@@ -1,0 +1,85 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'electrum.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+_$_BullbitcoinElectrumNetwork _$$_BullbitcoinElectrumNetworkFromJson(
+        Map<String, dynamic> json) =>
+    _$_BullbitcoinElectrumNetwork(
+      mainnet: json['mainnet'] as String? ?? 'ssl://$bbelectrum:50002',
+      testnet: json['testnet'] as String? ?? 'ssl://$bbelectrum:60002',
+      stopGap: json['stopGap'] as int? ?? 20,
+      timeout: json['timeout'] as int? ?? 5,
+      retry: json['retry'] as int? ?? 5,
+      validateDomain: json['validateDomain'] as bool? ?? true,
+      name: json['name'] as String? ?? 'bullbitcoin',
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$$_BullbitcoinElectrumNetworkToJson(
+        _$_BullbitcoinElectrumNetwork instance) =>
+    <String, dynamic>{
+      'mainnet': instance.mainnet,
+      'testnet': instance.testnet,
+      'stopGap': instance.stopGap,
+      'timeout': instance.timeout,
+      'retry': instance.retry,
+      'validateDomain': instance.validateDomain,
+      'name': instance.name,
+      'runtimeType': instance.$type,
+    };
+
+_$_DefaultElectrumNetwork _$$_DefaultElectrumNetworkFromJson(
+        Map<String, dynamic> json) =>
+    _$_DefaultElectrumNetwork(
+      mainnet: json['mainnet'] as String? ?? 'ssl://$openelectrum:50002',
+      testnet: json['testnet'] as String? ?? 'ssl://$openelectrum:60002',
+      stopGap: json['stopGap'] as int? ?? 20,
+      timeout: json['timeout'] as int? ?? 5,
+      retry: json['retry'] as int? ?? 5,
+      validateDomain: json['validateDomain'] as bool? ?? true,
+      name: json['name'] as String? ?? 'default',
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$$_DefaultElectrumNetworkToJson(
+        _$_DefaultElectrumNetwork instance) =>
+    <String, dynamic>{
+      'mainnet': instance.mainnet,
+      'testnet': instance.testnet,
+      'stopGap': instance.stopGap,
+      'timeout': instance.timeout,
+      'retry': instance.retry,
+      'validateDomain': instance.validateDomain,
+      'name': instance.name,
+      'runtimeType': instance.$type,
+    };
+
+_$_CustomElectrumNetwork _$$_CustomElectrumNetworkFromJson(
+        Map<String, dynamic> json) =>
+    _$_CustomElectrumNetwork(
+      mainnet: json['mainnet'] as String,
+      testnet: json['testnet'] as String,
+      stopGap: json['stopGap'] as int? ?? 20,
+      timeout: json['timeout'] as int? ?? 5,
+      retry: json['retry'] as int? ?? 5,
+      validateDomain: json['validateDomain'] as bool? ?? true,
+      name: json['name'] as String? ?? 'custom',
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$$_CustomElectrumNetworkToJson(
+        _$_CustomElectrumNetwork instance) =>
+    <String, dynamic>{
+      'mainnet': instance.mainnet,
+      'testnet': instance.testnet,
+      'stopGap': instance.stopGap,
+      'timeout': instance.timeout,
+      'retry': instance.retry,
+      'validateDomain': instance.validateDomain,
+      'name': instance.name,
+      'runtimeType': instance.$type,
+    };

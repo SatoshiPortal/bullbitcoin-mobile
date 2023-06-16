@@ -1,0 +1,12 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Enable Freezed",
+            "type": "shell",
+            "command": "flutter pub run build_runner watch --delete-conflicting-outputs",
+            "isBackground": true,
+        },
+    ],
+    "inputs": [],
+}

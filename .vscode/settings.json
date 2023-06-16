@@ -1,0 +1,63 @@
+{
+    "editor.tokenColorCustomizations": {
+        "comments": "#229977"
+    },
+    "explorer.fileNesting.patterns": {
+        "main.dart": "routes.dart, styles.dart, locator.dart",
+        "pubspec.yaml": "pubspec.lock,pubspec_overrides.yaml,.packages,.flutter-plugins,.flutter-plugins-dependencies,.metadata",
+        "*.dart": "${capture}.g.dart"
+    },
+    "[dart]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll": true,
+            "source.organizeImports": true,
+        },
+        
+    },
+    
+    "files.exclude": {
+        "**/.metadata": true,
+        ".gitignore": true,
+        "**/.packages": true,
+        "**/pubspec.lock": true,
+        "**/.flutter-plugins": true,
+        "**/.dart_tool": true,
+        "**/.flutter-plugins-dependencies": true,
+        "**/generated_plugin_registrant.dart": true,
+        "**/CHANGELOG.md": true,
+        "l10n.yaml": true,
+        "LICENSE": true,
+        "**/analysis_options.yaml": true,
+        "build.yaml": true,
+        "**/packages": true,
+        "README.md": true,
+        "**/build": true,
+        "assets": true,
+        "**/assets": true,
+        "**/**.g.dart": true,
+        "**/**.freezed.dart": true,
+        "android": true,
+        "ios": true,
+        "windows": true,
+        "web": true,
+        "macos": true,
+        "zmacos": true,
+        "linux": true,
+        "**/widgetbook": true,
+        // "**/pubspec.yaml": true,
+        "**/maintainance": true,
+        "**/test": true
+        // "integration_test": true
+        // 
+        // 
+        // "**/lib/auth": true,
+        // // "**/lib/create": true,
+        // // "**/lib/home": true,
+        // "**/lib/import": true,
+        // // "**/lib/settings": true,
+        // "**/lib/transaction": true,
+        // // "**/lib/send": true,
+        // "**/lib/wallet": true,
+        // "**/lib/wallet_settings": true,
+    }
+}
