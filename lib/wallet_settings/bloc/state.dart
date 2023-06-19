@@ -34,4 +34,12 @@ class WalletSettingsState with _$WalletSettingsState {
   String elementAt(int index) {
     return mnemonic[index];
   }
+
+  String shuffleElementAt(int index) {
+    return shuffledMnemonic[index];
+  }
+
+  bool shuffleIsSelected(int index) {
+    return testMnemonicOrder.contains(shuffledMnemonic[index]);
+  }
 }

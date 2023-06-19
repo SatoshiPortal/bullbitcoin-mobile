@@ -4,9 +4,11 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/_ui/word_grid.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,12 +20,11 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 class TestBackupScreen extends StatelessWidget {
   const TestBackupScreen({super.key});
 
-  static Future openPopup(
-    BuildContext context,
-  ) {
+  static Future openPopup(BuildContext context) {
     final settings = context.read<WalletSettingsCubit>();
     final wallet = context.read<WalletCubit>();
-    settings.clearnMnemonic();
+    // settings.clearnMnemonic();
+    settings.loadBackupClicked();
 
     return showMaterialModalBottomSheet(
       context: context,
@@ -65,18 +66,40 @@ class TestBackupScreen extends StatelessWidget {
               ),
             ),
             const Gap(16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: BBText.bodySmall(
+                'Your seed words are displayed below in a randomized order. Tap on the words in the correct sequence to prove you’ve done your backup correctly.',
+              ),
+            ),
+            const Gap(4),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: CenterLeft(
+                child: BBButton.text(
+                  label: 'Reset Order',
+                  onPressed: () => context.read<WalletSettingsCubit>().loadBackupClicked(),
+                ),
+              ),
+            ),
+            const Gap(32),
             for (var i = 0; i < 6; i++)
               Row(
                 children: [
                   for (var j = 0; j < 2; j++)
-                    BackupTestTextField(
+                    BackupTestItemWord(
                       index: i == 0 ? j : i * 2 + j,
+                      word: context
+                          .read<WalletSettingsCubit>()
+                          .state
+                          .shuffleElementAt(i == 0 ? j : i * 2 + j),
+                      isSelected: false,
                     ),
                 ],
               ),
             const Gap(16),
             const TestBackupPassField(),
-            const Gap(66),
+            const Gap(40),
             const TestBackupConfirmButton(),
             const Gap(24),
             Center(
@@ -91,7 +114,7 @@ class TestBackupScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Gap(48),
+            const Gap(60),
           ],
         ),
       ),
@@ -99,48 +122,66 @@ class TestBackupScreen extends StatelessWidget {
   }
 }
 
-class BackupTestTextField extends StatefulWidget {
-  const BackupTestTextField({super.key, required this.index});
+class BackupTestItemWord extends StatelessWidget {
+  const BackupTestItemWord({
+    super.key,
+    required this.index,
+    required this.word,
+    required this.isSelected,
+  });
 
   final int index;
+  final String word;
+  final bool isSelected;
 
-  @override
-  State<BackupTestTextField> createState() => _BackupTestTextFieldState();
-}
-
-class _BackupTestTextFieldState extends State<BackupTestTextField> {
   @override
   Widget build(BuildContext context) {
-    final text = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.mnemonic.elementAt(widget.index),
-    );
-
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-        height: 36,
-        child: Row(
-          children: [
-            SizedBox(
-              width: 20,
-              child: BBText.body(
-                '${widget.index + 1}',
-                textAlign: TextAlign.right,
-              ),
-            ),
-            const Gap(8),
-            Expanded(
-              child: SizedBox(
-                height: 44,
-                child: BBTextInput.small(
-                  value: text,
-                  onChanged: (value) {
-                    context.read<WalletSettingsCubit>().wordChanged(widget.index, value);
-                  },
+        margin: const EdgeInsets.fromLTRB(4, 0, 4, 24),
+        child: InkWell(
+          onTap: () {
+            context.read<WalletSettingsCubit>().wordClicked(word);
+          },
+          child: Stack(
+            children: [
+              AnimatedContainer(
+                duration: 0.3.seconds,
+                width: double.infinity,
+                height: 40,
+                padding: const EdgeInsets.only(left: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(80),
+                  border: Border.all(
+                    color: context.colour.onBackground,
+                  ),
+                  color: isSelected ? context.colour.primary : context.colour.onBackground,
+                ),
+                child: CenterLeft(
+                  child: BBText.body(
+                    isSelected ? '${index + 1}' : '?',
+                    onSurface: true,
+                  ),
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.only(left: 32),
+                child: Container(
+                  padding: const EdgeInsets.only(left: 16),
+                  width: double.infinity,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(80),
+                    border: Border.all(
+                      color: context.colour.onBackground,
+                    ),
+                    color: context.colour.background,
+                  ),
+                  child: CenterLeft(child: BBText.body(word)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -217,12 +258,13 @@ class TestBackupConfirmButton extends StatelessWidget {
         else
           Center(
             child: SizedBox(
-              width: 200,
+              width: 300,
               child: BBButton.bigRed(
                 disabled: testing,
                 loading: testing,
+                filled: true,
                 onPressed: () => context.read<WalletSettingsCubit>().testBackupClicked(),
-                label: 'Test',
+                label: 'Test Backup',
               ),
             ),
           ),
@@ -332,6 +374,51 @@ class BackupScreen extends StatelessWidget {
               ),
             ),
             const Gap(48),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class BackupTestTextField extends StatefulWidget {
+  const BackupTestTextField({super.key, required this.index});
+
+  final int index;
+
+  @override
+  State<BackupTestTextField> createState() => _BackupTestTextFieldState();
+}
+
+class _BackupTestTextFieldState extends State<BackupTestTextField> {
+  @override
+  Widget build(BuildContext context) {
+    final text = context.select(
+      (WalletSettingsCubit cubit) => cubit.state.mnemonic.elementAt(widget.index),
+    );
+
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+        height: 36,
+        child: Row(
+          children: [
+            SizedBox(
+              width: 20,
+              child: BBText.body(
+                '${widget.index + 1}',
+                textAlign: TextAlign.right,
+              ),
+            ),
+            const Gap(8),
+            Expanded(
+              child: BBTextInput.small(
+                value: text,
+                onChanged: (value) {
+                  context.read<WalletSettingsCubit>().wordChanged(widget.index, value);
+                },
+              ),
+            ),
           ],
         ),
       ),
