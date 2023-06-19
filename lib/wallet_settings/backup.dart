@@ -134,8 +134,7 @@ class BackupTestItemWord extends StatelessWidget {
   Widget build(BuildContext context) {
     final (word, isSelected, actualIdx) = context.select(
         (WalletSettingsCubit cubit) => cubit.state.shuffleElementAt(index));
-      (WalletSettingsCubit _) => _.state.shuffleElementAt(index),
-    );
+    (WalletSettingsCubit _) => _.state.shuffleElementAt(index);
 
     return Expanded(
       child: Container(
