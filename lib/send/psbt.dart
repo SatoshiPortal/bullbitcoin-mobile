@@ -153,7 +153,7 @@ class PSBTPopUp extends StatelessWidget {
             child: SizedBox(
               width: 200,
               height: 200,
-              child: QrImage(data: psbt),
+              child: QrImageView(data: psbt),
             ),
           ),
           const Gap(60),

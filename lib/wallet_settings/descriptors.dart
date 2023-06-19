@@ -101,7 +101,7 @@ class XpubPopUp extends StatelessWidget {
           ),
           const Gap(24),
           Center(
-            child: QrImage(
+            child: QrImageView(
               data: xpub,
             ),
           ),

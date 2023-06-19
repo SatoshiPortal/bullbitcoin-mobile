@@ -140,7 +140,7 @@ class AddressQR extends StatelessWidget {
     return Column(
       children: [
         const Gap(8),
-        QrImage(
+        QrImageView(
           data: address.address,
           padding: EdgeInsets.zero,
         ),

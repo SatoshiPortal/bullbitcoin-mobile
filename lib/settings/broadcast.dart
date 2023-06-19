@@ -249,7 +249,7 @@ class BroadcastSend extends StatelessWidget {
             child: SizedBox(
               width: 200,
               height: 200,
-              child: QrImage(data: psbtStr),
+              child: QrImageView(data: psbtStr),
             ),
           ),
           const Gap(60),

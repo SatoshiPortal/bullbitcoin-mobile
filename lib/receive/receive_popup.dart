@@ -151,7 +151,7 @@ class DefaultQR extends StatelessWidget {
     final address = context.select((ReceiveCubit x) => x.state.defaultAddress?.address ?? '');
 
     return Center(
-      child: QrImage(
+      child: QrImageView(
         data: address,
       ),
     );
@@ -166,7 +166,7 @@ class InvoiceQR extends StatelessWidget {
     final address = context.select((ReceiveCubit x) => x.state.invoiceAddress);
 
     return Center(
-      child: QrImage(
+      child: QrImageView(
         data: address,
         size: 200,
       ),
