@@ -250,11 +250,13 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       final wallet = w!;
 
       final fingerprint = wallet.cleanFingerprint();
-      final folder = wallet.network == BBNetwork.Mainnet ? 'bitcoin' : 'testnet';
+      final folder =
+          wallet.network == BBNetwork.Mainnet ? 'bitcoin' : 'testnet';
 
       final appDocDir = await getDownloadsDirectory();
       if (appDocDir == null) throw 'Could not get downloads directory';
-      final file = File(appDocDir.path + '/bullbitcoin_backup/$folder/$fingerprint.json');
+      final file = File(
+          appDocDir.path + '/bullbitcoin_backup/$folder/$fingerprint.json');
 
       await file.writeAsString(wallet.toJson().toString());
 

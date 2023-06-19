@@ -279,106 +279,92 @@ void main() {
   });
 }
 
-
 //   external = await bdk.Descriptor.create(
-          //   descriptor: wallet.externalDescriptor,
-          //   network: bdk.Network.Testnet,
-          // );
-          // internal = await bdk.Descriptor.create(
-          //   descriptor: wallet.internalDescriptor,
-          //   network: bdk.Network.Testnet,
-          // );
+//   descriptor: wallet.externalDescriptor,
+//   network: bdk.Network.Testnet,
+// );
+// internal = await bdk.Descriptor.create(
+//   descriptor: wallet.internalDescriptor,
+//   network: bdk.Network.Testnet,
+// );
 
-
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 //   BdkException.unExpected(e: called `Result::unwrap()` on an `Err` value:
 // Descriptor(HardenedDerivationXpub))
 
-
-
-
 //   BdkException.miniscript(e: "))))
-
 
 // const _t1 =
 //     'tpubDC5phKKvZNyMBySbRhQW6t1AkutpvxpAbPacFw38eM2DpiMRZAUBXooGNaBUzVKsST56w1osYwEuRtmqsEpKw4fw8mYWm3jbsjMGnYrgbUz';
-
-
-
-
-
-
-
 
 // const _d1 =
 //     "wpkh(tprv8ZgxMBicQKsPcthqtyCtGtGzJhWXNC5QwGek1GQMs9vxHFrqhfXzdL5tstUWjLfm8JNeY7TvG2PxrfY5F8edd1JLyXqb2e86JhG4icehVAy/84'/1'/0'/1/*)#7420nc5y";
@@ -394,8 +380,6 @@ void main() {
 
 // const _z1 =
 //     'zpub6qrjqR4sNQqcq3MbPTgNEQ33Dhz8VSU9G7o88FwKWpAMsoYbVbSMVxGtHx2829QkdMJCNrGuwEnF49KJAvXwkLQerAGmWEwpoQAQ7pMBFmV';
-
-
 
 // //pkh([ddffda99/44'/1'/0']tpubDC5phKKvZNyMBySbRhQW6t1AkutpvxpAbPacFw38eM2DpiMRZAUBXooGNaBUzVKsST56w1osYwEuRtmqsEpKw4fw8mYWm3jbsjMGnYrgbUz/0/*)#23krdrn4
 // // pkh([258ee68c/44'/1'/0']tpubDGkapRgaKKcdaEtBkHfcWBDsrUWh1Lubu7JWEyPdU3LTkJQmxMz6qKzWVcAuSNyWjRe7kJ9EVzk6BosPSP5GvfR6SuB913zP1jqUxsjBUsQ/0/*)#75nf0v7a

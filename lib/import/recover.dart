@@ -51,8 +51,8 @@ class ImportWordTextField extends StatefulWidget {
 class _ImportWordTextFieldState extends State<ImportWordTextField> {
   @override
   Widget build(BuildContext context) {
-    final text = context
-        .select((ImportWalletCubit cubit) => cubit.state.words.elementAtOrNull(widget.index) ?? '');
+    final text = context.select((ImportWalletCubit cubit) =>
+        cubit.state.words.elementAtOrNull(widget.index) ?? '');
 
     return Expanded(
       child: Container(
@@ -71,7 +71,9 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
             Expanded(
               child: BBTextInput.small(
                 onChanged: (value) {
-                  context.read<ImportWalletCubit>().wordChanged(widget.index, value);
+                  context
+                      .read<ImportWalletCubit>()
+                      .wordChanged(widget.index, value);
                 },
                 value: text,
               ),
@@ -93,13 +95,15 @@ class _ImportWordsPassphrase extends StatefulWidget {
 class _ImportWordsPassphraseState extends State<_ImportWordsPassphrase> {
   @override
   Widget build(BuildContext context) {
-    final text = context.select((ImportWalletCubit cubit) => cubit.state.password);
+    final text =
+        context.select((ImportWalletCubit cubit) => cubit.state.password);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: BBTextInput.big(
         value: text,
-        onChanged: (value) => context.read<ImportWalletCubit>().passwordChanged(value),
+        onChanged: (value) =>
+            context.read<ImportWalletCubit>().passwordChanged(value),
         hint: 'Enter passphrase if needed',
       ),
     );
@@ -111,8 +115,10 @@ class _ImportWordsRecoverButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recovering = context.select((ImportWalletCubit cubit) => cubit.state.importing);
-    final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+    final recovering =
+        context.select((ImportWalletCubit cubit) => cubit.state.importing);
+    final err =
+        context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(

@@ -96,7 +96,8 @@ class BBButton extends StatelessWidget {
         final style = OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           side: BorderSide(color: context.colour.primary),
-          backgroundColor: filled ? context.colour.primary : context.colour.background,
+          backgroundColor:
+              filled ? context.colour.primary : context.colour.background,
         );
 
         if (!loading)
@@ -122,7 +123,8 @@ class BBButton extends StatelessWidget {
                   width: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(context.colour.onPrimary),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(context.colour.onPrimary),
                   ),
                 ),
                 const Gap(8),
@@ -154,7 +156,8 @@ class BBButton extends StatelessWidget {
         final style = OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 8),
           side: BorderSide(color: context.colour.primary),
-          backgroundColor: filled ? context.colour.primary : context.colour.background,
+          backgroundColor:
+              filled ? context.colour.primary : context.colour.background,
         );
 
         widget = OutlinedButton(

@@ -94,7 +94,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       await Future.delayed(const Duration(seconds: 4));
       emit(state.copyWith(downloaded: true));
     } catch (e) {
-      emit(state.copyWith(downloadingFile: false, errDownloadingFile: e.toString()));
+      emit(state.copyWith(
+          downloadingFile: false, errDownloadingFile: e.toString()));
     }
   }
 
@@ -109,7 +110,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       await blockchain!.broadcast(tx);
       emit(state.copyWith(broadcastingTx: false, sent: true));
     } catch (e) {
-      emit(state.copyWith(broadcastingTx: false, errBroadcastingTx: e.toString()));
+      emit(state.copyWith(
+          broadcastingTx: false, errBroadcastingTx: e.toString()));
     }
   }
 }

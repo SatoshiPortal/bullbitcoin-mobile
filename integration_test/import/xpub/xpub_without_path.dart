@@ -38,7 +38,8 @@ void main() {
     final loader = find.byKey(UIKeys.importWalletSelectionSyncing);
     await waitForAllToDisappear(tester, loader);
 
-    final importConfirmButton = find.byKey(UIKeys.importWalletSelectionConfirmButton);
+    final importConfirmButton =
+        find.byKey(UIKeys.importWalletSelectionConfirmButton);
     await tester.tap(importConfirmButton);
     await tester.pumpAndSettle();
 

@@ -89,7 +89,8 @@ class Wallet with _$Wallet {
       if (err3 != null) errs.add(err3.message);
       wallets.add(wallet44!);
 
-      if (wallets.isEmpty) throw 'Unable to create a wallet:\n ${errs.join(', ')}';
+      if (wallets.isEmpty)
+        throw 'Unable to create a wallet:\n ${errs.join(', ')}';
 
       return (wallets, null);
     } catch (e) {
@@ -129,7 +130,8 @@ class Wallet with _$Wallet {
       if (err3 != null) errs.add(err3.message);
       wallets.add(wallet44!);
 
-      if (wallets.isEmpty) throw 'Unable to create a wallet:\n ${errs.join(', ')}';
+      if (wallets.isEmpty)
+        throw 'Unable to create a wallet:\n ${errs.join(', ')}';
 
       return (wallets, null);
     } catch (e) {
@@ -184,7 +186,8 @@ class Wallet with _$Wallet {
       if (err3 != null) errs.add(err3.message);
       wallets.add(wallet44!);
 
-      if (wallets.isEmpty) throw 'Unable to create a wallet:\n ${errs.join(', ')}';
+      if (wallets.isEmpty)
+        throw 'Unable to create a wallet:\n ${errs.join(', ')}';
       return (wallets, null);
     } catch (e) {
       return (null, Err(e.toString()));
@@ -261,7 +264,8 @@ class Wallet with _$Wallet {
       if (err3 != null) errs.add(err3.message);
       wallets.add(wallet44!);
 
-      if (wallets.isEmpty) throw 'Unable to create a wallet:\n ${errs.join(', ')}';
+      if (wallets.isEmpty)
+        throw 'Unable to create a wallet:\n ${errs.join(', ')}';
       return (wallets, null);
     } catch (e) {
       return (null, Err(e.toString()));
@@ -315,7 +319,8 @@ class Wallet with _$Wallet {
       if (err3 != null) errs.add(err3.message);
       wallets.add(wallet44!);
 
-      if (wallets.isEmpty) throw 'Unable to create a wallet:\n ${errs.join(', ')}';
+      if (wallets.isEmpty)
+        throw 'Unable to create a wallet:\n ${errs.join(', ')}';
       return (wallets, null);
     } catch (e) {
       return (null, Err(e.toString()));
@@ -335,7 +340,8 @@ class Wallet with _$Wallet {
     try {
       final bbNetwork = isTestNet ? BBNetwork.Testnet : BBNetwork.Mainnet;
       if (bbWalletType == BBWalletType.descriptors) {
-        if (descriptor == null || descriptor.isEmpty) throw 'No descriptor provided';
+        if (descriptor == null || descriptor.isEmpty)
+          throw 'No descriptor provided';
         if (changeDescriptor == null || changeDescriptor.isEmpty)
           throw 'No change descriptor provided';
 
@@ -438,7 +444,8 @@ class Wallet with _$Wallet {
   }
 
   String cleanFingerprint() {
-    if (network == BBNetwork.Testnet) return fingerprint.replaceFirst('tn::', '');
+    if (network == BBNetwork.Testnet)
+      return fingerprint.replaceFirst('tn::', '');
     return fingerprint;
   }
 
@@ -469,14 +476,19 @@ class Wallet with _$Wallet {
   }
 
   List<Address> addressesWithBalance() {
-    return addresses?.where((addr) => addr.calculateBalance() > 0).toList() ?? [];
+    return addresses?.where((addr) => addr.calculateBalance() > 0).toList() ??
+        [];
   }
 
   List<Address> addressesWithoutBalance({bool isUsed = false}) {
     if (!isUsed)
-      return addresses?.where((addr) => addr.calculateBalance() == 0).toList() ?? [];
+      return addresses
+              ?.where((addr) => addr.calculateBalance() == 0)
+              .toList() ??
+          [];
     else
-      return addresses?.where((addr) => addr.hasSpentAndNoBalance()).toList() ?? [];
+      return addresses?.where((addr) => addr.hasSpentAndNoBalance()).toList() ??
+          [];
   }
 
   List<String> mne() {
@@ -557,7 +569,8 @@ class Wallet with _$Wallet {
   }
 
   List<Transaction> getPendingTxs() {
-    return (transactions?.where((tx) => tx.timestamp == 0).toList() ?? []).toList();
+    return (transactions?.where((tx) => tx.timestamp == 0).toList() ?? [])
+        .toList();
   }
 
   List<Transaction> getConfirmedTxs() {
@@ -658,9 +671,6 @@ extension W on WalletType {
     }
   }
 }
-
-
-
 
 // segwit -> BIP84 -> m/84'/0'/0'/0-1/* -> wpkh
 // compatible -> BIP49 -> m/49'/0'/0'/0-1/* -> sh-wpkh

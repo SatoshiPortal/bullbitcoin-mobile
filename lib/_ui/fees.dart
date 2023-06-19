@@ -27,7 +27,8 @@ class SelectFeesButton extends StatelessWidget {
     if (!fromSettings)
       txt = context.select((SendCubit cubit) => cubit.state.feeButtonText());
     else
-      txt = context.select((SettingsCubit cubit) => cubit.state.feeButtonText());
+      txt =
+          context.select((SettingsCubit cubit) => cubit.state.feeButtonText());
 
     return InkWell(
       onTap: () {
@@ -247,16 +248,19 @@ class SelectFeesItem extends StatelessWidget {
 
     var selected = false;
     if (!fromSettings)
-      selected = context.select((SendCubit x) => x.state.selectedFeesOption == index);
+      selected =
+          context.select((SendCubit x) => x.state.selectedFeesOption == index);
     else
-      selected = context.select((SettingsCubit x) => x.state.selectedFeesOption == index);
+      selected = context
+          .select((SettingsCubit x) => x.state.selectedFeesOption == index);
 
     var fee = 0;
     if (!custom) {
       if (!fromSettings)
         fee = context.select((SendCubit x) => x.state.feesList?[index] ?? 0);
       else
-        fee = context.select((SettingsCubit x) => x.state.feesList?[index] ?? 0);
+        fee =
+            context.select((SettingsCubit x) => x.state.feesList?[index] ?? 0);
     }
 
     return GestureDetector(
@@ -276,7 +280,8 @@ class SelectFeesItem extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected ? context.colour.primary : context.colour.onBackground,
+            color:
+                selected ? context.colour.primary : context.colour.onBackground,
             width: selected ? 2 : 1,
           ),
         ),
@@ -331,9 +336,11 @@ class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
 
     var selected = false;
     if (!fromSettings)
-      selected = context.select((SendCubit x) => x.state.selectedFeesOption == 4);
+      selected =
+          context.select((SendCubit x) => x.state.selectedFeesOption == 4);
     else
-      selected = context.select((SettingsCubit x) => x.state.selectedFeesOption == 4);
+      selected =
+          context.select((SettingsCubit x) => x.state.selectedFeesOption == 4);
 
     if (selected && !_focusNode.hasFocus) _focusNode.requestFocus();
 

@@ -125,10 +125,11 @@ class WalletName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = context.select((WalletCubit cubit) => cubit.state.wallet?.name);
+    final name =
+        context.select((WalletCubit cubit) => cubit.state.wallet?.name);
 
-    final fingerprint =
-        context.select((WalletCubit cubit) => cubit.state.wallet?.cleanFingerprint() ?? '');
+    final fingerprint = context.select(
+        (WalletCubit cubit) => cubit.state.wallet?.cleanFingerprint() ?? '');
 
     return BBText.body(
       name ?? fingerprint,
@@ -141,9 +142,11 @@ class WalletBalance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balance = context.select((WalletCubit cubit) => cubit.state.balance?.total ?? 0);
+    final balance =
+        context.select((WalletCubit cubit) => cubit.state.balance?.total ?? 0);
 
-    final balStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(balance));
+    final balStr = context
+        .select((SettingsCubit cubit) => cubit.state.getAmountInUnits(balance));
 
     return BBText.body('Available: ' + balStr);
   }
@@ -204,10 +207,13 @@ class _EnterAmountState extends State<EnterAmount> {
 
   @override
   Widget build(BuildContext context) {
-    final sendAll = context.select((SendCubit cubit) => cubit.state.sendAllCoin);
+    final sendAll =
+        context.select((SendCubit cubit) => cubit.state.sendAllCoin);
     if (sendAll) return const SizedBox.shrink();
-    final balance = context.select((WalletCubit cubit) => cubit.state.balance?.total ?? 0);
-    final isSats = context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
+    final balance =
+        context.select((WalletCubit cubit) => cubit.state.balance?.total ?? 0);
+    final isSats =
+        context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
     final amount = context.select((SendCubit cubit) => cubit.state.amount);
 
     final amountStr = context.select(
@@ -256,7 +262,8 @@ class _EnterAmountState extends State<EnterAmount> {
                   else if (!txt.contains('.')) {
                     return;
                   }
-                  final amt = context.read<SettingsCubit>().state.getSatsAmount(clean);
+                  final amt =
+                      context.read<SettingsCubit>().state.getSatsAmount(clean);
                   print('----- $amt');
                   context.read<SendCubit>().updateAmount(amt);
                 },
@@ -308,10 +315,12 @@ class SendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final watchOnly = context.select((WalletCubit cubit) => cubit.state.wallet!.watchOnly());
+    final watchOnly =
+        context.select((WalletCubit cubit) => cubit.state.wallet!.watchOnly());
 
     final sending = context.select((SendCubit cubit) => cubit.state.sending);
-    final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);
+    final showSend =
+        context.select((SendCubit cubit) => cubit.state.showSendButton);
     final err = context.select((SendCubit cubit) => cubit.state.errSending);
 
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
@@ -361,7 +370,8 @@ class AdvancedOptionsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = context.select((SendCubit cubit) => cubit.state.advancedOptionsButtonText());
+    final text = context
+        .select((SendCubit cubit) => cubit.state.advancedOptionsButtonText());
     return BBButton.text(
       onPressed: () {
         AdvancedOptionsPopUp.openPopup(context);
@@ -406,13 +416,18 @@ class TxDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final address = context.select((SendCubit cubit) => cubit.state.address);
     final amount = context.select((SendCubit cubit) => cubit.state.amount);
-    final amtStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(amount));
-    final amtFiat = context.select((SettingsCubit cubit) => cubit.state.calculatePrice(amount));
-    final fee = context.select((SendCubit cubit) => cubit.state.psbtSignedFeeAmount ?? 0);
-    final feeStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(fee));
-    final feeFiat = context.select((SettingsCubit cubit) => cubit.state.calculatePrice(fee));
-    final fiatCurrency =
-        context.select((SettingsCubit cubit) => cubit.state.currency?.shortName ?? '');
+    final amtStr = context
+        .select((SettingsCubit cubit) => cubit.state.getAmountInUnits(amount));
+    final amtFiat = context
+        .select((SettingsCubit cubit) => cubit.state.calculatePrice(amount));
+    final fee = context
+        .select((SendCubit cubit) => cubit.state.psbtSignedFeeAmount ?? 0);
+    final feeStr = context
+        .select((SettingsCubit cubit) => cubit.state.getAmountInUnits(fee));
+    final feeFiat = context
+        .select((SettingsCubit cubit) => cubit.state.calculatePrice(fee));
+    final fiatCurrency = context
+        .select((SettingsCubit cubit) => cubit.state.currency?.shortName ?? '');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

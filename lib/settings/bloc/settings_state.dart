@@ -51,7 +51,8 @@ class SettingsState with _$SettingsState {
   }) = _SettingsState;
   const SettingsState._();
 
-  factory SettingsState.fromJson(Map<String, dynamic> json) => _$SettingsStateFromJson(json);
+  factory SettingsState.fromJson(Map<String, dynamic> json) =>
+      _$SettingsStateFromJson(json);
 
   ElectrumNetwork? getNetwork() {
     if (networks.isEmpty) return null;
@@ -91,7 +92,8 @@ class SettingsState with _$SettingsState {
   String calculatePrice(int sats) {
     if (currency == null) return '';
     if (testnet) return currency!.getSymbol() + '0';
-    return currency!.getSymbol() + (sats / 100000000 * currency!.price!).toStringAsFixed(2);
+    return currency!.getSymbol() +
+        (sats / 100000000 * currency!.price!).toStringAsFixed(2);
   }
 
   String getUnitString() {
@@ -119,8 +121,9 @@ class SettingsState with _$SettingsState {
     return BBNetwork.Mainnet;
   }
 
-  String explorerTxUrl(String txid) =>
-      testnet ? 'https://$mempoolapi/testnet/tx/$txid' : 'https://$mempoolapi/tx/$txid';
+  String explorerTxUrl(String txid) => testnet
+      ? 'https://$mempoolapi/testnet/tx/$txid'
+      : 'https://$mempoolapi/tx/$txid';
 
   String explorerAddressUrl(String address) => testnet
       ? 'https://$mempoolapi/testnet/address/$address'
@@ -129,10 +132,14 @@ class SettingsState with _$SettingsState {
   String feeButtonText() {
     var str = '';
     try {
-      if (selectedFeesOption == 0) str = 'Fastest fee rate: ' + feesList![0].toString();
-      if (selectedFeesOption == 1) str = 'Fast fee rate: ' + feesList![1].toString();
-      if (selectedFeesOption == 2) str = 'Medium fee rate: ' + feesList![2].toString();
-      if (selectedFeesOption == 3) str = 'Slow fee rate: ' + feesList![3].toString();
+      if (selectedFeesOption == 0)
+        str = 'Fastest fee rate: ' + feesList![0].toString();
+      if (selectedFeesOption == 1)
+        str = 'Fast fee rate: ' + feesList![1].toString();
+      if (selectedFeesOption == 2)
+        str = 'Medium fee rate: ' + feesList![2].toString();
+      if (selectedFeesOption == 3)
+        str = 'Slow fee rate: ' + feesList![3].toString();
 
       if (selectedFeesOption == 4) str = 'Manual fee rate: ' + fees.toString();
       return str + ' sat/vByte';

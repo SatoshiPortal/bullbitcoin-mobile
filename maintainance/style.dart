@@ -1,4 +1,3 @@
-
 //
 //
 
@@ -380,88 +379,88 @@
 // }
 //
 //
-  // labelLarge: GoogleFonts.inter(
-        //   fontSize: 22,
-        //   fontWeight: FontWeight.w200,
-        //   color: _Colours.red,
-        // ),
-        // labelMedium: GoogleFonts.inter(
-        //   color: _Colours.red,
-        // ),
-        // labelSmall: GoogleFonts.inter(
-        //   fontWeight: FontWeight.w800,
-        //   // color: _Colours.black,
-        // ),
-        // titleSmall: GoogleFonts.inter(
-        //   color: _Colours.black,
-        //   fontWeight: FontWeight.bold,
-        //   fontSize: 24,
-        // ),
-        // bodyMedium:
-        // headlineMedium:
-        // displayLarge:
-        // ),
+// labelLarge: GoogleFonts.inter(
+//   fontSize: 22,
+//   fontWeight: FontWeight.w200,
+//   color: _Colours.red,
+// ),
+// labelMedium: GoogleFonts.inter(
+//   color: _Colours.red,
+// ),
+// labelSmall: GoogleFonts.inter(
+//   fontWeight: FontWeight.w800,
+//   // color: _Colours.black,
+// ),
+// titleSmall: GoogleFonts.inter(
+//   color: _Colours.black,
+//   fontWeight: FontWeight.bold,
+//   fontSize: 24,
+// ),
+// bodyMedium:
+// headlineMedium:
+// displayLarge:
+// ),
 
-  // inputDecorationTheme: InputDecorationTheme(
-    //   border: OutlineInputBorder(
-    //     borderRadius: BorderRadius.circular(80.0),
-    //     borderSide: const BorderSide(
-    //       color: _Colours.blue,
-    //     ),
-    //   ),
-    //   enabledBorder: OutlineInputBorder(
-    //     borderRadius: BorderRadius.circular(80.0),
-    //     borderSide: const BorderSide(
-    //       color: _Colours.lightBlack,
-    //     ),
-    //   ),
-    //   hintStyle: const TextStyle(
-    //     // fontSize: 16,
-    //     color: _Colours.lightBlack,
-    //   ),
-    //   filled: true,
-    //   fillColor: _Colours.white,
-    //   contentPadding: const EdgeInsets.only(
-    //     bottom: 8,
-    //     left: 24,
-    //   ),
-    //   focusColor: _Colours.blue,
-    //   activeIndicatorBorder: const BorderSide(
-    //     color: _Colours.blue,
-    //   ),
-    // ),
-    // textSelectionTheme: const TextSelectionThemeData(
-    //   cursorColor: _Colours.blue,
-    //   selectionColor: _Colours.blue,
-    //   selectionHandleColor: _Colours.blue,
-    // ),
-    // textButtonTheme: TextButtonThemeData(
-    //   style: TextButton.styleFrom(
-    //     foregroundColor: _Colours.blue,
-    //     textStyle: GoogleFonts.inter(
-    //       fontSize: 16,
-    //       color: _Colours.blue,
-    //     ),
-    //   ),
-    // ),
-    // filledButtonTheme: FilledButtonThemeData(
-    //   style: FilledButton.styleFrom(
-    //     padding: const EdgeInsets.symmetric(vertical: 16),
-    //     shape: const StadiumBorder(),
-    //     backgroundColor: _Colours.red,
-    //     foregroundColor: _Colours.white,
-    //   ),
-    // ),
-    // outlinedButtonTheme: OutlinedButtonThemeData(
-    //   style: OutlinedButton.styleFrom(
-    //     elevation: 8,
-    //     padding: const EdgeInsets.symmetric(vertical: 16),
-    //     side: const BorderSide(color: _Colours.red),
-    //     foregroundColor: _Colours.red,
-    //     disabledBackgroundColor: _Colours.lightBlack.withOpacity(0.2),
-    //     disabledForegroundColor: _Colours.white,
-    //   ),
-    // ),
+// inputDecorationTheme: InputDecorationTheme(
+//   border: OutlineInputBorder(
+//     borderRadius: BorderRadius.circular(80.0),
+//     borderSide: const BorderSide(
+//       color: _Colours.blue,
+//     ),
+//   ),
+//   enabledBorder: OutlineInputBorder(
+//     borderRadius: BorderRadius.circular(80.0),
+//     borderSide: const BorderSide(
+//       color: _Colours.lightBlack,
+//     ),
+//   ),
+//   hintStyle: const TextStyle(
+//     // fontSize: 16,
+//     color: _Colours.lightBlack,
+//   ),
+//   filled: true,
+//   fillColor: _Colours.white,
+//   contentPadding: const EdgeInsets.only(
+//     bottom: 8,
+//     left: 24,
+//   ),
+//   focusColor: _Colours.blue,
+//   activeIndicatorBorder: const BorderSide(
+//     color: _Colours.blue,
+//   ),
+// ),
+// textSelectionTheme: const TextSelectionThemeData(
+//   cursorColor: _Colours.blue,
+//   selectionColor: _Colours.blue,
+//   selectionHandleColor: _Colours.blue,
+// ),
+// textButtonTheme: TextButtonThemeData(
+//   style: TextButton.styleFrom(
+//     foregroundColor: _Colours.blue,
+//     textStyle: GoogleFonts.inter(
+//       fontSize: 16,
+//       color: _Colours.blue,
+//     ),
+//   ),
+// ),
+// filledButtonTheme: FilledButtonThemeData(
+//   style: FilledButton.styleFrom(
+//     padding: const EdgeInsets.symmetric(vertical: 16),
+//     shape: const StadiumBorder(),
+//     backgroundColor: _Colours.red,
+//     foregroundColor: _Colours.white,
+//   ),
+// ),
+// outlinedButtonTheme: OutlinedButtonThemeData(
+//   style: OutlinedButton.styleFrom(
+//     elevation: 8,
+//     padding: const EdgeInsets.symmetric(vertical: 16),
+//     side: const BorderSide(color: _Colours.red),
+//     foregroundColor: _Colours.red,
+//     disabledBackgroundColor: _Colours.lightBlack.withOpacity(0.2),
+//     disabledForegroundColor: _Colours.white,
+//   ),
+// ),
 
 // class Fonts {
 //   // static TextStyle _fontt() => GoogleFonts.inter(

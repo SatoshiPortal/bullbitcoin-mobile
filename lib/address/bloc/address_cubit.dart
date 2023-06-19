@@ -44,9 +44,11 @@ class AddressCubit extends Cubit<AddressState> {
 
       walletCubit.updateWallet(w);
 
-      emit(state.copyWith(freezingAddress: false, frozenAddress: true, address: address));
+      emit(state.copyWith(
+          freezingAddress: false, frozenAddress: true, address: address));
     } catch (e) {
-      emit(state.copyWith(freezingAddress: false, errFreezingAddress: e.toString()));
+      emit(state.copyWith(
+          freezingAddress: false, errFreezingAddress: e.toString()));
     }
   }
 
@@ -70,9 +72,11 @@ class AddressCubit extends Cubit<AddressState> {
 
       walletCubit.updateWallet(w);
 
-      emit(state.copyWith(freezingAddress: false, frozenAddress: false, address: address));
+      emit(state.copyWith(
+          freezingAddress: false, frozenAddress: false, address: address));
     } catch (e) {
-      emit(state.copyWith(freezingAddress: false, errFreezingAddress: e.toString()));
+      emit(state.copyWith(
+          freezingAddress: false, errFreezingAddress: e.toString()));
     }
   }
 

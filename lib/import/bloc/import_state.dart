@@ -103,11 +103,23 @@ class ImportState with _$ImportState {
 
     switch (walletType) {
       case WalletType.bip84:
-        return walletD?.where((e) => e.walletType == WalletType.bip84).first.xpub ?? '';
+        return walletD
+                ?.where((e) => e.walletType == WalletType.bip84)
+                .first
+                .xpub ??
+            '';
       case WalletType.bip49:
-        return walletD?.where((e) => e.walletType == WalletType.bip49).first.xpub ?? '';
+        return walletD
+                ?.where((e) => e.walletType == WalletType.bip49)
+                .first
+                .xpub ??
+            '';
       case WalletType.bip44:
-        return walletD?.where((e) => e.walletType == WalletType.bip44).first.xpub ?? '';
+        return walletD
+                ?.where((e) => e.walletType == WalletType.bip44)
+                .first
+                .xpub ??
+            '';
     }
     // switch (walletType) {
     //   case WalletType.bip84:
@@ -127,11 +139,17 @@ class ImportState with _$ImportState {
     try {
       switch (type) {
         case WalletType.bip84:
-          return walletDetails?.where((e) => e.walletType == WalletType.bip84).first;
+          return walletDetails
+              ?.where((e) => e.walletType == WalletType.bip84)
+              .first;
         case WalletType.bip49:
-          return walletDetails?.where((e) => e.walletType == WalletType.bip49).first;
+          return walletDetails
+              ?.where((e) => e.walletType == WalletType.bip49)
+              .first;
         case WalletType.bip44:
-          return walletDetails?.where((e) => e.walletType == WalletType.bip44).first;
+          return walletDetails
+              ?.where((e) => e.walletType == WalletType.bip44)
+              .first;
       }
     } catch (e) {
       return null;
@@ -158,11 +176,17 @@ class ImportState with _$ImportState {
 
     switch (walletType) {
       case WalletType.bip84:
-        return walletDetails?.where((e) => e.walletType == WalletType.bip84).first;
+        return walletDetails
+            ?.where((e) => e.walletType == WalletType.bip84)
+            .first;
       case WalletType.bip49:
-        return walletDetails?.where((e) => e.walletType == WalletType.bip49).first;
+        return walletDetails
+            ?.where((e) => e.walletType == WalletType.bip49)
+            .first;
       case WalletType.bip44:
-        return walletDetails?.where((e) => e.walletType == WalletType.bip44).first;
+        return walletDetails
+            ?.where((e) => e.walletType == WalletType.bip44)
+            .first;
     }
   }
 

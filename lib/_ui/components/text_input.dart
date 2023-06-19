@@ -77,7 +77,8 @@ class _BBTextInputState extends State<BBTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.value != _editingController.text) _editingController.text = widget.value;
+    if (widget.value != _editingController.text)
+      _editingController.text = widget.value;
 
     Widget widgett;
 
@@ -90,7 +91,8 @@ class _BBTextInputState extends State<BBTextInput> {
           controller: _editingController,
           keyboardType: TextInputType.multiline,
           maxLines: 5,
-          style: context.font.bodySmall!.copyWith(color: context.colour.onBackground),
+          style: context.font.bodySmall!
+              .copyWith(color: context.colour.onBackground),
           decoration: InputDecoration(
             suffixIcon: widget.rightIcon,
             hintText: widget.hint,

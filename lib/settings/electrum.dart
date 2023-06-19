@@ -44,7 +44,8 @@ class NetworkButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedNetwork = context.select((SettingsCubit x) => x.state.getNetwork());
+    final selectedNetwork =
+        context.select((SettingsCubit x) => x.state.getNetwork());
     if (selectedNetwork == null) return const SizedBox.shrink();
     final err = context.select((SettingsCubit x) => x.state.errLoadingNetworks);
 
@@ -105,7 +106,8 @@ class NetworkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final networks = context.select((SettingsCubit x) => x.state.networks);
-    final selected = context.select((SettingsCubit x) => x.state.selectedNetwork);
+    final selected =
+        context.select((SettingsCubit x) => x.state.selectedNetwork);
 
     if (networks.isEmpty) return const SizedBox.shrink();
 
@@ -269,7 +271,9 @@ class NetworkConfigFields extends HookWidget {
                 timeout: int.tryParse(timeout.text) ?? 5,
                 validateDomain: validateDomain.value,
               );
-              context.read<SettingsCubit>().networkConfigsSaveClicked(updatednetwork);
+              context
+                  .read<SettingsCubit>()
+                  .networkConfigsSaveClicked(updatednetwork);
             },
             label: 'SAVE',
             filled: true,

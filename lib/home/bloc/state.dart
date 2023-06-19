@@ -15,8 +15,14 @@ class HomeState with _$HomeState {
   }) = _HomeState;
   const HomeState._();
 
-  bool hasWallets() => !loadingWallets && wallets != null && wallets!.isNotEmpty;
+  bool hasWallets() =>
+      !loadingWallets && wallets != null && wallets!.isNotEmpty;
 
   List<Wallet> walletsFromNetwork(BBNetwork network) =>
-      wallets?.where((wallet) => wallet.network == network).toList().reversed.toList() ?? [];
+      wallets
+          ?.where((wallet) => wallet.network == network)
+          .toList()
+          .reversed
+          .toList() ??
+      [];
 }

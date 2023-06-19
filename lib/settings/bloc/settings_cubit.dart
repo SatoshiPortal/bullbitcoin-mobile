@@ -51,7 +51,8 @@ class SettingsCubit extends Cubit<SettingsState> {
       final (result, err) = await storage.getValue(StorageKeys.settings);
       if (err != null) throw err;
 
-      final settings = SettingsState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
+      final settings =
+          SettingsState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
       emit(settings);
       await Future.delayed(const Duration(milliseconds: 50));
     } catch (e) {
@@ -92,7 +93,8 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   void loadTimer() {
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: state.reloadWalletTimer), (timer) {
+    _timer =
+        Timer.periodic(Duration(seconds: state.reloadWalletTimer), (timer) {
       // homeCubit?.state.selectedWalletCubit?.sync();
     });
   }
@@ -125,7 +127,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     );
 
     if (state.currency != null) {
-      final currency = results.firstWhere((element) => element.name == state.currency!.name);
+      final currency =
+          results.firstWhere((element) => element.name == state.currency!.name);
       emit(state.copyWith(currency: currency));
     }
   }
@@ -258,14 +261,16 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void checkFees() {
-    if (state.selectedFeesOption == 4 && (state.fees == null || state.fees == 0))
-      feeOptionSelected(2);
+    if (state.selectedFeesOption == 4 &&
+        (state.fees == null || state.fees == 0)) feeOptionSelected(2);
   }
 
   void checkMinimumFees() {
     final minFees = state.feesList!.last;
 
-    if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
+    if (state.fees != null &&
+        state.fees! < minFees &&
+        state.selectedFeesOption == 4)
       emit(
         state.copyWith(
           errLoadingFees:

@@ -53,7 +53,7 @@ abstract class $AddressCopyWith<$Res> {
       bool unspendable,
       int highestPreviousBalance,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          List<LocalUtxo>? utxos});
+      List<LocalUtxo>? utxos});
 }
 
 /// @nodoc
@@ -143,7 +143,7 @@ abstract class _$$_AddressCopyWith<$Res> implements $AddressCopyWith<$Res> {
       bool unspendable,
       int highestPreviousBalance,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          List<LocalUtxo>? utxos});
+      List<LocalUtxo>? utxos});
 }
 
 /// @nodoc
@@ -226,7 +226,7 @@ class _$_Address extends _Address {
       this.unspendable = false,
       this.highestPreviousBalance = 0,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          final List<LocalUtxo>? utxos})
+      final List<LocalUtxo>? utxos})
       : _utxos = utxos,
         super._();
 
@@ -334,7 +334,7 @@ abstract class _Address extends Address {
       final bool unspendable,
       final int highestPreviousBalance,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          final List<LocalUtxo>? utxos}) = _$_Address;
+      final List<LocalUtxo>? utxos}) = _$_Address;
   _Address._() : super._();
 
   factory _Address.fromJson(Map<String, dynamic> json) = _$_Address.fromJson;

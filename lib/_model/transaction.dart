@@ -27,11 +27,12 @@ class Transaction with _$Transaction {
       includeFromJson: false,
       includeToJson: false,
     )
-        bdk.TransactionDetails? bdkTx,
+    bdk.TransactionDetails? bdkTx,
   }) = _Transaction;
   const Transaction._();
 
-  factory Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
+  factory Transaction.fromJson(Map<String, dynamic> json) =>
+      _$TransactionFromJson(json);
 
   bool isReceived() => sent == 0;
 
@@ -53,10 +54,13 @@ class Transaction with _$Transaction {
   //         ? sent!
   //         : (sent! - fee!);
 
-  DateTime getDateTime() => DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000);
+  DateTime getDateTime() =>
+      DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000);
 
-  DateTime? getBroadcastDateTime() =>
-      broadcastTime == null ? null : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
+  DateTime? getBroadcastDateTime() => broadcastTime == null
+      ? null
+      : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
 }
 
-DateTime getDateTimeFromInt(int time) => DateTime.fromMillisecondsSinceEpoch(time * 1000);
+DateTime getDateTimeFromInt(int time) =>
+    DateTime.fromMillisecondsSinceEpoch(time * 1000);

@@ -6,7 +6,8 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:dio/dio.dart';
 
 class BullBitcoinAPI {
-  Future<(Currency?, Err?)> getExchangeRate({required String toCurrency}) async {
+  Future<(Currency?, Err?)> getExchangeRate(
+      {required String toCurrency}) async {
     try {
       final url = 'https://$exchangeapi';
       final resp = await Dio().post(
@@ -44,77 +45,74 @@ class BullBitcoinAPI {
   }
 }
 
-
-
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 // class CoinGecko {
 //   Future<Result<List<Currency>>> getExchangeRate() async {

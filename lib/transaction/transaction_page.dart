@@ -60,26 +60,31 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
-    final label = context.select((TransactionCubit cubit) => cubit.state.tx.label ?? '');
+    final label =
+        context.select((TransactionCubit cubit) => cubit.state.tx.label ?? '');
 
-    final toAddresses =
-        context.select((TransactionCubit cubit) => cubit.state.tx.outAddresses ?? []);
-    final err = context.select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
+    final toAddresses = context
+        .select((TransactionCubit cubit) => cubit.state.tx.outAddresses ?? []);
+    final err = context
+        .select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
 
     final txid = tx.txid;
     final amt = tx.getAmount().abs();
     final isReceived = tx.isReceived();
     final fees = tx.fee ?? 0;
     final amtStr = context.select(
-      (SettingsCubit cubit) => cubit.state.getAmountInUnits(amt, removeText: true),
+      (SettingsCubit cubit) =>
+          cubit.state.getAmountInUnits(amt, removeText: true),
     );
-    final feeStr = context
-        .select((SettingsCubit cubit) => cubit.state.getAmountInUnits(fees, removeText: true));
+    final feeStr = context.select((SettingsCubit cubit) =>
+        cubit.state.getAmountInUnits(fees, removeText: true));
     final units = context.select(
       (SettingsCubit cubit) => cubit.state.getUnitString(),
     );
     final status = tx.timestamp == 0 ? 'Pending' : 'Confirmed';
-    final time = tx.timestamp == 0 ? 'Waiting for confirmations' : timeago.format(tx.getDateTime());
+    final time = tx.timestamp == 0
+        ? 'Waiting for confirmations'
+        : timeago.format(tx.getDateTime());
     final broadcastTime = tx.getBroadcastDateTime();
 
     return Scaffold(
@@ -113,7 +118,8 @@ class _Screen extends StatelessWidget {
                   children: [
                     Container(
                       transformAlignment: Alignment.center,
-                      transform: Matrix4.identity()..rotateZ(isReceived ? 1 : -1),
+                      transform: Matrix4.identity()
+                        ..rotateZ(isReceived ? 1 : -1),
                       child: const FaIcon(
                         FontAwesomeIcons.arrowRight,
                         size: 12,
@@ -139,7 +145,10 @@ class _Screen extends StatelessWidget {
                 BBButton.text(
                   onPressed: () {
                     try {
-                      final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
+                      final url = context
+                          .read<SettingsCubit>()
+                          .state
+                          .explorerTxUrl(txid);
                       locator<Launcher>().launchApp(url);
                     } catch (e) {
                       print(e);
@@ -244,7 +253,8 @@ class TxLabelTextField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final storedLabel = context.select((TransactionCubit x) => x.state.tx.label ?? '');
+    final storedLabel =
+        context.select((TransactionCubit x) => x.state.tx.label ?? '');
     final showButton = context.select(
       (TransactionCubit x) => x.state.showSaveButton() && storedLabel.isEmpty,
     );

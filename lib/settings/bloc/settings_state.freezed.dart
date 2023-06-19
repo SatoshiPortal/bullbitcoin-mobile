@@ -73,7 +73,7 @@ abstract class $SettingsStateCopyWith<$Res> {
       String errLoadingLanguage,
       bool testnet,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          bdk.Blockchain? blockchain,
+      bdk.Blockchain? blockchain,
       int reloadWalletTimer,
       List<ElectrumNetwork> networks,
       int selectedNetwork,
@@ -262,7 +262,7 @@ abstract class _$$_SettingsStateCopyWith<$Res>
       String errLoadingLanguage,
       bool testnet,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          bdk.Blockchain? blockchain,
+      bdk.Blockchain? blockchain,
       int reloadWalletTimer,
       List<ElectrumNetwork> networks,
       int selectedNetwork,
@@ -669,7 +669,7 @@ abstract class _SettingsState extends SettingsState {
       final String errLoadingLanguage,
       final bool testnet,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          final bdk.Blockchain? blockchain,
+      final bdk.Blockchain? blockchain,
       final int reloadWalletTimer,
       final List<ElectrumNetwork> networks,
       final int selectedNetwork,

@@ -48,7 +48,8 @@ class WalletSettingsPage extends StatelessWidget {
       child: MultiBlocListener(
         listeners: [
           BlocListener<WalletSettingsCubit, WalletSettingsState>(
-            listenWhen: (previous, current) => previous.wallet != current.wallet,
+            listenWhen: (previous, current) =>
+                previous.wallet != current.wallet,
             listener: (context, state) {
               if (!state.deleted)
                 home.updateSelectedWallet(wallet);
@@ -59,9 +60,11 @@ class WalletSettingsPage extends StatelessWidget {
             },
           ),
           BlocListener<WalletSettingsCubit, WalletSettingsState>(
-            listenWhen: (previous, current) => previous.savedName != current.savedName,
+            listenWhen: (previous, current) =>
+                previous.savedName != current.savedName,
             listener: (context, state) {
-              if (state.savedName) FocusScope.of(context).requestFocus(FocusNode());
+              if (state.savedName)
+                FocusScope.of(context).requestFocus(FocusNode());
             },
           ),
         ],
@@ -76,7 +79,8 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final watchOnly = context.select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
+    final watchOnly = context
+        .select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -199,8 +203,10 @@ class WalletType extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final type = context.select((WalletSettingsCubit x) => x.state.wallet.getWalletTypeStr());
-    final walletType = context.select((WalletSettingsCubit x) => x.state.wallet.walletType);
+    final type = context
+        .select((WalletSettingsCubit x) => x.state.wallet.getWalletTypeStr());
+    final walletType =
+        context.select((WalletSettingsCubit x) => x.state.wallet.walletType);
     final _ = walletNameStr(walletType);
 
     return Column(
@@ -231,7 +237,8 @@ class Balances extends StatelessWidget {
     );
 
     final inAmt = context.select(
-      (SettingsCubit x) => x.state.getAmountInUnits(amtReceived, removeText: true),
+      (SettingsCubit x) =>
+          x.state.getAmountInUnits(amtReceived, removeText: true),
     );
 
     final outAmt = context.select(
@@ -389,7 +396,8 @@ class DeletePopUp extends StatelessWidget {
           BlocProvider.value(value: settings),
         ],
         child: BlocListener<WalletSettingsCubit, WalletSettingsState>(
-          listenWhen: (previous, current) => previous.deleted != current.deleted,
+          listenWhen: (previous, current) =>
+              previous.deleted != current.deleted,
           listener: (context, state) {
             if (state.deleted) {
               final home = locator<HomeCubit>();

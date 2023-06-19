@@ -103,12 +103,15 @@ class Title extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _ = context.select((AddressCubit cubit) => cubit.state.address!);
-    final label = context.select((AddressCubit cubit) => cubit.state.address!.label ?? '');
-    final address = context.select((AddressCubit cubit) => cubit.state.address!.miniString());
+    final label = context
+        .select((AddressCubit cubit) => cubit.state.address!.label ?? '');
+    final address = context
+        .select((AddressCubit cubit) => cubit.state.address!.miniString());
 
-    final walletName = context.select((WalletCubit cubit) => cubit.state.wallet!.name ?? '');
-    final walletFingerprint =
-        context.select((WalletCubit cubit) => cubit.state.wallet!.cleanFingerprint());
+    final walletName =
+        context.select((WalletCubit cubit) => cubit.state.wallet!.name ?? '');
+    final walletFingerprint = context
+        .select((WalletCubit cubit) => cubit.state.wallet!.cleanFingerprint());
     final title = walletName.isEmpty ? walletFingerprint : walletName;
 
     return Center(
@@ -132,7 +135,8 @@ class AddressQR extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final address = context.select((AddressCubit cubit) => cubit.state.address!);
+    final address =
+        context.select((AddressCubit cubit) => cubit.state.address!);
     final url = context.select(
       (SettingsCubit _) => _.state.explorerAddressUrl(address.address),
     );
@@ -140,7 +144,7 @@ class AddressQR extends StatelessWidget {
     return Column(
       children: [
         const Gap(8),
-        QrImage(
+        QrImageView(
           data: address.address,
           padding: EdgeInsets.zero,
         ),
@@ -164,11 +168,13 @@ class AddressDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final address = context.select((AddressCubit cubit) => cubit.state.address!);
+    final address =
+        context.select((AddressCubit cubit) => cubit.state.address!);
     final label = address.label ?? '';
     final isReceive = address.isReceiving();
     final balance = address.calculateBalance();
-    final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(balance));
+    final amt = context
+        .select((SettingsCubit cubit) => cubit.state.getAmountInUnits(balance));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,10 +200,12 @@ class AddressActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final frozen = context.select((AddressCubit cubit) => cubit.state.address!.unspendable);
-    final freezing = context.select((AddressCubit cubit) => cubit.state.freezingAddress);
-    final hasUtxos =
-        context.select((AddressCubit cubit) => cubit.state.address!.utxos?.isNotEmpty ?? false);
+    final frozen = context
+        .select((AddressCubit cubit) => cubit.state.address!.unspendable);
+    final freezing =
+        context.select((AddressCubit cubit) => cubit.state.freezingAddress);
+    final hasUtxos = context.select((AddressCubit cubit) =>
+        cubit.state.address!.utxos?.isNotEmpty ?? false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,7 +256,8 @@ class _CopyButtonState extends State<CopyButton> {
 
   @override
   Widget build(BuildContext context) {
-    final address = context.select((AddressCubit cubit) => cubit.state.address!);
+    final address =
+        context.select((AddressCubit cubit) => cubit.state.address!);
 
     return Center(
       child: AnimatedSwitcher(
@@ -303,7 +312,8 @@ class AddressLabelFieldPopUp extends StatelessWidget {
           BlocProvider.value(value: addressCubit),
         ],
         child: BlocListener<AddressCubit, AddressState>(
-          listenWhen: (previous, current) => previous.savedAddressName != current.savedAddressName,
+          listenWhen: (previous, current) =>
+              previous.savedAddressName != current.savedAddressName,
           listener: (context, state) async {
             if (!state.savedAddressName) return;
 
@@ -369,12 +379,18 @@ class _AddressLabelTextFieldState extends State<AddressLabelTextField> {
   final _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final saving = context.select((AddressCubit cubit) => cubit.state.savingAddressName);
-    final err = context.select((AddressCubit cubit) => cubit.state.errSavingAddressName);
-    final saved = context.select((AddressCubit cubit) => cubit.state.savedAddressName);
+    final saving =
+        context.select((AddressCubit cubit) => cubit.state.savingAddressName);
+    final err = context
+        .select((AddressCubit cubit) => cubit.state.errSavingAddressName);
+    final saved =
+        context.select((AddressCubit cubit) => cubit.state.savedAddressName);
     final _ = widget.address.label ?? 'Enter Label';
 
-    if (saved) const Center(child: BBText.body('Saved!')).animate(delay: 300.ms).fadeIn();
+    if (saved)
+      const Center(child: BBText.body('Saved!'))
+          .animate(delay: 300.ms)
+          .fadeIn();
     return Column(
       children: [
         Padding(
@@ -398,7 +414,9 @@ class _AddressLabelTextFieldState extends State<AddressLabelTextField> {
               onPressed: () {
                 if (_controller.text.isEmpty) return;
                 FocusScope.of(context).requestFocus(FocusNode());
-                context.read<AddressCubit>().saveAddressName(widget.address, _controller.text);
+                context
+                    .read<AddressCubit>()
+                    .saveAddressName(widget.address, _controller.text);
               },
               label: 'Save',
             ),

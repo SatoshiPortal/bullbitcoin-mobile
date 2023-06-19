@@ -50,8 +50,10 @@ class AuthCubit extends Cubit<AuthState> {
   void keyPressed(String key) {
     emit(state.copyWith(err: ''));
 
-    if (state.step == SecurityStep.enterPin || state.step == SecurityStep.createPin) {
-      if (state.pin.length < maxLength) emit(state.copyWith(pin: state.pin + key));
+    if (state.step == SecurityStep.enterPin ||
+        state.step == SecurityStep.createPin) {
+      if (state.pin.length < maxLength)
+        emit(state.copyWith(pin: state.pin + key));
       // else
       //   emit(state.copyWith(pin: key));
     }
@@ -65,7 +67,8 @@ class AuthCubit extends Cubit<AuthState> {
   void backspacePressed() {
     emit(state.copyWith(err: ''));
 
-    if (state.step == SecurityStep.enterPin || state.step == SecurityStep.createPin) {
+    if (state.step == SecurityStep.enterPin ||
+        state.step == SecurityStep.createPin) {
       if (state.pin.isNotEmpty)
         emit(state.copyWith(pin: state.pin.substring(0, state.pin.length - 1)));
     }
@@ -73,7 +76,9 @@ class AuthCubit extends Cubit<AuthState> {
     if (state.step == SecurityStep.confirmPin) {
       if (state.confirmPin.isNotEmpty)
         emit(
-          state.copyWith(confirmPin: state.confirmPin.substring(0, state.confirmPin.length - 1)),
+          state.copyWith(
+              confirmPin:
+                  state.confirmPin.substring(0, state.confirmPin.length - 1)),
         );
     }
   }
@@ -98,7 +103,8 @@ class AuthCubit extends Cubit<AuthState> {
             return;
           }
           emit(state.copyWith(checking: true));
-          final err = await storage.saveValue(key: StorageKeys.securityKey, value: state.pin);
+          final err = await storage.saveValue(
+              key: StorageKeys.securityKey, value: state.pin);
           if (err != null) {
             emit(
               state.copyWith(
@@ -114,7 +120,8 @@ class AuthCubit extends Cubit<AuthState> {
         case SecurityStep.enterPin:
           // if (state.pin.length != maxLength) return;
           emit(state.copyWith(checking: true));
-          final (savedPin, err) = await storage.getValue(StorageKeys.securityKey);
+          final (savedPin, err) =
+              await storage.getValue(StorageKeys.securityKey);
           if (err != null) {
             emit(
               state.copyWith(
@@ -146,7 +153,8 @@ class AuthCubit extends Cubit<AuthState> {
         case SecurityStep.enterPin:
           // if (state.pin.length != maxLength) return;
           emit(state.copyWith(checking: true));
-          final (savedPin, err) = await storage.getValue(StorageKeys.securityKey);
+          final (savedPin, err) =
+              await storage.getValue(StorageKeys.securityKey);
           if (err != null) {
             emit(
               state.copyWith(
@@ -198,7 +206,8 @@ class AuthCubit extends Cubit<AuthState> {
             );
             return;
           }
-          final errSaved = await storage.saveValue(key: StorageKeys.securityKey, value: state.pin);
+          final errSaved = await storage.saveValue(
+              key: StorageKeys.securityKey, value: state.pin);
           if (errSaved != null) {
             emit(
               state.copyWith(

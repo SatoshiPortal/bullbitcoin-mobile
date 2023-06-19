@@ -72,7 +72,8 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       );
       if (err2 != null) throw err2;
 
-      final errr = await walletUpdate.addWalletToList(wallet: wallet!, storage: storage);
+      final errr =
+          await walletUpdate.addWalletToList(wallet: wallet!, storage: storage);
       if (errr != null) throw errr;
 
       emit(
@@ -123,7 +124,8 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
         );
         if (err2 != null) throw err2;
 
-        final errr = await walletUpdate.addWalletToList(wallet: wallet!, storage: storage);
+        final errr = await walletUpdate.addWalletToList(
+            wallet: wallet!, storage: storage);
         if (errr != null) throw errr;
 
         if (selectWallet(i)) {
@@ -148,114 +150,110 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   }
 }
 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
+//
 
-// 
-// 
+//
 
-// 
+// final internalPath = await bdk.DerivationPath.create(path: "m/84'/1'/0'/1'");
+// final dervExternal = await descriptorSecretKey.derive(path);
+// final dervInternal = await descriptorSecretKey.derive(internalPath);
+// final dervExternalStr = dervExternal.asString();
+// final dervInternalStr = dervInternal.asString();
+// final externalDescriptor = 'wpkh($dervExternalStr)';
+// final internalDescriptor = 'wpkh($dervInternalStr)';
 
-      // final internalPath = await bdk.DerivationPath.create(path: "m/84'/1'/0'/1'");
-      // final dervExternal = await descriptorSecretKey.derive(path);
-      // final dervInternal = await descriptorSecretKey.derive(internalPath);
-      // final dervExternalStr = dervExternal.asString();
-      // final dervInternalStr = dervInternal.asString();
-      // final externalDescriptor = 'wpkh($dervExternalStr)';
-      // final internalDescriptor = 'wpkh($dervInternalStr)';
-
-      // final idesc = await internalDescriptor0.asPrivateString();
+// final idesc = await internalDescriptor0.asPrivateString();
 //pkh(tprv8ZgxMBicQKsPdWaX11g33Aimw1mzoaQZsRSRHmVZbhNbd5TfaofeXstFv518nqm5gbmB4J9XWqsJgNoML3XzQGmQeaDVp93rxRRnyCAqUu5/44'/1'/0'/1/*)#su6lh8zz
-      // final iDesc = await bdk.Descriptor.create(
-      //   descriptor: internalDescriptor,
-      //   network: network,
-      // );
+// final iDesc = await bdk.Descriptor.create(
+//   descriptor: internalDescriptor,
+//   network: network,
+// );
 
-      // final eDesc = await bdk.Descriptor.create(
-      //   descriptor: externalDescriptor,
-      //   network: network,
-      // );
+// final eDesc = await bdk.Descriptor.create(
+//   descriptor: externalDescriptor,
+//   network: network,
+// );
 
-// 
+//
 
-    // scheduleMicrotask(init());
+// scheduleMicrotask(init());
 
-    // final xprv = await descriptorSecretKey.asString();
-      // final sec = await descriptorSecretKey.secretBytes();
-      // final xpub = await descriptorSecretKey.asPublic();
-      // // final xpubString = xpub.asString();
-      // final derivedXprv = await descriptorSecretKey.extend(path);
-      // final derivedXpub = await xpub.extend(path);
-      // final derivedXprvStr = await derivedXprv.asString();
-      // final derivedXpubStr = derivedXpub.asString();
+// final xprv = await descriptorSecretKey.asString();
+// final sec = await descriptorSecretKey.secretBytes();
+// final xpub = await descriptorSecretKey.asPublic();
+// // final xpubString = xpub.asString();
+// final derivedXprv = await descriptorSecretKey.extend(path);
+// final derivedXpub = await xpub.extend(path);
+// final derivedXprvStr = await derivedXprv.asString();
+// final derivedXpubStr = derivedXpub.asString();
 
-      // final wallet = await Wallet.create(
-      //   descriptor: 'wpkh($derivedXprvStr)',
-      //   // changeDescriptor: 'wpkh($derivedXprvStr)',
-      //   network: Network.Bitcoin,
-      //   databaseConfig: const DatabaseConfig.memory(),
-      // );
+// final wallet = await Wallet.create(
+//   descriptor: 'wpkh($derivedXprvStr)',
+//   // changeDescriptor: 'wpkh($derivedXprvStr)',
+//   network: Network.Bitcoin,
+//   databaseConfig: const DatabaseConfig.memory(),
+// );
 
-      
+// final x =
 
+// final privKey = await derivedKey.asString();
+// final descrPubKey = await derivedKey.asPublic();
+// final pubKey = descrPubKey.asString();
+// final fingerPrint = _fingerPrintFromDescr(pubKey);
 
-      // final x =
+// final wallet = Wallet.create(descriptor: descriptor, network: network, databaseConfig: databaseConfig)
 
-      // final privKey = await derivedKey.asString();
-      // final descrPubKey = await derivedKey.asPublic();
-      // final pubKey = descrPubKey.asString();
-      // final fingerPrint = _fingerPrintFromDescr(pubKey);
-
-      // final wallet = Wallet.create(descriptor: descriptor, network: network, databaseConfig: databaseConfig)
-
-      // final wallet1 = await Wallet.create(externalDescriptor, internalDescriptor, Network.TESTNET,
-      //     databaseConfig: const DatabaseConfig.memory());
+// final wallet1 = await Wallet.create(externalDescriptor, internalDescriptor, Network.TESTNET,
+//     databaseConfig: const DatabaseConfig.memory());
 
 // Future<Result<w.WalletDetails>> createWalletDetailsForSelection({
 //   required String xpub,

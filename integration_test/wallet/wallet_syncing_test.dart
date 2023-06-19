@@ -1,5 +1,5 @@
 // import 'package:bb_mobile/_model/wallet.dart';
-// 
+//
 // import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 // import 'package:bb_mobile/_pkg/result.dart';
 // import 'package:bb_mobile/_pkg/secured_storage.dart';
@@ -33,7 +33,7 @@
 //       walletStorage: MockWalletStorage(),
 //       saveDir: w1.fingerprint,
 //       settingsCubit: settingsCubit,
-//       walletRead: 
+//       walletRead:
 //     );
 //   });
 

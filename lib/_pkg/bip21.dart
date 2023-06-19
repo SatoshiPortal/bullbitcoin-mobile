@@ -25,7 +25,8 @@ class BIP21Codec extends Codec<BIP21, String> {
     return encoder.convert(input);
   }
 
-  String tryEncode(String address, [Map<String, dynamic>? options, String urnScheme = 'bitcoin']) {
+  String tryEncode(String address,
+      [Map<String, dynamic>? options, String urnScheme = 'bitcoin']) {
     return encode(BIP21(address, options ?? <String, dynamic>{}, urnScheme));
   }
 }
@@ -56,8 +57,13 @@ class BIP21Encoder extends Converter<BIP21, String> {
 
     final query = options.keys.map((key) => '$key=${options[key]}').join('&');
 
-    return [input.urnScheme, ':', input.address, if (options.keys.isNotEmpty) '?' else '', query]
-        .join();
+    return [
+      input.urnScheme,
+      ':',
+      input.address,
+      if (options.keys.isNotEmpty) '?' else '',
+      query
+    ].join();
   }
 }
 
@@ -77,7 +83,8 @@ class BIP21Decoder extends Converter<String, BIP21> {
       throw Exception('Invalid BIP21 URI: $input');
     }
     final split = input.indexOf('?');
-    final address = input.substring(urnScheme.length + 1, split == -1 ? null : split);
+    final address =
+        input.substring(urnScheme.length + 1, split == -1 ? null : split);
     final query = split == -1 ? '' : input.substring(split + 1);
     final options = Map<String, dynamic>.from(Uri.splitQueryString(query));
 

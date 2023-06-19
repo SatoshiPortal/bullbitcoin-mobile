@@ -13,9 +13,15 @@ class ColdCardGeneric {
     xpub = json['xpub'] as String;
     xfp = json['xfp'] as String;
     account = json['account'] as int;
-    bip49 = json['bip49'] != null ? Bip49.fromJson(json['bip49'] as Map<String, dynamic>) : null;
-    bip44 = json['bip44'] != null ? Bip44.fromJson(json['bip44'] as Map<String, dynamic>) : null;
-    bip84 = json['bip84'] != null ? Bip49.fromJson(json['bip84'] as Map<String, dynamic>) : null;
+    bip49 = json['bip49'] != null
+        ? Bip49.fromJson(json['bip49'] as Map<String, dynamic>)
+        : null;
+    bip44 = json['bip44'] != null
+        ? Bip44.fromJson(json['bip44'] as Map<String, dynamic>)
+        : null;
+    bip84 = json['bip84'] != null
+        ? Bip49.fromJson(json['bip84'] as Map<String, dynamic>)
+        : null;
   }
   String? chain;
   String? xpub;

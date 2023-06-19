@@ -98,7 +98,8 @@ class Words extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mne = context.select((CreateWalletCubit cubit) => cubit.state.mnemonic ?? []);
+    final mne =
+        context.select((CreateWalletCubit cubit) => cubit.state.mnemonic ?? []);
     return WordGrid(mne: mne);
   }
 }

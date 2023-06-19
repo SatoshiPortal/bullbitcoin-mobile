@@ -76,8 +76,10 @@ class ImportAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final step = context.select((ImportWalletCubit cubit) => cubit.state.importStep);
-    final stepName = context.select((ImportWalletCubit cubit) => cubit.state.stepName());
+    final step =
+        context.select((ImportWalletCubit cubit) => cubit.state.importStep);
+    final stepName =
+        context.select((ImportWalletCubit cubit) => cubit.state.stepName());
     Function()? onBack;
 
     if (step == ImportSteps.importXpub ||
@@ -101,7 +103,8 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final step = context.select((ImportWalletCubit cubit) => cubit.state.importStep);
+    final step =
+        context.select((ImportWalletCubit cubit) => cubit.state.importStep);
     return WillPopScope(
       onWillPop: () async {
         if (step == ImportSteps.selectCreateType) return true;

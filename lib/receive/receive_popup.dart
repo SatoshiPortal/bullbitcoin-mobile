@@ -124,10 +124,11 @@ class WalletName extends StatelessWidget {
   Widget build(BuildContext context) {
     final loading = context.select((ReceiveCubit x) => x.state.loadingAddress);
 
-    final walletName = context.select((ReceiveCubit x) => x.walletCubit.state.wallet?.name);
+    final walletName =
+        context.select((ReceiveCubit x) => x.walletCubit.state.wallet?.name);
 
-    final fingerprint =
-        context.select((ReceiveCubit x) => x.walletCubit.state.wallet?.cleanFingerprint() ?? '');
+    final fingerprint = context.select((ReceiveCubit x) =>
+        x.walletCubit.state.wallet?.cleanFingerprint() ?? '');
 
     return Center(
       child: loading
@@ -148,10 +149,11 @@ class DefaultQR extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final address = context.select((ReceiveCubit x) => x.state.defaultAddress?.address ?? '');
+    final address = context
+        .select((ReceiveCubit x) => x.state.defaultAddress?.address ?? '');
 
     return Center(
-      child: QrImage(
+      child: QrImageView(
         data: address,
       ),
     );
@@ -166,7 +168,7 @@ class InvoiceQR extends StatelessWidget {
     final address = context.select((ReceiveCubit x) => x.state.invoiceAddress);
 
     return Center(
-      child: QrImage(
+      child: QrImageView(
         data: address,
         size: 200,
       ),
@@ -239,7 +241,8 @@ class _DefaultAddressState extends State<DefaultAddress> {
 
   @override
   Widget build(BuildContext context) {
-    final address = context.select((ReceiveCubit x) => x.state.defaultAddress?.address ?? '');
+    final address = context
+        .select((ReceiveCubit x) => x.state.defaultAddress?.address ?? '');
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
@@ -282,10 +285,12 @@ class LastAddressPrivateLabelField extends StatefulWidget {
   const LastAddressPrivateLabelField({super.key});
 
   @override
-  State<LastAddressPrivateLabelField> createState() => _LastAddressPrivateLabelFieldState();
+  State<LastAddressPrivateLabelField> createState() =>
+      _LastAddressPrivateLabelFieldState();
 }
 
-class _LastAddressPrivateLabelFieldState extends State<LastAddressPrivateLabelField> {
+class _LastAddressPrivateLabelFieldState
+    extends State<LastAddressPrivateLabelField> {
   @override
   Widget build(BuildContext context) {
     final saving = context.select(
@@ -373,8 +378,10 @@ class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
 
   @override
   Widget build(BuildContext context) {
-    final isSats = context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
-    final amount = context.select((ReceiveCubit cubit) => cubit.state.invoiceAmount);
+    final isSats =
+        context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
+    final amount =
+        context.select((ReceiveCubit cubit) => cubit.state.invoiceAmount);
     final amountStr = context.select(
       (SettingsCubit cubit) => cubit.state.getAmountInUnits(
         amount,
@@ -469,7 +476,8 @@ class InvoiceDescriptionField extends StatefulWidget {
   const InvoiceDescriptionField({super.key});
 
   @override
-  State<InvoiceDescriptionField> createState() => _InvoiceDescriptionFieldState();
+  State<InvoiceDescriptionField> createState() =>
+      _InvoiceDescriptionFieldState();
 }
 
 class _InvoiceDescriptionFieldState extends State<InvoiceDescriptionField> {
@@ -513,10 +521,12 @@ class NewAddressPrivateLabelField extends StatefulWidget {
   const NewAddressPrivateLabelField({super.key});
 
   @override
-  State<NewAddressPrivateLabelField> createState() => _NewAddressPrivateLabelFieldState();
+  State<NewAddressPrivateLabelField> createState() =>
+      _NewAddressPrivateLabelFieldState();
 }
 
-class _NewAddressPrivateLabelFieldState extends State<NewAddressPrivateLabelField> {
+class _NewAddressPrivateLabelFieldState
+    extends State<NewAddressPrivateLabelField> {
   final _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {

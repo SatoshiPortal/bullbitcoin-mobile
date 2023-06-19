@@ -35,7 +35,8 @@ class TestBackupScreen extends StatelessWidget {
           BlocProvider.value(value: settings),
         ],
         child: BlocListener<WalletSettingsCubit, WalletSettingsState>(
-          listenWhen: (previous, current) => previous.backupTested != current.backupTested,
+          listenWhen: (previous, current) =>
+              previous.backupTested != current.backupTested,
           listener: (context, state) async {
             if (state.backupTested) {
               await Future.delayed(3.seconds);
@@ -78,7 +79,8 @@ class TestBackupScreen extends StatelessWidget {
               child: CenterLeft(
                 child: BBButton.text(
                   label: 'Reset Order',
-                  onPressed: () => context.read<WalletSettingsCubit>().loadBackupClicked(),
+                  onPressed: () =>
+                      context.read<WalletSettingsCubit>().loadBackupClicked(),
                 ),
               ),
             ),
@@ -130,8 +132,8 @@ class BackupTestItemWord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (word, isSelected, actualIdx) =
-        context.select((WalletSettingsCubit cubit) => cubit.state.shuffleElementAt(index));
+    final (word, isSelected, actualIdx) = context.select(
+        (WalletSettingsCubit cubit) => cubit.state.shuffleElementAt(index));
 
     return Expanded(
       child: Container(
@@ -152,7 +154,9 @@ class BackupTestItemWord extends StatelessWidget {
                   border: Border.all(
                     color: context.colour.onBackground,
                   ),
-                  color: isSelected ? context.colour.primary : context.colour.onBackground,
+                  color: isSelected
+                      ? context.colour.primary
+                      : context.colour.onBackground,
                 ),
                 child: CenterLeft(
                   child: BBText.body(
@@ -190,11 +194,13 @@ class TestBackupPassField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasPassphrase = context.select((WalletCubit x) => x.state.wallet!.password != null);
+    final hasPassphrase =
+        context.select((WalletCubit x) => x.state.wallet!.password != null);
 
     if (!hasPassphrase) return const SizedBox.shrink();
 
-    final text = context.select((WalletSettingsCubit x) => x.state.testBackupPassword);
+    final text =
+        context.select((WalletSettingsCubit x) => x.state.testBackupPassword);
 
     return Padding(
       padding: const EdgeInsets.only(
@@ -226,9 +232,12 @@ class TestBackupConfirmButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final testing = context.select((WalletSettingsCubit cubit) => cubit.state.testingBackup);
-    final err = context.select((WalletSettingsCubit cubit) => cubit.state.errTestingBackup);
-    final tested = context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
+    final testing = context
+        .select((WalletSettingsCubit cubit) => cubit.state.testingBackup);
+    final err = context
+        .select((WalletSettingsCubit cubit) => cubit.state.errTestingBackup);
+    final tested =
+        context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
 
     return Column(
       children: [
@@ -261,7 +270,8 @@ class TestBackupConfirmButton extends StatelessWidget {
                 disabled: testing,
                 loading: testing,
                 filled: true,
-                onPressed: () => context.read<WalletSettingsCubit>().testBackupClicked(),
+                onPressed: () =>
+                    context.read<WalletSettingsCubit>().testBackupClicked(),
                 label: 'Test Backup',
               ),
             ),
@@ -392,7 +402,8 @@ class _BackupTestTextFieldState extends State<BackupTestTextField> {
   @override
   Widget build(BuildContext context) {
     final text = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.mnemonic.elementAt(widget.index),
+      (WalletSettingsCubit cubit) =>
+          cubit.state.mnemonic.elementAt(widget.index),
     );
 
     return Expanded(
@@ -413,7 +424,9 @@ class _BackupTestTextFieldState extends State<BackupTestTextField> {
               child: BBTextInput.small(
                 value: text,
                 onChanged: (value) {
-                  context.read<WalletSettingsCubit>().wordChanged(widget.index, value);
+                  context
+                      .read<WalletSettingsCubit>()
+                      .wordChanged(widget.index, value);
                 },
               ),
             ),

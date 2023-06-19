@@ -36,5 +36,6 @@ class ElectrumNetwork with _$ElectrumNetwork {
     @Default('custom') String name,
   }) = _CustomElectrumNetwork;
 
-  factory ElectrumNetwork.fromJson(Map<String, dynamic> json) => _$ElectrumNetworkFromJson(json);
+  factory ElectrumNetwork.fromJson(Map<String, dynamic> json) =>
+      _$ElectrumNetworkFromJson(json);
 }

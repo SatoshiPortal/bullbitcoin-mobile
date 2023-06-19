@@ -40,7 +40,7 @@ dependencies:
   font_awesome_flutter: ^10.3.0
   path_provider: ^2.0.15
   carousel_slider: ^4.2.1
-  qr_flutter: ^4.0.0
+  qr_flutter: ^4.1.0
   flutter_translate: ^4.0.3
   # flutter_localizations:
     # sdk: flutter

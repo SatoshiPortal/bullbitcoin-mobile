@@ -150,7 +150,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     }
 
     emit(
-      state.copyWith(step: ReceiveStep.enterPrivateLabel, errCreatingInvoice: ''),
+      state.copyWith(
+          step: ReceiveStep.enterPrivateLabel, errCreatingInvoice: ''),
     );
   }
 
@@ -163,7 +164,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       // final add = await bdk.Address.create(address: 'address');
       // final scr = await add.scriptPubKey();
 
-      final (a, err) = await walletUpdate.newAddress(bdkWallet: walletCubit.state.bdkWallet!);
+      final (a, err) = await walletUpdate.newAddress(
+          bdkWallet: walletCubit.state.bdkWallet!);
 
       if (err != null) throw err.toString();
 
@@ -186,7 +188,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
       final btcAmt = (state.invoiceAmount / 100000000).toStringAsFixed(8);
 
-      final invoice = 'bitcoin:' + address + '?amount=' + btcAmt + '&label=' + state.description;
+      final invoice = 'bitcoin:' +
+          address +
+          '?amount=' +
+          btcAmt +
+          '&label=' +
+          state.description;
 
       emit(
         state.copyWith(
@@ -213,21 +220,21 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 // mxTi8bUNMjYWM769B6d9ZMnphTMxL2sRbK
 // tb1qrqzgsjg7k3gdcmy8933ml46me7wmuetruttvag
 
-      // } else {
-      //   final defaultAddress = addresses.first;
-      //   // .firstWhere(
-      //   //   (element) => element.index == 0,
-      //   // );
+// } else {
+//   final defaultAddress = addresses.first;
+//   // .firstWhere(
+//   //   (element) => element.index == 0,
+//   // );
 
-      //   // final defaultAddress = await state.bdkWallet.getAddress(
-      //   //   addressIndex: const bdk.AddressIndex.lastUnused(),
-      //   // );
+//   // final defaultAddress = await state.bdkWallet.getAddress(
+//   //   addressIndex: const bdk.AddressIndex.lastUnused(),
+//   // );
 
-      //   emit(
-      //     state.copyWith(
-      //       loadingAddress: false,
-      //       errLoadingAddress: '',
-      //       defaultAddress: defaultAddress,
-      //     ),
-      //   );
-      // }
+//   emit(
+//     state.copyWith(
+//       loadingAddress: false,
+//       errLoadingAddress: '',
+//       defaultAddress: defaultAddress,
+//     ),
+//   );
+// }

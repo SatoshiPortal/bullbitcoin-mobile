@@ -27,7 +27,8 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallets = context.select((ImportWalletCubit cubit) => cubit.state.walletDetails ?? []);
+    final wallets = context
+        .select((ImportWalletCubit cubit) => cubit.state.walletDetails ?? []);
 
     final walletCubits = [
       for (final w in wallets)
@@ -44,7 +45,8 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
     ];
 
     return BlocListener<ImportWalletCubit, ImportState>(
-      listenWhen: (previous, current) => previous.savedWallet != current.savedWallet,
+      listenWhen: (previous, current) =>
+          previous.savedWallet != current.savedWallet,
       listener: (context, state) {
         if (state.savedWallet == null) return;
         locator<HomeCubit>().addWallet(state.savedWallet!);
@@ -75,21 +77,26 @@ class _ScreenState extends State<_Screen> {
 
   @override
   Widget build(BuildContext context) {
-    final step = context.select((ImportWalletCubit cubit) => cubit.state.importStep);
+    final step =
+        context.select((ImportWalletCubit cubit) => cubit.state.importStep);
 
     if (step == ImportSteps.scanningWallets) {
       final listeners = [
         for (final walletCubit in widget.walletCubits)
           BlocListener<WalletCubit, WalletState>(
             bloc: walletCubit,
-            listenWhen: (previous, current) => previous.syncing != current.syncing,
+            listenWhen: (previous, current) =>
+                previous.syncing != current.syncing,
             listener: (context, state) async {
               if (state.wallet == null) return;
 
-              if (!state.syncing) syncingDone(state.wallet!.walletType, context);
+              if (!state.syncing)
+                syncingDone(state.wallet!.walletType, context);
 
               if (state.wallet!.isActive()) {
-                context.read<ImportWalletCubit>().walletTypeChanged(state.wallet!.walletType);
+                context
+                    .read<ImportWalletCubit>()
+                    .walletTypeChanged(state.wallet!.walletType);
               }
             },
           )
@@ -187,8 +194,8 @@ class _ImportWalletTypeButton extends StatelessWidget {
 
     final walletType = wallet.walletType;
 
-    final selected =
-        context.select((ImportWalletCubit cubit) => cubit.state.isSelected(walletType));
+    final selected = context.select(
+        (ImportWalletCubit cubit) => cubit.state.isSelected(walletType));
 
     final name = context.select(
       (ImportWalletCubit cubit) => cubit.state.walletName(walletType),
@@ -196,12 +203,17 @@ class _ImportWalletTypeButton extends StatelessWidget {
 
     final syncing = context.select((WalletCubit cubit) => cubit.state.syncing);
 
-    final ad = context.select((WalletCubit cubit) => cubit.state.firstAddress ?? '');
+    final ad =
+        context.select((WalletCubit cubit) => cubit.state.firstAddress ?? '');
 
     final balance = context.select((WalletCubit cubit) => cubit.state.balance);
 
-    final address = ad.isNotEmpty ? ad.substring(0, 5) + '...' + ad.substring(ad.length - 5) : '';
-    final fingerprint = wallet.type == BBWalletType.descriptors ? '' : wallet.cleanFingerprint();
+    final address = ad.isNotEmpty
+        ? ad.substring(0, 5) + '...' + ad.substring(ad.length - 5)
+        : '';
+    final fingerprint = wallet.type == BBWalletType.descriptors
+        ? ''
+        : wallet.cleanFingerprint();
 
     return AnimatedContainer(
       duration: 500.ms,
@@ -213,17 +225,22 @@ class _ImportWalletTypeButton extends StatelessWidget {
               Expanded(
                 child: Container(
                   margin: const EdgeInsets.only(right: 40),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.all(Radius.circular(32.0)),
                     border: Border.all(
                       width: selected ? 4 : 1,
-                      color: selected ? context.colour.primary : context.colour.onBackground,
+                      color: selected
+                          ? context.colour.primary
+                          : context.colour.onBackground,
                     ),
                   ),
                   child: InkWell(
                     onTap: () {
-                      context.read<ImportWalletCubit>().walletTypeChanged(walletType);
+                      context
+                          .read<ImportWalletCubit>()
+                          .walletTypeChanged(walletType);
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -310,7 +327,8 @@ class _ImportWalletTypeButton extends StatelessWidget {
 }
 
 class ImportWalletDetailsPopUp extends StatelessWidget {
-  const ImportWalletDetailsPopUp({super.key, required this.wallet, required this.walletType});
+  const ImportWalletDetailsPopUp(
+      {super.key, required this.wallet, required this.walletType});
 
   final Wallet wallet;
   final WalletType walletType;

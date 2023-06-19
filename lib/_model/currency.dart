@@ -12,7 +12,8 @@ class Currency with _$Currency {
   }) = _Currency;
   const Currency._();
 
-  factory Currency.fromJson(Map<String, dynamic> json) => _$CurrencyFromJson(json);
+  factory Currency.fromJson(Map<String, dynamic> json) =>
+      _$CurrencyFromJson(json);
 
   String getSymbol() {
     switch (name) {

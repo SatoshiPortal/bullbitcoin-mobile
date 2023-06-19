@@ -152,8 +152,8 @@ class AddressSelectionPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final addresses =
-        context.select((SendCubit x) => x.walletCubit.state.wallet!.addressesWithBalance());
+    final addresses = context.select(
+        (SendCubit x) => x.walletCubit.state.wallet!.addressesWithBalance());
     final amount = context.select((SendCubit x) => x.state.amount);
 
     final amt = context.select(
@@ -258,7 +258,9 @@ class AdvancedOptionAdress extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isSelected ? context.colour.primary : context.colour.onBackground,
+              color: isSelected
+                  ? context.colour.primary
+                  : context.colour.onBackground,
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -301,7 +303,8 @@ class _SelectedAddressesTotal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final total = context.select((SendCubit x) => x.state.calculateTotalSelected());
+    final total =
+        context.select((SendCubit x) => x.state.calculateTotalSelected());
     final amt = context.select(
       (SettingsCubit x) => x.state.getAmountInUnits(total),
     );

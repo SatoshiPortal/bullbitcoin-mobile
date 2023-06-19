@@ -34,7 +34,8 @@ class Launcher {
     }
   }
 
-  Future<(bool?, Err?)> sentSupportEmail(String loggedInEmail, String name) async {
+  Future<(bool?, Err?)> sentSupportEmail(
+      String loggedInEmail, String name) async {
     try {
       throw UnimplementedError();
     } catch (e) {

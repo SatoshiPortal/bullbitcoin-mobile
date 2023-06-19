@@ -18,7 +18,8 @@ class ColdCard with _$ColdCard {
   }) = _ColdCard;
   const ColdCard._();
 
-  factory ColdCard.fromJson(Map<String, dynamic> json) => _$ColdCardFromJson(json);
+  factory ColdCard.fromJson(Map<String, dynamic> json) =>
+      _$ColdCardFromJson(json);
 
   // String? bip84Policy() => bip84 == null
   //     ? null
@@ -47,5 +48,6 @@ class ColdWallet with _$ColdWallet {
   }) = _ColdWallet;
   const ColdWallet._();
 
-  factory ColdWallet.fromJson(Map<String, dynamic> json) => _$ColdWalletFromJson(json);
+  factory ColdWallet.fromJson(Map<String, dynamic> json) =>
+      _$ColdWalletFromJson(json);
 }

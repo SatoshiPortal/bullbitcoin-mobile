@@ -74,10 +74,14 @@ class SendState with _$SendState {
   String feeButtonText() {
     var str = '';
     try {
-      if (selectedFeesOption == 0) str = 'Fastest fee rate: ' + feesList![0].toString();
-      if (selectedFeesOption == 1) str = 'Fast fee rate: ' + feesList![1].toString();
-      if (selectedFeesOption == 2) str = 'Medium fee rate: ' + feesList![2].toString();
-      if (selectedFeesOption == 3) str = 'Slow fee rate: ' + feesList![3].toString();
+      if (selectedFeesOption == 0)
+        str = 'Fastest fee rate: ' + feesList![0].toString();
+      if (selectedFeesOption == 1)
+        str = 'Fast fee rate: ' + feesList![1].toString();
+      if (selectedFeesOption == 2)
+        str = 'Medium fee rate: ' + feesList![2].toString();
+      if (selectedFeesOption == 3)
+        str = 'Slow fee rate: ' + feesList![3].toString();
 
       if (selectedFeesOption == 4) str = 'Manual fee rate: ' + fees.toString();
       return str + ' sat/vByte';

@@ -12,7 +12,10 @@ class UIKeys {
   static const importImportButton = Key('import_import_button');
   static const importXpubField = Key('import_xpub_field');
   static const importXpubConfirmButton = Key('import_xpub_confirm_button');
-  static const importWalletSelectionOption = Key('import_wallet_selection_option');
-  static const importWalletSelectionSyncing = Key('import_wallet_selection_syncing');
-  static const importWalletSelectionConfirmButton = Key('import_wallet_selection_confirm_button');
+  static const importWalletSelectionOption =
+      Key('import_wallet_selection_option');
+  static const importWalletSelectionSyncing =
+      Key('import_wallet_selection_syncing');
+  static const importWalletSelectionConfirmButton =
+      Key('import_wallet_selection_confirm_button');
 }

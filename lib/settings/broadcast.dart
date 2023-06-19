@@ -167,17 +167,22 @@ class BroadcastSend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tx = context.select((BroadcastTxCubit cubit) => cubit.state.transaction);
-    final psbt = context.select((BroadcastTxCubit cubit) => cubit.state.psbtBDK);
+    final tx =
+        context.select((BroadcastTxCubit cubit) => cubit.state.transaction);
+    final psbt =
+        context.select((BroadcastTxCubit cubit) => cubit.state.psbtBDK);
     if (tx == null || psbt == null) return const SizedBox();
 
     final txamt = context.select(
       (BroadcastTxCubit cubit) => cubit.state.transaction?.getAmount() ?? 0,
     );
-    final txfee = context.select((BroadcastTxCubit cubit) => cubit.state.transaction?.fee ?? 0);
+    final txfee = context
+        .select((BroadcastTxCubit cubit) => cubit.state.transaction?.fee ?? 0);
 
-    final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txamt));
-    final fee = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txfee));
+    final amt = context
+        .select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txamt));
+    final fee = context
+        .select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txfee));
     final psbtStr = psbt.psbtBase64;
 
     return Padding(
@@ -249,7 +254,7 @@ class BroadcastSend extends StatelessWidget {
             child: SizedBox(
               width: 200,
               height: 200,
-              child: QrImage(data: psbtStr),
+              child: QrImageView(data: psbtStr),
             ),
           ),
           const Gap(60),
@@ -266,8 +271,10 @@ class DownloadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final downloading = context.select((BroadcastTxCubit cubit) => cubit.state.downloadingFile);
-    final downloaded = context.select((BroadcastTxCubit cubit) => cubit.state.downloaded);
+    final downloading =
+        context.select((BroadcastTxCubit cubit) => cubit.state.downloadingFile);
+    final downloaded =
+        context.select((BroadcastTxCubit cubit) => cubit.state.downloaded);
 
     if (downloaded)
       return Center(
@@ -298,11 +305,15 @@ class SendButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final step = context.select((BroadcastTxCubit cubit) => cubit.state.step);
-    final hasErr = context.select((BroadcastTxCubit cubit) => cubit.state.hasErr());
-    final err = context.select((BroadcastTxCubit cubit) => cubit.state.getErrors());
+    final hasErr =
+        context.select((BroadcastTxCubit cubit) => cubit.state.hasErr());
+    final err =
+        context.select((BroadcastTxCubit cubit) => cubit.state.getErrors());
 
-    final broadcasting = context.select((BroadcastTxCubit cubit) => cubit.state.broadcastingTx);
-    final extractingTx = context.select((BroadcastTxCubit cubit) => cubit.state.extractingTx);
+    final broadcasting =
+        context.select((BroadcastTxCubit cubit) => cubit.state.broadcastingTx);
+    final extractingTx =
+        context.select((BroadcastTxCubit cubit) => cubit.state.extractingTx);
     final loading = broadcasting || extractingTx;
 
     final sent = context.select((BroadcastTxCubit cubit) => cubit.state.sent);

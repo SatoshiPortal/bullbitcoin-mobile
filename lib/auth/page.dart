@@ -31,7 +31,8 @@ class AuthPage extends StatelessWidget {
     return BlocProvider.value(
       value: authCubit,
       child: BlocListener<AuthCubit, AuthState>(
-        listenWhen: (previous, current) => previous.loggedIn != current.loggedIn,
+        listenWhen: (previous, current) =>
+            previous.loggedIn != current.loggedIn,
         listener: (context, state) async {
           if (state.loggedIn) {
             if (!state.fromSettings) {
@@ -120,7 +121,9 @@ class AuthPasswordField extends StatelessWidget {
           width: 40,
           child: IconButton(
             iconSize: 32,
-            color: pin.isEmpty ? context.colour.surface : context.colour.onBackground,
+            color: pin.isEmpty
+                ? context.colour.surface
+                : context.colour.onBackground,
             onPressed: () {
               SystemSound.play(SystemSoundType.click);
               HapticFeedback.mediumImpact();

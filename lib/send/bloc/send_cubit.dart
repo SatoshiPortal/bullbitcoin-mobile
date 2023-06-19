@@ -45,7 +45,8 @@ class SendCubit extends Cubit<SendState> {
   void setupFees() {
     final defaultFeeOption = settingsCubit.state.selectedFeesOption;
     emit(state.copyWith(selectedFeesOption: defaultFeeOption));
-    if (defaultFeeOption == 4) emit(state.copyWith(fees: settingsCubit.state.fees));
+    if (defaultFeeOption == 4)
+      emit(state.copyWith(fees: settingsCubit.state.fees));
   }
 
   void loadFees() async {
@@ -159,14 +160,16 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void checkFees() {
-    if (state.selectedFeesOption == 4 && (state.fees == null || state.fees == 0))
-      feeOptionSelected(2);
+    if (state.selectedFeesOption == 4 &&
+        (state.fees == null || state.fees == 0)) feeOptionSelected(2);
   }
 
   void checkMinimumFees() {
     final minFees = state.feesList!.last;
 
-    if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
+    if (state.fees != null &&
+        state.fees! < minFees &&
+        state.selectedFeesOption == 4)
       emit(
         state.copyWith(
           errLoadingFees:
@@ -249,7 +252,8 @@ class SendCubit extends Cubit<SendState> {
       await Future.delayed(const Duration(seconds: 4));
       emit(state.copyWith(downloaded: false));
     } catch (e) {
-      emit(state.copyWith(downloadingFile: false, errDownloadingFile: e.toString()));
+      emit(state.copyWith(
+          downloadingFile: false, errDownloadingFile: e.toString()));
     }
   }
 

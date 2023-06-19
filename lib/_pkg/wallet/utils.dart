@@ -25,11 +25,13 @@ String keyFromDescr(String descriptor) {
 }
 
 String convertToXpubStr(String xpub) {
-  if (xpub.toLowerCase().startsWith('u') || xpub.toLowerCase().startsWith('v')) {
+  if (xpub.toLowerCase().startsWith('u') ||
+      xpub.toLowerCase().startsWith('v')) {
     final result = convertVersion(xpub, Version.tPub);
     return result;
   }
-  if (xpub.toLowerCase().startsWith('y') || xpub.toLowerCase().startsWith('z')) {
+  if (xpub.toLowerCase().startsWith('y') ||
+      xpub.toLowerCase().startsWith('z')) {
     final result = convertVersion(xpub, Version.xPub);
     return result;
   }
@@ -91,120 +93,95 @@ String generateFingerPrint(int len) {
   return base64UrlEncode(values);
 }
 
-
 // bool validationPath(String path) {
 //   final pathList = path.split('/');
 //   if (pathList.length == 3 && (pathList[0] != 'm' || pathList[0] != '')) return false;
 //   if (pathList.length == 3) {
 //     // if(pathList)
-//   } 
+//   }
 // }
 
+//
+//
+//
 
-// 
-// 
-// 
+//
+//
+//
 
+//
+//
+//
 
-// 
-// 
-// 
+//
+//
+//
 
+//
+//
+//
 
-// 
-// 
-// 
+//
+//
+//
 
+//
+//
+//
 
-// 
-// 
-// 
+//
+//
+//
 
+//
+//
+//
 
-// 
-// 
-// 
+//
+//
+//
 
+//
+//
+//
 
-// 
-// 
-// 
+//
+//
+//
 
+//
+//
+//
 
-// 
-// 
-// 
+//
+//
+//
 
+//
+//
+//
 
-// 
-// 
-// 
+//
+//
+//
 
+//
+//
+//
 
-// 
-// 
-// 
+//
+//
+//
 
+//
+//
+//
 
-// 
-// 
-// 
-
-
-// 
-// 
-// 
-
-
-// 
-// 
-// 
-
-
-// 
-// 
-// 
-
-
-// 
-// 
-// 
-
-
-// 
-// 
-// 
-
-
-// 
-// 
-// 
-
-
-// 
-// 
-// 
-
-
-// 
-// 
-// 
-
-
-// 
-// 
-// 
-
-
-// 
-// 
-// 
-
-
+//
+//
+//
 
 // wpkh(tprv8ZgxMBicQKsPcthqtyCtGtGzJhWXNC5QwGek1GQMs9vxHFrqhfXzdL5tstUWjLfm8JNeY7TvG2PxrfY5F8edd1JLyXqb2e86JhG4icehVAy/84'/1'/0'/1/*)#7420nc5y
-
-
 
 //pkh([ddffda99/44'/1'/0']tpubDC5phKKvZNyMBySbRhQW6t1AkutpvxpAbPacFw38eM2DpiMRZAUBXooGNaBUzVKsST56w1osYwEuRtmqsEpKw4fw8mYWm3jbsjMGnYrgbUz/0/*)#23krdrn4
 // pkh([258ee68c/44'/1'/0']tpubDGkapRgaKKcdaEtBkHfcWBDsrUWh1Lubu7JWEyPdU3LTkJQmxMz6qKzWVcAuSNyWjRe7kJ9EVzk6BosPSP5GvfR6SuB913zP1jqUxsjBUsQ/0/*)#75nf0v7a

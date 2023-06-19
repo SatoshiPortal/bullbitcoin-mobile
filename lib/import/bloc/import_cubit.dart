@@ -116,7 +116,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
       return;
     }
 
-    if (state.importStep == ImportSteps.importXpub) emit(state.copyWith(xpub: res!));
+    if (state.importStep == ImportSteps.importXpub)
+      emit(state.copyWith(xpub: res!));
 
     emit(state.copyWith(loadingFile: false));
   }
@@ -197,7 +198,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
       final ccObj = jsonDecode(jsnStr) as Map<String, dynamic>;
       final coldcard = ColdCard.fromJson(ccObj);
 
-      emit(state.copyWith(coldCard: coldcard, importType: ImportTypes.coldcard));
+      emit(
+          state.copyWith(coldCard: coldcard, importType: ImportTypes.coldcard));
 
       await _updateWalletDetailsForSelection();
       if (state.errImporting.isNotEmpty) throw state.errImporting;
@@ -236,7 +238,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
       final coldcard = ColdCard.fromJson(ccObj);
 
-      emit(state.copyWith(coldCard: coldcard, importType: ImportTypes.coldcard));
+      emit(
+          state.copyWith(coldCard: coldcard, importType: ImportTypes.coldcard));
 
       await _updateWalletDetailsForSelection();
       if (state.errImporting.isNotEmpty) throw state.errImporting;
@@ -306,7 +309,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
         case ImportTypes.words:
           final mne = state.words.join(' ');
           final password = state.password.isEmpty ? null : state.password;
-          final path = state.customDerivation.isEmpty ? null : state.customDerivation;
+          final path =
+              state.customDerivation.isEmpty ? null : state.customDerivation;
 
           final (fingerPrint, errr) = await walletCreate.getMneFingerprint(
             mne: mne,
@@ -417,7 +421,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
       emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
       final selectedWallet = state.getSelectWalletDetails();
 
-      final err = await walletUpdate.addWalletToList(wallet: selectedWallet!, storage: storage);
+      final err = await walletUpdate.addWalletToList(
+          wallet: selectedWallet!, storage: storage);
 
       if (err != null) throw err;
 
@@ -655,8 +660,6 @@ const cc1 = <String, dynamic>{
   },
 };
 
-
-
 //
 //
 
@@ -664,65 +667,64 @@ const cc1 = <String, dynamic>{
 //
 
 //
-  // void importTypeSelected(ImportTypes type) {
-  //   switch (type) {
-  //     case ImportTypes.xpub:
-  //       emit(
-  //         state.copyWith(
-  //           importStep: ImportSteps.importXpub,
-  //           importType: ImportTypes.xpub,
-  //           xpub: '',
-  //           errImporting: '',
-  //         ),
-  //       );
-  //     case ImportTypes.coldcard:
-  //       emit(
-  //         state.copyWith(
-  //           importStep: ImportSteps.importXpub,
-  //           importType: ImportTypes.coldcard,
+// void importTypeSelected(ImportTypes type) {
+//   switch (type) {
+//     case ImportTypes.xpub:
+//       emit(
+//         state.copyWith(
+//           importStep: ImportSteps.importXpub,
+//           importType: ImportTypes.xpub,
+//           xpub: '',
+//           errImporting: '',
+//         ),
+//       );
+//     case ImportTypes.coldcard:
+//       emit(
+//         state.copyWith(
+//           importStep: ImportSteps.importXpub,
+//           importType: ImportTypes.coldcard,
 
-  //           // coldCardFile: '',
-  //           coldCard: null,
-  //           errImporting: '',
-  //         ),
-  //       );
-  //     case ImportTypes.words:
-  //       emit(
-  //         state.copyWith(
-  //           importStep: ImportSteps.importWords,
-  //           importType: ImportTypes.words,
-  //           xpub: '',
-  //           errImporting: '',
-  //         ),
-  //       );
-  //     case ImportTypes.notSelected:
-  //       break;
-  //   }
-  // }
+//           // coldCardFile: '',
+//           coldCard: null,
+//           errImporting: '',
+//         ),
+//       );
+//     case ImportTypes.words:
+//       emit(
+//         state.copyWith(
+//           importStep: ImportSteps.importWords,
+//           importType: ImportTypes.words,
+//           xpub: '',
+//           errImporting: '',
+//         ),
+//       );
+//     case ImportTypes.notSelected:
+//       break;
+//   }
+// }
 
+// void coldCardClicked() {
+//   emit(
+//     state.copyWith(
+//       importStep: ImportSteps.selectColdCard,
+//       importType: ImportTypes.coldcard,
+//     ),
+//   );
+// }
 
-  // void coldCardClicked() {
-  //   emit(
-  //     state.copyWith(
-  //       importStep: ImportSteps.selectColdCard,
-  //       importType: ImportTypes.coldcard,
-  //     ),
-  //   );
-  // }
+// void accountNumberChanged(String text) {
+//   emit(state.copyWith(accountNumber: int.tryParse(text) ?? 0));
+// }
 
-  // void accountNumberChanged(String text) {
-  //   emit(state.copyWith(accountNumber: int.tryParse(text) ?? 0));
-  // }
+// void saveDerivationClicked() async {
+//   emit(state.copyWith(customDerivation: state.customDerivation));
+//   await _updateWalletDetailsForSelection();
+//   if (state.errImporting.isNotEmpty) clearDerivation();
+// }
 
-  // void saveDerivationClicked() async {
-  //   emit(state.copyWith(customDerivation: state.customDerivation));
-  //   await _updateWalletDetailsForSelection();
-  //   if (state.errImporting.isNotEmpty) clearDerivation();
-  // }
-
-  // void clearDerivation() {
-  //   emit(state.copyWith(customDerivation: ''));
-  // }
+// void clearDerivation() {
+//   emit(state.copyWith(customDerivation: ''));
+// }
 
 // void recoverWalletClicked() async {
 //   try {

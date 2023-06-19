@@ -28,7 +28,8 @@ class WalletState with _$WalletState {
   }) = _WalletState;
   const WalletState._();
 
-  String balanceStr() => ((wallet?.balance ?? 0) / 100000000).toStringAsFixed(8);
+  String balanceStr() =>
+      ((wallet?.balance ?? 0) / 100000000).toStringAsFixed(8);
 
   int balanceSats() => wallet?.balance ?? 0;
 }

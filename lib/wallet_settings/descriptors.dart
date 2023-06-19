@@ -18,7 +18,8 @@ class XPubButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desc = context.select((WalletCubit cubit) => cubit.state.wallet!.externalDescriptor);
+    final desc = context
+        .select((WalletCubit cubit) => cubit.state.wallet!.externalDescriptor);
     if (desc.isEmpty) return const SizedBox();
 
     final xpub = keyFromDescr(desc);
@@ -37,7 +38,8 @@ class XPrivButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desc = context.select((WalletCubit cubit) => cubit.state.wallet!.internalDescriptor);
+    final desc = context
+        .select((WalletCubit cubit) => cubit.state.wallet!.internalDescriptor);
     if (desc.isEmpty) return const SizedBox();
 
     final xpub = keyFromPrivDescr(desc);
@@ -101,7 +103,7 @@ class XpubPopUp extends StatelessWidget {
           ),
           const Gap(24),
           Center(
-            child: QrImage(
+            child: QrImageView(
               data: xpub,
             ),
           ),

@@ -64,7 +64,7 @@ abstract class $TransactionCopyWith<$Res> {
       List<String>? inAddresses,
       List<String>? outAddresses,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          bdk.TransactionDetails? bdkTx});
+      bdk.TransactionDetails? bdkTx});
 }
 
 /// @nodoc
@@ -179,7 +179,7 @@ abstract class _$$_TransactionCopyWith<$Res>
       List<String>? inAddresses,
       List<String>? outAddresses,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          bdk.TransactionDetails? bdkTx});
+      bdk.TransactionDetails? bdkTx});
 }
 
 /// @nodoc
@@ -424,7 +424,7 @@ abstract class _Transaction extends Transaction {
       final List<String>? inAddresses,
       final List<String>? outAddresses,
       @JsonKey(includeFromJson: false, includeToJson: false)
-          final bdk.TransactionDetails? bdkTx}) = _$_Transaction;
+      final bdk.TransactionDetails? bdkTx}) = _$_Transaction;
   const _Transaction._() : super._();
 
   factory _Transaction.fromJson(Map<String, dynamic> json) =

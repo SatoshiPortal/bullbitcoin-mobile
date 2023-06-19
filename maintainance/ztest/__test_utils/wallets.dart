@@ -4,7 +4,8 @@ const w1 = Wallet(
   network: BBNetwork.Testnet,
   type: BBWalletType.words,
   walletType: WalletType.bip44,
-  mnemonic: 'trust gift fiber stove subject reject kite pride jewel expose shield cinnamon',
+  mnemonic:
+      'trust gift fiber stove subject reject kite pride jewel expose shield cinnamon',
   password: '',
   externalDescriptor:
       "pkh([ddffda99/44'/1'/0']tpubDC5phKKvZNyMBySbRhQW6t1AkutpvxpAbPacFw38eM2DpiMRZAUBXooGNaBUzVKsST56w1osYwEuRtmqsEpKw4fw8mYWm3jbsjMGnYrgbUz/0/*)#23krdrn4",

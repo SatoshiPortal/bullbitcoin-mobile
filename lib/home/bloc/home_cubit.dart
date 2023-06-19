@@ -35,7 +35,8 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> getWalletsFromStorage() async {
     emit(state.copyWith(loadingWallets: true));
 
-    final (wallets, err) = await walletRead.getWalletsFromStorage(storage: storage);
+    final (wallets, err) =
+        await walletRead.getWalletsFromStorage(storage: storage);
     if (err != null && err.toString() != 'No Key') {
       emit(state.copyWith(loadingWallets: false));
       return;
@@ -61,7 +62,8 @@ class HomeCubit extends Cubit<HomeState> {
 
   void updateSelectedWallet(WalletCubit walletCubit) {
     final wallet = walletCubit.state.wallet!;
-    final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+    final wallets =
+        state.wallets != null ? state.wallets!.toList() : <Wallet>[];
     final idx = wallets.indexWhere((w) => w.fingerprint == wallet.fingerprint);
     wallets[idx] = wallet;
 
@@ -76,7 +78,8 @@ class HomeCubit extends Cubit<HomeState> {
   void addWallet(Wallet wallet) {
     emit(state.copyWith(loadingWallets: true));
 
-    final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+    final wallets =
+        state.wallets != null ? state.wallets!.toList() : <Wallet>[];
     wallets.add(wallet);
 
     emit(
@@ -89,11 +92,15 @@ class HomeCubit extends Cubit<HomeState> {
 
   void clearSelectedWallet({bool removeWallet = false}) {
     if (removeWallet) {
-      final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+      final wallets =
+          state.wallets != null ? state.wallets!.toList() : <Wallet>[];
       wallets.removeWhere(
-        (w) => w.fingerprint == state.selectedWalletCubit!.state.wallet!.fingerprint,
+        (w) =>
+            w.fingerprint ==
+            state.selectedWalletCubit!.state.wallet!.fingerprint,
       );
-      emit(state.copyWith(wallets: wallets, selectedWalletCubit: null, selectedWallet: null));
+      emit(state.copyWith(
+          wallets: wallets, selectedWalletCubit: null, selectedWallet: null));
     } else
       emit(state.copyWith(selectedWalletCubit: null, selectedWallet: null));
   }

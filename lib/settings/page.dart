@@ -94,7 +94,8 @@ class Currencyx extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currency = context.select((SettingsCubit x) => x.state.currency);
-    final currencies = context.select((SettingsCubit x) => x.state.currencyList ?? []);
+    final currencies =
+        context.select((SettingsCubit x) => x.state.currencyList ?? []);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -123,7 +124,8 @@ class Currencyx extends StatelessWidget {
                     .toList(),
                 value: currency,
                 onChanged: (c) {
-                  if (c != null) context.read<SettingsCubit>().changeCurrency(c);
+                  if (c != null)
+                    context.read<SettingsCubit>().changeCurrency(c);
                 },
               ),
             ),

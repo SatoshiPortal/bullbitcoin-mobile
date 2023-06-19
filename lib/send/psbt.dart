@@ -37,7 +37,8 @@ class PSBTPopUp extends StatelessWidget {
     final psbt = context.select((SendCubit cubit) => cubit.state.psbt);
     if (tx == null || psbt.isEmpty) return const SizedBox();
 
-    final outAddresses = context.select((SendCubit cubit) => cubit.state.tx?.outAddresses ?? []);
+    final outAddresses =
+        context.select((SendCubit cubit) => cubit.state.tx?.outAddresses ?? []);
 
     final txamt = context.select(
       (SendCubit cubit) => cubit.state.tx?.getAmount() ?? 0,
@@ -46,8 +47,10 @@ class PSBTPopUp extends StatelessWidget {
     final toAddress = tx.toAddress ?? '';
     final label = tx.label;
 
-    final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txamt));
-    final fee = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txfee));
+    final amt = context
+        .select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txamt));
+    final fee = context
+        .select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txfee));
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -91,7 +94,10 @@ class PSBTPopUp extends StatelessWidget {
           const Gap(4),
           BBButton.text(
             onPressed: () {
-              final url = context.read<SettingsCubit>().state.explorerAddressUrl(toAddress);
+              final url = context
+                  .read<SettingsCubit>()
+                  .state
+                  .explorerAddressUrl(toAddress);
               locator<Launcher>().launchApp(url);
             },
             label: toAddress,
@@ -103,7 +109,10 @@ class PSBTPopUp extends StatelessWidget {
             for (final address in outAddresses) ...[
               BBButton.text(
                 onPressed: () {
-                  final url = context.read<SettingsCubit>().state.explorerAddressUrl(address);
+                  final url = context
+                      .read<SettingsCubit>()
+                      .state
+                      .explorerAddressUrl(address);
                   locator<Launcher>().launchApp(url);
                 },
                 label: address,
@@ -153,7 +162,7 @@ class PSBTPopUp extends StatelessWidget {
             child: SizedBox(
               width: 200,
               height: 200,
-              child: QrImage(data: psbt),
+              child: QrImageView(data: psbt),
             ),
           ),
           const Gap(60),
@@ -169,8 +178,10 @@ class DownloadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final downloading = context.select((SendCubit cubit) => cubit.state.downloadingFile);
-    final downloaded = context.select((SendCubit cubit) => cubit.state.downloaded);
+    final downloading =
+        context.select((SendCubit cubit) => cubit.state.downloadingFile);
+    final downloaded =
+        context.select((SendCubit cubit) => cubit.state.downloaded);
 
     if (downloaded)
       return Center(

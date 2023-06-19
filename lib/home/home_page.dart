@@ -101,7 +101,8 @@ class HomeWallets extends StatelessWidget {
   Widget build(BuildContext context) {
     final network = context.select((SettingsCubit x) => x.state.getBBNetwork());
 
-    final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
+    final wallets =
+        context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
 
     final hasWallets = wallets.isNotEmpty;
     final loading = context.select((HomeCubit x) => x.state.loadingWallets);
@@ -141,10 +142,13 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedWallet = context.select((HomeCubit x) => x.state.selectedWalletCubit);
+    final selectedWallet =
+        context.select((HomeCubit x) => x.state.selectedWalletCubit);
 
     if (selectedWallet == null && walletCubits.isNotEmpty)
-      context.read<HomeCubit>().walletSelected(walletCubits[walletCubits.length - 1]);
+      context
+          .read<HomeCubit>()
+          .walletSelected(walletCubits[walletCubits.length - 1]);
 
     return SafeArea(
       bottom: false,
@@ -208,7 +212,8 @@ class BackupAlertBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _ = context.select((WalletCubit x) => x.state.wallet);
-    final backupTested = context.select((WalletCubit x) => x.state.wallet?.backupTested ?? false);
+    final backupTested = context
+        .select((WalletCubit x) => x.state.wallet?.backupTested ?? false);
 
     if (backupTested) return Container();
 
@@ -289,12 +294,17 @@ class HomeTxList extends StatelessWidget {
   Widget build(BuildContext context) {
     final syncing = context.select((WalletCubit x) => x.state.syncing);
     final loading = context.select((WalletCubit x) => x.state.loadingTxs);
-    final loadingBal = context.select((WalletCubit x) => x.state.loadingBalance);
+    final loadingBal =
+        context.select((WalletCubit x) => x.state.loadingBalance);
 
-    final confirmedTXs = context.select((WalletCubit x) => x.state.wallet?.getConfirmedTxs() ?? []);
-    final pendingTXs = context.select((WalletCubit x) => x.state.wallet?.getPendingTxs() ?? []);
+    final confirmedTXs = context
+        .select((WalletCubit x) => x.state.wallet?.getConfirmedTxs() ?? []);
+    final pendingTXs = context
+        .select((WalletCubit x) => x.state.wallet?.getPendingTxs() ?? []);
 
-    if ((loading || syncing || loadingBal) && confirmedTXs.isEmpty && pendingTXs.isEmpty) {
+    if ((loading || syncing || loadingBal) &&
+        confirmedTXs.isEmpty &&
+        pendingTXs.isEmpty) {
       return TopCenter(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -318,7 +328,9 @@ class HomeTxList extends StatelessWidget {
             horizontal: 48.0,
             vertical: 24,
           ),
-          child: const BBText.titleLarge('No Transaction yet').animate(delay: 300.ms).fadeIn(),
+          child: const BBText.titleLarge('No Transaction yet')
+              .animate(delay: 300.ms)
+              .fadeIn(),
         ),
       );
     }
@@ -367,8 +379,8 @@ class HomeTxItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = tx.label ?? '';
 
-    final amount = context
-        .select((SettingsCubit x) => x.state.getAmountInUnits(tx.getAmount(sentAsTotal: true)));
+    final amount = context.select((SettingsCubit x) =>
+        x.state.getAmountInUnits(tx.getAmount(sentAsTotal: true)));
 
     final isReceive = tx.isReceived();
 
@@ -474,7 +486,8 @@ class HomeActionButtons extends StatelessWidget {
             width: buttonWidth,
             child: BBButton.smallRed(
               onPressed: () {
-                final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
+                final wallet =
+                    context.read<HomeCubit>().state.selectedWalletCubit!;
 
                 SendPopup.openSendPopUp(context, wallet);
               },
@@ -504,8 +517,10 @@ class HomeCard extends StatelessWidget {
     final isTestnet = wallet.network == BBNetwork.Testnet;
     final isWatchOnly = wallet.watchOnly();
 
-    if (isWatchOnly && !isTestnet) return (context.colour.onBackground, 'mainnet_watchonly');
-    if (isWatchOnly && isTestnet) return (context.colour.onBackground, 'testnet_watchonly');
+    if (isWatchOnly && !isTestnet)
+      return (context.colour.onBackground, 'mainnet_watchonly');
+    if (isWatchOnly && isTestnet)
+      return (context.colour.onBackground, 'testnet_watchonly');
 
     if (isTestnet) return (context.colour.surface, 'testnet');
     return (context.colour.primary, 'mainnet');
@@ -517,17 +532,20 @@ class HomeCard extends StatelessWidget {
     if (wallet == null) return const SizedBox.shrink();
 
     final name = context.select((WalletCubit x) => x.state.wallet?.name);
-    final fingerprint = context.select((WalletCubit x) => x.state.wallet?.cleanFingerprint() ?? '');
-    final walletStr = context.select((WalletCubit x) => x.state.wallet?.getWalletTypeShortStr());
+    final fingerprint = context
+        .select((WalletCubit x) => x.state.wallet?.cleanFingerprint() ?? '');
+    final walletStr = context
+        .select((WalletCubit x) => x.state.wallet?.getWalletTypeShortStr());
 
     final sats = context.select((WalletCubit x) => x.state.balanceSats());
 
-    final balance =
-        context.select((SettingsCubit x) => x.state.getAmountInUnits(sats, removeText: true));
+    final balance = context.select(
+        (SettingsCubit x) => x.state.getAmountInUnits(sats, removeText: true));
     final unit = context.select((SettingsCubit x) => x.state.getUnitString());
 
     final currency = context.select((SettingsCubit x) => x.state.currency);
-    final fiatAmt = context.select((SettingsCubit x) => x.state.calculatePrice(sats));
+    final fiatAmt =
+        context.select((SettingsCubit x) => x.state.calculatePrice(sats));
 
     final (color, info) = cardDetails(context, wallet);
 
@@ -703,7 +721,9 @@ class HomeTopBar extends StatelessWidget {
         ),
         const Spacer(),
         IconButton(
-          color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
+          color: pageIdx == 0
+              ? context.colour.onBackground
+              : context.colour.onPrimary,
           icon: const Icon(
             FontAwesomeIcons.circlePlus,
             shadows: [],
@@ -714,7 +734,9 @@ class HomeTopBar extends StatelessWidget {
         ),
         IconButton(
           key: UIKeys.homeSettingsButton,
-          color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
+          color: pageIdx == 0
+              ? context.colour.onBackground
+              : context.colour.onPrimary,
           icon: const Icon(
             FontAwesomeIcons.gear,
             shadows: [],

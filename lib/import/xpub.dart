@@ -60,14 +60,18 @@ class ColdCardSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loading = context.select((ImportWalletCubit cubit) => cubit.state.loadingFile);
-    final scanning = context
-        .select((ImportWalletCubit cubit) => cubit.state.importStep == ImportSteps.scanningNFC);
+    final loading =
+        context.select((ImportWalletCubit cubit) => cubit.state.loadingFile);
+    final scanning = context.select((ImportWalletCubit cubit) =>
+        cubit.state.importStep == ImportSteps.scanningNFC);
 
-    final err = context.select((ImportWalletCubit cubit) => cubit.state.errLoadingFile);
+    final err =
+        context.select((ImportWalletCubit cubit) => cubit.state.errLoadingFile);
 
     if (loading)
-      return const Center(child: CircularProgressIndicator()).animate(delay: 300.ms).fadeIn();
+      return const Center(child: CircularProgressIndicator())
+          .animate(delay: 300.ms)
+          .fadeIn();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -160,7 +164,8 @@ class _ImportButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+    final err =
+        context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -209,21 +214,27 @@ class AdvancedOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final xpub = context.select((ImportWalletCubit cubit) => cubit.state.xpub);
-    final path = context.select((ImportWalletCubit x) => x.state.customDerivation);
-    final fingerprint = context.select((ImportWalletCubit x) => x.state.fingerprint);
-    final combined =
-        context.select((ImportWalletCubit x) => x.state.manualCombinedDescriptor ?? '');
-    final descr = context.select((ImportWalletCubit x) => x.state.manualDescriptor ?? '');
-    final cdescr = context.select((ImportWalletCubit x) => x.state.manualCombinedDescriptor ?? '');
+    final path =
+        context.select((ImportWalletCubit x) => x.state.customDerivation);
+    final fingerprint =
+        context.select((ImportWalletCubit x) => x.state.fingerprint);
+    final combined = context.select(
+        (ImportWalletCubit x) => x.state.manualCombinedDescriptor ?? '');
+    final descr =
+        context.select((ImportWalletCubit x) => x.state.manualDescriptor ?? '');
+    final cdescr = context.select(
+        (ImportWalletCubit x) => x.state.manualCombinedDescriptor ?? '');
 
-    final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+    final err =
+        context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const BBHeader.popUpCenteredText(text: 'Advanced Options', isLeft: true),
+          const BBHeader.popUpCenteredText(
+              text: 'Advanced Options', isLeft: true),
           BBTextInput.multiLine(
             value: xpub,
             onChanged: (value) {
