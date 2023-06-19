@@ -50,7 +50,8 @@ class WalletCubit extends Cubit<WalletState> {
       emit(state.copyWith(wallet: wallet));
 
       if (state.bdkWallet == null) {
-        final (wallets, err) = await walletCreate.loadBdkWallet(wallet, fromStorage: fromStorage);
+        final (wallets, err) =
+            await walletCreate.loadBdkWallet(wallet, fromStorage: fromStorage);
         if (err != null) throw err;
         final (w, bdkWallet) = wallets!;
         wallet = w;
@@ -103,15 +104,13 @@ class WalletCubit extends Cubit<WalletState> {
 
       final blockchain = settingsCubit.state.blockchain!;
       final bdkWallet = state.bdkWallet!;
-
-      final _ = await walletRead.sync2(
+      final receivePort = await walletRead.sync2(
         blockchain,
         bdkWallet,
       );
-
       // if (!synced) return;
 
-      emit(state.copyWith(syncing: false));
+      // emit(state.copyWith(syncing: false));
 
       // final _ = await compute(syncW, (bdkWallet, blockchain));
 
@@ -147,7 +146,8 @@ class WalletCubit extends Cubit<WalletState> {
       await Future.delayed(const Duration(milliseconds: 50));
       listTransactions();
       getFirstAddress();
-
+      await receivePort.first
+          .whenComplete(() => emit(state.copyWith(syncing: false)));
       // });
     } catch (e) {
       emit(
@@ -280,8 +280,8 @@ class WalletCubit extends Cubit<WalletState> {
   void getFirstAddress() async {
     if (state.bdkWallet == null) return;
 
-    final address =
-        await state.bdkWallet!.getAddress(addressIndex: const bdk.AddressIndex.peek(index: 0));
+    final address = await state.bdkWallet!
+        .getAddress(addressIndex: const bdk.AddressIndex.peek(index: 0));
 
     emit(state.copyWith(firstAddress: address.address));
   }
@@ -294,10 +294,6 @@ class WalletCubit extends Cubit<WalletState> {
 //   await wallet.sync(blockchain);
 //   return true;
 // }
-
-
-
-
 
 //
 //

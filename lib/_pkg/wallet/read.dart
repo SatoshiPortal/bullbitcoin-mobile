@@ -36,7 +36,8 @@ class WalletRead {
 
       var wallet = Wallet.fromJson(obj);
       if (removeSensitive)
-        wallet = wallet.copyWith(mnemonic: '', password: '', internalDescriptor: '');
+        wallet =
+            wallet.copyWith(mnemonic: '', password: '', internalDescriptor: '');
 
       return (wallet, null);
     } catch (e) {
@@ -76,7 +77,8 @@ class WalletRead {
       final unspentList = await bdkWallet.listUnspent();
       final addresses = wallet.addresses?.toList() ?? [];
       for (final unspent in unspentList) {
-        final scr = await bdk.Script.create(unspent.txout.scriptPubkey.internal);
+        final scr =
+            await bdk.Script.create(unspent.txout.scriptPubkey.internal);
         final addresss = await bdk.Address.fromScript(
           scr,
           wallet.getBdkNetwork(),
@@ -91,16 +93,18 @@ class WalletRead {
         );
         final utxos = address.utxos?.toList() ?? [];
 
-        if (utxos.indexWhere((u) => u.outpoint.txid == unspent.outpoint.txid) == -1)
-          utxos.add(unspent);
+        if (utxos.indexWhere((u) => u.outpoint.txid == unspent.outpoint.txid) ==
+            -1) utxos.add(unspent);
 
         var updated = address.copyWith(utxos: utxos);
 
         if (updated.calculateBalance() > 0 &&
             updated.calculateBalance() > updated.highestPreviousBalance)
-          updated = updated.copyWith(highestPreviousBalance: updated.calculateBalance());
+          updated = updated.copyWith(
+              highestPreviousBalance: updated.calculateBalance());
 
-        if (updated.isReceive == null) updated = updated.copyWith(isReceive: updated.hasReceive());
+        if (updated.isReceive == null)
+          updated = updated.copyWith(isReceive: updated.hasReceive());
 
         addresses.removeWhere((a) => a.address == address.address);
         addresses.add(updated);
@@ -146,10 +150,13 @@ class WalletRead {
           isSend: !txObj.isReceived(),
         );
 
-        if (idx != -1 && storedTxs[idx].label != null && storedTxs[idx].label!.isNotEmpty)
+        if (idx != -1 &&
+            storedTxs[idx].label != null &&
+            storedTxs[idx].label!.isNotEmpty)
           label = storedTxs[idx].label!;
-        else if (address != null && address.label != null && address.label!.isNotEmpty)
-          label = address.label!;
+        else if (address != null &&
+            address.label != null &&
+            address.label!.isNotEmpty) label = address.label!;
 
         if (txObj.isReceived()) {
           // final fromAddress = state.wallet!.getAddressFromTxid(txObj.txid);
@@ -176,7 +183,10 @@ class WalletRead {
 
       return (w, null);
     } catch (e) {
-      return (null, Err(e.toString(), expected: e.toString() == 'No bdk transactions found'));
+      return (
+        null,
+        Err(e.toString(), expected: e.toString() == 'No bdk transactions found')
+      );
     }
   }
 
@@ -222,7 +232,8 @@ class WalletRead {
         inputs.map((txIn) async {
           final idx = txIn.previousOutput.vout;
           final txid = txIn.previousOutput.txid;
-          final (addresses, err) = await mempoolAPI.getVOutAddressesFromTx(txid, isTestnet);
+          final (addresses, err) =
+              await mempoolAPI.getVOutAddressesFromTx(txid, isTestnet);
           if (err != null) throw err;
           return addresses![idx];
         }),
@@ -273,12 +284,11 @@ class WalletRead {
     }
   }
 
-  Future<bool> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
+  Future<ReceivePort> sync2(
+      bdk.Blockchain blockchain, bdk.Wallet wallet) async {
     final receivePort = ReceivePort();
-
     await Isolate.spawn(_sync, [receivePort.sendPort, wallet, blockchain]);
-    final res = await receivePort.first;
-    return res as bool;
+    return receivePort;
   }
 
   Future<void> _sync(List<dynamic> args) async {
