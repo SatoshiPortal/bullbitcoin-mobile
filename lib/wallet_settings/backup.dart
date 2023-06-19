@@ -134,6 +134,8 @@ class BackupTestItemWord extends StatelessWidget {
   Widget build(BuildContext context) {
     final (word, isSelected, actualIdx) = context.select(
         (WalletSettingsCubit cubit) => cubit.state.shuffleElementAt(index));
+      (WalletSettingsCubit _) => _.state.shuffleElementAt(index),
+    );
 
     return Expanded(
       child: Container(
@@ -152,7 +154,7 @@ class BackupTestItemWord extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(80),
                   border: Border.all(
-                    color: context.colour.onBackground,
+                    color: context.colour.surface,
                   ),
                   color: isSelected
                       ? context.colour.primary
@@ -174,7 +176,7 @@ class BackupTestItemWord extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(80),
                     border: Border.all(
-                      color: context.colour.onBackground,
+                      color: context.colour.surface,
                     ),
                     color: context.colour.background,
                   ),
