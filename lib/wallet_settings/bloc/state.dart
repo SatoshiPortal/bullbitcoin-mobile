@@ -35,11 +35,10 @@ class WalletSettingsState with _$WalletSettingsState {
     return mnemonic[index];
   }
 
-  String shuffleElementAt(int index) {
-    return shuffledMnemonic[index];
-  }
-
-  bool shuffleIsSelected(int index) {
-    return testMnemonicOrder.contains(shuffledMnemonic[index]);
+  (String, bool, int) shuffleElementAt(int index) {
+    final word = shuffledMnemonic[index];
+    final isSelected = testMnemonicOrder.contains(word);
+    final actualIdx = mnemonic.indexOf(word);
+    return (word, isSelected, actualIdx);
   }
 }

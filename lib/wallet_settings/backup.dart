@@ -89,17 +89,15 @@ class TestBackupScreen extends StatelessWidget {
                   for (var j = 0; j < 2; j++)
                     BackupTestItemWord(
                       index: i == 0 ? j : i * 2 + j,
-                      word: context
-                          .read<WalletSettingsCubit>()
-                          .state
-                          .shuffleElementAt(i == 0 ? j : i * 2 + j),
-                      isSelected: false,
+                      // isSelected: context
+                      //     .select<WalletSettingsCubit>()
+                      //     .state
+                      //     .shuffleIsSelected(i == 0 ? j : i * 2 + j),
                     ),
                 ],
               ),
             const Gap(16),
             const TestBackupPassField(),
-            const Gap(40),
             const TestBackupConfirmButton(),
             const Gap(24),
             Center(
@@ -126,16 +124,15 @@ class BackupTestItemWord extends StatelessWidget {
   const BackupTestItemWord({
     super.key,
     required this.index,
-    required this.word,
-    required this.isSelected,
   });
 
   final int index;
-  final String word;
-  final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
+    final (word, isSelected, actualIdx) =
+        context.select((WalletSettingsCubit cubit) => cubit.state.shuffleElementAt(index));
+
     return Expanded(
       child: Container(
         margin: const EdgeInsets.fromLTRB(4, 0, 4, 24),
@@ -159,7 +156,7 @@ class BackupTestItemWord extends StatelessWidget {
                 ),
                 child: CenterLeft(
                   child: BBText.body(
-                    isSelected ? '${index + 1}' : '?',
+                    isSelected ? '${actualIdx + 1}' : '?',
                     onSurface: true,
                   ),
                 ),
@@ -239,11 +236,12 @@ class TestBackupConfirmButton extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Center(
-              child: BBText.body(
+              child: BBText.error(
                 err,
               ).animate().fadeIn(),
             ),
           ),
+        const Gap(40),
         if (tested)
           Center(
             child: Padding(

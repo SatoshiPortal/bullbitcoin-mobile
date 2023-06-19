@@ -128,10 +128,11 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       ),
     );
     await Future.delayed(const Duration(seconds: 2));
+    final shuffled = state.mnemonic.toList()..shuffle();
     emit(
       state.copyWith(
         errTestingBackup: '',
-        mnemonic: state.mnemonic..shuffle(),
+        shuffledMnemonic: shuffled,
       ),
     );
   }
