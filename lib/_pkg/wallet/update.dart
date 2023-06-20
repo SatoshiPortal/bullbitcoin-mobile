@@ -67,6 +67,7 @@ class WalletUpdate {
         a = a.copyWith(
           label: label,
           sentTxId: sentTxId,
+          isReceive: !isSend,
         );
         addresses.insert(existing, a);
       } else {

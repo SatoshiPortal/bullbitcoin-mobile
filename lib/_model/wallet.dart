@@ -588,12 +588,12 @@ class Wallet with _$Wallet {
     }
   }
 
-  List<Address> allAddresses() {
-    final all = <Address>[];
-    all.addAll(addresses ?? <Address>[]);
-    all.addAll(toAddresses ?? <Address>[]);
-    return all;
-  }
+  // List<Address> allAddresses() {
+  //   final all = <Address>[];
+  //   all.addAll(addresses ?? <Address>[]);
+  //   all.addAll(toAddresses ?? <Address>[]);
+  //   return all;
+  // }
 
   List<Address> allFreezedAddresses() {
     final all = <Address>[];

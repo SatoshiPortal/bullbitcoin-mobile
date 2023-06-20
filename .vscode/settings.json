@@ -12,9 +12,7 @@
             "source.fixAll": true,
             "source.organizeImports": true,
         },
-        
     },
-    
     "files.exclude": {
         "**/.metadata": true,
         ".gitignore": true,
@@ -44,10 +42,10 @@
         "zmacos": true,
         "linux": true,
         "**/widgetbook": true,
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
         "**/maintainance": true,
-        "**/test": true
-        // "integration_test": true
+        "**/test": true,
+        "integration_test": true
         // 
         // 
         // "**/lib/auth": true,
