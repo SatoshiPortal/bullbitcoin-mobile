@@ -247,7 +247,10 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final (appDocDir, err) = await fileStorage.getDownloadDirectory();
-    if (err != null) throw err;
+    if (err != null) {
+      emit(state.copyWith(downloadingFile: false, errDownloadingFile: err.toString()));
+      return;
+    }
     final file = File(appDocDir! + '/bullbitcoin_psbt/$txid.psbt');
     final (_, errSave) = await fileStorage.saveToFile(file, psbt);
     if (errSave != null) {
