@@ -1,115 +1,139 @@
 import 'dart:io';
 
 import 'package:bb_mobile/_pkg/barcode.dart';
-import 'package:bb_mobile/_pkg/file.dart';
+import 'package:bb_mobile/_pkg/file_picker.dart';
+import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 // import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart';
 
 class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   BroadcastTxCubit({
     required this.barcode,
     required this.filePicker,
     required this.settingsCubit,
+    required this.fileStorage,
+    required this.walletUpdate,
   }) : super(const BroadcastTxState());
 
   final FilePick filePicker;
   final SettingsCubit settingsCubit;
   final Barcode barcode;
+  final FileStorage fileStorage;
+  final WalletUpdate walletUpdate;
 
   void txChanged(String tx) {
     emit(state.copyWith(tx: tx));
   }
 
   void scanQRClicked() async {
-    try {
-      emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
-      final (file, err) = await barcode.scan();
-      if (err != null) throw err;
-
-      final tx = file!;
-      emit(state.copyWith(loadingFile: false, tx: tx));
-    } catch (e) {
-      emit(state.copyWith(loadingFile: false, errLoadingFile: e.toString()));
+    emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
+    final (file, err) = await barcode.scan();
+    if (err != null) {
+      emit(state.copyWith(loadingFile: false, errLoadingFile: err.toString()));
+      return;
     }
+
+    final tx = file!;
+    emit(state.copyWith(loadingFile: false, tx: tx));
   }
 
   void uploadFileClicked() async {
-    try {
-      emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
-      final (file, err) = await filePicker.pickFile();
-      if (err != null) throw err;
-      final tx = file!;
-      emit(state.copyWith(loadingFile: false, tx: tx));
-    } catch (e) {
-      emit(state.copyWith(loadingFile: false, errLoadingFile: e.toString()));
+    emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
+    final (file, err) = await filePicker.pickFile();
+    if (err != null) {
+      emit(state.copyWith(loadingFile: false, errLoadingFile: err.toString()));
+      return;
     }
+    final tx = file!;
+    emit(state.copyWith(loadingFile: false, tx: tx));
   }
 
   void extractTxClicked() async {
-    try {
-      emit(state.copyWith(extractingTx: true, errExtractingTx: ''));
-      // final tx = state.tx;
-      // final psbt = bdk.PartiallySignedTransaction(psbtBase64: tx);
-      // await psbt.extractTx();
+    emit(state.copyWith(extractingTx: true, errExtractingTx: ''));
+    // final tx = state.tx;
+    // final psbt = bdk.PartiallySignedTransaction(psbtBase64: tx);
+    // await psbt.extractTx();
 
-      // final details = psbt.txDetails;
-      // if (details == null) throw 'No Details';
+    // final details = psbt.txDetails;
+    // if (details == null) throw 'No Details';
 
-      // final transaction = Transaction(
-      //   txid: details.txid,
-      //   sent: details.sent,
-      //   received: details.received,
-      //   fee: details.fee,
-      // );
+    // final transaction = Transaction(
+    //   txid: details.txid,
+    //   sent: details.sent,
+    //   received: details.received,
+    //   fee: details.fee,
+    // );
 
-      // emit(
-      //   state.copyWith(
-      //     psbtBDK: psbt,
-      //     transaction: transaction,
-      //     step: BroadcastTxStep.broadcast,
-      //   ),
-      // );
-    } catch (e) {
-      emit(state.copyWith(extractingTx: false, errExtractingTx: e.toString()));
-    }
+    // emit(
+    //   state.copyWith(
+    //     psbtBDK: psbt,
+    //     transaction: transaction,
+    //     step: BroadcastTxStep.broadcast,
+    //   ),
+    // );
+    // } catch (e) {
+    //   emit(state.copyWith(extractingTx: false, errExtractingTx: e.toString()));
+    // }
   }
 
   void downloadPSBTClicked() async {
-    try {
-      emit(state.copyWith(downloadingFile: true, errDownloadingFile: ''));
-      final psbt = state.psbtBDK?.psbtBase64;
-      if (psbt == null) throw 'No PSBT';
-      final txid = state.transaction?.txid;
-      if (txid == null) throw 'No TXID';
-
-      final appDocDir = await getDownloadsDirectory();
-      if (appDocDir == null) throw 'Could not get downloads directory';
-      final file = File(appDocDir.path + '/bullbitcoin_psbt/$txid');
-      await file.writeAsString(psbt);
-
-      emit(state.copyWith(downloadingFile: false, downloaded: true));
-      await Future.delayed(const Duration(seconds: 4));
-      emit(state.copyWith(downloaded: true));
-    } catch (e) {
-      emit(state.copyWith(downloadingFile: false, errDownloadingFile: e.toString()));
+    emit(state.copyWith(downloadingFile: true, errDownloadingFile: ''));
+    final psbt = state.psbtBDK?.psbtBase64;
+    if (psbt == null || psbt.isEmpty) {
+      emit(state.copyWith(downloadingFile: false, errDownloadingFile: 'No PSBT'));
+      return;
     }
+
+    final txid = state.transaction?.txid;
+    if (txid == null || txid.isEmpty) {
+      emit(state.copyWith(downloadingFile: false, errDownloadingFile: 'No TXID'));
+      return;
+    }
+
+    final (appDocDir, err) = await fileStorage.getDownloadDirectory();
+    if (err != null) throw err;
+    final file = File(appDocDir! + '/bullbitcoin_psbt/$txid.psbt');
+    final (_, errSave) = await fileStorage.saveToFile(file, psbt);
+    if (errSave != null) {
+      emit(state.copyWith(downloadingFile: false, errDownloadingFile: errSave.toString()));
+      return;
+    }
+
+    emit(state.copyWith(downloadingFile: false, downloaded: true));
+    await Future.delayed(const Duration(seconds: 4));
+    emit(state.copyWith(downloaded: false));
   }
 
   void broadcastClicked() async {
-    try {
-      emit(state.copyWith(broadcastingTx: true, errBroadcastingTx: ''));
-      final psbt = state.psbtBDK;
-      final blockchain = settingsCubit.state.blockchain;
-
-      final tx = await psbt!.extractTx();
-
-      await blockchain!.broadcast(tx);
-      emit(state.copyWith(broadcastingTx: false, sent: true));
-    } catch (e) {
-      emit(state.copyWith(broadcastingTx: false, errBroadcastingTx: e.toString()));
+    emit(state.copyWith(broadcastingTx: true, errBroadcastingTx: ''));
+    final psbt = state.psbtBDK;
+    if (psbt == null) {
+      emit(state.copyWith(broadcastingTx: false, errBroadcastingTx: 'No PSBT'));
+      return;
     }
+
+    final blockchain = settingsCubit.state.blockchain;
+    if (blockchain == null) {
+      emit(
+        state.copyWith(
+          broadcastingTx: false,
+          errBroadcastingTx: 'No Blockchain',
+        ),
+      );
+      return;
+    }
+
+    final err = await walletUpdate.broadcastTx(
+      psbt: psbt,
+      blockchain: blockchain,
+    );
+    if (err != null) {
+      emit(state.copyWith(broadcastingTx: false, errBroadcastingTx: err.toString()));
+      return;
+    }
+    emit(state.copyWith(broadcastingTx: false, sent: true));
   }
 }

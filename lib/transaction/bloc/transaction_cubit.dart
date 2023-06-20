@@ -31,61 +31,49 @@ class TransactionCubit extends Cubit<TransactionState> {
   final WalletRead walletRead;
 
   void loadTx() async {
-    try {
-      emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));
+    emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));
 
-      Future.wait([
-        // loadInAddresses(),
-        loadOutAddresses(),
-      ]);
+    Future.wait([
+      // loadInAddresses(),
+      loadOutAddresses(),
+    ]);
 
-      emit(state.copyWith(loadingAddresses: false));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          loadingAddresses: false,
-          errLoadingAddresses: e.toString(),
-        ),
-      );
-    }
+    emit(state.copyWith(loadingAddresses: false));
   }
 
   Future loadInAddresses() async {
-    try {
-      final (tx, err) = await walletRead.getInputAddresses(
-        tx: state.tx,
-        wallet: walletCubit.state.wallet!,
-        mempoolAPI: mempoolAPI,
-      );
-      if (err != null) throw err;
-
-      emit(state.copyWith(tx: tx!));
-    } catch (e) {
+    final (tx, err) = await walletRead.getInputAddresses(
+      tx: state.tx,
+      wallet: walletCubit.state.wallet!,
+      mempoolAPI: mempoolAPI,
+    );
+    if (err != null) {
       emit(
         state.copyWith(
-          errLoadingAddresses: e.toString(),
+          errLoadingAddresses: err.toString(),
         ),
       );
+      return;
     }
+
+    emit(state.copyWith(tx: tx!));
   }
 
   Future loadOutAddresses() async {
-    try {
-      final (tx, err) = await walletRead.getOutputAddresses(
-        tx: state.tx,
-        wallet: walletCubit.state.wallet!,
-        mempoolAPI: mempoolAPI,
-      );
-      if (err != null) throw err;
-
-      emit(state.copyWith(tx: tx!));
-    } catch (e) {
+    final (tx, err) = await walletRead.getOutputAddresses(
+      tx: state.tx,
+      wallet: walletCubit.state.wallet!,
+      mempoolAPI: mempoolAPI,
+    );
+    if (err != null) {
       emit(
         state.copyWith(
-          errLoadingAddresses: e.toString(),
+          errLoadingAddresses: err.toString(),
         ),
       );
+      return;
     }
+    emit(state.copyWith(tx: tx!));
   }
 
   void loadReceiveLabel() {

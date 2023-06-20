@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
-import 'package:bb_mobile/_pkg/file.dart';
+import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
 import 'package:bb_mobile/_pkg/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';

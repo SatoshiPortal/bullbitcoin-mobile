@@ -21,70 +21,59 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final WalletRead walletRead;
 
   void loadAddress() async {
-    try {
-      emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
+    emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
 
-      final (ai, err) = await walletUpdate.getNewAddress(
-        wallet: walletCubit.state.wallet!,
-        bdkWallet: walletCubit.state.bdkWallet!,
-      );
-      if (err != null) throw err.toString();
-
-      final (idx, address, label) = ai!;
-
-      final (a, w) = await walletUpdate.updateWalletAddress(
-        address: (idx, address),
-        wallet: walletCubit.state.wallet!,
-        label: label,
-      );
-      final errUpdate = await walletUpdate.updateWallet(
-        wallet: w,
-        walletRead: walletRead,
-        storage: storage,
-      );
-      if (errUpdate != null) throw errUpdate.toString();
-
-      walletCubit.updateWallet(w);
-
+    final (ai, err) = await walletUpdate.getNewAddress(
+      wallet: walletCubit.state.wallet!,
+      bdkWallet: walletCubit.state.bdkWallet!,
+    );
+    if (err != null) {
       emit(
         state.copyWith(
           loadingAddress: false,
-          errLoadingAddress: '',
-          defaultAddress: a,
+          errLoadingAddress: err.toString(),
         ),
       );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          loadingAddress: false,
-          errLoadingAddress: e.toString(),
-        ),
-      );
+      return;
     }
-  }
 
-  // void toggleBtcUnit() {
-  //   if (state.unit == BTCUnit.sats) {
-  //     emit(state.copyWith(unit: BTCUnit.btc));
-  //   } else {
-  //     emit(state.copyWith(unit: BTCUnit.sats));
-  //   }
-  // }
+    final (idx, address, label) = ai!;
+
+    final (a, w) = await walletUpdate.updateWalletAddress(
+      address: (idx, address),
+      wallet: walletCubit.state.wallet!,
+      label: label,
+    );
+
+    final errUpdate = await walletUpdate.updateWallet(
+      wallet: w,
+      walletRead: walletRead,
+      storage: storage,
+    );
+    if (errUpdate != null) {
+      emit(
+        state.copyWith(
+          loadingAddress: false,
+          errLoadingAddress: errUpdate.toString(),
+        ),
+      );
+      return;
+    }
+
+    walletCubit.updateWallet(w);
+
+    emit(
+      state.copyWith(
+        loadingAddress: false,
+        errLoadingAddress: '',
+        defaultAddress: a,
+      ),
+    );
+  }
 
   void updateAmount(int amt) {
     emit(state.copyWith(invoiceAmount: amt));
   }
-
-  // void amountChanged(String amount) {
-  //   if (state.unit == BTCUnit.btc) {
-  //     final amountDouble = double.parse(amount);
-  //     final amountSatoshi = (amountDouble * 100000000).toInt();
-  //     emit(state.copyWith(invoiceAmount: amountSatoshi));
-  //   } else {
-  //     final amountInt = int.parse(amount);
-  //     emit(state.copyWith(invoiceAmount: amountInt));
-  //   }
-  // }
 
   void descriptionChanged(String description) {
     emit(state.copyWith(description: description));
@@ -95,43 +84,42 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   void saveDefaultAddressLabel() async {
-    try {
-      if (state.privateLabel == (state.defaultAddress?.label ?? '')) return;
+    if (state.privateLabel == (state.defaultAddress?.label ?? '')) return;
 
-      emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
+    emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
 
-      final (a, w) = await walletUpdate.updateWalletAddress(
-        address: (state.defaultAddress!.index, state.defaultAddress!.address),
-        wallet: walletCubit.state.wallet!,
-        label: state.privateLabel,
-      );
+    final (a, w) = await walletUpdate.updateWalletAddress(
+      address: (state.defaultAddress!.index, state.defaultAddress!.address),
+      wallet: walletCubit.state.wallet!,
+      label: state.privateLabel,
+    );
 
-      final errUpdate = await walletUpdate.updateWallet(
-        wallet: w,
-        walletRead: walletRead,
-        storage: storage,
-      );
-      if (errUpdate != null) throw errUpdate.toString();
-
-      walletCubit.updateWallet(w);
-
-      emit(
-        state.copyWith(
-          privateLabel: '',
-          savingLabel: false,
-          labelSaved: true,
-          errSavingLabel: '',
-          defaultAddress: a,
-        ),
-      );
-    } catch (e) {
+    final errUpdate = await walletUpdate.updateWallet(
+      wallet: w,
+      walletRead: walletRead,
+      storage: storage,
+    );
+    if (errUpdate != null) {
       emit(
         state.copyWith(
           savingLabel: false,
-          errSavingLabel: e.toString(),
+          errSavingLabel: errUpdate.toString(),
         ),
       );
+      return;
     }
+
+    walletCubit.updateWallet(w);
+
+    emit(
+      state.copyWith(
+        privateLabel: '',
+        savingLabel: false,
+        labelSaved: true,
+        errSavingLabel: '',
+        defaultAddress: a,
+      ),
+    );
   }
 
   void invoiceClicked() {
@@ -155,56 +143,61 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   void saveFinalInvoiceClicked() async {
-    try {
-      emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
+    emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
 
-      // bdk.AddressInfo(index: 1, address: '');
+    // bdk.AddressInfo(index: 1, address: '');
 
-      // final add = await bdk.Address.create(address: 'address');
-      // final scr = await add.scriptPubKey();
+    // final add = await bdk.Address.create(address: 'address');
+    // final scr = await add.scriptPubKey();
 
-      final (a, err) = await walletUpdate.newAddress(bdkWallet: walletCubit.state.bdkWallet!);
+    final (a, err) = await walletUpdate.newAddress(bdkWallet: walletCubit.state.bdkWallet!);
 
-      if (err != null) throw err.toString();
-
-      final (idx, address) = a!;
-
-      final (savedAddress, w) = await walletUpdate.updateWalletAddress(
-        address: (idx, address),
-        wallet: walletCubit.state.wallet!,
-        label: state.privateLabel,
-      );
-
-      final errUpdate = await walletUpdate.updateWallet(
-        wallet: w,
-        walletRead: walletRead,
-        storage: storage,
-      );
-      if (errUpdate != null) throw errUpdate.toString();
-
-      walletCubit.updateWallet(w);
-
-      final btcAmt = (state.invoiceAmount / 100000000).toStringAsFixed(8);
-
-      final invoice = 'bitcoin:' + address + '?amount=' + btcAmt + '&label=' + state.description;
-
+    if (err != null)
       emit(
         state.copyWith(
           creatingInvoice: false,
-          errCreatingInvoice: '',
-          invoiceAddress: invoice,
-          newInvoiceAddress: savedAddress,
-          step: ReceiveStep.showInvoice,
+          errCreatingInvoice: err.toString(),
         ),
       );
-    } catch (e) {
+
+    final (idx, address) = a!;
+
+    final (savedAddress, w) = await walletUpdate.updateWalletAddress(
+      address: (idx, address),
+      wallet: walletCubit.state.wallet!,
+      label: state.privateLabel,
+    );
+
+    final errUpdate = await walletUpdate.updateWallet(
+      wallet: w,
+      walletRead: walletRead,
+      storage: storage,
+    );
+    if (errUpdate != null) {
       emit(
         state.copyWith(
           creatingInvoice: false,
-          errCreatingInvoice: e.toString(),
+          errCreatingInvoice: errUpdate.toString(),
         ),
       );
+      return;
     }
+
+    walletCubit.updateWallet(w);
+
+    final btcAmt = (state.invoiceAmount / 100000000).toStringAsFixed(8);
+
+    final invoice = 'bitcoin:' + address + '?amount=' + btcAmt + '&label=' + state.description;
+
+    emit(
+      state.copyWith(
+        creatingInvoice: false,
+        errCreatingInvoice: '',
+        invoiceAddress: invoice,
+        newInvoiceAddress: savedAddress,
+        step: ReceiveStep.showInvoice,
+      ),
+    );
   }
 
   void shareClicked() {}

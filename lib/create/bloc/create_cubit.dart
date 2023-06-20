@@ -23,130 +23,138 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final WalletUpdate walletUpdate;
 
   void createMne({bool fromHome = false}) async {
-    try {
-      emit(state.copyWith(creatingNmemonic: true));
-      final (mne, err) = await walletCreate.createMne();
-      if (err != null) throw err;
-
+    emit(state.copyWith(creatingNmemonic: true));
+    final (mne, err) = await walletCreate.createMne();
+    if (err != null) {
       emit(
         state.copyWith(
-          mnemonic: mne,
+          errCreatingNmemonic: err.toString(),
           creatingNmemonic: false,
         ),
       );
-
-      if (fromHome) firstTime();
-    } catch (e) {
-      emit(
-        state.copyWith(
-          errCreatingNmemonic: e.toString(),
-          creatingNmemonic: false,
-        ),
-      );
+      return;
     }
+
+    emit(
+      state.copyWith(
+        mnemonic: mne,
+        creatingNmemonic: false,
+      ),
+    );
+
+    if (fromHome) firstTime();
   }
 
   void passPhraseChanged(String text) {
     emit(state.copyWith(passPhase: text));
   }
 
+  void _showSavingErr(String err) {
+    emit(
+      state.copyWith(
+        errSaving: err,
+        creatingNmemonic: false,
+      ),
+    );
+  }
+
   void confirmClicked() async {
     if (state.mnemonic == null) return;
     emit(state.copyWith(saving: true, errSaving: ''));
 
-    try {
-      final (fgnr, err) = await walletCreate.getMneFingerprint(
-        mne: state.mnemonic!.join(' '),
-        isTestnet: settingsCubit.state.testnet,
-        walletType: WalletType.bip84,
-      );
-      if (err != null) throw err;
-
-      final (wallet, err2) = Wallet.fromMnemonic(
-        mne: state.mnemonic!.join(' '),
-        password: state.passPhase.isNotEmpty ? state.passPhase : null,
-        walletType: WalletType.bip84,
-        bbWalletType: BBWalletType.newSeed,
-        isTestNet: settingsCubit.state.testnet,
-        fngr: fgnr!,
-        backupTested: false,
-      );
-      if (err2 != null) throw err2;
-
-      final errr = await walletUpdate.addWalletToList(wallet: wallet!, storage: storage);
-      if (errr != null) throw errr;
-
-      emit(
-        state.copyWith(
-          saving: false,
-          saved: true,
-          savedWallet: wallet,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          errSaving: e.toString(),
-          creatingNmemonic: false,
-        ),
-      );
+    final (fgnr, err) = await walletCreate.getMneFingerprint(
+      mne: state.mnemonic!.join(' '),
+      isTestnet: settingsCubit.state.testnet,
+      walletType: WalletType.bip84,
+    );
+    if (err != null) {
+      _showSavingErr(err.toString());
+      return;
     }
+
+    final (wallet, err2) = Wallet.fromMnemonic(
+      mne: state.mnemonic!.join(' '),
+      password: state.passPhase.isNotEmpty ? state.passPhase : null,
+      walletType: WalletType.bip84,
+      bbWalletType: BBWalletType.newSeed,
+      isTestNet: settingsCubit.state.testnet,
+      fngr: fgnr!,
+      backupTested: false,
+    );
+    if (err2 != null) {
+      _showSavingErr(err2.toString());
+      return;
+    }
+
+    final errr = await walletUpdate.addWalletToList(wallet: wallet!, storage: storage);
+    if (errr != null) {
+      _showSavingErr(errr.toString());
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        saving: false,
+        saved: true,
+        savedWallet: wallet,
+      ),
+    );
   }
 
   void firstTime() async {
     if (state.mnemonic == null) return;
     emit(state.copyWith(saving: true, errSaving: ''));
 
-    try {
-      final isTestNet = settingsCubit.state.testnet;
-      bool testnet(int i) => i != 0;
-      bool selectWallet(int i) => isTestNet ? i == 1 : i == 0;
+    final isTestNet = settingsCubit.state.testnet;
+    bool testnet(int i) => i != 0;
+    bool selectWallet(int i) => isTestNet ? i == 1 : i == 0;
 
-      for (var i = 0; i < 2; i++) {
-        final mne = state.mnemonic!.join(' ');
-        final password = state.passPhase.isNotEmpty ? state.passPhase : null;
+    for (var i = 0; i < 2; i++) {
+      final mne = state.mnemonic!.join(' ');
+      final password = state.passPhase.isNotEmpty ? state.passPhase : null;
 
-        final (fgnr, err) = await walletCreate.getMneFingerprint(
-          mne: mne,
-          isTestnet: settingsCubit.state.testnet,
-          walletType: WalletType.bip84,
-          password: password,
-        );
-        if (err != null) throw err;
-
-        final (wallet, err2) = Wallet.fromMnemonic(
-          mne: state.mnemonic!.join(' '),
-          password: state.passPhase.isNotEmpty ? state.passPhase : null,
-          walletType: WalletType.bip84,
-          bbWalletType: BBWalletType.newSeed,
-          isTestNet: testnet(i),
-          fngr: fgnr!,
-          backupTested: false,
-        );
-        if (err2 != null) throw err2;
-
-        final errr = await walletUpdate.addWalletToList(wallet: wallet!, storage: storage);
-        if (errr != null) throw errr;
-
-        if (selectWallet(i)) {
-          emit(state.copyWith(savedWallet: wallet));
-        }
+      final (fgnr, err) = await walletCreate.getMneFingerprint(
+        mne: mne,
+        isTestnet: settingsCubit.state.testnet,
+        walletType: WalletType.bip84,
+        password: password,
+      );
+      if (err != null) {
+        _showSavingErr(err.toString());
+        return;
       }
 
-      emit(
-        state.copyWith(
-          saving: false,
-          saved: true,
-        ),
+      final (wallet, err2) = Wallet.fromMnemonic(
+        mne: state.mnemonic!.join(' '),
+        password: state.passPhase.isNotEmpty ? state.passPhase : null,
+        walletType: WalletType.bip84,
+        bbWalletType: BBWalletType.newSeed,
+        isTestNet: testnet(i),
+        fngr: fgnr!,
+        backupTested: false,
       );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          errSaving: e.toString(),
-          creatingNmemonic: false,
-        ),
-      );
+      if (err2 != null) {
+        _showSavingErr(err2.toString());
+        return;
+      }
+
+      final errr = await walletUpdate.addWalletToList(wallet: wallet!, storage: storage);
+      if (errr != null) {
+        _showSavingErr(errr.toString());
+        return;
+      }
+
+      if (selectWallet(i)) {
+        emit(state.copyWith(savedWallet: wallet));
+      }
     }
+
+    emit(
+      state.copyWith(
+        saving: false,
+        saved: true,
+      ),
+    );
   }
 }
 

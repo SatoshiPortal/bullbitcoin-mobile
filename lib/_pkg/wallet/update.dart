@@ -258,7 +258,7 @@ class WalletUpdate {
     }
   }
 
-  Future<((Wallet, String)?, Err?)> broadcastTx({
+  Future<((Wallet, String)?, Err?)> broadcastTxWithWallet({
     required bdk.PartiallySignedTransaction psbt,
     required bdk.Blockchain blockchain,
     required Wallet wallet,
@@ -283,6 +283,33 @@ class WalletUpdate {
       final w = wallet.copyWith(transactions: txs);
 
       return ((w, txid), null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<Err?> broadcastTx({
+    required bdk.PartiallySignedTransaction psbt,
+    required bdk.Blockchain blockchain,
+  }) async {
+    try {
+      final tx = await psbt.extractTx();
+
+      await blockchain.broadcast(tx);
+
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
+
+  Future<(String?, Err?)> getAddressAtIdx(bdk.Wallet bdkWallet, int idx) async {
+    try {
+      final address = await bdkWallet.getAddress(
+        addressIndex: const bdk.AddressIndex.peek(index: 0),
+      );
+
+      return (address.address, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }

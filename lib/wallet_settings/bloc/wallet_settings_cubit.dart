@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/delete.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
@@ -8,7 +9,6 @@ import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart';
 
 class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   WalletSettingsCubit({
@@ -18,6 +18,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     required this.storage,
     required this.walletRead,
     required this.walletDelete,
+    required this.fileStorage,
   }) : super(
           WalletSettingsState(
             wallet: wallet,
@@ -33,6 +34,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   final IStorage storage;
   final WalletRead walletRead;
   final WalletDelete walletDelete;
+  final FileStorage fileStorage;
 
   void changeName(String name) {
     emit(state.copyWith(name: name));
@@ -40,33 +42,34 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
   void saveNameClicked() async {
     emit(state.copyWith(savingName: true, errSavingName: ''));
-    try {
-      final wallet = state.wallet.copyWith(name: state.name);
-      final err = await walletUpdate.updateWallet(
-        wallet: wallet,
-        storage: storage,
-        walletRead: walletRead,
-      );
-      if (err != null) throw err;
 
+    final wallet = state.wallet.copyWith(name: state.name);
+    final err = await walletUpdate.updateWallet(
+      wallet: wallet,
+      storage: storage,
+      walletRead: walletRead,
+    );
+    if (err != null) {
       emit(
         state.copyWith(
-          savingName: false,
-          wallet: wallet,
-          savedName: true,
-        ),
-      );
-      walletCubit.updateWallet(wallet);
-      await Future.delayed(const Duration(seconds: 1));
-      emit(state.copyWith(savedName: false));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          errSavingName: e.toString(),
+          errSavingName: err.toString(),
           savingName: false,
         ),
       );
+      return;
     }
+
+    emit(
+      state.copyWith(
+        savingName: false,
+        wallet: wallet,
+        savedName: true,
+      ),
+    );
+
+    walletCubit.updateWallet(wallet);
+    await Future.delayed(const Duration(seconds: 1));
+    emit(state.copyWith(savedName: false));
   }
 
   void wordChanged(int index, String word) {
@@ -187,46 +190,71 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
   void testBackupClicked() async {
     emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
-    try {
-      final words = state.testMnemonicOrder.toList().join(' ');
-      final password = state.testBackupPassword;
-      final (w, err) = await walletRead.getWalletDetails(
-        saveDir: state.wallet.getStorageString(),
-        storage: storage,
-      );
+    final words = state.testMnemonicOrder.toList().join(' ');
+    final password = state.testBackupPassword;
+    final (w, err) = await walletRead.getWalletDetails(
+      saveDir: state.wallet.getStorageString(),
+      storage: storage,
+    );
 
-      if (err != null) throw err;
-
-      final mne = w!.mnemonic == words;
-      final psd = (w.password ?? '') == password;
-      if (!mne) throw 'Mnemonic does not match';
-      if (!psd) throw 'Passphase does not match';
-
-      final wallet = state.wallet.copyWith(backupTested: true);
-
-      final updateErr = await walletUpdate.updateWallet(
-        wallet: wallet,
-        storage: storage,
-        walletRead: walletRead,
-      );
-      if (updateErr != null) throw updateErr;
-
-      walletCubit.updateWallet(wallet);
+    if (err != null) {
       emit(
         state.copyWith(
-          backupTested: true,
-          testingBackup: false,
-          wallet: wallet,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          errTestingBackup: e.toString(),
+          errTestingBackup: err.toString(),
           testingBackup: false,
         ),
       );
+      return;
     }
+
+    final mne = w!.mnemonic == words;
+    final psd = (w.password ?? '') == password;
+    if (!mne) {
+      {
+        emit(
+          state.copyWith(
+            errTestingBackup: 'Mnemonic does not match',
+            testingBackup: false,
+          ),
+        );
+        return;
+      }
+    }
+    if (!psd) {
+      emit(
+        state.copyWith(
+          errTestingBackup: 'Password does not match',
+          testingBackup: false,
+        ),
+      );
+      return;
+    }
+
+    final wallet = state.wallet.copyWith(backupTested: true);
+
+    final updateErr = await walletUpdate.updateWallet(
+      wallet: wallet,
+      storage: storage,
+      walletRead: walletRead,
+    );
+    if (updateErr != null) {
+      emit(
+        state.copyWith(
+          errTestingBackup: updateErr.toString(),
+          testingBackup: false,
+        ),
+      );
+      return;
+    }
+
+    walletCubit.updateWallet(wallet);
+    emit(
+      state.copyWith(
+        backupTested: true,
+        testingBackup: false,
+        wallet: wallet,
+      ),
+    );
   }
 
   void clearnMnemonic() {
@@ -241,70 +269,100 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   }
 
   void backupToSD() async {
-    try {
-      emit(state.copyWith(savingFile: true, errSavingFile: ''));
-      final (w, err) = await walletRead.getWalletDetails(
-        saveDir: state.wallet.getStorageString(),
-        storage: storage,
-      );
+    emit(state.copyWith(savingFile: true, errSavingFile: ''));
+    final (w, err) = await walletRead.getWalletDetails(
+      saveDir: state.wallet.getStorageString(),
+      storage: storage,
+    );
 
-      if (err != null) throw err;
-
-      final wallet = w!;
-
-      final fingerprint = wallet.cleanFingerprint();
-      final folder = wallet.network == BBNetwork.Mainnet ? 'bitcoin' : 'testnet';
-
-      final appDocDir = await getDownloadsDirectory();
-      if (appDocDir == null) throw 'Could not get downloads directory';
-      final file = File(appDocDir.path + '/bullbitcoin_backup/$folder/$fingerprint.json');
-
-      await file.writeAsString(wallet.toJson().toString());
-
-      emit(state.copyWith(savingFile: false, savedFile: true));
-      await Future.delayed(const Duration(seconds: 4));
-      emit(state.copyWith(savedFile: false));
-    } catch (e) {
-      emit(state.copyWith(savingFile: false, errSavingFile: e.toString()));
+    if (err != null) {
+      emit(state.copyWith(savingFile: false, errSavingFile: err.toString()));
+      return;
     }
+
+    final wallet = w!;
+
+    final fingerprint = wallet.cleanFingerprint();
+    final folder = wallet.network == BBNetwork.Mainnet ? 'bitcoin' : 'testnet';
+
+    final (appDocDir, errDir) = await fileStorage.getDownloadDirectory();
+
+    if (errDir == null) {
+      emit(
+        state.copyWith(
+          savingFile: false,
+          errSavingFile: errDir.toString(),
+        ),
+      );
+      return;
+    }
+    final file = File(appDocDir! + '/bullbitcoin_backup/$folder/$fingerprint.json');
+
+    final (_, errSave) = await fileStorage.saveToFile(
+      file,
+      wallet.toJson().toString(),
+    );
+    if (errSave != null) {
+      emit(
+        state.copyWith(
+          savingFile: false,
+          errSavingFile: errSave.toString(),
+        ),
+      );
+      return;
+    }
+
+    emit(state.copyWith(savingFile: false, savedFile: true));
+    await Future.delayed(const Duration(seconds: 4));
+    emit(state.copyWith(savedFile: false));
   }
 
   void deleteWalletClicked() async {
-    try {
-      emit(state.copyWith(deleting: true, errDeleting: ''));
-      // final fingerprint = state.wallet.fingerprint;
-      // final bdkWallet = walletCubit.state.bdkWallet;
-      // if (bdkWallet == null) throw 'Wallet not loaded';
+    emit(state.copyWith(deleting: true, errDeleting: ''));
 
-      final err = await walletDelete.deleteWallet(
-        saveDir: state.wallet.getStorageString(),
-        storage: storage,
-      );
+    final err = await walletDelete.deleteWallet(
+      saveDir: state.wallet.getStorageString(),
+      storage: storage,
+    );
 
-      if (err != null) throw err;
-
-      // final fingerPrint = fingerPrintFromDescr(edesc, isTesnet: isTesnet);
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final dbDir = appDocDir.path + '/' + state.wallet.getStorageString();
-      final dbFile = File(dbDir);
-      if (dbFile.existsSync()) {
-        await dbFile.delete(recursive: true);
-      }
-
+    if (err != null) {
       emit(
         state.copyWith(
           deleting: false,
-          deleted: true,
+          errDeleting: err.toString(),
         ),
       );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          deleting: false,
-          errDeleting: e.toString(),
-        ),
-      );
+      return;
     }
+
+    final (appDocDir, errDir) = await fileStorage.getAppDirectory();
+    if (errDir != null) {
+      emit(
+        state.copyWith(
+          deleting: false,
+          errDeleting: errDir.toString(),
+        ),
+      );
+      return;
+    }
+    final dbDir = appDocDir! + '/' + state.wallet.getStorageString();
+    final errDeleting = await fileStorage.deleteFileFromSD(dbDir);
+    if (errDeleting != null) {
+      emit(
+        state.copyWith(
+          deleting: false,
+          errDeleting: errDeleting.toString(),
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        deleting: false,
+        deleted: true,
+      ),
+    );
   }
 }
 

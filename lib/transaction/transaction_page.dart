@@ -138,12 +138,8 @@ class _Screen extends StatelessWidget {
                 const Gap(4),
                 BBButton.text(
                   onPressed: () {
-                    try {
-                      final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
-                      locator<Launcher>().launchApp(url);
-                    } catch (e) {
-                      print(e);
-                    }
+                    final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
+                    locator<Launcher>().launchApp(url);
                   },
                   label: txid,
                 ),
@@ -155,15 +151,9 @@ class _Screen extends StatelessWidget {
                   const Gap(4),
                   BBButton.text(
                     onPressed: () {
-                      try {
-                        final url = context
-                            .read<SettingsCubit>()
-                            .state
-                            .explorerAddressUrl(toAddresses.last);
-                        locator<Launcher>().launchApp(url);
-                      } catch (e) {
-                        print(e);
-                      }
+                      final url =
+                          context.read<SettingsCubit>().state.explorerAddressUrl(toAddresses.last);
+                      locator<Launcher>().launchApp(url);
                     },
                     label: toAddresses.last,
                   ),

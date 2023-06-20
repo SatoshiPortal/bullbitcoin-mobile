@@ -47,17 +47,16 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> init() async {
-    try {
-      final (result, err) = await storage.getValue(StorageKeys.settings);
-      if (err != null) throw err;
-
-      final settings = SettingsState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
-      emit(settings);
-      await Future.delayed(const Duration(milliseconds: 50));
-    } catch (e) {
+    final (result, err) = await storage.getValue(StorageKeys.settings);
+    if (err != null) {
       // first time maybe
+      loadNetworks();
+      return;
     }
 
+    final settings = SettingsState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
+    emit(settings);
+    await Future.delayed(const Duration(milliseconds: 50));
     loadNetworks();
   }
 
@@ -131,30 +130,29 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future setupBlockchain() async {
-    try {
-      emit(state.copyWith(errLoadingNetworks: ''));
-      final isTestnet = state.testnet;
-      final selectedNetwork = state.networks[state.selectedNetwork];
+    emit(state.copyWith(errLoadingNetworks: ''));
+    final isTestnet = state.testnet;
+    final selectedNetwork = state.networks[state.selectedNetwork];
 
-      final (blockchain, err) = await walletCreate.createBlockChain(
-        stopGap: selectedNetwork.stopGap,
-        timeout: selectedNetwork.timeout,
-        retry: selectedNetwork.retry,
-        url: isTestnet ? selectedNetwork.testnet : selectedNetwork.mainnet,
-        validateDomain: selectedNetwork.validateDomain,
-      );
-      if (err != null) throw err;
-
-      loadFees();
-      emit(state.copyWith(blockchain: blockchain));
-    } catch (e) {
+    final (blockchain, err) = await walletCreate.createBlockChain(
+      stopGap: selectedNetwork.stopGap,
+      timeout: selectedNetwork.timeout,
+      retry: selectedNetwork.retry,
+      url: isTestnet ? selectedNetwork.testnet : selectedNetwork.mainnet,
+      validateDomain: selectedNetwork.validateDomain,
+    );
+    if (err != null) {
       emit(
         state.copyWith(
           blockchain: null,
-          errLoadingNetworks: e.toString(),
+          errLoadingNetworks: err.toString(),
         ),
       );
+      return;
     }
+
+    loadFees();
+    emit(state.copyWith(blockchain: blockchain));
   }
 
   Future loadNetworks() async {
@@ -205,51 +203,50 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void loadFees() async {
-    try {
-      emit(state.copyWith(loadingFees: true, errLoadingFees: ''));
+    emit(state.copyWith(loadingFees: true, errLoadingFees: ''));
 
-      final (fees, err) = await mempoolAPI.getFees(state.testnet);
-      if (err != null) throw err;
-
-      // final blockchain = state.blockchain;
-      // if (blockchain == null) throw 'No Blockchain';
-
-      // final fast = await blockchain.estimateFee(1);
-      // final medium = await blockchain.estimateFee(6);
-      // final slow = await blockchain.estimateFee(12);
-
-      // final fees = [
-      //   fast.asSatPerVb().round(),
-      //   medium.asSatPerVb().round(),
-      //   slow.asSatPerVb().round(),
-      // ];
-
+    final (fees, err) = await mempoolAPI.getFees(state.testnet);
+    if (err != null) {
       emit(
         state.copyWith(
-          feesList: fees,
+          errLoadingFees: err.toString(),
           loadingFees: false,
         ),
       );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          errLoadingFees: e.toString(),
-          loadingFees: false,
-        ),
-      );
+      return;
     }
+
+    // final blockchain = state.blockchain;
+    // if (blockchain == null) throw 'No Blockchain';
+
+    // final fast = await blockchain.estimateFee(1);
+    // final medium = await blockchain.estimateFee(6);
+    // final slow = await blockchain.estimateFee(12);
+
+    // final fees = [
+    //   fast.asSatPerVb().round(),
+    //   medium.asSatPerVb().round(),
+    //   slow.asSatPerVb().round(),
+    // ];
+
+    emit(
+      state.copyWith(
+        feesList: fees,
+        loadingFees: false,
+      ),
+    );
   }
 
   void updateManualFees(String fees) async {
-    try {
-      final feesInDouble = int.parse(fees);
-      emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
-      checkMinimumFees();
-    } catch (e) {
+    final feesInDouble = int.tryParse(fees);
+    if (feesInDouble == null) {
       emit(state.copyWith(fees: 000, selectedFeesOption: 2));
       await Future.delayed(const Duration(milliseconds: 50));
       emit(state.copyWith(fees: null));
+      return;
     }
+    emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
+    checkMinimumFees();
   }
 
   void feeOptionSelected(int index) {

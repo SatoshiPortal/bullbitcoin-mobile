@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
-import 'package:bb_mobile/_pkg/file.dart';
+import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
 import 'package:bb_mobile/_pkg/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
@@ -161,102 +161,121 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void coldCardNFCClicked() async {
-    try {
-      emit(
-        state.copyWith(
-          importStep: ImportSteps.scanningNFC,
-          loadingFile: true,
-          errLoadingFile: '',
-        ),
-      );
+    emit(
+      state.copyWith(
+        importStep: ImportSteps.scanningNFC,
+        loadingFile: true,
+        errLoadingFile: '',
+      ),
+    );
 
-      await nfc.startSession(coldCardNFCReceived);
-    } catch (e) {
+    final err = await nfc.startSession(coldCardNFCReceived);
+    if (err != null) {
       emit(
         state.copyWith(
           importStep: ImportSteps.importXpub,
-          errLoadingFile: e.toString(),
+          errLoadingFile: err.toString(),
           loadingFile: false,
         ),
       );
-      nfc.stopSession();
+
+      final errStopping = nfc.stopSession();
+      if (errStopping != null)
+        emit(
+          state.copyWith(
+            errLoadingFile: errStopping.toString(),
+            loadingFile: false,
+          ),
+        );
     }
   }
 
   void stopScanningNFC() async {
-    try {
-      nfc.stopSession();
-      emit(state.copyWith(loadingFile: false));
-    } catch (e) {
-      emit(state.copyWith(errLoadingFile: e.toString(), loadingFile: false));
-    }
+    final err = nfc.stopSession();
+    if (err != null) emit(state.copyWith(errLoadingFile: err.toString()));
+    emit(state.copyWith(loadingFile: false));
   }
 
   void coldCardNFCReceived(String jsnStr) async {
-    try {
-      final ccObj = jsonDecode(jsnStr) as Map<String, dynamic>;
-      final coldcard = ColdCard.fromJson(ccObj);
+    final ccObj = jsonDecode(jsnStr) as Map<String, dynamic>;
+    final coldcard = ColdCard.fromJson(ccObj);
 
-      emit(state.copyWith(coldCard: coldcard, importType: ImportTypes.coldcard));
+    emit(state.copyWith(coldCard: coldcard, importType: ImportTypes.coldcard));
 
-      await _updateWalletDetailsForSelection();
-      if (state.errImporting.isNotEmpty) throw state.errImporting;
-
-      emit(
-        state.copyWith(
-          importStep: ImportSteps.scanningWallets,
-          loadingFile: false,
-          importType: ImportTypes.coldcard,
-        ),
-      );
-    } catch (e) {
+    await _updateWalletDetailsForSelection();
+    if (state.errImporting.isNotEmpty) {
+      final errStoppping = nfc.stopSession();
+      if (errStoppping != null)
+        emit(
+          state.copyWith(
+            errLoadingFile: errStoppping.toString(),
+            loadingFile: false,
+          ),
+        );
       emit(
         state.copyWith(
           importStep: ImportSteps.importXpub,
-          errLoadingFile: e.toString(),
+          errLoadingFile: state.errImporting,
           loadingFile: false,
         ),
       );
-      nfc.stopSession();
+
+      return;
     }
+
+    emit(
+      state.copyWith(
+        importStep: ImportSteps.scanningWallets,
+        loadingFile: false,
+        importType: ImportTypes.coldcard,
+      ),
+    );
   }
 
   void coldCardFileClicked() async {
-    try {
-      emit(
-        state.copyWith(
-          loadingFile: true,
-          errLoadingFile: '',
-        ),
-      );
-      final (file, err) = await filePicker.pickFile();
-      if (err != null) throw err;
-
-      final ccObj = jsonDecode(file!) as Map<String, dynamic>;
-
-      final coldcard = ColdCard.fromJson(ccObj);
-
-      emit(state.copyWith(coldCard: coldcard, importType: ImportTypes.coldcard));
-
-      await _updateWalletDetailsForSelection();
-      if (state.errImporting.isNotEmpty) throw state.errImporting;
-
-      emit(
-        state.copyWith(
-          importStep: ImportSteps.scanningWallets,
-          loadingFile: false,
-          importType: ImportTypes.coldcard,
-        ),
-      );
-    } catch (e) {
+    emit(
+      state.copyWith(
+        loadingFile: true,
+        errLoadingFile: '',
+      ),
+    );
+    final (file, err) = await filePicker.pickFile();
+    if (err != null) {
       emit(
         state.copyWith(
           importStep: ImportSteps.importXpub,
-          errLoadingFile: e.toString(),
+          errLoadingFile: err.toString(),
           loadingFile: false,
         ),
       );
+      return;
     }
+
+    final ccObj = jsonDecode(file!) as Map<String, dynamic>;
+
+    final coldcard = ColdCard.fromJson(ccObj);
+
+    emit(state.copyWith(coldCard: coldcard, importType: ImportTypes.coldcard));
+
+    await _updateWalletDetailsForSelection();
+    if (state.errImporting.isNotEmpty) {
+      emit(
+        state.copyWith(
+          importStep: ImportSteps.importXpub,
+          errLoadingFile: state.errImporting,
+          loadingFile: false,
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        importStep: ImportSteps.scanningWallets,
+        loadingFile: false,
+        importType: ImportTypes.coldcard,
+      ),
+    );
   }
 
   void xpubSaveClicked() async {
@@ -413,23 +432,27 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void saveClicked() async {
-    try {
-      emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
-      final selectedWallet = state.getSelectWalletDetails();
+    emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
+    final selectedWallet = state.getSelectWalletDetails();
 
-      final err = await walletUpdate.addWalletToList(wallet: selectedWallet!, storage: storage);
+    final err = await walletUpdate.addWalletToList(wallet: selectedWallet!, storage: storage);
 
-      if (err != null) throw err;
-
+    if (err != null) {
       emit(
         state.copyWith(
+          errSavingWallet: err.toString(),
           savingWallet: false,
-          savedWallet: selectedWallet,
         ),
       );
-    } catch (e) {
-      emit(state.copyWith(errSavingWallet: e.toString(), savingWallet: false));
+      return;
     }
+
+    emit(
+      state.copyWith(
+        savingWallet: false,
+        savedWallet: selectedWallet,
+      ),
+    );
   }
 }
 

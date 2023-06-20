@@ -4,6 +4,7 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bip21.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
@@ -12,7 +13,6 @@ import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart';
 
 class SendCubit extends Cubit<SendState> {
   SendCubit({
@@ -24,6 +24,7 @@ class SendCubit extends Cubit<SendState> {
     required this.walletRead,
     required this.walletUpdate,
     required this.mempoolAPI,
+    required this.fileStorage,
   }) : super(const SendState()) {
     setupFees();
     loadFees();
@@ -37,6 +38,7 @@ class SendCubit extends Cubit<SendState> {
   final WalletRead walletRead;
   final WalletUpdate walletUpdate;
   final MempoolAPI mempoolAPI;
+  final FileStorage fileStorage;
 
   void loadAddressesAndBalances() {
     walletCubit.getAddresses();
@@ -49,40 +51,39 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void loadFees() async {
-    try {
-      emit(state.copyWith(loadingFees: true));
-      final isTestnet = settingsCubit.state.testnet;
-      final (fees, err) = await mempoolAPI.getFees(isTestnet);
-      if (err != null) throw err;
-      // if (fees.hasError) throw fees.error!;
-
-      // final blockchain = settingsCubit.state.blockchain;
-      // if (blockchain == null) throw 'No Blockchain';
-
-      // final fast = await blockchain.estimateFee(1);
-      // final medium = await blockchain.estimateFee(6);
-      // final slow = await blockchain.estimateFee(12);
-
-      // final fees = [
-      //   fast.asSatPerVb().round(),
-      //   medium.asSatPerVb().round(),
-      //   slow.asSatPerVb().round(),
-      // ];
-
+    emit(state.copyWith(loadingFees: true));
+    final isTestnet = settingsCubit.state.testnet;
+    final (fees, err) = await mempoolAPI.getFees(isTestnet);
+    if (err != null) {
       emit(
         state.copyWith(
-          feesList: fees,
+          errLoadingFees: err.toString(),
           loadingFees: false,
         ),
       );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          errLoadingFees: e.toString(),
-          loadingFees: false,
-        ),
-      );
+      return;
     }
+    // if (fees.hasError) throw fees.error!;
+
+    // final blockchain = settingsCubit.state.blockchain;
+    // if (blockchain == null) throw 'No Blockchain';
+
+    // final fast = await blockchain.estimateFee(1);
+    // final medium = await blockchain.estimateFee(6);
+    // final slow = await blockchain.estimateFee(12);
+
+    // final fees = [
+    //   fast.asSatPerVb().round(),
+    //   medium.asSatPerVb().round(),
+    //   slow.asSatPerVb().round(),
+    // ];
+
+    emit(
+      state.copyWith(
+        feesList: fees,
+        loadingFees: false,
+      ),
+    );
   }
 
   void updateAddress(String address) {
@@ -144,13 +145,13 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void updateManualFees(String fees) {
-    try {
-      final feesInDouble = int.parse(fees);
-      emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
-      checkMinimumFees();
-    } catch (e) {
+    final feesInDouble = int.tryParse(fees);
+    if (feesInDouble == null) {
       emit(state.copyWith(fees: -1, selectedFeesOption: 2));
+      return;
     }
+    emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
+    checkMinimumFees();
   }
 
   void feeOptionSelected(int index) {
@@ -233,134 +234,149 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void downloadPSBTClicked() async {
-    try {
-      emit(state.copyWith(downloadingFile: true, errDownloadingFile: ''));
-      final psbt = state.psbt;
-      if (psbt.isEmpty) throw 'No PSBT';
-      final txid = state.tx?.txid;
-      if (txid == null) throw 'No TXID';
-
-      final appDocDir = await getDownloadsDirectory();
-      if (appDocDir == null) throw 'Could not get downloads directory';
-      final file = File(appDocDir.path + '/bullbitcoin_psbt/$txid.psbt');
-      await file.writeAsString(psbt);
-
-      emit(state.copyWith(downloadingFile: false, downloaded: true));
-      await Future.delayed(const Duration(seconds: 4));
-      emit(state.copyWith(downloaded: false));
-    } catch (e) {
-      emit(state.copyWith(downloadingFile: false, errDownloadingFile: e.toString()));
+    emit(state.copyWith(downloadingFile: true, errDownloadingFile: ''));
+    final psbt = state.psbt;
+    if (psbt.isEmpty) {
+      emit(state.copyWith(downloadingFile: false, errDownloadingFile: 'No PSBT'));
+      return;
     }
+    final txid = state.tx?.txid;
+    if (txid == null) {
+      emit(state.copyWith(downloadingFile: false, errDownloadingFile: 'No TXID'));
+      return;
+    }
+
+    final (appDocDir, err) = await fileStorage.getDownloadDirectory();
+    if (err != null) throw err;
+    final file = File(appDocDir! + '/bullbitcoin_psbt/$txid.psbt');
+    final (_, errSave) = await fileStorage.saveToFile(file, psbt);
+    if (errSave != null) {
+      emit(state.copyWith(downloadingFile: false, errDownloadingFile: errSave.toString()));
+
+      return;
+    }
+
+    emit(state.copyWith(downloadingFile: false, downloaded: true));
+    await Future.delayed(const Duration(seconds: 4));
+    emit(state.copyWith(downloaded: false));
   }
 
   void confirmClickedd() async {
-    try {
-      if (state.sending) return;
-      final bdkWallet = walletCubit.state.bdkWallet;
-      if (bdkWallet == null) throw 'No BDK Wallet';
+    if (state.sending) return;
+    final bdkWallet = walletCubit.state.bdkWallet;
+    if (bdkWallet == null) return;
 
-      emit(state.copyWith(sending: true, errSending: ''));
+    emit(state.copyWith(sending: true, errSending: ''));
 
-      final localWallet = walletCubit.state.wallet;
+    final localWallet = walletCubit.state.wallet;
 
-      final (buildResp, err) = await walletUpdate.buildTx(
-        watchOnly: walletCubit.state.wallet!.watchOnly(),
-        wallet: localWallet!,
-        bdkWallet: bdkWallet,
-        isManualSend: state.selectedAddresses.isNotEmpty,
-        address: state.address,
-        amount: state.amount,
-        sendAllCoin: state.sendAllCoin,
-        feeRate: state.selectedFeesOption == 4
-            ? state.fees!.toDouble()
-            : state.feesList![state.selectedFeesOption].toDouble(),
-        enableRbf: state.enableRBF,
-        selectedAddresses: state.selectedAddresses,
-      );
-      if (err != null) throw err;
-
-      final (tx, feeAmt, psbt) = buildResp!;
-
-      if (walletCubit.state.wallet!.watchOnly()) {
-        final txs = localWallet.transactions?.toList() ?? [];
-        txs.add(tx!);
-
-        final errUpdate = await walletUpdate.updateWallet(
-          wallet: localWallet.copyWith(transactions: txs),
-          storage: storage,
-          walletRead: walletRead,
-        );
-        if (errUpdate != null) throw errUpdate;
-
-        walletCubit.updateWallet(localWallet);
-
-        emit(
-          state.copyWith(
-            sending: false,
-            // sent: true,
-            psbt: psbt.psbtBase64,
-            tx: tx,
-          ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            sending: false,
-            psbtSigned: psbt,
-            psbtSignedFeeAmount: feeAmt,
-            signed: true,
-          ),
-        );
-
-        // sendClicked();
-      }
-    } catch (e) {
+    final (buildResp, err) = await walletUpdate.buildTx(
+      watchOnly: walletCubit.state.wallet!.watchOnly(),
+      wallet: localWallet!,
+      bdkWallet: bdkWallet,
+      isManualSend: state.selectedAddresses.isNotEmpty,
+      address: state.address,
+      amount: state.amount,
+      sendAllCoin: state.sendAllCoin,
+      feeRate: state.selectedFeesOption == 4
+          ? state.fees!.toDouble()
+          : state.feesList![state.selectedFeesOption].toDouble(),
+      enableRbf: state.enableRBF,
+      selectedAddresses: state.selectedAddresses,
+    );
+    if (err != null) {
       emit(
         state.copyWith(
-          errSending: e.toString(),
+          errSending: err.toString(),
           sending: false,
         ),
       );
     }
-  }
 
-  void sendClicked() async {
-    try {
-      emit(state.copyWith(sending: true, errSending: ''));
+    final (tx, feeAmt, psbt) = buildResp!;
 
-      final (wtxid, err) = await walletUpdate.broadcastTx(
-        psbt: state.psbtSigned!,
-        blockchain: settingsCubit.state.blockchain!,
-        wallet: walletCubit.state.wallet!,
-        address: state.address,
-        note: state.note,
-      );
-      if (err != null) throw err;
+    if (walletCubit.state.wallet!.watchOnly()) {
+      final txs = localWallet.transactions?.toList() ?? [];
+      txs.add(tx!);
 
-      final (wallet, txid) = wtxid!;
-
-      final (_, updatedWallet) = await walletUpdate.updateWalletAddress(
-        address: (1, state.address),
-        wallet: wallet,
-        label: state.note,
-        sentTxId: txid,
-        isSend: true,
-      );
-
-      final err2 = await walletUpdate.updateWallet(
-        wallet: updatedWallet,
+      final errUpdate = await walletUpdate.updateWallet(
+        wallet: localWallet.copyWith(transactions: txs),
         storage: storage,
         walletRead: walletRead,
       );
-      if (err2 != null) throw err2;
+      if (errUpdate != null) {
+        emit(
+          state.copyWith(
+            errSending: errUpdate.toString(),
+            sending: false,
+          ),
+        );
+        return;
+      }
 
-      walletCubit.updateWallet(updatedWallet);
+      walletCubit.updateWallet(localWallet);
 
-      walletCubit.sync();
+      emit(
+        state.copyWith(
+          sending: false,
+          // sent: true,
+          psbt: psbt.psbtBase64,
+          tx: tx,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          sending: false,
+          psbtSigned: psbt,
+          psbtSignedFeeAmount: feeAmt,
+          signed: true,
+        ),
+      );
 
-      emit(state.copyWith(sending: false, sent: true));
-    } catch (e) {
-      emit(state.copyWith(errSending: e.toString(), sending: false));
+      // sendClicked();
     }
+  }
+
+  void sendClicked() async {
+    emit(state.copyWith(sending: true, errSending: ''));
+
+    final (wtxid, err) = await walletUpdate.broadcastTxWithWallet(
+      psbt: state.psbtSigned!,
+      blockchain: settingsCubit.state.blockchain!,
+      wallet: walletCubit.state.wallet!,
+      address: state.address,
+      note: state.note,
+    );
+    if (err != null) {
+      emit(state.copyWith(errSending: err.toString(), sending: false));
+      return;
+    }
+
+    final (wallet, txid) = wtxid!;
+
+    final (_, updatedWallet) = await walletUpdate.updateWalletAddress(
+      address: (1, state.address),
+      wallet: wallet,
+      label: state.note,
+      sentTxId: txid,
+      isSend: true,
+    );
+
+    final err2 = await walletUpdate.updateWallet(
+      wallet: updatedWallet,
+      storage: storage,
+      walletRead: walletRead,
+    );
+    if (err2 != null) {
+      emit(state.copyWith(errSending: err2.toString(), sending: false));
+      return;
+    }
+
+    walletCubit.updateWallet(updatedWallet);
+
+    walletCubit.sync();
+
+    emit(state.copyWith(sending: false, sent: true));
   }
 }

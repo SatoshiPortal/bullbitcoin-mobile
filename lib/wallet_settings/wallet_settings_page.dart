@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/delete.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
@@ -38,6 +39,7 @@ class WalletSettingsPage extends StatelessWidget {
       walletUpdate: locator<WalletUpdate>(),
       storage: locator<IStorage>(),
       walletCubit: wallet,
+      fileStorage: locator<FileStorage>(),
     );
 
     return MultiBlocProvider(

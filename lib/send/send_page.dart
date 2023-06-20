@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
@@ -41,6 +42,7 @@ class SendPopup extends StatelessWidget {
       settingsCubit: locator<SettingsCubit>(),
       bullBitcoinAPI: locator<BullBitcoinAPI>(),
       mempoolAPI: locator<MempoolAPI>(),
+      fileStorage: locator<FileStorage>(),
     );
 
     return showMaterialModalBottomSheet(

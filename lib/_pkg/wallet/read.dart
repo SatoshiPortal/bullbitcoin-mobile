@@ -273,10 +273,14 @@ class WalletRead {
   //   }
   // }
 
-  Future<ReceivePort> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
-    final receivePort = ReceivePort();
-    await Isolate.spawn(_sync, [receivePort.sendPort, wallet, blockchain]);
-    return receivePort;
+  Future<(ReceivePort?, Err?)> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
+    try {
+      final receivePort = ReceivePort();
+      await Isolate.spawn(_sync, [receivePort.sendPort, wallet, blockchain]);
+      return (receivePort, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
   }
 
   Future<void> _sync(List<dynamic> args) async {
