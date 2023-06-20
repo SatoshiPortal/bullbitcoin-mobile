@@ -69,6 +69,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
         bbWalletType: BBWalletType.newSeed,
         isTestNet: settingsCubit.state.testnet,
         fngr: fgnr!,
+        backupTested: false,
       );
       if (err2 != null) throw err2;
 
@@ -120,6 +121,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
           bbWalletType: BBWalletType.newSeed,
           isTestNet: testnet(i),
           fngr: fgnr!,
+          backupTested: false,
         );
         if (err2 != null) throw err2;
 

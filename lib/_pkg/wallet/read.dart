@@ -261,24 +261,22 @@ class WalletRead {
     }
   }
 
-  Future<Err?> syncWallet({
-    required bdk.Wallet bdkWallet,
-    required bdk.Blockchain blockChain,
-  }) async {
-    try {
-      Isolate.run(() async => {await bdkWallet.sync(blockChain)});
-      return null;
-    } catch (e) {
-      return Err(e.toString());
-    }
-  }
+  // Future<Err?> syncWallet({
+  //   required bdk.Wallet bdkWallet,
+  //   required bdk.Blockchain blockChain,
+  // }) async {
+  //   try {
+  //     Isolate.run(() async => {await bdkWallet.sync(blockChain)});
+  //     return null;
+  //   } catch (e) {
+  //     return Err(e.toString());
+  //   }
+  // }
 
-  Future<bool> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
+  Future<ReceivePort> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
     final receivePort = ReceivePort();
-
     await Isolate.spawn(_sync, [receivePort.sendPort, wallet, blockchain]);
-    final res = await receivePort.first;
-    return res as bool;
+    return receivePort;
   }
 
   Future<void> _sync(List<dynamic> args) async {
@@ -288,4 +286,20 @@ class WalletRead {
     await wallet.sync(blockchain);
     resultPort.send(true);
   }
+
+  // Future<bool> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
+  //   final receivePort = ReceivePort();
+
+  //   await Isolate.spawn(_sync, [receivePort.sendPort, wallet, blockchain]);
+  //   final res = await receivePort.first;
+  //   return res as bool;
+  // }
+
+  // Future<void> _sync(List<dynamic> args) async {
+  //   final resultPort = args[0] as SendPort;
+  //   final wallet = args[1] as bdk.Wallet;
+  //   final blockchain = args[2] as bdk.Blockchain;
+  //   await wallet.sync(blockchain);
+  //   resultPort.send(true);
+  // }
 }

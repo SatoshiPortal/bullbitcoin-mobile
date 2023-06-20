@@ -104,14 +104,19 @@ class WalletCubit extends Cubit<WalletState> {
       final blockchain = settingsCubit.state.blockchain!;
       final bdkWallet = state.bdkWallet!;
 
-      final _ = await walletRead.sync2(
+      // final _ = await walletRead.sync2(
+      //   blockchain,
+      //   bdkWallet,
+      // );
+
+      final receivePort = await walletRead.sync2(
         blockchain,
         bdkWallet,
       );
 
       // if (!synced) return;
 
-      emit(state.copyWith(syncing: false));
+      // emit(state.copyWith(syncing: false));
 
       // final _ = await compute(syncW, (bdkWallet, blockchain));
 
@@ -147,7 +152,7 @@ class WalletCubit extends Cubit<WalletState> {
       await Future.delayed(const Duration(milliseconds: 50));
       listTransactions();
       getFirstAddress();
-
+      await receivePort.first.whenComplete(() => emit(state.copyWith(syncing: false)));
       // });
     } catch (e) {
       emit(

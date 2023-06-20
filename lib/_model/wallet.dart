@@ -61,6 +61,7 @@ class Wallet with _$Wallet {
         bbWalletType: bbWalletType,
         isTestNet: isTestNet,
         fngr: fngr,
+        backupTested: true,
       );
       if (err1 != null) errs.add(err1.message);
       wallets.add(wallet84!);
@@ -73,6 +74,7 @@ class Wallet with _$Wallet {
         bbWalletType: bbWalletType,
         isTestNet: isTestNet,
         fngr: fngr,
+        backupTested: true,
       );
       if (err2 != null) errs.add(err2.message);
       wallets.add(wallet49!);
@@ -85,6 +87,7 @@ class Wallet with _$Wallet {
         bbWalletType: bbWalletType,
         isTestNet: isTestNet,
         fngr: fngr,
+        backupTested: true,
       );
       if (err3 != null) errs.add(err3.message);
       wallets.add(wallet44!);
@@ -347,6 +350,7 @@ class Wallet with _$Wallet {
           internalDescriptor: changeDescriptor,
           path: path,
           fingerprint: fngr,
+          backupTested: true,
         );
 
         return (wallet, null);
@@ -363,6 +367,7 @@ class Wallet with _$Wallet {
         xpub: xpub,
         fingerprint: fngr,
         path: path,
+        backupTested: true,
       );
 
       return (wallet, null);
@@ -401,6 +406,7 @@ class Wallet with _$Wallet {
         fingerprint: fingerprint,
         path: path,
         xpub: coldCard.xpub,
+        backupTested: true,
       );
 
       return (wallet, null);
@@ -417,6 +423,7 @@ class Wallet with _$Wallet {
     required bool isTestNet,
     required String fngr,
     String? path,
+    required bool backupTested,
   }) {
     try {
       final network = isTestNet ? BBNetwork.Testnet : BBNetwork.Mainnet;
@@ -429,6 +436,7 @@ class Wallet with _$Wallet {
         password: password,
         path: path,
         fingerprint: fngr,
+        backupTested: backupTested,
       );
 
       return (wallet, null);
