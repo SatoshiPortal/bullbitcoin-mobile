@@ -31,8 +31,9 @@ class SendPopup extends StatelessWidget {
 
   static Future openSendPopUp(
     BuildContext context,
-    WalletCubit walletCubit,
-  ) {
+    WalletCubit walletCubit, {
+    String? deepLinkUri,
+  }) {
     final cubit = SendCubit(
       storage: locator<IStorage>(),
       walletRead: locator<WalletRead>(),
@@ -44,6 +45,8 @@ class SendPopup extends StatelessWidget {
       mempoolAPI: locator<MempoolAPI>(),
       fileStorage: locator<FileStorage>(),
     );
+
+    if (deepLinkUri != null) cubit.updateAddress(deepLinkUri);
 
     return showMaterialModalBottomSheet(
       context: context,

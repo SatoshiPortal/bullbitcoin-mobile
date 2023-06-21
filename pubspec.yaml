@@ -57,6 +57,7 @@ dependencies:
   widgetbook: ^3.0.0-beta.14
   widgetbook_annotation: ^3.0.0-beta.7
   flutter_dotenv: ^5.1.0
+  uni_links: ^0.5.1
 
   
   # currency_text_input_formatter: ^2.1.10

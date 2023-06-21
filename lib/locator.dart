@@ -1,6 +1,4 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
-// import 'package:bb_mobile/_common/repository/wallet_service.dart';
-
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
@@ -21,8 +19,6 @@ GetIt locator = GetIt.instance;
 
 Future setupLocator({bool fromTest = false}) async {
   final secureStorage = SecureStorage();
-  final mempoolAPI = MempoolAPI();
-  final fileStorage = FileStorage();
 
   if (fromTest) {
     await secureStorage.deleteAll();
@@ -31,6 +27,8 @@ Future setupLocator({bool fromTest = false}) async {
     // await locator.reset();
   }
 
+  final mempoolAPI = MempoolAPI();
+  final fileStorage = FileStorage();
   locator.registerSingleton<IStorage>(secureStorage);
   locator.registerSingleton<WalletUpdate>(WalletUpdate());
   locator.registerSingleton<FileStorage>(fileStorage);
