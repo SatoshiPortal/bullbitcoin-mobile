@@ -10,6 +10,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_popup.dart';
 import 'package:bb_mobile/send/send_page.dart';
@@ -245,39 +246,55 @@ class BackupAlertBanner extends StatelessWidget {
   }
 }
 
-class HomeHeaderCards extends StatelessWidget {
+class HomeHeaderCards extends StatefulWidget {
   const HomeHeaderCards({super.key, required this.walletCubits});
 
   final List<WalletCubit> walletCubits;
 
   @override
+  State<HomeHeaderCards> createState() => _HomeHeaderCardsState();
+}
+
+class _HomeHeaderCardsState extends State<HomeHeaderCards> {
+  final CarouselController _carouselController = CarouselController();
+
+  @override
   Widget build(BuildContext context) {
-    return CarouselSlider(
-      options: CarouselOptions(
-        initialPage: walletCubits.length - 1,
-        enlargeStrategy: CenterPageEnlargeStrategy.zoom,
-        reverse: true,
-        enableInfiniteScroll: false,
-        aspectRatio: 2.1,
-        onPageChanged: (i, s) {
-          context.read<HomeCubit>().walletSelected(walletCubits[i]);
-        },
+    return BlocListener<HomeCubit, HomeState>(
+      listenWhen: (previous, current) => previous.moveToIdx != current.moveToIdx,
+      listener: (context, state) {
+        final moveToIdx = state.moveToIdx;
+        if (moveToIdx == null) return;
+        _carouselController.animateToPage(moveToIdx);
+      },
+      child: CarouselSlider(
+        carouselController: _carouselController,
+        options: CarouselOptions(
+          initialPage: widget.walletCubits.length - 1,
+          enlargeStrategy: CenterPageEnlargeStrategy.zoom,
+          reverse: true,
+          enableInfiniteScroll: false,
+          aspectRatio: 2.1,
+          onPageChanged: (i, s) {
+            context.read<HomeCubit>().walletSelected(widget.walletCubits[i]);
+          },
+        ),
+        items: [
+          for (final w in widget.walletCubits) ...[
+            Builder(
+              builder: (context) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: BlocProvider.value(
+                    value: w,
+                    child: const HomeCard(),
+                  ),
+                );
+              },
+            ),
+          ]
+        ],
       ),
-      items: [
-        for (final w in walletCubits) ...[
-          Builder(
-            builder: (context) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: BlocProvider.value(
-                  value: w,
-                  child: const HomeCard(),
-                ),
-              );
-            },
-          ),
-        ]
-      ],
     );
   }
 }

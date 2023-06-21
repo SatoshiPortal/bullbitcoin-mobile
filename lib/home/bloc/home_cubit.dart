@@ -73,6 +73,21 @@ class HomeCubit extends Cubit<HomeState> {
     );
   }
 
+  void updateErrDeepLink(String err) async {
+    emit(state.copyWith(errDeepLinking: err));
+    await Future.delayed(const Duration(seconds: 5));
+    emit(state.copyWith(errDeepLinking: ''));
+  }
+
+  void changeMoveToIdx(Wallet wallet) async {
+    final idx = state.wallets!.indexWhere(
+      (w) => w.getStorageString() == wallet.getStorageString(),
+    );
+    emit(state.copyWith(moveToIdx: idx));
+    await Future.delayed(const Duration(seconds: 5));
+    emit(state.copyWith(moveToIdx: null));
+  }
+
   void addWallet(Wallet wallet) {
     emit(state.copyWith(loadingWallets: true));
 
@@ -93,8 +108,19 @@ class HomeCubit extends Cubit<HomeState> {
       wallets.removeWhere(
         (w) => w.fingerprint == state.selectedWalletCubit!.state.wallet!.fingerprint,
       );
-      emit(state.copyWith(wallets: wallets, selectedWalletCubit: null, selectedWallet: null));
+      emit(
+        state.copyWith(
+          wallets: wallets,
+          selectedWalletCubit: null,
+          // selectedWallet: null,
+        ),
+      );
     } else
-      emit(state.copyWith(selectedWalletCubit: null, selectedWallet: null));
+      emit(
+        state.copyWith(
+          selectedWalletCubit: null,
+          // selectedWallet: null,
+        ),
+      );
   }
 }

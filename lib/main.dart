@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_pkg/i18n.dart';
+import 'package:bb_mobile/home/deep_linking.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -40,29 +41,31 @@ class BullBitcoinWalletApp extends StatelessWidget {
             if (state.language != localizationDelegate.currentLocale.languageCode)
               localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
           },
-          child: MaterialApp.router(
-            theme: Themes.lightTheme,
-            darkTheme: Themes.darkTheme,
-            themeMode: ThemeMode.light,
-            routerConfig: router,
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: [
-              localizationDelegate,
-            ],
-            supportedLocales: localizationDelegate.supportedLocales,
-            locale: localizationDelegate.currentLocale,
-            builder: (context, child) {
-              SystemChrome.setSystemUIOverlayStyle(
-                SystemUiOverlayStyle(statusBarColor: context.colour.background),
-              );
-              if (child == null) return Container();
-              return GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                },
-                child: child,
-              );
-            },
+          child: DeepLinker(
+            child: MaterialApp.router(
+              theme: Themes.lightTheme,
+              darkTheme: Themes.darkTheme,
+              themeMode: ThemeMode.light,
+              routerConfig: router,
+              debugShowCheckedModeBanner: false,
+              localizationsDelegates: [
+                localizationDelegate,
+              ],
+              supportedLocales: localizationDelegate.supportedLocales,
+              locale: localizationDelegate.currentLocale,
+              builder: (context, child) {
+                SystemChrome.setSystemUIOverlayStyle(
+                  SystemUiOverlayStyle(statusBarColor: context.colour.background),
+                );
+                if (child == null) return Container();
+                return GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                  },
+                  child: child,
+                );
+              },
+            ),
           ),
         ),
       ),

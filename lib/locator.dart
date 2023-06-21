@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/deep_link.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
@@ -25,6 +26,9 @@ Future setupLocator({bool fromTest = false}) async {
     // final appDocDir = await getApplicationDocumentsDirectory();
     // await appDocDir.delete(recursive: true);
     // await locator.reset();
+  } else {
+    final deepLink = DeepLink();
+    locator.registerSingleton<DeepLink>(deepLink);
   }
 
   final mempoolAPI = MempoolAPI();
