@@ -21,7 +21,7 @@ mixin _$WalletSettingsState {
   List<String> get mnemonic => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   List<String> get shuffledMnemonic => throw _privateConstructorUsedError;
-  List<(String, int)> get testMnemonicOrder =>
+  List<({int shuffleIdx, String word})> get testMnemonicOrder =>
       throw _privateConstructorUsedError;
   bool get backup => throw _privateConstructorUsedError;
   String get testBackupPassword => throw _privateConstructorUsedError;
@@ -57,7 +57,7 @@ abstract class $WalletSettingsStateCopyWith<$Res> {
       List<String> mnemonic,
       String password,
       List<String> shuffledMnemonic,
-      List<(String, int)> testMnemonicOrder,
+      List<({int shuffleIdx, String word})> testMnemonicOrder,
       bool backup,
       String testBackupPassword,
       bool testingBackup,
@@ -138,7 +138,7 @@ class _$WalletSettingsStateCopyWithImpl<$Res, $Val extends WalletSettingsState>
       testMnemonicOrder: null == testMnemonicOrder
           ? _value.testMnemonicOrder
           : testMnemonicOrder // ignore: cast_nullable_to_non_nullable
-              as List<(String, int)>,
+              as List<({int shuffleIdx, String word})>,
       backup: null == backup
           ? _value.backup
           : backup // ignore: cast_nullable_to_non_nullable
@@ -229,7 +229,7 @@ abstract class _$$_WalletSettingsStateCopyWith<$Res>
       List<String> mnemonic,
       String password,
       List<String> shuffledMnemonic,
-      List<(String, int)> testMnemonicOrder,
+      List<({int shuffleIdx, String word})> testMnemonicOrder,
       bool backup,
       String testBackupPassword,
       bool testingBackup,
@@ -309,7 +309,7 @@ class __$$_WalletSettingsStateCopyWithImpl<$Res>
       testMnemonicOrder: null == testMnemonicOrder
           ? _value._testMnemonicOrder
           : testMnemonicOrder // ignore: cast_nullable_to_non_nullable
-              as List<(String, int)>,
+              as List<({int shuffleIdx, String word})>,
       backup: null == backup
           ? _value.backup
           : backup // ignore: cast_nullable_to_non_nullable
@@ -387,7 +387,7 @@ class _$_WalletSettingsState extends _WalletSettingsState {
       required final List<String> mnemonic,
       this.password = '',
       final List<String> shuffledMnemonic = const [],
-      final List<(String, int)> testMnemonicOrder = const [],
+      final List<({int shuffleIdx, String word})> testMnemonicOrder = const [],
       this.backup = false,
       this.testBackupPassword = '',
       this.testingBackup = false,
@@ -435,10 +435,10 @@ class _$_WalletSettingsState extends _WalletSettingsState {
     return EqualUnmodifiableListView(_shuffledMnemonic);
   }
 
-  final List<(String, int)> _testMnemonicOrder;
+  final List<({int shuffleIdx, String word})> _testMnemonicOrder;
   @override
   @JsonKey()
-  List<(String, int)> get testMnemonicOrder {
+  List<({int shuffleIdx, String word})> get testMnemonicOrder {
     if (_testMnemonicOrder is EqualUnmodifiableListView)
       return _testMnemonicOrder;
     // ignore: implicit_dynamic_type
@@ -587,7 +587,7 @@ abstract class _WalletSettingsState extends WalletSettingsState {
       required final List<String> mnemonic,
       final String password,
       final List<String> shuffledMnemonic,
-      final List<(String, int)> testMnemonicOrder,
+      final List<({int shuffleIdx, String word})> testMnemonicOrder,
       final bool backup,
       final String testBackupPassword,
       final bool testingBackup,
@@ -617,7 +617,7 @@ abstract class _WalletSettingsState extends WalletSettingsState {
   @override
   List<String> get shuffledMnemonic;
   @override
-  List<(String, int)> get testMnemonicOrder;
+  List<({int shuffleIdx, String word})> get testMnemonicOrder;
   @override
   bool get backup;
   @override

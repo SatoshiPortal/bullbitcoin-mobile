@@ -118,7 +118,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    testMnemonic.add((word, shuffledIdx));
+    testMnemonic.add((word: word, shuffleIdx: shuffledIdx));
 
     emit(state.copyWith(testMnemonicOrder: testMnemonic));
 

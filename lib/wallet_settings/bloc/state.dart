@@ -11,7 +11,7 @@ class WalletSettingsState with _$WalletSettingsState {
     required List<String> mnemonic,
     @Default('') String password,
     @Default([]) List<String> shuffledMnemonic,
-    @Default([]) List<(String word, int shuffleIdx)> testMnemonicOrder,
+    @Default([]) List<({String word, int shuffleIdx})> testMnemonicOrder,
     @Default(false) bool backup,
     @Default('') String testBackupPassword,
     @Default(false) bool testingBackup,
@@ -42,18 +42,18 @@ class WalletSettingsState with _$WalletSettingsState {
     final word = shuffledMnemonic[shuffleIdx];
     final wordCount = mnemonic.where((w) => w == word).length;
     if (wordCount == 1) return mnemonic.indexOf(word);
-    final sameWordList = testMnemonicOrder.where((w) => w.$1 == word).toList();
+    final sameWordList = testMnemonicOrder.where((w) => w.word == word).toList();
     if (!_isSelected(shuffleIdx)) return mnemonic.indexOf(word, sameWordList.length);
-    final position = sameWordList.indexWhere((w) => w.$2 == shuffleIdx);
+    final position = sameWordList.indexWhere((w) => w.shuffleIdx == shuffleIdx);
     return mnemonic.indexOf(word, position);
   }
 
   bool _isSelected(int shuffleIdx) {
-    return testMnemonicOrder.where((w) => w.$2 == shuffleIdx).isNotEmpty;
+    return testMnemonicOrder.where((w) => w.shuffleIdx == shuffleIdx).isNotEmpty;
   }
 
   String testMneString() {
-    return testMnemonicOrder.map((w) => w.$1).join(' ');
+    return testMnemonicOrder.map((w) => w.word).join(' ');
   }
 }
 
