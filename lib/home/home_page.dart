@@ -457,7 +457,10 @@ class HomeActionButtons extends StatelessWidget {
 
     if (!hasWallets) return const SizedBox.shrink();
 
-    const buttonWidth = 128.0;
+    final buttonWidth = (MediaQuery.of(context).size.width / 2) - 40;
+
+    // const buttonWidth = double.maxFinite;
+    //128.0;
 
     final color = context.colour.background;
 

@@ -134,12 +134,14 @@ class BackupTestItemWord extends StatelessWidget {
       (WalletSettingsCubit _) => _.state.shuffleElementAt(index),
     );
 
+    final padLeft = (isSelected && actualIdx.toString().length == 2) ? 12.0 : 16.0;
+
     return Expanded(
       child: Container(
         margin: const EdgeInsets.fromLTRB(4, 0, 4, 24),
         child: InkWell(
           onTap: () {
-            context.read<WalletSettingsCubit>().wordClicked(word);
+            context.read<WalletSettingsCubit>().wordClicked(index);
           },
           child: Stack(
             children: [
@@ -147,7 +149,7 @@ class BackupTestItemWord extends StatelessWidget {
                 duration: 0.3.seconds,
                 width: double.infinity,
                 height: 40,
-                padding: const EdgeInsets.only(left: 16),
+                padding: EdgeInsets.only(left: padLeft),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(80),
                   border: Border.all(
@@ -312,9 +314,12 @@ class BackupScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const BBHeader.popUpCenteredText(
-              text: 'Backup',
-              isLeft: true,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: BBHeader.popUpCenteredText(
+                text: 'Backup',
+                isLeft: true,
+              ),
             ),
             const Padding(
               padding: EdgeInsets.all(16.0),
@@ -380,47 +385,47 @@ class BackupScreen extends StatelessWidget {
   }
 }
 
-class BackupTestTextField extends StatefulWidget {
-  const BackupTestTextField({super.key, required this.index});
+// class BackupTestTextField extends StatefulWidget {
+//   const BackupTestTextField({super.key, required this.index});
 
-  final int index;
+//   final int index;
 
-  @override
-  State<BackupTestTextField> createState() => _BackupTestTextFieldState();
-}
+//   @override
+//   State<BackupTestTextField> createState() => _BackupTestTextFieldState();
+// }
 
-class _BackupTestTextFieldState extends State<BackupTestTextField> {
-  @override
-  Widget build(BuildContext context) {
-    final text = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.mnemonic.elementAt(widget.index),
-    );
+// class _BackupTestTextFieldState extends State<BackupTestTextField> {
+//   @override
+//   Widget build(BuildContext context) {
+//     final text = context.select(
+//       (WalletSettingsCubit cubit) => cubit.state.mnemonic.elementAt(widget.index),
+//     );
 
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-        height: 36,
-        child: Row(
-          children: [
-            SizedBox(
-              width: 20,
-              child: BBText.body(
-                '${widget.index + 1}',
-                textAlign: TextAlign.right,
-              ),
-            ),
-            const Gap(8),
-            Expanded(
-              child: BBTextInput.small(
-                value: text,
-                onChanged: (value) {
-                  context.read<WalletSettingsCubit>().wordChanged(widget.index, value);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+//     return Expanded(
+//       child: Container(
+//         margin: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+//         height: 36,
+//         child: Row(
+//           children: [
+//             SizedBox(
+//               width: 20,
+//               child: BBText.body(
+//                 '${widget.index + 1}',
+//                 textAlign: TextAlign.right,
+//               ),
+//             ),
+//             const Gap(8),
+//             Expanded(
+//               child: BBTextInput.small(
+//                 value: text,
+//                 onChanged: (value) {
+//                   context.read<WalletSettingsCubit>().wordChanged(widget.index, value);
+//                 },
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

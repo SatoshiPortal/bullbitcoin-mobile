@@ -72,16 +72,16 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(savedName: false));
   }
 
-  void wordChanged(int index, String word) {
-    final words = state.mnemonic.toList();
-    words[index] = word;
-    emit(
-      state.copyWith(
-        mnemonic: words,
-        errTestingBackup: '',
-      ),
-    );
-  }
+  // void wordChanged(int index, String word) {
+  //   final words = state.mnemonic.toList();
+  //   words[index] = word;
+  //   emit(
+  //     state.copyWith(
+  //       mnemonic: words,
+  //       errTestingBackup: '',
+  //     ),
+  //   );
+  // }
 
   void loadBackupClicked() async {
     final (w, err) = await walletRead.getWalletDetails(
@@ -107,21 +107,22 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     );
   }
 
-  void wordClicked(String word) {
-    final order = state.testMnemonicOrder.toList();
-    if (order.contains(word)) return;
-    if (order.length == 12) return;
+  void wordClicked(int shuffledIdx) {
+    final testMnemonic = state.testMnemonicOrder.toList();
+    if (testMnemonic.length == 12) return;
 
-    final actualIdx = state.mnemonic.indexOf(word);
-    if (actualIdx != order.length) {
+    final (word, isSelected, actualIdx) = state.shuffleElementAt(shuffledIdx);
+    if (isSelected) return;
+    if (actualIdx != testMnemonic.length) {
       invalidTestOrderClicked();
       return;
     }
 
-    order.add(word);
-    emit(state.copyWith(testMnemonicOrder: order));
+    testMnemonic.add((word, shuffledIdx));
 
-    if (order.length == 12) testingOrderCompleted();
+    emit(state.copyWith(testMnemonicOrder: testMnemonic));
+
+    if (testMnemonic.length == 12) testingOrderCompleted();
   }
 
   void invalidTestOrderClicked() async {
@@ -142,7 +143,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   }
 
   void testingOrderCompleted() async {
-    final words = state.testMnemonicOrder.join(' ');
+    final words = state.testMneString();
     final mne = state.mnemonic.join(' ');
     if (words != mne) {
       return;
@@ -190,7 +191,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
   void testBackupClicked() async {
     emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
-    final words = state.testMnemonicOrder.toList().join(' ');
+    final words = state.testMneString();
     final password = state.testBackupPassword;
     final (w, err) = await walletRead.getWalletDetails(
       saveDir: state.wallet.getStorageString(),

@@ -45,7 +45,8 @@
         "**/pubspec.yaml": true,
         "**/maintainance": true,
         "**/test": true,
-        "integration_test": true
+        "integration_test": true,
+        ".idea": true,
         // 
         // 
         // "**/lib/auth": true,

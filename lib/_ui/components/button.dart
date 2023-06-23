@@ -97,6 +97,8 @@ class BBButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16),
           side: BorderSide(color: context.colour.primary),
           backgroundColor: filled ? context.colour.primary : context.colour.background,
+          elevation: 6,
+          shadowColor: context.colour.background,
         );
 
         if (!loading)
@@ -155,6 +157,8 @@ class BBButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           side: BorderSide(color: context.colour.primary),
           backgroundColor: filled ? context.colour.primary : context.colour.background,
+          elevation: 6,
+          shadowColor: context.colour.background,
         );
 
         widget = OutlinedButton(
