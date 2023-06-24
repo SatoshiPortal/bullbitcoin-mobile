@@ -34,7 +34,7 @@
         "**/assets": true,
         "**/**.g.dart": true,
         "**/**.freezed.dart": true,
-        // "android": true,
+        "android": true,
         "ios": true,
         "windows": true,
         "web": true,
@@ -45,7 +45,7 @@
         "**/pubspec.yaml": true,
         "**/maintainance": true,
         "**/test": true,
-        "integration_test": true,
+        // "integration_test": true,
         ".idea": true,
         // 
         // 

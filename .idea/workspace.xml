@@ -5,16 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="98020386-db16-42e8-ac0a-10ae5649cf2f" name="Changes" comment="unExpected element error resolved">
-      <change beforePath="$PROJECT_DIR$/.idea/bullbitcoin-mobile.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/bullbitcoin-mobile.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wallet_settings/bloc/state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wallet_settings/bloc/state.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wallet_settings/bloc/state.freezed.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wallet_settings/bloc/state.freezed.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/wallet_settings/bloc/wallet_settings_cubit.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/wallet_settings/bloc/wallet_settings_cubit.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

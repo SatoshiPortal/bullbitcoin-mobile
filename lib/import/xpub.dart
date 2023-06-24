@@ -7,6 +7,7 @@ import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,11 +75,14 @@ class ColdCardSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const BBText.headline(
-            'ColdCard',
-            isRed: true,
-            isBold: true,
-          ),
+          const Opacity(opacity: 0.3, child: Divider()),
+          const Gap(24),
+          const ColdCardLogo(),
+          // const BBText.headline(
+          //   'ColdCard',
+          //   isRed: true,
+          //   isBold: true,
+          // ),
           const Gap(16),
           BBButton.textWithRightArrow(
             onPressed: () {
@@ -102,6 +106,7 @@ class ColdCardSection extends StatelessWidget {
             BBText.error(
               err,
             ),
+          const Opacity(opacity: 0.3, child: Divider()),
         ],
       ),
     );
@@ -315,11 +320,12 @@ class ImportScanning extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (isColdCard) ...[
-          const BBText.title(
-            'ColdCard',
-            isRed: true,
-            isBold: true,
-          ),
+          const ColdCardLogo(),
+          // const BBText.title(
+          //   'ColdCard',
+          //   isRed: true,
+          //   isBold: true,
+          // ),
           const Gap(16),
         ],
         const BBText.title(
@@ -329,6 +335,17 @@ class ImportScanning extends StatelessWidget {
         const Gap(16),
         const BBLoadingRow(),
       ],
+    );
+  }
+}
+
+class ColdCardLogo extends StatelessWidget {
+  const ColdCardLogo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CenterLeft(
+      child: Image.asset('assets/cc-logo.png'),
     );
   }
 }

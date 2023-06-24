@@ -83,6 +83,7 @@ flutter:
     - assets/i18n/
     - assets/textlogo.png
     - assets/nfc_scan.png
+    - assets/cc-logo.png
 
 flutter_native_splash:
   background_image: "assets/splash.png"

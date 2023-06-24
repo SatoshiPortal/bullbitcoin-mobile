@@ -9,11 +9,9 @@ import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
-import 'package:bb_mobile/import/xpub.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -75,31 +73,31 @@ class _ScreenState extends State<_Screen> {
 
   @override
   Widget build(BuildContext context) {
-    final step = context.select((ImportWalletCubit cubit) => cubit.state.importStep);
+    // final step = context.select((ImportWalletCubit cubit) => cubit.state.importStep);
 
-    if (step == ImportSteps.scanningWallets) {
-      final listeners = [
-        for (final walletCubit in widget.walletCubits)
-          BlocListener<WalletCubit, WalletState>(
-            bloc: walletCubit,
-            listenWhen: (previous, current) => previous.syncing != current.syncing,
-            listener: (context, state) async {
-              if (state.wallet == null) return;
+    // if (step == ImportSteps.scanningWallets) {
+    //   final listeners = [
+    //     for (final walletCubit in widget.walletCubits)
+    //       BlocListener<WalletCubit, WalletState>(
+    //         bloc: walletCubit,
+    //         listenWhen: (previous, current) => previous.syncing != current.syncing,
+    //         listener: (context, state) async {
+    //           if (state.wallet == null) return;
 
-              if (!state.syncing) syncingDone(state.wallet!.walletType, context);
+    //           if (!state.syncing) syncingDone(state.wallet!.walletType, context);
 
-              if (state.wallet!.isActive()) {
-                context.read<ImportWalletCubit>().walletTypeChanged(state.wallet!.walletType);
-              }
-            },
-          )
-      ];
+    //           if (state.wallet!.isActive()) {
+    //             context.read<ImportWalletCubit>().walletTypeChanged(state.wallet!.walletType);
+    //           }
+    //         },
+    //       )
+    //   ];
 
-      return MultiBlocListener(
-        listeners: listeners,
-        child: const ImportScanning(isColdCard: false),
-      );
-    }
+    //   return MultiBlocListener(
+    //     listeners: listeners,
+    //     child: const ImportScanning(isColdCard: false),
+    //   );
+    // }
 
     return SingleChildScrollView(
       child: Padding(

@@ -13,6 +13,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -148,14 +149,18 @@ class _Screen extends StatelessWidget {
                   const BBText.title(
                     'Recipient Bitcoin Address',
                   ),
-                  const Gap(4),
-                  BBButton.text(
-                    onPressed: () {
-                      final url =
-                          context.read<SettingsCubit>().state.explorerAddressUrl(toAddresses.last);
-                      locator<Launcher>().launchApp(url);
-                    },
-                    label: toAddresses.last,
+                  // const Gap(4),
+                  CenterLeft(
+                    child: BBButton.text(
+                      onPressed: () {
+                        final url = context
+                            .read<SettingsCubit>()
+                            .state
+                            .explorerAddressUrl(toAddresses.last);
+                        locator<Launcher>().launchApp(url);
+                      },
+                      label: toAddresses.last,
+                    ),
                   ),
                 ],
                 const Gap(24),

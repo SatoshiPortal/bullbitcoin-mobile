@@ -9,7 +9,7 @@
             "request": "launch",
             "type": "dart",
             "args": [
-                // "-v",
+                "-v",
             ]
         },
         {

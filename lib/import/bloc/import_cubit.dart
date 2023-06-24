@@ -356,7 +356,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
               isTesnet: isTesnet,
             );
 
-            if (fngr.isEmpty) fngr = generateFingerPrint(6);
+            final noFngr = fngr.isEmpty;
+            if (noFngr) fngr = generateFingerPrint(6);
 
             final (w, err) = Wallet.fromDescrAll(
               changeDescriptor: state.manualChangeDescriptor!,
@@ -367,15 +368,16 @@ class ImportWalletCubit extends Cubit<ImportState> {
             );
 
             if (err != null) throw err;
+
             wallets.addAll(w!);
           } else if (state.fingerprint.isEmpty) {
-            final randFngr = generateFingerPrint(6);
+            final randFngr = generateFingerPrint(3);
 
             final (w, err) = Wallet.fromXpubNoPathAll(
               xpub: state.xpub,
               isTestNet: isTesnet,
               bbWalletType: BBWalletType.descriptors,
-              fngr: randFngr,
+              fngr: 'watcher#' + randFngr,
             );
 
             if (err != null) throw err;
