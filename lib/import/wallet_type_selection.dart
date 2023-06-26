@@ -209,92 +209,119 @@ class _ImportWalletTypeButton extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(right: 40),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(32.0)),
-                    border: Border.all(
-                      width: selected ? 4 : 1,
-                      color: selected ? context.colour.primary : context.colour.onBackground,
-                    ),
-                  ),
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 40),
                   child: InkWell(
                     onTap: () {
                       context.read<ImportWalletCubit>().walletTypeChanged(walletType);
                     },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          children: [
-                            BBText.body(
-                              name,
-                            ),
-                            const Spacer(),
-                            SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: syncing
-                                  ? CircularProgressIndicator(
-                                      color: context.colour.primary,
-                                      strokeWidth: 2,
-                                    )
-                                  : const SizedBox.shrink(),
+                    radius: 32,
+                    child: Container(
+                      constraints: const BoxConstraints(minHeight: 100),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(Radius.circular(32.0)),
+                        border: Border.all(
+                          width: selected ? 4 : 1,
+                          color: selected ? context.colour.primary : context.colour.onBackground,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              BBText.body(
+                                name,
+                              ),
+                              const Spacer(),
+                              SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: syncing
+                                    ? CircularProgressIndicator(
+                                        color: context.colour.primary,
+                                        strokeWidth: 2,
+                                      )
+                                    : const SizedBox.shrink(),
+                              ),
+                            ],
+                          ),
+                          const Gap(4),
+                          if (syncing) ...[
+                            const BBText.bodySmall(
+                              'Scanning wallet ...',
                             ),
                           ],
-                        ),
-                        const Gap(4),
-                        if (address.isNotEmpty)
-                          BBText.body(
-                            address,
-                          ),
-                        const Gap(4),
-                        if (fingerprint.isNotEmpty)
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Wallet fingerprint (XFP): ',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: context.colour.onBackground,
+                          if (address.isNotEmpty)
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'First Address: ',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: context.colour.onBackground,
+                                    ),
                                   ),
-                                ),
-                                TextSpan(
-                                  text: fingerprint,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: context.colour.onBackground,
+                                  TextSpan(
+                                    text: address,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: context.colour.onBackground,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        if (balance != null)
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Balance: ',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: context.colour.onBackground,
+                          const Gap(4),
+                          if (fingerprint.isNotEmpty)
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Wallet fingerprint (XFP): ',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: context.colour.onBackground,
+                                    ),
                                   ),
-                                ),
-                                TextSpan(
-                                  text: balance.total.toString(),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: context.colour.onBackground,
+                                  TextSpan(
+                                    text: fingerprint,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: context.colour.onBackground,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                      ],
+                          if (balance != null)
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Balance: ',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: context.colour.onBackground,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: balance.total.toString(),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: context.colour.onBackground,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

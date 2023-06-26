@@ -78,7 +78,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           );
         emit(state.copyWith(errSavingWallet: ''));
 
-        nfc.stopSession();
+        stopScanningNFC();
 
       default:
         break;

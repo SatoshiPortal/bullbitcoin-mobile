@@ -5,6 +5,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
@@ -200,9 +201,7 @@ class InvoiceAddress extends StatelessWidget {
               SystemSound.play(SystemSoundType.click);
               HapticFeedback.selectionClick();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: BBText.body('Copied'),
-                ),
+                context.showToast('Copied'),
               );
             },
             iconSize: 16,

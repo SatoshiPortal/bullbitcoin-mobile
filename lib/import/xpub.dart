@@ -4,6 +4,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
+import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/styles.dart';
@@ -172,7 +173,12 @@ class _ImportButtons extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBButton.text(label: 'Hardware wallet instruction', onPressed: () {}),
+          BBButton.text(
+            label: 'Hardware wallet instruction',
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
+            },
+          ),
           BBButton.text(
             label: 'Advanced Options',
             onPressed: () {
@@ -320,7 +326,7 @@ class ImportScanning extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (isColdCard) ...[
-          const ColdCardLogo(),
+          const ColdCardLogo(isLeft: false),
           // const BBText.title(
           //   'ColdCard',
           //   isRed: true,
@@ -329,7 +335,7 @@ class ImportScanning extends StatelessWidget {
           const Gap(16),
         ],
         const BBText.title(
-          'Scanning for wallets',
+          "Please scan via device's NFC",
           isRed: true,
         ),
         const Gap(16),
@@ -340,11 +346,18 @@ class ImportScanning extends StatelessWidget {
 }
 
 class ColdCardLogo extends StatelessWidget {
-  const ColdCardLogo({super.key});
+  const ColdCardLogo({super.key, this.isLeft = true});
+
+  final bool isLeft;
 
   @override
   Widget build(BuildContext context) {
-    return CenterLeft(
+    if (isLeft) {
+      return CenterLeft(
+        child: Image.asset('assets/cc-logo.png'),
+      );
+    }
+    return Center(
       child: Image.asset('assets/cc-logo.png'),
     );
   }

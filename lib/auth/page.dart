@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/auth/bloc/cubit.dart';
 import 'package:bb_mobile/auth/bloc/state.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -39,9 +40,7 @@ class AuthPage extends StatelessWidget {
               context.go('/home');
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: BBText.body('Pin Changed'),
-                ),
+                context.showToast('Pin Changed'),
               );
               context.pop();
             }
