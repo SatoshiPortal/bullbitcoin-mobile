@@ -6,12 +6,12 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/toast.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -26,8 +26,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 class ReceivePopUp extends StatelessWidget {
   const ReceivePopUp({super.key});
 
-  static Future openPopUp(BuildContext context) async {
-    final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
+  static Future openPopUp(BuildContext context, WalletCubit wallet) async {
     final receiveCubit = ReceiveCubit(
       walletCubit: wallet,
       walletUpdate: locator<WalletUpdate>(),
@@ -112,6 +111,7 @@ class _Screen extends StatelessWidget {
             const InvoiceAddress(),
             const Gap(80),
           ],
+          // const Gap(80),
         ],
       ),
     );

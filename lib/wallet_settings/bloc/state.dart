@@ -32,10 +32,14 @@ class WalletSettingsState with _$WalletSettingsState {
   const WalletSettingsState._();
 
   (String word, bool isSelected, int actualIdx) shuffleElementAt(int shuffleIdx) {
-    final word = shuffledMnemonic[shuffleIdx];
-    final isSelected = _isSelected(shuffleIdx);
-    final actualIdx = _actualIdx(shuffleIdx);
-    return (word, isSelected, actualIdx);
+    try {
+      final word = shuffledMnemonic[shuffleIdx];
+      final isSelected = _isSelected(shuffleIdx);
+      final actualIdx = _actualIdx(shuffleIdx);
+      return (word, isSelected, actualIdx);
+    } catch (e) {
+      return ('', false, 0);
+    }
   }
 
   int _actualIdx(int shuffleIdx) {

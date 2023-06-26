@@ -493,10 +493,10 @@ class HomeActionButtons extends StatelessWidget {
           SizedBox(
             width: buttonWidth,
             child: BBButton.smallRed(
-              onPressed: () {
+              onPressed: () async {
                 final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
 
-                SendPopup.openSendPopUp(context, wallet);
+                await SendPopup.openSendPopUp(context, wallet);
               },
               label: 'Send',
             ),
@@ -505,8 +505,10 @@ class HomeActionButtons extends StatelessWidget {
           SizedBox(
             width: buttonWidth,
             child: BBButton.smallRed(
-              onPressed: () {
-                ReceivePopUp.openPopUp(context);
+              onPressed: () async {
+                final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
+
+                await ReceivePopUp.openPopUp(context, wallet);
               },
               label: 'Receive',
             ),
