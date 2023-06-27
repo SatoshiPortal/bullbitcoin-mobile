@@ -123,7 +123,6 @@ When spending or selling Bitcoin, the exchange will create a payment invoice (BI
 ### Roadmap
 
 - Extract and display transaction details of a PSBT file before broadcasting.
-- A specific UTXO can be frozen. When freezed it will be added to a list of unspendable UTXOs and will never be used for spending, unless manually selected.
 - Wallet translation in French and Spanish.
 - Store encrypted backup of wallets on the device.
 - Encrypted cloud wallet backups for registered Bull Bitcoin users, with a scheme similar to photon-sdk. 
