@@ -10,6 +10,7 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/electrum.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -62,6 +63,17 @@ class _Screen extends StatelessWidget {
               const Gap(8),
               const TestNetButton(),
               const NetworkButton(),
+              const Gap(8),
+              Divider(
+                color: context.colour.onBackground.withOpacity(0.2),
+              ),
+              const Gap(32),
+              const CenterLeft(
+                child: BBText.bodySmall(
+                  'Version 0.1.2',
+                  isBold: true,
+                ),
+              ),
               const Gap(24),
             ],
           ),

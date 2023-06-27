@@ -565,7 +565,7 @@ class Wallet with _$Wallet {
   }
 
   List<Transaction> getPendingTxs() {
-    return (transactions?.where((tx) => tx.timestamp == 0).toList() ?? []).toList();
+    return (transactions?.where((tx) => tx.timestamp == 0).toList().reversed ?? []).toList();
   }
 
   List<Transaction> getConfirmedTxs() {

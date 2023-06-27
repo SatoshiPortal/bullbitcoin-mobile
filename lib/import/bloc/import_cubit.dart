@@ -24,10 +24,10 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required this.walletUpdate,
   }) : super(
           const ImportState(
-            words: [
-              ...r2,
-            ],
-          ),
+              // words: [
+              //   ...r2,
+              // ],
+              ),
         );
 
   final Barcode barcode;
@@ -601,6 +601,8 @@ const r2 = [
   'tilt',
   'ugly',
 ];
+
+const x1 = [];
 
 const x = '''
 1. arrive

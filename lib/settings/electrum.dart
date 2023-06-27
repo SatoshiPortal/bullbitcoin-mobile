@@ -72,7 +72,7 @@ class NetworkButton extends StatelessWidget {
           ),
         ),
         if (err.isNotEmpty)
-          BBText.body(
+          BBText.errorSmall(
             err,
           ),
       ],
