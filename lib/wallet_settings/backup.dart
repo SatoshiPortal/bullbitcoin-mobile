@@ -72,16 +72,16 @@ class TestBackupScreen extends StatelessWidget {
                 'Your seed words are displayed below in a randomized order. Tap on the words in the correct sequence to prove you’ve done your backup correctly.',
               ),
             ),
-            const Gap(4),
-            Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: CenterLeft(
-                child: BBButton.text(
-                  label: 'Reset Order',
-                  onPressed: () => context.read<WalletSettingsCubit>().loadBackupClicked(),
-                ),
-              ),
-            ),
+            // const Gap(4),
+            // Padding(
+            //   padding: const EdgeInsets.only(left: 16.0),
+            //   child: CenterLeft(
+            //     child: BBButton.text(
+            //       label: 'Reset Order',
+            //       onPressed: () => context.read<WalletSettingsCubit>().loadBackupClicked(),
+            //     ),
+            //   ),
+            // ),
             const Gap(32),
             for (var i = 0; i < 6; i++)
               Row(
