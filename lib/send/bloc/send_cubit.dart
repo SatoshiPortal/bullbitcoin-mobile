@@ -16,7 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState> {
   SendCubit({
-    required this.barcodeService,
+    required this.barcode,
     required this.walletCubit,
     required this.settingsCubit,
     required this.bullBitcoinAPI,
@@ -30,7 +30,7 @@ class SendCubit extends Cubit<SendState> {
     loadFees();
   }
 
-  final Barcode barcodeService;
+  final Barcode barcode;
   final WalletCubit walletCubit;
   final SettingsCubit settingsCubit;
   final BullBitcoinAPI bullBitcoinAPI;
@@ -117,7 +117,7 @@ class SendCubit extends Cubit<SendState> {
 
   void scanAddress() async {
     emit(state.copyWith(scanningAddress: true));
-    final (address, err) = await barcodeService.scan();
+    final (address, err) = await barcode.scan();
     if (err != null) {
       emit(
         state.copyWith(
@@ -127,6 +127,7 @@ class SendCubit extends Cubit<SendState> {
       );
       return;
     }
+
     updateAddress(address!);
     emit(
       state.copyWith(
@@ -139,10 +140,22 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(note: note));
   }
 
-  void updateAmount(int amount) {
-    emit(state.copyWith(amount: amount));
+  void updateAmount(String txt) {
+    var clean = txt.replaceAll(',', '');
+    if (settingsCubit.state.unitsInSats)
+      clean = clean.replaceAll('.', '');
+    else if (!txt.contains('.')) {
+      return;
+    }
+    final amt = settingsCubit.state.getSatsAmount(clean);
+    emit(state.copyWith(amount: amt));
     updateShowSend();
   }
+
+  // void _updateAmount(int amount) {
+  //   emit(state.copyWith(amount: amount));
+  //   updateShowSend();
+  // }
 
   void updateManualFees(String fees) {
     final feesInDouble = int.tryParse(fees);

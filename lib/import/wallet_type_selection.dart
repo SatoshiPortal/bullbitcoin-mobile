@@ -248,6 +248,29 @@ class _ImportWalletTypeButton extends StatelessWidget {
                             ],
                           ),
                           const Gap(4),
+                          if (fingerprint.isNotEmpty)
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Wallet fingerprint (XFP): ',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: context.colour.onBackground,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: fingerprint,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: context.colour.onBackground,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          const Gap(4),
                           if (syncing) ...[
                             const BBText.bodySmall(
                               'Scanning wallet ...',
@@ -276,28 +299,6 @@ class _ImportWalletTypeButton extends StatelessWidget {
                               ),
                             ),
                           const Gap(4),
-                          if (fingerprint.isNotEmpty)
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Wallet fingerprint (XFP): ',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: context.colour.onBackground,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: fingerprint,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: context.colour.onBackground,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                           if (balance != null)
                             RichText(
                               text: TextSpan(

@@ -38,7 +38,7 @@ class SendPopup extends StatelessWidget {
       storage: locator<IStorage>(),
       walletRead: locator<WalletRead>(),
       walletUpdate: locator<WalletUpdate>(),
-      barcodeService: locator<Barcode>(),
+      barcode: locator<Barcode>(),
       walletCubit: walletCubit,
       settingsCubit: locator<SettingsCubit>(),
       bullBitcoinAPI: locator<BullBitcoinAPI>(),
@@ -245,25 +245,25 @@ class _EnterAmountState extends State<EnterAmount> {
                 },
                 isSats: isSats,
                 onChanged: (txt) {
-                  final aLen = amountStr.length;
-                  final tLen = txt.length;
+                  // final aLen = amountStr.length;
+                  // final tLen = txt.length;
 
-                  print('\n\n');
-                  print('||--- $txt');
+                  // print('\n\n');
+                  // print('||--- $txt');
 
-                  if ((tLen - aLen) > 1 || (aLen - tLen) > 1) {
-                    return;
-                  }
+                  // if ((tLen - aLen) > 1 || (aLen - tLen) > 1) {
+                  //   return;
+                  // }
 
-                  var clean = txt.replaceAll(',', '');
-                  if (isSats)
-                    clean = clean.replaceAll('.', '');
-                  else if (!txt.contains('.')) {
-                    return;
-                  }
-                  final amt = context.read<SettingsCubit>().state.getSatsAmount(clean);
-                  print('----- $amt');
-                  context.read<SendCubit>().updateAmount(amt);
+                  // var clean = txt.replaceAll(',', '');
+                  // if (isSats)
+                  //   clean = clean.replaceAll('.', '');
+                  // else if (!txt.contains('.')) {
+                  //   return;
+                  // }
+                  // final amt = context.read<SettingsCubit>().state.getSatsAmount(clean);
+                  // print('----- $amt');
+                  context.read<SendCubit>().updateAmount(txt);
                 },
               ),
             ),
