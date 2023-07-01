@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:document_file_save_plus/document_file_save_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileStorage {
@@ -43,6 +45,20 @@ class FileStorage {
       return (appDocDir.path, null);
     } catch (e) {
       return (null, Err(e.toString()));
+    }
+  }
+
+  Future<Err?> selectAndSaveFile({
+    required String txt,
+    required String fileName,
+    required String mime,
+  }) async {
+    try {
+      final textBytes = Uint8List.fromList(txt.codeUnits);
+      await DocumentFileSavePlus().saveFile(textBytes, fileName, mime);
+      return null;
+    } catch (e) {
+      return Err(e.toString());
     }
   }
 }

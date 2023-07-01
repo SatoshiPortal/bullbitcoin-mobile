@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bip21.dart';
@@ -259,13 +257,17 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    final (appDocDir, err) = await fileStorage.getDownloadDirectory();
-    if (err != null) {
-      emit(state.copyWith(downloadingFile: false, errDownloadingFile: err.toString()));
-      return;
-    }
-    final file = File(appDocDir! + '/bullbitcoin_psbt/$txid.psbt');
-    final (_, errSave) = await fileStorage.saveToFile(file, psbt);
+    // final (appDocDir, err) = await fileStorage.getAppDirectory();
+    // if (err != null) {
+    //   emit(state.copyWith(downloadingFile: false, errDownloadingFile: err.toString()));
+    //   return;
+    // }
+    // final file = File(appDocDir! + '/bullbitcoin_psbt/$txid.psbt');
+    final errSave = await fileStorage.selectAndSaveFile(
+      txt: psbt,
+      fileName: '$txid.psbt',
+      mime: 'text/psbt',
+    );
     if (errSave != null) {
       emit(state.copyWith(downloadingFile: false, errDownloadingFile: errSave.toString()));
 

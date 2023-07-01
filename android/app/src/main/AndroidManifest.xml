@@ -2,6 +2,8 @@
     package="com.example.bb_mobile">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.NFC"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
@@ -10,6 +12,7 @@
     </queries>
     
     <application
+        android:requestLegacyExternalStorage="true"
         android:label="Bull Bitcoin"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
