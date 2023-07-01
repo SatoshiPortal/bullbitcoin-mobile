@@ -532,7 +532,7 @@ class _$_DefaultElectrumNetwork implements _DefaultElectrumNetwork {
       this.timeout = 5,
       this.retry = 5,
       this.validateDomain = true,
-      this.name = 'default',
+      this.name = 'blockstream',
       final String? $type})
       : $type = $type ?? 'defaultElectrum';
 

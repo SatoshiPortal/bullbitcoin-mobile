@@ -37,7 +37,7 @@ class SettingsState with _$SettingsState {
     bdk.Blockchain? blockchain,
     @Default(20) int reloadWalletTimer,
     @Default([]) List<ElectrumNetwork> networks,
-    @Default(0) int selectedNetwork,
+    @Default(1) int selectedNetwork,
     @Default(false) bool loadingNetworks,
     @Default('') String errLoadingNetworks,
     //

@@ -41,7 +41,7 @@ _$_DefaultElectrumNetwork _$$_DefaultElectrumNetworkFromJson(
       timeout: json['timeout'] as int? ?? 5,
       retry: json['retry'] as int? ?? 5,
       validateDomain: json['validateDomain'] as bool? ?? true,
-      name: json['name'] as String? ?? 'default',
+      name: json['name'] as String? ?? 'blockstream',
       $type: json['runtimeType'] as String?,
     );
 

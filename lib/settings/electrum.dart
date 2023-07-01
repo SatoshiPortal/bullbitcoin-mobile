@@ -137,7 +137,7 @@ class NetworkScreen extends StatelessWidget {
               context.read<SettingsCubit>().changeNetwork(i ?? 0);
             },
             children: const {
-              0: BBText.body('Default'),
+              0: BBText.body('Blockstream'),
               1: BBText.body('Bull Bitcoin'),
               2: BBText.body('Custom'),
             },

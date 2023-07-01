@@ -435,7 +435,7 @@ class _$_SettingsState extends _SettingsState {
       @JsonKey(includeFromJson: false, includeToJson: false) this.blockchain,
       this.reloadWalletTimer = 20,
       final List<ElectrumNetwork> networks = const [],
-      this.selectedNetwork = 0,
+      this.selectedNetwork = 1,
       this.loadingNetworks = false,
       this.errLoadingNetworks = '',
       this.fees,

@@ -23,7 +23,7 @@ class ElectrumNetwork with _$ElectrumNetwork {
     @Default(5) int timeout,
     @Default(5) int retry,
     @Default(true) bool validateDomain,
-    @Default('default') String name,
+    @Default('blockstream') String name,
   }) = _DefaultElectrumNetwork;
 
   const factory ElectrumNetwork.custom({

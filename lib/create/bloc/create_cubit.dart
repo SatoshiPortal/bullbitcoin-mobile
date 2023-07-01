@@ -124,7 +124,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
         return;
       }
 
-      final (wallet, err2) = Wallet.fromMnemonic(
+      var (wallet, err2) = Wallet.fromMnemonic(
         mne: state.mnemonic!.join(' '),
         password: state.passPhase.isNotEmpty ? state.passPhase : null,
         walletType: WalletType.bip84,
@@ -138,7 +138,11 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
         return;
       }
 
-      final errr = await walletUpdate.addWalletToList(wallet: wallet!, storage: storage);
+      final label = testnet(i) ? 'Bull Wallet Testnet' : 'Bull Wallet';
+
+      wallet = wallet!.copyWith(name: label);
+
+      final errr = await walletUpdate.addWalletToList(wallet: wallet, storage: storage);
       if (errr != null) {
         _showSavingErr(errr.toString());
         return;

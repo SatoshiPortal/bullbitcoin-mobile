@@ -34,7 +34,7 @@ _$_SettingsState _$$_SettingsStateFromJson(Map<String, dynamic> json) =>
               ?.map((e) => ElectrumNetwork.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      selectedNetwork: json['selectedNetwork'] as int? ?? 0,
+      selectedNetwork: json['selectedNetwork'] as int? ?? 1,
       loadingNetworks: json['loadingNetworks'] as bool? ?? false,
       errLoadingNetworks: json['errLoadingNetworks'] as String? ?? '',
       fees: json['fees'] as int?,
