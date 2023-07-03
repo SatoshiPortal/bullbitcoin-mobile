@@ -88,6 +88,7 @@ class _BBTextInputState extends State<BBTextInput> {
           enabled: !widget.disabled,
           onChanged: widget.onChanged,
           controller: _editingController,
+          enableIMEPersonalizedLearning: false,
           keyboardType: TextInputType.multiline,
           maxLines: 5,
           style: context.font.bodySmall!.copyWith(color: context.colour.onBackground),
@@ -117,6 +118,7 @@ class _BBTextInputState extends State<BBTextInput> {
           enabled: !widget.disabled,
           focusNode: widget.focusNode,
           onChanged: widget.onChanged,
+          enableIMEPersonalizedLearning: false,
           controller: _editingController,
           decoration: InputDecoration(
             hintText: widget.hint,
@@ -145,6 +147,7 @@ class _BBTextInputState extends State<BBTextInput> {
           enabled: !widget.disabled,
           onChanged: widget.onChanged,
           controller: _editingController,
+          enableIMEPersonalizedLearning: false,
           decoration: InputDecoration(
             hintText: widget.hint,
             suffixIcon: IconButton(
@@ -181,6 +184,7 @@ class _BBTextInputState extends State<BBTextInput> {
             enabled: !widget.disabled,
             onChanged: widget.onChanged,
             controller: _editingController,
+            enableIMEPersonalizedLearning: false,
             decoration: InputDecoration(
               hintText: widget.hint,
               border: OutlineInputBorder(
@@ -264,6 +268,7 @@ class _BBAmountInputState extends State<BBAmountInput> {
       enabled: !widget.disabled,
       onChanged: widget.onChanged,
       controller: _editingController,
+      enableIMEPersonalizedLearning: false,
       keyboardType: const TextInputType.numberWithOptions(
         decimal: true,
       ),

@@ -6,7 +6,6 @@ import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -97,22 +96,22 @@ class PSBTPopUp extends StatelessWidget {
             label: toAddress,
           ),
           const Gap(24),
-          if (outAddresses.isNotEmpty) ...[
-            const BBText.title('Sender Bitcoin Addresses'),
-            const Gap(4),
-            for (final address in outAddresses) ...[
-              BBButton.text(
-                onPressed: () {
-                  final url = context.read<SettingsCubit>().state.explorerAddressUrl(address);
-                  locator<Launcher>().launchApp(url);
-                },
-                label: address,
-              ),
-              const Gap(4),
-              Divider(color: context.colour.surface.withOpacity(0.2))
-            ],
-            const Gap(24),
-          ],
+          // if (outAddresses.isNotEmpty) ...[
+          //   const BBText.title('Sender Bitcoin Addresses'),
+          //   const Gap(4),
+          //   for (final address in outAddresses) ...[
+          //     BBButton.text(
+          //       onPressed: () {
+          //         final url = context.read<SettingsCubit>().state.explorerAddressUrl(address);
+          //         locator<Launcher>().launchApp(url);
+          //       },
+          //       label: address,
+          //     ),
+          //     const Gap(4),
+          //     Divider(color: context.colour.surface.withOpacity(0.2))
+          //   ],
+          //   const Gap(24),
+          // ],
           const BBText.title(
             'Status',
           ),
