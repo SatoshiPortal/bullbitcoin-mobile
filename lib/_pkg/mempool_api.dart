@@ -3,11 +3,15 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:dio/dio.dart';
 
 class MempoolAPI {
+  MempoolAPI(this.http);
+
+  final Dio http;
+
   Future<(List<int>?, Err?)> getFees(bool isTestnet) async {
     try {
       final testnet = isTestnet ? '/testnet' : '';
       final url = 'https://$mempoolapi$testnet/api/v1/fees/recommended';
-      final resp = await Dio().get(url);
+      final resp = await http.get(url);
       if (resp.statusCode == null || resp.statusCode != 200) {
         throw 'Error Occured.';
       }
@@ -38,7 +42,7 @@ class MempoolAPI {
     try {
       final testnet = isTestnet ? '/testnet' : '';
       final url = 'https://$mempoolapi$testnet/api/tx/$txid';
-      final resp = await Dio().get(url);
+      final resp = await http.get(url);
       if (resp.statusCode == null || resp.statusCode != 200) {
         throw 'Error Occured.';
       }

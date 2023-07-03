@@ -8,6 +8,7 @@ import 'package:bb_mobile/_pkg/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:dio/dio.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -123,10 +124,12 @@ void main() {
         databaseConfig: const bdk.DatabaseConfig.memory(),
       );
 
+      final dio = Dio();
+
       final settingsCubit = SettingsCubit(
         storage: SecureStorage(),
-        bbAPI: BullBitcoinAPI(),
-        mempoolAPI: MempoolAPI(),
+        bbAPI: BullBitcoinAPI(dio),
+        mempoolAPI: MempoolAPI(dio),
         walletCreate: WalletCreate(),
       );
       await Future.delayed(2.seconds);
@@ -172,10 +175,12 @@ void main() {
       databaseConfig: const bdk.DatabaseConfig.memory(),
     );
 
+    final dio = Dio();
+
     final settingsCubit = SettingsCubit(
       storage: SecureStorage(),
-      bbAPI: BullBitcoinAPI(),
-      mempoolAPI: MempoolAPI(),
+      bbAPI: BullBitcoinAPI(dio),
+      mempoolAPI: MempoolAPI(dio),
       walletCreate: WalletCreate(),
     );
 
@@ -213,10 +218,12 @@ void main() {
 
       final (_, wallet) = w!;
 
+      final dio = Dio();
+
       final settingsCubit = SettingsCubit(
         storage: SecureStorage(),
-        bbAPI: BullBitcoinAPI(),
-        mempoolAPI: MempoolAPI(),
+        bbAPI: BullBitcoinAPI(dio),
+        mempoolAPI: MempoolAPI(dio),
         walletCreate: WalletCreate(),
       );
       settingsCubit.toggleTestnet();
@@ -256,10 +263,12 @@ void main() {
 
       final (_, wallet) = w!;
 
+      final dio = Dio();
+
       final settingsCubit = SettingsCubit(
         storage: SecureStorage(),
-        bbAPI: BullBitcoinAPI(),
-        mempoolAPI: MempoolAPI(),
+        bbAPI: BullBitcoinAPI(dio),
+        mempoolAPI: MempoolAPI(dio),
         walletCreate: WalletCreate(),
       );
       settingsCubit.toggleTestnet();

@@ -6,10 +6,14 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:dio/dio.dart';
 
 class BullBitcoinAPI {
+  BullBitcoinAPI(this.http);
+
+  final Dio http;
+
   Future<(Currency?, Err?)> getExchangeRate({required String toCurrency}) async {
     try {
       final url = 'https://$exchangeapi';
-      final resp = await Dio().post(
+      final resp = await http.post(
         url,
         data: {
           'id': 0,

@@ -14,6 +14,7 @@ import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
 GetIt locator = GetIt.instance;
@@ -31,14 +32,16 @@ Future setupLocator({bool fromTest = false}) async {
     locator.registerSingleton<DeepLink>(deepLink);
   }
 
-  final mempoolAPI = MempoolAPI();
+  final http = Dio();
+
+  final mempoolAPI = MempoolAPI(http);
   final fileStorage = FileStorage();
   locator.registerSingleton<IStorage>(secureStorage);
   locator.registerSingleton<WalletUpdate>(WalletUpdate());
   locator.registerSingleton<FileStorage>(fileStorage);
 
   // final coinGecko = CoinGecko();
-  final bbAPI = BullBitcoinAPI();
+  final bbAPI = BullBitcoinAPI(http);
   locator.registerSingleton<BullBitcoinAPI>(bbAPI);
   final walletcreate = WalletCreate();
   final walletread = WalletRead();
