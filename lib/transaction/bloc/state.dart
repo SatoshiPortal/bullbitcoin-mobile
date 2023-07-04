@@ -12,6 +12,12 @@ class TransactionState with _$TransactionState {
     @Default('') String label,
     @Default(false) bool savingLabel,
     @Default('') String errSavingLabel,
+    int? feeRate,
+    @Default(false) bool buildingTx,
+    @Default('') String errBuildingTx,
+    @Default(false) bool sendingTx,
+    @Default('') String errSendingTx,
+    @Default(false) bool sentTx,
   }) = _TransactionState;
   const TransactionState._();
 

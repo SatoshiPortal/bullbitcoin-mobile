@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_pkg/extensions.dart';
-import 'package:bb_mobile/_pkg/storage.dart';
+import 'package:bb_mobile/_pkg/storage/interface.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
-import 'package:bb_mobile/_pkg/storage.dart';
+import 'package:bb_mobile/_pkg/storage/interface.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
@@ -142,6 +142,18 @@ class TransactionCubit extends Cubit<TransactionState> {
     );
     walletCubit.updateWallet(updateWallet);
   }
+
+  void checkRBFStatus() {}
+
+  void updateFeeRate(int feeRate) {
+    emit(state.copyWith(feeRate: feeRate));
+  }
+
+  void buildTx() {}
+
+  void sendTx() {}
+
+  void cancelTx() {}
 }
 
 // 

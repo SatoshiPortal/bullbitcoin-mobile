@@ -5,7 +5,7 @@ import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/electrum.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
-import 'package:bb_mobile/_pkg/storage.dart';
+import 'package:bb_mobile/_pkg/storage/interface.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_state.dart';

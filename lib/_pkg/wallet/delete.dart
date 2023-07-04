@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/storage.dart';
+import 'package:bb_mobile/_pkg/storage/interface.dart';
 
 class WalletDelete {
   Future<Err?> deleteWallet({

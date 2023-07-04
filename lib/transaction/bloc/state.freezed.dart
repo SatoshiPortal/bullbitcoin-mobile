@@ -22,6 +22,12 @@ mixin _$TransactionState {
   String get label => throw _privateConstructorUsedError;
   bool get savingLabel => throw _privateConstructorUsedError;
   String get errSavingLabel => throw _privateConstructorUsedError;
+  int? get feeRate => throw _privateConstructorUsedError;
+  bool get buildingTx => throw _privateConstructorUsedError;
+  String get errBuildingTx => throw _privateConstructorUsedError;
+  bool get sendingTx => throw _privateConstructorUsedError;
+  String get errSendingTx => throw _privateConstructorUsedError;
+  bool get sentTx => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TransactionStateCopyWith<TransactionState> get copyWith =>
@@ -40,7 +46,13 @@ abstract class $TransactionStateCopyWith<$Res> {
       String errLoadingAddresses,
       String label,
       bool savingLabel,
-      String errSavingLabel});
+      String errSavingLabel,
+      int? feeRate,
+      bool buildingTx,
+      String errBuildingTx,
+      bool sendingTx,
+      String errSendingTx,
+      bool sentTx});
 
   $TransactionCopyWith<$Res> get tx;
 }
@@ -64,6 +76,12 @@ class _$TransactionStateCopyWithImpl<$Res, $Val extends TransactionState>
     Object? label = null,
     Object? savingLabel = null,
     Object? errSavingLabel = null,
+    Object? feeRate = freezed,
+    Object? buildingTx = null,
+    Object? errBuildingTx = null,
+    Object? sendingTx = null,
+    Object? errSendingTx = null,
+    Object? sentTx = null,
   }) {
     return _then(_value.copyWith(
       tx: null == tx
@@ -90,6 +108,30 @@ class _$TransactionStateCopyWithImpl<$Res, $Val extends TransactionState>
           ? _value.errSavingLabel
           : errSavingLabel // ignore: cast_nullable_to_non_nullable
               as String,
+      feeRate: freezed == feeRate
+          ? _value.feeRate
+          : feeRate // ignore: cast_nullable_to_non_nullable
+              as int?,
+      buildingTx: null == buildingTx
+          ? _value.buildingTx
+          : buildingTx // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errBuildingTx: null == errBuildingTx
+          ? _value.errBuildingTx
+          : errBuildingTx // ignore: cast_nullable_to_non_nullable
+              as String,
+      sendingTx: null == sendingTx
+          ? _value.sendingTx
+          : sendingTx // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errSendingTx: null == errSendingTx
+          ? _value.errSendingTx
+          : errSendingTx // ignore: cast_nullable_to_non_nullable
+              as String,
+      sentTx: null == sentTx
+          ? _value.sentTx
+          : sentTx // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -116,7 +158,13 @@ abstract class _$$_TransactionStateCopyWith<$Res>
       String errLoadingAddresses,
       String label,
       bool savingLabel,
-      String errSavingLabel});
+      String errSavingLabel,
+      int? feeRate,
+      bool buildingTx,
+      String errBuildingTx,
+      bool sendingTx,
+      String errSendingTx,
+      bool sentTx});
 
   @override
   $TransactionCopyWith<$Res> get tx;
@@ -139,6 +187,12 @@ class __$$_TransactionStateCopyWithImpl<$Res>
     Object? label = null,
     Object? savingLabel = null,
     Object? errSavingLabel = null,
+    Object? feeRate = freezed,
+    Object? buildingTx = null,
+    Object? errBuildingTx = null,
+    Object? sendingTx = null,
+    Object? errSendingTx = null,
+    Object? sentTx = null,
   }) {
     return _then(_$_TransactionState(
       tx: null == tx
@@ -165,6 +219,30 @@ class __$$_TransactionStateCopyWithImpl<$Res>
           ? _value.errSavingLabel
           : errSavingLabel // ignore: cast_nullable_to_non_nullable
               as String,
+      feeRate: freezed == feeRate
+          ? _value.feeRate
+          : feeRate // ignore: cast_nullable_to_non_nullable
+              as int?,
+      buildingTx: null == buildingTx
+          ? _value.buildingTx
+          : buildingTx // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errBuildingTx: null == errBuildingTx
+          ? _value.errBuildingTx
+          : errBuildingTx // ignore: cast_nullable_to_non_nullable
+              as String,
+      sendingTx: null == sendingTx
+          ? _value.sendingTx
+          : sendingTx // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errSendingTx: null == errSendingTx
+          ? _value.errSendingTx
+          : errSendingTx // ignore: cast_nullable_to_non_nullable
+              as String,
+      sentTx: null == sentTx
+          ? _value.sentTx
+          : sentTx // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -178,7 +256,13 @@ class _$_TransactionState extends _TransactionState {
       this.errLoadingAddresses = '',
       this.label = '',
       this.savingLabel = false,
-      this.errSavingLabel = ''})
+      this.errSavingLabel = '',
+      this.feeRate,
+      this.buildingTx = false,
+      this.errBuildingTx = '',
+      this.sendingTx = false,
+      this.errSendingTx = '',
+      this.sentTx = false})
       : super._();
 
   @override
@@ -198,10 +282,27 @@ class _$_TransactionState extends _TransactionState {
   @override
   @JsonKey()
   final String errSavingLabel;
+  @override
+  final int? feeRate;
+  @override
+  @JsonKey()
+  final bool buildingTx;
+  @override
+  @JsonKey()
+  final String errBuildingTx;
+  @override
+  @JsonKey()
+  final bool sendingTx;
+  @override
+  @JsonKey()
+  final String errSendingTx;
+  @override
+  @JsonKey()
+  final bool sentTx;
 
   @override
   String toString() {
-    return 'TransactionState(tx: $tx, loadingAddresses: $loadingAddresses, errLoadingAddresses: $errLoadingAddresses, label: $label, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel)';
+    return 'TransactionState(tx: $tx, loadingAddresses: $loadingAddresses, errLoadingAddresses: $errLoadingAddresses, label: $label, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, feeRate: $feeRate, buildingTx: $buildingTx, errBuildingTx: $errBuildingTx, sendingTx: $sendingTx, errSendingTx: $errSendingTx, sentTx: $sentTx)';
   }
 
   @override
@@ -218,12 +319,34 @@ class _$_TransactionState extends _TransactionState {
             (identical(other.savingLabel, savingLabel) ||
                 other.savingLabel == savingLabel) &&
             (identical(other.errSavingLabel, errSavingLabel) ||
-                other.errSavingLabel == errSavingLabel));
+                other.errSavingLabel == errSavingLabel) &&
+            (identical(other.feeRate, feeRate) || other.feeRate == feeRate) &&
+            (identical(other.buildingTx, buildingTx) ||
+                other.buildingTx == buildingTx) &&
+            (identical(other.errBuildingTx, errBuildingTx) ||
+                other.errBuildingTx == errBuildingTx) &&
+            (identical(other.sendingTx, sendingTx) ||
+                other.sendingTx == sendingTx) &&
+            (identical(other.errSendingTx, errSendingTx) ||
+                other.errSendingTx == errSendingTx) &&
+            (identical(other.sentTx, sentTx) || other.sentTx == sentTx));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, tx, loadingAddresses,
-      errLoadingAddresses, label, savingLabel, errSavingLabel);
+  int get hashCode => Object.hash(
+      runtimeType,
+      tx,
+      loadingAddresses,
+      errLoadingAddresses,
+      label,
+      savingLabel,
+      errSavingLabel,
+      feeRate,
+      buildingTx,
+      errBuildingTx,
+      sendingTx,
+      errSendingTx,
+      sentTx);
 
   @JsonKey(ignore: true)
   @override
@@ -239,7 +362,13 @@ abstract class _TransactionState extends TransactionState {
       final String errLoadingAddresses,
       final String label,
       final bool savingLabel,
-      final String errSavingLabel}) = _$_TransactionState;
+      final String errSavingLabel,
+      final int? feeRate,
+      final bool buildingTx,
+      final String errBuildingTx,
+      final bool sendingTx,
+      final String errSendingTx,
+      final bool sentTx}) = _$_TransactionState;
   const _TransactionState._() : super._();
 
   @override
@@ -254,6 +383,18 @@ abstract class _TransactionState extends TransactionState {
   bool get savingLabel;
   @override
   String get errSavingLabel;
+  @override
+  int? get feeRate;
+  @override
+  bool get buildingTx;
+  @override
+  String get errBuildingTx;
+  @override
+  bool get sendingTx;
+  @override
+  String get errSendingTx;
+  @override
+  bool get sentTx;
   @override
   @JsonKey(ignore: true)
   _$$_TransactionStateCopyWith<_$_TransactionState> get copyWith =>

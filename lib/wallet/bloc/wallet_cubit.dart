@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/storage.dart';
+import 'package:bb_mobile/_pkg/storage/interface.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -58,8 +58,7 @@ class WalletCubit extends Cubit<WalletState> {
     emit(state.copyWith(wallet: wallet));
 
     if (state.bdkWallet == null) {
-      final (wallets, err) =
-          await walletCreate.loadBdkWallet(wallet, fromStorage: fromStorage);
+      final (wallets, err) = await walletCreate.loadBdkWallet(wallet, fromStorage: fromStorage);
       if (err != null) {
         emit(
           state.copyWith(
@@ -314,8 +313,7 @@ class WalletCubit extends Cubit<WalletState> {
   void getFirstAddress() async {
     if (state.bdkWallet == null) return;
 
-    final (address, err) =
-        await walletUpdate.getAddressAtIdx(state.bdkWallet!, 0);
+    final (address, err) = await walletUpdate.getAddressAtIdx(state.bdkWallet!, 0);
     if (err != null) {
       emit(state.copyWith(errSyncingAddresses: err.toString()));
       return;

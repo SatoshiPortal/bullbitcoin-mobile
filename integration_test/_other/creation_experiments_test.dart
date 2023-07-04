@@ -4,7 +4,7 @@ import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
-import 'package:bb_mobile/_pkg/storage.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;

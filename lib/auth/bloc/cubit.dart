@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_pkg/extensions.dart';
-import 'package:bb_mobile/_pkg/storage.dart';
+import 'package:bb_mobile/_pkg/storage/interface.dart';
 import 'package:bb_mobile/auth/bloc/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
