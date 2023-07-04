@@ -7,7 +7,7 @@ class HiveStorage implements IStorage {
     _init(password);
   }
 
-  late Box? _box;
+  late Box<String>? _box;
 
   void _init(String password) async {
     final cipher = HiveAesCipher(password.codeUnits);
@@ -39,7 +39,7 @@ class HiveStorage implements IStorage {
     try {
       final Map<String, String> data = {};
       _box!.toMap().forEach((key, value) {
-        data[key as String] = value.toString();
+        data[key as String] = value;
       });
       return (data, null);
     } catch (e) {
@@ -50,7 +50,7 @@ class HiveStorage implements IStorage {
   @override
   Future<(String?, Err?)> getValue(String key) async {
     try {
-      final value = _box!.get(key) as String?;
+      final value = _box!.get(key);
       if (value == null) throw 'Key not found';
       return (value, null);
     } catch (e) {
