@@ -29,7 +29,7 @@ class WalletDelete {
         value: jsn,
       );
 
-      await storage.deleteWallet(saveDir);
+      await storage.deleteValue(saveDir);
 
       return null;
     } catch (e) {

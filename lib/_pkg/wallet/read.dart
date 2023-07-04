@@ -16,7 +16,7 @@ class WalletRead {
     bool removeSensitive = false,
   }) async {
     try {
-      final (jsn, err) = await storage.getWallet(saveDir);
+      final (jsn, err) = await storage.getValue(saveDir);
       if (err != null) throw err;
       final obj = jsonDecode(jsn!) as Map<String, dynamic>;
       //add network and wallet type to obj

@@ -21,7 +21,7 @@ class WalletUpdate {
       );
       if (err != null) throw err;
 
-      final _ = await storage.saveWallet(
+      final _ = await storage.saveValue(
         key: wallet.getStorageString(),
         value: jsonEncode(
           wallet
@@ -128,7 +128,7 @@ class WalletUpdate {
         );
       }
 
-      await storage.saveWallet(
+      await storage.saveValue(
         key: saveDir,
         value: jsonEncode(wallet.toJson()),
       );

@@ -9,14 +9,8 @@ class SembastStorage implements IStorage {
   }
 
   @override
-  Future<Err?> deleteValue(StorageKeys key) {
+  Future<Err?> deleteValue(String key) {
     // TODO: implement deleteValue
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Err?> deleteWallet(String key) {
-    // TODO: implement deleteWallet
     throw UnimplementedError();
   }
 
@@ -27,26 +21,14 @@ class SembastStorage implements IStorage {
   }
 
   @override
-  Future<(String?, Err?)> getValue(StorageKeys key) {
+  Future<(String?, Err?)> getValue(String key) {
     // TODO: implement getValue
     throw UnimplementedError();
   }
 
   @override
-  Future<(String?, Err?)> getWallet(String key) {
-    // TODO: implement getWallet
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Err?> saveValue({required StorageKeys key, required String value}) {
+  Future<Err?> saveValue({required String key, required String value}) {
     // TODO: implement saveValue
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Err?> saveWallet({required String key, required String value}) {
-    // TODO: implement saveWallet
     throw UnimplementedError();
   }
 }
