@@ -58,7 +58,8 @@ class WalletCubit extends Cubit<WalletState> {
     emit(state.copyWith(wallet: wallet));
 
     if (state.bdkWallet == null) {
-      final (wallets, err) = await walletCreate.loadBdkWallet(wallet, fromStorage: fromStorage);
+      final (wallets, err) =
+          await walletCreate.loadBdkWallet(wallet, fromStorage: fromStorage);
       if (err != null) {
         emit(
           state.copyWith(
@@ -313,7 +314,8 @@ class WalletCubit extends Cubit<WalletState> {
   void getFirstAddress() async {
     if (state.bdkWallet == null) return;
 
-    final (address, err) = await walletUpdate.getAddressAtIdx(state.bdkWallet!, 0);
+    final (address, err) =
+        await walletUpdate.getAddressAtIdx(state.bdkWallet!, 0);
     if (err != null) {
       emit(state.copyWith(errSyncingAddresses: err.toString()));
       return;
