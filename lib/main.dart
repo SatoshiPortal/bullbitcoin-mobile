@@ -38,7 +38,8 @@ class BullBitcoinWalletApp extends StatelessWidget {
         value: locator<SettingsCubit>(),
         child: BlocListener<SettingsCubit, SettingsState>(
           listener: (context, state) {
-            if (state.language != localizationDelegate.currentLocale.languageCode)
+            if (state.language !=
+                localizationDelegate.currentLocale.languageCode)
               localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
           },
           child: DeepLinker(
@@ -55,7 +56,8 @@ class BullBitcoinWalletApp extends StatelessWidget {
               locale: localizationDelegate.currentLocale,
               builder: (context, child) {
                 SystemChrome.setSystemUIOverlayStyle(
-                  SystemUiOverlayStyle(statusBarColor: context.colour.background),
+                  SystemUiOverlayStyle(
+                      statusBarColor: context.colour.background),
                 );
                 if (child == null) return Container();
                 return GestureDetector(
