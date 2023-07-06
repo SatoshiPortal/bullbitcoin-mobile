@@ -338,7 +338,7 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           sending: false,
           // sent: true,
-          psbt: psbt.psbtBase64,
+          psbt: psbt,
           tx: tx,
         ),
       );

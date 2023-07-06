@@ -178,7 +178,7 @@ class WalletUpdate {
     }
   }
 
-  Future<((Transaction?, int?, bdk.PartiallySignedTransaction)?, Err?)> buildTx({
+  Future<((Transaction?, int?, String)?, Err?)> buildTx({
     required bool watchOnly,
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
@@ -247,31 +247,31 @@ class WalletUpdate {
           psbt: txResult.psbt.psbtBase64,
         );
 
-        return ((tx, null, txResult.psbt), null);
+        return ((tx, null, txResult.psbt.psbtBase64), null);
       }
 
       final signedPSBT = await bdkWallet.sign(psbt: txResult.psbt);
       final feeAmt = await signedPSBT.feeAmount();
 
-      return ((null, feeAmt, signedPSBT), null);
+      return ((null, feeAmt, signedPSBT.psbtBase64), null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
   }
 
   Future<((Wallet, String)?, Err?)> broadcastTxWithWallet({
-    required bdk.PartiallySignedTransaction psbt,
+    required String psbt,
     required bdk.Blockchain blockchain,
     required Wallet wallet,
     required String address,
     String? note,
   }) async {
     try {
-      final tx = await psbt.extractTx();
+      final psb = bdk.PartiallySignedTransaction(psbtBase64: psbt);
+      final tx = await psb.extractTx();
 
       await blockchain.broadcast(tx);
-
-      final txid = await psbt.txId();
+      final txid = await psb.txId();
       final newTx = Transaction(
         txid: txid,
         label: note,
@@ -311,6 +311,38 @@ class WalletUpdate {
       );
 
       return (address.address, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(Transaction?, Err?)> buildBumpFeeTx({
+    required Transaction tx,
+    required double feeRate,
+    required bdk.Wallet wallet,
+  }) async {
+    try {
+      final txBuilder = bdk.BumpFeeTxBuilder(
+        txid: tx.txid,
+        feeRate: feeRate,
+      );
+
+      final txResult = await txBuilder.finish(wallet);
+      final txDetails = txResult.txDetails;
+
+      final newTx = Transaction(
+        txid: txDetails.txid,
+        received: txDetails.received,
+        sent: txDetails.sent,
+        fee: txDetails.fee ?? 0,
+        height: txDetails.confirmationTime?.height,
+        timestamp: txDetails.confirmationTime?.timestamp,
+        label: tx.label,
+        toAddress: tx.toAddress,
+        outAddresses: tx.outAddresses,
+        psbt: txResult.psbt.psbtBase64,
+      );
+      return (newTx, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }

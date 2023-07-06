@@ -1,6 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
@@ -38,7 +37,7 @@ class SendState with _$SendState {
     @Default('') String errAddresses,
     //
     @Default(false) bool signed,
-    bdk.PartiallySignedTransaction? psbtSigned,
+    String? psbtSigned,
     int? psbtSignedFeeAmount,
     // @Default(false) bool signing,
     // @Default('') String errSigning,

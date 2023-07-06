@@ -21,7 +21,8 @@ mixin _$TransactionState {
   String get errLoadingAddresses => throw _privateConstructorUsedError;
   String get label => throw _privateConstructorUsedError;
   bool get savingLabel => throw _privateConstructorUsedError;
-  String get errSavingLabel => throw _privateConstructorUsedError;
+  String get errSavingLabel => throw _privateConstructorUsedError; //
+  Transaction? get updatedTx => throw _privateConstructorUsedError;
   int? get feeRate => throw _privateConstructorUsedError;
   bool get buildingTx => throw _privateConstructorUsedError;
   String get errBuildingTx => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $TransactionStateCopyWith<$Res> {
       String label,
       bool savingLabel,
       String errSavingLabel,
+      Transaction? updatedTx,
       int? feeRate,
       bool buildingTx,
       String errBuildingTx,
@@ -55,6 +57,7 @@ abstract class $TransactionStateCopyWith<$Res> {
       bool sentTx});
 
   $TransactionCopyWith<$Res> get tx;
+  $TransactionCopyWith<$Res>? get updatedTx;
 }
 
 /// @nodoc
@@ -76,6 +79,7 @@ class _$TransactionStateCopyWithImpl<$Res, $Val extends TransactionState>
     Object? label = null,
     Object? savingLabel = null,
     Object? errSavingLabel = null,
+    Object? updatedTx = freezed,
     Object? feeRate = freezed,
     Object? buildingTx = null,
     Object? errBuildingTx = null,
@@ -108,6 +112,10 @@ class _$TransactionStateCopyWithImpl<$Res, $Val extends TransactionState>
           ? _value.errSavingLabel
           : errSavingLabel // ignore: cast_nullable_to_non_nullable
               as String,
+      updatedTx: freezed == updatedTx
+          ? _value.updatedTx
+          : updatedTx // ignore: cast_nullable_to_non_nullable
+              as Transaction?,
       feeRate: freezed == feeRate
           ? _value.feeRate
           : feeRate // ignore: cast_nullable_to_non_nullable
@@ -142,6 +150,18 @@ class _$TransactionStateCopyWithImpl<$Res, $Val extends TransactionState>
       return _then(_value.copyWith(tx: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $TransactionCopyWith<$Res>? get updatedTx {
+    if (_value.updatedTx == null) {
+      return null;
+    }
+
+    return $TransactionCopyWith<$Res>(_value.updatedTx!, (value) {
+      return _then(_value.copyWith(updatedTx: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -159,6 +179,7 @@ abstract class _$$_TransactionStateCopyWith<$Res>
       String label,
       bool savingLabel,
       String errSavingLabel,
+      Transaction? updatedTx,
       int? feeRate,
       bool buildingTx,
       String errBuildingTx,
@@ -168,6 +189,8 @@ abstract class _$$_TransactionStateCopyWith<$Res>
 
   @override
   $TransactionCopyWith<$Res> get tx;
+  @override
+  $TransactionCopyWith<$Res>? get updatedTx;
 }
 
 /// @nodoc
@@ -187,6 +210,7 @@ class __$$_TransactionStateCopyWithImpl<$Res>
     Object? label = null,
     Object? savingLabel = null,
     Object? errSavingLabel = null,
+    Object? updatedTx = freezed,
     Object? feeRate = freezed,
     Object? buildingTx = null,
     Object? errBuildingTx = null,
@@ -219,6 +243,10 @@ class __$$_TransactionStateCopyWithImpl<$Res>
           ? _value.errSavingLabel
           : errSavingLabel // ignore: cast_nullable_to_non_nullable
               as String,
+      updatedTx: freezed == updatedTx
+          ? _value.updatedTx
+          : updatedTx // ignore: cast_nullable_to_non_nullable
+              as Transaction?,
       feeRate: freezed == feeRate
           ? _value.feeRate
           : feeRate // ignore: cast_nullable_to_non_nullable
@@ -257,6 +285,7 @@ class _$_TransactionState extends _TransactionState {
       this.label = '',
       this.savingLabel = false,
       this.errSavingLabel = '',
+      this.updatedTx,
       this.feeRate,
       this.buildingTx = false,
       this.errBuildingTx = '',
@@ -282,6 +311,9 @@ class _$_TransactionState extends _TransactionState {
   @override
   @JsonKey()
   final String errSavingLabel;
+//
+  @override
+  final Transaction? updatedTx;
   @override
   final int? feeRate;
   @override
@@ -302,7 +334,7 @@ class _$_TransactionState extends _TransactionState {
 
   @override
   String toString() {
-    return 'TransactionState(tx: $tx, loadingAddresses: $loadingAddresses, errLoadingAddresses: $errLoadingAddresses, label: $label, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, feeRate: $feeRate, buildingTx: $buildingTx, errBuildingTx: $errBuildingTx, sendingTx: $sendingTx, errSendingTx: $errSendingTx, sentTx: $sentTx)';
+    return 'TransactionState(tx: $tx, loadingAddresses: $loadingAddresses, errLoadingAddresses: $errLoadingAddresses, label: $label, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, updatedTx: $updatedTx, feeRate: $feeRate, buildingTx: $buildingTx, errBuildingTx: $errBuildingTx, sendingTx: $sendingTx, errSendingTx: $errSendingTx, sentTx: $sentTx)';
   }
 
   @override
@@ -320,6 +352,8 @@ class _$_TransactionState extends _TransactionState {
                 other.savingLabel == savingLabel) &&
             (identical(other.errSavingLabel, errSavingLabel) ||
                 other.errSavingLabel == errSavingLabel) &&
+            (identical(other.updatedTx, updatedTx) ||
+                other.updatedTx == updatedTx) &&
             (identical(other.feeRate, feeRate) || other.feeRate == feeRate) &&
             (identical(other.buildingTx, buildingTx) ||
                 other.buildingTx == buildingTx) &&
@@ -341,6 +375,7 @@ class _$_TransactionState extends _TransactionState {
       label,
       savingLabel,
       errSavingLabel,
+      updatedTx,
       feeRate,
       buildingTx,
       errBuildingTx,
@@ -363,6 +398,7 @@ abstract class _TransactionState extends TransactionState {
       final String label,
       final bool savingLabel,
       final String errSavingLabel,
+      final Transaction? updatedTx,
       final int? feeRate,
       final bool buildingTx,
       final String errBuildingTx,
@@ -383,6 +419,8 @@ abstract class _TransactionState extends TransactionState {
   bool get savingLabel;
   @override
   String get errSavingLabel;
+  @override //
+  Transaction? get updatedTx;
   @override
   int? get feeRate;
   @override

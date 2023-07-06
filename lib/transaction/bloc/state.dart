@@ -12,6 +12,8 @@ class TransactionState with _$TransactionState {
     @Default('') String label,
     @Default(false) bool savingLabel,
     @Default('') String errSavingLabel,
+    //
+    Transaction? updatedTx,
     int? feeRate,
     @Default(false) bool buildingTx,
     @Default('') String errBuildingTx,

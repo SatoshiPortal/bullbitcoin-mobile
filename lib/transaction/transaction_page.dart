@@ -38,6 +38,7 @@ class TxPage extends StatelessWidget {
       storage: locator<IStorage>(),
       walletUpdate: locator<WalletUpdate>(),
       walletRead: locator<WalletRead>(),
+      settingsCubit: locator<SettingsCubit>(),
     );
     return MultiBlocProvider(
       providers: [

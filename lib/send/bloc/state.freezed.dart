@@ -42,8 +42,7 @@ mixin _$SendState {
   List<Address> get selectedAddresses => throw _privateConstructorUsedError;
   String get errAddresses => throw _privateConstructorUsedError; //
   bool get signed => throw _privateConstructorUsedError;
-  bdk.PartiallySignedTransaction? get psbtSigned =>
-      throw _privateConstructorUsedError;
+  String? get psbtSigned => throw _privateConstructorUsedError;
   int? get psbtSignedFeeAmount => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -81,7 +80,7 @@ abstract class $SendStateCopyWith<$Res> {
       List<Address> selectedAddresses,
       String errAddresses,
       bool signed,
-      bdk.PartiallySignedTransaction? psbtSigned,
+      String? psbtSigned,
       int? psbtSignedFeeAmount});
 
   $TransactionCopyWith<$Res>? get tx;
@@ -227,7 +226,7 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
       psbtSigned: freezed == psbtSigned
           ? _value.psbtSigned
           : psbtSigned // ignore: cast_nullable_to_non_nullable
-              as bdk.PartiallySignedTransaction?,
+              as String?,
       psbtSignedFeeAmount: freezed == psbtSignedFeeAmount
           ? _value.psbtSignedFeeAmount
           : psbtSignedFeeAmount // ignore: cast_nullable_to_non_nullable
@@ -280,7 +279,7 @@ abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
       List<Address> selectedAddresses,
       String errAddresses,
       bool signed,
-      bdk.PartiallySignedTransaction? psbtSigned,
+      String? psbtSigned,
       int? psbtSignedFeeAmount});
 
   @override
@@ -425,7 +424,7 @@ class __$$_SendStateCopyWithImpl<$Res>
       psbtSigned: freezed == psbtSigned
           ? _value.psbtSigned
           : psbtSigned // ignore: cast_nullable_to_non_nullable
-              as bdk.PartiallySignedTransaction?,
+              as String?,
       psbtSignedFeeAmount: freezed == psbtSignedFeeAmount
           ? _value.psbtSignedFeeAmount
           : psbtSignedFeeAmount // ignore: cast_nullable_to_non_nullable
@@ -559,7 +558,7 @@ class _$_SendState extends _SendState {
   @JsonKey()
   final bool signed;
   @override
-  final bdk.PartiallySignedTransaction? psbtSigned;
+  final String? psbtSigned;
   @override
   final int? psbtSignedFeeAmount;
 
@@ -681,7 +680,7 @@ abstract class _SendState extends SendState {
       final List<Address> selectedAddresses,
       final String errAddresses,
       final bool signed,
-      final bdk.PartiallySignedTransaction? psbtSigned,
+      final String? psbtSigned,
       final int? psbtSignedFeeAmount}) = _$_SendState;
   const _SendState._() : super._();
 
@@ -735,7 +734,7 @@ abstract class _SendState extends SendState {
   @override //
   bool get signed;
   @override
-  bdk.PartiallySignedTransaction? get psbtSigned;
+  String? get psbtSigned;
   @override
   int? get psbtSignedFeeAmount;
   @override

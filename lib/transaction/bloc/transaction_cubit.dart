@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/interface.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.walletUpdate,
     required this.walletRead,
     required this.mempoolAPI,
+    required this.settingsCubit,
   }) : super(TransactionState(tx: tx)) {
     if (tx.isReceived())
       loadReceiveLabel();
@@ -29,6 +31,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   final IStorage storage;
   final WalletUpdate walletUpdate;
   final WalletRead walletRead;
+  final SettingsCubit settingsCubit;
 
   void loadTx() async {
     emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));
@@ -143,17 +146,92 @@ class TransactionCubit extends Cubit<TransactionState> {
     walletCubit.updateWallet(updateWallet);
   }
 
-  void checkRBFStatus() {}
-
   void updateFeeRate(int feeRate) {
     emit(state.copyWith(feeRate: feeRate));
   }
 
-  void buildTx() {}
+  void buildTx() async {
+    emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
+    final (tx, err) = await walletUpdate.buildBumpFeeTx(
+      tx: state.tx,
+      feeRate: state.feeRate!.toDouble(),
+      wallet: walletCubit.state.bdkWallet!,
+    );
+    if (err != null) {
+      emit(
+        state.copyWith(
+          buildingTx: false,
+          errBuildingTx: err.toString(),
+        ),
+      );
+      return;
+    }
 
-  void sendTx() {}
+    emit(
+      state.copyWith(
+        buildingTx: false,
+        updatedTx: tx,
+      ),
+    );
+  }
 
-  void cancelTx() {}
+  void sendTx() async {
+    emit(state.copyWith(sendingTx: true, errSendingTx: ''));
+    final tx = state.updatedTx!;
+    final wallet = walletCubit.state.wallet!;
+    final blockchain = settingsCubit.state.blockchain!;
+    final (wtxid, err) = await walletUpdate.broadcastTxWithWallet(
+      psbt: tx.psbt!,
+      address: tx.toAddress!,
+      wallet: wallet,
+      blockchain: blockchain,
+    );
+    if (err != null) {
+      emit(
+        state.copyWith(
+          sendingTx: false,
+          errSendingTx: err.toString(),
+        ),
+      );
+      return;
+    }
+
+    final (w, txid) = wtxid!;
+
+    final (_, updatedWallet) = await walletUpdate.updateWalletAddress(
+      address: (1, tx.toAddress!),
+      wallet: wallet,
+      label: tx.label,
+      sentTxId: txid,
+      isSend: true,
+    );
+
+    final err2 = await walletUpdate.updateWallet(
+      wallet: updatedWallet,
+      storage: storage,
+      walletRead: walletRead,
+    );
+    if (err2 != null) {
+      emit(state.copyWith(errSendingTx: err2.toString(), sendingTx: false));
+      return;
+    }
+
+    walletCubit.updateWallet(updatedWallet);
+
+    walletCubit.sync();
+
+    emit(
+      state.copyWith(
+        sendingTx: false,
+        sentTx: true,
+      ),
+    );
+    walletCubit.updateWallet(w);
+  }
+
+  void cancelTx() {
+    emit(state.copyWith(updatedTx: null));
+  }
 }
 
 // 
