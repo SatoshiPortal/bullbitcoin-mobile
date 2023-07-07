@@ -152,7 +152,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   void buildTx() async {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
-    final (tx, err) = await walletUpdate.buildBumpFeeTx(
+    final (newTx, err) = await walletUpdate.buildBumpFeeTx(
       tx: state.tx,
       feeRate: state.feeRate!.toDouble(),
       wallet: walletCubit.state.bdkWallet!,
@@ -167,10 +167,20 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
+    if (state.tx.fee! >= newTx!.fee!) {
+      emit(
+        state.copyWith(
+          buildingTx: false,
+          errBuildingTx: 'Fee rate much be higher than current fee rate',
+        ),
+      );
+      return;
+    }
+
     emit(
       state.copyWith(
         buildingTx: false,
-        updatedTx: tx,
+        updatedTx: newTx,
       ),
     );
   }
