@@ -58,5 +58,22 @@
         // // "**/lib/send": true,
         // "**/lib/wallet": true,
         // "**/lib/wallet_settings": true,
-    }
+    },
+    "[dart]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.rulers": [],
+        "editor.selectionHighlight": false,
+        "editor.suggest.snippetsPreventQuickSuggestions": false,
+        "editor.suggestSelection": "first",
+        "editor.tabCompletion": "onlySnippets",
+        "editor.wordBasedSuggestions": false,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": true,
+            "source.organizeImports": true,
+        },
+
+    },
+    "dart.lineLength": 100,
+
 }

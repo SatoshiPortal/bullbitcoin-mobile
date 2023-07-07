@@ -74,9 +74,8 @@ class WalletCreate {
     bool fromStorage = true,
   }) async {
     try {
-      final network = wallet.network == BBNetwork.Testnet
-          ? bdk.Network.Testnet
-          : bdk.Network.Bitcoin;
+      final network =
+          wallet.network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
       final walletType = wallet.walletType;
       // final eternalDescr = wallet.externalDescriptor;
       // String? iDesc;
@@ -96,8 +95,7 @@ class WalletCreate {
           );
 
           if (wallet.path != null) {
-            final derivation =
-                await bdk.DerivationPath.create(path: wallet.path!);
+            final derivation = await bdk.DerivationPath.create(path: wallet.path!);
             descriptor = await descriptor.derive(derivation);
           }
 
@@ -208,8 +206,7 @@ class WalletCreate {
           //     await bdk.DescriptorPublicKey.fromString(wallet.internalDescriptor);
 
           if (wallet.path != null) {
-            final derivation =
-                await bdk.DerivationPath.create(path: wallet.path!);
+            final derivation = await bdk.DerivationPath.create(path: wallet.path!);
             pubKey = await pubKey.derive(derivation);
           }
 
