@@ -290,16 +290,14 @@ class WalletUpdate {
   }
 
   Future<Err?> broadcastTx({
-    required bdk.PartiallySignedTransaction psbt,
+    required bdk.Transaction tx,
     required bdk.Blockchain blockchain,
   }) async {
     try {
-      final tx = await psbt.extractTx();
-
       await blockchain.broadcast(tx);
-
       return null;
     } catch (e) {
+      print(e);
       return Err(e.toString());
     }
   }
