@@ -57,7 +57,8 @@ class BullBitcoinWalletApp extends StatelessWidget {
               builder: (context, child) {
                 SystemChrome.setSystemUIOverlayStyle(
                   SystemUiOverlayStyle(
-                      statusBarColor: context.colour.background),
+                    statusBarColor: context.colour.background,
+                  ),
                 );
                 if (child == null) return Container();
                 return GestureDetector(

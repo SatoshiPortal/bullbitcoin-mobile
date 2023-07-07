@@ -49,8 +49,10 @@ class WalletUpdate {
   }) async {
     try {
       final (idx, adr) = address;
-      final addresses =
-          (isSend ? wallet.toAddresses?.toList() : wallet.addresses?.toList()) ?? <Address>[];
+      final addresses = (isSend
+              ? wallet.toAddresses?.toList()
+              : wallet.addresses?.toList()) ??
+          <Address>[];
 
       // if (label == null && ad.any((element) => element.address == address.address)) {
       //   return ad.firstWhere((element) => element.address == address.address);
@@ -82,8 +84,9 @@ class WalletUpdate {
         addresses.add(a);
       }
 
-      final w =
-          isSend ? wallet.copyWith(toAddresses: addresses) : wallet.copyWith(addresses: addresses);
+      final w = isSend
+          ? wallet.copyWith(toAddresses: addresses)
+          : wallet.copyWith(addresses: addresses);
 
       // await updateWallet(w);
       // walletCubit.updateWallet(w);
@@ -209,7 +212,8 @@ class WalletUpdate {
       if (isManualSend) {
         txBuilder = txBuilder.manuallySelectedOnly();
         final utxos = <bdk.OutPoint>[];
-        for (final address in selectedAddresses) utxos.addAll(address.getUnspentUtxosOutpoints());
+        for (final address in selectedAddresses)
+          utxos.addAll(address.getUnspentUtxosOutpoints());
         txBuilder = txBuilder.addUtxos(utxos);
       }
 
@@ -290,14 +294,11 @@ class WalletUpdate {
   }
 
   Future<Err?> broadcastTx({
-    required bdk.PartiallySignedTransaction psbt,
+    required bdk.Transaction tx,
     required bdk.Blockchain blockchain,
   }) async {
     try {
-      final tx = await psbt.extractTx();
-
       await blockchain.broadcast(tx);
-
       return null;
     } catch (e) {
       return Err(e.toString());

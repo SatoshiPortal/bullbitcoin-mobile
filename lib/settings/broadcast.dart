@@ -67,7 +67,7 @@ class BroadcasePopUp extends StatelessWidget {
               children: [
                 const SizedBox(width: 14),
                 const BBText.body(
-                  'Import tx',
+                  'Import Transaction',
                 ),
                 IconButton(
                   onPressed: () {
@@ -103,7 +103,7 @@ class BroadcasePopUp extends StatelessWidget {
                           ),
                           const Gap(8),
                           const BBText.body(
-                            'Scan XPUB',
+                            'Scan Txn',
                           ),
                         ],
                       ),
@@ -246,7 +246,7 @@ class BroadcastSend extends StatelessWidget {
           const Gap(16),
           const Center(
             child: BBText.body(
-              'Scan PSBT',
+              'Scan Txn',
             ),
           ),
           Center(
@@ -314,7 +314,7 @@ class SendButton extends StatelessWidget {
     if (sent)
       return const Center(
         child: BBText.body(
-          'Tx Broadcasted !',
+          'Tx Broadcasted!',
         ),
       ).animate(delay: 300.ms).fadeIn();
 
@@ -333,13 +333,13 @@ class SendButton extends StatelessWidget {
             child: BBButton.bigRed(
               loading: loading,
               onPressed: () {
-                if (loading) return;
+                // if (loading) return;
                 if (step == BroadcastTxStep.import)
                   context.read<BroadcastTxCubit>().extractTxClicked();
                 if (step == BroadcastTxStep.broadcast)
                   context.read<BroadcastTxCubit>().broadcastClicked();
               },
-              label: 'Send',
+              label: (step == BroadcastTxStep.import) ? 'Decode' : 'Broadcast',
             ),
           ),
         ),
