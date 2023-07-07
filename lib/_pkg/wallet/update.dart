@@ -297,7 +297,6 @@ class WalletUpdate {
       await blockchain.broadcast(tx);
       return null;
     } catch (e) {
-      print(e);
       return Err(e.toString());
     }
   }

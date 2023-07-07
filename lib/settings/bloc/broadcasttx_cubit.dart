@@ -58,11 +58,9 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     try {
       emit(state.copyWith(extractingTx: true, errExtractingTx: ''));
       final tx = state.tx;
-      var isTxHex = false;
       var isPsbt = false;
       try {
         hex.decode(tx);
-        isTxHex = true;
       } catch (e) {
         isPsbt = true;
       }
@@ -130,15 +128,6 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   void broadcastClicked() async {
     emit(state.copyWith(broadcastingTx: true, errBroadcastingTx: ''));
     final tx = state.tx;
-    if (tx == null) {
-      emit(
-        state.copyWith(
-          broadcastingTx: false,
-          errBroadcastingTx: 'No Transaction Found.',
-        ),
-      );
-      return;
-    }
     final bdkTx = await bdk.Transaction.create(transactionBytes: hex.decode(tx));
     final blockchain = settingsCubit.state.blockchain;
     if (blockchain == null) {
