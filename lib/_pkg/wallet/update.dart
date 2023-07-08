@@ -110,6 +110,10 @@ class WalletUpdate {
           key: StorageKeys.wallets,
           value: jsn,
         );
+        final __ = await secureStorage.saveValue(
+          key: StorageKeys.wallets,
+          value: jsn,
+        );
       } else {
         final walletsObjs = jsonDecode(walletsJsn!)['wallets'] as List<dynamic>;
 
@@ -124,6 +128,10 @@ class WalletUpdate {
           'wallets': [...fingerprints]
         });
         final _ = await storage.saveValue(
+          key: StorageKeys.wallets,
+          value: jsn,
+        );
+        final __ = await secureStorage.saveValue(
           key: StorageKeys.wallets,
           value: jsn,
         );

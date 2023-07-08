@@ -1,16 +1,18 @@
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HiveStorage implements IStorage {
-  HiveStorage({required String password}) {
-    _init(password);
-  }
+  HiveStorage();
 
   late Box<String>? _box;
 
-  void _init(String password) async {
-    final cipher = HiveAesCipher(password.codeUnits);
+  Future init({required List<int> password}) async {
+    final dir = await getApplicationDocumentsDirectory();
+    Hive.init(dir.path);
+
+    final cipher = HiveAesCipher(password);
     _box = await Hive.openBox('store', encryptionCipher: cipher);
   }
 

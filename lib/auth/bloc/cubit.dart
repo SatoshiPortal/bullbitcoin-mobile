@@ -6,18 +6,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit({
     bool fromSettings = false,
-    required this.storage,
+    required this.secureStorage,
   }) : super(AuthState(fromSettings: fromSettings)) {
     init();
     // scheduleMicrotask(init());
   }
 
-  final IStorage storage;
+  final IStorage secureStorage;
 
   static const maxLength = 8;
 
   Future<void> init() async {
-    final (_, err) = await storage.getValue(StorageKeys.securityKey);
+    final (_, err) = await secureStorage.getValue(StorageKeys.securityKey);
     if (err != null && !state.fromSettings) {
       emit(
         state.copyWith(
@@ -98,7 +98,7 @@ class AuthCubit extends Cubit<AuthState> {
             return;
           }
           emit(state.copyWith(checking: true));
-          final err = await storage.saveValue(key: StorageKeys.securityKey, value: state.pin);
+          final err = await secureStorage.saveValue(key: StorageKeys.securityKey, value: state.pin);
           if (err != null) {
             emit(
               state.copyWith(
@@ -114,7 +114,7 @@ class AuthCubit extends Cubit<AuthState> {
         case SecurityStep.enterPin:
           // if (state.pin.length != maxLength) return;
           emit(state.copyWith(checking: true));
-          final (savedPin, err) = await storage.getValue(StorageKeys.securityKey);
+          final (savedPin, err) = await secureStorage.getValue(StorageKeys.securityKey);
           if (err != null) {
             emit(
               state.copyWith(
@@ -146,7 +146,7 @@ class AuthCubit extends Cubit<AuthState> {
         case SecurityStep.enterPin:
           // if (state.pin.length != maxLength) return;
           emit(state.copyWith(checking: true));
-          final (savedPin, err) = await storage.getValue(StorageKeys.securityKey);
+          final (savedPin, err) = await secureStorage.getValue(StorageKeys.securityKey);
           if (err != null) {
             emit(
               state.copyWith(
@@ -187,7 +187,7 @@ class AuthCubit extends Cubit<AuthState> {
             return;
           }
           emit(state.copyWith(checking: true));
-          final err = await storage.deleteValue(StorageKeys.securityKey);
+          final err = await secureStorage.deleteValue(StorageKeys.securityKey);
           if (err != null) {
             emit(
               state.copyWith(
@@ -198,7 +198,8 @@ class AuthCubit extends Cubit<AuthState> {
             );
             return;
           }
-          final errSaved = await storage.saveValue(key: StorageKeys.securityKey, value: state.pin);
+          final errSaved =
+              await secureStorage.saveValue(key: StorageKeys.securityKey, value: state.pin);
           if (errSaved != null) {
             emit(
               state.copyWith(

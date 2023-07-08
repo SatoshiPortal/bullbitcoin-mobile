@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:hive/hive.dart';
 
 class StorageKeys {
   static const securityKey = 'securityKey';
@@ -30,9 +33,18 @@ abstract class IStorage {
 
 Future<(SecureStorage, HiveStorage)> setupStorage() async {
   final secureStorage = SecureStorage();
-  const password = 'satoshi';
-  final (_, err) = await secureStorage.getValue(StorageKeys.seed);
-  if (err != null) secureStorage.saveValue(key: StorageKeys.seed, value: password);
-  final hiveStorage = HiveStorage(password: password);
+  final hiveStorage = HiveStorage();
+  // await secureStorage.deleteAll();
+
+  final (password, err) = await secureStorage.getValue(StorageKeys.seed);
+  if (err != null) {
+    final password = Hive.generateSecureKey();
+    secureStorage.saveValue(key: StorageKeys.seed, value: base64UrlEncode(password));
+    await hiveStorage.init(password: password);
+  } else
+    await hiveStorage.init(password: base64Url.decode(password!));
+
+  // await hiveStorage.deleteAll();
+
   return (secureStorage, hiveStorage);
 }

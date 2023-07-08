@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_pkg/extensions.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -25,7 +25,7 @@ class AuthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authCubit = AuthCubit(
-      storage: locator<IStorage>(),
+      secureStorage: locator<SecureStorage>(),
       fromSettings: fromSettings,
     );
 
