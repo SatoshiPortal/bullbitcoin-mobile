@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/storage/interface.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -33,7 +34,8 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
           saveDir: w.getStorageString(),
           settingsCubit: locator<SettingsCubit>(),
           walletRead: locator<WalletRead>(),
-          storage: locator<IStorage>(),
+          secureStorage: locator<IStorage>(),
+          storage: locator<HiveStorage>(),
           walletCreate: locator<WalletCreate>(),
           walletUpdate: locator<WalletUpdate>(),
           fromStorage: false,

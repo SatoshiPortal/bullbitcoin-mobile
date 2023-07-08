@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/storage/interface.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:hive/hive.dart';
 
 class HiveStorage implements IStorage {
-  HiveStorage(String password) {
+  HiveStorage({required String password}) {
     _init(password);
   }
 

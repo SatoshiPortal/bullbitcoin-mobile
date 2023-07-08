@@ -6,8 +6,9 @@ import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
-import 'package:bb_mobile/_pkg/storage/interface.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/delete.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
@@ -21,7 +22,7 @@ import 'package:get_it/get_it.dart';
 GetIt locator = GetIt.instance;
 
 Future setupLocator({bool fromTest = false}) async {
-  final secureStorage = SecureStorage();
+  final (secureStorage, hiveStorage) = await setupStorage();
 
   if (fromTest) {
     await secureStorage.deleteAll();
@@ -33,38 +34,39 @@ Future setupLocator({bool fromTest = false}) async {
     locator.registerSingleton<DeepLink>(deepLink);
   }
 
+  locator.registerSingleton<SecureStorage>(secureStorage);
+  locator.registerSingleton<HiveStorage>(hiveStorage);
+  locator.registerSingleton<IStorage>(hiveStorage);
+
   final http = Dio();
 
   final mempoolAPI = MempoolAPI(http);
-  final fileStorage = FileStorage();
-  locator.registerSingleton<IStorage>(secureStorage);
-  locator.registerSingleton<WalletUpdate>(WalletUpdate());
-  locator.registerSingleton<FileStorage>(fileStorage);
-
-  // final coinGecko = CoinGecko();
   final bbAPI = BullBitcoinAPI(http);
   locator.registerSingleton<BullBitcoinAPI>(bbAPI);
+
+  final fileStorage = FileStorage();
+  locator.registerSingleton<FileStorage>(fileStorage);
+
+  locator.registerSingleton<WalletUpdate>(WalletUpdate());
   final walletcreate = WalletCreate();
   final walletread = WalletRead();
 
   final settings = SettingsCubit(
     walletCreate: walletcreate,
-    storage: secureStorage,
+    storage: hiveStorage,
     mempoolAPI: mempoolAPI,
-    // coinGecko: coinGecko,
     bbAPI: bbAPI,
   );
 
   final homeCubit = HomeCubit(
     walletRead: walletread,
-    storage: secureStorage,
+    storage: locator<HiveStorage>(),
     createWalletCubit: CreateWalletCubit(
       walletCreate: walletcreate,
-
       settingsCubit: settings,
       walletUpdate: locator<WalletUpdate>(),
-      storage: locator<IStorage>(),
-      // fromHome: true,
+      storage: hiveStorage,
+      secureStorage: secureStorage,
     ),
   );
 
@@ -77,16 +79,10 @@ Future setupLocator({bool fromTest = false}) async {
   locator.registerSingleton<WalletDelete>(WalletDelete());
   locator.registerSingleton<WalletCreate>(walletcreate);
   locator.registerSingleton<WalletRead>(walletread);
-  // final walletUtils = WalletService(walletStorage);
   locator.registerSingleton<Barcode>(Barcode());
   locator.registerSingleton<Launcher>(Launcher());
-
   locator.registerSingleton<NFCPicker>(NFCPicker());
   locator.registerSingleton<FilePick>(FilePick());
 
   locator.registerSingleton<HomeCubit>(homeCubit);
-
-  // locator.registerSingleton<WalletService>(walletUtils);
-
-  // locator.registerSingleton<BdkFlutter>(BdkFlutter());
 }

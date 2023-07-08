@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/storage/interface.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -14,6 +14,7 @@ class WalletCubit extends Cubit<WalletState> {
     required String saveDir,
     required this.settingsCubit,
     required this.walletRead,
+    required this.secureStorage,
     required this.storage,
     required this.walletCreate,
     required this.walletUpdate,
@@ -28,6 +29,7 @@ class WalletCubit extends Cubit<WalletState> {
   final WalletRead walletRead;
   final WalletCreate walletCreate;
   final WalletUpdate walletUpdate;
+  final IStorage secureStorage;
   final IStorage storage;
   final bool fromStorage;
 
@@ -39,7 +41,7 @@ class WalletCubit extends Cubit<WalletState> {
     if (fromStorage) {
       final (w, err) = await walletRead.getWalletDetails(
         saveDir: saveDir,
-        storage: storage,
+        storage: secureStorage,
       );
       if (err != null) {
         emit(
@@ -58,8 +60,7 @@ class WalletCubit extends Cubit<WalletState> {
     emit(state.copyWith(wallet: wallet));
 
     if (state.bdkWallet == null) {
-      final (wallets, err) =
-          await walletCreate.loadBdkWallet(wallet, fromStorage: fromStorage);
+      final (wallets, err) = await walletCreate.loadBdkWallet(wallet, fromStorage: fromStorage);
       if (err != null) {
         emit(
           state.copyWith(
@@ -197,7 +198,7 @@ class WalletCubit extends Cubit<WalletState> {
     if (fromStorage) {
       final errUpdate = await walletUpdate.updateWallet(
         wallet: wallet,
-        storage: storage,
+        storage: secureStorage,
         walletRead: walletRead,
       );
 
@@ -245,7 +246,7 @@ class WalletCubit extends Cubit<WalletState> {
     if (fromStorage) {
       final errUpdate = await walletUpdate.updateWallet(
         wallet: wallet!,
-        storage: storage,
+        storage: secureStorage,
         walletRead: walletRead,
       );
       if (errUpdate != null) {
@@ -289,7 +290,7 @@ class WalletCubit extends Cubit<WalletState> {
     if (fromStorage) {
       final errUpdating = await walletUpdate.updateWallet(
         wallet: wallet!,
-        storage: storage,
+        storage: secureStorage,
         walletRead: walletRead,
       );
       if (errUpdating != null) {
@@ -314,8 +315,7 @@ class WalletCubit extends Cubit<WalletState> {
   void getFirstAddress() async {
     if (state.bdkWallet == null) return;
 
-    final (address, err) =
-        await walletUpdate.getAddressAtIdx(state.bdkWallet!, 0);
+    final (address, err) = await walletUpdate.getAddressAtIdx(state.bdkWallet!, 0);
     if (err != null) {
       emit(state.copyWith(errSyncingAddresses: err.toString()));
       return;

@@ -4,7 +4,7 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/storage/interface.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
@@ -49,10 +49,8 @@ class WalletUpdate {
   }) async {
     try {
       final (idx, adr) = address;
-      final addresses = (isSend
-              ? wallet.toAddresses?.toList()
-              : wallet.addresses?.toList()) ??
-          <Address>[];
+      final addresses =
+          (isSend ? wallet.toAddresses?.toList() : wallet.addresses?.toList()) ?? <Address>[];
 
       // if (label == null && ad.any((element) => element.address == address.address)) {
       //   return ad.firstWhere((element) => element.address == address.address);
@@ -84,9 +82,8 @@ class WalletUpdate {
         addresses.add(a);
       }
 
-      final w = isSend
-          ? wallet.copyWith(toAddresses: addresses)
-          : wallet.copyWith(addresses: addresses);
+      final w =
+          isSend ? wallet.copyWith(toAddresses: addresses) : wallet.copyWith(addresses: addresses);
 
       // await updateWallet(w);
       // walletCubit.updateWallet(w);
@@ -100,6 +97,7 @@ class WalletUpdate {
   Future<Err?> addWalletToList({
     required Wallet wallet,
     required IStorage storage,
+    required IStorage secureStorage,
   }) async {
     try {
       final (walletsJsn, err) = await storage.getValue(StorageKeys.wallets);
@@ -131,9 +129,24 @@ class WalletUpdate {
         );
       }
 
-      await storage.saveValue(
+      await secureStorage.saveValue(
         key: saveDir,
         value: jsonEncode(wallet.toJson()),
+      );
+
+      await storage.saveValue(
+        key: saveDir,
+        value: jsonEncode(
+          wallet
+              .copyWith(
+                mnemonic: '',
+                password: '',
+                internalDescriptor: '',
+                externalDescriptor: '',
+                xpub: '',
+              )
+              .toJson(),
+        ),
       );
 
       return null;
@@ -212,8 +225,7 @@ class WalletUpdate {
       if (isManualSend) {
         txBuilder = txBuilder.manuallySelectedOnly();
         final utxos = <bdk.OutPoint>[];
-        for (final address in selectedAddresses)
-          utxos.addAll(address.getUnspentUtxosOutpoints());
+        for (final address in selectedAddresses) utxos.addAll(address.getUnspentUtxosOutpoints());
         txBuilder = txBuilder.addUtxos(utxos);
       }
 

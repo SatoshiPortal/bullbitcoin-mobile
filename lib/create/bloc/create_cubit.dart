@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/storage/interface.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
@@ -11,6 +11,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     required this.settingsCubit,
     required this.walletCreate,
     required this.storage,
+    required this.secureStorage,
     required this.walletUpdate,
     bool fromHome = false,
   }) : super(const CreateWalletState()) {
@@ -20,6 +21,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final SettingsCubit settingsCubit;
   final WalletCreate walletCreate;
   final IStorage storage;
+  final IStorage secureStorage;
   final WalletUpdate walletUpdate;
 
   void createMne({bool fromHome = false}) async {
@@ -86,7 +88,11 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       return;
     }
 
-    final errr = await walletUpdate.addWalletToList(wallet: wallet!, storage: storage);
+    final errr = await walletUpdate.addWalletToList(
+      wallet: wallet!,
+      storage: storage,
+      secureStorage: secureStorage,
+    );
     if (errr != null) {
       _showSavingErr(errr.toString());
       return;
@@ -142,7 +148,11 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
 
       wallet = wallet!.copyWith(name: label);
 
-      final errr = await walletUpdate.addWalletToList(wallet: wallet, storage: storage);
+      final errr = await walletUpdate.addWalletToList(
+        wallet: wallet,
+        storage: storage,
+        secureStorage: secureStorage,
+      );
       if (errr != null) {
         _showSavingErr(errr.toString());
         return;

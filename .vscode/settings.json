@@ -21,9 +21,7 @@
             "source.organizeImports": true,
         },
     },
-
     "dart.lineLength": 100,
-
     "files.exclude": {
         "**/.metadata": true,
         ".gitignore": true,
@@ -53,7 +51,7 @@
         "zmacos": true,
         "linux": true,
         "**/widgetbook": true,
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
         "**/maintainance": true,
         "**/test": true,
         // "integration_test": true,
@@ -70,5 +68,4 @@
         // "**/lib/wallet": true,
         // "**/lib/wallet_settings": true,
     },
-
 }

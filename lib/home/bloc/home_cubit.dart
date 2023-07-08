@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/storage/interface.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
@@ -14,7 +14,6 @@ class HomeCubit extends Cubit<HomeState> {
     required this.walletRead,
     required this.storage,
   }) : super(const HomeState()) {
-    // getWalletsFromStorage();
     createWalletCubitSubscription = createWalletCubit.stream.listen((state) {
       if (state.saved) getWalletsFromStorage();
     });

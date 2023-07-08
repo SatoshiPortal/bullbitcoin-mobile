@@ -5,7 +5,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
-import 'package:bb_mobile/_pkg/storage/interface.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
@@ -21,6 +21,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required this.settingsCubit,
     required this.walletCreate,
     required this.storage,
+    required this.secureStorage,
     required this.walletUpdate,
   }) : super(
           const ImportState(
@@ -37,6 +38,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
   final SettingsCubit settingsCubit;
   final WalletCreate walletCreate;
   final IStorage storage;
+  final IStorage secureStorage;
   final WalletUpdate walletUpdate;
 
   void backClicked() {
@@ -437,7 +439,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
     final selectedWallet = state.getSelectWalletDetails();
 
-    final err = await walletUpdate.addWalletToList(wallet: selectedWallet!, storage: storage);
+    final err = await walletUpdate.addWalletToList(
+      wallet: selectedWallet!,
+      storage: storage,
+      secureStorage: secureStorage,
+    );
 
     if (err != null) {
       emit(

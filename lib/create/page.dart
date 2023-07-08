@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/extensions.dart';
-import 'package:bb_mobile/_pkg/storage/interface.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -31,6 +32,7 @@ class CreateWalletPage extends StatelessWidget {
       settingsCubit: locator<SettingsCubit>(),
       walletCreate: locator<WalletCreate>(),
       storage: locator<IStorage>(),
+      secureStorage: locator<SecureStorage>(),
       walletUpdate: locator<WalletUpdate>(),
     );
 
