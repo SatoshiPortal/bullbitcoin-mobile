@@ -38,7 +38,7 @@ class WalletCubit extends Cubit<WalletState> {
     Wallet wallet;
 
     if (fromStorage) {
-      final (w, err) = await walletRead.getWalletDetails(
+      final (sensitiveWallet, err) = await walletRead.getWalletDetails(
         saveDir: saveDir,
         storage: secureStorage,
       );
@@ -52,7 +52,7 @@ class WalletCubit extends Cubit<WalletState> {
         return;
       }
 
-      wallet = w!;
+      wallet = sensitiveWallet!;
     } else
       wallet = state.wallet!;
 
@@ -69,16 +69,20 @@ class WalletCubit extends Cubit<WalletState> {
         );
         return;
       }
-      final (w, bdkWallet) = wallets!;
-      wallet = w;
+      final (_, bdkWallet) = wallets!;
       emit(state.copyWith(bdkWallet: bdkWallet));
     }
+
+    final (notSensitiveWallet, _) = await walletRead.getWalletDetails(
+      saveDir: saveDir,
+      storage: storage,
+    );
 
     emit(
       state.copyWith(
         loadingWallet: false,
         errLoadingWallet: '',
-        wallet: wallet,
+        wallet: notSensitiveWallet,
         name: wallet.name ?? '',
       ),
     );
@@ -134,44 +138,6 @@ class WalletCubit extends Cubit<WalletState> {
         emit(state.copyWith(syncing: false))
       },
     );
-
-    // final _ = await walletRead.sync2(
-    //   blockchain,
-    //   bdkWallet,
-    // );
-    // if (!synced) return;
-
-    // emit(state.copyWith(syncing: false));
-
-    // final _ = await compute(syncW, (bdkWallet, blockchain));
-
-    // final resultPort = ReceivePort();
-    // await Isolate.spawn(
-    //   (data) async {
-    //     await data.$1.sync(data.$2);
-    //     Isolate.exit(data.$3, true);
-    //   },
-    //   (state.bdkWallet!, blockchain, resultPort.sendPort),
-    // );
-    // await resultPort.first;
-
-    // await compute(
-    //   (data) async => {await data.$1.sync(data.$2)},
-    //   (state.bdkWallet!, blockchain),
-    // );
-
-    // walletRead.syncWallet(bdkWallet: state.bdkWallet!, blockChain: blockchain);
-
-    // final err = await walletRead.syncWallet(bdkWallet: state.bdkWallet!, blockChain: blockchain);
-    // if (err != null) throw err;
-    // // await Isolate.run(
-    // //   () {
-    // //     state.bdkWallet!.sync(blockchain);
-    // //   },
-    // // );
-
-    // emit(state.copyWith(syncing: false));
-    // });
   }
 
   Future<void> getBalance() async {
@@ -197,7 +163,7 @@ class WalletCubit extends Cubit<WalletState> {
     if (fromStorage) {
       final errUpdate = await walletUpdate.updateWallet(
         wallet: wallet,
-        storage: secureStorage,
+        storage: storage,
         walletRead: walletRead,
       );
 
@@ -245,7 +211,7 @@ class WalletCubit extends Cubit<WalletState> {
     if (fromStorage) {
       final errUpdate = await walletUpdate.updateWallet(
         wallet: wallet!,
-        storage: secureStorage,
+        storage: storage,
         walletRead: walletRead,
       );
       if (errUpdate != null) {
@@ -289,7 +255,7 @@ class WalletCubit extends Cubit<WalletState> {
     if (fromStorage) {
       final errUpdating = await walletUpdate.updateWallet(
         wallet: wallet!,
-        storage: secureStorage,
+        storage: storage,
         walletRead: walletRead,
       );
       if (errUpdating != null) {
@@ -374,3 +340,40 @@ class WalletCubit extends Cubit<WalletState> {
 // ArgumentError (Invalid argument(s): Illegal argument in isolate message: (object implements Finalizable - Library:'package:bdk_flutter/src/generated/bridge_definitions.dart' Class: WalletInstance))
 
 //
+    // final _ = await walletRead.sync2(
+    //   blockchain,
+    //   bdkWallet,
+    // );
+    // if (!synced) return;
+
+    // emit(state.copyWith(syncing: false));
+
+    // final _ = await compute(syncW, (bdkWallet, blockchain));
+
+    // final resultPort = ReceivePort();
+    // await Isolate.spawn(
+    //   (data) async {
+    //     await data.$1.sync(data.$2);
+    //     Isolate.exit(data.$3, true);
+    //   },
+    //   (state.bdkWallet!, blockchain, resultPort.sendPort),
+    // );
+    // await resultPort.first;
+
+    // await compute(
+    //   (data) async => {await data.$1.sync(data.$2)},
+    //   (state.bdkWallet!, blockchain),
+    // );
+
+    // walletRead.syncWallet(bdkWallet: state.bdkWallet!, blockChain: blockchain);
+
+    // final err = await walletRead.syncWallet(bdkWallet: state.bdkWallet!, blockChain: blockchain);
+    // if (err != null) throw err;
+    // // await Isolate.run(
+    // //   () {
+    // //     state.bdkWallet!.sync(blockchain);
+    // //   },
+    // // );
+
+    // emit(state.copyWith(syncing: false));
+    // });
