@@ -18,6 +18,8 @@ _$_Transaction _$$_TransactionFromJson(Map<String, dynamic> json) =>
       fromAddress: json['fromAddress'] as String?,
       toAddress: json['toAddress'] as String?,
       psbt: json['psbt'] as String?,
+      rbfEnabled: json['rbfEnabled'] as bool?,
+      oldTx: json['oldTx'] as bool? ?? false,
       broadcastTime: json['broadcastTime'] as int?,
       inAddresses: (json['inAddresses'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -39,6 +41,8 @@ Map<String, dynamic> _$$_TransactionToJson(_$_Transaction instance) =>
       'fromAddress': instance.fromAddress,
       'toAddress': instance.toAddress,
       'psbt': instance.psbt,
+      'rbfEnabled': instance.rbfEnabled,
+      'oldTx': instance.oldTx,
       'broadcastTime': instance.broadcastTime,
       'inAddresses': instance.inAddresses,
       'outAddresses': instance.outAddresses,

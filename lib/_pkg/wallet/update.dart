@@ -260,6 +260,7 @@ class WalletUpdate {
 
         final tx = Transaction(
           txid: txDetails.txid,
+          rbfEnabled: enableRbf,
           received: txDetails.received,
           sent: txDetails.sent,
           fee: txDetails.fee ?? 0,

@@ -30,6 +30,8 @@ mixin _$Transaction {
   String? get fromAddress => throw _privateConstructorUsedError;
   String? get toAddress => throw _privateConstructorUsedError;
   String? get psbt => throw _privateConstructorUsedError;
+  bool? get rbfEnabled => throw _privateConstructorUsedError;
+  bool get oldTx => throw _privateConstructorUsedError;
   int? get broadcastTime =>
       throw _privateConstructorUsedError; // String? serializedTx,
   List<String>? get inAddresses => throw _privateConstructorUsedError;
@@ -60,6 +62,8 @@ abstract class $TransactionCopyWith<$Res> {
       String? fromAddress,
       String? toAddress,
       String? psbt,
+      bool? rbfEnabled,
+      bool oldTx,
       int? broadcastTime,
       List<String>? inAddresses,
       List<String>? outAddresses,
@@ -90,6 +94,8 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? fromAddress = freezed,
     Object? toAddress = freezed,
     Object? psbt = freezed,
+    Object? rbfEnabled = freezed,
+    Object? oldTx = null,
     Object? broadcastTime = freezed,
     Object? inAddresses = freezed,
     Object? outAddresses = freezed,
@@ -136,6 +142,14 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.psbt
           : psbt // ignore: cast_nullable_to_non_nullable
               as String?,
+      rbfEnabled: freezed == rbfEnabled
+          ? _value.rbfEnabled
+          : rbfEnabled // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      oldTx: null == oldTx
+          ? _value.oldTx
+          : oldTx // ignore: cast_nullable_to_non_nullable
+              as bool,
       broadcastTime: freezed == broadcastTime
           ? _value.broadcastTime
           : broadcastTime // ignore: cast_nullable_to_non_nullable
@@ -175,6 +189,8 @@ abstract class _$$_TransactionCopyWith<$Res>
       String? fromAddress,
       String? toAddress,
       String? psbt,
+      bool? rbfEnabled,
+      bool oldTx,
       int? broadcastTime,
       List<String>? inAddresses,
       List<String>? outAddresses,
@@ -203,6 +219,8 @@ class __$$_TransactionCopyWithImpl<$Res>
     Object? fromAddress = freezed,
     Object? toAddress = freezed,
     Object? psbt = freezed,
+    Object? rbfEnabled = freezed,
+    Object? oldTx = null,
     Object? broadcastTime = freezed,
     Object? inAddresses = freezed,
     Object? outAddresses = freezed,
@@ -249,6 +267,14 @@ class __$$_TransactionCopyWithImpl<$Res>
           ? _value.psbt
           : psbt // ignore: cast_nullable_to_non_nullable
               as String?,
+      rbfEnabled: freezed == rbfEnabled
+          ? _value.rbfEnabled
+          : rbfEnabled // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      oldTx: null == oldTx
+          ? _value.oldTx
+          : oldTx // ignore: cast_nullable_to_non_nullable
+              as bool,
       broadcastTime: freezed == broadcastTime
           ? _value.broadcastTime
           : broadcastTime // ignore: cast_nullable_to_non_nullable
@@ -283,6 +309,8 @@ class _$_Transaction extends _Transaction {
       this.fromAddress,
       this.toAddress,
       this.psbt,
+      this.rbfEnabled,
+      this.oldTx = false,
       this.broadcastTime,
       final List<String>? inAddresses,
       final List<String>? outAddresses,
@@ -315,6 +343,11 @@ class _$_Transaction extends _Transaction {
   @override
   final String? psbt;
   @override
+  final bool? rbfEnabled;
+  @override
+  @JsonKey()
+  final bool oldTx;
+  @override
   final int? broadcastTime;
 // String? serializedTx,
   final List<String>? _inAddresses;
@@ -344,7 +377,7 @@ class _$_Transaction extends _Transaction {
 
   @override
   String toString() {
-    return 'Transaction(txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, timestamp: $timestamp, label: $label, fromAddress: $fromAddress, toAddress: $toAddress, psbt: $psbt, broadcastTime: $broadcastTime, inAddresses: $inAddresses, outAddresses: $outAddresses, bdkTx: $bdkTx)';
+    return 'Transaction(txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, timestamp: $timestamp, label: $label, fromAddress: $fromAddress, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, inAddresses: $inAddresses, outAddresses: $outAddresses, bdkTx: $bdkTx)';
   }
 
   @override
@@ -366,6 +399,9 @@ class _$_Transaction extends _Transaction {
             (identical(other.toAddress, toAddress) ||
                 other.toAddress == toAddress) &&
             (identical(other.psbt, psbt) || other.psbt == psbt) &&
+            (identical(other.rbfEnabled, rbfEnabled) ||
+                other.rbfEnabled == rbfEnabled) &&
+            (identical(other.oldTx, oldTx) || other.oldTx == oldTx) &&
             (identical(other.broadcastTime, broadcastTime) ||
                 other.broadcastTime == broadcastTime) &&
             const DeepCollectionEquality()
@@ -389,6 +425,8 @@ class _$_Transaction extends _Transaction {
       fromAddress,
       toAddress,
       psbt,
+      rbfEnabled,
+      oldTx,
       broadcastTime,
       const DeepCollectionEquality().hash(_inAddresses),
       const DeepCollectionEquality().hash(_outAddresses),
@@ -420,6 +458,8 @@ abstract class _Transaction extends Transaction {
       final String? fromAddress,
       final String? toAddress,
       final String? psbt,
+      final bool? rbfEnabled,
+      final bool oldTx,
       final int? broadcastTime,
       final List<String>? inAddresses,
       final List<String>? outAddresses,
@@ -450,6 +490,10 @@ abstract class _Transaction extends Transaction {
   String? get toAddress;
   @override
   String? get psbt;
+  @override
+  bool? get rbfEnabled;
+  @override
+  bool get oldTx;
   @override
   int? get broadcastTime;
   @override // String? serializedTx,

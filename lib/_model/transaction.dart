@@ -19,6 +19,8 @@ class Transaction with _$Transaction {
     String? fromAddress,
     String? toAddress,
     String? psbt,
+    bool? rbfEnabled,
+    @Default(false) bool oldTx,
     int? broadcastTime,
     // String? serializedTx,
     List<String>? inAddresses,
@@ -27,7 +29,7 @@ class Transaction with _$Transaction {
       includeFromJson: false,
       includeToJson: false,
     )
-        bdk.TransactionDetails? bdkTx,
+    bdk.TransactionDetails? bdkTx,
   }) = _Transaction;
   const Transaction._();
 

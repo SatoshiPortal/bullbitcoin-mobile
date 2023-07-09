@@ -208,13 +208,20 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final (w, txid) = wtxid!;
 
-    final (_, updatedWallet) = await walletUpdate.updateWalletAddress(
+    var (_, updatedWallet) = await walletUpdate.updateWalletAddress(
       address: (1, tx.toAddress!),
       wallet: wallet,
       label: tx.label,
       sentTxId: txid,
       isSend: true,
     );
+
+    final txs = walletCubit.state.wallet!.transactions ?? [];
+    final idx = txs.indexWhere((element) => element.txid == tx.txid);
+    txs.removeAt(idx);
+    txs.insert(idx, state.tx.copyWith(oldTx: true));
+
+    updatedWallet = updatedWallet.copyWith(transactions: txs);
 
     final err2 = await walletUpdate.updateWallet(
       wallet: updatedWallet,
