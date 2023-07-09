@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:hive/hive.dart';
 
 class StorageKeys {
@@ -10,6 +11,7 @@ class StorageKeys {
   static const wallets = 'wallets';
   static const settings = 'settings';
   static const seed = 'seed';
+  static const version = 'version';
 }
 
 abstract class IStorage {
@@ -34,7 +36,14 @@ abstract class IStorage {
 Future<(SecureStorage, HiveStorage)> setupStorage() async {
   final secureStorage = SecureStorage();
   final hiveStorage = HiveStorage();
-  // await secureStorage.deleteAll();
+
+  final (version, errr) = await secureStorage.getValue(StorageKeys.version);
+  if (errr != null) {
+    await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
+  } else if (version != bbVersion) {
+    await secureStorage.deleteAll();
+    await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
+  }
 
   final (password, err) = await secureStorage.getValue(StorageKeys.seed);
   if (err != null) {
@@ -44,7 +53,7 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
   } else
     await hiveStorage.init(password: base64Url.decode(password!));
 
-  // await hiveStorage.deleteAll();
+  if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
 
   return (secureStorage, hiveStorage);
 }

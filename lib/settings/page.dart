@@ -70,7 +70,7 @@ class _Screen extends StatelessWidget {
               const Gap(32),
               const CenterLeft(
                 child: BBText.bodySmall(
-                  'Version 0.1.2',
+                  'Version $bbVersion',
                   isBold: true,
                 ),
               ),

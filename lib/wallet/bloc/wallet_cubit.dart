@@ -24,7 +24,6 @@ class WalletCubit extends Cubit<WalletState> {
     loadWallet(saveDir);
   }
 
-  // final WalletStorage walletStorage;
   final SettingsCubit settingsCubit;
   final WalletRead walletRead;
   final WalletCreate walletCreate;

@@ -19,24 +19,16 @@ class WalletRead {
       final (jsn, err) = await storage.getValue(saveDir);
       if (err != null) throw err;
       final obj = jsonDecode(jsn!) as Map<String, dynamic>;
-      //add network and wallet type to obj
-      // if (!obj.containsKey('network')) obj['network'] = 'Testnet';
-      // if (!obj.containsKey('type')) obj['type'] = 'newSeed';
-      // if (!obj.containsKey('walletType')) {
-      //   obj['walletType'] = 'bip84';
-      // } else {
-      //   if (obj['walletType'] == 'bech32') {
-      //     obj['walletType'] = 'bip84';
-      //   } else if (obj['walletType'] == 'p2sh') {
-      //     obj['walletType'] = 'bip49';
-      //   } else if (obj['walletType'] == 'p2wpkh') {
-      //     obj['walletType'] = 'bip84';
-      //   }
-      // }
 
       var wallet = Wallet.fromJson(obj);
       if (removeSensitive)
-        wallet = wallet.copyWith(mnemonic: '', password: '', internalDescriptor: '');
+        wallet = wallet.copyWith(
+          mnemonic: '',
+          password: '',
+          internalDescriptor: '',
+          externalDescriptor: '',
+          xpub: '',
+        );
 
       return (wallet, null);
     } catch (e) {

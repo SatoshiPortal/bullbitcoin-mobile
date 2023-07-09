@@ -38,8 +38,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
         value: locator<SettingsCubit>(),
         child: BlocListener<SettingsCubit, SettingsState>(
           listener: (context, state) {
-            if (state.language !=
-                localizationDelegate.currentLocale.languageCode)
+            if (state.language != localizationDelegate.currentLocale.languageCode)
               localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
           },
           child: DeepLinker(
