@@ -301,7 +301,7 @@ class BackupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mnemonic = context.select(
-      (WalletCubit cubit) => cubit.state.wallet!.mnemonic,
+      (WalletSettingsCubit cubit) => cubit.state.wallet.mnemonic,
     );
 
     final password = context.select(

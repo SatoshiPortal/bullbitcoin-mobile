@@ -4,6 +4,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,8 +26,10 @@ class XPubButton extends StatelessWidget {
 
     return BBButton.textWithLeftArrow(
       label: 'Public Descriptor',
-      onPressed: () {
-        XpubPopUp.openPopup(context, xpub, 'Public Descriptor');
+      onPressed: () async {
+        await context.read<WalletSettingsCubit>().loadSensitiveInfo();
+        await XpubPopUp.openPopup(context, xpub, 'Public Descriptor');
+        context.read<WalletSettingsCubit>().clearSensitiveInfo();
       },
     );
   }
@@ -44,8 +47,10 @@ class XPrivButton extends StatelessWidget {
 
     return BBButton.textWithLeftArrow(
       label: 'Private Descriptor',
-      onPressed: () {
-        XpubPopUp.openPopup(context, xpub, 'Private Descriptor');
+      onPressed: () async {
+        await context.read<WalletSettingsCubit>().loadSensitiveInfo();
+        await XpubPopUp.openPopup(context, xpub, 'Private Descriptor');
+        context.read<WalletSettingsCubit>().clearSensitiveInfo();
       },
     );
   }

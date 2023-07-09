@@ -15,7 +15,7 @@ class FileStorage {
     }
   }
 
-  Future<Err?> deleteFileFromSD(String dbDir) async {
+  Future<Err?> deleteFile(String dbDir) async {
     try {
       final dbFile = File(dbDir);
       if (dbFile.existsSync()) {

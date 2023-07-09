@@ -274,3 +274,21 @@ class TxLabelTextField extends HookWidget {
     );
   }
 }
+
+class BumpFeesButton extends StatelessWidget {
+  const BumpFeesButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+class BumpFeesPopup extends StatelessWidget {
+  const BumpFeesPopup({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}

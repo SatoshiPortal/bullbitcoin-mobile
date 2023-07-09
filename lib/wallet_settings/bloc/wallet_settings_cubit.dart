@@ -19,6 +19,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     required this.walletRead,
     required this.walletDelete,
     required this.fileStorage,
+    required this.secureStorage,
   }) : super(
           WalletSettingsState(
             wallet: wallet,
@@ -32,6 +33,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   final WalletCubit walletCubit;
   final WalletUpdate walletUpdate;
   final IStorage storage;
+  final IStorage secureStorage;
   final WalletRead walletRead;
   final WalletDelete walletDelete;
   final FileStorage fileStorage;
@@ -72,6 +74,37 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(savedName: false));
   }
 
+  Future loadSensitiveInfo() async {
+    final (w, err) = await walletRead.getWalletDetails(
+      saveDir: state.wallet.getStorageString(),
+      storage: secureStorage,
+    );
+    if (err != null) return;
+
+    final wallet = state.wallet.copyWith(
+      mnemonic: w!.mnemonic,
+      password: w.password,
+      externalDescriptor: w.externalDescriptor,
+      internalDescriptor: w.internalDescriptor,
+      xpub: w.xpub,
+    );
+
+    emit(state.copyWith(wallet: wallet));
+    // await Future.delayed(const Duration(milliseconds: 100));
+  }
+
+  void clearSensitiveInfo() {
+    final wallet = state.wallet.copyWith(
+      mnemonic: '',
+      password: '',
+      externalDescriptor: '',
+      internalDescriptor: '',
+      xpub: '',
+    );
+
+    emit(state.copyWith(wallet: wallet));
+  }
+
   // void wordChanged(int index, String word) {
   //   final words = state.mnemonic.toList();
   //   words[index] = word;
@@ -86,7 +119,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   void loadBackupClicked() async {
     final (w, err) = await walletRead.getWalletDetails(
       saveDir: state.wallet.getStorageString(),
-      storage: storage,
+      storage: secureStorage,
     );
 
     if (err != null) {
@@ -336,6 +369,21 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
+    final errr = await walletDelete.deleteWallet(
+      saveDir: state.wallet.getStorageString(),
+      storage: secureStorage,
+    );
+
+    if (errr != null) {
+      emit(
+        state.copyWith(
+          deleting: false,
+          errDeleting: errr.toString(),
+        ),
+      );
+      return;
+    }
+
     final (appDocDir, errDir) = await fileStorage.getAppDirectory();
     if (errDir != null) {
       emit(
@@ -347,7 +395,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
     final dbDir = appDocDir! + '/' + state.wallet.getStorageString();
-    final errDeleting = await fileStorage.deleteFileFromSD(dbDir);
+    final errDeleting = await fileStorage.deleteFile(dbDir);
     if (errDeleting != null) {
       emit(
         state.copyWith(
