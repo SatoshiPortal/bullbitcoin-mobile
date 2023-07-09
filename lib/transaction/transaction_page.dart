@@ -8,11 +8,13 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +22,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class TxPage extends StatelessWidget {
@@ -280,15 +283,92 @@ class BumpFeesButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final canRbf = context.select((TransactionCubit x) => x.state.tx.canRBF());
+
+    if (!canRbf) return const SizedBox.shrink();
+
+    return BlocListener<TransactionCubit, TransactionState>(
+      listenWhen: (previous, current) => previous.sentTx != current.sentTx,
+      listener: (context, state) async {
+        if (state.sentTx)
+          context
+            ..pop()
+            ..pop();
+      },
+      child: BBButton.bigRed(
+        label: 'Bump Fees',
+        onPressed: () async {
+          await BumpFeesPopup.showPopUp(context);
+        },
+      ),
+    );
   }
 }
 
 class BumpFeesPopup extends StatelessWidget {
   const BumpFeesPopup({super.key});
 
+  static Future showPopUp(BuildContext context) async {
+    final tx = context.read<TransactionCubit>();
+    final wallet = context.read<WalletCubit>();
+
+    return showMaterialModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: wallet),
+          BlocProvider.value(value: tx),
+        ],
+        child: const PopUpBorder(
+          child: BumpFeesPopup(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final amt = context.select((TransactionCubit x) => x.state.tx.fee?.toString() ?? '');
+    final built = context.select((TransactionCubit x) => x.state.updatedTx != null);
+    final sending = context.select((TransactionCubit x) => x.state.sendingTx);
+
+    final er = context.select((TransactionCubit x) => x.state.errSendingTx);
+    final err = context.select((TransactionCubit x) => x.state.errBuildingTx);
+
+    final errr = err.isNotEmpty ? err : er;
+
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          const BBText.titleLarge('Bump Fees'),
+          const Gap(32),
+          const BBText.title('Enter Fees'),
+          const Gap(4),
+          BBTextInput.big(
+            onChanged: (e) {
+              context.read<TransactionCubit>().updateFeeRate(e);
+            },
+            value: amt,
+          ),
+          const Gap(32),
+          if (errr.isNotEmpty) BBText.errorSmall(errr),
+          const Gap(8),
+          BBButton.bigRed(
+            label: built ? 'Send Transaction' : 'Build Transaction',
+            loading: sending,
+            disabled: sending,
+            onPressed: () {
+              if (!built)
+                context.read<TransactionCubit>().buildTx();
+              else
+                context.read<TransactionCubit>().sendTx();
+            },
+          ),
+          const Gap(80),
+        ],
+      ),
+    );
   }
 }

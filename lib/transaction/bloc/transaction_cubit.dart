@@ -146,8 +146,9 @@ class TransactionCubit extends Cubit<TransactionState> {
     walletCubit.updateWallet(updateWallet);
   }
 
-  void updateFeeRate(int feeRate) {
-    emit(state.copyWith(feeRate: feeRate));
+  void updateFeeRate(String feeRate) {
+    final amt = int.tryParse(feeRate) ?? 0;
+    emit(state.copyWith(feeRate: amt));
   }
 
   void buildTx() async {

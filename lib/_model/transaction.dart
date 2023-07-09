@@ -59,6 +59,8 @@ class Transaction with _$Transaction {
 
   DateTime? getBroadcastDateTime() =>
       broadcastTime == null ? null : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
+
+  bool canRBF() => (rbfEnabled ?? false) && timestamp == null;
 }
 
 DateTime getDateTimeFromInt(int time) => DateTime.fromMillisecondsSinceEpoch(time * 1000);
