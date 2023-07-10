@@ -350,6 +350,8 @@ class WalletUpdate {
       );
 
       final txResult = await txBuilder.finish(wallet);
+      final signedPSBT = await wallet.sign(psbt: txResult.psbt);
+
       final txDetails = txResult.txDetails;
 
       final newTx = Transaction(
@@ -362,7 +364,7 @@ class WalletUpdate {
         label: tx.label,
         toAddress: tx.toAddress,
         outAddresses: tx.outAddresses,
-        psbt: txResult.psbt.psbtBase64,
+        psbt: signedPSBT.psbtBase64,
       );
       return (newTx, null);
     } catch (e) {
