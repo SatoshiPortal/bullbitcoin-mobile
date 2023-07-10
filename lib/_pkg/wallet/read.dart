@@ -119,7 +119,9 @@ class WalletRead {
       final List<Transaction> transactions = [];
       for (final tx in txs) {
         final idx = storedTxs.indexWhere((t) => t.txid == tx.txid);
-        final storedTx = storedTxs.elementAt(idx);
+
+        Transaction? storedTx;
+        if (idx != -1) storedTx = storedTxs.elementAtOrNull(idx);
 
         var txObj = Transaction(
           txid: tx.txid,
@@ -129,7 +131,7 @@ class WalletRead {
           height: tx.confirmationTime?.height ?? 0,
           timestamp: tx.confirmationTime?.timestamp ?? 0,
           bdkTx: tx,
-          rbfEnabled: storedTx.rbfEnabled,
+          rbfEnabled: storedTx?.rbfEnabled,
           // label: label,
         );
 
