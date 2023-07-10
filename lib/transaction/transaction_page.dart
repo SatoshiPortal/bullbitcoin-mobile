@@ -108,6 +108,7 @@ class _Screen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Gap(24),
+                const BumpFeesButton(),
                 BBText.title(
                   isReceived ? 'Amount received' : 'Amount sent',
                 ),
@@ -295,11 +296,17 @@ class BumpFeesButton extends StatelessWidget {
             ..pop()
             ..pop();
       },
-      child: BBButton.bigRed(
-        label: 'Bump Fees',
-        onPressed: () async {
-          await BumpFeesPopup.showPopUp(context);
-        },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BBButton.bigRed(
+            label: 'Bump Fees',
+            onPressed: () async {
+              await BumpFeesPopup.showPopUp(context);
+            },
+          ),
+          const Gap(24),
+        ],
       ),
     );
   }
@@ -329,7 +336,7 @@ class BumpFeesPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amt = context.select((TransactionCubit x) => x.state.tx.fee?.toString() ?? '');
+    final amt = context.select((TransactionCubit x) => x.state.feeRate?.toString() ?? '');
     final built = context.select((TransactionCubit x) => x.state.updatedTx != null);
     final sending = context.select((TransactionCubit x) => x.state.sendingTx);
 
@@ -341,6 +348,7 @@ class BumpFeesPopup extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const BBText.titleLarge('Bump Fees'),
           const Gap(32),
