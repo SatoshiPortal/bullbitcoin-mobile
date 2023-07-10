@@ -217,7 +217,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       isSend: true,
     );
 
-    final txs = walletCubit.state.wallet!.transactions ?? [];
+    final txs = walletCubit.state.wallet!.transactions?.toList() ?? [];
     final idx = txs.indexWhere((element) => element.txid == tx.txid);
     txs.removeAt(idx);
     txs.insert(idx, state.tx.copyWith(oldTx: true));
