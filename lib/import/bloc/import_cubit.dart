@@ -303,14 +303,12 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void recoverWalletClicked() async {
+    emit(state.copyWith(importType: ImportTypes.words, errImporting: ''));
     for (final word in state.words)
       if (word.isEmpty) {
         emit(state.copyWith(errImporting: 'Please fill all words'));
         return;
       }
-
-    emit(state.copyWith(importType: ImportTypes.words));
-
     await _updateWalletDetailsForSelection();
     if (state.errImporting.isNotEmpty) return;
 
