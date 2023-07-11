@@ -299,7 +299,7 @@ class SendCubit extends Cubit<SendState> {
       feeRate: state.selectedFeesOption == 4
           ? state.fees!.toDouble()
           : state.feesList![state.selectedFeesOption].toDouble(),
-      enableRbf: state.enableRBF,
+      enableRbf: true,
       selectedAddresses: state.selectedAddresses,
     );
     if (err != null) {

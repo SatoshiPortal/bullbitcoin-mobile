@@ -73,16 +73,16 @@ class WalletCubit extends Cubit<WalletState> {
       emit(state.copyWith(bdkWallet: bdkWallet));
     }
 
-    // final (notSensitiveWallet, _) = await walletRead.getWalletDetails(
-    //   saveDir: saveDir,
-    //   storage: storage,
-    // );
+    final (notSensitiveWallet, err) = await walletRead.getWalletDetails(
+      saveDir: saveDir,
+      storage: storage,
+    );
 
     emit(
       state.copyWith(
         loadingWallet: false,
         errLoadingWallet: '',
-        wallet: wallet,
+        wallet: err == null ? notSensitiveWallet : wallet,
         name: wallet.name ?? '',
       ),
     );

@@ -32,7 +32,7 @@ class WalletRead {
 
       return (wallet, null);
     } catch (e) {
-      return (null, Err(e.toString()));
+      return (null, Err(e.toString(), expected: e.toString() == 'No Key'));
     }
   }
 

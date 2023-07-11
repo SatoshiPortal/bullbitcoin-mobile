@@ -66,7 +66,7 @@ class AdvancedOptionsPopUp extends StatelessWidget {
                 // child: const BBText.body('Manual coin selection'),
               ),
             ),
-            const EnableRBFOption(),
+            // const EnableRBFOption(),
             const Gap(8),
             const SendAllOption(),
             const Gap(40),

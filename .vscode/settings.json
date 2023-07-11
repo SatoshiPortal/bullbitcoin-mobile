@@ -39,8 +39,7 @@
         "**/packages": true,
         "README.md": true,
         "**/build": true,
-        // "assets": true,
-        // "**/assets": true,
+        "**/assets": true,
         "**/**.g.dart": true,
         "**/**.freezed.dart": true,
         "android": true,
@@ -51,10 +50,10 @@
         "zmacos": true,
         "linux": true,
         "**/widgetbook": true,
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
         "**/maintainance": true,
         "**/test": true,
-        // "integration_test": true,
+        "integration_test": true,
         ".idea": true,
         // 
         // 
