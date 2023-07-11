@@ -5,6 +5,7 @@ import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
+import 'package:bb_mobile/_pkg/mnemonic_word.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
@@ -15,6 +16,7 @@ import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -85,6 +87,11 @@ Future setupLocator({bool fromTest = false}) async {
   locator.registerSingleton<Launcher>(Launcher());
   locator.registerSingleton<NFCPicker>(NFCPicker());
   locator.registerSingleton<FilePick>(FilePick());
+  locator.registerSingleton<WordsCubit>(
+    WordsCubit(
+      mnemonicWords: MnemonicWords(),
+    ),
+  );
 
   locator.registerSingleton<HomeCubit>(homeCubit);
 }

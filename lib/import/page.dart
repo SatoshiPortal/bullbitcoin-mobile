@@ -9,6 +9,7 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
+import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:bb_mobile/import/recover.dart';
 import 'package:bb_mobile/import/wallet_type_selection.dart';
 import 'package:bb_mobile/import/xpub.dart';
@@ -28,6 +29,7 @@ class ImportWalletPage extends StatefulWidget {
 
 class _ImportWalletPageState extends State<ImportWalletPage> {
   ImportWalletCubit? importCubit;
+  WordsCubit? wordsCubit;
 
   @override
   void initState() {
@@ -42,13 +44,18 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
       walletUpdate: locator<WalletUpdate>(),
     );
 
+    wordsCubit = locator<WordsCubit>();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: importCubit!,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: importCubit!),
+        BlocProvider.value(value: wordsCubit!),
+      ],
       child: const _Page(),
     );
   }

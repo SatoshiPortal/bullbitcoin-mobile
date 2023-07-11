@@ -2,6 +2,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
+import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,34 +50,113 @@ class ImportWordTextField extends StatefulWidget {
 }
 
 class _ImportWordTextFieldState extends State<ImportWordTextField> {
+  OverlayEntry? entry;
+  final layerLink = LayerLink();
+  final focusNode = FocusNode();
+  final controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showOverLay();
+    });
+
+    focusNode.addListener(() {
+      if (focusNode.hasFocus)
+        showOverLay();
+      else
+        hideOverlay();
+    });
+  }
+
+  void showOverLay() {
+    final overlay = Overlay.of(context);
+    final renderBox = context.findRenderObject()! as RenderBox;
+    final size = renderBox.size;
+
+    entry = OverlayEntry(
+      builder: (context) => Positioned(
+        width: size.width,
+        child: CompositedTransformFollower(
+          link: layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0, size.height + 8),
+          child: buildOverlay(),
+        ),
+      ),
+    );
+
+    overlay.insert(entry!);
+  }
+
+  void hideOverlay() {
+    entry?.remove();
+    entry = null;
+  }
+
+  Widget buildOverlay() {
+    final suggestions = context.select((WordsCubit x) => x.state.findWords(controller.text));
+
+    if (suggestions.isEmpty) {
+      hideOverlay();
+      return Container();
+    }
+
+    return Material(
+      elevation: 4,
+      child: Column(
+        children: [
+          for (final word in suggestions)
+            ListTile(
+              title: BBText.body(word),
+              onTap: () {
+                context.read<ImportWalletCubit>().wordChanged(widget.index, word);
+                hideOverlay();
+                focusNode.unfocus();
+              },
+            )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final text = context
         .select((ImportWalletCubit cubit) => cubit.state.words.elementAtOrNull(widget.index) ?? '');
 
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-        height: 66,
-        child: Row(
-          children: [
-            SizedBox(
-              width: 20,
-              child: BBText.body(
-                '${widget.index + 1}',
-                textAlign: TextAlign.right,
+    if (controller.text != text) controller.text = text;
+
+    return CompositedTransformTarget(
+      link: layerLink,
+      child: Expanded(
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+          height: 66,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 20,
+                child: BBText.body(
+                  '${widget.index + 1}',
+                  textAlign: TextAlign.right,
+                ),
               ),
-            ),
-            const Gap(8),
-            Expanded(
-              child: BBTextInput.small(
-                onChanged: (value) {
-                  context.read<ImportWalletCubit>().wordChanged(widget.index, value);
-                },
-                value: text,
+              const Gap(8),
+              Expanded(
+                child: BBTextInput.small(
+                  focusNode: focusNode,
+                  controller: controller,
+                  onChanged: (value) {
+                    context.read<ImportWalletCubit>().wordChanged(widget.index, value);
+                  },
+                  value: text,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

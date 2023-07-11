@@ -20,6 +20,7 @@ class BBTextInput extends StatefulWidget {
     this.disabled = false,
     this.focusNode,
     this.hint,
+    this.controller,
   }) : type = _TextInputType.multiLine;
 
   const BBTextInput.big({
@@ -28,6 +29,7 @@ class BBTextInput extends StatefulWidget {
     this.disabled = false,
     this.focusNode,
     this.hint,
+    this.controller,
   })  : type = _TextInputType.big,
         rightIcon = null,
         onRightTap = null;
@@ -40,6 +42,7 @@ class BBTextInput extends StatefulWidget {
     required this.rightIcon,
     required this.onRightTap,
     this.hint,
+    this.controller,
   }) : type = _TextInputType.bigWithIcon;
 
   const BBTextInput.small({
@@ -48,12 +51,14 @@ class BBTextInput extends StatefulWidget {
     this.disabled = false,
     this.focusNode,
     this.hint,
+    this.controller,
   })  : type = _TextInputType.small,
         rightIcon = null,
         onRightTap = null;
 
   final _TextInputType type;
 
+  final TextEditingController? controller;
   final Function(String) onChanged;
   final String value;
   final String? hint;
