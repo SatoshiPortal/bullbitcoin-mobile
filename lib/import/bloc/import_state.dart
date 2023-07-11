@@ -13,16 +13,12 @@ enum ImportSteps {
   selectImportType,
   importWords,
   importXpub,
-
   scanningNFC,
   scanningWallets,
-
   advancedOptions,
-
   // selectColdCard,
   // coldcardFile,
   // coldcardNFC,
-
   selectWalletType,
 }
 
