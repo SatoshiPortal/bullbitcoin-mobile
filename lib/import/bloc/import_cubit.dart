@@ -69,6 +69,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
             state.copyWith(
               importStep: ImportSteps.importWords,
               importType: state.importType,
+              words: [for (int i = 0; i < 12; i++) ''],
             ),
           );
         else if (state.importType == ImportTypes.coldcard)
