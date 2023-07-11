@@ -54,14 +54,11 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
   final layerLink = LayerLink();
   final focusNode = FocusNode();
   final controller = TextEditingController();
+  List<String> suggestions = [];
 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showOverLay();
-    });
 
     focusNode.addListener(() {
       if (focusNode.hasFocus)
@@ -69,6 +66,26 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
       else
         hideOverlay();
     });
+
+    controller.addListener(() {
+      if (suggestions.isNotEmpty && suggestions.contains(controller.text)) return;
+
+      hideOverlay();
+      setState(() {
+        suggestions = context.read<WordsCubit>().state.findWords(controller.text);
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showOverLay();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    focusNode.dispose();
+
+    super.dispose();
   }
 
   void showOverLay() {
@@ -78,11 +95,11 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
 
     entry = OverlayEntry(
       builder: (context) => Positioned(
-        width: size.width,
+        width: size.width - 24,
         child: CompositedTransformFollower(
           link: layerLink,
           showWhenUnlinked: false,
-          offset: Offset(0, size.height + 8),
+          offset: Offset(24, size.height - 8),
           child: buildOverlay(),
         ),
       ),
@@ -97,8 +114,6 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
   }
 
   Widget buildOverlay() {
-    final suggestions = context.select((WordsCubit x) => x.state.findWords(controller.text));
-
     if (suggestions.isEmpty) {
       hideOverlay();
       return Container();
@@ -106,6 +121,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
 
     return Material(
       elevation: 4,
+      borderRadius: BorderRadius.circular(8),
       child: Column(
         children: [
           for (final word in suggestions)
@@ -129,9 +145,9 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
 
     if (controller.text != text) controller.text = text;
 
-    return CompositedTransformTarget(
-      link: layerLink,
-      child: Expanded(
+    return Expanded(
+      child: CompositedTransformTarget(
+        link: layerLink,
         child: Container(
           margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
           height: 66,
@@ -151,6 +167,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                   controller: controller,
                   onChanged: (value) {
                     context.read<ImportWalletCubit>().wordChanged(widget.index, value);
+                    hideOverlay();
                   },
                   value: text,
                 ),

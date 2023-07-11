@@ -16,13 +16,15 @@ class WordsState with _$WordsState {
   List<String> findWords(String str) {
     if (str.isEmpty) return [];
 
-    return words!
+    final w = words!
         .where(
-          (word) => word.toLowerCase().contains(
+          (word) => word.toLowerCase().startsWith(
                 str.toLowerCase(),
               ),
         )
         .toList();
+
+    return w.length > 3 ? w.sublist(0, 3) : w;
   }
 }
 
