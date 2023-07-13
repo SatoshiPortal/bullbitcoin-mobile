@@ -229,12 +229,12 @@ class WalletCreate {
         );
       }
 
-      // if (wallet.mnemonic.startsWith('upper')) {
-      //   final i = await internal.asString();
-      //   final e = await external.asString();
-      //   print('internal::' + i);
-      //   print('external::' + e);
-      // }
+      if (wallet.mnemonic.startsWith('upper')) {
+        final i = await internal.asString();
+        final e = await external.asString();
+        print('internal::' + i);
+        print('external::' + e);
+      }
 
       final bdkWallet = await bdk.Wallet.create(
         descriptor: external,
@@ -283,7 +283,7 @@ class WalletCreate {
     try {
       final network =
           wallet.network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
-      // final isTestnet = wallet.network == BBNetwork.Testnet;
+      final isTestnet = wallet.network == BBNetwork.Testnet;
       final walletType = wallet.walletType;
 
       final mnemo = await bdk.Mnemonic.fromString(wallet.mnemonic);
@@ -294,15 +294,15 @@ class WalletCreate {
         password: wallet.password,
       );
 
+      if (wallet.path != null) {
+        final derivation = await bdk.DerivationPath.create(path: wallet.path!);
+        descriptor = await descriptor.derive(derivation);
+      }
+
       bdk.Descriptor? internal;
       bdk.Descriptor? external;
 
       if (!onlyPublic) {
-        if (wallet.path != null) {
-          final derivation = await bdk.DerivationPath.create(path: wallet.path!);
-          descriptor = await descriptor.derive(derivation);
-        }
-
         switch (walletType) {
           case WalletType.bip84:
             internal = await bdk.Descriptor.newBip84(
@@ -342,88 +342,66 @@ class WalletCreate {
         return ((internal: internal, external: external), null);
       }
 
-      final xpub = await descriptor.asPublic();
-      var xpubStr = xpub.asString();
-      xpubStr = xpubStr.replaceAll('/*', '');
+      final pubKey = await descriptor.asPublic();
 
-      // final pubKey = await bdk.DescriptorPublicKey.fromString(xpubStr);
-      // // final x = pubKey.asString();
-      // print('x::' + xpubStr);
-      // var (fngr, err) = await getMneFingerprint(
-      //   mne: wallet.mnemonic,
-      //   isTestnet: isTestnet,
-      //   walletType: walletType,
-      // );
-      // if (err != null) throw err;
-      // fngr = removeFngrPrefix(fngr!);
-
-      internal = await bdk.Descriptor.create(
-        descriptor: buildDescriptorVanilla(
-          xpub: xpubStr,
-          walletType: walletType,
-          isChange: true,
-        ),
-        network: network,
+      var (fngr, err) = await getMneFingerprint(
+        mne: wallet.mnemonic,
+        isTestnet: isTestnet,
+        walletType: walletType,
       );
+      if (err != null) throw err;
 
-      external = await bdk.Descriptor.create(
-        descriptor: buildDescriptorVanilla(
-          xpub: xpubStr,
-          walletType: walletType,
-          isChange: false,
-        ),
-        network: network,
-      );
+      fngr = removeFngrPrefix(fngr!);
 
-      // if (wallet.path != null) {
-      //   final derivation = await bdk.DerivationPath.create(path: wallet.path!);
-      //   pubKey.derive(derivation);
-      // }
+      switch (walletType) {
+        case WalletType.bip84:
+          // pubKey = await pubKey.derive(
+          //   await bdk.DerivationPath.create(
+          //     path: "m/84'/1'/0'",
+          //   ),
+          // );
+          internal = await bdk.Descriptor.newBip84Public(
+            fingerPrint: fngr,
+            publicKey: pubKey,
+            network: network,
+            keychain: bdk.KeychainKind.Internal,
+          );
 
-      // switch (walletType) {
-      //   case WalletType.bip84:
-      //     internal = await bdk.Descriptor.newBip84Public(
-      //       fingerPrint: fngr,
-      //       publicKey: pubKey,
-      //       network: network,
-      //       keychain: bdk.KeychainKind.Internal,
-      //     );
+          external = await bdk.Descriptor.newBip84Public(
+            fingerPrint: fngr,
+            publicKey: pubKey,
+            network: network,
+            keychain: bdk.KeychainKind.External,
+          );
+        case WalletType.bip49:
+          internal = await bdk.Descriptor.newBip49Public(
+            fingerPrint: fngr,
+            publicKey: pubKey,
+            network: network,
+            keychain: bdk.KeychainKind.Internal,
+          );
 
-      //     external = await bdk.Descriptor.newBip84Public(
-      //       fingerPrint: fngr,
-      //       publicKey: pubKey,
-      //       network: network,
-      //       keychain: bdk.KeychainKind.External,
-      //     );
-      //   case WalletType.bip49:
-      //     internal = await bdk.Descriptor.newBip49Public(
-      //       fingerPrint: fngr,
-      //       publicKey: pubKey,
-      //       network: network,
-      //       keychain: bdk.KeychainKind.Internal,
-      //     );
+          external = await bdk.Descriptor.newBip49Public(
+            fingerPrint: fngr,
+            publicKey: pubKey,
+            network: network,
+            keychain: bdk.KeychainKind.External,
+          );
+        case WalletType.bip44:
+          internal = await bdk.Descriptor.newBip44Public(
+            fingerPrint: fngr,
+            publicKey: pubKey,
+            network: network,
+            keychain: bdk.KeychainKind.Internal,
+          );
 
-      //     external = await bdk.Descriptor.newBip49Public(
-      //       fingerPrint: fngr,
-      //       publicKey: pubKey,
-      //       network: network,
-      //       keychain: bdk.KeychainKind.External,
-      //     );
-      //   case WalletType.bip44:
-      //     internal = await bdk.Descriptor.newBip44Public(
-      //       fingerPrint: fngr,
-      //       publicKey: pubKey,
-      //       network: network,
-      //       keychain: bdk.KeychainKind.Internal,
-      //     );
-
-      //     external = await bdk.Descriptor.newBip44Public(
-      //       fingerPrint: fngr,
-      //       publicKey: pubKey,
-      //       network: network,
-      //       keychain: bdk.KeychainKind.External,
-      //     );
-      // }
+          external = await bdk.Descriptor.newBip44Public(
+            fingerPrint: fngr,
+            publicKey: pubKey,
+            network: network,
+            keychain: bdk.KeychainKind.External,
+          );
+      }
 
       return ((internal: internal, external: external), null);
     } catch (e) {
@@ -431,3 +409,26 @@ class WalletCreate {
     }
   }
 }
+    // var xpubStr = xpub.asString();
+      // xpubStr = xpubStr.replaceAll('/*', '');
+
+      // final pubKey = await bdk.DescriptorPublicKey.fromString(xpubStr);
+      // final x = pubKey.asString();
+      // print('x::' + xpubStr);
+      // internal = await bdk.Descriptor.create(
+      //   descriptor: buildDescriptorVanilla(
+      //     xpub: xpubStr,
+      //     walletType: walletType,
+      //     isChange: true,
+      //   ),
+      //   network: network,
+      // );
+
+      // external = await bdk.Descriptor.create(
+      //   descriptor: buildDescriptorVanilla(
+      //     xpub: xpubStr,
+      //     walletType: walletType,
+      //     isChange: false,
+      //   ),
+      //   network: network,
+      // );
