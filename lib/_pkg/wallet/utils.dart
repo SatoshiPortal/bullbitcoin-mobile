@@ -17,6 +17,11 @@ String fingerPrintFromDescr(
   return fingerPrint;
 }
 
+String removeFngrPrefix(String fingerPrint) {
+  if (fingerPrint.startsWith('tn::')) return fingerPrint.substring(4);
+  return fingerPrint;
+}
+
 String keyFromDescr(String descriptor) {
   final startIndex = descriptor.indexOf(']');
   final cut1 = descriptor.substring(startIndex + 1);

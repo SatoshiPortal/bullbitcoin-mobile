@@ -62,6 +62,7 @@ class WalletCubit extends Cubit<WalletState> {
       final (wallets, err) = await walletCreate.loadBdkWallet(
         wallet,
         fromStorage: fromStorage,
+        // fromStorage: false,
         onlyPublic: true,
       );
       if (err != null) {

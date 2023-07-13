@@ -200,6 +200,10 @@ class _ImportWalletTypeButton extends StatelessWidget {
 
     final balance = context.select((WalletCubit cubit) => cubit.state.balance);
 
+    final hasTxs = context.select(
+      (WalletCubit cubit) => cubit.state.wallet?.transactions?.isNotEmpty ?? false,
+    );
+
     final address = ad.isNotEmpty ? ad.substring(0, 5) + '...' + ad.substring(ad.length - 5) : '';
     final fingerprint = wallet.type == BBWalletType.descriptors ? '' : wallet.cleanFingerprint();
 
@@ -314,6 +318,29 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                   ),
                                   TextSpan(
                                     text: balance.total.toString(),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: context.colour.onBackground,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          const Gap(4),
+                          if (hasTxs)
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Transactions: ',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: context.colour.onBackground,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: wallet.transactions!.length.toString(),
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
