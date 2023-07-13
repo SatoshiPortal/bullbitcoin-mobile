@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -15,6 +16,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.storage,
     required this.walletUpdate,
     required this.walletRead,
+    required this.walletCreate,
     required this.mempoolAPI,
     required this.settingsCubit,
   }) : super(TransactionState(tx: tx)) {
@@ -31,6 +33,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   final IStorage storage;
   final WalletUpdate walletUpdate;
   final WalletRead walletRead;
+  final WalletCreate walletCreate;
   final SettingsCubit settingsCubit;
 
   void loadTx() async {
@@ -153,12 +156,29 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   void buildTx() async {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
-    final (newTx, err) = await walletUpdate.buildBumpFeeTx(
-      tx: state.tx,
-      feeRate: state.feeRate!.toDouble(),
-      wallet: walletCubit.state.bdkWallet!,
+
+    final (sensitiveWallet, err) = await walletRead.getWalletDetails(
+      saveDir: walletCubit.state.wallet!.getStorageString(),
+      storage: storage,
     );
     if (err != null) {
+      emit(state.copyWith(errBuildingTx: err.toString(), buildingTx: false));
+      return;
+    }
+
+    final (wallets, errr) = await walletCreate.loadBdkWallet(sensitiveWallet!);
+    if (errr != null) {
+      emit(state.copyWith(errBuildingTx: errr.toString(), buildingTx: false));
+      return;
+    }
+    final bdkWallet = wallets!.$2;
+
+    final (newTx, errrr) = await walletUpdate.buildBumpFeeTx(
+      tx: state.tx,
+      feeRate: state.feeRate!.toDouble(),
+      bdkWallet: bdkWallet,
+    );
+    if (errrr != null) {
       emit(
         state.copyWith(
           buildingTx: false,

@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -38,6 +39,7 @@ class SendPopup extends StatelessWidget {
       storage: locator<IStorage>(),
       walletRead: locator<WalletRead>(),
       walletUpdate: locator<WalletUpdate>(),
+      walletCreate: locator<WalletCreate>(),
       barcode: locator<Barcode>(),
       walletCubit: walletCubit,
       settingsCubit: locator<SettingsCubit>(),

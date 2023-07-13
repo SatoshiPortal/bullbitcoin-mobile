@@ -5,6 +5,7 @@ import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
@@ -21,6 +22,7 @@ class SendCubit extends Cubit<SendState> {
     required this.storage,
     required this.walletRead,
     required this.walletUpdate,
+    required this.walletCreate,
     required this.mempoolAPI,
     required this.fileStorage,
   }) : super(const SendState()) {
@@ -35,6 +37,7 @@ class SendCubit extends Cubit<SendState> {
   final IStorage storage;
   final WalletRead walletRead;
   final WalletUpdate walletUpdate;
+  final WalletCreate walletCreate;
   final MempoolAPI mempoolAPI;
   final FileStorage fileStorage;
 
@@ -281,8 +284,26 @@ class SendCubit extends Cubit<SendState> {
 
   void confirmClickedd() async {
     if (state.sending) return;
-    final bdkWallet = walletCubit.state.bdkWallet;
+    var bdkWallet = walletCubit.state.bdkWallet;
     if (bdkWallet == null) return;
+
+    if (!walletCubit.state.wallet!.watchOnly()) {
+      final (sensitiveWallet, err) = await walletRead.getWalletDetails(
+        saveDir: walletCubit.state.wallet!.getStorageString(),
+        storage: storage,
+      );
+      if (err != null) {
+        emit(state.copyWith(errSending: err.toString(), sending: false));
+        return;
+      }
+
+      final (wallets, errr) = await walletCreate.loadBdkWallet(sensitiveWallet!);
+      if (errr != null) {
+        emit(state.copyWith(errSending: errr.toString(), sending: false));
+        return;
+      }
+      bdkWallet = wallets!.$2;
+    }
 
     emit(state.copyWith(sending: true, errSending: ''));
 

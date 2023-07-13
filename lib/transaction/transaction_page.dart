@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -38,6 +39,7 @@ class TxPage extends StatelessWidget {
       tx: tx,
       walletCubit: wallet,
       mempoolAPI: locator<MempoolAPI>(),
+      walletCreate: locator<WalletCreate>(),
       storage: locator<IStorage>(),
       walletUpdate: locator<WalletUpdate>(),
       walletRead: locator<WalletRead>(),

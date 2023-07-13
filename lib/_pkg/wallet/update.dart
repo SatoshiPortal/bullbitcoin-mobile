@@ -341,7 +341,7 @@ class WalletUpdate {
   Future<(Transaction?, Err?)> buildBumpFeeTx({
     required Transaction tx,
     required double feeRate,
-    required bdk.Wallet wallet,
+    required bdk.Wallet bdkWallet,
   }) async {
     try {
       final txBuilder = bdk.BumpFeeTxBuilder(
@@ -349,8 +349,8 @@ class WalletUpdate {
         feeRate: feeRate,
       );
 
-      final txResult = await txBuilder.finish(wallet);
-      final signedPSBT = await wallet.sign(psbt: txResult.psbt);
+      final txResult = await txBuilder.finish(bdkWallet);
+      final signedPSBT = await bdkWallet.sign(psbt: txResult.psbt);
 
       final txDetails = txResult.txDetails;
 

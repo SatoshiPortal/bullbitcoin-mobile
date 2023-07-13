@@ -59,7 +59,11 @@ class WalletCubit extends Cubit<WalletState> {
     emit(state.copyWith(wallet: wallet));
 
     if (state.bdkWallet == null) {
-      final (wallets, err) = await walletCreate.loadBdkWallet(wallet, fromStorage: fromStorage);
+      final (wallets, err) = await walletCreate.loadBdkWallet(
+        wallet,
+        fromStorage: fromStorage,
+        onlyPublic: true,
+      );
       if (err != null) {
         emit(
           state.copyWith(

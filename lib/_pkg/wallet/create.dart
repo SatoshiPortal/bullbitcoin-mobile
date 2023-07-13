@@ -72,68 +72,28 @@ class WalletCreate {
   Future<((Wallet, bdk.Wallet)?, Err?)> loadBdkWallet(
     Wallet wallet, {
     bool fromStorage = true,
+    bool onlyPublic = false,
   }) async {
     try {
       final network =
           wallet.network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
       final walletType = wallet.walletType;
-      // final eternalDescr = wallet.externalDescriptor;
-      // String? iDesc;
-      // final isTestNet = wallet.network == BBNetwork.Testnet;
 
       bdk.Descriptor? internal;
       bdk.Descriptor? external;
+
       switch (wallet.type) {
         case BBWalletType.words:
         case BBWalletType.newSeed:
-          final mnemo = await bdk.Mnemonic.fromString(wallet.mnemonic);
-
-          var descriptor = await bdk.DescriptorSecretKey.create(
-            network: network,
-            mnemonic: mnemo,
-            password: wallet.password,
+          final (descriptors, err) = await _buildDescriptorsForMnemonic(
+            wallet: wallet,
+            onlyPublic: onlyPublic,
           );
 
-          if (wallet.path != null) {
-            final derivation = await bdk.DerivationPath.create(path: wallet.path!);
-            descriptor = await descriptor.derive(derivation);
-          }
+          if (err != null) throw err;
 
-          switch (walletType) {
-            case WalletType.bip84:
-              internal = await bdk.Descriptor.newBip84(
-                secretKey: descriptor,
-                network: network,
-                keychain: bdk.KeychainKind.Internal,
-              );
-              external = await bdk.Descriptor.newBip84(
-                secretKey: descriptor,
-                network: network,
-                keychain: bdk.KeychainKind.External,
-              );
-            case WalletType.bip49:
-              internal = await bdk.Descriptor.newBip49(
-                secretKey: descriptor,
-                network: network,
-                keychain: bdk.KeychainKind.Internal,
-              );
-              external = await bdk.Descriptor.newBip49(
-                secretKey: descriptor,
-                network: network,
-                keychain: bdk.KeychainKind.External,
-              );
-            case WalletType.bip44:
-              internal = await bdk.Descriptor.newBip44(
-                secretKey: descriptor,
-                network: network,
-                keychain: bdk.KeychainKind.Internal,
-              );
-              external = await bdk.Descriptor.newBip44(
-                secretKey: descriptor,
-                network: network,
-                keychain: bdk.KeychainKind.External,
-              );
-          }
+          internal = descriptors!.internal;
+          external = descriptors.external;
 
         case BBWalletType.coldcard:
           final fngr = wallet.fingerprint;
@@ -302,6 +262,137 @@ class WalletCreate {
       );
 
       return (blockchain, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(({bdk.Descriptor internal, bdk.Descriptor external})?, Err?)>
+      _buildDescriptorsForMnemonic({
+    required Wallet wallet,
+    required bool onlyPublic,
+  }) async {
+    try {
+      final network =
+          wallet.network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+      final isTestnet = wallet.network == BBNetwork.Testnet;
+      final walletType = wallet.walletType;
+
+      final mnemo = await bdk.Mnemonic.fromString(wallet.mnemonic);
+
+      var descriptor = await bdk.DescriptorSecretKey.create(
+        network: network,
+        mnemonic: mnemo,
+        password: wallet.password,
+      );
+
+      bdk.Descriptor? internal;
+      bdk.Descriptor? external;
+
+      if (!onlyPublic) {
+        if (wallet.path != null) {
+          final derivation = await bdk.DerivationPath.create(path: wallet.path!);
+          descriptor = await descriptor.derive(derivation);
+        }
+
+        switch (walletType) {
+          case WalletType.bip84:
+            internal = await bdk.Descriptor.newBip84(
+              secretKey: descriptor,
+              network: network,
+              keychain: bdk.KeychainKind.Internal,
+            );
+            external = await bdk.Descriptor.newBip84(
+              secretKey: descriptor,
+              network: network,
+              keychain: bdk.KeychainKind.External,
+            );
+          case WalletType.bip49:
+            internal = await bdk.Descriptor.newBip49(
+              secretKey: descriptor,
+              network: network,
+              keychain: bdk.KeychainKind.Internal,
+            );
+            external = await bdk.Descriptor.newBip49(
+              secretKey: descriptor,
+              network: network,
+              keychain: bdk.KeychainKind.External,
+            );
+          case WalletType.bip44:
+            internal = await bdk.Descriptor.newBip44(
+              secretKey: descriptor,
+              network: network,
+              keychain: bdk.KeychainKind.Internal,
+            );
+            external = await bdk.Descriptor.newBip44(
+              secretKey: descriptor,
+              network: network,
+              keychain: bdk.KeychainKind.External,
+            );
+        }
+      } else {
+        final xpub = await descriptor.asPublic();
+        final xpubStr = xpub.asString();
+        final pubKey = await bdk.DescriptorPublicKey.fromString(xpubStr);
+        final (fngr, err) = await getMneFingerprint(
+          mne: wallet.mnemonic,
+          isTestnet: isTestnet,
+          walletType: walletType,
+        );
+        if (err != null) throw err;
+
+        if (wallet.path != null) {
+          final derivation = await bdk.DerivationPath.create(path: wallet.path!);
+          pubKey.derive(derivation);
+        }
+
+        switch (walletType) {
+          case WalletType.bip84:
+            internal = await bdk.Descriptor.newBip84Public(
+              fingerPrint: fngr!,
+              publicKey: pubKey,
+              network: network,
+              keychain: bdk.KeychainKind.Internal,
+            );
+
+            external = await bdk.Descriptor.newBip84Public(
+              fingerPrint: fngr,
+              publicKey: pubKey,
+              network: network,
+              keychain: bdk.KeychainKind.External,
+            );
+          case WalletType.bip49:
+            internal = await bdk.Descriptor.newBip49Public(
+              fingerPrint: fngr!,
+              publicKey: pubKey,
+              network: network,
+              keychain: bdk.KeychainKind.Internal,
+            );
+
+            external = await bdk.Descriptor.newBip49Public(
+              fingerPrint: fngr,
+              publicKey: pubKey,
+              network: network,
+              keychain: bdk.KeychainKind.External,
+            );
+          case WalletType.bip44:
+            internal = await bdk.Descriptor.newBip44Public(
+              fingerPrint: fngr!,
+              publicKey: pubKey,
+              network: network,
+              keychain: bdk.KeychainKind.Internal,
+            );
+
+            external = await bdk.Descriptor.newBip44Public(
+              fingerPrint: fngr,
+              publicKey: pubKey,
+              network: network,
+              keychain: bdk.KeychainKind.External,
+            );
+        }
+      }
+
+      return ((internal: internal, external: external), null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
