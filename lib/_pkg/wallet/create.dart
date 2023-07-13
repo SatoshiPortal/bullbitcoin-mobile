@@ -284,6 +284,7 @@ class WalletCreate {
       final network =
           wallet.network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
       final isTestnet = wallet.network == BBNetwork.Testnet;
+      final testnetPath = isTestnet ? '1' : '0';
       final walletType = wallet.walletType;
 
       final mnemo = await bdk.Mnemonic.fromString(wallet.mnemonic);
@@ -342,8 +343,6 @@ class WalletCreate {
         return ((internal: internal, external: external), null);
       }
 
-      final pubKey = await descriptor.asPublic();
-
       var (fngr, err) = await getMneFingerprint(
         mne: wallet.mnemonic,
         isTestnet: isTestnet,
@@ -355,11 +354,13 @@ class WalletCreate {
 
       switch (walletType) {
         case WalletType.bip84:
-          // pubKey = await pubKey.derive(
-          //   await bdk.DerivationPath.create(
-          //     path: "m/84'/1'/0'",
-          //   ),
-          // );
+          final desc = await descriptor.derive(
+            await bdk.DerivationPath.create(
+              path: "m/84'/$testnetPath'/0'",
+            ),
+          );
+          final pubKey = await desc.asPublic();
+
           internal = await bdk.Descriptor.newBip84Public(
             fingerPrint: fngr,
             publicKey: pubKey,
@@ -374,6 +375,12 @@ class WalletCreate {
             keychain: bdk.KeychainKind.External,
           );
         case WalletType.bip49:
+          final desc = await descriptor.derive(
+            await bdk.DerivationPath.create(
+              path: "m/49'/$testnetPath'/0'",
+            ),
+          );
+          final pubKey = await desc.asPublic();
           internal = await bdk.Descriptor.newBip49Public(
             fingerPrint: fngr,
             publicKey: pubKey,
@@ -388,6 +395,13 @@ class WalletCreate {
             keychain: bdk.KeychainKind.External,
           );
         case WalletType.bip44:
+          final desc = await descriptor.derive(
+            await bdk.DerivationPath.create(
+              path: "m/44'/$testnetPath'/0'",
+            ),
+          );
+          final pubKey = await desc.asPublic();
+
           internal = await bdk.Descriptor.newBip44Public(
             fingerPrint: fngr,
             publicKey: pubKey,

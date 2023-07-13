@@ -297,7 +297,10 @@ class SendCubit extends Cubit<SendState> {
         return;
       }
 
-      final (wallets, errr) = await walletCreate.loadBdkWallet(sensitiveWallet!);
+      final (wallets, errr) = await walletCreate.loadBdkWallet(
+        sensitiveWallet!,
+        fromStorage: false,
+      );
       if (errr != null) {
         emit(state.copyWith(errSending: errr.toString(), sending: false));
         return;

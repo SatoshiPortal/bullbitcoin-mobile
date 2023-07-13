@@ -166,7 +166,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
-    final (wallets, errr) = await walletCreate.loadBdkWallet(sensitiveWallet!);
+    final (wallets, errr) = await walletCreate.loadBdkWallet(sensitiveWallet!, fromStorage: false);
     if (errr != null) {
       emit(state.copyWith(errBuildingTx: errr.toString(), buildingTx: false));
       return;
