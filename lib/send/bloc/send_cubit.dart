@@ -20,6 +20,7 @@ class SendCubit extends Cubit<SendState> {
     required this.settingsCubit,
     required this.bullBitcoinAPI,
     required this.storage,
+    required this.secureStorage,
     required this.walletRead,
     required this.walletUpdate,
     required this.walletCreate,
@@ -35,6 +36,7 @@ class SendCubit extends Cubit<SendState> {
   final SettingsCubit settingsCubit;
   final BullBitcoinAPI bullBitcoinAPI;
   final IStorage storage;
+  final IStorage secureStorage;
   final WalletRead walletRead;
   final WalletUpdate walletUpdate;
   final WalletCreate walletCreate;
@@ -290,7 +292,7 @@ class SendCubit extends Cubit<SendState> {
     if (!walletCubit.state.wallet!.watchOnly()) {
       final (sensitiveWallet, err) = await walletRead.getWalletDetails(
         saveDir: walletCubit.state.wallet!.getStorageString(),
-        storage: storage,
+        storage: secureStorage,
       );
       if (err != null) {
         emit(state.copyWith(errSending: err.toString(), sending: false));
@@ -311,6 +313,9 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(sending: true, errSending: ''));
 
     final localWallet = walletCubit.state.wallet;
+
+    await bdkWallet.sync(settingsCubit.state.blockchain!);
+    // final bal = await bdkWallet.getBalance();
 
     final (buildResp, err) = await walletUpdate.buildTx(
       watchOnly: walletCubit.state.wallet!.watchOnly(),
@@ -333,6 +338,7 @@ class SendCubit extends Cubit<SendState> {
           sending: false,
         ),
       );
+      return;
     }
 
     final (tx, feeAmt, psbt) = buildResp!;

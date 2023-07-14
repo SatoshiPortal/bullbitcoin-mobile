@@ -14,6 +14,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required Transaction tx,
     required this.walletCubit,
     required this.storage,
+    required this.secureStorage,
     required this.walletUpdate,
     required this.walletRead,
     required this.walletCreate,
@@ -31,6 +32,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   final WalletCubit walletCubit;
   final MempoolAPI mempoolAPI;
   final IStorage storage;
+  final IStorage secureStorage;
   final WalletUpdate walletUpdate;
   final WalletRead walletRead;
   final WalletCreate walletCreate;
@@ -159,7 +161,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final (sensitiveWallet, err) = await walletRead.getWalletDetails(
       saveDir: walletCubit.state.wallet!.getStorageString(),
-      storage: storage,
+      storage: secureStorage,
     );
     if (err != null) {
       emit(state.copyWith(errBuildingTx: err.toString(), buildingTx: false));
@@ -172,6 +174,8 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
     final bdkWallet = wallets!.$2;
+    // await bdkWallet.sync();
+    // bdkWallet.
 
     final (newTx, errrr) = await walletUpdate.buildBumpFeeTx(
       tx: state.tx,

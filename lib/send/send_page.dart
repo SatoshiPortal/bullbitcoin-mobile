@@ -2,6 +2,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
@@ -37,6 +38,7 @@ class SendPopup extends StatelessWidget {
   }) {
     final cubit = SendCubit(
       storage: locator<IStorage>(),
+      secureStorage: locator<SecureStorage>(),
       walletRead: locator<WalletRead>(),
       walletUpdate: locator<WalletUpdate>(),
       walletCreate: locator<WalletCreate>(),
@@ -346,8 +348,12 @@ class SendButton extends StatelessWidget {
               label: watchOnly
                   ? 'Generate PSBT'
                   : signed
-                      ? 'Confirm'
-                      : 'Send',
+                      ? sending
+                          ? 'Broadcasting'
+                          : 'Confirm'
+                      : sending
+                          ? 'Syncing'
+                          : 'Send',
             ),
           ),
         ),

@@ -124,7 +124,7 @@ class BBButton extends StatelessWidget {
                   width: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(context.colour.onPrimary),
+                    valueColor: AlwaysStoppedAnimation<Color>(context.colour.primary),
                   ),
                 ),
                 const Gap(8),

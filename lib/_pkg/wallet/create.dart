@@ -229,13 +229,6 @@ class WalletCreate {
         );
       }
 
-      if (wallet.mnemonic.startsWith('upper')) {
-        final i = await internal.asString();
-        final e = await external.asString();
-        print('internal::' + i);
-        print('external::' + e);
-      }
-
       final bdkWallet = await bdk.Wallet.create(
         descriptor: external,
         changeDescriptor: internal,
