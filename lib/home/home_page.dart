@@ -267,7 +267,7 @@ class _HomeHeaderCardsState extends State<HomeHeaderCards> {
       listener: (context, state) {
         final moveToIdx = state.moveToIdx;
         if (moveToIdx == null) return;
-        _carouselController.animateToPage(moveToIdx);
+        _carouselController.animateToPage(0);
       },
       child: CarouselSlider(
         carouselController: _carouselController,

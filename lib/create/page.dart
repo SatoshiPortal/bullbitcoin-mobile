@@ -17,6 +17,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -40,10 +41,13 @@ class CreateWalletPage extends StatelessWidget {
       value: createWallet,
       child: BlocListener<CreateWalletCubit, CreateWalletState>(
         listenWhen: (previous, current) => previous.saved != current.saved,
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state.saved) {
             if (state.savedWallet == null) return;
             locator<HomeCubit>().addWallet(state.savedWallet!);
+            await Future.delayed(500.milliseconds);
+            locator<HomeCubit>().moveToLastWallet();
+            // await Future.delayed(300.milliseconds);
             context.go('/home');
           }
         },

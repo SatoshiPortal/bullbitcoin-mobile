@@ -87,6 +87,13 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(moveToIdx: null));
   }
 
+  void moveToLastWallet() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    emit(state.copyWith(moveToIdx: state.wallets!.length - 1));
+    await Future.delayed(const Duration(seconds: 5));
+    emit(state.copyWith(moveToIdx: null));
+  }
+
   void addWallet(Wallet wallet) {
     emit(state.copyWith(loadingWallets: true));
 
