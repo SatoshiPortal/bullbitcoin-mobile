@@ -1,8 +1,6 @@
-import 'dart:ui';
-
+import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/create/page.dart';
-import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -25,29 +23,7 @@ class CreateWalletConfirmPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 16),
-      child: ColoredBox(
-        color: Colors.transparent,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IgnorePointer(
-              ignoring: false,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: context.colour.onPrimary,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(25.0),
-                  ),
-                ),
-                child: const _Screen(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const PopUpBorder(child: _Screen());
   }
 }
 
