@@ -205,7 +205,8 @@ class WalletUpdate {
   Future<((Transaction?, int?, String)?, Err?)> buildTx({
     required bool watchOnly,
     required Wallet wallet,
-    required bdk.Wallet bdkWallet,
+    required bdk.Wallet signingWallet,
+    required bdk.Wallet pubWallet,
     required bool isManualSend,
     required String address,
     required int? amount,
@@ -241,7 +242,7 @@ class WalletUpdate {
 
       if (enableRbf) txBuilder = txBuilder.enableRbf();
 
-      final txResult = await txBuilder.finish(bdkWallet);
+      final txResult = await txBuilder.finish(pubWallet);
 
       if (watchOnly) {
         final txDetails = txResult.txDetails;
@@ -275,7 +276,7 @@ class WalletUpdate {
         return ((tx, null, txResult.psbt.psbtBase64), null);
       }
 
-      final signedPSBT = await bdkWallet.sign(psbt: txResult.psbt);
+      final signedPSBT = await signingWallet.sign(psbt: txResult.psbt);
       final feeAmt = await signedPSBT.feeAmount();
 
       return ((null, feeAmt, signedPSBT.psbtBase64), null);
@@ -341,7 +342,8 @@ class WalletUpdate {
   Future<(Transaction?, Err?)> buildBumpFeeTx({
     required Transaction tx,
     required double feeRate,
-    required bdk.Wallet bdkWallet,
+    required bdk.Wallet signingWallet,
+    required bdk.Wallet pubWallet,
   }) async {
     try {
       final txBuilder = bdk.BumpFeeTxBuilder(
@@ -349,8 +351,8 @@ class WalletUpdate {
         feeRate: feeRate,
       );
 
-      final txResult = await txBuilder.finish(bdkWallet);
-      final signedPSBT = await bdkWallet.sign(psbt: txResult.psbt);
+      final txResult = await txBuilder.finish(pubWallet);
+      final signedPSBT = await signingWallet.sign(psbt: txResult.psbt);
 
       final txDetails = txResult.txDetails;
 

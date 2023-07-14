@@ -314,13 +314,11 @@ class SendCubit extends Cubit<SendState> {
 
     final localWallet = walletCubit.state.wallet;
 
-    await bdkWallet.sync(settingsCubit.state.blockchain!);
-    // final bal = await bdkWallet.getBalance();
-
     final (buildResp, err) = await walletUpdate.buildTx(
       watchOnly: walletCubit.state.wallet!.watchOnly(),
       wallet: localWallet!,
-      bdkWallet: bdkWallet,
+      signingWallet: bdkWallet,
+      pubWallet: walletCubit.state.bdkWallet!,
       isManualSend: state.selectedAddresses.isNotEmpty,
       address: state.address,
       amount: state.amount,

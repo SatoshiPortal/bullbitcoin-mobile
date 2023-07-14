@@ -352,7 +352,7 @@ class SendButton extends StatelessWidget {
                           ? 'Broadcasting'
                           : 'Confirm'
                       : sending
-                          ? 'Syncing'
+                          ? 'Building Tx'
                           : 'Send',
             ),
           ),

@@ -180,7 +180,8 @@ class TransactionCubit extends Cubit<TransactionState> {
     final (newTx, errrr) = await walletUpdate.buildBumpFeeTx(
       tx: state.tx,
       feeRate: state.feeRate!.toDouble(),
-      bdkWallet: bdkWallet,
+      signingWallet: bdkWallet,
+      pubWallet: walletCubit.state.bdkWallet!,
     );
     if (errrr != null) {
       emit(

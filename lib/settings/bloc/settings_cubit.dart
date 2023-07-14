@@ -92,7 +92,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   void loadTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: state.reloadWalletTimer), (timer) {
-      // homeCubit?.state.selectedWalletCubit?.sync();
+      homeCubit?.state.selectedWalletCubit?.sync();
     });
   }
 

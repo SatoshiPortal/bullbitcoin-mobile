@@ -101,6 +101,7 @@ class WalletCubit extends Cubit<WalletState> {
 
   Future<void> syncWallet() async {
     if (state.bdkWallet == null) return;
+    if (state.syncing) return;
 
     emit(
       state.copyWith(
