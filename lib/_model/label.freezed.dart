@@ -22,9 +22,9 @@ Label _$LabelFromJson(Map<String, dynamic> json) {
 mixin _$Label {
   LabelType get type => throw _privateConstructorUsedError;
   String get ref => throw _privateConstructorUsedError;
-  String get label => throw _privateConstructorUsedError;
-  String get origin => throw _privateConstructorUsedError;
-  bool get spendable => throw _privateConstructorUsedError;
+  String? get label => throw _privateConstructorUsedError;
+  String? get origin => throw _privateConstructorUsedError;
+  bool? get spendable => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -39,9 +39,9 @@ abstract class $LabelCopyWith<$Res> {
   $Res call(
       {LabelType type,
       String ref,
-      String label,
-      String origin,
-      bool spendable});
+      String? label,
+      String? origin,
+      bool? spendable});
 }
 
 /// @nodoc
@@ -59,9 +59,9 @@ class _$LabelCopyWithImpl<$Res, $Val extends Label>
   $Res call({
     Object? type = null,
     Object? ref = null,
-    Object? label = null,
-    Object? origin = null,
-    Object? spendable = null,
+    Object? label = freezed,
+    Object? origin = freezed,
+    Object? spendable = freezed,
   }) {
     return _then(_value.copyWith(
       type: null == type
@@ -72,18 +72,18 @@ class _$LabelCopyWithImpl<$Res, $Val extends Label>
           ? _value.ref
           : ref // ignore: cast_nullable_to_non_nullable
               as String,
-      label: null == label
+      label: freezed == label
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
-              as String,
-      origin: null == origin
+              as String?,
+      origin: freezed == origin
           ? _value.origin
           : origin // ignore: cast_nullable_to_non_nullable
-              as String,
-      spendable: null == spendable
+              as String?,
+      spendable: freezed == spendable
           ? _value.spendable
           : spendable // ignore: cast_nullable_to_non_nullable
-              as bool,
+              as bool?,
     ) as $Val);
   }
 }
@@ -97,9 +97,9 @@ abstract class _$$_LabelCopyWith<$Res> implements $LabelCopyWith<$Res> {
   $Res call(
       {LabelType type,
       String ref,
-      String label,
-      String origin,
-      bool spendable});
+      String? label,
+      String? origin,
+      bool? spendable});
 }
 
 /// @nodoc
@@ -113,9 +113,9 @@ class __$$_LabelCopyWithImpl<$Res> extends _$LabelCopyWithImpl<$Res, _$_Label>
   $Res call({
     Object? type = null,
     Object? ref = null,
-    Object? label = null,
-    Object? origin = null,
-    Object? spendable = null,
+    Object? label = freezed,
+    Object? origin = freezed,
+    Object? spendable = freezed,
   }) {
     return _then(_$_Label(
       type: null == type
@@ -126,18 +126,18 @@ class __$$_LabelCopyWithImpl<$Res> extends _$LabelCopyWithImpl<$Res, _$_Label>
           ? _value.ref
           : ref // ignore: cast_nullable_to_non_nullable
               as String,
-      label: null == label
+      label: freezed == label
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
-              as String,
-      origin: null == origin
+              as String?,
+      origin: freezed == origin
           ? _value.origin
           : origin // ignore: cast_nullable_to_non_nullable
-              as String,
-      spendable: null == spendable
+              as String?,
+      spendable: freezed == spendable
           ? _value.spendable
           : spendable // ignore: cast_nullable_to_non_nullable
-              as bool,
+              as bool?,
     ));
   }
 }
@@ -148,9 +148,9 @@ class _$_Label extends _Label {
   const _$_Label(
       {required this.type,
       required this.ref,
-      required this.label,
-      required this.origin,
-      required this.spendable})
+      this.label,
+      this.origin,
+      this.spendable})
       : super._();
 
   factory _$_Label.fromJson(Map<String, dynamic> json) =>
@@ -161,11 +161,11 @@ class _$_Label extends _Label {
   @override
   final String ref;
   @override
-  final String label;
+  final String? label;
   @override
-  final String origin;
+  final String? origin;
   @override
-  final bool spendable;
+  final bool? spendable;
 
   @override
   String toString() {
@@ -208,9 +208,9 @@ abstract class _Label extends Label {
   const factory _Label(
       {required final LabelType type,
       required final String ref,
-      required final String label,
-      required final String origin,
-      required final bool spendable}) = _$_Label;
+      final String? label,
+      final String? origin,
+      final bool? spendable}) = _$_Label;
   const _Label._() : super._();
 
   factory _Label.fromJson(Map<String, dynamic> json) = _$_Label.fromJson;
@@ -220,11 +220,11 @@ abstract class _Label extends Label {
   @override
   String get ref;
   @override
-  String get label;
+  String? get label;
   @override
-  String get origin;
+  String? get origin;
   @override
-  bool get spendable;
+  bool? get spendable;
   @override
   @JsonKey(ignore: true)
   _$$_LabelCopyWith<_$_Label> get copyWith =>
