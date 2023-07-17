@@ -19,6 +19,7 @@ class BBText extends StatelessWidget {
     this.isBold = false,
     this.isRed = false,
     this.isBlue = false,
+    this.removeColourOpacity = false,
   })  : type = _FontTypes.headline,
         textAlign = TextAlign.left;
 
@@ -29,6 +30,7 @@ class BBText extends StatelessWidget {
     this.isBold = false,
     this.isRed = false,
     this.isBlue = false,
+    this.removeColourOpacity = false,
   }) : type = _FontTypes.titleLarge;
 
   const BBText.title(
@@ -38,6 +40,7 @@ class BBText extends StatelessWidget {
     this.isBold = false,
     this.isRed = false,
     this.isBlue = false,
+    this.removeColourOpacity = false,
   }) : type = _FontTypes.title;
 
   const BBText.body(
@@ -47,6 +50,7 @@ class BBText extends StatelessWidget {
     this.isBold = false,
     this.isRed = false,
     this.isBlue = false,
+    this.removeColourOpacity = false,
   }) : type = _FontTypes.body;
 
   const BBText.bodySmall(
@@ -56,6 +60,7 @@ class BBText extends StatelessWidget {
     this.isBold = false,
     this.isRed = false,
     this.isBlue = false,
+    this.removeColourOpacity = false,
   }) : type = _FontTypes.bodySmall;
 
   const BBText.error(
@@ -65,6 +70,7 @@ class BBText extends StatelessWidget {
     this.isBold = false,
     this.isRed = false,
     this.isBlue = false,
+    this.removeColourOpacity = false,
   }) : type = _FontTypes.error;
 
   const BBText.errorSmall(
@@ -74,6 +80,7 @@ class BBText extends StatelessWidget {
     this.isBold = false,
     this.isRed = false,
     this.isBlue = false,
+    this.removeColourOpacity = false,
   }) : type = _FontTypes.errorSmall;
 
   final String text;
@@ -83,6 +90,7 @@ class BBText extends StatelessWidget {
   final bool isBold;
   final bool isRed;
   final bool isBlue;
+  final bool removeColourOpacity;
 
   @override
   Widget build(BuildContext context) {
@@ -111,6 +119,7 @@ class BBText extends StatelessWidget {
     if (isBlue) style = style.copyWith(color: context.colour.secondary);
     if (isRed) style = style.copyWith(color: context.colour.primary);
     if (isBold) style = style.copyWith(fontWeight: FontWeight.bold);
+    if (removeColourOpacity) style = style.copyWith(color: context.colour.onBackground);
 
     return Text(
       text,

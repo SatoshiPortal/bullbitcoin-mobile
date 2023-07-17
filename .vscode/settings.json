@@ -50,10 +50,10 @@
         "zmacos": true,
         "linux": true,
         "**/widgetbook": true,
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
         "**/maintainance": true,
         "**/test": true,
-        // "integration_test": true,
+        "integration_test": true,
         ".idea": true,
         // 
         // 

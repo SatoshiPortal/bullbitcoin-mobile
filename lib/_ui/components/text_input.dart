@@ -142,6 +142,12 @@ class _BBTextInputState extends State<BBTextInput> {
                 color: context.colour.onBackground,
               ),
             ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(80.0),
+              borderSide: BorderSide(
+                color: context.colour.onBackground.withOpacity(0.2),
+              ),
+            ),
             labelStyle: context.font.labelSmall,
             contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
           ),

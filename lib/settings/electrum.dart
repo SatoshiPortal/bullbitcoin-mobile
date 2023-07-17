@@ -1,10 +1,11 @@
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -105,49 +106,99 @@ class NetworkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final networks = context.select((SettingsCubit x) => x.state.networks);
-    final selected = context.select((SettingsCubit x) => x.state.selectedNetwork);
-
     if (networks.isEmpty) return const SizedBox.shrink();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Gap(32),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Gap(8),
+          BBHeader.popUpCenteredText(text: 'Electrum Server', isLeft: true),
+          SelectNetworkSegment(),
+          Gap(16),
+          NetworkConfigFields(),
+          Gap(80),
+        ],
+      ),
+    );
+  }
+}
+
+class SelectNetworkSegment extends StatelessWidget {
+  const SelectNetworkSegment({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = context.select((SettingsCubit x) => x.state.selectedNetwork);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _SegmentButton(
+          index: 0,
+          isSelected: selected == 0,
+          text: 'Blockstream',
+        ),
+        _SegmentButton(
+          index: 1,
+          isSelected: selected == 1,
+          text: 'Bull Bitcoin',
+        ),
+        _SegmentButton(
+          index: 2,
+          isSelected: selected == 2,
+          text: 'Custom',
+        ),
+      ],
+    );
+  }
+}
+
+class _SegmentButton extends StatelessWidget {
+  const _SegmentButton({
+    required this.index,
+    required this.isSelected,
+    required this.text,
+  });
+
+  final int index;
+  final bool isSelected;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedBGColour = context.colour.surface.withOpacity(0.3);
+    final unselectedBGColour = context.colour.surface.withOpacity(0.1);
+
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          context.read<SettingsCubit>().changeNetwork(index);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          // width: double.infinity,
+          decoration: BoxDecoration(
+            color: isSelected ? selectedBGColour : unselectedBGColour,
+            borderRadius: BorderRadius.only(
+              topLeft: index == 0 ? const Radius.circular(8) : Radius.zero,
+              topRight: index == 2 ? const Radius.circular(8) : Radius.zero,
+            ),
+          ),
+          child: Column(
             children: [
-              const BBText.body(
-                'Select network',
-              ),
-              const Spacer(),
-              IconButton(
-                onPressed: () {
-                  context.pop();
-                },
-                icon: const Icon(Icons.close),
+              const Gap(8),
+              BBText.bodySmall(text, removeColourOpacity: true),
+              Gap(isSelected ? 7 : 8),
+              Container(
+                // width: double.infinity,
+                height: isSelected ? 2 : 1,
+                color: isSelected ? context.colour.primary : context.colour.surface,
               ),
             ],
           ),
-          const Gap(32),
-          CupertinoSlidingSegmentedControl(
-            groupValue: selected,
-            onValueChanged: (i) {
-              context.read<SettingsCubit>().changeNetwork(i ?? 0);
-            },
-            children: const {
-              0: BBText.body('Blockstream'),
-              1: BBText.body('Bull Bitcoin'),
-              2: BBText.body('Custom'),
-            },
-          ),
-          const Gap(8),
-          const Divider(),
-          const Gap(16),
-          const NetworkConfigFields(),
-          const Gap(80),
-        ],
+        ),
       ),
     );
   }
@@ -165,6 +216,7 @@ class NetworkConfigFields extends HookWidget {
     final network = context.select((SettingsCubit x) => x.state.getNetwork());
     final index = context.select((SettingsCubit x) => x.state.selectedNetwork);
     final err = context.select((SettingsCubit x) => x.state.errLoadingNetworks);
+    final loading = context.select((SettingsCubit x) => x.state.loadingNetworks);
 
     if (network == null) return const SizedBox.shrink();
 
@@ -193,59 +245,98 @@ class NetworkConfigFields extends HookWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const Gap(16),
+          const BBText.title('    Mainnet'),
+          const Gap(4),
           SizedBox(
             width: fieldWidth,
-            child: TextField(
-              enabled: index == 2,
+            child: BBTextInput.big(
+              onChanged: (t) {},
+              value: mainnet.text,
               controller: mainnet,
-              style: index != 2 ? const TextStyle(color: Colors.grey) : null,
-              decoration: const InputDecoration(labelText: 'Mainnet'),
+              disabled: index != 2,
             ),
+            // child: TextField(
+            //   enabled: index == 2,
+            //   controller: mainnet,
+            //   style: index != 2 ? const TextStyle(color: Colors.grey) : null,
+            //   decoration: const InputDecoration(labelText: 'Mainnet'),
+            // ),
           ),
           const Gap(16),
+          const BBText.title('    Testnet'),
+          const Gap(4),
           SizedBox(
             width: fieldWidth,
-            child: TextField(
-              enabled: index == 2,
+            child: BBTextInput.big(
+              onChanged: (t) {},
+              value: testnet.text,
               controller: testnet,
-              style: index != 2 ? const TextStyle(color: Colors.grey) : null,
-              decoration: const InputDecoration(labelText: 'Testnet'),
+              disabled: index != 2,
             ),
+            // child: TextField(
+            //   enabled: index == 2,
+            //   controller: testnet,
+            //   style: index != 2 ? const TextStyle(color: Colors.grey) : null,
+            //   decoration: const InputDecoration(labelText: 'Testnet'),
+            // ),
           ),
           const Gap(16),
+          const BBText.title('    Stop gap'),
+          const Gap(4),
           SizedBox(
             width: fieldWidth,
-            child: TextField(
+            child: BBTextInput.big(
+              onChanged: (t) {},
+              value: stopGap.text,
               controller: stopGap,
-              decoration: const InputDecoration(
-                labelText: 'Stop gap',
-              ),
             ),
+            // child: TextField(
+            //   controller: stopGap,
+            //   decoration: const InputDecoration(
+            //     labelText: 'Stop gap',
+            //   ),
+            // ),
           ),
           const Gap(16),
+          const BBText.title('    Retry'),
+          const Gap(4),
           SizedBox(
             width: fieldWidth,
-            child: TextField(
+            child: BBTextInput.big(
+              onChanged: (t) {},
+              value: retry.text,
               controller: retry,
-              decoration: const InputDecoration(
-                labelText: 'Retry',
-              ),
             ),
+            // child: TextField(
+            //   controller: retry,
+            //   decoration: const InputDecoration(
+            //     labelText: 'Retry',
+            //   ),
+            // ),
           ),
           const Gap(16),
+          const BBText.title('    Timeout'),
+          const Gap(4),
           SizedBox(
             width: fieldWidth,
-            child: TextField(
+            child: BBTextInput.big(
+              onChanged: (t) {},
+              value: timeout.text,
               controller: timeout,
-              decoration: const InputDecoration(
-                labelText: 'Timeout',
-              ),
             ),
+            // child: TextField(
+            //   controller: timeout,
+            //   decoration: const InputDecoration(
+            //     labelText: 'Timeout',
+            //   ),
+            // ),
           ),
           const Gap(16),
           Row(
             children: [
               const BBText.body('Validate domain'),
+              const Spacer(),
               IgnorePointer(
                 ignoring: index != 2,
                 child: Switch(
@@ -257,9 +348,15 @@ class NetworkConfigFields extends HookWidget {
               ),
             ],
           ),
-          const Gap(32),
+          const Gap(40),
+          if (err.isNotEmpty) ...[
+            BBText.error(err),
+            const Gap(8),
+          ],
           BBButton.bigRed(
-            onPressed: () {
+            loading: loading,
+            loadingText: 'Connecting...',
+            onPressed: () async {
               FocusScope.of(context).requestFocus(FocusNode());
               final updatednetwork = network.copyWith(
                 mainnet: mainnet.text,
@@ -270,15 +367,13 @@ class NetworkConfigFields extends HookWidget {
                 validateDomain: validateDomain.value,
               );
               context.read<SettingsCubit>().networkConfigsSaveClicked(updatednetwork);
+              await Future.delayed(const Duration(milliseconds: 500));
+              final err = context.read<SettingsCubit>().state.errLoadingNetworks;
+              if (err.isEmpty) context.pop();
             },
             label: 'SAVE',
             filled: true,
           ),
-          const Gap(8),
-          if (err.isNotEmpty)
-            BBText.body(
-              err,
-            ),
           const Gap(40),
         ],
       ),
