@@ -199,7 +199,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
 
     final syncing = context.select((WalletBloc cubit) => cubit.state.syncing);
 
-    final ad = context.select((WalletBloc cubit) => cubit.state.firstAddress ?? '');
+    final ad = context.select((WalletBloc cubit) => cubit.state.newAddress?.address ?? '');
 
     final balance = context.select((WalletBloc cubit) => cubit.state.balance);
 

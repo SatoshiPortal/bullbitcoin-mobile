@@ -8,7 +8,11 @@ class LoadWallet extends WalletEvent {
   final String saveDir;
 }
 
-class SyncWallet extends WalletEvent {}
+class SyncWallet extends WalletEvent {
+  SyncWallet({this.cancelSync = false});
+
+  final bool cancelSync;
+}
 
 class UpdateWallet extends WalletEvent {
   UpdateWallet(this.wallet);
@@ -22,3 +26,5 @@ class GetAddresses extends WalletEvent {}
 class ListTransactions extends WalletEvent {}
 
 class GetFirstAddress extends WalletEvent {}
+
+class GetNewAddress extends WalletEvent {}

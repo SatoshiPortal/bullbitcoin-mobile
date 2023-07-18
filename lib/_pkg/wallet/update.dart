@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:isolate';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
@@ -53,10 +52,6 @@ class WalletUpdate {
       final addresses =
           (isSend ? wallet.toAddresses?.toList() : wallet.addresses?.toList()) ?? <Address>[];
 
-      // if (label == null && ad.any((element) => element.address == address.address)) {
-      //   return ad.firstWhere((element) => element.address == address.address);
-      // }
-
       Address a;
 
       final existing = addresses.indexWhere(
@@ -85,9 +80,6 @@ class WalletUpdate {
 
       final w =
           isSend ? wallet.copyWith(toAddresses: addresses) : wallet.copyWith(addresses: addresses);
-
-      // await updateWallet(w);
-      // walletBloc.updateWallet(w);
 
       return (a, w);
     } catch (e) {
@@ -164,33 +156,33 @@ class WalletUpdate {
     }
   }
 
-  Future<((int, String, String?)?, Err?)> getNewAddress({
+  Future<(({int index, String address})?, Err?)> getNewAddress({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
   }) async {
     try {
-      final addresses = wallet.addresses ?? <Address>[];
+      final address = await bdkWallet.getAddress(
+        addressIndex: const bdk.AddressIndex.new(),
+      );
 
-      final receivePort = ReceivePort();
-      await Isolate.spawn(_getNewAddress, [receivePort.sendPort, bdkWallet]);
-      final address = await receivePort.first as bdk.AddressInfo;
-
-      // final address = await bdkWallet.getAddress(
-      //   addressIndex: const bdk.AddressIndex.new(),
-      // );
-
-      String? label;
-      if (addresses.any((element) => element.address == address.address)) {
-        final x = addresses.firstWhere(
-          (element) => element.address == address.address,
-        );
-        label = x.label;
-      }
-
-      return ((address.index, address.address, label), null);
+      return ((index: address.index, address: address.address), null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
+  }
+
+  Future<String?> getAddressLabel({required Wallet wallet, required String address}) async {
+    final addresses = wallet.addresses ?? <Address>[];
+
+    String? label;
+    if (addresses.any((element) => element.address == address)) {
+      final x = addresses.firstWhere(
+        (element) => element.address == address,
+      );
+      label = x.label;
+    }
+
+    return label;
   }
 
   Future<((int, String)?, Err?)> newAddress({
@@ -378,13 +370,4 @@ class WalletUpdate {
       return (null, Err(e.toString()));
     }
   }
-}
-
-Future<void> _getNewAddress(List<dynamic> args) async {
-  final resultPort = args[0] as SendPort;
-  final bdkWallet = args[1] as bdk.Wallet;
-  final address = await bdkWallet.getAddress(
-    addressIndex: const bdk.AddressIndex.new(),
-  );
-  resultPort.send(address);
 }

@@ -24,46 +24,87 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   void loadAddress() async {
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
 
-    final (ai, err) = await walletUpdate.getNewAddress(
-      wallet: walletBloc.state.wallet!,
-      bdkWallet: walletBloc.state.bdkWallet!,
-    );
-    if (err != null) {
-      emit(
-        state.copyWith(
-          loadingAddress: false,
-          errLoadingAddress: err.toString(),
-        ),
+    final syncing = walletBloc.state.syncing;
+    if (syncing) {
+      final newAddress = walletBloc.state.newAddress;
+
+      final address = newAddress!.address;
+      final idx = newAddress.index;
+
+      final label = await walletUpdate.getAddressLabel(
+        wallet: walletBloc.state.wallet!,
+        address: address,
       );
-      return;
-    }
 
-    final (idx, address, label) = ai!;
-
-    final (a, w) = await walletUpdate.updateWalletAddress(
-      address: (idx, address),
-      wallet: walletBloc.state.wallet!,
-      label: label,
-    );
-
-    emit(state.copyWith(defaultAddress: a));
-
-    final errUpdate = await walletUpdate.updateWallet(
-      wallet: w,
-      walletRead: walletRead,
-      storage: storage,
-    );
-    if (errUpdate != null) {
-      emit(
-        state.copyWith(
-          loadingAddress: false,
-          errLoadingAddress: errUpdate.toString(),
-        ),
+      final (a, w) = await walletUpdate.updateWalletAddress(
+        address: (idx, address),
+        wallet: walletBloc.state.wallet!,
+        label: label,
       );
-      return;
-    }
 
-    walletBloc.add(UpdateWallet(w));
+      emit(state.copyWith(defaultAddress: a));
+
+      final errUpdate = await walletUpdate.updateWallet(
+        wallet: w,
+        walletRead: walletRead,
+        storage: storage,
+      );
+      if (errUpdate != null) {
+        emit(
+          state.copyWith(
+            loadingAddress: false,
+            errLoadingAddress: errUpdate.toString(),
+          ),
+        );
+        return;
+      }
+
+      walletBloc.add(UpdateWallet(w));
+    } else {
+      final (newAddress, err) = await walletUpdate.getNewAddress(
+        wallet: walletBloc.state.wallet!,
+        bdkWallet: walletBloc.state.bdkWallet!,
+      );
+      if (err != null) {
+        emit(
+          state.copyWith(
+            loadingAddress: false,
+            errLoadingAddress: err.toString(),
+          ),
+        );
+        return;
+      }
+
+      final label = await walletUpdate.getAddressLabel(
+        wallet: walletBloc.state.wallet!,
+        address: newAddress!.address,
+      );
+
+      final (a, w) = await walletUpdate.updateWalletAddress(
+        address: (newAddress.index, newAddress.address),
+        wallet: walletBloc.state.wallet!,
+        label: label,
+      );
+
+      emit(state.copyWith(defaultAddress: a));
+
+      final errUpdate = await walletUpdate.updateWallet(
+        wallet: w,
+        walletRead: walletRead,
+        storage: storage,
+      );
+      if (errUpdate != null) {
+        emit(
+          state.copyWith(
+            loadingAddress: false,
+            errLoadingAddress: errUpdate.toString(),
+          ),
+        );
+        return;
+      }
+
+      walletBloc.add(UpdateWallet(w));
+    }
 
     emit(
       state.copyWith(
@@ -147,11 +188,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   void saveFinalInvoiceClicked() async {
     emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
 
-    // bdk.AddressInfo(index: 1, address: '');
-
-    // final add = await bdk.Address.create(address: 'address');
-    // final scr = await add.scriptPubKey();
-
     final (a, err) = await walletUpdate.newAddress(bdkWallet: walletBloc.state.bdkWallet!);
 
     if (err != null)
@@ -204,25 +240,3 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void shareClicked() {}
 }
-
-// mxTi8bUNMjYWM769B6d9ZMnphTMxL2sRbK
-// tb1qrqzgsjg7k3gdcmy8933ml46me7wmuetruttvag
-
-      // } else {
-      //   final defaultAddress = addresses.first;
-      //   // .firstWhere(
-      //   //   (element) => element.index == 0,
-      //   // );
-
-      //   // final defaultAddress = await state.bdkWallet.getAddress(
-      //   //   addressIndex: const bdk.AddressIndex.lastUnused(),
-      //   // );
-
-      //   emit(
-      //     state.copyWith(
-      //       loadingAddress: false,
-      //       errLoadingAddress: '',
-      //       defaultAddress: defaultAddress,
-      //     ),
-      //   );
-      // }

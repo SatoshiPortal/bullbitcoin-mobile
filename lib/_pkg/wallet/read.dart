@@ -257,17 +257,17 @@ class WalletRead {
     }
   }
 
-  // Future<Err?> syncWallet({
-  //   required bdk.Wallet bdkWallet,
-  //   required bdk.Blockchain blockChain,
-  // }) async {
-  //   try {
-  //     Isolate.run(() async => {await bdkWallet.sync(blockChain)});
-  //     return null;
-  //   } catch (e) {
-  //     return Err(e.toString());
-  //   }
-  // }
+  Future<Err?> syncWallet({
+    required bdk.Wallet bdkWallet,
+    required bdk.Blockchain blockChain,
+  }) async {
+    try {
+      await bdkWallet.sync(blockChain);
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
 
   Future<(ReceivePort?, Err?)> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
     try {
