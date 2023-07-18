@@ -130,16 +130,26 @@ class WalletName extends StatelessWidget {
     final fingerprint =
         context.select((ReceiveCubit x) => x.walletBloc.state.wallet?.cleanFingerprint() ?? '');
 
-    return Center(
-      child: loading
-          ? const SizedBox(
-              height: 8,
-              width: 8,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : BBText.body(
-              walletName ?? fingerprint,
-            ),
+    return AnimatedContainer(
+      duration: 500.ms,
+      child: Center(
+        child: loading
+            ? const Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  BBText.body('Waiting for sync to complete ...'),
+                  Gap(32),
+                  SizedBox(
+                    height: 8,
+                    width: 8,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ],
+              )
+            : BBText.body(
+                walletName ?? fingerprint,
+              ),
+      ),
     );
   }
 }

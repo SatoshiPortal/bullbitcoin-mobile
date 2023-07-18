@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
@@ -170,9 +171,13 @@ class WalletUpdate {
     try {
       final addresses = wallet.addresses ?? <Address>[];
 
-      final address = await bdkWallet.getAddress(
-        addressIndex: const bdk.AddressIndex.new(),
-      );
+      final receivePort = ReceivePort();
+      await Isolate.spawn(_getNewAddress, [receivePort.sendPort, bdkWallet]);
+      final address = await receivePort.first as bdk.AddressInfo;
+
+      // final address = await bdkWallet.getAddress(
+      //   addressIndex: const bdk.AddressIndex.new(),
+      // );
 
       String? label;
       if (addresses.any((element) => element.address == address.address)) {
@@ -373,4 +378,13 @@ class WalletUpdate {
       return (null, Err(e.toString()));
     }
   }
+}
+
+Future<void> _getNewAddress(List<dynamic> args) async {
+  final resultPort = args[0] as SendPort;
+  final bdkWallet = args[1] as bdk.Wallet;
+  final address = await bdkWallet.getAddress(
+    addressIndex: const bdk.AddressIndex.new(),
+  );
+  resultPort.send(address);
 }

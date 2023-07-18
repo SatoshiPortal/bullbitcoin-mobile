@@ -279,14 +279,6 @@ class WalletRead {
     }
   }
 
-  Future<void> _sync(List<dynamic> args) async {
-    final resultPort = args[0] as SendPort;
-    final wallet = args[1] as bdk.Wallet;
-    final blockchain = args[2] as bdk.Blockchain;
-    await wallet.sync(blockchain);
-    resultPort.send(true);
-  }
-
   // Future<bool> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
   //   final receivePort = ReceivePort();
 
@@ -302,4 +294,12 @@ class WalletRead {
   //   await wallet.sync(blockchain);
   //   resultPort.send(true);
   // }
+}
+
+Future<void> _sync(List<dynamic> args) async {
+  final resultPort = args[0] as SendPort;
+  final wallet = args[1] as bdk.Wallet;
+  final blockchain = args[2] as bdk.Blockchain;
+  await wallet.sync(blockchain);
+  resultPort.send(true);
 }

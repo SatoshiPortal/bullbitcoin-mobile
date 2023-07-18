@@ -46,6 +46,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       label: label,
     );
 
+    emit(state.copyWith(defaultAddress: a));
+
     final errUpdate = await walletUpdate.updateWallet(
       wallet: w,
       walletRead: walletRead,
@@ -67,7 +69,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       state.copyWith(
         loadingAddress: false,
         errLoadingAddress: '',
-        defaultAddress: a,
       ),
     );
   }
