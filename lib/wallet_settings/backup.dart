@@ -5,7 +5,7 @@ import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/_ui/word_grid.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:extra_alignments/extra_alignments.dart';
@@ -22,7 +22,7 @@ class TestBackupScreen extends StatelessWidget {
 
   static Future openPopup(BuildContext context) {
     final settings = context.read<WalletSettingsCubit>();
-    final wallet = context.read<WalletCubit>();
+    final wallet = context.read<WalletBloc>();
     // settings.clearnMnemonic();
     settings.loadBackupClicked();
 
@@ -193,7 +193,7 @@ class TestBackupPassField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasPassphrase = context.select((WalletCubit x) => x.state.wallet!.password != null);
+    final hasPassphrase = context.select((WalletBloc x) => x.state.wallet!.password != null);
 
     if (!hasPassphrase) return const SizedBox.shrink();
 
@@ -280,7 +280,7 @@ class BackupScreen extends StatelessWidget {
   static Future openPopup(
     BuildContext context,
   ) {
-    final wallet = context.read<WalletCubit>();
+    final wallet = context.read<WalletBloc>();
     final walletSettings = context.read<WalletSettingsCubit>();
 
     return showMaterialModalBottomSheet(

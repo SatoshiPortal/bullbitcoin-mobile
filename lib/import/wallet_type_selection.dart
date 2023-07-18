@@ -13,7 +13,7 @@ import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,7 +30,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
 
     final walletCubits = [
       for (final w in wallets)
-        WalletCubit(
+        WalletBloc(
           saveDir: w.getStorageString(),
           settingsCubit: locator<SettingsCubit>(),
           walletRead: locator<WalletRead>(),
@@ -61,7 +61,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
 class _Screen extends StatefulWidget {
   const _Screen({required this.walletCubits});
 
-  final List<WalletCubit> walletCubits;
+  final List<WalletBloc> walletCubits;
 
   @override
   State<_Screen> createState() => _ScreenState();
@@ -82,9 +82,9 @@ class _ScreenState extends State<_Screen> {
 
     // if (step == ImportSteps.scanningWallets) {
     //   final listeners = [
-    //     for (final walletCubit in widget.walletCubits)
-    //       BlocListener<WalletCubit, WalletState>(
-    //         bloc: walletCubit,
+    //     for (final walletBloc in widget.walletCubits)
+    //       BlocListener<walletBloc, WalletState>(
+    //         bloc: walletBloc,
     //         listenWhen: (previous, current) => previous.syncing != current.syncing,
     //         listener: (context, state) async {
     //           if (state.wallet == null) return;
@@ -117,9 +117,9 @@ class _ScreenState extends State<_Screen> {
               'Choose wallet type',
             ),
             const Gap(16),
-            for (final walletCubit in widget.walletCubits) ...[
+            for (final walletBloc in widget.walletCubits) ...[
               BlocProvider.value(
-                value: walletCubit,
+                value: walletBloc,
                 child: const _ImportWalletTypeButton(),
               ),
               const Gap(16),
@@ -184,7 +184,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((WalletCubit cubit) => cubit.state.wallet);
+    final wallet = context.select((WalletBloc cubit) => cubit.state.wallet);
 
     if (wallet == null) return const SizedBox.shrink();
 
@@ -197,14 +197,14 @@ class _ImportWalletTypeButton extends StatelessWidget {
       (ImportWalletCubit cubit) => cubit.state.walletName(walletType),
     );
 
-    final syncing = context.select((WalletCubit cubit) => cubit.state.syncing);
+    final syncing = context.select((WalletBloc cubit) => cubit.state.syncing);
 
-    final ad = context.select((WalletCubit cubit) => cubit.state.firstAddress ?? '');
+    final ad = context.select((WalletBloc cubit) => cubit.state.firstAddress ?? '');
 
-    final balance = context.select((WalletCubit cubit) => cubit.state.balance);
+    final balance = context.select((WalletBloc cubit) => cubit.state.balance);
 
     final hasTxs = context.select(
-      (WalletCubit cubit) => cubit.state.wallet?.transactions?.isNotEmpty ?? false,
+      (WalletBloc cubit) => cubit.state.wallet?.transactions?.isNotEmpty ?? false,
     );
 
     final address = ad.isNotEmpty ? ad.substring(0, 5) + '...' + ad.substring(ad.length - 5) : '';

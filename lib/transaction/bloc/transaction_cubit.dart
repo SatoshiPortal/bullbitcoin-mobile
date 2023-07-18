@@ -6,13 +6,14 @@ import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransactionCubit extends Cubit<TransactionState> {
   TransactionCubit({
     required Transaction tx,
-    required this.walletCubit,
+    required this.walletBloc,
     required this.storage,
     required this.secureStorage,
     required this.walletUpdate,
@@ -29,7 +30,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     loadTx();
   }
 
-  final WalletCubit walletCubit;
+  final WalletBloc walletBloc;
   final MempoolAPI mempoolAPI;
   final IStorage storage;
   final IStorage secureStorage;
@@ -52,7 +53,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   Future loadInAddresses() async {
     final (tx, err) = await walletRead.getInputAddresses(
       tx: state.tx,
-      wallet: walletCubit.state.wallet!,
+      wallet: walletBloc.state.wallet!,
       mempoolAPI: mempoolAPI,
     );
     if (err != null) {
@@ -70,7 +71,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   Future loadOutAddresses() async {
     final (tx, err) = await walletRead.getOutputAddresses(
       tx: state.tx,
-      wallet: walletCubit.state.wallet!,
+      wallet: walletBloc.state.wallet!,
       mempoolAPI: mempoolAPI,
     );
     if (err != null) {
@@ -88,7 +89,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     final tx = state.tx;
     final txid = tx.txid;
 
-    final address = walletCubit.state.wallet!.getAddressFromAddresses(txid);
+    final address = walletBloc.state.wallet!.getAddressFromAddresses(txid);
 
     if (address == null || address.label == null) return;
 
@@ -103,7 +104,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   void loadSentLabel() {}
 
   // void loadLabel() async {
-  //   final tx = (walletCubit.state.wallet?.transactions ?? []).firstWhere(
+  //   final tx = (walletBloc.state.wallet?.transactions ?? []).firstWhere(
   //     (t) => t.txid == state.tx.txid,
   //     orElse: () => state.tx,
   //   );
@@ -120,9 +121,9 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
 
     final tx = state.tx.copyWith(label: state.label);
-    final updateWallet = walletCubit.state.wallet!.copyWith(
+    final updateWallet = walletBloc.state.wallet!.copyWith(
       transactions: [
-        for (var t in walletCubit.state.wallet?.transactions ?? <Transaction>[])
+        for (var t in walletBloc.state.wallet?.transactions ?? <Transaction>[])
           if (t.txid == tx.txid) tx else t,
       ],
     );
@@ -148,7 +149,8 @@ class TransactionCubit extends Cubit<TransactionState> {
         tx: tx,
       ),
     );
-    walletCubit.updateWallet(updateWallet);
+
+    walletBloc.add(UpdateWallet(updateWallet));
   }
 
   void updateFeeRate(String feeRate) {
@@ -160,7 +162,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
 
     final (sensitiveWallet, err) = await walletRead.getWalletDetails(
-      saveDir: walletCubit.state.wallet!.getStorageString(),
+      saveDir: walletBloc.state.wallet!.getStorageString(),
       storage: secureStorage,
     );
     if (err != null) {
@@ -181,7 +183,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       tx: state.tx,
       feeRate: state.feeRate!.toDouble(),
       signingWallet: bdkWallet,
-      pubWallet: walletCubit.state.bdkWallet!,
+      pubWallet: walletBloc.state.bdkWallet!,
     );
     if (errrr != null) {
       emit(
@@ -214,7 +216,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   void sendTx() async {
     emit(state.copyWith(sendingTx: true, errSendingTx: ''));
     final tx = state.updatedTx!;
-    final wallet = walletCubit.state.wallet!;
+    final wallet = walletBloc.state.wallet!;
     final blockchain = settingsCubit.state.blockchain!;
     final (wtxid, err) = await walletUpdate.broadcastTxWithWallet(
       psbt: tx.psbt!,
@@ -236,13 +238,13 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     var (_, updatedWallet) = await walletUpdate.updateWalletAddress(
       address: (1, tx.toAddress!),
-      wallet: wallet,
+      wallet: w,
       label: tx.label,
       sentTxId: txid,
       isSend: true,
     );
 
-    final txs = walletCubit.state.wallet!.transactions?.toList() ?? [];
+    final txs = walletBloc.state.wallet!.transactions?.toList() ?? [];
     final idx = txs.indexWhere((element) => element.txid == tx.txid);
     txs.removeAt(idx);
     txs.insert(idx, state.tx.copyWith(oldTx: true));
@@ -259,9 +261,8 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
-    walletCubit.updateWallet(updatedWallet);
-
-    walletCubit.sync();
+    walletBloc.add(UpdateWallet(updatedWallet));
+    walletBloc.add(SyncWallet());
 
     emit(
       state.copyWith(
@@ -269,7 +270,7 @@ class TransactionCubit extends Cubit<TransactionState> {
         sentTx: true,
       ),
     );
-    walletCubit.updateWallet(w);
+    // walletBloc.updateWallet(w);
   }
 
   void cancelTx() {

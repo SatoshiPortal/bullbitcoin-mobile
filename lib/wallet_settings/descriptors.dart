@@ -3,7 +3,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +19,7 @@ class XPubButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desc = context.select((WalletCubit cubit) => cubit.state.wallet!.externalDescriptor);
+    final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.externalDescriptor);
     if (desc.isEmpty) return const SizedBox();
 
     final xpub = keyFromDescr(desc);
@@ -40,7 +40,7 @@ class XPrivButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desc = context.select((WalletCubit cubit) => cubit.state.wallet!.internalDescriptor);
+    final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.internalDescriptor);
     if (desc.isEmpty) return const SizedBox();
 
     final xpub = keyFromPrivDescr(desc);

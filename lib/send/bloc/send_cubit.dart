@@ -10,13 +10,14 @@ import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState> {
   SendCubit({
     required this.barcode,
-    required this.walletCubit,
+    required this.walletBloc,
     required this.settingsCubit,
     required this.bullBitcoinAPI,
     required this.storage,
@@ -32,7 +33,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   final Barcode barcode;
-  final WalletCubit walletCubit;
+  final WalletBloc walletBloc;
   final SettingsCubit settingsCubit;
   final BullBitcoinAPI bullBitcoinAPI;
   final IStorage storage;
@@ -44,7 +45,7 @@ class SendCubit extends Cubit<SendState> {
   final FileStorage fileStorage;
 
   void loadAddressesAndBalances() {
-    walletCubit.getAddresses();
+    walletBloc.add(GetAddresses());
   }
 
   void setupFees() {
@@ -201,7 +202,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void sendAllCoin(bool sendAll) {
-    final balance = walletCubit.state.balanceSats();
+    final balance = walletBloc.state.balanceSats();
     emit(
       state.copyWith(
         sendAllCoin: sendAll,
@@ -239,7 +240,7 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
     if (state.selectedAddresses.isEmpty) {
-      if (amount > 0 && walletCubit.state.balanceSats() >= amount)
+      if (amount > 0 && walletBloc.state.balanceSats() >= amount)
         emit(state.copyWith(showSendButton: true));
       else
         emit(state.copyWith(showSendButton: false));
@@ -286,12 +287,12 @@ class SendCubit extends Cubit<SendState> {
 
   void confirmClickedd() async {
     if (state.sending) return;
-    var bdkWallet = walletCubit.state.bdkWallet;
+    var bdkWallet = walletBloc.state.bdkWallet;
     if (bdkWallet == null) return;
 
-    if (!walletCubit.state.wallet!.watchOnly()) {
+    if (!walletBloc.state.wallet!.watchOnly()) {
       final (sensitiveWallet, err) = await walletRead.getWalletDetails(
-        saveDir: walletCubit.state.wallet!.getStorageString(),
+        saveDir: walletBloc.state.wallet!.getStorageString(),
         storage: secureStorage,
       );
       if (err != null) {
@@ -312,13 +313,13 @@ class SendCubit extends Cubit<SendState> {
 
     emit(state.copyWith(sending: true, errSending: ''));
 
-    final localWallet = walletCubit.state.wallet;
+    final localWallet = walletBloc.state.wallet;
 
     final (buildResp, err) = await walletUpdate.buildTx(
-      watchOnly: walletCubit.state.wallet!.watchOnly(),
+      watchOnly: walletBloc.state.wallet!.watchOnly(),
       wallet: localWallet!,
       signingWallet: bdkWallet,
-      pubWallet: walletCubit.state.bdkWallet!,
+      pubWallet: walletBloc.state.bdkWallet!,
       isManualSend: state.selectedAddresses.isNotEmpty,
       address: state.address,
       amount: state.amount,
@@ -341,7 +342,7 @@ class SendCubit extends Cubit<SendState> {
 
     final (tx, feeAmt, psbt) = buildResp!;
 
-    if (walletCubit.state.wallet!.watchOnly()) {
+    if (walletBloc.state.wallet!.watchOnly()) {
       final txs = localWallet.transactions?.toList() ?? [];
       txs.add(tx!);
 
@@ -360,7 +361,7 @@ class SendCubit extends Cubit<SendState> {
         return;
       }
 
-      walletCubit.updateWallet(localWallet);
+      walletBloc.add(UpdateWallet(localWallet));
 
       emit(
         state.copyWith(
@@ -390,7 +391,7 @@ class SendCubit extends Cubit<SendState> {
     final (wtxid, err) = await walletUpdate.broadcastTxWithWallet(
       psbt: state.psbtSigned!,
       blockchain: settingsCubit.state.blockchain!,
-      wallet: walletCubit.state.wallet!,
+      wallet: walletBloc.state.wallet!,
       address: state.address,
       note: state.note,
     );
@@ -419,9 +420,8 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    walletCubit.updateWallet(updatedWallet);
-
-    walletCubit.sync();
+    walletBloc.add(UpdateWallet(updatedWallet));
+    walletBloc.add(SyncWallet());
 
     emit(state.copyWith(sending: false, sent: true));
   }

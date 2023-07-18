@@ -63,13 +63,13 @@ class DeepLink {
 
       await Future.delayed(const Duration(milliseconds: 100));
 
-      final walletCubit = homeCubit.state.selectedWalletCubit;
+      final walletBloc = homeCubit.state.selectedWalletCubit;
 
-      if (walletCubit == null) return Err('No wallet found');
+      if (walletBloc == null) return Err('No wallet found');
 
       await SendPopup.openSendPopUp(
         context,
-        walletCubit,
+        walletBloc,
         deepLinkUri: link,
       );
 

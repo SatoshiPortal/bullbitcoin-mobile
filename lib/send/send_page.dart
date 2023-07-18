@@ -19,7 +19,7 @@ import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/send/psbt.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,7 +33,7 @@ class SendPopup extends StatelessWidget {
 
   static Future openSendPopUp(
     BuildContext context,
-    WalletCubit walletCubit, {
+    WalletBloc walletBloc, {
     String? deepLinkUri,
   }) {
     final cubit = SendCubit(
@@ -43,7 +43,7 @@ class SendPopup extends StatelessWidget {
       walletUpdate: locator<WalletUpdate>(),
       walletCreate: locator<WalletCreate>(),
       barcode: locator<Barcode>(),
-      walletCubit: walletCubit,
+      walletBloc: walletBloc,
       settingsCubit: locator<SettingsCubit>(),
       bullBitcoinAPI: locator<BullBitcoinAPI>(),
       mempoolAPI: locator<MempoolAPI>(),
@@ -58,7 +58,7 @@ class SendPopup extends StatelessWidget {
       builder: (context) => BlocProvider.value(
         value: cubit,
         child: BlocProvider.value(
-          value: walletCubit,
+          value: walletBloc,
           child: BlocListener<SendCubit, SendState>(
             listenWhen: (previous, current) => previous.sent != current.sent,
             listener: (context, state) {
@@ -134,10 +134,10 @@ class WalletName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = context.select((WalletCubit cubit) => cubit.state.wallet?.name);
+    final name = context.select((WalletBloc cubit) => cubit.state.wallet?.name);
 
     final fingerprint =
-        context.select((WalletCubit cubit) => cubit.state.wallet?.cleanFingerprint() ?? '');
+        context.select((WalletBloc cubit) => cubit.state.wallet?.cleanFingerprint() ?? '');
 
     return BBText.body(
       name ?? fingerprint,
@@ -150,7 +150,7 @@ class WalletBalance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balance = context.select((WalletCubit cubit) => cubit.state.balance?.total ?? 0);
+    final balance = context.select((WalletBloc cubit) => cubit.state.balance?.total ?? 0);
 
     final balStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(balance));
 
@@ -215,7 +215,7 @@ class _EnterAmountState extends State<EnterAmount> {
   Widget build(BuildContext context) {
     final sendAll = context.select((SendCubit cubit) => cubit.state.sendAllCoin);
     if (sendAll) return const SizedBox.shrink();
-    final balance = context.select((WalletCubit cubit) => cubit.state.balance?.total ?? 0);
+    final balance = context.select((WalletBloc cubit) => cubit.state.balance?.total ?? 0);
     final isSats = context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
     final amount = context.select((SendCubit cubit) => cubit.state.amount);
 
@@ -317,7 +317,7 @@ class SendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final watchOnly = context.select((WalletCubit cubit) => cubit.state.wallet!.watchOnly());
+    final watchOnly = context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
 
     final sending = context.select((SendCubit cubit) => cubit.state.sending);
     final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);

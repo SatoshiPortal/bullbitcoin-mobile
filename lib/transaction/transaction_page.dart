@@ -16,7 +16,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,7 +38,7 @@ class TxPage extends StatelessWidget {
     final wallet = home.state.selectedWalletCubit!;
     final txCubit = TransactionCubit(
       tx: tx,
-      walletCubit: wallet,
+      walletBloc: wallet,
       mempoolAPI: locator<MempoolAPI>(),
       walletCreate: locator<WalletCreate>(),
       storage: locator<IStorage>(),
@@ -321,7 +321,7 @@ class BumpFeesPopup extends StatelessWidget {
 
   static Future showPopUp(BuildContext context) async {
     final tx = context.read<TransactionCubit>();
-    final wallet = context.read<WalletCubit>();
+    final wallet = context.read<WalletBloc>();
 
     return showMaterialModalBottomSheet(
       context: context,

@@ -6,14 +6,15 @@ import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/delete.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   WalletSettingsCubit({
     required Wallet wallet,
-    required this.walletCubit,
+    required this.walletBloc,
     required this.walletUpdate,
     required this.storage,
     required this.walletRead,
@@ -30,7 +31,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
           ),
         );
 
-  final WalletCubit walletCubit;
+  final WalletBloc walletBloc;
   final WalletUpdate walletUpdate;
   final IStorage storage;
   final IStorage secureStorage;
@@ -69,7 +70,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       ),
     );
 
-    walletCubit.updateWallet(wallet);
+    walletBloc.add(UpdateWallet(wallet));
     await Future.delayed(const Duration(seconds: 1));
     emit(state.copyWith(savedName: false));
   }
@@ -203,7 +204,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    walletCubit.updateWallet(wallet);
+    walletBloc.add(UpdateWallet(wallet));
     emit(
       state.copyWith(
         backupTested: true,
@@ -281,7 +282,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    walletCubit.updateWallet(wallet);
+    walletBloc.add(UpdateWallet(wallet));
     emit(
       state.copyWith(
         backupTested: true,

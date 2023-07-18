@@ -12,7 +12,7 @@ import 'package:bb_mobile/address/bloc/address_state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,7 +32,7 @@ class AddressPopUp extends StatelessWidget {
     Address address,
   ) async {
     final settings = context.read<SettingsCubit>();
-    final wallet = context.read<WalletCubit>();
+    final wallet = context.read<WalletBloc>();
     final walletSettings = context.read<WalletSettingsCubit>();
     final addressCubit = AddressCubit(
       address: address,
@@ -40,7 +40,7 @@ class AddressPopUp extends StatelessWidget {
       storage: locator<IStorage>(),
       walletRead: locator<WalletRead>(),
       walletSettingsCubit: walletSettings,
-      walletCubit: wallet,
+      walletBloc: wallet,
     );
 
     return showMaterialModalBottomSheet(
@@ -106,9 +106,9 @@ class Title extends StatelessWidget {
     final label = context.select((AddressCubit cubit) => cubit.state.address!.label ?? '');
     final address = context.select((AddressCubit cubit) => cubit.state.address!.miniString());
 
-    final walletName = context.select((WalletCubit cubit) => cubit.state.wallet!.name ?? '');
+    final walletName = context.select((WalletBloc cubit) => cubit.state.wallet!.name ?? '');
     final walletFingerprint =
-        context.select((WalletCubit cubit) => cubit.state.wallet!.cleanFingerprint());
+        context.select((WalletBloc cubit) => cubit.state.wallet!.cleanFingerprint());
     final title = walletName.isEmpty ? walletFingerprint : walletName;
 
     return Center(
@@ -288,7 +288,7 @@ class AddressLabelFieldPopUp extends StatelessWidget {
     Address address,
   ) {
     final settings = context.read<SettingsCubit>();
-    final wallet = context.read<WalletCubit>();
+    final wallet = context.read<WalletBloc>();
     final walletSettings = context.read<WalletSettingsCubit>();
     final addressCubit = context.read<AddressCubit>();
 

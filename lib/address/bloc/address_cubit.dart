@@ -3,7 +3,8 @@ import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/address/bloc/address_state.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -11,7 +12,7 @@ class AddressCubit extends Cubit<AddressState> {
   AddressCubit({
     required Address address,
     required this.walletSettingsCubit,
-    required this.walletCubit,
+    required this.walletBloc,
     required this.walletUpdate,
     required this.storage,
     required this.walletRead,
@@ -19,7 +20,7 @@ class AddressCubit extends Cubit<AddressState> {
 
   // final WalletStorage walletStorage;
   final WalletSettingsCubit walletSettingsCubit;
-  final WalletCubit walletCubit;
+  final WalletBloc walletBloc;
   final WalletUpdate walletUpdate;
   final IStorage storage;
   final WalletRead walletRead;
@@ -31,7 +32,7 @@ class AddressCubit extends Cubit<AddressState> {
       address: (state.address!.index, state.address!.address),
       label: state.address?.label,
       freeze: true,
-      wallet: walletCubit.state.wallet!,
+      wallet: walletBloc.state.wallet!,
     );
 
     final errUpdate = await walletUpdate.updateWallet(
@@ -49,7 +50,7 @@ class AddressCubit extends Cubit<AddressState> {
       return;
     }
 
-    walletCubit.updateWallet(w);
+    walletBloc.add(UpdateWallet(w));
 
     emit(state.copyWith(freezingAddress: false, frozenAddress: true, address: address));
   }
@@ -61,7 +62,7 @@ class AddressCubit extends Cubit<AddressState> {
       address: (state.address!.index, state.address!.address),
       label: state.address?.label,
       freeze: false,
-      wallet: walletCubit.state.wallet!,
+      wallet: walletBloc.state.wallet!,
     );
 
     final errUpdate = await walletUpdate.updateWallet(
@@ -79,7 +80,7 @@ class AddressCubit extends Cubit<AddressState> {
       return;
     }
 
-    walletCubit.updateWallet(w);
+    walletBloc.add(UpdateWallet(w));
 
     emit(
       state.copyWith(
@@ -96,7 +97,7 @@ class AddressCubit extends Cubit<AddressState> {
     final (addr, w) = await walletUpdate.updateWalletAddress(
       address: (address.index, address.address),
       label: label,
-      wallet: walletCubit.state.wallet!,
+      wallet: walletBloc.state.wallet!,
     );
 
     final errUpdate = await walletUpdate.updateWallet(
@@ -116,7 +117,7 @@ class AddressCubit extends Cubit<AddressState> {
       return;
     }
 
-    walletCubit.updateWallet(w);
+    walletBloc.add(UpdateWallet(w));
 
     emit(
       state.copyWith(

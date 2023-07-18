@@ -5,7 +5,7 @@ import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeCubit extends Cubit<HomeState> {
@@ -54,12 +54,12 @@ class HomeCubit extends Cubit<HomeState> {
       );
   }
 
-  void walletSelected(WalletCubit wallet) {
+  void walletSelected(WalletBloc wallet) {
     emit(state.copyWith(selectedWalletCubit: wallet));
   }
 
-  void updateSelectedWallet(WalletCubit walletCubit) {
-    final wallet = walletCubit.state.wallet!;
+  void updateSelectedWallet(WalletBloc walletBloc) {
+    final wallet = walletBloc.state.wallet!;
     final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
     final idx = wallets.indexWhere((w) => w.fingerprint == wallet.fingerprint);
     wallets[idx] = wallet;
@@ -67,7 +67,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(
       state.copyWith(
         wallets: wallets,
-        selectedWalletCubit: walletCubit,
+        selectedWalletCubit: walletBloc,
       ),
     );
   }

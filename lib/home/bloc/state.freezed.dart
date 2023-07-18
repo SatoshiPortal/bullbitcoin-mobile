@@ -20,7 +20,7 @@ mixin _$HomeState {
   bool get loadingWallets => throw _privateConstructorUsedError;
   String get errLoadingWallets =>
       throw _privateConstructorUsedError; // Wallet? selectedWallet,
-  WalletCubit? get selectedWalletCubit => throw _privateConstructorUsedError;
+  WalletBloc? get selectedWalletCubit => throw _privateConstructorUsedError;
   String get errDeepLinking => throw _privateConstructorUsedError;
   int? get moveToIdx => throw _privateConstructorUsedError;
 
@@ -38,7 +38,7 @@ abstract class $HomeStateCopyWith<$Res> {
       {List<Wallet>? wallets,
       bool loadingWallets,
       String errLoadingWallets,
-      WalletCubit? selectedWalletCubit,
+      WalletBloc? selectedWalletCubit,
       String errDeepLinking,
       int? moveToIdx});
 }
@@ -79,7 +79,7 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
       selectedWalletCubit: freezed == selectedWalletCubit
           ? _value.selectedWalletCubit
           : selectedWalletCubit // ignore: cast_nullable_to_non_nullable
-              as WalletCubit?,
+              as WalletBloc?,
       errDeepLinking: null == errDeepLinking
           ? _value.errDeepLinking
           : errDeepLinking // ignore: cast_nullable_to_non_nullable
@@ -103,7 +103,7 @@ abstract class _$$_HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Res> {
       {List<Wallet>? wallets,
       bool loadingWallets,
       String errLoadingWallets,
-      WalletCubit? selectedWalletCubit,
+      WalletBloc? selectedWalletCubit,
       String errDeepLinking,
       int? moveToIdx});
 }
@@ -142,7 +142,7 @@ class __$$_HomeStateCopyWithImpl<$Res>
       selectedWalletCubit: freezed == selectedWalletCubit
           ? _value.selectedWalletCubit
           : selectedWalletCubit // ignore: cast_nullable_to_non_nullable
-              as WalletCubit?,
+              as WalletBloc?,
       errDeepLinking: null == errDeepLinking
           ? _value.errDeepLinking
           : errDeepLinking // ignore: cast_nullable_to_non_nullable
@@ -186,7 +186,7 @@ class _$_HomeState extends _HomeState {
   final String errLoadingWallets;
 // Wallet? selectedWallet,
   @override
-  final WalletCubit? selectedWalletCubit;
+  final WalletBloc? selectedWalletCubit;
   @override
   @JsonKey()
   final String errDeepLinking;
@@ -238,7 +238,7 @@ abstract class _HomeState extends HomeState {
       {final List<Wallet>? wallets,
       final bool loadingWallets,
       final String errLoadingWallets,
-      final WalletCubit? selectedWalletCubit,
+      final WalletBloc? selectedWalletCubit,
       final String errDeepLinking,
       final int? moveToIdx}) = _$_HomeState;
   const _HomeState._() : super._();
@@ -250,7 +250,7 @@ abstract class _HomeState extends HomeState {
   @override
   String get errLoadingWallets;
   @override // Wallet? selectedWallet,
-  WalletCubit? get selectedWalletCubit;
+  WalletBloc? get selectedWalletCubit;
   @override
   String get errDeepLinking;
   @override

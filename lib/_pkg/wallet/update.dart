@@ -86,7 +86,7 @@ class WalletUpdate {
           isSend ? wallet.copyWith(toAddresses: addresses) : wallet.copyWith(addresses: addresses);
 
       // await updateWallet(w);
-      // walletCubit.updateWallet(w);
+      // walletBloc.updateWallet(w);
 
       return (a, w);
     } catch (e) {

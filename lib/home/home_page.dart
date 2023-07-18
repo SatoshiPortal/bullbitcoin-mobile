@@ -17,7 +17,8 @@ import 'package:bb_mobile/receive/receive_popup.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -114,7 +115,7 @@ class HomeWallets extends StatelessWidget {
 
     final walletCubits = [
       for (final w in wallets)
-        WalletCubit(
+        WalletBloc(
           saveDir: w.getStorageString(),
           settingsCubit: locator<SettingsCubit>(),
           walletRead: locator<WalletRead>(),
@@ -140,7 +141,7 @@ class HomeWallets extends StatelessWidget {
 class WalletScreen extends StatelessWidget {
   const WalletScreen({super.key, required this.walletCubits});
 
-  final List<WalletCubit> walletCubits;
+  final List<WalletBloc> walletCubits;
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +157,7 @@ class WalletScreen extends StatelessWidget {
         color: context.colour.primary,
         child: RefreshIndicator(
           onRefresh: () async {
-            selectedWallet?.sync();
+            selectedWallet?.add(SyncWallet());
             return;
           },
           color: context.colour.primary,
@@ -210,8 +211,8 @@ class BackupAlertBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((WalletCubit x) => x.state.wallet);
-    final backupTested = context.select((WalletCubit x) => x.state.wallet?.backupTested ?? false);
+    final _ = context.select((WalletBloc x) => x.state.wallet);
+    final backupTested = context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
 
     if (backupTested) return Container();
 
@@ -251,7 +252,7 @@ class BackupAlertBanner extends StatelessWidget {
 class HomeHeaderCards extends StatefulWidget {
   const HomeHeaderCards({super.key, required this.walletCubits});
 
-  final List<WalletCubit> walletCubits;
+  final List<WalletBloc> walletCubits;
 
   @override
   State<HomeHeaderCards> createState() => _HomeHeaderCardsState();
@@ -309,12 +310,12 @@ class HomeTxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final syncing = context.select((WalletCubit x) => x.state.syncing);
-    final loading = context.select((WalletCubit x) => x.state.loadingTxs);
-    final loadingBal = context.select((WalletCubit x) => x.state.loadingBalance);
+    final syncing = context.select((WalletBloc x) => x.state.syncing);
+    final loading = context.select((WalletBloc x) => x.state.loadingTxs);
+    final loadingBal = context.select((WalletBloc x) => x.state.loadingBalance);
 
-    final confirmedTXs = context.select((WalletCubit x) => x.state.wallet?.getConfirmedTxs() ?? []);
-    final pendingTXs = context.select((WalletCubit x) => x.state.wallet?.getPendingTxs() ?? []);
+    final confirmedTXs = context.select((WalletBloc x) => x.state.wallet?.getConfirmedTxs() ?? []);
+    final pendingTXs = context.select((WalletBloc x) => x.state.wallet?.getPendingTxs() ?? []);
 
     if ((loading || syncing || loadingBal) && confirmedTXs.isEmpty && pendingTXs.isEmpty) {
       return TopCenter(
@@ -540,14 +541,14 @@ class HomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((WalletCubit x) => x.state.wallet);
+    final wallet = context.select((WalletBloc x) => x.state.wallet);
     if (wallet == null) return const SizedBox.shrink();
 
-    final name = context.select((WalletCubit x) => x.state.wallet?.name);
-    final fingerprint = context.select((WalletCubit x) => x.state.wallet?.cleanFingerprint() ?? '');
-    final walletStr = context.select((WalletCubit x) => x.state.wallet?.getWalletTypeShortStr());
+    final name = context.select((WalletBloc x) => x.state.wallet?.name);
+    final fingerprint = context.select((WalletBloc x) => x.state.wallet?.cleanFingerprint() ?? '');
+    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeShortStr());
 
-    final sats = context.select((WalletCubit x) => x.state.balanceSats());
+    final sats = context.select((WalletBloc x) => x.state.balanceSats());
 
     final balance =
         context.select((SettingsCubit x) => x.state.getAmountInUnits(sats, removeText: true));

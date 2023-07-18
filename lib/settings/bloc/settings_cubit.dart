@@ -9,6 +9,7 @@ import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_state.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
@@ -92,7 +93,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   void loadTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: state.reloadWalletTimer), (timer) {
-      homeCubit?.state.selectedWalletCubit?.sync();
+      homeCubit?.state.selectedWalletCubit?.add(SyncWallet());
     });
   }
 

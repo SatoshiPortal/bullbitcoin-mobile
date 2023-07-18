@@ -11,7 +11,7 @@ import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -26,9 +26,9 @@ import 'package:qr_flutter/qr_flutter.dart';
 class ReceivePopUp extends StatelessWidget {
   const ReceivePopUp({super.key});
 
-  static Future openPopUp(BuildContext context, WalletCubit wallet) async {
+  static Future openPopUp(BuildContext context, WalletBloc wallet) async {
     final receiveCubit = ReceiveCubit(
-      walletCubit: wallet,
+      walletBloc: wallet,
       walletUpdate: locator<WalletUpdate>(),
       storage: locator<IStorage>(),
       walletRead: locator<WalletRead>(),
@@ -125,10 +125,10 @@ class WalletName extends StatelessWidget {
   Widget build(BuildContext context) {
     final loading = context.select((ReceiveCubit x) => x.state.loadingAddress);
 
-    final walletName = context.select((ReceiveCubit x) => x.walletCubit.state.wallet?.name);
+    final walletName = context.select((ReceiveCubit x) => x.walletBloc.state.wallet?.name);
 
     final fingerprint =
-        context.select((ReceiveCubit x) => x.walletCubit.state.wallet?.cleanFingerprint() ?? '');
+        context.select((ReceiveCubit x) => x.walletBloc.state.wallet?.cleanFingerprint() ?? '');
 
     return Center(
       child: loading

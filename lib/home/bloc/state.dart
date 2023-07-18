@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
@@ -11,7 +11,7 @@ class HomeState with _$HomeState {
     @Default(true) bool loadingWallets,
     @Default('') String errLoadingWallets,
     // Wallet? selectedWallet,
-    WalletCubit? selectedWalletCubit,
+    WalletBloc? selectedWalletCubit,
     @Default('') String errDeepLinking,
     int? moveToIdx,
   }) = _HomeState;
@@ -36,8 +36,8 @@ class HomeState with _$HomeState {
   }
 
   static int? selectedWalletIdx({
-    required WalletCubit selectedWalletCubit,
-    required List<WalletCubit> walletCubits,
+    required WalletBloc selectedWalletCubit,
+    required List<WalletBloc> walletCubits,
   }) {
     final wallet = selectedWalletCubit.state.wallet;
     if (wallet == null) return -1;

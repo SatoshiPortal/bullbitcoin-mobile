@@ -5,7 +5,7 @@ import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/address/pop_up.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +19,7 @@ class AddressesScreen extends HookWidget {
   static Future openPopup(
     BuildContext context,
   ) {
-    final wallet = context.read<WalletCubit>();
+    final wallet = context.read<WalletBloc>();
     final walletSettings = context.read<WalletSettingsCubit>();
 
     return showMaterialModalBottomSheet(
@@ -41,7 +41,7 @@ class AddressesScreen extends HookWidget {
   Widget build(BuildContext context) {
     final selectedOption = useState(0);
 
-    final addresses = context.select((WalletCubit cubit) => cubit.state.wallet!.addresses ?? []);
+    final addresses = context.select((WalletBloc cubit) => cubit.state.wallet!.addresses ?? []);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),

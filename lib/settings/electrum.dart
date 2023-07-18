@@ -256,12 +256,6 @@ class NetworkConfigFields extends HookWidget {
               controller: mainnet,
               disabled: index != 2,
             ),
-            // child: TextField(
-            //   enabled: index == 2,
-            //   controller: mainnet,
-            //   style: index != 2 ? const TextStyle(color: Colors.grey) : null,
-            //   decoration: const InputDecoration(labelText: 'Mainnet'),
-            // ),
           ),
           const Gap(16),
           const BBText.title('    Testnet'),
@@ -274,12 +268,6 @@ class NetworkConfigFields extends HookWidget {
               controller: testnet,
               disabled: index != 2,
             ),
-            // child: TextField(
-            //   enabled: index == 2,
-            //   controller: testnet,
-            //   style: index != 2 ? const TextStyle(color: Colors.grey) : null,
-            //   decoration: const InputDecoration(labelText: 'Testnet'),
-            // ),
           ),
           const Gap(16),
           const BBText.title('    Stop gap'),
@@ -291,12 +279,6 @@ class NetworkConfigFields extends HookWidget {
               value: stopGap.text,
               controller: stopGap,
             ),
-            // child: TextField(
-            //   controller: stopGap,
-            //   decoration: const InputDecoration(
-            //     labelText: 'Stop gap',
-            //   ),
-            // ),
           ),
           const Gap(16),
           const BBText.title('    Retry'),
@@ -308,12 +290,6 @@ class NetworkConfigFields extends HookWidget {
               value: retry.text,
               controller: retry,
             ),
-            // child: TextField(
-            //   controller: retry,
-            //   decoration: const InputDecoration(
-            //     labelText: 'Retry',
-            //   ),
-            // ),
           ),
           const Gap(16),
           const BBText.title('    Timeout'),
@@ -325,12 +301,6 @@ class NetworkConfigFields extends HookWidget {
               value: timeout.text,
               controller: timeout,
             ),
-            // child: TextField(
-            //   controller: timeout,
-            //   decoration: const InputDecoration(
-            //     labelText: 'Timeout',
-            //   ),
-            // ),
           ),
           const Gap(16),
           Row(

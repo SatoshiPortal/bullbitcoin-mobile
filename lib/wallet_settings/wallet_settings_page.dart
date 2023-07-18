@@ -13,7 +13,7 @@ import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/addresses.dart';
 import 'package:bb_mobile/wallet_settings/backup.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
@@ -40,7 +40,7 @@ class WalletSettingsPage extends StatelessWidget {
       walletUpdate: locator<WalletUpdate>(),
       storage: locator<IStorage>(),
       secureStorage: locator<SecureStorage>(),
-      walletCubit: wallet,
+      walletBloc: wallet,
       fileStorage: locator<FileStorage>(),
     );
 
@@ -227,11 +227,11 @@ class Balances extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final amtSent = context.select(
-      (WalletCubit cubit) => cubit.state.wallet!.totalSent(),
+      (WalletBloc cubit) => cubit.state.wallet!.totalSent(),
     );
 
     final amtReceived = context.select(
-      (WalletCubit cubit) => cubit.state.wallet!.totalReceived(),
+      (WalletBloc cubit) => cubit.state.wallet!.totalReceived(),
     );
 
     final inAmt = context.select(
@@ -342,7 +342,7 @@ class TestBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTested = context.select((WalletCubit x) => x.state.wallet!.backupTested);
+    final isTested = context.select((WalletBloc x) => x.state.wallet!.backupTested);
 
     if (isTested) return const SizedBox.shrink();
 

@@ -2,12 +2,13 @@ import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReceiveCubit extends Cubit<ReceiveState> {
   ReceiveCubit({
-    required this.walletCubit,
+    required this.walletBloc,
     required this.walletUpdate,
     required this.storage,
     required this.walletRead,
@@ -15,7 +16,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     loadAddress();
   }
 
-  final WalletCubit walletCubit;
+  final WalletBloc walletBloc;
   final WalletUpdate walletUpdate;
   final IStorage storage;
   final WalletRead walletRead;
@@ -24,8 +25,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
 
     final (ai, err) = await walletUpdate.getNewAddress(
-      wallet: walletCubit.state.wallet!,
-      bdkWallet: walletCubit.state.bdkWallet!,
+      wallet: walletBloc.state.wallet!,
+      bdkWallet: walletBloc.state.bdkWallet!,
     );
     if (err != null) {
       emit(
@@ -41,7 +42,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     final (a, w) = await walletUpdate.updateWalletAddress(
       address: (idx, address),
-      wallet: walletCubit.state.wallet!,
+      wallet: walletBloc.state.wallet!,
       label: label,
     );
 
@@ -60,7 +61,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    walletCubit.updateWallet(w);
+    walletBloc.add(UpdateWallet(w));
 
     emit(
       state.copyWith(
@@ -90,7 +91,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     final (a, w) = await walletUpdate.updateWalletAddress(
       address: (state.defaultAddress!.index, state.defaultAddress!.address),
-      wallet: walletCubit.state.wallet!,
+      wallet: walletBloc.state.wallet!,
       label: state.privateLabel,
     );
 
@@ -109,7 +110,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    walletCubit.updateWallet(w);
+    walletBloc.add(UpdateWallet(w));
 
     emit(
       state.copyWith(
@@ -150,7 +151,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     // final add = await bdk.Address.create(address: 'address');
     // final scr = await add.scriptPubKey();
 
-    final (a, err) = await walletUpdate.newAddress(bdkWallet: walletCubit.state.bdkWallet!);
+    final (a, err) = await walletUpdate.newAddress(bdkWallet: walletBloc.state.bdkWallet!);
 
     if (err != null)
       emit(
@@ -164,7 +165,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     final (savedAddress, w) = await walletUpdate.updateWalletAddress(
       address: (idx, address),
-      wallet: walletCubit.state.wallet!,
+      wallet: walletBloc.state.wallet!,
       label: state.privateLabel,
     );
 
@@ -183,7 +184,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    walletCubit.updateWallet(w);
+    walletBloc.add(UpdateWallet(w));
 
     final btcAmt = (state.invoiceAmount / 100000000).toStringAsFixed(8);
 
