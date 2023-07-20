@@ -53,7 +53,7 @@
         "**/pubspec.yaml": true,
         "**/maintainance": true,
         "**/test": true,
-        "integration_test": true,
+        "integration_test": false,
         ".idea": true,
         // 
         // 
