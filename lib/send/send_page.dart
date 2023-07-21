@@ -12,6 +12,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/fees.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/send/advanced.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
@@ -55,6 +56,8 @@ class SendPopup extends StatelessWidget {
     return showMaterialModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isDismissible: false,
+      enableDrag: false,
       builder: (context) => BlocProvider.value(
         value: cubit,
         child: BlocProvider.value(
@@ -89,6 +92,10 @@ class _Screen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const BBHeader.popUpCenteredText(
+            text: 'SEND',
+            isLeft: true,
+          ),
           if (signed)
             const TxDetailsScreen()
           else ...[

@@ -6,6 +6,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
@@ -34,6 +35,8 @@ class BroadcasePopUp extends StatelessWidget {
 
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => BlocProvider.value(
         value: broadcast,
@@ -62,6 +65,11 @@ class BroadcasePopUp extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const BBHeader.popUpCenteredText(
+              text: 'BROADCAST',
+              isLeft: true,
+            ),
+            const Gap(16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

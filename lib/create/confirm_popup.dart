@@ -13,6 +13,8 @@ class CreateWalletConfirmPopUp extends StatelessWidget {
     final cubit = context.read<CreateWalletCubit>();
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => BlocProvider.value(
         value: cubit,

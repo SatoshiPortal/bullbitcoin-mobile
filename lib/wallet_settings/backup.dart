@@ -28,6 +28,8 @@ class TestBackupScreen extends StatelessWidget {
 
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => MultiBlocProvider(
         providers: [
@@ -285,6 +287,8 @@ class BackupScreen extends StatelessWidget {
 
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => MultiBlocProvider(
         providers: [

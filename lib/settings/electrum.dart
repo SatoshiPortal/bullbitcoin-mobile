@@ -87,6 +87,8 @@ class NetworkPopup extends StatelessWidget {
   static Future openPopUp(BuildContext context) {
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => const NetworkPopup(),
     );

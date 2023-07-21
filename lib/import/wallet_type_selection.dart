@@ -380,6 +380,8 @@ class ImportWalletDetailsPopUp extends StatelessWidget {
 
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => BlocProvider.value(
         value: import,

@@ -5,6 +5,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
@@ -36,6 +37,8 @@ class ReceivePopUp extends StatelessWidget {
 
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => BlocProvider.value(
         value: receiveCubit,
@@ -61,8 +64,12 @@ class _Screen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const BBHeader.popUpCenteredText(
+            text: 'RECEIVE',
+            isLeft: true,
+          ),
           if (step == ReceiveStep.defaultAddress) ...[
-            const Gap(48),
+            const Gap(24),
             const WalletName(),
             const Gap(24),
             const DefaultQR(),
@@ -77,7 +84,7 @@ class _Screen extends StatelessWidget {
             const Gap(80),
           ],
           if (step == ReceiveStep.createInvoice) ...[
-            const Gap(48),
+            const Gap(24),
             const BBText.body(
               'Create Invoice',
             ),

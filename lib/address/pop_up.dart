@@ -46,6 +46,8 @@ class AddressPopUp extends StatelessWidget {
     return showMaterialModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isDismissible: false,
+      enableDrag: false,
       builder: (context) => MultiBlocProvider(
         providers: [
           BlocProvider.value(value: settings),
@@ -295,6 +297,8 @@ class AddressLabelFieldPopUp extends StatelessWidget {
     return showMaterialModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isDismissible: false,
+      enableDrag: false,
       builder: (context) => MultiBlocProvider(
         providers: [
           BlocProvider.value(value: settings),

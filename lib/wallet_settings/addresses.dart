@@ -24,6 +24,8 @@ class AddressesScreen extends HookWidget {
 
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => MultiBlocProvider(
         providers: [

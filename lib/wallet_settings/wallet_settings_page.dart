@@ -395,6 +395,8 @@ class DeletePopUp extends StatelessWidget {
 
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => MultiBlocProvider(
         providers: [

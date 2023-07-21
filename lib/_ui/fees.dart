@@ -64,6 +64,8 @@ class SelectFeesPopUp extends StatelessWidget {
       final send = context.read<SendCubit>();
       return showMaterialModalBottomSheet(
         context: context,
+        isDismissible: false,
+        enableDrag: false,
         backgroundColor: Colors.transparent,
         builder: (context) => MultiBlocProvider(
           providers: [
@@ -85,6 +87,8 @@ class SelectFeesPopUp extends StatelessWidget {
     settings.loadFees();
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => MultiBlocProvider(
         providers: [

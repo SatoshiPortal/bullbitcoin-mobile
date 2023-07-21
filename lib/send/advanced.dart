@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -19,6 +20,8 @@ class AdvancedOptionsPopUp extends StatelessWidget {
     final send = context.read<SendCubit>();
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => BlocProvider.value(
         value: send,
@@ -35,27 +38,31 @@ class AdvancedOptionsPopUp extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Gap(32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const BBText.body(
-                  'Advanced Options',
-                  // style: TextStyle(
-                  //   fontSize: 20,
-                  //   fontWeight: FontWeight.bold,
-                  // ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                  icon: const Icon(Icons.close),
-                ),
-              ],
+            // const Gap(32),
+            const BBHeader.popUpCenteredText(
+              text: 'ADVANCED OPTIONS',
+              isLeft: true,
             ),
-            const Gap(40),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     const BBText.body(
+            //       'Advanced Options',
+            //       // style: TextStyle(
+            //       //   fontSize: 20,
+            //       //   fontWeight: FontWeight.bold,
+            //       // ),
+            //     ),
+            //     const Spacer(),
+            //     IconButton(
+            //       onPressed: () {
+            //         context.pop();
+            //       },
+            //       icon: const Icon(Icons.close),
+            //     ),
+            //   ],
+            // ),
+            const Gap(32),
             CenterLeft(
               child: BBButton.text(
                 // style: TextButton.styleFrom(padding: EdgeInsets.zero),
@@ -142,6 +149,8 @@ class AddressSelectionPopUp extends StatelessWidget {
     final send = context.read<SendCubit>();
     return showMaterialModalBottomSheet(
       context: context,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => BlocProvider.value(
         value: send,
