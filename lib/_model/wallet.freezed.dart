@@ -28,7 +28,7 @@ mixin _$Wallet {
   String get fingerprint => throw _privateConstructorUsedError;
   BBNetwork get network => throw _privateConstructorUsedError;
   BBWalletType get type => throw _privateConstructorUsedError;
-  WalletType get walletType =>
+  WalletPurpose get purpose =>
       throw _privateConstructorUsedError; // String? address,
   String? get name => throw _privateConstructorUsedError;
   String? get path => throw _privateConstructorUsedError;
@@ -57,7 +57,7 @@ abstract class $WalletCopyWith<$Res> {
       String fingerprint,
       BBNetwork network,
       BBWalletType type,
-      WalletType walletType,
+      WalletPurpose purpose,
       String? name,
       String? path,
       int? balance,
@@ -88,7 +88,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? fingerprint = null,
     Object? network = null,
     Object? type = null,
-    Object? walletType = null,
+    Object? purpose = null,
     Object? name = freezed,
     Object? path = freezed,
     Object? balance = freezed,
@@ -130,10 +130,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as BBWalletType,
-      walletType: null == walletType
-          ? _value.walletType
-          : walletType // ignore: cast_nullable_to_non_nullable
-              as WalletType,
+      purpose: null == purpose
+          ? _value.purpose
+          : purpose // ignore: cast_nullable_to_non_nullable
+              as WalletPurpose,
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -181,7 +181,7 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       String fingerprint,
       BBNetwork network,
       BBWalletType type,
-      WalletType walletType,
+      WalletPurpose purpose,
       String? name,
       String? path,
       int? balance,
@@ -209,7 +209,7 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? fingerprint = null,
     Object? network = null,
     Object? type = null,
-    Object? walletType = null,
+    Object? purpose = null,
     Object? name = freezed,
     Object? path = freezed,
     Object? balance = freezed,
@@ -251,10 +251,10 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as BBWalletType,
-      walletType: null == walletType
-          ? _value.walletType
-          : walletType // ignore: cast_nullable_to_non_nullable
-              as WalletType,
+      purpose: null == purpose
+          ? _value.purpose
+          : purpose // ignore: cast_nullable_to_non_nullable
+              as WalletPurpose,
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -299,7 +299,7 @@ class _$_Wallet extends _Wallet {
       this.fingerprint = '',
       required this.network,
       required this.type,
-      required this.walletType,
+      required this.purpose,
       this.name,
       this.path,
       this.balance,
@@ -336,7 +336,7 @@ class _$_Wallet extends _Wallet {
   @override
   final BBWalletType type;
   @override
-  final WalletType walletType;
+  final WalletPurpose purpose;
 // String? address,
   @override
   final String? name;
@@ -380,7 +380,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(externalDescriptor: $externalDescriptor, internalDescriptor: $internalDescriptor, mnemonic: $mnemonic, password: $password, xpub: $xpub, fingerprint: $fingerprint, network: $network, type: $type, walletType: $walletType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, backupTested: $backupTested)';
+    return 'Wallet(externalDescriptor: $externalDescriptor, internalDescriptor: $internalDescriptor, mnemonic: $mnemonic, password: $password, xpub: $xpub, fingerprint: $fingerprint, network: $network, type: $type, purpose: $purpose, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, backupTested: $backupTested)';
   }
 
   @override
@@ -401,8 +401,7 @@ class _$_Wallet extends _Wallet {
                 other.fingerprint == fingerprint) &&
             (identical(other.network, network) || other.network == network) &&
             (identical(other.type, type) || other.type == type) &&
-            (identical(other.walletType, walletType) ||
-                other.walletType == walletType) &&
+            (identical(other.purpose, purpose) || other.purpose == purpose) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.path, path) || other.path == path) &&
             (identical(other.balance, balance) || other.balance == balance) &&
@@ -428,7 +427,7 @@ class _$_Wallet extends _Wallet {
       fingerprint,
       network,
       type,
-      walletType,
+      purpose,
       name,
       path,
       balance,
@@ -461,7 +460,7 @@ abstract class _Wallet extends Wallet {
       final String fingerprint,
       required final BBNetwork network,
       required final BBWalletType type,
-      required final WalletType walletType,
+      required final WalletPurpose purpose,
       final String? name,
       final String? path,
       final int? balance,
@@ -490,7 +489,7 @@ abstract class _Wallet extends Wallet {
   @override
   BBWalletType get type;
   @override
-  WalletType get walletType;
+  WalletPurpose get purpose;
   @override // String? address,
   String? get name;
   @override

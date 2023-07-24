@@ -15,7 +15,7 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
       fingerprint: json['fingerprint'] as String? ?? '',
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
       type: $enumDecode(_$BBWalletTypeEnumMap, json['type']),
-      walletType: $enumDecode(_$WalletTypeEnumMap, json['walletType']),
+      purpose: $enumDecode(_$WalletPurposeEnumMap, json['purpose']),
       name: json['name'] as String?,
       path: json['path'] as String?,
       balance: json['balance'] as int?,
@@ -40,7 +40,7 @@ Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
       'fingerprint': instance.fingerprint,
       'network': _$BBNetworkEnumMap[instance.network]!,
       'type': _$BBWalletTypeEnumMap[instance.type]!,
-      'walletType': _$WalletTypeEnumMap[instance.walletType]!,
+      'purpose': _$WalletPurposeEnumMap[instance.purpose]!,
       'name': instance.name,
       'path': instance.path,
       'balance': instance.balance,
@@ -63,8 +63,8 @@ const _$BBWalletTypeEnumMap = {
   BBWalletType.coldcard: 'coldcard',
 };
 
-const _$WalletTypeEnumMap = {
-  WalletType.bip84: 'bip84',
-  WalletType.bip49: 'bip49',
-  WalletType.bip44: 'bip44',
+const _$WalletPurposeEnumMap = {
+  WalletPurpose.bip84: 'bip84',
+  WalletPurpose.bip49: 'bip49',
+  WalletPurpose.bip44: 'bip44',
 };

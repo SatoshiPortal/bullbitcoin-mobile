@@ -51,7 +51,7 @@ String keyFromPrivDescr(String descriptor) {
 
 String buildDescriptorVanilla({
   required String xpub,
-  required WalletType walletType,
+  required WalletPurpose walletPurpose,
   required bool isChange,
 }) {
   try {
@@ -59,12 +59,12 @@ String buildDescriptorVanilla({
     final endPath = '/$change/*';
     String descriptor = '';
 
-    switch (walletType) {
-      case WalletType.bip84:
+    switch (walletPurpose) {
+      case WalletPurpose.bip84:
         descriptor = 'wpkh($xpub$endPath)';
-      case WalletType.bip49:
+      case WalletPurpose.bip49:
         descriptor = 'sh(wpkh($xpub$endPath))';
-      case WalletType.bip44:
+      case WalletPurpose.bip44:
         descriptor = 'pkh($xpub$endPath)';
     }
 

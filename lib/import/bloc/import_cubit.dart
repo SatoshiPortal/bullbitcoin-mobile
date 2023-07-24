@@ -56,7 +56,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
       case ImportSteps.scanningNFC:
       case ImportSteps.scanningWallets:
-      case ImportSteps.selectWalletType:
+      case ImportSteps.selectWalletFormat:
         if (state.importType == ImportTypes.xpub)
           emit(
             state.copyWith(
@@ -331,7 +331,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           final (fingerPrint, errr) = await walletCreate.getMneFingerprint(
             mne: mne,
             isTestnet: isTesnet,
-            walletType: WalletType.bip84,
+            walletPurpose: WalletPurpose.bip84,
           );
           if (errr != null) throw errr;
 
@@ -425,13 +425,13 @@ class ImportWalletCubit extends Cubit<ImportState> {
   void syncingComplete() {
     emit(
       state.copyWith(
-        importStep: ImportSteps.selectWalletType,
+        importStep: ImportSteps.selectWalletFormat,
       ),
     );
   }
 
-  void walletTypeChanged(WalletType type) {
-    emit(state.copyWith(walletType: type));
+  void walletPurposeChanged(WalletPurpose purpose) {
+    emit(state.copyWith(walletPurpose: purpose));
   }
 
   void saveClicked() async {

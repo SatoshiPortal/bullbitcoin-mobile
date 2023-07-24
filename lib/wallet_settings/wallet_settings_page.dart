@@ -204,8 +204,8 @@ class WalletType extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final type = context.select((WalletSettingsCubit x) => x.state.wallet.getWalletTypeStr());
-    final walletType = context.select((WalletSettingsCubit x) => x.state.wallet.walletType);
-    final _ = walletNameStr(walletType);
+    final walletPurpose = context.select((WalletSettingsCubit x) => x.state.wallet.purpose);
+    final _ = walletNameStr(walletPurpose);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

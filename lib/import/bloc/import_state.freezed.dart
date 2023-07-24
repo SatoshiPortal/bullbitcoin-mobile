@@ -23,7 +23,7 @@ mixin _$ImportState {
   String get fingerprint =>
       throw _privateConstructorUsedError; // @Default('') String coldCardFile,
   ImportSteps get importStep => throw _privateConstructorUsedError;
-  WalletType get walletType => throw _privateConstructorUsedError;
+  WalletPurpose get walletPurpose => throw _privateConstructorUsedError;
   ImportTypes get importType => throw _privateConstructorUsedError;
   List<Wallet>? get walletDetails => throw _privateConstructorUsedError;
   String get customDerivation => throw _privateConstructorUsedError;
@@ -58,7 +58,7 @@ abstract class $ImportStateCopyWith<$Res> {
       String tempXpub,
       String fingerprint,
       ImportSteps importStep,
-      WalletType walletType,
+      WalletPurpose walletPurpose,
       ImportTypes importType,
       List<Wallet>? walletDetails,
       String customDerivation,
@@ -98,7 +98,7 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
     Object? tempXpub = null,
     Object? fingerprint = null,
     Object? importStep = null,
-    Object? walletType = null,
+    Object? walletPurpose = null,
     Object? importType = null,
     Object? walletDetails = freezed,
     Object? customDerivation = null,
@@ -140,10 +140,10 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
           ? _value.importStep
           : importStep // ignore: cast_nullable_to_non_nullable
               as ImportSteps,
-      walletType: null == walletType
-          ? _value.walletType
-          : walletType // ignore: cast_nullable_to_non_nullable
-              as WalletType,
+      walletPurpose: null == walletPurpose
+          ? _value.walletPurpose
+          : walletPurpose // ignore: cast_nullable_to_non_nullable
+              as WalletPurpose,
       importType: null == importType
           ? _value.importType
           : importType // ignore: cast_nullable_to_non_nullable
@@ -247,7 +247,7 @@ abstract class _$$_ImportStateCopyWith<$Res>
       String tempXpub,
       String fingerprint,
       ImportSteps importStep,
-      WalletType walletType,
+      WalletPurpose walletPurpose,
       ImportTypes importType,
       List<Wallet>? walletDetails,
       String customDerivation,
@@ -287,7 +287,7 @@ class __$$_ImportStateCopyWithImpl<$Res>
     Object? tempXpub = null,
     Object? fingerprint = null,
     Object? importStep = null,
-    Object? walletType = null,
+    Object? walletPurpose = null,
     Object? importType = null,
     Object? walletDetails = freezed,
     Object? customDerivation = null,
@@ -329,10 +329,10 @@ class __$$_ImportStateCopyWithImpl<$Res>
           ? _value.importStep
           : importStep // ignore: cast_nullable_to_non_nullable
               as ImportSteps,
-      walletType: null == walletType
-          ? _value.walletType
-          : walletType // ignore: cast_nullable_to_non_nullable
-              as WalletType,
+      walletPurpose: null == walletPurpose
+          ? _value.walletPurpose
+          : walletPurpose // ignore: cast_nullable_to_non_nullable
+              as WalletPurpose,
       importType: null == importType
           ? _value.importType
           : importType // ignore: cast_nullable_to_non_nullable
@@ -407,7 +407,7 @@ class _$_ImportState extends _ImportState {
       this.tempXpub = '',
       this.fingerprint = '',
       this.importStep = ImportSteps.selectCreateType,
-      this.walletType = WalletType.bip84,
+      this.walletPurpose = WalletPurpose.bip84,
       this.importType = ImportTypes.notSelected,
       final List<Wallet>? walletDetails,
       this.customDerivation = '',
@@ -454,7 +454,7 @@ class _$_ImportState extends _ImportState {
   final ImportSteps importStep;
   @override
   @JsonKey()
-  final WalletType walletType;
+  final WalletPurpose walletPurpose;
   @override
   @JsonKey()
   final ImportTypes importType;
@@ -505,7 +505,7 @@ class _$_ImportState extends _ImportState {
 
   @override
   String toString() {
-    return 'ImportState(words: $words, password: $password, xpub: $xpub, tempXpub: $tempXpub, fingerprint: $fingerprint, importStep: $importStep, walletType: $walletType, importType: $importType, walletDetails: $walletDetails, customDerivation: $customDerivation, accountNumber: $accountNumber, manualDescriptor: $manualDescriptor, manualChangeDescriptor: $manualChangeDescriptor, manualCombinedDescriptor: $manualCombinedDescriptor, importing: $importing, errImporting: $errImporting, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, savingWallet: $savingWallet, errSavingWallet: $errSavingWallet, savedWallet: $savedWallet, coldCard: $coldCard)';
+    return 'ImportState(words: $words, password: $password, xpub: $xpub, tempXpub: $tempXpub, fingerprint: $fingerprint, importStep: $importStep, walletPurpose: $walletPurpose, importType: $importType, walletDetails: $walletDetails, customDerivation: $customDerivation, accountNumber: $accountNumber, manualDescriptor: $manualDescriptor, manualChangeDescriptor: $manualChangeDescriptor, manualCombinedDescriptor: $manualCombinedDescriptor, importing: $importing, errImporting: $errImporting, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, savingWallet: $savingWallet, errSavingWallet: $errSavingWallet, savedWallet: $savedWallet, coldCard: $coldCard)';
   }
 
   @override
@@ -523,8 +523,8 @@ class _$_ImportState extends _ImportState {
                 other.fingerprint == fingerprint) &&
             (identical(other.importStep, importStep) ||
                 other.importStep == importStep) &&
-            (identical(other.walletType, walletType) ||
-                other.walletType == walletType) &&
+            (identical(other.walletPurpose, walletPurpose) ||
+                other.walletPurpose == walletPurpose) &&
             (identical(other.importType, importType) ||
                 other.importType == importType) &&
             const DeepCollectionEquality()
@@ -567,7 +567,7 @@ class _$_ImportState extends _ImportState {
         tempXpub,
         fingerprint,
         importStep,
-        walletType,
+        walletPurpose,
         importType,
         const DeepCollectionEquality().hash(_walletDetails),
         customDerivation,
@@ -600,7 +600,7 @@ abstract class _ImportState extends ImportState {
       final String tempXpub,
       final String fingerprint,
       final ImportSteps importStep,
-      final WalletType walletType,
+      final WalletPurpose walletPurpose,
       final ImportTypes importType,
       final List<Wallet>? walletDetails,
       final String customDerivation,
@@ -631,7 +631,7 @@ abstract class _ImportState extends ImportState {
   @override // @Default('') String coldCardFile,
   ImportSteps get importStep;
   @override
-  WalletType get walletType;
+  WalletPurpose get walletPurpose;
   @override
   ImportTypes get importType;
   @override

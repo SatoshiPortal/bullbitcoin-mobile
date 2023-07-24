@@ -95,7 +95,7 @@ class ImportAppBar extends StatelessWidget {
         step == ImportSteps.scanningNFC ||
         step == ImportSteps.scanningWallets ||
         step == ImportSteps.advancedOptions ||
-        step == ImportSteps.selectWalletType ||
+        step == ImportSteps.selectWalletFormat ||
         step == ImportSteps.selectImportType)
       onBack = () => context.read<ImportWalletCubit>().backClicked();
 
@@ -134,7 +134,7 @@ class _Screen extends StatelessWidget {
             return const ImportEnterWordsScreen();
 
           case ImportSteps.scanningWallets:
-          case ImportSteps.selectWalletType:
+          case ImportSteps.selectWalletFormat:
             return const ImportSelectWalletTypeScreen();
           default:
             return Container();
