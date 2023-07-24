@@ -17,6 +17,16 @@ String fingerPrintFromDescr(
   return fingerPrint;
 }
 
+String fingerPrintFromXKey(
+  String xkey,
+) {
+  final startIndex = xkey.indexOf('[');
+  if (startIndex == -1) return '';
+  final fingerPrintEndIndex = xkey.indexOf('/');
+  final fingerPrint = xkey.substring(startIndex + 1, fingerPrintEndIndex);
+  return fingerPrint;
+}
+
 String removeFngrPrefix(String fingerPrint) {
   if (fingerPrint.startsWith('tn::')) return fingerPrint.substring(4);
   return fingerPrint;
