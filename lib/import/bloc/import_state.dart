@@ -157,7 +157,6 @@ class ImportState with _$ImportState {
       case WalletPurpose.bip44:
         return walletDetails?.where((e) => e.purpose == WalletPurpose.bip44).first;
     }
-    return null;
   }
 
   String walletName(WalletPurpose purpose) => walletNameStr(purpose);

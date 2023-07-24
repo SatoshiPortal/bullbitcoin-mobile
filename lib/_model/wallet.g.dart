@@ -7,8 +7,10 @@ part of 'wallet.dart';
 // **************************************************************************
 
 _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
-      externalDescriptor: json['externalDescriptor'] as String? ?? '',
-      internalDescriptor: json['internalDescriptor'] as String? ?? '',
+      externalPublicDescriptor:
+          json['externalPublicDescriptor'] as String? ?? '',
+      internalPublicDescriptor:
+          json['internalPublicDescriptor'] as String? ?? '',
       mnemonic: json['mnemonic'] as String? ?? '',
       password: json['password'] as String?,
       xpub: json['xpub'] as String?,
@@ -32,8 +34,8 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
     );
 
 Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
-      'externalDescriptor': instance.externalDescriptor,
-      'internalDescriptor': instance.internalDescriptor,
+      'externalPublicDescriptor': instance.externalPublicDescriptor,
+      'internalPublicDescriptor': instance.internalPublicDescriptor,
       'mnemonic': instance.mnemonic,
       'password': instance.password,
       'xpub': instance.xpub,

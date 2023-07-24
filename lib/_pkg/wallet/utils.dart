@@ -22,13 +22,6 @@ String removeFngrPrefix(String fingerPrint) {
   return fingerPrint;
 }
 
-String keyFromDescr(String descriptor) {
-  final startIndex = descriptor.indexOf(']');
-  final cut1 = descriptor.substring(startIndex + 1);
-  final endIndex = cut1.indexOf('/');
-  return cut1.substring(0, endIndex);
-}
-
 String convertToXpubStr(String xpub) {
   if (xpub.toLowerCase().startsWith('u') || xpub.toLowerCase().startsWith('v')) {
     final result = convertVersion(xpub, Version.tPub);
@@ -42,7 +35,7 @@ String convertToXpubStr(String xpub) {
   return xpub;
 }
 
-String keyFromPrivDescr(String descriptor) {
+String keyFromDescriptor(String descriptor) {
   final startIndex = descriptor.indexOf('(');
   final cut1 = descriptor.substring(startIndex + 1);
   final endIndex = cut1.indexOf('/');

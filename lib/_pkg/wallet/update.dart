@@ -28,7 +28,7 @@ class WalletUpdate {
               .copyWith(
                 mnemonic: w!.mnemonic,
                 password: w.password,
-                internalDescriptor: w.internalDescriptor,
+                internalPublicDescriptor: w.internalPublicDescriptor,
               )
               .toJson(),
         ),
@@ -142,8 +142,8 @@ class WalletUpdate {
               .copyWith(
                 mnemonic: '',
                 password: '',
-                internalDescriptor: '',
-                externalDescriptor: '',
+                internalPublicDescriptor: '',
+                externalPublicDescriptor: '',
                 xpub: '',
               )
               .toJson(),

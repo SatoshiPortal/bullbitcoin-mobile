@@ -36,30 +36,30 @@ class WalletCreate {
 
       switch (walletPurpose) {
         case WalletPurpose.bip84:
-          final externalDescriptor = await bdk.Descriptor.newBip84(
+          final externalPublicDescriptor = await bdk.Descriptor.newBip84(
             secretKey: descriptorSecretKey,
             network: network,
             keychain: bdk.KeychainKind.External,
           );
-          final edesc = await externalDescriptor.asString();
+          final edesc = await externalPublicDescriptor.asString();
           fgnr = fingerPrintFromDescr(edesc, isTesnet: isTestnet);
 
         case WalletPurpose.bip44:
-          final externalDescriptor = await bdk.Descriptor.newBip44(
+          final externalPublicDescriptor = await bdk.Descriptor.newBip44(
             secretKey: descriptorSecretKey,
             network: network,
             keychain: bdk.KeychainKind.External,
           );
-          final edesc = await externalDescriptor.asString();
+          final edesc = await externalPublicDescriptor.asString();
           fgnr = fingerPrintFromDescr(edesc, isTesnet: isTestnet);
 
         case WalletPurpose.bip49:
-          final externalDescriptor = await bdk.Descriptor.newBip49(
+          final externalPublicDescriptor = await bdk.Descriptor.newBip49(
             secretKey: descriptorSecretKey,
             network: network,
             keychain: bdk.KeychainKind.External,
           );
-          final edesc = await externalDescriptor.asString();
+          final edesc = await externalPublicDescriptor.asString();
           fgnr = fingerPrintFromDescr(edesc, isTesnet: isTestnet);
       }
 
@@ -154,8 +154,8 @@ class WalletCreate {
 
           var pubKey = await bdk.DescriptorPublicKey.fromString(wallet.xpub!);
 
-          // final internalDescriptor =
-          //     await bdk.DescriptorPublicKey.fromString(wallet.internalDescriptor);
+          // final internalPublicDescriptor =
+          //     await bdk.DescriptorPublicKey.fromString(wallet.internalPublicDescriptor);
 
           if (wallet.path != null) {
             final derivation = await bdk.DerivationPath.create(path: wallet.path!);
@@ -208,11 +208,11 @@ class WalletCreate {
           }
         case BBWalletType.descriptors:
           external = await bdk.Descriptor.create(
-            descriptor: wallet.externalDescriptor,
+            descriptor: wallet.externalPublicDescriptor,
             network: network,
           );
           internal = await bdk.Descriptor.create(
-            descriptor: wallet.internalDescriptor,
+            descriptor: wallet.internalPublicDescriptor,
             network: network,
           );
       }

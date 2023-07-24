@@ -25,8 +25,8 @@ class WalletRead {
         wallet = wallet.copyWith(
           mnemonic: '',
           password: '',
-          internalDescriptor: '',
-          externalDescriptor: '',
+          internalPublicDescriptor: '',
+          externalPublicDescriptor: '',
           xpub: '',
         );
 

@@ -85,8 +85,8 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final wallet = state.wallet.copyWith(
       mnemonic: w!.mnemonic,
       password: w.password,
-      externalDescriptor: w.externalDescriptor,
-      internalDescriptor: w.internalDescriptor,
+      externalPublicDescriptor: w.externalPublicDescriptor,
+      internalPublicDescriptor: w.internalPublicDescriptor,
       xpub: w.xpub,
     );
 
@@ -98,8 +98,8 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final wallet = state.wallet.copyWith(
       mnemonic: '',
       password: '',
-      externalDescriptor: '',
-      internalDescriptor: '',
+      externalPublicDescriptor: '',
+      internalPublicDescriptor: '',
       xpub: '',
     );
 

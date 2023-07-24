@@ -19,16 +19,18 @@ class XPubButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.externalDescriptor);
+    final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.externalPublicDescriptor);
     if (desc.isEmpty) return const SizedBox();
-
-    final xpub = keyFromDescr(desc);
 
     return BBButton.textWithLeftArrow(
       label: 'Public Descriptor',
       onPressed: () async {
         await context.read<WalletSettingsCubit>().loadSensitiveInfo();
-        await XpubPopUp.openPopup(context, xpub, 'Public Descriptor');
+        await XpubPopUp.openPopup(
+          context,
+          desc.replaceAll('/0/*', '/[0;1]/*'),
+          'Public Descriptor',
+        );
         context.read<WalletSettingsCubit>().clearSensitiveInfo();
       },
     );
@@ -40,16 +42,16 @@ class XPrivButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.internalDescriptor);
+    final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.internalPublicDescriptor);
     if (desc.isEmpty) return const SizedBox();
 
-    final xpub = keyFromPrivDescr(desc);
+    final xpub = keyFromDescriptor(desc);
 
     return BBButton.textWithLeftArrow(
-      label: 'Private Descriptor',
+      label: 'XPub',
       onPressed: () async {
         await context.read<WalletSettingsCubit>().loadSensitiveInfo();
-        await XpubPopUp.openPopup(context, xpub, 'Private Descriptor');
+        await XpubPopUp.openPopup(context, xpub, 'Extended Public Key');
         context.read<WalletSettingsCubit>().clearSensitiveInfo();
       },
     );

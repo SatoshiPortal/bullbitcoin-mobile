@@ -19,8 +19,8 @@ enum WalletPurpose { bip84, bip49, bip44 }
 @freezed
 class Wallet with _$Wallet {
   const factory Wallet({
-    @Default('') String externalDescriptor,
-    @Default('') String internalDescriptor,
+    @Default('') String externalPublicDescriptor,
+    @Default('') String internalPublicDescriptor,
     @Default('') String mnemonic,
     String? password,
     String? xpub,
@@ -346,8 +346,8 @@ class Wallet with _$Wallet {
           network: bbNetwork,
           type: bbWalletType,
           purpose: walletPurpose,
-          externalDescriptor: descriptor,
-          internalDescriptor: changeDescriptor,
+          externalPublicDescriptor: descriptor,
+          internalPublicDescriptor: changeDescriptor,
           path: path,
           fingerprint: fngr,
           backupTested: true,

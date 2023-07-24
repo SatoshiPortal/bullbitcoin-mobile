@@ -20,8 +20,8 @@ Wallet _$WalletFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Wallet {
-  String get externalDescriptor => throw _privateConstructorUsedError;
-  String get internalDescriptor => throw _privateConstructorUsedError;
+  String get externalPublicDescriptor => throw _privateConstructorUsedError;
+  String get internalPublicDescriptor => throw _privateConstructorUsedError;
   String get mnemonic => throw _privateConstructorUsedError;
   String? get password => throw _privateConstructorUsedError;
   String? get xpub => throw _privateConstructorUsedError;
@@ -49,8 +49,8 @@ abstract class $WalletCopyWith<$Res> {
       _$WalletCopyWithImpl<$Res, Wallet>;
   @useResult
   $Res call(
-      {String externalDescriptor,
-      String internalDescriptor,
+      {String externalPublicDescriptor,
+      String internalPublicDescriptor,
       String mnemonic,
       String? password,
       String? xpub,
@@ -80,8 +80,8 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? externalDescriptor = null,
-    Object? internalDescriptor = null,
+    Object? externalPublicDescriptor = null,
+    Object? internalPublicDescriptor = null,
     Object? mnemonic = null,
     Object? password = freezed,
     Object? xpub = freezed,
@@ -98,13 +98,13 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? backupTested = null,
   }) {
     return _then(_value.copyWith(
-      externalDescriptor: null == externalDescriptor
-          ? _value.externalDescriptor
-          : externalDescriptor // ignore: cast_nullable_to_non_nullable
+      externalPublicDescriptor: null == externalPublicDescriptor
+          ? _value.externalPublicDescriptor
+          : externalPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String,
-      internalDescriptor: null == internalDescriptor
-          ? _value.internalDescriptor
-          : internalDescriptor // ignore: cast_nullable_to_non_nullable
+      internalPublicDescriptor: null == internalPublicDescriptor
+          ? _value.internalPublicDescriptor
+          : internalPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String,
       mnemonic: null == mnemonic
           ? _value.mnemonic
@@ -173,8 +173,8 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String externalDescriptor,
-      String internalDescriptor,
+      {String externalPublicDescriptor,
+      String internalPublicDescriptor,
       String mnemonic,
       String? password,
       String? xpub,
@@ -201,8 +201,8 @@ class __$$_WalletCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? externalDescriptor = null,
-    Object? internalDescriptor = null,
+    Object? externalPublicDescriptor = null,
+    Object? internalPublicDescriptor = null,
     Object? mnemonic = null,
     Object? password = freezed,
     Object? xpub = freezed,
@@ -219,13 +219,13 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? backupTested = null,
   }) {
     return _then(_$_Wallet(
-      externalDescriptor: null == externalDescriptor
-          ? _value.externalDescriptor
-          : externalDescriptor // ignore: cast_nullable_to_non_nullable
+      externalPublicDescriptor: null == externalPublicDescriptor
+          ? _value.externalPublicDescriptor
+          : externalPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String,
-      internalDescriptor: null == internalDescriptor
-          ? _value.internalDescriptor
-          : internalDescriptor // ignore: cast_nullable_to_non_nullable
+      internalPublicDescriptor: null == internalPublicDescriptor
+          ? _value.internalPublicDescriptor
+          : internalPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String,
       mnemonic: null == mnemonic
           ? _value.mnemonic
@@ -291,8 +291,8 @@ class __$$_WalletCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_Wallet extends _Wallet {
   const _$_Wallet(
-      {this.externalDescriptor = '',
-      this.internalDescriptor = '',
+      {this.externalPublicDescriptor = '',
+      this.internalPublicDescriptor = '',
       this.mnemonic = '',
       this.password,
       this.xpub,
@@ -317,10 +317,10 @@ class _$_Wallet extends _Wallet {
 
   @override
   @JsonKey()
-  final String externalDescriptor;
+  final String externalPublicDescriptor;
   @override
   @JsonKey()
-  final String internalDescriptor;
+  final String internalPublicDescriptor;
   @override
   @JsonKey()
   final String mnemonic;
@@ -380,7 +380,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(externalDescriptor: $externalDescriptor, internalDescriptor: $internalDescriptor, mnemonic: $mnemonic, password: $password, xpub: $xpub, fingerprint: $fingerprint, network: $network, type: $type, purpose: $purpose, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, backupTested: $backupTested)';
+    return 'Wallet(externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonic: $mnemonic, password: $password, xpub: $xpub, fingerprint: $fingerprint, network: $network, type: $type, purpose: $purpose, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, backupTested: $backupTested)';
   }
 
   @override
@@ -388,10 +388,12 @@ class _$_Wallet extends _Wallet {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Wallet &&
-            (identical(other.externalDescriptor, externalDescriptor) ||
-                other.externalDescriptor == externalDescriptor) &&
-            (identical(other.internalDescriptor, internalDescriptor) ||
-                other.internalDescriptor == internalDescriptor) &&
+            (identical(
+                    other.externalPublicDescriptor, externalPublicDescriptor) ||
+                other.externalPublicDescriptor == externalPublicDescriptor) &&
+            (identical(
+                    other.internalPublicDescriptor, internalPublicDescriptor) ||
+                other.internalPublicDescriptor == internalPublicDescriptor) &&
             (identical(other.mnemonic, mnemonic) ||
                 other.mnemonic == mnemonic) &&
             (identical(other.password, password) ||
@@ -419,8 +421,8 @@ class _$_Wallet extends _Wallet {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      externalDescriptor,
-      internalDescriptor,
+      externalPublicDescriptor,
+      internalPublicDescriptor,
       mnemonic,
       password,
       xpub,
@@ -452,8 +454,8 @@ class _$_Wallet extends _Wallet {
 
 abstract class _Wallet extends Wallet {
   const factory _Wallet(
-      {final String externalDescriptor,
-      final String internalDescriptor,
+      {final String externalPublicDescriptor,
+      final String internalPublicDescriptor,
       final String mnemonic,
       final String? password,
       final String? xpub,
@@ -473,9 +475,9 @@ abstract class _Wallet extends Wallet {
   factory _Wallet.fromJson(Map<String, dynamic> json) = _$_Wallet.fromJson;
 
   @override
-  String get externalDescriptor;
+  String get externalPublicDescriptor;
   @override
-  String get internalDescriptor;
+  String get internalPublicDescriptor;
   @override
   String get mnemonic;
   @override
