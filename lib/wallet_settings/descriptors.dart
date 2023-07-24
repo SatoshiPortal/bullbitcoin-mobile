@@ -14,8 +14,8 @@ import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class XPubButton extends StatelessWidget {
-  const XPubButton({super.key});
+class PublicDescriptorButton extends StatelessWidget {
+  const PublicDescriptorButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +25,9 @@ class XPubButton extends StatelessWidget {
     return BBButton.textWithLeftArrow(
       label: 'Public Descriptor',
       onPressed: () async {
+        // no more loading and clearing sensitive data
         await context.read<WalletSettingsCubit>().loadSensitiveInfo();
-        await XpubPopUp.openPopup(
+        await PublicDataPopUp.openPopup(
           context,
           desc.replaceAll('/0/*', '/[0;1]/*'),
           'Public Descriptor',
@@ -37,12 +38,12 @@ class XPubButton extends StatelessWidget {
   }
 }
 
-class XPrivButton extends StatelessWidget {
-  const XPrivButton({super.key});
+class ExtendedPublicKeyButton extends StatelessWidget {
+  const ExtendedPublicKeyButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.internalPublicDescriptor);
+    final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.externalPublicDescriptor);
     if (desc.isEmpty) return const SizedBox();
 
     final xpub = keyFromDescriptor(desc);
@@ -51,23 +52,27 @@ class XPrivButton extends StatelessWidget {
       label: 'XPub',
       onPressed: () async {
         await context.read<WalletSettingsCubit>().loadSensitiveInfo();
-        await XpubPopUp.openPopup(context, xpub, 'Extended Public Key');
+        await PublicDataPopUp.openPopup(
+          context,
+          xpub,
+          'Extended Public Key',
+        );
         context.read<WalletSettingsCubit>().clearSensitiveInfo();
       },
     );
   }
 }
 
-class XpubPopUp extends StatelessWidget {
-  const XpubPopUp({
+class PublicDataPopUp extends StatelessWidget {
+  const PublicDataPopUp({
     super.key,
-    required this.xpub,
+    required this.publicKeyData,
     required this.title,
   });
 
   static Future openPopup(
     BuildContext context,
-    String xpub,
+    String publicKeyData,
     String title,
   ) {
     return showMaterialModalBottomSheet(
@@ -76,15 +81,15 @@ class XpubPopUp extends StatelessWidget {
       enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (context) => PopUpBorder(
-        child: XpubPopUp(
-          xpub: xpub,
+        child: PublicDataPopUp(
+          publicKeyData: publicKeyData,
           title: title,
         ),
       ),
     );
   }
 
-  final String xpub;
+  final String publicKeyData;
   final String title;
 
   @override
@@ -111,11 +116,11 @@ class XpubPopUp extends StatelessWidget {
           const Gap(24),
           Center(
             child: QrImageView(
-              data: xpub,
+              data: publicKeyData,
             ),
           ),
           const Gap(16),
-          _TextSection(xpub: xpub),
+          _TextSection(publicKeyData: publicKeyData),
           const Gap(80),
         ],
       ),
@@ -124,9 +129,9 @@ class XpubPopUp extends StatelessWidget {
 }
 
 class _TextSection extends StatefulWidget {
-  const _TextSection({required this.xpub});
+  const _TextSection({required this.publicKeyData});
 
-  final String xpub;
+  final String publicKeyData;
 
   @override
   State<_TextSection> createState() => _TextSectionState();
@@ -158,7 +163,7 @@ class _TextSectionState extends State<_TextSection> {
                   child: Wrap(
                     children: [
                       BBText.body(
-                        widget.xpub,
+                        widget.publicKeyData,
                       ),
                     ],
                   ),
@@ -166,7 +171,7 @@ class _TextSectionState extends State<_TextSection> {
                 const Gap(16),
                 IconButton(
                   onPressed: () async {
-                    await Clipboard.setData(ClipboardData(text: widget.xpub));
+                    await Clipboard.setData(ClipboardData(text: widget.publicKeyData));
                     SystemSound.play(SystemSoundType.click);
                     HapticFeedback.selectionClick();
                     _copyClicked();
@@ -179,7 +184,7 @@ class _TextSectionState extends State<_TextSection> {
             )
           : const Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
-              child: BBText.body('xPub Copied to clipboard'),
+              child: BBText.body('Public Key Data Copied to clipboard'),
             ),
     );
   }
