@@ -30,7 +30,7 @@ class ImportState with _$ImportState {
     @Default('') String fingerprint,
     // @Default('') String coldCardFile,
     @Default(ImportSteps.selectCreateType) ImportSteps importStep,
-    @Default(WalletPurpose.bip84) WalletPurpose walletPurpose,
+    @Default(ScriptType.bip84) ScriptType scriptType,
     @Default(ImportTypes.notSelected) ImportTypes importType,
     List<Wallet>? walletDetails,
     @Default('') String customDerivation,
@@ -91,16 +91,16 @@ class ImportState with _$ImportState {
   }
 
   String xpubStr() {
-    final walletPurpose = this.walletPurpose;
+    final scriptType = this.scriptType;
     final walletD = walletDetails;
 
-    switch (walletPurpose) {
-      case WalletPurpose.bip84:
-        return walletD?.where((e) => e.purpose == WalletPurpose.bip84).first.xpub ?? '';
-      case WalletPurpose.bip49:
-        return walletD?.where((e) => e.purpose == WalletPurpose.bip49).first.xpub ?? '';
-      case WalletPurpose.bip44:
-        return walletD?.where((e) => e.purpose == WalletPurpose.bip44).first.xpub ?? '';
+    switch (scriptType) {
+      case ScriptType.bip84:
+        return walletD?.where((e) => e.scriptType == ScriptType.bip84).first.xpub ?? '';
+      case ScriptType.bip49:
+        return walletD?.where((e) => e.scriptType == ScriptType.bip49).first.xpub ?? '';
+      case ScriptType.bip44:
+        return walletD?.where((e) => e.scriptType == ScriptType.bip44).first.xpub ?? '';
     }
     // switch (walletType) {
     //   case WalletType.bip84:
@@ -112,58 +112,58 @@ class ImportState with _$ImportState {
     // }
   }
 
-  Wallet? getWalletDetails(WalletPurpose purpose) {
+  Wallet? getWalletDetails(ScriptType scriptType) {
     final walletDetails = this.walletDetails;
 
-    if (!showWalletPurpose(purpose)) return null;
+    if (!showWalletPurpose(scriptType)) return null;
 
     try {
-      switch (purpose) {
-        case WalletPurpose.bip84:
-          return walletDetails?.where((e) => e.purpose == WalletPurpose.bip84).first;
-        case WalletPurpose.bip49:
-          return walletDetails?.where((e) => e.purpose == WalletPurpose.bip49).first;
-        case WalletPurpose.bip44:
-          return walletDetails?.where((e) => e.purpose == WalletPurpose.bip44).first;
+      switch (scriptType) {
+        case ScriptType.bip84:
+          return walletDetails?.where((e) => e.scriptType == ScriptType.bip84).first;
+        case ScriptType.bip49:
+          return walletDetails?.where((e) => e.scriptType == ScriptType.bip49).first;
+        case ScriptType.bip44:
+          return walletDetails?.where((e) => e.scriptType == ScriptType.bip44).first;
       }
     } catch (e) {
       return null;
     }
   }
 
-  bool showWalletPurpose(WalletPurpose purpose) {
+  bool showWalletPurpose(ScriptType scriptType) {
     final pub = tempXpub;
 
     if (pub.startsWith('x') || pub.startsWith('t')) return true;
 
-    if (pub.startsWith('z') && purpose == WalletPurpose.bip84) return true;
-    if (pub.startsWith('y') && purpose == WalletPurpose.bip49) return true;
+    if (pub.startsWith('z') && scriptType == ScriptType.bip84) return true;
+    if (pub.startsWith('y') && scriptType == ScriptType.bip49) return true;
 
-    if (pub.startsWith('u') && purpose == WalletPurpose.bip84) return true;
-    if (pub.startsWith('v') && purpose == WalletPurpose.bip44) return true;
+    if (pub.startsWith('u') && scriptType == ScriptType.bip84) return true;
+    if (pub.startsWith('v') && scriptType == ScriptType.bip44) return true;
 
     return false;
   }
 
   Wallet? getSelectWalletDetails() {
-    final walletPurpose = this.walletPurpose;
+    final scriptType = this.scriptType;
     final walletDetails = this.walletDetails;
 
-    switch (walletPurpose) {
-      case WalletPurpose.bip84:
-        return walletDetails?.where((e) => e.purpose == WalletPurpose.bip84).first;
-      case WalletPurpose.bip49:
-        return walletDetails?.where((e) => e.purpose == WalletPurpose.bip49).first;
-      case WalletPurpose.bip44:
-        return walletDetails?.where((e) => e.purpose == WalletPurpose.bip44).first;
+    switch (scriptType) {
+      case ScriptType.bip84:
+        return walletDetails?.where((e) => e.scriptType == ScriptType.bip84).first;
+      case ScriptType.bip49:
+        return walletDetails?.where((e) => e.scriptType == ScriptType.bip49).first;
+      case ScriptType.bip44:
+        return walletDetails?.where((e) => e.scriptType == ScriptType.bip44).first;
     }
   }
 
-  String walletName(WalletPurpose purpose) => walletNameStr(purpose);
+  String walletName(ScriptType scriptType) => walletNameStr(scriptType);
 
-  bool isSelected(WalletPurpose type) {
-    final walletPurpose = this.walletPurpose;
-    return walletPurpose == type;
+  bool isSelected(ScriptType scriptType) {
+    final scriptType = this.scriptType;
+    return scriptType == scriptType;
   }
 }
 

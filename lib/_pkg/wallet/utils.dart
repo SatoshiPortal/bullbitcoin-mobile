@@ -54,7 +54,7 @@ String keyFromDescriptor(String descriptor) {
 
 String buildDescriptorVanilla({
   required String xpub,
-  required WalletPurpose walletPurpose,
+  required ScriptType scriptType,
   required bool isChange,
 }) {
   try {
@@ -62,12 +62,12 @@ String buildDescriptorVanilla({
     final endPath = '/$change/*';
     String descriptor = '';
 
-    switch (walletPurpose) {
-      case WalletPurpose.bip84:
+    switch (scriptType) {
+      case ScriptType.bip84:
         descriptor = 'wpkh($xpub$endPath)';
-      case WalletPurpose.bip49:
+      case ScriptType.bip49:
         descriptor = 'sh(wpkh($xpub$endPath))';
-      case WalletPurpose.bip44:
+      case ScriptType.bip44:
         descriptor = 'pkh($xpub$endPath)';
     }
 

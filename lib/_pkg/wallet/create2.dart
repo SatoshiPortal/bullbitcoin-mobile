@@ -27,7 +27,7 @@ class WalletCreate {
     required String mne,
     required bool isTestnet,
     String? password,
-    required WalletPurpose walletType,
+    required ScriptType walletType,
   }) async {
     try {
       final network = isTestnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
@@ -42,7 +42,7 @@ class WalletCreate {
       String fgnr;
 
       switch (walletType) {
-        case WalletPurpose.bip84:
+        case ScriptType.bip84:
           final externalDescriptor = await bdk.Descriptor.newBip84(
             secretKey: descriptorSecretKey,
             network: network,
@@ -51,7 +51,7 @@ class WalletCreate {
           final edesc = await externalDescriptor.asString();
           fgnr = fingerPrintFromXKey(edesc);
 
-        case WalletPurpose.bip44:
+        case ScriptType.bip44:
           final externalDescriptor = await bdk.Descriptor.newBip44(
             secretKey: descriptorSecretKey,
             network: network,
@@ -60,7 +60,7 @@ class WalletCreate {
           final edesc = await externalDescriptor.asString();
           fgnr = fingerPrintFromXKey(edesc);
 
-        case WalletPurpose.bip49:
+        case ScriptType.bip49:
           final externalDescriptor = await bdk.Descriptor.newBip49(
             secretKey: descriptorSecretKey,
             network: network,
@@ -179,7 +179,7 @@ class WalletCreate {
       sourceFingerprint: fingerprint,
       network: network,
       type: BBWalletType.coldcard,
-      purpose: WalletPurpose.bip44,
+      scriptType: ScriptType.bip44,
     );
     final wallet49HashId =
         sha1.convert(utf8.encode(bdkDescriptor49External.toString())).toString().substring(0, 12);
@@ -191,7 +191,7 @@ class WalletCreate {
       sourceFingerprint: fingerprint,
       network: network,
       type: BBWalletType.coldcard,
-      purpose: WalletPurpose.bip49,
+      scriptType: ScriptType.bip49,
     );
     final wallet84HashId =
         sha1.convert(utf8.encode(bdkDescriptor84External.toString())).toString().substring(0, 12);
@@ -203,7 +203,7 @@ class WalletCreate {
       sourceFingerprint: fingerprint,
       network: network,
       type: BBWalletType.coldcard,
-      purpose: WalletPurpose.bip84,
+      scriptType: ScriptType.bip84,
     );
 
     return ([wallet44, wallet49, wallet84], null);
@@ -253,7 +253,7 @@ class WalletCreate {
   Future<(Wallet?, Err?)> newPassphraseWalletFromSeed(
     String mnemonicFingerprint,
     String passphrase,
-    WalletPurpose purpose,
+    ScriptType scriptType,
     BBNetwork network,
     bool isImported,
   ) async {
@@ -287,8 +287,8 @@ class WalletCreate {
     bdk.Descriptor? internal;
     bdk.Descriptor? external;
 
-    switch (purpose) {
-      case WalletPurpose.bip84:
+    switch (scriptType) {
+      case ScriptType.bip84:
         internal = await bdk.Descriptor.newBip84Public(
           publicKey: rootXpub,
           fingerPrint: sourceFingerprint,
@@ -302,7 +302,7 @@ class WalletCreate {
           network: bdkNetwork,
           keychain: bdk.KeychainKind.External,
         );
-      case WalletPurpose.bip49:
+      case ScriptType.bip49:
         internal = await bdk.Descriptor.newBip49Public(
           publicKey: rootXpub,
           fingerPrint: sourceFingerprint,
@@ -316,7 +316,7 @@ class WalletCreate {
           network: bdkNetwork,
           keychain: bdk.KeychainKind.External,
         );
-      case WalletPurpose.bip44:
+      case ScriptType.bip44:
         internal = await bdk.Descriptor.newBip44Public(
           publicKey: rootXpub,
           fingerPrint: sourceFingerprint,
@@ -340,7 +340,7 @@ class WalletCreate {
       sourceFingerprint: sourceFingerprint,
       network: network,
       type: isImported ? BBWalletType.words : BBWalletType.newSeed,
-      purpose: purpose,
+      scriptType: scriptType,
     );
     final (_, wErr) = await HiveStorage().getValue(wallet.getRelatedSeedStorageString());
     if (wErr != null) {
@@ -380,7 +380,7 @@ class WalletCreate {
 
   Future<(Wallet?, Err?)> newColdCardWallet(
     ColdCard coldCard,
-    WalletPurpose purpose,
+    ScriptType scriptType,
     BBNetwork network,
   ) async {
     // create all 3 coldcard wallets and return only the one requested
@@ -451,8 +451,8 @@ class WalletCreate {
       sourceFingerprint: fingerprint,
       network: network,
       type: BBWalletType.coldcard,
-      purpose: WalletPurpose.bip44,
-      hide: purpose != WalletPurpose.bip44,
+      scriptType: ScriptType.bip44,
+      hide: scriptType != ScriptType.bip44,
     );
     final (_, w44Err) = await HiveStorage().getValue(wallet44HashId);
     if (w44Err != null) {
@@ -472,8 +472,8 @@ class WalletCreate {
       sourceFingerprint: fingerprint,
       network: network,
       type: BBWalletType.coldcard,
-      purpose: WalletPurpose.bip49,
-      hide: purpose != WalletPurpose.bip49,
+      scriptType: ScriptType.bip49,
+      hide: scriptType != ScriptType.bip49,
     );
     final (_, w49Err) = await HiveStorage().getValue(wallet49HashId);
     if (w49Err != null) {
@@ -493,8 +493,8 @@ class WalletCreate {
       sourceFingerprint: fingerprint,
       network: network,
       type: BBWalletType.coldcard,
-      purpose: WalletPurpose.bip84,
-      hide: purpose != WalletPurpose.bip84,
+      scriptType: ScriptType.bip84,
+      hide: scriptType != ScriptType.bip84,
     );
     final (_, w84Err) = await HiveStorage().getValue(wallet84HashId);
     if (w84Err != null) {
@@ -531,8 +531,8 @@ class WalletCreate {
       print(wallet84SavingError);
       return (null, Err(wallet84SavingError.toString()));
     }
-    if (purpose == WalletPurpose.bip44) return (wallet44, null);
-    if (purpose == WalletPurpose.bip49)
+    if (scriptType == ScriptType.bip44) return (wallet44, null);
+    if (scriptType == ScriptType.bip49)
       return (wallet49, null);
     else
       return (wallet84, null);
@@ -544,11 +544,11 @@ class WalletCreate {
   ) async {
     try {
       final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
-      final purpose = xpub.startsWith('x') || xpub.startsWith('t')
-          ? WalletPurpose.bip44
+      final scriptType = xpub.startsWith('x') || xpub.startsWith('t')
+          ? ScriptType.bip44
           : xpub.startsWith('y') || xpub.startsWith('u')
-              ? WalletPurpose.bip49
-              : WalletPurpose.bip84;
+              ? ScriptType.bip49
+              : ScriptType.bip84;
       final xPub = convertToXpubStr(xpub);
       final rootXpub = await bdk.DescriptorPublicKey.fromString(xPub);
       print(rootXpub);
@@ -557,8 +557,8 @@ class WalletCreate {
 
       bdk.Descriptor? internal;
       bdk.Descriptor? external;
-      switch (purpose) {
-        case WalletPurpose.bip84:
+      switch (scriptType) {
+        case ScriptType.bip84:
           internal = await bdk.Descriptor.create(
             descriptor: 'wpkh($xPub/1/*)',
             network: bdkNetwork,
@@ -567,7 +567,7 @@ class WalletCreate {
             descriptor: 'wpkh($xPub/0/*)',
             network: bdkNetwork,
           );
-        case WalletPurpose.bip49:
+        case ScriptType.bip49:
           internal = await bdk.Descriptor.create(
             descriptor: 'sh-wsh($xPub/1/*)',
             network: bdkNetwork,
@@ -576,7 +576,7 @@ class WalletCreate {
             descriptor: 'sh-wsh($xPub/0/*)',
             network: bdkNetwork,
           );
-        case WalletPurpose.bip44:
+        case ScriptType.bip44:
           internal = await bdk.Descriptor.create(
             descriptor: 'pkh($xPub/1/*)',
             network: bdkNetwork,
@@ -597,7 +597,7 @@ class WalletCreate {
         sourceFingerprint: walletHashId,
         network: network,
         type: BBWalletType.xpub,
-        purpose: purpose,
+        scriptType: scriptType,
       );
       final (_, wErr) = await HiveStorage().getValue(wallet.getWalletStorageString());
       if (wErr != null) {

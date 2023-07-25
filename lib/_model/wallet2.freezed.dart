@@ -23,20 +23,17 @@ mixin _$Wallet {
   String get walletHashId =>
       throw _privateConstructorUsedError; // sha1(externalPublicDescriptor).toString().substring(12, 20)
   String get externalPublicDescriptor => throw _privateConstructorUsedError;
-  String get internalPublicDescriptor =>
-      throw _privateConstructorUsedError; // @Default('') String mnemonic,
-// String? password,
+  String get internalPublicDescriptor => throw _privateConstructorUsedError;
   String? get xpub => throw _privateConstructorUsedError;
   String get mnemonicFingerprint =>
       throw _privateConstructorUsedError; // fingerprint of the 12 words / seed
   String get sourceFingerprint =>
       throw _privateConstructorUsedError; // the fingerprint of the source which could be only the seed or seed+passphrase
 // if sourceFingerprint is different from mnemonicFingerprint; the wallet has a passphrase
-  BBNetwork get network => throw _privateConstructorUsedError; //
+  BBNetwork get network => throw _privateConstructorUsedError;
   BBWalletType get type => throw _privateConstructorUsedError;
-  WalletPurpose get purpose =>
-      throw _privateConstructorUsedError; // bip49,44,84
-// String? address,
+  ScriptType get scriptType =>
+      throw _privateConstructorUsedError; // String? address,
   String? get name => throw _privateConstructorUsedError;
   String? get path => throw _privateConstructorUsedError;
   int? get balance => throw _privateConstructorUsedError;
@@ -65,7 +62,7 @@ abstract class $WalletCopyWith<$Res> {
       String sourceFingerprint,
       BBNetwork network,
       BBWalletType type,
-      WalletPurpose purpose,
+      ScriptType scriptType,
       String? name,
       String? path,
       int? balance,
@@ -97,7 +94,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? sourceFingerprint = null,
     Object? network = null,
     Object? type = null,
-    Object? purpose = null,
+    Object? scriptType = null,
     Object? name = freezed,
     Object? path = freezed,
     Object? balance = freezed,
@@ -140,10 +137,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as BBWalletType,
-      purpose: null == purpose
-          ? _value.purpose
-          : purpose // ignore: cast_nullable_to_non_nullable
-              as WalletPurpose,
+      scriptType: null == scriptType
+          ? _value.scriptType
+          : scriptType // ignore: cast_nullable_to_non_nullable
+              as ScriptType,
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -195,7 +192,7 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       String sourceFingerprint,
       BBNetwork network,
       BBWalletType type,
-      WalletPurpose purpose,
+      ScriptType scriptType,
       String? name,
       String? path,
       int? balance,
@@ -224,7 +221,7 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? sourceFingerprint = null,
     Object? network = null,
     Object? type = null,
-    Object? purpose = null,
+    Object? scriptType = null,
     Object? name = freezed,
     Object? path = freezed,
     Object? balance = freezed,
@@ -267,10 +264,10 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as BBWalletType,
-      purpose: null == purpose
-          ? _value.purpose
-          : purpose // ignore: cast_nullable_to_non_nullable
-              as WalletPurpose,
+      scriptType: null == scriptType
+          ? _value.scriptType
+          : scriptType // ignore: cast_nullable_to_non_nullable
+              as ScriptType,
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -319,7 +316,7 @@ class _$_Wallet extends _Wallet {
       required this.sourceFingerprint,
       required this.network,
       required this.type,
-      required this.purpose,
+      required this.scriptType,
       this.name,
       this.path,
       this.balance,
@@ -343,8 +340,6 @@ class _$_Wallet extends _Wallet {
   final String externalPublicDescriptor;
   @override
   final String internalPublicDescriptor;
-// @Default('') String mnemonic,
-// String? password,
   @override
   final String? xpub;
   @override
@@ -356,12 +351,10 @@ class _$_Wallet extends _Wallet {
 // if sourceFingerprint is different from mnemonicFingerprint; the wallet has a passphrase
   @override
   final BBNetwork network;
-//
   @override
   final BBWalletType type;
   @override
-  final WalletPurpose purpose;
-// bip49,44,84
+  final ScriptType scriptType;
 // String? address,
   @override
   final String? name;
@@ -408,7 +401,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(walletHashId: $walletHashId, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, xpub: $xpub, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, purpose: $purpose, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, backupTested: $backupTested, hide: $hide)';
+    return 'Wallet(walletHashId: $walletHashId, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, xpub: $xpub, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, backupTested: $backupTested, hide: $hide)';
   }
 
   @override
@@ -431,7 +424,8 @@ class _$_Wallet extends _Wallet {
                 other.sourceFingerprint == sourceFingerprint) &&
             (identical(other.network, network) || other.network == network) &&
             (identical(other.type, type) || other.type == type) &&
-            (identical(other.purpose, purpose) || other.purpose == purpose) &&
+            (identical(other.scriptType, scriptType) ||
+                other.scriptType == scriptType) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.path, path) || other.path == path) &&
             (identical(other.balance, balance) || other.balance == balance) &&
@@ -458,7 +452,7 @@ class _$_Wallet extends _Wallet {
       sourceFingerprint,
       network,
       type,
-      purpose,
+      scriptType,
       name,
       path,
       balance,
@@ -492,7 +486,7 @@ abstract class _Wallet extends Wallet {
       required final String sourceFingerprint,
       required final BBNetwork network,
       required final BBWalletType type,
-      required final WalletPurpose purpose,
+      required final ScriptType scriptType,
       final String? name,
       final String? path,
       final int? balance,
@@ -511,8 +505,7 @@ abstract class _Wallet extends Wallet {
   String get externalPublicDescriptor;
   @override
   String get internalPublicDescriptor;
-  @override // @Default('') String mnemonic,
-// String? password,
+  @override
   String? get xpub;
   @override
   String get mnemonicFingerprint;
@@ -521,12 +514,11 @@ abstract class _Wallet extends Wallet {
   @override // the fingerprint of the source which could be only the seed or seed+passphrase
 // if sourceFingerprint is different from mnemonicFingerprint; the wallet has a passphrase
   BBNetwork get network;
-  @override //
+  @override
   BBWalletType get type;
   @override
-  WalletPurpose get purpose;
-  @override // bip49,44,84
-// String? address,
+  ScriptType get scriptType;
+  @override // String? address,
   String? get name;
   @override
   String? get path;

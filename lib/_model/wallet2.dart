@@ -12,7 +12,7 @@ enum BBNetwork { Testnet, Mainnet }
 
 enum BBWalletType { newSeed, xpub, descriptors, words, coldcard }
 
-enum WalletPurpose { bip84, bip49, bip44 }
+enum ScriptType { bip84, bip49, bip44 }
 
 // seed -> w1() w2() w3()
 
@@ -22,16 +22,14 @@ class Wallet with _$Wallet {
     required String walletHashId, // sha1(externalPublicDescriptor).toString().substring(12, 20)
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
-    // @Default('') String mnemonic,
-    // String? password,
     String? xpub,
     required String mnemonicFingerprint, // fingerprint of the 12 words / seed
     required String
         sourceFingerprint, // the fingerprint of the source which could be only the seed or seed+passphrase
     // if sourceFingerprint is different from mnemonicFingerprint; the wallet has a passphrase
-    required BBNetwork network, //
+    required BBNetwork network,
     required BBWalletType type,
-    required WalletPurpose purpose, // bip49,44,84
+    required ScriptType scriptType,
     // String? address,
     String? name,
     String? path,
@@ -230,27 +228,27 @@ class Balance with _$Balance {
   }) = _Balance;
 }
 
-String walletNameStr(WalletPurpose type) {
+String walletNameStr(ScriptType type) {
   var name = '';
   switch (type) {
-    case WalletPurpose.bip84:
+    case ScriptType.bip84:
       name = 'Segwit';
-    case WalletPurpose.bip49:
+    case ScriptType.bip49:
       name = 'Legacy Script';
-    case WalletPurpose.bip44:
+    case ScriptType.bip44:
       name = 'Legacy Pubkey';
   }
   return name;
 }
 
-extension W on WalletPurpose {
+extension W on ScriptType {
   String walletNumber() {
     switch (this) {
-      case WalletPurpose.bip84:
+      case ScriptType.bip84:
         return '84';
-      case WalletPurpose.bip49:
+      case ScriptType.bip49:
         return '49';
-      case WalletPurpose.bip44:
+      case ScriptType.bip44:
         return '44';
     }
   }

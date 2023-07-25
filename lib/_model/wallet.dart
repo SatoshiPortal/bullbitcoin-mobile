@@ -14,7 +14,7 @@ enum BBNetwork { Testnet, Mainnet }
 
 enum BBWalletType { newSeed, xpub, descriptors, words, coldcard }
 
-enum WalletPurpose { bip84, bip49, bip44 }
+enum ScriptType { bip84, bip49, bip44 }
 
 @freezed
 class Wallet with _$Wallet {
@@ -27,7 +27,7 @@ class Wallet with _$Wallet {
     @Default('') String fingerprint,
     required BBNetwork network,
     required BBWalletType type,
-    required WalletPurpose purpose,
+    required ScriptType scriptType,
     // String? address,
     String? name,
     String? path,
@@ -57,7 +57,7 @@ class Wallet with _$Wallet {
         mne: mne,
         password: password,
         path: path,
-        walletPurpose: WalletPurpose.bip84,
+        scriptType: ScriptType.bip84,
         bbWalletType: bbWalletType,
         isTestNet: isTestNet,
         fngr: fngr,
@@ -70,7 +70,7 @@ class Wallet with _$Wallet {
         mne: mne,
         password: password,
         path: path,
-        walletPurpose: WalletPurpose.bip49,
+        scriptType: ScriptType.bip49,
         bbWalletType: bbWalletType,
         isTestNet: isTestNet,
         fngr: fngr,
@@ -83,7 +83,7 @@ class Wallet with _$Wallet {
         mne: mne,
         password: password,
         path: path,
-        walletPurpose: WalletPurpose.bip44,
+        scriptType: ScriptType.bip44,
         bbWalletType: bbWalletType,
         isTestNet: isTestNet,
         fngr: fngr,
@@ -110,7 +110,7 @@ class Wallet with _$Wallet {
 
       final (wallet84, err1) = fromColdCard(
         coldCard: coldCard,
-        walletPurpose: WalletPurpose.bip84,
+        scriptType: ScriptType.bip84,
         isTestNet: isTestNet,
       );
       if (err1 != null) errs.add(err1.message);
@@ -118,7 +118,7 @@ class Wallet with _$Wallet {
 
       final (wallet49, err2) = fromColdCard(
         coldCard: coldCard,
-        walletPurpose: WalletPurpose.bip49,
+        scriptType: ScriptType.bip49,
         isTestNet: isTestNet,
       );
       if (err2 != null) errs.add(err2.message);
@@ -126,7 +126,7 @@ class Wallet with _$Wallet {
 
       final (wallet44, err3) = fromColdCard(
         coldCard: coldCard,
-        walletPurpose: WalletPurpose.bip44,
+        scriptType: ScriptType.bip44,
         isTestNet: isTestNet,
       );
       if (err3 != null) errs.add(err3.message);
@@ -153,7 +153,7 @@ class Wallet with _$Wallet {
 
       final (wallet84, err) = Wallet.fromXPubDescr(
         xpub: xpub,
-        walletPurpose: WalletPurpose.bip84,
+        scriptType: ScriptType.bip84,
         isTestNet: isTestNet,
         path: path,
         fngr: fngr,
@@ -165,7 +165,7 @@ class Wallet with _$Wallet {
 
       final (wallet49, err2) = Wallet.fromXPubDescr(
         xpub: xpub,
-        walletPurpose: WalletPurpose.bip49,
+        scriptType: ScriptType.bip49,
         path: path,
         isTestNet: isTestNet,
         bbWalletType: bbWalletType,
@@ -177,7 +177,7 @@ class Wallet with _$Wallet {
 
       final (wallet44, err3) = Wallet.fromXPubDescr(
         xpub: xpub,
-        walletPurpose: WalletPurpose.bip44,
+        scriptType: ScriptType.bip44,
         path: path,
         isTestNet: isTestNet,
         bbWalletType: bbWalletType,
@@ -206,17 +206,17 @@ class Wallet with _$Wallet {
 
       final (wallet84, err) = Wallet.fromXPubDescr(
         fngr: fngr,
-        walletPurpose: WalletPurpose.bip84,
+        scriptType: ScriptType.bip84,
         isTestNet: isTestNet,
         bbWalletType: bbWalletType,
         changeDescriptor: buildDescriptorVanilla(
           xpub: xpub,
-          walletPurpose: WalletPurpose.bip84,
+          scriptType: ScriptType.bip84,
           isChange: true,
         ),
         descriptor: buildDescriptorVanilla(
           xpub: xpub,
-          walletPurpose: WalletPurpose.bip84,
+          scriptType: ScriptType.bip84,
           isChange: false,
         ),
       );
@@ -226,17 +226,17 @@ class Wallet with _$Wallet {
 
       final (wallet49, err2) = Wallet.fromXPubDescr(
         fngr: fngr,
-        walletPurpose: WalletPurpose.bip49,
+        scriptType: ScriptType.bip49,
         isTestNet: isTestNet,
         bbWalletType: bbWalletType,
         changeDescriptor: buildDescriptorVanilla(
           xpub: xpub,
-          walletPurpose: WalletPurpose.bip49,
+          scriptType: ScriptType.bip49,
           isChange: true,
         ),
         descriptor: buildDescriptorVanilla(
           xpub: xpub,
-          walletPurpose: WalletPurpose.bip49,
+          scriptType: ScriptType.bip49,
           isChange: false,
         ),
       );
@@ -246,17 +246,17 @@ class Wallet with _$Wallet {
 
       final (wallet44, err3) = Wallet.fromXPubDescr(
         fngr: fngr,
-        walletPurpose: WalletPurpose.bip44,
+        scriptType: ScriptType.bip44,
         isTestNet: isTestNet,
         bbWalletType: bbWalletType,
         changeDescriptor: buildDescriptorVanilla(
           xpub: xpub,
-          walletPurpose: WalletPurpose.bip44,
+          scriptType: ScriptType.bip44,
           isChange: true,
         ),
         descriptor: buildDescriptorVanilla(
           xpub: xpub,
-          walletPurpose: WalletPurpose.bip44,
+          scriptType: ScriptType.bip44,
           isChange: false,
         ),
       );
@@ -283,7 +283,7 @@ class Wallet with _$Wallet {
       final errs = <String>[];
 
       final (wallet84, err) = Wallet.fromXPubDescr(
-        walletPurpose: WalletPurpose.bip84,
+        scriptType: ScriptType.bip84,
         isTestNet: isTestNet,
         bbWalletType: bbWalletType,
         changeDescriptor: changeDescriptor,
@@ -295,7 +295,7 @@ class Wallet with _$Wallet {
       wallets.add(wallet84!);
 
       final (wallet49, err2) = Wallet.fromXPubDescr(
-        walletPurpose: WalletPurpose.bip49,
+        scriptType: ScriptType.bip49,
         isTestNet: isTestNet,
         bbWalletType: bbWalletType,
         changeDescriptor: changeDescriptor,
@@ -307,7 +307,7 @@ class Wallet with _$Wallet {
       wallets.add(wallet49!);
 
       final (wallet44, err3) = Wallet.fromXPubDescr(
-        walletPurpose: WalletPurpose.bip44,
+        scriptType: ScriptType.bip44,
         isTestNet: isTestNet,
         bbWalletType: bbWalletType,
         changeDescriptor: changeDescriptor,
@@ -327,7 +327,7 @@ class Wallet with _$Wallet {
 
   static (Wallet?, Err?) fromXPubDescr({
     required BBWalletType bbWalletType,
-    required WalletPurpose walletPurpose,
+    required ScriptType scriptType,
     required bool isTestNet,
     String? descriptor,
     String? changeDescriptor,
@@ -345,7 +345,7 @@ class Wallet with _$Wallet {
         final wallet = Wallet(
           network: bbNetwork,
           type: bbWalletType,
-          purpose: walletPurpose,
+          scriptType: scriptType,
           externalPublicDescriptor: descriptor,
           internalPublicDescriptor: changeDescriptor,
           path: path,
@@ -363,7 +363,7 @@ class Wallet with _$Wallet {
       final wallet = Wallet(
         network: bbNetwork,
         type: bbWalletType,
-        purpose: walletPurpose,
+        scriptType: scriptType,
         xpub: xpub,
         fingerprint: fngr,
         path: path,
@@ -378,7 +378,7 @@ class Wallet with _$Wallet {
 
   static (Wallet?, Err?) fromColdCard({
     required ColdCard coldCard,
-    required WalletPurpose walletPurpose,
+    required ScriptType scriptType,
     required bool isTestNet,
   }) {
     try {
@@ -388,12 +388,12 @@ class Wallet with _$Wallet {
       ColdWallet coldWallet;
       String path;
 
-      switch (walletPurpose) {
-        case WalletPurpose.bip84:
+      switch (scriptType) {
+        case ScriptType.bip84:
           coldWallet = coldCard.bip84!;
-        case WalletPurpose.bip49:
+        case ScriptType.bip49:
           coldWallet = coldCard.bip49!;
-        case WalletPurpose.bip44:
+        case ScriptType.bip44:
           coldWallet = coldCard.bip44!;
       }
       path = coldWallet.deriv!;
@@ -402,7 +402,7 @@ class Wallet with _$Wallet {
       final wallet = Wallet(
         network: bbnetwork,
         type: BBWalletType.coldcard,
-        purpose: walletPurpose,
+        scriptType: scriptType,
         fingerprint: fingerprint,
         path: path,
         xpub: coldWallet.xpub,
@@ -418,7 +418,7 @@ class Wallet with _$Wallet {
   static (Wallet?, Err?) fromMnemonic({
     required String mne,
     required String? password,
-    required WalletPurpose walletPurpose,
+    required ScriptType scriptType,
     required BBWalletType bbWalletType,
     required bool isTestNet,
     required String fngr,
@@ -431,7 +431,7 @@ class Wallet with _$Wallet {
       final wallet = Wallet(
         network: network,
         type: bbWalletType,
-        purpose: walletPurpose,
+        scriptType: scriptType,
         mnemonic: mne,
         password: password,
         path: path,
@@ -642,27 +642,27 @@ class Balance with _$Balance {
   }) = _Balance;
 }
 
-String walletNameStr(WalletPurpose purpose) {
+String walletNameStr(ScriptType purpose) {
   var name = '';
   switch (purpose) {
-    case WalletPurpose.bip84:
+    case ScriptType.bip84:
       name = 'Segwit';
-    case WalletPurpose.bip49:
+    case ScriptType.bip49:
       name = 'Legacy Script';
-    case WalletPurpose.bip44:
+    case ScriptType.bip44:
       name = 'Legacy Pubkey';
   }
   return name;
 }
 
-extension W on WalletPurpose {
+extension W on ScriptType {
   String walletNumber() {
     switch (this) {
-      case WalletPurpose.bip84:
+      case ScriptType.bip84:
         return '84';
-      case WalletPurpose.bip49:
+      case ScriptType.bip49:
         return '49';
-      case WalletPurpose.bip44:
+      case ScriptType.bip44:
         return '44';
     }
   }

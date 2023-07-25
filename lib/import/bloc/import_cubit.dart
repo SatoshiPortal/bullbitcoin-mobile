@@ -331,7 +331,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           final (fingerPrint, errr) = await walletCreate.getMneFingerprint(
             mne: mne,
             isTestnet: isTesnet,
-            walletPurpose: WalletPurpose.bip84,
+            scriptType: ScriptType.bip84,
           );
           if (errr != null) throw errr;
 
@@ -430,8 +430,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
     );
   }
 
-  void walletPurposeChanged(WalletPurpose purpose) {
-    emit(state.copyWith(walletPurpose: purpose));
+  void scriptTypeChanged(ScriptType scriptType) {
+    emit(state.copyWith(scriptType: scriptType));
   }
 
   void saveClicked() async {

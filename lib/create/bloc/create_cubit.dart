@@ -67,7 +67,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     final (fgnr, err) = await walletCreate.getMneFingerprint(
       mne: state.mnemonic!.join(' '),
       isTestnet: settingsCubit.state.testnet,
-      walletPurpose: WalletPurpose.bip84,
+      scriptType: ScriptType.bip84,
     );
     if (err != null) {
       _showSavingErr(err.toString());
@@ -77,7 +77,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     final (wallet, err2) = Wallet.fromMnemonic(
       mne: state.mnemonic!.join(' '),
       password: state.passPhase.isNotEmpty ? state.passPhase : null,
-      walletPurpose: WalletPurpose.bip84,
+      scriptType: ScriptType.bip84,
       bbWalletType: BBWalletType.newSeed,
       isTestNet: settingsCubit.state.testnet,
       fngr: fgnr!,
@@ -122,7 +122,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       final (fgnr, err) = await walletCreate.getMneFingerprint(
         mne: mne,
         isTestnet: settingsCubit.state.testnet,
-        walletPurpose: WalletPurpose.bip84,
+        scriptType: ScriptType.bip84,
         password: password,
       );
       if (err != null) {
@@ -133,7 +133,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       var (wallet, err2) = Wallet.fromMnemonic(
         mne: state.mnemonic!.join(' '),
         password: state.passPhase.isNotEmpty ? state.passPhase : null,
-        walletPurpose: WalletPurpose.bip84,
+        scriptType: ScriptType.bip84,
         bbWalletType: BBWalletType.newSeed,
         isTestNet: testnet(i),
         fngr: fgnr!,

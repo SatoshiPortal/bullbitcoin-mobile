@@ -203,7 +203,7 @@ void main() {
 
       final (ww, _) = Wallet.fromColdCard(
         coldCard: coldcard,
-        walletPurpose: WalletPurpose.bip49,
+        walletPurpose: ScriptType.bip49,
         isTestNet: true,
       );
 
@@ -248,7 +248,7 @@ void main() {
 
       final (ww, _) = Wallet.fromColdCard(
         coldCard: coldcard,
-        walletPurpose: WalletPurpose.bip49,
+        walletPurpose: ScriptType.bip49,
         isTestNet: true,
       );
 

@@ -68,11 +68,11 @@ class _Screen extends StatefulWidget {
 }
 
 class _ScreenState extends State<_Screen> {
-  List<WalletPurpose> walletPurposes = [];
-  void syncingDone(WalletPurpose purpose, BuildContext context) {
-    if (walletPurposes.contains(purpose)) return;
-    walletPurposes.add(purpose);
-    if (walletPurposes.length == widget.walletCubits.length)
+  List<ScriptType> scriptTypes = [];
+  void syncingDone(ScriptType scriptType, BuildContext context) {
+    if (scriptTypes.contains(scriptType)) return;
+    scriptTypes.add(scriptType);
+    if (scriptTypes.length == widget.walletCubits.length)
       context.read<ImportWalletCubit>().syncingComplete();
   }
 
@@ -188,13 +188,13 @@ class _ImportWalletTypeButton extends StatelessWidget {
 
     if (wallet == null) return const SizedBox.shrink();
 
-    final walletPurpose = wallet.purpose;
+    final scriptType = wallet.scriptType;
 
     final selected =
-        context.select((ImportWalletCubit cubit) => cubit.state.isSelected(walletPurpose));
+        context.select((ImportWalletCubit cubit) => cubit.state.isSelected(scriptType));
 
     final name = context.select(
-      (ImportWalletCubit cubit) => cubit.state.walletName(walletPurpose),
+      (ImportWalletCubit cubit) => cubit.state.walletName(scriptType),
     );
 
     final syncing = context.select((WalletBloc cubit) => cubit.state.syncing);
@@ -222,7 +222,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 40),
                   child: InkWell(
                     onTap: () {
-                      context.read<ImportWalletCubit>().walletPurposeChanged(walletPurpose);
+                      context.read<ImportWalletCubit>().scriptTypeChanged(scriptType);
                     },
                     radius: 32,
                     child: Container(
@@ -368,14 +368,14 @@ class _ImportWalletTypeButton extends StatelessWidget {
 }
 
 class ImportWalletDetailsPopUp extends StatelessWidget {
-  const ImportWalletDetailsPopUp({super.key, required this.wallet, required this.walletPurpose});
+  const ImportWalletDetailsPopUp({super.key, required this.wallet, required this.scriptType});
 
   final Wallet wallet;
-  final WalletPurpose walletPurpose;
+  final ScriptType scriptType;
 
-  static Future showPopUp(BuildContext context, WalletPurpose walletPurpose) async {
+  static Future showPopUp(BuildContext context, ScriptType scriptType) async {
     final import = context.read<ImportWalletCubit>();
-    final wallet = import.state.getWalletDetails(walletPurpose);
+    final wallet = import.state.getWalletDetails(scriptType);
     if (wallet == null) return;
 
     return showMaterialModalBottomSheet(
@@ -387,7 +387,7 @@ class ImportWalletDetailsPopUp extends StatelessWidget {
         value: import,
         child: ImportWalletDetailsPopUp(
           wallet: wallet,
-          walletPurpose: walletPurpose,
+          scriptType: scriptType,
         ),
       ),
     );
@@ -396,7 +396,7 @@ class ImportWalletDetailsPopUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = context.select(
-      (ImportWalletCubit cubit) => cubit.state.walletName(walletPurpose),
+      (ImportWalletCubit cubit) => cubit.state.walletName(scriptType),
     );
 
     return PopUpBorder(

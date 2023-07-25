@@ -20,7 +20,7 @@ class WalletCreate {
     required String mne,
     required bool isTestnet,
     String? password,
-    required WalletPurpose walletPurpose,
+    required ScriptType scriptType,
   }) async {
     try {
       final network = isTestnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
@@ -34,8 +34,8 @@ class WalletCreate {
 
       String fgnr;
 
-      switch (walletPurpose) {
-        case WalletPurpose.bip84:
+      switch (scriptType) {
+        case ScriptType.bip84:
           final externalPublicDescriptor = await bdk.Descriptor.newBip84(
             secretKey: descriptorSecretKey,
             network: network,
@@ -44,7 +44,7 @@ class WalletCreate {
           final edesc = await externalPublicDescriptor.asString();
           fgnr = fingerPrintFromDescr(edesc, isTesnet: isTestnet);
 
-        case WalletPurpose.bip44:
+        case ScriptType.bip44:
           final externalPublicDescriptor = await bdk.Descriptor.newBip44(
             secretKey: descriptorSecretKey,
             network: network,
@@ -53,7 +53,7 @@ class WalletCreate {
           final edesc = await externalPublicDescriptor.asString();
           fgnr = fingerPrintFromDescr(edesc, isTesnet: isTestnet);
 
-        case WalletPurpose.bip49:
+        case ScriptType.bip49:
           final externalPublicDescriptor = await bdk.Descriptor.newBip49(
             secretKey: descriptorSecretKey,
             network: network,
@@ -77,7 +77,7 @@ class WalletCreate {
     try {
       final network =
           wallet.network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
-      final purpose = wallet.purpose;
+      final scriptType = wallet.scriptType;
 
       bdk.Descriptor? internal;
       bdk.Descriptor? external;
@@ -98,8 +98,8 @@ class WalletCreate {
         case BBWalletType.coldcard:
           final fngr = wallet.fingerprint;
           final pubKey = await bdk.DescriptorPublicKey.fromString(wallet.xpub!);
-          switch (purpose) {
-            case WalletPurpose.bip84:
+          switch (scriptType) {
+            case ScriptType.bip84:
               internal = await bdk.Descriptor.newBip84Public(
                 fingerPrint: fngr,
                 publicKey: pubKey,
@@ -113,7 +113,7 @@ class WalletCreate {
                 network: network,
                 keychain: bdk.KeychainKind.External,
               );
-            case WalletPurpose.bip49:
+            case ScriptType.bip49:
               internal = await bdk.Descriptor.newBip49Public(
                 fingerPrint: fngr,
                 publicKey: pubKey,
@@ -127,7 +127,7 @@ class WalletCreate {
                 network: network,
                 keychain: bdk.KeychainKind.External,
               );
-            case WalletPurpose.bip44:
+            case ScriptType.bip44:
               internal = await bdk.Descriptor.newBip44Public(
                 fingerPrint: fngr,
                 publicKey: pubKey,
@@ -162,8 +162,8 @@ class WalletCreate {
             pubKey = await pubKey.derive(derivation);
           }
 
-          switch (purpose) {
-            case WalletPurpose.bip84:
+          switch (scriptType) {
+            case ScriptType.bip84:
               internal = await bdk.Descriptor.newBip84Public(
                 fingerPrint: fngr,
                 publicKey: pubKey,
@@ -177,7 +177,7 @@ class WalletCreate {
                 network: network,
                 keychain: bdk.KeychainKind.External,
               );
-            case WalletPurpose.bip49:
+            case ScriptType.bip49:
               internal = await bdk.Descriptor.newBip49Public(
                 fingerPrint: fngr,
                 publicKey: pubKey,
@@ -191,7 +191,7 @@ class WalletCreate {
                 network: network,
                 keychain: bdk.KeychainKind.External,
               );
-            case WalletPurpose.bip44:
+            case ScriptType.bip44:
               internal = await bdk.Descriptor.newBip44Public(
                 fingerPrint: fngr,
                 publicKey: pubKey,
@@ -278,7 +278,7 @@ class WalletCreate {
           wallet.network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
       final isTestnet = wallet.network == BBNetwork.Testnet;
       final testnetPath = isTestnet ? '1' : '0';
-      final purpose = wallet.purpose;
+      final scriptType = wallet.scriptType;
 
       final mnemo = await bdk.Mnemonic.fromString(wallet.mnemonic);
 
@@ -297,8 +297,8 @@ class WalletCreate {
       bdk.Descriptor? external;
 
       if (!onlyPublic) {
-        switch (purpose) {
-          case WalletPurpose.bip84:
+        switch (scriptType) {
+          case ScriptType.bip84:
             internal = await bdk.Descriptor.newBip84(
               secretKey: descriptor,
               network: network,
@@ -309,7 +309,7 @@ class WalletCreate {
               network: network,
               keychain: bdk.KeychainKind.External,
             );
-          case WalletPurpose.bip49:
+          case ScriptType.bip49:
             internal = await bdk.Descriptor.newBip49(
               secretKey: descriptor,
               network: network,
@@ -320,7 +320,7 @@ class WalletCreate {
               network: network,
               keychain: bdk.KeychainKind.External,
             );
-          case WalletPurpose.bip44:
+          case ScriptType.bip44:
             internal = await bdk.Descriptor.newBip44(
               secretKey: descriptor,
               network: network,
@@ -339,14 +339,14 @@ class WalletCreate {
       var (fngr, err) = await getMneFingerprint(
         mne: wallet.mnemonic,
         isTestnet: isTestnet,
-        walletPurpose: purpose,
+        scriptType: scriptType,
       );
       if (err != null) throw err;
 
       fngr = removeFngrPrefix(fngr!);
 
-      switch (purpose) {
-        case WalletPurpose.bip84:
+      switch (scriptType) {
+        case ScriptType.bip84:
           final desc = await descriptor.derive(
             await bdk.DerivationPath.create(
               path: "m/84'/$testnetPath'/0'",
@@ -367,7 +367,7 @@ class WalletCreate {
             network: network,
             keychain: bdk.KeychainKind.External,
           );
-        case WalletPurpose.bip49:
+        case ScriptType.bip49:
           final desc = await descriptor.derive(
             await bdk.DerivationPath.create(
               path: "m/49'/$testnetPath'/0'",
@@ -387,7 +387,7 @@ class WalletCreate {
             network: network,
             keychain: bdk.KeychainKind.External,
           );
-        case WalletPurpose.bip44:
+        case ScriptType.bip44:
           final desc = await descriptor.derive(
             await bdk.DerivationPath.create(
               path: "m/44'/$testnetPath'/0'",
