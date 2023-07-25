@@ -96,7 +96,7 @@ class WalletCreate {
           external = descriptors.external;
 
         case BBWalletType.coldcard:
-          final fngr = wallet.fingerprint;
+          final fngr = wallet.mnemonicFingerprint;
           final pubKey = await bdk.DescriptorPublicKey.fromString(wallet.xpub!);
           switch (scriptType) {
             case ScriptType.bip84:
@@ -150,7 +150,7 @@ class WalletCreate {
           // );
           // final key = keyFromDescr(eternalDescr);
 
-          final fngr = wallet.fingerprint;
+          final fngr = wallet.mnemonicFingerprint;
 
           var pubKey = await bdk.DescriptorPublicKey.fromString(wallet.xpub!);
 

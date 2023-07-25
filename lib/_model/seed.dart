@@ -12,7 +12,7 @@ part 'seed.g.dart';
 class Seed with _$Seed {
   const factory Seed({
     @Default('') String mnemonic,
-    @Default('') String fingerprint,
+    @Default('') String mnemonicFingerprint,
     required BBNetwork network,
     required List<Passphrase> passphrases,
   }) = _Seed;
@@ -21,7 +21,7 @@ class Seed with _$Seed {
   factory Seed.fromJson(Map<String, dynamic> json) => _$SeedFromJson(json);
 
   String getSeedStorageString() {
-    return fingerprint;
+    return mnemonicFingerprint;
   }
 
   List<String> mnemonicList() {
@@ -33,7 +33,7 @@ class Seed with _$Seed {
 class Passphrase with _$Passphrase {
   const factory Passphrase({
     @Default('') String passphrase,
-    required String fingerprint,
+    required String sourceFingerprint,
   }) = _Passphrase;
   const Passphrase._();
 

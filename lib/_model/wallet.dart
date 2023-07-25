@@ -24,7 +24,8 @@ class Wallet with _$Wallet {
     @Default('') String mnemonic,
     String? password,
     String? xpub,
-    @Default('') String fingerprint,
+    @Default('') String mnemonicFingerprint,
+    @Default('') String sourceFingerprint,
     required BBNetwork network,
     required BBWalletType type,
     required ScriptType scriptType,
@@ -349,7 +350,7 @@ class Wallet with _$Wallet {
           externalPublicDescriptor: descriptor,
           internalPublicDescriptor: changeDescriptor,
           path: path,
-          fingerprint: fngr,
+          mnemonicFingerprint: fngr,
           backupTested: true,
         );
 
@@ -365,7 +366,7 @@ class Wallet with _$Wallet {
         type: bbWalletType,
         scriptType: scriptType,
         xpub: xpub,
-        fingerprint: fngr,
+        mnemonicFingerprint: fngr,
         path: path,
         backupTested: true,
       );
@@ -403,7 +404,7 @@ class Wallet with _$Wallet {
         network: bbnetwork,
         type: BBWalletType.coldcard,
         scriptType: scriptType,
-        fingerprint: fingerprint,
+        mnemonicFingerprint: fingerprint,
         path: path,
         xpub: coldWallet.xpub,
         backupTested: true,
@@ -435,7 +436,7 @@ class Wallet with _$Wallet {
         mnemonic: mne,
         password: password,
         path: path,
-        fingerprint: fngr,
+        mnemonicFingerprint: fngr,
         backupTested: backupTested,
       );
 
@@ -446,18 +447,18 @@ class Wallet with _$Wallet {
   }
 
   String cleanFingerprint() {
-    if (network == BBNetwork.Testnet) return fingerprint.replaceFirst('tn::', '');
-    return fingerprint;
+    if (network == BBNetwork.Testnet) return mnemonicFingerprint.replaceFirst('tn::', '');
+    return mnemonicFingerprint;
   }
 
   String getStorageString() {
-    var str = fingerprint + '_' + type.name;
+    var str = mnemonicFingerprint + '_' + type.name;
     if (network == BBNetwork.Testnet && !str.startsWith('tn')) str = 'tn::$str';
     return str;
   }
 
   String getStorageString2() {
-    var str = fingerprint + '_' + type.name + '_' + type.name;
+    var str = mnemonicFingerprint + '_' + type.name + '_' + type.name;
     if (network == BBNetwork.Testnet && !str.startsWith('tn')) str = 'tn::$str';
     return str;
   }

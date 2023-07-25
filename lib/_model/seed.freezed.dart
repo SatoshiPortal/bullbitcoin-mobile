@@ -21,7 +21,7 @@ Seed _$SeedFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Seed {
   String get mnemonic => throw _privateConstructorUsedError;
-  String get fingerprint => throw _privateConstructorUsedError;
+  String get mnemonicFingerprint => throw _privateConstructorUsedError;
   BBNetwork get network => throw _privateConstructorUsedError;
   List<Passphrase> get passphrases => throw _privateConstructorUsedError;
 
@@ -37,7 +37,7 @@ abstract class $SeedCopyWith<$Res> {
   @useResult
   $Res call(
       {String mnemonic,
-      String fingerprint,
+      String mnemonicFingerprint,
       BBNetwork network,
       List<Passphrase> passphrases});
 }
@@ -56,7 +56,7 @@ class _$SeedCopyWithImpl<$Res, $Val extends Seed>
   @override
   $Res call({
     Object? mnemonic = null,
-    Object? fingerprint = null,
+    Object? mnemonicFingerprint = null,
     Object? network = null,
     Object? passphrases = null,
   }) {
@@ -65,9 +65,9 @@ class _$SeedCopyWithImpl<$Res, $Val extends Seed>
           ? _value.mnemonic
           : mnemonic // ignore: cast_nullable_to_non_nullable
               as String,
-      fingerprint: null == fingerprint
-          ? _value.fingerprint
-          : fingerprint // ignore: cast_nullable_to_non_nullable
+      mnemonicFingerprint: null == mnemonicFingerprint
+          ? _value.mnemonicFingerprint
+          : mnemonicFingerprint // ignore: cast_nullable_to_non_nullable
               as String,
       network: null == network
           ? _value.network
@@ -89,7 +89,7 @@ abstract class _$$_SeedCopyWith<$Res> implements $SeedCopyWith<$Res> {
   @useResult
   $Res call(
       {String mnemonic,
-      String fingerprint,
+      String mnemonicFingerprint,
       BBNetwork network,
       List<Passphrase> passphrases});
 }
@@ -104,7 +104,7 @@ class __$$_SeedCopyWithImpl<$Res> extends _$SeedCopyWithImpl<$Res, _$_Seed>
   @override
   $Res call({
     Object? mnemonic = null,
-    Object? fingerprint = null,
+    Object? mnemonicFingerprint = null,
     Object? network = null,
     Object? passphrases = null,
   }) {
@@ -113,9 +113,9 @@ class __$$_SeedCopyWithImpl<$Res> extends _$SeedCopyWithImpl<$Res, _$_Seed>
           ? _value.mnemonic
           : mnemonic // ignore: cast_nullable_to_non_nullable
               as String,
-      fingerprint: null == fingerprint
-          ? _value.fingerprint
-          : fingerprint // ignore: cast_nullable_to_non_nullable
+      mnemonicFingerprint: null == mnemonicFingerprint
+          ? _value.mnemonicFingerprint
+          : mnemonicFingerprint // ignore: cast_nullable_to_non_nullable
               as String,
       network: null == network
           ? _value.network
@@ -134,7 +134,7 @@ class __$$_SeedCopyWithImpl<$Res> extends _$SeedCopyWithImpl<$Res, _$_Seed>
 class _$_Seed extends _Seed {
   const _$_Seed(
       {this.mnemonic = '',
-      this.fingerprint = '',
+      this.mnemonicFingerprint = '',
       required this.network,
       required final List<Passphrase> passphrases})
       : _passphrases = passphrases,
@@ -147,7 +147,7 @@ class _$_Seed extends _Seed {
   final String mnemonic;
   @override
   @JsonKey()
-  final String fingerprint;
+  final String mnemonicFingerprint;
   @override
   final BBNetwork network;
   final List<Passphrase> _passphrases;
@@ -160,7 +160,7 @@ class _$_Seed extends _Seed {
 
   @override
   String toString() {
-    return 'Seed(mnemonic: $mnemonic, fingerprint: $fingerprint, network: $network, passphrases: $passphrases)';
+    return 'Seed(mnemonic: $mnemonic, mnemonicFingerprint: $mnemonicFingerprint, network: $network, passphrases: $passphrases)';
   }
 
   @override
@@ -170,8 +170,8 @@ class _$_Seed extends _Seed {
             other is _$_Seed &&
             (identical(other.mnemonic, mnemonic) ||
                 other.mnemonic == mnemonic) &&
-            (identical(other.fingerprint, fingerprint) ||
-                other.fingerprint == fingerprint) &&
+            (identical(other.mnemonicFingerprint, mnemonicFingerprint) ||
+                other.mnemonicFingerprint == mnemonicFingerprint) &&
             (identical(other.network, network) || other.network == network) &&
             const DeepCollectionEquality()
                 .equals(other._passphrases, _passphrases));
@@ -179,8 +179,8 @@ class _$_Seed extends _Seed {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, mnemonic, fingerprint, network,
-      const DeepCollectionEquality().hash(_passphrases));
+  int get hashCode => Object.hash(runtimeType, mnemonic, mnemonicFingerprint,
+      network, const DeepCollectionEquality().hash(_passphrases));
 
   @JsonKey(ignore: true)
   @override
@@ -199,7 +199,7 @@ class _$_Seed extends _Seed {
 abstract class _Seed extends Seed {
   const factory _Seed(
       {final String mnemonic,
-      final String fingerprint,
+      final String mnemonicFingerprint,
       required final BBNetwork network,
       required final List<Passphrase> passphrases}) = _$_Seed;
   const _Seed._() : super._();
@@ -209,7 +209,7 @@ abstract class _Seed extends Seed {
   @override
   String get mnemonic;
   @override
-  String get fingerprint;
+  String get mnemonicFingerprint;
   @override
   BBNetwork get network;
   @override
@@ -226,7 +226,7 @@ Passphrase _$PassphraseFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Passphrase {
   String get passphrase => throw _privateConstructorUsedError;
-  String get fingerprint => throw _privateConstructorUsedError;
+  String get sourceFingerprint => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -240,7 +240,7 @@ abstract class $PassphraseCopyWith<$Res> {
           Passphrase value, $Res Function(Passphrase) then) =
       _$PassphraseCopyWithImpl<$Res, Passphrase>;
   @useResult
-  $Res call({String passphrase, String fingerprint});
+  $Res call({String passphrase, String sourceFingerprint});
 }
 
 /// @nodoc
@@ -257,16 +257,16 @@ class _$PassphraseCopyWithImpl<$Res, $Val extends Passphrase>
   @override
   $Res call({
     Object? passphrase = null,
-    Object? fingerprint = null,
+    Object? sourceFingerprint = null,
   }) {
     return _then(_value.copyWith(
       passphrase: null == passphrase
           ? _value.passphrase
           : passphrase // ignore: cast_nullable_to_non_nullable
               as String,
-      fingerprint: null == fingerprint
-          ? _value.fingerprint
-          : fingerprint // ignore: cast_nullable_to_non_nullable
+      sourceFingerprint: null == sourceFingerprint
+          ? _value.sourceFingerprint
+          : sourceFingerprint // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -280,7 +280,7 @@ abstract class _$$_PassphraseCopyWith<$Res>
       __$$_PassphraseCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String passphrase, String fingerprint});
+  $Res call({String passphrase, String sourceFingerprint});
 }
 
 /// @nodoc
@@ -295,16 +295,16 @@ class __$$_PassphraseCopyWithImpl<$Res>
   @override
   $Res call({
     Object? passphrase = null,
-    Object? fingerprint = null,
+    Object? sourceFingerprint = null,
   }) {
     return _then(_$_Passphrase(
       passphrase: null == passphrase
           ? _value.passphrase
           : passphrase // ignore: cast_nullable_to_non_nullable
               as String,
-      fingerprint: null == fingerprint
-          ? _value.fingerprint
-          : fingerprint // ignore: cast_nullable_to_non_nullable
+      sourceFingerprint: null == sourceFingerprint
+          ? _value.sourceFingerprint
+          : sourceFingerprint // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -313,7 +313,7 @@ class __$$_PassphraseCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$_Passphrase extends _Passphrase {
-  const _$_Passphrase({this.passphrase = '', required this.fingerprint})
+  const _$_Passphrase({this.passphrase = '', required this.sourceFingerprint})
       : super._();
 
   factory _$_Passphrase.fromJson(Map<String, dynamic> json) =>
@@ -323,11 +323,11 @@ class _$_Passphrase extends _Passphrase {
   @JsonKey()
   final String passphrase;
   @override
-  final String fingerprint;
+  final String sourceFingerprint;
 
   @override
   String toString() {
-    return 'Passphrase(passphrase: $passphrase, fingerprint: $fingerprint)';
+    return 'Passphrase(passphrase: $passphrase, sourceFingerprint: $sourceFingerprint)';
   }
 
   @override
@@ -337,13 +337,13 @@ class _$_Passphrase extends _Passphrase {
             other is _$_Passphrase &&
             (identical(other.passphrase, passphrase) ||
                 other.passphrase == passphrase) &&
-            (identical(other.fingerprint, fingerprint) ||
-                other.fingerprint == fingerprint));
+            (identical(other.sourceFingerprint, sourceFingerprint) ||
+                other.sourceFingerprint == sourceFingerprint));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, passphrase, fingerprint);
+  int get hashCode => Object.hash(runtimeType, passphrase, sourceFingerprint);
 
   @JsonKey(ignore: true)
   @override
@@ -362,7 +362,7 @@ class _$_Passphrase extends _Passphrase {
 abstract class _Passphrase extends Passphrase {
   const factory _Passphrase(
       {final String passphrase,
-      required final String fingerprint}) = _$_Passphrase;
+      required final String sourceFingerprint}) = _$_Passphrase;
   const _Passphrase._() : super._();
 
   factory _Passphrase.fromJson(Map<String, dynamic> json) =
@@ -371,7 +371,7 @@ abstract class _Passphrase extends Passphrase {
   @override
   String get passphrase;
   @override
-  String get fingerprint;
+  String get sourceFingerprint;
   @override
   @JsonKey(ignore: true)
   _$$_PassphraseCopyWith<_$_Passphrase> get copyWith =>

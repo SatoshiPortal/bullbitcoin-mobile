@@ -25,7 +25,8 @@ mixin _$Wallet {
   String get mnemonic => throw _privateConstructorUsedError;
   String? get password => throw _privateConstructorUsedError;
   String? get xpub => throw _privateConstructorUsedError;
-  String get fingerprint => throw _privateConstructorUsedError;
+  String get mnemonicFingerprint => throw _privateConstructorUsedError;
+  String get sourceFingerprint => throw _privateConstructorUsedError;
   BBNetwork get network => throw _privateConstructorUsedError;
   BBWalletType get type => throw _privateConstructorUsedError;
   ScriptType get scriptType =>
@@ -54,7 +55,8 @@ abstract class $WalletCopyWith<$Res> {
       String mnemonic,
       String? password,
       String? xpub,
-      String fingerprint,
+      String mnemonicFingerprint,
+      String sourceFingerprint,
       BBNetwork network,
       BBWalletType type,
       ScriptType scriptType,
@@ -85,7 +87,8 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? mnemonic = null,
     Object? password = freezed,
     Object? xpub = freezed,
-    Object? fingerprint = null,
+    Object? mnemonicFingerprint = null,
+    Object? sourceFingerprint = null,
     Object? network = null,
     Object? type = null,
     Object? scriptType = null,
@@ -118,9 +121,13 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.xpub
           : xpub // ignore: cast_nullable_to_non_nullable
               as String?,
-      fingerprint: null == fingerprint
-          ? _value.fingerprint
-          : fingerprint // ignore: cast_nullable_to_non_nullable
+      mnemonicFingerprint: null == mnemonicFingerprint
+          ? _value.mnemonicFingerprint
+          : mnemonicFingerprint // ignore: cast_nullable_to_non_nullable
+              as String,
+      sourceFingerprint: null == sourceFingerprint
+          ? _value.sourceFingerprint
+          : sourceFingerprint // ignore: cast_nullable_to_non_nullable
               as String,
       network: null == network
           ? _value.network
@@ -178,7 +185,8 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       String mnemonic,
       String? password,
       String? xpub,
-      String fingerprint,
+      String mnemonicFingerprint,
+      String sourceFingerprint,
       BBNetwork network,
       BBWalletType type,
       ScriptType scriptType,
@@ -206,7 +214,8 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? mnemonic = null,
     Object? password = freezed,
     Object? xpub = freezed,
-    Object? fingerprint = null,
+    Object? mnemonicFingerprint = null,
+    Object? sourceFingerprint = null,
     Object? network = null,
     Object? type = null,
     Object? scriptType = null,
@@ -239,9 +248,13 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value.xpub
           : xpub // ignore: cast_nullable_to_non_nullable
               as String?,
-      fingerprint: null == fingerprint
-          ? _value.fingerprint
-          : fingerprint // ignore: cast_nullable_to_non_nullable
+      mnemonicFingerprint: null == mnemonicFingerprint
+          ? _value.mnemonicFingerprint
+          : mnemonicFingerprint // ignore: cast_nullable_to_non_nullable
+              as String,
+      sourceFingerprint: null == sourceFingerprint
+          ? _value.sourceFingerprint
+          : sourceFingerprint // ignore: cast_nullable_to_non_nullable
               as String,
       network: null == network
           ? _value.network
@@ -296,7 +309,8 @@ class _$_Wallet extends _Wallet {
       this.mnemonic = '',
       this.password,
       this.xpub,
-      this.fingerprint = '',
+      this.mnemonicFingerprint = '',
+      this.sourceFingerprint = '',
       required this.network,
       required this.type,
       required this.scriptType,
@@ -330,7 +344,10 @@ class _$_Wallet extends _Wallet {
   final String? xpub;
   @override
   @JsonKey()
-  final String fingerprint;
+  final String mnemonicFingerprint;
+  @override
+  @JsonKey()
+  final String sourceFingerprint;
   @override
   final BBNetwork network;
   @override
@@ -380,7 +397,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonic: $mnemonic, password: $password, xpub: $xpub, fingerprint: $fingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, backupTested: $backupTested)';
+    return 'Wallet(externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonic: $mnemonic, password: $password, xpub: $xpub, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, backupTested: $backupTested)';
   }
 
   @override
@@ -399,8 +416,10 @@ class _$_Wallet extends _Wallet {
             (identical(other.password, password) ||
                 other.password == password) &&
             (identical(other.xpub, xpub) || other.xpub == xpub) &&
-            (identical(other.fingerprint, fingerprint) ||
-                other.fingerprint == fingerprint) &&
+            (identical(other.mnemonicFingerprint, mnemonicFingerprint) ||
+                other.mnemonicFingerprint == mnemonicFingerprint) &&
+            (identical(other.sourceFingerprint, sourceFingerprint) ||
+                other.sourceFingerprint == sourceFingerprint) &&
             (identical(other.network, network) || other.network == network) &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.scriptType, scriptType) ||
@@ -427,7 +446,8 @@ class _$_Wallet extends _Wallet {
       mnemonic,
       password,
       xpub,
-      fingerprint,
+      mnemonicFingerprint,
+      sourceFingerprint,
       network,
       type,
       scriptType,
@@ -460,7 +480,8 @@ abstract class _Wallet extends Wallet {
       final String mnemonic,
       final String? password,
       final String? xpub,
-      final String fingerprint,
+      final String mnemonicFingerprint,
+      final String sourceFingerprint,
       required final BBNetwork network,
       required final BBWalletType type,
       required final ScriptType scriptType,
@@ -486,7 +507,9 @@ abstract class _Wallet extends Wallet {
   @override
   String? get xpub;
   @override
-  String get fingerprint;
+  String get mnemonicFingerprint;
+  @override
+  String get sourceFingerprint;
   @override
   BBNetwork get network;
   @override

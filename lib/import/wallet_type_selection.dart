@@ -429,12 +429,12 @@ class ImportWalletDetailsPopUp extends StatelessWidget {
                   'wallet.firstAddress',
                 ),
                 const Gap(16),
-                if (wallet.fingerprint.isNotEmpty) ...[
+                if (wallet.mnemonicFingerprint.isNotEmpty) ...[
                   const BBText.body(
                     'Wallet fingerprint (XFP)',
                   ),
                   BBText.body(
-                    wallet.fingerprint,
+                    wallet.mnemonicFingerprint,
                   ),
                   const Gap(16),
                 ],

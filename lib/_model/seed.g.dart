@@ -8,7 +8,7 @@ part of 'seed.dart';
 
 _$_Seed _$$_SeedFromJson(Map<String, dynamic> json) => _$_Seed(
       mnemonic: json['mnemonic'] as String? ?? '',
-      fingerprint: json['fingerprint'] as String? ?? '',
+      mnemonicFingerprint: json['mnemonicFingerprint'] as String? ?? '',
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
       passphrases: (json['passphrases'] as List<dynamic>)
           .map((e) => Passphrase.fromJson(e as Map<String, dynamic>))
@@ -17,7 +17,7 @@ _$_Seed _$$_SeedFromJson(Map<String, dynamic> json) => _$_Seed(
 
 Map<String, dynamic> _$$_SeedToJson(_$_Seed instance) => <String, dynamic>{
       'mnemonic': instance.mnemonic,
-      'fingerprint': instance.fingerprint,
+      'mnemonicFingerprint': instance.mnemonicFingerprint,
       'network': _$BBNetworkEnumMap[instance.network]!,
       'passphrases': instance.passphrases,
     };
@@ -30,11 +30,11 @@ const _$BBNetworkEnumMap = {
 _$_Passphrase _$$_PassphraseFromJson(Map<String, dynamic> json) =>
     _$_Passphrase(
       passphrase: json['passphrase'] as String? ?? '',
-      fingerprint: json['fingerprint'] as String,
+      sourceFingerprint: json['sourceFingerprint'] as String,
     );
 
 Map<String, dynamic> _$$_PassphraseToJson(_$_Passphrase instance) =>
     <String, dynamic>{
       'passphrase': instance.passphrase,
-      'fingerprint': instance.fingerprint,
+      'sourceFingerprint': instance.sourceFingerprint,
     };

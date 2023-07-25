@@ -6,13 +6,14 @@ import 'package:bb_mobile/_model/wallet2.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:crypto/crypto.dart';
 import 'package:path_provider/path_provider.dart';
 
 class WalletCreate {
-  Future<(List<String>?, Err?)> createMne() async {
+  Future<(List<String>?, Err?)> createMnemonic() async {
     try {
       final mne = await bdk.Mnemonic.create(bdk.WordCount.Words12);
       final mneList = mne.asString().split(' ');
@@ -23,16 +24,16 @@ class WalletCreate {
     }
   }
 
-  Future<(String?, Err?)> getMneFingerprint({
-    required String mne,
-    required bool isTestnet,
+  Future<(String?, Err?)> getFingerprint({
+    required String mnemonic,
     String? password,
+    required bool isTestnet,
     required ScriptType walletType,
   }) async {
     try {
       final network = isTestnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
 
-      final mn = await bdk.Mnemonic.fromString(mne);
+      final mn = await bdk.Mnemonic.fromString(mnemonic);
       final descriptorSecretKey = await bdk.DescriptorSecretKey.create(
         network: network,
         mnemonic: mn,
@@ -129,8 +130,8 @@ class WalletCreate {
     );
 
     final bdkXpub44 = await bdkXpriv44.asPublic();
-    final bdkXpub49 = await bdkXpriv44.asPublic();
-    final bdkXpub84 = await bdkXpriv44.asPublic();
+    final bdkXpub49 = await bdkXpriv49.asPublic();
+    final bdkXpub84 = await bdkXpriv84.asPublic();
 
     final bdkDescriptor44External = await bdk.Descriptor.newBip44Public(
       publicKey: bdkXpub44,
@@ -224,26 +225,14 @@ class WalletCreate {
       final mnemonicFingerprint = fingerPrintFromXKey(rootXprv.toString());
       final seed = Seed(
         mnemonic: mnemonic,
-        fingerprint: mnemonicFingerprint,
+        mnemonicFingerprint: mnemonicFingerprint,
         passphrases: [],
         network: network,
       );
-      final (_, sErr) = await SecureStorage().getValue(seed.getSeedStorageString());
-      if (sErr != null) {
-        // seed doesnt exist
-      } else {
-        // mnemonic exists, error
-        return (false, Err('Seed Exists'));
-      }
-      final seedSavingError = await SecureStorage().saveValue(
-        key: seed.getSeedStorageString(),
-        value: seed.toJson().toString(),
+      await WalletRepository().createSeed(
+        seed: seed,
+        secureStore: SecureStorage(),
       );
-      if (seedSavingError != null) {
-        print('ERROR SAVING SEED');
-        print(seedSavingError);
-        return (false, Err(seedSavingError.toString()));
-      }
       return (true, null);
     } catch (e) {
       return (false, Err(e.toString()));
@@ -257,35 +246,37 @@ class WalletCreate {
     BBNetwork network,
     bool isImported,
   ) async {
-    final (seedString, sErr) = await SecureStorage().getValue(mnemonicFingerprint);
+    if (passphrase == '') return (null, Err('Passphrase Cannot Be Empty'));
+
+    final (seed, sErr) = await WalletRepository().readSeed(
+      fingerprintIndex: mnemonicFingerprint,
+      secureStore: SecureStorage(),
+    );
     if (sErr != null) {
-      // seed doesnt exist
+      return (null, Err(sErr.toString()));
     }
-    final seed = Seed.fromJson(json.encode(seedString) as Map<String, dynamic>);
-    final bdkMnemonic = await bdk.Mnemonic.fromString(seed.mnemonic);
+
+    final bdkMnemonic = await bdk.Mnemonic.fromString(seed!.mnemonic);
     final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
     final rootXprv = await bdk.DescriptorSecretKey.create(
       network: bdkNetwork,
       mnemonic: bdkMnemonic,
       password: passphrase,
     );
-    final rootXpub = await rootXprv.asPublic();
     final sourceFingerprint = fingerPrintFromXKey(rootXprv.toString());
-    if (sourceFingerprint == mnemonicFingerprint ||
-        seed.passphrases.contains(
-          Passphrase(fingerprint: sourceFingerprint, passphrase: passphrase),
-        )) {
-      return (null, Err('Passphrase Wallet Exists'));
-    } else {
-      seed.passphrases.add(
-        Passphrase(
-          fingerprint: sourceFingerprint,
-          passphrase: passphrase,
-        ),
-      );
-    }
+
+    await WalletRepository().createPassphrase(
+      passphrase: Passphrase(
+        sourceFingerprint: sourceFingerprint,
+        passphrase: passphrase,
+      ),
+      seedFingerprintIndex: mnemonicFingerprint,
+      secureStore: SecureStorage(),
+    );
+
     bdk.Descriptor? internal;
     bdk.Descriptor? external;
+    final rootXpub = await rootXprv.asPublic();
 
     switch (scriptType) {
       case ScriptType.bip84:
@@ -342,38 +333,7 @@ class WalletCreate {
       type: isImported ? BBWalletType.words : BBWalletType.newSeed,
       scriptType: scriptType,
     );
-    final (_, wErr) = await HiveStorage().getValue(wallet.getRelatedSeedStorageString());
-    if (wErr != null) {
-      // wallet does not exist
-    } else {
-      // wallet exists, error
-      return (null, Err('Wallet Exists'));
-    }
-
-    final walletSavingError = await HiveStorage().saveValue(
-      key: wallet.getRelatedSeedStorageString(),
-      value: wallet.toJson().toString(),
-    );
-    if (walletSavingError != null) {
-      print('ERROR SAVING WALLET');
-      print(walletSavingError);
-      return (null, Err(walletSavingError.toString()));
-    }
-
-    final seedSavingError = await SecureStorage().saveValue(
-      key: seed.getSeedStorageString(),
-      value: seed.toJson().toString(),
-    );
-    if (seedSavingError != null) {
-      print('ERROR SAVING SEED');
-      print(seedSavingError);
-      return (
-        null,
-        Err(
-          seedSavingError.toString(),
-        ),
-      );
-    }
+    // await WalletRepository().createWallet(wallet: wallet, hiveStore: HiveStorage());
 
     return (wallet, null);
   }

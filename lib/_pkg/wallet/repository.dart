@@ -29,7 +29,10 @@ class WalletRepository {
 
         final List<String> walletHashIds = [];
         for (final id in walletIdsJson) {
-          walletHashIds.add(id as String);
+          if (id == walletIdIndex)
+            return Err('Wallet Exists');
+          else
+            walletHashIds.add(id as String);
         }
 
         walletHashIds.add(walletIdIndex);
@@ -74,7 +77,10 @@ class WalletRepository {
 
         final List<String> fingerprints = [];
         for (final fingerprint in fingerprintIdsJson) {
-          fingerprints.add(fingerprint as String);
+          if (fingerprint == fingerprintIndex)
+            return Err('Seed Exists');
+          else
+            fingerprints.add(fingerprint as String);
         }
 
         fingerprints.add(fingerprintIndex);
@@ -113,7 +119,7 @@ class WalletRepository {
       final seed = Seed.fromJson(seedJson);
 
       for (final pp in seed.passphrases) {
-        if (pp.fingerprint == passphrase.fingerprint) {
+        if (pp.sourceFingerprint == passphrase.sourceFingerprint) {
           return Err('Passphrase Exists!');
         }
       }
@@ -333,7 +339,7 @@ class WalletRepository {
       seed.passphrases.clear();
 
       for (final pp in existingPassphrases) {
-        if (pp.fingerprint != passphraseFingerprintIndex) {
+        if (pp.sourceFingerprint != passphraseFingerprintIndex) {
           seed.passphrases.add(pp);
         }
       }
