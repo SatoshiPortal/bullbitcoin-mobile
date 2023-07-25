@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bitcoin_utils/xyzpub.dart';
+import 'package:crypto/crypto.dart';
 
 String fingerPrintFromDescr(
   String xkey, {
@@ -15,6 +16,19 @@ String fingerPrintFromDescr(
   var fingerPrint = xkey.substring(startIndex + 1, fingerPrintEndIndex);
   if (isTesnet && !ignorePrefix) fingerPrint = 'tn::' + fingerPrint;
   return fingerPrint;
+}
+
+String createDescriptorHashId(String descriptor) {
+  final descHashId = sha1
+      .convert(
+        utf8.encode(
+          // allows passing either internal or external descriptor
+          descriptor.replaceFirst('/0/*', '/[0;1]/*').replaceFirst('/1/*', '/[0;1]/*'),
+        ),
+      )
+      .toString()
+      .substring(0, 12);
+  return descHashId;
 }
 
 String fingerPrintFromXKey(

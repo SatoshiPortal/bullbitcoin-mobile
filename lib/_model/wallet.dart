@@ -19,6 +19,7 @@ enum ScriptType { bip84, bip49, bip44 }
 @freezed
 class Wallet with _$Wallet {
   const factory Wallet({
+    @Default('') String descHashId,
     @Default('') String externalPublicDescriptor,
     @Default('') String internalPublicDescriptor,
     @Default('') String mnemonic,
@@ -37,6 +38,7 @@ class Wallet with _$Wallet {
     List<Address>? toAddresses,
     List<Transaction>? transactions,
     @Default(false) bool backupTested,
+    @Default(false) bool hide,
   }) = _Wallet;
   const Wallet._();
 

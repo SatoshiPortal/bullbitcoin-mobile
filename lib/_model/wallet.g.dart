@@ -7,6 +7,7 @@ part of 'wallet.dart';
 // **************************************************************************
 
 _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
+      descHashId: json['descHashId'] as String? ?? '',
       externalPublicDescriptor:
           json['externalPublicDescriptor'] as String? ?? '',
       internalPublicDescriptor:
@@ -32,9 +33,11 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
           ?.map((e) => Transaction.fromJson(e as Map<String, dynamic>))
           .toList(),
       backupTested: json['backupTested'] as bool? ?? false,
+      hide: json['hide'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
+      'descHashId': instance.descHashId,
       'externalPublicDescriptor': instance.externalPublicDescriptor,
       'internalPublicDescriptor': instance.internalPublicDescriptor,
       'mnemonic': instance.mnemonic,
@@ -52,6 +55,7 @@ Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
       'toAddresses': instance.toAddresses,
       'transactions': instance.transactions,
       'backupTested': instance.backupTested,
+      'hide': instance.hide,
     };
 
 const _$BBNetworkEnumMap = {
