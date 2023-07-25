@@ -225,7 +225,7 @@ class WalletCreate {
       final seed = Seed(
         mnemonic: mnemonic,
         fingerprint: mnemonicFingerprint,
-        passphraseWallets: [],
+        passphrases: [],
         network: network,
       );
       final (_, sErr) = await SecureStorage().getValue(seed.getSeedStorageString());
@@ -272,12 +272,12 @@ class WalletCreate {
     final rootXpub = await rootXprv.asPublic();
     final sourceFingerprint = fingerPrintFromXKey(rootXprv.toString());
     if (sourceFingerprint == mnemonicFingerprint ||
-        seed.passphraseWallets.contains(
+        seed.passphrases.contains(
           Passphrase(fingerprint: sourceFingerprint, passphrase: passphrase),
         )) {
       return (null, Err('Passphrase Wallet Exists'));
     } else {
-      seed.passphraseWallets.add(
+      seed.passphrases.add(
         Passphrase(
           fingerprint: sourceFingerprint,
           passphrase: passphrase,

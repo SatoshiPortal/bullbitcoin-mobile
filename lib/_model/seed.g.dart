@@ -10,7 +10,7 @@ _$_Seed _$$_SeedFromJson(Map<String, dynamic> json) => _$_Seed(
       mnemonic: json['mnemonic'] as String? ?? '',
       fingerprint: json['fingerprint'] as String? ?? '',
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
-      passphraseWallets: (json['passphraseWallets'] as List<dynamic>)
+      passphrases: (json['passphrases'] as List<dynamic>)
           .map((e) => Passphrase.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -19,7 +19,7 @@ Map<String, dynamic> _$$_SeedToJson(_$_Seed instance) => <String, dynamic>{
       'mnemonic': instance.mnemonic,
       'fingerprint': instance.fingerprint,
       'network': _$BBNetworkEnumMap[instance.network]!,
-      'passphraseWallets': instance.passphraseWallets,
+      'passphrases': instance.passphrases,
     };
 
 const _$BBNetworkEnumMap = {

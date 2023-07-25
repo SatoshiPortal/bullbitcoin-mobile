@@ -14,7 +14,7 @@ class Seed with _$Seed {
     @Default('') String mnemonic,
     @Default('') String fingerprint,
     required BBNetwork network,
-    required List<Passphrase> passphraseWallets,
+    required List<Passphrase> passphrases,
   }) = _Seed;
   const Seed._();
 

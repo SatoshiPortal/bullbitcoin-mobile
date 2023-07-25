@@ -23,7 +23,7 @@ mixin _$Seed {
   String get mnemonic => throw _privateConstructorUsedError;
   String get fingerprint => throw _privateConstructorUsedError;
   BBNetwork get network => throw _privateConstructorUsedError;
-  List<Passphrase> get passphraseWallets => throw _privateConstructorUsedError;
+  List<Passphrase> get passphrases => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -39,7 +39,7 @@ abstract class $SeedCopyWith<$Res> {
       {String mnemonic,
       String fingerprint,
       BBNetwork network,
-      List<Passphrase> passphraseWallets});
+      List<Passphrase> passphrases});
 }
 
 /// @nodoc
@@ -58,7 +58,7 @@ class _$SeedCopyWithImpl<$Res, $Val extends Seed>
     Object? mnemonic = null,
     Object? fingerprint = null,
     Object? network = null,
-    Object? passphraseWallets = null,
+    Object? passphrases = null,
   }) {
     return _then(_value.copyWith(
       mnemonic: null == mnemonic
@@ -73,9 +73,9 @@ class _$SeedCopyWithImpl<$Res, $Val extends Seed>
           ? _value.network
           : network // ignore: cast_nullable_to_non_nullable
               as BBNetwork,
-      passphraseWallets: null == passphraseWallets
-          ? _value.passphraseWallets
-          : passphraseWallets // ignore: cast_nullable_to_non_nullable
+      passphrases: null == passphrases
+          ? _value.passphrases
+          : passphrases // ignore: cast_nullable_to_non_nullable
               as List<Passphrase>,
     ) as $Val);
   }
@@ -91,7 +91,7 @@ abstract class _$$_SeedCopyWith<$Res> implements $SeedCopyWith<$Res> {
       {String mnemonic,
       String fingerprint,
       BBNetwork network,
-      List<Passphrase> passphraseWallets});
+      List<Passphrase> passphrases});
 }
 
 /// @nodoc
@@ -106,7 +106,7 @@ class __$$_SeedCopyWithImpl<$Res> extends _$SeedCopyWithImpl<$Res, _$_Seed>
     Object? mnemonic = null,
     Object? fingerprint = null,
     Object? network = null,
-    Object? passphraseWallets = null,
+    Object? passphrases = null,
   }) {
     return _then(_$_Seed(
       mnemonic: null == mnemonic
@@ -121,9 +121,9 @@ class __$$_SeedCopyWithImpl<$Res> extends _$SeedCopyWithImpl<$Res, _$_Seed>
           ? _value.network
           : network // ignore: cast_nullable_to_non_nullable
               as BBNetwork,
-      passphraseWallets: null == passphraseWallets
-          ? _value._passphraseWallets
-          : passphraseWallets // ignore: cast_nullable_to_non_nullable
+      passphrases: null == passphrases
+          ? _value._passphrases
+          : passphrases // ignore: cast_nullable_to_non_nullable
               as List<Passphrase>,
     ));
   }
@@ -136,8 +136,8 @@ class _$_Seed extends _Seed {
       {this.mnemonic = '',
       this.fingerprint = '',
       required this.network,
-      required final List<Passphrase> passphraseWallets})
-      : _passphraseWallets = passphraseWallets,
+      required final List<Passphrase> passphrases})
+      : _passphrases = passphrases,
         super._();
 
   factory _$_Seed.fromJson(Map<String, dynamic> json) => _$$_SeedFromJson(json);
@@ -150,18 +150,17 @@ class _$_Seed extends _Seed {
   final String fingerprint;
   @override
   final BBNetwork network;
-  final List<Passphrase> _passphraseWallets;
+  final List<Passphrase> _passphrases;
   @override
-  List<Passphrase> get passphraseWallets {
-    if (_passphraseWallets is EqualUnmodifiableListView)
-      return _passphraseWallets;
+  List<Passphrase> get passphrases {
+    if (_passphrases is EqualUnmodifiableListView) return _passphrases;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_passphraseWallets);
+    return EqualUnmodifiableListView(_passphrases);
   }
 
   @override
   String toString() {
-    return 'Seed(mnemonic: $mnemonic, fingerprint: $fingerprint, network: $network, passphraseWallets: $passphraseWallets)';
+    return 'Seed(mnemonic: $mnemonic, fingerprint: $fingerprint, network: $network, passphrases: $passphrases)';
   }
 
   @override
@@ -175,13 +174,13 @@ class _$_Seed extends _Seed {
                 other.fingerprint == fingerprint) &&
             (identical(other.network, network) || other.network == network) &&
             const DeepCollectionEquality()
-                .equals(other._passphraseWallets, _passphraseWallets));
+                .equals(other._passphrases, _passphrases));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, mnemonic, fingerprint, network,
-      const DeepCollectionEquality().hash(_passphraseWallets));
+      const DeepCollectionEquality().hash(_passphrases));
 
   @JsonKey(ignore: true)
   @override
@@ -202,7 +201,7 @@ abstract class _Seed extends Seed {
       {final String mnemonic,
       final String fingerprint,
       required final BBNetwork network,
-      required final List<Passphrase> passphraseWallets}) = _$_Seed;
+      required final List<Passphrase> passphrases}) = _$_Seed;
   const _Seed._() : super._();
 
   factory _Seed.fromJson(Map<String, dynamic> json) = _$_Seed.fromJson;
@@ -214,7 +213,7 @@ abstract class _Seed extends Seed {
   @override
   BBNetwork get network;
   @override
-  List<Passphrase> get passphraseWallets;
+  List<Passphrase> get passphrases;
   @override
   @JsonKey(ignore: true)
   _$$_SeedCopyWith<_$_Seed> get copyWith => throw _privateConstructorUsedError;

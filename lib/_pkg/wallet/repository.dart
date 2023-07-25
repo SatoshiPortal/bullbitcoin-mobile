@@ -98,6 +98,38 @@ class WalletRepository {
     }
   }
 
+  Future<Err?> createPassphrase({
+    required Passphrase passphrase,
+    required String seedFingerprintIndex,
+    required SecureStorage secureStore,
+  }) async {
+    try {
+      final (seedString, err) = await secureStore.getValue(seedFingerprintIndex);
+      if (err != null) {
+        // no seeds exist
+        return Err('No Seed Exists!');
+      }
+      final seedJson = jsonDecode(seedString!) as Map<String, String>;
+      final seed = Seed.fromJson(seedJson);
+
+      for (final pp in seed.passphrases) {
+        if (pp.fingerprint == passphrase.fingerprint) {
+          return Err('Passphrase Exists!');
+        }
+      }
+
+      seed.passphrases.add(passphrase);
+
+      await secureStore.saveValue(
+        key: seedFingerprintIndex,
+        value: jsonEncode(seed),
+      );
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
+
   Future<(Wallet?, Err?)> readWallet({
     required String walletHashId,
     required HiveStorage hiveStore,
@@ -276,6 +308,40 @@ class WalletRepository {
 
       await secureStore.deleteValue(fingerprint);
 
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
+
+  Future<Err?> deletePassphrase({
+    required String passphraseFingerprintIndex,
+    required String seedFingerprintIndex,
+    required SecureStorage secureStore,
+  }) async {
+    try {
+      final (seedString, err) = await secureStore.getValue(seedFingerprintIndex);
+      if (err != null) {
+        // no seeds exist
+        return Err('No Seed Exists!');
+      }
+      final seedJson = jsonDecode(seedString!) as Map<String, String>;
+      final seed = Seed.fromJson(seedJson);
+
+      final existingPassphrases = seed.passphrases;
+
+      seed.passphrases.clear();
+
+      for (final pp in existingPassphrases) {
+        if (pp.fingerprint != passphraseFingerprintIndex) {
+          seed.passphrases.add(pp);
+        }
+      }
+
+      await secureStore.saveValue(
+        key: seedFingerprintIndex,
+        value: jsonEncode(seed),
+      );
       return null;
     } catch (e) {
       return Err(e.toString());
