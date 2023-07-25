@@ -416,26 +416,3 @@ class WalletCreate {
     }
   }
 }
-    // var xpubStr = xpub.asString();
-      // xpubStr = xpubStr.replaceAll('/*', '');
-
-      // final pubKey = await bdk.DescriptorPublicKey.fromString(xpubStr);
-      // final x = pubKey.asString();
-      // print('x::' + xpubStr);
-      // internal = await bdk.Descriptor.create(
-      //   descriptor: buildDescriptorVanilla(
-      //     xpub: xpubStr,
-      //     walletType: walletType,
-      //     isChange: true,
-      //   ),
-      //   network: network,
-      // );
-
-      // external = await bdk.Descriptor.create(
-      //   descriptor: buildDescriptorVanilla(
-      //     xpub: xpubStr,
-      //     walletType: walletType,
-      //     isChange: false,
-      //   ),
-      //   network: network,
-      // );

@@ -8,9 +8,10 @@ import 'package:hive/hive.dart';
 
 class StorageKeys {
   static const securityKey = 'securityKey';
+  static const seeds = 'seeds';
   static const wallets = 'wallets';
   static const settings = 'settings';
-  static const seed = 'seed';
+  static const hiveEncryption = 'hiveEncryptionKey';
   static const version = 'version';
 }
 
@@ -45,13 +46,18 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
     await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
   }
 
-  final (password, err) = await secureStorage.getValue(StorageKeys.seed);
+  final (password, err) = await secureStorage.getValue(StorageKeys.hiveEncryption);
   if (err != null) {
     final password = Hive.generateSecureKey();
-    secureStorage.saveValue(key: StorageKeys.seed, value: base64UrlEncode(password));
+    secureStorage.saveValue(
+      key: StorageKeys.hiveEncryption,
+      value: base64UrlEncode(password),
+    );
     await hiveStorage.init(password: password);
   } else
-    await hiveStorage.init(password: base64Url.decode(password!));
+    await hiveStorage.init(
+      password: base64Url.decode(password!),
+    );
 
   if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
 
