@@ -44,6 +44,15 @@ class Wallet with _$Wallet {
 
   factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
 
+  // storage key
+  String getRelatedSeedStorageString() {
+    return mnemonicFingerprint;
+  }
+
+  String getWalletStorageString() {
+    return descHashId;
+  }
+
   static (List<Wallet>?, Err?) fromMnemonicAll({
     required String mne,
     required String? password,

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';

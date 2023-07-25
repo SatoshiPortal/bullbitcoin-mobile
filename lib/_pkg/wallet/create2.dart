@@ -1,15 +1,12 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/seed.dart';
-import 'package:bb_mobile/_model/wallet2.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:crypto/crypto.dart';
 import 'package:path_provider/path_provider.dart';
 
 class WalletCreate {
@@ -171,9 +168,9 @@ class WalletCreate {
     );
 
     final wallet44HashId =
-        sha1.convert(utf8.encode(bdkDescriptor44External.toString())).toString().substring(0, 12);
+        createDescriptorHashId(bdkDescriptor44External.toString()).substring(0, 12);
     final wallet44 = Wallet(
-      walletHashId: wallet44HashId,
+      descHashId: wallet44HashId,
       externalPublicDescriptor: bdkDescriptor44External.toString(),
       internalPublicDescriptor: bdkDescriptor44Internal.toString(),
       mnemonicFingerprint: fingerprint,
@@ -183,9 +180,9 @@ class WalletCreate {
       scriptType: ScriptType.bip44,
     );
     final wallet49HashId =
-        sha1.convert(utf8.encode(bdkDescriptor49External.toString())).toString().substring(0, 12);
+        createDescriptorHashId(bdkDescriptor49External.toString()).substring(0, 12);
     final wallet49 = Wallet(
-      walletHashId: wallet49HashId,
+      descHashId: wallet49HashId,
       externalPublicDescriptor: bdkDescriptor49External.toString(),
       internalPublicDescriptor: bdkDescriptor49Internal.toString(),
       mnemonicFingerprint: fingerprint,
@@ -195,9 +192,9 @@ class WalletCreate {
       scriptType: ScriptType.bip49,
     );
     final wallet84HashId =
-        sha1.convert(utf8.encode(bdkDescriptor84External.toString())).toString().substring(0, 12);
+        createDescriptorHashId(bdkDescriptor84External.toString()).substring(0, 12);
     final wallet84 = Wallet(
-      walletHashId: wallet84HashId,
+      descHashId: wallet84HashId,
       externalPublicDescriptor: bdkDescriptor84External.toString(),
       internalPublicDescriptor: bdkDescriptor84Internal.toString(),
       mnemonicFingerprint: fingerprint,
@@ -322,9 +319,9 @@ class WalletCreate {
         );
     }
 
-    final walletHashId = sha1.convert(utf8.encode(external.toString())).toString().substring(0, 12);
+    final descHashId = createDescriptorHashId(external.toString()).substring(0, 12);
     final wallet = Wallet(
-      walletHashId: walletHashId,
+      descHashId: descHashId,
       externalPublicDescriptor: external.toString(),
       internalPublicDescriptor: internal.toString(),
       mnemonicFingerprint: mnemonicFingerprint,
@@ -402,9 +399,9 @@ class WalletCreate {
     );
 
     final wallet44HashId =
-        sha1.convert(utf8.encode(bdkDescriptor44External.toString())).toString().substring(0, 12);
+        createDescriptorHashId(bdkDescriptor44External.toString()).substring(0, 12);
     final wallet44 = Wallet(
-      walletHashId: wallet44HashId,
+      descHashId: wallet44HashId,
       externalPublicDescriptor: bdkDescriptor44External.toString(),
       internalPublicDescriptor: bdkDescriptor44Internal.toString(),
       mnemonicFingerprint: fingerprint,
@@ -423,9 +420,9 @@ class WalletCreate {
     }
 
     final wallet49HashId =
-        sha1.convert(utf8.encode(bdkDescriptor49External.toString())).toString().substring(0, 12);
+        createDescriptorHashId(bdkDescriptor49External.toString()).substring(0, 12);
     final wallet49 = Wallet(
-      walletHashId: wallet49HashId,
+      descHashId: wallet49HashId,
       externalPublicDescriptor: bdkDescriptor49External.toString(),
       internalPublicDescriptor: bdkDescriptor49Internal.toString(),
       mnemonicFingerprint: fingerprint,
@@ -444,9 +441,9 @@ class WalletCreate {
     }
 
     final wallet84HashId =
-        sha1.convert(utf8.encode(bdkDescriptor84External.toString())).toString().substring(0, 12);
+        createDescriptorHashId(bdkDescriptor84External.toString()).substring(0, 12);
     final wallet84 = Wallet(
-      walletHashId: wallet84HashId,
+      descHashId: wallet84HashId,
       externalPublicDescriptor: bdkDescriptor84External.toString(),
       internalPublicDescriptor: bdkDescriptor84Internal.toString(),
       mnemonicFingerprint: fingerprint,
@@ -547,14 +544,13 @@ class WalletCreate {
           );
       }
 
-      final walletHashId =
-          sha1.convert(utf8.encode(external.toString())).toString().substring(0, 12);
+      final descHashId = createDescriptorHashId(external.toString()).substring(0, 12);
       final wallet = Wallet(
-        walletHashId: walletHashId,
+        descHashId: descHashId,
         externalPublicDescriptor: external.toString(),
         internalPublicDescriptor: internal.toString(),
-        mnemonicFingerprint: walletHashId,
-        sourceFingerprint: walletHashId,
+        mnemonicFingerprint: descHashId,
+        sourceFingerprint: descHashId,
         network: network,
         type: BBWalletType.xpub,
         scriptType: scriptType,
