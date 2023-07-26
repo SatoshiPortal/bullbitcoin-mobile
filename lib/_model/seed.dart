@@ -1,10 +1,9 @@
 // ignore_for_file: constant_identifier_names
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'seed.freezed.dart';
 part 'seed.g.dart';
-
-enum BBNetwork { Testnet, Mainnet }
 
 // {
 //   network_fingerprint: Seed,

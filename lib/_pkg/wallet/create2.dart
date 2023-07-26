@@ -3,8 +3,6 @@ import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
@@ -100,7 +98,32 @@ class WalletCreate {
     }
   }
 
-  Future<(List<Wallet>?, Err?)> previewWalletsFromSeed(
+  Future<(Seed?, Err?)> newSeed(
+    String mnemonic,
+    BBNetwork network,
+  ) async {
+    try {
+      final bdkMnemonic = await bdk.Mnemonic.fromString(mnemonic);
+      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+      final rootXprv = await bdk.DescriptorSecretKey.create(
+        network: bdkNetwork,
+        mnemonic: bdkMnemonic,
+        password: '',
+      );
+      final mnemonicFingerprint = fingerPrintFromXKey(rootXprv.toString());
+      final seed = Seed(
+        mnemonic: mnemonic,
+        mnemonicFingerprint: mnemonicFingerprint,
+        passphrases: [],
+        network: network,
+      );
+      return (seed, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(List<Wallet>?, Err?)> newAllScriptWalletsFromBIP39(
     String mnemonic,
     String passphrase,
     BBNetwork network,
@@ -207,53 +230,14 @@ class WalletCreate {
     return ([wallet44, wallet49, wallet84], null);
   }
 
-  Future<(bool, Err?)> newSeed(
-    String mnemonic,
-    BBNetwork network,
-  ) async {
-    try {
-      final bdkMnemonic = await bdk.Mnemonic.fromString(mnemonic);
-      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
-      final rootXprv = await bdk.DescriptorSecretKey.create(
-        network: bdkNetwork,
-        mnemonic: bdkMnemonic,
-        password: '',
-      );
-      final mnemonicFingerprint = fingerPrintFromXKey(rootXprv.toString());
-      final seed = Seed(
-        mnemonic: mnemonic,
-        mnemonicFingerprint: mnemonicFingerprint,
-        passphrases: [],
-        network: network,
-      );
-      await WalletRepository().createSeed(
-        seed: seed,
-        secureStore: SecureStorage(),
-      );
-      return (true, null);
-    } catch (e) {
-      return (false, Err(e.toString()));
-    }
-  }
-
   Future<(Wallet?, Err?)> newPassphraseWalletFromSeed(
-    String mnemonicFingerprint,
+    Seed seed,
     String passphrase,
     ScriptType scriptType,
     BBNetwork network,
     bool isImported,
   ) async {
-    if (passphrase == '') return (null, Err('Passphrase Cannot Be Empty'));
-
-    final (seed, sErr) = await WalletRepository().readSeed(
-      fingerprintIndex: mnemonicFingerprint,
-      secureStore: SecureStorage(),
-    );
-    if (sErr != null) {
-      return (null, Err(sErr.toString()));
-    }
-
-    final bdkMnemonic = await bdk.Mnemonic.fromString(seed!.mnemonic);
+    final bdkMnemonic = await bdk.Mnemonic.fromString(seed.mnemonic);
     final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
     final rootXprv = await bdk.DescriptorSecretKey.create(
       network: bdkNetwork,
@@ -261,15 +245,6 @@ class WalletCreate {
       password: passphrase,
     );
     final sourceFingerprint = fingerPrintFromXKey(rootXprv.toString());
-
-    await WalletRepository().createPassphrase(
-      passphrase: Passphrase(
-        sourceFingerprint: sourceFingerprint,
-        passphrase: passphrase,
-      ),
-      seedFingerprintIndex: mnemonicFingerprint,
-      secureStore: SecureStorage(),
-    );
 
     bdk.Descriptor? internal;
     bdk.Descriptor? external;
@@ -283,7 +258,6 @@ class WalletCreate {
           network: bdkNetwork,
           keychain: bdk.KeychainKind.Internal,
         );
-
         external = await bdk.Descriptor.newBip84Public(
           publicKey: rootXpub,
           fingerPrint: sourceFingerprint,
@@ -297,7 +271,6 @@ class WalletCreate {
           network: bdkNetwork,
           keychain: bdk.KeychainKind.Internal,
         );
-
         external = await bdk.Descriptor.newBip49Public(
           publicKey: rootXpub,
           fingerPrint: sourceFingerprint,
@@ -324,20 +297,18 @@ class WalletCreate {
       descHashId: descHashId,
       externalPublicDescriptor: external.toString(),
       internalPublicDescriptor: internal.toString(),
-      mnemonicFingerprint: mnemonicFingerprint,
+      mnemonicFingerprint: seed.mnemonicFingerprint,
       sourceFingerprint: sourceFingerprint,
       network: network,
       type: isImported ? BBWalletType.words : BBWalletType.newSeed,
       scriptType: scriptType,
     );
-    // await WalletRepository().createWallet(wallet: wallet, hiveStore: HiveStorage());
 
     return (wallet, null);
   }
 
-  Future<(Wallet?, Err?)> newColdCardWallet(
+  Future<(List<Wallet>?, Err?)> newWalletsFromColdCard(
     ColdCard coldCard,
-    ScriptType scriptType,
     BBNetwork network,
   ) async {
     // create all 3 coldcard wallets and return only the one requested
@@ -409,7 +380,6 @@ class WalletCreate {
       network: network,
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip44,
-      hide: scriptType != ScriptType.bip44,
     );
     final (_, w44Err) = await HiveStorage().getValue(wallet44HashId);
     if (w44Err != null) {
@@ -430,7 +400,6 @@ class WalletCreate {
       network: network,
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip49,
-      hide: scriptType != ScriptType.bip49,
     );
     final (_, w49Err) = await HiveStorage().getValue(wallet49HashId);
     if (w49Err != null) {
@@ -451,7 +420,6 @@ class WalletCreate {
       network: network,
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip84,
-      hide: scriptType != ScriptType.bip84,
     );
     final (_, w84Err) = await HiveStorage().getValue(wallet84HashId);
     if (w84Err != null) {
@@ -461,46 +429,19 @@ class WalletCreate {
       return (null, Err('Wallet 84 Exists'));
     }
 
-    final wallet44SavingError = await HiveStorage().saveValue(
-      key: wallet44.getWalletStorageString(),
-      value: wallet44.toJson().toString(),
-    );
-    if (wallet44SavingError != null) {
-      print('ERROR SAVING WALLET 44');
-      print(wallet44SavingError);
-      return (null, Err(wallet44SavingError.toString()));
-    }
-    final wallet49SavingError = await HiveStorage().saveValue(
-      key: wallet49.getWalletStorageString(),
-      value: wallet49.toJson().toString(),
-    );
-    if (wallet49SavingError != null) {
-      print('ERROR SAVING WALLET 49');
-      print(wallet49SavingError);
-      return (null, Err(wallet49SavingError.toString()));
-    }
-    final wallet84SavingError = await HiveStorage().saveValue(
-      key: wallet84.getWalletStorageString(),
-      value: wallet84.toJson().toString(),
-    );
-    if (wallet84SavingError != null) {
-      print('ERROR SAVING WALLET 84');
-      print(wallet84SavingError);
-      return (null, Err(wallet84SavingError.toString()));
-    }
-    if (scriptType == ScriptType.bip44) return (wallet44, null);
-    if (scriptType == ScriptType.bip49)
-      return (wallet49, null);
-    else
-      return (wallet84, null);
+    return ([wallet44, wallet49, wallet84], null);
   }
 
-  Future<(Wallet?, Err?)> newXpubWallet(
+  Future<(Wallet?, Err?)> newWalletFromXpub(
     String xpub,
-    BBNetwork network,
   ) async {
     try {
-      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+      final network = (xpub.startsWith('t') || xpub.startsWith('u') || xpub.startsWith('v'))
+          ? BBNetwork.Testnet
+          : BBNetwork.Mainnet;
+      final bdkNetwork = (xpub.startsWith('t') || xpub.startsWith('u') || xpub.startsWith('v'))
+          ? bdk.Network.Testnet
+          : bdk.Network.Bitcoin;
       final scriptType = xpub.startsWith('x') || xpub.startsWith('t')
           ? ScriptType.bip44
           : xpub.startsWith('y') || xpub.startsWith('u')
@@ -555,29 +496,22 @@ class WalletCreate {
         type: BBWalletType.xpub,
         scriptType: scriptType,
       );
-      final (_, wErr) = await HiveStorage().getValue(wallet.getWalletStorageString());
-      if (wErr != null) {
-        // wallet does not exist
-      } else {
-        // wallet exists, error
-        return (null, Err('Wallet Exists'));
-      }
-
-      final walletSavingError = await HiveStorage().saveValue(
-        key: wallet.getWalletStorageString(),
-        value: wallet.toJson().toString(),
-      );
-      if (walletSavingError != null) {
-        print('ERROR SAVING WALLET');
-        print(walletSavingError);
-        return (null, Err(walletSavingError.toString()));
-      }
 
       return (wallet, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
   }
+
+  // Future<(Wallet?, Err?)> newWalletFromDescriptor(
+  //   String descriptor,
+  // ) async {
+  //   try {
+
+  //   } catch (e) {
+  //     return (null, Err(e.toString()));
+  //   }
+  // }
 
   Future<(bdk.Wallet?, Err?)> loadPublicBdkWallet(
     Wallet wallet,
