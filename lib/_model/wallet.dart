@@ -43,6 +43,9 @@ class Wallet with _$Wallet {
   const Wallet._();
 
   factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
+  bool hasPassphrase() {
+    return mnemonicFingerprint != sourceFingerprint;
+  }
 
   // storage key
   String getRelatedSeedStorageString() {

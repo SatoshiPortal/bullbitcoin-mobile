@@ -2,10 +2,11 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -38,7 +39,7 @@ class SendPopup extends StatelessWidget {
     String? deepLinkUri,
   }) {
     final cubit = SendCubit(
-      storage: locator<IStorage>(),
+      hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletRead: locator<WalletRead>(),
       walletUpdate: locator<WalletUpdate>(),
@@ -49,6 +50,7 @@ class SendPopup extends StatelessWidget {
       bullBitcoinAPI: locator<BullBitcoinAPI>(),
       mempoolAPI: locator<MempoolAPI>(),
       fileStorage: locator<FileStorage>(),
+      walletRepository: locator<WalletRepository>(),
     );
 
     if (deepLinkUri != null) cubit.updateAddress(deepLinkUri);

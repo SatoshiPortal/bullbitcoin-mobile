@@ -548,4 +548,87 @@ class WalletCreate {
       return (null, Err(e.toString()));
     }
   }
+
+  Future<(bdk.Wallet?, Err?)> loadPrivateBdkWallet(
+    Wallet wallet,
+    Seed seed,
+  ) async {
+    try {
+      final network =
+          wallet.network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+
+      final mn = await bdk.Mnemonic.fromString(seed.mnemonic);
+      final pp = wallet.hasPassphrase()
+          ? seed.passphrases
+              .firstWhere((element) => element.sourceFingerprint == wallet.sourceFingerprint)
+          : Passphrase(
+              sourceFingerprint: wallet.mnemonicFingerprint,
+            );
+
+      final descriptorSecretKey = await bdk.DescriptorSecretKey.create(
+        network: network,
+        mnemonic: mn,
+        password: pp.passphrase,
+      );
+
+      bdk.Descriptor? internal;
+      bdk.Descriptor? external;
+
+      switch (wallet.scriptType) {
+        case ScriptType.bip84:
+          external = await bdk.Descriptor.newBip84(
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: bdk.KeychainKind.External,
+          );
+          internal = await bdk.Descriptor.newBip84(
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: bdk.KeychainKind.Internal,
+          );
+
+        case ScriptType.bip44:
+          external = await bdk.Descriptor.newBip44(
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: bdk.KeychainKind.External,
+          );
+          internal = await bdk.Descriptor.newBip44(
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: bdk.KeychainKind.Internal,
+          );
+
+        case ScriptType.bip49:
+          external = await bdk.Descriptor.newBip49(
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: bdk.KeychainKind.External,
+          );
+          internal = await bdk.Descriptor.newBip49(
+            secretKey: descriptorSecretKey,
+            network: network,
+            keychain: bdk.KeychainKind.Internal,
+          );
+      }
+
+      final appDocDir = await getApplicationDocumentsDirectory();
+      final String dbDir = appDocDir.path + '/${wallet.getWalletStorageString()}';
+
+      final dbConfig = bdk.DatabaseConfig.sqlite(
+        config: bdk.SqliteDbConfiguration(path: dbDir),
+      );
+
+      final bdkWallet = await bdk.Wallet.create(
+        descriptor: external,
+        changeDescriptor: internal,
+        network: network,
+        databaseConfig: dbConfig,
+      );
+
+      return (bdkWallet, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
 }

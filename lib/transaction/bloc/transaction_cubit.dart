@@ -1,8 +1,10 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
@@ -14,9 +16,10 @@ class TransactionCubit extends Cubit<TransactionState> {
   TransactionCubit({
     required Transaction tx,
     required this.walletBloc,
-    required this.storage,
+    required this.hiveStorage,
     required this.secureStorage,
     required this.walletUpdate,
+    required this.walletRepository,
     required this.walletRead,
     required this.walletCreate,
     required this.mempoolAPI,
@@ -32,9 +35,10 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   final WalletBloc walletBloc;
   final MempoolAPI mempoolAPI;
-  final IStorage storage;
-  final IStorage secureStorage;
+  final HiveStorage hiveStorage;
+  final SecureStorage secureStorage;
   final WalletUpdate walletUpdate;
+  final WalletRepository walletRepository;
   final WalletRead walletRead;
   final WalletCreate walletCreate;
   final SettingsCubit settingsCubit;
@@ -130,7 +134,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final err = await walletUpdate.updateWallet(
       wallet: updateWallet,
-      storage: storage,
+      storage: hiveStorage,
       walletRead: walletRead,
     );
     if (err != null) {
@@ -161,28 +165,38 @@ class TransactionCubit extends Cubit<TransactionState> {
   void buildTx() async {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
 
-    final (sensitiveWallet, err) = await walletRead.getWalletDetails(
-      saveDir: walletBloc.state.wallet!.getStorageString(),
-      storage: secureStorage,
+    final (wallet, err) = await walletRepository.readWallet(
+      walletHashId: walletBloc.state.wallet!.getWalletStorageString(),
+      hiveStore: hiveStorage,
     );
     if (err != null) {
       emit(state.copyWith(errBuildingTx: err.toString(), buildingTx: false));
       return;
     }
 
-    final (wallets, errr) = await walletCreate.loadBdkWallet(sensitiveWallet!, fromStorage: false);
+    final (seed, sErr) = await walletRepository.readSeed(
+      fingerprintIndex: walletBloc.state.wallet!.getRelatedSeedStorageString(),
+      secureStore: SecureStorage(),
+    );
+
+    if (sErr != null) {
+      emit(state.copyWith(errBuildingTx: err.toString(), buildingTx: false));
+      return;
+    }
+
+    final (bdkSignerWallet, errr) = await walletCreate.loadPrivateBdkWallet(wallet!, seed!);
     if (errr != null) {
       emit(state.copyWith(errBuildingTx: errr.toString(), buildingTx: false));
       return;
     }
-    final bdkWallet = wallets!.$2;
+
     // await bdkWallet.sync();
     // bdkWallet.
 
     final (newTx, errrr) = await walletUpdate.buildBumpFeeTx(
       tx: state.tx,
       feeRate: state.feeRate!.toDouble(),
-      signingWallet: bdkWallet,
+      signingWallet: bdkSignerWallet!,
       pubWallet: walletBloc.state.bdkWallet!,
     );
     if (errrr != null) {
@@ -253,7 +267,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final err2 = await walletUpdate.updateWallet(
       wallet: updatedWallet,
-      storage: storage,
+      storage: hiveStorage,
       walletRead: walletRead,
     );
     if (err2 != null) {

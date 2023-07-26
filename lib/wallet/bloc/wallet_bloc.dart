@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -16,8 +18,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.settingsCubit,
     required this.walletRead,
     required this.secureStorage,
-    required this.storage,
+    required this.hiveStorage,
     required this.walletCreate,
+    required this.walletRepository,
     required this.walletUpdate,
     this.fromStorage = true,
     Wallet? wallet,
@@ -36,9 +39,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final SettingsCubit settingsCubit;
   final WalletRead walletRead;
   final WalletCreate walletCreate;
+  final WalletRepository walletRepository;
   final WalletUpdate walletUpdate;
-  final IStorage secureStorage;
-  final IStorage storage;
+  final SecureStorage secureStorage;
+  final HiveStorage hiveStorage;
   final bool fromStorage;
 
   void _loadWallet(LoadWallet event, Emitter<WalletState> emit) async {
@@ -47,9 +51,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Wallet wallet;
 
     if (fromStorage) {
-      final (sensitiveWallet, err) = await walletRead.getWalletDetails(
-        saveDir: event.saveDir,
-        storage: secureStorage,
+      final (sensitiveWallet, err) = await walletRepository.readWallet(
+        walletHashId: event.saveDir,
+        hiveStore: hiveStorage,
       );
       if (err != null) {
         emit(
@@ -68,10 +72,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(state.copyWith(wallet: wallet));
 
     if (state.bdkWallet == null) {
-      final (wallets, err) = await walletCreate.loadBdkWallet(
+      final (bdkWallet, err) = await walletCreate.loadPublicBdkWallet(
         wallet,
-        fromStorage: fromStorage,
-        onlyPublic: true,
       );
       if (err != null) {
         emit(
@@ -81,14 +83,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           ),
         );
       }
-      final (w, bdkWallet) = wallets!;
-      wallet = w;
       emit(state.copyWith(bdkWallet: bdkWallet));
     }
 
     final (notSensitiveWallet, err) = await walletRead.getWalletDetails(
       saveDir: event.saveDir,
-      storage: storage,
+      storage: hiveStorage,
     );
 
     emit(
@@ -174,10 +174,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     final (wallet, balance) = w!;
     if (fromStorage) {
-      final errUpdate = await walletUpdate.updateWallet(
+      final errUpdate = await walletRepository.updateWallet(
         wallet: wallet,
-        storage: storage,
-        walletRead: walletRead,
+        hiveStore: hiveStorage,
       );
 
       if (errUpdate != null) {
@@ -222,10 +221,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
 
     if (fromStorage) {
-      final errUpdating = await walletUpdate.updateWallet(
+      final errUpdating = await walletRepository.updateWallet(
         wallet: wallet!,
-        storage: storage,
-        walletRead: walletRead,
+        hiveStore: hiveStorage,
       );
       if (errUpdating != null) {
         emit(
@@ -267,10 +265,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
     if (fromStorage) {
-      final errUpdate = await walletUpdate.updateWallet(
+      final errUpdate = await walletRepository.updateWallet(
         wallet: wallet!,
-        storage: storage,
-        walletRead: walletRead,
+        hiveStore: hiveStorage,
       );
       if (errUpdate != null) {
         emit(

@@ -5,6 +5,7 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/bottom_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -120,8 +121,9 @@ class HomeWallets extends StatelessWidget {
           settingsCubit: locator<SettingsCubit>(),
           walletRead: locator<WalletRead>(),
           secureStorage: locator<SecureStorage>(),
-          storage: locator<HiveStorage>(),
+          hiveStorage: locator<HiveStorage>(),
           walletCreate: locator<WalletCreate>(),
+          walletRepository: locator<WalletRepository>(),
           walletUpdate: locator<WalletUpdate>(),
         )
     ];

@@ -200,9 +200,7 @@ class WalletUpdate {
   }
 
   Future<((Transaction?, int?, String)?, Err?)> buildTx({
-    required bool watchOnly,
     required Wallet wallet,
-    required bdk.Wallet signingWallet,
     required bdk.Wallet pubWallet,
     required bool isManualSend,
     required String address,
@@ -241,42 +239,48 @@ class WalletUpdate {
 
       final txResult = await txBuilder.finish(pubWallet);
 
-      if (watchOnly) {
-        final txDetails = txResult.txDetails;
+      final txDetails = txResult.txDetails;
 
-        final extractedTx = await txResult.psbt.extractTx();
-        final outputs = await extractedTx.output();
-        final outAddresses = await Future.wait(
-          outputs.map((txOut) async {
-            final address = await bdk.Address.fromScript(
-              txOut.scriptPubkey,
-              wallet.getBdkNetwork(),
-            );
-            return address.toString();
-          }),
-        );
+      final extractedTx = await txResult.psbt.extractTx();
+      final outputs = await extractedTx.output();
+      final outAddresses = await Future.wait(
+        outputs.map((txOut) async {
+          final address = await bdk.Address.fromScript(
+            txOut.scriptPubkey,
+            wallet.getBdkNetwork(),
+          );
+          return address.toString();
+        }),
+      );
 
-        final tx = Transaction(
-          txid: txDetails.txid,
-          rbfEnabled: enableRbf,
-          received: txDetails.received,
-          sent: txDetails.sent,
-          fee: txDetails.fee ?? 0,
-          height: txDetails.confirmationTime?.height,
-          timestamp: txDetails.confirmationTime?.timestamp,
-          label: note,
-          toAddress: address,
-          outAddresses: outAddresses,
-          psbt: txResult.psbt.psbtBase64,
-        );
+      final tx = Transaction(
+        txid: txDetails.txid,
+        rbfEnabled: enableRbf,
+        received: txDetails.received,
+        sent: txDetails.sent,
+        fee: txDetails.fee ?? 0,
+        height: txDetails.confirmationTime?.height,
+        timestamp: txDetails.confirmationTime?.timestamp,
+        label: note,
+        toAddress: address,
+        outAddresses: outAddresses,
+        psbt: txResult.psbt.psbtBase64,
+      );
+      final feeAmt = await txResult.psbt.feeAmount();
+      return ((tx, feeAmt, txResult.psbt.psbtBase64), null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
 
-        return ((tx, null, txResult.psbt.psbtBase64), null);
-      }
-
-      final signedPSBT = await signingWallet.sign(psbt: txResult.psbt);
-      final feeAmt = await signedPSBT.feeAmount();
-
-      return ((null, feeAmt, signedPSBT.psbtBase64), null);
+  Future<(String?, Err?)> signTx({
+    required String unsignedPSBT,
+    required bdk.Wallet signingWallet,
+  }) async {
+    try {
+      final psbt = bdk.PartiallySignedTransaction(psbtBase64: unsignedPSBT);
+      final signedPSBT = await signingWallet.sign(psbt: psbt);
+      return (signedPSBT.psbtBase64, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
