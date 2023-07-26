@@ -21,9 +21,9 @@ class WalletCreate {
 
   Future<(String?, Err?)> getFingerprint({
     required String mnemonic,
-    String? password,
+    String? passphrase,
     required bool isTestnet,
-    required ScriptType walletType,
+    required ScriptType scriptType,
   }) async {
     try {
       final network = isTestnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
@@ -32,12 +32,12 @@ class WalletCreate {
       final descriptorSecretKey = await bdk.DescriptorSecretKey.create(
         network: network,
         mnemonic: mn,
-        password: password,
+        password: passphrase,
       );
 
       String fgnr;
 
-      switch (walletType) {
+      switch (scriptType) {
         case ScriptType.bip84:
           final externalDescriptor = await bdk.Descriptor.newBip84(
             secretKey: descriptorSecretKey,
@@ -45,7 +45,7 @@ class WalletCreate {
             keychain: bdk.KeychainKind.External,
           );
           final edesc = await externalDescriptor.asString();
-          fgnr = fingerPrintFromXKey(edesc);
+          fgnr = fingerPrintFromXKeyDesc(edesc);
 
         case ScriptType.bip44:
           final externalDescriptor = await bdk.Descriptor.newBip44(
@@ -54,7 +54,7 @@ class WalletCreate {
             keychain: bdk.KeychainKind.External,
           );
           final edesc = await externalDescriptor.asString();
-          fgnr = fingerPrintFromXKey(edesc);
+          fgnr = fingerPrintFromXKeyDesc(edesc);
 
         case ScriptType.bip49:
           final externalDescriptor = await bdk.Descriptor.newBip49(
@@ -63,7 +63,7 @@ class WalletCreate {
             keychain: bdk.KeychainKind.External,
           );
           final edesc = await externalDescriptor.asString();
-          fgnr = fingerPrintFromXKey(edesc);
+          fgnr = fingerPrintFromXKeyDesc(edesc);
       }
 
       return (fgnr, null);
@@ -110,7 +110,7 @@ class WalletCreate {
         mnemonic: bdkMnemonic,
         password: '',
       );
-      final mnemonicFingerprint = fingerPrintFromXKey(rootXprv.toString());
+      final mnemonicFingerprint = fingerPrintFromXKeyDesc(rootXprv.toString());
       final seed = Seed(
         mnemonic: mnemonic,
         mnemonicFingerprint: mnemonicFingerprint,
@@ -135,7 +135,7 @@ class WalletCreate {
       mnemonic: bdkMnemonic,
       password: passphrase,
     );
-    final fingerprint = fingerPrintFromXKey(rootXprv.toString());
+    final fingerprint = fingerPrintFromXKeyDesc(rootXprv.toString());
     final networkPath = network == BBNetwork.Mainnet ? '0h' : '1h';
     const accountPath = '0h';
 
@@ -237,6 +237,7 @@ class WalletCreate {
     BBNetwork network,
     bool isImported,
   ) async {
+    final isTestnet = network == BBNetwork.Testnet;
     final bdkMnemonic = await bdk.Mnemonic.fromString(seed.mnemonic);
     final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
     final rootXprv = await bdk.DescriptorSecretKey.create(
@@ -244,7 +245,12 @@ class WalletCreate {
       mnemonic: bdkMnemonic,
       password: passphrase,
     );
-    final sourceFingerprint = fingerPrintFromXKey(rootXprv.toString());
+    final (sourceFingerprint, sfErr) = await getFingerprint(
+      mnemonic: seed.mnemonic,
+      passphrase: passphrase,
+      isTestnet: isTestnet,
+      scriptType: scriptType,
+    );
 
     bdk.Descriptor? internal;
     bdk.Descriptor? external;
@@ -254,7 +260,7 @@ class WalletCreate {
       case ScriptType.bip84:
         internal = await bdk.Descriptor.newBip84Public(
           publicKey: rootXpub,
-          fingerPrint: sourceFingerprint,
+          fingerPrint: sourceFingerprint!,
           network: bdkNetwork,
           keychain: bdk.KeychainKind.Internal,
         );
@@ -267,7 +273,7 @@ class WalletCreate {
       case ScriptType.bip49:
         internal = await bdk.Descriptor.newBip49Public(
           publicKey: rootXpub,
-          fingerPrint: sourceFingerprint,
+          fingerPrint: sourceFingerprint!,
           network: bdkNetwork,
           keychain: bdk.KeychainKind.Internal,
         );
@@ -280,7 +286,7 @@ class WalletCreate {
       case ScriptType.bip44:
         internal = await bdk.Descriptor.newBip44Public(
           publicKey: rootXpub,
-          fingerPrint: sourceFingerprint,
+          fingerPrint: sourceFingerprint!,
           network: bdkNetwork,
           keychain: bdk.KeychainKind.Internal,
         );

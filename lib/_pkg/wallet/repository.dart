@@ -13,7 +13,7 @@ class WalletRepository {
     required HiveStorage hiveStore,
   }) async {
     try {
-      final walletIdIndex = wallet.getStorageString();
+      final walletIdIndex = wallet.getWalletStorageString();
       final (walletIds, err) = await hiveStore.getValue(StorageKeys.wallets);
       if (err != null) {
         // no wallets exist make this the first
@@ -208,7 +208,7 @@ class WalletRepository {
   }) async {
     try {
       final (_, err) = await readWallet(
-        walletHashId: wallet.getStorageString(),
+        walletHashId: wallet.getWalletStorageString(),
         hiveStore: hiveStore,
       );
       if (err != null) throw err;
@@ -216,7 +216,7 @@ class WalletRepository {
       // does not exist to update, use create
 
       final _ = await hiveStore.saveValue(
-        key: wallet.getStorageString(),
+        key: wallet.getWalletStorageString(),
         value: jsonEncode(
           wallet,
         ),

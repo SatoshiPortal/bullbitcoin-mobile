@@ -111,8 +111,9 @@ class Title extends StatelessWidget {
     final address = context.select((AddressCubit cubit) => cubit.state.address!.miniString());
 
     final walletName = context.select((WalletBloc cubit) => cubit.state.wallet!.name ?? '');
-    final walletFingerprint =
-        context.select((WalletBloc cubit) => cubit.state.wallet!.cleanFingerprint());
+    final walletFingerprint = context.select(
+      (WalletBloc cubit) => cubit.state.wallet!.sourceFingerprint,
+    );
     final title = walletName.isEmpty ? walletFingerprint : walletName;
 
     return Center(

@@ -31,7 +31,7 @@ String createDescriptorHashId(String descriptor) {
   return descHashId;
 }
 
-String fingerPrintFromXKey(
+String fingerPrintFromXKeyDesc(
   String xkey,
 ) {
   final startIndex = xkey.indexOf('[');

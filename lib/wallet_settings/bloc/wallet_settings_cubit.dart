@@ -89,7 +89,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
   void loadBackupClicked() async {
     final (w, err) = await walletRepository.readWallet(
-      walletHashId: state.wallet.getStorageString(),
+      walletHashId: state.wallet.getWalletStorageString(),
       hiveStore: hiveStorage,
     );
 
@@ -197,7 +197,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final words = state.testMneString();
     final password = state.testBackupPassword;
     final (w, err) = await walletRepository.readWallet(
-      walletHashId: state.wallet.getStorageString(),
+      walletHashId: state.wallet.getWalletStorageString(),
       hiveStore: hiveStorage,
     );
 
@@ -285,7 +285,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
     final wallet = w!;
 
-    final fingerprint = wallet.cleanFingerprint();
+    final fingerprint = wallet.descHashId;
     final folder = wallet.network == BBNetwork.Mainnet ? 'bitcoin' : 'testnet';
 
     final (appDocDir, errDir) = await fileStorage.getDownloadDirectory();
@@ -363,7 +363,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       );
       return;
     }
-    final dbDir = appDocDir! + '/' + state.wallet.getStorageString();
+    final dbDir = appDocDir! + '/' + state.wallet.getWalletStorageString();
     final errDeleting = await fileStorage.deleteFile(dbDir);
     if (errDeleting != null) {
       emit(

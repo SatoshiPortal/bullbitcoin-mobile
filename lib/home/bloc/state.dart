@@ -43,7 +43,8 @@ class HomeState with _$HomeState {
     if (wallet == null) return -1;
 
     for (var i = 0; i < walletCubits.length; i++)
-      if (walletCubits[i].state.wallet!.getStorageString() == wallet.getStorageString()) return i;
+      if (walletCubits[i].state.wallet!.getWalletStorageString() == wallet.getWalletStorageString())
+        return i;
 
     return null;
   }

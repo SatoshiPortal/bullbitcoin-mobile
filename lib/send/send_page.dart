@@ -146,7 +146,7 @@ class WalletName extends StatelessWidget {
     final name = context.select((WalletBloc cubit) => cubit.state.wallet?.name);
 
     final fingerprint =
-        context.select((WalletBloc cubit) => cubit.state.wallet?.cleanFingerprint() ?? '');
+        context.select((WalletBloc cubit) => cubit.state.wallet?.sourceFingerprint ?? '');
 
     return BBText.body(
       name ?? fingerprint,

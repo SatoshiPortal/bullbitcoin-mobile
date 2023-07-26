@@ -130,7 +130,7 @@ class ApppBar extends StatelessWidget {
     );
 
     final fingerPrint = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.wallet.cleanFingerprint(),
+      (WalletSettingsCubit cubit) => cubit.state.wallet.sourceFingerprint,
     );
 
     return BBAppBar(

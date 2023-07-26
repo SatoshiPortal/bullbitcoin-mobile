@@ -137,7 +137,7 @@ class WalletName extends StatelessWidget {
     final walletName = context.select((ReceiveCubit x) => x.walletBloc.state.wallet?.name);
 
     final fingerprint =
-        context.select((ReceiveCubit x) => x.walletBloc.state.wallet?.cleanFingerprint() ?? '');
+        context.select((ReceiveCubit x) => x.walletBloc.state.wallet?.sourceFingerprint ?? '');
 
     return AnimatedContainer(
       duration: 500.ms,

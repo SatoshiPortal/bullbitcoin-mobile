@@ -32,7 +32,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
     final walletCubits = [
       for (final w in wallets)
         WalletBloc(
-          saveDir: w.getStorageString(),
+          saveDir: w.getWalletStorageString(),
           settingsCubit: locator<SettingsCubit>(),
           walletRead: locator<WalletRead>(),
           secureStorage: locator<SecureStorage>(),
@@ -210,7 +210,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
     );
 
     final address = ad.isNotEmpty ? ad.substring(0, 5) + '...' + ad.substring(ad.length - 5) : '';
-    final fingerprint = wallet.type == BBWalletType.descriptors ? '' : wallet.cleanFingerprint();
+    final fingerprint = wallet.sourceFingerprint;
 
     return AnimatedContainer(
       duration: 500.ms,

@@ -117,7 +117,7 @@ class HomeWallets extends StatelessWidget {
     final walletCubits = [
       for (final w in wallets)
         WalletBloc(
-          saveDir: w.getStorageString(),
+          saveDir: w.getWalletStorageString(),
           settingsCubit: locator<SettingsCubit>(),
           walletRead: locator<WalletRead>(),
           secureStorage: locator<SecureStorage>(),
@@ -547,7 +547,7 @@ class HomeCard extends StatelessWidget {
     if (wallet == null) return const SizedBox.shrink();
 
     final name = context.select((WalletBloc x) => x.state.wallet?.name);
-    final fingerprint = context.select((WalletBloc x) => x.state.wallet?.cleanFingerprint() ?? '');
+    final fingerprint = context.select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
     final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeShortStr());
 
     final sats = context.select((WalletBloc x) => x.state.balanceSats());

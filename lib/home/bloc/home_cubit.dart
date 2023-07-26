@@ -63,7 +63,7 @@ class HomeCubit extends Cubit<HomeState> {
   void updateSelectedWallet(WalletBloc walletBloc) {
     final wallet = walletBloc.state.wallet!;
     final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-    final idx = wallets.indexWhere((w) => w.mnemonicFingerprint == wallet.mnemonicFingerprint);
+    final idx = wallets.indexWhere((w) => w.descHashId == wallet.descHashId);
     wallets[idx] = wallet;
 
     emit(
@@ -82,7 +82,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   void changeMoveToIdx(Wallet wallet) async {
     final idx = state.wallets!.indexWhere(
-      (w) => w.getStorageString() == wallet.getStorageString(),
+      (w) => w.getWalletStorageString() == wallet.getWalletStorageString(),
     );
     emit(state.copyWith(moveToIdx: idx));
     await Future.delayed(const Duration(seconds: 5));
