@@ -68,6 +68,9 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
     final mnemonic = state.mnemonic!.join(' ');
     final (seed, sErr) = await walletCreate.mnemonicSeed(mnemonic, network);
+    if (sErr != null) {
+      emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
+    }
     final (wallet, wErr) = await walletCreate.passphraseWalletFromSeed(
       seed!,
       state.passPhase,
@@ -75,10 +78,18 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       network,
       false,
     );
+    if (wErr != null) {
+      emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
+    }
 
-    await walletRepository.newSeed(seed: seed, secureStore: secureStorage);
-    await walletRepository.newWallet(wallet: wallet!, hiveStore: hiveStorage);
-
+    final ssErr = await walletRepository.newSeed(seed: seed, secureStore: secureStorage);
+    if (ssErr != null) {
+      emit(state.copyWith(saving: false, errSaving: 'Error Saving Seed'));
+    }
+    final wsErr = await walletRepository.newWallet(wallet: wallet!, hiveStore: hiveStorage);
+    if (wsErr != null) {
+      emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
+    }
     emit(
       state.copyWith(
         saving: false,
@@ -101,6 +112,9 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     for (var i = 0; i < 2; i++) {
       final mnemonic = state.mnemonic!.join(' ');
       final (seed, sErr) = await walletCreate.mnemonicSeed(mnemonic, network);
+      if (sErr != null) {
+        emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
+      }
       var (wallet, wErr) = await walletCreate.passphraseWalletFromSeed(
         seed!,
         '',
@@ -108,12 +122,21 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
         network,
         false,
       );
+      if (wErr != null) {
+        emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
+      }
 
       final label = testnet(i) ? 'Bull Wallet Testnet' : 'Bull Wallet';
       wallet = wallet!.copyWith(name: label);
 
-      await walletRepository.newSeed(seed: seed, secureStore: secureStorage);
-      await walletRepository.newWallet(wallet: wallet, hiveStore: hiveStorage);
+      final ssErr = await walletRepository.newSeed(seed: seed, secureStore: secureStorage);
+      if (ssErr != null) {
+        emit(state.copyWith(saving: false, errSaving: 'Error Saving Seed'));
+      }
+      final wsErr = await walletRepository.newWallet(wallet: wallet, hiveStore: hiveStorage);
+      if (wsErr != null) {
+        emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
+      }
 
       if (selectWallet(i)) {
         emit(state.copyWith(savedWallet: wallet));
