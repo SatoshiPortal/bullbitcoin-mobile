@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_pkg/extensions.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -32,9 +32,9 @@ class CreateWalletPage extends StatelessWidget {
     final createWallet = CreateWalletCubit(
       settingsCubit: locator<SettingsCubit>(),
       walletCreate: locator<WalletCreate>(),
-      storage: locator<IStorage>(),
+      hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
-      walletUpdate: locator<WalletUpdate>(),
+      walletRepository: locator<WalletRepository>(),
     );
 
     return BlocProvider.value(

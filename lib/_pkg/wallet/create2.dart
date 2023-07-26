@@ -123,7 +123,7 @@ class WalletCreate {
     }
   }
 
-  Future<(List<Wallet>?, Err?)> newAllScriptWalletsFromBIP39(
+  Future<(List<Wallet>?, Err?)> newWalletsFromBIP39(
     String mnemonic,
     String passphrase,
     BBNetwork network,

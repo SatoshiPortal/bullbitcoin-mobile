@@ -13,6 +13,7 @@ import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/delete.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -68,8 +69,8 @@ Future setupLocator({bool fromTest = false}) async {
     createWalletCubit: CreateWalletCubit(
       walletCreate: walletcreate,
       settingsCubit: settings,
-      walletUpdate: locator<WalletUpdate>(),
-      storage: hiveStorage,
+      walletRepository: locator<WalletRepository>(),
+      hiveStorage: hiveStorage,
       secureStorage: secureStorage,
     ),
   );

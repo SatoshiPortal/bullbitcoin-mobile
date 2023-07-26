@@ -8,7 +8,7 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 
 class WalletRepository {
-  Future<Err?> createWallet({
+  Future<Err?> newWallet({
     required Wallet wallet,
     required HiveStorage hiveStore,
   }) async {
@@ -56,7 +56,7 @@ class WalletRepository {
     }
   }
 
-  Future<Err?> createSeed({
+  Future<Err?> newSeed({
     required Seed seed,
     required SecureStorage secureStore,
   }) async {
@@ -104,7 +104,7 @@ class WalletRepository {
     }
   }
 
-  Future<Err?> createPassphrase({
+  Future<Err?> newPassphrase({
     required Passphrase passphrase,
     required String seedFingerprintIndex,
     required SecureStorage secureStore,

@@ -1,7 +1,8 @@
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,9 +11,9 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   CreateWalletCubit({
     required this.settingsCubit,
     required this.walletCreate,
-    required this.storage,
+    required this.hiveStorage,
     required this.secureStorage,
-    required this.walletUpdate,
+    required this.walletRepository,
     bool fromHome = false,
   }) : super(const CreateWalletState()) {
     createMne(fromHome: fromHome);
@@ -20,13 +21,13 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
 
   final SettingsCubit settingsCubit;
   final WalletCreate walletCreate;
-  final IStorage storage;
-  final IStorage secureStorage;
-  final WalletUpdate walletUpdate;
+  final HiveStorage hiveStorage;
+  final SecureStorage secureStorage;
+  final WalletRepository walletRepository;
 
   void createMne({bool fromHome = false}) async {
     emit(state.copyWith(creatingNmemonic: true));
-    final (mne, err) = await walletCreate.createMne();
+    final (mnemonic, err) = await walletCreate.createMnemonic();
     if (err != null) {
       emit(
         state.copyWith(
@@ -39,7 +40,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
 
     emit(
       state.copyWith(
-        mnemonic: mne,
+        mnemonic: mnemonic,
         creatingNmemonic: false,
       ),
     );
@@ -64,39 +65,19 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (state.mnemonic == null) return;
     emit(state.copyWith(saving: true, errSaving: ''));
 
-    final (fgnr, err) = await walletCreate.getMneFingerprint(
-      mne: state.mnemonic!.join(' '),
-      isTestnet: settingsCubit.state.testnet,
-      scriptType: ScriptType.bip84,
+    final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final mnemonic = state.mnemonic!.join(' ');
+    final (seed, sErr) = await walletCreate.mnemonicSeed(mnemonic, network);
+    final (wallet, wErr) = await walletCreate.passphraseWalletFromSeed(
+      seed!,
+      state.passPhase,
+      ScriptType.bip84,
+      network,
+      false,
     );
-    if (err != null) {
-      _showSavingErr(err.toString());
-      return;
-    }
 
-    final (wallet, err2) = Wallet.fromMnemonic(
-      mne: state.mnemonic!.join(' '),
-      password: state.passPhase.isNotEmpty ? state.passPhase : null,
-      scriptType: ScriptType.bip84,
-      bbWalletType: BBWalletType.newSeed,
-      isTestNet: settingsCubit.state.testnet,
-      fngr: fgnr!,
-      backupTested: false,
-    );
-    if (err2 != null) {
-      _showSavingErr(err2.toString());
-      return;
-    }
-
-    final errr = await walletUpdate.addWalletToList(
-      wallet: wallet!,
-      storage: storage,
-      secureStorage: secureStorage,
-    );
-    if (errr != null) {
-      _showSavingErr(errr.toString());
-      return;
-    }
+    await walletRepository.newSeed(seed: seed, secureStore: secureStorage);
+    await walletRepository.newWallet(wallet: wallet!, hiveStore: hiveStorage);
 
     emit(
       state.copyWith(
@@ -112,51 +93,27 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     emit(state.copyWith(saving: true, errSaving: ''));
 
     final isTestNet = settingsCubit.state.testnet;
+    final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+
     bool testnet(int i) => i != 0;
-    bool selectWallet(int i) => isTestNet ? i == 1 : i == 0;
+    bool selectWallet(int i) => isTestNet ? i == 1 : i == 0; // wont this always be true?
 
     for (var i = 0; i < 2; i++) {
-      final mne = state.mnemonic!.join(' ');
-      final password = state.passPhase.isNotEmpty ? state.passPhase : null;
-
-      final (fgnr, err) = await walletCreate.getMneFingerprint(
-        mne: mne,
-        isTestnet: settingsCubit.state.testnet,
-        scriptType: ScriptType.bip84,
-        password: password,
+      final mnemonic = state.mnemonic!.join(' ');
+      final (seed, sErr) = await walletCreate.mnemonicSeed(mnemonic, network);
+      var (wallet, wErr) = await walletCreate.passphraseWalletFromSeed(
+        seed!,
+        '',
+        ScriptType.bip84,
+        network,
+        false,
       );
-      if (err != null) {
-        _showSavingErr(err.toString());
-        return;
-      }
-
-      var (wallet, err2) = Wallet.fromMnemonic(
-        mne: state.mnemonic!.join(' '),
-        password: state.passPhase.isNotEmpty ? state.passPhase : null,
-        scriptType: ScriptType.bip84,
-        bbWalletType: BBWalletType.newSeed,
-        isTestNet: testnet(i),
-        fngr: fgnr!,
-        backupTested: false,
-      );
-      if (err2 != null) {
-        _showSavingErr(err2.toString());
-        return;
-      }
 
       final label = testnet(i) ? 'Bull Wallet Testnet' : 'Bull Wallet';
-
       wallet = wallet!.copyWith(name: label);
 
-      final errr = await walletUpdate.addWalletToList(
-        wallet: wallet,
-        storage: storage,
-        secureStorage: secureStorage,
-      );
-      if (errr != null) {
-        _showSavingErr(errr.toString());
-        return;
-      }
+      await walletRepository.newSeed(seed: seed, secureStore: secureStorage);
+      await walletRepository.newWallet(wallet: wallet, hiveStore: hiveStorage);
 
       if (selectWallet(i)) {
         emit(state.copyWith(savedWallet: wallet));
