@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletUpdate {
@@ -53,75 +50,6 @@ class WalletUpdate {
       return (a, w);
     } catch (e) {
       rethrow;
-    }
-  }
-
-  Future<Err?> addWalletToList({
-    required Wallet wallet,
-    required IStorage storage,
-    required IStorage secureStorage,
-  }) async {
-    try {
-      final (walletsJsn, err) = await storage.getValue(StorageKeys.wallets);
-      final saveDir = wallet.getStorageString();
-      if (err != null) {
-        final jsn = jsonEncode({
-          'wallets': [saveDir]
-        });
-        final _ = await storage.saveValue(
-          key: StorageKeys.wallets,
-          value: jsn,
-        );
-        final __ = await secureStorage.saveValue(
-          key: StorageKeys.wallets,
-          value: jsn,
-        );
-      } else {
-        final walletsObjs = jsonDecode(walletsJsn!)['wallets'] as List<dynamic>;
-
-        final List<String> fingerprints = [];
-        for (final w in walletsObjs) {
-          fingerprints.add(w as String);
-        }
-
-        fingerprints.add(saveDir);
-
-        final jsn = jsonEncode({
-          'wallets': [...fingerprints]
-        });
-        final _ = await storage.saveValue(
-          key: StorageKeys.wallets,
-          value: jsn,
-        );
-        final __ = await secureStorage.saveValue(
-          key: StorageKeys.wallets,
-          value: jsn,
-        );
-      }
-
-      await secureStorage.saveValue(
-        key: saveDir,
-        value: jsonEncode(wallet.toJson()),
-      );
-
-      await storage.saveValue(
-        key: saveDir,
-        value: jsonEncode(
-          wallet
-              .copyWith(
-                mnemonic: '',
-                password: '',
-                internalPublicDescriptor: '',
-                externalPublicDescriptor: '',
-                xpub: '',
-              )
-              .toJson(),
-        ),
-      );
-
-      return null;
-    } catch (e) {
-      return Err(e.toString());
     }
   }
 

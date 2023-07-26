@@ -4,7 +4,6 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/delete.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -21,7 +20,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     required this.hiveStorage,
     required this.walletRead,
     required this.walletRepository,
-    required this.walletDelete,
     required this.fileStorage,
     required this.secureStorage,
   }) : super(
@@ -39,7 +37,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
   final WalletRead walletRead;
-  final WalletDelete walletDelete;
   final WalletRepository walletRepository;
 
   final FileStorage fileStorage;
@@ -326,9 +323,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   void deleteWalletClicked() async {
     emit(state.copyWith(deleting: true, errDeleting: ''));
 
-    final err = await walletDelete.deleteWallet(
-      saveDir: state.wallet.getStorageString(),
-      storage: hiveStorage,
+    final err = await walletRepository.deleteWallet(
+      walletHashId: state.wallet.getWalletStorageString(),
+      hiveStore: hiveStorage,
     );
 
     if (err != null) {
@@ -341,9 +338,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    final errr = await walletDelete.deleteWallet(
-      saveDir: state.wallet.getStorageString(),
-      storage: secureStorage,
+    final errr = await walletRepository.deleteWallet(
+      walletHashId: state.wallet.getWalletStorageString(),
+      hiveStore: hiveStorage,
     );
 
     if (errr != null) {

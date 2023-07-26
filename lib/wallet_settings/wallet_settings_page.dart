@@ -2,7 +2,6 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/delete.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -36,7 +35,6 @@ class WalletSettingsPage extends StatelessWidget {
     final wallet = home.state.selectedWalletCubit!;
     final walletSettings = WalletSettingsCubit(
       wallet: wallet.state.wallet!,
-      walletDelete: locator<WalletDelete>(),
       walletRead: locator<WalletRead>(),
       walletUpdate: locator<WalletUpdate>(),
       hiveStorage: locator<HiveStorage>(),

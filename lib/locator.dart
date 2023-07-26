@@ -11,7 +11,6 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/delete.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -85,7 +84,6 @@ Future setupLocator({bool fromTest = false}) async {
   locator.registerSingleton<SettingsCubit>(settings);
 
   locator.registerSingleton<MempoolAPI>(mempoolAPI);
-  locator.registerSingleton<WalletDelete>(WalletDelete());
   locator.registerSingleton<WalletCreate>(walletcreate);
   locator.registerSingleton<WalletRead>(walletread);
   locator.registerSingleton<Barcode>(Barcode());
