@@ -5,18 +5,18 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bitcoin_utils/xyzpub.dart';
 import 'package:crypto/crypto.dart';
 
-String fingerPrintFromDescr(
-  String xkey, {
-  required bool isTesnet,
-  bool ignorePrefix = false,
-}) {
-  final startIndex = xkey.indexOf('[');
-  if (startIndex == -1) return '';
-  final fingerPrintEndIndex = xkey.indexOf('/');
-  var fingerPrint = xkey.substring(startIndex + 1, fingerPrintEndIndex);
-  if (isTesnet && !ignorePrefix) fingerPrint = 'tn::' + fingerPrint;
-  return fingerPrint;
-}
+// String fingerPrintFromDescr(
+//   String xkey, {
+//   required bool isTesnet,
+//   bool ignorePrefix = false,
+// }) {
+//   final startIndex = xkey.indexOf('[');
+//   if (startIndex == -1) return '';
+//   final fingerPrintEndIndex = xkey.indexOf('/');
+//   var fingerPrint = xkey.substring(startIndex + 1, fingerPrintEndIndex);
+//   if (isTesnet && !ignorePrefix) fingerPrint = 'tn::' + fingerPrint;
+//   return fingerPrint;
+// }
 
 String createDescriptorHashId(String descriptor) {
   final descHashId = sha1
@@ -60,7 +60,7 @@ String convertToXpubStr(String xpub) {
 }
 
 String keyFromDescriptor(String descriptor) {
-  final startIndex = descriptor.indexOf('(');
+  final startIndex = descriptor.indexOf(']');
   final cut1 = descriptor.substring(startIndex + 1);
   final endIndex = cut1.indexOf('/');
   return cut1.substring(0, endIndex);

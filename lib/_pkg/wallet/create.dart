@@ -191,11 +191,11 @@ class WalletCreate {
     );
 
     final wallet44HashId =
-        createDescriptorHashId(bdkDescriptor44External.toString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor44External.asString()).substring(0, 12);
     final wallet44 = Wallet(
       descHashId: wallet44HashId,
-      externalPublicDescriptor: bdkDescriptor44External.toString(),
-      internalPublicDescriptor: bdkDescriptor44Internal.toString(),
+      externalPublicDescriptor: await bdkDescriptor44External.asString(),
+      internalPublicDescriptor: await bdkDescriptor44Internal.asString(),
       mnemonicFingerprint: fingerprint,
       sourceFingerprint: fingerprint,
       network: network,
@@ -203,11 +203,11 @@ class WalletCreate {
       scriptType: ScriptType.bip44,
     );
     final wallet49HashId =
-        createDescriptorHashId(bdkDescriptor49External.toString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor49External.asString()).substring(0, 12);
     final wallet49 = Wallet(
       descHashId: wallet49HashId,
-      externalPublicDescriptor: bdkDescriptor49External.toString(),
-      internalPublicDescriptor: bdkDescriptor49Internal.toString(),
+      externalPublicDescriptor: await bdkDescriptor49External.asString(),
+      internalPublicDescriptor: await bdkDescriptor49Internal.asString(),
       mnemonicFingerprint: fingerprint,
       sourceFingerprint: fingerprint,
       network: network,
@@ -215,11 +215,11 @@ class WalletCreate {
       scriptType: ScriptType.bip49,
     );
     final wallet84HashId =
-        createDescriptorHashId(bdkDescriptor84External.toString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor84External.asString()).substring(0, 12);
     final wallet84 = Wallet(
       descHashId: wallet84HashId,
-      externalPublicDescriptor: bdkDescriptor84External.toString(),
-      internalPublicDescriptor: bdkDescriptor84Internal.toString(),
+      externalPublicDescriptor: await bdkDescriptor84External.asString(),
+      internalPublicDescriptor: await bdkDescriptor84Internal.asString(),
       mnemonicFingerprint: fingerprint,
       sourceFingerprint: fingerprint,
       network: network,
@@ -298,11 +298,11 @@ class WalletCreate {
         );
     }
 
-    final descHashId = createDescriptorHashId(external.toString()).substring(0, 12);
+    final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
     final wallet = Wallet(
       descHashId: descHashId,
-      externalPublicDescriptor: external.toString(),
-      internalPublicDescriptor: internal.toString(),
+      externalPublicDescriptor: await external.asString(),
+      internalPublicDescriptor: await internal.asString(),
       mnemonicFingerprint: seed.mnemonicFingerprint,
       sourceFingerprint: sourceFingerprint,
       network: network,
@@ -376,11 +376,11 @@ class WalletCreate {
     );
 
     final wallet44HashId =
-        createDescriptorHashId(bdkDescriptor44External.toString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor44External.asString()).substring(0, 12);
     final wallet44 = Wallet(
       descHashId: wallet44HashId,
-      externalPublicDescriptor: bdkDescriptor44External.toString(),
-      internalPublicDescriptor: bdkDescriptor44Internal.toString(),
+      externalPublicDescriptor: await bdkDescriptor44External.asString(),
+      internalPublicDescriptor: await bdkDescriptor44Internal.asString(),
       mnemonicFingerprint: fingerprint,
       sourceFingerprint: fingerprint,
       network: network,
@@ -396,11 +396,11 @@ class WalletCreate {
     }
 
     final wallet49HashId =
-        createDescriptorHashId(bdkDescriptor49External.toString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor49External.asString()).substring(0, 12);
     final wallet49 = Wallet(
       descHashId: wallet49HashId,
-      externalPublicDescriptor: bdkDescriptor49External.toString(),
-      internalPublicDescriptor: bdkDescriptor49Internal.toString(),
+      externalPublicDescriptor: await bdkDescriptor49External.asString(),
+      internalPublicDescriptor: await bdkDescriptor49Internal.asString(),
       mnemonicFingerprint: fingerprint,
       sourceFingerprint: fingerprint,
       network: network,
@@ -416,11 +416,11 @@ class WalletCreate {
     }
 
     final wallet84HashId =
-        createDescriptorHashId(bdkDescriptor84External.toString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor84External.asString()).substring(0, 12);
     final wallet84 = Wallet(
       descHashId: wallet84HashId,
-      externalPublicDescriptor: bdkDescriptor84External.toString(),
-      internalPublicDescriptor: bdkDescriptor84Internal.toString(),
+      externalPublicDescriptor: await bdkDescriptor84External.asString(),
+      internalPublicDescriptor: await bdkDescriptor84Internal.asString(),
       mnemonicFingerprint: fingerprint,
       sourceFingerprint: fingerprint,
       network: network,
@@ -491,11 +491,11 @@ class WalletCreate {
           );
       }
 
-      final descHashId = createDescriptorHashId(external.toString()).substring(0, 12);
+      final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
       final wallet = Wallet(
         descHashId: descHashId,
-        externalPublicDescriptor: external.toString(),
-        internalPublicDescriptor: internal.toString(),
+        externalPublicDescriptor: await external.asString(),
+        internalPublicDescriptor: await internal.asString(),
         mnemonicFingerprint: descHashId,
         sourceFingerprint: descHashId,
         network: network,
@@ -515,7 +515,7 @@ class WalletCreate {
   //   try {
 
   //   } catch (e) {
-  //     return (null, Err(e.toString()));
+  //     return (null, Err(e.asString()));
   //   }
   // }
 

@@ -218,7 +218,7 @@ class InfoText extends StatelessWidget {
         Gap(16),
         Flexible(
           child: BBText.title(
-            'Pro-tip: Store your passphrase and 12 words separately. ',
+            'Pro-tip: Store your passphrase and 12 words separately.',
           ),
         ),
       ],

@@ -11,7 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
-Future main({bool fromTest = false}) async {
+Future main({bool fromTest = true}) async {
   await dotenv.load(isOptional: true);
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator(fromTest: fromTest);

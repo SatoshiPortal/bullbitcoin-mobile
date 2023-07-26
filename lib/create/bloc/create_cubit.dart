@@ -104,14 +104,16 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     emit(state.copyWith(saving: true, errSaving: ''));
 
     final isTestNet = settingsCubit.state.testnet;
-    final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 
     bool testnet(int i) => i != 0;
     bool selectWallet(int i) => isTestNet ? i == 1 : i == 0; // wont this always be true?
 
     for (var i = 0; i < 2; i++) {
       final mnemonic = state.mnemonic!.join(' ');
-      final (seed, sErr) = await walletCreate.mnemonicSeed(mnemonic, network);
+      final (seed, sErr) = await walletCreate.mnemonicSeed(
+        mnemonic,
+        testnet(i) ? BBNetwork.Testnet : BBNetwork.Mainnet,
+      );
       if (sErr != null) {
         emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
       }
@@ -119,7 +121,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
         seed!,
         '',
         ScriptType.bip84,
-        network,
+        testnet(i) ? BBNetwork.Testnet : BBNetwork.Mainnet,
         false,
       );
       if (wErr != null) {

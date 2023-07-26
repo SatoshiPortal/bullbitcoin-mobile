@@ -403,9 +403,10 @@ class ImportWalletCubit extends Cubit<ImportState> {
             Passphrase(passphrase: password, sourceFingerprint: selectedWallet.sourceFingerprint);
 
         final err = await walletRepository.newPassphrase(
-            passphrase: passphrase,
-            secureStore: secureStorage,
-            seedFingerprintIndex: selectedWallet.sourceFingerprint);
+          passphrase: passphrase,
+          secureStore: secureStorage,
+          seedFingerprintIndex: selectedWallet.sourceFingerprint,
+        );
 
         if (err != null) {
           emit(
