@@ -1,13 +1,15 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/_model/cold_card.dart';
+import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -20,9 +22,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required this.nfc,
     required this.settingsCubit,
     required this.walletCreate,
-    required this.storage,
+    required this.hiveStorage,
     required this.secureStorage,
-    required this.walletUpdate,
+    required this.walletRepository,
   }) : super(
           const ImportState(
               // words: [
@@ -37,9 +39,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
   final SettingsCubit settingsCubit;
   final WalletCreate walletCreate;
-  final IStorage storage;
-  final IStorage secureStorage;
-  final WalletUpdate walletUpdate;
+  final HiveStorage hiveStorage;
+  final SecureStorage secureStorage;
+  final WalletRepository walletRepository;
 
   void backClicked() {
     switch (state.importStep) {
@@ -321,94 +323,34 @@ class ImportWalletCubit extends Cubit<ImportState> {
       final type = state.importType;
 
       final wallets = <Wallet>[];
+      final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 
       switch (type) {
         case ImportTypes.words:
-          final mne = state.words.join(' ');
-          final password = state.password.isEmpty ? null : state.password;
-          final path = state.customDerivation.isEmpty ? null : state.customDerivation;
+          final mnemonic = state.words.join(' ');
+          final passphrase = state.password.isEmpty ? '' : state.password;
 
-          final (fingerPrint, errr) = await walletCreate.getMneFingerprint(
-            mne: mne,
-            isTestnet: isTesnet,
-            scriptType: ScriptType.bip84,
+          final (ws, wErrs) = await walletCreate.walletsFromBIP39(
+            mnemonic,
+            passphrase,
+            network,
           );
-          if (errr != null) throw errr;
-
-          final (w, err) = Wallet.fromMnemonicAll(
-            mne: mne,
-            password: password,
-            path: path,
-            isTestNet: isTesnet,
-            bbWalletType: BBWalletType.words,
-            fngr: fingerPrint!,
-          );
-
-          if (err != null) throw err;
-          wallets.addAll(w!);
+          wallets.addAll(ws!);
 
         case ImportTypes.xpub:
-          if (state.manualChangeDescriptor != null &&
-              state.manualDescriptor != null &&
-              state.manualChangeDescriptor!.isNotEmpty &&
-              state.manualDescriptor!.isNotEmpty) {
-            var fngr = fingerPrintFromDescr(
-              state.manualChangeDescriptor!,
-              isTesnet: isTesnet,
-            );
-
-            final noFngr = fngr.isEmpty;
-            if (noFngr) fngr = generateFingerPrint(6);
-
-            final (w, err) = Wallet.fromDescrAll(
-              changeDescriptor: state.manualChangeDescriptor!,
-              descriptor: state.manualDescriptor!,
-              isTestNet: isTesnet,
-              bbWalletType: BBWalletType.descriptors,
-              fngr: fngr,
-            );
-
-            if (err != null) throw err;
-
-            wallets.addAll(w!);
-          } else if (state.fingerprint.isEmpty) {
-            final randFngr = generateFingerPrint(3);
-
-            final (w, err) = Wallet.fromXpubNoPathAll(
-              xpub: state.xpub,
-              isTestNet: isTesnet,
-              bbWalletType: BBWalletType.descriptors,
-              fngr: 'watcher#' + randFngr,
-            );
-
-            if (err != null) throw err;
-            wallets.addAll(w!);
-          } else {
-            final path = state.customDerivation;
-            final fingerprint = state.fingerprint;
-
-            final (w, err) = Wallet.fromXpubWithPathAll(
-              xpub: state.xpub,
-              isTestNet: isTesnet,
-              bbWalletType: BBWalletType.xpub,
-              fngr: fingerprint,
-              path: path,
-            );
-
-            if (err != null) throw err;
-            wallets.addAll(w!);
-          }
+          final (wxpub, wErrs) = await walletCreate.walletFromXpub(
+            state.xpub,
+          );
+          wallets.addAll([wxpub!]);
 
         case ImportTypes.coldcard:
           final coldcard = state.coldCard!;
 
-          final (w, err) = Wallet.fromColdCardAll(
-            coldCard: coldcard,
-            isTestNet: isTesnet,
+          final (cws, wErrs) = await walletCreate.walletsFromColdCard(
+            coldcard,
+            network,
           );
-
-          if (err != null) throw err;
-          wallets.addAll(w!);
+          wallets.addAll(cws!);
 
         default:
           break;
@@ -437,11 +379,49 @@ class ImportWalletCubit extends Cubit<ImportState> {
   void saveClicked() async {
     emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
     final selectedWallet = state.getSelectWalletDetails();
+    final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 
-    final err = await walletUpdate.addWalletToList(
-      wallet: selectedWallet!,
-      storage: storage,
-      secureStorage: secureStorage,
+    if (selectedWallet!.type == BBWalletType.words) {
+      final mnemonic = state.words.join(' ');
+      final (seed, sErr) = await walletCreate.mnemonicSeed(mnemonic, network);
+      final err = await walletRepository.newSeed(seed: seed!, secureStore: secureStorage);
+
+      if (err != null) {
+        emit(
+          state.copyWith(
+            errSavingWallet: err.toString(),
+            savingWallet: false,
+          ),
+        );
+        return;
+      }
+
+      if (state.password.isNotEmpty) {
+        final password = state.password.isEmpty ? '' : state.password;
+
+        final passphrase =
+            Passphrase(passphrase: password, sourceFingerprint: selectedWallet.sourceFingerprint);
+
+        final err = await walletRepository.newPassphrase(
+            passphrase: passphrase,
+            secureStore: secureStorage,
+            seedFingerprintIndex: selectedWallet.sourceFingerprint);
+
+        if (err != null) {
+          emit(
+            state.copyWith(
+              errSavingWallet: err.toString(),
+              savingWallet: false,
+            ),
+          );
+          return;
+        }
+      }
+    }
+
+    final err = await walletRepository.newWallet(
+      wallet: selectedWallet,
+      hiveStore: hiveStorage,
     );
 
     if (err != null) {

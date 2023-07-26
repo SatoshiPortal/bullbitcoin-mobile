@@ -1,10 +1,10 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
@@ -39,9 +39,9 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
       nfc: locator<NFCPicker>(),
       settingsCubit: locator<SettingsCubit>(),
       walletCreate: locator<WalletCreate>(),
-      storage: locator<IStorage>(),
+      hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
-      walletUpdate: locator<WalletUpdate>(),
+      walletRepository: locator<WalletRepository>(),
     );
 
     wordsCubit = locator<WordsCubit>();

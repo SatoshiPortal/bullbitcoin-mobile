@@ -135,10 +135,8 @@ class ImportState with _$ImportState {
     final pub = tempXpub;
 
     if (pub.startsWith('x') || pub.startsWith('t')) return true;
-
     if (pub.startsWith('z') && scriptType == ScriptType.bip84) return true;
     if (pub.startsWith('y') && scriptType == ScriptType.bip49) return true;
-
     if (pub.startsWith('u') && scriptType == ScriptType.bip84) return true;
     if (pub.startsWith('v') && scriptType == ScriptType.bip44) return true;
 
