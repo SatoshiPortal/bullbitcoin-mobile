@@ -362,10 +362,9 @@ class SendCubit extends Cubit<SendState> {
       final txs = localWallet.transactions?.toList() ?? [];
       txs.add(tx!);
 
-      final errUpdate = await walletUpdate.updateWallet(
+      final errUpdate = await walletRepository.updateWallet(
         wallet: localWallet.copyWith(transactions: txs),
-        storage: hiveStorage,
-        walletRead: walletRead,
+        hiveStore: hiveStorage,
       );
       if (errUpdate != null) {
         emit(
@@ -414,10 +413,9 @@ class SendCubit extends Cubit<SendState> {
       isSend: true,
     );
 
-    final err2 = await walletUpdate.updateWallet(
+    final err2 = await walletRepository.updateWallet(
       wallet: updatedWallet,
-      storage: hiveStorage,
-      walletRead: walletRead,
+      hiveStore: hiveStorage,
     );
     if (err2 != null) {
       emit(state.copyWith(errSending: err2.toString(), sending: false));

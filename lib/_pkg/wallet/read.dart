@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:bb_mobile/_model/address.dart';
@@ -6,36 +5,9 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletRead {
-  Future<(Wallet?, Err?)> getWalletDetails({
-    required String saveDir,
-    required IStorage storage,
-    bool removeSensitive = false,
-  }) async {
-    try {
-      final (jsn, err) = await storage.getValue(saveDir);
-      if (err != null) throw err;
-      final obj = jsonDecode(jsn!) as Map<String, dynamic>;
-
-      var wallet = Wallet.fromJson(obj);
-      if (removeSensitive)
-        wallet = wallet.copyWith(
-          mnemonic: '',
-          password: '',
-          internalPublicDescriptor: '',
-          externalPublicDescriptor: '',
-          xpub: '',
-        );
-
-      return (wallet, null);
-    } catch (e) {
-      return (null, Err(e.toString(), expected: e.toString() == 'No Key'));
-    }
-  }
-
   Future<((Wallet, Balance)?, Err?)> getBalance({
     required bdk.Wallet bdkWallet,
     required Wallet wallet,
@@ -173,35 +145,6 @@ class WalletRead {
       return (w, null);
     } catch (e) {
       return (null, Err(e.toString(), expected: e.toString() == 'No bdk transactions found'));
-    }
-  }
-
-  Future<(List<Wallet>?, Err?)> getWalletsFromStorage({
-    required IStorage storage,
-  }) async {
-    try {
-      final (walletsJsn, err) = await storage.getValue(StorageKeys.wallets);
-      if (err != null) throw err;
-
-      final walletsObjs = jsonDecode(walletsJsn!)['wallets'] as List<dynamic>;
-
-      final List<Wallet> wallets = [];
-      for (final w in walletsObjs) {
-        try {
-          final (wallet, err) = await getWalletDetails(
-            saveDir: w as String,
-            storage: storage,
-          );
-          if (err != null) continue;
-          wallets.add(wallet!);
-        } catch (e) {
-          print(e);
-        }
-      }
-
-      return (wallets, null);
-    } catch (e) {
-      return (null, Err(e.toString(), expected: e.toString() == 'No Key'));
     }
   }
 

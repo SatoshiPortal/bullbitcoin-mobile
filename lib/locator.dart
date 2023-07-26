@@ -50,7 +50,10 @@ Future setupLocator({bool fromTest = false}) async {
   locator.registerSingleton<BullBitcoinAPI>(bbAPI);
 
   final fileStorage = FileStorage();
+  final walletRepository = WalletRepository();
+
   locator.registerSingleton<FileStorage>(fileStorage);
+  locator.registerSingleton<WalletRepository>(walletRepository);
 
   locator.registerSingleton<WalletUpdate>(WalletUpdate());
   final walletcreate = WalletCreate();
@@ -65,7 +68,7 @@ Future setupLocator({bool fromTest = false}) async {
 
   final homeCubit = HomeCubit(
     walletRead: walletread,
-    storage: locator<HiveStorage>(),
+    hiveStorage: locator<HiveStorage>(),
     createWalletCubit: CreateWalletCubit(
       walletCreate: walletcreate,
       settingsCubit: settings,
@@ -73,6 +76,7 @@ Future setupLocator({bool fromTest = false}) async {
       hiveStorage: hiveStorage,
       secureStorage: secureStorage,
     ),
+    walletRepository: locator<WalletRepository>(),
   );
 
   settings.homeCubit = homeCubit;

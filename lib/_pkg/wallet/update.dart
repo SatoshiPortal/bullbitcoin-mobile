@@ -5,40 +5,9 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletUpdate {
-  Future<Err?> updateWallet({
-    required Wallet wallet,
-    required IStorage storage,
-    required WalletRead walletRead,
-  }) async {
-    try {
-      final (w, err) = await walletRead.getWalletDetails(
-        saveDir: wallet.getStorageString(),
-        storage: storage,
-      );
-      if (err != null) throw err;
-
-      final _ = await storage.saveValue(
-        key: wallet.getStorageString(),
-        value: jsonEncode(
-          wallet
-              .copyWith(
-                mnemonic: w!.mnemonic,
-                password: w.password,
-                internalPublicDescriptor: w.internalPublicDescriptor,
-              )
-              .toJson(),
-        ),
-      );
-      return null;
-    } catch (e) {
-      return Err(e.toString());
-    }
-  }
-
   Future<(Address, Wallet)> updateWalletAddress({
     required (int, String) address,
     required Wallet wallet,

@@ -86,16 +86,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(bdkWallet: bdkWallet));
     }
 
-    final (notSensitiveWallet, err) = await walletRead.getWalletDetails(
-      saveDir: event.saveDir,
-      storage: hiveStorage,
-    );
-
     emit(
       state.copyWith(
         loadingWallet: false,
         errLoadingWallet: '',
-        wallet: err == null ? notSensitiveWallet : wallet,
+        wallet: wallet,
         name: wallet.name ?? '',
       ),
     );

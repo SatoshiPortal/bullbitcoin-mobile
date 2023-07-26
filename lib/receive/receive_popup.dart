@@ -1,5 +1,6 @@
-import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -31,8 +32,9 @@ class ReceivePopUp extends StatelessWidget {
     final receiveCubit = ReceiveCubit(
       walletBloc: wallet,
       walletUpdate: locator<WalletUpdate>(),
-      storage: locator<IStorage>(),
+      hiveStorage: locator<HiveStorage>(),
       walletRead: locator<WalletRead>(),
+      walletRepository: locator<WalletRepository>(),
     );
 
     return showMaterialModalBottomSheet(

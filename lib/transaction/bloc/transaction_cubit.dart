@@ -132,10 +132,9 @@ class TransactionCubit extends Cubit<TransactionState> {
       ],
     );
 
-    final err = await walletUpdate.updateWallet(
+    final err = await walletRepository.updateWallet(
       wallet: updateWallet,
-      storage: hiveStorage,
-      walletRead: walletRead,
+      hiveStore: hiveStorage,
     );
     if (err != null) {
       emit(
@@ -265,10 +264,9 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     updatedWallet = updatedWallet.copyWith(transactions: txs);
 
-    final err2 = await walletUpdate.updateWallet(
+    final err2 = await walletRepository.updateWallet(
       wallet: updatedWallet,
-      storage: hiveStorage,
-      walletRead: walletRead,
+      hiveStore: hiveStorage,
     );
     if (err2 != null) {
       emit(state.copyWith(errSendingTx: err2.toString(), sendingTx: false));

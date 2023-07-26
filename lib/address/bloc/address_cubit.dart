@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_model/address.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/address/bloc/address_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -14,7 +15,8 @@ class AddressCubit extends Cubit<AddressState> {
     required this.walletSettingsCubit,
     required this.walletBloc,
     required this.walletUpdate,
-    required this.storage,
+    required this.walletRepository,
+    required this.hiveStorage,
     required this.walletRead,
   }) : super(AddressState(address: address));
 
@@ -22,7 +24,9 @@ class AddressCubit extends Cubit<AddressState> {
   final WalletSettingsCubit walletSettingsCubit;
   final WalletBloc walletBloc;
   final WalletUpdate walletUpdate;
-  final IStorage storage;
+  final WalletRepository walletRepository;
+
+  final HiveStorage hiveStorage;
   final WalletRead walletRead;
 
   void freezeAddress() async {
@@ -35,10 +39,9 @@ class AddressCubit extends Cubit<AddressState> {
       wallet: walletBloc.state.wallet!,
     );
 
-    final errUpdate = await walletUpdate.updateWallet(
+    final errUpdate = await walletRepository.updateWallet(
       wallet: w,
-      walletRead: walletRead,
-      storage: storage,
+      hiveStore: hiveStorage,
     );
     if (errUpdate != null) {
       emit(
@@ -65,10 +68,9 @@ class AddressCubit extends Cubit<AddressState> {
       wallet: walletBloc.state.wallet!,
     );
 
-    final errUpdate = await walletUpdate.updateWallet(
+    final errUpdate = await walletRepository.updateWallet(
       wallet: w,
-      walletRead: walletRead,
-      storage: storage,
+      hiveStore: hiveStorage,
     );
     if (errUpdate != null) {
       emit(
@@ -100,10 +102,9 @@ class AddressCubit extends Cubit<AddressState> {
       wallet: walletBloc.state.wallet!,
     );
 
-    final errUpdate = await walletUpdate.updateWallet(
+    final errUpdate = await walletRepository.updateWallet(
       wallet: w,
-      walletRead: walletRead,
-      storage: storage,
+      hiveStore: hiveStorage,
     );
     if (errUpdate != null) {
       emit(

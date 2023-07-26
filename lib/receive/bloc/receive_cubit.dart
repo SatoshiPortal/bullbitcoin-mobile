@@ -1,5 +1,6 @@
-import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -10,16 +11,18 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   ReceiveCubit({
     required this.walletBloc,
     required this.walletUpdate,
-    required this.storage,
+    required this.hiveStorage,
     required this.walletRead,
+    required this.walletRepository,
   }) : super(const ReceiveState()) {
     loadAddress();
   }
 
   final WalletBloc walletBloc;
   final WalletUpdate walletUpdate;
-  final IStorage storage;
+  final HiveStorage hiveStorage;
   final WalletRead walletRead;
+  final WalletRepository walletRepository;
 
   void loadAddress() async {
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
@@ -44,10 +47,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
       emit(state.copyWith(defaultAddress: a));
 
-      final errUpdate = await walletUpdate.updateWallet(
+      final errUpdate = await walletRepository.updateWallet(
         wallet: w,
-        walletRead: walletRead,
-        storage: storage,
+        hiveStore: hiveStorage,
       );
       if (errUpdate != null) {
         emit(
@@ -88,10 +90,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
       emit(state.copyWith(defaultAddress: a));
 
-      final errUpdate = await walletUpdate.updateWallet(
+      final errUpdate = await walletRepository.updateWallet(
         wallet: w,
-        walletRead: walletRead,
-        storage: storage,
+        hiveStore: hiveStorage,
       );
       if (errUpdate != null) {
         emit(
@@ -137,10 +138,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       label: state.privateLabel,
     );
 
-    final errUpdate = await walletUpdate.updateWallet(
+    final errUpdate = await walletRepository.updateWallet(
       wallet: w,
-      walletRead: walletRead,
-      storage: storage,
+      hiveStore: hiveStorage,
     );
     if (errUpdate != null) {
       emit(
@@ -206,10 +206,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       label: state.privateLabel,
     );
 
-    final errUpdate = await walletUpdate.updateWallet(
+    final errUpdate = await walletRepository.updateWallet(
       wallet: w,
-      walletRead: walletRead,
-      storage: storage,
+      hiveStore: hiveStorage,
     );
     if (errUpdate != null) {
       emit(

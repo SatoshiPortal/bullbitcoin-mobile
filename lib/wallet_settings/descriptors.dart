@@ -4,7 +4,6 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,13 +25,11 @@ class PublicDescriptorButton extends StatelessWidget {
       label: 'Public Descriptor',
       onPressed: () async {
         // no more loading and clearing sensitive data
-        await context.read<WalletSettingsCubit>().loadSensitiveInfo();
         await PublicDataPopUp.openPopup(
           context,
           desc.replaceAll('/0/*', '/[0;1]/*'),
           'Public Descriptor',
         );
-        context.read<WalletSettingsCubit>().clearSensitiveInfo();
       },
     );
   }
@@ -51,13 +48,11 @@ class ExtendedPublicKeyButton extends StatelessWidget {
     return BBButton.textWithLeftArrow(
       label: 'XPub',
       onPressed: () async {
-        await context.read<WalletSettingsCubit>().loadSensitiveInfo();
         await PublicDataPopUp.openPopup(
           context,
           xpub,
           'Extended Public Key',
         );
-        context.read<WalletSettingsCubit>().clearSensitiveInfo();
       },
     );
   }

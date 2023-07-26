@@ -1,9 +1,10 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/delete.dart';
 import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -38,10 +39,11 @@ class WalletSettingsPage extends StatelessWidget {
       walletDelete: locator<WalletDelete>(),
       walletRead: locator<WalletRead>(),
       walletUpdate: locator<WalletUpdate>(),
-      storage: locator<IStorage>(),
+      hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletBloc: wallet,
       fileStorage: locator<FileStorage>(),
+      walletRepository: locator<WalletRepository>(),
     );
 
     return MultiBlocProvider(
@@ -349,9 +351,7 @@ class TestBackupButton extends StatelessWidget {
     return BBButton.textWithLeftArrow(
       label: 'Test Backup',
       onPressed: () async {
-        await context.read<WalletSettingsCubit>().loadSensitiveInfo();
         await TestBackupScreen.openPopup(context);
-        context.read<WalletSettingsCubit>().clearSensitiveInfo();
       },
     );
   }
@@ -364,9 +364,7 @@ class BackupButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BBButton.textWithLeftArrow(
       onPressed: () async {
-        await context.read<WalletSettingsCubit>().loadSensitiveInfo();
         await BackupScreen.openPopup(context);
-        context.read<WalletSettingsCubit>().clearSensitiveInfo();
       },
       label: 'Backup',
     );
