@@ -52,14 +52,14 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     emit(state.copyWith(passPhase: text));
   }
 
-  void _showSavingErr(String err) {
-    emit(
-      state.copyWith(
-        errSaving: err,
-        creatingNmemonic: false,
-      ),
-    );
-  }
+  // void _showSavingErr(String err) {
+  //   emit(
+  //     state.copyWith(
+  //       errSaving: err,
+  //       creatingNmemonic: false,
+  //     ),
+  //   );
+  // }
 
   void confirmClicked() async {
     if (state.mnemonic == null) return;
@@ -103,47 +103,38 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (state.mnemonic == null) return;
     emit(state.copyWith(saving: true, errSaving: ''));
 
-    final isTestNet = settingsCubit.state.testnet;
-
-    bool testnet(int i) => i != 0;
-    bool selectWallet(int i) => isTestNet ? i == 1 : i == 0; // wont this always be true?
-
-    for (var i = 0; i < 2; i++) {
-      final mnemonic = state.mnemonic!.join(' ');
-      final (seed, sErr) = await walletCreate.mnemonicSeed(
-        mnemonic,
-        testnet(i) ? BBNetwork.Testnet : BBNetwork.Mainnet,
-      );
-      if (sErr != null) {
-        emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
-      }
-      var (wallet, wErr) = await walletCreate.passphraseWalletFromSeed(
-        seed!,
-        '',
-        ScriptType.bip84,
-        testnet(i) ? BBNetwork.Testnet : BBNetwork.Mainnet,
-        false,
-      );
-      if (wErr != null) {
-        emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
-      }
-
-      final label = testnet(i) ? 'Bull Wallet Testnet' : 'Bull Wallet';
-      wallet = wallet!.copyWith(name: label);
-
-      final ssErr = await walletRepository.newSeed(seed: seed, secureStore: secureStorage);
-      if (ssErr != null) {
-        emit(state.copyWith(saving: false, errSaving: 'Error Saving Seed'));
-      }
-      final wsErr = await walletRepository.newWallet(wallet: wallet, hiveStore: hiveStorage);
-      if (wsErr != null) {
-        emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
-      }
-
-      if (selectWallet(i)) {
-        emit(state.copyWith(savedWallet: wallet));
-      }
+    final mnemonic = state.mnemonic!.join(' ');
+    final (seed, sErr) = await walletCreate.mnemonicSeed(
+      mnemonic,
+      BBNetwork.Mainnet,
+    );
+    if (sErr != null) {
+      emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
     }
+    var (wallet, wErr) = await walletCreate.passphraseWalletFromSeed(
+      seed!,
+      '',
+      ScriptType.bip84,
+      BBNetwork.Mainnet,
+      false,
+    );
+    if (wErr != null) {
+      emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
+    }
+
+    const label = 'Bull Wallet';
+    wallet = wallet!.copyWith(name: label);
+
+    final ssErr = await walletRepository.newSeed(seed: seed, secureStore: secureStorage);
+    if (ssErr != null) {
+      emit(state.copyWith(saving: false, errSaving: 'Error Saving Seed'));
+    }
+    final wsErr = await walletRepository.newWallet(wallet: wallet, hiveStore: hiveStorage);
+    if (wsErr != null) {
+      emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
+    }
+
+    emit(state.copyWith(savedWallet: wallet));
 
     emit(
       state.copyWith(

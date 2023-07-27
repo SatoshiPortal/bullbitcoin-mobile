@@ -319,7 +319,6 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
   Future _updateWalletDetailsForSelection() async {
     try {
-      final isTesnet = settingsCubit.state.testnet;
       final type = state.importType;
 
       final wallets = <Wallet>[];
@@ -335,12 +334,18 @@ class ImportWalletCubit extends Cubit<ImportState> {
             passphrase,
             network,
           );
+          if (wErrs != null) {
+            emit(state.copyWith(errImporting: 'Error creating Wallets from Bip 39'));
+          }
           wallets.addAll(ws!);
 
         case ImportTypes.xpub:
           final (wxpub, wErrs) = await walletCreate.walletFromXpub(
             state.xpub,
           );
+          if (wErrs != null) {
+            emit(state.copyWith(errImporting: 'Error creating Wallets from Xpub'));
+          }
           wallets.addAll([wxpub!]);
 
         case ImportTypes.coldcard:
@@ -350,6 +355,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
             coldcard,
             network,
           );
+          if (wErrs != null) {
+            emit(state.copyWith(errImporting: 'Error creating Wallets from ColdCard'));
+          }
           wallets.addAll(cws!);
 
         default:
@@ -384,6 +392,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
     if (selectedWallet!.type == BBWalletType.words) {
       final mnemonic = state.words.join(' ');
       final (seed, sErr) = await walletCreate.mnemonicSeed(mnemonic, network);
+      if (sErr != null) {
+        emit(state.copyWith(errImporting: 'Error creating mnemonicSeed'));
+      }
       final err = await walletRepository.newSeed(seed: seed!, secureStore: secureStorage);
 
       if (err != null) {

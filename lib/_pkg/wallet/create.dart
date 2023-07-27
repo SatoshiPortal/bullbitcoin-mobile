@@ -2,7 +2,6 @@ import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
@@ -251,7 +250,9 @@ class WalletCreate {
       isTestnet: isTestnet,
       scriptType: scriptType,
     );
-
+    if (sfErr != null) {
+      return (null, Err('Error Getting Fingerprint'));
+    }
     bdk.Descriptor? internal;
     bdk.Descriptor? external;
     final rootXpub = await rootXprv.asPublic();
@@ -387,13 +388,6 @@ class WalletCreate {
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip44,
     );
-    final (_, w44Err) = await HiveStorage().getValue(wallet44HashId);
-    if (w44Err != null) {
-      // wallet does not exist
-    } else {
-      // wallet exists, error
-      return (null, Err('Wallet 44 Exists'));
-    }
 
     final wallet49HashId =
         createDescriptorHashId(await bdkDescriptor49External.asString()).substring(0, 12);
@@ -407,13 +401,6 @@ class WalletCreate {
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip49,
     );
-    final (_, w49Err) = await HiveStorage().getValue(wallet49HashId);
-    if (w49Err != null) {
-      // wallet does not exist
-    } else {
-      // wallet exists, error
-      return (null, Err('Wallet 49 Exists'));
-    }
 
     final wallet84HashId =
         createDescriptorHashId(await bdkDescriptor84External.asString()).substring(0, 12);
@@ -427,13 +414,6 @@ class WalletCreate {
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip84,
     );
-    final (_, w84Err) = await HiveStorage().getValue(wallet84HashId);
-    if (w84Err != null) {
-      // wallet does not exist
-    } else {
-      // wallet exists, error
-      return (null, Err('Wallet 84 Exists'));
-    }
 
     return ([wallet44, wallet49, wallet84], null);
   }
