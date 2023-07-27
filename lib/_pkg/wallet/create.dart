@@ -199,7 +199,7 @@ class WalletCreate {
       mnemonicFingerprint: fingerprint,
       sourceFingerprint: fingerprint,
       network: network,
-      type: BBWalletType.coldcard,
+      type: BBWalletType.words,
       scriptType: ScriptType.bip44,
     );
     final wallet49HashId =
@@ -211,7 +211,7 @@ class WalletCreate {
       mnemonicFingerprint: fingerprint,
       sourceFingerprint: fingerprint,
       network: network,
-      type: BBWalletType.coldcard,
+      type: BBWalletType.words,
       scriptType: ScriptType.bip49,
     );
     final wallet84HashId =
@@ -223,7 +223,7 @@ class WalletCreate {
       mnemonicFingerprint: fingerprint,
       sourceFingerprint: fingerprint,
       network: network,
-      type: BBWalletType.coldcard,
+      type: BBWalletType.words,
       scriptType: ScriptType.bip84,
     );
 
