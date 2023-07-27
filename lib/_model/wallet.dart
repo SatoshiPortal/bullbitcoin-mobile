@@ -132,21 +132,43 @@ class Wallet with _$Wallet {
         if (hasPassphrase())
           str += '\n(Passphase Protected)';
         else
-          str += '\n(No passphase)';
+          str += '\n(No Passphase)';
 
       case BBWalletType.xpub:
         str = 'Imported Xpub';
       case BBWalletType.words:
-        str = 'Recovered Wallet';
+        str = 'Imported Mnemonics';
         if (hasPassphrase())
           str += '\n(Passphase Protected)';
         else
-          str += '\n(No passphase)';
+          str += '\n(No Passphase)';
       case BBWalletType.coldcard:
         str = 'Imported Coldcard';
 
       case BBWalletType.descriptors:
         str = 'Imported Descriptors';
+    }
+
+    // final name = walletNameStr(walletType);
+    // str += '\n$name';
+
+    return str;
+  }
+
+  String defaultNameString() {
+    String str = '';
+
+    switch (type) {
+      case BBWalletType.newSeed:
+        str = 'Bull Wallet';
+      case BBWalletType.xpub:
+        str = 'Xpub';
+      case BBWalletType.words:
+        str = 'Imported Mnemonic';
+      case BBWalletType.coldcard:
+        str = 'Coldcard';
+      case BBWalletType.descriptors:
+        str = 'Imported Descriptor';
     }
 
     // final name = walletNameStr(walletType);

@@ -192,7 +192,7 @@ class WalletCreate {
 
     final wallet44HashId =
         createDescriptorHashId(await bdkDescriptor44External.asString()).substring(0, 12);
-    final wallet44 = Wallet(
+    var wallet44 = Wallet(
       descHashId: wallet44HashId,
       externalPublicDescriptor: await bdkDescriptor44External.asString(),
       internalPublicDescriptor: await bdkDescriptor44Internal.asString(),
@@ -202,9 +202,11 @@ class WalletCreate {
       type: BBWalletType.words,
       scriptType: ScriptType.bip44,
     );
+    wallet44 = wallet44.copyWith(name: wallet44.defaultNameString());
+
     final wallet49HashId =
         createDescriptorHashId(await bdkDescriptor49External.asString()).substring(0, 12);
-    final wallet49 = Wallet(
+    var wallet49 = Wallet(
       descHashId: wallet49HashId,
       externalPublicDescriptor: await bdkDescriptor49External.asString(),
       internalPublicDescriptor: await bdkDescriptor49Internal.asString(),
@@ -214,9 +216,11 @@ class WalletCreate {
       type: BBWalletType.words,
       scriptType: ScriptType.bip49,
     );
+    wallet49 = wallet49.copyWith(name: wallet49.defaultNameString());
+
     final wallet84HashId =
         createDescriptorHashId(await bdkDescriptor84External.asString()).substring(0, 12);
-    final wallet84 = Wallet(
+    var wallet84 = Wallet(
       descHashId: wallet84HashId,
       externalPublicDescriptor: await bdkDescriptor84External.asString(),
       internalPublicDescriptor: await bdkDescriptor84Internal.asString(),
@@ -226,6 +230,7 @@ class WalletCreate {
       type: BBWalletType.words,
       scriptType: ScriptType.bip84,
     );
+    wallet84 = wallet84.copyWith(name: wallet84.defaultNameString());
 
     return ([wallet44, wallet49, wallet84], null);
   }
@@ -301,7 +306,7 @@ class WalletCreate {
     }
 
     final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
-    final wallet = Wallet(
+    var wallet = Wallet(
       descHashId: descHashId,
       externalPublicDescriptor: await external.asString(),
       internalPublicDescriptor: await internal.asString(),
@@ -311,6 +316,7 @@ class WalletCreate {
       type: isImported ? BBWalletType.words : BBWalletType.newSeed,
       scriptType: scriptType,
     );
+    wallet = wallet.copyWith(name: wallet.defaultNameString());
 
     return (wallet, null);
   }
@@ -379,7 +385,7 @@ class WalletCreate {
 
     final wallet44HashId =
         createDescriptorHashId(await bdkDescriptor44External.asString()).substring(0, 12);
-    final wallet44 = Wallet(
+    var wallet44 = Wallet(
       descHashId: wallet44HashId,
       externalPublicDescriptor: await bdkDescriptor44External.asString(),
       internalPublicDescriptor: await bdkDescriptor44Internal.asString(),
@@ -389,10 +395,11 @@ class WalletCreate {
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip44,
     );
+    wallet44 = wallet44.copyWith(name: wallet44.defaultNameString());
 
     final wallet49HashId =
         createDescriptorHashId(await bdkDescriptor49External.asString()).substring(0, 12);
-    final wallet49 = Wallet(
+    var wallet49 = Wallet(
       descHashId: wallet49HashId,
       externalPublicDescriptor: await bdkDescriptor49External.asString(),
       internalPublicDescriptor: await bdkDescriptor49Internal.asString(),
@@ -402,10 +409,11 @@ class WalletCreate {
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip49,
     );
+    wallet49 = wallet49.copyWith(name: wallet49.defaultNameString());
 
     final wallet84HashId =
         createDescriptorHashId(await bdkDescriptor84External.asString()).substring(0, 12);
-    final wallet84 = Wallet(
+    var wallet84 = Wallet(
       descHashId: wallet84HashId,
       externalPublicDescriptor: await bdkDescriptor84External.asString(),
       internalPublicDescriptor: await bdkDescriptor84Internal.asString(),
@@ -415,6 +423,7 @@ class WalletCreate {
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip84,
     );
+    wallet84 = wallet84.copyWith(name: wallet84.defaultNameString());
 
     return ([wallet44, wallet49, wallet84], null);
   }
@@ -475,7 +484,7 @@ class WalletCreate {
       }
 
       final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
-      final wallet = Wallet(
+      var wallet = Wallet(
         descHashId: descHashId,
         externalPublicDescriptor: await external.asString(),
         internalPublicDescriptor: await internal.asString(),
@@ -485,6 +494,7 @@ class WalletCreate {
         type: BBWalletType.xpub,
         scriptType: scriptType,
       );
+      wallet = wallet.copyWith(name: wallet.defaultNameString());
 
       return (wallet, null);
     } catch (e) {

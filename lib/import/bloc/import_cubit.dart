@@ -358,6 +358,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           if (wErrs != null) {
             emit(state.copyWith(errImporting: 'Error creating Wallets from ColdCard'));
           }
+          // loadBdkPublicWallet and check if first address matches coldcard - sync not required
           wallets.addAll(cws!);
 
         default:
