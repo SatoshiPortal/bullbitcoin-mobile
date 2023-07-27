@@ -548,7 +548,7 @@ class HomeCard extends StatelessWidget {
 
     final name = context.select((WalletBloc x) => x.state.wallet?.name);
     final fingerprint = context.select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
-    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeShortStr());
+    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeShortString());
 
     final sats = context.select((WalletBloc x) => x.state.balanceSats());
 

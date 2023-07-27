@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/bip329_label.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -25,13 +26,14 @@ class Wallet with _$Wallet {
     required BBNetwork network,
     required BBWalletType type,
     required ScriptType scriptType,
-    // String? address,
     String? name,
     String? path,
     int? balance,
     List<Address>? addresses,
     List<Address>? toAddresses,
     List<Transaction>? transactions,
+    List<String>? labelTags,
+    List<Bip329Label>? bip392Labels,
     @Default(false) bool backupTested,
     @Default(false) bool hide,
   }) = _Wallet;
@@ -40,6 +42,26 @@ class Wallet with _$Wallet {
   factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
   bool hasPassphrase() {
     return mnemonicFingerprint != sourceFingerprint;
+  }
+
+  String purposePathString() {
+    return scriptType == ScriptType.bip84
+        ? '84h'
+        : scriptType == ScriptType.bip49
+            ? '49h'
+            : '44h';
+  }
+
+  String networkPathString() {
+    return network == BBNetwork.Mainnet ? '0h' : '1h';
+  }
+
+  String accountPathString() {
+    return externalPublicDescriptor.split('[')[1].split(']')[0].split('/')[3];
+  }
+
+  String originString() {
+    return '[$sourceFingerprint/$purposePathString()/$networkPathString()/$accountPathString()]';
   }
 
   // storage key
@@ -76,10 +98,6 @@ class Wallet with _$Wallet {
       return addresses?.where((addr) => addr.hasSpentAndNoBalance()).toList() ?? [];
   }
 
-  List<String> mne() {
-    return mnemonic.split(' ');
-  }
-
   String getAddressFromTxid(String txid) {
     for (final address in addresses ?? <Address>[])
       for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
@@ -105,14 +123,13 @@ class Wallet with _$Wallet {
     return null;
   }
 
-  String getWalletTypeStr() {
+  String getWalletTypeString() {
     String str = '';
 
-    final hasPassword = password != null && password!.isNotEmpty;
     switch (type) {
       case BBWalletType.newSeed:
         str = 'Bull Bitcoin Wallet';
-        if (hasPassword)
+        if (hasPassphrase())
           str += '\n(Passphase Protected)';
         else
           str += '\n(No passphase)';
@@ -121,7 +138,7 @@ class Wallet with _$Wallet {
         str = 'Imported Xpub';
       case BBWalletType.words:
         str = 'Recovered Wallet';
-        if (hasPassword)
+        if (hasPassphrase())
           str += '\n(Passphase Protected)';
         else
           str += '\n(No passphase)';
@@ -138,7 +155,7 @@ class Wallet with _$Wallet {
     return str;
   }
 
-  String getWalletTypeShortStr() {
+  String getWalletTypeShortString() {
     switch (type) {
       case BBWalletType.newSeed:
       case BBWalletType.words:
@@ -212,9 +229,9 @@ class Balance with _$Balance {
   }) = _Balance;
 }
 
-String walletNameStr(ScriptType purpose) {
+String scriptTypeString(ScriptType scriptType) {
   var name = '';
-  switch (purpose) {
+  switch (scriptType) {
     case ScriptType.bip84:
       name = 'Segwit';
     case ScriptType.bip49:
@@ -226,7 +243,7 @@ String walletNameStr(ScriptType purpose) {
 }
 
 extension W on ScriptType {
-  String walletNumber() {
+  String pathsString() {
     switch (this) {
       case ScriptType.bip84:
         return '84';

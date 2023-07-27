@@ -157,7 +157,7 @@ class ImportState with _$ImportState {
     }
   }
 
-  String walletName(ScriptType scriptType) => walletNameStr(scriptType);
+  String walletName(ScriptType scriptType) => scriptTypeString(scriptType);
 
   bool isSelected(ScriptType scriptType) {
     final scriptType = this.scriptType;

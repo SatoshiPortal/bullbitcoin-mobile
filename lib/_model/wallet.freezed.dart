@@ -23,21 +23,20 @@ mixin _$Wallet {
   String get descHashId => throw _privateConstructorUsedError;
   String get externalPublicDescriptor => throw _privateConstructorUsedError;
   String get internalPublicDescriptor => throw _privateConstructorUsedError;
-  String get mnemonic => throw _privateConstructorUsedError;
-  String? get password => throw _privateConstructorUsedError;
   String? get xpub => throw _privateConstructorUsedError;
   String get mnemonicFingerprint => throw _privateConstructorUsedError;
   String get sourceFingerprint => throw _privateConstructorUsedError;
   BBNetwork get network => throw _privateConstructorUsedError;
   BBWalletType get type => throw _privateConstructorUsedError;
-  ScriptType get scriptType =>
-      throw _privateConstructorUsedError; // String? address,
+  ScriptType get scriptType => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
   String? get path => throw _privateConstructorUsedError;
   int? get balance => throw _privateConstructorUsedError;
   List<Address>? get addresses => throw _privateConstructorUsedError;
   List<Address>? get toAddresses => throw _privateConstructorUsedError;
   List<Transaction>? get transactions => throw _privateConstructorUsedError;
+  List<String>? get labelTags => throw _privateConstructorUsedError;
+  List<Bip329Label>? get bip392Labels => throw _privateConstructorUsedError;
   bool get backupTested => throw _privateConstructorUsedError;
   bool get hide => throw _privateConstructorUsedError;
 
@@ -55,8 +54,6 @@ abstract class $WalletCopyWith<$Res> {
       {String descHashId,
       String externalPublicDescriptor,
       String internalPublicDescriptor,
-      String mnemonic,
-      String? password,
       String? xpub,
       String mnemonicFingerprint,
       String sourceFingerprint,
@@ -69,6 +66,8 @@ abstract class $WalletCopyWith<$Res> {
       List<Address>? addresses,
       List<Address>? toAddresses,
       List<Transaction>? transactions,
+      List<String>? labelTags,
+      List<Bip329Label>? bip392Labels,
       bool backupTested,
       bool hide});
 }
@@ -89,8 +88,6 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? descHashId = null,
     Object? externalPublicDescriptor = null,
     Object? internalPublicDescriptor = null,
-    Object? mnemonic = null,
-    Object? password = freezed,
     Object? xpub = freezed,
     Object? mnemonicFingerprint = null,
     Object? sourceFingerprint = null,
@@ -103,6 +100,8 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? addresses = freezed,
     Object? toAddresses = freezed,
     Object? transactions = freezed,
+    Object? labelTags = freezed,
+    Object? bip392Labels = freezed,
     Object? backupTested = null,
     Object? hide = null,
   }) {
@@ -119,14 +118,6 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.internalPublicDescriptor
           : internalPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String,
-      mnemonic: null == mnemonic
-          ? _value.mnemonic
-          : mnemonic // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: freezed == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String?,
       xpub: freezed == xpub
           ? _value.xpub
           : xpub // ignore: cast_nullable_to_non_nullable
@@ -175,6 +166,14 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.transactions
           : transactions // ignore: cast_nullable_to_non_nullable
               as List<Transaction>?,
+      labelTags: freezed == labelTags
+          ? _value.labelTags
+          : labelTags // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
+      bip392Labels: freezed == bip392Labels
+          ? _value.bip392Labels
+          : bip392Labels // ignore: cast_nullable_to_non_nullable
+              as List<Bip329Label>?,
       backupTested: null == backupTested
           ? _value.backupTested
           : backupTested // ignore: cast_nullable_to_non_nullable
@@ -197,8 +196,6 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       {String descHashId,
       String externalPublicDescriptor,
       String internalPublicDescriptor,
-      String mnemonic,
-      String? password,
       String? xpub,
       String mnemonicFingerprint,
       String sourceFingerprint,
@@ -211,6 +208,8 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       List<Address>? addresses,
       List<Address>? toAddresses,
       List<Transaction>? transactions,
+      List<String>? labelTags,
+      List<Bip329Label>? bip392Labels,
       bool backupTested,
       bool hide});
 }
@@ -228,8 +227,6 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? descHashId = null,
     Object? externalPublicDescriptor = null,
     Object? internalPublicDescriptor = null,
-    Object? mnemonic = null,
-    Object? password = freezed,
     Object? xpub = freezed,
     Object? mnemonicFingerprint = null,
     Object? sourceFingerprint = null,
@@ -242,6 +239,8 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? addresses = freezed,
     Object? toAddresses = freezed,
     Object? transactions = freezed,
+    Object? labelTags = freezed,
+    Object? bip392Labels = freezed,
     Object? backupTested = null,
     Object? hide = null,
   }) {
@@ -258,14 +257,6 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value.internalPublicDescriptor
           : internalPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String,
-      mnemonic: null == mnemonic
-          ? _value.mnemonic
-          : mnemonic // ignore: cast_nullable_to_non_nullable
-              as String,
-      password: freezed == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
-              as String?,
       xpub: freezed == xpub
           ? _value.xpub
           : xpub // ignore: cast_nullable_to_non_nullable
@@ -314,6 +305,14 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value._transactions
           : transactions // ignore: cast_nullable_to_non_nullable
               as List<Transaction>?,
+      labelTags: freezed == labelTags
+          ? _value._labelTags
+          : labelTags // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
+      bip392Labels: freezed == bip392Labels
+          ? _value._bip392Labels
+          : bip392Labels // ignore: cast_nullable_to_non_nullable
+              as List<Bip329Label>?,
       backupTested: null == backupTested
           ? _value.backupTested
           : backupTested // ignore: cast_nullable_to_non_nullable
@@ -333,8 +332,6 @@ class _$_Wallet extends _Wallet {
       {this.descHashId = '',
       this.externalPublicDescriptor = '',
       this.internalPublicDescriptor = '',
-      this.mnemonic = '',
-      this.password,
       this.xpub,
       this.mnemonicFingerprint = '',
       this.sourceFingerprint = '',
@@ -347,11 +344,15 @@ class _$_Wallet extends _Wallet {
       final List<Address>? addresses,
       final List<Address>? toAddresses,
       final List<Transaction>? transactions,
+      final List<String>? labelTags,
+      final List<Bip329Label>? bip392Labels,
       this.backupTested = false,
       this.hide = false})
       : _addresses = addresses,
         _toAddresses = toAddresses,
         _transactions = transactions,
+        _labelTags = labelTags,
+        _bip392Labels = bip392Labels,
         super._();
 
   factory _$_Wallet.fromJson(Map<String, dynamic> json) =>
@@ -367,11 +368,6 @@ class _$_Wallet extends _Wallet {
   @JsonKey()
   final String internalPublicDescriptor;
   @override
-  @JsonKey()
-  final String mnemonic;
-  @override
-  final String? password;
-  @override
   final String? xpub;
   @override
   @JsonKey()
@@ -385,7 +381,6 @@ class _$_Wallet extends _Wallet {
   final BBWalletType type;
   @override
   final ScriptType scriptType;
-// String? address,
   @override
   final String? name;
   @override
@@ -422,6 +417,26 @@ class _$_Wallet extends _Wallet {
     return EqualUnmodifiableListView(value);
   }
 
+  final List<String>? _labelTags;
+  @override
+  List<String>? get labelTags {
+    final value = _labelTags;
+    if (value == null) return null;
+    if (_labelTags is EqualUnmodifiableListView) return _labelTags;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  final List<Bip329Label>? _bip392Labels;
+  @override
+  List<Bip329Label>? get bip392Labels {
+    final value = _bip392Labels;
+    if (value == null) return null;
+    if (_bip392Labels is EqualUnmodifiableListView) return _bip392Labels;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   @override
   @JsonKey()
   final bool backupTested;
@@ -431,7 +446,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(descHashId: $descHashId, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonic: $mnemonic, password: $password, xpub: $xpub, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, backupTested: $backupTested, hide: $hide)';
+    return 'Wallet(descHashId: $descHashId, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, xpub: $xpub, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, labelTags: $labelTags, bip392Labels: $bip392Labels, backupTested: $backupTested, hide: $hide)';
   }
 
   @override
@@ -447,10 +462,6 @@ class _$_Wallet extends _Wallet {
             (identical(
                     other.internalPublicDescriptor, internalPublicDescriptor) ||
                 other.internalPublicDescriptor == internalPublicDescriptor) &&
-            (identical(other.mnemonic, mnemonic) ||
-                other.mnemonic == mnemonic) &&
-            (identical(other.password, password) ||
-                other.password == password) &&
             (identical(other.xpub, xpub) || other.xpub == xpub) &&
             (identical(other.mnemonicFingerprint, mnemonicFingerprint) ||
                 other.mnemonicFingerprint == mnemonicFingerprint) &&
@@ -469,6 +480,10 @@ class _$_Wallet extends _Wallet {
                 .equals(other._toAddresses, _toAddresses) &&
             const DeepCollectionEquality()
                 .equals(other._transactions, _transactions) &&
+            const DeepCollectionEquality()
+                .equals(other._labelTags, _labelTags) &&
+            const DeepCollectionEquality()
+                .equals(other._bip392Labels, _bip392Labels) &&
             (identical(other.backupTested, backupTested) ||
                 other.backupTested == backupTested) &&
             (identical(other.hide, hide) || other.hide == hide));
@@ -481,8 +496,6 @@ class _$_Wallet extends _Wallet {
         descHashId,
         externalPublicDescriptor,
         internalPublicDescriptor,
-        mnemonic,
-        password,
         xpub,
         mnemonicFingerprint,
         sourceFingerprint,
@@ -495,6 +508,8 @@ class _$_Wallet extends _Wallet {
         const DeepCollectionEquality().hash(_addresses),
         const DeepCollectionEquality().hash(_toAddresses),
         const DeepCollectionEquality().hash(_transactions),
+        const DeepCollectionEquality().hash(_labelTags),
+        const DeepCollectionEquality().hash(_bip392Labels),
         backupTested,
         hide
       ]);
@@ -518,8 +533,6 @@ abstract class _Wallet extends Wallet {
       {final String descHashId,
       final String externalPublicDescriptor,
       final String internalPublicDescriptor,
-      final String mnemonic,
-      final String? password,
       final String? xpub,
       final String mnemonicFingerprint,
       final String sourceFingerprint,
@@ -532,6 +545,8 @@ abstract class _Wallet extends Wallet {
       final List<Address>? addresses,
       final List<Address>? toAddresses,
       final List<Transaction>? transactions,
+      final List<String>? labelTags,
+      final List<Bip329Label>? bip392Labels,
       final bool backupTested,
       final bool hide}) = _$_Wallet;
   const _Wallet._() : super._();
@@ -545,10 +560,6 @@ abstract class _Wallet extends Wallet {
   @override
   String get internalPublicDescriptor;
   @override
-  String get mnemonic;
-  @override
-  String? get password;
-  @override
   String? get xpub;
   @override
   String get mnemonicFingerprint;
@@ -560,7 +571,7 @@ abstract class _Wallet extends Wallet {
   BBWalletType get type;
   @override
   ScriptType get scriptType;
-  @override // String? address,
+  @override
   String? get name;
   @override
   String? get path;
@@ -572,6 +583,10 @@ abstract class _Wallet extends Wallet {
   List<Address>? get toAddresses;
   @override
   List<Transaction>? get transactions;
+  @override
+  List<String>? get labelTags;
+  @override
+  List<Bip329Label>? get bip392Labels;
   @override
   bool get backupTested;
   @override

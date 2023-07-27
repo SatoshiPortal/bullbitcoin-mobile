@@ -384,7 +384,7 @@ class _$_WalletSettingsState extends _WalletSettingsState {
   const _$_WalletSettingsState(
       {required this.wallet,
       this.name = '',
-      required final List<String> mnemonic,
+      final List<String> mnemonic = const [],
       this.password = '',
       final List<String> shuffledMnemonic = const [],
       final List<({int shuffleIdx, String word})> testMnemonicOrder = const [],
@@ -416,6 +416,7 @@ class _$_WalletSettingsState extends _WalletSettingsState {
   final String name;
   final List<String> _mnemonic;
   @override
+  @JsonKey()
   List<String> get mnemonic {
     if (_mnemonic is EqualUnmodifiableListView) return _mnemonic;
     // ignore: implicit_dynamic_type
@@ -584,7 +585,7 @@ abstract class _WalletSettingsState extends WalletSettingsState {
   const factory _WalletSettingsState(
       {required final Wallet wallet,
       final String name,
-      required final List<String> mnemonic,
+      final List<String> mnemonic,
       final String password,
       final List<String> shuffledMnemonic,
       final List<({int shuffleIdx, String word})> testMnemonicOrder,

@@ -12,8 +12,6 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
           json['externalPublicDescriptor'] as String? ?? '',
       internalPublicDescriptor:
           json['internalPublicDescriptor'] as String? ?? '',
-      mnemonic: json['mnemonic'] as String? ?? '',
-      password: json['password'] as String?,
       xpub: json['xpub'] as String?,
       mnemonicFingerprint: json['mnemonicFingerprint'] as String? ?? '',
       sourceFingerprint: json['sourceFingerprint'] as String? ?? '',
@@ -32,6 +30,12 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
       transactions: (json['transactions'] as List<dynamic>?)
           ?.map((e) => Transaction.fromJson(e as Map<String, dynamic>))
           .toList(),
+      labelTags: (json['labelTags'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      bip392Labels: (json['bip392Labels'] as List<dynamic>?)
+          ?.map((e) => Bip329Label.fromJson(e as Map<String, dynamic>))
+          .toList(),
       backupTested: json['backupTested'] as bool? ?? false,
       hide: json['hide'] as bool? ?? false,
     );
@@ -40,8 +44,6 @@ Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
       'descHashId': instance.descHashId,
       'externalPublicDescriptor': instance.externalPublicDescriptor,
       'internalPublicDescriptor': instance.internalPublicDescriptor,
-      'mnemonic': instance.mnemonic,
-      'password': instance.password,
       'xpub': instance.xpub,
       'mnemonicFingerprint': instance.mnemonicFingerprint,
       'sourceFingerprint': instance.sourceFingerprint,
@@ -54,6 +56,8 @@ Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
       'addresses': instance.addresses,
       'toAddresses': instance.toAddresses,
       'transactions': instance.transactions,
+      'labelTags': instance.labelTags,
+      'bip392Labels': instance.bip392Labels,
       'backupTested': instance.backupTested,
       'hide': instance.hide,
     };

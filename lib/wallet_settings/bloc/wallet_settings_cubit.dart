@@ -25,10 +25,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   }) : super(
           WalletSettingsState(
             wallet: wallet,
-            mnemonic: [
-              // ...mn1,
-              // for (var i = 0; i < 12; i++) '',
-            ],
           ),
         );
 
@@ -88,24 +84,23 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   // }
 
   void loadBackupClicked() async {
-    final (w, err) = await walletRepository.readWallet(
-      walletHashId: state.wallet.getWalletStorageString(),
-      hiveStore: hiveStorage,
+    final (seed, err) = await walletRepository.readSeed(
+      fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
+      secureStore: secureStorage,
     );
-
     if (err != null) {
       emit(state.copyWith(errTestingBackup: err.toString()));
       return;
     }
 
-    final words = w!.mnemonic.split(' ');
+    final words = seed!.mnemonic.split(' ');
     final shuffled = words.toList()..shuffle();
 
     emit(
       state.copyWith(
         testMnemonicOrder: [],
         mnemonic: words,
-        password: w.password ?? '',
+        password: seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase,
         shuffledMnemonic: shuffled,
       ),
     );
@@ -196,9 +191,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
     final words = state.testMneString();
     final password = state.testBackupPassword;
-    final (w, err) = await walletRepository.readWallet(
-      walletHashId: state.wallet.getWalletStorageString(),
-      hiveStore: hiveStorage,
+    final (seed, err) = await walletRepository.readSeed(
+      fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
+      secureStore: secureStorage,
     );
 
     if (err != null) {
@@ -211,8 +206,8 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    final mne = w!.mnemonic == words;
-    final psd = (w.password ?? '') == password;
+    final mne = seed!.mnemonic == words;
+    final psd = seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase == password;
     if (!mne) {
       {
         emit(
@@ -273,9 +268,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
   void backupToSD() async {
     emit(state.copyWith(savingFile: true, errSavingFile: ''));
-    final (w, err) = await walletRepository.readWallet(
-      walletHashId: state.wallet.getWalletStorageString(),
-      hiveStore: hiveStorage,
+    final (seed, err) = await walletRepository.readSeed(
+      fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
+      secureStore: secureStorage,
     );
 
     if (err != null) {
@@ -283,9 +278,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    final wallet = w!;
+    final wallet = seed!;
 
-    final fingerprint = wallet.descHashId;
+    final fingerprint = seed.mnemonicFingerprint;
     final folder = wallet.network == BBNetwork.Mainnet ? 'bitcoin' : 'testnet';
 
     final (appDocDir, errDir) = await fileStorage.getDownloadDirectory();

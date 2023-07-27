@@ -8,7 +8,7 @@ class WalletSettingsState with _$WalletSettingsState {
   const factory WalletSettingsState({
     required Wallet wallet,
     @Default('') String name,
-    required List<String> mnemonic,
+    @Default([]) List<String> mnemonic,
     @Default('') String password,
     @Default([]) List<String> shuffledMnemonic,
     @Default([]) List<({String word, int shuffleIdx})> testMnemonicOrder,

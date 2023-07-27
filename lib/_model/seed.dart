@@ -27,6 +27,13 @@ class Seed with _$Seed {
   List<String> mnemonicList() {
     return mnemonic.split(' ');
   }
+
+  Passphrase getPassphraseFromIndex(String sourceFingerprint) {
+    return passphrases.firstWhere(
+      (element) => element.sourceFingerprint == sourceFingerprint,
+      orElse: () => Passphrase(sourceFingerprint: mnemonicFingerprint),
+    );
+  }
 }
 
 @freezed

@@ -195,7 +195,7 @@ class TestBackupPassField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasPassphrase = context.select((WalletBloc x) => x.state.wallet!.password != null);
+    final hasPassphrase = context.select((WalletBloc x) => x.state.wallet!.hasPassphrase());
 
     if (!hasPassphrase) return const SizedBox.shrink();
 
@@ -284,6 +284,7 @@ class BackupScreen extends StatelessWidget {
   ) {
     final wallet = context.read<WalletBloc>();
     final walletSettings = context.read<WalletSettingsCubit>();
+    walletSettings.loadBackupClicked();
 
     return showMaterialModalBottomSheet(
       context: context,
@@ -305,11 +306,11 @@ class BackupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mnemonic = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.wallet.mnemonic,
+      (WalletSettingsCubit cubit) => cubit.state.mnemonic,
     );
 
     final password = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.wallet.password,
+      (WalletSettingsCubit cubit) => cubit.state.password,
     );
 
     return SingleChildScrollView(
@@ -332,8 +333,8 @@ class BackupScreen extends StatelessWidget {
               ),
             ),
             const Gap(8),
-            WordGrid(mne: mnemonic.split(' ')),
-            if (password != null && password.isNotEmpty) ...[
+            WordGrid(mne: mnemonic),
+            if (password.isNotEmpty) ...[
               const Gap(24),
               const Padding(
                 padding: EdgeInsets.all(16.0),
