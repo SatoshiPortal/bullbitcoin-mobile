@@ -19,8 +19,6 @@ class Wallet with _$Wallet {
     @Default('') String descHashId,
     @Default('') String externalPublicDescriptor,
     @Default('') String internalPublicDescriptor,
-    @Default('') String mnemonic,
-    String? password,
     String? xpub,
     @Default('') String mnemonicFingerprint,
     @Default('') String sourceFingerprint,
@@ -201,25 +199,6 @@ class Wallet with _$Wallet {
     return false;
   }
 }
-
-// @freezed
-// class WalletDetails with _$WalletDetails {
-//   const factory WalletDetails({
-//     // required String name,
-//     required String firstAddress,
-//     required String fingerPrint,
-//     String? expandedPubKey,
-//     required String derivationPath,
-//     required WalletType type,
-//   }) = _WalletDetails;
-
-//   const WalletDetails._();
-
-//   String cleanFingerprint() {
-//     if (fingerPrint.startsWith('tn')) return fingerPrint.replaceFirst('tn::', '');
-//     return fingerPrint;
-//   }
-// }
 
 @freezed
 class Balance with _$Balance {

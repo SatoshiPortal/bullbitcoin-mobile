@@ -134,23 +134,24 @@ class WalletCreate {
       mnemonic: bdkMnemonic,
       password: passphrase,
     );
-    final fingerprint = fingerPrintFromXKeyDesc(rootXprv.toString());
     final networkPath = network == BBNetwork.Mainnet ? '0h' : '1h';
     const accountPath = '0h';
 
     final bdkXpriv44 = await rootXprv.derive(
-      bdk.DerivationPath.create(path: 'm/44h/$networkPath/$accountPath') as bdk.DerivationPath,
+      await bdk.DerivationPath.create(path: 'm/44h/$networkPath/$accountPath'),
     );
     final bdkXpriv49 = await rootXprv.derive(
-      bdk.DerivationPath.create(path: 'm/49h/$networkPath/$accountPath') as bdk.DerivationPath,
+      await bdk.DerivationPath.create(path: 'm/49h/$networkPath/$accountPath'),
     );
     final bdkXpriv84 = await rootXprv.derive(
-      bdk.DerivationPath.create(path: 'm/84h/$networkPath/$accountPath') as bdk.DerivationPath,
+      await bdk.DerivationPath.create(path: 'm/84h/$networkPath/$accountPath'),
     );
 
     final bdkXpub44 = await bdkXpriv44.asPublic();
     final bdkXpub49 = await bdkXpriv49.asPublic();
     final bdkXpub84 = await bdkXpriv84.asPublic();
+
+    final fingerprint = fingerPrintFromXKeyDesc(bdkXpub84.toString());
 
     final bdkDescriptor44External = await bdk.Descriptor.newBip44Public(
       publicKey: bdkXpub44,
