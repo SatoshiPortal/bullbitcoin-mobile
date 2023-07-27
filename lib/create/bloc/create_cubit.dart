@@ -71,7 +71,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (sErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
     }
-    final (wallet, wErr) = await walletCreate.passphraseWalletFromSeed(
+    final (wallet, wErr) = await walletCreate.oneFromBIP39(
       seed!,
       state.passPhase,
       ScriptType.bip84,
@@ -111,7 +111,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (sErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
     }
-    var (wallet, wErr) = await walletCreate.passphraseWalletFromSeed(
+    var (wallet, wErr) = await walletCreate.oneFromBIP39(
       seed!,
       '',
       ScriptType.bip84,

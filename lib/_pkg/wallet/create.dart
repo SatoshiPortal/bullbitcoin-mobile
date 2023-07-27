@@ -122,7 +122,7 @@ class WalletCreate {
     }
   }
 
-  Future<(List<Wallet>?, Err?)> walletsFromBIP39(
+  Future<(List<Wallet>?, Err?)> allFromBIP39(
     String mnemonic,
     String passphrase,
     BBNetwork network,
@@ -229,7 +229,7 @@ class WalletCreate {
     return ([wallet44, wallet49, wallet84], null);
   }
 
-  Future<(Wallet?, Err?)> passphraseWalletFromSeed(
+  Future<(Wallet?, Err?)> oneFromBIP39(
     Seed seed,
     String passphrase,
     ScriptType scriptType,
@@ -314,7 +314,7 @@ class WalletCreate {
     return (wallet, null);
   }
 
-  Future<(List<Wallet>?, Err?)> walletsFromColdCard(
+  Future<(List<Wallet>?, Err?)> allFromColdCard(
     ColdCard coldCard,
     BBNetwork network,
   ) async {
@@ -418,22 +418,24 @@ class WalletCreate {
     return ([wallet44, wallet49, wallet84], null);
   }
 
-  Future<(Wallet?, Err?)> walletFromXpub(
-    String xpub,
+  Future<(Wallet?, Err?)> oneFromSlip132Pub(
+    String slip132Pub,
   ) async {
     try {
-      final network = (xpub.startsWith('t') || xpub.startsWith('u') || xpub.startsWith('v'))
-          ? BBNetwork.Testnet
-          : BBNetwork.Mainnet;
-      final bdkNetwork = (xpub.startsWith('t') || xpub.startsWith('u') || xpub.startsWith('v'))
-          ? bdk.Network.Testnet
-          : bdk.Network.Bitcoin;
-      final scriptType = xpub.startsWith('x') || xpub.startsWith('t')
+      final network =
+          (slip132Pub.startsWith('t') || slip132Pub.startsWith('u') || slip132Pub.startsWith('v'))
+              ? BBNetwork.Testnet
+              : BBNetwork.Mainnet;
+      final bdkNetwork =
+          (slip132Pub.startsWith('t') || slip132Pub.startsWith('u') || slip132Pub.startsWith('v'))
+              ? bdk.Network.Testnet
+              : bdk.Network.Bitcoin;
+      final scriptType = slip132Pub.startsWith('x') || slip132Pub.startsWith('t')
           ? ScriptType.bip44
-          : xpub.startsWith('y') || xpub.startsWith('u')
+          : slip132Pub.startsWith('y') || slip132Pub.startsWith('u')
               ? ScriptType.bip49
               : ScriptType.bip84;
-      final xPub = convertToXpubStr(xpub);
+      final xPub = convertToXpubStr(slip132Pub);
       final rootXpub = await bdk.DescriptorPublicKey.fromString(xPub);
       print(rootXpub);
       // check if this mnemonic exists in Seed

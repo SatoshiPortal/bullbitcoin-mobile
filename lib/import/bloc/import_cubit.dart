@@ -329,7 +329,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           final mnemonic = state.words.join(' ');
           final passphrase = state.password.isEmpty ? '' : state.password;
 
-          final (ws, wErrs) = await walletCreate.walletsFromBIP39(
+          final (ws, wErrs) = await walletCreate.allFromBIP39(
             mnemonic,
             passphrase,
             network,
@@ -340,7 +340,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           wallets.addAll(ws!);
 
         case ImportTypes.xpub:
-          final (wxpub, wErrs) = await walletCreate.walletFromXpub(
+          final (wxpub, wErrs) = await walletCreate.oneFromSlip132Pub(
             state.xpub,
           );
           if (wErrs != null) {
@@ -351,7 +351,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         case ImportTypes.coldcard:
           final coldcard = state.coldCard!;
 
-          final (cws, wErrs) = await walletCreate.walletsFromColdCard(
+          final (cws, wErrs) = await walletCreate.allFromColdCard(
             coldcard,
             network,
           );
