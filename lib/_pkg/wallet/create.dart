@@ -110,6 +110,7 @@ class WalletCreate {
     String mnemonic,
     String passphrase,
     BBNetwork network,
+    bool isImported,
   ) async {
     final bdkMnemonic = await bdk.Mnemonic.fromString(mnemonic);
     final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
@@ -200,6 +201,7 @@ class WalletCreate {
       network: network,
       type: BBWalletType.words,
       scriptType: ScriptType.bip44,
+      backupTested: isImported,
     );
     wallet44 = wallet44.copyWith(name: wallet44.defaultNameString());
 
@@ -228,6 +230,7 @@ class WalletCreate {
       network: network,
       type: BBWalletType.words,
       scriptType: ScriptType.bip84,
+      backupTested: isImported,
     );
     wallet84 = wallet84.copyWith(name: wallet84.defaultNameString());
 
@@ -314,6 +317,7 @@ class WalletCreate {
       network: network,
       type: isImported ? BBWalletType.words : BBWalletType.newSeed,
       scriptType: scriptType,
+      backupTested: isImported,
     );
     wallet = wallet.copyWith(name: wallet.defaultNameString());
 

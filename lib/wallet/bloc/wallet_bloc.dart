@@ -51,7 +51,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Wallet wallet;
 
     if (fromStorage) {
-      final (sensitiveWallet, err) = await walletRepository.readWallet(
+      final (walletFromStorage, err) = await walletRepository.readWallet(
         walletHashId: event.saveDir,
         hiveStore: hiveStorage,
       );
@@ -65,7 +65,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         return;
       }
 
-      wallet = sensitiveWallet!;
+      wallet = walletFromStorage!;
     } else
       wallet = state.wallet!;
 

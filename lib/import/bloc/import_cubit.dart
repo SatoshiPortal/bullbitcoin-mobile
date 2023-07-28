@@ -333,6 +333,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
             mnemonic,
             passphrase,
             network,
+            true,
           );
           if (wErrs != null) {
             emit(state.copyWith(errImporting: 'Error creating Wallets from Bip 39'));
@@ -444,14 +445,12 @@ class ImportWalletCubit extends Cubit<ImportState> {
           savingWallet: false,
         ),
       );
-      return;
-    }
-
-    emit(
-      state.copyWith(
-        savingWallet: false,
-        savedWallet: selectedWallet,
-      ),
-    );
+    } else
+      emit(
+        state.copyWith(
+          savingWallet: false,
+          savedWallet: selectedWallet,
+        ),
+      );
   }
 }

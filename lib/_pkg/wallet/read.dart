@@ -62,7 +62,9 @@ class WalletRead {
 
         if (updated.calculateBalance() > 0 &&
             updated.calculateBalance() > updated.highestPreviousBalance)
-          updated = updated.copyWith(highestPreviousBalance: updated.calculateBalance());
+          updated = updated.copyWith(
+            highestPreviousBalance: updated.calculateBalance(),
+          );
 
         if (updated.isReceive == null) updated = updated.copyWith(isReceive: updated.hasReceive());
 
@@ -124,6 +126,7 @@ class WalletRead {
 
           txObj = txObj.copyWith(
             toAddress: address?.address ?? '',
+            fromAddress: '',
           );
         } else {
           final fromAddress = wallet.getAddressFromTxid(txObj.txid);
