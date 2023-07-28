@@ -329,7 +329,7 @@ class SendCubit extends Cubit<SendState> {
       // sign
       final (seed, sErr) = await walletRepository.readSeed(
         fingerprintIndex: walletBloc.state.wallet!.getRelatedSeedStorageString(),
-        secureStore: SecureStorage(),
+        secureStore: secureStorage,
       );
 
       if (sErr != null) {

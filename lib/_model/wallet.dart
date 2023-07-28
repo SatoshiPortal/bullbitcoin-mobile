@@ -137,7 +137,7 @@ class Wallet with _$Wallet {
       case BBWalletType.xpub:
         str = 'Imported Xpub';
       case BBWalletType.words:
-        str = 'Imported Mnemonics';
+        str = 'Imported Mnemonic';
         if (hasPassphrase())
           str += '\n(Passphase Protected)';
         else
