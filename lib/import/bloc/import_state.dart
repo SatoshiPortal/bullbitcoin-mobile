@@ -159,10 +159,7 @@ class ImportState with _$ImportState {
 
   String walletName(ScriptType scriptType) => scriptTypeString(scriptType);
 
-  bool isSelected(ScriptType scriptType) {
-    final scriptType = this.scriptType;
-    return scriptType == scriptType;
-  }
+  bool isSelected(ScriptType type) => type == scriptType;
 }
 
 const emptyWords = [

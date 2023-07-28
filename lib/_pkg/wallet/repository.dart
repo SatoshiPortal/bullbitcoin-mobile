@@ -254,10 +254,10 @@ class WalletRepository {
 
   Future<Err?> deleteWallet({
     required String walletHashId,
-    required HiveStorage hiveStore,
+    required HiveStorage storage,
   }) async {
     try {
-      final (walletIds, err) = await hiveStore.getValue(StorageKeys.wallets);
+      final (walletIds, err) = await storage.getValue(StorageKeys.wallets);
       if (err != null) throw err;
 
       final walletIdsJson = jsonDecode(walletIds!)['wallets'] as List<dynamic>;
@@ -273,12 +273,12 @@ class WalletRepository {
         'wallets': [...walletHashIds]
       });
 
-      final _ = await hiveStore.saveValue(
+      final _ = await storage.saveValue(
         key: StorageKeys.wallets,
         value: jsn,
       );
 
-      await hiveStore.deleteValue(walletHashId);
+      await storage.deleteValue(walletHashId);
 
       return null;
     } catch (e) {
@@ -288,13 +288,13 @@ class WalletRepository {
 
   Future<Err?> deleteSeed({
     required String fingerprint,
-    required SecureStorage secureStore,
+    required SecureStorage storage,
   }) async {
     try {
-      final (fingerprintIdxs, err) = await secureStore.getValue(StorageKeys.seeds);
+      final (fingerprintIdxs, err) = await storage.getValue(StorageKeys.seeds);
       if (err != null) throw err;
 
-      final fingerprintsJson = jsonDecode(fingerprintIdxs!)['wallets'] as List<dynamic>;
+      final fingerprintsJson = jsonDecode(fingerprintIdxs!)['seeds'] as List<dynamic>;
 
       final List<String> fingerprints = [];
       for (final fingerprint in fingerprintsJson) {
@@ -307,12 +307,12 @@ class WalletRepository {
         'seeds': [...fingerprints]
       });
 
-      final _ = await secureStore.saveValue(
+      final _ = await storage.saveValue(
         key: StorageKeys.seeds,
         value: jsn,
       );
 
-      await secureStore.deleteValue(fingerprint);
+      await storage.deleteValue(fingerprint);
 
       return null;
     } catch (e) {

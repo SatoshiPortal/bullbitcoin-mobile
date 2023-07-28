@@ -320,7 +320,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
     final err = await walletRepository.deleteWallet(
       walletHashId: state.wallet.getWalletStorageString(),
-      hiveStore: hiveStorage,
+      storage: hiveStorage,
     );
 
     if (err != null) {
@@ -333,11 +333,10 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    final errr = await walletRepository.deleteWallet(
-      walletHashId: state.wallet.getWalletStorageString(),
-      hiveStore: hiveStorage,
+    final errr = await walletRepository.deleteSeed(
+      fingerprint: state.wallet.getRelatedSeedStorageString(),
+      storage: secureStorage,
     );
-
     if (errr != null) {
       emit(
         state.copyWith(

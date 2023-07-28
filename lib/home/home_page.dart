@@ -271,9 +271,8 @@ class _HomeHeaderCardsState extends State<HomeHeaderCards> {
         final moveToIdx = state.moveToIdx;
         if (moveToIdx == null) return;
         _carouselController.animateToPage(0);
-        context
-            .read<HomeCubit>()
-            .walletSelected(widget.walletCubits[widget.walletCubits.length - 1]);
+        final selected = widget.walletCubits[0];
+        context.read<HomeCubit>().walletSelected(selected);
       },
       child: CarouselSlider(
         carouselController: _carouselController,
