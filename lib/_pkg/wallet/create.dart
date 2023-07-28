@@ -193,7 +193,7 @@ class WalletCreate {
     final wallet44HashId =
         createDescriptorHashId(await bdkDescriptor44External.asString()).substring(0, 12);
     var wallet44 = Wallet(
-      descHashId: wallet44HashId,
+      id: wallet44HashId,
       externalPublicDescriptor: await bdkDescriptor44External.asString(),
       internalPublicDescriptor: await bdkDescriptor44Internal.asString(),
       mnemonicFingerprint: mnemonicFingerprint,
@@ -208,7 +208,7 @@ class WalletCreate {
     final wallet49HashId =
         createDescriptorHashId(await bdkDescriptor49External.asString()).substring(0, 12);
     var wallet49 = Wallet(
-      descHashId: wallet49HashId,
+      id: wallet49HashId,
       externalPublicDescriptor: await bdkDescriptor49External.asString(),
       internalPublicDescriptor: await bdkDescriptor49Internal.asString(),
       mnemonicFingerprint: sourceFingerprint,
@@ -222,7 +222,7 @@ class WalletCreate {
     final wallet84HashId =
         createDescriptorHashId(await bdkDescriptor84External.asString()).substring(0, 12);
     var wallet84 = Wallet(
-      descHashId: wallet84HashId,
+      id: wallet84HashId,
       externalPublicDescriptor: await bdkDescriptor84External.asString(),
       internalPublicDescriptor: await bdkDescriptor84Internal.asString(),
       mnemonicFingerprint: sourceFingerprint,
@@ -309,7 +309,7 @@ class WalletCreate {
 
     final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
     var wallet = Wallet(
-      descHashId: descHashId,
+      id: descHashId,
       externalPublicDescriptor: await external.asString(),
       internalPublicDescriptor: await internal.asString(),
       mnemonicFingerprint: seed.mnemonicFingerprint,
@@ -389,7 +389,7 @@ class WalletCreate {
     final wallet44HashId =
         createDescriptorHashId(await bdkDescriptor44External.asString()).substring(0, 12);
     var wallet44 = Wallet(
-      descHashId: wallet44HashId,
+      id: wallet44HashId,
       externalPublicDescriptor: await bdkDescriptor44External.asString(),
       internalPublicDescriptor: await bdkDescriptor44Internal.asString(),
       mnemonicFingerprint: fingerprint,
@@ -397,13 +397,14 @@ class WalletCreate {
       network: network,
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip44,
+      backupTested: true,
     );
     wallet44 = wallet44.copyWith(name: wallet44.defaultNameString());
 
     final wallet49HashId =
         createDescriptorHashId(await bdkDescriptor49External.asString()).substring(0, 12);
     var wallet49 = Wallet(
-      descHashId: wallet49HashId,
+      id: wallet49HashId,
       externalPublicDescriptor: await bdkDescriptor49External.asString(),
       internalPublicDescriptor: await bdkDescriptor49Internal.asString(),
       mnemonicFingerprint: fingerprint,
@@ -411,13 +412,14 @@ class WalletCreate {
       network: network,
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip49,
+      backupTested: true,
     );
     wallet49 = wallet49.copyWith(name: wallet49.defaultNameString());
 
     final wallet84HashId =
         createDescriptorHashId(await bdkDescriptor84External.asString()).substring(0, 12);
     var wallet84 = Wallet(
-      descHashId: wallet84HashId,
+      id: wallet84HashId,
       externalPublicDescriptor: await bdkDescriptor84External.asString(),
       internalPublicDescriptor: await bdkDescriptor84Internal.asString(),
       mnemonicFingerprint: fingerprint,
@@ -425,6 +427,7 @@ class WalletCreate {
       network: network,
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip84,
+      backupTested: true,
     );
     wallet84 = wallet84.copyWith(name: wallet84.defaultNameString());
 
@@ -488,7 +491,7 @@ class WalletCreate {
 
       final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
       var wallet = Wallet(
-        descHashId: descHashId,
+        id: descHashId,
         externalPublicDescriptor: await external.asString(),
         internalPublicDescriptor: await internal.asString(),
         mnemonicFingerprint: descHashId,
@@ -496,6 +499,7 @@ class WalletCreate {
         network: network,
         type: BBWalletType.xpub,
         scriptType: scriptType,
+        backupTested: true,
       );
       wallet = wallet.copyWith(name: wallet.defaultNameString());
 

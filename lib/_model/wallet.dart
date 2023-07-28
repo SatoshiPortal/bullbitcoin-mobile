@@ -17,10 +17,9 @@ enum ScriptType { bip84, bip49, bip44 }
 @freezed
 class Wallet with _$Wallet {
   const factory Wallet({
-    @Default('') String descHashId,
+    @Default('') String id,
     @Default('') String externalPublicDescriptor,
     @Default('') String internalPublicDescriptor,
-    String? xpub,
     @Default('') String mnemonicFingerprint,
     @Default('') String sourceFingerprint,
     required BBNetwork network,
@@ -70,7 +69,7 @@ class Wallet with _$Wallet {
   }
 
   String getWalletStorageString() {
-    return descHashId;
+    return id;
   }
 
   int totalReceived() {

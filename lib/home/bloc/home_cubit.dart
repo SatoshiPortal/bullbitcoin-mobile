@@ -63,7 +63,7 @@ class HomeCubit extends Cubit<HomeState> {
   void updateSelectedWallet(WalletBloc walletBloc) {
     final wallet = walletBloc.state.wallet!;
     final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-    final idx = wallets.indexWhere((w) => w.descHashId == wallet.descHashId);
+    final idx = wallets.indexWhere((w) => w.id == wallet.id);
     wallets[idx] = wallet;
 
     emit(

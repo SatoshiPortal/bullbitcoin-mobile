@@ -90,27 +90,27 @@ class ImportState with _$ImportState {
     }
   }
 
-  String xpubStr() {
-    final scriptType = this.scriptType;
-    final walletD = walletDetails;
+  // String xpubStr() {
+  //   final scriptType = this.scriptType;
+  //   final walletD = walletDetails;
 
-    switch (scriptType) {
-      case ScriptType.bip84:
-        return walletD?.where((e) => e.scriptType == ScriptType.bip84).first.xpub ?? '';
-      case ScriptType.bip49:
-        return walletD?.where((e) => e.scriptType == ScriptType.bip49).first.xpub ?? '';
-      case ScriptType.bip44:
-        return walletD?.where((e) => e.scriptType == ScriptType.bip44).first.xpub ?? '';
-    }
-    // switch (walletType) {
-    //   case WalletType.bip84:
-    //     return walletDetails?.where((e) => e.type == WalletType.bip84).first.expandedPubKey ?? '';
-    //   case WalletType.bip49:
-    //     return walletDetails?.where((e) => e.type == WalletType.bip49).first.expandedPubKey ?? '';
-    //   case WalletType.bip44:
-    //     return walletDetails?.where((e) => e.type == WalletType.bip44).first.expandedPubKey ?? '';
-    // }
-  }
+  //   switch (scriptType) {
+  //     case ScriptType.bip84:
+  //       return walletD?.where((e) => e.scriptType == ScriptType.bip84).first.xpub ?? '';
+  //     case ScriptType.bip49:
+  //       return walletD?.where((e) => e.scriptType == ScriptType.bip49).first.xpub ?? '';
+  //     case ScriptType.bip44:
+  //       return walletD?.where((e) => e.scriptType == ScriptType.bip44).first.xpub ?? '';
+  //   }
+  //   // switch (walletType) {
+  //   //   case WalletType.bip84:
+  //   //     return walletDetails?.where((e) => e.type == WalletType.bip84).first.expandedPubKey ?? '';
+  //   //   case WalletType.bip49:
+  //   //     return walletDetails?.where((e) => e.type == WalletType.bip49).first.expandedPubKey ?? '';
+  //   //   case WalletType.bip44:
+  //   //     return walletDetails?.where((e) => e.type == WalletType.bip44).first.expandedPubKey ?? '';
+  //   // }
+  // }
 
   Wallet? getWalletDetails(ScriptType scriptType) {
     final walletDetails = this.walletDetails;

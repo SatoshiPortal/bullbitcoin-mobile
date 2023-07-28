@@ -20,10 +20,9 @@ Wallet _$WalletFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Wallet {
-  String get descHashId => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError;
   String get externalPublicDescriptor => throw _privateConstructorUsedError;
   String get internalPublicDescriptor => throw _privateConstructorUsedError;
-  String? get xpub => throw _privateConstructorUsedError;
   String get mnemonicFingerprint => throw _privateConstructorUsedError;
   String get sourceFingerprint => throw _privateConstructorUsedError;
   BBNetwork get network => throw _privateConstructorUsedError;
@@ -51,10 +50,9 @@ abstract class $WalletCopyWith<$Res> {
       _$WalletCopyWithImpl<$Res, Wallet>;
   @useResult
   $Res call(
-      {String descHashId,
+      {String id,
       String externalPublicDescriptor,
       String internalPublicDescriptor,
-      String? xpub,
       String mnemonicFingerprint,
       String sourceFingerprint,
       BBNetwork network,
@@ -85,10 +83,9 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? descHashId = null,
+    Object? id = null,
     Object? externalPublicDescriptor = null,
     Object? internalPublicDescriptor = null,
-    Object? xpub = freezed,
     Object? mnemonicFingerprint = null,
     Object? sourceFingerprint = null,
     Object? network = null,
@@ -106,9 +103,9 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? hide = null,
   }) {
     return _then(_value.copyWith(
-      descHashId: null == descHashId
-          ? _value.descHashId
-          : descHashId // ignore: cast_nullable_to_non_nullable
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
               as String,
       externalPublicDescriptor: null == externalPublicDescriptor
           ? _value.externalPublicDescriptor
@@ -118,10 +115,6 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.internalPublicDescriptor
           : internalPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String,
-      xpub: freezed == xpub
-          ? _value.xpub
-          : xpub // ignore: cast_nullable_to_non_nullable
-              as String?,
       mnemonicFingerprint: null == mnemonicFingerprint
           ? _value.mnemonicFingerprint
           : mnemonicFingerprint // ignore: cast_nullable_to_non_nullable
@@ -193,10 +186,9 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String descHashId,
+      {String id,
       String externalPublicDescriptor,
       String internalPublicDescriptor,
-      String? xpub,
       String mnemonicFingerprint,
       String sourceFingerprint,
       BBNetwork network,
@@ -224,10 +216,9 @@ class __$$_WalletCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? descHashId = null,
+    Object? id = null,
     Object? externalPublicDescriptor = null,
     Object? internalPublicDescriptor = null,
-    Object? xpub = freezed,
     Object? mnemonicFingerprint = null,
     Object? sourceFingerprint = null,
     Object? network = null,
@@ -245,9 +236,9 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? hide = null,
   }) {
     return _then(_$_Wallet(
-      descHashId: null == descHashId
-          ? _value.descHashId
-          : descHashId // ignore: cast_nullable_to_non_nullable
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
               as String,
       externalPublicDescriptor: null == externalPublicDescriptor
           ? _value.externalPublicDescriptor
@@ -257,10 +248,6 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value.internalPublicDescriptor
           : internalPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String,
-      xpub: freezed == xpub
-          ? _value.xpub
-          : xpub // ignore: cast_nullable_to_non_nullable
-              as String?,
       mnemonicFingerprint: null == mnemonicFingerprint
           ? _value.mnemonicFingerprint
           : mnemonicFingerprint // ignore: cast_nullable_to_non_nullable
@@ -329,10 +316,9 @@ class __$$_WalletCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_Wallet extends _Wallet {
   const _$_Wallet(
-      {this.descHashId = '',
+      {this.id = '',
       this.externalPublicDescriptor = '',
       this.internalPublicDescriptor = '',
-      this.xpub,
       this.mnemonicFingerprint = '',
       this.sourceFingerprint = '',
       required this.network,
@@ -360,15 +346,13 @@ class _$_Wallet extends _Wallet {
 
   @override
   @JsonKey()
-  final String descHashId;
+  final String id;
   @override
   @JsonKey()
   final String externalPublicDescriptor;
   @override
   @JsonKey()
   final String internalPublicDescriptor;
-  @override
-  final String? xpub;
   @override
   @JsonKey()
   final String mnemonicFingerprint;
@@ -446,7 +430,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(descHashId: $descHashId, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, xpub: $xpub, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, labelTags: $labelTags, bip392Labels: $bip392Labels, backupTested: $backupTested, hide: $hide)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, labelTags: $labelTags, bip392Labels: $bip392Labels, backupTested: $backupTested, hide: $hide)';
   }
 
   @override
@@ -454,15 +438,13 @@ class _$_Wallet extends _Wallet {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Wallet &&
-            (identical(other.descHashId, descHashId) ||
-                other.descHashId == descHashId) &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(
                     other.externalPublicDescriptor, externalPublicDescriptor) ||
                 other.externalPublicDescriptor == externalPublicDescriptor) &&
             (identical(
                     other.internalPublicDescriptor, internalPublicDescriptor) ||
                 other.internalPublicDescriptor == internalPublicDescriptor) &&
-            (identical(other.xpub, xpub) || other.xpub == xpub) &&
             (identical(other.mnemonicFingerprint, mnemonicFingerprint) ||
                 other.mnemonicFingerprint == mnemonicFingerprint) &&
             (identical(other.sourceFingerprint, sourceFingerprint) ||
@@ -491,28 +473,26 @@ class _$_Wallet extends _Wallet {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hashAll([
-        runtimeType,
-        descHashId,
-        externalPublicDescriptor,
-        internalPublicDescriptor,
-        xpub,
-        mnemonicFingerprint,
-        sourceFingerprint,
-        network,
-        type,
-        scriptType,
-        name,
-        path,
-        balance,
-        const DeepCollectionEquality().hash(_addresses),
-        const DeepCollectionEquality().hash(_toAddresses),
-        const DeepCollectionEquality().hash(_transactions),
-        const DeepCollectionEquality().hash(_labelTags),
-        const DeepCollectionEquality().hash(_bip392Labels),
-        backupTested,
-        hide
-      ]);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      externalPublicDescriptor,
+      internalPublicDescriptor,
+      mnemonicFingerprint,
+      sourceFingerprint,
+      network,
+      type,
+      scriptType,
+      name,
+      path,
+      balance,
+      const DeepCollectionEquality().hash(_addresses),
+      const DeepCollectionEquality().hash(_toAddresses),
+      const DeepCollectionEquality().hash(_transactions),
+      const DeepCollectionEquality().hash(_labelTags),
+      const DeepCollectionEquality().hash(_bip392Labels),
+      backupTested,
+      hide);
 
   @JsonKey(ignore: true)
   @override
@@ -530,10 +510,9 @@ class _$_Wallet extends _Wallet {
 
 abstract class _Wallet extends Wallet {
   const factory _Wallet(
-      {final String descHashId,
+      {final String id,
       final String externalPublicDescriptor,
       final String internalPublicDescriptor,
-      final String? xpub,
       final String mnemonicFingerprint,
       final String sourceFingerprint,
       required final BBNetwork network,
@@ -554,13 +533,11 @@ abstract class _Wallet extends Wallet {
   factory _Wallet.fromJson(Map<String, dynamic> json) = _$_Wallet.fromJson;
 
   @override
-  String get descHashId;
+  String get id;
   @override
   String get externalPublicDescriptor;
   @override
   String get internalPublicDescriptor;
-  @override
-  String? get xpub;
   @override
   String get mnemonicFingerprint;
   @override

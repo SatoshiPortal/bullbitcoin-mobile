@@ -7,12 +7,11 @@ part of 'wallet.dart';
 // **************************************************************************
 
 _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
-      descHashId: json['descHashId'] as String? ?? '',
+      id: json['id'] as String? ?? '',
       externalPublicDescriptor:
           json['externalPublicDescriptor'] as String? ?? '',
       internalPublicDescriptor:
           json['internalPublicDescriptor'] as String? ?? '',
-      xpub: json['xpub'] as String?,
       mnemonicFingerprint: json['mnemonicFingerprint'] as String? ?? '',
       sourceFingerprint: json['sourceFingerprint'] as String? ?? '',
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
@@ -41,10 +40,9 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
     );
 
 Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
-      'descHashId': instance.descHashId,
+      'id': instance.id,
       'externalPublicDescriptor': instance.externalPublicDescriptor,
       'internalPublicDescriptor': instance.internalPublicDescriptor,
-      'xpub': instance.xpub,
       'mnemonicFingerprint': instance.mnemonicFingerprint,
       'sourceFingerprint': instance.sourceFingerprint,
       'network': _$BBNetworkEnumMap[instance.network]!,

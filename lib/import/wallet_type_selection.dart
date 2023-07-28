@@ -440,14 +440,6 @@ class ImportWalletDetailsPopUp extends StatelessWidget {
                   ),
                   const Gap(16),
                 ],
-                if (wallet.xpub != null) ...[
-                  const BBText.body(
-                    'Child expanded public key',
-                  ),
-                  BBText.body(
-                    wallet.xpub!,
-                  ),
-                ],
                 const Gap(16),
                 const BBText.body(
                   'Derivation Path',
