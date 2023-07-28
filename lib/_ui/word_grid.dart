@@ -32,7 +32,7 @@ class WordGrid extends StatelessWidget {
       width: double.infinity,
       child: GridView.count(
         physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 2,
+        crossAxisCount: 3,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         childAspectRatio: 5 / 1,
         children: reorderWidgets([

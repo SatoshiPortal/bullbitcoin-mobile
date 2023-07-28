@@ -342,9 +342,9 @@ class TestBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTested = context.select((WalletBloc x) => x.state.wallet!.backupTested);
+    // final isTested = context.select((WalletBloc x) => x.state.wallet!.backupTested);
 
-    if (isTested) return const SizedBox.shrink();
+    // if (isTested) return const SizedBox.shrink();
 
     return BBButton.textWithLeftArrow(
       label: 'Test Backup',

@@ -66,6 +66,11 @@ String keyFromDescriptor(String descriptor) {
   return cut1.substring(0, endIndex);
 }
 
+String removeChecksumFromDesc(String descriptor) {
+  final endIndex = descriptor.indexOf('#');
+  return descriptor.substring(0, endIndex);
+}
+
 String buildDescriptorVanilla({
   required String xpub,
   required ScriptType scriptType,
