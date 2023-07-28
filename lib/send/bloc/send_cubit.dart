@@ -151,7 +151,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void updateAmount(String txt) {
-    var clean = txt.replaceAll(',', '');
+    var clean = txt.replaceAll(',', '').replaceAll(' ', '');
     if (settingsCubit.state.unitsInSats)
       clean = clean.replaceAll('.', '');
     else if (!txt.contains('.')) {

@@ -139,7 +139,7 @@ class SettingsState with _$SettingsState {
         b = (amount / 100000000).toStringAsFixed(8);
       else
         b = (amount / 100000000).toStringAsFixed(8);
-      amt = btcFormatting(b) + ' BTC';
+      amt = b + ' BTC'; // applying btc formatting breaks
     }
 
     if (removeText) {
