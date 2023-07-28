@@ -1,5 +1,4 @@
 // ignore_for_file: invalid_annotation_target
-
 import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/electrum.dart';
 import 'package:bb_mobile/_model/wallet.dart';
@@ -14,39 +13,55 @@ part 'settings_state.g.dart';
 @freezed
 class SettingsState with _$SettingsState {
   const factory SettingsState({
-    @Default(false) bool unitsInSats,
-    @Default(false) bool notifications,
-    @Default(false) bool privacyView,
+    @Default(false)
+        bool unitsInSats,
+    @Default(false)
+        bool notifications,
+    @Default(false)
+        bool privacyView,
     //
     Currency? currency,
     List<Currency>? currencyList,
     DateTime? lastUpdatedCurrency,
-    @Default(false) bool loadingCurrency,
-    @Default('') String errLoadingCurrency,
+    @Default(false)
+        bool loadingCurrency,
+    @Default('')
+        String errLoadingCurrency,
     //
     String? language,
     List<String>? languageList,
-    @Default(false) bool loadingLanguage,
-    @Default('') String errLoadingLanguage,
+    @Default(false)
+        bool loadingLanguage,
+    @Default('')
+        String errLoadingLanguage,
     //
-    @Default(false) bool testnet,
+    @Default(false)
+        bool testnet,
     @JsonKey(
       includeFromJson: false,
       includeToJson: false,
     )
-    bdk.Blockchain? blockchain,
-    @Default(20) int reloadWalletTimer,
-    @Default([]) List<ElectrumNetwork> networks,
-    @Default(1) int selectedNetwork,
-    @Default(false) bool loadingNetworks,
-    @Default('') String errLoadingNetworks,
+        bdk.Blockchain? blockchain,
+    @Default(20)
+        int reloadWalletTimer,
+    @Default([])
+        List<ElectrumNetwork> networks,
+    @Default(1)
+        int selectedNetwork,
+    @Default(false)
+        bool loadingNetworks,
+    @Default('')
+        String errLoadingNetworks,
     //
     int? fees,
     List<int>? feesList,
-    @Default(2) int selectedFeesOption,
+    @Default(2)
+        int selectedFeesOption,
     //
-    @Default(false) bool loadingFees,
-    @Default('') String errLoadingFees,
+    @Default(false)
+        bool loadingFees,
+    @Default('')
+        String errLoadingFees,
     //
   }) = _SettingsState;
   const SettingsState._();
@@ -58,22 +73,73 @@ class SettingsState with _$SettingsState {
     return networks[selectedNetwork];
   }
 
+  String satsFormatting(String satsAmount) {
+    String satsAmountInText = '';
+    int counter = 0;
+    for (int i = satsAmount.length - 1; i >= 0; i--) {
+      counter++;
+      final String str = satsAmount[i];
+      if ((counter % 3) != 0 && i != 0) {
+        satsAmountInText = '$str$satsAmountInText';
+      } else if (i == 0) {
+        satsAmountInText = '$str$satsAmountInText';
+      } else {
+        satsAmountInText = ',$str$satsAmountInText';
+      }
+    }
+    return satsAmountInText.trim();
+  }
+
+  String btcFormatting(String btcAmount) {
+    var btcPreDecimalText = '';
+    final int preDecimalLength = btcAmount.split('.')[0].length;
+    var btcPostDecimalText = '';
+    final int postDecimalLength = btcAmount.split('.')[1].length;
+
+    int counter = 0;
+    for (int i = preDecimalLength - 1; i >= 0; i--) {
+      counter++;
+      final String str = btcAmount.split('.')[0][i];
+      if ((counter % 3) != 0 && i != 0) {
+        btcPreDecimalText = '$str$btcPreDecimalText';
+      } else if (i == 0) {
+        btcPreDecimalText = '$str$btcPreDecimalText';
+      } else {
+        btcPreDecimalText = ',$str$btcPreDecimalText';
+      }
+    }
+    counter = 0;
+    for (int i = postDecimalLength - 1; i >= 0; i--) {
+      counter++;
+      final String str = btcAmount.split('.')[1][i];
+      if ((counter % 4) != 0 && i != 0) {
+        btcPostDecimalText = '$str$btcPostDecimalText';
+      } else if (i == 0) {
+        btcPostDecimalText = '$str$btcPostDecimalText';
+      } else {
+        btcPostDecimalText = ' $str$btcPostDecimalText';
+      }
+    }
+    final btcAmountInText = btcPreDecimalText + '.' + btcPostDecimalText;
+    return btcAmountInText.trim();
+  }
+
   String getAmountInUnits(
     int amount, {
     bool removeText = false,
     bool hideZero = false,
-    bool removeEndZeros = false,
+    bool removeEndZeros = false, // we should never removeEndZeros for BTC
   }) {
     String amt = '';
     if (unitsInSats)
-      amt = amount.toString() + ' sats';
+      amt = satsFormatting(amount.toString()) + ' sats';
     else {
       String b = '';
       if (!removeEndZeros)
         b = (amount / 100000000).toStringAsFixed(8);
       else
         b = (amount / 100000000).toStringAsFixed(8);
-      amt = b + ' BTC';
+      amt = btcFormatting(b) + ' BTC';
     }
 
     if (removeText) {
