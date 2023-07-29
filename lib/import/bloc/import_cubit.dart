@@ -149,12 +149,17 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void combinedDescriptorChanged(String text) {
-    emit(state.copyWith(manualCombinedDescriptor: text));
-
+    emit(
+      state.copyWith(manualCombinedDescriptor: text),
+    );
     final desc = splitCombinedChanged(text, false);
     final cdesc = splitCombinedChanged(text, true);
-
-    emit(state.copyWith(manualDescriptor: desc, manualChangeDescriptor: cdesc));
+    emit(
+      state.copyWith(
+        manualDescriptor: desc,
+        manualChangeDescriptor: cdesc,
+      ),
+    );
   }
 
   void fingerprintChanged(String text) {
