@@ -90,7 +90,7 @@ String fullKeyFromDescriptor(String descriptor) {
 
 String removeChecksumFromDesc(String descriptor) {
   final endIndex = descriptor.indexOf('#');
-  return descriptor.substring(0, endIndex - 1);
+  return descriptor.substring(0, endIndex);
 }
 
 String buildDescriptorVanilla({
