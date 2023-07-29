@@ -442,20 +442,13 @@ class WalletCreate {
           (slip132Pub.startsWith('t') || slip132Pub.startsWith('u') || slip132Pub.startsWith('v'))
               ? BBNetwork.Testnet
               : BBNetwork.Mainnet;
-      final bdkNetwork =
-          (slip132Pub.startsWith('t') || slip132Pub.startsWith('u') || slip132Pub.startsWith('v'))
-              ? bdk.Network.Testnet
-              : bdk.Network.Bitcoin;
+      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
       final scriptType = slip132Pub.startsWith('x') || slip132Pub.startsWith('t')
           ? ScriptType.bip44
           : slip132Pub.startsWith('y') || slip132Pub.startsWith('u')
               ? ScriptType.bip49
               : ScriptType.bip84;
       final xPub = convertToXpubStr(slip132Pub);
-      final rootXpub = await bdk.DescriptorPublicKey.fromString(xPub);
-      print(rootXpub);
-      // check if this mnemonic exists in Seed
-      // if exists; then add passphrase wallet; else create new
 
       bdk.Descriptor? internal;
       bdk.Descriptor? external;
@@ -471,11 +464,11 @@ class WalletCreate {
           );
         case ScriptType.bip49:
           internal = await bdk.Descriptor.create(
-            descriptor: 'sh-wsh($xPub/1/*)',
+            descriptor: 'sh(wpkh($xPub/1/*))',
             network: bdkNetwork,
           );
           external = await bdk.Descriptor.create(
-            descriptor: 'sh-wsh($xPub/0/*)',
+            descriptor: 'sh(wpkh($xPub/0/*))',
             network: bdkNetwork,
           );
         case ScriptType.bip44:

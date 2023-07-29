@@ -5,18 +5,35 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bitcoin_utils/xyzpub.dart';
 import 'package:crypto/crypto.dart';
 
-// String fingerPrintFromDescr(
-//   String xkey, {
-//   required bool isTesnet,
-//   bool ignorePrefix = false,
-// }) {
-//   final startIndex = xkey.indexOf('[');
-//   if (startIndex == -1) return '';
-//   final fingerPrintEndIndex = xkey.indexOf('/');
-//   var fingerPrint = xkey.substring(startIndex + 1, fingerPrintEndIndex);
-//   if (isTesnet && !ignorePrefix) fingerPrint = 'tn::' + fingerPrint;
-//   return fingerPrint;
-// }
+String combinedDescriptorString(String descriptor) {
+  final desc = descriptor.replaceFirst('/0/*', '/{0;1}/*').replaceFirst('/1/*', '/{0;1}/*');
+  return removeChecksumFromDesc(desc);
+}
+
+(String, String) splitDescriptorString(String descriptor) {
+  final desc = removeChecksumFromDesc(descriptor);
+  final hasCombinedChangePath = desc.contains('/{0;1}/*');
+  if (hasCombinedChangePath) {
+    final internal = desc.replaceFirst('/{0;1}/*', '/1/*');
+    final external = desc.replaceFirst('/{0;1}/*', '/0/*');
+
+    return (internal, external);
+  } else {
+    // this is a case where user has used either ONLY internal,external or just /*
+    final internal = desc
+        .replaceFirst('/1/*', '')
+        .replaceFirst('/0/*', '')
+        .replaceFirst('/*', '')
+        .replaceFirst(')', '/1/*)');
+    final external = desc
+        .replaceFirst('/1/*', '')
+        .replaceFirst('/0/*', '')
+        .replaceFirst('/*', '')
+        .replaceFirst(')', '/0/*)');
+
+    return (internal, external);
+  }
+}
 
 String createDescriptorHashId(String descriptor) {
   final descHashId = sha1
@@ -41,11 +58,6 @@ String fingerPrintFromXKeyDesc(
   return fingerPrint;
 }
 
-String removeFngrPrefix(String fingerPrint) {
-  if (fingerPrint.startsWith('tn::')) return fingerPrint.substring(4);
-  return fingerPrint;
-}
-
 String convertToXpubStr(String xpub) {
   if (xpub.toLowerCase().startsWith('u') || xpub.toLowerCase().startsWith('v')) {
     final result = convertVersion(xpub, Version.tPub);
@@ -66,9 +78,19 @@ String keyFromDescriptor(String descriptor) {
   return cut1.substring(0, endIndex);
 }
 
+String fullKeyFromDescriptor(String descriptor) {
+  final startIndex = descriptor.indexOf('(');
+  final cut1 = descriptor.substring(startIndex + 1);
+  final endIndex = cut1.indexOf(')');
+  return cut1.substring(
+    0,
+    endIndex - 4,
+  ); // eg externalDesc: wpkh([fingertint/hdpath]xpub/0/*); hence -4 from )
+}
+
 String removeChecksumFromDesc(String descriptor) {
   final endIndex = descriptor.indexOf('#');
-  return descriptor.substring(0, endIndex);
+  return descriptor.substring(0, endIndex - 1);
 }
 
 String buildDescriptorVanilla({

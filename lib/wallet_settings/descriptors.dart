@@ -27,7 +27,7 @@ class PublicDescriptorButton extends StatelessWidget {
         // no more loading and clearing sensitive data
         await PublicDataPopUp.openPopup(
           context,
-          desc.replaceAll('/0/*', '/[0;1]/*'),
+          combinedDescriptorString(desc),
           'Public Descriptor',
         );
       },
@@ -43,14 +43,12 @@ class ExtendedPublicKeyButton extends StatelessWidget {
     final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.externalPublicDescriptor);
     if (desc.isEmpty) return const SizedBox();
 
-    final xpub = keyFromDescriptor(desc);
-
     return BBButton.textWithLeftArrow(
-      label: 'XPub',
+      label: 'Extended Public Key',
       onPressed: () async {
         await PublicDataPopUp.openPopup(
           context,
-          xpub,
+          fullKeyFromDescriptor(desc),
           'Extended Public Key',
         );
       },
