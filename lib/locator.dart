@@ -60,7 +60,7 @@ Future setupLocator({bool fromTest = false}) async {
 
   final settings = SettingsCubit(
     walletCreate: walletcreate,
-    storage: hiveStorage,
+    hiveStorage: hiveStorage,
     mempoolAPI: mempoolAPI,
     bbAPI: bbAPI,
   );

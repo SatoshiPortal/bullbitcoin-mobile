@@ -487,8 +487,71 @@ class WalletCreate {
         id: descHashId,
         externalPublicDescriptor: await external.asString(),
         internalPublicDescriptor: await internal.asString(),
-        mnemonicFingerprint: descHashId,
-        sourceFingerprint: descHashId,
+        mnemonicFingerprint: 'hashId:' + descHashId,
+        sourceFingerprint: 'hashId:' + descHashId,
+        network: network,
+        type: BBWalletType.xpub,
+        scriptType: scriptType,
+        backupTested: true,
+      );
+      wallet = wallet.copyWith(name: wallet.defaultNameString());
+
+      return (wallet, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(Wallet?, Err?)> oneFromXpubWithOrigin(
+    String xpubWithOrigin,
+  ) async {
+    try {
+      final network = (xpubWithOrigin.contains('tpub')) ? BBNetwork.Testnet : BBNetwork.Mainnet;
+      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+      final scriptType = xpubWithOrigin.contains('/44')
+          ? ScriptType.bip44
+          : xpubWithOrigin.contains('/49')
+              ? ScriptType.bip49
+              : ScriptType.bip84;
+      bdk.Descriptor? internal;
+      bdk.Descriptor? external;
+      switch (scriptType) {
+        case ScriptType.bip84:
+          internal = await bdk.Descriptor.create(
+            descriptor: 'wpkh($xpubWithOrigin/1/*)',
+            network: bdkNetwork,
+          );
+          external = await bdk.Descriptor.create(
+            descriptor: 'wpkh($xpubWithOrigin/0/*)',
+            network: bdkNetwork,
+          );
+        case ScriptType.bip49:
+          internal = await bdk.Descriptor.create(
+            descriptor: 'sh(wpkh($xpubWithOrigin/1/*))',
+            network: bdkNetwork,
+          );
+          external = await bdk.Descriptor.create(
+            descriptor: 'sh(wpkh($xpubWithOrigin/0/*))',
+            network: bdkNetwork,
+          );
+        case ScriptType.bip44:
+          internal = await bdk.Descriptor.create(
+            descriptor: 'pkh($xpubWithOrigin/1/*)',
+            network: bdkNetwork,
+          );
+          external = await bdk.Descriptor.create(
+            descriptor: 'pkh($xpubWithOrigin/0/*)',
+            network: bdkNetwork,
+          );
+      }
+
+      final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
+      var wallet = Wallet(
+        id: descHashId,
+        externalPublicDescriptor: await external.asString(),
+        internalPublicDescriptor: await internal.asString(),
+        mnemonicFingerprint: 'hashId:' + descHashId,
+        sourceFingerprint: 'hashId:' + descHashId,
         network: network,
         type: BBWalletType.xpub,
         scriptType: scriptType,

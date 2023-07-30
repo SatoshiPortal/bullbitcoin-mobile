@@ -5,6 +5,7 @@ import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/electrum.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -13,7 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit({
-    required this.storage,
+    required this.hiveStorage,
     required this.bbAPI,
     required this.mempoolAPI,
     required this.walletCreate,
@@ -22,7 +23,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     loadCurrencies();
   }
 
-  final IStorage storage;
+  final HiveStorage hiveStorage;
   final BullBitcoinAPI bbAPI;
   final MempoolAPI mempoolAPI;
   final WalletCreate walletCreate;
@@ -34,7 +35,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   @override
   void onChange(Change<SettingsState> change) {
     super.onChange(change);
-    storage.saveValue(
+    hiveStorage.saveValue(
       key: StorageKeys.settings,
       value: jsonEncode(change.nextState.toJson()),
     );
@@ -47,7 +48,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> init() async {
-    final (result, err) = await storage.getValue(StorageKeys.settings);
+    final (result, err) = await hiveStorage.getValue(StorageKeys.settings);
     if (err != null) {
       // first time maybe
       loadNetworks();

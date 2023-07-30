@@ -342,18 +342,31 @@ class ImportWalletCubit extends Cubit<ImportState> {
           );
           if (wErrs != null) {
             emit(state.copyWith(errImporting: 'Error creating Wallets from Bip 39'));
+            return;
           }
           wallets.addAll(ws!);
 
         case ImportTypes.xpub:
-          final (wxpub, wErrs) = await walletCreate.oneFromSlip132Pub(
-            state.xpub,
-          );
-          if (wErrs != null) {
-            emit(state.copyWith(errImporting: 'Error creating Wallets from Xpub'));
+          if (state.xpub.contains('[')) {
+            // has origin info
+            final (wxpub, wErrs) = await walletCreate.oneFromXpubWithOrigin(
+              state.xpub,
+            );
+            if (wErrs != null) {
+              emit(state.copyWith(errImporting: 'Error creating Wallets from Xpub'));
+              return;
+            }
+            wallets.addAll([wxpub!]);
+          } else {
+            final (wxpub, wErrs) = await walletCreate.oneFromSlip132Pub(
+              state.xpub,
+            );
+            if (wErrs != null) {
+              emit(state.copyWith(errImporting: 'Error creating Wallets from Xpub'));
+              return;
+            }
+            wallets.addAll([wxpub!]);
           }
-          wallets.addAll([wxpub!]);
-
         case ImportTypes.coldcard:
           final coldcard = state.coldCard!;
 
@@ -363,6 +376,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           );
           if (wErrs != null) {
             emit(state.copyWith(errImporting: 'Error creating Wallets from ColdCard'));
+            return;
           }
           // loadBdkPublicWallet and check if first address matches coldcard - sync not required
           wallets.addAll(cws!);
