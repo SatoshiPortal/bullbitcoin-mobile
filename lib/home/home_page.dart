@@ -235,7 +235,7 @@ class BackupAlertBanner extends StatelessWidget {
                 const BBText.body('Make sure to backup your wallet.'),
                 InkWell(
                   onTap: () {
-                    context.push('/wallet-settings');
+                    context.push('/wallet-settings/test-backup');
                   },
                   child: const BBText.bodySmall(
                     'Click here to test backup.',

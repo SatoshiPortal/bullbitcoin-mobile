@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -27,7 +29,9 @@ import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class WalletSettingsPage extends StatelessWidget {
-  const WalletSettingsPage({super.key});
+  const WalletSettingsPage({super.key, this.openTestBackup = false});
+
+  final bool openTestBackup;
 
   @override
   Widget build(BuildContext context) {
@@ -69,17 +73,25 @@ class WalletSettingsPage extends StatelessWidget {
             },
           ),
         ],
-        child: const _Screen(),
+        child: _Screen(openTestBackup: openTestBackup),
       ),
     );
   }
 }
 
 class _Screen extends StatelessWidget {
-  const _Screen();
+  const _Screen({required this.openTestBackup});
+
+  final bool openTestBackup;
 
   @override
   Widget build(BuildContext context) {
+    if (openTestBackup)
+      scheduleMicrotask(() async {
+        await Future.delayed(const Duration(milliseconds: 1000));
+        await TestBackupScreen.openPopup(context);
+      });
+
     final watchOnly = context.select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
     return Scaffold(
       appBar: AppBar(

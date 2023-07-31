@@ -60,5 +60,11 @@ final GoRouter router = GoRouter(
         return const WalletSettingsPage();
       },
     ),
+    GoRoute(
+      path: '/wallet-settings/test-backup',
+      builder: (context, state) {
+        return const WalletSettingsPage(openTestBackup: true);
+      },
+    ),
   ],
 );
