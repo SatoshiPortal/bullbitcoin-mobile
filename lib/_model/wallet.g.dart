@@ -32,7 +32,7 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
       labelTags: (json['labelTags'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
-      bip392Labels: (json['bip392Labels'] as List<dynamic>?)
+      bip329Labels: (json['bip329Labels'] as List<dynamic>?)
           ?.map((e) => Bip329Label.fromJson(e as Map<String, dynamic>))
           .toList(),
       backupTested: json['backupTested'] as bool? ?? false,
@@ -55,7 +55,7 @@ Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
       'toAddresses': instance.toAddresses,
       'transactions': instance.transactions,
       'labelTags': instance.labelTags,
-      'bip392Labels': instance.bip392Labels,
+      'bip329Labels': instance.bip329Labels,
       'backupTested': instance.backupTested,
       'hide': instance.hide,
     };

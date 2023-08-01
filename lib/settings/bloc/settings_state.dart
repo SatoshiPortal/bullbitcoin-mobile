@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:intl/intl.dart';
 
 part 'settings_state.freezed.dart';
 part 'settings_state.g.dart';
@@ -74,54 +75,30 @@ class SettingsState with _$SettingsState {
   }
 
   String satsFormatting(String satsAmount) {
-    String satsAmountInText = '';
-    int counter = 0;
-    for (int i = satsAmount.length - 1; i >= 0; i--) {
-      counter++;
-      final String str = satsAmount[i];
-      if ((counter % 3) != 0 && i != 0) {
-        satsAmountInText = '$str$satsAmountInText';
-      } else if (i == 0) {
-        satsAmountInText = '$str$satsAmountInText';
-      } else {
-        satsAmountInText = ',$str$satsAmountInText';
-      }
-    }
-    return satsAmountInText.trim();
+    final currency = NumberFormat('#,##0', 'en_US');
+    return currency.format(
+      double.parse(satsAmount),
+    );
+  }
+
+  String fiatFormatting(String fiatAmount) {
+    final currency = NumberFormat('#,##0.00', 'en_US');
+    return currency.format(
+      double.parse(fiatAmount),
+    );
   }
 
   String btcFormatting(String btcAmount) {
-    var btcPreDecimalText = '';
-    final int preDecimalLength = btcAmount.split('.')[0].length;
-    var btcPostDecimalText = '';
-    final int postDecimalLength = btcAmount.split('.')[1].length;
-
-    int counter = 0;
-    for (int i = preDecimalLength - 1; i >= 0; i--) {
-      counter++;
-      final String str = btcAmount.split('.')[0][i];
-      if ((counter % 3) != 0 && i != 0) {
-        btcPreDecimalText = '$str$btcPreDecimalText';
-      } else if (i == 0) {
-        btcPreDecimalText = '$str$btcPreDecimalText';
-      } else {
-        btcPreDecimalText = ',$str$btcPreDecimalText';
-      }
-    }
-    counter = 0;
-    for (int i = postDecimalLength - 1; i >= 0; i--) {
-      counter++;
-      final String str = btcAmount.split('.')[1][i];
-      if ((counter % 4) != 0 && i != 0) {
-        btcPostDecimalText = '$str$btcPostDecimalText';
-      } else if (i == 0) {
-        btcPostDecimalText = '$str$btcPostDecimalText';
-      } else {
-        btcPostDecimalText = ' $str$btcPostDecimalText';
-      }
-    }
-    final btcAmountInText = btcPreDecimalText + '.' + btcPostDecimalText;
-    return btcAmountInText.trim();
+    final currency = NumberFormat.currency(
+      locale: 'en_US',
+      customPattern: '#,##0.####,###0',
+      decimalDigits: 8,
+    );
+    return currency
+        .format(
+          double.parse(btcAmount),
+        )
+        .replaceAll('', ' ');
   }
 
   String getAmountInUnits(
@@ -157,7 +134,8 @@ class SettingsState with _$SettingsState {
   String calculatePrice(int sats) {
     if (currency == null) return '';
     if (testnet) return currency!.getSymbol() + '0';
-    return currency!.getSymbol() + (sats / 100000000 * currency!.price!).toStringAsFixed(2);
+    return currency!.getSymbol() +
+        fiatFormatting((sats / 100000000 * currency!.price!).toStringAsFixed(2));
   }
 
   String getUnitString() {

@@ -35,7 +35,7 @@ mixin _$Wallet {
   List<Address>? get toAddresses => throw _privateConstructorUsedError;
   List<Transaction>? get transactions => throw _privateConstructorUsedError;
   List<String>? get labelTags => throw _privateConstructorUsedError;
-  List<Bip329Label>? get bip392Labels => throw _privateConstructorUsedError;
+  List<Bip329Label>? get bip329Labels => throw _privateConstructorUsedError;
   bool get backupTested => throw _privateConstructorUsedError;
   bool get hide => throw _privateConstructorUsedError;
 
@@ -65,7 +65,7 @@ abstract class $WalletCopyWith<$Res> {
       List<Address>? toAddresses,
       List<Transaction>? transactions,
       List<String>? labelTags,
-      List<Bip329Label>? bip392Labels,
+      List<Bip329Label>? bip329Labels,
       bool backupTested,
       bool hide});
 }
@@ -98,7 +98,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? toAddresses = freezed,
     Object? transactions = freezed,
     Object? labelTags = freezed,
-    Object? bip392Labels = freezed,
+    Object? bip329Labels = freezed,
     Object? backupTested = null,
     Object? hide = null,
   }) {
@@ -163,9 +163,9 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.labelTags
           : labelTags // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      bip392Labels: freezed == bip392Labels
-          ? _value.bip392Labels
-          : bip392Labels // ignore: cast_nullable_to_non_nullable
+      bip329Labels: freezed == bip329Labels
+          ? _value.bip329Labels
+          : bip329Labels // ignore: cast_nullable_to_non_nullable
               as List<Bip329Label>?,
       backupTested: null == backupTested
           ? _value.backupTested
@@ -201,7 +201,7 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       List<Address>? toAddresses,
       List<Transaction>? transactions,
       List<String>? labelTags,
-      List<Bip329Label>? bip392Labels,
+      List<Bip329Label>? bip329Labels,
       bool backupTested,
       bool hide});
 }
@@ -231,7 +231,7 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? toAddresses = freezed,
     Object? transactions = freezed,
     Object? labelTags = freezed,
-    Object? bip392Labels = freezed,
+    Object? bip329Labels = freezed,
     Object? backupTested = null,
     Object? hide = null,
   }) {
@@ -296,9 +296,9 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value._labelTags
           : labelTags // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      bip392Labels: freezed == bip392Labels
-          ? _value._bip392Labels
-          : bip392Labels // ignore: cast_nullable_to_non_nullable
+      bip329Labels: freezed == bip329Labels
+          ? _value._bip329Labels
+          : bip329Labels // ignore: cast_nullable_to_non_nullable
               as List<Bip329Label>?,
       backupTested: null == backupTested
           ? _value.backupTested
@@ -331,14 +331,14 @@ class _$_Wallet extends _Wallet {
       final List<Address>? toAddresses,
       final List<Transaction>? transactions,
       final List<String>? labelTags,
-      final List<Bip329Label>? bip392Labels,
+      final List<Bip329Label>? bip329Labels,
       this.backupTested = false,
       this.hide = false})
       : _addresses = addresses,
         _toAddresses = toAddresses,
         _transactions = transactions,
         _labelTags = labelTags,
-        _bip392Labels = bip392Labels,
+        _bip329Labels = bip329Labels,
         super._();
 
   factory _$_Wallet.fromJson(Map<String, dynamic> json) =>
@@ -411,12 +411,12 @@ class _$_Wallet extends _Wallet {
     return EqualUnmodifiableListView(value);
   }
 
-  final List<Bip329Label>? _bip392Labels;
+  final List<Bip329Label>? _bip329Labels;
   @override
-  List<Bip329Label>? get bip392Labels {
-    final value = _bip392Labels;
+  List<Bip329Label>? get bip329Labels {
+    final value = _bip329Labels;
     if (value == null) return null;
-    if (_bip392Labels is EqualUnmodifiableListView) return _bip392Labels;
+    if (_bip329Labels is EqualUnmodifiableListView) return _bip329Labels;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
@@ -430,7 +430,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, labelTags: $labelTags, bip392Labels: $bip392Labels, backupTested: $backupTested, hide: $hide)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, hide: $hide)';
   }
 
   @override
@@ -465,7 +465,7 @@ class _$_Wallet extends _Wallet {
             const DeepCollectionEquality()
                 .equals(other._labelTags, _labelTags) &&
             const DeepCollectionEquality()
-                .equals(other._bip392Labels, _bip392Labels) &&
+                .equals(other._bip329Labels, _bip329Labels) &&
             (identical(other.backupTested, backupTested) ||
                 other.backupTested == backupTested) &&
             (identical(other.hide, hide) || other.hide == hide));
@@ -490,7 +490,7 @@ class _$_Wallet extends _Wallet {
       const DeepCollectionEquality().hash(_toAddresses),
       const DeepCollectionEquality().hash(_transactions),
       const DeepCollectionEquality().hash(_labelTags),
-      const DeepCollectionEquality().hash(_bip392Labels),
+      const DeepCollectionEquality().hash(_bip329Labels),
       backupTested,
       hide);
 
@@ -525,7 +525,7 @@ abstract class _Wallet extends Wallet {
       final List<Address>? toAddresses,
       final List<Transaction>? transactions,
       final List<String>? labelTags,
-      final List<Bip329Label>? bip392Labels,
+      final List<Bip329Label>? bip329Labels,
       final bool backupTested,
       final bool hide}) = _$_Wallet;
   const _Wallet._() : super._();
@@ -563,7 +563,7 @@ abstract class _Wallet extends Wallet {
   @override
   List<String>? get labelTags;
   @override
-  List<Bip329Label>? get bip392Labels;
+  List<Bip329Label>? get bip329Labels;
   @override
   bool get backupTested;
   @override

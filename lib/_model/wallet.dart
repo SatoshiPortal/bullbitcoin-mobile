@@ -32,7 +32,7 @@ class Wallet with _$Wallet {
     List<Address>? toAddresses,
     List<Transaction>? transactions,
     List<String>? labelTags,
-    List<Bip329Label>? bip392Labels,
+    List<Bip329Label>? bip329Labels,
     @Default(false) bool backupTested,
     @Default(false) bool hide,
   }) = _Wallet;

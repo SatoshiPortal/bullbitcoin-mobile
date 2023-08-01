@@ -24,6 +24,8 @@ class Currency with _$Currency {
         return '₡';
       case 'eur':
         return '€';
+      case 'inr':
+        return '₹';
       default:
         return '';
     }
@@ -39,6 +41,8 @@ class Currency with _$Currency {
         return 'Costa Rican Colón';
       case 'EUR':
         return 'Euro';
+      case 'INR':
+        return 'Indian Rupee';
       default:
         return '';
     }

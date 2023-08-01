@@ -1,9 +1,14 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:math';
 
 import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:dio/dio.dart';
+
+const INR_USD = 88;
+const CRC_USD = 540;
 
 class BullBitcoinAPI {
   BullBitcoinAPI(this.http);
@@ -21,7 +26,9 @@ class BullBitcoinAPI {
           'method': 'getRate',
           'params': {
             'from': 'BTC',
-            'to': toCurrency,
+            'to': toCurrency.toUpperCase() == 'INR' || toCurrency.toUpperCase() == 'CRC'
+                ? 'USD'
+                : toCurrency.toUpperCase(),
           }
         },
       );
@@ -38,7 +45,11 @@ class BullBitcoinAPI {
       final currency = Currency(
         name: toCurrency,
         shortName: toCurrency,
-        price: rateDouble,
+        price: toCurrency.toUpperCase() == 'INR'
+            ? rateDouble * INR_USD
+            : toCurrency.toUpperCase() == 'CRC'
+                ? rateDouble * CRC_USD
+                : rateDouble,
       );
 
       return (currency, null);
