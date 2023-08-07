@@ -2,6 +2,7 @@ import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -91,22 +91,8 @@ class PublicDataPopUp extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         children: [
-          const Gap(32),
-          Row(
-            children: [
-              const Gap(16),
-              BBText.body(
-                title,
-              ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(FontAwesomeIcons.xmark),
-                onPressed: () => context.pop(),
-              ),
-              const Gap(16),
-            ],
-          ),
-          const Gap(24),
+          BBHeader.popUpCenteredText(text: title, isLeft: true),
+          const Gap(16),
           Center(
             child: QrImageView(
               data: publicKeyData,
