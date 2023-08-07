@@ -4,12 +4,20 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class ImportEnterWordsScreen extends StatelessWidget {
-  const ImportEnterWordsScreen({super.key});
+  ImportEnterWordsScreen({super.key});
+
+  final focusNodes = List<FocusNode>.generate(12, (index) => FocusNode());
+
+  void returnClicked(int idx) {
+    if (idx == 11) return;
+    focusNodes[idx + 1].requestFocus();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +28,34 @@ class ImportEnterWordsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Gap(32),
-            for (var i = 0; i < 6; i++)
-              Row(
-                children: [
-                  for (var j = 0; j < 2; j++)
-                    ImportWordTextField(
-                      index: i == 0 ? j : i * 2 + j,
-                    ),
-                ],
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    children: [
+                      for (var i = 0; i < 6; i++)
+                        ImportWordTextField(
+                          index: i,
+                          focusNode: focusNodes[i],
+                          returnClicked: returnClicked,
+                        ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      for (var i = 6; i < 12; i++)
+                        ImportWordTextField(
+                          index: i,
+                          focusNode: focusNodes[i],
+                          returnClicked: returnClicked,
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             const Gap(32),
             const _ImportWordsPassphrase(),
             const Gap(80),
@@ -41,9 +68,16 @@ class ImportEnterWordsScreen extends StatelessWidget {
 }
 
 class ImportWordTextField extends StatefulWidget {
-  const ImportWordTextField({super.key, required this.index});
+  const ImportWordTextField({
+    super.key,
+    required this.index,
+    required this.focusNode,
+    required this.returnClicked,
+  });
 
   final int index;
+  final FocusNode focusNode;
+  final Function(int) returnClicked;
 
   @override
   State<ImportWordTextField> createState() => _ImportWordTextFieldState();
@@ -52,7 +86,6 @@ class ImportWordTextField extends StatefulWidget {
 class _ImportWordTextFieldState extends State<ImportWordTextField> {
   OverlayEntry? entry;
   final layerLink = LayerLink();
-  final focusNode = FocusNode();
   final controller = TextEditingController();
   List<String> suggestions = [];
 
@@ -60,10 +93,10 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
   void initState() {
     super.initState();
 
-    focusNode.addListener(() {
-      if (focusNode.hasFocus)
+    widget.focusNode.addListener(() {
+      if (widget.focusNode.hasFocus) {
         showOverLay();
-      else
+      } else
         hideOverlay();
     });
 
@@ -83,7 +116,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
   @override
   void dispose() {
     controller.dispose();
-    focusNode.dispose();
+    widget.focusNode.dispose();
 
     super.dispose();
   }
@@ -130,7 +163,8 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
               onTap: () {
                 context.read<ImportWalletCubit>().wordChanged(widget.index, word);
                 hideOverlay();
-                focusNode.unfocus();
+                widget.focusNode.unfocus();
+                widget.returnClicked(widget.index);
               },
             )
         ],
@@ -145,25 +179,30 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
 
     if (controller.text != text) controller.text = text;
 
-    return Expanded(
-      child: CompositedTransformTarget(
-        link: layerLink,
-        child: Container(
-          margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-          height: 66,
-          child: Row(
-            children: [
-              SizedBox(
-                width: 20,
-                child: BBText.body(
-                  '${widget.index + 1}',
-                  textAlign: TextAlign.right,
-                ),
+    return CompositedTransformTarget(
+      link: layerLink,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+        height: 66,
+        child: Row(
+          children: [
+            SizedBox(
+              width: 20,
+              child: BBText.body(
+                '${widget.index + 1}',
+                textAlign: TextAlign.right,
               ),
-              const Gap(8),
-              Expanded(
+            ),
+            const Gap(8),
+            Expanded(
+              child: CallbackShortcuts(
+                bindings: {
+                  LogicalKeySet(LogicalKeyboardKey.enter): () {
+                    if (widget.focusNode.hasFocus) widget.returnClicked(widget.index);
+                  },
+                },
                 child: BBTextInput.small(
-                  focusNode: focusNode,
+                  focusNode: widget.focusNode,
                   controller: controller,
                   onChanged: (value) {
                     context.read<ImportWalletCubit>().wordChanged(widget.index, value);
@@ -172,8 +211,9 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                   value: text,
                 ),
               ),
-            ],
-          ),
+              // ),
+            ),
+          ],
         ),
       ),
     );

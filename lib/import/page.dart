@@ -131,7 +131,7 @@ class _Screen extends StatelessWidget {
           case ImportSteps.advancedOptions:
             return const AdvancedOptions();
           case ImportSteps.importWords:
-            return const ImportEnterWordsScreen();
+            return ImportEnterWordsScreen();
 
           case ImportSteps.scanningWallets:
           case ImportSteps.selectWalletFormat:
