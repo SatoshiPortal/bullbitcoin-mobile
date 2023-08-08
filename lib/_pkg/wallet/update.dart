@@ -39,6 +39,7 @@ class WalletUpdate {
           label: label,
           sentTxId: sentTxId,
           isReceive: !isSend,
+          // isMine: !isSend, // !isSend does not always mean isMine - change isMine and isSend
         );
         if (freeze != null) a = a.copyWith(unspendable: freeze);
         addresses.add(a);

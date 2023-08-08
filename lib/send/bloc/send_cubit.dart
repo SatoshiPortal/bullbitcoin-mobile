@@ -227,10 +227,10 @@ class SendCubit extends Cubit<SendState> {
 
     emit(state.copyWith(selectedAddresses: selectedAddresses));
 
-    if (selectedAddresses.isNotEmpty) {
-      final total = state.calculateTotalSelected();
-      // emit(state.copyWith(amount: total)); //totalSelectedAmount
-    }
+    // if (selectedAddresses.isNotEmpty) {
+    //   final total = state.calculateTotalSelected();
+    //   // emit(state.copyWith(amount: total)); //totalSelectedAmount
+    // }
 
     updateShowSend();
   }

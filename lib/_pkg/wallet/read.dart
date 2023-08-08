@@ -185,13 +185,14 @@ class WalletRead {
   }) async {
     try {
       final outputs = await tx.bdkTx!.transaction!.output();
-      final outAddresses = await Future.wait(
+      final (outAddresses) = await Future.wait(
         outputs.map((txOut) async {
           final address = await bdk.Address.fromScript(
             txOut.scriptPubkey,
             wallet.getBdkNetwork(),
           );
-          return address.toString();
+          final value = txOut.value;
+          return address.toString() + ':$value';
         }),
       );
 

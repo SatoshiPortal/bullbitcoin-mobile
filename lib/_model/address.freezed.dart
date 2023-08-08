@@ -27,7 +27,8 @@ mixin _$Address {
   bool? get isReceive => throw _privateConstructorUsedError;
   bool get saving => throw _privateConstructorUsedError;
   String get errSaving => throw _privateConstructorUsedError;
-  bool get unspendable => throw _privateConstructorUsedError;
+  bool get unspendable => throw _privateConstructorUsedError; // @Default(true)
+//     bool isMine,
   int get highestPreviousBalance => throw _privateConstructorUsedError;
   @JsonKey(includeFromJson: false, includeToJson: false)
   List<LocalUtxo>? get utxos => throw _privateConstructorUsedError;
@@ -252,6 +253,8 @@ class _$_Address extends _Address {
   @override
   @JsonKey()
   final bool unspendable;
+// @Default(true)
+//     bool isMine,
   @override
   @JsonKey()
   final int highestPreviousBalance;
@@ -355,7 +358,8 @@ abstract class _Address extends Address {
   String get errSaving;
   @override
   bool get unspendable;
-  @override
+  @override // @Default(true)
+//     bool isMine,
   int get highestPreviousBalance;
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)

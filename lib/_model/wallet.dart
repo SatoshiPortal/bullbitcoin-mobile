@@ -100,7 +100,7 @@ class Wallet with _$Wallet {
   String getAddressFromTxid(String txid) {
     for (final address in addresses ?? <Address>[])
       for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
-        if (utxo.outpoint.txid == txid) return address.address;
+        if (utxo.outpoint.txid == txid) return address.address; // this will return change
 
     return '';
   }

@@ -20,7 +20,8 @@ class Transaction with _$Transaction {
     String? toAddress,
     String? psbt,
     bool? rbfEnabled,
-    @Default(false) bool oldTx,
+    @Default(false)
+        bool oldTx,
     int? broadcastTime,
     // String? serializedTx,
     List<String>? inAddresses,
@@ -29,11 +30,19 @@ class Transaction with _$Transaction {
       includeFromJson: false,
       includeToJson: false,
     )
-    bdk.TransactionDetails? bdkTx,
+        bdk.TransactionDetails? bdkTx,
   }) = _Transaction;
   const Transaction._();
 
   factory Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
+  String mapOutValueToAddress(String value) {
+    if (outAddresses == null) return '';
+    final String address = outAddresses!.firstWhere(
+      (element) => element.split(':')[1] == value,
+      orElse: () => '',
+    );
+    return address.split(':')[0];
+  }
 
   bool isReceived() => sent == 0;
 

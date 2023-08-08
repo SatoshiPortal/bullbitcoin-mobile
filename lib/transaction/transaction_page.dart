@@ -70,28 +70,7 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
     final label = context.select((TransactionCubit cubit) => cubit.state.tx.label ?? '');
-
-    final toAddresses =
-        context.select((TransactionCubit cubit) => cubit.state.tx.outAddresses ?? []);
-    final err = context.select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
-
-    final txid = tx.txid;
-    final amt = tx.getAmount().abs();
-    final isReceived = tx.isReceived();
-    final fees = tx.fee ?? 0;
-    final amtStr = context.select(
-      (SettingsCubit cubit) => cubit.state.getAmountInUnits(amt, removeText: true),
-    );
-    final feeStr = context
-        .select((SettingsCubit cubit) => cubit.state.getAmountInUnits(fees, removeText: true));
-    final units = context.select(
-      (SettingsCubit cubit) => cubit.state.getUnitString(),
-    );
-    final status = tx.timestamp == 0 ? 'Pending' : 'Confirmed';
-    final time = tx.timestamp == 0 ? 'Waiting for confirmations' : timeago.format(tx.getDateTime());
-    final broadcastTime = tx.getBroadcastDateTime();
 
     return Scaffold(
       appBar: AppBar(
@@ -105,141 +84,170 @@ class _Screen extends StatelessWidget {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 800),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Gap(24),
-                const BumpFeesButton(),
-                BBText.title(
-                  isReceived ? 'Amount received' : 'Amount sent',
-                ),
-                const Gap(4),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
+      body: BlocBuilder<TransactionCubit, TransactionState>(
+        // buildWhen: (previous, current) => previous.tx != current.tx,
+        builder: (context, state) {
+          final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
+
+          final toAddresses = tx.outAddresses ?? [];
+
+          final err = context.select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
+
+          final txid = tx.txid;
+          final amt = tx.getAmount().abs();
+          final isReceived = tx.isReceived();
+          final fees = tx.fee ?? 0;
+          final amtStr = context.select(
+            (SettingsCubit cubit) => cubit.state.getAmountInUnits(amt, removeText: true),
+          );
+          final feeStr = context.select(
+            (SettingsCubit cubit) => cubit.state.getAmountInUnits(fees, removeText: true),
+          );
+          final units = context.select(
+            (SettingsCubit cubit) => cubit.state.getUnitString(),
+          );
+          final status = tx.timestamp == 0 ? 'Pending' : 'Confirmed';
+          final time =
+              tx.timestamp == 0 ? 'Waiting for confirmations' : timeago.format(tx.getDateTime());
+          final broadcastTime = tx.getBroadcastDateTime();
+
+          final toAddress = tx.mapOutValueToAddress((amt).toString());
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 800),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Container(
-                      transformAlignment: Alignment.center,
-                      transform: Matrix4.identity()..rotateZ(isReceived ? 1 : -1),
-                      child: const FaIcon(
-                        FontAwesomeIcons.arrowRight,
-                        size: 12,
-                      ),
-                    ),
-                    const Gap(8),
-                    BBText.titleLarge(
-                      amtStr,
-                      isBold: true,
+                    const Gap(24),
+                    const BumpFeesButton(),
+                    BBText.title(
+                      isReceived ? 'Amount received' : 'Amount sent',
                     ),
                     const Gap(4),
-                    BBText.title(
-                      units,
-                      isBold: true,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Container(
+                          transformAlignment: Alignment.center,
+                          transform: Matrix4.identity()..rotateZ(isReceived ? 1 : -1),
+                          child: const FaIcon(
+                            FontAwesomeIcons.arrowRight,
+                            size: 12,
+                          ),
+                        ),
+                        const Gap(8),
+                        BBText.titleLarge(
+                          amtStr,
+                          isBold: true,
+                        ),
+                        const Gap(4),
+                        BBText.title(
+                          units,
+                          isBold: true,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                const Gap(24),
-                const BBText.title(
-                  'Transaction ID',
-                ),
-                const Gap(4),
-                BBButton.text(
-                  onPressed: () {
-                    final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
-                    locator<Launcher>().launchApp(url);
-                  },
-                  label: txid,
-                ),
-                if (toAddresses.isNotEmpty) ...[
-                  const Gap(24),
-                  const BBText.title(
-                    'Recipient Bitcoin Address',
-                  ),
-                  // const Gap(4),
-                  CenterLeft(
-                    child: BBButton.text(
+                    const Gap(24),
+                    const BBText.title(
+                      'Transaction ID',
+                    ),
+                    const Gap(4),
+                    BBButton.text(
                       onPressed: () {
-                        final url = context
-                            .read<SettingsCubit>()
-                            .state
-                            .explorerAddressUrl(toAddresses.last);
+                        final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
                         locator<Launcher>().launchApp(url);
                       },
-                      label: toAddresses.last,
+                      label: txid,
                     ),
-                  ),
-                ],
-                const Gap(24),
-                const BBText.title(
-                  'Status',
-                ),
-                const Gap(4),
-                BBText.titleLarge(
-                  status,
-                  isBold: true,
-                ),
-                const Gap(24),
-                const BBText.title(
-                  'Network Fee',
-                ),
-                const Gap(4),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    BBText.titleLarge(
-                      feeStr,
-                      isBold: true,
+
+                    const Gap(24),
+                    const BBText.title(
+                      'Recipient Bitcoin Address',
+                    ),
+                    // const Gap(4),
+                    CenterLeft(
+                      child: BBButton.text(
+                        onPressed: () {
+                          final url = context.read<SettingsCubit>().state.explorerAddressUrl(
+                                toAddress,
+                              );
+                          locator<Launcher>().launchApp(url);
+                        },
+                        label: toAddress,
+                      ),
+                    ),
+
+                    const Gap(24),
+                    const BBText.title(
+                      'Status',
                     ),
                     const Gap(4),
-                    BBText.title(
-                      units,
+                    BBText.titleLarge(
+                      status,
                       isBold: true,
                     ),
+                    const Gap(24),
+                    const BBText.title(
+                      'Network Fee',
+                    ),
+                    const Gap(4),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        BBText.titleLarge(
+                          feeStr,
+                          isBold: true,
+                        ),
+                        const Gap(4),
+                        BBText.title(
+                          units,
+                          isBold: true,
+                        ),
+                      ],
+                    ),
+                    const Gap(24),
+                    BBText.title(
+                      isReceived ? 'Tranaction received' : 'Transaction sent',
+                    ),
+                    const Gap(4),
+                    BBText.titleLarge(
+                      time,
+                      isBold: true,
+                    ),
+                    if (broadcastTime != null) ...[
+                      const Gap(24),
+                      const BBText.title(
+                        'Sent Time',
+                      ),
+                      BBText.titleLarge(
+                        timeago.format(broadcastTime),
+                        isBold: true,
+                      ),
+                    ],
+                    const Gap(24),
+                    const BBText.title(
+                      'Change Label',
+                    ),
+                    const Gap(4),
+                    const TxLabelTextField(),
+                    const Gap(24),
+                    if (err.isNotEmpty) ...[
+                      const Gap(32),
+                      BBText.errorSmall(
+                        err,
+                      ),
+                    ],
+                    const Gap(100),
                   ],
                 ),
-                const Gap(24),
-                BBText.title(
-                  isReceived ? 'Tranaction received' : 'Transaction sent',
-                ),
-                const Gap(4),
-                BBText.titleLarge(
-                  time,
-                  isBold: true,
-                ),
-                if (broadcastTime != null) ...[
-                  const Gap(24),
-                  const BBText.title(
-                    'Sent Time',
-                  ),
-                  BBText.titleLarge(
-                    timeago.format(broadcastTime),
-                    isBold: true,
-                  ),
-                ],
-                const Gap(24),
-                const BBText.title(
-                  'Change Label',
-                ),
-                const Gap(4),
-                const TxLabelTextField(),
-                const Gap(24),
-                if (err.isNotEmpty) ...[
-                  const Gap(32),
-                  BBText.errorSmall(
-                    err,
-                  ),
-                ],
-                const Gap(100),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

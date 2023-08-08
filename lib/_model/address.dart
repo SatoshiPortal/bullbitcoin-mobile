@@ -29,6 +29,8 @@ class Address with _$Address {
         String errSaving,
     @Default(false)
         bool unspendable,
+    // @Default(true)
+    //     bool isMine,
     @Default(0)
         int highestPreviousBalance,
     @JsonKey(
