@@ -129,18 +129,18 @@ class Wallet with _$Wallet {
       case BBWalletType.newSeed:
         str = 'Bull Bitcoin Wallet';
         if (hasPassphrase())
-          str += '\n(Passphase Protected)';
+          str += '\n(Passphrase Protected)';
         else
-          str += '\n(No Passphase)';
+          str += '\n(No Passphrase)';
 
       case BBWalletType.xpub:
         str = 'Imported Xpub';
       case BBWalletType.words:
         str = 'Imported Mnemonic';
         if (hasPassphrase())
-          str += '\n(Passphase Protected)';
+          str += '\n(Passphrase Protected)';
         else
-          str += '\n(No Passphase)';
+          str += '\n(No Passphrase)';
       case BBWalletType.coldcard:
         str = 'Imported Coldcard';
 
