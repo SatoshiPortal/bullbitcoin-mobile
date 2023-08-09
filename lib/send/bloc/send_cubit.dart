@@ -73,20 +73,6 @@ class SendCubit extends Cubit<SendState> {
       );
       return;
     }
-    // if (fees.hasError) throw fees.error!;
-
-    // final blockchain = settingsCubit.state.blockchain;
-    // if (blockchain == null) throw 'No Blockchain';
-
-    // final fast = await blockchain.estimateFee(1);
-    // final medium = await blockchain.estimateFee(6);
-    // final slow = await blockchain.estimateFee(12);
-
-    // final fees = [
-    //   fast.asSatPerVb().round(),
-    //   medium.asSatPerVb().round(),
-    //   slow.asSatPerVb().round(),
-    // ];
 
     emit(
       state.copyWith(

@@ -148,9 +148,6 @@ class Wallet with _$Wallet {
         str = 'Imported Descriptors';
     }
 
-    // final name = walletNameStr(walletType);
-    // str += '\n$name';
-
     return str;
   }
 
@@ -169,9 +166,6 @@ class Wallet with _$Wallet {
       case BBWalletType.descriptors:
         str = 'Imported Descriptor';
     }
-
-    // final name = walletNameStr(walletType);
-    // str += '\n$name';
 
     return str;
   }
@@ -215,13 +209,6 @@ class Wallet with _$Wallet {
         return bdk.Network.Bitcoin;
     }
   }
-
-  // List<Address> allAddresses() {
-  //   final all = <Address>[];
-  //   all.addAll(addresses ?? <Address>[]);
-  //   all.addAll(toAddresses ?? <Address>[]);
-  //   return all;
-  // }
 
   List<Address> allFreezedAddresses() {
     final all = <Address>[];
@@ -275,9 +262,6 @@ extension W on ScriptType {
     }
   }
 }
-
-
-
 
 // segwit -> BIP84 -> m/84'/0'/0'/0-1/* -> wpkh
 // compatible -> BIP49 -> m/49'/0'/0'/0-1/* -> sh-wpkh

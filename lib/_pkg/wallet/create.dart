@@ -431,7 +431,36 @@ class WalletCreate {
     );
     wallet84 = wallet84.copyWith(name: wallet84.defaultNameString());
 
-    return ([wallet44, wallet49, wallet84], null);
+    final (bdkWallet44, b44Err) = await loadPublicBdkWallet(wallet44);
+    if (b44Err != null) {
+      return (null, b44Err);
+    }
+    final (bdkWallet49, b49Err) = await loadPublicBdkWallet(wallet49);
+    if (b49Err != null) {
+      return (null, b49Err);
+    }
+    final (bdkWallet84, b84Err) = await loadPublicBdkWallet(wallet84);
+    if (b84Err != null) {
+      return (null, b84Err);
+    }
+    final wallet44FirstAddress = await bdkWallet44!.getAddress(
+      addressIndex: const bdk.AddressIndex.peek(index: 0),
+    );
+    final wallet49FirstAddress = await bdkWallet49!.getAddress(
+      addressIndex: const bdk.AddressIndex.peek(index: 0),
+    );
+    final wallet84FirstAddress = await bdkWallet84!.getAddress(
+      addressIndex: const bdk.AddressIndex.peek(index: 0),
+    );
+    if (wallet44FirstAddress.address == coldWallet44.first &&
+        wallet49FirstAddress.address == coldWallet49.first &&
+        wallet84FirstAddress.address == coldWallet84.first)
+      return ([wallet44, wallet49, wallet84], null);
+    else
+      return (
+        null,
+        Err('First Addresses Did Not Match!'),
+      );
   }
 
   Future<(Wallet?, Err?)> oneFromSlip132Pub(
