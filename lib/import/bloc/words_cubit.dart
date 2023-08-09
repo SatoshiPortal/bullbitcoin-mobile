@@ -7,7 +7,17 @@ part 'words_cubit.freezed.dart';
 @freezed
 class WordsState with _$WordsState {
   const factory WordsState({
+    /**
+     * 
+     * SENSITIVE
+     * 
+     */
     List<String>? words,
+    /**
+     * 
+     * SENSITIVE
+     * 
+     */
     @Default('') String err,
     @Default(false) bool loading,
   }) = _WordsState;

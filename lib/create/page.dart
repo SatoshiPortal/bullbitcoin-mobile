@@ -123,7 +123,7 @@ class CreateWalletPassField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = context.select((CreateWalletCubit x) => x.state.passPhase);
+    final text = context.select((CreateWalletCubit x) => x.state.passPhrase);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),

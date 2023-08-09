@@ -230,13 +230,13 @@ class _ImportWordsPassphrase extends StatefulWidget {
 class _ImportWordsPassphraseState extends State<_ImportWordsPassphrase> {
   @override
   Widget build(BuildContext context) {
-    final text = context.select((ImportWalletCubit cubit) => cubit.state.password);
+    final text = context.select((ImportWalletCubit cubit) => cubit.state.passPhrase);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: BBTextInput.big(
         value: text,
-        onChanged: (value) => context.read<ImportWalletCubit>().passwordChanged(value),
+        onChanged: (value) => context.read<ImportWalletCubit>().passPhraseChanged(value),
         hint: 'Enter passphrase if needed',
       ),
     );

@@ -176,6 +176,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         wallet: wallet,
       ),
     );
+    clearSensitive();
   }
 
   void changePassword(String password) {
@@ -253,6 +254,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         wallet: wallet,
       ),
     );
+    clearSensitive();
   }
 
   void clearnMnemonic() {
@@ -373,6 +375,18 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       state.copyWith(
         deleting: false,
         deleted: true,
+      ),
+    );
+  }
+
+  void clearSensitive() {
+    emit(
+      state.copyWith(
+        mnemonic: [],
+        testBackupPassword: '',
+        password: '',
+        shuffledMnemonic: [],
+        testMnemonicOrder: [],
       ),
     );
   }

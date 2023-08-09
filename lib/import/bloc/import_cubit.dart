@@ -132,8 +132,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(state.copyWith(words: words));
   }
 
-  void passwordChanged(String text) {
-    emit(state.copyWith(password: text));
+  void passPhraseChanged(String text) {
+    emit(state.copyWith(passPhrase: text));
   }
 
   void xpubChanged(String text) {
@@ -141,23 +141,23 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void descriptorChanged(String text) {
-    emit(state.copyWith(manualDescriptor: text));
+    emit(state.copyWith(manualPublicDescriptor: text));
   }
 
   void cDescriptorChanged(String text) {
-    emit(state.copyWith(manualChangeDescriptor: text));
+    emit(state.copyWith(manualPublicChangeDescriptor: text));
   }
 
   void combinedDescriptorChanged(String text) {
     emit(
-      state.copyWith(manualCombinedDescriptor: text),
+      state.copyWith(manualCombinedPublicDescriptor: text),
     );
     final desc = splitCombinedChanged(text, false);
     final cdesc = splitCombinedChanged(text, true);
     emit(
       state.copyWith(
-        manualDescriptor: desc,
-        manualChangeDescriptor: cdesc,
+        manualPublicDescriptor: desc,
+        manualPublicChangeDescriptor: cdesc,
       ),
     );
   }
@@ -332,7 +332,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       switch (type) {
         case ImportTypes.words:
           final mnemonic = state.words.join(' ');
-          final passphrase = state.password.isEmpty ? '' : state.password;
+          final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
 
           final (ws, wErrs) = await walletCreate.allFromBIP39(
             mnemonic,
@@ -428,11 +428,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
         return;
       }
 
-      if (state.password.isNotEmpty) {
-        final password = state.password.isEmpty ? '' : state.password;
+      if (state.passPhrase.isNotEmpty) {
+        final passPhrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
 
         final passphrase =
-            Passphrase(passphrase: password, sourceFingerprint: selectedWallet.sourceFingerprint);
+            Passphrase(passphrase: passPhrase, sourceFingerprint: selectedWallet.sourceFingerprint);
 
         final err = await walletRepository.newPassphrase(
           passphrase: passphrase,
@@ -464,12 +464,23 @@ class ImportWalletCubit extends Cubit<ImportState> {
           savingWallet: false,
         ),
       );
-    } else
+    } else {
       emit(
         state.copyWith(
           savingWallet: false,
           savedWallet: selectedWallet,
         ),
       );
+      clearSensitive();
+    }
+  }
+
+  void clearSensitive() async {
+    emit(
+      state.copyWith(
+        words: [],
+        passPhrase: '',
+      ),
+    );
   }
 }

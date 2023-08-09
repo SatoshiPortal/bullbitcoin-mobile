@@ -16,21 +16,32 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ImportState {
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   List<String> get words => throw _privateConstructorUsedError;
-  String get password => throw _privateConstructorUsedError;
+  String get passPhrase => throw _privateConstructorUsedError;
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   String get xpub => throw _privateConstructorUsedError;
   String get tempXpub => throw _privateConstructorUsedError;
-  String get fingerprint =>
-      throw _privateConstructorUsedError; // @Default('') String coldCardFile,
+  String get fingerprint => throw _privateConstructorUsedError;
   ImportSteps get importStep => throw _privateConstructorUsedError;
   ScriptType get scriptType => throw _privateConstructorUsedError;
   ImportTypes get importType => throw _privateConstructorUsedError;
   List<Wallet>? get walletDetails => throw _privateConstructorUsedError;
   String get customDerivation => throw _privateConstructorUsedError;
   int get accountNumber => throw _privateConstructorUsedError;
-  String? get manualDescriptor => throw _privateConstructorUsedError;
-  String? get manualChangeDescriptor => throw _privateConstructorUsedError;
-  String? get manualCombinedDescriptor => throw _privateConstructorUsedError;
+  String? get manualPublicDescriptor => throw _privateConstructorUsedError;
+  String? get manualPublicChangeDescriptor =>
+      throw _privateConstructorUsedError;
+  String? get manualCombinedPublicDescriptor =>
+      throw _privateConstructorUsedError;
   bool get importing => throw _privateConstructorUsedError;
   String get errImporting => throw _privateConstructorUsedError;
   bool get loadingFile => throw _privateConstructorUsedError;
@@ -53,7 +64,7 @@ abstract class $ImportStateCopyWith<$Res> {
   @useResult
   $Res call(
       {List<String> words,
-      String password,
+      String passPhrase,
       String xpub,
       String tempXpub,
       String fingerprint,
@@ -63,9 +74,9 @@ abstract class $ImportStateCopyWith<$Res> {
       List<Wallet>? walletDetails,
       String customDerivation,
       int accountNumber,
-      String? manualDescriptor,
-      String? manualChangeDescriptor,
-      String? manualCombinedDescriptor,
+      String? manualPublicDescriptor,
+      String? manualPublicChangeDescriptor,
+      String? manualCombinedPublicDescriptor,
       bool importing,
       String errImporting,
       bool loadingFile,
@@ -93,7 +104,7 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
   @override
   $Res call({
     Object? words = null,
-    Object? password = null,
+    Object? passPhrase = null,
     Object? xpub = null,
     Object? tempXpub = null,
     Object? fingerprint = null,
@@ -103,9 +114,9 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
     Object? walletDetails = freezed,
     Object? customDerivation = null,
     Object? accountNumber = null,
-    Object? manualDescriptor = freezed,
-    Object? manualChangeDescriptor = freezed,
-    Object? manualCombinedDescriptor = freezed,
+    Object? manualPublicDescriptor = freezed,
+    Object? manualPublicChangeDescriptor = freezed,
+    Object? manualCombinedPublicDescriptor = freezed,
     Object? importing = null,
     Object? errImporting = null,
     Object? loadingFile = null,
@@ -120,9 +131,9 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
           ? _value.words
           : words // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
+      passPhrase: null == passPhrase
+          ? _value.passPhrase
+          : passPhrase // ignore: cast_nullable_to_non_nullable
               as String,
       xpub: null == xpub
           ? _value.xpub
@@ -160,17 +171,17 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
           ? _value.accountNumber
           : accountNumber // ignore: cast_nullable_to_non_nullable
               as int,
-      manualDescriptor: freezed == manualDescriptor
-          ? _value.manualDescriptor
-          : manualDescriptor // ignore: cast_nullable_to_non_nullable
+      manualPublicDescriptor: freezed == manualPublicDescriptor
+          ? _value.manualPublicDescriptor
+          : manualPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String?,
-      manualChangeDescriptor: freezed == manualChangeDescriptor
-          ? _value.manualChangeDescriptor
-          : manualChangeDescriptor // ignore: cast_nullable_to_non_nullable
+      manualPublicChangeDescriptor: freezed == manualPublicChangeDescriptor
+          ? _value.manualPublicChangeDescriptor
+          : manualPublicChangeDescriptor // ignore: cast_nullable_to_non_nullable
               as String?,
-      manualCombinedDescriptor: freezed == manualCombinedDescriptor
-          ? _value.manualCombinedDescriptor
-          : manualCombinedDescriptor // ignore: cast_nullable_to_non_nullable
+      manualCombinedPublicDescriptor: freezed == manualCombinedPublicDescriptor
+          ? _value.manualCombinedPublicDescriptor
+          : manualCombinedPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String?,
       importing: null == importing
           ? _value.importing
@@ -242,7 +253,7 @@ abstract class _$$_ImportStateCopyWith<$Res>
   @useResult
   $Res call(
       {List<String> words,
-      String password,
+      String passPhrase,
       String xpub,
       String tempXpub,
       String fingerprint,
@@ -252,9 +263,9 @@ abstract class _$$_ImportStateCopyWith<$Res>
       List<Wallet>? walletDetails,
       String customDerivation,
       int accountNumber,
-      String? manualDescriptor,
-      String? manualChangeDescriptor,
-      String? manualCombinedDescriptor,
+      String? manualPublicDescriptor,
+      String? manualPublicChangeDescriptor,
+      String? manualCombinedPublicDescriptor,
       bool importing,
       String errImporting,
       bool loadingFile,
@@ -282,7 +293,7 @@ class __$$_ImportStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? words = null,
-    Object? password = null,
+    Object? passPhrase = null,
     Object? xpub = null,
     Object? tempXpub = null,
     Object? fingerprint = null,
@@ -292,9 +303,9 @@ class __$$_ImportStateCopyWithImpl<$Res>
     Object? walletDetails = freezed,
     Object? customDerivation = null,
     Object? accountNumber = null,
-    Object? manualDescriptor = freezed,
-    Object? manualChangeDescriptor = freezed,
-    Object? manualCombinedDescriptor = freezed,
+    Object? manualPublicDescriptor = freezed,
+    Object? manualPublicChangeDescriptor = freezed,
+    Object? manualCombinedPublicDescriptor = freezed,
     Object? importing = null,
     Object? errImporting = null,
     Object? loadingFile = null,
@@ -309,9 +320,9 @@ class __$$_ImportStateCopyWithImpl<$Res>
           ? _value._words
           : words // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      password: null == password
-          ? _value.password
-          : password // ignore: cast_nullable_to_non_nullable
+      passPhrase: null == passPhrase
+          ? _value.passPhrase
+          : passPhrase // ignore: cast_nullable_to_non_nullable
               as String,
       xpub: null == xpub
           ? _value.xpub
@@ -349,17 +360,17 @@ class __$$_ImportStateCopyWithImpl<$Res>
           ? _value.accountNumber
           : accountNumber // ignore: cast_nullable_to_non_nullable
               as int,
-      manualDescriptor: freezed == manualDescriptor
-          ? _value.manualDescriptor
-          : manualDescriptor // ignore: cast_nullable_to_non_nullable
+      manualPublicDescriptor: freezed == manualPublicDescriptor
+          ? _value.manualPublicDescriptor
+          : manualPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String?,
-      manualChangeDescriptor: freezed == manualChangeDescriptor
-          ? _value.manualChangeDescriptor
-          : manualChangeDescriptor // ignore: cast_nullable_to_non_nullable
+      manualPublicChangeDescriptor: freezed == manualPublicChangeDescriptor
+          ? _value.manualPublicChangeDescriptor
+          : manualPublicChangeDescriptor // ignore: cast_nullable_to_non_nullable
               as String?,
-      manualCombinedDescriptor: freezed == manualCombinedDescriptor
-          ? _value.manualCombinedDescriptor
-          : manualCombinedDescriptor // ignore: cast_nullable_to_non_nullable
+      manualCombinedPublicDescriptor: freezed == manualCombinedPublicDescriptor
+          ? _value.manualCombinedPublicDescriptor
+          : manualCombinedPublicDescriptor // ignore: cast_nullable_to_non_nullable
               as String?,
       importing: null == importing
           ? _value.importing
@@ -402,7 +413,7 @@ class __$$_ImportStateCopyWithImpl<$Res>
 class _$_ImportState extends _ImportState {
   const _$_ImportState(
       {final List<String> words = emptyWords,
-      this.password = '',
+      this.passPhrase = '',
       this.xpub = '',
       this.tempXpub = '',
       this.fingerprint = '',
@@ -412,9 +423,9 @@ class _$_ImportState extends _ImportState {
       final List<Wallet>? walletDetails,
       this.customDerivation = '',
       this.accountNumber = 0,
-      this.manualDescriptor,
-      this.manualChangeDescriptor,
-      this.manualCombinedDescriptor,
+      this.manualPublicDescriptor,
+      this.manualPublicChangeDescriptor,
+      this.manualCombinedPublicDescriptor,
       this.importing = false,
       this.errImporting = '',
       this.loadingFile = false,
@@ -427,7 +438,17 @@ class _$_ImportState extends _ImportState {
         _walletDetails = walletDetails,
         super._();
 
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   final List<String> _words;
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   @override
   @JsonKey()
   List<String> get words {
@@ -438,7 +459,12 @@ class _$_ImportState extends _ImportState {
 
   @override
   @JsonKey()
-  final String password;
+  final String passPhrase;
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   @override
   @JsonKey()
   final String xpub;
@@ -448,7 +474,6 @@ class _$_ImportState extends _ImportState {
   @override
   @JsonKey()
   final String fingerprint;
-// @Default('') String coldCardFile,
   @override
   @JsonKey()
   final ImportSteps importStep;
@@ -475,11 +500,11 @@ class _$_ImportState extends _ImportState {
   @JsonKey()
   final int accountNumber;
   @override
-  final String? manualDescriptor;
+  final String? manualPublicDescriptor;
   @override
-  final String? manualChangeDescriptor;
+  final String? manualPublicChangeDescriptor;
   @override
-  final String? manualCombinedDescriptor;
+  final String? manualCombinedPublicDescriptor;
   @override
   @JsonKey()
   final bool importing;
@@ -505,7 +530,7 @@ class _$_ImportState extends _ImportState {
 
   @override
   String toString() {
-    return 'ImportState(words: $words, password: $password, xpub: $xpub, tempXpub: $tempXpub, fingerprint: $fingerprint, importStep: $importStep, scriptType: $scriptType, importType: $importType, walletDetails: $walletDetails, customDerivation: $customDerivation, accountNumber: $accountNumber, manualDescriptor: $manualDescriptor, manualChangeDescriptor: $manualChangeDescriptor, manualCombinedDescriptor: $manualCombinedDescriptor, importing: $importing, errImporting: $errImporting, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, savingWallet: $savingWallet, errSavingWallet: $errSavingWallet, savedWallet: $savedWallet, coldCard: $coldCard)';
+    return 'ImportState(words: $words, passPhrase: $passPhrase, xpub: $xpub, tempXpub: $tempXpub, fingerprint: $fingerprint, importStep: $importStep, scriptType: $scriptType, importType: $importType, walletDetails: $walletDetails, customDerivation: $customDerivation, accountNumber: $accountNumber, manualPublicDescriptor: $manualPublicDescriptor, manualPublicChangeDescriptor: $manualPublicChangeDescriptor, manualCombinedPublicDescriptor: $manualCombinedPublicDescriptor, importing: $importing, errImporting: $errImporting, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, savingWallet: $savingWallet, errSavingWallet: $errSavingWallet, savedWallet: $savedWallet, coldCard: $coldCard)';
   }
 
   @override
@@ -514,8 +539,8 @@ class _$_ImportState extends _ImportState {
         (other.runtimeType == runtimeType &&
             other is _$_ImportState &&
             const DeepCollectionEquality().equals(other._words, _words) &&
-            (identical(other.password, password) ||
-                other.password == password) &&
+            (identical(other.passPhrase, passPhrase) ||
+                other.passPhrase == passPhrase) &&
             (identical(other.xpub, xpub) || other.xpub == xpub) &&
             (identical(other.tempXpub, tempXpub) ||
                 other.tempXpub == tempXpub) &&
@@ -533,13 +558,16 @@ class _$_ImportState extends _ImportState {
                 other.customDerivation == customDerivation) &&
             (identical(other.accountNumber, accountNumber) ||
                 other.accountNumber == accountNumber) &&
-            (identical(other.manualDescriptor, manualDescriptor) ||
-                other.manualDescriptor == manualDescriptor) &&
-            (identical(other.manualChangeDescriptor, manualChangeDescriptor) ||
-                other.manualChangeDescriptor == manualChangeDescriptor) &&
-            (identical(
-                    other.manualCombinedDescriptor, manualCombinedDescriptor) ||
-                other.manualCombinedDescriptor == manualCombinedDescriptor) &&
+            (identical(other.manualPublicDescriptor, manualPublicDescriptor) ||
+                other.manualPublicDescriptor == manualPublicDescriptor) &&
+            (identical(other.manualPublicChangeDescriptor,
+                    manualPublicChangeDescriptor) ||
+                other.manualPublicChangeDescriptor ==
+                    manualPublicChangeDescriptor) &&
+            (identical(other.manualCombinedPublicDescriptor,
+                    manualCombinedPublicDescriptor) ||
+                other.manualCombinedPublicDescriptor ==
+                    manualCombinedPublicDescriptor) &&
             (identical(other.importing, importing) ||
                 other.importing == importing) &&
             (identical(other.errImporting, errImporting) ||
@@ -562,7 +590,7 @@ class _$_ImportState extends _ImportState {
   int get hashCode => Object.hashAll([
         runtimeType,
         const DeepCollectionEquality().hash(_words),
-        password,
+        passPhrase,
         xpub,
         tempXpub,
         fingerprint,
@@ -572,9 +600,9 @@ class _$_ImportState extends _ImportState {
         const DeepCollectionEquality().hash(_walletDetails),
         customDerivation,
         accountNumber,
-        manualDescriptor,
-        manualChangeDescriptor,
-        manualCombinedDescriptor,
+        manualPublicDescriptor,
+        manualPublicChangeDescriptor,
+        manualCombinedPublicDescriptor,
         importing,
         errImporting,
         loadingFile,
@@ -595,7 +623,7 @@ class _$_ImportState extends _ImportState {
 abstract class _ImportState extends ImportState {
   const factory _ImportState(
       {final List<String> words,
-      final String password,
+      final String passPhrase,
       final String xpub,
       final String tempXpub,
       final String fingerprint,
@@ -605,9 +633,9 @@ abstract class _ImportState extends ImportState {
       final List<Wallet>? walletDetails,
       final String customDerivation,
       final int accountNumber,
-      final String? manualDescriptor,
-      final String? manualChangeDescriptor,
-      final String? manualCombinedDescriptor,
+      final String? manualPublicDescriptor,
+      final String? manualPublicChangeDescriptor,
+      final String? manualCombinedPublicDescriptor,
       final bool importing,
       final String errImporting,
       final bool loadingFile,
@@ -619,16 +647,26 @@ abstract class _ImportState extends ImportState {
   const _ImportState._() : super._();
 
   @override
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   List<String> get words;
   @override
-  String get password;
+  String get passPhrase;
   @override
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   String get xpub;
   @override
   String get tempXpub;
   @override
   String get fingerprint;
-  @override // @Default('') String coldCardFile,
+  @override
   ImportSteps get importStep;
   @override
   ScriptType get scriptType;
@@ -641,11 +679,11 @@ abstract class _ImportState extends ImportState {
   @override
   int get accountNumber;
   @override
-  String? get manualDescriptor;
+  String? get manualPublicDescriptor;
   @override
-  String? get manualChangeDescriptor;
+  String? get manualPublicChangeDescriptor;
   @override
-  String? get manualCombinedDescriptor;
+  String? get manualCombinedPublicDescriptor;
   @override
   bool get importing;
   @override

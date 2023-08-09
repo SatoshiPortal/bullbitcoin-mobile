@@ -23,21 +23,30 @@ enum ImportSteps {
 @freezed
 class ImportState with _$ImportState {
   const factory ImportState({
+    /**
+     * 
+     * SENSITIVE
+     * 
+     */
     @Default(emptyWords) List<String> words,
-    @Default('') String password,
+    @Default('') String passPhrase,
+    /**
+     * 
+     * SENSITIVE
+     * 
+     */
     @Default('') String xpub,
     @Default('') String tempXpub,
     @Default('') String fingerprint,
-    // @Default('') String coldCardFile,
     @Default(ImportSteps.selectCreateType) ImportSteps importStep,
     @Default(ScriptType.bip84) ScriptType scriptType,
     @Default(ImportTypes.notSelected) ImportTypes importType,
     List<Wallet>? walletDetails,
     @Default('') String customDerivation,
     @Default(0) int accountNumber,
-    String? manualDescriptor,
-    String? manualChangeDescriptor,
-    String? manualCombinedDescriptor,
+    String? manualPublicDescriptor,
+    String? manualPublicChangeDescriptor,
+    String? manualCombinedPublicDescriptor,
     @Default(false) bool importing,
     @Default('') String errImporting,
     @Default(false) bool loadingFile,

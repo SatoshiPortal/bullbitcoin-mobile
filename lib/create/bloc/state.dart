@@ -6,10 +6,20 @@ part 'state.freezed.dart';
 @freezed
 class CreateWalletState with _$CreateWalletState {
   const factory CreateWalletState({
+    /**
+     * 
+     * SENSITIVE
+     * 
+     */
     List<String>? mnemonic,
+    @Default('') String passPhrase,
+    /**
+     * 
+     * SENSITIVE
+     * 
+     */
     @Default(true) bool creatingNmemonic,
     @Default('') String errCreatingNmemonic,
-    @Default('') String passPhase,
     @Default(false) bool saving,
     @Default('') String errSaving,
     @Default(false) bool saved,

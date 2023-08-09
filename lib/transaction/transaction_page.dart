@@ -89,7 +89,7 @@ class _Screen extends StatelessWidget {
         builder: (context, state) {
           final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
 
-          final toAddresses = tx.outAddresses ?? [];
+          // final toAddresses = tx.outAddresses ?? [];
 
           final err = context.select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
 

@@ -16,7 +16,17 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$WordsState {
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   List<String>? get words => throw _privateConstructorUsedError;
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   String get err => throw _privateConstructorUsedError;
   bool get loading => throw _privateConstructorUsedError;
 
@@ -119,7 +129,17 @@ class _$_WordsState extends _WordsState {
       : _words = words,
         super._();
 
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   final List<String>? _words;
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   @override
   List<String>? get words {
     final value = _words;
@@ -129,6 +149,11 @@ class _$_WordsState extends _WordsState {
     return EqualUnmodifiableListView(value);
   }
 
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   @override
   @JsonKey()
   final String err;
@@ -170,8 +195,18 @@ abstract class _WordsState extends WordsState {
   const _WordsState._() : super._();
 
   @override
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   List<String>? get words;
   @override
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   String get err;
   @override
   bool get loading;

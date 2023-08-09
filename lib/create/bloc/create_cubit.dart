@@ -49,7 +49,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   }
 
   void passPhraseChanged(String text) {
-    emit(state.copyWith(passPhase: text));
+    emit(state.copyWith(passPhrase: text));
   }
 
   // void _showSavingErr(String err) {
@@ -73,7 +73,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     }
     final (wallet, wErr) = await walletCreate.oneFromBIP39(
       seed!,
-      state.passPhase,
+      state.passPhrase,
       ScriptType.bip84,
       network,
       false,
@@ -90,6 +90,8 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (wsErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }
+    clearSensitive();
+
     emit(
       state.copyWith(
         saving: false,
@@ -134,14 +136,19 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }
 
-    emit(state.copyWith(savedWallet: wallet));
+    clearSensitive();
 
     emit(
       state.copyWith(
+        savedWallet: wallet,
         saving: false,
         saved: true,
       ),
     );
+  }
+
+  void clearSensitive() {
+    emit(state.copyWith(mnemonic: [], passPhrase: ''));
   }
 }
 

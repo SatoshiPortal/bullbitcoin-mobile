@@ -8,12 +8,22 @@ class WalletSettingsState with _$WalletSettingsState {
   const factory WalletSettingsState({
     required Wallet wallet,
     @Default('') String name,
+    /**
+     * 
+     * SENSITIVE
+     * 
+     */
     @Default([]) List<String> mnemonic,
     @Default('') String password,
     @Default([]) List<String> shuffledMnemonic,
     @Default([]) List<({String word, int shuffleIdx})> testMnemonicOrder,
-    @Default(false) bool backup,
     @Default('') String testBackupPassword,
+    /**
+     * 
+     * SENSITIVE
+     * 
+     */
+    @Default(false) bool backup,
     @Default(false) bool testingBackup,
     @Default('') String errTestingBackup,
     @Default(false) bool backupTested,

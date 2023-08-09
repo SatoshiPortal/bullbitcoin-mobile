@@ -225,9 +225,10 @@ class AdvancedOptions extends StatelessWidget {
     final path = context.select((ImportWalletCubit x) => x.state.customDerivation);
     final fingerprint = context.select((ImportWalletCubit x) => x.state.fingerprint);
     final combined =
-        context.select((ImportWalletCubit x) => x.state.manualCombinedDescriptor ?? '');
-    final descr = context.select((ImportWalletCubit x) => x.state.manualDescriptor ?? '');
-    final cdescr = context.select((ImportWalletCubit x) => x.state.manualCombinedDescriptor ?? '');
+        context.select((ImportWalletCubit x) => x.state.manualCombinedPublicDescriptor ?? '');
+    final descr = context.select((ImportWalletCubit x) => x.state.manualPublicDescriptor ?? '');
+    final cdescr =
+        context.select((ImportWalletCubit x) => x.state.manualCombinedPublicDescriptor ?? '');
 
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
 

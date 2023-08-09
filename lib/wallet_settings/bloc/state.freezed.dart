@@ -18,13 +18,23 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$WalletSettingsState {
   Wallet get wallet => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   List<String> get mnemonic => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   List<String> get shuffledMnemonic => throw _privateConstructorUsedError;
   List<({int shuffleIdx, String word})> get testMnemonicOrder =>
       throw _privateConstructorUsedError;
-  bool get backup => throw _privateConstructorUsedError;
   String get testBackupPassword => throw _privateConstructorUsedError;
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
+  bool get backup => throw _privateConstructorUsedError;
   bool get testingBackup => throw _privateConstructorUsedError;
   String get errTestingBackup => throw _privateConstructorUsedError;
   bool get backupTested => throw _privateConstructorUsedError;
@@ -58,8 +68,8 @@ abstract class $WalletSettingsStateCopyWith<$Res> {
       String password,
       List<String> shuffledMnemonic,
       List<({int shuffleIdx, String word})> testMnemonicOrder,
-      bool backup,
       String testBackupPassword,
+      bool backup,
       bool testingBackup,
       String errTestingBackup,
       bool backupTested,
@@ -97,8 +107,8 @@ class _$WalletSettingsStateCopyWithImpl<$Res, $Val extends WalletSettingsState>
     Object? password = null,
     Object? shuffledMnemonic = null,
     Object? testMnemonicOrder = null,
-    Object? backup = null,
     Object? testBackupPassword = null,
+    Object? backup = null,
     Object? testingBackup = null,
     Object? errTestingBackup = null,
     Object? backupTested = null,
@@ -139,14 +149,14 @@ class _$WalletSettingsStateCopyWithImpl<$Res, $Val extends WalletSettingsState>
           ? _value.testMnemonicOrder
           : testMnemonicOrder // ignore: cast_nullable_to_non_nullable
               as List<({int shuffleIdx, String word})>,
-      backup: null == backup
-          ? _value.backup
-          : backup // ignore: cast_nullable_to_non_nullable
-              as bool,
       testBackupPassword: null == testBackupPassword
           ? _value.testBackupPassword
           : testBackupPassword // ignore: cast_nullable_to_non_nullable
               as String,
+      backup: null == backup
+          ? _value.backup
+          : backup // ignore: cast_nullable_to_non_nullable
+              as bool,
       testingBackup: null == testingBackup
           ? _value.testingBackup
           : testingBackup // ignore: cast_nullable_to_non_nullable
@@ -230,8 +240,8 @@ abstract class _$$_WalletSettingsStateCopyWith<$Res>
       String password,
       List<String> shuffledMnemonic,
       List<({int shuffleIdx, String word})> testMnemonicOrder,
-      bool backup,
       String testBackupPassword,
+      bool backup,
       bool testingBackup,
       String errTestingBackup,
       bool backupTested,
@@ -268,8 +278,8 @@ class __$$_WalletSettingsStateCopyWithImpl<$Res>
     Object? password = null,
     Object? shuffledMnemonic = null,
     Object? testMnemonicOrder = null,
-    Object? backup = null,
     Object? testBackupPassword = null,
+    Object? backup = null,
     Object? testingBackup = null,
     Object? errTestingBackup = null,
     Object? backupTested = null,
@@ -310,14 +320,14 @@ class __$$_WalletSettingsStateCopyWithImpl<$Res>
           ? _value._testMnemonicOrder
           : testMnemonicOrder // ignore: cast_nullable_to_non_nullable
               as List<({int shuffleIdx, String word})>,
-      backup: null == backup
-          ? _value.backup
-          : backup // ignore: cast_nullable_to_non_nullable
-              as bool,
       testBackupPassword: null == testBackupPassword
           ? _value.testBackupPassword
           : testBackupPassword // ignore: cast_nullable_to_non_nullable
               as String,
+      backup: null == backup
+          ? _value.backup
+          : backup // ignore: cast_nullable_to_non_nullable
+              as bool,
       testingBackup: null == testingBackup
           ? _value.testingBackup
           : testingBackup // ignore: cast_nullable_to_non_nullable
@@ -388,8 +398,8 @@ class _$_WalletSettingsState extends _WalletSettingsState {
       this.password = '',
       final List<String> shuffledMnemonic = const [],
       final List<({int shuffleIdx, String word})> testMnemonicOrder = const [],
-      this.backup = false,
       this.testBackupPassword = '',
+      this.backup = false,
       this.testingBackup = false,
       this.errTestingBackup = '',
       this.backupTested = false,
@@ -414,7 +424,17 @@ class _$_WalletSettingsState extends _WalletSettingsState {
   @override
   @JsonKey()
   final String name;
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   final List<String> _mnemonic;
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   @override
   @JsonKey()
   List<String> get mnemonic {
@@ -448,10 +468,15 @@ class _$_WalletSettingsState extends _WalletSettingsState {
 
   @override
   @JsonKey()
-  final bool backup;
+  final String testBackupPassword;
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   @override
   @JsonKey()
-  final String testBackupPassword;
+  final bool backup;
   @override
   @JsonKey()
   final bool testingBackup;
@@ -497,7 +522,7 @@ class _$_WalletSettingsState extends _WalletSettingsState {
 
   @override
   String toString() {
-    return 'WalletSettingsState(wallet: $wallet, name: $name, mnemonic: $mnemonic, password: $password, shuffledMnemonic: $shuffledMnemonic, testMnemonicOrder: $testMnemonicOrder, backup: $backup, testBackupPassword: $testBackupPassword, testingBackup: $testingBackup, errTestingBackup: $errTestingBackup, backupTested: $backupTested, gettingAddresses: $gettingAddresses, errGettingAddresses: $errGettingAddresses, savingName: $savingName, errSavingName: $errSavingName, savedName: $savedName, deleting: $deleting, errDeleting: $errDeleting, deleted: $deleted, savingFile: $savingFile, errSavingFile: $errSavingFile, savedFile: $savedFile)';
+    return 'WalletSettingsState(wallet: $wallet, name: $name, mnemonic: $mnemonic, password: $password, shuffledMnemonic: $shuffledMnemonic, testMnemonicOrder: $testMnemonicOrder, testBackupPassword: $testBackupPassword, backup: $backup, testingBackup: $testingBackup, errTestingBackup: $errTestingBackup, backupTested: $backupTested, gettingAddresses: $gettingAddresses, errGettingAddresses: $errGettingAddresses, savingName: $savingName, errSavingName: $errSavingName, savedName: $savedName, deleting: $deleting, errDeleting: $errDeleting, deleted: $deleted, savingFile: $savingFile, errSavingFile: $errSavingFile, savedFile: $savedFile)';
   }
 
   @override
@@ -514,9 +539,9 @@ class _$_WalletSettingsState extends _WalletSettingsState {
                 .equals(other._shuffledMnemonic, _shuffledMnemonic) &&
             const DeepCollectionEquality()
                 .equals(other._testMnemonicOrder, _testMnemonicOrder) &&
-            (identical(other.backup, backup) || other.backup == backup) &&
             (identical(other.testBackupPassword, testBackupPassword) ||
                 other.testBackupPassword == testBackupPassword) &&
+            (identical(other.backup, backup) || other.backup == backup) &&
             (identical(other.testingBackup, testingBackup) ||
                 other.testingBackup == testingBackup) &&
             (identical(other.errTestingBackup, errTestingBackup) ||
@@ -555,8 +580,8 @@ class _$_WalletSettingsState extends _WalletSettingsState {
         password,
         const DeepCollectionEquality().hash(_shuffledMnemonic),
         const DeepCollectionEquality().hash(_testMnemonicOrder),
-        backup,
         testBackupPassword,
+        backup,
         testingBackup,
         errTestingBackup,
         backupTested,
@@ -589,8 +614,8 @@ abstract class _WalletSettingsState extends WalletSettingsState {
       final String password,
       final List<String> shuffledMnemonic,
       final List<({int shuffleIdx, String word})> testMnemonicOrder,
-      final bool backup,
       final String testBackupPassword,
+      final bool backup,
       final bool testingBackup,
       final String errTestingBackup,
       final bool backupTested,
@@ -612,6 +637,11 @@ abstract class _WalletSettingsState extends WalletSettingsState {
   @override
   String get name;
   @override
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   List<String> get mnemonic;
   @override
   String get password;
@@ -620,9 +650,14 @@ abstract class _WalletSettingsState extends WalletSettingsState {
   @override
   List<({int shuffleIdx, String word})> get testMnemonicOrder;
   @override
-  bool get backup;
-  @override
   String get testBackupPassword;
+  @override
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
+  bool get backup;
   @override
   bool get testingBackup;
   @override

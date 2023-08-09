@@ -291,6 +291,7 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(downloaded: false));
   }
 
+  // SENSITIVE DATA HANDLER
   void confirmClickedd() async {
     if (state.sending) return;
     final bdkWallet = walletBloc.state.bdkWallet;

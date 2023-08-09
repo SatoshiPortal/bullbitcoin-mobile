@@ -16,10 +16,20 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$CreateWalletState {
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   List<String>? get mnemonic => throw _privateConstructorUsedError;
+  String get passPhrase => throw _privateConstructorUsedError;
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   bool get creatingNmemonic => throw _privateConstructorUsedError;
   String get errCreatingNmemonic => throw _privateConstructorUsedError;
-  String get passPhase => throw _privateConstructorUsedError;
   bool get saving => throw _privateConstructorUsedError;
   String get errSaving => throw _privateConstructorUsedError;
   bool get saved => throw _privateConstructorUsedError;
@@ -38,9 +48,9 @@ abstract class $CreateWalletStateCopyWith<$Res> {
   @useResult
   $Res call(
       {List<String>? mnemonic,
+      String passPhrase,
       bool creatingNmemonic,
       String errCreatingNmemonic,
-      String passPhase,
       bool saving,
       String errSaving,
       bool saved,
@@ -63,9 +73,9 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
   @override
   $Res call({
     Object? mnemonic = freezed,
+    Object? passPhrase = null,
     Object? creatingNmemonic = null,
     Object? errCreatingNmemonic = null,
-    Object? passPhase = null,
     Object? saving = null,
     Object? errSaving = null,
     Object? saved = null,
@@ -76,6 +86,10 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
           ? _value.mnemonic
           : mnemonic // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      passPhrase: null == passPhrase
+          ? _value.passPhrase
+          : passPhrase // ignore: cast_nullable_to_non_nullable
+              as String,
       creatingNmemonic: null == creatingNmemonic
           ? _value.creatingNmemonic
           : creatingNmemonic // ignore: cast_nullable_to_non_nullable
@@ -83,10 +97,6 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
       errCreatingNmemonic: null == errCreatingNmemonic
           ? _value.errCreatingNmemonic
           : errCreatingNmemonic // ignore: cast_nullable_to_non_nullable
-              as String,
-      passPhase: null == passPhase
-          ? _value.passPhase
-          : passPhase // ignore: cast_nullable_to_non_nullable
               as String,
       saving: null == saving
           ? _value.saving
@@ -130,9 +140,9 @@ abstract class _$$_CreateWalletStateCopyWith<$Res>
   @useResult
   $Res call(
       {List<String>? mnemonic,
+      String passPhrase,
       bool creatingNmemonic,
       String errCreatingNmemonic,
-      String passPhase,
       bool saving,
       String errSaving,
       bool saved,
@@ -154,9 +164,9 @@ class __$$_CreateWalletStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? mnemonic = freezed,
+    Object? passPhrase = null,
     Object? creatingNmemonic = null,
     Object? errCreatingNmemonic = null,
-    Object? passPhase = null,
     Object? saving = null,
     Object? errSaving = null,
     Object? saved = null,
@@ -167,6 +177,10 @@ class __$$_CreateWalletStateCopyWithImpl<$Res>
           ? _value._mnemonic
           : mnemonic // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      passPhrase: null == passPhrase
+          ? _value.passPhrase
+          : passPhrase // ignore: cast_nullable_to_non_nullable
+              as String,
       creatingNmemonic: null == creatingNmemonic
           ? _value.creatingNmemonic
           : creatingNmemonic // ignore: cast_nullable_to_non_nullable
@@ -174,10 +188,6 @@ class __$$_CreateWalletStateCopyWithImpl<$Res>
       errCreatingNmemonic: null == errCreatingNmemonic
           ? _value.errCreatingNmemonic
           : errCreatingNmemonic // ignore: cast_nullable_to_non_nullable
-              as String,
-      passPhase: null == passPhase
-          ? _value.passPhase
-          : passPhase // ignore: cast_nullable_to_non_nullable
               as String,
       saving: null == saving
           ? _value.saving
@@ -204,9 +214,9 @@ class __$$_CreateWalletStateCopyWithImpl<$Res>
 class _$_CreateWalletState extends _CreateWalletState {
   const _$_CreateWalletState(
       {final List<String>? mnemonic,
+      this.passPhrase = '',
       this.creatingNmemonic = true,
       this.errCreatingNmemonic = '',
-      this.passPhase = '',
       this.saving = false,
       this.errSaving = '',
       this.saved = false,
@@ -214,7 +224,17 @@ class _$_CreateWalletState extends _CreateWalletState {
       : _mnemonic = mnemonic,
         super._();
 
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   final List<String>? _mnemonic;
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
   @override
   List<String>? get mnemonic {
     final value = _mnemonic;
@@ -226,13 +246,18 @@ class _$_CreateWalletState extends _CreateWalletState {
 
   @override
   @JsonKey()
+  final String passPhrase;
+/**
+     * 
+     * SENSITIVE
+     * 
+     */
+  @override
+  @JsonKey()
   final bool creatingNmemonic;
   @override
   @JsonKey()
   final String errCreatingNmemonic;
-  @override
-  @JsonKey()
-  final String passPhase;
   @override
   @JsonKey()
   final bool saving;
@@ -247,7 +272,7 @@ class _$_CreateWalletState extends _CreateWalletState {
 
   @override
   String toString() {
-    return 'CreateWalletState(mnemonic: $mnemonic, creatingNmemonic: $creatingNmemonic, errCreatingNmemonic: $errCreatingNmemonic, passPhase: $passPhase, saving: $saving, errSaving: $errSaving, saved: $saved, savedWallet: $savedWallet)';
+    return 'CreateWalletState(mnemonic: $mnemonic, passPhrase: $passPhrase, creatingNmemonic: $creatingNmemonic, errCreatingNmemonic: $errCreatingNmemonic, saving: $saving, errSaving: $errSaving, saved: $saved, savedWallet: $savedWallet)';
   }
 
   @override
@@ -256,12 +281,12 @@ class _$_CreateWalletState extends _CreateWalletState {
         (other.runtimeType == runtimeType &&
             other is _$_CreateWalletState &&
             const DeepCollectionEquality().equals(other._mnemonic, _mnemonic) &&
+            (identical(other.passPhrase, passPhrase) ||
+                other.passPhrase == passPhrase) &&
             (identical(other.creatingNmemonic, creatingNmemonic) ||
                 other.creatingNmemonic == creatingNmemonic) &&
             (identical(other.errCreatingNmemonic, errCreatingNmemonic) ||
                 other.errCreatingNmemonic == errCreatingNmemonic) &&
-            (identical(other.passPhase, passPhase) ||
-                other.passPhase == passPhase) &&
             (identical(other.saving, saving) || other.saving == saving) &&
             (identical(other.errSaving, errSaving) ||
                 other.errSaving == errSaving) &&
@@ -274,9 +299,9 @@ class _$_CreateWalletState extends _CreateWalletState {
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_mnemonic),
+      passPhrase,
       creatingNmemonic,
       errCreatingNmemonic,
-      passPhase,
       saving,
       errSaving,
       saved,
@@ -293,9 +318,9 @@ class _$_CreateWalletState extends _CreateWalletState {
 abstract class _CreateWalletState extends CreateWalletState {
   const factory _CreateWalletState(
       {final List<String>? mnemonic,
+      final String passPhrase,
       final bool creatingNmemonic,
       final String errCreatingNmemonic,
-      final String passPhase,
       final bool saving,
       final String errSaving,
       final bool saved,
@@ -303,13 +328,23 @@ abstract class _CreateWalletState extends CreateWalletState {
   const _CreateWalletState._() : super._();
 
   @override
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   List<String>? get mnemonic;
   @override
+  String get passPhrase;
+  @override
+  /**
+     * 
+     * SENSITIVE
+     * 
+     */
   bool get creatingNmemonic;
   @override
   String get errCreatingNmemonic;
-  @override
-  String get passPhase;
   @override
   bool get saving;
   @override
