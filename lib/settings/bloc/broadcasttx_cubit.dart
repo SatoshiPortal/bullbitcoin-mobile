@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
@@ -50,8 +48,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       return;
     }
     // remove carriage return and newline from file read strings
-    final tx =
-        file!.replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '');
+    final tx = file!.replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '');
     emit(state.copyWith(loadingFile: false, tx: tx));
   }
 
@@ -93,8 +90,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           ),
         );
       } else {
-        final bdkTx =
-            await bdk.Transaction.create(transactionBytes: hex.decode(tx));
+        final bdkTx = await bdk.Transaction.create(transactionBytes: hex.decode(tx));
         final txid = await bdkTx.txid();
         final outputs = await bdkTx.output();
         final List<String> outAddresses = [];
@@ -130,8 +126,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   void broadcastClicked() async {
     emit(state.copyWith(broadcastingTx: true, errBroadcastingTx: ''));
     final tx = state.tx;
-    final bdkTx =
-        await bdk.Transaction.create(transactionBytes: hex.decode(tx));
+    final bdkTx = await bdk.Transaction.create(transactionBytes: hex.decode(tx));
     final blockchain = settingsCubit.state.blockchain;
     if (blockchain == null) {
       emit(
@@ -183,18 +178,21 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       return;
     }
 
-    final (appDocDir, err) = await fileStorage.getDownloadDirectory();
-    if (err != null) {
-      emit(
-        state.copyWith(
-          downloadingFile: false,
-          errDownloadingFile: err.toString(),
-        ),
-      );
-      return;
-    }
-    final file = File(appDocDir! + '/bullbitcoin_psbt/$txid.psbt');
-    final (_, errSave) = await fileStorage.saveToFile(file, psbt);
+    // final (appDocDir, err) = await fileStorage.getDownloadDirectory();
+    // if (err != null) {
+    //   emit(
+    //     state.copyWith(
+    //       downloadingFile: false,
+    //       errDownloadingFile: err.toString(),
+    //     ),
+    //   );
+    //   return;
+    // }
+    // final file = File(appDocDir! + '/bullbitcoin_psbt/$txid.psbt');
+    final errSave = await fileStorage.savePSBT(
+      psbt: psbt,
+      txid: txid,
+    );
     if (errSave != null) {
       emit(
         state.copyWith(

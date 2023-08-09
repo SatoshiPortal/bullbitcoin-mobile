@@ -1,8 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:document_file_save_plus/document_file_save_plus.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileStorage {
@@ -48,14 +47,33 @@ class FileStorage {
     }
   }
 
-  Future<Err?> selectAndSaveFile({
-    required String txt,
-    required String fileName,
-    required String mime,
+  // Future<Err?> selectAndSaveFile({
+  //   required String txt,
+  //   required String fileName,
+  //   required String mime,
+  // }) async {
+  //   try {
+  //     final textBytes = Uint8List.fromList(txt.codeUnits);
+  //     await DocumentFileSavePlus().saveFile(textBytes, fileName, mime);
+  //     return null;
+  //   } catch (e) {
+  //     return Err(e.toString());
+  //   }
+  // }
+
+  Future<Err?> savePSBT({
+    required String psbt,
+    required String txid,
   }) async {
     try {
-      final textBytes = Uint8List.fromList(txt.codeUnits);
-      await DocumentFileSavePlus().saveFile(textBytes, fileName, mime);
+      final dir = await getTemporaryDirectory();
+      final file = File(dir.path + '/$txid.psbt');
+      await file.writeAsString(psbt);
+
+      final params = SaveFileDialogParams(sourceFilePath: file.path);
+      final finalPath = await FlutterFileDialog.saveFile(params: params);
+
+      if (finalPath == null) throw 'Could not save file';
       return null;
     } catch (e) {
       return Err(e.toString());
