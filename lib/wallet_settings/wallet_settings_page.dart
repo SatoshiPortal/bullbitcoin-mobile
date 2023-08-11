@@ -122,6 +122,7 @@ class _Screen extends StatelessWidget {
               const PublicDescriptorButton(),
               const ExtendedPublicKeyButton(),
               const AddressesButtons(),
+              const AccountingButton(),
               const DeleteButton(),
               const Gap(24),
             ],
@@ -344,6 +345,21 @@ class AddressesButtons extends StatelessWidget {
       label: 'Addresses',
       onPressed: () {
         AddressesScreen.openPopup(context);
+      },
+    );
+  }
+}
+
+class AccountingButton extends StatelessWidget {
+  const AccountingButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithLeftArrow(
+      label: 'Accounting',
+      onPressed: () {
+        final walletBloc = context.read<WalletBloc>();
+        context.push('/wallet-settings/accounting', extra: walletBloc);
       },
     );
   }

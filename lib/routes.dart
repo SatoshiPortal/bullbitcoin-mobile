@@ -5,6 +5,8 @@ import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/settings/page.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/wallet_settings/accounting.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
 import 'package:go_router/go_router.dart';
 
@@ -64,6 +66,13 @@ final GoRouter router = GoRouter(
       path: '/wallet-settings/test-backup',
       builder: (context, state) {
         return const WalletSettingsPage(openTestBackup: true);
+      },
+    ),
+    GoRoute(
+      path: '/wallet-settings/accounting',
+      builder: (context, state) {
+        final walletBloc = state.extra! as WalletBloc;
+        return AccountingPage(walletBloc: walletBloc);
       },
     ),
   ],
