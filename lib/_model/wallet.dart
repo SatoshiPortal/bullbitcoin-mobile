@@ -223,6 +223,14 @@ class Wallet with _$Wallet {
 
     return false;
   }
+
+  int txSentCount() {
+    return transactions?.where((tx) => !tx.isReceived()).toList().length ?? 0;
+  }
+
+  int txReceivedCount() {
+    return transactions?.where((tx) => tx.isReceived()).toList().length ?? 0;
+  }
 }
 
 @freezed
