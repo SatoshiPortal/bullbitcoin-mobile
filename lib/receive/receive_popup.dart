@@ -258,6 +258,7 @@ class _DefaultAddressState extends State<DefaultAddress> {
   @override
   Widget build(BuildContext context) {
     final address = context.select((ReceiveCubit x) => x.state.defaultAddress?.address ?? '');
+    final index = context.select((ReceiveCubit x) => x.state.defaultAddress?.index ?? '');
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
@@ -270,7 +271,7 @@ class _DefaultAddressState extends State<DefaultAddress> {
                   child: Wrap(
                     children: [
                       BBText.body(
-                        address,
+                        '$index:$address',
                       ),
                     ],
                   ),

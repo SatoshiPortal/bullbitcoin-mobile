@@ -64,7 +64,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       walletBloc.add(UpdateWallet(w));
     } else {
       final (newAddress, err) = await walletUpdate.getNewAddress(
-        wallet: walletBloc.state.wallet!,
         bdkWallet: walletBloc.state.bdkWallet!,
       );
       if (err != null) {

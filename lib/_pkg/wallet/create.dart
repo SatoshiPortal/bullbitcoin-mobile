@@ -594,16 +594,6 @@ class WalletCreate {
     }
   }
 
-  // Future<(Wallet?, Err?)> newWalletFromDescriptor(
-  //   String descriptor,
-  // ) async {
-  //   try {
-
-  //   } catch (e) {
-  //     return (null, Err(e.asString()));
-  //   }
-  // }
-
   Future<(bdk.Wallet?, Err?)> loadPublicBdkWallet(
     Wallet wallet,
   ) async {

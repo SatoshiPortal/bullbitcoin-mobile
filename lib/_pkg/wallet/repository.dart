@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
@@ -6,6 +7,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:path_provider/path_provider.dart';
 
 class WalletRepository {
   Future<Err?> newWallet({
@@ -279,7 +281,9 @@ class WalletRepository {
       );
 
       await storage.deleteValue(walletHashId);
-
+      final appDocDir = await getApplicationDocumentsDirectory();
+      final File dbDir = File(appDocDir.path + '/$walletHashId');
+      await dbDir.delete();
       return null;
     } catch (e) {
       return Err(e.toString());

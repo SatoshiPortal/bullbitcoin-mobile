@@ -55,7 +55,6 @@ class WalletUpdate {
   }
 
   Future<(({int index, String address})?, Err?)> getNewAddress({
-    required Wallet wallet,
     required bdk.Wallet bdkWallet,
   }) async {
     try {

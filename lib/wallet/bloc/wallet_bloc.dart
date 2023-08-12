@@ -102,7 +102,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (state.bdkWallet == null) return;
     if (state.syncing) return;
 
-    add(GetNewAddress());
+    // add(GetNewAddress());
     await Future.delayed(const Duration(milliseconds: 300));
 
     emit(
@@ -284,21 +284,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   void _getFirstAddress(GetFirstAddress event, Emitter<WalletState> emit) async {
     if (state.bdkWallet == null) return;
-
     final (address, err) = await walletUpdate.getAddressAtIdx(state.bdkWallet!, 0);
     if (err != null) {
       emit(state.copyWith(errSyncingAddresses: err.toString()));
       return;
     }
 
-    emit(state.copyWith(newAddress: (address: address!, index: 0)));
+    emit(state.copyWith(firstAddress: address!));
   }
 
   void _getNewAddress(GetNewAddress event, Emitter<WalletState> emit) async {
     if (state.bdkWallet == null) return;
 
     final (newAddress, err) = await walletUpdate.getNewAddress(
-      wallet: state.wallet!,
       bdkWallet: state.bdkWallet!,
     );
     if (err != null) {
