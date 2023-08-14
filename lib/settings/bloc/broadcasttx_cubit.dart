@@ -58,6 +58,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       final tx = state.tx;
       var isPsbt = false;
       try {
+        // check if = is in the string
         hex.decode(tx);
       } catch (e) {
         isPsbt = true;

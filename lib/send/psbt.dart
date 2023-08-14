@@ -59,7 +59,7 @@ class PSBTPopUp extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const BBHeader.popUpCenteredText(
-            text: 'Broadcast tx',
+            text: 'Built tx',
           ),
           const Gap(24),
           const BBText.title(

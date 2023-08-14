@@ -30,8 +30,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     final syncing = walletBloc.state.syncing;
     if (syncing) {
       final newAddress = walletBloc.state.newAddress;
-      final firstAddress = walletBloc.state.firstAddress;
       final addresses = walletBloc.state.wallet!.addresses;
+      final firstAddress = walletBloc.state.firstAddress;
+
       final address = newAddress == null
           ? addresses != null && addresses.isNotEmpty
               ? addresses.last.address
