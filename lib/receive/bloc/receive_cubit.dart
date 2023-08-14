@@ -30,9 +30,18 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     final syncing = walletBloc.state.syncing;
     if (syncing) {
       final newAddress = walletBloc.state.newAddress;
-
-      final address = newAddress!.address;
-      final idx = newAddress.index;
+      final firstAddress = walletBloc.state.firstAddress;
+      final addresses = walletBloc.state.wallet!.addresses;
+      final address = newAddress == null
+          ? addresses != null && addresses.isNotEmpty
+              ? addresses.last.address
+              : firstAddress
+          : newAddress.address;
+      final idx = newAddress == null
+          ? addresses != null && addresses.isNotEmpty
+              ? addresses.last.index
+              : 0
+          : newAddress.index;
 
       final label = await walletUpdate.getAddressLabel(
         wallet: walletBloc.state.wallet!,

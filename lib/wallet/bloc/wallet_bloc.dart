@@ -102,7 +102,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (state.bdkWallet == null) return;
     if (state.syncing) return;
 
-    // add(GetNewAddress());
+    add(GetFirstAddress());
     await Future.delayed(const Duration(milliseconds: 300));
 
     emit(
@@ -140,7 +140,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     emit(state.copyWith(syncing: false));
 
-    if (!fromStorage) add(GetFirstAddress());
+    // if (!fromStorage) add(GetFirstAddress());
     add(GetBalance());
   }
 

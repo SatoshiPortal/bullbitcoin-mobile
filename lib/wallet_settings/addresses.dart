@@ -217,7 +217,7 @@ class AddressItem extends StatelessWidget {
               AddressPopUp.openPopup(context, address);
             },
             child: BBText.body(
-              address.address,
+              '${address.index}:${address.address}',
               isBlue: true,
             ),
           ),
