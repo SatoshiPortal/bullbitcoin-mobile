@@ -87,12 +87,13 @@ class SettingsState with _$SettingsState {
 
   String getAmountInUnits(
     int amount, {
+    bool? isSats,
     bool removeText = false,
     bool hideZero = false,
     bool removeEndZeros = false, // we should never removeEndZeros for BTC
   }) {
     String amt = '';
-    if (unitsInSats)
+    if (isSats ?? unitsInSats)
       amt = satsFormatting(amount.toString()) + ' sats';
     else {
       String b = '';

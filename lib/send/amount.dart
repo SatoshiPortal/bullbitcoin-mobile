@@ -21,10 +21,12 @@ class _EnterAmountState extends State<EnterAmount> {
 
   @override
   Widget build(BuildContext context) {
+    final _ = context.select((SendCubit cubit) => cubit.state.selectedCurrency);
+
     final sendAll = context.select((SendCubit cubit) => cubit.state.sendAllCoin);
     if (sendAll) return const SizedBox.shrink();
     final balance = context.select((WalletBloc cubit) => cubit.state.balance?.total ?? 0);
-    final isSats = context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
+    final isSats = context.select((SendCubit cubit) => cubit.state.isSats);
     final amount = context.select((SendCubit cubit) => cubit.state.amount);
 
     final fiatSelected = context.select((SendCubit cubit) => cubit.state.fiatSelected);
@@ -38,6 +40,7 @@ class _EnterAmountState extends State<EnterAmount> {
           removeText: true,
           hideZero: true,
           removeEndZeros: true,
+          isSats: isSats,
         ),
       );
     else
@@ -65,7 +68,7 @@ class _EnterAmountState extends State<EnterAmount> {
                       // context.read<SettingsCubit>().toggleUnitsInSats();
                     },
                     isSats: isSats,
-                    btcFormatting: !fiatSelected,
+                    btcFormatting: !isSats && !fiatSelected,
                     onChanged: (txt) {
                       // final aLen = amountStr.length;
                       // final tLen = txt.length;

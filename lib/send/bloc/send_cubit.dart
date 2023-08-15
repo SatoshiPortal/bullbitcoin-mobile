@@ -159,31 +159,47 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void updateCurrency(String currency) {
+    emit(state.copyWith(amount: 0, fiatAmt: 0));
     final currencies = state.updatedCurrencyList();
     final selectedCurrency =
         currencies.firstWhere((element) => element.name.toLowerCase() == currency);
 
     if (currency == 'btc' || currency == 'sats') {
-      emit(state.copyWith(fiatSelected: false, selectedCurrency: selectedCurrency));
+      emit(
+        state.copyWith(
+          fiatSelected: false,
+          selectedCurrency: selectedCurrency,
+          isSats: currency == 'sats',
+        ),
+      );
       return;
     }
 
-    emit(state.copyWith(fiatSelected: true, selectedCurrency: selectedCurrency));
+    emit(
+      state.copyWith(
+        fiatSelected: true,
+        selectedCurrency: selectedCurrency,
+        isSats: false,
+      ),
+    );
+    updateShowSend();
   }
 
   void updateAmount(String txt) {
     var clean = txt.replaceAll(',', '').replaceAll(' ', '');
-    if (settingsCubit.state.unitsInSats)
-      clean = clean.replaceAll('.', '');
-    else if (!txt.contains('.')) return;
+    if (state.isSats) clean = clean.replaceAll('.', '');
+    // else if (!txt.contains('.')) return;
 
     final isFiat = state.fiatSelected;
     if (isFiat) {
       final currency = state.selectedCurrency ?? settingsCubit.state.currency;
-      final amount = double.tryParse(clean);
-      if (amount == null) return;
-      final sats = amount ~/ currency!.price!;
-      emit(state.copyWith(amount: sats, fiatAmt: amount));
+      final fiat = double.tryParse(clean);
+      if (fiat == null) return;
+      // final sats = (amount / 100000000) * currency!.price!;
+      //
+      final sats = (fiat / currency!.price!) * 100000000;
+
+      emit(state.copyWith(amount: sats.toInt(), fiatAmt: fiat));
       updateShowSend();
       return;
     }
@@ -192,6 +208,7 @@ class SendCubit extends Cubit<SendState> {
     final amt = settingsCubit.state.getSatsAmount(clean, isSats);
     final currency = settingsCubit.state.currency;
     final fiatAmt = currency!.price! * (amt / 100000000);
+
     emit(state.copyWith(amount: amt, fiatAmt: fiatAmt));
     updateShowSend();
   }
