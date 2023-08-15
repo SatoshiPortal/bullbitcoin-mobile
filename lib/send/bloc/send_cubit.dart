@@ -153,7 +153,8 @@ class SendCubit extends Cubit<SendState> {
 
   void updateCurrency(String currency) {
     if (currency == 'btc' || currency == 'sats') {
-      emit(state.copyWith(fiatSelected: false, selectedCurrency: null));
+      final defaultCurrency = settingsCubit.state.currency;
+      emit(state.copyWith(fiatSelected: false, selectedCurrency: defaultCurrency));
       return;
     }
     final currencies = settingsCubit.state.currencyList;
@@ -166,11 +167,24 @@ class SendCubit extends Cubit<SendState> {
     var clean = txt.replaceAll(',', '').replaceAll(' ', '');
     if (settingsCubit.state.unitsInSats)
       clean = clean.replaceAll('.', '');
-    else if (!txt.contains('.')) {
+    else if (!txt.contains('.')) return;
+
+    final isFiat = state.fiatSelected;
+    if (isFiat) {
+      final currency = state.selectedCurrency ?? settingsCubit.state.currency;
+      final amount = double.tryParse(clean);
+      if (amount == null) return;
+      final sats = amount ~/ currency!.price!;
+      emit(state.copyWith(amount: sats, fiatAmt: amount));
+      updateShowSend();
       return;
     }
-    final amt = settingsCubit.state.getSatsAmount(clean);
-    emit(state.copyWith(amount: amt));
+
+    final isSats = state.isSats;
+    final amt = settingsCubit.state.getSatsAmount(clean, isSats);
+    final currency = settingsCubit.state.currency;
+    final fiatAmt = currency!.price! * (amt / 100000000);
+    emit(state.copyWith(amount: amt, fiatAmt: fiatAmt));
     updateShowSend();
   }
 

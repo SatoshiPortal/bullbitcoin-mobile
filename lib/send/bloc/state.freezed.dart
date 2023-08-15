@@ -51,6 +51,7 @@ mixin _$SendState {
   List<Currency>? get currencyList => throw _privateConstructorUsedError;
   bool get isSats => throw _privateConstructorUsedError;
   bool get fiatSelected => throw _privateConstructorUsedError;
+  double get fiatAmt => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SendStateCopyWith<SendState> get copyWith =>
@@ -92,7 +93,8 @@ abstract class $SendStateCopyWith<$Res> {
       Currency? selectedCurrency,
       List<Currency>? currencyList,
       bool isSats,
-      bool fiatSelected});
+      bool fiatSelected,
+      double fiatAmt});
 
   $TransactionCopyWith<$Res>? get tx;
   $CurrencyCopyWith<$Res>? get selectedCurrency;
@@ -141,6 +143,7 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? currencyList = freezed,
     Object? isSats = null,
     Object? fiatSelected = null,
+    Object? fiatAmt = null,
   }) {
     return _then(_value.copyWith(
       amount: null == amount
@@ -263,6 +266,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.fiatSelected
           : fiatSelected // ignore: cast_nullable_to_non_nullable
               as bool,
+      fiatAmt: null == fiatAmt
+          ? _value.fiatAmt
+          : fiatAmt // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 
@@ -328,7 +335,8 @@ abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
       Currency? selectedCurrency,
       List<Currency>? currencyList,
       bool isSats,
-      bool fiatSelected});
+      bool fiatSelected,
+      double fiatAmt});
 
   @override
   $TransactionCopyWith<$Res>? get tx;
@@ -377,6 +385,7 @@ class __$$_SendStateCopyWithImpl<$Res>
     Object? currencyList = freezed,
     Object? isSats = null,
     Object? fiatSelected = null,
+    Object? fiatAmt = null,
   }) {
     return _then(_$_SendState(
       amount: null == amount
@@ -499,6 +508,10 @@ class __$$_SendStateCopyWithImpl<$Res>
           ? _value.fiatSelected
           : fiatSelected // ignore: cast_nullable_to_non_nullable
               as bool,
+      fiatAmt: null == fiatAmt
+          ? _value.fiatAmt
+          : fiatAmt // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -536,7 +549,8 @@ class _$_SendState extends _SendState {
       this.selectedCurrency,
       final List<Currency>? currencyList,
       this.isSats = false,
-      this.fiatSelected = false})
+      this.fiatSelected = false,
+      this.fiatAmt = 0})
       : _feesList = feesList,
         _selectedAddresses = selectedAddresses,
         _currencyList = currencyList,
@@ -657,10 +671,13 @@ class _$_SendState extends _SendState {
   @override
   @JsonKey()
   final bool fiatSelected;
+  @override
+  @JsonKey()
+  final double fiatAmt;
 
   @override
   String toString() {
-    return 'SendState(amount: $amount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, enableRBF: $enableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected)';
+    return 'SendState(amount: $amount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, enableRBF: $enableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
   }
 
   @override
@@ -716,7 +733,8 @@ class _$_SendState extends _SendState {
                 .equals(other._currencyList, _currencyList) &&
             (identical(other.isSats, isSats) || other.isSats == isSats) &&
             (identical(other.fiatSelected, fiatSelected) ||
-                other.fiatSelected == fiatSelected));
+                other.fiatSelected == fiatSelected) &&
+            (identical(other.fiatAmt, fiatAmt) || other.fiatAmt == fiatAmt));
   }
 
   @override
@@ -751,7 +769,8 @@ class _$_SendState extends _SendState {
         selectedCurrency,
         const DeepCollectionEquality().hash(_currencyList),
         isSats,
-        fiatSelected
+        fiatSelected,
+        fiatAmt
       ]);
 
   @JsonKey(ignore: true)
@@ -792,7 +811,8 @@ abstract class _SendState extends SendState {
       final Currency? selectedCurrency,
       final List<Currency>? currencyList,
       final bool isSats,
-      final bool fiatSelected}) = _$_SendState;
+      final bool fiatSelected,
+      final double fiatAmt}) = _$_SendState;
   const _SendState._() : super._();
 
   @override
@@ -858,6 +878,8 @@ abstract class _SendState extends SendState {
   bool get isSats;
   @override
   bool get fiatSelected;
+  @override
+  double get fiatAmt;
   @override
   @JsonKey(ignore: true)
   _$$_SendStateCopyWith<_$_SendState> get copyWith =>

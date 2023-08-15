@@ -137,6 +137,32 @@ class ConversionAmt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final fiatSelected = context.select((SendCubit cubit) => cubit.state.fiatSelected);
+    final isDefaultSats = context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
+
+    final fiatAmt = context.select((SendCubit cubit) => cubit.state.fiatAmt);
+    final satsAmt = context.select((SendCubit cubit) => cubit.state.amount);
+    final defaultCurrency = context.select((SettingsCubit cubit) => cubit.state.currency);
+
+    var amt = '';
+    var unit = '';
+
+    if (fiatSelected) {
+      unit = isDefaultSats ? 'sats' : 'BTC';
+      amt = context.select((SettingsCubit _) => _.state.getAmountInUnits(satsAmt));
+    } else {
+      unit = defaultCurrency!.name;
+      amt = fiatAmt.toStringAsFixed(2);
+    }
+
+    return Row(
+      children: [
+        const BBText.title('    ≈ '),
+        const Gap(4),
+        BBText.title(amt),
+        const Gap(4),
+        BBText.title(unit),
+      ],
+    );
   }
 }

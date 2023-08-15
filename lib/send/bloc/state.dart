@@ -47,6 +47,7 @@ class SendState with _$SendState {
     List<Currency>? currencyList,
     @Default(false) bool isSats,
     @Default(false) bool fiatSelected,
+    @Default(0) double fiatAmt,
   }) = _SendState;
   const SendState._();
 

@@ -14,55 +14,39 @@ part 'settings_state.g.dart';
 @freezed
 class SettingsState with _$SettingsState {
   const factory SettingsState({
-    @Default(false)
-        bool unitsInSats,
-    @Default(false)
-        bool notifications,
-    @Default(false)
-        bool privacyView,
+    @Default(false) bool unitsInSats,
+    @Default(false) bool notifications,
+    @Default(false) bool privacyView,
     //
     Currency? currency,
     List<Currency>? currencyList,
     DateTime? lastUpdatedCurrency,
-    @Default(false)
-        bool loadingCurrency,
-    @Default('')
-        String errLoadingCurrency,
+    @Default(false) bool loadingCurrency,
+    @Default('') String errLoadingCurrency,
     //
     String? language,
     List<String>? languageList,
-    @Default(false)
-        bool loadingLanguage,
-    @Default('')
-        String errLoadingLanguage,
+    @Default(false) bool loadingLanguage,
+    @Default('') String errLoadingLanguage,
     //
-    @Default(false)
-        bool testnet,
+    @Default(false) bool testnet,
     @JsonKey(
       includeFromJson: false,
       includeToJson: false,
     )
-        bdk.Blockchain? blockchain,
-    @Default(20)
-        int reloadWalletTimer,
-    @Default([])
-        List<ElectrumNetwork> networks,
-    @Default(1)
-        int selectedNetwork,
-    @Default(false)
-        bool loadingNetworks,
-    @Default('')
-        String errLoadingNetworks,
+    bdk.Blockchain? blockchain,
+    @Default(20) int reloadWalletTimer,
+    @Default([]) List<ElectrumNetwork> networks,
+    @Default(1) int selectedNetwork,
+    @Default(false) bool loadingNetworks,
+    @Default('') String errLoadingNetworks,
     //
     int? fees,
     List<int>? feesList,
-    @Default(2)
-        int selectedFeesOption,
+    @Default(2) int selectedFeesOption,
     //
-    @Default(false)
-        bool loadingFees,
-    @Default('')
-        String errLoadingFees,
+    @Default(false) bool loadingFees,
+    @Default('') String errLoadingFees,
     //
   }) = _SettingsState;
   const SettingsState._();
@@ -143,9 +127,9 @@ class SettingsState with _$SettingsState {
     return 'BTC';
   }
 
-  int getSatsAmount(String amount) {
+  int getSatsAmount(String amount, bool? unitsInSatss) {
     try {
-      if (unitsInSats) return int.parse(amount);
+      if (unitsInSatss ?? unitsInSats) return int.parse(amount);
       return (double.parse(amount) * 100000000).toInt();
     } catch (e) {
       debugPrint(e.toString());

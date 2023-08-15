@@ -466,7 +466,7 @@ class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
             return;
           }
           final clean = txt.replaceAll(',', '');
-          final amt = context.read<SettingsCubit>().state.getSatsAmount(clean);
+          final amt = context.read<SettingsCubit>().state.getSatsAmount(clean, null);
           context.read<ReceiveCubit>().updateAmount(amt);
         },
         inputFormatters: [
