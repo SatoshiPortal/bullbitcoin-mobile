@@ -34,6 +34,7 @@ class SendCubit extends Cubit<SendState> {
   }) : super(const SendState()) {
     setupFees();
     loadFees();
+    loadCurrencies();
   }
 
   final Barcode barcode;
@@ -136,6 +137,31 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(note: note));
   }
 
+  void loadCurrencies() async {
+    final currencies = settingsCubit.state.currencyList;
+    final isSats = settingsCubit.state.unitsInSats;
+    final selectedCurrency = settingsCubit.state.currency;
+
+    emit(
+      state.copyWith(
+        currencyList: currencies,
+        isSats: isSats,
+        selectedCurrency: selectedCurrency,
+      ),
+    );
+  }
+
+  void updateCurrency(String currency) {
+    if (currency == 'btc' || currency == 'sats') {
+      emit(state.copyWith(fiatSelected: false, selectedCurrency: null));
+      return;
+    }
+    final currencies = settingsCubit.state.currencyList;
+    final selectedCurrency = currencies!.firstWhere((element) => element.name == currency);
+
+    emit(state.copyWith(fiatSelected: true, selectedCurrency: selectedCurrency));
+  }
+
   void updateAmount(String txt) {
     var clean = txt.replaceAll(',', '').replaceAll(' ', '');
     if (settingsCubit.state.unitsInSats)
@@ -147,11 +173,6 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(amount: amt));
     updateShowSend();
   }
-
-  // void _updateAmount(int amount) {
-  //   emit(state.copyWith(amount: amount));
-  //   updateShowSend();
-  // }
 
   void updateManualFees(String fees) {
     final feesInDouble = int.tryParse(fees);

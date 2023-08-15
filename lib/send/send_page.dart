@@ -16,6 +16,7 @@ import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/send/advanced.dart';
+import 'package:bb_mobile/send/amount.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/send/psbt.dart';
@@ -206,90 +207,6 @@ class _EnterAddressState extends State<EnterAddress> {
   void dispose() {
     _focusNode.dispose();
     _controller.dispose();
-    super.dispose();
-  }
-}
-
-class EnterAmount extends StatefulWidget {
-  const EnterAmount({super.key});
-
-  @override
-  State<EnterAmount> createState() => _EnterAmountState();
-}
-
-class _EnterAmountState extends State<EnterAmount> {
-  final FocusNode _focusNode = FocusNode();
-
-  @override
-  Widget build(BuildContext context) {
-    final sendAll = context.select((SendCubit cubit) => cubit.state.sendAllCoin);
-    if (sendAll) return const SizedBox.shrink();
-    final balance = context.select((WalletBloc cubit) => cubit.state.balance?.total ?? 0);
-    final isSats = context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
-    final amount = context.select((SendCubit cubit) => cubit.state.amount);
-
-    final amountStr = context.select(
-      (SettingsCubit cubit) => cubit.state.getAmountInUnits(
-        sendAll ? balance : amount,
-        removeText: true,
-        hideZero: true,
-        removeEndZeros: true,
-      ),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const BBText.title('    Amount'),
-        const Gap(4),
-        AnimatedOpacity(
-          duration: const Duration(milliseconds: 300),
-          opacity: sendAll ? 0.5 : 1,
-          child: IgnorePointer(
-            ignoring: sendAll,
-            child: Focus(
-              focusNode: _focusNode,
-              child: BBAmountInput(
-                disabled: sendAll,
-                value: amountStr,
-                hint: 'Enter amount',
-                onRightTap: () {
-                  context.read<SettingsCubit>().toggleUnitsInSats();
-                },
-                isSats: isSats,
-                onChanged: (txt) {
-                  // final aLen = amountStr.length;
-                  // final tLen = txt.length;
-
-                  // print('\n\n');
-                  // print('||--- $txt');
-
-                  // if ((tLen - aLen) > 1 || (aLen - tLen) > 1) {
-                  //   return;
-                  // }
-
-                  // var clean = txt.replaceAll(',', '');
-                  // if (isSats)
-                  //   clean = clean.replaceAll('.', '');
-                  // else if (!txt.contains('.')) {
-                  //   return;
-                  // }
-                  // final amt = context.read<SettingsCubit>().state.getSatsAmount(clean);
-                  // print('----- $amt');
-                  context.read<SendCubit>().updateAmount(txt);
-                },
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-
     super.dispose();
   }
 }

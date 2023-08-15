@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -41,6 +42,11 @@ class SendState with _$SendState {
     int? psbtSignedFeeAmount,
     // @Default(false) bool signing,
     // @Default('') String errSigning,
+    //
+    Currency? selectedCurrency,
+    List<Currency>? currencyList,
+    @Default(false) bool isSats,
+    @Default(false) bool fiatSelected,
   }) = _SendState;
   const SendState._();
 
@@ -91,5 +97,15 @@ class SendState with _$SendState {
     return 'Selected ${selectedAddresses.length} addresses';
     // else
     // return 'Selected ${selectedAddresses.length} addresses (not enough coins)';
+  }
+
+  List<Currency> updatedCurrencyList() {
+    final list = [
+      const Currency(name: 'btc', price: 0, shortName: 'BTC'),
+      const Currency(name: 'sats', price: 0, shortName: 'sats'),
+      ...currencyList ?? [],
+    ];
+
+    return list;
   }
 }

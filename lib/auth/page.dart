@@ -234,9 +234,7 @@ class AuthKeyPad extends StatelessWidget {
             crossAxisCount: 3,
           ),
           children: [
-            for (var i = 1; i < 10; i = i + 1) ...[
-              NumberButton(text: i.toString()),
-            ],
+            for (var i = 1; i < 10; i = i + 1) NumberButton(text: i.toString()),
             Container(),
             const NumberButton(text: '0'),
             Container(),
@@ -257,7 +255,7 @@ class AuthConfirmButton extends StatelessWidget {
 
     if (err.isNotEmpty)
       return Center(
-        child: BBText.body(
+        child: BBText.error(
           err,
         ),
       );

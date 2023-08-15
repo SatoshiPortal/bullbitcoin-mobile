@@ -1,6 +1,5 @@
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pattern_formatter/numeric_formatter.dart';
 
@@ -312,28 +311,28 @@ class _BBAmountInputState extends State<BBAmountInput> {
           ),
         ),
         contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
-        suffixIcon: Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: widget.isSats
-              ? IconButton(
-                  color: context.colour.secondary,
-                  onPressed: () {
-                    widget.onRightTap();
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.coins,
-                  ),
-                )
-              : IconButton(
-                  color: context.colour.secondary,
-                  onPressed: () {
-                    widget.onRightTap();
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.bitcoin,
-                  ),
-                ),
-        ),
+        // suffixIcon: Padding(
+        //   padding: const EdgeInsets.only(right: 16),
+        //   child: widget.isSats
+        //       ? IconButton(
+        //           color: context.colour.secondary,
+        //           onPressed: () {
+        //             widget.onRightTap();
+        //           },
+        //           icon: const FaIcon(
+        //             FontAwesomeIcons.coins,
+        //           ),
+        //         )
+        //       : IconButton(
+        //           color: context.colour.secondary,
+        //           onPressed: () {
+        //             widget.onRightTap();
+        //           },
+        //           icon: const FaIcon(
+        //             FontAwesomeIcons.bitcoin,
+        //           ),
+        //         ),
+        // ),
       ),
     );
   }

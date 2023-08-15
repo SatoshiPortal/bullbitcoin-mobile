@@ -43,7 +43,14 @@ mixin _$SendState {
   String get errAddresses => throw _privateConstructorUsedError; //
   bool get signed => throw _privateConstructorUsedError;
   String? get psbtSigned => throw _privateConstructorUsedError;
-  int? get psbtSignedFeeAmount => throw _privateConstructorUsedError;
+  int? get psbtSignedFeeAmount =>
+      throw _privateConstructorUsedError; // @Default(false) bool signing,
+// @Default('') String errSigning,
+//
+  Currency? get selectedCurrency => throw _privateConstructorUsedError;
+  List<Currency>? get currencyList => throw _privateConstructorUsedError;
+  bool get isSats => throw _privateConstructorUsedError;
+  bool get fiatSelected => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SendStateCopyWith<SendState> get copyWith =>
@@ -81,9 +88,14 @@ abstract class $SendStateCopyWith<$Res> {
       String errAddresses,
       bool signed,
       String? psbtSigned,
-      int? psbtSignedFeeAmount});
+      int? psbtSignedFeeAmount,
+      Currency? selectedCurrency,
+      List<Currency>? currencyList,
+      bool isSats,
+      bool fiatSelected});
 
   $TransactionCopyWith<$Res>? get tx;
+  $CurrencyCopyWith<$Res>? get selectedCurrency;
 }
 
 /// @nodoc
@@ -125,6 +137,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? signed = null,
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
+    Object? selectedCurrency = freezed,
+    Object? currencyList = freezed,
+    Object? isSats = null,
+    Object? fiatSelected = null,
   }) {
     return _then(_value.copyWith(
       amount: null == amount
@@ -231,6 +247,22 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.psbtSignedFeeAmount
           : psbtSignedFeeAmount // ignore: cast_nullable_to_non_nullable
               as int?,
+      selectedCurrency: freezed == selectedCurrency
+          ? _value.selectedCurrency
+          : selectedCurrency // ignore: cast_nullable_to_non_nullable
+              as Currency?,
+      currencyList: freezed == currencyList
+          ? _value.currencyList
+          : currencyList // ignore: cast_nullable_to_non_nullable
+              as List<Currency>?,
+      isSats: null == isSats
+          ? _value.isSats
+          : isSats // ignore: cast_nullable_to_non_nullable
+              as bool,
+      fiatSelected: null == fiatSelected
+          ? _value.fiatSelected
+          : fiatSelected // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -243,6 +275,18 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
 
     return $TransactionCopyWith<$Res>(_value.tx!, (value) {
       return _then(_value.copyWith(tx: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $CurrencyCopyWith<$Res>? get selectedCurrency {
+    if (_value.selectedCurrency == null) {
+      return null;
+    }
+
+    return $CurrencyCopyWith<$Res>(_value.selectedCurrency!, (value) {
+      return _then(_value.copyWith(selectedCurrency: value) as $Val);
     });
   }
 }
@@ -280,10 +324,16 @@ abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
       String errAddresses,
       bool signed,
       String? psbtSigned,
-      int? psbtSignedFeeAmount});
+      int? psbtSignedFeeAmount,
+      Currency? selectedCurrency,
+      List<Currency>? currencyList,
+      bool isSats,
+      bool fiatSelected});
 
   @override
   $TransactionCopyWith<$Res>? get tx;
+  @override
+  $CurrencyCopyWith<$Res>? get selectedCurrency;
 }
 
 /// @nodoc
@@ -323,6 +373,10 @@ class __$$_SendStateCopyWithImpl<$Res>
     Object? signed = null,
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
+    Object? selectedCurrency = freezed,
+    Object? currencyList = freezed,
+    Object? isSats = null,
+    Object? fiatSelected = null,
   }) {
     return _then(_$_SendState(
       amount: null == amount
@@ -429,6 +483,22 @@ class __$$_SendStateCopyWithImpl<$Res>
           ? _value.psbtSignedFeeAmount
           : psbtSignedFeeAmount // ignore: cast_nullable_to_non_nullable
               as int?,
+      selectedCurrency: freezed == selectedCurrency
+          ? _value.selectedCurrency
+          : selectedCurrency // ignore: cast_nullable_to_non_nullable
+              as Currency?,
+      currencyList: freezed == currencyList
+          ? _value._currencyList
+          : currencyList // ignore: cast_nullable_to_non_nullable
+              as List<Currency>?,
+      isSats: null == isSats
+          ? _value.isSats
+          : isSats // ignore: cast_nullable_to_non_nullable
+              as bool,
+      fiatSelected: null == fiatSelected
+          ? _value.fiatSelected
+          : fiatSelected // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -462,9 +532,14 @@ class _$_SendState extends _SendState {
       this.errAddresses = '',
       this.signed = false,
       this.psbtSigned,
-      this.psbtSignedFeeAmount})
+      this.psbtSignedFeeAmount,
+      this.selectedCurrency,
+      final List<Currency>? currencyList,
+      this.isSats = false,
+      this.fiatSelected = false})
       : _feesList = feesList,
         _selectedAddresses = selectedAddresses,
+        _currencyList = currencyList,
         super._();
 
   @override
@@ -561,10 +636,31 @@ class _$_SendState extends _SendState {
   final String? psbtSigned;
   @override
   final int? psbtSignedFeeAmount;
+// @Default(false) bool signing,
+// @Default('') String errSigning,
+//
+  @override
+  final Currency? selectedCurrency;
+  final List<Currency>? _currencyList;
+  @override
+  List<Currency>? get currencyList {
+    final value = _currencyList;
+    if (value == null) return null;
+    if (_currencyList is EqualUnmodifiableListView) return _currencyList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  @JsonKey()
+  final bool isSats;
+  @override
+  @JsonKey()
+  final bool fiatSelected;
 
   @override
   String toString() {
-    return 'SendState(amount: $amount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, enableRBF: $enableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount)';
+    return 'SendState(amount: $amount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, enableRBF: $enableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected)';
   }
 
   @override
@@ -613,7 +709,14 @@ class _$_SendState extends _SendState {
             (identical(other.psbtSigned, psbtSigned) ||
                 other.psbtSigned == psbtSigned) &&
             (identical(other.psbtSignedFeeAmount, psbtSignedFeeAmount) ||
-                other.psbtSignedFeeAmount == psbtSignedFeeAmount));
+                other.psbtSignedFeeAmount == psbtSignedFeeAmount) &&
+            (identical(other.selectedCurrency, selectedCurrency) ||
+                other.selectedCurrency == selectedCurrency) &&
+            const DeepCollectionEquality()
+                .equals(other._currencyList, _currencyList) &&
+            (identical(other.isSats, isSats) || other.isSats == isSats) &&
+            (identical(other.fiatSelected, fiatSelected) ||
+                other.fiatSelected == fiatSelected));
   }
 
   @override
@@ -644,7 +747,11 @@ class _$_SendState extends _SendState {
         errAddresses,
         signed,
         psbtSigned,
-        psbtSignedFeeAmount
+        psbtSignedFeeAmount,
+        selectedCurrency,
+        const DeepCollectionEquality().hash(_currencyList),
+        isSats,
+        fiatSelected
       ]);
 
   @JsonKey(ignore: true)
@@ -681,7 +788,11 @@ abstract class _SendState extends SendState {
       final String errAddresses,
       final bool signed,
       final String? psbtSigned,
-      final int? psbtSignedFeeAmount}) = _$_SendState;
+      final int? psbtSignedFeeAmount,
+      final Currency? selectedCurrency,
+      final List<Currency>? currencyList,
+      final bool isSats,
+      final bool fiatSelected}) = _$_SendState;
   const _SendState._() : super._();
 
   @override
@@ -737,6 +848,16 @@ abstract class _SendState extends SendState {
   String? get psbtSigned;
   @override
   int? get psbtSignedFeeAmount;
+  @override // @Default(false) bool signing,
+// @Default('') String errSigning,
+//
+  Currency? get selectedCurrency;
+  @override
+  List<Currency>? get currencyList;
+  @override
+  bool get isSats;
+  @override
+  bool get fiatSelected;
   @override
   @JsonKey(ignore: true)
   _$$_SendStateCopyWith<_$_SendState> get copyWith =>
