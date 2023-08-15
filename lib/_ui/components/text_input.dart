@@ -231,12 +231,14 @@ class BBAmountInput extends StatefulWidget {
     required this.hint,
     required this.onRightTap,
     required this.disabled,
+    required this.btcFormatting,
     required this.isSats,
   });
 
   final Function(String) onChanged;
   final String value;
   final String hint;
+  final bool btcFormatting;
   final bool isSats;
 
   final Function onRightTap;
@@ -260,16 +262,16 @@ class _BBAmountInputState extends State<BBAmountInput> {
     if (_editingController.text != widget.value) {
       _editingController.text = widget.value;
 
-      if (widget.isSats)
+      if (widget.btcFormatting)
         _editingController.selection = TextSelection.fromPosition(
           TextPosition(
-            offset: widget.value.length,
+            offset: _editingController.text.length,
           ),
         );
       else
         _editingController.selection = TextSelection.fromPosition(
           TextPosition(
-            offset: _editingController.text.length,
+            offset: widget.value.length,
           ),
         );
     }
@@ -283,7 +285,7 @@ class _BBAmountInputState extends State<BBAmountInput> {
         decimal: true,
       ),
       inputFormatters: [
-        if (!widget.isSats)
+        if (widget.btcFormatting)
           ThousandsFormatter(
             formatter: NumberFormat()
               ..maximumFractionDigits = 8
@@ -292,6 +294,23 @@ class _BBAmountInputState extends State<BBAmountInput> {
               ..turnOffGrouping(),
             allowFraction: true,
           )
+        else if (widget.isSats)
+          ThousandsFormatter(
+            formatter: NumberFormat()
+              ..maximumFractionDigits = 0
+              ..minimumFractionDigits = 0
+              ..minimumExponentDigits = 1
+              ..turnOffGrouping(),
+          )
+        else
+          ThousandsFormatter(
+            formatter: NumberFormat()
+              ..maximumFractionDigits = 2
+              ..minimumFractionDigits = 2
+              ..minimumExponentDigits = 1
+              ..turnOffGrouping(),
+            allowFraction: true,
+          ),
       ],
       decoration: InputDecoration(
         hintText: widget.hint,

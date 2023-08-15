@@ -15,6 +15,7 @@ import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState> {
@@ -140,25 +141,32 @@ class SendCubit extends Cubit<SendState> {
   void loadCurrencies() async {
     final currencies = settingsCubit.state.currencyList;
     final isSats = settingsCubit.state.unitsInSats;
-    final selectedCurrency = settingsCubit.state.currency;
 
     emit(
       state.copyWith(
         currencyList: currencies,
         isSats: isSats,
-        selectedCurrency: selectedCurrency,
       ),
     );
+
+    await Future.delayed(100.microseconds);
+
+    final updatedCurrenciess = state.updatedCurrencyList();
+    final selectedCurrency =
+        updatedCurrenciess.firstWhere((element) => element.name == (isSats ? 'sats' : 'btc'));
+
+    emit(state.copyWith(selectedCurrency: selectedCurrency));
   }
 
   void updateCurrency(String currency) {
+    final currencies = state.updatedCurrencyList();
+    final selectedCurrency =
+        currencies.firstWhere((element) => element.name.toLowerCase() == currency);
+
     if (currency == 'btc' || currency == 'sats') {
-      final defaultCurrency = settingsCubit.state.currency;
-      emit(state.copyWith(fiatSelected: false, selectedCurrency: defaultCurrency));
+      emit(state.copyWith(fiatSelected: false, selectedCurrency: selectedCurrency));
       return;
     }
-    final currencies = settingsCubit.state.currencyList;
-    final selectedCurrency = currencies!.firstWhere((element) => element.name == currency);
 
     emit(state.copyWith(fiatSelected: true, selectedCurrency: selectedCurrency));
   }

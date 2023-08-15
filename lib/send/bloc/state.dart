@@ -104,7 +104,7 @@ class SendState with _$SendState {
     final list = [
       const Currency(name: 'btc', price: 0, shortName: 'BTC'),
       const Currency(name: 'sats', price: 0, shortName: 'sats'),
-      ...currencyList ?? [],
+      ...currencyList ?? <Currency>[],
     ];
 
     return list;

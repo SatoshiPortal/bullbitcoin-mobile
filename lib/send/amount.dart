@@ -4,6 +4,7 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -26,37 +27,45 @@ class _EnterAmountState extends State<EnterAmount> {
     final isSats = context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
     final amount = context.select((SendCubit cubit) => cubit.state.amount);
 
-    final amountStr = context.select(
-      (SettingsCubit cubit) => cubit.state.getAmountInUnits(
-        sendAll ? balance : amount,
-        removeText: true,
-        hideZero: true,
-        removeEndZeros: true,
-      ),
-    );
+    final fiatSelected = context.select((SendCubit cubit) => cubit.state.fiatSelected);
+    final fiatAmt = context.select((SendCubit cubit) => cubit.state.fiatAmt);
+
+    var amountStr = '';
+    if (!fiatSelected)
+      amountStr = context.select(
+        (SettingsCubit cubit) => cubit.state.getAmountInUnits(
+          sendAll ? balance : amount,
+          removeText: true,
+          hideZero: true,
+          removeEndZeros: true,
+        ),
+      );
+    else
+      amountStr = fiatAmt.toStringAsFixed(2);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const BBText.title('    Amount'),
         const Gap(4),
-        AnimatedOpacity(
-          duration: const Duration(milliseconds: 300),
-          opacity: sendAll ? 0.5 : 1,
-          child: Row(
-            children: [
-              IgnorePointer(
-                ignoring: sendAll,
-                child: Focus(
+        IgnorePointer(
+          ignoring: sendAll,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 300),
+            opacity: sendAll ? 0.5 : 1,
+            child: Stack(
+              children: [
+                Focus(
                   focusNode: _focusNode,
                   child: BBAmountInput(
                     disabled: sendAll,
                     value: amountStr,
                     hint: 'Enter amount',
                     onRightTap: () {
-                      context.read<SettingsCubit>().toggleUnitsInSats();
+                      // context.read<SettingsCubit>().toggleUnitsInSats();
                     },
                     isSats: isSats,
+                    btcFormatting: !fiatSelected,
                     onChanged: (txt) {
                       // final aLen = amountStr.length;
                       // final tLen = txt.length;
@@ -80,13 +89,17 @@ class _EnterAmountState extends State<EnterAmount> {
                     },
                   ),
                 ),
-              ),
-              const Gap(8),
-              const CurrencyDropDown(),
-            ],
+                const CenterRight(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: CurrencyDropDown(),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        const Gap(8),
+        const Gap(4),
         const ConversionAmt(),
       ],
     );
@@ -110,14 +123,11 @@ class CurrencyDropDown extends StatelessWidget {
 
     return DropdownButton<String>(
       value: currency?.name,
-      icon: const Icon(Icons.arrow_downward),
+      // icon: const Icon(Icons.arrow_downward),
       // iconSize: 24,
       elevation: 16,
       style: const TextStyle(color: Colors.deepPurple),
-      underline: Container(
-        height: 2,
-        color: Colors.deepPurpleAccent,
-      ),
+      underline: const ColoredBox(color: Colors.transparent),
       onChanged: (String? amt) {
         if (amt == null) return;
         context.read<SendCubit>().updateCurrency(amt.toLowerCase());
@@ -125,7 +135,7 @@ class CurrencyDropDown extends StatelessWidget {
       items: currencyList.map<DropdownMenuItem<String>>((Currency value) {
         return DropdownMenuItem<String>(
           value: value.name,
-          child: Text(value.getFullName()),
+          child: BBText.body(value.shortName),
         );
       }).toList(),
     );
@@ -149,7 +159,12 @@ class ConversionAmt extends StatelessWidget {
 
     if (fiatSelected) {
       unit = isDefaultSats ? 'sats' : 'BTC';
-      amt = context.select((SettingsCubit _) => _.state.getAmountInUnits(satsAmt));
+      amt = context.select(
+        (SettingsCubit _) => _.state.getAmountInUnits(
+          satsAmt,
+          removeText: true,
+        ),
+      );
     } else {
       unit = defaultCurrency!.name;
       amt = fiatAmt.toStringAsFixed(2);
