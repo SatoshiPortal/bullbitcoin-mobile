@@ -71,7 +71,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   }
 
   Future loadInAddresses() async {
-    final (tx, err) = await walletAddress.updateTxInputAddresses(
+    final (tx, err) = await walletTx.updateTxInputAddresses(
       tx: state.tx,
       wallet: walletBloc.state.wallet!,
       mempoolAPI: mempoolAPI,
@@ -89,7 +89,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   }
 
   Future loadOutAddresses() async {
-    final (tx, err) = await walletAddress.updateTxOutputAddresses(
+    final (tx, err) = await walletTx.updateTxOutputAddresses(
       tx: state.tx,
       wallet: walletBloc.state.wallet!,
       mempoolAPI: mempoolAPI,

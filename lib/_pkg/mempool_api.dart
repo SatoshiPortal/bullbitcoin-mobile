@@ -38,7 +38,7 @@ class MempoolAPI {
     }
   }
 
-  Future<(List<String>?, Err?)> getVOutAddressesFromTx(String txid, bool isTestnet) async {
+  Future<(List<String>?, Err?)> getVinAddressesFromTx(String txid, bool isTestnet) async {
     try {
       final testnet = isTestnet ? '/testnet' : '';
       final url = 'https://$mempoolapi$testnet/api/tx/$txid';
@@ -47,8 +47,8 @@ class MempoolAPI {
         throw 'Error Occured.';
       }
       final data = resp.data as Map<String, dynamic>;
-      final outputs = data['vout'] as List<dynamic>;
-      final addresses = outputs.map((e) => e['scriptpubkey_address'] as String).toList();
+      final inputs = data['in'] as List<dynamic>;
+      final addresses = inputs.map((e) => e['scriptpubkey_address'] as String).toList();
 
       return (addresses, null);
     } catch (e) {
