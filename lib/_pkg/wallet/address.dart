@@ -6,7 +6,7 @@ import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletAddress {
-  Future<(({int index, String address})?, Err?)> getNewAddress({
+  Future<(({int index, String address})?, Err?)> newDeposit({
     required bdk.Wallet bdkWallet,
   }) async {
     try {
@@ -20,7 +20,7 @@ class WalletAddress {
     }
   }
 
-  Future<String?> getAddressLabel({required Wallet wallet, required String address}) async {
+  Future<String?> getLabel({required Wallet wallet, required String address}) async {
     final addresses = wallet.addresses ?? <Address>[];
 
     String? label;
@@ -34,21 +34,21 @@ class WalletAddress {
     return label;
   }
 
-  Future<((int, String)?, Err?)> newAddress({
-    required bdk.Wallet bdkWallet,
-  }) async {
-    try {
-      final address = await bdkWallet.getAddress(
-        addressIndex: const bdk.AddressIndex(),
-      );
+  // Future<((int, String)?, Err?)> newAddress({
+  //   required bdk.Wallet bdkWallet,
+  // }) async {
+  //   try {
+  //     final address = await bdkWallet.getAddress(
+  //       addressIndex: const bdk.AddressIndex(),
+  //     );
 
-      return ((address.index, address.address), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
+  //     return ((address.index, address.address), null);
+  //   } catch (e) {
+  //     return (null, Err(e.toString()));
+  //   }
+  // }
 
-  Future<(String?, Err?)> getAddressAtIdx(bdk.Wallet bdkWallet, int idx) async {
+  Future<(String?, Err?)> peekIndex(bdk.Wallet bdkWallet, int idx) async {
     try {
       final address = await bdkWallet.getAddress(
         addressIndex: const bdk.AddressIndex.peek(index: 0),
@@ -60,7 +60,7 @@ class WalletAddress {
     }
   }
 
-  Future<(Wallet?, Err?)> getAddresses({
+  Future<(Wallet?, Err?)> updateAddresses({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
   }) async {
@@ -107,7 +107,7 @@ class WalletAddress {
     }
   }
 
-  Future<(Transaction?, Err?)> getInputAddresses({
+  Future<(Transaction?, Err?)> updateTxInputAddresses({
     required Transaction tx,
     required Wallet wallet,
     required MempoolAPI mempoolAPI,
@@ -134,7 +134,7 @@ class WalletAddress {
     }
   }
 
-  Future<(Transaction?, Err?)> getOutputAddresses({
+  Future<(Transaction?, Err?)> updateTxOutputAddresses({
     required Transaction tx,
     required Wallet wallet,
     required MempoolAPI mempoolAPI,

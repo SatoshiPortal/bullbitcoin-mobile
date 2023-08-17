@@ -255,7 +255,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         errSyncingAddresses: '',
       ),
     );
-    final (wallet, err) = await walletAddress.getAddresses(
+    final (wallet, err) = await walletAddress.updateAddresses(
       bdkWallet: state.bdkWallet!,
       wallet: state.wallet!,
     );
@@ -291,7 +291,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   void _getFirstAddress(GetFirstAddress event, Emitter<WalletState> emit) async {
     if (state.bdkWallet == null) return;
-    final (address, err) = await walletAddress.getAddressAtIdx(state.bdkWallet!, 0);
+    final (address, err) = await walletAddress.peekIndex(state.bdkWallet!, 0);
     if (err != null) {
       emit(state.copyWith(errSyncingAddresses: err.toString()));
       return;
@@ -303,7 +303,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   void _getNewAddress(GetNewAddress event, Emitter<WalletState> emit) async {
     if (state.bdkWallet == null) return;
 
-    final (newAddress, err) = await walletAddress.getNewAddress(
+    final (newAddress, err) = await walletAddress.newDeposit(
       bdkWallet: state.bdkWallet!,
     );
     if (err != null) {

@@ -41,7 +41,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
               : 0
           : newAddress.index;
 
-      final label = await walletAddress.getAddressLabel(
+      final label = await walletAddress.getLabel(
         wallet: walletBloc.state.wallet!,
         address: address,
       );
@@ -70,7 +70,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
       walletBloc.add(UpdateWallet(w));
     } else {
-      final (newAddress, err) = await walletAddress.getNewAddress(
+      final (newAddress, err) = await walletAddress.newDeposit(
         bdkWallet: walletBloc.state.bdkWallet!,
       );
       if (err != null) {
@@ -83,7 +83,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         return;
       }
 
-      final label = await walletAddress.getAddressLabel(
+      final label = await walletAddress.getLabel(
         wallet: walletBloc.state.wallet!,
         address: newAddress!.address,
       );
@@ -194,7 +194,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   void saveFinalInvoiceClicked() async {
     emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
 
-    final (a, err) = await walletAddress.newAddress(bdkWallet: walletBloc.state.bdkWallet!);
+    final (a, err) = await walletAddress.newDeposit(bdkWallet: walletBloc.state.bdkWallet!);
 
     if (err != null)
       emit(
@@ -204,10 +204,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         ),
       );
 
-    final (idx, address) = a!;
-
     final (savedAddress, w) = await walletAddress.addAddressToWallet(
-      address: (idx, address),
+      address: (a!.index, a.address),
       wallet: walletBloc.state.wallet!,
       label: state.privateLabel,
     );
@@ -230,7 +228,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     final btcAmt = (state.invoiceAmount / 100000000).toStringAsFixed(8);
 
-    final invoice = 'bitcoin:' + address + '?amount=' + btcAmt + '&label=' + state.description;
+    final invoice = 'bitcoin:' + a.address + '?amount=' + btcAmt + '&label=' + state.description;
 
     emit(
       state.copyWith(

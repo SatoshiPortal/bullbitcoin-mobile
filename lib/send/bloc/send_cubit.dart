@@ -465,25 +465,25 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final (wallet, txid) = wtxid!;
-    final (bdkWallet, errr) = await walletCreate.loadPublicBdkWallet(wallet);
-    if (errr != null) {
-      emit(state.copyWith(errSending: errr.toString(), signed: false));
-      return;
-    }
-    // update labels for change
-    final (changeUWallet, cErr) = await walletAddress.updateChangeLabel(
-      wallet: wallet,
-      bdkWallet: bdkWallet!,
-      txid: txid,
-      label: state.note,
-    );
-    if (cErr != null) {
-      emit(state.copyWith(errSending: errr.toString()));
-      return;
-    }
+    // final (bdkWallet, errr) = await walletCreate.loadPublicBdkWallet(wallet);
+    // if (errr != null) {
+    //   emit(state.copyWith(errSending: errr.toString(), signed: false));
+    //   return;
+    // }
+    // sync update labels for change
+    // final (changeUWallet, cErr) = await walletAddress.updateChangeLabel(
+    //   wallet: wallet,
+    //   bdkWallet: bdkWallet!,
+    //   txid: txid,
+    //   label: state.note,
+    // );
+    // if (cErr != null) {
+    //   emit(state.copyWith(errSending: errr.toString()));
+    //   return;
+    // }
     final (_, updatedWallet) = await walletAddress.addAddressToWallet(
       address: (1, state.address),
-      wallet: changeUWallet!,
+      wallet: wallet,
       label: state.note,
       sentTxId: txid,
       isSend: true,
