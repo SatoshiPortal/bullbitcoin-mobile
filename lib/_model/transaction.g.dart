@@ -18,7 +18,7 @@ _$_Transaction _$$_TransactionFromJson(Map<String, dynamic> json) =>
       fromAddress: json['fromAddress'] as String?,
       toAddress: json['toAddress'] as String?,
       psbt: json['psbt'] as String?,
-      rbfEnabled: json['rbfEnabled'] as bool?,
+      rbfEnabled: json['rbfEnabled'] as bool? ?? false,
       oldTx: json['oldTx'] as bool? ?? false,
       broadcastTime: json['broadcastTime'] as int?,
       inAddresses: (json['inAddresses'] as List<dynamic>?)

@@ -84,63 +84,63 @@ class AddressesScreen extends HookWidget {
           const Gap(32),
           if (selectedOption.value == 0) ...[
             if (addresses
-                .where((element) => element.getAddressListType() == AddressListType.receiveActive)
+                .where((element) => element.getAddressType() == AddressType.receiveActive)
                 .isNotEmpty) ...[
               const BBText.title(
                 'Active Balance',
               ),
               const Gap(8),
               for (var i = 0; i < addresses.length; i++)
-                if (addresses[i].getAddressListType() == AddressListType.receiveActive)
+                if (addresses[i].getAddressType() == AddressType.receiveActive)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],
             if (addresses
-                .where((element) => element.getAddressListType() == AddressListType.receiveUnused)
+                .where((element) => element.getAddressType() == AddressType.receiveUnused)
                 .isNotEmpty) ...[
               const BBText.title(
                 'Unused',
               ),
               const Gap(8),
               for (var i = 0; i < addresses.length; i++)
-                if (addresses[i].getAddressListType() == AddressListType.receiveUnused)
+                if (addresses[i].getAddressType() == AddressType.receiveUnused)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],
             if (addresses
-                .where((element) => element.getAddressListType() == AddressListType.receiveUsed)
+                .where((element) => element.getAddressType() == AddressType.receiveUsed)
                 .isNotEmpty) ...[
               const BBText.title(
                 'Previously used',
               ),
               const Gap(8),
               for (var i = 0; i < addresses.length; i++)
-                if (addresses[i].getAddressListType() == AddressListType.receiveUsed)
+                if (addresses[i].getAddressType() == AddressType.receiveUsed)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],
           ] else ...[
             if (addresses
-                .where((element) => element.getAddressListType() == AddressListType.changeActive)
+                .where((element) => element.getAddressType() == AddressType.changeActive)
                 .isNotEmpty) ...[
               const BBText.title(
                 'Active Balance',
               ),
               const Gap(8),
               for (var i = 0; i < addresses.length; i++)
-                if (addresses[i].getAddressListType() == AddressListType.changeActive)
+                if (addresses[i].getAddressType() == AddressType.changeActive)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],
             if (addresses
-                .where((element) => element.getAddressListType() == AddressListType.changeUsed)
+                .where((element) => element.getAddressType() == AddressType.changeUsed)
                 .isNotEmpty) ...[
               const BBText.title(
                 'Previously used',
               ),
               const Gap(8),
               for (var i = 0; i < addresses.length; i++)
-                if (addresses[i].getAddressListType() == AddressListType.changeUsed)
+                if (addresses[i].getAddressType() == AddressType.changeUsed)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],

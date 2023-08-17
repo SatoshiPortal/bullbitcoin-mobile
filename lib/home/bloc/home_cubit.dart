@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
     required this.createWalletCubit,
-    required this.walletRead,
     required this.walletRepository,
     required this.hiveStorage,
   }) : super(const HomeState()) {
@@ -21,7 +19,6 @@ class HomeCubit extends Cubit<HomeState> {
     });
   }
 
-  final WalletRead walletRead;
   final WalletRepository walletRepository;
   final HiveStorage hiveStorage;
   final CreateWalletCubit createWalletCubit;

@@ -237,7 +237,7 @@ class ChangePin extends StatelessWidget {
             FontAwesomeIcons.angleRight,
             size: 14,
             color: context.colour.secondary,
-          )
+          ),
         ],
       ),
     );
@@ -266,7 +266,7 @@ class ImportWalletButton extends StatelessWidget {
             FontAwesomeIcons.angleRight,
             size: 14,
             color: context.colour.secondary,
-          )
+          ),
         ],
       ),
     );
@@ -295,7 +295,7 @@ class BroadCastButton extends StatelessWidget {
             FontAwesomeIcons.angleRight,
             size: 14,
             color: context.colour.secondary,
-          )
+          ),
         ],
       ),
     );

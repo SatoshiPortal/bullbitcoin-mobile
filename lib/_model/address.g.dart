@@ -15,6 +15,7 @@ _$_Address _$$_AddressFromJson(Map<String, dynamic> json) => _$_Address(
       saving: json['saving'] as bool? ?? false,
       errSaving: json['errSaving'] as String? ?? '',
       unspendable: json['unspendable'] as bool? ?? false,
+      isMine: json['isMine'] as bool? ?? true,
       highestPreviousBalance: json['highestPreviousBalance'] as int? ?? 0,
     );
 
@@ -28,5 +29,6 @@ Map<String, dynamic> _$$_AddressToJson(_$_Address instance) =>
       'saving': instance.saving,
       'errSaving': instance.errSaving,
       'unspendable': instance.unspendable,
+      'isMine': instance.isMine,
       'highestPreviousBalance': instance.highestPreviousBalance,
     };

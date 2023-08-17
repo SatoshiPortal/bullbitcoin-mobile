@@ -7,10 +7,13 @@ import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -26,10 +29,13 @@ class SendCubit extends Cubit<SendState> {
     required this.bullBitcoinAPI,
     required this.hiveStorage,
     required this.secureStorage,
-    required this.walletRead,
-    required this.walletUpdate,
+    required this.walletAddress,
+    required this.walletTx,
+    required this.walletSensTx,
     required this.walletRepository,
+    required this.walletSensRepository,
     required this.walletCreate,
+    required this.walletSensCreate,
     required this.mempoolAPI,
     required this.fileStorage,
   }) : super(const SendState()) {
@@ -44,11 +50,15 @@ class SendCubit extends Cubit<SendState> {
   final BullBitcoinAPI bullBitcoinAPI;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletRead walletRead;
-  final WalletUpdate walletUpdate;
+  final WalletAddress walletAddress;
+  final WalletTx walletTx;
+  final WalletSensitiveTx walletSensTx;
   final WalletRepository walletRepository;
+  final WalletSensitiveRepository walletSensRepository;
 
   final WalletCreate walletCreate;
+
+  final WalletSensitiveCreate walletSensCreate;
   final MempoolAPI mempoolAPI;
   final FileStorage fileStorage;
 
@@ -349,7 +359,7 @@ class SendCubit extends Cubit<SendState> {
 
     final localWallet = walletBloc.state.wallet;
 
-    final (buildResp, err) = await walletUpdate.buildTx(
+    final (buildResp, err) = await walletTx.buildTx(
       wallet: localWallet!,
       pubWallet: walletBloc.state.bdkWallet!,
       isManualSend: state.selectedAddresses.isNotEmpty,
@@ -376,7 +386,7 @@ class SendCubit extends Cubit<SendState> {
 
     if (localWallet.type == BBWalletType.newSeed || localWallet.type == BBWalletType.words) {
       // sign
-      final (seed, sErr) = await walletRepository.readSeed(
+      final (seed, sErr) = await walletSensRepository.readSeed(
         fingerprintIndex: walletBloc.state.wallet!.getRelatedSeedStorageString(),
         secureStore: secureStorage,
       );
@@ -387,17 +397,19 @@ class SendCubit extends Cubit<SendState> {
         );
         return;
       }
-      final (bdkSignerWallet, errr) = await walletCreate.loadPrivateBdkWallet(localWallet, seed!);
+      final (bdkSignerWallet, errr) =
+          await walletSensCreate.loadPrivateBdkWallet(localWallet, seed!);
       if (errr != null) {
         emit(state.copyWith(errSending: errr.toString(), signed: false));
         return;
       }
       final (signed, sErrr) =
-          await walletUpdate.signTx(unsignedPSBT: psbt, signingWallet: bdkSignerWallet!);
+          await walletSensTx.signTx(unsignedPSBT: psbt, signingWallet: bdkSignerWallet!);
       if (sErrr != null) {
         emit(state.copyWith(errSending: errr.toString(), signed: false));
         return;
       }
+
       emit(
         state.copyWith(
           sending: false,
@@ -440,7 +452,7 @@ class SendCubit extends Cubit<SendState> {
   void sendClicked() async {
     emit(state.copyWith(sending: true, errSending: ''));
 
-    final (wtxid, err) = await walletUpdate.broadcastTxWithWallet(
+    final (wtxid, err) = await walletTx.broadcastTxWithWallet(
       psbt: state.psbtSigned!,
       blockchain: settingsCubit.state.blockchain!,
       wallet: walletBloc.state.wallet!,
@@ -453,13 +465,29 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final (wallet, txid) = wtxid!;
-
-    final (_, updatedWallet) = await walletUpdate.updateWalletAddress(
-      address: (1, state.address),
+    final (bdkWallet, errr) = await walletCreate.loadPublicBdkWallet(wallet);
+    if (errr != null) {
+      emit(state.copyWith(errSending: errr.toString(), signed: false));
+      return;
+    }
+    // update labels for change
+    final (changeUWallet, cErr) = await walletAddress.updateChangeLabel(
       wallet: wallet,
+      bdkWallet: bdkWallet!,
+      txid: txid,
+      label: state.note,
+    );
+    if (cErr != null) {
+      emit(state.copyWith(errSending: errr.toString()));
+      return;
+    }
+    final (_, updatedWallet) = await walletAddress.addAddressToWallet(
+      address: (1, state.address),
+      wallet: changeUWallet!,
       label: state.note,
       sentTxId: txid,
       isSend: true,
+      isMine: false,
     );
 
     final err2 = await walletRepository.updateWallet(

@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -31,9 +30,8 @@ class ReceivePopUp extends StatelessWidget {
   static Future openPopUp(BuildContext context, WalletBloc wallet) async {
     final receiveCubit = ReceiveCubit(
       walletBloc: wallet,
-      walletUpdate: locator<WalletUpdate>(),
+      walletAddress: locator<WalletAddress>(),
       hiveStorage: locator<HiveStorage>(),
-      walletRead: locator<WalletRead>(),
       walletRepository: locator<WalletRepository>(),
     );
 
@@ -477,7 +475,7 @@ class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
                 ..minimumFractionDigits = 8
                 ..turnOffGrouping(),
               allowFraction: true,
-            )
+            ),
         ],
       ),
     );

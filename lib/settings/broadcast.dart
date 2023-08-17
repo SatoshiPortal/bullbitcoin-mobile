@@ -1,7 +1,7 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -30,7 +30,7 @@ class BroadcasePopUp extends StatelessWidget {
       filePicker: locator<FilePick>(),
       settingsCubit: locator<SettingsCubit>(),
       fileStorage: locator<FileStorage>(),
-      walletUpdate: locator<WalletUpdate>(),
+      walletTx: locator<WalletTx>(),
     );
 
     return showMaterialModalBottomSheet(

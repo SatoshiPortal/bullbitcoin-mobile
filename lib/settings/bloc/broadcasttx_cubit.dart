@@ -2,7 +2,7 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -15,14 +15,14 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     required this.filePicker,
     required this.settingsCubit,
     required this.fileStorage,
-    required this.walletUpdate,
+    required this.walletTx,
   }) : super(const BroadcastTxState());
 
   final FilePick filePicker;
   final SettingsCubit settingsCubit;
   final Barcode barcode;
   final FileStorage fileStorage;
-  final WalletUpdate walletUpdate;
+  final WalletTx walletTx;
 
   void txChanged(String tx) {
     emit(state.copyWith(tx: tx));
@@ -139,7 +139,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       return;
     }
 
-    final err = await walletUpdate.broadcastTx(
+    final err = await walletTx.broadcastTx(
       tx: bdkTx,
       blockchain: blockchain,
     );

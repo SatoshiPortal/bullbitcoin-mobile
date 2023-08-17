@@ -3,10 +3,14 @@ import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -18,7 +22,6 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -42,11 +45,15 @@ class TxPage extends StatelessWidget {
       walletBloc: wallet,
       mempoolAPI: locator<MempoolAPI>(),
       walletCreate: locator<WalletCreate>(),
+      walletSensCreate: locator<WalletSensitiveCreate>(),
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
-      walletUpdate: locator<WalletUpdate>(),
+      walletSync: locator<WalletSync>(),
+      walletTx: locator<WalletTx>(),
+      walletSensTx: locator<WalletSensitiveTx>(),
       walletRepository: locator<WalletRepository>(),
-      walletRead: locator<WalletRead>(),
+      walletSensRepository: locator<WalletSensitiveRepository>(),
+      walletAddress: locator<WalletAddress>(),
       settingsCubit: locator<SettingsCubit>(),
     );
     return MultiBlocProvider(
@@ -111,7 +118,7 @@ class _Screen extends StatelessWidget {
               tx.timestamp == 0 ? 'Waiting for confirmations' : timeago.format(tx.getDateTime());
           final broadcastTime = tx.getBroadcastDateTime();
 
-          final toAddress = tx.mapOutValueToAddress((amt).toString());
+          // final toAddress = tx.mapOutValueToAddress((amt).toString());
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -163,22 +170,22 @@ class _Screen extends StatelessWidget {
                       label: txid,
                     ),
 
-                    const Gap(24),
-                    const BBText.title(
-                      'Recipient Bitcoin Address',
-                    ),
-                    // const Gap(4),
-                    CenterLeft(
-                      child: BBButton.text(
-                        onPressed: () {
-                          final url = context.read<SettingsCubit>().state.explorerAddressUrl(
-                                toAddress,
-                              );
-                          locator<Launcher>().launchApp(url);
-                        },
-                        label: toAddress,
-                      ),
-                    ),
+                    // const Gap(24),
+                    // const BBText.title(
+                    //   'Recipient Bitcoin Address',
+                    // ),
+                    // // const Gap(4),
+                    // CenterLeft(
+                    //   child: BBButton.text(
+                    //     onPressed: () {
+                    //       final url = context.read<SettingsCubit>().state.explorerAddressUrl(
+                    //             toAddress,
+                    //           );
+                    //       locator<Launcher>().launchApp(url);
+                    //     },
+                    //     label: toAddress,
+                    //   ),
+                    // ),
 
                     const Gap(24),
                     const BBText.title(
@@ -287,7 +294,7 @@ class TxLabelTextField extends HookWidget {
             context.read<TransactionCubit>().saveLabelClicked();
           },
           label: 'SAVE',
-        )
+        ),
       ],
     );
   }

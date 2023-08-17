@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
@@ -16,12 +18,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
     required String saveDir,
     required this.settingsCubit,
-    required this.walletRead,
+    required this.walletSync,
     required this.secureStorage,
     required this.hiveStorage,
     required this.walletCreate,
     required this.walletRepository,
-    required this.walletUpdate,
+    required this.walletTransaction,
+    required this.walletBalance,
+    required this.walletAddress,
     this.fromStorage = true,
     Wallet? wallet,
   }) : super(WalletState(wallet: wallet)) {
@@ -37,10 +41,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }
 
   final SettingsCubit settingsCubit;
-  final WalletRead walletRead;
+  final WalletSync walletSync;
   final WalletCreate walletCreate;
   final WalletRepository walletRepository;
-  final WalletUpdate walletUpdate;
+  final WalletTx walletTransaction;
+  final WalletBalance walletBalance;
+  final WalletAddress walletAddress;
+
   final SecureStorage secureStorage;
   final HiveStorage hiveStorage;
   final bool fromStorage;
@@ -124,7 +131,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     final blockchain = settingsCubit.state.blockchain!;
     final bdkWallet = state.bdkWallet!;
 
-    final err = await walletRead.syncWallet(
+    final err = await walletSync.syncWallet(
       blockChain: blockchain,
       bdkWallet: bdkWallet,
     );
@@ -153,7 +160,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     emit(state.copyWith(loadingBalance: true, errLoadingBalance: ''));
 
-    final (w, err) = await walletRead.getBalance(
+    final (w, err) = await walletBalance.getBalance(
       bdkWallet: state.bdkWallet!,
       wallet: state.wallet!,
     );
@@ -200,7 +207,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     emit(state.copyWith(loadingTxs: true, errLoadingWallet: ''));
 
-    final (wallet, err) = await walletRead.getTransactions(
+    final (wallet, err) = await walletTransaction.getTransactions(
       bdkWallet: state.bdkWallet!,
       wallet: state.wallet!,
     );
@@ -248,7 +255,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         errSyncingAddresses: '',
       ),
     );
-    final (wallet, err) = await walletRead.getAddresses(
+    final (wallet, err) = await walletAddress.getAddresses(
       bdkWallet: state.bdkWallet!,
       wallet: state.wallet!,
     );
@@ -284,7 +291,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   void _getFirstAddress(GetFirstAddress event, Emitter<WalletState> emit) async {
     if (state.bdkWallet == null) return;
-    final (address, err) = await walletUpdate.getAddressAtIdx(state.bdkWallet!, 0);
+    final (address, err) = await walletAddress.getAddressAtIdx(state.bdkWallet!, 0);
     if (err != null) {
       emit(state.copyWith(errSyncingAddresses: err.toString()));
       return;
@@ -296,7 +303,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   void _getNewAddress(GetNewAddress event, Emitter<WalletState> emit) async {
     if (state.bdkWallet == null) return;
 
-    final (newAddress, err) = await walletUpdate.getNewAddress(
+    final (newAddress, err) = await walletAddress.getNewAddress(
       bdkWallet: state.bdkWallet!,
     );
     if (err != null) {

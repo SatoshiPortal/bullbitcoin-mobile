@@ -10,6 +10,8 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -22,9 +24,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required this.nfc,
     required this.settingsCubit,
     required this.walletCreate,
+    required this.walletSensCreate,
     required this.hiveStorage,
     required this.secureStorage,
     required this.walletRepository,
+    required this.walletSensRepository,
   }) : super(
           const ImportState(
               // words: [
@@ -39,9 +43,12 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
   final SettingsCubit settingsCubit;
   final WalletCreate walletCreate;
+  final WalletSensitiveCreate walletSensCreate;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
   final WalletRepository walletRepository;
+
+  final WalletSensitiveRepository walletSensRepository;
 
   void backClicked() {
     switch (state.importStep) {
@@ -334,7 +341,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           final mnemonic = state.words.join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
 
-          final (ws, wErrs) = await walletCreate.allFromBIP39(
+          final (ws, wErrs) = await walletSensCreate.allFromBIP39(
             mnemonic,
             passphrase,
             network,
@@ -411,11 +418,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
     if (selectedWallet!.type == BBWalletType.words) {
       final mnemonic = state.words.join(' ');
-      final (seed, sErr) = await walletCreate.mnemonicSeed(mnemonic, network);
+      final (seed, sErr) = await walletSensCreate.mnemonicSeed(mnemonic, network);
       if (sErr != null) {
         emit(state.copyWith(errImporting: 'Error creating mnemonicSeed'));
       }
-      final err = await walletRepository.newSeed(seed: seed!, secureStore: secureStorage);
+      final err = await walletSensRepository.newSeed(seed: seed!, secureStore: secureStorage);
 
       if (err != null) {
         emit(
@@ -433,7 +440,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         final passphrase =
             Passphrase(passphrase: passPhrase, sourceFingerprint: selectedWallet.sourceFingerprint);
 
-        final err = await walletRepository.newPassphrase(
+        final err = await walletSensRepository.newPassphrase(
           passphrase: passphrase,
           secureStore: secureStorage,
           seedFingerprintIndex: selectedWallet.sourceFingerprint,

@@ -1,10 +1,12 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
@@ -34,15 +36,16 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
         WalletBloc(
           saveDir: w.getWalletStorageString(),
           settingsCubit: locator<SettingsCubit>(),
-          walletRead: locator<WalletRead>(),
+          walletSync: locator<WalletSync>(),
           secureStorage: locator<SecureStorage>(),
           hiveStorage: locator<HiveStorage>(),
           walletCreate: locator<WalletCreate>(),
-          walletUpdate: locator<WalletUpdate>(),
+          walletTransaction: locator<WalletTx>(),
           walletRepository: locator<WalletRepository>(),
           fromStorage: false,
-          wallet: w,
-        )
+          walletBalance: locator<WalletBalance>(),
+          walletAddress: locator<WalletAddress>(),
+        ),
     ];
 
     return BlocListener<ImportWalletCubit, ImportState>(

@@ -4,9 +4,9 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
@@ -16,10 +16,11 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   WalletSettingsCubit({
     required Wallet wallet,
     required this.walletBloc,
-    required this.walletUpdate,
+    // required this.walletUpdate,
     required this.hiveStorage,
     required this.walletRead,
     required this.walletRepository,
+    required this.walletSensRepository,
     required this.fileStorage,
     required this.secureStorage,
   }) : super(
@@ -29,11 +30,12 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         );
 
   final WalletBloc walletBloc;
-  final WalletUpdate walletUpdate;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletRead walletRead;
+  final WalletSync walletRead;
   final WalletRepository walletRepository;
+
+  final WalletSensitiveRepository walletSensRepository;
 
   final FileStorage fileStorage;
 
@@ -84,7 +86,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   // }
 
   void loadBackupClicked() async {
-    final (seed, err) = await walletRepository.readSeed(
+    final (seed, err) = await walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
       secureStore: secureStorage,
     );
@@ -192,7 +194,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
     final words = state.testMneString();
     final password = state.testBackupPassword;
-    final (seed, err) = await walletRepository.readSeed(
+    final (seed, err) = await walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
       secureStore: secureStorage,
     );
@@ -270,7 +272,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
   void backupToSD() async {
     emit(state.copyWith(savingFile: true, errSavingFile: ''));
-    final (seed, err) = await walletRepository.readSeed(
+    final (seed, err) = await walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
       secureStore: secureStorage,
     );
@@ -335,7 +337,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    final errr = await walletRepository.deleteSeed(
+    final errr = await walletSensRepository.deleteSeed(
       fingerprint: state.wallet.getRelatedSeedStorageString(),
       storage: secureStorage,
     );
@@ -404,7 +406,7 @@ const mn1 = [
   'fancy',
   'need',
   'olive',
-  'earn'
+  'earn',
 ];
 
 // arrive term same weird genuine year trash autumn fancy need olive earn

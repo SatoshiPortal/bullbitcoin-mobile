@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/address/bloc/address_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -14,7 +14,7 @@ class AddressCubit extends Cubit<AddressState> {
     required Address address,
     required this.walletSettingsCubit,
     required this.walletBloc,
-    required this.walletUpdate,
+    required this.walletAddress,
     required this.walletRepository,
     required this.hiveStorage,
     required this.walletRead,
@@ -23,16 +23,16 @@ class AddressCubit extends Cubit<AddressState> {
   // final WalletStorage walletStorage;
   final WalletSettingsCubit walletSettingsCubit;
   final WalletBloc walletBloc;
-  final WalletUpdate walletUpdate;
+  final WalletAddress walletAddress;
   final WalletRepository walletRepository;
 
   final HiveStorage hiveStorage;
-  final WalletRead walletRead;
+  final WalletSync walletRead;
 
   void freezeAddress() async {
     emit(state.copyWith(freezingAddress: true, errFreezingAddress: ''));
 
-    final (address, w) = await walletUpdate.updateWalletAddress(
+    final (address, w) = await walletAddress.addAddressToWallet(
       address: (state.address!.index, state.address!.address),
       label: state.address?.label,
       freeze: true,
@@ -61,7 +61,7 @@ class AddressCubit extends Cubit<AddressState> {
   void unfreezeAddress() async {
     emit(state.copyWith(freezingAddress: true, errFreezingAddress: ''));
 
-    final (address, w) = await walletUpdate.updateWalletAddress(
+    final (address, w) = await walletAddress.addAddressToWallet(
       address: (state.address!.index, state.address!.address),
       label: state.address?.label,
       freeze: false,
@@ -96,7 +96,7 @@ class AddressCubit extends Cubit<AddressState> {
   void saveAddressName(Address address, String label) async {
     emit(state.copyWith(savingAddressName: true, errSavingAddressName: ''));
 
-    final (addr, w) = await walletUpdate.updateWalletAddress(
+    final (addr, w) = await walletAddress.addAddressToWallet(
       address: (address.index, address.address),
       label: label,
       wallet: walletBloc.state.wallet!,

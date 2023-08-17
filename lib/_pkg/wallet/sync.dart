@@ -1,14 +1,42 @@
-import 'dart:isolate';
-
-import 'package:bb_mobile/_model/address.dart';
-import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
-class WalletRead {
-  Future<((Wallet, Balance)?, Err?)> getBalance({
+class WalletSync {
+  Future<Err?> syncWallet({
+    required bdk.Wallet bdkWallet,
+    required bdk.Blockchain blockChain,
+  }) async {
+    try {
+      await bdkWallet.sync(blockChain);
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
+
+  // Future<(ReceivePort?, Err?)> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
+  //   try {
+  //     final receivePort = ReceivePort();
+  //     await Isolate.spawn(_sync, [receivePort.sendPort, wallet, blockchain]);
+  //     return (receivePort, null);
+  //   } catch (e) {
+  //     return (null, Err(e.toString()));
+  //   }
+  // }
+}
+
+// Future<void> _sync(List<dynamic> args) async {
+//   final resultPort = args[0] as SendPort;
+//   final wallet = args[1] as bdk.Wallet;
+//   final blockchain = args[2] as bdk.Blockchain;
+//   await wallet.sync(blockchain);
+//   resultPort.send(true);
+// }
+
+
+/**
+ * 
+ *   Future<((Wallet, Balance)?, Err?)> getBalance({
     required bdk.Wallet bdkWallet,
     required Wallet wallet,
   }) async {
@@ -27,6 +55,60 @@ class WalletRead {
       final w = wallet.copyWith(balance: balance.total);
 
       return ((w, balance), null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(({int index, String address})?, Err?)> getNewAddress({
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final address = await bdkWallet.getAddress(
+        addressIndex: const bdk.AddressIndex.new(),
+      );
+
+      return ((index: address.index, address: address.address), null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<String?> getAddressLabel({required Wallet wallet, required String address}) async {
+    final addresses = wallet.addresses ?? <Address>[];
+
+    String? label;
+    if (addresses.any((element) => element.address == address)) {
+      final x = addresses.firstWhere(
+        (element) => element.address == address,
+      );
+      label = x.label;
+    }
+
+    return label;
+  }
+
+  Future<((int, String)?, Err?)> newAddress({
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final address = await bdkWallet.getAddress(
+        addressIndex: const bdk.AddressIndex(),
+      );
+
+      return ((address.index, address.address), null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(String?, Err?)> getAddressAtIdx(bdk.Wallet bdkWallet, int idx) async {
+    try {
+      final address = await bdkWallet.getAddress(
+        addressIndex: const bdk.AddressIndex.peek(index: 0),
+      );
+
+      return (address.address, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
@@ -105,7 +187,7 @@ class WalletRead {
           height: tx.confirmationTime?.height ?? 0,
           timestamp: tx.confirmationTime?.timestamp ?? 0,
           bdkTx: tx,
-          rbfEnabled: storedTx?.rbfEnabled,
+          rbfEnabled: storedTx?.rbfEnabled ?? false,
           // label: label,
         );
 
@@ -203,50 +285,4 @@ class WalletRead {
       return (null, Err(e.toString()));
     }
   }
-
-  Future<Err?> syncWallet({
-    required bdk.Wallet bdkWallet,
-    required bdk.Blockchain blockChain,
-  }) async {
-    try {
-      await bdkWallet.sync(blockChain);
-      return null;
-    } catch (e) {
-      return Err(e.toString());
-    }
-  }
-
-  Future<(ReceivePort?, Err?)> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
-    try {
-      final receivePort = ReceivePort();
-      await Isolate.spawn(_sync, [receivePort.sendPort, wallet, blockchain]);
-      return (receivePort, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-
-  // Future<bool> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
-  //   final receivePort = ReceivePort();
-
-  //   await Isolate.spawn(_sync, [receivePort.sendPort, wallet, blockchain]);
-  //   final res = await receivePort.first;
-  //   return res as bool;
-  // }
-
-  // Future<void> _sync(List<dynamic> args) async {
-  //   final resultPort = args[0] as SendPort;
-  //   final wallet = args[1] as bdk.Wallet;
-  //   final blockchain = args[2] as bdk.Blockchain;
-  //   await wallet.sync(blockchain);
-  //   resultPort.send(true);
-  // }
-}
-
-Future<void> _sync(List<dynamic> args) async {
-  final resultPort = args[0] as SendPort;
-  final wallet = args[1] as bdk.Wallet;
-  final blockchain = args[2] as bdk.Blockchain;
-  await wallet.sync(blockchain);
-  resultPort.send(true);
-}
+*/

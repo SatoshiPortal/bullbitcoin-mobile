@@ -10,10 +10,15 @@ import 'package:bb_mobile/_pkg/nfc.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
@@ -54,26 +59,34 @@ Future setupLocator({bool fromTest = false}) async {
   locator.registerSingleton<FileStorage>(fileStorage);
   locator.registerSingleton<WalletRepository>(walletRepository);
 
-  locator.registerSingleton<WalletUpdate>(WalletUpdate());
-  final walletcreate = WalletCreate();
-  final walletread = WalletRead();
+  locator.registerSingleton<WalletBalance>(WalletBalance());
+  locator.registerSingleton<WalletTx>(WalletTx());
+  locator.registerSingleton<WalletAddress>(WalletAddress());
+
+  final walletSync = WalletSync();
+
+  final walletCreate = WalletCreate();
+  final walletSensCreate = WalletSensitiveCreate();
+  final walletSensTx = WalletSensitiveTx();
+  final walletSensRepo = WalletSensitiveRepository();
 
   final settings = SettingsCubit(
-    walletCreate: walletcreate,
+    walletCreate: walletCreate,
     hiveStorage: hiveStorage,
     mempoolAPI: mempoolAPI,
     bbAPI: bbAPI,
   );
 
   final homeCubit = HomeCubit(
-    walletRead: walletread,
+    // walletSync: walletSync,
     hiveStorage: locator<HiveStorage>(),
     createWalletCubit: CreateWalletCubit(
-      walletCreate: walletcreate,
+      walletSensCreate: walletSensCreate,
       settingsCubit: settings,
       walletRepository: locator<WalletRepository>(),
       hiveStorage: hiveStorage,
       secureStorage: secureStorage,
+      walletSensRepository: walletSensRepo,
     ),
     walletRepository: locator<WalletRepository>(),
   );
@@ -82,10 +95,13 @@ Future setupLocator({bool fromTest = false}) async {
   settings.loadTimer();
 
   locator.registerSingleton<SettingsCubit>(settings);
+  locator.registerSingleton<WalletSensitiveCreate>(walletSensCreate);
+  locator.registerSingleton<WalletSensitiveTx>(walletSensTx);
+  locator.registerSingleton<WalletSensitiveRepository>(walletSensRepo);
 
   locator.registerSingleton<MempoolAPI>(mempoolAPI);
-  locator.registerSingleton<WalletCreate>(walletcreate);
-  locator.registerSingleton<WalletRead>(walletread);
+  locator.registerSingleton<WalletCreate>(walletCreate);
+  locator.registerSingleton<WalletSync>(walletSync);
   locator.registerSingleton<Barcode>(Barcode());
   locator.registerSingleton<Launcher>(Launcher());
   locator.registerSingleton<NFCPicker>(NFCPicker());

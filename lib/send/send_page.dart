@@ -4,10 +4,13 @@ import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -42,9 +45,11 @@ class SendPopup extends StatelessWidget {
     final cubit = SendCubit(
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
-      walletRead: locator<WalletRead>(),
-      walletUpdate: locator<WalletUpdate>(),
+      walletAddress: locator<WalletAddress>(),
+      walletTx: locator<WalletTx>(),
+      walletSensTx: locator<WalletSensitiveTx>(),
       walletCreate: locator<WalletCreate>(),
+      walletSensCreate: locator<WalletSensitiveCreate>(),
       barcode: locator<Barcode>(),
       walletBloc: walletBloc,
       settingsCubit: locator<SettingsCubit>(),
@@ -52,6 +57,7 @@ class SendPopup extends StatelessWidget {
       mempoolAPI: locator<MempoolAPI>(),
       fileStorage: locator<FileStorage>(),
       walletRepository: locator<WalletRepository>(),
+      walletSensRepository: locator<WalletSensitiveRepository>(),
     );
 
     if (deepLinkUri != null) cubit.updateAddress(deepLinkUri);

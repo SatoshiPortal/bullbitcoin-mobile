@@ -102,16 +102,6 @@ class _AppLifecycleOverlayState extends State<AppLifecycleOverlay> with WidgetsB
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    setState(() {
-      shouldBlur = state == AppLifecycleState.inactive ||
-          state == AppLifecycleState.paused ||
-          state == AppLifecycleState.hidden ||
-          state == AppLifecycleState.detached;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return ColoredBox(
       color: context.colour.primary,

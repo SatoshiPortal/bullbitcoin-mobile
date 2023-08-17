@@ -166,7 +166,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                 widget.focusNode.unfocus();
                 widget.returnClicked(widget.index);
               },
-            )
+            ),
         ],
       ),
     );

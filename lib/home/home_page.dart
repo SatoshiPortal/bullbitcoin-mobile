@@ -3,10 +3,12 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/bottom_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
@@ -15,7 +17,9 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_popup.dart';
-import 'package:bb_mobile/send/send_page.dart';
+// ignore: library_prefixes
+import 'package:bb_mobile/send/send_page.dart' as SendPage;
+// import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -119,13 +123,15 @@ class HomeWallets extends StatelessWidget {
         WalletBloc(
           saveDir: w.getWalletStorageString(),
           settingsCubit: locator<SettingsCubit>(),
-          walletRead: locator<WalletRead>(),
+          walletSync: locator<WalletSync>(),
           secureStorage: locator<SecureStorage>(),
           hiveStorage: locator<HiveStorage>(),
           walletCreate: locator<WalletCreate>(),
           walletRepository: locator<WalletRepository>(),
-          walletUpdate: locator<WalletUpdate>(),
-        )
+          walletTransaction: locator<WalletTx>(),
+          walletBalance: locator<WalletBalance>(),
+          walletAddress: locator<WalletAddress>(),
+        ),
     ];
 
     return WalletScreen(
@@ -243,7 +249,7 @@ class BackupAlertBanner extends StatelessWidget {
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ],
@@ -299,7 +305,7 @@ class _HomeHeaderCardsState extends State<HomeHeaderCards> {
                 );
               },
             ),
-          ]
+          ],
         ],
       ),
     );
@@ -447,7 +453,7 @@ class HomeTxItem extends StatelessWidget {
                   label,
                 ),
               ),
-            ]
+            ],
           ],
         ),
       ),
@@ -503,7 +509,7 @@ class HomeActionButtons extends StatelessWidget {
               onPressed: () async {
                 final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
 
-                await SendPopup.openSendPopUp(context, wallet);
+                await SendPage.SendPopup.openSendPopUp(context, wallet);
               },
               label: 'Send',
             ),

@@ -7,12 +7,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'address.freezed.dart';
 part 'address.g.dart';
 
-enum AddressListType {
+enum AddressType {
   receiveActive,
   receiveUnused,
   receiveUsed,
   changeActive,
   changeUsed,
+  notMine,
 }
 
 @freezed
@@ -29,8 +30,8 @@ class Address with _$Address {
         String errSaving,
     @Default(false)
         bool unspendable,
-    // @Default(true)
-    //     bool isMine,
+    @Default(true)
+        bool isMine,
     @Default(0)
         int highestPreviousBalance,
     @JsonKey(
@@ -71,27 +72,27 @@ class Address with _$Address {
     return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.External).isNotEmpty ?? false;
   }
 
-  AddressListType getAddressListType() {
+  AddressType getAddressType() {
     final isChange = hasInternal() || (isReceive != null && !isReceive!);
     if (calculateBalance() > 0) {
-      if (isChange) return AddressListType.changeActive;
-      return AddressListType.receiveActive;
+      if (isChange) return AddressType.changeActive;
+      return AddressType.receiveActive;
     }
 
     if (highestPreviousBalance > 0) {
-      if (isChange) return AddressListType.changeUsed;
-      return AddressListType.receiveUsed;
+      if (isChange) return AddressType.changeUsed;
+      return AddressType.receiveUsed;
     }
-
-    return AddressListType.receiveUnused;
+    if (!isMine) return AddressType.notMine;
+    return AddressType.receiveUnused;
   }
 
   bool isReceiving() {
-    final type = getAddressListType();
+    final type = getAddressType();
     switch (type) {
-      case AddressListType.receiveActive:
-      case AddressListType.receiveUnused:
-      case AddressListType.receiveUsed:
+      case AddressType.receiveActive:
+      case AddressType.receiveUnused:
+      case AddressType.receiveUsed:
         return true;
       default:
         return false;

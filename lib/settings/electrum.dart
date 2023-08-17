@@ -68,7 +68,7 @@ class NetworkButton extends StatelessWidget {
                 FontAwesomeIcons.angleRight,
                 size: 14,
                 color: context.colour.secondary,
-              )
+              ),
             ],
           ),
         ),

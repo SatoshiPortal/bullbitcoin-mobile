@@ -27,8 +27,8 @@ mixin _$Address {
   bool? get isReceive => throw _privateConstructorUsedError;
   bool get saving => throw _privateConstructorUsedError;
   String get errSaving => throw _privateConstructorUsedError;
-  bool get unspendable => throw _privateConstructorUsedError; // @Default(true)
-//     bool isMine,
+  bool get unspendable => throw _privateConstructorUsedError;
+  bool get isMine => throw _privateConstructorUsedError;
   int get highestPreviousBalance => throw _privateConstructorUsedError;
   @JsonKey(includeFromJson: false, includeToJson: false)
   List<LocalUtxo>? get utxos => throw _privateConstructorUsedError;
@@ -52,6 +52,7 @@ abstract class $AddressCopyWith<$Res> {
       bool saving,
       String errSaving,
       bool unspendable,
+      bool isMine,
       int highestPreviousBalance,
       @JsonKey(includeFromJson: false, includeToJson: false)
       List<LocalUtxo>? utxos});
@@ -78,6 +79,7 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
     Object? saving = null,
     Object? errSaving = null,
     Object? unspendable = null,
+    Object? isMine = null,
     Object? highestPreviousBalance = null,
     Object? utxos = freezed,
   }) {
@@ -114,6 +116,10 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
           ? _value.unspendable
           : unspendable // ignore: cast_nullable_to_non_nullable
               as bool,
+      isMine: null == isMine
+          ? _value.isMine
+          : isMine // ignore: cast_nullable_to_non_nullable
+              as bool,
       highestPreviousBalance: null == highestPreviousBalance
           ? _value.highestPreviousBalance
           : highestPreviousBalance // ignore: cast_nullable_to_non_nullable
@@ -142,6 +148,7 @@ abstract class _$$_AddressCopyWith<$Res> implements $AddressCopyWith<$Res> {
       bool saving,
       String errSaving,
       bool unspendable,
+      bool isMine,
       int highestPreviousBalance,
       @JsonKey(includeFromJson: false, includeToJson: false)
       List<LocalUtxo>? utxos});
@@ -165,6 +172,7 @@ class __$$_AddressCopyWithImpl<$Res>
     Object? saving = null,
     Object? errSaving = null,
     Object? unspendable = null,
+    Object? isMine = null,
     Object? highestPreviousBalance = null,
     Object? utxos = freezed,
   }) {
@@ -201,6 +209,10 @@ class __$$_AddressCopyWithImpl<$Res>
           ? _value.unspendable
           : unspendable // ignore: cast_nullable_to_non_nullable
               as bool,
+      isMine: null == isMine
+          ? _value.isMine
+          : isMine // ignore: cast_nullable_to_non_nullable
+              as bool,
       highestPreviousBalance: null == highestPreviousBalance
           ? _value.highestPreviousBalance
           : highestPreviousBalance // ignore: cast_nullable_to_non_nullable
@@ -225,6 +237,7 @@ class _$_Address extends _Address {
       this.saving = false,
       this.errSaving = '',
       this.unspendable = false,
+      this.isMine = true,
       this.highestPreviousBalance = 0,
       @JsonKey(includeFromJson: false, includeToJson: false)
       final List<LocalUtxo>? utxos})
@@ -253,8 +266,9 @@ class _$_Address extends _Address {
   @override
   @JsonKey()
   final bool unspendable;
-// @Default(true)
-//     bool isMine,
+  @override
+  @JsonKey()
+  final bool isMine;
   @override
   @JsonKey()
   final int highestPreviousBalance;
@@ -271,7 +285,7 @@ class _$_Address extends _Address {
 
   @override
   String toString() {
-    return 'Address(address: $address, index: $index, label: $label, sentTxId: $sentTxId, isReceive: $isReceive, saving: $saving, errSaving: $errSaving, unspendable: $unspendable, highestPreviousBalance: $highestPreviousBalance, utxos: $utxos)';
+    return 'Address(address: $address, index: $index, label: $label, sentTxId: $sentTxId, isReceive: $isReceive, saving: $saving, errSaving: $errSaving, unspendable: $unspendable, isMine: $isMine, highestPreviousBalance: $highestPreviousBalance, utxos: $utxos)';
   }
 
   @override
@@ -291,6 +305,7 @@ class _$_Address extends _Address {
                 other.errSaving == errSaving) &&
             (identical(other.unspendable, unspendable) ||
                 other.unspendable == unspendable) &&
+            (identical(other.isMine, isMine) || other.isMine == isMine) &&
             (identical(other.highestPreviousBalance, highestPreviousBalance) ||
                 other.highestPreviousBalance == highestPreviousBalance) &&
             const DeepCollectionEquality().equals(other._utxos, _utxos));
@@ -308,6 +323,7 @@ class _$_Address extends _Address {
       saving,
       errSaving,
       unspendable,
+      isMine,
       highestPreviousBalance,
       const DeepCollectionEquality().hash(_utxos));
 
@@ -335,6 +351,7 @@ abstract class _Address extends Address {
       final bool saving,
       final String errSaving,
       final bool unspendable,
+      final bool isMine,
       final int highestPreviousBalance,
       @JsonKey(includeFromJson: false, includeToJson: false)
       final List<LocalUtxo>? utxos}) = _$_Address;
@@ -358,8 +375,9 @@ abstract class _Address extends Address {
   String get errSaving;
   @override
   bool get unspendable;
-  @override // @Default(true)
-//     bool isMine,
+  @override
+  bool get isMine;
+  @override
   int get highestPreviousBalance;
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)

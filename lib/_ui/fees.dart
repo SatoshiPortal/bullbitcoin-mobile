@@ -46,7 +46,7 @@ class SelectFeesButton extends StatelessWidget {
             FontAwesomeIcons.angleRight,
             size: 14,
             color: context.colour.secondary,
-          )
+          ),
         ],
       ),
     );
@@ -303,7 +303,7 @@ class SelectFeesItem extends StatelessWidget {
                 }(),
               ),
             ] else
-              ...[]
+              ...[],
           ],
         ),
       ),
@@ -374,7 +374,7 @@ class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
           BBText.errorSmall(
             err,
           ),
-        ]
+        ],
       ],
     );
   }

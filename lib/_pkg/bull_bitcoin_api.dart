@@ -29,7 +29,7 @@ class BullBitcoinAPI {
             'to': toCurrency.toUpperCase() == 'INR' || toCurrency.toUpperCase() == 'CRC'
                 ? 'USD'
                 : toCurrency.toUpperCase(),
-          }
+          },
         },
       );
       if (resp.statusCode == null || resp.statusCode != 200) {

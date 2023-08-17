@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/wallet/read.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/inline_label.dart';
@@ -37,9 +37,9 @@ class AddressPopUp extends StatelessWidget {
     final walletSettings = context.read<WalletSettingsCubit>();
     final addressCubit = AddressCubit(
       address: address,
-      walletUpdate: locator<WalletUpdate>(),
+      walletAddress: locator<WalletAddress>(),
       hiveStorage: locator<HiveStorage>(),
-      walletRead: locator<WalletRead>(),
+      walletRead: locator<WalletSync>(),
       walletSettingsCubit: walletSettings,
       walletBloc: wallet,
       walletRepository: locator<WalletRepository>(),

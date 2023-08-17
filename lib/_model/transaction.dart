@@ -19,7 +19,8 @@ class Transaction with _$Transaction {
     String? fromAddress,
     String? toAddress,
     String? psbt,
-    bool? rbfEnabled,
+    @Default(false)
+        bool rbfEnabled,
     @Default(false)
         bool oldTx,
     int? broadcastTime,
@@ -69,9 +70,7 @@ class Transaction with _$Transaction {
   DateTime? getBroadcastDateTime() =>
       broadcastTime == null ? null : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
 
-  bool canRBF() =>
-      //  (rbfEnabled ?? false) &&
-      timestamp == null || timestamp == 0;
+  bool canRBF() => rbfEnabled == true && timestamp == null || timestamp == 0;
 }
 
 DateTime getDateTimeFromInt(int time) => DateTime.fromMillisecondsSinceEpoch(time * 1000);

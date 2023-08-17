@@ -30,7 +30,7 @@ mixin _$Transaction {
   String? get fromAddress => throw _privateConstructorUsedError;
   String? get toAddress => throw _privateConstructorUsedError;
   String? get psbt => throw _privateConstructorUsedError;
-  bool? get rbfEnabled => throw _privateConstructorUsedError;
+  bool get rbfEnabled => throw _privateConstructorUsedError;
   bool get oldTx => throw _privateConstructorUsedError;
   int? get broadcastTime =>
       throw _privateConstructorUsedError; // String? serializedTx,
@@ -62,7 +62,7 @@ abstract class $TransactionCopyWith<$Res> {
       String? fromAddress,
       String? toAddress,
       String? psbt,
-      bool? rbfEnabled,
+      bool rbfEnabled,
       bool oldTx,
       int? broadcastTime,
       List<String>? inAddresses,
@@ -94,7 +94,7 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? fromAddress = freezed,
     Object? toAddress = freezed,
     Object? psbt = freezed,
-    Object? rbfEnabled = freezed,
+    Object? rbfEnabled = null,
     Object? oldTx = null,
     Object? broadcastTime = freezed,
     Object? inAddresses = freezed,
@@ -142,10 +142,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.psbt
           : psbt // ignore: cast_nullable_to_non_nullable
               as String?,
-      rbfEnabled: freezed == rbfEnabled
+      rbfEnabled: null == rbfEnabled
           ? _value.rbfEnabled
           : rbfEnabled // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as bool,
       oldTx: null == oldTx
           ? _value.oldTx
           : oldTx // ignore: cast_nullable_to_non_nullable
@@ -189,7 +189,7 @@ abstract class _$$_TransactionCopyWith<$Res>
       String? fromAddress,
       String? toAddress,
       String? psbt,
-      bool? rbfEnabled,
+      bool rbfEnabled,
       bool oldTx,
       int? broadcastTime,
       List<String>? inAddresses,
@@ -219,7 +219,7 @@ class __$$_TransactionCopyWithImpl<$Res>
     Object? fromAddress = freezed,
     Object? toAddress = freezed,
     Object? psbt = freezed,
-    Object? rbfEnabled = freezed,
+    Object? rbfEnabled = null,
     Object? oldTx = null,
     Object? broadcastTime = freezed,
     Object? inAddresses = freezed,
@@ -267,10 +267,10 @@ class __$$_TransactionCopyWithImpl<$Res>
           ? _value.psbt
           : psbt // ignore: cast_nullable_to_non_nullable
               as String?,
-      rbfEnabled: freezed == rbfEnabled
+      rbfEnabled: null == rbfEnabled
           ? _value.rbfEnabled
           : rbfEnabled // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as bool,
       oldTx: null == oldTx
           ? _value.oldTx
           : oldTx // ignore: cast_nullable_to_non_nullable
@@ -309,7 +309,7 @@ class _$_Transaction extends _Transaction {
       this.fromAddress,
       this.toAddress,
       this.psbt,
-      this.rbfEnabled,
+      this.rbfEnabled = false,
       this.oldTx = false,
       this.broadcastTime,
       final List<String>? inAddresses,
@@ -343,7 +343,8 @@ class _$_Transaction extends _Transaction {
   @override
   final String? psbt;
   @override
-  final bool? rbfEnabled;
+  @JsonKey()
+  final bool rbfEnabled;
   @override
   @JsonKey()
   final bool oldTx;
@@ -458,7 +459,7 @@ abstract class _Transaction extends Transaction {
       final String? fromAddress,
       final String? toAddress,
       final String? psbt,
-      final bool? rbfEnabled,
+      final bool rbfEnabled,
       final bool oldTx,
       final int? broadcastTime,
       final List<String>? inAddresses,
@@ -491,7 +492,7 @@ abstract class _Transaction extends Transaction {
   @override
   String? get psbt;
   @override
-  bool? get rbfEnabled;
+  bool get rbfEnabled;
   @override
   bool get oldTx;
   @override

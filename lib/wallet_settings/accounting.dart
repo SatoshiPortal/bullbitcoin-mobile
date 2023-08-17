@@ -120,7 +120,7 @@ class _Screen extends StatelessWidget {
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),
