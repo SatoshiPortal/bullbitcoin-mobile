@@ -7,6 +7,7 @@ import 'package:bb_mobile/settings/bloc/settings_state.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_translate/flutter_translate.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 Future main({bool fromTest = false}) async {
   await dotenv.load(isOptional: true);
   WidgetsFlutterBinding.ensureInitialized();
+
   await setupLocator(fromTest: fromTest);
   final delegate = await Localise.getDelegate();
 
@@ -64,12 +66,59 @@ class BullBitcoinWalletApp extends StatelessWidget {
                   onTap: () {
                     FocusScope.of(context).requestFocus(FocusNode());
                   },
-                  child: child,
+                  child: AppLifecycleOverlay(child: child),
                 );
               },
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class AppLifecycleOverlay extends StatefulWidget {
+  const AppLifecycleOverlay({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  State<AppLifecycleOverlay> createState() => _AppLifecycleOverlayState();
+}
+
+class _AppLifecycleOverlayState extends State<AppLifecycleOverlay> with WidgetsBindingObserver {
+  bool shouldBlur = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      shouldBlur = state == AppLifecycleState.inactive ||
+          state == AppLifecycleState.paused ||
+          state == AppLifecycleState.hidden ||
+          state == AppLifecycleState.detached;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: context.colour.primary,
+      child: AnimatedOpacity(
+        duration: 300.ms,
+        opacity: shouldBlur ? 0 : 1,
+        child: widget.child,
       ),
     );
   }

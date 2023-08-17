@@ -42,8 +42,6 @@
         "**/assets": true,
         "**/**.g.dart": true,
         "**/**.freezed.dart": true,
-        "android": true,
-        "ios": true,
         "windows": true,
         "web": true,
         "macos": true,
@@ -51,10 +49,12 @@
         "linux": true,
         "**/widgetbook": true,
         "**/maintainance": true,
+        ".idea": true,
         "**/test": true,
         "integration_test": false,
-        ".idea": true,
-        // "**/pubspec.yaml": true,
+        "android": true,
+        "ios": true,
+        "**/pubspec.yaml": true,
         // 
         // 
         // "**/lib/auth": true,
