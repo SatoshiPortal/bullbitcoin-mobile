@@ -169,6 +169,21 @@ class SettingsState with _$SettingsState {
       return 'Select fee rate';
     }
   }
+
+  String defaultFeeStatus() {
+    try {
+      var str = '';
+      if (selectedFeesOption == 0) str = feesList![0].toString();
+      if (selectedFeesOption == 1) str = feesList![1].toString();
+      if (selectedFeesOption == 2) str = feesList![2].toString();
+      if (selectedFeesOption == 3) str = feesList![3].toString();
+      if (selectedFeesOption == 4) str = fees.toString();
+
+      return str + ' sats/vbyte';
+    } catch (e) {
+      return '';
+    }
+  }
 }
 
 extension StringRegEx on String {

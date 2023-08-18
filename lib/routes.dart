@@ -3,7 +3,7 @@ import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/import/page.dart';
-import 'package:bb_mobile/settings/page.dart';
+import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/accounting.dart';

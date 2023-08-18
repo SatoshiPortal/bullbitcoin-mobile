@@ -9,7 +9,6 @@ import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -51,27 +50,33 @@ class NetworkButton extends StatelessWidget {
 
     return Column(
       children: [
-        InkWell(
-          onTap: () {
+        BBButton.textWithStatusAndRightArrow(
+          label: 'Electrum Server',
+          onPressed: () {
             NetworkPopup.openPopUp(context);
           },
-          child: Row(
-            children: [
-              BBButton.text(
-                onPressed: () {
-                  NetworkPopup.openPopUp(context);
-                },
-                label: 'Electrum server',
-              ),
-              const Gap(6),
-              FaIcon(
-                FontAwesomeIcons.angleRight,
-                size: 14,
-                color: context.colour.secondary,
-              ),
-            ],
-          ),
         ),
+        // InkWell(
+        //   onTap: () {
+        //     NetworkPopup.openPopUp(context);
+        //   },
+        //   child: Row(
+        //     children: [
+        //       BBButton.text(
+        //         onPressed: () {
+        //           NetworkPopup.openPopUp(context);
+        //         },
+        //         label: 'Electrum server',
+        //       ),
+        //       const Gap(6),
+        //       FaIcon(
+        //         FontAwesomeIcons.angleRight,
+        //         size: 14,
+        //         color: context.colour.secondary,
+        //       ),
+        //     ],
+        //   ),
+        // ),
         if (err.isNotEmpty)
           BBText.errorSmall(
             err,

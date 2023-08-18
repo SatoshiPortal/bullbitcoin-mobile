@@ -26,8 +26,17 @@ class SelectFeesButton extends StatelessWidget {
     var txt = '';
     if (!fromSettings)
       txt = context.select((SendCubit cubit) => cubit.state.feeButtonText());
-    else
-      txt = context.select((SettingsCubit cubit) => cubit.state.feeButtonText());
+    else {
+      txt = context.select((SettingsCubit cubit) => cubit.state.defaultFeeStatus());
+
+      return BBButton.textWithStatusAndRightArrow(
+        label: 'Default fee rate',
+        statusText: txt,
+        onPressed: () {
+          SelectFeesPopUp.openSelectFees(context, fromSettings);
+        },
+      );
+    }
 
     return InkWell(
       onTap: () {
