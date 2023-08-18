@@ -70,10 +70,10 @@ class BBButton extends StatelessWidget {
     this.loading = false,
     this.loadingText,
     this.disabled = false,
+    this.isRed = false,
+    this.isBlue = true,
   })  : type = _ButtonType.text,
         filled = false,
-        isBlue = null,
-        isRed = null,
         statusText = null;
 
   const BBButton.textWithRightArrow({
@@ -255,7 +255,15 @@ class BBButton extends StatelessWidget {
         widget = TextButton(
           onPressed: disabled ? null : () => onPressed(),
           style: TextButton.styleFrom(padding: EdgeInsets.zero),
-          child: BBText.body(label, isBlue: true),
+          child: Row(
+            children: [
+              BBText.body(
+                label,
+                isBlue: isBlue ?? false,
+                isRed: isRed ?? false,
+              ),
+            ],
+          ),
         );
 
       case _ButtonType.textWithRightArrow:
