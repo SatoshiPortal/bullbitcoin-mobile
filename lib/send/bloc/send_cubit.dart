@@ -68,7 +68,8 @@ class SendCubit extends Cubit<SendState> {
 
   void setupFees() {
     final defaultFeeOption = settingsCubit.state.selectedFeesOption;
-    emit(state.copyWith(selectedFeesOption: defaultFeeOption));
+    final defaultRBF = settingsCubit.state.defaultRBF;
+    emit(state.copyWith(selectedFeesOption: defaultFeeOption, enableRBF: defaultRBF));
     if (defaultFeeOption == 4) emit(state.copyWith(fees: settingsCubit.state.fees));
   }
 

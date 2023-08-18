@@ -47,9 +47,11 @@ class _Screen extends StatelessWidget {
               Gap(8),
               Currencyx(),
               Gap(8),
+              Units(),
+              Gap(8),
               TestNetButton(),
               Gap(8),
-              Units(),
+              DefaultRBFToggle(),
               Gap(8),
               ChangePin(),
               Gap(8),
@@ -230,6 +232,31 @@ class BroadCastButton extends StatelessWidget {
       onPressed: () {
         BroadcasePopUp.openPopUp(context);
       },
+    );
+  }
+}
+
+class DefaultRBFToggle extends StatelessWidget {
+  const DefaultRBFToggle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final rbf = context.select((SettingsCubit x) => x.state.defaultRBF);
+
+    return Row(
+      children: [
+        // const Gap(8),
+        const BBText.body(
+          'Default RBF',
+        ),
+        const Spacer(),
+        Switch(
+          value: rbf,
+          onChanged: (e) {
+            context.read<SettingsCubit>().toggleDefaultRBF();
+          },
+        ),
+      ],
     );
   }
 }

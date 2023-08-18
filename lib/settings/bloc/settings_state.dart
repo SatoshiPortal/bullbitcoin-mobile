@@ -48,6 +48,7 @@ class SettingsState with _$SettingsState {
     @Default(false) bool loadingFees,
     @Default('') String errLoadingFees,
     //
+    @Default(true) bool defaultRBF,
   }) = _SettingsState;
   const SettingsState._();
 

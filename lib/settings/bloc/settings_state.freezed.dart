@@ -44,7 +44,8 @@ mixin _$SettingsState {
   List<int>? get feesList => throw _privateConstructorUsedError;
   int get selectedFeesOption => throw _privateConstructorUsedError; //
   bool get loadingFees => throw _privateConstructorUsedError;
-  String get errLoadingFees => throw _privateConstructorUsedError;
+  String get errLoadingFees => throw _privateConstructorUsedError; //
+  bool get defaultRBF => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -83,7 +84,8 @@ abstract class $SettingsStateCopyWith<$Res> {
       List<int>? feesList,
       int selectedFeesOption,
       bool loadingFees,
-      String errLoadingFees});
+      String errLoadingFees,
+      bool defaultRBF});
 
   $CurrencyCopyWith<$Res>? get currency;
 }
@@ -125,6 +127,7 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? selectedFeesOption = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
+    Object? defaultRBF = null,
   }) {
     return _then(_value.copyWith(
       unitsInSats: null == unitsInSats
@@ -223,6 +226,10 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.errLoadingFees
           : errLoadingFees // ignore: cast_nullable_to_non_nullable
               as String,
+      defaultRBF: null == defaultRBF
+          ? _value.defaultRBF
+          : defaultRBF // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -272,7 +279,8 @@ abstract class _$$_SettingsStateCopyWith<$Res>
       List<int>? feesList,
       int selectedFeesOption,
       bool loadingFees,
-      String errLoadingFees});
+      String errLoadingFees,
+      bool defaultRBF});
 
   @override
   $CurrencyCopyWith<$Res>? get currency;
@@ -313,6 +321,7 @@ class __$$_SettingsStateCopyWithImpl<$Res>
     Object? selectedFeesOption = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
+    Object? defaultRBF = null,
   }) {
     return _then(_$_SettingsState(
       unitsInSats: null == unitsInSats
@@ -411,6 +420,10 @@ class __$$_SettingsStateCopyWithImpl<$Res>
           ? _value.errLoadingFees
           : errLoadingFees // ignore: cast_nullable_to_non_nullable
               as String,
+      defaultRBF: null == defaultRBF
+          ? _value.defaultRBF
+          : defaultRBF // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -442,7 +455,8 @@ class _$_SettingsState extends _SettingsState {
       final List<int>? feesList,
       this.selectedFeesOption = 2,
       this.loadingFees = false,
-      this.errLoadingFees = ''})
+      this.errLoadingFees = '',
+      this.defaultRBF = true})
       : _currencyList = currencyList,
         _languageList = languageList,
         _networks = networks,
@@ -552,10 +566,14 @@ class _$_SettingsState extends _SettingsState {
   @override
   @JsonKey()
   final String errLoadingFees;
+//
+  @override
+  @JsonKey()
+  final bool defaultRBF;
 
   @override
   String toString() {
-    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees)';
+    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, defaultRBF: $defaultRBF)';
   }
 
   @override
@@ -606,7 +624,9 @@ class _$_SettingsState extends _SettingsState {
             (identical(other.loadingFees, loadingFees) ||
                 other.loadingFees == loadingFees) &&
             (identical(other.errLoadingFees, errLoadingFees) ||
-                other.errLoadingFees == errLoadingFees));
+                other.errLoadingFees == errLoadingFees) &&
+            (identical(other.defaultRBF, defaultRBF) ||
+                other.defaultRBF == defaultRBF));
   }
 
   @JsonKey(ignore: true)
@@ -636,7 +656,8 @@ class _$_SettingsState extends _SettingsState {
         const DeepCollectionEquality().hash(_feesList),
         selectedFeesOption,
         loadingFees,
-        errLoadingFees
+        errLoadingFees,
+        defaultRBF
       ]);
 
   @JsonKey(ignore: true)
@@ -679,7 +700,8 @@ abstract class _SettingsState extends SettingsState {
       final List<int>? feesList,
       final int selectedFeesOption,
       final bool loadingFees,
-      final String errLoadingFees}) = _$_SettingsState;
+      final String errLoadingFees,
+      final bool defaultRBF}) = _$_SettingsState;
   const _SettingsState._() : super._();
 
   factory _SettingsState.fromJson(Map<String, dynamic> json) =
@@ -734,6 +756,8 @@ abstract class _SettingsState extends SettingsState {
   bool get loadingFees;
   @override
   String get errLoadingFees;
+  @override //
+  bool get defaultRBF;
   @override
   @JsonKey(ignore: true)
   _$$_SettingsStateCopyWith<_$_SettingsState> get copyWith =>

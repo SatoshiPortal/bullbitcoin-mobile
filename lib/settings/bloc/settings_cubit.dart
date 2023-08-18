@@ -81,6 +81,10 @@ class SettingsCubit extends Cubit<SettingsState> {
     homeCubit?.clearSelectedWallet();
   }
 
+  void toggleDefaultRBF() {
+    emit(state.copyWith(defaultRBF: !state.defaultRBF));
+  }
+
   void changeLanguage(String language) {
     emit(state.copyWith(language: language));
   }
