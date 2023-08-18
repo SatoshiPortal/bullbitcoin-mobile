@@ -21,6 +21,7 @@ import 'package:bb_mobile/wallet_settings/backup.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/descriptors.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -117,12 +118,18 @@ class _Screen extends StatelessWidget {
               const Gap(24),
               if (!watchOnly) ...[
                 const BackupButton(),
+                const Gap(8),
                 const TestBackupButton(),
+                const Gap(8),
               ],
               const PublicDescriptorButton(),
+              const Gap(8),
               const ExtendedPublicKeyButton(),
+              const Gap(8),
               const AddressesButtons(),
+              const Gap(8),
               const AccountingButton(),
+              const Gap(8),
               const DeleteButton(),
               const Gap(24),
             ],
@@ -341,7 +348,7 @@ class AddressesButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBButton.textWithLeftArrow(
+    return BBButton.textWithStatusAndRightArrow(
       label: 'Addresses',
       onPressed: () {
         AddressesScreen.openPopup(context);
@@ -355,7 +362,7 @@ class AccountingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBButton.textWithLeftArrow(
+    return BBButton.textWithStatusAndRightArrow(
       label: 'Accounting',
       onPressed: () {
         final walletBloc = context.read<WalletBloc>();
@@ -373,23 +380,30 @@ class TestBackupButton extends StatelessWidget {
     final isTested = context.select((WalletBloc x) => x.state.wallet!.backupTested);
 
     // if (isTested) return const SizedBox.shrink();
-
-    return Row(
-      children: [
-        BBButton.textWithLeftArrow(
-          label: 'Test Backup',
-          onPressed: () async {
-            await TestBackupScreen.openPopup(context);
-          },
-        ),
-        const Spacer(),
-        BBText.body(
-          isTested ? 'Tested' : 'Not tested',
-          isGreen: isTested,
-          isRed: !isTested,
-        ),
-      ],
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Test Backup',
+      statusText: isTested ? 'Tested' : 'Not Tested',
+      isRed: !isTested,
+      onPressed: () async {
+        await TestBackupScreen.openPopup(context);
+      },
     );
+    // return Row(
+    //   children: [
+    //     BBButton.textWithLeftArrow(
+    //       label: 'Test Backup',
+    //       onPressed: () async {
+    //         await TestBackupScreen.openPopup(context);
+    //       },
+    //     ),
+    //     const Spacer(),
+    //     BBText.body(
+    //       isTested ? 'Tested' : 'Not tested',
+    //       isGreen: isTested,
+    //       isRed: !isTested,
+    //     ),
+    //   ],
+    // );
   }
 }
 
@@ -398,7 +412,7 @@ class BackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBButton.textWithLeftArrow(
+    return BBButton.textWithStatusAndRightArrow(
       onPressed: () async {
         await BackupScreen.openPopup(context);
       },
@@ -412,11 +426,14 @@ class DeleteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBButton.textWithLeftArrow(
-      onPressed: () {
-        DeletePopUp.openPopUp(context);
-      },
-      label: 'Delete',
+    return CenterLeft(
+      child: BBButton.text(
+        isRed: true,
+        onPressed: () {
+          DeletePopUp.openPopUp(context);
+        },
+        label: 'Delete',
+      ),
     );
   }
 }

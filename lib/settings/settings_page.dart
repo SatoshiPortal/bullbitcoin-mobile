@@ -9,11 +9,9 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/electrum.dart';
-import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -41,40 +39,33 @@ class _Screen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: const SettingsAppBar(),
       ),
-      body: SafeArea(
+      body: const SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.0),
           child: Column(
             children: [
-              const Gap(16),
-              const Units(),
-              const Gap(16),
-              const Currencyx(),
-              // const Gap(16),
-              // const Translate(),
-              const Gap(16),
-              const SelectFeesButton(fromSettings: true),
-              const ChangePin(),
-              const BroadCastButton(),
-              const Gap(8),
-              Divider(
-                color: context.colour.onBackground.withOpacity(0.2),
-              ),
-              const Gap(8),
-              const TestNetButton(),
-              const NetworkButton(),
-              const Gap(8),
-              Divider(
-                color: context.colour.onBackground.withOpacity(0.2),
-              ),
-              const Gap(32),
-              const CenterLeft(
+              Gap(8),
+              Currencyx(),
+              Gap(8),
+              TestNetButton(),
+              Gap(8),
+              Units(),
+              Gap(8),
+              ChangePin(),
+              Gap(8),
+              SelectFeesButton(fromSettings: true),
+              Gap(8),
+              BroadCastButton(),
+              Gap(8),
+              NetworkButton(),
+              Spacer(),
+              CenterLeft(
                 child: BBText.bodySmall(
                   'Version $bbVersion',
                   isBold: true,
                 ),
               ),
-              const Gap(24),
+              Gap(24),
             ],
           ),
         ),
@@ -220,55 +211,11 @@ class ChangePin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Change PIN',
+      onPressed: () {
         context.push('/change-pin');
       },
-      child: Row(
-        children: [
-          BBButton.text(
-            onPressed: () {
-              context.push('/change-pin');
-            },
-            label: 'Change PIN',
-          ),
-          const Gap(6),
-          FaIcon(
-            FontAwesomeIcons.angleRight,
-            size: 14,
-            color: context.colour.secondary,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ImportWalletButton extends StatelessWidget {
-  const ImportWalletButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        context.push('/import');
-      },
-      child: Row(
-        children: [
-          BBButton.text(
-            onPressed: () {
-              context.push('/import');
-            },
-            label: 'Import Wallet',
-          ),
-          const Gap(6),
-          FaIcon(
-            FontAwesomeIcons.angleRight,
-            size: 14,
-            color: context.colour.secondary,
-          ),
-        ],
-      ),
     );
   }
 }
@@ -278,26 +225,11 @@ class BroadCastButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Broadcast transaction',
+      onPressed: () {
         BroadcasePopUp.openPopUp(context);
       },
-      child: Row(
-        children: [
-          BBButton.text(
-            onPressed: () {
-              BroadcasePopUp.openPopUp(context);
-            },
-            label: 'Broadcast Transaction',
-          ),
-          const Gap(6),
-          FaIcon(
-            FontAwesomeIcons.angleRight,
-            size: 14,
-            color: context.colour.secondary,
-          ),
-        ],
-      ),
     );
   }
 }
