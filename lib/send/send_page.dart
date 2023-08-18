@@ -105,9 +105,10 @@ class _Screen extends StatelessWidget {
             text: 'SEND',
             isLeft: true,
           ),
-          if (signed)
-            const TxDetailsScreen()
-          else ...[
+          if (signed) ...[
+            const TxDetailsScreen(),
+            const Gap(48),
+          ] else ...[
             const Gap(24),
             const Center(child: WalletName()),
             const Gap(8),
@@ -123,20 +124,12 @@ class _Screen extends StatelessWidget {
             const Gap(4),
             const EnterNote(),
             const Gap(24),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: AdvancedOptionsButton(),
-            ),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: SelectFeesButton(),
-            ),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: CoinSelectionButton(),
-            ),
+            const SelectFeesButton(),
+            const CoinSelectionButton(),
+            const Gap(24),
+            const AdvancedOptionsButton(),
+            const Gap(8),
           ],
-          const Gap(48),
           const SendButton(),
           const Gap(80),
         ],
@@ -170,7 +163,7 @@ class WalletBalance extends StatelessWidget {
 
     final balStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(balance));
 
-    return BBText.body('Available: ' + balStr);
+    return BBText.body(balStr, isBold: true);
   }
 }
 
@@ -308,6 +301,7 @@ class AdvancedOptionsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = context.select((SendCubit cubit) => cubit.state.advancedOptionsButtonText());
     return BBButton.text(
+      centered: true,
       onPressed: () {
         AdvancedOptionsPopUp.openPopup(context);
       },
@@ -326,11 +320,32 @@ class CoinSelectionButton extends StatelessWidget {
 
     if (totalUTXOsSelected == 0) return Container();
 
-    return BBButton.text(
-      onPressed: () {
-        AddressSelectionPopUp.openPopup(context);
-      },
-      label: 'Coin selection: $totalUTXOsSelected utxos',
+    final totalSelected = context.select((SendCubit cubit) => cubit.state.calculateTotalSelected());
+    final amtStr = context
+        .select((SettingsCubit _) => _.state.getAmountInUnits(totalSelected, removeText: true));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Gap(8),
+        BBButton.textWithStatusAndRightArrow(
+          isBlue: true,
+          onPressed: () {
+            AddressSelectionPopUp.openPopup(context);
+          },
+          statusText: totalUTXOsSelected.toString(),
+          label: 'Coins selected',
+        ),
+        const Gap(8),
+        BBButton.textWithStatusAndRightArrow(
+          isBlue: true,
+          onPressed: () {
+            AddressSelectionPopUp.openPopup(context);
+          },
+          statusText: amtStr,
+          label: 'Amount selected',
+        ),
+      ],
     );
   }
 }

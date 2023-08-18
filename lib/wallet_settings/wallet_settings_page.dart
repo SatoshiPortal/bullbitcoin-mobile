@@ -432,7 +432,7 @@ class DeleteButton extends StatelessWidget {
         onPressed: () {
           DeletePopUp.openPopUp(context);
         },
-        label: 'Delete',
+        label: 'Delete Wallet',
       ),
     );
   }

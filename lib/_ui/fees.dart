@@ -38,26 +38,13 @@ class SelectFeesButton extends StatelessWidget {
       );
     }
 
-    return InkWell(
-      onTap: () {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Default fee rate',
+      statusText: txt,
+      isBlue: true,
+      onPressed: () {
         SelectFeesPopUp.openSelectFees(context, fromSettings);
       },
-      child: Row(
-        children: [
-          BBButton.text(
-            onPressed: () {
-              SelectFeesPopUp.openSelectFees(context, fromSettings);
-            },
-            label: txt,
-          ),
-          const Gap(6),
-          FaIcon(
-            FontAwesomeIcons.angleRight,
-            size: 14,
-            color: context.colour.secondary,
-          ),
-        ],
-      ),
     );
   }
 }

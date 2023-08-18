@@ -26,7 +26,8 @@ class BBButton extends StatelessWidget {
   })  : type = _ButtonType.smallRed,
         isBlue = null,
         isRed = null,
-        statusText = null;
+        statusText = null,
+        centered = null;
 
   const BBButton.smallBlack({
     required this.label,
@@ -38,7 +39,8 @@ class BBButton extends StatelessWidget {
   })  : type = _ButtonType.smallBlack,
         isBlue = null,
         isRed = null,
-        statusText = null;
+        statusText = null,
+        centered = null;
 
   const BBButton.bigRed({
     required this.label,
@@ -50,7 +52,8 @@ class BBButton extends StatelessWidget {
   })  : type = _ButtonType.bigRed,
         isBlue = null,
         isRed = null,
-        statusText = null;
+        statusText = null,
+        centered = null;
 
   const BBButton.bigBlack({
     required this.label,
@@ -62,7 +65,8 @@ class BBButton extends StatelessWidget {
   })  : type = _ButtonType.bigBlack,
         isBlue = null,
         isRed = null,
-        statusText = null;
+        statusText = null,
+        centered = null;
 
   const BBButton.text({
     required this.label,
@@ -72,6 +76,7 @@ class BBButton extends StatelessWidget {
     this.disabled = false,
     this.isRed = false,
     this.isBlue = true,
+    this.centered = false,
   })  : type = _ButtonType.text,
         filled = false,
         statusText = null;
@@ -86,7 +91,8 @@ class BBButton extends StatelessWidget {
         filled = false,
         isBlue = null,
         isRed = null,
-        statusText = null;
+        statusText = null,
+        centered = null;
 
   const BBButton.textWithLeftArrow({
     required this.label,
@@ -98,7 +104,8 @@ class BBButton extends StatelessWidget {
         filled = false,
         isBlue = null,
         isRed = null,
-        statusText = null;
+        statusText = null,
+        centered = null;
 
   const BBButton.textWithStatusAndRightArrow({
     required this.label,
@@ -110,7 +117,8 @@ class BBButton extends StatelessWidget {
     this.isRed = false,
     this.statusText,
   })  : type = _ButtonType.textWithStatusAndRightArrow,
-        filled = false;
+        filled = false,
+        centered = null;
 
   final String label;
   final String? statusText;
@@ -119,6 +127,7 @@ class BBButton extends StatelessWidget {
   final Function onPressed;
   final bool filled;
   final bool disabled;
+  final bool? centered;
   final _ButtonType type;
 
   final bool loading;
@@ -134,6 +143,7 @@ class BBButton extends StatelessWidget {
           style: TextButton.styleFrom(padding: EdgeInsets.zero),
           onPressed: disabled ? null : () => onPressed(),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               BBText.body(label),
               const Spacer(),
@@ -257,11 +267,13 @@ class BBButton extends StatelessWidget {
           style: TextButton.styleFrom(padding: EdgeInsets.zero),
           child: Row(
             children: [
+              if (centered ?? false) const Spacer(),
               BBText.body(
                 label,
                 isBlue: isBlue ?? false,
                 isRed: isRed ?? false,
               ),
+              if (centered ?? false) const Spacer(),
             ],
           ),
         );
