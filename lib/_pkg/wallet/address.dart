@@ -90,6 +90,7 @@ class WalletAddress {
             }
           }
         }
+        // tjhe above might not be the best way to update change label from a send tx
 
         if (utxos.indexWhere((u) => u.outpoint.txid == unspent.outpoint.txid) == -1)
           utxos.add(unspent);
