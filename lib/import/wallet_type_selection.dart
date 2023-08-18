@@ -45,6 +45,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
           fromStorage: false,
           walletBalance: locator<WalletBalance>(),
           walletAddress: locator<WalletAddress>(),
+          wallet: w,
         ),
     ];
 
