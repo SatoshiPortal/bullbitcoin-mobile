@@ -1,11 +1,14 @@
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:test/test.dart';
 
 void main() {
   test('Error in mnemonics recovery', () async {
-    const mnemonic = 'chronic pilot sell cigar case clinic produce parent steel radar raw inch';
+    const mnemonic =
+        'bitter raccoon quantum sort hollow online toast anxiety student camp learn marriage';
     const passphrase = '';
     final (wallet, _) = await WalletSensitiveCreate().allFromBIP39(
       mnemonic,
@@ -14,10 +17,28 @@ void main() {
       false,
     );
     final w84 = wallet![2];
-
-    final (w84Updated, _) = await WalletUpdate().syncUpdateWallet(
-      wallet: w84,
+    final (electrum, _) = await WalletCreate().createBlockChain(
+      stopGap: 20,
+      timeout: 10,
+      retry: 10,
+      url: 'ssl://electrum.bullbitcoin.com:60002',
+      validateDomain: true,
     );
-    print(w84Updated);
+    final (bdkW84, _) = await WalletCreate().loadPublicBdkWallet(w84);
+
+    await WalletSync().syncWallet(
+      bdkWallet: bdkW84!,
+      blockChain: electrum!,
+    );
+
+    final (w84Updated, err) = await WalletUpdate().syncWalletTxsAndAddresses(
+      wallet: w84,
+      bdkWallet: bdkW84,
+    );
+
+    assert(w84Updated!.transactions!.isNotEmpty);
+    for (final tx in w84Updated!.transactions!) {
+      // print(tx.);
+    }
   });
 }

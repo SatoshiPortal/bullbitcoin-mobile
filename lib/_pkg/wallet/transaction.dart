@@ -78,6 +78,77 @@ class WalletTx {
     }
   }
 
+  Future<(Wallet?, Err?)> syncWalletTxsAndAddresses({
+    required Wallet wallet,
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      // sync bdk wallet, import state from wallet into new native type
+      // if native type exists, only update
+      // for every new tx:
+      // check collect vins and vouts
+      // check for related addresses and inherit labels
+
+      final storedTxs = wallet.transactions ?? [];
+      final storedAddrs = wallet.addresses ?? [];
+      final storedToAddrs = wallet.toAddresses ?? [];
+      print('storedAddrs: $storedAddrs');
+      print('storedToAddrs: $storedToAddrs');
+      final txs = await bdkWallet.listTransactions(true);
+      // final x = bdk.TxBuilderResult();
+
+      if (txs.isEmpty) throw 'No bdk transactions found';
+
+      final List<Transaction> transactions = [];
+      for (final tx in txs) {
+        final idx = storedTxs.indexWhere((t) => t.txid == tx.txid);
+        Transaction? storedTx;
+        if (idx != -1) storedTx = storedTxs.elementAtOrNull(idx);
+        if (storedTx != null) {
+          print('Tx already exists, update');
+        } else {
+          print('Tx does not exist, must be added.');
+          print('Addresses related to tx must be added and label inherited.');
+          // send txs will have the address we send to and our change both to inherit the same label
+          // recieve tx will have our deposit address
+        }
+
+        final txObj = Transaction(
+          txid: tx.txid,
+          received: tx.received,
+          sent: tx.sent,
+          fee: tx.fee ?? 0,
+          height: tx.confirmationTime?.height ?? 0,
+          timestamp: tx.confirmationTime?.timestamp ?? 0,
+          bdkTx: tx,
+          rbfEnabled: storedTx?.rbfEnabled ?? false,
+          // label: label,
+        );
+        const label = '';
+        final outputs = await tx.transaction?.output();
+        for (final out in outputs!) {
+          final addresss = await bdk.Address.fromScript(
+            out.scriptPubkey,
+            wallet.getBdkNetwork(),
+          );
+          final addressStr = addresss.toString();
+          print('$addressStr:${out.value}');
+        }
+        print(outputs.first.scriptPubkey);
+
+        print('Check to match address with transaction');
+
+        transactions.add(txObj.copyWith(label: label));
+      }
+
+      final w = wallet.copyWith(transactions: transactions);
+
+      return (wallet, null);
+    } catch (e) {
+      return (null, Err(e.toString(), expected: e.toString() == 'No bdk transactions found'));
+    }
+  }
+
   Future<((Transaction?, int?, String)?, Err?)> buildTx({
     required Wallet wallet,
     required bdk.Wallet pubWallet,
