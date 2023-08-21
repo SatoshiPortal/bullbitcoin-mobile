@@ -90,12 +90,15 @@ class PSBTPopUp extends StatelessWidget {
             'Receipent Bitcoin Address',
           ),
           const Gap(4),
-          BBButton.text(
-            onPressed: () {
+          InkWell(
+            onTap: () {
               final url = context.read<SettingsCubit>().state.explorerAddressUrl(toAddress);
               locator<Launcher>().launchApp(url);
             },
-            label: toAddress,
+            child: BBText.body(
+              toAddress,
+              isBlue: true,
+            ),
           ),
           const Gap(24),
           // if (outAddresses.isNotEmpty) ...[

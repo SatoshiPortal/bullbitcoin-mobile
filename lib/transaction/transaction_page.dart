@@ -162,12 +162,13 @@ class _Screen extends StatelessWidget {
                       'Transaction ID',
                     ),
                     const Gap(4),
-                    BBButton.text(
-                      onPressed: () {
+
+                    InkWell(
+                      onTap: () {
                         final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
                         locator<Launcher>().launchApp(url);
                       },
-                      label: txid,
+                      child: BBText.body(txid, isBlue: true),
                     ),
 
                     // const Gap(24),

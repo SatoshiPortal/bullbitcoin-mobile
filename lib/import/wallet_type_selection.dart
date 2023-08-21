@@ -142,14 +142,12 @@ class _ScreenState extends State<_Screen> {
               ),
             ),
             const Gap(16),
-            SizedBox(
-              width: 250,
-              child: BBButton.text(
-                onPressed: () {
-                  context.read<ImportWalletCubit>().backClicked();
-                },
-                label: 'Cancel',
-              ),
+            BBButton.text(
+              centered: true,
+              onPressed: () {
+                context.read<ImportWalletCubit>().backClicked();
+              },
+              label: 'Cancel',
             ),
             const Gap(80),
           ],

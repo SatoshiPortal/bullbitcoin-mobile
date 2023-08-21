@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -82,8 +83,8 @@ class WalletAddress {
           ),
         );
         final utxos = address.utxos?.toList() ?? [];
-        for (final tx in wallet.transactions!) {
-          for (final addrs in tx.outAddresses!) {
+        for (final tx in wallet.transactions ?? <Transaction>[]) {
+          for (final addrs in tx.outAddresses ?? []) {
             if (addrs == addressStr) {
               isRelated = true;
               txLabel = tx.label ?? '';
