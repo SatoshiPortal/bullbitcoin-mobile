@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeCubit extends Cubit<HomeState> {
@@ -53,7 +54,8 @@ class HomeCubit extends Cubit<HomeState> {
       );
   }
 
-  void walletSelected(WalletBloc wallet) {
+  void walletSelected(WalletBloc wallet) async {
+    await Future.delayed(100.microseconds);
     emit(state.copyWith(selectedWalletCubit: wallet));
   }
 
