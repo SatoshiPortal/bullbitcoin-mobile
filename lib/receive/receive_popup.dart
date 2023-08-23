@@ -601,6 +601,7 @@ class RequestAmountButton extends StatelessWidget {
         context.read<ReceiveCubit>().invoiceClicked();
       },
       label: 'Request Amount',
+      centered: true,
     );
   }
 }

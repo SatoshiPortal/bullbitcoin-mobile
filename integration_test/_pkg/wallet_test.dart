@@ -44,8 +44,8 @@ void main() {
     );
 
     assert(w84Updated!.transactions.isNotEmpty);
-    for (final tx in w84Updated!.transactions) {
-      // print(tx.);
-    }
+    // for (final tx in w84Updated!.transactions) {
+    // print(tx.);
+    // }
   });
 }

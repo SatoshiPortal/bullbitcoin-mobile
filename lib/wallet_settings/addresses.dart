@@ -43,7 +43,7 @@ class AddressesScreen extends HookWidget {
   Widget build(BuildContext context) {
     final selectedOption = useState(0);
 
-    final addresses = context.select((WalletBloc cubit) => cubit.state.wallet!.addresses ?? []);
+    final addresses = context.select((WalletBloc cubit) => cubit.state.wallet!.addresses);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),

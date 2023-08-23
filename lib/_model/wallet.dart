@@ -74,32 +74,32 @@ class Wallet with _$Wallet {
   }
 
   int totalReceived() {
-    final txs = transactions?.where((tx) => tx.isReceived()).toList() ?? [];
+    final txs = transactions.where((tx) => tx.isReceived()).toList();
     int amt = 0;
     for (final tx in txs) amt += tx.getAmount().abs();
     return amt;
   }
 
   int totalSent() {
-    final txs = transactions?.where((tx) => !tx.isReceived()).toList() ?? [];
+    final txs = transactions.where((tx) => !tx.isReceived()).toList();
     int amt = 0;
     for (final tx in txs) amt += tx.getAmount(sentAsTotal: true).abs();
     return amt;
   }
 
   List<Address> addressesWithBalance() {
-    return addresses?.where((addr) => addr.calculateBalance() > 0).toList() ?? [];
+    return addresses.where((addr) => addr.calculateBalance() > 0).toList();
   }
 
   List<Address> addressesWithoutBalance({bool isUsed = false}) {
     if (!isUsed)
-      return addresses?.where((addr) => addr.calculateBalance() == 0).toList() ?? [];
+      return addresses.where((addr) => addr.calculateBalance() == 0).toList();
     else
-      return addresses?.where((addr) => addr.hasSpentAndNoBalance()).toList() ?? [];
+      return addresses.where((addr) => addr.hasSpentAndNoBalance()).toList();
   }
 
   String getAddressFromTxid(String txid) {
-    for (final address in addresses ?? <Address>[])
+    for (final address in addresses)
       for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
         if (utxo.outpoint.txid == txid) return address.address; // this will return change
 
@@ -187,12 +187,11 @@ class Wallet with _$Wallet {
   }
 
   List<Transaction> getPendingTxs() {
-    return (transactions?.where((tx) => tx.timestamp == 0 && !tx.oldTx).toList().reversed ?? [])
-        .toList();
+    return transactions.where((tx) => tx.timestamp == 0 && !tx.oldTx).toList().reversed.toList();
   }
 
   List<Transaction> getConfirmedTxs() {
-    final txs = transactions?.where((tx) => tx.timestamp != 0 && !tx.oldTx).toList() ?? [];
+    final txs = transactions.where((tx) => tx.timestamp != 0 && !tx.oldTx).toList();
     txs.sort((a, b) => b.timestamp?.compareTo(a.timestamp ?? 0) ?? 0);
     return txs;
   }
@@ -213,24 +212,24 @@ class Wallet with _$Wallet {
 
   List<Address> allFreezedAddresses() {
     final all = <Address>[];
-    all.addAll(addresses ?? <Address>[]);
+    all.addAll(addresses);
     all.addAll(toAddresses ?? <Address>[]);
     return all.where((addr) => addr.unspendable).toList();
   }
 
   bool isActive() {
     if (balance != null && balance! > 0) return true;
-    if (transactions != null && transactions!.isNotEmpty) return true;
+    if (transactions.isNotEmpty) return true;
 
     return false;
   }
 
   int txSentCount() {
-    return transactions?.where((tx) => !tx.isReceived()).toList().length ?? 0;
+    return transactions.where((tx) => !tx.isReceived()).toList().length;
   }
 
   int txReceivedCount() {
-    return transactions?.where((tx) => tx.isReceived()).toList().length ?? 0;
+    return transactions.where((tx) => tx.isReceived()).toList().length;
   }
 }
 

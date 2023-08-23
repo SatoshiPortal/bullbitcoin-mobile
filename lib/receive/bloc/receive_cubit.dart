@@ -31,12 +31,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       final firstAddress = walletBloc.state.firstAddress;
 
       final address = newAddress == null
-          ? addresses != null && addresses.isNotEmpty
+          ? addresses.isNotEmpty
               ? addresses.last.address
               : firstAddress
           : newAddress.address;
       final idx = newAddress == null
-          ? addresses != null && addresses.isNotEmpty
+          ? addresses.isNotEmpty
               ? addresses.last.index
               : 0
           : newAddress.index;

@@ -1,7 +1,6 @@
 import 'package:bb_mobile/styles.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:pattern_formatter/numeric_formatter.dart';
 
 enum _TextInputType {
   big,
@@ -261,19 +260,6 @@ class _BBAmountInputState extends State<BBAmountInput> {
   Widget build(BuildContext context) {
     if (_editingController.text != widget.value) {
       _editingController.text = widget.value;
-
-      if (widget.btcFormatting)
-        _editingController.selection = TextSelection.fromPosition(
-          TextPosition(
-            offset: _editingController.text.length,
-          ),
-        );
-      else
-        _editingController.selection = TextSelection.fromPosition(
-          TextPosition(
-            offset: widget.value.length,
-          ),
-        );
     }
 
     return TextField(
@@ -281,35 +267,25 @@ class _BBAmountInputState extends State<BBAmountInput> {
       onChanged: widget.onChanged,
       controller: _editingController,
       enableIMEPersonalizedLearning: false,
-      keyboardType: const TextInputType.numberWithOptions(
-        decimal: true,
-      ),
+      keyboardType: TextInputType.number,
       inputFormatters: [
         if (widget.btcFormatting)
-          ThousandsFormatter(
-            formatter: NumberFormat()
-              ..maximumFractionDigits = 8
-              ..minimumFractionDigits = 8
-              ..minimumExponentDigits = 1
-              ..turnOffGrouping(),
-            allowFraction: true,
+          CurrencyTextInputFormatter(
+            decimalDigits: 8,
+            enableNegative: false,
+            symbol: '',
           )
         else if (widget.isSats)
-          ThousandsFormatter(
-            formatter: NumberFormat()
-              ..maximumFractionDigits = 0
-              ..minimumFractionDigits = 0
-              ..minimumExponentDigits = 1
-              ..turnOffGrouping(),
+          CurrencyTextInputFormatter(
+            decimalDigits: 0,
+            enableNegative: false,
+            symbol: '',
           )
         else
-          ThousandsFormatter(
-            formatter: NumberFormat()
-              ..maximumFractionDigits = 2
-              ..minimumFractionDigits = 2
-              ..minimumExponentDigits = 1
-              ..turnOffGrouping(),
-            allowFraction: true,
+          CurrencyTextInputFormatter(
+            decimalDigits: 2,
+            enableNegative: false,
+            symbol: '',
           ),
       ],
       decoration: InputDecoration(
@@ -330,28 +306,6 @@ class _BBAmountInputState extends State<BBAmountInput> {
           ),
         ),
         contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
-        // suffixIcon: Padding(
-        //   padding: const EdgeInsets.only(right: 16),
-        //   child: widget.isSats
-        //       ? IconButton(
-        //           color: context.colour.secondary,
-        //           onPressed: () {
-        //             widget.onRightTap();
-        //           },
-        //           icon: const FaIcon(
-        //             FontAwesomeIcons.coins,
-        //           ),
-        //         )
-        //       : IconButton(
-        //           color: context.colour.secondary,
-        //           onPressed: () {
-        //             widget.onRightTap();
-        //           },
-        //           icon: const FaIcon(
-        //             FontAwesomeIcons.bitcoin,
-        //           ),
-        //         ),
-        // ),
       ),
     );
   }

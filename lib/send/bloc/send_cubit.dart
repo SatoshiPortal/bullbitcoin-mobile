@@ -421,7 +421,7 @@ class SendCubit extends Cubit<SendState> {
       );
     } else {
       // watch only
-      final txs = localWallet.transactions?.toList() ?? [];
+      final txs = localWallet.transactions.toList();
       txs.add(tx!);
 
       final errUpdate = await walletRepository.updateWallet(

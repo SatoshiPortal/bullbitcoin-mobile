@@ -11,7 +11,7 @@ class WalletTx {
     required bdk.Wallet bdkWallet,
   }) async {
     try {
-      final storedTxs = wallet.transactions ?? [];
+      final storedTxs = wallet.transactions;
       final txs = await bdkWallet.listTransactions(true);
       // final x = bdk.TxBuilderResult();
 
@@ -89,8 +89,8 @@ class WalletTx {
       // check collect vins and vouts
       // check for related addresses and inherit labels
 
-      final storedTxs = wallet.transactions ?? [];
-      final storedAddrs = wallet.addresses ?? [];
+      final storedTxs = wallet.transactions;
+      final storedAddrs = wallet.addresses;
       final storedToAddrs = wallet.toAddresses ?? [];
       print('storedAddrs: $storedAddrs');
       print('storedToAddrs: $storedToAddrs');
@@ -143,7 +143,7 @@ class WalletTx {
 
       final w = wallet.copyWith(transactions: transactions);
 
-      return (wallet, null);
+      return (w, null);
     } catch (e) {
       return (null, Err(e.toString(), expected: e.toString() == 'No bdk transactions found'));
     }
@@ -243,7 +243,7 @@ class WalletTx {
         broadcastTime: DateTime.now().millisecondsSinceEpoch,
       );
 
-      final txs = wallet.transactions?.toList() ?? [];
+      final txs = wallet.transactions.toList();
       txs.add(newTx);
       final w = wallet.copyWith(transactions: txs);
 
@@ -305,7 +305,7 @@ class WalletTx {
             txOut.scriptPubkey,
             wallet.getBdkNetwork(),
           );
-          final value = txOut.value;
+          // final value = txOut.value;
           return address.toString();
         }),
       );

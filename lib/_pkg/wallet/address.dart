@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_model/address.dart';
-import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -20,7 +19,7 @@ class WalletAddress {
   }
 
   Future<String?> getLabel({required Wallet wallet, required String address}) async {
-    final addresses = wallet.addresses ?? <Address>[];
+    final addresses = wallet.addresses;
 
     String? label;
     if (addresses.any((element) => element.address == address)) {
@@ -87,7 +86,7 @@ class WalletAddress {
   }) async {
     try {
       final unspentList = await bdkWallet.listUnspent();
-      final addresses = wallet.addresses.toList() ?? [];
+      final addresses = wallet.addresses.toList();
       for (final unspent in unspentList) {
         final scr = await bdk.Script.create(unspent.txout.scriptPubkey.internal);
         final addresss = await bdk.Address.fromScript(
@@ -105,7 +104,7 @@ class WalletAddress {
           ),
         );
         final utxos = address.utxos?.toList() ?? [];
-        for (final tx in wallet.transactions ?? <Transaction>[]) {
+        for (final tx in wallet.transactions) {
           for (final addrs in tx.outAddresses ?? []) {
             if (addrs == addressStr) {
               isRelated = true;

@@ -208,7 +208,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
     final balance = context.select((WalletBloc cubit) => cubit.state.balance);
 
     final hasTxs = context.select(
-      (WalletBloc cubit) => cubit.state.wallet?.transactions?.isNotEmpty ?? false,
+      (WalletBloc cubit) => cubit.state.wallet?.transactions.isNotEmpty ?? false,
     );
 
     final address = ad.isNotEmpty ? ad.substring(0, 5) + '...' + ad.substring(ad.length - 5) : '';
@@ -347,7 +347,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: wallet.transactions!.length.toString(),
+                                    text: wallet.transactions.length.toString(),
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,

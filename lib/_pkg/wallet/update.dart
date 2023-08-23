@@ -21,8 +21,8 @@ class WalletUpdate {
       // check collect vins and vouts
       // check for related addresses and inherit labels
 
-      final storedTxs = wallet.transactions ?? [];
-      final storedAddrs = wallet.addresses ?? [];
+      final storedTxs = wallet.transactions;
+      final storedAddrs = wallet.addresses;
       final storedToAddrs = wallet.toAddresses ?? [];
       print('storedAddrs: $storedAddrs');
       print('storedToAddrs: $storedToAddrs');
