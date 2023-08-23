@@ -31,9 +31,10 @@ mixin _$Wallet {
   String? get name => throw _privateConstructorUsedError;
   String? get path => throw _privateConstructorUsedError;
   int? get balance => throw _privateConstructorUsedError;
-  List<Address>? get addresses => throw _privateConstructorUsedError;
+  List<Address> get addresses => throw _privateConstructorUsedError;
+  dynamic get lastDepositIndex => throw _privateConstructorUsedError;
   List<Address>? get toAddresses => throw _privateConstructorUsedError;
-  List<Transaction>? get transactions => throw _privateConstructorUsedError;
+  List<Transaction> get transactions => throw _privateConstructorUsedError;
   List<String>? get labelTags => throw _privateConstructorUsedError;
   List<Bip329Label>? get bip329Labels => throw _privateConstructorUsedError;
   bool get backupTested => throw _privateConstructorUsedError;
@@ -61,9 +62,10 @@ abstract class $WalletCopyWith<$Res> {
       String? name,
       String? path,
       int? balance,
-      List<Address>? addresses,
+      List<Address> addresses,
+      dynamic lastDepositIndex,
       List<Address>? toAddresses,
-      List<Transaction>? transactions,
+      List<Transaction> transactions,
       List<String>? labelTags,
       List<Bip329Label>? bip329Labels,
       bool backupTested,
@@ -94,9 +96,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? name = freezed,
     Object? path = freezed,
     Object? balance = freezed,
-    Object? addresses = freezed,
+    Object? addresses = null,
+    Object? lastDepositIndex = freezed,
     Object? toAddresses = freezed,
-    Object? transactions = freezed,
+    Object? transactions = null,
     Object? labelTags = freezed,
     Object? bip329Labels = freezed,
     Object? backupTested = null,
@@ -147,18 +150,22 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.balance
           : balance // ignore: cast_nullable_to_non_nullable
               as int?,
-      addresses: freezed == addresses
+      addresses: null == addresses
           ? _value.addresses
           : addresses // ignore: cast_nullable_to_non_nullable
-              as List<Address>?,
+              as List<Address>,
+      lastDepositIndex: freezed == lastDepositIndex
+          ? _value.lastDepositIndex
+          : lastDepositIndex // ignore: cast_nullable_to_non_nullable
+              as dynamic,
       toAddresses: freezed == toAddresses
           ? _value.toAddresses
           : toAddresses // ignore: cast_nullable_to_non_nullable
               as List<Address>?,
-      transactions: freezed == transactions
+      transactions: null == transactions
           ? _value.transactions
           : transactions // ignore: cast_nullable_to_non_nullable
-              as List<Transaction>?,
+              as List<Transaction>,
       labelTags: freezed == labelTags
           ? _value.labelTags
           : labelTags // ignore: cast_nullable_to_non_nullable
@@ -197,9 +204,10 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       String? name,
       String? path,
       int? balance,
-      List<Address>? addresses,
+      List<Address> addresses,
+      dynamic lastDepositIndex,
       List<Address>? toAddresses,
-      List<Transaction>? transactions,
+      List<Transaction> transactions,
       List<String>? labelTags,
       List<Bip329Label>? bip329Labels,
       bool backupTested,
@@ -227,9 +235,10 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? name = freezed,
     Object? path = freezed,
     Object? balance = freezed,
-    Object? addresses = freezed,
+    Object? addresses = null,
+    Object? lastDepositIndex = freezed,
     Object? toAddresses = freezed,
-    Object? transactions = freezed,
+    Object? transactions = null,
     Object? labelTags = freezed,
     Object? bip329Labels = freezed,
     Object? backupTested = null,
@@ -280,18 +289,21 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value.balance
           : balance // ignore: cast_nullable_to_non_nullable
               as int?,
-      addresses: freezed == addresses
+      addresses: null == addresses
           ? _value._addresses
           : addresses // ignore: cast_nullable_to_non_nullable
-              as List<Address>?,
+              as List<Address>,
+      lastDepositIndex: freezed == lastDepositIndex
+          ? _value.lastDepositIndex!
+          : lastDepositIndex,
       toAddresses: freezed == toAddresses
           ? _value._toAddresses
           : toAddresses // ignore: cast_nullable_to_non_nullable
               as List<Address>?,
-      transactions: freezed == transactions
+      transactions: null == transactions
           ? _value._transactions
           : transactions // ignore: cast_nullable_to_non_nullable
-              as List<Transaction>?,
+              as List<Transaction>,
       labelTags: freezed == labelTags
           ? _value._labelTags
           : labelTags // ignore: cast_nullable_to_non_nullable
@@ -327,9 +339,10 @@ class _$_Wallet extends _Wallet {
       this.name,
       this.path,
       this.balance,
-      final List<Address>? addresses,
+      final List<Address> addresses = const [],
+      this.lastDepositIndex = -1,
       final List<Address>? toAddresses,
-      final List<Transaction>? transactions,
+      final List<Transaction> transactions = const [],
       final List<String>? labelTags,
       final List<Bip329Label>? bip329Labels,
       this.backupTested = false,
@@ -371,16 +384,18 @@ class _$_Wallet extends _Wallet {
   final String? path;
   @override
   final int? balance;
-  final List<Address>? _addresses;
+  final List<Address> _addresses;
   @override
-  List<Address>? get addresses {
-    final value = _addresses;
-    if (value == null) return null;
+  @JsonKey()
+  List<Address> get addresses {
     if (_addresses is EqualUnmodifiableListView) return _addresses;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
+    return EqualUnmodifiableListView(_addresses);
   }
 
+  @override
+  @JsonKey()
+  final dynamic lastDepositIndex;
   final List<Address>? _toAddresses;
   @override
   List<Address>? get toAddresses {
@@ -391,14 +406,13 @@ class _$_Wallet extends _Wallet {
     return EqualUnmodifiableListView(value);
   }
 
-  final List<Transaction>? _transactions;
+  final List<Transaction> _transactions;
   @override
-  List<Transaction>? get transactions {
-    final value = _transactions;
-    if (value == null) return null;
+  @JsonKey()
+  List<Transaction> get transactions {
     if (_transactions is EqualUnmodifiableListView) return _transactions;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
+    return EqualUnmodifiableListView(_transactions);
   }
 
   final List<String>? _labelTags;
@@ -430,7 +444,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, toAddresses: $toAddresses, transactions: $transactions, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, hide: $hide)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, lastDepositIndex: $lastDepositIndex, toAddresses: $toAddresses, transactions: $transactions, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, hide: $hide)';
   }
 
   @override
@@ -459,6 +473,8 @@ class _$_Wallet extends _Wallet {
             const DeepCollectionEquality()
                 .equals(other._addresses, _addresses) &&
             const DeepCollectionEquality()
+                .equals(other.lastDepositIndex, lastDepositIndex) &&
+            const DeepCollectionEquality()
                 .equals(other._toAddresses, _toAddresses) &&
             const DeepCollectionEquality()
                 .equals(other._transactions, _transactions) &&
@@ -473,26 +489,28 @@ class _$_Wallet extends _Wallet {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      externalPublicDescriptor,
-      internalPublicDescriptor,
-      mnemonicFingerprint,
-      sourceFingerprint,
-      network,
-      type,
-      scriptType,
-      name,
-      path,
-      balance,
-      const DeepCollectionEquality().hash(_addresses),
-      const DeepCollectionEquality().hash(_toAddresses),
-      const DeepCollectionEquality().hash(_transactions),
-      const DeepCollectionEquality().hash(_labelTags),
-      const DeepCollectionEquality().hash(_bip329Labels),
-      backupTested,
-      hide);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        id,
+        externalPublicDescriptor,
+        internalPublicDescriptor,
+        mnemonicFingerprint,
+        sourceFingerprint,
+        network,
+        type,
+        scriptType,
+        name,
+        path,
+        balance,
+        const DeepCollectionEquality().hash(_addresses),
+        const DeepCollectionEquality().hash(lastDepositIndex),
+        const DeepCollectionEquality().hash(_toAddresses),
+        const DeepCollectionEquality().hash(_transactions),
+        const DeepCollectionEquality().hash(_labelTags),
+        const DeepCollectionEquality().hash(_bip329Labels),
+        backupTested,
+        hide
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -521,9 +539,10 @@ abstract class _Wallet extends Wallet {
       final String? name,
       final String? path,
       final int? balance,
-      final List<Address>? addresses,
+      final List<Address> addresses,
+      final dynamic lastDepositIndex,
       final List<Address>? toAddresses,
-      final List<Transaction>? transactions,
+      final List<Transaction> transactions,
       final List<String>? labelTags,
       final List<Bip329Label>? bip329Labels,
       final bool backupTested,
@@ -555,11 +574,13 @@ abstract class _Wallet extends Wallet {
   @override
   int? get balance;
   @override
-  List<Address>? get addresses;
+  List<Address> get addresses;
+  @override
+  dynamic get lastDepositIndex;
   @override
   List<Address>? get toAddresses;
   @override
-  List<Transaction>? get transactions;
+  List<Transaction> get transactions;
   @override
   List<String>? get labelTags;
   @override

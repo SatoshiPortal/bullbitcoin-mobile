@@ -27,6 +27,10 @@ _$_Transaction _$$_TransactionFromJson(Map<String, dynamic> json) =>
       outAddresses: (json['outAddresses'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      outAddrs: (json['outAddrs'] as List<dynamic>?)
+              ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$_TransactionToJson(_$_Transaction instance) =>
@@ -46,4 +50,5 @@ Map<String, dynamic> _$$_TransactionToJson(_$_Transaction instance) =>
       'broadcastTime': instance.broadcastTime,
       'inAddresses': instance.inAddresses,
       'outAddresses': instance.outAddresses,
+      'outAddrs': instance.outAddrs,
     };

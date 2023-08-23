@@ -55,7 +55,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void walletSelected(WalletBloc wallet) async {
-    await Future.delayed(100.microseconds);
+    await Future.delayed(500.microseconds);
     emit(state.copyWith(selectedWalletCubit: wallet));
   }
 

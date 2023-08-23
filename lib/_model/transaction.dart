@@ -1,5 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 
+import 'package:bb_mobile/_model/address.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -19,19 +20,18 @@ class Transaction with _$Transaction {
     String? fromAddress,
     String? toAddress,
     String? psbt,
-    @Default(false)
-        bool rbfEnabled,
-    @Default(false)
-        bool oldTx,
+    @Default(false) bool rbfEnabled,
+    @Default(false) bool oldTx,
     int? broadcastTime,
     // String? serializedTx,
     List<String>? inAddresses,
     List<String>? outAddresses,
+    @Default([]) List<Address> outAddrs,
     @JsonKey(
       includeFromJson: false,
       includeToJson: false,
     )
-        bdk.TransactionDetails? bdkTx,
+    bdk.TransactionDetails? bdkTx,
   }) = _Transaction;
   const Transaction._();
 

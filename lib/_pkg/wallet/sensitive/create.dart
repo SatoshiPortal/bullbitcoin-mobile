@@ -361,7 +361,7 @@ class WalletSensitiveCreate {
       }
 
       final appDocDir = await getApplicationDocumentsDirectory();
-      final String dbDir = appDocDir.path + '/${wallet.getWalletStorageString()}';
+      final String dbDir = appDocDir.path + '/${wallet.getWalletStorageString()}_signer';
 
       final dbConfig = bdk.DatabaseConfig.sqlite(
         config: bdk.SqliteDbConfiguration(path: dbDir),

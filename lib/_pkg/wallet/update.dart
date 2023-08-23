@@ -47,16 +47,8 @@ class WalletUpdate {
         final idx = storedTxs.indexWhere((t) => t.txid == tx.txid);
         Transaction? storedTx;
         if (idx != -1) storedTx = storedTxs.elementAtOrNull(idx);
-        if (storedTx != null) {
-          print('Tx already exists, update');
-        } else {
-          print('Tx does not exist, must be added.');
-          print('Addresses related to tx must be added and label inherited.');
-          // send txs will have the address we send to and our change both to inherit the same label
-          // recieve tx will have our deposit address
-        }
 
-        final txObj = Transaction(
+        var txObj = Transaction(
           txid: tx.txid,
           received: tx.received,
           sent: tx.sent,
@@ -65,12 +57,14 @@ class WalletUpdate {
           timestamp: tx.confirmationTime?.timestamp ?? 0,
           bdkTx: tx,
           rbfEnabled: storedTx?.rbfEnabled ?? false,
+
           // label: label,
         );
         const label = '';
         final outputs = await tx.transaction?.output();
         print('recd: ${tx.received}');
         print('sent: ${tx.sent}');
+        late final List<Address> outAddrs = [];
 
         for (final out in outputs!) {
           late Address? linkedAddress;
@@ -88,6 +82,7 @@ class WalletUpdate {
                 index: -1,
                 isReceive: true,
               );
+              outAddrs.add(linkedAddress);
             } else {
               print('SENDERS CHANGE');
               linkedAddress = Address(
@@ -106,6 +101,8 @@ class WalletUpdate {
                 index: -1,
                 isReceive: false,
               );
+              outAddrs.add(linkedAddress);
+
               print('CHANGE');
             } else {
               linkedAddress = Address(
@@ -114,14 +111,29 @@ class WalletUpdate {
                 isReceive: false,
                 isMine: false,
               );
+
+              outAddrs.add(linkedAddress);
+
               print('TO');
             }
           }
           print('$linkedAddress');
         }
-        print('Check to match address with transaction');
 
-        transactions.add(txObj.copyWith(label: label));
+        txObj = txObj.copyWith(
+          outAddrs: outAddrs,
+        );
+        print('Check to match address with transaction');
+        if (storedTx != null) {
+          print('Tx already exists, update');
+          transactions.add(txObj.copyWith(label: label));
+        } else {
+          print('Tx does not exist, must be added.');
+          print('Addresses related to tx must be added and label inherited.');
+          // send txs will have the address we send to and our change both to inherit the same label
+          // recieve tx will have our deposit address
+          transactions.add(txObj.copyWith(label: label));
+        }
       }
 
       final w = wallet.copyWith(transactions: transactions);

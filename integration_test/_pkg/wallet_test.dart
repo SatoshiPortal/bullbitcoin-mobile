@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
@@ -31,13 +32,19 @@ void main() {
       blockChain: electrum!,
     );
 
-    final (w84Updated, err) = await WalletUpdate().syncWalletTxsAndAddresses(
+    final (w, _) = await WalletAddress().loadNewAddresses(
+      wallet: w84,
+      bdkWallet: bdkW84,
+    );
+    print(w!.addresses);
+
+    final (w84Updated, _) = await WalletUpdate().syncWalletTxsAndAddresses(
       wallet: w84,
       bdkWallet: bdkW84,
     );
 
-    assert(w84Updated!.transactions!.isNotEmpty);
-    for (final tx in w84Updated!.transactions!) {
+    assert(w84Updated!.transactions.isNotEmpty);
+    for (final tx in w84Updated!.transactions) {
       // print(tx.);
     }
   });

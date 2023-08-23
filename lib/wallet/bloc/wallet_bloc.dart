@@ -255,7 +255,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         errSyncingAddresses: '',
       ),
     );
-    final (wallet, err) = await walletAddress.updateAddresses(
+    final (wallet, err) = await walletAddress.updateUtxos(
       bdkWallet: state.bdkWallet!,
       wallet: state.wallet!,
     );

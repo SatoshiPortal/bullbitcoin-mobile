@@ -36,6 +36,7 @@ mixin _$Transaction {
       throw _privateConstructorUsedError; // String? serializedTx,
   List<String>? get inAddresses => throw _privateConstructorUsedError;
   List<String>? get outAddresses => throw _privateConstructorUsedError;
+  List<Address> get outAddrs => throw _privateConstructorUsedError;
   @JsonKey(includeFromJson: false, includeToJson: false)
   bdk.TransactionDetails? get bdkTx => throw _privateConstructorUsedError;
 
@@ -67,6 +68,7 @@ abstract class $TransactionCopyWith<$Res> {
       int? broadcastTime,
       List<String>? inAddresses,
       List<String>? outAddresses,
+      List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       bdk.TransactionDetails? bdkTx});
 }
@@ -99,6 +101,7 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? broadcastTime = freezed,
     Object? inAddresses = freezed,
     Object? outAddresses = freezed,
+    Object? outAddrs = null,
     Object? bdkTx = freezed,
   }) {
     return _then(_value.copyWith(
@@ -162,6 +165,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.outAddresses
           : outAddresses // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      outAddrs: null == outAddrs
+          ? _value.outAddrs
+          : outAddrs // ignore: cast_nullable_to_non_nullable
+              as List<Address>,
       bdkTx: freezed == bdkTx
           ? _value.bdkTx
           : bdkTx // ignore: cast_nullable_to_non_nullable
@@ -194,6 +201,7 @@ abstract class _$$_TransactionCopyWith<$Res>
       int? broadcastTime,
       List<String>? inAddresses,
       List<String>? outAddresses,
+      List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       bdk.TransactionDetails? bdkTx});
 }
@@ -224,6 +232,7 @@ class __$$_TransactionCopyWithImpl<$Res>
     Object? broadcastTime = freezed,
     Object? inAddresses = freezed,
     Object? outAddresses = freezed,
+    Object? outAddrs = null,
     Object? bdkTx = freezed,
   }) {
     return _then(_$_Transaction(
@@ -287,6 +296,10 @@ class __$$_TransactionCopyWithImpl<$Res>
           ? _value._outAddresses
           : outAddresses // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      outAddrs: null == outAddrs
+          ? _value._outAddrs
+          : outAddrs // ignore: cast_nullable_to_non_nullable
+              as List<Address>,
       bdkTx: freezed == bdkTx
           ? _value.bdkTx
           : bdkTx // ignore: cast_nullable_to_non_nullable
@@ -314,9 +327,11 @@ class _$_Transaction extends _Transaction {
       this.broadcastTime,
       final List<String>? inAddresses,
       final List<String>? outAddresses,
+      final List<Address> outAddrs = const [],
       @JsonKey(includeFromJson: false, includeToJson: false) this.bdkTx})
       : _inAddresses = inAddresses,
         _outAddresses = outAddresses,
+        _outAddrs = outAddrs,
         super._();
 
   factory _$_Transaction.fromJson(Map<String, dynamic> json) =>
@@ -372,13 +387,22 @@ class _$_Transaction extends _Transaction {
     return EqualUnmodifiableListView(value);
   }
 
+  final List<Address> _outAddrs;
+  @override
+  @JsonKey()
+  List<Address> get outAddrs {
+    if (_outAddrs is EqualUnmodifiableListView) return _outAddrs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_outAddrs);
+  }
+
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   final bdk.TransactionDetails? bdkTx;
 
   @override
   String toString() {
-    return 'Transaction(txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, timestamp: $timestamp, label: $label, fromAddress: $fromAddress, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, inAddresses: $inAddresses, outAddresses: $outAddresses, bdkTx: $bdkTx)';
+    return 'Transaction(txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, timestamp: $timestamp, label: $label, fromAddress: $fromAddress, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, inAddresses: $inAddresses, outAddresses: $outAddresses, outAddrs: $outAddrs, bdkTx: $bdkTx)';
   }
 
   @override
@@ -409,6 +433,7 @@ class _$_Transaction extends _Transaction {
                 .equals(other._inAddresses, _inAddresses) &&
             const DeepCollectionEquality()
                 .equals(other._outAddresses, _outAddresses) &&
+            const DeepCollectionEquality().equals(other._outAddrs, _outAddrs) &&
             (identical(other.bdkTx, bdkTx) || other.bdkTx == bdkTx));
   }
 
@@ -431,6 +456,7 @@ class _$_Transaction extends _Transaction {
       broadcastTime,
       const DeepCollectionEquality().hash(_inAddresses),
       const DeepCollectionEquality().hash(_outAddresses),
+      const DeepCollectionEquality().hash(_outAddrs),
       bdkTx);
 
   @JsonKey(ignore: true)
@@ -464,6 +490,7 @@ abstract class _Transaction extends Transaction {
       final int? broadcastTime,
       final List<String>? inAddresses,
       final List<String>? outAddresses,
+      final List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       final bdk.TransactionDetails? bdkTx}) = _$_Transaction;
   const _Transaction._() : super._();
@@ -501,6 +528,8 @@ abstract class _Transaction extends Transaction {
   List<String>? get inAddresses;
   @override
   List<String>? get outAddresses;
+  @override
+  List<Address> get outAddrs;
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   bdk.TransactionDetails? get bdkTx;

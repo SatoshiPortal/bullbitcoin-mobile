@@ -33,19 +33,41 @@ class WalletAddress {
     return label;
   }
 
-  // Future<((int, String)?, Err?)> newAddress({
-  //   required bdk.Wallet bdkWallet,
-  // }) async {
-  //   try {
-  //     final address = await bdkWallet.getAddress(
-  //       addressIndex: const bdk.AddressIndex(),
-  //     );
+  Future<(Wallet?, Err?)> loadNewAddresses({
+    required Wallet wallet,
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final addressLastUnused = await bdkWallet.getAddress(
+        addressIndex: const bdk.AddressIndex.lastUnused(),
+      );
+      if (wallet.lastDepositIndex == addressLastUnused.index) {
+        return (wallet, null);
+      }
+      final List<Address> addresses = [...wallet.addresses];
+      for (var i = addressLastUnused.index; i <= addressLastUnused.index + 10; i++) {
+        final address = await bdkWallet.getAddress(
+          addressIndex: bdk.AddressIndex.peek(index: i),
+        );
+        final contain = wallet.addresses.where((element) => element.address == address.address);
+        if (contain.isEmpty)
+          addresses.add(
+            Address(
+              address: address.address,
+              index: address.index,
+            ),
+          );
+      }
+      final w = wallet.copyWith(
+        addresses: addresses,
+        lastDepositIndex: addressLastUnused.index,
+      );
 
-  //     return ((address.index, address.address), null);
-  //   } catch (e) {
-  //     return (null, Err(e.toString()));
-  //   }
-  // }
+      return (w, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
 
   Future<(String?, Err?)> peekIndex(bdk.Wallet bdkWallet, int idx) async {
     try {
@@ -59,13 +81,13 @@ class WalletAddress {
     }
   }
 
-  Future<(Wallet?, Err?)> updateAddresses({
+  Future<(Wallet?, Err?)> updateUtxos({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
   }) async {
     try {
       final unspentList = await bdkWallet.listUnspent();
-      final addresses = wallet.addresses?.toList() ?? [];
+      final addresses = wallet.addresses.toList() ?? [];
       for (final unspent in unspentList) {
         final scr = await bdk.Script.create(unspent.txout.scriptPubkey.internal);
         final addresss = await bdk.Address.fromScript(
@@ -129,7 +151,7 @@ class WalletAddress {
     try {
       final (idx, adr) = address;
       final addresses =
-          (isSend ? wallet.toAddresses?.toList() : wallet.addresses?.toList()) ?? <Address>[];
+          (isSend ? wallet.toAddresses?.toList() : wallet.addresses.toList()) ?? <Address>[];
 
       Address a;
 
