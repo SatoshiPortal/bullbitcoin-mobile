@@ -24,7 +24,9 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
               ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      lastDepositIndex: json['lastDepositIndex'] ?? -1,
+      lastUnusedAddress: json['lastUnusedAddress'] == null
+          ? null
+          : Address.fromJson(json['lastUnusedAddress'] as Map<String, dynamic>),
       toAddresses: (json['toAddresses'] as List<dynamic>?)
           ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -55,7 +57,7 @@ Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
       'path': instance.path,
       'balance': instance.balance,
       'addresses': instance.addresses,
-      'lastDepositIndex': instance.lastDepositIndex,
+      'lastUnusedAddress': instance.lastUnusedAddress,
       'toAddresses': instance.toAddresses,
       'transactions': instance.transactions,
       'labelTags': instance.labelTags,

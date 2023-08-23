@@ -18,6 +18,20 @@ class WalletAddress {
     }
   }
 
+  Future<(({int index, String address})?, Err?)> lastUnused({
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final address = await bdkWallet.getAddress(
+        addressIndex: const bdk.AddressIndex.lastUnused(),
+      );
+
+      return ((index: address.index, address: address.address), null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
   Future<String?> getLabel({required Wallet wallet, required String address}) async {
     final addresses = wallet.addresses;
 
@@ -32,7 +46,7 @@ class WalletAddress {
     return label;
   }
 
-  Future<(Wallet?, Err?)> loadNewAddresses({
+  Future<(Wallet?, Err?)> loadAddresses({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
   }) async {
@@ -40,11 +54,19 @@ class WalletAddress {
       final addressLastUnused = await bdkWallet.getAddress(
         addressIndex: const bdk.AddressIndex.lastUnused(),
       );
-      if (wallet.lastDepositIndex == addressLastUnused.index) {
-        return (wallet, null);
+      Wallet w;
+      if (wallet.lastUnusedAddress == null) {
+        w = wallet.copyWith(
+          lastUnusedAddress: Address(
+            address: addressLastUnused.address,
+            index: addressLastUnused.index,
+          ),
+        );
+      } else if (wallet.lastUnusedAddress!.index == addressLastUnused.index) {
+        // return (wallet, null);
       }
       final List<Address> addresses = [...wallet.addresses];
-      for (var i = addressLastUnused.index; i <= addressLastUnused.index + 10; i++) {
+      for (var i = 0; i <= addressLastUnused.index + 5; i++) {
         final address = await bdkWallet.getAddress(
           addressIndex: bdk.AddressIndex.peek(index: i),
         );
@@ -57,9 +79,12 @@ class WalletAddress {
             ),
           );
       }
-      final w = wallet.copyWith(
+      w = wallet.copyWith(
         addresses: addresses,
-        lastDepositIndex: addressLastUnused.index,
+        lastUnusedAddress: Address(
+          address: addressLastUnused.address,
+          index: addressLastUnused.index,
+        ),
       );
 
       return (w, null);
@@ -94,6 +119,7 @@ class WalletAddress {
           wallet.getBdkNetwork(),
         );
         final addressStr = addresss.toString();
+
         late bool isRelated = false;
         late String txLabel = '';
         final address = addresses.firstWhere(

@@ -35,7 +35,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<GetAddresses>(_getAddresses);
     on<ListTransactions>(_listTransactions);
     on<GetFirstAddress>(_getFirstAddress);
-    on<GetNewAddress>(_getNewAddress);
+    on<GetNewAddress>(_getLastUnusedAddress);
     on<SyncWallet>(_syncWallet);
     add(LoadWallet(saveDir));
   }
@@ -255,9 +255,21 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         errSyncingAddresses: '',
       ),
     );
+    final (walletUpdated, wErr) = await walletAddress.loadAddresses(
+      wallet: state.wallet!,
+      bdkWallet: state.bdkWallet!,
+    );
+    if (wErr != null)
+      emit(
+        state.copyWith(
+          errSyncingAddresses: wErr.toString(),
+          syncingAddresses: false,
+        ),
+      );
+
     final (wallet, err) = await walletAddress.updateUtxos(
       bdkWallet: state.bdkWallet!,
-      wallet: state.wallet!,
+      wallet: walletUpdated!,
     );
     if (err != null)
       emit(
@@ -300,10 +312,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(state.copyWith(firstAddress: address!));
   }
 
-  void _getNewAddress(GetNewAddress event, Emitter<WalletState> emit) async {
+  void _getLastUnusedAddress(GetNewAddress event, Emitter<WalletState> emit) async {
     if (state.bdkWallet == null) return;
 
-    final (newAddress, err) = await walletAddress.newDeposit(
+    final (newAddress, err) = await walletAddress.lastUnused(
       bdkWallet: state.bdkWallet!,
     );
     if (err != null) {

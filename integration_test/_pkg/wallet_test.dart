@@ -32,7 +32,7 @@ void main() {
       blockChain: electrum!,
     );
 
-    final (w, _) = await WalletAddress().loadNewAddresses(
+    final (w, _) = await WalletAddress().loadAddresses(
       wallet: w84,
       bdkWallet: bdkW84,
     );

@@ -31,8 +31,9 @@ mixin _$Wallet {
   String? get name => throw _privateConstructorUsedError;
   String? get path => throw _privateConstructorUsedError;
   int? get balance => throw _privateConstructorUsedError;
-  List<Address> get addresses => throw _privateConstructorUsedError;
-  dynamic get lastDepositIndex => throw _privateConstructorUsedError;
+  List<Address> get addresses =>
+      throw _privateConstructorUsedError; // @Default(-1) lastDepositIndex,
+  Address? get lastUnusedAddress => throw _privateConstructorUsedError;
   List<Address>? get toAddresses => throw _privateConstructorUsedError;
   List<Transaction> get transactions => throw _privateConstructorUsedError;
   List<String>? get labelTags => throw _privateConstructorUsedError;
@@ -63,13 +64,15 @@ abstract class $WalletCopyWith<$Res> {
       String? path,
       int? balance,
       List<Address> addresses,
-      dynamic lastDepositIndex,
+      Address? lastUnusedAddress,
       List<Address>? toAddresses,
       List<Transaction> transactions,
       List<String>? labelTags,
       List<Bip329Label>? bip329Labels,
       bool backupTested,
       bool hide});
+
+  $AddressCopyWith<$Res>? get lastUnusedAddress;
 }
 
 /// @nodoc
@@ -97,7 +100,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? path = freezed,
     Object? balance = freezed,
     Object? addresses = null,
-    Object? lastDepositIndex = freezed,
+    Object? lastUnusedAddress = freezed,
     Object? toAddresses = freezed,
     Object? transactions = null,
     Object? labelTags = freezed,
@@ -154,10 +157,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.addresses
           : addresses // ignore: cast_nullable_to_non_nullable
               as List<Address>,
-      lastDepositIndex: freezed == lastDepositIndex
-          ? _value.lastDepositIndex
-          : lastDepositIndex // ignore: cast_nullable_to_non_nullable
-              as dynamic,
+      lastUnusedAddress: freezed == lastUnusedAddress
+          ? _value.lastUnusedAddress
+          : lastUnusedAddress // ignore: cast_nullable_to_non_nullable
+              as Address?,
       toAddresses: freezed == toAddresses
           ? _value.toAddresses
           : toAddresses // ignore: cast_nullable_to_non_nullable
@@ -184,6 +187,18 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
               as bool,
     ) as $Val);
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $AddressCopyWith<$Res>? get lastUnusedAddress {
+    if (_value.lastUnusedAddress == null) {
+      return null;
+    }
+
+    return $AddressCopyWith<$Res>(_value.lastUnusedAddress!, (value) {
+      return _then(_value.copyWith(lastUnusedAddress: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -205,13 +220,16 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       String? path,
       int? balance,
       List<Address> addresses,
-      dynamic lastDepositIndex,
+      Address? lastUnusedAddress,
       List<Address>? toAddresses,
       List<Transaction> transactions,
       List<String>? labelTags,
       List<Bip329Label>? bip329Labels,
       bool backupTested,
       bool hide});
+
+  @override
+  $AddressCopyWith<$Res>? get lastUnusedAddress;
 }
 
 /// @nodoc
@@ -236,7 +254,7 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? path = freezed,
     Object? balance = freezed,
     Object? addresses = null,
-    Object? lastDepositIndex = freezed,
+    Object? lastUnusedAddress = freezed,
     Object? toAddresses = freezed,
     Object? transactions = null,
     Object? labelTags = freezed,
@@ -293,9 +311,10 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value._addresses
           : addresses // ignore: cast_nullable_to_non_nullable
               as List<Address>,
-      lastDepositIndex: freezed == lastDepositIndex
-          ? _value.lastDepositIndex!
-          : lastDepositIndex,
+      lastUnusedAddress: freezed == lastUnusedAddress
+          ? _value.lastUnusedAddress
+          : lastUnusedAddress // ignore: cast_nullable_to_non_nullable
+              as Address?,
       toAddresses: freezed == toAddresses
           ? _value._toAddresses
           : toAddresses // ignore: cast_nullable_to_non_nullable
@@ -340,7 +359,7 @@ class _$_Wallet extends _Wallet {
       this.path,
       this.balance,
       final List<Address> addresses = const [],
-      this.lastDepositIndex = -1,
+      this.lastUnusedAddress,
       final List<Address>? toAddresses,
       final List<Transaction> transactions = const [],
       final List<String>? labelTags,
@@ -393,9 +412,9 @@ class _$_Wallet extends _Wallet {
     return EqualUnmodifiableListView(_addresses);
   }
 
+// @Default(-1) lastDepositIndex,
   @override
-  @JsonKey()
-  final dynamic lastDepositIndex;
+  final Address? lastUnusedAddress;
   final List<Address>? _toAddresses;
   @override
   List<Address>? get toAddresses {
@@ -444,7 +463,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, lastDepositIndex: $lastDepositIndex, toAddresses: $toAddresses, transactions: $transactions, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, hide: $hide)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, lastUnusedAddress: $lastUnusedAddress, toAddresses: $toAddresses, transactions: $transactions, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, hide: $hide)';
   }
 
   @override
@@ -472,8 +491,8 @@ class _$_Wallet extends _Wallet {
             (identical(other.balance, balance) || other.balance == balance) &&
             const DeepCollectionEquality()
                 .equals(other._addresses, _addresses) &&
-            const DeepCollectionEquality()
-                .equals(other.lastDepositIndex, lastDepositIndex) &&
+            (identical(other.lastUnusedAddress, lastUnusedAddress) ||
+                other.lastUnusedAddress == lastUnusedAddress) &&
             const DeepCollectionEquality()
                 .equals(other._toAddresses, _toAddresses) &&
             const DeepCollectionEquality()
@@ -503,7 +522,7 @@ class _$_Wallet extends _Wallet {
         path,
         balance,
         const DeepCollectionEquality().hash(_addresses),
-        const DeepCollectionEquality().hash(lastDepositIndex),
+        lastUnusedAddress,
         const DeepCollectionEquality().hash(_toAddresses),
         const DeepCollectionEquality().hash(_transactions),
         const DeepCollectionEquality().hash(_labelTags),
@@ -540,7 +559,7 @@ abstract class _Wallet extends Wallet {
       final String? path,
       final int? balance,
       final List<Address> addresses,
-      final dynamic lastDepositIndex,
+      final Address? lastUnusedAddress,
       final List<Address>? toAddresses,
       final List<Transaction> transactions,
       final List<String>? labelTags,
@@ -575,8 +594,8 @@ abstract class _Wallet extends Wallet {
   int? get balance;
   @override
   List<Address> get addresses;
-  @override
-  dynamic get lastDepositIndex;
+  @override // @Default(-1) lastDepositIndex,
+  Address? get lastUnusedAddress;
   @override
   List<Address>? get toAddresses;
   @override

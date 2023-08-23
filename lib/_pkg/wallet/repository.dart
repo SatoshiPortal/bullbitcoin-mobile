@@ -158,10 +158,10 @@ class WalletRepository {
       await storage.deleteValue(walletHashId);
       final appDocDir = await getApplicationDocumentsDirectory();
       final File dbDir = File(appDocDir.path + '/$walletHashId');
-      final File dbDirSigner = File(appDocDir.path + '/${walletHashId}_signer');
+      // final File dbDirSigner = File(appDocDir.path + '/${walletHashId}_signer');
 
       await dbDir.delete();
-      await dbDirSigner.delete();
+      // await dbDirSigner.delete();
       return null;
     } catch (e) {
       return Err(e.toString());
