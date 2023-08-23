@@ -126,7 +126,8 @@ class WalletAddress {
           (a) => a.address == addressStr,
           orElse: () => Address(
             address: addressStr,
-            index: -1,
+            isReceive: true,
+            index: -1, // do not use negative index
           ),
         );
         final utxos = address.utxos?.toList() ?? [];

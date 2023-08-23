@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
@@ -41,34 +42,41 @@ class ReceiveCubit extends Cubit<ReceiveState> {
               : 0
           : newAddress.index;
 
-      final label = await walletAddress.getLabel(
-        wallet: walletBloc.state.wallet!,
-        address: address,
-      );
+      // final label = await walletAddress.getLabel(
+      //   wallet: walletBloc.state.wallet!,
+      //   address: address,
+      // );
 
-      final (a, w) = await walletAddress.addAddressToWallet(
-        address: (idx, address),
-        wallet: walletBloc.state.wallet!,
-        label: label,
-      );
+      // final (a, w) = await walletAddress.addAddressToWallet(
+      //   address: (idx, address),
+      //   wallet: walletBloc.state.wallet!,
+      //   label: label,
+      // );
 
-      emit(state.copyWith(defaultAddress: a));
-
-      final errUpdate = await walletRepository.updateWallet(
-        wallet: w,
-        hiveStore: hiveStorage,
-      );
-      if (errUpdate != null) {
-        emit(
-          state.copyWith(
-            loadingAddress: false,
-            errLoadingAddress: errUpdate.toString(),
+      emit(
+        state.copyWith(
+          defaultAddress: Address(
+            address: address,
+            index: idx,
           ),
-        );
-        return;
-      }
+        ),
+      );
 
-      walletBloc.add(UpdateWallet(w));
+      // final errUpdate = await walletRepository.updateWallet(
+      //   wallet: w,
+      //   hiveStore: hiveStorage,
+      // );
+      // if (errUpdate != null) {
+      //   emit(
+      //     state.copyWith(
+      //       loadingAddress: false,
+      //       errLoadingAddress: errUpdate.toString(),
+      //     ),
+      //   );
+      //   return;
+      // }
+
+      // walletBloc.add(UpdateWallet(w));
     } else {
       final wallet = walletBloc.state.wallet!;
 
