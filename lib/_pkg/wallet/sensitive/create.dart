@@ -3,7 +3,6 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:path_provider/path_provider.dart';
 
 class WalletSensitiveCreate {
   Future<(List<String>?, Err?)> createMnemonic() async {
@@ -360,12 +359,10 @@ class WalletSensitiveCreate {
           );
       }
 
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final String dbDir = appDocDir.path + '/${wallet.getWalletStorageString()}_signer';
+      // final appDocDir = await getApplicationDocumentsDirectory();
+      // final String dbDir = appDocDir.path + '/${wallet.getWalletStorageString()}_signer';
 
-      final dbConfig = bdk.DatabaseConfig.sqlite(
-        config: bdk.SqliteDbConfiguration(path: dbDir),
-      );
+      const dbConfig = bdk.DatabaseConfig.memory();
 
       final bdkWallet = await bdk.Wallet.create(
         descriptor: external,
