@@ -110,6 +110,7 @@ class TestBackupScreen extends StatelessWidget {
                     context.pop();
                     BackupScreen.openPopup(context);
                   },
+                  centered: true,
                   label: 'View backup',
                 ),
               ),
@@ -378,6 +379,7 @@ class BackupScreen extends StatelessWidget {
                     context.pop();
                     TestBackupScreen.openPopup(context);
                   },
+                  centered: true,
                   label: 'Test backup',
                 ),
               ),
