@@ -33,6 +33,7 @@ class WalletTx {
           timestamp: tx.confirmationTime?.timestamp ?? 0,
           bdkTx: tx,
           rbfEnabled: storedTx?.rbfEnabled ?? false,
+          outAddrs: storedTx?.outAddrs ?? [],
           // label: label,
         );
 
@@ -295,7 +296,6 @@ class WalletTx {
   Future<(Transaction?, Err?)> updateTxOutputAddresses({
     required Transaction tx,
     required Wallet wallet,
-    required MempoolAPI mempoolAPI,
   }) async {
     try {
       final outputs = await tx.bdkTx!.transaction!.output();
@@ -305,8 +305,8 @@ class WalletTx {
             txOut.scriptPubkey,
             wallet.getBdkNetwork(),
           );
-          // final value = txOut.value;
-          return address.toString();
+          final value = txOut.value;
+          return address.toString() + ':' + value.toString();
         }),
       );
 
@@ -344,6 +344,43 @@ class WalletTx {
         return (tx.copyWith(label: label), null);
       }
       return (tx, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(Transaction?, Err?)> mapOutputAddresses({
+    required Transaction tx,
+    required Wallet wallet,
+  }) async {
+    try {
+      final outputStrings = tx.outAddresses;
+      final addresses = wallet.addresses;
+      final toAddresses = wallet.toAddresses;
+      final amt = tx.getAmount();
+      final (outAddrs) = await Future.wait(
+        outputStrings!.map((output) async {
+          final myAddressesIdx =
+              addresses.indexWhere((address) => address.address == output.split(':')[0]);
+          if (myAddressesIdx != -1) return addresses.elementAtOrNull(myAddressesIdx)!;
+
+          final toAddressesIdx =
+              toAddresses!.indexWhere((address) => address.address == output.split(':')[0]);
+          if (toAddressesIdx != -1) return toAddresses.elementAtOrNull(toAddressesIdx)!;
+
+          final isChange = int.parse(output.split(':')[1]) == amt;
+
+          return Address(
+            address: output.split(':')[0],
+            index: -1,
+            type: isChange ? AddressType.changeActive : AddressType.notMine,
+          );
+        }),
+      );
+
+      final updated = tx.copyWith(outAddrs: outAddrs);
+
+      return (updated, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }

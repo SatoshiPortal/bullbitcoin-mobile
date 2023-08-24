@@ -93,7 +93,6 @@ class TransactionCubit extends Cubit<TransactionState> {
     final (tx, err) = await walletTx.updateTxOutputAddresses(
       tx: state.tx,
       wallet: walletBloc.state.wallet!,
-      mempoolAPI: mempoolAPI,
     );
     if (err != null) {
       emit(

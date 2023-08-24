@@ -45,6 +45,11 @@ class Transaction with _$Transaction {
     return address.split(':')[0];
   }
 
+  List<Address> createOutAddrsFromTx() {
+    final List<Address> outAddrs = [];
+    return outAddrs;
+  }
+
   bool isReceived() => sent == 0;
 
   int getAmount({bool sentAsTotal = false}) {

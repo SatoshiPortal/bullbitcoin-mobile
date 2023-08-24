@@ -118,7 +118,8 @@ class _Screen extends StatelessWidget {
               tx.timestamp == 0 ? 'Waiting for confirmations' : timeago.format(tx.getDateTime());
           final broadcastTime = tx.getBroadcastDateTime();
 
-          // final toAddress = tx.mapOutValueToAddress((amt).toString());
+          final toAddress = tx.mapOutValueToAddress((amt).toString());
+
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -171,22 +172,19 @@ class _Screen extends StatelessWidget {
                       child: BBText.body(txid, isBlue: true),
                     ),
 
-                    // const Gap(24),
-                    // const BBText.title(
-                    //   'Recipient Bitcoin Address',
-                    // ),
-                    // // const Gap(4),
-                    // CenterLeft(
-                    //   child: BBButton.text(
-                    //     onPressed: () {
-                    //       final url = context.read<SettingsCubit>().state.explorerAddressUrl(
-                    //             toAddress,
-                    //           );
-                    //       locator<Launcher>().launchApp(url);
-                    //     },
-                    //     label: toAddress,
-                    //   ),
-                    // ),
+                    const Gap(24),
+                    const BBText.title(
+                      'Recipient Bitcoin Address',
+                    ),
+                    // const Gap(4),
+                    InkWell(
+                      onTap: () {
+                        final url =
+                            context.read<SettingsCubit>().state.explorerAddressUrl(toAddress);
+                        locator<Launcher>().launchApp(url);
+                      },
+                      child: BBText.body(toAddress, isBlue: true),
+                    ),
 
                     const Gap(24),
                     const BBText.title(
