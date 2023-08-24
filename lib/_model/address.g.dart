@@ -9,6 +9,7 @@ part of 'address.dart';
 _$_Address _$$_AddressFromJson(Map<String, dynamic> json) => _$_Address(
       address: json['address'] as String,
       index: json['index'] as int,
+      type: $enumDecode(_$AddressTypeEnumMap, json['type']),
       label: json['label'] as String?,
       sentTxId: json['sentTxId'] as String?,
       isReceive: json['isReceive'] as bool?,
@@ -23,6 +24,7 @@ Map<String, dynamic> _$$_AddressToJson(_$_Address instance) =>
     <String, dynamic>{
       'address': instance.address,
       'index': instance.index,
+      'type': _$AddressTypeEnumMap[instance.type]!,
       'label': instance.label,
       'sentTxId': instance.sentTxId,
       'isReceive': instance.isReceive,
@@ -32,3 +34,12 @@ Map<String, dynamic> _$$_AddressToJson(_$_Address instance) =>
       'isMine': instance.isMine,
       'highestPreviousBalance': instance.highestPreviousBalance,
     };
+
+const _$AddressTypeEnumMap = {
+  AddressType.receiveActive: 'receiveActive',
+  AddressType.receiveUnused: 'receiveUnused',
+  AddressType.receiveUsed: 'receiveUsed',
+  AddressType.changeActive: 'changeActive',
+  AddressType.changeUsed: 'changeUsed',
+  AddressType.notMine: 'notMine',
+};

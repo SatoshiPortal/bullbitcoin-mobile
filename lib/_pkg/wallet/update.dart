@@ -81,6 +81,7 @@ class WalletUpdate {
                 address: addressStr,
                 index: -1,
                 isReceive: true,
+                type: AddressType.receiveActive,
               );
               outAddrs.add(linkedAddress);
             } else {
@@ -90,6 +91,7 @@ class WalletUpdate {
                 index: -1,
                 isReceive: true,
                 isMine: false,
+                type: AddressType.notMine,
               );
             }
           } else {
@@ -100,6 +102,7 @@ class WalletUpdate {
                 label: 'inherit-tx-label',
                 index: -1,
                 isReceive: false,
+                type: AddressType.changeActive,
               );
               outAddrs.add(linkedAddress);
 
@@ -110,6 +113,7 @@ class WalletUpdate {
                 index: -1,
                 isReceive: false,
                 isMine: false,
+                type: AddressType.notMine,
               );
 
               outAddrs.add(linkedAddress);

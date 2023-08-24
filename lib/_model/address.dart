@@ -21,24 +21,20 @@ class Address with _$Address {
   factory Address({
     required String address,
     required int index,
+    required AddressType type,
     String? label,
     String? sentTxId,
     bool? isReceive,
-    @Default(false)
-        bool saving,
-    @Default('')
-        String errSaving,
-    @Default(false)
-        bool unspendable,
-    @Default(true)
-        bool isMine,
-    @Default(0)
-        int highestPreviousBalance,
+    @Default(false) bool saving,
+    @Default('') String errSaving,
+    @Default(false) bool unspendable,
+    @Default(true) bool isMine,
+    @Default(0) int highestPreviousBalance,
     @JsonKey(
       includeFromJson: false,
       includeToJson: false,
     )
-        List<bdk.LocalUtxo>? utxos,
+    List<bdk.LocalUtxo>? utxos,
   }) = _Address;
   const Address._();
 

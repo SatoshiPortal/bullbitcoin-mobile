@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -271,6 +272,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       label: tx.label,
       sentTxId: txid,
       isSend: true,
+      type: AddressType.notMine,
     );
 
     final txs = walletBloc.state.wallet!.transactions.toList();

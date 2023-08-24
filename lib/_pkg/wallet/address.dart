@@ -60,6 +60,7 @@ class WalletAddress {
           lastUnusedAddress: Address(
             address: addressLastUnused.address,
             index: addressLastUnused.index,
+            type: AddressType.receiveUnused,
           ),
         );
       } else if (wallet.lastUnusedAddress!.index == addressLastUnused.index) {
@@ -70,12 +71,15 @@ class WalletAddress {
         final address = await bdkWallet.getAddress(
           addressIndex: bdk.AddressIndex.peek(index: i),
         );
-        final contain = wallet.addresses.where((element) => element.address == address.address);
+        final contain = wallet.addresses.where(
+          (element) => element.address == address.address,
+        );
         if (contain.isEmpty)
           addresses.add(
             Address(
               address: address.address,
               index: address.index,
+              type: AddressType.receiveUnused,
             ),
           );
       }
@@ -84,6 +88,7 @@ class WalletAddress {
         lastUnusedAddress: Address(
           address: addressLastUnused.address,
           index: addressLastUnused.index,
+          type: AddressType.receiveUnused,
         ),
       );
 
@@ -127,6 +132,7 @@ class WalletAddress {
           orElse: () => Address(
             address: addressStr,
             isReceive: true,
+            type: AddressType.changeActive,
             index: -1, // do not use negative index
           ),
         );
@@ -173,6 +179,7 @@ class WalletAddress {
     String? sentTxId,
     bool? freeze,
     bool isMine = true,
+    AddressType? type,
   }) async {
     try {
       final (idx, adr) = address;
@@ -202,6 +209,7 @@ class WalletAddress {
           sentTxId: sentTxId,
           isReceive: !isSend,
           isMine: isMine, // !isSend does not always mean isMine - change isMine and isSend
+          type: type!,
         );
         if (freeze != null) a = a.copyWith(unspendable: freeze);
         addresses.add(a);

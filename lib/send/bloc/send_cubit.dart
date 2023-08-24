@@ -489,6 +489,7 @@ class SendCubit extends Cubit<SendState> {
       sentTxId: txid,
       isSend: true,
       isMine: false,
+      type: AddressType.notMine,
     );
 
     final err2 = await walletRepository.updateWallet(

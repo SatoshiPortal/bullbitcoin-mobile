@@ -22,6 +22,7 @@ Address _$AddressFromJson(Map<String, dynamic> json) {
 mixin _$Address {
   String get address => throw _privateConstructorUsedError;
   int get index => throw _privateConstructorUsedError;
+  AddressType get type => throw _privateConstructorUsedError;
   String? get label => throw _privateConstructorUsedError;
   String? get sentTxId => throw _privateConstructorUsedError;
   bool? get isReceive => throw _privateConstructorUsedError;
@@ -46,6 +47,7 @@ abstract class $AddressCopyWith<$Res> {
   $Res call(
       {String address,
       int index,
+      AddressType type,
       String? label,
       String? sentTxId,
       bool? isReceive,
@@ -73,6 +75,7 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
   $Res call({
     Object? address = null,
     Object? index = null,
+    Object? type = null,
     Object? label = freezed,
     Object? sentTxId = freezed,
     Object? isReceive = freezed,
@@ -92,6 +95,10 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
           ? _value.index
           : index // ignore: cast_nullable_to_non_nullable
               as int,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as AddressType,
       label: freezed == label
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
@@ -142,6 +149,7 @@ abstract class _$$_AddressCopyWith<$Res> implements $AddressCopyWith<$Res> {
   $Res call(
       {String address,
       int index,
+      AddressType type,
       String? label,
       String? sentTxId,
       bool? isReceive,
@@ -166,6 +174,7 @@ class __$$_AddressCopyWithImpl<$Res>
   $Res call({
     Object? address = null,
     Object? index = null,
+    Object? type = null,
     Object? label = freezed,
     Object? sentTxId = freezed,
     Object? isReceive = freezed,
@@ -185,6 +194,10 @@ class __$$_AddressCopyWithImpl<$Res>
           ? _value.index
           : index // ignore: cast_nullable_to_non_nullable
               as int,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as AddressType,
       label: freezed == label
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
@@ -231,6 +244,7 @@ class _$_Address extends _Address {
   _$_Address(
       {required this.address,
       required this.index,
+      required this.type,
       this.label,
       this.sentTxId,
       this.isReceive,
@@ -251,6 +265,8 @@ class _$_Address extends _Address {
   final String address;
   @override
   final int index;
+  @override
+  final AddressType type;
   @override
   final String? label;
   @override
@@ -285,7 +301,7 @@ class _$_Address extends _Address {
 
   @override
   String toString() {
-    return 'Address(address: $address, index: $index, label: $label, sentTxId: $sentTxId, isReceive: $isReceive, saving: $saving, errSaving: $errSaving, unspendable: $unspendable, isMine: $isMine, highestPreviousBalance: $highestPreviousBalance, utxos: $utxos)';
+    return 'Address(address: $address, index: $index, type: $type, label: $label, sentTxId: $sentTxId, isReceive: $isReceive, saving: $saving, errSaving: $errSaving, unspendable: $unspendable, isMine: $isMine, highestPreviousBalance: $highestPreviousBalance, utxos: $utxos)';
   }
 
   @override
@@ -295,6 +311,7 @@ class _$_Address extends _Address {
             other is _$_Address &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.index, index) || other.index == index) &&
+            (identical(other.type, type) || other.type == type) &&
             (identical(other.label, label) || other.label == label) &&
             (identical(other.sentTxId, sentTxId) ||
                 other.sentTxId == sentTxId) &&
@@ -317,6 +334,7 @@ class _$_Address extends _Address {
       runtimeType,
       address,
       index,
+      type,
       label,
       sentTxId,
       isReceive,
@@ -345,6 +363,7 @@ abstract class _Address extends Address {
   factory _Address(
       {required final String address,
       required final int index,
+      required final AddressType type,
       final String? label,
       final String? sentTxId,
       final bool? isReceive,
@@ -363,6 +382,8 @@ abstract class _Address extends Address {
   String get address;
   @override
   int get index;
+  @override
+  AddressType get type;
   @override
   String? get label;
   @override

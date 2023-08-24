@@ -58,6 +58,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
           defaultAddress: Address(
             address: address,
             index: idx,
+            type: AddressType.receiveUnused,
           ),
         ),
       );
