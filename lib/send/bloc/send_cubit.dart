@@ -394,7 +394,7 @@ class SendCubit extends Cubit<SendState> {
 
       if (sErr != null) {
         emit(
-          state.copyWith(errSending: err.toString()),
+          state.copyWith(errSending: sErr.toString()),
         );
         return;
       }
@@ -407,7 +407,7 @@ class SendCubit extends Cubit<SendState> {
       final (signed, sErrr) =
           await walletSensTx.signTx(unsignedPSBT: psbt, signingWallet: bdkSignerWallet!);
       if (sErrr != null) {
-        emit(state.copyWith(errSending: errr.toString(), signed: false));
+        emit(state.copyWith(errSending: sErrr.toString(), signed: false));
         return;
       }
 

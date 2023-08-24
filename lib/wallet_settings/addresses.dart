@@ -217,9 +217,14 @@ class AddressItem extends StatelessWidget {
               AddressPopUp.openPopup(context, address);
             },
             child: BBText.body(
-              '${address.index}:${address.address}',
+              address.address,
               isBlue: true,
             ),
+          ),
+          const Gap(4),
+          InlineLabel(
+            title: 'Index',
+            body: address.index.toString(),
           ),
           const Gap(4),
           if (amt.isNotEmpty) InlineLabel(title: 'Balance', body: amt),

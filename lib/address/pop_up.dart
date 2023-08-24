@@ -182,6 +182,12 @@ class AddressDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const Gap(8),
+        InlineLabel(
+          title: 'Index',
+          body: address.index.toString(),
+        ),
+        const Gap(8),
         InlineLabel(title: 'Balance', body: amt),
         if (label.isNotEmpty) ...[
           const Gap(8),

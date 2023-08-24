@@ -269,7 +269,7 @@ class _DefaultAddressState extends State<DefaultAddress> {
                   child: Wrap(
                     children: [
                       BBText.body(
-                        '$index:$address',
+                        address,
                       ),
                     ],
                   ),

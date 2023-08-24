@@ -109,14 +109,14 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(state.copyWith(loadingCurrency: true));
     final (cad, _) = await bbAPI.getExchangeRate(toCurrency: 'CAD');
     final (usd, _) = await bbAPI.getExchangeRate(toCurrency: 'USD');
-    final (eur, _) = await bbAPI.getExchangeRate(toCurrency: 'EUR');
+    // final (eur, _) = await bbAPI.getExchangeRate(toCurrency: 'EUR');
     final (crc, _) = await bbAPI.getExchangeRate(toCurrency: 'CRC');
     final (inr, _) = await bbAPI.getExchangeRate(toCurrency: 'INR');
 
     final results = [
       if (cad != null) cad,
       if (usd != null) usd,
-      if (eur != null) eur,
+      // if (eur != null) eur,
       if (crc != null) crc,
       if (inr != null) inr,
     ];
