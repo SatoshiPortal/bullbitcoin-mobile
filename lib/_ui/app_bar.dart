@@ -2,7 +2,6 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BBAppBar extends StatelessWidget {
   const BBAppBar({this.buttonKey, required this.text, this.onBack});
@@ -19,16 +18,18 @@ class BBAppBar extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(
           right: 16.0,
+          left: 10,
+          top: 35,
           bottom: 16,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (onBack != null)
-              IconButton(
+              BackButton(
                 key: buttonKey,
-                icon: const FaIcon(FontAwesomeIcons.angleLeft),
-                padding: const EdgeInsets.fromLTRB(16, 24, 0, 0),
+                // icon: const FaIcon(FontAwesomeIcons.angleLeft),
+                // padding: const EdgeInsets.fromLTRB(16, 24, 0, 0),
                 onPressed: onBack,
                 color: context.colour.onBackground,
               ).animate(delay: 100.ms).fadeIn(),

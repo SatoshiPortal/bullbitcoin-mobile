@@ -18,6 +18,9 @@ class AccountingPage extends StatelessWidget {
       value: walletBloc,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          automaticallyImplyLeading: false,
           flexibleSpace: BBAppBar(
             text: 'Accounting',
             onBack: () {
