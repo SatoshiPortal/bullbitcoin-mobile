@@ -433,7 +433,7 @@ class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
           fillColor: context.colour.onPrimary,
           contentPadding: const EdgeInsets.only(left: 24),
           hintText: 'Enter amount ',
-          suffixText: 'sats',
+          suffixText: isSats ? 'sats' : 'BTC',
           suffixIcon: isSats
               ? IconButton(
                   color: context.colour.secondary,
