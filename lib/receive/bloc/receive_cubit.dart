@@ -5,6 +5,7 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReceiveCubit extends Cubit<ReceiveState> {
@@ -124,6 +125,17 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       }
 
       walletBloc.add(UpdateWallet(walletUpdated));
+    }
+
+    await Future.delayed(200.ms);
+
+    if (state.defaultAddress != null) {
+      final defaultAddress = state.defaultAddress;
+      final label = await walletAddress.getLabel(
+        address: defaultAddress!.address,
+        wallet: walletBloc.state.wallet!,
+      );
+      if (label != null) emit(state.copyWith(privateLabel: label));
     }
 
     emit(
