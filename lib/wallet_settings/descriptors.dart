@@ -120,13 +120,15 @@ class _TextSectionState extends State<_TextSection> {
   bool showToast = false;
 
   void _copyClicked() async {
-    setState(() {
-      showToast = true;
-    });
+    if (mounted)
+      setState(() {
+        showToast = true;
+      });
     await Future.delayed(const Duration(seconds: 2));
-    setState(() {
-      showToast = false;
-    });
+    if (mounted)
+      setState(() {
+        showToast = false;
+      });
   }
 
   @override

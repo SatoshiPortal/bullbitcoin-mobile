@@ -249,7 +249,7 @@ class BBButton extends StatelessWidget {
 
       case _ButtonType.smallBlack:
         final style = OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
           shape: const StadiumBorder(),
           backgroundColor: context.colour.onBackground,
           foregroundColor: context.colour.onPrimary,
@@ -258,7 +258,7 @@ class BBButton extends StatelessWidget {
         widget = TextButton(
           style: style,
           onPressed: disabled ? null : () => onPressed(),
-          child: BBText.titleLarge(label, onSurface: filled),
+          child: BBText.titleLarge(label, onSurface: filled, isBold: true),
         );
 
       case _ButtonType.text:
