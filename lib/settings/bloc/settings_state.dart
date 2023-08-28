@@ -185,6 +185,18 @@ class SettingsState with _$SettingsState {
       return '';
     }
   }
+
+  String calculateFiatPriceForFees({
+    required int feeRate,
+    Currency? curr,
+  }) {
+    final selectedCurrency = curr ?? currency;
+    if (selectedCurrency == null || selectedCurrency.price == null) return '';
+    final btcAmt = (150 * feeRate) / 100000000;
+    final amt = (btcAmt * selectedCurrency.price!).toStringAsFixed(2);
+    final currencyStr = selectedCurrency.shortName;
+    return '≈ $amt $currencyStr';
+  }
 }
 
 extension StringRegEx on String {

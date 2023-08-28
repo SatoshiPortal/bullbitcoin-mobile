@@ -253,11 +253,18 @@ class SelectFeesItem extends StatelessWidget {
 
     var fee = 0;
     if (!custom) {
-      if (!fromSettings)
+      if (!fromSettings) {
         fee = context.select((SendCubit x) => x.state.feesList?[index] ?? 0);
-      else
+      } else {
         fee = context.select((SettingsCubit x) => x.state.feesList?[index] ?? 0);
+      }
     }
+
+    final fiatRateStr = context.select(
+      (SettingsCubit _) => _.state.calculateFiatPriceForFees(
+        feeRate: fee,
+      ),
+    );
 
     return GestureDetector(
       onTap: () {
@@ -269,7 +276,7 @@ class SelectFeesItem extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Container(
-        height: 124,
+        height: 148,
         width: MediaQuery.of(context).size.width / 2 - 66,
         padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.all(8),
@@ -292,12 +299,13 @@ class SelectFeesItem extends StatelessWidget {
               ),
               BBText.body(
                 () {
-                  if (index == 0) return '10 min ≈';
-                  if (index == 1) return '30 min ≈';
-                  if (index == 2) return '60 min ≈';
-                  return '60 min +';
+                  if (index == 0) return '≈ 10 min';
+                  if (index == 1) return '≈ 30 min';
+                  if (index == 2) return '≈ 60 min';
+                  return '+ 60 min';
                 }(),
               ),
+              BBText.body(fiatRateStr),
             ] else
               ...[],
           ],
