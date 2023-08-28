@@ -131,6 +131,7 @@ class _ScreenState extends State<_Screen> {
               const Gap(16),
             ],
             const Gap(80),
+            const SavingError(),
             SizedBox(
               width: 250,
               child: BBButton.bigRed(
@@ -153,6 +154,22 @@ class _ScreenState extends State<_Screen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SavingError extends StatelessWidget {
+  const SavingError({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final err = context.select((ImportWalletCubit _) => _.state.errSavingWallet);
+
+    if (err.isEmpty) return const SizedBox(height: 24);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: BBText.error(err, textAlign: TextAlign.center),
     );
   }
 }
@@ -284,11 +301,6 @@ class _ImportWalletTypeButton extends StatelessWidget {
                               ),
                             ),
                           const Gap(4),
-                          if (syncing) ...[
-                            const BBText.bodySmall(
-                              'Scanning wallet ...',
-                            ),
-                          ],
                           if (address.isNotEmpty)
                             RichText(
                               text: TextSpan(
@@ -357,6 +369,11 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                 ],
                               ),
                             ),
+                          if (syncing) ...[
+                            const BBText.bodySmall(
+                              'Scanning wallet ...',
+                            ),
+                          ],
                         ],
                       ),
                     ),
