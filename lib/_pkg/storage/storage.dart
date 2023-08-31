@@ -42,8 +42,8 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
   if (errr != null) {
     await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
   } else if (version != bbVersion) {
-    await secureStorage.deleteAll();
-    await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
+    // await secureStorage.deleteAll();
+    // await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
   }
 
   final (password, err) = await secureStorage.getValue(StorageKeys.hiveEncryption);
@@ -59,7 +59,7 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
       password: base64Url.decode(password!),
     );
 
-  if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
+  // if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
 
   return (secureStorage, hiveStorage);
 }
