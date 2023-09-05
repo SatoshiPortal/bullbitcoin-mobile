@@ -158,15 +158,15 @@ class Wallet with _$Wallet {
 
     switch (type) {
       case BBWalletType.newSeed:
-        str = 'Bull Wallet';
+        str = 'Bull Wallet' + ':' + id.substring(0, 5);
       case BBWalletType.xpub:
-        str = 'Xpub';
+        str = 'Xpub' + ':' + id.substring(0, 5);
       case BBWalletType.words:
-        str = 'Imported Mnemonic';
+        str = 'Imported' + ':' + id.substring(0, 5);
       case BBWalletType.coldcard:
-        str = 'Coldcard';
+        str = 'Coldcard' + ':' + id.substring(0, 5);
       case BBWalletType.descriptors:
-        str = 'Imported Descriptor';
+        str = 'Imported Descriptor' + ':' + id.substring(0, 5);
     }
 
     return str;

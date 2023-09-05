@@ -1,0 +1,23 @@
+import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/wallet/repository.dart';
+
+class WalletNames {
+  Future<(List<String>?, Err?)> getAllNames({
+    required HiveStorage hiveStore,
+  }) async {
+    try {
+      // final name = wallet.defaultNameString();
+      final (wallets, err) = await WalletRepository().readAllWallets(
+        hiveStore: hiveStore,
+      );
+      if (err != null) {
+        return (null, Err(err.toString()));
+      }
+      final walletNames = wallets!.map((wallet) => wallet.name!).toList();
+      return (walletNames, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+}
