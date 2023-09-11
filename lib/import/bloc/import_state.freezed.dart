@@ -21,7 +21,8 @@ mixin _$ImportState {
      * SENSITIVE
      * 
      */
-  List<String> get words => throw _privateConstructorUsedError;
+  List<String> get words12 => throw _privateConstructorUsedError;
+  List<String> get words24 => throw _privateConstructorUsedError;
   String get passPhrase => throw _privateConstructorUsedError;
   /**
      * 
@@ -63,7 +64,8 @@ abstract class $ImportStateCopyWith<$Res> {
       _$ImportStateCopyWithImpl<$Res, ImportState>;
   @useResult
   $Res call(
-      {List<String> words,
+      {List<String> words12,
+      List<String> words24,
       String passPhrase,
       String xpub,
       String tempXpub,
@@ -103,7 +105,8 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? words = null,
+    Object? words12 = null,
+    Object? words24 = null,
     Object? passPhrase = null,
     Object? xpub = null,
     Object? tempXpub = null,
@@ -127,9 +130,13 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
     Object? coldCard = freezed,
   }) {
     return _then(_value.copyWith(
-      words: null == words
-          ? _value.words
-          : words // ignore: cast_nullable_to_non_nullable
+      words12: null == words12
+          ? _value.words12
+          : words12 // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      words24: null == words24
+          ? _value.words24
+          : words24 // ignore: cast_nullable_to_non_nullable
               as List<String>,
       passPhrase: null == passPhrase
           ? _value.passPhrase
@@ -252,7 +259,8 @@ abstract class _$$_ImportStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<String> words,
+      {List<String> words12,
+      List<String> words24,
       String passPhrase,
       String xpub,
       String tempXpub,
@@ -292,7 +300,8 @@ class __$$_ImportStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? words = null,
+    Object? words12 = null,
+    Object? words24 = null,
     Object? passPhrase = null,
     Object? xpub = null,
     Object? tempXpub = null,
@@ -316,9 +325,13 @@ class __$$_ImportStateCopyWithImpl<$Res>
     Object? coldCard = freezed,
   }) {
     return _then(_$_ImportState(
-      words: null == words
-          ? _value._words
-          : words // ignore: cast_nullable_to_non_nullable
+      words12: null == words12
+          ? _value._words12
+          : words12 // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      words24: null == words24
+          ? _value._words24
+          : words24 // ignore: cast_nullable_to_non_nullable
               as List<String>,
       passPhrase: null == passPhrase
           ? _value.passPhrase
@@ -412,7 +425,8 @@ class __$$_ImportStateCopyWithImpl<$Res>
 
 class _$_ImportState extends _ImportState {
   const _$_ImportState(
-      {final List<String> words = emptyWords,
+      {final List<String> words12 = emptyWords12,
+      final List<String> words24 = emptyWords24,
       this.passPhrase = '',
       this.xpub = '',
       this.tempXpub = '',
@@ -434,7 +448,8 @@ class _$_ImportState extends _ImportState {
       this.errSavingWallet = '',
       this.savedWallet,
       this.coldCard})
-      : _words = words,
+      : _words12 = words12,
+        _words24 = words24,
         _walletDetails = walletDetails,
         super._();
 
@@ -443,7 +458,7 @@ class _$_ImportState extends _ImportState {
      * SENSITIVE
      * 
      */
-  final List<String> _words;
+  final List<String> _words12;
 /**
      * 
      * SENSITIVE
@@ -451,10 +466,19 @@ class _$_ImportState extends _ImportState {
      */
   @override
   @JsonKey()
-  List<String> get words {
-    if (_words is EqualUnmodifiableListView) return _words;
+  List<String> get words12 {
+    if (_words12 is EqualUnmodifiableListView) return _words12;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_words);
+    return EqualUnmodifiableListView(_words12);
+  }
+
+  final List<String> _words24;
+  @override
+  @JsonKey()
+  List<String> get words24 {
+    if (_words24 is EqualUnmodifiableListView) return _words24;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_words24);
   }
 
   @override
@@ -530,7 +554,7 @@ class _$_ImportState extends _ImportState {
 
   @override
   String toString() {
-    return 'ImportState(words: $words, passPhrase: $passPhrase, xpub: $xpub, tempXpub: $tempXpub, fingerprint: $fingerprint, importStep: $importStep, scriptType: $scriptType, importType: $importType, walletDetails: $walletDetails, customDerivation: $customDerivation, accountNumber: $accountNumber, manualPublicDescriptor: $manualPublicDescriptor, manualPublicChangeDescriptor: $manualPublicChangeDescriptor, manualCombinedPublicDescriptor: $manualCombinedPublicDescriptor, importing: $importing, errImporting: $errImporting, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, savingWallet: $savingWallet, errSavingWallet: $errSavingWallet, savedWallet: $savedWallet, coldCard: $coldCard)';
+    return 'ImportState(words12: $words12, words24: $words24, passPhrase: $passPhrase, xpub: $xpub, tempXpub: $tempXpub, fingerprint: $fingerprint, importStep: $importStep, scriptType: $scriptType, importType: $importType, walletDetails: $walletDetails, customDerivation: $customDerivation, accountNumber: $accountNumber, manualPublicDescriptor: $manualPublicDescriptor, manualPublicChangeDescriptor: $manualPublicChangeDescriptor, manualCombinedPublicDescriptor: $manualCombinedPublicDescriptor, importing: $importing, errImporting: $errImporting, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, savingWallet: $savingWallet, errSavingWallet: $errSavingWallet, savedWallet: $savedWallet, coldCard: $coldCard)';
   }
 
   @override
@@ -538,7 +562,8 @@ class _$_ImportState extends _ImportState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ImportState &&
-            const DeepCollectionEquality().equals(other._words, _words) &&
+            const DeepCollectionEquality().equals(other._words12, _words12) &&
+            const DeepCollectionEquality().equals(other._words24, _words24) &&
             (identical(other.passPhrase, passPhrase) ||
                 other.passPhrase == passPhrase) &&
             (identical(other.xpub, xpub) || other.xpub == xpub) &&
@@ -589,7 +614,8 @@ class _$_ImportState extends _ImportState {
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        const DeepCollectionEquality().hash(_words),
+        const DeepCollectionEquality().hash(_words12),
+        const DeepCollectionEquality().hash(_words24),
         passPhrase,
         xpub,
         tempXpub,
@@ -622,7 +648,8 @@ class _$_ImportState extends _ImportState {
 
 abstract class _ImportState extends ImportState {
   const factory _ImportState(
-      {final List<String> words,
+      {final List<String> words12,
+      final List<String> words24,
       final String passPhrase,
       final String xpub,
       final String tempXpub,
@@ -652,7 +679,9 @@ abstract class _ImportState extends ImportState {
      * SENSITIVE
      * 
      */
-  List<String> get words;
+  List<String> get words12;
+  @override
+  List<String> get words24;
   @override
   String get passPhrase;
   @override

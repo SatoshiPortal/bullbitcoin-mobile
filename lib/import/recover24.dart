@@ -9,13 +9,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class ImportEnterWordsScreen extends StatelessWidget {
-  ImportEnterWordsScreen({super.key});
+class ImportEnterWordsScreen24 extends StatelessWidget {
+  ImportEnterWordsScreen24({super.key});
 
-  final focusNodes = List<FocusNode>.generate(12, (index) => FocusNode());
+  final focusNodes = List<FocusNode>.generate(24, (index) => FocusNode());
 
   void returnClicked(int idx) {
-    if (idx == 11) return;
+    if (idx == 23) return;
     focusNodes[idx + 1].requestFocus();
   }
 
@@ -27,13 +27,13 @@ class ImportEnterWordsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Gap(32),
+            const Gap(24),
             Row(
               children: [
                 Expanded(
                   child: Column(
                     children: [
-                      for (var i = 0; i < 6; i++)
+                      for (var i = 0; i < 12; i++)
                         ImportWordTextField(
                           index: i,
                           focusNode: focusNodes[i],
@@ -45,7 +45,7 @@ class ImportEnterWordsScreen extends StatelessWidget {
                 Expanded(
                   child: Column(
                     children: [
-                      for (var i = 6; i < 12; i++)
+                      for (var i = 12; i < 24; i++)
                         ImportWordTextField(
                           index: i,
                           focusNode: focusNodes[i],
@@ -60,14 +60,14 @@ class ImportEnterWordsScreen extends StatelessWidget {
             Center(
               child: BBButton.text(
                 centered: true,
-                label: 'Go to 24 words ',
+                label: ' Back to 12 words ',
                 onPressed: () {
-                  context.read<ImportWalletCubit>().recoverClicked24();
+                  context.read<ImportWalletCubit>().recoverClicked();
                 },
               ),
             ),
             const _ImportWordsPassphrase(),
-            const Gap(80),
+            const Gap(60),
             const _ImportWordsRecoverButton(),
           ],
         ),
@@ -170,7 +170,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
             ListTile(
               title: BBText.body(word),
               onTap: () {
-                context.read<ImportWalletCubit>().wordChanged12(widget.index, word);
+                context.read<ImportWalletCubit>().wordChanged24(widget.index, word);
                 hideOverlay();
                 widget.focusNode.unfocus();
                 widget.returnClicked(widget.index);
@@ -184,7 +184,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
   @override
   Widget build(BuildContext context) {
     final text = context.select(
-      (ImportWalletCubit cubit) => cubit.state.words12.elementAtOrNull(widget.index) ?? '',
+      (ImportWalletCubit cubit) => cubit.state.words24.elementAtOrNull(widget.index) ?? '',
     );
 
     if (controller.text != text) controller.text = text;
@@ -197,13 +197,13 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
         child: Row(
           children: [
             SizedBox(
-              width: 20,
+              width: 21,
               child: BBText.body(
                 '${widget.index + 1}',
                 textAlign: TextAlign.right,
               ),
             ),
-            const Gap(8),
+            const Gap(6),
             Expanded(
               child: CallbackShortcuts(
                 bindings: {
@@ -215,7 +215,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                   focusNode: widget.focusNode,
                   controller: controller,
                   onChanged: (value) {
-                    context.read<ImportWalletCubit>().wordChanged12(widget.index, value);
+                    context.read<ImportWalletCubit>().wordChanged24(widget.index, value);
                     hideOverlay();
                   },
                   value: text,
@@ -269,7 +269,7 @@ class _ImportWordsRecoverButton extends StatelessWidget {
             child: BBButton.bigRed(
               label: 'Recover',
               onPressed: () {
-                context.read<ImportWalletCubit>().recoverWallet12Clicked();
+                context.read<ImportWalletCubit>().recoverWallet24Clicked();
               },
               disabled: recovering,
             ),

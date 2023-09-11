@@ -4,12 +4,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'import_state.freezed.dart';
 
-enum ImportTypes { xpub, coldcard, words, notSelected }
+enum ImportTypes { xpub, coldcard, words12, words24, notSelected }
 
 enum ImportSteps {
   selectCreateType,
   selectImportType,
-  importWords,
+  import12Words,
+  import24Words,
   importXpub,
   scanningNFC,
   scanningWallets,
@@ -28,7 +29,8 @@ class ImportState with _$ImportState {
      * SENSITIVE
      * 
      */
-    @Default(emptyWords) List<String> words,
+    @Default(emptyWords12) List<String> words12,
+    @Default(emptyWords24) List<String> words24,
     @Default('') String passPhrase,
     /**
      * 
@@ -65,7 +67,10 @@ class ImportState with _$ImportState {
   bool enableRecoverButton() {
     bool enable = true;
 
-    for (final word in words) {
+    for (final word in words12) {
+      if (word.isEmpty) enable = false;
+    }
+    for (final word in words24) {
       if (word.isEmpty) enable = false;
     }
 
@@ -80,8 +85,10 @@ class ImportState with _$ImportState {
         return 'Import a new wallet';
       case ImportSteps.importXpub:
         return 'Import XPUB';
-      case ImportSteps.importWords:
-        return 'Import Words';
+      case ImportSteps.import12Words:
+        return 'Import 12 Words';
+      case ImportSteps.import24Words:
+        return 'Import 24 Words';
       // case ImportSteps.selectColdCard:
       //   return 'Select Coldcard';
       // // case ImportSteps.coldcardFile:
@@ -149,7 +156,33 @@ class ImportState with _$ImportState {
   bool isSelected(ScriptType type) => type == scriptType;
 }
 
-const emptyWords = [
+const emptyWords12 = [
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+];
+const emptyWords24 = [
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
+  '',
   '',
   '',
   '',
