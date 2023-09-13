@@ -2,6 +2,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
+import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,12 +22,40 @@ class ImportEnterWordsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const ImportTypes importwords = ImportTypes.words12;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SegmentedButton(
+              segments: <ButtonSegment<ImportTypes>>[
+                ButtonSegment(
+                  value: ImportTypes.words12,
+                  label: OutlinedButton(
+                    onPressed: () {
+                      context.read<ImportWalletCubit>().recoverClicked();
+                    },
+                    child: const Text(
+                      '12 words',
+                    ),
+                  ),
+                ),
+                ButtonSegment(
+                  value: ImportTypes.words24,
+                  label: OutlinedButton(
+                    onPressed: () {
+                      context.read<ImportWalletCubit>().recoverClicked24();
+                    },
+                    child: const Text(
+                      '24 words',
+                    ),
+                  ),
+                )
+              ],
+              selected: const <ImportTypes>{importwords},
+            ),
             const Gap(32),
             Row(
               children: [
@@ -57,15 +86,6 @@ class ImportEnterWordsScreen extends StatelessWidget {
               ],
             ),
             const Gap(32),
-            Center(
-              child: BBButton.text(
-                centered: true,
-                label: 'Go to 24 words ',
-                onPressed: () {
-                  context.read<ImportWalletCubit>().recoverClicked24();
-                },
-              ),
-            ),
             const _ImportWordsPassphrase(),
             const Gap(80),
             const _ImportWordsRecoverButton(),

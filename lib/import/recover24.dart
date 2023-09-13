@@ -2,6 +2,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
+import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,58 +22,85 @@ class ImportEnterWordsScreen24 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(24),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      for (var i = 0; i < 12; i++)
-                        ImportWordTextField(
-                          index: i,
-                          focusNode: focusNodes[i],
-                          returnClicked: returnClicked,
-                        ),
-                    ],
+    const ImportTypes importwords = ImportTypes.words24;
+
+    return Scrollbar(
+      interactive: true,
+      thumbVisibility: false,
+      thickness: 5,
+      radius: const Radius.circular(4),
+      scrollbarOrientation: ScrollbarOrientation.right,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SegmentedButton(
+                segments: <ButtonSegment<ImportTypes>>[
+                  ButtonSegment(
+                    value: ImportTypes.words12,
+                    label: OutlinedButton(
+                      onPressed: () {
+                        context.read<ImportWalletCubit>().recoverClicked();
+                      },
+                      child: const Text(
+                        '12 words',
+                      ),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      for (var i = 12; i < 24; i++)
-                        ImportWordTextField(
-                          index: i,
-                          focusNode: focusNodes[i],
-                          returnClicked: returnClicked,
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const Gap(32),
-            Center(
-              child: BBButton.text(
-                centered: true,
-                label: ' Back to 12 words ',
-                onPressed: () {
-                  context.read<ImportWalletCubit>().recoverClicked();
-                },
+                  ButtonSegment(
+                    value: ImportTypes.words24,
+                    label: OutlinedButton(
+                      onPressed: () {
+                        context.read<ImportWalletCubit>().recoverClicked24();
+                      },
+                      child: const Text(
+                        '24 words',
+                      ),
+                    ),
+                  )
+                ],
+                selected: const <ImportTypes>{importwords},
               ),
-            ),
-            const _ImportWordsPassphrase(),
-            const Gap(60),
-            const _ImportWordsRecoverButton(),
-          ],
+              const Gap(32),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        for (var i = 0; i < 12; i++)
+                          ImportWordTextField(
+                            index: i,
+                            focusNode: focusNodes[i],
+                            returnClicked: returnClicked,
+                          ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        for (var i = 12; i < 24; i++)
+                          ImportWordTextField(
+                            index: i,
+                            focusNode: focusNodes[i],
+                            returnClicked: returnClicked,
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const Gap(32),
+              const _ImportWordsPassphrase(),
+              const Gap(55),
+              const _ImportWordsRecoverButton(),
+            ],
+          ),
         ),
-      ),
-    ).animate(delay: 200.ms).fadeIn();
+      ).animate(delay: 200.ms).fadeIn(),
+    );
   }
 }
 
@@ -264,6 +292,12 @@ class _ImportWordsRecoverButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         children: [
+          if (err.isNotEmpty) ...[
+            const Gap(8),
+            BBText.error(
+              err,
+            ),
+          ],
           SizedBox(
             width: 250,
             child: BBButton.bigRed(
@@ -274,12 +308,6 @@ class _ImportWordsRecoverButton extends StatelessWidget {
               disabled: recovering,
             ),
           ),
-          if (err.isNotEmpty) ...[
-            const Gap(8),
-            BBText.error(
-              err,
-            ),
-          ],
         ],
       ),
     );
