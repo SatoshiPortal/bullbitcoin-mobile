@@ -4,6 +4,7 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -36,32 +37,32 @@ class ImportEnterWordsScreen24 extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Gap(32),
               SegmentedButton(
+                style: ButtonStyle(
+                  iconColor: MaterialStatePropertyAll<Color>(context.colour.onBackground),
+                  backgroundColor: MaterialStatePropertyAll<Color>(context.colour.onPrimary),
+                ),
                 segments: <ButtonSegment<ImportTypes>>[
                   ButtonSegment(
                     value: ImportTypes.words12,
-                    label: OutlinedButton(
-                      onPressed: () {
-                        context.read<ImportWalletCubit>().recoverClicked();
-                      },
-                      child: const Text(
-                        '12 words',
-                      ),
+                    label: Text(
+                      '12 words',
+                      style: TextStyle(color: context.colour.onBackground),
                     ),
                   ),
                   ButtonSegment(
                     value: ImportTypes.words24,
-                    label: OutlinedButton(
-                      onPressed: () {
-                        context.read<ImportWalletCubit>().recoverClicked24();
-                      },
-                      child: const Text(
-                        '24 words',
-                      ),
+                    label: Text(
+                      '24 words',
+                      style: TextStyle(color: context.colour.onBackground),
                     ),
                   )
                 ],
                 selected: const <ImportTypes>{importwords},
+                onSelectionChanged: (p0) {
+                  context.read<ImportWalletCubit>().recoverClicked();
+                },
               ),
               const Gap(32),
               Row(
