@@ -40,26 +40,36 @@ class ImportEnterWordsScreen24 extends StatelessWidget {
               const Gap(32),
               SegmentedButton(
                 style: ButtonStyle(
-                  iconColor: MaterialStatePropertyAll<Color>(context.colour.onBackground),
-                  backgroundColor: MaterialStatePropertyAll<Color>(context.colour.onPrimary),
+                  iconColor: MaterialStatePropertyAll<Color>(
+                    context.colour.onBackground,
+                  ),
+                  backgroundColor: MaterialStatePropertyAll<Color>(
+                    context.colour.onPrimary,
+                  ),
                 ),
                 segments: <ButtonSegment<ImportTypes>>[
                   ButtonSegment(
                     value: ImportTypes.words12,
                     label: Text(
                       '12 words',
-                      style: TextStyle(color: context.colour.onBackground),
+                      style: TextStyle(
+                        color: context.colour.onBackground,
+                      ),
                     ),
                   ),
                   ButtonSegment(
                     value: ImportTypes.words24,
                     label: Text(
                       '24 words',
-                      style: TextStyle(color: context.colour.onBackground),
+                      style: TextStyle(
+                        color: context.colour.onBackground,
+                      ),
                     ),
                   )
                 ],
-                selected: const <ImportTypes>{importwords},
+                selected: const <ImportTypes>{
+                  importwords,
+                },
                 onSelectionChanged: (p0) {
                   context.read<ImportWalletCubit>().recoverClicked();
                 },
@@ -309,6 +319,7 @@ class _ImportWordsRecoverButton extends StatelessWidget {
               disabled: recovering,
             ),
           ),
+          const Gap(18),
         ],
       ),
     );

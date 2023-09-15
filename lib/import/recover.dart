@@ -33,26 +33,36 @@ class ImportEnterWordsScreen extends StatelessWidget {
             const Gap(32),
             SegmentedButton(
               style: ButtonStyle(
-                iconColor: MaterialStatePropertyAll<Color>(context.colour.onBackground),
-                backgroundColor: MaterialStatePropertyAll<Color>(context.colour.onPrimary),
+                iconColor: MaterialStatePropertyAll<Color>(
+                  context.colour.onBackground,
+                ),
+                backgroundColor: MaterialStatePropertyAll<Color>(
+                  context.colour.onPrimary,
+                ),
               ),
               segments: <ButtonSegment<ImportTypes>>[
                 ButtonSegment(
                   value: ImportTypes.words12,
                   label: Text(
                     '12 words',
-                    style: TextStyle(color: context.colour.onBackground),
+                    style: TextStyle(
+                      color: context.colour.onBackground,
+                    ),
                   ),
                 ),
                 ButtonSegment(
                   value: ImportTypes.words24,
                   label: Text(
                     '24 words',
-                    style: TextStyle(color: context.colour.onBackground),
+                    style: TextStyle(
+                      color: context.colour.onBackground,
+                    ),
                   ),
                 )
               ],
-              selected: const <ImportTypes>{importwords},
+              selected: const <ImportTypes>{
+                importwords,
+              },
               onSelectionChanged: (p0) {
                 context.read<ImportWalletCubit>().recoverClicked24();
               },
@@ -224,7 +234,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                 textAlign: TextAlign.right,
               ),
             ),
-            const Gap(8),
+            const Gap(6),
             Expanded(
               child: CallbackShortcuts(
                 bindings: {
