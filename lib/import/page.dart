@@ -13,6 +13,7 @@ import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:bb_mobile/import/recover.dart';
+import 'package:bb_mobile/import/recover24.dart';
 import 'package:bb_mobile/import/wallet_type_selection.dart';
 import 'package:bb_mobile/import/xpub.dart';
 import 'package:bb_mobile/locator.dart';
@@ -94,8 +95,8 @@ class ImportAppBar extends StatelessWidget {
     Function()? onBack;
 
     if (step == ImportSteps.importXpub ||
-        step == ImportSteps.importWords ||
-        step == ImportSteps.importWords ||
+        step == ImportSteps.import12Words ||
+        step == ImportSteps.import24Words ||
         step == ImportSteps.scanningNFC ||
         step == ImportSteps.scanningWallets ||
         step == ImportSteps.advancedOptions ||
@@ -134,8 +135,10 @@ class _Screen extends StatelessWidget {
 
           case ImportSteps.advancedOptions:
             return const AdvancedOptions();
-          case ImportSteps.importWords:
+          case ImportSteps.import12Words:
             return ImportEnterWordsScreen();
+          case ImportSteps.import24Words:
+            return ImportEnterWordsScreen24();
 
           case ImportSteps.scanningWallets:
           case ImportSteps.selectWalletFormat:

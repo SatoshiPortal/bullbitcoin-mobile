@@ -11,99 +11,107 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class ImportEnterWordsScreen extends StatelessWidget {
-  ImportEnterWordsScreen({super.key});
+class ImportEnterWordsScreen24 extends StatelessWidget {
+  ImportEnterWordsScreen24({super.key});
 
-  final focusNodes = List<FocusNode>.generate(12, (index) => FocusNode());
+  final focusNodes = List<FocusNode>.generate(24, (index) => FocusNode());
 
   void returnClicked(int idx) {
-    if (idx == 11) return;
+    if (idx == 23) return;
     focusNodes[idx + 1].requestFocus();
   }
 
   @override
   Widget build(BuildContext context) {
-    const ImportTypes importwords = ImportTypes.words12;
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(32),
-            SegmentedButton(
-              style: ButtonStyle(
-                iconColor: MaterialStatePropertyAll<Color>(
-                  context.colour.onBackground,
+    const ImportTypes importwords = ImportTypes.words24;
+
+    return Scrollbar(
+      interactive: true,
+      thumbVisibility: false,
+      thickness: 5,
+      radius: const Radius.circular(4),
+      scrollbarOrientation: ScrollbarOrientation.right,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Gap(32),
+              SegmentedButton(
+                style: ButtonStyle(
+                  iconColor: MaterialStatePropertyAll<Color>(
+                    context.colour.onBackground,
+                  ),
+                  backgroundColor: MaterialStatePropertyAll<Color>(
+                    context.colour.onPrimary,
+                  ),
                 ),
-                backgroundColor: MaterialStatePropertyAll<Color>(
-                  context.colour.onPrimary,
-                ),
+                segments: <ButtonSegment<ImportTypes>>[
+                  ButtonSegment(
+                    value: ImportTypes.words12,
+                    label: Text(
+                      '12 words',
+                      style: TextStyle(
+                        color: context.colour.onBackground,
+                      ),
+                    ),
+                  ),
+                  ButtonSegment(
+                    value: ImportTypes.words24,
+                    label: Text(
+                      '24 words',
+                      style: TextStyle(
+                        color: context.colour.onBackground,
+                      ),
+                    ),
+                  )
+                ],
+                selected: const <ImportTypes>{
+                  importwords,
+                },
+                onSelectionChanged: (p0) {
+                  context.read<ImportWalletCubit>().recoverClicked();
+                },
               ),
-              segments: <ButtonSegment<ImportTypes>>[
-                ButtonSegment(
-                  value: ImportTypes.words12,
-                  label: Text(
-                    '12 words',
-                    style: TextStyle(
-                      color: context.colour.onBackground,
+              const Gap(32),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        for (var i = 0; i < 12; i++)
+                          ImportWordTextField(
+                            index: i,
+                            focusNode: focusNodes[i],
+                            returnClicked: returnClicked,
+                          ),
+                      ],
                     ),
                   ),
-                ),
-                ButtonSegment(
-                  value: ImportTypes.words24,
-                  label: Text(
-                    '24 words',
-                    style: TextStyle(
-                      color: context.colour.onBackground,
+                  Expanded(
+                    child: Column(
+                      children: [
+                        for (var i = 12; i < 24; i++)
+                          ImportWordTextField(
+                            index: i,
+                            focusNode: focusNodes[i],
+                            returnClicked: returnClicked,
+                          ),
+                      ],
                     ),
                   ),
-                )
-              ],
-              selected: const <ImportTypes>{
-                importwords,
-              },
-              onSelectionChanged: (p0) {
-                context.read<ImportWalletCubit>().recoverClicked24();
-              },
-            ),
-            const Gap(32),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      for (var i = 0; i < 6; i++)
-                        ImportWordTextField(
-                          index: i,
-                          focusNode: focusNodes[i],
-                          returnClicked: returnClicked,
-                        ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      for (var i = 6; i < 12; i++)
-                        ImportWordTextField(
-                          index: i,
-                          focusNode: focusNodes[i],
-                          returnClicked: returnClicked,
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const Gap(32),
-            const _ImportWordsPassphrase(),
-            const Gap(80),
-            const _ImportWordsRecoverButton(),
-          ],
+                ],
+              ),
+              const Gap(32),
+              const _ImportWordsPassphrase(),
+              const Gap(55),
+              const _ImportWordsRecoverButton(),
+            ],
+          ),
         ),
-      ),
-    ).animate(delay: 200.ms).fadeIn();
+      ).animate(delay: 200.ms).fadeIn(),
+    );
   }
 }
 
@@ -201,7 +209,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
             ListTile(
               title: BBText.body(word),
               onTap: () {
-                context.read<ImportWalletCubit>().wordChanged12(widget.index, word);
+                context.read<ImportWalletCubit>().wordChanged24(widget.index, word);
                 hideOverlay();
                 widget.focusNode.unfocus();
                 widget.returnClicked(widget.index);
@@ -215,7 +223,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
   @override
   Widget build(BuildContext context) {
     final text = context.select(
-      (ImportWalletCubit cubit) => cubit.state.words12.elementAtOrNull(widget.index) ?? '',
+      (ImportWalletCubit cubit) => cubit.state.words24.elementAtOrNull(widget.index) ?? '',
     );
 
     if (controller.text != text) controller.text = text;
@@ -228,7 +236,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
         child: Row(
           children: [
             SizedBox(
-              width: 20,
+              width: 21,
               child: BBText.body(
                 '${widget.index + 1}',
                 textAlign: TextAlign.right,
@@ -246,7 +254,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                   focusNode: widget.focusNode,
                   controller: controller,
                   onChanged: (value) {
-                    context.read<ImportWalletCubit>().wordChanged12(widget.index, value);
+                    context.read<ImportWalletCubit>().wordChanged24(widget.index, value);
                     hideOverlay();
                   },
                   value: text,
@@ -295,22 +303,23 @@ class _ImportWordsRecoverButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
         children: [
-          SizedBox(
-            width: 250,
-            child: BBButton.bigRed(
-              label: 'Recover',
-              onPressed: () {
-                context.read<ImportWalletCubit>().recoverWallet12Clicked();
-              },
-              disabled: recovering,
-            ),
-          ),
           if (err.isNotEmpty) ...[
             const Gap(8),
             BBText.error(
               err,
             ),
           ],
+          SizedBox(
+            width: 250,
+            child: BBButton.bigRed(
+              label: 'Recover',
+              onPressed: () {
+                context.read<ImportWalletCubit>().recoverWallet24Clicked();
+              },
+              disabled: recovering,
+            ),
+          ),
+          const Gap(18),
         ],
       ),
     );

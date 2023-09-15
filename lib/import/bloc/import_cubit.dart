@@ -52,7 +52,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
   void backClicked() {
     switch (state.importStep) {
-      case ImportSteps.importWords:
+      case ImportSteps.import12Words:
+      case ImportSteps.import24Words:
       case ImportSteps.selectImportType:
       case ImportSteps.importXpub:
         emit(
@@ -73,12 +74,20 @@ class ImportWalletCubit extends Cubit<ImportState> {
               importType: state.importType,
             ),
           );
-        else if (state.importType == ImportTypes.words)
+        else if (state.importType == ImportTypes.words12)
           emit(
             state.copyWith(
-              importStep: ImportSteps.importWords,
+              importStep: ImportSteps.import12Words,
               importType: state.importType,
-              words: [for (int i = 0; i < 12; i++) ''],
+              words12: [for (int i = 0; i < 12; i++) ''],
+            ),
+          );
+        else if (state.importType == ImportTypes.words24)
+          emit(
+            state.copyWith(
+              importStep: ImportSteps.import24Words,
+              importType: state.importType,
+              words24: [for (int i = 0; i < 23; i++) ''],
             ),
           );
         else if (state.importType == ImportTypes.coldcard)
@@ -109,8 +118,17 @@ class ImportWalletCubit extends Cubit<ImportState> {
   void recoverClicked() {
     emit(
       state.copyWith(
-        importStep: ImportSteps.importWords,
-        importType: ImportTypes.words,
+        importStep: ImportSteps.import12Words,
+        importType: ImportTypes.words12,
+      ),
+    );
+  }
+
+  void recoverClicked24() {
+    emit(
+      state.copyWith(
+        importStep: ImportSteps.import24Words,
+        importType: ImportTypes.words24,
       ),
     );
   }
@@ -133,10 +151,24 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(state.copyWith(loadingFile: false));
   }
 
-  void wordChanged(int idx, String text) {
-    final words = state.words.toList();
-    words[idx] = text;
-    emit(state.copyWith(words: words));
+  void wordChanged12(int idx, String text) {
+    final words12 = state.words12.toList();
+    words12[idx] = text;
+    emit(
+      state.copyWith(
+        words12: words12,
+      ),
+    );
+  }
+
+  void wordChanged24(int idx, String text) {
+    final words24 = state.words24.toList();
+    words24[idx] = text;
+    emit(
+      state.copyWith(
+        words24: words24,
+      ),
+    );
   }
 
   void passPhraseChanged(String text) {
@@ -316,9 +348,22 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(state.copyWith(importStep: ImportSteps.scanningWallets));
   }
 
-  void recoverWalletClicked() async {
-    emit(state.copyWith(importType: ImportTypes.words, errImporting: ''));
-    for (final word in state.words)
+  void recoverWallet12Clicked() async {
+    emit(state.copyWith(importType: ImportTypes.words12, errImporting: ''));
+    for (final word in state.words12)
+      if (word.isEmpty) {
+        emit(state.copyWith(errImporting: 'Please fill all words'));
+        return;
+      }
+    await _updateWalletDetailsForSelection();
+    if (state.errImporting.isNotEmpty) return;
+
+    emit(state.copyWith(importStep: ImportSteps.scanningWallets));
+  }
+
+  void recoverWallet24Clicked() async {
+    emit(state.copyWith(importType: ImportTypes.words24, errImporting: ''));
+    for (final word in state.words24)
       if (word.isEmpty) {
         emit(state.copyWith(errImporting: 'Please fill all words'));
         return;
@@ -337,8 +382,23 @@ class ImportWalletCubit extends Cubit<ImportState> {
       final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 
       switch (type) {
-        case ImportTypes.words:
-          final mnemonic = state.words.join(' ');
+        case ImportTypes.words12:
+          final mnemonic = state.words12.join(' ');
+          final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
+
+          final (ws, wErrs) = await walletSensCreate.allFromBIP39(
+            mnemonic,
+            passphrase,
+            network,
+            true,
+          );
+          if (wErrs != null) {
+            emit(state.copyWith(errImporting: 'Error creating Wallets from Bip 39'));
+            return;
+          }
+          wallets.addAll(ws!);
+        case ImportTypes.words24:
+          final mnemonic = state.words24.join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
 
           final (ws, wErrs) = await walletSensCreate.allFromBIP39(
@@ -417,7 +477,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
     final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 
     if (selectedWallet!.type == BBWalletType.words) {
-      final mnemonic = state.words.join(' ');
+      final mnemonic = (state.importType == ImportTypes.words12)
+          ? state.words12.join(' ')
+          : state.words24.join(' ');
       final (seed, sErr) = await walletSensCreate.mnemonicSeed(mnemonic, network);
       if (sErr != null) {
         emit(state.copyWith(errImporting: 'Error creating mnemonicSeed'));
@@ -477,14 +539,24 @@ class ImportWalletCubit extends Cubit<ImportState> {
           savedWallet: selectedWallet,
         ),
       );
-      clearSensitive();
+      clearSensitive12();
+      clearSensitive24();
     }
   }
 
-  void clearSensitive() async {
+  void clearSensitive12() async {
     emit(
       state.copyWith(
-        words: [],
+        words12: [],
+        passPhrase: '',
+      ),
+    );
+  }
+
+  void clearSensitive24() async {
+    emit(
+      state.copyWith(
+        words24: [],
         passPhrase: '',
       ),
     );

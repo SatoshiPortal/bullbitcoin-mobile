@@ -126,6 +126,24 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     if (testMnemonic.length == 12) testingOrderCompleted();
   }
 
+  void word24Clicked(int shuffledIdx) {
+    final testMnemonic = state.testMnemonicOrder.toList();
+    if (testMnemonic.length == 24) return;
+
+    final (word, isSelected, actualIdx) = state.shuffleElementAt(shuffledIdx);
+    if (isSelected) return;
+    if (actualIdx != testMnemonic.length) {
+      invalidTestOrderClicked();
+      return;
+    }
+
+    testMnemonic.add((word: word, shuffleIdx: shuffledIdx));
+
+    emit(state.copyWith(testMnemonicOrder: testMnemonic));
+
+    if (testMnemonic.length == 24) testingOrderCompleted();
+  }
+
   void invalidTestOrderClicked() async {
     emit(
       state.copyWith(

@@ -54,6 +54,9 @@ class TestBackupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mnemonic = context.select(
+      (WalletSettingsCubit cubit) => cubit.state.mnemonic,
+    );
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -85,19 +88,34 @@ class TestBackupScreen extends StatelessWidget {
             //   ),
             // ),
             const Gap(32),
-            for (var i = 0; i < 6; i++)
-              Row(
-                children: [
-                  for (var j = 0; j < 2; j++)
-                    BackupTestItemWord(
-                      index: i == 0 ? j : i * 2 + j,
-                      // isSelected: context
-                      //     .select<WalletSettingsCubit>()
-                      //     .state
-                      //     .shuffleIsSelected(i == 0 ? j : i * 2 + j),
-                    ),
-                ],
-              ),
+            if (mnemonic.length == 12)
+              for (var i = 0; i < 6; i++)
+                Row(
+                  children: [
+                    for (var j = 0; j < 2; j++)
+                      BackupTestItemWord(
+                        index: i == 0 ? j : i * 2 + j,
+                        // isSelected: context
+                        //     .select<WalletSettingsCubit>()
+                        //     .state
+                        //     .shuffleIsSelected(i == 0 ? j : i * 2 + j),
+                      ),
+                  ],
+                ),
+            if (mnemonic.length == 24)
+              for (var i = 0; i < 12; i++)
+                Row(
+                  children: [
+                    for (var j = 0; j < 2; j++)
+                      BackupTestItemWord(
+                        index: i == 0 ? j : i * 2 + j,
+                        // isSelected: context
+                        //     .select<WalletSettingsCubit>()
+                        //     .state
+                        //     .shuffleIsSelected(i == 0 ? j : i * 2 + j),
+                      ),
+                  ],
+                ),
             const Gap(16),
             const TestBackupPassField(),
             const TestBackupConfirmButton(),
@@ -133,6 +151,10 @@ class BackupTestItemWord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mnemonic = context.select(
+      (WalletSettingsCubit cubit) => cubit.state.mnemonic,
+    );
+
     final (word, isSelected, actualIdx) = context.select(
       (WalletSettingsCubit _) => _.state.shuffleElementAt(index),
     );
@@ -144,7 +166,11 @@ class BackupTestItemWord extends StatelessWidget {
         margin: const EdgeInsets.fromLTRB(4, 0, 4, 24),
         child: InkWell(
           onTap: () {
-            context.read<WalletSettingsCubit>().wordClicked(index);
+            if (mnemonic.length == 12)
+              context.read<WalletSettingsCubit>().wordClicked(index);
+            else {
+              context.read<WalletSettingsCubit>().word24Clicked(index);
+            }
           },
           child: Stack(
             children: [
@@ -330,11 +356,11 @@ class BackupScreen extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: BBText.bodySmall(
-                'Write down these 12 words somewhere safe, on a piece of paper or engraved in metal. You’ll need them if you lose your phone or access to the Bull Bitcoin app. Don’t store them on a phone or computer.',
+                'Write down these 12/24 words somewhere safe, on a piece of paper or engraved in metal. You’ll need them if you lose your phone or access to the Bull Bitcoin app. Don’t store them on a phone or computer.',
               ),
             ),
             const Gap(8),
-            WordGrid(mne: mnemonic),
+            if (mnemonic.length == 12) WordGrid(mne: mnemonic) else WordGrid(mne: mnemonic),
             if (password.isNotEmpty) ...[
               const Gap(24),
               const Padding(
