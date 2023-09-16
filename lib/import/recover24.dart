@@ -236,7 +236,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
         child: Row(
           children: [
             SizedBox(
-              width: 21,
+              width: 28,
               child: BBText.body(
                 '${widget.index + 1}',
                 textAlign: TextAlign.right,
