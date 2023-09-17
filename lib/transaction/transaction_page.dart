@@ -305,7 +305,7 @@ class BumpFeesButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final canRbf = context.select((TransactionCubit x) => x.state.tx.canRBF());
-
+    final isReceive = context.select((TransactionCubit x) => x.state.tx.isReceived());
     if (!canRbf) return const SizedBox.shrink();
 
     return BlocListener<TransactionCubit, TransactionState>(
@@ -319,12 +319,13 @@ class BumpFeesButton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBButton.bigRed(
-            label: 'Bump Fees',
-            onPressed: () async {
-              await BumpFeesPopup.showPopUp(context);
-            },
-          ),
+          if (!isReceive)
+            BBButton.bigRed(
+              label: 'Bump Fees',
+              onPressed: () async {
+                await BumpFeesPopup.showPopUp(context);
+              },
+            ),
           const Gap(24),
         ],
       ),
