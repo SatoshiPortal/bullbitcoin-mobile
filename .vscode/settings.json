@@ -52,7 +52,7 @@
         ".idea": true,
         "**/test": true,
         "integration_test": false,
-        "android": true,
+        "android": false,
         "ios": true,
         // "**/pubspec.yaml": true,
         // 
