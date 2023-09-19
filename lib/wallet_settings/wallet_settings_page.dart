@@ -89,7 +89,7 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     if (openTestBackup)
       scheduleMicrotask(() async {
-        await Future.delayed(const Duration(milliseconds: 1000));
+        await Future.delayed(const Duration(milliseconds: 600));
         await TestBackupScreen.openPopup(context);
       });
 

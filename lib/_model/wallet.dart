@@ -176,7 +176,7 @@ class Wallet with _$Wallet {
     switch (type) {
       case BBWalletType.newSeed:
       case BBWalletType.words:
-        return 'Spendable';
+        return 'Spendable on-chain';
       case BBWalletType.xpub:
       // return 'Watch Only';
       case BBWalletType.coldcard:

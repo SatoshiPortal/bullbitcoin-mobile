@@ -175,7 +175,9 @@ class CreateWalletConfirmButton extends StatelessWidget {
               Navigator.of(context).pop();
             },
             label: 'Back',
+            centered: true,
           ),
+          const Gap(32),
         ],
       ),
     );

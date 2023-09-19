@@ -59,6 +59,7 @@ dependencies:
   hive: ^2.2.3
   flutter_file_dialog: ^3.0.1
   currency_text_input_formatter: ^2.1.10
+  intl: ^0.18.1
 
   
   # currency_text_input_formatter: ^2.1.10

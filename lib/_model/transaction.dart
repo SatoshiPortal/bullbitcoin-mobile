@@ -3,6 +3,7 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 part 'transaction.freezed.dart';
 part 'transaction.g.dart';
@@ -70,7 +71,31 @@ class Transaction with _$Transaction {
   //         ? sent!
   //         : (sent! - fee!);
 
-  DateTime getDateTime() => DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000);
+  DateTime getDateTime() {
+    return DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000);
+  }
+
+  static const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sept',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  String getDateTimeStr() {
+    final dt = DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000);
+    if (dt.isAfter(DateTime.now().subtract(const Duration(days: 2)))) return timeago.format(dt);
+    final day = dt.day.toString().length == 1 ? '0${dt.day}' : dt.day.toString();
+    return months[dt.month - 1] + ' ' + day + ', ' + dt.year.toString();
+  }
 
   DateTime? getBroadcastDateTime() =>
       broadcastTime == null ? null : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);

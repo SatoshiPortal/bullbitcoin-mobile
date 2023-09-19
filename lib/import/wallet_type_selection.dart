@@ -242,6 +242,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 40),
                   child: InkWell(
+                    borderRadius: BorderRadius.circular(32),
                     onTap: () {
                       context.read<ImportWalletCubit>().scriptTypeChanged(scriptType);
                     },
