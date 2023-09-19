@@ -8,6 +8,7 @@ part 'state.freezed.dart';
 class HomeState with _$HomeState {
   const factory HomeState({
     List<Wallet>? wallets,
+    List<WalletBloc>? walletBlocs,
     @Default(true) bool loadingWallets,
     @Default('') String errLoadingWallets,
     // Wallet? selectedWallet,

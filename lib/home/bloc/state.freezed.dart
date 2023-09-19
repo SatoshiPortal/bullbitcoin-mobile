@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$HomeState {
   List<Wallet>? get wallets => throw _privateConstructorUsedError;
+  List<WalletBloc>? get walletBlocs => throw _privateConstructorUsedError;
   bool get loadingWallets => throw _privateConstructorUsedError;
   String get errLoadingWallets =>
       throw _privateConstructorUsedError; // Wallet? selectedWallet,
@@ -36,6 +37,7 @@ abstract class $HomeStateCopyWith<$Res> {
   @useResult
   $Res call(
       {List<Wallet>? wallets,
+      List<WalletBloc>? walletBlocs,
       bool loadingWallets,
       String errLoadingWallets,
       WalletBloc? selectedWalletCubit,
@@ -57,6 +59,7 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
   @override
   $Res call({
     Object? wallets = freezed,
+    Object? walletBlocs = freezed,
     Object? loadingWallets = null,
     Object? errLoadingWallets = null,
     Object? selectedWalletCubit = freezed,
@@ -68,6 +71,10 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
           ? _value.wallets
           : wallets // ignore: cast_nullable_to_non_nullable
               as List<Wallet>?,
+      walletBlocs: freezed == walletBlocs
+          ? _value.walletBlocs
+          : walletBlocs // ignore: cast_nullable_to_non_nullable
+              as List<WalletBloc>?,
       loadingWallets: null == loadingWallets
           ? _value.loadingWallets
           : loadingWallets // ignore: cast_nullable_to_non_nullable
@@ -101,6 +108,7 @@ abstract class _$$_HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Res> {
   @useResult
   $Res call(
       {List<Wallet>? wallets,
+      List<WalletBloc>? walletBlocs,
       bool loadingWallets,
       String errLoadingWallets,
       WalletBloc? selectedWalletCubit,
@@ -120,6 +128,7 @@ class __$$_HomeStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? wallets = freezed,
+    Object? walletBlocs = freezed,
     Object? loadingWallets = null,
     Object? errLoadingWallets = null,
     Object? selectedWalletCubit = freezed,
@@ -131,6 +140,10 @@ class __$$_HomeStateCopyWithImpl<$Res>
           ? _value._wallets
           : wallets // ignore: cast_nullable_to_non_nullable
               as List<Wallet>?,
+      walletBlocs: freezed == walletBlocs
+          ? _value._walletBlocs
+          : walletBlocs // ignore: cast_nullable_to_non_nullable
+              as List<WalletBloc>?,
       loadingWallets: null == loadingWallets
           ? _value.loadingWallets
           : loadingWallets // ignore: cast_nullable_to_non_nullable
@@ -160,12 +173,14 @@ class __$$_HomeStateCopyWithImpl<$Res>
 class _$_HomeState extends _HomeState {
   const _$_HomeState(
       {final List<Wallet>? wallets,
+      final List<WalletBloc>? walletBlocs,
       this.loadingWallets = true,
       this.errLoadingWallets = '',
       this.selectedWalletCubit,
       this.errDeepLinking = '',
       this.moveToIdx})
       : _wallets = wallets,
+        _walletBlocs = walletBlocs,
         super._();
 
   final List<Wallet>? _wallets;
@@ -174,6 +189,16 @@ class _$_HomeState extends _HomeState {
     final value = _wallets;
     if (value == null) return null;
     if (_wallets is EqualUnmodifiableListView) return _wallets;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  final List<WalletBloc>? _walletBlocs;
+  @override
+  List<WalletBloc>? get walletBlocs {
+    final value = _walletBlocs;
+    if (value == null) return null;
+    if (_walletBlocs is EqualUnmodifiableListView) return _walletBlocs;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
@@ -195,7 +220,7 @@ class _$_HomeState extends _HomeState {
 
   @override
   String toString() {
-    return 'HomeState(wallets: $wallets, loadingWallets: $loadingWallets, errLoadingWallets: $errLoadingWallets, selectedWalletCubit: $selectedWalletCubit, errDeepLinking: $errDeepLinking, moveToIdx: $moveToIdx)';
+    return 'HomeState(wallets: $wallets, walletBlocs: $walletBlocs, loadingWallets: $loadingWallets, errLoadingWallets: $errLoadingWallets, selectedWalletCubit: $selectedWalletCubit, errDeepLinking: $errDeepLinking, moveToIdx: $moveToIdx)';
   }
 
   @override
@@ -204,6 +229,8 @@ class _$_HomeState extends _HomeState {
         (other.runtimeType == runtimeType &&
             other is _$_HomeState &&
             const DeepCollectionEquality().equals(other._wallets, _wallets) &&
+            const DeepCollectionEquality()
+                .equals(other._walletBlocs, _walletBlocs) &&
             (identical(other.loadingWallets, loadingWallets) ||
                 other.loadingWallets == loadingWallets) &&
             (identical(other.errLoadingWallets, errLoadingWallets) ||
@@ -220,6 +247,7 @@ class _$_HomeState extends _HomeState {
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_wallets),
+      const DeepCollectionEquality().hash(_walletBlocs),
       loadingWallets,
       errLoadingWallets,
       selectedWalletCubit,
@@ -236,6 +264,7 @@ class _$_HomeState extends _HomeState {
 abstract class _HomeState extends HomeState {
   const factory _HomeState(
       {final List<Wallet>? wallets,
+      final List<WalletBloc>? walletBlocs,
       final bool loadingWallets,
       final String errLoadingWallets,
       final WalletBloc? selectedWalletCubit,
@@ -245,6 +274,8 @@ abstract class _HomeState extends HomeState {
 
   @override
   List<Wallet>? get wallets;
+  @override
+  List<WalletBloc>? get walletBlocs;
   @override
   bool get loadingWallets;
   @override

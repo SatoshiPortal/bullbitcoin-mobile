@@ -51,10 +51,12 @@
         "**/maintainance": true,
         ".idea": true,
         "**/test": true,
-        "integration_test": false,
-        "android": false,
+        "integration_test": true,
+        "android": true,
         "ios": true,
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
+        "repro": true,
+        "doc": true,
         // 
         // 
         // "**/lib/auth": true,

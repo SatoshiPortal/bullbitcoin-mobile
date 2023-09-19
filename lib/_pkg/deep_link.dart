@@ -4,7 +4,6 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/bip21.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:uni_links/uni_links.dart';
@@ -67,11 +66,11 @@ class DeepLink {
 
       if (walletBloc == null) return Err('No wallet found');
 
-      await SendPopup.openSendPopUp(
-        context,
-        walletBloc,
-        deepLinkUri: link,
-      );
+      // await SendPage.openSendPopUp(
+      //   context,
+      //   walletBloc,
+      //   deepLinkUri: link,
+      // );
 
       return null;
     } catch (e) {

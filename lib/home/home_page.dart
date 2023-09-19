@@ -12,12 +12,11 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/home_card.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_popup.dart';
-// ignore: library_prefixes
-import 'package:bb_mobile/send/send_page.dart' as SendPage;
 // import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -104,19 +103,7 @@ class MarketHome extends StatelessWidget {
 class HomeWallets extends StatelessWidget {
   const HomeWallets({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final network = context.select((SettingsCubit x) => x.state.getBBNetwork());
-
-    final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
-
-    final hasWallets = wallets.isNotEmpty;
-    final loading = context.select((HomeCubit x) => x.state.loadingWallets);
-
-    if (loading) return Container();
-
-    if (!hasWallets) return const HomeNoWallets().animate().fadeIn();
-
+  static List<WalletBloc> createWalletBlocs(List<Wallet> wallets) {
     final walletCubits = [
       for (final w in wallets)
         WalletBloc(
@@ -132,10 +119,26 @@ class HomeWallets extends StatelessWidget {
           walletAddress: locator<WalletAddress>(),
         ),
     ];
+    return walletCubits;
+  }
 
-    return WalletScreen(
-      walletCubits: walletCubits,
-    )
+  @override
+  Widget build(BuildContext context) {
+    final network = context.select((SettingsCubit x) => x.state.getBBNetwork());
+
+    final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
+
+    final hasWallets = wallets.isNotEmpty;
+    final loading = context.select((HomeCubit x) => x.state.loadingWallets);
+
+    if (loading) return Container();
+
+    if (!hasWallets) return const HomeNoWallets().animate().fadeIn();
+
+    final walletBlocs = createWalletBlocs(wallets);
+    context.read<HomeCubit>().updateWalletBlocs(walletBlocs);
+
+    return const WalletScreen()
         .animate(
           delay: const Duration(
             milliseconds: 300,
@@ -146,12 +149,12 @@ class HomeWallets extends StatelessWidget {
 }
 
 class WalletScreen extends StatelessWidget {
-  const WalletScreen({super.key, required this.walletCubits});
-
-  final List<WalletBloc> walletCubits;
+  const WalletScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final walletCubits = context.select((HomeCubit _) => _.state.walletBlocs ?? []);
+
     final selectedWallet = context.select((HomeCubit x) => x.state.selectedWalletCubit);
 
     if (selectedWallet == null && walletCubits.isNotEmpty)
@@ -186,7 +189,7 @@ class WalletScreen extends StatelessWidget {
                           child: const BackupAlertBanner(),
                         ),
                       ],
-                      HomeHeaderCards(walletCubits: walletCubits),
+                      const HomeHeaderCards(),
                       if (selectedWallet != null) ...[
                         BlocProvider.value(
                           value: selectedWallet,
@@ -257,9 +260,9 @@ class BackupAlertBanner extends StatelessWidget {
 }
 
 class HomeHeaderCards extends StatefulWidget {
-  const HomeHeaderCards({super.key, required this.walletCubits});
+  const HomeHeaderCards({super.key});
 
-  final List<WalletBloc> walletCubits;
+  // final List<WalletBloc> walletCubits;
 
   @override
   State<HomeHeaderCards> createState() => _HomeHeaderCardsState();
@@ -270,29 +273,31 @@ class _HomeHeaderCardsState extends State<HomeHeaderCards> {
 
   @override
   Widget build(BuildContext context) {
+    final walletCubits = context.select((HomeCubit _) => _.state.walletBlocs ?? []);
+
     return BlocListener<HomeCubit, HomeState>(
       listenWhen: (previous, current) => previous.moveToIdx != current.moveToIdx,
       listener: (context, state) {
         final moveToIdx = state.moveToIdx;
         if (moveToIdx == null) return;
         _carouselController.animateToPage(0);
-        final selected = widget.walletCubits[0];
+        final selected = walletCubits[0];
         context.read<HomeCubit>().walletSelected(selected);
       },
       child: CarouselSlider(
         carouselController: _carouselController,
         options: CarouselOptions(
-          initialPage: widget.walletCubits.length - 1,
+          initialPage: walletCubits.length - 1,
           enlargeStrategy: CenterPageEnlargeStrategy.zoom,
           reverse: true,
           enableInfiniteScroll: false,
           aspectRatio: 2.1,
           onPageChanged: (i, s) {
-            context.read<HomeCubit>().walletSelected(widget.walletCubits[i]);
+            context.read<HomeCubit>().walletSelected(walletCubits[i]);
           },
         ),
         items: [
-          for (final w in widget.walletCubits) ...[
+          for (final w in walletCubits) ...[
             Builder(
               builder: (context) {
                 return Padding(
@@ -502,9 +507,10 @@ class HomeActionButtons extends StatelessWidget {
             child: BBButton.smallRed(
               filled: true,
               onPressed: () async {
-                final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
+                context.push('/send');
+                // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
 
-                await SendPage.SendPopup.openSendPopUp(context, wallet);
+                // await SendPage.SendPage.openSendPopUp(context, wallet);
               },
               label: 'Send',
             ),
@@ -523,162 +529,6 @@ class HomeActionButtons extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class HomeCard extends StatelessWidget {
-  const HomeCard({super.key});
-
-  (Color, String) cardDetails(BuildContext context, Wallet wallet) {
-    final isTestnet = wallet.network == BBNetwork.Testnet;
-    final isWatchOnly = wallet.watchOnly();
-
-    if (isWatchOnly && !isTestnet) return (context.colour.onBackground, 'mainnet_watchonly');
-    if (isWatchOnly && isTestnet) return (context.colour.onBackground, 'testnet_watchonly');
-
-    if (isTestnet) return (context.colour.surface, 'testnet');
-    return (context.colour.primary, 'mainnet');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final wallet = context.select((WalletBloc x) => x.state.wallet);
-    if (wallet == null) return const SizedBox.shrink();
-
-    final name = context.select((WalletBloc x) => x.state.wallet?.name);
-    final fingerprint = context.select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
-    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeShortString());
-
-    final sats = context.select((WalletBloc x) => x.state.balanceSats());
-
-    final balance =
-        context.select((SettingsCubit x) => x.state.getAmountInUnits(sats, removeText: true));
-    final unit = context.select((SettingsCubit x) => x.state.getUnitString());
-
-    final currency = context.select((SettingsCubit x) => x.state.currency);
-    final fiatAmt = context.select((SettingsCubit x) => x.state.calculatePrice(sats));
-
-    final (color, info) = cardDetails(context, wallet);
-
-    final keyName = 'home_card_$info';
-
-    return Material(
-      key: Key(keyName),
-      elevation: 4,
-      borderRadius: BorderRadius.circular(32),
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      color: color,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              color.withOpacity(0.73),
-              color,
-            ],
-          ),
-        ),
-        child: AspectRatio(
-          aspectRatio: 2 / 1,
-          child: Padding(
-            padding: const EdgeInsets.only(
-              top: 8,
-              right: 16.0,
-              left: 32,
-              bottom: 32,
-            ),
-            child: Stack(
-              children: [
-                TopLeft(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: BBText.titleLarge(
-                      name ?? fingerprint,
-                      onSurface: true,
-                    ),
-                  ),
-                ),
-                TopRight(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: IconButton(
-                      onPressed: () {
-                        context.push('/wallet-settings');
-                      },
-                      color: context.colour.onPrimary,
-                      icon: const FaIcon(
-                        FontAwesomeIcons.ellipsis,
-                      ),
-                    ),
-                  ),
-                ),
-                BottomLeft(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          BBText.titleLarge(
-                            balance,
-                            onSurface: true,
-                            isBold: true,
-                          ),
-                          const Gap(4),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 1),
-                            child: BBText.title(
-                              unit,
-                              onSurface: true,
-                              isBold: true,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (currency != null)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            BBText.body(
-                              fiatAmt,
-                              onSurface: true,
-                              isBold: true,
-                            ),
-                            const Gap(4),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 1),
-                              child: BBText.bodySmall(
-                                currency.shortName.toUpperCase(),
-                                onSurface: true,
-                                isBold: true,
-                              ),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
-                BottomRight(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Opacity(
-                      opacity: 0.7,
-                      child: BBText.bodySmall(
-                        walletStr ?? '',
-                        onSurface: true,
-                        isBold: true,
-                        textAlign: TextAlign.right,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

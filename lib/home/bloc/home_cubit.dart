@@ -95,6 +95,8 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(moveToIdx: null));
   }
 
+  void updateWalletBlocs(List<WalletBloc> blocs) => emit(state.copyWith(walletBlocs: blocs));
+
   void addWallet(Wallet wallet) {
     emit(state.copyWith(loadingWallets: true));
 

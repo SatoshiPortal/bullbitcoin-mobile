@@ -3,6 +3,8 @@ import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/import/page.dart';
+import 'package:bb_mobile/send/send_page.dart';
+import 'package:bb_mobile/send/wallet_select.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -73,6 +75,19 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         final walletBloc = state.extra! as WalletBloc;
         return AccountingPage(walletBloc: walletBloc);
+      },
+    ),
+    GoRoute(
+      path: '/send',
+      builder: (context, state) {
+        return const SelectSendWalletPage();
+      },
+    ),
+    GoRoute(
+      path: '/send/one',
+      builder: (context, state) {
+        final walletBloc = state.extra! as WalletBloc;
+        return SendPage(walletBloc: walletBloc);
       },
     ),
   ],

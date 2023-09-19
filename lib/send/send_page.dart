@@ -11,12 +11,11 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/fees.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
-import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/send/advanced.dart';
 import 'package:bb_mobile/send/amount.dart';
@@ -32,16 +31,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-class SendPopup extends StatelessWidget {
-  const SendPopup({super.key});
+class SendPage extends StatelessWidget {
+  const SendPage({super.key, required this.walletBloc, this.deepLinkUri});
 
-  static Future openSendPopUp(
-    BuildContext context,
-    WalletBloc walletBloc, {
-    String? deepLinkUri,
-  }) {
+  final WalletBloc walletBloc;
+  final String? deepLinkUri;
+
+  @override
+  Widget build(BuildContext context) {
     final cubit = SendCubit(
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
@@ -60,32 +58,38 @@ class SendPopup extends StatelessWidget {
       walletSensRepository: locator<WalletSensitiveRepository>(),
     );
 
-    if (deepLinkUri != null) cubit.updateAddress(deepLinkUri);
+    if (deepLinkUri != null) cubit.updateAddress(deepLinkUri!);
 
-    return showMaterialModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isDismissible: false,
-      enableDrag: false,
-      builder: (context) => BlocProvider.value(
+    return Scaffold(
+      appBar: AppBar(flexibleSpace: const _AppBar()),
+      body: BlocProvider.value(
         value: cubit,
         child: BlocProvider.value(
           value: walletBloc,
           child: BlocListener<SendCubit, SendState>(
-            listenWhen: (previous, current) => previous.sent != current.sent,
-            listener: (context, state) {
-              if (state.sent) context.pop();
-            },
-            child: const SendPopup(),
+            listenWhen: (previous, current) => previous.sent != current.sent && current.sent,
+            listener: (context, state) => context
+              ..pop()
+              ..pop(),
+            child: const _Screen(),
           ),
         ),
       ),
     );
   }
+}
+
+class _AppBar extends StatelessWidget {
+  const _AppBar();
 
   @override
   Widget build(BuildContext context) {
-    return const PopUpBorder(child: _Screen());
+    return BBAppBar(
+      text: 'Send Bitcoin',
+      onBack: () {
+        context.pop();
+      },
+    );
   }
 }
 
@@ -96,43 +100,41 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const BBHeader.popUpCenteredText(
-            text: 'SEND',
-            isLeft: true,
-          ),
-          if (signed) ...[
-            const TxDetailsScreen(),
-            const Gap(48),
-          ] else ...[
-            const Gap(24),
-            const Center(child: WalletName()),
-            const Gap(8),
-            const Center(child: WalletBalance()),
-            const Gap(48),
-            const EnterAmount(),
-            const Gap(24),
-            const BBText.title('    Address'),
-            const Gap(4),
-            const EnterAddress(),
-            const Gap(24),
-            const BBText.title('    Note to self (private)'),
-            const Gap(4),
-            const EnterNote(),
-            const Gap(24),
-            const SelectFeesButton(),
-            const CoinSelectionButton(),
-            const Gap(24),
-            const AdvancedOptionsButton(),
-            const Gap(8),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (signed) ...[
+              const TxDetailsScreen(),
+              const Gap(48),
+            ] else ...[
+              const Gap(24),
+              const Center(child: WalletName()),
+              const Gap(8),
+              const Center(child: WalletBalance()),
+              const Gap(48),
+              const EnterAmount(),
+              const Gap(24),
+              const BBText.title('    Address'),
+              const Gap(4),
+              const EnterAddress(),
+              const Gap(24),
+              const BBText.title('    Note to self (private)'),
+              const Gap(4),
+              const EnterNote(),
+              const Gap(24),
+              const SelectFeesButton(),
+              const CoinSelectionButton(),
+              const Gap(24),
+              const AdvancedOptionsButton(),
+              const Gap(8),
+            ],
+            const SendButton(),
+            const Gap(80),
           ],
-          const SendButton(),
-          const Gap(80),
-        ],
+        ),
       ),
     );
   }
@@ -224,7 +226,7 @@ class _EnterNoteState extends State<EnterNote> {
 
     return BBTextInput.big(
       value: note,
-      hint: 'Enter private note',
+      hint: 'Label (optional)',
       onChanged: (txt) {
         context.read<SendCubit>().updateNote(txt);
       },
