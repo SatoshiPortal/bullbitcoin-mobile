@@ -11,7 +11,6 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -22,6 +21,7 @@ import 'package:bb_mobile/send/amount.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/send/psbt.dart';
+import 'package:bb_mobile/send/wallet_select.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -32,15 +32,23 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SendPage extends StatelessWidget {
-  const SendPage({super.key, required this.walletBloc, this.deepLinkUri});
+class SendScreen extends StatelessWidget {
+  const SendScreen({
+    super.key,
+    // required this.walletBloc,
+    // this.deepLinkUri,
+  });
 
-  final WalletBloc walletBloc;
-  final String? deepLinkUri;
+  // final WalletBloc walletBloc;
+  // final String? deepLinkUri;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = SendCubit(
+    final walletBloc = context.select((SelectWalletStep _) => _.state.walletBloc);
+
+    if (walletBloc == null) return const SizedBox.shrink();
+
+    final sendCubit = SendCubit(
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletAddress: locator<WalletAddress>(),
@@ -58,37 +66,18 @@ class SendPage extends StatelessWidget {
       walletSensRepository: locator<WalletSensitiveRepository>(),
     );
 
-    if (deepLinkUri != null) cubit.updateAddress(deepLinkUri!);
+    // if (deepLinkUri != null) sendCubit.updateAddress(deepLinkUri!);
 
-    return Scaffold(
-      appBar: AppBar(flexibleSpace: const _AppBar()),
-      body: BlocProvider.value(
-        value: cubit,
-        child: BlocProvider.value(
-          value: walletBloc,
-          child: BlocListener<SendCubit, SendState>(
-            listenWhen: (previous, current) => previous.sent != current.sent && current.sent,
-            listener: (context, state) => context
-              ..pop()
-              ..pop(),
-            child: const _Screen(),
-          ),
+    return BlocProvider.value(
+      value: sendCubit,
+      child: BlocProvider.value(
+        value: walletBloc,
+        child: BlocListener<SendCubit, SendState>(
+          listenWhen: (previous, current) => previous.sent != current.sent && current.sent,
+          listener: (context, state) => context.pop(),
+          child: const _Screen(),
         ),
       ),
-    );
-  }
-}
-
-class _AppBar extends StatelessWidget {
-  const _AppBar();
-
-  @override
-  Widget build(BuildContext context) {
-    return BBAppBar(
-      text: 'Send Bitcoin',
-      onBack: () {
-        context.pop();
-      },
     );
   }
 }
@@ -121,7 +110,7 @@ class _Screen extends StatelessWidget {
               const Gap(4),
               const EnterAddress(),
               const Gap(24),
-              const BBText.title('    Note to self (private)'),
+              const BBText.title('    Label (optional)'),
               const Gap(4),
               const EnterNote(),
               const Gap(24),
@@ -226,7 +215,7 @@ class _EnterNoteState extends State<EnterNote> {
 
     return BBTextInput.big(
       value: note,
-      hint: 'Label (optional)',
+      hint: 'Enter a description',
       onChanged: (txt) {
         context.read<SendCubit>().updateNote(txt);
       },

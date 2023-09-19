@@ -3,13 +3,36 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/home_card.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/send/send_page.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SelectSendWalletPage extends StatelessWidget {
+class SelectWalletStep extends Cubit<({bool selectWallet, WalletBloc? walletBloc})> {
+  SelectWalletStep() : super((selectWallet: true, walletBloc: null));
+
+  void goBack() => emit((selectWallet: true, walletBloc: null));
+  void goNext(WalletBloc bloc) => emit((selectWallet: false, walletBloc: bloc));
+}
+
+class SelectSendWalletPage extends StatefulWidget {
   const SelectSendWalletPage({super.key});
+
+  @override
+  State<SelectSendWalletPage> createState() => _SelectSendWalletPageState();
+}
+
+class _SelectSendWalletPageState extends State<SelectSendWalletPage> {
+  SelectWalletStep? stepBloc;
+
+  @override
+  void initState() {
+    stepBloc = SelectWalletStep();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,23 +40,36 @@ class SelectSendWalletPage extends StatelessWidget {
 
     return BlocProvider.value(
       value: homeCubit,
-      child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: BBAppBar(
-            text: 'Send Bitcoin',
-            onBack: () {
-              context.pop();
-            },
+      child: BlocProvider.value(
+        value: stepBloc!,
+        child: Scaffold(
+          appBar: AppBar(
+            flexibleSpace: const SendAppBar(),
+            automaticallyImplyLeading: false,
           ),
+          body: const SelectStepScreen(),
         ),
-        body: const _Screen(),
       ),
     );
   }
 }
 
-class _Screen extends StatelessWidget {
-  const _Screen();
+class SelectStepScreen extends StatelessWidget {
+  const SelectStepScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final walletNotSelected = context.select((SelectWalletStep _) => _.state.selectWallet);
+
+    return AnimatedSwitcher(
+      duration: 400.ms,
+      child: walletNotSelected ? const SelectWalletScreen() : const SendScreen(),
+    );
+  }
+}
+
+class SelectWalletScreen extends StatelessWidget {
+  const SelectWalletScreen();
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +85,7 @@ class _Screen extends StatelessWidget {
             for (final wallet in walletBlocs) ...[
               InkWell(
                 onTap: () {
-                  context.push('/send/one', extra: wallet);
+                  context.read<SelectWalletStep>().goNext(wallet);
                 },
                 borderRadius: BorderRadius.circular(32),
                 child: BlocProvider.value(
@@ -62,6 +98,27 @@ class _Screen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SendAppBar extends StatelessWidget {
+  const SendAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return BBAppBar(
+      text: 'Send Bitcoin',
+      onBack: () {
+        final walletNotSelected = context.read<SelectWalletStep>().state.selectWallet;
+
+        if (walletNotSelected) {
+          context.pop();
+          return;
+        }
+
+        context.read<SelectWalletStep>().goBack();
+      },
     );
   }
 }
