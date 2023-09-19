@@ -16,23 +16,19 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$ReceiveState {
-  ReceiveStep get step =>
-      throw _privateConstructorUsedError; // required bdk.Wallet bdkWallet,
-//
-  Address? get defaultAddress =>
-      throw _privateConstructorUsedError; // @Default('') String label,
   bool get loadingAddress => throw _privateConstructorUsedError;
   String get errLoadingAddress => throw _privateConstructorUsedError;
+  Address? get defaultAddress => throw _privateConstructorUsedError;
+  String get privateLabel => throw _privateConstructorUsedError;
   bool get savingLabel => throw _privateConstructorUsedError;
   String get errSavingLabel => throw _privateConstructorUsedError;
-  bool get labelSaved => throw _privateConstructorUsedError; //
+  bool get labelSaved => throw _privateConstructorUsedError;
   int get invoiceAmount => throw _privateConstructorUsedError;
+  int get savedInvoiceAmount => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
-  String get privateLabel => throw _privateConstructorUsedError;
-  String get invoiceAddress => throw _privateConstructorUsedError;
-  Address? get newInvoiceAddress => throw _privateConstructorUsedError;
-  String get errCreatingInvoice => throw _privateConstructorUsedError;
+  String get savedDescription => throw _privateConstructorUsedError;
   bool get creatingInvoice => throw _privateConstructorUsedError;
+  String get errCreatingInvoice => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ReceiveStateCopyWith<ReceiveState> get copyWith =>
@@ -46,23 +42,21 @@ abstract class $ReceiveStateCopyWith<$Res> {
       _$ReceiveStateCopyWithImpl<$Res, ReceiveState>;
   @useResult
   $Res call(
-      {ReceiveStep step,
-      Address? defaultAddress,
-      bool loadingAddress,
+      {bool loadingAddress,
       String errLoadingAddress,
+      Address? defaultAddress,
+      String privateLabel,
       bool savingLabel,
       String errSavingLabel,
       bool labelSaved,
       int invoiceAmount,
+      int savedInvoiceAmount,
       String description,
-      String privateLabel,
-      String invoiceAddress,
-      Address? newInvoiceAddress,
-      String errCreatingInvoice,
-      bool creatingInvoice});
+      String savedDescription,
+      bool creatingInvoice,
+      String errCreatingInvoice});
 
   $AddressCopyWith<$Res>? get defaultAddress;
-  $AddressCopyWith<$Res>? get newInvoiceAddress;
 }
 
 /// @nodoc
@@ -78,30 +72,21 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? step = null,
-    Object? defaultAddress = freezed,
     Object? loadingAddress = null,
     Object? errLoadingAddress = null,
+    Object? defaultAddress = freezed,
+    Object? privateLabel = null,
     Object? savingLabel = null,
     Object? errSavingLabel = null,
     Object? labelSaved = null,
     Object? invoiceAmount = null,
+    Object? savedInvoiceAmount = null,
     Object? description = null,
-    Object? privateLabel = null,
-    Object? invoiceAddress = null,
-    Object? newInvoiceAddress = freezed,
-    Object? errCreatingInvoice = null,
+    Object? savedDescription = null,
     Object? creatingInvoice = null,
+    Object? errCreatingInvoice = null,
   }) {
     return _then(_value.copyWith(
-      step: null == step
-          ? _value.step
-          : step // ignore: cast_nullable_to_non_nullable
-              as ReceiveStep,
-      defaultAddress: freezed == defaultAddress
-          ? _value.defaultAddress
-          : defaultAddress // ignore: cast_nullable_to_non_nullable
-              as Address?,
       loadingAddress: null == loadingAddress
           ? _value.loadingAddress
           : loadingAddress // ignore: cast_nullable_to_non_nullable
@@ -109,6 +94,14 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
       errLoadingAddress: null == errLoadingAddress
           ? _value.errLoadingAddress
           : errLoadingAddress // ignore: cast_nullable_to_non_nullable
+              as String,
+      defaultAddress: freezed == defaultAddress
+          ? _value.defaultAddress
+          : defaultAddress // ignore: cast_nullable_to_non_nullable
+              as Address?,
+      privateLabel: null == privateLabel
+          ? _value.privateLabel
+          : privateLabel // ignore: cast_nullable_to_non_nullable
               as String,
       savingLabel: null == savingLabel
           ? _value.savingLabel
@@ -126,30 +119,26 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.invoiceAmount
           : invoiceAmount // ignore: cast_nullable_to_non_nullable
               as int,
+      savedInvoiceAmount: null == savedInvoiceAmount
+          ? _value.savedInvoiceAmount
+          : savedInvoiceAmount // ignore: cast_nullable_to_non_nullable
+              as int,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
-      privateLabel: null == privateLabel
-          ? _value.privateLabel
-          : privateLabel // ignore: cast_nullable_to_non_nullable
-              as String,
-      invoiceAddress: null == invoiceAddress
-          ? _value.invoiceAddress
-          : invoiceAddress // ignore: cast_nullable_to_non_nullable
-              as String,
-      newInvoiceAddress: freezed == newInvoiceAddress
-          ? _value.newInvoiceAddress
-          : newInvoiceAddress // ignore: cast_nullable_to_non_nullable
-              as Address?,
-      errCreatingInvoice: null == errCreatingInvoice
-          ? _value.errCreatingInvoice
-          : errCreatingInvoice // ignore: cast_nullable_to_non_nullable
+      savedDescription: null == savedDescription
+          ? _value.savedDescription
+          : savedDescription // ignore: cast_nullable_to_non_nullable
               as String,
       creatingInvoice: null == creatingInvoice
           ? _value.creatingInvoice
           : creatingInvoice // ignore: cast_nullable_to_non_nullable
               as bool,
+      errCreatingInvoice: null == errCreatingInvoice
+          ? _value.errCreatingInvoice
+          : errCreatingInvoice // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 
@@ -164,18 +153,6 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
       return _then(_value.copyWith(defaultAddress: value) as $Val);
     });
   }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $AddressCopyWith<$Res>? get newInvoiceAddress {
-    if (_value.newInvoiceAddress == null) {
-      return null;
-    }
-
-    return $AddressCopyWith<$Res>(_value.newInvoiceAddress!, (value) {
-      return _then(_value.copyWith(newInvoiceAddress: value) as $Val);
-    });
-  }
 }
 
 /// @nodoc
@@ -187,25 +164,22 @@ abstract class _$$_ReceiveStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {ReceiveStep step,
-      Address? defaultAddress,
-      bool loadingAddress,
+      {bool loadingAddress,
       String errLoadingAddress,
+      Address? defaultAddress,
+      String privateLabel,
       bool savingLabel,
       String errSavingLabel,
       bool labelSaved,
       int invoiceAmount,
+      int savedInvoiceAmount,
       String description,
-      String privateLabel,
-      String invoiceAddress,
-      Address? newInvoiceAddress,
-      String errCreatingInvoice,
-      bool creatingInvoice});
+      String savedDescription,
+      bool creatingInvoice,
+      String errCreatingInvoice});
 
   @override
   $AddressCopyWith<$Res>? get defaultAddress;
-  @override
-  $AddressCopyWith<$Res>? get newInvoiceAddress;
 }
 
 /// @nodoc
@@ -219,30 +193,21 @@ class __$$_ReceiveStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? step = null,
-    Object? defaultAddress = freezed,
     Object? loadingAddress = null,
     Object? errLoadingAddress = null,
+    Object? defaultAddress = freezed,
+    Object? privateLabel = null,
     Object? savingLabel = null,
     Object? errSavingLabel = null,
     Object? labelSaved = null,
     Object? invoiceAmount = null,
+    Object? savedInvoiceAmount = null,
     Object? description = null,
-    Object? privateLabel = null,
-    Object? invoiceAddress = null,
-    Object? newInvoiceAddress = freezed,
-    Object? errCreatingInvoice = null,
+    Object? savedDescription = null,
     Object? creatingInvoice = null,
+    Object? errCreatingInvoice = null,
   }) {
     return _then(_$_ReceiveState(
-      step: null == step
-          ? _value.step
-          : step // ignore: cast_nullable_to_non_nullable
-              as ReceiveStep,
-      defaultAddress: freezed == defaultAddress
-          ? _value.defaultAddress
-          : defaultAddress // ignore: cast_nullable_to_non_nullable
-              as Address?,
       loadingAddress: null == loadingAddress
           ? _value.loadingAddress
           : loadingAddress // ignore: cast_nullable_to_non_nullable
@@ -250,6 +215,14 @@ class __$$_ReceiveStateCopyWithImpl<$Res>
       errLoadingAddress: null == errLoadingAddress
           ? _value.errLoadingAddress
           : errLoadingAddress // ignore: cast_nullable_to_non_nullable
+              as String,
+      defaultAddress: freezed == defaultAddress
+          ? _value.defaultAddress
+          : defaultAddress // ignore: cast_nullable_to_non_nullable
+              as Address?,
+      privateLabel: null == privateLabel
+          ? _value.privateLabel
+          : privateLabel // ignore: cast_nullable_to_non_nullable
               as String,
       savingLabel: null == savingLabel
           ? _value.savingLabel
@@ -267,30 +240,26 @@ class __$$_ReceiveStateCopyWithImpl<$Res>
           ? _value.invoiceAmount
           : invoiceAmount // ignore: cast_nullable_to_non_nullable
               as int,
+      savedInvoiceAmount: null == savedInvoiceAmount
+          ? _value.savedInvoiceAmount
+          : savedInvoiceAmount // ignore: cast_nullable_to_non_nullable
+              as int,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String,
-      privateLabel: null == privateLabel
-          ? _value.privateLabel
-          : privateLabel // ignore: cast_nullable_to_non_nullable
-              as String,
-      invoiceAddress: null == invoiceAddress
-          ? _value.invoiceAddress
-          : invoiceAddress // ignore: cast_nullable_to_non_nullable
-              as String,
-      newInvoiceAddress: freezed == newInvoiceAddress
-          ? _value.newInvoiceAddress
-          : newInvoiceAddress // ignore: cast_nullable_to_non_nullable
-              as Address?,
-      errCreatingInvoice: null == errCreatingInvoice
-          ? _value.errCreatingInvoice
-          : errCreatingInvoice // ignore: cast_nullable_to_non_nullable
+      savedDescription: null == savedDescription
+          ? _value.savedDescription
+          : savedDescription // ignore: cast_nullable_to_non_nullable
               as String,
       creatingInvoice: null == creatingInvoice
           ? _value.creatingInvoice
           : creatingInvoice // ignore: cast_nullable_to_non_nullable
               as bool,
+      errCreatingInvoice: null == errCreatingInvoice
+          ? _value.errCreatingInvoice
+          : errCreatingInvoice // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -299,36 +268,32 @@ class __$$_ReceiveStateCopyWithImpl<$Res>
 
 class _$_ReceiveState extends _ReceiveState {
   const _$_ReceiveState(
-      {this.step = ReceiveStep.defaultAddress,
-      this.defaultAddress,
-      this.loadingAddress = true,
+      {this.loadingAddress = true,
       this.errLoadingAddress = '',
+      this.defaultAddress,
+      this.privateLabel = '',
       this.savingLabel = false,
       this.errSavingLabel = '',
       this.labelSaved = false,
       this.invoiceAmount = 0,
+      this.savedInvoiceAmount = 0,
       this.description = '',
-      this.privateLabel = '',
-      this.invoiceAddress = '',
-      this.newInvoiceAddress,
-      this.errCreatingInvoice = '',
-      this.creatingInvoice = true})
+      this.savedDescription = '',
+      this.creatingInvoice = true,
+      this.errCreatingInvoice = ''})
       : super._();
 
-  @override
-  @JsonKey()
-  final ReceiveStep step;
-// required bdk.Wallet bdkWallet,
-//
-  @override
-  final Address? defaultAddress;
-// @Default('') String label,
   @override
   @JsonKey()
   final bool loadingAddress;
   @override
   @JsonKey()
   final String errLoadingAddress;
+  @override
+  final Address? defaultAddress;
+  @override
+  @JsonKey()
+  final String privateLabel;
   @override
   @JsonKey()
   final bool savingLabel;
@@ -338,31 +303,28 @@ class _$_ReceiveState extends _ReceiveState {
   @override
   @JsonKey()
   final bool labelSaved;
-//
   @override
   @JsonKey()
   final int invoiceAmount;
   @override
   @JsonKey()
+  final int savedInvoiceAmount;
+  @override
+  @JsonKey()
   final String description;
   @override
   @JsonKey()
-  final String privateLabel;
-  @override
-  @JsonKey()
-  final String invoiceAddress;
-  @override
-  final Address? newInvoiceAddress;
-  @override
-  @JsonKey()
-  final String errCreatingInvoice;
+  final String savedDescription;
   @override
   @JsonKey()
   final bool creatingInvoice;
+  @override
+  @JsonKey()
+  final String errCreatingInvoice;
 
   @override
   String toString() {
-    return 'ReceiveState(step: $step, defaultAddress: $defaultAddress, loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, invoiceAmount: $invoiceAmount, description: $description, privateLabel: $privateLabel, invoiceAddress: $invoiceAddress, newInvoiceAddress: $newInvoiceAddress, errCreatingInvoice: $errCreatingInvoice, creatingInvoice: $creatingInvoice)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, invoiceAmount: $invoiceAmount, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice)';
   }
 
   @override
@@ -370,13 +332,14 @@ class _$_ReceiveState extends _ReceiveState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ReceiveState &&
-            (identical(other.step, step) || other.step == step) &&
-            (identical(other.defaultAddress, defaultAddress) ||
-                other.defaultAddress == defaultAddress) &&
             (identical(other.loadingAddress, loadingAddress) ||
                 other.loadingAddress == loadingAddress) &&
             (identical(other.errLoadingAddress, errLoadingAddress) ||
                 other.errLoadingAddress == errLoadingAddress) &&
+            (identical(other.defaultAddress, defaultAddress) ||
+                other.defaultAddress == defaultAddress) &&
+            (identical(other.privateLabel, privateLabel) ||
+                other.privateLabel == privateLabel) &&
             (identical(other.savingLabel, savingLabel) ||
                 other.savingLabel == savingLabel) &&
             (identical(other.errSavingLabel, errSavingLabel) ||
@@ -385,37 +348,34 @@ class _$_ReceiveState extends _ReceiveState {
                 other.labelSaved == labelSaved) &&
             (identical(other.invoiceAmount, invoiceAmount) ||
                 other.invoiceAmount == invoiceAmount) &&
+            (identical(other.savedInvoiceAmount, savedInvoiceAmount) ||
+                other.savedInvoiceAmount == savedInvoiceAmount) &&
             (identical(other.description, description) ||
                 other.description == description) &&
-            (identical(other.privateLabel, privateLabel) ||
-                other.privateLabel == privateLabel) &&
-            (identical(other.invoiceAddress, invoiceAddress) ||
-                other.invoiceAddress == invoiceAddress) &&
-            (identical(other.newInvoiceAddress, newInvoiceAddress) ||
-                other.newInvoiceAddress == newInvoiceAddress) &&
-            (identical(other.errCreatingInvoice, errCreatingInvoice) ||
-                other.errCreatingInvoice == errCreatingInvoice) &&
+            (identical(other.savedDescription, savedDescription) ||
+                other.savedDescription == savedDescription) &&
             (identical(other.creatingInvoice, creatingInvoice) ||
-                other.creatingInvoice == creatingInvoice));
+                other.creatingInvoice == creatingInvoice) &&
+            (identical(other.errCreatingInvoice, errCreatingInvoice) ||
+                other.errCreatingInvoice == errCreatingInvoice));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      step,
-      defaultAddress,
       loadingAddress,
       errLoadingAddress,
+      defaultAddress,
+      privateLabel,
       savingLabel,
       errSavingLabel,
       labelSaved,
       invoiceAmount,
+      savedInvoiceAmount,
       description,
-      privateLabel,
-      invoiceAddress,
-      newInvoiceAddress,
-      errCreatingInvoice,
-      creatingInvoice);
+      savedDescription,
+      creatingInvoice,
+      errCreatingInvoice);
 
   @JsonKey(ignore: true)
   @override
@@ -426,51 +386,47 @@ class _$_ReceiveState extends _ReceiveState {
 
 abstract class _ReceiveState extends ReceiveState {
   const factory _ReceiveState(
-      {final ReceiveStep step,
-      final Address? defaultAddress,
-      final bool loadingAddress,
+      {final bool loadingAddress,
       final String errLoadingAddress,
+      final Address? defaultAddress,
+      final String privateLabel,
       final bool savingLabel,
       final String errSavingLabel,
       final bool labelSaved,
       final int invoiceAmount,
+      final int savedInvoiceAmount,
       final String description,
-      final String privateLabel,
-      final String invoiceAddress,
-      final Address? newInvoiceAddress,
-      final String errCreatingInvoice,
-      final bool creatingInvoice}) = _$_ReceiveState;
+      final String savedDescription,
+      final bool creatingInvoice,
+      final String errCreatingInvoice}) = _$_ReceiveState;
   const _ReceiveState._() : super._();
 
   @override
-  ReceiveStep get step;
-  @override // required bdk.Wallet bdkWallet,
-//
-  Address? get defaultAddress;
-  @override // @Default('') String label,
   bool get loadingAddress;
   @override
   String get errLoadingAddress;
+  @override
+  Address? get defaultAddress;
+  @override
+  String get privateLabel;
   @override
   bool get savingLabel;
   @override
   String get errSavingLabel;
   @override
   bool get labelSaved;
-  @override //
+  @override
   int get invoiceAmount;
+  @override
+  int get savedInvoiceAmount;
   @override
   String get description;
   @override
-  String get privateLabel;
-  @override
-  String get invoiceAddress;
-  @override
-  Address? get newInvoiceAddress;
-  @override
-  String get errCreatingInvoice;
+  String get savedDescription;
   @override
   bool get creatingInvoice;
+  @override
+  String get errCreatingInvoice;
   @override
   @JsonKey(ignore: true)
   _$$_ReceiveStateCopyWith<_$_ReceiveState> get copyWith =>

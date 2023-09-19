@@ -44,7 +44,7 @@ class SendScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletBloc = context.select((SelectWalletStep _) => _.state.walletBloc);
+    final walletBloc = context.select((SelectSendWalletStep _) => _.state.walletBloc);
 
     if (walletBloc == null) return const SizedBox.shrink();
 

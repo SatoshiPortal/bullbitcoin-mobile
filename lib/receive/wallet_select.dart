@@ -3,7 +3,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/home_card.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/send/send_page.dart';
+import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -11,26 +11,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SelectSendWalletStep extends Cubit<({bool selectWallet, WalletBloc? walletBloc})> {
-  SelectSendWalletStep() : super((selectWallet: true, walletBloc: null));
+class SelectReceiveWalletStep extends Cubit<({bool selectWallet, WalletBloc? walletBloc})> {
+  SelectReceiveWalletStep() : super((selectWallet: true, walletBloc: null));
 
   void goBack() => emit((selectWallet: true, walletBloc: null));
   void goNext(WalletBloc bloc) => emit((selectWallet: false, walletBloc: bloc));
 }
 
-class SelectSendWalletPage extends StatefulWidget {
-  const SelectSendWalletPage({super.key});
+class SelectReceiveWalletPage extends StatefulWidget {
+  const SelectReceiveWalletPage({super.key});
 
   @override
-  State<SelectSendWalletPage> createState() => _SelectSendWalletPageState();
+  State<SelectReceiveWalletPage> createState() => _SelectReceiveWalletPageState();
 }
 
-class _SelectSendWalletPageState extends State<SelectSendWalletPage> {
-  SelectSendWalletStep? stepBloc;
+class _SelectReceiveWalletPageState extends State<SelectReceiveWalletPage> {
+  SelectReceiveWalletStep? stepBloc;
 
   @override
   void initState() {
-    stepBloc = SelectSendWalletStep();
+    stepBloc = SelectReceiveWalletStep();
     super.initState();
   }
 
@@ -44,7 +44,7 @@ class _SelectSendWalletPageState extends State<SelectSendWalletPage> {
         value: stepBloc!,
         child: Scaffold(
           appBar: AppBar(
-            flexibleSpace: const SendAppBar(),
+            flexibleSpace: const ReceiveAppBar(),
             automaticallyImplyLeading: false,
           ),
           body: const SelectStepScreen(),
@@ -59,11 +59,11 @@ class SelectStepScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletNotSelected = context.select((SelectSendWalletStep _) => _.state.selectWallet);
+    final walletNotSelected = context.select((SelectReceiveWalletStep _) => _.state.selectWallet);
 
     return AnimatedSwitcher(
       duration: 400.ms,
-      child: walletNotSelected ? const SelectWalletScreen() : const SendScreen(),
+      child: walletNotSelected ? const SelectWalletScreen() : const ReceiveScreen(),
     );
   }
 }
@@ -80,12 +80,12 @@ class SelectWalletScreen extends StatelessWidget {
         child: Column(
           children: [
             const Gap(32),
-            const BBText.body('Select wallet to send from'),
+            const BBText.body('Select wallet to receive in'),
             const Gap(24),
             for (final wallet in walletBlocs) ...[
               InkWell(
                 onTap: () {
-                  context.read<SelectSendWalletStep>().goNext(wallet);
+                  context.read<SelectReceiveWalletStep>().goNext(wallet);
                 },
                 borderRadius: BorderRadius.circular(32),
                 child: BlocProvider.value(
@@ -102,22 +102,22 @@ class SelectWalletScreen extends StatelessWidget {
   }
 }
 
-class SendAppBar extends StatelessWidget {
-  const SendAppBar();
+class ReceiveAppBar extends StatelessWidget {
+  const ReceiveAppBar();
 
   @override
   Widget build(BuildContext context) {
     return BBAppBar(
-      text: 'Send Bitcoin',
+      text: 'Receive Bitcoin',
       onBack: () {
-        final walletNotSelected = context.read<SelectSendWalletStep>().state.selectWallet;
+        final walletNotSelected = context.read<SelectReceiveWalletStep>().state.selectWallet;
 
         if (walletNotSelected) {
           context.pop();
           return;
         }
 
-        context.read<SelectSendWalletStep>().goBack();
+        context.read<SelectReceiveWalletStep>().goBack();
       },
     );
   }

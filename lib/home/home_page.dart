@@ -16,7 +16,6 @@ import 'package:bb_mobile/_ui/home_card.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/receive/receive_popup.dart';
 // import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -521,9 +520,10 @@ class HomeActionButtons extends StatelessWidget {
             child: BBButton.smallRed(
               filled: true,
               onPressed: () async {
-                final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
+                context.push('/receive');
+                // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
 
-                await ReceivePopUp.openPopUp(context, wallet);
+                // await ReceiveScreen.openPopUp(context, wallet);
               },
               label: 'Receive',
             ),

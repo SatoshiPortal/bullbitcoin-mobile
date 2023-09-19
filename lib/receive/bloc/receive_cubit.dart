@@ -146,6 +146,11 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
   }
 
+  void generateNewAddress() async {
+    emit(const ReceiveState());
+    loadAddress();
+  }
+
   void updateAmount(int amt) {
     emit(state.copyWith(invoiceAmount: amt));
   }
@@ -156,6 +161,10 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void privateLabelChanged(String privateLabel) {
     emit(state.copyWith(privateLabel: privateLabel));
+  }
+
+  void clearLabelField() {
+    emit(state.copyWith(privateLabel: ''));
   }
 
   void saveDefaultAddressLabel() async {
@@ -196,72 +205,98 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
   }
 
-  void invoiceClicked() {
-    emit(
-      state.copyWith(
-        step: ReceiveStep.createInvoice,
-        privateLabel: '',
-      ),
-    );
+  // void invoiceClicked() {
+  //   emit(
+  //     state.copyWith(
+  //       step: ReceiveStep.createInvoice,
+  //       privateLabel: '',
+  //     ),
+  //   );
+  // }
+
+  // void saveInvoiceClicked() {
+  //   if (state.invoiceAmount <= 0) {
+  //     emit(state.copyWith(errCreatingInvoice: 'Enter correct amount'));
+  //     return;
+  //   }
+
+  //   emit(
+  //     state.copyWith(
+  //       // step: ReceiveStep.enterPrivateLabel,
+  //       errCreatingInvoice: '',
+  //     ),
+  //   );
+  // }
+
+  void loadInvoice() {
+    if (state.savedDescription.isNotEmpty)
+      emit(state.copyWith(description: state.savedDescription));
+    if (state.savedInvoiceAmount > 0) emit(state.copyWith(invoiceAmount: state.savedInvoiceAmount));
   }
 
-  void saveInvoiceClicked() {
+  void clearInvoiceFields() {
+    emit(state.copyWith(invoiceAmount: 0, description: ''));
+  }
+
+  void saveFinalInvoiceClicked() async {
     if (state.invoiceAmount <= 0) {
       emit(state.copyWith(errCreatingInvoice: 'Enter correct amount'));
       return;
     }
 
-    emit(
-      state.copyWith(step: ReceiveStep.enterPrivateLabel, errCreatingInvoice: ''),
-    );
-  }
-
-  void saveFinalInvoiceClicked() async {
     emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
 
-    final (a, err) = await walletAddress.newDeposit(bdkWallet: walletBloc.state.bdkWallet!);
+    if (state.savedDescription.isEmpty || state.savedInvoiceAmount == 0) {
+      final (a, err) = await walletAddress.newDeposit(bdkWallet: walletBloc.state.bdkWallet!);
 
-    if (err != null)
-      emit(
-        state.copyWith(
-          creatingInvoice: false,
-          errCreatingInvoice: err.toString(),
-        ),
+      if (err != null)
+        emit(
+          state.copyWith(
+            creatingInvoice: false,
+            errCreatingInvoice: err.toString(),
+          ),
+        );
+
+      final (savedAddress, w) = await walletAddress.addAddressToWallet(
+        address: (a!.index, a.address),
+        wallet: walletBloc.state.wallet!,
+        label: state.privateLabel,
       );
 
-    final (savedAddress, w) = await walletAddress.addAddressToWallet(
-      address: (a!.index, a.address),
-      wallet: walletBloc.state.wallet!,
-      label: state.privateLabel,
-    );
-
-    final errUpdate = await walletRepository.updateWallet(
-      wallet: w,
-      hiveStore: hiveStorage,
-    );
-    if (errUpdate != null) {
-      emit(
-        state.copyWith(
-          creatingInvoice: false,
-          errCreatingInvoice: errUpdate.toString(),
-        ),
+      final errUpdate = await walletRepository.updateWallet(
+        wallet: w,
+        hiveStore: hiveStorage,
       );
-      return;
+      if (errUpdate != null) {
+        emit(
+          state.copyWith(
+            creatingInvoice: false,
+            errCreatingInvoice: errUpdate.toString(),
+          ),
+        );
+        return;
+      }
+
+      walletBloc.add(UpdateWallet(w));
+
+      emit(state.copyWith(defaultAddress: savedAddress));
     }
 
-    walletBloc.add(UpdateWallet(w));
+    // final btcAmt = (state.invoiceAmount / 100000000).toStringAsFixed(8);
 
-    final btcAmt = (state.invoiceAmount / 100000000).toStringAsFixed(8);
-
-    final invoice = 'bitcoin:' + a.address + '?amount=' + btcAmt + '&label=' + state.description;
+    // final invoice = 'bitcoin:' + a.address + '?amount=' + btcAmt + '&label=' + state.description;
 
     emit(
       state.copyWith(
         creatingInvoice: false,
         errCreatingInvoice: '',
-        invoiceAddress: invoice,
-        newInvoiceAddress: savedAddress,
-        step: ReceiveStep.showInvoice,
+        savedDescription: state.description,
+        description: '',
+        savedInvoiceAmount: state.invoiceAmount,
+        invoiceAmount: 0,
+        // invoiceAddress: invoice,
+        // newInvoiceAddress: savedAddress,
+        // step: ReceiveStep.showInvoice,
       ),
     );
   }

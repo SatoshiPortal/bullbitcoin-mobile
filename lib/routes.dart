@@ -3,6 +3,7 @@ import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/import/page.dart';
+import 'package:bb_mobile/receive/wallet_select.dart';
 import 'package:bb_mobile/send/wallet_select.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
@@ -82,6 +83,12 @@ final GoRouter router = GoRouter(
         // final String? deepLinkUri = state.extra as String?;
 
         return const SelectSendWalletPage();
+      },
+    ),
+    GoRoute(
+      path: '/receive',
+      builder: (context, state) {
+        return const SelectReceiveWalletPage();
       },
     ),
   ],
