@@ -10,6 +10,9 @@ import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_page.dart';
 import 'package:bb_mobile/wallet_settings/accounting.dart';
+import 'package:bb_mobile/wallet_settings/backup.dart';
+import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
+import 'package:bb_mobile/wallet_settings/test-backup.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
 import 'package:go_router/go_router.dart';
 
@@ -66,9 +69,37 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/wallet-settings/test-backup',
+      path: '/wallet-settings/open-test-backup',
       builder: (context, state) {
         return const WalletSettingsPage(openTestBackup: true);
+      },
+    ),
+    GoRoute(
+      path: '/wallet-settings/open-backup',
+      builder: (context, state) {
+        return const WalletSettingsPage(openBackup: true);
+      },
+    ),
+    GoRoute(
+      path: '/wallet-settings/test-backup',
+      builder: (context, state) {
+        final blocs = state.extra! as (WalletBloc, WalletSettingsCubit);
+        return TestBackupPage(
+          walletBloc: blocs.$1,
+          walletSettings: blocs.$2,
+        );
+        // const WalletSettingsPage(openTestBackup: true);
+      },
+    ),
+    GoRoute(
+      path: '/wallet-settings/backup',
+      builder: (context, state) {
+        final blocs = state.extra! as (WalletBloc, WalletSettingsCubit);
+
+        return BackupPage(
+          walletBloc: blocs.$1,
+          walletSettings: blocs.$2,
+        );
       },
     ),
     GoRoute(

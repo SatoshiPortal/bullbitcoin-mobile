@@ -17,7 +17,6 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/addresses.dart';
-import 'package:bb_mobile/wallet_settings/backup.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/descriptors.dart';
@@ -30,9 +29,10 @@ import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class WalletSettingsPage extends StatelessWidget {
-  const WalletSettingsPage({super.key, this.openTestBackup = false});
+  const WalletSettingsPage({super.key, this.openTestBackup = false, this.openBackup = false});
 
   final bool openTestBackup;
+  final bool openBackup;
 
   @override
   Widget build(BuildContext context) {
@@ -74,23 +74,45 @@ class WalletSettingsPage extends StatelessWidget {
             },
           ),
         ],
-        child: _Screen(openTestBackup: openTestBackup),
+        child: _Screen(
+          openTestBackup: openTestBackup,
+          openBackup: openBackup,
+        ),
       ),
     );
   }
 }
 
 class _Screen extends StatelessWidget {
-  const _Screen({required this.openTestBackup});
+  const _Screen({required this.openTestBackup, required this.openBackup});
 
   final bool openTestBackup;
+  final bool openBackup;
 
   @override
   Widget build(BuildContext context) {
     if (openTestBackup)
       scheduleMicrotask(() async {
-        await Future.delayed(const Duration(milliseconds: 600));
-        await TestBackupScreen.openPopup(context);
+        await Future.delayed(const Duration(milliseconds: 300));
+        await context.push(
+          '/wallet-settings/test-backup',
+          extra: (
+            context.read<WalletBloc>(),
+            context.read<WalletSettingsCubit>(),
+          ),
+        );
+      });
+
+    if (openBackup)
+      scheduleMicrotask(() async {
+        await Future.delayed(const Duration(milliseconds: 300));
+        await context.push(
+          '/wallet-settings/backup',
+          extra: (
+            context.read<WalletBloc>(),
+            context.read<WalletSettingsCubit>(),
+          ),
+        );
       });
 
     final watchOnly = context.select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
@@ -385,7 +407,14 @@ class TestBackupButton extends StatelessWidget {
       statusText: isTested ? 'Tested' : 'Not Tested',
       isRed: !isTested,
       onPressed: () async {
-        await TestBackupScreen.openPopup(context);
+        context.push(
+          '/wallet-settings/test-backup',
+          extra: (
+            context.read<WalletBloc>(),
+            context.read<WalletSettingsCubit>(),
+          ),
+        );
+        // await TestBackupScreen.openPopup(context);
       },
     );
     // return Row(
@@ -414,7 +443,14 @@ class BackupButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BBButton.textWithStatusAndRightArrow(
       onPressed: () async {
-        await BackupScreen.openPopup(context);
+        context.push(
+          '/wallet-settings/backup',
+          extra: (
+            context.read<WalletBloc>(),
+            context.read<WalletSettingsCubit>(),
+          ),
+        );
+        // await BackupScreen.openPopup(context);
       },
       label: 'Backup',
     );

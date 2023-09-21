@@ -51,7 +51,7 @@ class _Screen extends StatelessWidget {
               if (!backupTested) ...[
                 const Gap(24),
                 const BackupAlertBanner(),
-                const Gap(24),
+                // const Gap(24),
               ],
               const WalletTxList(),
             ],
@@ -92,7 +92,9 @@ class ActionsRow extends StatelessWidget {
             label: 'Backup',
             isBlue: false,
             isRed: true,
-            onPressed: () {},
+            onPressed: () {
+              context.push('/wallet-settings/open-backup');
+            },
           ),
           BBButton.text(
             label: 'Wallet Details',
@@ -103,7 +105,9 @@ class ActionsRow extends StatelessWidget {
           BBButton.text(
             label: 'Settings',
             isBlue: false,
-            onPressed: () {},
+            onPressed: () {
+              context.push('/wallet-settings');
+            },
             isRed: true,
           ),
         ],

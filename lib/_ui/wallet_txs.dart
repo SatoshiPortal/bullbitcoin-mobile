@@ -32,6 +32,7 @@ class WalletTxList extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 48.0,
+            vertical: 24,
           ),
           child: SizedBox(
             height: 32,
@@ -64,15 +65,18 @@ class WalletTxList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (syncing || loading || loadingBal)
-              SizedBox(
-                height: 32,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: const BBLoadingRow().animate().fadeIn(),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: SizedBox(
+                  height: 32,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: const BBLoadingRow().animate().fadeIn(),
+                  ),
                 ),
               )
             else
-              const Gap(32),
+              const Gap(40),
             if (pendingTXs.isNotEmpty) ...[
               const BBText.titleLarge('    Pending Transactions', isBold: true),
               ...pendingTXs.map((tx) => HomeTxItem(tx: tx)),
@@ -179,7 +183,7 @@ class BackupAlertBanner extends StatelessWidget {
         InkWell(
           borderRadius: BorderRadius.circular(10),
           onTap: () {
-            context.push('/wallet-settings/test-backup');
+            context.push('/wallet-settings/open-test-backup');
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
