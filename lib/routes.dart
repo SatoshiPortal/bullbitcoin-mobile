@@ -8,6 +8,7 @@ import 'package:bb_mobile/send/wallet_select.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/wallet/details.dart';
 import 'package:bb_mobile/wallet/wallet_page.dart';
 import 'package:bb_mobile/wallet_settings/accounting.dart';
 import 'package:bb_mobile/wallet_settings/backup.dart';
@@ -128,6 +129,13 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         final wallet = state.extra! as WalletBloc;
         return WalletPage(walletBloc: wallet);
+      },
+    ),
+    GoRoute(
+      path: '/wallet/details',
+      builder: (context, state) {
+        final wallet = state.extra! as WalletBloc;
+        return WalletDetailsPage(walletBloc: wallet);
       },
     ),
   ],

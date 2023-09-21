@@ -112,13 +112,15 @@ class TestBackupScreen extends StatelessWidget {
                 width: 200,
                 child: BBButton.text(
                   onPressed: () {
-                    context.push(
-                      '/wallet-settings/backup',
-                      extra: (
-                        context.read<WalletBloc>(),
-                        context.read<WalletSettingsCubit>(),
-                      ),
-                    );
+                    context
+                      ..pop()
+                      ..push(
+                        '/wallet-settings/backup',
+                        extra: (
+                          context.read<WalletBloc>(),
+                          context.read<WalletSettingsCubit>(),
+                        ),
+                      );
                     // context.pop();
                     // BackupScreen.openPopup(context);
                   },

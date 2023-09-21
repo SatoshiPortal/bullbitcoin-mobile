@@ -148,6 +148,8 @@ class _Screen extends StatelessWidget {
               const Gap(8),
               const ExtendedPublicKeyButton(),
               const Gap(8),
+              const WalletDetailsButton(),
+              const Gap(8),
               const AddressesButtons(),
               const Gap(8),
               const AccountingButton(),
@@ -389,6 +391,21 @@ class AccountingButton extends StatelessWidget {
       onPressed: () {
         final walletBloc = context.read<WalletBloc>();
         context.push('/wallet-settings/accounting', extra: walletBloc);
+      },
+    );
+  }
+}
+
+class WalletDetailsButton extends StatelessWidget {
+  const WalletDetailsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Wallet Details',
+      onPressed: () {
+        final walletBloc = context.read<WalletBloc>();
+        context.push('/wallet/details', extra: walletBloc);
       },
     );
   }
