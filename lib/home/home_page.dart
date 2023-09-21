@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -9,10 +8,11 @@ import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_ui/bottom_wallet_actions.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
-import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/_ui/home_card.dart';
+import 'package:bb_mobile/_ui/wallet_card.dart';
+import 'package:bb_mobile/_ui/wallet_txs.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/locator.dart';
@@ -30,7 +30,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -192,7 +191,7 @@ class WalletScreen extends StatelessWidget {
                       if (selectedWallet != null) ...[
                         BlocProvider.value(
                           value: selectedWallet,
-                          child: const HomeTxList(),
+                          child: const WalletTxList(),
                         ),
                       ],
                     ],
@@ -209,51 +208,6 @@ class WalletScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class BackupAlertBanner extends StatelessWidget {
-  const BackupAlertBanner({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final _ = context.select((WalletBloc x) => x.state.wallet);
-    final backupTested = context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
-
-    if (backupTested) return Container();
-
-    return Row(
-      children: [
-        const Spacer(),
-        InkWell(
-          borderRadius: BorderRadius.circular(10),
-          onTap: () {
-            context.push('/wallet-settings/test-backup');
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: context.colour.error.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                FaIcon(
-                  FontAwesomeIcons.triangleExclamation,
-                  color: context.colour.error,
-                  size: 16,
-                ),
-                const Gap(8),
-                const BBText.errorSmall('Back up your wallet! Tap to test backup.'),
-              ],
-            ),
-          ),
-        ),
-        const Spacer(),
-      ],
     );
   }
 }
@@ -309,225 +263,6 @@ class _HomeHeaderCardsState extends State<HomeHeaderCards> {
               },
             ),
           ],
-        ],
-      ),
-    );
-  }
-}
-
-class HomeTxList extends StatelessWidget {
-  const HomeTxList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final syncing = context.select((WalletBloc x) => x.state.syncing);
-    final loading = context.select((WalletBloc x) => x.state.loadingTxs);
-    final loadingBal = context.select((WalletBloc x) => x.state.loadingBalance);
-
-    final confirmedTXs = context.select((WalletBloc x) => x.state.wallet?.getConfirmedTxs() ?? []);
-    final pendingTXs = context.select((WalletBloc x) => x.state.wallet?.getPendingTxs() ?? []);
-    final zeroPending = pendingTXs.isEmpty;
-
-    if ((loading || syncing || loadingBal) && confirmedTXs.isEmpty && pendingTXs.isEmpty) {
-      return TopCenter(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 48.0,
-          ),
-          child: SizedBox(
-            height: 32,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: const BBLoadingRow().animate().fadeIn(),
-            ),
-          ),
-        ),
-      );
-    }
-
-    if (confirmedTXs.isEmpty && pendingTXs.isEmpty) {
-      return TopLeft(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 48.0,
-            vertical: 24,
-          ),
-          child: const BBText.titleLarge('No Transaction yet').animate(delay: 300.ms).fadeIn(),
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (syncing || loading || loadingBal)
-            SizedBox(
-              height: 32,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: const BBLoadingRow().animate().fadeIn(),
-              ),
-            )
-          else
-            const Gap(32),
-          if (pendingTXs.isNotEmpty) ...[
-            const BBText.titleLarge('    Pending Transactions', isBold: true),
-            ...pendingTXs.map((tx) => HomeTxItem(tx: tx)),
-            const Gap(32),
-          ],
-          if (confirmedTXs.isNotEmpty) ...[
-            if (!zeroPending)
-              const BBText.titleLarge('    Confirmed Transactions', isBold: true)
-            else
-              const BBText.titleLarge('    Transactions', isBold: true),
-            const Gap(8),
-            ...confirmedTXs.map((tx) => HomeTxItem(tx: tx)),
-            const Gap(100),
-          ],
-        ],
-      ),
-    ).animate().fadeIn();
-  }
-}
-
-class HomeTxItem extends StatelessWidget {
-  const HomeTxItem({super.key, required this.tx});
-
-  final Transaction tx;
-
-  @override
-  Widget build(BuildContext context) {
-    final label = tx.label ?? '';
-
-    final amount = context
-        .select((SettingsCubit x) => x.state.getAmountInUnits(tx.getAmount(sentAsTotal: true)));
-
-    final isReceive = tx.isReceived();
-
-    final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
-
-    return InkWell(
-      onTap: () {
-        context.push('/tx', extra: tx);
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 8,
-          bottom: 16,
-          left: 24,
-          right: 8,
-        ),
-        child: Row(
-          children: [
-            Container(
-              transformAlignment: Alignment.center,
-              transform: Matrix4.identity()..rotateZ(isReceive ? 1.6 : -1.6),
-              child: const FaIcon(FontAwesomeIcons.arrowRight),
-            ),
-            const Gap(8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BBText.titleLarge(amt),
-                if (label.isNotEmpty) ...[
-                  const Gap(4),
-                  BBText.bodySmall(label),
-                ],
-              ],
-            ),
-            const Spacer(),
-            if (tx.getBroadcastDateTime() != null)
-              BBText.body(timeago.format(tx.getBroadcastDateTime()!))
-            else
-              BBText.bodySmall(
-                (tx.timestamp == null || tx.timestamp == 0) ? 'Pending' : tx.getDateTimeStr(),
-                // : timeago.format(tx.getDateTime()),
-                removeColourOpacity: true,
-              ),
-            // Align(
-            //   alignment: Alignment.bottomRight,
-            //   child: BBText.bodySmall(
-            //     label,
-            //   ),
-            // ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class HomeActionButtons extends StatelessWidget {
-  const HomeActionButtons({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final hasWallets = context.select((HomeCubit x) => x.state.hasWallets());
-
-    if (!hasWallets) return const SizedBox.shrink();
-
-    final buttonWidth = (MediaQuery.of(context).size.width / 2) - 40;
-
-    // const buttonWidth = double.maxFinite;
-    //128.0;
-
-    final color = context.colour.background;
-
-    return Container(
-      padding: const EdgeInsets.only(
-        bottom: 16,
-        top: 48,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            color,
-            color,
-            color,
-            color,
-            color,
-            color,
-            color,
-            color.withOpacity(0.9),
-            color.withOpacity(0.5),
-            color.withOpacity(0.0),
-          ],
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: buttonWidth,
-            child: BBButton.smallRed(
-              filled: true,
-              onPressed: () async {
-                context.push('/send');
-                // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
-
-                // await SendPage.SendPage.openSendPopUp(context, wallet);
-              },
-              label: 'Send',
-            ),
-          ),
-          const SizedBox(width: 16),
-          SizedBox(
-            width: buttonWidth,
-            child: BBButton.smallRed(
-              filled: true,
-              onPressed: () async {
-                context.push('/receive');
-                // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
-
-                // await ReceiveScreen.openPopUp(context, wallet);
-              },
-              label: 'Receive',
-            ),
-          ),
         ],
       ),
     );

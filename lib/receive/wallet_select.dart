@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/_ui/home_card.dart';
+import 'package:bb_mobile/_ui/wallet_card.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
