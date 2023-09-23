@@ -30,13 +30,13 @@ mixin _$Transaction2 {
   String? get fromAddress => throw _privateConstructorUsedError;
   String? get toAddress => throw _privateConstructorUsedError;
   String? get psbt => throw _privateConstructorUsedError;
-  bool? get rbfEnabled => throw _privateConstructorUsedError;
+  bool get rbfEnabled => throw _privateConstructorUsedError;
   bool get oldTx => throw _privateConstructorUsedError;
   int? get broadcastTime =>
       throw _privateConstructorUsedError; // String? serializedTx,
-  List<String>? get vins => throw _privateConstructorUsedError; // address:vin[]
-  List<String>? get vouts =>
-      throw _privateConstructorUsedError; // address:vout[]
+  List<String>? get inAddresses => throw _privateConstructorUsedError;
+  List<String>? get outAddresses => throw _privateConstructorUsedError;
+  List<Address> get outAddrs => throw _privateConstructorUsedError;
   @JsonKey(includeFromJson: false, includeToJson: false)
   bdk.TransactionDetails? get bdkTx => throw _privateConstructorUsedError;
 
@@ -63,11 +63,12 @@ abstract class $Transaction2CopyWith<$Res> {
       String? fromAddress,
       String? toAddress,
       String? psbt,
-      bool? rbfEnabled,
+      bool rbfEnabled,
       bool oldTx,
       int? broadcastTime,
-      List<String>? vins,
-      List<String>? vouts,
+      List<String>? inAddresses,
+      List<String>? outAddresses,
+      List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       bdk.TransactionDetails? bdkTx});
 }
@@ -95,11 +96,12 @@ class _$Transaction2CopyWithImpl<$Res, $Val extends Transaction2>
     Object? fromAddress = freezed,
     Object? toAddress = freezed,
     Object? psbt = freezed,
-    Object? rbfEnabled = freezed,
+    Object? rbfEnabled = null,
     Object? oldTx = null,
     Object? broadcastTime = freezed,
-    Object? vins = freezed,
-    Object? vouts = freezed,
+    Object? inAddresses = freezed,
+    Object? outAddresses = freezed,
+    Object? outAddrs = null,
     Object? bdkTx = freezed,
   }) {
     return _then(_value.copyWith(
@@ -143,10 +145,10 @@ class _$Transaction2CopyWithImpl<$Res, $Val extends Transaction2>
           ? _value.psbt
           : psbt // ignore: cast_nullable_to_non_nullable
               as String?,
-      rbfEnabled: freezed == rbfEnabled
+      rbfEnabled: null == rbfEnabled
           ? _value.rbfEnabled
           : rbfEnabled // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as bool,
       oldTx: null == oldTx
           ? _value.oldTx
           : oldTx // ignore: cast_nullable_to_non_nullable
@@ -155,14 +157,18 @@ class _$Transaction2CopyWithImpl<$Res, $Val extends Transaction2>
           ? _value.broadcastTime
           : broadcastTime // ignore: cast_nullable_to_non_nullable
               as int?,
-      vins: freezed == vins
-          ? _value.vins
-          : vins // ignore: cast_nullable_to_non_nullable
+      inAddresses: freezed == inAddresses
+          ? _value.inAddresses
+          : inAddresses // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      vouts: freezed == vouts
-          ? _value.vouts
-          : vouts // ignore: cast_nullable_to_non_nullable
+      outAddresses: freezed == outAddresses
+          ? _value.outAddresses
+          : outAddresses // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      outAddrs: null == outAddrs
+          ? _value.outAddrs
+          : outAddrs // ignore: cast_nullable_to_non_nullable
+              as List<Address>,
       bdkTx: freezed == bdkTx
           ? _value.bdkTx
           : bdkTx // ignore: cast_nullable_to_non_nullable
@@ -190,11 +196,12 @@ abstract class _$$_Transaction2CopyWith<$Res>
       String? fromAddress,
       String? toAddress,
       String? psbt,
-      bool? rbfEnabled,
+      bool rbfEnabled,
       bool oldTx,
       int? broadcastTime,
-      List<String>? vins,
-      List<String>? vouts,
+      List<String>? inAddresses,
+      List<String>? outAddresses,
+      List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       bdk.TransactionDetails? bdkTx});
 }
@@ -220,11 +227,12 @@ class __$$_Transaction2CopyWithImpl<$Res>
     Object? fromAddress = freezed,
     Object? toAddress = freezed,
     Object? psbt = freezed,
-    Object? rbfEnabled = freezed,
+    Object? rbfEnabled = null,
     Object? oldTx = null,
     Object? broadcastTime = freezed,
-    Object? vins = freezed,
-    Object? vouts = freezed,
+    Object? inAddresses = freezed,
+    Object? outAddresses = freezed,
+    Object? outAddrs = null,
     Object? bdkTx = freezed,
   }) {
     return _then(_$_Transaction2(
@@ -268,10 +276,10 @@ class __$$_Transaction2CopyWithImpl<$Res>
           ? _value.psbt
           : psbt // ignore: cast_nullable_to_non_nullable
               as String?,
-      rbfEnabled: freezed == rbfEnabled
+      rbfEnabled: null == rbfEnabled
           ? _value.rbfEnabled
           : rbfEnabled // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as bool,
       oldTx: null == oldTx
           ? _value.oldTx
           : oldTx // ignore: cast_nullable_to_non_nullable
@@ -280,14 +288,18 @@ class __$$_Transaction2CopyWithImpl<$Res>
           ? _value.broadcastTime
           : broadcastTime // ignore: cast_nullable_to_non_nullable
               as int?,
-      vins: freezed == vins
-          ? _value._vins
-          : vins // ignore: cast_nullable_to_non_nullable
+      inAddresses: freezed == inAddresses
+          ? _value._inAddresses
+          : inAddresses // ignore: cast_nullable_to_non_nullable
               as List<String>?,
-      vouts: freezed == vouts
-          ? _value._vouts
-          : vouts // ignore: cast_nullable_to_non_nullable
+      outAddresses: freezed == outAddresses
+          ? _value._outAddresses
+          : outAddresses // ignore: cast_nullable_to_non_nullable
               as List<String>?,
+      outAddrs: null == outAddrs
+          ? _value._outAddrs
+          : outAddrs // ignore: cast_nullable_to_non_nullable
+              as List<Address>,
       bdkTx: freezed == bdkTx
           ? _value.bdkTx
           : bdkTx // ignore: cast_nullable_to_non_nullable
@@ -310,14 +322,16 @@ class _$_Transaction2 extends _Transaction2 {
       this.fromAddress,
       this.toAddress,
       this.psbt,
-      this.rbfEnabled,
+      this.rbfEnabled = false,
       this.oldTx = false,
       this.broadcastTime,
-      final List<String>? vins,
-      final List<String>? vouts,
+      final List<String>? inAddresses,
+      final List<String>? outAddresses,
+      final List<Address> outAddrs = const [],
       @JsonKey(includeFromJson: false, includeToJson: false) this.bdkTx})
-      : _vins = vins,
-        _vouts = vouts,
+      : _inAddresses = inAddresses,
+        _outAddresses = outAddresses,
+        _outAddrs = outAddrs,
         super._();
 
   factory _$_Transaction2.fromJson(Map<String, dynamic> json) =>
@@ -344,44 +358,51 @@ class _$_Transaction2 extends _Transaction2 {
   @override
   final String? psbt;
   @override
-  final bool? rbfEnabled;
+  @JsonKey()
+  final bool rbfEnabled;
   @override
   @JsonKey()
   final bool oldTx;
   @override
   final int? broadcastTime;
 // String? serializedTx,
-  final List<String>? _vins;
+  final List<String>? _inAddresses;
 // String? serializedTx,
   @override
-  List<String>? get vins {
-    final value = _vins;
+  List<String>? get inAddresses {
+    final value = _inAddresses;
     if (value == null) return null;
-    if (_vins is EqualUnmodifiableListView) return _vins;
+    if (_inAddresses is EqualUnmodifiableListView) return _inAddresses;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
 
-// address:vin[]
-  final List<String>? _vouts;
-// address:vin[]
+  final List<String>? _outAddresses;
   @override
-  List<String>? get vouts {
-    final value = _vouts;
+  List<String>? get outAddresses {
+    final value = _outAddresses;
     if (value == null) return null;
-    if (_vouts is EqualUnmodifiableListView) return _vouts;
+    if (_outAddresses is EqualUnmodifiableListView) return _outAddresses;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
 
-// address:vout[]
+  final List<Address> _outAddrs;
+  @override
+  @JsonKey()
+  List<Address> get outAddrs {
+    if (_outAddrs is EqualUnmodifiableListView) return _outAddrs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_outAddrs);
+  }
+
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   final bdk.TransactionDetails? bdkTx;
 
   @override
   String toString() {
-    return 'Transaction2(txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, timestamp: $timestamp, label: $label, fromAddress: $fromAddress, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, vins: $vins, vouts: $vouts, bdkTx: $bdkTx)';
+    return 'Transaction2(txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, timestamp: $timestamp, label: $label, fromAddress: $fromAddress, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, inAddresses: $inAddresses, outAddresses: $outAddresses, outAddrs: $outAddrs, bdkTx: $bdkTx)';
   }
 
   @override
@@ -408,8 +429,11 @@ class _$_Transaction2 extends _Transaction2 {
             (identical(other.oldTx, oldTx) || other.oldTx == oldTx) &&
             (identical(other.broadcastTime, broadcastTime) ||
                 other.broadcastTime == broadcastTime) &&
-            const DeepCollectionEquality().equals(other._vins, _vins) &&
-            const DeepCollectionEquality().equals(other._vouts, _vouts) &&
+            const DeepCollectionEquality()
+                .equals(other._inAddresses, _inAddresses) &&
+            const DeepCollectionEquality()
+                .equals(other._outAddresses, _outAddresses) &&
+            const DeepCollectionEquality().equals(other._outAddrs, _outAddrs) &&
             (identical(other.bdkTx, bdkTx) || other.bdkTx == bdkTx));
   }
 
@@ -430,8 +454,9 @@ class _$_Transaction2 extends _Transaction2 {
       rbfEnabled,
       oldTx,
       broadcastTime,
-      const DeepCollectionEquality().hash(_vins),
-      const DeepCollectionEquality().hash(_vouts),
+      const DeepCollectionEquality().hash(_inAddresses),
+      const DeepCollectionEquality().hash(_outAddresses),
+      const DeepCollectionEquality().hash(_outAddrs),
       bdkTx);
 
   @JsonKey(ignore: true)
@@ -460,11 +485,12 @@ abstract class _Transaction2 extends Transaction2 {
       final String? fromAddress,
       final String? toAddress,
       final String? psbt,
-      final bool? rbfEnabled,
+      final bool rbfEnabled,
       final bool oldTx,
       final int? broadcastTime,
-      final List<String>? vins,
-      final List<String>? vouts,
+      final List<String>? inAddresses,
+      final List<String>? outAddresses,
+      final List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       final bdk.TransactionDetails? bdkTx}) = _$_Transaction2;
   const _Transaction2._() : super._();
@@ -493,16 +519,18 @@ abstract class _Transaction2 extends Transaction2 {
   @override
   String? get psbt;
   @override
-  bool? get rbfEnabled;
+  bool get rbfEnabled;
   @override
   bool get oldTx;
   @override
   int? get broadcastTime;
   @override // String? serializedTx,
-  List<String>? get vins;
-  @override // address:vin[]
-  List<String>? get vouts;
-  @override // address:vout[]
+  List<String>? get inAddresses;
+  @override
+  List<String>? get outAddresses;
+  @override
+  List<Address> get outAddrs;
+  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   bdk.TransactionDetails? get bdkTx;
   @override

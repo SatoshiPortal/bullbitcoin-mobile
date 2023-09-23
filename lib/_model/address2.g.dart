@@ -9,31 +9,40 @@ part of 'address2.dart';
 _$_Address2 _$$_Address2FromJson(Map<String, dynamic> json) => _$_Address2(
       address: json['address'] as String,
       index: json['index'] as int,
-      type: $enumDecode(_$AddressTypeEnumMap, json['type']),
-      txVIns:
-          (json['txVIns'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      txVOuts:
-          (json['txVOuts'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      balance: json['balance'] as int? ?? 0,
-      label: json['label'] as String? ?? '',
+      kind: $enumDecode(_$AddressKindEnumMap, json['kind']),
+      state: $enumDecode(_$AddressStateEnumMap, json['state']),
+      label: json['label'] as String?,
+      spentTxId: json['spentTxId'] as String?,
+      isReceive: json['isReceive'] as bool?,
+      saving: json['saving'] as bool? ?? false,
+      errSaving: json['errSaving'] as String? ?? '',
+      highestPreviousBalance: json['highestPreviousBalance'] as int? ?? 0,
     );
 
 Map<String, dynamic> _$$_Address2ToJson(_$_Address2 instance) =>
     <String, dynamic>{
       'address': instance.address,
       'index': instance.index,
-      'type': _$AddressTypeEnumMap[instance.type]!,
-      'txVIns': instance.txVIns,
-      'txVOuts': instance.txVOuts,
-      'balance': instance.balance,
+      'kind': _$AddressKindEnumMap[instance.kind]!,
+      'state': _$AddressStateEnumMap[instance.state]!,
       'label': instance.label,
+      'spentTxId': instance.spentTxId,
+      'isReceive': instance.isReceive,
+      'saving': instance.saving,
+      'errSaving': instance.errSaving,
+      'highestPreviousBalance': instance.highestPreviousBalance,
     };
 
-const _$AddressTypeEnumMap = {
-  AddressType.receiveActive: 'receiveActive',
-  AddressType.receiveUnused: 'receiveUnused',
-  AddressType.receiveUsed: 'receiveUsed',
-  AddressType.changeActive: 'changeActive',
-  AddressType.changeUsed: 'changeUsed',
-  AddressType.notMine: 'notMine',
+const _$AddressKindEnumMap = {
+  AddressKind.deposit: 'deposit',
+  AddressKind.change: 'change',
+  AddressKind.external: 'external',
+};
+
+const _$AddressStateEnumMap = {
+  AddressState.unset: 'unset',
+  AddressState.unused: 'unused',
+  AddressState.active: 'active',
+  AddressState.frozen: 'frozen',
+  AddressState.used: 'used',
 };

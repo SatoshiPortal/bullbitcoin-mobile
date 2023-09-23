@@ -18,12 +18,19 @@ _$_Transaction2 _$$_Transaction2FromJson(Map<String, dynamic> json) =>
       fromAddress: json['fromAddress'] as String?,
       toAddress: json['toAddress'] as String?,
       psbt: json['psbt'] as String?,
-      rbfEnabled: json['rbfEnabled'] as bool?,
+      rbfEnabled: json['rbfEnabled'] as bool? ?? false,
       oldTx: json['oldTx'] as bool? ?? false,
       broadcastTime: json['broadcastTime'] as int?,
-      vins: (json['vins'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      vouts:
-          (json['vouts'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      inAddresses: (json['inAddresses'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      outAddresses: (json['outAddresses'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+      outAddrs: (json['outAddrs'] as List<dynamic>?)
+              ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$_Transaction2ToJson(_$_Transaction2 instance) =>
@@ -41,6 +48,7 @@ Map<String, dynamic> _$$_Transaction2ToJson(_$_Transaction2 instance) =>
       'rbfEnabled': instance.rbfEnabled,
       'oldTx': instance.oldTx,
       'broadcastTime': instance.broadcastTime,
-      'vins': instance.vins,
-      'vouts': instance.vouts,
+      'inAddresses': instance.inAddresses,
+      'outAddresses': instance.outAddresses,
+      'outAddrs': instance.outAddrs,
     };

@@ -385,7 +385,6 @@ class ImportWalletCubit extends Cubit<ImportState> {
         case ImportTypes.words12:
           final mnemonic = state.words12.join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
-
           final (ws, wErrs) = await walletSensCreate.allFromBIP39(
             mnemonic,
             passphrase,
@@ -484,17 +483,6 @@ class ImportWalletCubit extends Cubit<ImportState> {
       if (sErr != null) {
         emit(state.copyWith(errImporting: 'Error creating mnemonicSeed'));
       }
-      final err = await walletSensRepository.newSeed(seed: seed!, secureStore: secureStorage);
-
-      if (err != null) {
-        emit(
-          state.copyWith(
-            errSavingWallet: err.toString(),
-            savingWallet: false,
-          ),
-        );
-        return;
-      }
 
       if (state.passPhrase.isNotEmpty) {
         final passPhrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
@@ -502,11 +490,27 @@ class ImportWalletCubit extends Cubit<ImportState> {
         final passphrase =
             Passphrase(passphrase: passPhrase, sourceFingerprint: selectedWallet.sourceFingerprint);
 
+        // if seed exists - this will error with Seed Exists, but we ignore it
+        // else we create the seed
+        await walletSensRepository.newSeed(seed: seed!, secureStore: secureStorage);
+
         final err = await walletSensRepository.newPassphrase(
           passphrase: passphrase,
           secureStore: secureStorage,
-          seedFingerprintIndex: selectedWallet.sourceFingerprint,
+          seedFingerprintIndex: selectedWallet.getRelatedSeedStorageString(),
         );
+
+        if (err != null) {
+          emit(
+            state.copyWith(
+              errSavingWallet: err.toString(),
+              savingWallet: false,
+            ),
+          );
+          return;
+        }
+      } else {
+        final err = await walletSensRepository.newSeed(seed: seed!, secureStore: secureStorage);
 
         if (err != null) {
           emit(

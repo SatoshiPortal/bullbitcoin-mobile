@@ -22,14 +22,14 @@ Address2 _$Address2FromJson(Map<String, dynamic> json) {
 mixin _$Address2 {
   String get address => throw _privateConstructorUsedError;
   int get index => throw _privateConstructorUsedError;
-  AddressType get type => throw _privateConstructorUsedError;
-  List<String>? get txVIns => throw _privateConstructorUsedError; // txid:vin[]
-// notMine: receive tx, myChange/myDeposit: spend tx
-  List<String>? get txVOuts =>
-      throw _privateConstructorUsedError; // txid:vout[]
-// myDeposit: receive tx, notMine/myChange: spend tx
-  int? get balance => throw _privateConstructorUsedError;
+  AddressKind get kind => throw _privateConstructorUsedError;
+  AddressState get state => throw _privateConstructorUsedError;
   String? get label => throw _privateConstructorUsedError;
+  String? get spentTxId => throw _privateConstructorUsedError;
+  bool? get isReceive => throw _privateConstructorUsedError;
+  bool get saving => throw _privateConstructorUsedError;
+  String get errSaving => throw _privateConstructorUsedError;
+  int get highestPreviousBalance => throw _privateConstructorUsedError;
   @JsonKey(includeFromJson: false, includeToJson: false)
   List<LocalUtxo>? get utxos => throw _privateConstructorUsedError;
 
@@ -47,11 +47,14 @@ abstract class $Address2CopyWith<$Res> {
   $Res call(
       {String address,
       int index,
-      AddressType type,
-      List<String>? txVIns,
-      List<String>? txVOuts,
-      int? balance,
+      AddressKind kind,
+      AddressState state,
       String? label,
+      String? spentTxId,
+      bool? isReceive,
+      bool saving,
+      String errSaving,
+      int highestPreviousBalance,
       @JsonKey(includeFromJson: false, includeToJson: false)
       List<LocalUtxo>? utxos});
 }
@@ -71,11 +74,14 @@ class _$Address2CopyWithImpl<$Res, $Val extends Address2>
   $Res call({
     Object? address = null,
     Object? index = null,
-    Object? type = null,
-    Object? txVIns = freezed,
-    Object? txVOuts = freezed,
-    Object? balance = freezed,
+    Object? kind = null,
+    Object? state = null,
     Object? label = freezed,
+    Object? spentTxId = freezed,
+    Object? isReceive = freezed,
+    Object? saving = null,
+    Object? errSaving = null,
+    Object? highestPreviousBalance = null,
     Object? utxos = freezed,
   }) {
     return _then(_value.copyWith(
@@ -87,26 +93,38 @@ class _$Address2CopyWithImpl<$Res, $Val extends Address2>
           ? _value.index
           : index // ignore: cast_nullable_to_non_nullable
               as int,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as AddressType,
-      txVIns: freezed == txVIns
-          ? _value.txVIns
-          : txVIns // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      txVOuts: freezed == txVOuts
-          ? _value.txVOuts
-          : txVOuts // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      balance: freezed == balance
-          ? _value.balance
-          : balance // ignore: cast_nullable_to_non_nullable
-              as int?,
+      kind: null == kind
+          ? _value.kind
+          : kind // ignore: cast_nullable_to_non_nullable
+              as AddressKind,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as AddressState,
       label: freezed == label
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
               as String?,
+      spentTxId: freezed == spentTxId
+          ? _value.spentTxId
+          : spentTxId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isReceive: freezed == isReceive
+          ? _value.isReceive
+          : isReceive // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      saving: null == saving
+          ? _value.saving
+          : saving // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errSaving: null == errSaving
+          ? _value.errSaving
+          : errSaving // ignore: cast_nullable_to_non_nullable
+              as String,
+      highestPreviousBalance: null == highestPreviousBalance
+          ? _value.highestPreviousBalance
+          : highestPreviousBalance // ignore: cast_nullable_to_non_nullable
+              as int,
       utxos: freezed == utxos
           ? _value.utxos
           : utxos // ignore: cast_nullable_to_non_nullable
@@ -125,11 +143,14 @@ abstract class _$$_Address2CopyWith<$Res> implements $Address2CopyWith<$Res> {
   $Res call(
       {String address,
       int index,
-      AddressType type,
-      List<String>? txVIns,
-      List<String>? txVOuts,
-      int? balance,
+      AddressKind kind,
+      AddressState state,
       String? label,
+      String? spentTxId,
+      bool? isReceive,
+      bool saving,
+      String errSaving,
+      int highestPreviousBalance,
       @JsonKey(includeFromJson: false, includeToJson: false)
       List<LocalUtxo>? utxos});
 }
@@ -147,11 +168,14 @@ class __$$_Address2CopyWithImpl<$Res>
   $Res call({
     Object? address = null,
     Object? index = null,
-    Object? type = null,
-    Object? txVIns = freezed,
-    Object? txVOuts = freezed,
-    Object? balance = freezed,
+    Object? kind = null,
+    Object? state = null,
     Object? label = freezed,
+    Object? spentTxId = freezed,
+    Object? isReceive = freezed,
+    Object? saving = null,
+    Object? errSaving = null,
+    Object? highestPreviousBalance = null,
     Object? utxos = freezed,
   }) {
     return _then(_$_Address2(
@@ -163,26 +187,38 @@ class __$$_Address2CopyWithImpl<$Res>
           ? _value.index
           : index // ignore: cast_nullable_to_non_nullable
               as int,
-      type: null == type
-          ? _value.type
-          : type // ignore: cast_nullable_to_non_nullable
-              as AddressType,
-      txVIns: freezed == txVIns
-          ? _value._txVIns
-          : txVIns // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      txVOuts: freezed == txVOuts
-          ? _value._txVOuts
-          : txVOuts // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      balance: freezed == balance
-          ? _value.balance
-          : balance // ignore: cast_nullable_to_non_nullable
-              as int?,
+      kind: null == kind
+          ? _value.kind
+          : kind // ignore: cast_nullable_to_non_nullable
+              as AddressKind,
+      state: null == state
+          ? _value.state
+          : state // ignore: cast_nullable_to_non_nullable
+              as AddressState,
       label: freezed == label
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
               as String?,
+      spentTxId: freezed == spentTxId
+          ? _value.spentTxId
+          : spentTxId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isReceive: freezed == isReceive
+          ? _value.isReceive
+          : isReceive // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      saving: null == saving
+          ? _value.saving
+          : saving // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errSaving: null == errSaving
+          ? _value.errSaving
+          : errSaving // ignore: cast_nullable_to_non_nullable
+              as String,
+      highestPreviousBalance: null == highestPreviousBalance
+          ? _value.highestPreviousBalance
+          : highestPreviousBalance // ignore: cast_nullable_to_non_nullable
+              as int,
       utxos: freezed == utxos
           ? _value._utxos
           : utxos // ignore: cast_nullable_to_non_nullable
@@ -197,16 +233,17 @@ class _$_Address2 extends _Address2 {
   _$_Address2(
       {required this.address,
       required this.index,
-      required this.type,
-      final List<String>? txVIns,
-      final List<String>? txVOuts,
-      this.balance = 0,
-      this.label = '',
+      required this.kind,
+      required this.state,
+      this.label,
+      this.spentTxId,
+      this.isReceive,
+      this.saving = false,
+      this.errSaving = '',
+      this.highestPreviousBalance = 0,
       @JsonKey(includeFromJson: false, includeToJson: false)
       final List<LocalUtxo>? utxos})
-      : _txVIns = txVIns,
-        _txVOuts = txVOuts,
-        _utxos = utxos,
+      : _utxos = utxos,
         super._();
 
   factory _$_Address2.fromJson(Map<String, dynamic> json) =>
@@ -217,39 +254,24 @@ class _$_Address2 extends _Address2 {
   @override
   final int index;
   @override
-  final AddressType type;
-  final List<String>? _txVIns;
+  final AddressKind kind;
   @override
-  List<String>? get txVIns {
-    final value = _txVIns;
-    if (value == null) return null;
-    if (_txVIns is EqualUnmodifiableListView) return _txVIns;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-// txid:vin[]
-// notMine: receive tx, myChange/myDeposit: spend tx
-  final List<String>? _txVOuts;
-// txid:vin[]
-// notMine: receive tx, myChange/myDeposit: spend tx
+  final AddressState state;
   @override
-  List<String>? get txVOuts {
-    final value = _txVOuts;
-    if (value == null) return null;
-    if (_txVOuts is EqualUnmodifiableListView) return _txVOuts;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-// txid:vout[]
-// myDeposit: receive tx, notMine/myChange: spend tx
-  @override
-  @JsonKey()
-  final int? balance;
-  @override
-  @JsonKey()
   final String? label;
+  @override
+  final String? spentTxId;
+  @override
+  final bool? isReceive;
+  @override
+  @JsonKey()
+  final bool saving;
+  @override
+  @JsonKey()
+  final String errSaving;
+  @override
+  @JsonKey()
+  final int highestPreviousBalance;
   final List<LocalUtxo>? _utxos;
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -263,7 +285,7 @@ class _$_Address2 extends _Address2 {
 
   @override
   String toString() {
-    return 'Address2(address: $address, index: $index, type: $type, txVIns: $txVIns, txVOuts: $txVOuts, balance: $balance, label: $label, utxos: $utxos)';
+    return 'Address2(address: $address, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, isReceive: $isReceive, saving: $saving, errSaving: $errSaving, highestPreviousBalance: $highestPreviousBalance, utxos: $utxos)';
   }
 
   @override
@@ -273,11 +295,18 @@ class _$_Address2 extends _Address2 {
             other is _$_Address2 &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.index, index) || other.index == index) &&
-            (identical(other.type, type) || other.type == type) &&
-            const DeepCollectionEquality().equals(other._txVIns, _txVIns) &&
-            const DeepCollectionEquality().equals(other._txVOuts, _txVOuts) &&
-            (identical(other.balance, balance) || other.balance == balance) &&
+            (identical(other.kind, kind) || other.kind == kind) &&
+            (identical(other.state, state) || other.state == state) &&
             (identical(other.label, label) || other.label == label) &&
+            (identical(other.spentTxId, spentTxId) ||
+                other.spentTxId == spentTxId) &&
+            (identical(other.isReceive, isReceive) ||
+                other.isReceive == isReceive) &&
+            (identical(other.saving, saving) || other.saving == saving) &&
+            (identical(other.errSaving, errSaving) ||
+                other.errSaving == errSaving) &&
+            (identical(other.highestPreviousBalance, highestPreviousBalance) ||
+                other.highestPreviousBalance == highestPreviousBalance) &&
             const DeepCollectionEquality().equals(other._utxos, _utxos));
   }
 
@@ -287,11 +316,14 @@ class _$_Address2 extends _Address2 {
       runtimeType,
       address,
       index,
-      type,
-      const DeepCollectionEquality().hash(_txVIns),
-      const DeepCollectionEquality().hash(_txVOuts),
-      balance,
+      kind,
+      state,
       label,
+      spentTxId,
+      isReceive,
+      saving,
+      errSaving,
+      highestPreviousBalance,
       const DeepCollectionEquality().hash(_utxos));
 
   @JsonKey(ignore: true)
@@ -312,11 +344,14 @@ abstract class _Address2 extends Address2 {
   factory _Address2(
       {required final String address,
       required final int index,
-      required final AddressType type,
-      final List<String>? txVIns,
-      final List<String>? txVOuts,
-      final int? balance,
+      required final AddressKind kind,
+      required final AddressState state,
       final String? label,
+      final String? spentTxId,
+      final bool? isReceive,
+      final bool saving,
+      final String errSaving,
+      final int highestPreviousBalance,
       @JsonKey(includeFromJson: false, includeToJson: false)
       final List<LocalUtxo>? utxos}) = _$_Address2;
   _Address2._() : super._();
@@ -328,17 +363,21 @@ abstract class _Address2 extends Address2 {
   @override
   int get index;
   @override
-  AddressType get type;
+  AddressKind get kind;
   @override
-  List<String>? get txVIns;
-  @override // txid:vin[]
-// notMine: receive tx, myChange/myDeposit: spend tx
-  List<String>? get txVOuts;
-  @override // txid:vout[]
-// myDeposit: receive tx, notMine/myChange: spend tx
-  int? get balance;
+  AddressState get state;
   @override
   String? get label;
+  @override
+  String? get spentTxId;
+  @override
+  bool? get isReceive;
+  @override
+  bool get saving;
+  @override
+  String get errSaving;
+  @override
+  int get highestPreviousBalance;
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   List<LocalUtxo>? get utxos;

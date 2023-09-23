@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="testRunner" value="GRADLE" />
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="$USER_HOME$/.sdkman/candidates/gradle/current" />
+        <option name="gradleJvm" value="jbr-17" />
+        <option name="modules">
+          <set>
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/bdk_flutter-0.28.3/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/document_file_save_plus-2.0.0/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/file_picker-5.5.0/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_barcode_scanner-2.0.0/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_file_dialog-3.0.2/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_native_splash-2.3.2/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_plugin_android_lifecycle-2.0.16/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/flutter_secure_storage-8.1.0/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/nfc_manager-3.3.0/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/path_provider_android-2.2.0/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/uni_links-0.5.1/android" />
+            <option value="$USER_HOME$/.pub-cache/hosted/pub.dev/url_launcher_android-6.1.0/android" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="/opt/flutter/packages/integration_test/android" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
