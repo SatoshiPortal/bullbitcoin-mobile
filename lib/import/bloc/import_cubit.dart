@@ -349,7 +349,12 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void recoverWallet12Clicked() async {
-    emit(state.copyWith(importType: ImportTypes.words12, errImporting: ''));
+    emit(
+      state.copyWith(
+        importType: ImportTypes.words12,
+        errImporting: '',
+      ),
+    );
     for (final word in state.words12)
       if (word.isEmpty) {
         emit(state.copyWith(errImporting: 'Please fill all words'));
@@ -362,7 +367,12 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void recoverWallet24Clicked() async {
-    emit(state.copyWith(importType: ImportTypes.words24, errImporting: ''));
+    emit(
+      state.copyWith(
+        importType: ImportTypes.words24,
+        errImporting: '',
+      ),
+    );
     for (final word in state.words24)
       if (word.isEmpty) {
         emit(state.copyWith(errImporting: 'Please fill all words'));

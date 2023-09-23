@@ -37,44 +37,47 @@ class ImportEnterWordsScreen24 extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Gap(32),
-              SegmentedButton(
-                style: ButtonStyle(
-                  iconColor: MaterialStatePropertyAll<Color>(
-                    context.colour.onBackground,
+              const Gap(22),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: SegmentedButton(
+                  style: ButtonStyle(
+                    iconColor: MaterialStatePropertyAll<Color>(
+                      context.colour.onBackground,
+                    ),
+                    backgroundColor: MaterialStatePropertyAll<Color>(
+                      context.colour.onPrimary,
+                    ),
                   ),
-                  backgroundColor: MaterialStatePropertyAll<Color>(
-                    context.colour.onPrimary,
-                  ),
+                  segments: <ButtonSegment<ImportTypes>>[
+                    ButtonSegment(
+                      value: ImportTypes.words12,
+                      label: Text(
+                        '12 words',
+                        style: TextStyle(
+                          color: context.colour.onBackground,
+                        ),
+                      ),
+                    ),
+                    ButtonSegment(
+                      value: ImportTypes.words24,
+                      label: Text(
+                        '24 words',
+                        style: TextStyle(
+                          color: context.colour.onBackground,
+                        ),
+                      ),
+                    )
+                  ],
+                  selected: const <ImportTypes>{
+                    importwords,
+                  },
+                  onSelectionChanged: (p0) {
+                    context.read<ImportWalletCubit>().recoverClicked();
+                  },
                 ),
-                segments: <ButtonSegment<ImportTypes>>[
-                  ButtonSegment(
-                    value: ImportTypes.words12,
-                    label: Text(
-                      '12 words',
-                      style: TextStyle(
-                        color: context.colour.onBackground,
-                      ),
-                    ),
-                  ),
-                  ButtonSegment(
-                    value: ImportTypes.words24,
-                    label: Text(
-                      '24 words',
-                      style: TextStyle(
-                        color: context.colour.onBackground,
-                      ),
-                    ),
-                  )
-                ],
-                selected: const <ImportTypes>{
-                  importwords,
-                },
-                onSelectionChanged: (p0) {
-                  context.read<ImportWalletCubit>().recoverClicked();
-                },
               ),
-              const Gap(32),
+              const Gap(25),
               Row(
                 children: [
                   Expanded(
@@ -232,7 +235,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
       link: layerLink,
       child: Container(
         margin: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-        height: 66,
+        height: 45,
         child: Row(
           children: [
             SizedBox(
@@ -242,7 +245,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                 textAlign: TextAlign.right,
               ),
             ),
-            const Gap(6),
+            const Gap(5),
             Expanded(
               child: CallbackShortcuts(
                 bindings: {
@@ -269,14 +272,9 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
   }
 }
 
-class _ImportWordsPassphrase extends StatefulWidget {
+class _ImportWordsPassphrase extends StatelessWidget {
   const _ImportWordsPassphrase();
 
-  @override
-  State<_ImportWordsPassphrase> createState() => _ImportWordsPassphraseState();
-}
-
-class _ImportWordsPassphraseState extends State<_ImportWordsPassphrase> {
   @override
   Widget build(BuildContext context) {
     final text = context.select((ImportWalletCubit cubit) => cubit.state.passPhrase);
