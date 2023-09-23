@@ -507,7 +507,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         final err = await walletSensRepository.newPassphrase(
           passphrase: passphrase,
           secureStore: secureStorage,
-          seedFingerprintIndex: selectedWallet.getRelatedSeedStorageString(),
+          seedFingerprintIndex: seed.getSeedStorageString(),
         );
 
         if (err != null) {
