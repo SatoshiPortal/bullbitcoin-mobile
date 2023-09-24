@@ -251,16 +251,21 @@ class _HomeHeaderCardsState extends State<HomeHeaderCards> {
         ),
         items: [
           for (final w in walletCubits) ...[
-            Builder(
-              builder: (context) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: BlocProvider.value(
-                    value: w,
-                    child: const HomeCard(),
-                  ),
-                );
-              },
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: BlocProvider.value(
+                value: w,
+                child: Builder(
+                  builder: (context) {
+                    return HomeCard(
+                      onTap: () {
+                        final walletBloc = context.read<WalletBloc>();
+                        context.push('/wallet', extra: walletBloc);
+                      },
+                    );
+                  },
+                ),
+              ),
             ),
           ],
         ],

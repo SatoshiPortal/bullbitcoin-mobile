@@ -83,14 +83,12 @@ class SelectWalletScreen extends StatelessWidget {
             const BBText.body('Select wallet to receive in'),
             const Gap(24),
             for (final wallet in walletBlocs) ...[
-              InkWell(
-                onTap: () {
-                  context.read<SelectReceiveWalletStep>().goNext(wallet);
-                },
-                borderRadius: BorderRadius.circular(32),
-                child: BlocProvider.value(
-                  value: wallet,
-                  child: const HomeCard(hideSettings: true),
+              BlocProvider.value(
+                value: wallet,
+                child: HomeCard(
+                  onTap: () {
+                    context.read<SelectReceiveWalletStep>().goNext(wallet);
+                  },
                 ),
               ),
               const Gap(16),

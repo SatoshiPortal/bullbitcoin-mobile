@@ -12,9 +12,10 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeCard extends StatelessWidget {
-  const HomeCard({super.key, this.hideSettings = false});
+  const HomeCard({super.key, this.hideSettings = false, required this.onTap});
 
   final bool hideSettings;
+  final Function onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +28,9 @@ class HomeCard extends StatelessWidget {
     return Hero(
       tag: 'wallet-card',
       child: InkWell(
+        radius: 32,
         onTap: () {
-          final walletBloc = context.read<WalletBloc>();
-          context.push('/wallet', extra: walletBloc);
+          onTap();
         },
         child: Material(
           key: Key(keyName),
