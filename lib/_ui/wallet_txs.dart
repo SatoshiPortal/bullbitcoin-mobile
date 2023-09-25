@@ -145,7 +145,10 @@ class HomeTxItem extends StatelessWidget {
             ),
             const Spacer(),
             if (tx.getBroadcastDateTime() != null)
-              BBText.body(timeago.format(tx.getBroadcastDateTime()!))
+              BBText.bodySmall(
+                timeago.format(tx.getBroadcastDateTime()!),
+                removeColourOpacity: true,
+              )
             else
               BBText.bodySmall(
                 (tx.timestamp == null || tx.timestamp == 0) ? 'Pending' : tx.getDateTimeStr(),
