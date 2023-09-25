@@ -483,13 +483,12 @@ class SendCubit extends Cubit<SendState> {
     //   return;
     // }
     final (_, updatedWallet) = await walletAddress.addAddressToWallet(
-      address: (1, state.address),
+      address: (null, state.address),
       wallet: wallet,
       label: state.note,
-      sentTxId: txid,
-      isSend: true,
-      isMine: false,
-      type: AddressType.notMine,
+      spentTxId: txid,
+      kind: AddressKind.external,
+      state: AddressStatus.used,
     );
 
     final err2 = await walletRepository.updateWallet(

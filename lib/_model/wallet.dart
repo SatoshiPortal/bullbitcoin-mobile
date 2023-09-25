@@ -110,7 +110,7 @@ class Wallet with _$Wallet {
   Address? getAddressFromAddresses(String txid, {bool isSend = false}) {
     for (final address in (isSend ? toAddresses : addresses) ?? <Address>[])
       if (isSend) {
-        if (address.sentTxId == txid) {
+        if (address.spentTxId == txid) {
           return address;
         }
       } else {
@@ -215,7 +215,11 @@ class Wallet with _$Wallet {
     final all = <Address>[];
     all.addAll(addresses);
     all.addAll(toAddresses ?? <Address>[]);
-    return all.where((addr) => addr.unspendable).toList();
+    return all
+        .where(
+          (addr) => addr.state == AddressStatus.frozen,
+        )
+        .toList();
   }
 
   bool isActive() {

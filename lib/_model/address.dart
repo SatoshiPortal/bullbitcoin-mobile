@@ -7,28 +7,31 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'address.freezed.dart';
 part 'address.g.dart';
 
-enum AddressType {
-  receiveActive,
-  receiveUnused,
-  receiveUsed,
-  changeActive,
-  changeUsed,
-  notMine,
+enum AddressKind {
+  deposit,
+  change,
+  external,
+}
+
+enum AddressStatus {
+  unset,
+  unused,
+  active,
+  frozen,
+  used,
 }
 
 @freezed
 class Address with _$Address {
   factory Address({
     required String address,
-    required int index,
-    required AddressType type,
+    int? index,
+    required AddressKind kind,
+    required AddressStatus state,
     String? label,
-    String? sentTxId,
-    bool? isReceive,
+    String? spentTxId,
     @Default(false) bool saving,
     @Default('') String errSaving,
-    @Default(false) bool unspendable,
-    @Default(true) bool isMine,
     @Default(0) int highestPreviousBalance,
     @JsonKey(
       includeFromJson: false,
@@ -62,37 +65,6 @@ class Address with _$Address {
 
   bool hasExternal() {
     return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.External).isNotEmpty ?? false;
-  }
-
-  bool hasReceive() {
-    return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.External).isNotEmpty ?? false;
-  }
-
-  AddressType getAddressType() {
-    final isChange = hasInternal() || (isReceive != null && !isReceive!);
-    if (calculateBalance() > 0) {
-      if (isChange) return AddressType.changeActive;
-      return AddressType.receiveActive;
-    }
-
-    if (highestPreviousBalance > 0) {
-      if (isChange) return AddressType.changeUsed;
-      return AddressType.receiveUsed;
-    }
-    if (!isMine) return AddressType.notMine;
-    return AddressType.receiveUnused;
-  }
-
-  bool isReceiving() {
-    final type = getAddressType();
-    switch (type) {
-      case AddressType.receiveActive:
-      case AddressType.receiveUnused:
-      case AddressType.receiveUsed:
-        return true;
-      default:
-        return false;
-    }
   }
 
   String miniString() {

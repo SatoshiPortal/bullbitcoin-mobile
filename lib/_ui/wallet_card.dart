@@ -25,22 +25,19 @@ class HomeCard extends StatelessWidget {
     final (_, info) = WalletCardDetails.cardDetails(context, wallet);
     final keyName = 'home_card_$info';
 
-    return Hero(
-      tag: 'wallet-card',
-      child: InkWell(
-        radius: 32,
-        onTap: () {
-          onTap();
-        },
-        child: Material(
-          key: Key(keyName),
-          elevation: 4,
-          borderRadius: BorderRadius.circular(32),
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          child: AspectRatio(
-            aspectRatio: 2 / 1,
-            child: WalletCardDetails(hideSettings: hideSettings),
-          ),
+    return InkWell(
+      radius: 32,
+      onTap: () {
+        onTap();
+      },
+      child: Material(
+        key: Key(keyName),
+        elevation: 4,
+        borderRadius: BorderRadius.circular(32),
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        child: AspectRatio(
+          aspectRatio: 2 / 1,
+          child: WalletCardDetails(hideSettings: hideSettings),
         ),
       ),
     );

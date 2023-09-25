@@ -269,9 +269,9 @@ class TransactionCubit extends Cubit<TransactionState> {
       address: (1, tx.toAddress!),
       wallet: w,
       label: tx.label,
-      sentTxId: txid,
-      isSend: true,
-      type: AddressType.notMine,
+      spentTxId: txid,
+      kind: AddressKind.external,
+      state: AddressStatus.used,
     );
 
     final txs = walletBloc.state.wallet!.transactions.toList();

@@ -175,7 +175,7 @@ class AddressDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final address = context.select((AddressCubit cubit) => cubit.state.address!);
     final label = address.label ?? '';
-    final isReceive = address.isReceiving();
+    final isReceive = address.kind == AddressKind.deposit;
     final balance = address.calculateBalance();
     final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(balance));
 
@@ -209,7 +209,9 @@ class AddressActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final frozen = context.select((AddressCubit cubit) => cubit.state.address!.unspendable);
+    final bool frozen = context.select(
+      (AddressCubit cubit) => cubit.state.address!.state == AddressStatus.frozen,
+    );
     final freezing = context.select((AddressCubit cubit) => cubit.state.freezingAddress);
     final hasUtxos =
         context.select((AddressCubit cubit) => cubit.state.address!.utxos?.isNotEmpty ?? false);

@@ -60,7 +60,8 @@ class WalletAddress {
           lastUnusedAddress: Address(
             address: addressLastUnused.address,
             index: addressLastUnused.index,
-            type: AddressType.receiveUnused,
+            kind: AddressKind.deposit,
+            state: AddressStatus.unused,
           ),
         );
       } else if (wallet.lastUnusedAddress!.index == addressLastUnused.index) {
@@ -79,7 +80,8 @@ class WalletAddress {
             Address(
               address: address.address,
               index: address.index,
-              type: AddressType.receiveUnused,
+              kind: AddressKind.deposit,
+              state: AddressStatus.unset,
             ),
           );
       }
@@ -88,7 +90,8 @@ class WalletAddress {
         lastUnusedAddress: Address(
           address: addressLastUnused.address,
           index: addressLastUnused.index,
-          type: AddressType.receiveUnused,
+          kind: AddressKind.deposit,
+          state: AddressStatus.unused,
         ),
       );
 
@@ -129,13 +132,14 @@ class WalletAddress {
         late String txLabel = '';
         final address = addresses.firstWhere(
           (a) => a.address == addressStr,
+          // if the address does not exist, its because its new change
           orElse: () => Address(
             address: addressStr,
-            isReceive: true,
-            type: AddressType.changeActive,
-            index: -1, // do not use negative index
+            kind: AddressKind.change,
+            state: AddressStatus.active,
           ),
         );
+
         final utxos = address.utxos?.toList() ?? [];
         for (final tx in wallet.transactions) {
           for (final addrs in tx.outAddresses ?? []) {
@@ -150,15 +154,17 @@ class WalletAddress {
         if (utxos.indexWhere((u) => u.outpoint.txid == unspent.outpoint.txid) == -1)
           utxos.add(unspent);
 
-        var updated = address.copyWith(utxos: utxos, label: isRelated ? address.label : txLabel);
+        var updated = address.copyWith(
+          utxos: utxos,
+          label: isRelated ? address.label : txLabel,
+          state: AddressStatus.active,
+        );
 
         if (updated.calculateBalance() > 0 &&
             updated.calculateBalance() > updated.highestPreviousBalance)
           updated = updated.copyWith(
             highestPreviousBalance: updated.calculateBalance(),
           );
-
-        if (updated.isReceive == null) updated = updated.copyWith(isReceive: updated.hasReceive());
 
         addresses.removeWhere((a) => a.address == address.address);
         addresses.add(updated);
@@ -172,33 +178,32 @@ class WalletAddress {
   }
 
   Future<(Address, Wallet)> addAddressToWallet({
-    required (int, String) address,
+    required (int?, String) address,
     required Wallet wallet,
     String? label,
-    bool isSend = false,
-    String? sentTxId,
-    bool? freeze,
-    bool isMine = true,
-    AddressType? type,
+    String? spentTxId,
+    AddressKind? kind,
+    AddressStatus state = AddressStatus.unset,
   }) async {
     try {
       final (idx, adr) = address;
-      final addresses =
-          (isSend ? wallet.toAddresses?.toList() : wallet.addresses.toList()) ?? <Address>[];
+      final addresses = (kind == AddressKind.external
+              ? wallet.toAddresses?.toList()
+              : wallet.addresses.toList()) ??
+          <Address>[];
 
       Address a;
 
       final existing = addresses.indexWhere(
         (element) => element.address == adr,
       );
-      if (existing != -1) {
+      final addressExists = existing != -1;
+      if (addressExists) {
         a = addresses.removeAt(existing);
-        if (freeze != null) a = a.copyWith(unspendable: freeze);
         a = a.copyWith(
           label: label,
-          sentTxId: sentTxId,
-          isReceive: !isSend,
-          isMine: isMine,
+          spentTxId: spentTxId,
+          state: state,
         );
         addresses.insert(existing, a);
       } else {
@@ -206,21 +211,32 @@ class WalletAddress {
           address: adr,
           index: idx,
           label: label,
-          sentTxId: sentTxId,
-          isReceive: !isSend,
-          isMine: isMine, // !isSend does not always mean isMine - change isMine and isSend
-          type: type!,
+          spentTxId: spentTxId,
+          kind: kind!,
+          state: state,
         );
-        if (freeze != null) a = a.copyWith(unspendable: freeze);
         addresses.add(a);
       }
 
-      final w =
-          isSend ? wallet.copyWith(toAddresses: addresses) : wallet.copyWith(addresses: addresses);
+      final w = kind == AddressKind.external
+          ? wallet.copyWith(toAddresses: addresses)
+          : wallet.copyWith(addresses: addresses);
 
       return (a, w);
     } catch (e) {
       rethrow;
     }
+
+    // Future<Err?> freezeUtxo({
+    //   required String address,
+    //   required bdk.Wallet bdkWallet,
+    // }) async {
+    //   try {
+    //     //
+    //     return null;
+    //   } catch (e) {
+    //     rethrow;
+    //   }
+    // }
   }
 }

@@ -79,19 +79,16 @@ class WalletUpdate {
               print('DEPOSIT');
               linkedAddress = Address(
                 address: addressStr,
-                index: -1,
-                isReceive: true,
-                type: AddressType.receiveActive,
+                kind: AddressKind.deposit,
+                state: AddressStatus.used,
               );
               outAddrs.add(linkedAddress);
             } else {
               print('SENDERS CHANGE');
               linkedAddress = Address(
                 address: addressStr,
-                index: -1,
-                isReceive: true,
-                isMine: false,
-                type: AddressType.notMine,
+                kind: AddressKind.external,
+                state: AddressStatus.unset,
               );
             }
           } else {
@@ -100,9 +97,8 @@ class WalletUpdate {
               linkedAddress = Address(
                 address: addressStr,
                 label: 'inherit-tx-label',
-                index: -1,
-                isReceive: false,
-                type: AddressType.changeActive,
+                kind: AddressKind.change,
+                state: AddressStatus.used,
               );
               outAddrs.add(linkedAddress);
 
@@ -110,10 +106,8 @@ class WalletUpdate {
             } else {
               linkedAddress = Address(
                 address: addressStr,
-                index: -1,
-                isReceive: false,
-                isMine: false,
-                type: AddressType.notMine,
+                kind: AddressKind.external,
+                state: AddressStatus.unset,
               );
 
               outAddrs.add(linkedAddress);

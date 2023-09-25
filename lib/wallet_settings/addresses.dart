@@ -75,7 +75,7 @@ class AddressesScreen extends HookWidget {
           //   ],
           // ),
           const Gap(24),
-          SelectAddressType(
+          SelectAddressKind(
             onSelected: (i) {
               selectedOption.value = i;
             },
@@ -84,63 +84,83 @@ class AddressesScreen extends HookWidget {
           const Gap(32),
           if (selectedOption.value == 0) ...[
             if (addresses
-                .where((element) => element.getAddressType() == AddressType.receiveActive)
+                .where(
+                  (element) =>
+                      element.kind == AddressKind.deposit && element.state == AddressStatus.active,
+                )
                 .isNotEmpty) ...[
               const BBText.title(
                 'Active Balance',
               ),
               const Gap(8),
               for (var i = 0; i < addresses.length; i++)
-                if (addresses[i].getAddressType() == AddressType.receiveActive)
+                if (addresses[i].kind == AddressKind.deposit &&
+                    addresses[i].state == AddressStatus.active)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],
             if (addresses
-                .where((element) => element.getAddressType() == AddressType.receiveUnused)
+                .where(
+                  (element) =>
+                      element.kind == AddressKind.deposit && element.state == AddressStatus.unused,
+                )
                 .isNotEmpty) ...[
               const BBText.title(
                 'Unused',
               ),
               const Gap(8),
               for (var i = 0; i < addresses.length; i++)
-                if (addresses[i].getAddressType() == AddressType.receiveUnused)
+                if (addresses[i].kind == AddressKind.deposit &&
+                    addresses[i].state == AddressStatus.unused)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],
             if (addresses
-                .where((element) => element.getAddressType() == AddressType.receiveUsed)
+                .where(
+                  (element) =>
+                      element.kind == AddressKind.deposit && element.state == AddressStatus.used,
+                )
                 .isNotEmpty) ...[
               const BBText.title(
                 'Previously used',
               ),
               const Gap(8),
               for (var i = 0; i < addresses.length; i++)
-                if (addresses[i].getAddressType() == AddressType.receiveUsed)
+                if (addresses[i].kind == AddressKind.deposit &&
+                    addresses[i].state == AddressStatus.used)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],
           ] else ...[
             if (addresses
-                .where((element) => element.getAddressType() == AddressType.changeActive)
+                .where(
+                  (element) =>
+                      element.kind == AddressKind.change && element.state == AddressStatus.active,
+                )
                 .isNotEmpty) ...[
               const BBText.title(
                 'Active Balance',
               ),
               const Gap(8),
               for (var i = 0; i < addresses.length; i++)
-                if (addresses[i].getAddressType() == AddressType.changeActive)
+                if (addresses[i].kind == AddressKind.change &&
+                    addresses[i].state == AddressStatus.active)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],
             if (addresses
-                .where((element) => element.getAddressType() == AddressType.changeUsed)
+                .where(
+                  (element) =>
+                      element.kind == AddressKind.change && element.state == AddressStatus.used,
+                )
                 .isNotEmpty) ...[
               const BBText.title(
                 'Previously used',
               ),
               const Gap(8),
               for (var i = 0; i < addresses.length; i++)
-                if (addresses[i].getAddressType() == AddressType.changeUsed)
+                if (addresses[i].kind == AddressKind.change &&
+                    addresses[i].state == AddressStatus.used)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],
@@ -152,8 +172,8 @@ class AddressesScreen extends HookWidget {
   }
 }
 
-class SelectAddressType extends StatelessWidget {
-  const SelectAddressType({
+class SelectAddressKind extends StatelessWidget {
+  const SelectAddressKind({
     super.key,
     required this.onSelected,
     required this.selectedOption,

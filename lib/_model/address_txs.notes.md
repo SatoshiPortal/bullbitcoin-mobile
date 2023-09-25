@@ -44,3 +44,5 @@ We then look to see if old utxos are spent.
 
 Sync will also check if there are always 10 available unused address for the user to cycle through, if not it will generate them.
 
+When deleting old records of address and replacing with new, ensure older fields are retained.
+Especially state, since state is required - frozen states can be reset to unset.

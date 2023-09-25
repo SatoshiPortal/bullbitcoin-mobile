@@ -59,7 +59,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
           defaultAddress: Address(
             address: address,
             index: idx,
-            type: AddressType.receiveUnused,
+            kind: AddressKind.deposit,
+            state: AddressStatus.unused,
           ),
         ),
       );
@@ -173,7 +174,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
 
     final (a, w) = await walletAddress.addAddressToWallet(
-      address: (state.defaultAddress!.index, state.defaultAddress!.address),
+      address: (state.defaultAddress!.index!, state.defaultAddress!.address),
       wallet: walletBloc.state.wallet!,
       label: state.privateLabel,
     );

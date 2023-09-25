@@ -372,8 +372,8 @@ class WalletTx {
 
           return Address(
             address: output.split(':')[0],
-            index: -1,
-            type: isChange ? AddressType.changeActive : AddressType.notMine,
+            kind: isChange ? AddressKind.change : AddressKind.external,
+            state: AddressStatus.unset,
           );
         }),
       );

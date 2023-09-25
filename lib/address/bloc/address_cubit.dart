@@ -33,10 +33,11 @@ class AddressCubit extends Cubit<AddressState> {
     emit(state.copyWith(freezingAddress: true, errFreezingAddress: ''));
 
     final (address, w) = await walletAddress.addAddressToWallet(
-      address: (state.address!.index, state.address!.address),
+      address: (state.address!.index!, state.address!.address),
       label: state.address?.label,
-      freeze: true,
       wallet: walletBloc.state.wallet!,
+      kind: state.address!.kind,
+      state: state.address!.state,
     );
 
     final errUpdate = await walletRepository.updateWallet(
@@ -62,10 +63,11 @@ class AddressCubit extends Cubit<AddressState> {
     emit(state.copyWith(freezingAddress: true, errFreezingAddress: ''));
 
     final (address, w) = await walletAddress.addAddressToWallet(
-      address: (state.address!.index, state.address!.address),
+      address: (state.address!.index!, state.address!.address),
       label: state.address?.label,
-      freeze: false,
       wallet: walletBloc.state.wallet!,
+      kind: state.address!.kind,
+      state: state.address!.state,
     );
 
     final errUpdate = await walletRepository.updateWallet(
@@ -97,9 +99,11 @@ class AddressCubit extends Cubit<AddressState> {
     emit(state.copyWith(savingAddressName: true, errSavingAddressName: ''));
 
     final (addr, w) = await walletAddress.addAddressToWallet(
-      address: (address.index, address.address),
+      address: (address.index!, address.address),
       label: label,
       wallet: walletBloc.state.wallet!,
+      kind: address.kind,
+      state: address.state,
     );
 
     final errUpdate = await walletRepository.updateWallet(
