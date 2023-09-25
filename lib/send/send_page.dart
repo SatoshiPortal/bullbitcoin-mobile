@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
@@ -89,7 +90,7 @@ class _Screen extends StatelessWidget {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     return ColoredBox(
-      color: sent ? Colors.green : context.colour.onPrimary,
+      color: sent ? Colors.green.shade200 : context.colour.onPrimary,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -417,30 +418,36 @@ class TxSuccess extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final txid = context.select((SendCubit cubit) => cubit.state.tx!.txid);
     final amount = context.select((SendCubit cubit) => cubit.state.amount);
     final amtStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(amount));
-    // ignore: use_colored_box
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Gap(52),
         const Icon(Icons.check_circle, size: 120),
         const Gap(32),
-        const BBText.titleLarge(
+        const BBText.body(
           'Transaction sent',
           textAlign: TextAlign.center,
+          isBold: true,
         ),
         const Gap(52),
         BBText.titleLarge(
           amtStr,
           textAlign: TextAlign.center,
+          isBold: true,
         ),
         const Gap(15),
         GestureDetector(
-          onTap: () {},
-          child: const BBText.titleLarge(
+          onTap: () {
+            final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
+            locator<Launcher>().launchApp(url);
+          },
+          child: const BBText.body(
             'View Transaction details ->',
             textAlign: TextAlign.center,
+            isBlue: true,
           ),
         ),
         const Gap(200),
@@ -454,6 +461,7 @@ class TxSuccess extends StatelessWidget {
             child: const BBText.titleLarge(
               'Done',
               textAlign: TextAlign.center,
+              isBold: true,
             ),
           ),
         )
