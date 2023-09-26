@@ -31,7 +31,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class SendScreen extends StatelessWidget {
   const SendScreen({
@@ -75,7 +74,7 @@ class SendScreen extends StatelessWidget {
         value: walletBloc,
         child: BlocListener<SendCubit, SendState>(
           listenWhen: (previous, current) => previous.sent != current.sent && current.sent,
-          listener: (context, state) => context.pop(),
+          listener: (context, state) => {}, //context.pop(),
           child: const _Screen(),
         ),
       ),
