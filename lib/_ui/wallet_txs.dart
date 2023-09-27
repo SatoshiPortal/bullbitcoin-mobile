@@ -57,44 +57,41 @@ class WalletTxList extends StatelessWidget {
       );
     }
 
-    return Hero(
-      tag: 'wallet-txs',
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (syncing || loading || loadingBal)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: SizedBox(
-                  height: 32,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: const BBLoadingRow().animate().fadeIn(),
-                  ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (syncing || loading || loadingBal)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: SizedBox(
+                height: 32,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: const BBLoadingRow().animate().fadeIn(),
                 ),
-              )
-            else
-              const Gap(40),
-            if (pendingTXs.isNotEmpty) ...[
-              const BBText.titleLarge('    Pending Transactions', isBold: true),
-              ...pendingTXs.map((tx) => HomeTxItem(tx: tx)),
-              const Gap(32),
-            ],
-            if (confirmedTXs.isNotEmpty) ...[
-              if (!zeroPending)
-                const BBText.titleLarge('    Confirmed Transactions', isBold: true)
-              else
-                const BBText.titleLarge('    Transactions', isBold: true),
-              const Gap(8),
-              ...confirmedTXs.map((tx) => HomeTxItem(tx: tx)),
-              const Gap(100),
-            ],
+              ),
+            )
+          else
+            const Gap(40),
+          if (pendingTXs.isNotEmpty) ...[
+            const BBText.titleLarge('    Pending Transactions', isBold: true),
+            ...pendingTXs.map((tx) => HomeTxItem(tx: tx)),
+            const Gap(32),
           ],
-        ),
-      ).animate().fadeIn(),
-    );
+          if (confirmedTXs.isNotEmpty) ...[
+            if (!zeroPending)
+              const BBText.titleLarge('    Confirmed Transactions', isBold: true)
+            else
+              const BBText.titleLarge('    Transactions', isBold: true),
+            const Gap(8),
+            ...confirmedTXs.map((tx) => HomeTxItem(tx: tx)),
+            const Gap(100),
+          ],
+        ],
+      ),
+    ).animate().fadeIn();
   }
 }
 
@@ -145,7 +142,10 @@ class HomeTxItem extends StatelessWidget {
             ),
             const Spacer(),
             if (tx.getBroadcastDateTime() != null)
-              BBText.body(timeago.format(tx.getBroadcastDateTime()!))
+              BBText.bodySmall(
+                timeago.format(tx.getBroadcastDateTime()!),
+                removeColourOpacity: true,
+              )
             else
               BBText.bodySmall(
                 (tx.timestamp == null || tx.timestamp == 0) ? 'Pending' : tx.getDateTimeStr(),

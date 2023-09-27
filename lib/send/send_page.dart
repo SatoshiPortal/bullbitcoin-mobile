@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
@@ -30,7 +31,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class SendScreen extends StatelessWidget {
   const SendScreen({
@@ -74,7 +74,7 @@ class SendScreen extends StatelessWidget {
         value: walletBloc,
         child: BlocListener<SendCubit, SendState>(
           listenWhen: (previous, current) => previous.sent != current.sent && current.sent,
-          listener: (context, state) => context.pop(),
+          listener: (context, state) => {}, //context.pop(),
           child: const _Screen(),
         ),
       ),
@@ -88,41 +88,53 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
-
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (signed) ...[
-              const TxDetailsScreen(),
-              const Gap(48),
-            ] else ...[
-              const Gap(24),
-              const Center(child: WalletName()),
-              const Gap(8),
-              const Center(child: WalletBalance()),
-              const Gap(48),
-              const EnterAmount(),
-              const Gap(24),
-              const BBText.title('    Address'),
-              const Gap(4),
-              const EnterAddress(),
-              const Gap(24),
-              const BBText.title('    Label (optional)'),
-              const Gap(4),
-              const EnterNote(),
-              const Gap(24),
-              const SelectFeesButton(),
-              const CoinSelectionButton(),
-              const Gap(24),
-              const AdvancedOptionsButton(),
-              const Gap(8),
-            ],
-            const SendButton(),
-            const Gap(80),
-          ],
+    final sent = context.select((SendCubit cubit) => cubit.state.sent);
+    return Scaffold(
+      backgroundColor: sent ? Colors.green : context.colour.onPrimary,
+      appBar: sent
+          ? null
+          : AppBar(
+              flexibleSpace: const SendAppBar(),
+              automaticallyImplyLeading: false,
+            ),
+      body: ColoredBox(
+        color: sent ? Colors.green : context.colour.onPrimary,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (signed) ...[
+                  if (!sent) const TxDetailsScreen() else const TxSuccess(),
+                  const Gap(48),
+                ] else ...[
+                  const Gap(24),
+                  const Center(child: WalletName()),
+                  const Gap(8),
+                  const Center(child: WalletBalance()),
+                  const Gap(48),
+                  const EnterAmount(),
+                  const Gap(24),
+                  const BBText.title('    Address'),
+                  const Gap(4),
+                  const EnterAddress(),
+                  const Gap(24),
+                  const BBText.title('    Label (optional)'),
+                  const Gap(4),
+                  const EnterNote(),
+                  const Gap(24),
+                  const SelectFeesButton(),
+                  const CoinSelectionButton(),
+                  const Gap(24),
+                  const AdvancedOptionsButton(),
+                  const Gap(8),
+                ],
+                if (!sent) const SendButton(),
+                const Gap(80),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -405,6 +417,63 @@ class TxDetailsScreen extends StatelessWidget {
           '~ $feeFiat $fiatCurrency',
         ),
         const Gap(32),
+      ],
+    );
+  }
+}
+
+class TxSuccess extends StatelessWidget {
+  const TxSuccess({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final amount = context.select((SendCubit cubit) => cubit.state.amount);
+    final amtStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(amount));
+    final txid = context.select((SendCubit cubit) => cubit.state.tx);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Gap(152),
+        const Icon(Icons.check_circle, size: 120),
+        const Gap(32),
+        const BBText.body(
+          'Transaction sent',
+          textAlign: TextAlign.center,
+          isBold: true,
+        ),
+        const Gap(52),
+        BBText.titleLarge(
+          amtStr,
+          textAlign: TextAlign.center,
+          isBold: true,
+        ),
+        const Gap(15),
+        GestureDetector(
+          onTap: () {
+            final url = context.read<SettingsCubit>().state.explorerTxUrl(txid!.txid);
+            locator<Launcher>().launchApp(url);
+          },
+          child: const BBText.body(
+            'View Transaction details ->',
+            textAlign: TextAlign.center,
+            isBlue: true,
+          ),
+        ),
+        const Gap(200),
+        const Gap(100),
+        SizedBox(
+          height: 52,
+          child: TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const BBText.titleLarge(
+              'Done',
+              textAlign: TextAlign.center,
+              isBold: true,
+            ),
+          ),
+        )
       ],
     );
   }
