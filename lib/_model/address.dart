@@ -19,6 +19,7 @@ enum AddressStatus {
   active,
   frozen,
   used,
+  copied,
 }
 
 @freezed

@@ -46,6 +46,8 @@ class WalletAddress {
     return label;
   }
 
+  // get lastUnused from bdk
+  // ensure wallet has lastUnused + 5 unused addresses to cycle through
   Future<(Wallet?, Err?)> loadAddresses({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
@@ -64,8 +66,6 @@ class WalletAddress {
             state: AddressStatus.unused,
           ),
         );
-      } else if (wallet.lastUnusedAddress!.index == addressLastUnused.index) {
-        // return (wallet, null);
       }
       final List<Address> addresses = [...wallet.addresses];
       for (var i = 0; i <= addressLastUnused.index + 5; i++) {
@@ -81,7 +81,7 @@ class WalletAddress {
               address: address.address,
               index: address.index,
               kind: AddressKind.deposit,
-              state: AddressStatus.unset,
+              state: AddressStatus.unused,
             ),
           );
       }

@@ -29,7 +29,6 @@ class Wallet with _$Wallet {
     String? path,
     int? balance,
     @Default([]) List<Address> addresses,
-    // @Default(-1) lastDepositIndex,
     Address? lastUnusedAddress,
     List<Address>? toAddresses,
     @Default([]) List<Transaction> transactions,
