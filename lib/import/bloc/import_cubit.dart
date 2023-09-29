@@ -494,33 +494,21 @@ class ImportWalletCubit extends Cubit<ImportState> {
         emit(state.copyWith(errImporting: 'Error creating mnemonicSeed'));
       }
 
+      // if seed exists - this will error with Seed Exists, but we ignore it
+      // else we create the seed
+      await walletSensRepository.newSeed(seed: seed!, secureStore: secureStorage);
+
       if (state.passPhrase.isNotEmpty) {
         final passPhrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
 
         final passphrase =
             Passphrase(passphrase: passPhrase, sourceFingerprint: selectedWallet.sourceFingerprint);
 
-        // if seed exists - this will error with Seed Exists, but we ignore it
-        // else we create the seed
-        await walletSensRepository.newSeed(seed: seed!, secureStore: secureStorage);
-
         final err = await walletSensRepository.newPassphrase(
           passphrase: passphrase,
           secureStore: secureStorage,
           seedFingerprintIndex: seed.getSeedStorageString(),
         );
-
-        if (err != null) {
-          emit(
-            state.copyWith(
-              errSavingWallet: err.toString(),
-              savingWallet: false,
-            ),
-          );
-          return;
-        }
-      } else {
-        final err = await walletSensRepository.newSeed(seed: seed!, secureStore: secureStorage);
 
         if (err != null) {
           emit(
