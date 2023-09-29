@@ -26,6 +26,7 @@ mixin _$Address {
   AddressStatus get state => throw _privateConstructorUsedError;
   String? get label => throw _privateConstructorUsedError;
   String? get spentTxId => throw _privateConstructorUsedError;
+  bool get spendable => throw _privateConstructorUsedError;
   bool get saving => throw _privateConstructorUsedError;
   String get errSaving => throw _privateConstructorUsedError;
   int get highestPreviousBalance => throw _privateConstructorUsedError;
@@ -49,6 +50,7 @@ abstract class $AddressCopyWith<$Res> {
       AddressStatus state,
       String? label,
       String? spentTxId,
+      bool spendable,
       bool saving,
       String errSaving,
       int highestPreviousBalance,
@@ -75,6 +77,7 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
     Object? state = null,
     Object? label = freezed,
     Object? spentTxId = freezed,
+    Object? spendable = null,
     Object? saving = null,
     Object? errSaving = null,
     Object? highestPreviousBalance = null,
@@ -105,6 +108,10 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
           ? _value.spentTxId
           : spentTxId // ignore: cast_nullable_to_non_nullable
               as String?,
+      spendable: null == spendable
+          ? _value.spendable
+          : spendable // ignore: cast_nullable_to_non_nullable
+              as bool,
       saving: null == saving
           ? _value.saving
           : saving // ignore: cast_nullable_to_non_nullable
@@ -139,6 +146,7 @@ abstract class _$$_AddressCopyWith<$Res> implements $AddressCopyWith<$Res> {
       AddressStatus state,
       String? label,
       String? spentTxId,
+      bool spendable,
       bool saving,
       String errSaving,
       int highestPreviousBalance,
@@ -162,6 +170,7 @@ class __$$_AddressCopyWithImpl<$Res>
     Object? state = null,
     Object? label = freezed,
     Object? spentTxId = freezed,
+    Object? spendable = null,
     Object? saving = null,
     Object? errSaving = null,
     Object? highestPreviousBalance = null,
@@ -192,6 +201,10 @@ class __$$_AddressCopyWithImpl<$Res>
           ? _value.spentTxId
           : spentTxId // ignore: cast_nullable_to_non_nullable
               as String?,
+      spendable: null == spendable
+          ? _value.spendable
+          : spendable // ignore: cast_nullable_to_non_nullable
+              as bool,
       saving: null == saving
           ? _value.saving
           : saving // ignore: cast_nullable_to_non_nullable
@@ -222,6 +235,7 @@ class _$_Address extends _Address {
       required this.state,
       this.label,
       this.spentTxId,
+      this.spendable = true,
       this.saving = false,
       this.errSaving = '',
       this.highestPreviousBalance = 0,
@@ -247,6 +261,9 @@ class _$_Address extends _Address {
   final String? spentTxId;
   @override
   @JsonKey()
+  final bool spendable;
+  @override
+  @JsonKey()
   final bool saving;
   @override
   @JsonKey()
@@ -267,7 +284,7 @@ class _$_Address extends _Address {
 
   @override
   String toString() {
-    return 'Address(address: $address, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, saving: $saving, errSaving: $errSaving, highestPreviousBalance: $highestPreviousBalance, utxos: $utxos)';
+    return 'Address(address: $address, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, saving: $saving, errSaving: $errSaving, highestPreviousBalance: $highestPreviousBalance, utxos: $utxos)';
   }
 
   @override
@@ -282,6 +299,8 @@ class _$_Address extends _Address {
             (identical(other.label, label) || other.label == label) &&
             (identical(other.spentTxId, spentTxId) ||
                 other.spentTxId == spentTxId) &&
+            (identical(other.spendable, spendable) ||
+                other.spendable == spendable) &&
             (identical(other.saving, saving) || other.saving == saving) &&
             (identical(other.errSaving, errSaving) ||
                 other.errSaving == errSaving) &&
@@ -300,6 +319,7 @@ class _$_Address extends _Address {
       state,
       label,
       spentTxId,
+      spendable,
       saving,
       errSaving,
       highestPreviousBalance,
@@ -327,6 +347,7 @@ abstract class _Address extends Address {
       required final AddressStatus state,
       final String? label,
       final String? spentTxId,
+      final bool spendable,
       final bool saving,
       final String errSaving,
       final int highestPreviousBalance,
@@ -348,6 +369,8 @@ abstract class _Address extends Address {
   String? get label;
   @override
   String? get spentTxId;
+  @override
+  bool get spendable;
   @override
   bool get saving;
   @override

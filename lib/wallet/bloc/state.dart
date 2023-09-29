@@ -24,7 +24,7 @@ class WalletState with _$WalletState {
     @Default('') String errSyncingAddresses,
     @Default(false) bool savingName,
     @Default('') String errSavingName,
-    ({String address, int index})? newAddress,
+    // Address? newAddress,
     @Default('') String firstAddress,
   }) = _WalletState;
   const WalletState._();

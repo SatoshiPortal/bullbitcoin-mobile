@@ -32,9 +32,8 @@ mixin _$WalletState {
   bool get syncingAddresses => throw _privateConstructorUsedError;
   String get errSyncingAddresses => throw _privateConstructorUsedError;
   bool get savingName => throw _privateConstructorUsedError;
-  String get errSavingName => throw _privateConstructorUsedError;
-  ({String address, int index})? get newAddress =>
-      throw _privateConstructorUsedError;
+  String get errSavingName =>
+      throw _privateConstructorUsedError; // Address? newAddress,
   String get firstAddress => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -65,7 +64,6 @@ abstract class $WalletStateCopyWith<$Res> {
       String errSyncingAddresses,
       bool savingName,
       String errSavingName,
-      ({String address, int index})? newAddress,
       String firstAddress});
 
   $WalletCopyWith<$Res>? get wallet;
@@ -101,7 +99,6 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
     Object? errSyncingAddresses = null,
     Object? savingName = null,
     Object? errSavingName = null,
-    Object? newAddress = freezed,
     Object? firstAddress = null,
   }) {
     return _then(_value.copyWith(
@@ -169,10 +166,6 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
           ? _value.errSavingName
           : errSavingName // ignore: cast_nullable_to_non_nullable
               as String,
-      newAddress: freezed == newAddress
-          ? _value.newAddress
-          : newAddress // ignore: cast_nullable_to_non_nullable
-              as ({String address, int index})?,
       firstAddress: null == firstAddress
           ? _value.firstAddress
           : firstAddress // ignore: cast_nullable_to_non_nullable
@@ -230,7 +223,6 @@ abstract class _$$_WalletStateCopyWith<$Res>
       String errSyncingAddresses,
       bool savingName,
       String errSavingName,
-      ({String address, int index})? newAddress,
       String firstAddress});
 
   @override
@@ -266,7 +258,6 @@ class __$$_WalletStateCopyWithImpl<$Res>
     Object? errSyncingAddresses = null,
     Object? savingName = null,
     Object? errSavingName = null,
-    Object? newAddress = freezed,
     Object? firstAddress = null,
   }) {
     return _then(_$_WalletState(
@@ -334,10 +325,6 @@ class __$$_WalletStateCopyWithImpl<$Res>
           ? _value.errSavingName
           : errSavingName // ignore: cast_nullable_to_non_nullable
               as String,
-      newAddress: freezed == newAddress
-          ? _value.newAddress
-          : newAddress // ignore: cast_nullable_to_non_nullable
-              as ({String address, int index})?,
       firstAddress: null == firstAddress
           ? _value.firstAddress
           : firstAddress // ignore: cast_nullable_to_non_nullable
@@ -366,7 +353,6 @@ class _$_WalletState extends _WalletState {
       this.errSyncingAddresses = '',
       this.savingName = false,
       this.errSavingName = '',
-      this.newAddress,
       this.firstAddress = ''})
       : super._();
 
@@ -416,15 +402,14 @@ class _$_WalletState extends _WalletState {
   @override
   @JsonKey()
   final String errSavingName;
-  @override
-  final ({String address, int index})? newAddress;
+// Address? newAddress,
   @override
   @JsonKey()
   final String firstAddress;
 
   @override
   String toString() {
-    return 'WalletState(wallet: $wallet, bdkWallet: $bdkWallet, balance: $balance, name: $name, loadingWallet: $loadingWallet, errLoadingWallet: $errLoadingWallet, loadingTxs: $loadingTxs, errLoadingTxs: $errLoadingTxs, loadingBalance: $loadingBalance, errLoadingBalance: $errLoadingBalance, syncing: $syncing, errSyncing: $errSyncing, syncingAddresses: $syncingAddresses, errSyncingAddresses: $errSyncingAddresses, savingName: $savingName, errSavingName: $errSavingName, newAddress: $newAddress, firstAddress: $firstAddress)';
+    return 'WalletState(wallet: $wallet, bdkWallet: $bdkWallet, balance: $balance, name: $name, loadingWallet: $loadingWallet, errLoadingWallet: $errLoadingWallet, loadingTxs: $loadingTxs, errLoadingTxs: $errLoadingTxs, loadingBalance: $loadingBalance, errLoadingBalance: $errLoadingBalance, syncing: $syncing, errSyncing: $errSyncing, syncingAddresses: $syncingAddresses, errSyncingAddresses: $errSyncingAddresses, savingName: $savingName, errSavingName: $errSavingName, firstAddress: $firstAddress)';
   }
 
   @override
@@ -460,8 +445,6 @@ class _$_WalletState extends _WalletState {
                 other.savingName == savingName) &&
             (identical(other.errSavingName, errSavingName) ||
                 other.errSavingName == errSavingName) &&
-            (identical(other.newAddress, newAddress) ||
-                other.newAddress == newAddress) &&
             (identical(other.firstAddress, firstAddress) ||
                 other.firstAddress == firstAddress));
   }
@@ -485,7 +468,6 @@ class _$_WalletState extends _WalletState {
       errSyncingAddresses,
       savingName,
       errSavingName,
-      newAddress,
       firstAddress);
 
   @JsonKey(ignore: true)
@@ -513,7 +495,6 @@ abstract class _WalletState extends WalletState {
       final String errSyncingAddresses,
       final bool savingName,
       final String errSavingName,
-      final ({String address, int index})? newAddress,
       final String firstAddress}) = _$_WalletState;
   const _WalletState._() : super._();
 
@@ -549,9 +530,7 @@ abstract class _WalletState extends WalletState {
   bool get savingName;
   @override
   String get errSavingName;
-  @override
-  ({String address, int index})? get newAddress;
-  @override
+  @override // Address? newAddress,
   String get firstAddress;
   @override
   @JsonKey(ignore: true)

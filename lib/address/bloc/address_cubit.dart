@@ -38,6 +38,7 @@ class AddressCubit extends Cubit<AddressState> {
       wallet: walletBloc.state.wallet!,
       kind: state.address!.kind,
       state: state.address!.state,
+      spendable: false,
     );
 
     final errUpdate = await walletRepository.updateWallet(

@@ -26,107 +26,71 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   void loadAddress() async {
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
 
-    final syncing = walletBloc.state.syncing;
-    if (syncing) {
-      final newAddress = walletBloc.state.newAddress;
-      final addresses = walletBloc.state.wallet!.addresses;
-      final firstAddress = walletBloc.state.firstAddress;
+    final defaultAddress = state.defaultAddress;
+    final addresses = walletBloc.state.wallet!.addresses;
+    final firstAddress = walletBloc.state.firstAddress;
+    final List<Address> sortedUnusedAddresses =
+        List.from(addresses.where((address) => address.state == AddressStatus.unused))
+          ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
 
-      final address = newAddress == null
-          ? addresses.isNotEmpty
-              ? addresses.last.address
-              : firstAddress
-          : newAddress.address;
-      final idx = newAddress == null
-          ? addresses.isNotEmpty
-              ? addresses.last.index
-              : 0
-          : newAddress.index;
+    final address = defaultAddress ??
+        (addresses.isNotEmpty
+            ? sortedUnusedAddresses.first
+            : Address(
+                address: firstAddress,
+                index: 0,
+                kind: AddressKind.deposit,
+                state: AddressStatus.unset,
+              ));
 
-      // final label = await walletAddress.getLabel(
-      //   wallet: walletBloc.state.wallet!,
-      //   address: address,
-      // );
+    // final label = await walletAddress.getLabel(
+    //   wallet: walletBloc.state.wallet!,
+    //   address: address,
+    // );
 
-      // final (a, w) = await walletAddress.addAddressToWallet(
-      //   address: (idx, address),
-      //   wallet: walletBloc.state.wallet!,
-      //   label: label,
-      // );
+    // final (a, w) = await walletAddress.addAddressToWallet(
+    //   address: (idx, address),
+    //   wallet: walletBloc.state.wallet!,
+    //   label: label,
+    // );
 
-      emit(
-        state.copyWith(
-          defaultAddress: Address(
-            address: address,
-            index: idx,
-            kind: AddressKind.deposit,
-            state: AddressStatus.unused,
-          ),
-        ),
-      );
+    emit(
+      state.copyWith(
+        defaultAddress: address,
+      ),
+    );
 
-      // final errUpdate = await walletRepository.updateWallet(
-      //   wallet: w,
-      //   hiveStore: hiveStorage,
-      // );
-      // if (errUpdate != null) {
-      //   emit(
-      //     state.copyWith(
-      //       loadingAddress: false,
-      //       errLoadingAddress: errUpdate.toString(),
-      //     ),
-      //   );
-      //   return;
-      // }
+    // final errUpdate = await walletRepository.updateWallet(
+    //   wallet: w,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (errUpdate != null) {
+    //   emit(
+    //     state.copyWith(
+    //       loadingAddress: false,
+    //       errLoadingAddress: errUpdate.toString(),
+    //     ),
+    //   );
+    //   return;
+    // }
 
-      // walletBloc.add(UpdateWallet(w));
-    } else {
-      final wallet = walletBloc.state.wallet!;
+    // walletBloc.add(UpdateWallet(w));
 
-      final (walletUpdated, wErr) = await walletAddress.loadAddresses(
-        wallet: wallet,
-        bdkWallet: walletBloc.state.bdkWallet!,
-      );
+    // final errUpdate = await walletRepository.updateWallet(
+    //   wallet: walletUpdated,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (errUpdate != null) {
+    //   emit(
+    //     state.copyWith(
+    //       loadingAddress: false,
+    //       errLoadingAddress: errUpdate.toString(),
+    //     ),
+    //   );
+    //   return;
+    // }
 
-      if (wErr != null) {
-        emit(
-          state.copyWith(
-            loadingAddress: false,
-            errLoadingAddress: wErr.toString(),
-          ),
-        );
-        return;
-      }
-
-      // final label = await walletAddress.getLabel(
-      //   wallet: walletBloc.state.wallet!,
-      //   address: newAddress!.address,
-      // );
-
-      // final (a, w) = await walletAddress.addAddressToWallet(
-      //   address: (newAddress.index, newAddress.address),
-      //   wallet: walletBloc.state.wallet!,
-      //   label: label,
-      // );
-
-      emit(state.copyWith(defaultAddress: walletUpdated!.lastUnusedAddress));
-
-      final errUpdate = await walletRepository.updateWallet(
-        wallet: walletUpdated,
-        hiveStore: hiveStorage,
-      );
-      if (errUpdate != null) {
-        emit(
-          state.copyWith(
-            loadingAddress: false,
-            errLoadingAddress: errUpdate.toString(),
-          ),
-        );
-        return;
-      }
-
-      walletBloc.add(UpdateWallet(walletUpdated));
-    }
+    // walletBloc.add(UpdateWallet(walletUpdated));
 
     await Future.delayed(200.ms);
 
@@ -148,8 +112,23 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   void generateNewAddress() async {
-    emit(const ReceiveState());
-    loadAddress();
+    // emit(const ReceiveState());
+    emit(state.copyWith(errLoadingAddress: ''));
+    final currentIndex = state.defaultAddress!.index ?? 0;
+    final (rotatedAddress, err) =
+        walletAddress.rotateAddress(walletBloc.state.wallet!, currentIndex);
+    if (err != null) {
+      emit(
+        state.copyWith(
+          errLoadingAddress: err.toString(),
+        ),
+      );
+    } else
+      emit(
+        state.copyWith(
+          defaultAddress: rotatedAddress,
+        ),
+      );
   }
 
   void updateAmount(int amt) {
@@ -177,6 +156,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       address: (state.defaultAddress!.index!, state.defaultAddress!.address),
       wallet: walletBloc.state.wallet!,
       label: state.privateLabel,
+      kind: state.defaultAddress!.kind,
+      state: state.defaultAddress!.state,
+      spendable: state.defaultAddress!.spendable,
     );
 
     final errUpdate = await walletRepository.updateWallet(

@@ -32,6 +32,34 @@ class WalletAddress {
     }
   }
 
+  (Address?, Err?) rotateAddress(Wallet wallet, int currentIndex) {
+    // Filter out addresses with AddressStatus.unused and then sort them by index
+    final List<Address> sortedAddresses =
+        List.from(wallet.addresses.where((address) => address.state == AddressStatus.unused))
+          ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
+
+    // Find the index of the address with the current index
+    final int foundIndex = sortedAddresses.indexWhere((address) => address.index == currentIndex);
+
+    // If not found, throw an error or handle it accordingly
+    if (foundIndex == -1) {
+      // ignore: unnecessary_statements
+      return (
+        null,
+        Err(
+          'Wallet not synced. Sync wallet on home page to load more addresses.',
+        ),
+      );
+    }
+
+    // Get the next unused address. If it's the last unused address, wrap around to 0 index
+    if (foundIndex + 1 < sortedAddresses.length) {
+      return (sortedAddresses[foundIndex + 1], null);
+    } else {
+      return (sortedAddresses[0], null);
+    }
+  }
+
   Future<String?> getLabel({required Wallet wallet, required String address}) async {
     final addresses = wallet.addresses;
 
@@ -184,6 +212,7 @@ class WalletAddress {
     String? spentTxId,
     AddressKind? kind,
     AddressStatus state = AddressStatus.unset,
+    bool spendable = true,
   }) async {
     try {
       final (idx, adr) = address;
@@ -204,6 +233,7 @@ class WalletAddress {
           label: label,
           spentTxId: spentTxId,
           state: state,
+          spendable: spendable,
         );
         addresses.insert(existing, a);
       } else {
@@ -214,6 +244,7 @@ class WalletAddress {
           spentTxId: spentTxId,
           kind: kind!,
           state: state,
+          spendable: spendable,
         );
         addresses.add(a);
       }

@@ -237,7 +237,7 @@ class AdvancedOptionAdress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isFrozen = address.state == AddressStatus.frozen;
+    final isFrozen = address.spendable == false;
 
     final isSelected = context.select(
       (SendCubit x) => x.state.addressIsSelected(address),

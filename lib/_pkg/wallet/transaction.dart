@@ -15,7 +15,7 @@ class WalletTx {
       final txs = await bdkWallet.listTransactions(true);
       // final x = bdk.TxBuilderResult();
 
-      if (txs.isEmpty) throw 'No bdk transactions found';
+      if (txs.isEmpty) return (wallet, null);
 
       final List<Transaction> transactions = [];
       for (final tx in txs) {

@@ -17,7 +17,6 @@ enum AddressStatus {
   unset,
   unused,
   active,
-  frozen,
   used,
   copied,
 }
@@ -31,6 +30,7 @@ class Address with _$Address {
     required AddressStatus state,
     String? label,
     String? spentTxId,
+    @Default(true) bool spendable,
     @Default(false) bool saving,
     @Default('') String errSaving,
     @Default(0) int highestPreviousBalance,

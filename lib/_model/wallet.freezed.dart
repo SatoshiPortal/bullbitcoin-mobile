@@ -31,8 +31,7 @@ mixin _$Wallet {
   String? get name => throw _privateConstructorUsedError;
   String? get path => throw _privateConstructorUsedError;
   int? get balance => throw _privateConstructorUsedError;
-  List<Address> get addresses =>
-      throw _privateConstructorUsedError; // @Default(-1) lastDepositIndex,
+  List<Address> get addresses => throw _privateConstructorUsedError;
   Address? get lastUnusedAddress => throw _privateConstructorUsedError;
   List<Address>? get toAddresses => throw _privateConstructorUsedError;
   List<Transaction> get transactions => throw _privateConstructorUsedError;
@@ -412,7 +411,6 @@ class _$_Wallet extends _Wallet {
     return EqualUnmodifiableListView(_addresses);
   }
 
-// @Default(-1) lastDepositIndex,
   @override
   final Address? lastUnusedAddress;
   final List<Address>? _toAddresses;
@@ -594,7 +592,7 @@ abstract class _Wallet extends Wallet {
   int? get balance;
   @override
   List<Address> get addresses;
-  @override // @Default(-1) lastDepositIndex,
+  @override
   Address? get lastUnusedAddress;
   @override
   List<Address>? get toAddresses;

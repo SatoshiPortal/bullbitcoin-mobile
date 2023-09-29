@@ -210,7 +210,7 @@ class AddressActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool frozen = context.select(
-      (AddressCubit cubit) => cubit.state.address!.state == AddressStatus.frozen,
+      (AddressCubit cubit) => cubit.state.address!.spendable == false,
     );
     final freezing = context.select((AddressCubit cubit) => cubit.state.freezingAddress);
     final hasUtxos =

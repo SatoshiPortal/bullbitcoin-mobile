@@ -154,6 +154,7 @@ class Actions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showRequestButton = context.select((ReceiveCubit x) => x.state.showNewRequestButton());
+    final errLoadingAddress = context.select((ReceiveCubit x) => x.state.errLoadingAddress);
 
     return Column(
       children: [
@@ -170,6 +171,7 @@ class Actions extends StatelessWidget {
             context.read<ReceiveCubit>().generateNewAddress();
           },
         ),
+        BBText.errorSmall(errLoadingAddress),
       ],
     );
   }

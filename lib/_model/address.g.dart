@@ -13,6 +13,7 @@ _$_Address _$$_AddressFromJson(Map<String, dynamic> json) => _$_Address(
       state: $enumDecode(_$AddressStatusEnumMap, json['state']),
       label: json['label'] as String?,
       spentTxId: json['spentTxId'] as String?,
+      spendable: json['spendable'] as bool? ?? true,
       saving: json['saving'] as bool? ?? false,
       errSaving: json['errSaving'] as String? ?? '',
       highestPreviousBalance: json['highestPreviousBalance'] as int? ?? 0,
@@ -26,6 +27,7 @@ Map<String, dynamic> _$$_AddressToJson(_$_Address instance) =>
       'state': _$AddressStatusEnumMap[instance.state]!,
       'label': instance.label,
       'spentTxId': instance.spentTxId,
+      'spendable': instance.spendable,
       'saving': instance.saving,
       'errSaving': instance.errSaving,
       'highestPreviousBalance': instance.highestPreviousBalance,
@@ -41,6 +43,6 @@ const _$AddressStatusEnumMap = {
   AddressStatus.unset: 'unset',
   AddressStatus.unused: 'unused',
   AddressStatus.active: 'active',
-  AddressStatus.frozen: 'frozen',
   AddressStatus.used: 'used',
+  AddressStatus.copied: 'copied',
 };

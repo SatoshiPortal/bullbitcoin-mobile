@@ -216,7 +216,7 @@ class Wallet with _$Wallet {
     all.addAll(toAddresses ?? <Address>[]);
     return all
         .where(
-          (addr) => addr.state == AddressStatus.frozen,
+          (addr) => !addr.spendable,
         )
         .toList();
   }
