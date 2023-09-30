@@ -220,7 +220,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
 
     final syncing = context.select((WalletBloc cubit) => cubit.state.syncing);
 
-    final ad = context.select((WalletBloc cubit) => cubit.state.firstAddress);
+    final ad = context.select((WalletBloc cubit) => cubit.state.firstAddress!);
 
     final balance = context.select((WalletBloc cubit) => cubit.state.balance);
 
@@ -228,7 +228,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
       (WalletBloc cubit) => cubit.state.wallet?.transactions.isNotEmpty ?? false,
     );
 
-    final address = ad.isNotEmpty ? ad.substring(0, 5) + '...' + ad.substring(ad.length - 5) : '';
+    final address = ad.miniString();
     final fingerprint = wallet.sourceFingerprint;
 
     return AnimatedContainer(

@@ -67,7 +67,7 @@ class ImportEnterWordsScreen24 extends StatelessWidget {
                           color: context.colour.onBackground,
                         ),
                       ),
-                    )
+                    ),
                   ],
                   selected: const <ImportTypes>{
                     importwords,

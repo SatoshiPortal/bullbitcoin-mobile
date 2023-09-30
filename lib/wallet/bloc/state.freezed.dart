@@ -34,7 +34,7 @@ mixin _$WalletState {
   bool get savingName => throw _privateConstructorUsedError;
   String get errSavingName =>
       throw _privateConstructorUsedError; // Address? newAddress,
-  String get firstAddress => throw _privateConstructorUsedError;
+  Address? get firstAddress => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $WalletStateCopyWith<WalletState> get copyWith =>
@@ -64,10 +64,11 @@ abstract class $WalletStateCopyWith<$Res> {
       String errSyncingAddresses,
       bool savingName,
       String errSavingName,
-      String firstAddress});
+      Address? firstAddress});
 
   $WalletCopyWith<$Res>? get wallet;
   $BalanceCopyWith<$Res>? get balance;
+  $AddressCopyWith<$Res>? get firstAddress;
 }
 
 /// @nodoc
@@ -99,7 +100,7 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
     Object? errSyncingAddresses = null,
     Object? savingName = null,
     Object? errSavingName = null,
-    Object? firstAddress = null,
+    Object? firstAddress = freezed,
   }) {
     return _then(_value.copyWith(
       wallet: freezed == wallet
@@ -166,10 +167,10 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
           ? _value.errSavingName
           : errSavingName // ignore: cast_nullable_to_non_nullable
               as String,
-      firstAddress: null == firstAddress
+      firstAddress: freezed == firstAddress
           ? _value.firstAddress
           : firstAddress // ignore: cast_nullable_to_non_nullable
-              as String,
+              as Address?,
     ) as $Val);
   }
 
@@ -194,6 +195,18 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
 
     return $BalanceCopyWith<$Res>(_value.balance!, (value) {
       return _then(_value.copyWith(balance: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $AddressCopyWith<$Res>? get firstAddress {
+    if (_value.firstAddress == null) {
+      return null;
+    }
+
+    return $AddressCopyWith<$Res>(_value.firstAddress!, (value) {
+      return _then(_value.copyWith(firstAddress: value) as $Val);
     });
   }
 }
@@ -223,12 +236,14 @@ abstract class _$$_WalletStateCopyWith<$Res>
       String errSyncingAddresses,
       bool savingName,
       String errSavingName,
-      String firstAddress});
+      Address? firstAddress});
 
   @override
   $WalletCopyWith<$Res>? get wallet;
   @override
   $BalanceCopyWith<$Res>? get balance;
+  @override
+  $AddressCopyWith<$Res>? get firstAddress;
 }
 
 /// @nodoc
@@ -258,7 +273,7 @@ class __$$_WalletStateCopyWithImpl<$Res>
     Object? errSyncingAddresses = null,
     Object? savingName = null,
     Object? errSavingName = null,
-    Object? firstAddress = null,
+    Object? firstAddress = freezed,
   }) {
     return _then(_$_WalletState(
       wallet: freezed == wallet
@@ -325,10 +340,10 @@ class __$$_WalletStateCopyWithImpl<$Res>
           ? _value.errSavingName
           : errSavingName // ignore: cast_nullable_to_non_nullable
               as String,
-      firstAddress: null == firstAddress
+      firstAddress: freezed == firstAddress
           ? _value.firstAddress
           : firstAddress // ignore: cast_nullable_to_non_nullable
-              as String,
+              as Address?,
     ));
   }
 }
@@ -353,7 +368,7 @@ class _$_WalletState extends _WalletState {
       this.errSyncingAddresses = '',
       this.savingName = false,
       this.errSavingName = '',
-      this.firstAddress = ''})
+      this.firstAddress})
       : super._();
 
   @override
@@ -404,8 +419,7 @@ class _$_WalletState extends _WalletState {
   final String errSavingName;
 // Address? newAddress,
   @override
-  @JsonKey()
-  final String firstAddress;
+  final Address? firstAddress;
 
   @override
   String toString() {
@@ -495,7 +509,7 @@ abstract class _WalletState extends WalletState {
       final String errSyncingAddresses,
       final bool savingName,
       final String errSavingName,
-      final String firstAddress}) = _$_WalletState;
+      final Address? firstAddress}) = _$_WalletState;
   const _WalletState._() : super._();
 
   @override
@@ -531,7 +545,7 @@ abstract class _WalletState extends WalletState {
   @override
   String get errSavingName;
   @override // Address? newAddress,
-  String get firstAddress;
+  Address? get firstAddress;
   @override
   @JsonKey(ignore: true)
   _$$_WalletStateCopyWith<_$_WalletState> get copyWith =>

@@ -29,7 +29,7 @@ class Wallet with _$Wallet {
     String? path,
     int? balance,
     @Default([]) List<Address> addresses,
-    Address? lastUnusedAddress,
+    Address? lastGeneratedAddress,
     List<Address>? toAddresses,
     @Default([]) List<Transaction> transactions,
     List<String>? labelTags,
@@ -42,6 +42,21 @@ class Wallet with _$Wallet {
   factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
   bool hasPassphrase() {
     return mnemonicFingerprint != sourceFingerprint;
+  }
+
+  int addressGap() {
+    final List<Address> sortedAddresses = List.from(addresses)
+      ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
+
+    final int lastUsedIndex =
+        sortedAddresses.lastIndexWhere((address) => address.state == AddressStatus.used);
+
+    // If there's no address with status "used", return the count of all addresses as they're all unused
+    if (lastUsedIndex == -1) {
+      return sortedAddresses.length;
+    }
+
+    return sortedAddresses.length - lastUsedIndex;
   }
 
   String purposePathString() {

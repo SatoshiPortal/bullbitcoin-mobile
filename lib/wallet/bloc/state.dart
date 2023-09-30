@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -25,7 +26,7 @@ class WalletState with _$WalletState {
     @Default(false) bool savingName,
     @Default('') String errSavingName,
     // Address? newAddress,
-    @Default('') String firstAddress,
+    Address? firstAddress,
   }) = _WalletState;
   const WalletState._();
 

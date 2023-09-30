@@ -75,7 +75,7 @@ class WalletAddress {
   }
 
   // get lastUnused from bdk
-  // ensure wallet has lastUnused + 5 unused addresses to cycle through
+  // can be optimized
   Future<(Wallet?, Err?)> loadAddresses({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
@@ -85,39 +85,114 @@ class WalletAddress {
         addressIndex: const bdk.AddressIndex.lastUnused(),
       );
       Wallet w;
-      if (wallet.lastUnusedAddress == null) {
-        w = wallet.copyWith(
-          lastUnusedAddress: Address(
+
+      final List<Address> addresses = [...wallet.addresses];
+
+      final contain = wallet.addresses.where(
+        (element) => element.address == addressLastUnused.address,
+      );
+      if (contain.isEmpty)
+        addresses.add(
+          Address(
             address: addressLastUnused.address,
             index: addressLastUnused.index,
             kind: AddressKind.deposit,
             state: AddressStatus.unused,
           ),
         );
-      }
+
+      if (wallet.lastGeneratedAddress == null ||
+          addressLastUnused.index >= wallet.lastGeneratedAddress!.index!)
+        w = wallet.copyWith(
+          addresses: addresses,
+          lastGeneratedAddress: Address(
+            address: addressLastUnused.address,
+            index: addressLastUnused.index,
+            kind: AddressKind.deposit,
+            state: AddressStatus.unused,
+          ),
+        );
+      else
+        w = wallet.copyWith(
+          addresses: addresses,
+        );
+      return (w, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(Wallet?, Err?)> newAddress({
+    required Wallet wallet,
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final addressNewIndex = await bdkWallet.getAddress(
+        addressIndex: bdk.AddressIndex.peek(index: wallet.lastGeneratedAddress!.index! + 1),
+      );
+      Wallet w;
+
       final List<Address> addresses = [...wallet.addresses];
-      for (var i = 0; i <= addressLastUnused.index + 5; i++) {
-        final address = await bdkWallet.getAddress(
-          addressIndex: bdk.AddressIndex.peek(index: i),
+
+      final contain = wallet.addresses.where(
+        (element) => element.address == addressNewIndex.address,
+      );
+      if (contain.isEmpty)
+        addresses.add(
+          Address(
+            address: addressNewIndex.address,
+            index: addressNewIndex.index,
+            kind: AddressKind.deposit,
+            state: AddressStatus.unused,
+          ),
         );
-        final contain = wallet.addresses.where(
-          (element) => element.address == address.address,
-        );
-        if (contain.isEmpty)
-          addresses.add(
-            Address(
-              address: address.address,
-              index: address.index,
-              kind: AddressKind.deposit,
-              state: AddressStatus.unused,
-            ),
-          );
-      }
+
       w = wallet.copyWith(
         addresses: addresses,
-        lastUnusedAddress: Address(
-          address: addressLastUnused.address,
-          index: addressLastUnused.index,
+        lastGeneratedAddress: Address(
+          address: addressNewIndex.address,
+          index: addressNewIndex.index,
+          kind: AddressKind.deposit,
+          state: AddressStatus.unused,
+        ),
+      );
+
+      return (w, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(Wallet?, Err?)> firstAddress({
+    required Wallet wallet,
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final addressNewIndex = await bdkWallet.getAddress(
+        addressIndex: const bdk.AddressIndex.peek(index: 0),
+      );
+      Wallet w;
+
+      final List<Address> addresses = [...wallet.addresses];
+
+      final contain = wallet.addresses.where(
+        (element) => element.address == addressNewIndex.address,
+      );
+      if (contain.isEmpty)
+        addresses.add(
+          Address(
+            address: addressNewIndex.address,
+            index: addressNewIndex.index,
+            kind: AddressKind.deposit,
+            state: AddressStatus.unset,
+          ),
+        );
+
+      w = wallet.copyWith(
+        addresses: addresses,
+        lastGeneratedAddress: Address(
+          address: addressNewIndex.address,
+          index: addressNewIndex.index,
           kind: AddressKind.deposit,
           state: AddressStatus.unused,
         ),

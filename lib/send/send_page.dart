@@ -473,7 +473,7 @@ class TxSuccess extends StatelessWidget {
               isBold: true,
             ),
           ),
-        )
+        ),
       ],
     );
   }

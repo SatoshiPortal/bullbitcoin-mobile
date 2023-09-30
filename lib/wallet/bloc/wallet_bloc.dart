@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
@@ -92,6 +93,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       }
       emit(state.copyWith(bdkWallet: bdkWallet));
     }
+    add(GetFirstAddress());
 
     emit(
       state.copyWith(
@@ -109,7 +111,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (state.bdkWallet == null) return;
     if (state.syncing) return;
 
-    add(GetFirstAddress());
     await Future.delayed(const Duration(milliseconds: 300));
 
     emit(
@@ -148,7 +149,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(state.copyWith(syncing: false));
 
     // if (!fromStorage) add(GetFirstAddress());
+    add(GetAddresses());
     add(GetBalance());
+    emit(
+      state.copyWith(
+        syncing: false,
+      ),
+    );
   }
 
   void _updateWallet(UpdateWallet event, Emitter<WalletState> emit) async {
@@ -246,8 +253,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         wallet: wallet,
       ),
     );
-
-    add(GetAddresses());
   }
 
   void _getAddresses(GetAddresses event, Emitter<WalletState> emit) async {
@@ -298,7 +303,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(
       state.copyWith(
         wallet: wallet,
-        syncingAddresses: false,
       ),
     );
   }
@@ -311,7 +315,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       return;
     }
 
-    emit(state.copyWith(firstAddress: address!));
+    emit(
+      state.copyWith(
+        firstAddress: Address(
+          address: address!,
+          index: 0,
+          kind: AddressKind.deposit,
+          state: AddressStatus.unset,
+        ),
+      ),
+    );
   }
 
   // void _getLastUnusedAddress(GetNewAddress event, Emitter<WalletState> emit) async {

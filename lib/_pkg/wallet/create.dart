@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
@@ -107,7 +108,19 @@ class WalletCreate {
       scriptType: ScriptType.bip44,
       backupTested: true,
     );
-    wallet44 = wallet44.copyWith(name: wallet44.defaultNameString());
+    final (bdkWallet44, errBdk44) = await loadPublicBdkWallet(wallet44);
+    final firstAddress44 = await bdkWallet44!.getAddress(
+      addressIndex: const bdk.AddressIndex.peek(index: 0),
+    );
+    wallet44 = wallet44.copyWith(
+      name: wallet44.defaultNameString(),
+      lastGeneratedAddress: Address(
+        address: firstAddress44.address,
+        index: 0,
+        kind: AddressKind.deposit,
+        state: AddressStatus.unset,
+      ),
+    );
 
     final wallet49HashId =
         createDescriptorHashId(await bdkDescriptor49External.asString()).substring(0, 12);
@@ -122,7 +135,19 @@ class WalletCreate {
       scriptType: ScriptType.bip49,
       backupTested: true,
     );
-    wallet49 = wallet49.copyWith(name: wallet49.defaultNameString());
+    final (bdkWallet49, errBdk49) = await loadPublicBdkWallet(wallet49);
+    final firstAddress49 = await bdkWallet49!.getAddress(
+      addressIndex: const bdk.AddressIndex.peek(index: 0),
+    );
+    wallet49 = wallet49.copyWith(
+      name: wallet49.defaultNameString(),
+      lastGeneratedAddress: Address(
+        address: firstAddress49.address,
+        index: 0,
+        kind: AddressKind.deposit,
+        state: AddressStatus.unset,
+      ),
+    );
 
     final wallet84HashId =
         createDescriptorHashId(await bdkDescriptor84External.asString()).substring(0, 12);
@@ -137,32 +162,23 @@ class WalletCreate {
       scriptType: ScriptType.bip84,
       backupTested: true,
     );
-    wallet84 = wallet84.copyWith(name: wallet84.defaultNameString());
+    final (bdkWallet84, errBdk84) = await loadPublicBdkWallet(wallet84);
+    final firstAddress84 = await bdkWallet84!.getAddress(
+      addressIndex: const bdk.AddressIndex.peek(index: 0),
+    );
+    wallet84 = wallet84.copyWith(
+      name: wallet84.defaultNameString(),
+      lastGeneratedAddress: Address(
+        address: firstAddress84.address,
+        index: 0,
+        kind: AddressKind.deposit,
+        state: AddressStatus.unset,
+      ),
+    );
 
-    final (bdkWallet44, b44Err) = await loadPublicBdkWallet(wallet44);
-    if (b44Err != null) {
-      return (null, b44Err);
-    }
-    final (bdkWallet49, b49Err) = await loadPublicBdkWallet(wallet49);
-    if (b49Err != null) {
-      return (null, b49Err);
-    }
-    final (bdkWallet84, b84Err) = await loadPublicBdkWallet(wallet84);
-    if (b84Err != null) {
-      return (null, b84Err);
-    }
-    final wallet44FirstAddress = await bdkWallet44!.getAddress(
-      addressIndex: const bdk.AddressIndex.peek(index: 0),
-    );
-    final wallet49FirstAddress = await bdkWallet49!.getAddress(
-      addressIndex: const bdk.AddressIndex.peek(index: 0),
-    );
-    final wallet84FirstAddress = await bdkWallet84!.getAddress(
-      addressIndex: const bdk.AddressIndex.peek(index: 0),
-    );
-    if (wallet44FirstAddress.address == coldWallet44.first &&
-        wallet49FirstAddress.address == coldWallet49.first &&
-        wallet84FirstAddress.address == coldWallet84.first)
+    if (firstAddress44.address == coldWallet44.first &&
+        firstAddress49.address == coldWallet49.first &&
+        firstAddress84.address == coldWallet84.first)
       return ([wallet44, wallet49, wallet84], null);
     else
       return (
@@ -231,6 +247,20 @@ class WalletCreate {
         scriptType: scriptType,
         backupTested: true,
       );
+      final (bdkWallet, errBdk) = await loadPublicBdkWallet(wallet);
+      final firstAddress = await bdkWallet!.getAddress(
+        addressIndex: const bdk.AddressIndex.peek(index: 0),
+      );
+      wallet = wallet.copyWith(
+        name: wallet.defaultNameString(),
+        lastGeneratedAddress: Address(
+          address: firstAddress.address,
+          index: 0,
+          kind: AddressKind.deposit,
+          state: AddressStatus.unset,
+        ),
+      );
+
       wallet = wallet.copyWith(name: wallet.defaultNameString());
 
       return (wallet, null);
@@ -294,7 +324,19 @@ class WalletCreate {
         scriptType: scriptType,
         backupTested: true,
       );
-      wallet = wallet.copyWith(name: wallet.defaultNameString());
+      final (bdkWallet, errBdk) = await loadPublicBdkWallet(wallet);
+      final firstAddress = await bdkWallet!.getAddress(
+        addressIndex: const bdk.AddressIndex.peek(index: 0),
+      );
+      wallet = wallet.copyWith(
+        name: wallet.defaultNameString(),
+        lastGeneratedAddress: Address(
+          address: firstAddress.address,
+          index: 0,
+          kind: AddressKind.deposit,
+          state: AddressStatus.unset,
+        ),
+      );
 
       return (wallet, null);
     } catch (e) {
