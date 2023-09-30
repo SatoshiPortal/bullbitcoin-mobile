@@ -39,7 +39,8 @@ mixin _$SettingsState {
   List<ElectrumNetwork> get networks => throw _privateConstructorUsedError;
   int get selectedNetwork => throw _privateConstructorUsedError;
   bool get loadingNetworks => throw _privateConstructorUsedError;
-  String get errLoadingNetworks => throw _privateConstructorUsedError; //
+  String get errLoadingNetworks => throw _privateConstructorUsedError;
+  int get stopGap => throw _privateConstructorUsedError; //
   int? get fees => throw _privateConstructorUsedError;
   List<int>? get feesList => throw _privateConstructorUsedError;
   int get selectedFeesOption => throw _privateConstructorUsedError; //
@@ -80,6 +81,7 @@ abstract class $SettingsStateCopyWith<$Res> {
       int selectedNetwork,
       bool loadingNetworks,
       String errLoadingNetworks,
+      int stopGap,
       int? fees,
       List<int>? feesList,
       int selectedFeesOption,
@@ -122,6 +124,7 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? selectedNetwork = null,
     Object? loadingNetworks = null,
     Object? errLoadingNetworks = null,
+    Object? stopGap = null,
     Object? fees = freezed,
     Object? feesList = freezed,
     Object? selectedFeesOption = null,
@@ -206,6 +209,10 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.errLoadingNetworks
           : errLoadingNetworks // ignore: cast_nullable_to_non_nullable
               as String,
+      stopGap: null == stopGap
+          ? _value.stopGap
+          : stopGap // ignore: cast_nullable_to_non_nullable
+              as int,
       fees: freezed == fees
           ? _value.fees
           : fees // ignore: cast_nullable_to_non_nullable
@@ -275,6 +282,7 @@ abstract class _$$_SettingsStateCopyWith<$Res>
       int selectedNetwork,
       bool loadingNetworks,
       String errLoadingNetworks,
+      int stopGap,
       int? fees,
       List<int>? feesList,
       int selectedFeesOption,
@@ -316,6 +324,7 @@ class __$$_SettingsStateCopyWithImpl<$Res>
     Object? selectedNetwork = null,
     Object? loadingNetworks = null,
     Object? errLoadingNetworks = null,
+    Object? stopGap = null,
     Object? fees = freezed,
     Object? feesList = freezed,
     Object? selectedFeesOption = null,
@@ -400,6 +409,10 @@ class __$$_SettingsStateCopyWithImpl<$Res>
           ? _value.errLoadingNetworks
           : errLoadingNetworks // ignore: cast_nullable_to_non_nullable
               as String,
+      stopGap: null == stopGap
+          ? _value.stopGap
+          : stopGap // ignore: cast_nullable_to_non_nullable
+              as int,
       fees: freezed == fees
           ? _value.fees
           : fees // ignore: cast_nullable_to_non_nullable
@@ -451,6 +464,7 @@ class _$_SettingsState extends _SettingsState {
       this.selectedNetwork = 1,
       this.loadingNetworks = false,
       this.errLoadingNetworks = '',
+      this.stopGap = 20,
       this.fees,
       final List<int>? feesList,
       this.selectedFeesOption = 2,
@@ -543,6 +557,9 @@ class _$_SettingsState extends _SettingsState {
   @override
   @JsonKey()
   final String errLoadingNetworks;
+  @override
+  @JsonKey()
+  final int stopGap;
 //
   @override
   final int? fees;
@@ -573,7 +590,7 @@ class _$_SettingsState extends _SettingsState {
 
   @override
   String toString() {
-    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, defaultRBF: $defaultRBF)';
+    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, stopGap: $stopGap, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, defaultRBF: $defaultRBF)';
   }
 
   @override
@@ -617,6 +634,7 @@ class _$_SettingsState extends _SettingsState {
                 other.loadingNetworks == loadingNetworks) &&
             (identical(other.errLoadingNetworks, errLoadingNetworks) ||
                 other.errLoadingNetworks == errLoadingNetworks) &&
+            (identical(other.stopGap, stopGap) || other.stopGap == stopGap) &&
             (identical(other.fees, fees) || other.fees == fees) &&
             const DeepCollectionEquality().equals(other._feesList, _feesList) &&
             (identical(other.selectedFeesOption, selectedFeesOption) ||
@@ -652,6 +670,7 @@ class _$_SettingsState extends _SettingsState {
         selectedNetwork,
         loadingNetworks,
         errLoadingNetworks,
+        stopGap,
         fees,
         const DeepCollectionEquality().hash(_feesList),
         selectedFeesOption,
@@ -696,6 +715,7 @@ abstract class _SettingsState extends SettingsState {
       final int selectedNetwork,
       final bool loadingNetworks,
       final String errLoadingNetworks,
+      final int stopGap,
       final int? fees,
       final List<int>? feesList,
       final int selectedFeesOption,
@@ -746,6 +766,8 @@ abstract class _SettingsState extends SettingsState {
   bool get loadingNetworks;
   @override
   String get errLoadingNetworks;
+  @override
+  int get stopGap;
   @override //
   int? get fees;
   @override

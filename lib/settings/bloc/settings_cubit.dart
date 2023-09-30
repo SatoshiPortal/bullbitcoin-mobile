@@ -89,6 +89,11 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(state.copyWith(language: language));
   }
 
+  void updateStopGap(int gap) {
+    final updatedConfig = state.networks[state.selectedNetwork].copyWith(stopGap: gap);
+    networkConfigsSaveClicked(updatedConfig);
+  }
+
   void updateReloadWalletTimer(int value) {
     emit(state.copyWith(reloadWalletTimer: value));
     loadTimer();

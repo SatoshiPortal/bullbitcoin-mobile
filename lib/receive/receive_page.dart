@@ -36,6 +36,7 @@ class ReceiveScreen extends StatelessWidget {
       walletAddress: locator<WalletAddress>(),
       hiveStorage: locator<HiveStorage>(),
       walletRepository: locator<WalletRepository>(),
+      settingsCubit: locator<SettingsCubit>(),
     );
     return BlocProvider.value(
       value: receiveCubit,

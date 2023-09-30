@@ -2,6 +2,7 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
+import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -13,10 +14,11 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required this.hiveStorage,
     required this.walletAddress,
     required this.walletRepository,
+    required this.settingsCubit,
   }) : super(const ReceiveState()) {
     loadAddress();
   }
-
+  final SettingsCubit settingsCubit;
   final WalletBloc walletBloc;
   final WalletAddress walletAddress;
   final HiveStorage hiveStorage;
@@ -117,7 +119,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       hiveStore: hiveStorage,
     );
     final addressGap = updatedWallet.addressGap();
-    if (addressGap > 5) {
+    if (addressGap >= 5 && addressGap <= 20) {
       emit(
         state.copyWith(
           errLoadingAddress:
@@ -125,6 +127,17 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         ),
       );
     }
+
+    if (addressGap > 20) {
+      emit(
+        state.copyWith(
+          errLoadingAddress:
+              'WARNING! Electrum stop gap has been increased to $addressGap. This will affect your wallet sync time.',
+        ),
+      );
+      settingsCubit.updateStopGap(addressGap + 1);
+    }
+
     if (errUpdate != null) {
       emit(
         state.copyWith(
