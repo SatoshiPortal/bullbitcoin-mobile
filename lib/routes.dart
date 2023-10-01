@@ -15,6 +15,8 @@ import 'package:bb_mobile/wallet_settings/backup.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/test-backup.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 final GoRouter router = GoRouter(
@@ -140,3 +142,35 @@ final GoRouter router = GoRouter(
     ),
   ],
 );
+
+class BBlocObserver extends BlocObserver {
+  @override
+  void onEvent(Bloc bloc, Object? event) {
+    super.onEvent(bloc, event);
+    debugPrint('\n\n' + event.runtimeType.toString());
+  }
+
+  @override
+  void onChange(BlocBase bloc, Change change) {
+    super.onChange(bloc, change);
+    // debugPrint('\n\n' + change.toString());
+  }
+
+  @override
+  void onCreate(BlocBase bloc) {
+    super.onCreate(bloc);
+    // debugPrint('\n\n' + bloc.toString());
+  }
+
+  @override
+  void onTransition(Bloc bloc, Transition transition) {
+    super.onTransition(bloc, transition);
+    // debugPrint('\n\n' + transition.toString());
+  }
+
+  @override
+  void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
+    debugPrint('\n\n' + error.toString());
+    super.onError(bloc, error, stackTrace);
+  }
+}

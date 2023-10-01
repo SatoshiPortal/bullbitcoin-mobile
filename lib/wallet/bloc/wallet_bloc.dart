@@ -93,7 +93,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       }
       emit(state.copyWith(bdkWallet: bdkWallet));
     }
-    add(GetFirstAddress());
 
     emit(
       state.copyWith(
@@ -103,6 +102,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         name: wallet.name ?? '',
       ),
     );
+
+    await Future.delayed(const Duration(microseconds: 300));
+
+    add(GetFirstAddress());
 
     add(SyncWallet());
   }
@@ -148,9 +151,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     emit(state.copyWith(syncing: false));
 
-    // if (!fromStorage) add(GetFirstAddress());
+    if (!fromStorage) add(GetFirstAddress());
     add(GetAddresses());
-    add(GetBalance());
+    // add(GetBalance());
     emit(
       state.copyWith(
         syncing: false,
@@ -305,6 +308,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         wallet: wallet,
       ),
     );
+    add(GetBalance());
   }
 
   void _getFirstAddress(GetFirstAddress event, Emitter<WalletState> emit) async {

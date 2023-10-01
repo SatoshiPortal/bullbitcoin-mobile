@@ -15,6 +15,8 @@ import 'package:flutter_translate/flutter_translate.dart';
 Future main({bool fromTest = false}) async {
   await dotenv.load(isOptional: true);
   WidgetsFlutterBinding.ensureInitialized();
+  Bloc.observer = BBlocObserver();
+
   // DateFormat.in
 
   await setupLocator(fromTest: fromTest);
