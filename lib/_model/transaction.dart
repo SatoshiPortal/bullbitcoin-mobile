@@ -101,6 +101,61 @@ class Transaction with _$Transaction {
       broadcastTime == null ? null : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
 
   bool canRBF() => rbfEnabled == true && timestamp == null || timestamp == 0;
+
+  // List<Address> outputAddressesFromSerialized() {
+  //   final serialized = bdkTx!.serializedTx;
+
+  // }
 }
 
 DateTime getDateTimeFromInt(int time) => DateTime.fromMillisecondsSinceEpoch(time * 1000);
+
+class SerializedTx {
+  SerializedTx({this.version, this.lockTime, this.input, this.output});
+
+  factory SerializedTx.fromJson(Map<String, dynamic> json) {
+    return SerializedTx(
+      version: json['version'] as int?,
+      lockTime: json['lock_time'] as int?,
+      input:
+          (json['input'] as List?)?.map((e) => Input.fromJson(e as Map<String, dynamic>)).toList(),
+      output: (json['output'] as List?)
+          ?.map((e) => Output.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+  int? version;
+  int? lockTime;
+  List<Input>? input;
+  List<Output>? output;
+}
+
+class Input {
+  Input({this.previousOutput, this.scriptSig, this.sequence, this.witness});
+
+  factory Input.fromJson(Map<String, dynamic> json) {
+    return Input(
+      previousOutput: json['previous_output'] as String?,
+      scriptSig: json['script_sig'] as String?,
+      sequence: json['sequence'] as int?,
+      witness: (json['witness'] as List?)?.map((e) => e as String).toList(),
+    );
+  }
+  String? previousOutput;
+  String? scriptSig;
+  int? sequence;
+  List<String>? witness;
+}
+
+class Output {
+  Output({this.value, this.scriptPubkey});
+
+  factory Output.fromJson(Map<String, dynamic> json) {
+    return Output(
+      value: json['value'] as int?,
+      scriptPubkey: json['script_pubkey'] as String?,
+    );
+  }
+  int? value;
+  String? scriptPubkey;
+}

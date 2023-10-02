@@ -11,7 +11,10 @@ class PopUpBorder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, top: 100),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        top: 100,
+      ),
       controller: ModalScrollController.of(context),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 8, sigmaY: 16),

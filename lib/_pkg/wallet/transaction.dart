@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
@@ -14,7 +17,7 @@ class WalletTx {
       final storedTxs = wallet.transactions;
       final txs = await bdkWallet.listTransactions(true);
       // final x = bdk.TxBuilderResult();
-      // final updatedToAddresses = wallet.toAddresses;
+      final updatedToAddresses = wallet.toAddresses;
       final updatedAddresses = wallet.addresses;
 
       if (txs.isEmpty) return (wallet, null);
@@ -41,10 +44,48 @@ class WalletTx {
 
         var label = '';
 
-        final address = wallet.getAddressFromAddresses(
+        var address = wallet.getAddressFromAddresses(
           txObj.txid,
           isSend: !txObj.isReceived(),
         );
+        if (address == null) {
+          // mempool check
+          // final serialized = txObj.bdkTx.serializedTx!;
+          final SerializedTx transaction = SerializedTx.fromJson(
+            jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
+          );
+          print(transaction.output);
+          if (!txObj.isReceived()) {
+            final amount = tx.sent - (tx.received + (tx.fee ?? 0));
+            final scriptPubkeyString =
+                transaction.output?.firstWhere((output) => output.value == amount).scriptPubkey;
+            final scriptPubKey = await bdk.Script.create(
+              Uint8List.fromList(
+                utf8.encode(scriptPubkeyString!),
+              ),
+            );
+            final addressStruct = await bdk.Address.fromScript(
+              scriptPubKey,
+              wallet.getBdkNetwork(),
+            );
+            address = Address(
+              address: addressStruct.toString(),
+              index: 0,
+              kind: AddressKind.external,
+              state: AddressStatus.used,
+            );
+            updatedToAddresses!.add(address);
+          }
+        }
+        //
+        //
+        // address can be null if imported since sent addresses are not saved
+        // in this case use mempool to get address, ensure you didnt get your
+        // change address by checking the amount value
+        //
+        //
+        //
+        //
 
         if (idx != -1 && storedTxs[idx].label != null && storedTxs[idx].label!.isNotEmpty)
           label = storedTxs[idx].label!;
@@ -87,7 +128,7 @@ class WalletTx {
 
       final w = wallet.copyWith(
         transactions: transactions,
-        // toAddresses: updatedToAddresses,
+        toAddresses: updatedToAddresses,
         addresses: updatedAddresses,
       );
 
@@ -266,37 +307,36 @@ class WalletTx {
   }
 }
 
-  // Future<(Transaction?, Err?)> updateRelatedTxLabels({
-  //   required Transaction tx,
-  //   required bdk.Wallet bdkWallet,
-  //   // ignore: type_annotate_public_apis
-  //   required String label,
-  //   required String address,
-  // }) async {
-  //   try {
-  //     late bool isRelated = false;
+// Future<(Transaction?, Err?)> updateRelatedTxLabels({
+//   required Transaction tx,
+//   required bdk.Wallet bdkWallet,
+//   // ignore: type_annotate_public_apis
+//   required String label,
+//   required String address,
+// }) async {
+//   try {
+//     late bool isRelated = false;
 
-  //     for (final element in tx.inAddresses!) {
-  //       if (element == address) {
-  //         isRelated = true;
-  //       }
-  //     }
+//     for (final element in tx.inAddresses!) {
+//       if (element == address) {
+//         isRelated = true;
+//       }
+//     }
 
-  //     for (final element in tx.outAddresses!) {
-  //       if (element == address) {
-  //         isRelated = true;
-  //       }
-  //     }
+//     for (final element in tx.outAddresses!) {
+//       if (element == address) {
+//         isRelated = true;
+//       }
+//     }
 
-  //     if (isRelated) {
-  //       return (tx.copyWith(label: label), null);
-  //     }
-  //     return (tx, null);
-  //   } catch (e) {
-  //     return (null, Err(e.toString()));
-  //   }
-  // }
-
+//     if (isRelated) {
+//       return (tx.copyWith(label: label), null);
+//     }
+//     return (tx, null);
+//   } catch (e) {
+//     return (null, Err(e.toString()));
+//   }
+// }
 
 // Future<(Transaction?, Err?)> mapOutputAddresses({
 //     required Transaction tx,
@@ -335,73 +375,73 @@ class WalletTx {
 //     }
 //   }
 
-  // Future<(Wallet?, Err?)> syncWalletTxsAndAddresses({
-  //   required Wallet wallet,
-  //   required bdk.Wallet bdkWallet,
-  // }) async {
-  //   try {
-  //     // sync bdk wallet, import state from wallet into new native type
-  //     // if native type exists, only update
-  //     // for every new tx:
-  //     // check collect vins and vouts
-  //     // check for related addresses and inherit labels
+// Future<(Wallet?, Err?)> syncWalletTxsAndAddresses({
+//   required Wallet wallet,
+//   required bdk.Wallet bdkWallet,
+// }) async {
+//   try {
+//     // sync bdk wallet, import state from wallet into new native type
+//     // if native type exists, only update
+//     // for every new tx:
+//     // check collect vins and vouts
+//     // check for related addresses and inherit labels
 
-  //     final storedTxs = wallet.transactions;
-  //     final storedAddrs = wallet.addresses;
-  //     final storedToAddrs = wallet.toAddresses ?? [];
-  //     print('storedAddrs: $storedAddrs');
-  //     print('storedToAddrs: $storedToAddrs');
-  //     final txs = await bdkWallet.listTransactions(true);
-  //     // final x = bdk.TxBuilderResult();
+//     final storedTxs = wallet.transactions;
+//     final storedAddrs = wallet.addresses;
+//     final storedToAddrs = wallet.toAddresses ?? [];
+//     print('storedAddrs: $storedAddrs');
+//     print('storedToAddrs: $storedToAddrs');
+//     final txs = await bdkWallet.listTransactions(true);
+//     // final x = bdk.TxBuilderResult();
 
-  //     if (txs.isEmpty) return (wallet, null);
+//     if (txs.isEmpty) return (wallet, null);
 
-  //     final List<Transaction> transactions = [];
-  //     for (final tx in txs) {
-  //       final idx = storedTxs.indexWhere((t) => t.txid == tx.txid);
-  //       Transaction? storedTx;
-  //       if (idx != -1) storedTx = storedTxs.elementAtOrNull(idx);
-  //       if (storedTx != null) {
-  //         print('Tx already exists, update');
-  //       } else {
-  //         print('Tx does not exist, must be added.');
-  //         print('Addresses related to tx must be added and label inherited.');
-  //         // send txs will have the address we send to and our change both to inherit the same label
-  //         // recieve tx will have our deposit address
-  //       }
+//     final List<Transaction> transactions = [];
+//     for (final tx in txs) {
+//       final idx = storedTxs.indexWhere((t) => t.txid == tx.txid);
+//       Transaction? storedTx;
+//       if (idx != -1) storedTx = storedTxs.elementAtOrNull(idx);
+//       if (storedTx != null) {
+//         print('Tx already exists, update');
+//       } else {
+//         print('Tx does not exist, must be added.');
+//         print('Addresses related to tx must be added and label inherited.');
+//         // send txs will have the address we send to and our change both to inherit the same label
+//         // recieve tx will have our deposit address
+//       }
 
-  //       final txObj = Transaction(
-  //         txid: tx.txid,
-  //         received: tx.received,
-  //         sent: tx.sent,
-  //         fee: tx.fee ?? 0,
-  //         height: tx.confirmationTime?.height ?? 0,
-  //         timestamp: tx.confirmationTime?.timestamp ?? 0,
-  //         bdkTx: tx,
-  //         rbfEnabled: storedTx?.rbfEnabled ?? false,
-  //         // label: label,
-  //       );
-  //       const label = '';
-  //       final outputs = await tx.transaction?.output();
-  //       for (final out in outputs!) {
-  //         final addresss = await bdk.Address.fromScript(
-  //           out.scriptPubkey,
-  //           wallet.getBdkNetwork(),
-  //         );
-  //         final addressStr = addresss.toString();
-  //         print('$addressStr:${out.value}');
-  //       }
-  //       print(outputs.first.scriptPubkey);
+//       final txObj = Transaction(
+//         txid: tx.txid,
+//         received: tx.received,
+//         sent: tx.sent,
+//         fee: tx.fee ?? 0,
+//         height: tx.confirmationTime?.height ?? 0,
+//         timestamp: tx.confirmationTime?.timestamp ?? 0,
+//         bdkTx: tx,
+//         rbfEnabled: storedTx?.rbfEnabled ?? false,
+//         // label: label,
+//       );
+//       const label = '';
+//       final outputs = await tx.transaction?.output();
+//       for (final out in outputs!) {
+//         final addresss = await bdk.Address.fromScript(
+//           out.scriptPubkey,
+//           wallet.getBdkNetwork(),
+//         );
+//         final addressStr = addresss.toString();
+//         print('$addressStr:${out.value}');
+//       }
+//       print(outputs.first.scriptPubkey);
 
-  //       print('Check to match address with transaction');
+//       print('Check to match address with transaction');
 
-  //       transactions.add(txObj.copyWith(label: label));
-  //     }
+//       transactions.add(txObj.copyWith(label: label));
+//     }
 
-  //     final w = wallet.copyWith(transactions: transactions);
+//     final w = wallet.copyWith(transactions: transactions);
 
-  //     return (w, null);
-  //   } catch (e) {
-  //     return (null, Err(e.toString(), expected: e.toString() == 'No bdk transactions found'));
-  //   }
-  // }
+//     return (w, null);
+//   } catch (e) {
+//     return (null, Err(e.toString(), expected: e.toString() == 'No bdk transactions found'));
+//   }
+// }
