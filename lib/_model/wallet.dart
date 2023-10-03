@@ -121,7 +121,7 @@ class Wallet with _$Wallet {
     return '';
   }
 
-  Address? getAddressFromAddresses(String txid, {bool isSend = false}) {
+  Address? getAddressFromAddresses(String txid, {bool isSend = false, AddressKind? kind}) {
     for (final address in (isSend ? toAddresses : addresses) ?? <Address>[])
       if (isSend) {
         if (address.spentTxId == txid) {

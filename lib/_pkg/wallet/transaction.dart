@@ -9,6 +9,7 @@ import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletTx {
+  // THIS WORKS THE FIRST TIME, SUBSEQUENT TIMES IT BREAKS ADDRESSES
   Future<(Wallet?, Err?)> getTransactions({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
@@ -47,8 +48,9 @@ class WalletTx {
         var address = wallet.getAddressFromAddresses(
           txObj.txid,
           isSend: !txObj.isReceived(),
+          kind: AddressKind.external,
         );
-        if (address == null && !txObj.isReceived()) {
+        if (!txObj.isReceived()) {
           final SerializedTx sTx = SerializedTx.fromJson(
             jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
           );
@@ -77,6 +79,7 @@ class WalletTx {
               index: 0,
               kind: AddressKind.external,
               state: AddressStatus.used,
+              spentTxId: tx.txid,
             );
             updatedToAddresses!.add(address);
           } catch (e) {
