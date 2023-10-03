@@ -344,10 +344,9 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(downloadingFile: false, errDownloadingFile: errSave.toString()));
       return;
     }
-    await Future.delayed(const Duration(seconds: 4));
-
+    await Future.delayed(const Duration(seconds: 1));
     emit(state.copyWith(downloadingFile: false, downloaded: true));
-    await Future.delayed(const Duration(seconds: 4));
+    await Future.delayed(const Duration(seconds: 1));
     emit(state.copyWith(downloaded: false));
   }
 

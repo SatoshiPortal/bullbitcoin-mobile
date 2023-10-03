@@ -48,47 +48,41 @@ class WalletTx {
           txObj.txid,
           isSend: !txObj.isReceived(),
         );
-        if (address == null) {
-          // mempool check
-          // final serialized = txObj.bdkTx.serializedTx!;
+        if (address == null && !txObj.isReceived()) {
           final SerializedTx sTx = SerializedTx.fromJson(
             jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
           );
-          print(sTx.output);
-          if (!txObj.isReceived()) {
-            final amount = tx.sent - (tx.received + (tx.fee ?? 0));
-
-            try {
-              if (sTx.output == null) throw 'No output object';
-              final scriptPubkeyString =
-                  sTx.output?.firstWhere((output) => output.value == amount).scriptPubkey;
-              // also check and update your own change, for older transactions
-              // this can help keep an index of change?
-              if (scriptPubkeyString == null) {
-                throw 'No script pubkey';
-              }
-
-              final scriptPubKey = await bdk.Script.create(
-                Uint8List.fromList(
-                  utf8.encode(scriptPubkeyString),
-                ),
-              );
-              final addressStruct = await bdk.Address.fromScript(
-                scriptPubKey,
-                wallet.getBdkNetwork(),
-              );
-              address = Address(
-                address: addressStruct.toString(),
-                index: 0,
-                kind: AddressKind.external,
-                state: AddressStatus.used,
-              );
-              updatedToAddresses!.add(address);
-            } catch (e) {
-              // usually scriptpubkey not available
-              // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
-              print(e);
+          final amount = tx.sent - (tx.received + (tx.fee ?? 0));
+          try {
+            if (sTx.output == null) throw 'No output object';
+            final scriptPubkeyString =
+                sTx.output?.firstWhere((output) => output.value == amount).scriptPubkey;
+            // also check and update your own change, for older transactions
+            // this can help keep an index of change?
+            if (scriptPubkeyString == null) {
+              throw 'No script pubkey';
             }
+
+            final scriptPubKey = await bdk.Script.create(
+              Uint8List.fromList(
+                utf8.encode(scriptPubkeyString),
+              ),
+            );
+            final addressStruct = await bdk.Address.fromScript(
+              scriptPubKey,
+              wallet.getBdkNetwork(),
+            );
+            address = Address(
+              address: addressStruct.toString(),
+              index: 0,
+              kind: AddressKind.external,
+              state: AddressStatus.used,
+            );
+            updatedToAddresses!.add(address);
+          } catch (e) {
+            // usually scriptpubkey not available
+            // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
+            print(e);
           }
         }
         //
