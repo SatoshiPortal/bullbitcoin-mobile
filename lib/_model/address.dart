@@ -69,10 +69,10 @@ class Address with _$Address {
   }
 
   String miniString() {
-    return address.substring(0, 6) + '...' + address.substring(address.length - 6);
+    return address.substring(0, 6) + '[...]' + address.substring(address.length - 6);
   }
 
   String largeString() {
-    return address.substring(0, 10) + '...' + address.substring(address.length - 10);
+    return address.substring(0, 10) + '[...]' + address.substring(address.length - 10);
   }
 }

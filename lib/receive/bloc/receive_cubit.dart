@@ -101,10 +101,15 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   void generateNewAddress() async {
     // emit(const ReceiveState());
     emit(state.copyWith(errLoadingAddress: ''));
+    if (walletBloc.state.bdkWallet == null) {
+      emit(state.copyWith(errLoadingAddress: 'Wallet Sync Required'));
+      return;
+    }
     final (updatedWallet, err) = await walletAddress.newAddress(
       wallet: walletBloc.state.wallet!,
       bdkWallet: walletBloc.state.bdkWallet!,
     );
+    Future.delayed(const Duration(milliseconds: 100));
     if (err != null) {
       emit(
         state.copyWith(
@@ -118,12 +123,21 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       wallet: updatedWallet!,
       hiveStore: hiveStorage,
     );
+    if (errUpdate != null) {
+      emit(
+        state.copyWith(
+          savingLabel: false,
+          errLoadingAddress: errUpdate.toString(),
+        ),
+      );
+      return;
+    }
     final addressGap = updatedWallet.addressGap();
     if (addressGap >= 5 && addressGap <= 20) {
       emit(
         state.copyWith(
           errLoadingAddress:
-              'Careful! Generating too many addresses will affect the global sync time.\n\nCurrent Gap: $addressGap',
+              'Careful! Generating too many addresses will affect the global sync time.\n\nCurrent Gap: $addressGap.',
         ),
       );
     }
@@ -132,33 +146,17 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       emit(
         state.copyWith(
           errLoadingAddress:
-              'WARNING! Electrum stop gap has been increased to $addressGap. This will affect your wallet sync time.',
+              'WARNING! Electrum stop gap has been increased to $addressGap. This will affect your wallet sync time.\nGoto WalletSettings->Addresses to see all generated addresses.',
         ),
       );
       settingsCubit.updateStopGap(addressGap + 1);
     }
 
-    if (errUpdate != null) {
-      emit(
-        state.copyWith(
-          savingLabel: false,
-          errSavingLabel: errUpdate.toString(),
-        ),
-      );
-      return;
-    }
-    if (err != null) {
-      emit(
-        state.copyWith(
-          errLoadingAddress: err.toString(),
-        ),
-      );
-    } else
-      emit(
-        state.copyWith(
-          defaultAddress: updatedWallet.lastGeneratedAddress,
-        ),
-      );
+    emit(
+      state.copyWith(
+        defaultAddress: updatedWallet.lastGeneratedAddress,
+      ),
+    );
     walletBloc.add(UpdateWallet(updatedWallet));
   }
 

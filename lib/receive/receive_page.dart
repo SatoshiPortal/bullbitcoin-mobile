@@ -253,35 +253,34 @@ class _DisplayAddressState extends State<DisplayAddress> {
 
   @override
   Widget build(BuildContext context) {
-    final address = context.select((ReceiveCubit x) => x.state.getQRStr());
+    final addressQr = context.select((ReceiveCubit x) => x.state.getQRStr());
+    final address = context.select((ReceiveCubit x) => x.state.defaultAddress);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
       child: !showToast
-          ? Row(
+          ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: 220,
-                  child: Wrap(
-                    children: [
-                      BBText.body(
-                        address,
-                        textAlign: TextAlign.justify,
-                      ),
-                    ],
+                  child: BBText.body(
+                    address!.largeString(),
+                    textAlign: TextAlign.justify,
                   ),
                 ),
-                IconButton(
-                  onPressed: () async {
-                    await Clipboard.setData(ClipboardData(text: address));
-                    SystemSound.play(SystemSoundType.click);
-                    HapticFeedback.selectionClick();
-                    _copyClicked();
-                  },
-                  iconSize: 16,
-                  color: context.colour.secondary,
-                  icon: const FaIcon(FontAwesomeIcons.copy),
+                SizedBox(
+                  width: 50,
+                  child: IconButton(
+                    onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: addressQr));
+                      SystemSound.play(SystemSoundType.click);
+                      HapticFeedback.selectionClick();
+                      _copyClicked();
+                    },
+                    iconSize: 30,
+                    color: context.colour.secondary,
+                    icon: const FaIcon(FontAwesomeIcons.copy),
+                  ),
                 ),
               ],
             )
@@ -314,7 +313,10 @@ class CreateInvoice extends StatelessWidget {
             context.pop();
           },
           child: const PopUpBorder(
-            child: CreateInvoice(),
+            child: Padding(
+              padding: EdgeInsets.all(30),
+              child: CreateInvoice(),
+            ),
           ),
         ),
       ),
@@ -397,7 +399,10 @@ class RenameLabel extends StatelessWidget {
             context.pop();
           },
           child: const PopUpBorder(
-            child: RenameLabel(),
+            child: Padding(
+              padding: EdgeInsets.all(30),
+              child: RenameLabel(),
+            ),
           ),
         ),
       ),
