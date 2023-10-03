@@ -330,7 +330,7 @@ class SendButton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (hasErr) ...[
-          BBText.body(
+          BBText.error(
             err,
           ),
           const Gap(16),

@@ -144,10 +144,12 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       blockchain: blockchain,
     );
     if (err != null) {
+      // final error =
       emit(
         state.copyWith(
           broadcastingTx: false,
-          errBroadcastingTx: err.toString(),
+          errBroadcastingTx:
+              'Failed to Broadcast.\n\nCheck the following:\n- Internet connection\n- PSBT must be unspent, signed & finalized\n- Electrum server availability\nColdCard: Use the -final.txn file.',
         ),
       );
       return;
