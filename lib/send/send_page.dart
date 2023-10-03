@@ -440,10 +440,12 @@ class _TxSuccessState extends State<TxSuccess> {
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
-    );
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+
+    // SystemChrome.setEnabledSystemUIMode(
+    //   SystemUiMode.manual,
+    //   overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+    // );
     super.dispose();
   }
 
