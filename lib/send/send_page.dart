@@ -27,6 +27,7 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -135,7 +136,7 @@ class _Screen extends StatelessWidget {
               ],
             ),
           ),
-        ),
+        ).animate(delay: 200.ms).fadeIn(),
       ),
     );
   }
@@ -422,8 +423,29 @@ class TxDetailsScreen extends StatelessWidget {
   }
 }
 
-class TxSuccess extends StatelessWidget {
+class TxSuccess extends StatefulWidget {
   const TxSuccess({super.key});
+
+  @override
+  State<TxSuccess> createState() => _TxSuccessState();
+}
+
+class _TxSuccessState extends State<TxSuccess> {
+  @override
+  void initState() {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.green));
+    //SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+    );
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
