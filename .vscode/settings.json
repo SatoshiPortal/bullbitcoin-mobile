@@ -54,7 +54,7 @@
         "integration_test": true,
         "android": true,
         "ios": true,
-        "**/pubspec.yaml": true,
+        "**/pubspec.yaml": false,
         "repro": true,
         "doc": true,
         // 

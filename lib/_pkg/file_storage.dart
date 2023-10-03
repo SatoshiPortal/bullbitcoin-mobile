@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class FileStorage {
   Future<(File?, Err?)> saveToFile(File file, String value) async {
@@ -66,15 +67,28 @@ class FileStorage {
     required String txid,
   }) async {
     try {
-      final dir = await getTemporaryDirectory();
-      final file = File(dir.path + '/$txid.psbt');
-      await file.writeAsString(psbt);
+      final PermissionStatus permissionStatus = await Permission.storage.request();
+      if (permissionStatus.isGranted) {
+        // Pick a directory using the file_picker package
+        final Directory directory = await FilePicker.platform.getDirectoryPath().then(
+              (path) => Directory(path!),
+            );
+        // // final dir = await getTemporaryDirectory();
+        // final Uint8List data = Uint8List.fromList(utf8.encode(psbt));
+        final file = File('$txid.psbt');
+        await file.writeAsString(psbt);
 
-      final params = SaveFileDialogParams(sourceFilePath: file.path);
-      final finalPath = await FlutterFileDialog.saveFile(params: params);
+        // final params = SaveFileDialogParams(
+        //   fileName: '$txid.psbt',
+        //   data: data,
+        // );
+        // final finalPath = await FlutterFileDialog.saveFile(params: params);
 
-      if (finalPath == null) throw 'Could not save file';
-      return null;
+        // if (finalPath == null) throw 'Could not save file';
+        return null;
+      } else {
+        return Err(permissionStatus.toString());
+      }
     } catch (e) {
       return Err(e.toString());
     }

@@ -339,11 +339,12 @@ class SendCubit extends Cubit<SendState> {
       // fileName: '$txid.psbt',
       // mime: 'text/psbt',
     );
+
     if (errSave != null) {
       emit(state.copyWith(downloadingFile: false, errDownloadingFile: errSave.toString()));
-
       return;
     }
+    await Future.delayed(const Duration(seconds: 4));
 
     emit(state.copyWith(downloadingFile: false, downloaded: true));
     await Future.delayed(const Duration(seconds: 4));

@@ -65,7 +65,7 @@ class WalletSensitiveRepository {
         // no seeds exist
         return Err('No Seed Exists!');
       }
-      final seedJson = jsonDecode(seedString!) as Map<String, String>;
+      final seedJson = jsonDecode(seedString!) as Map<String, dynamic>;
       final seed = Seed.fromJson(seedJson);
 
       for (final pp in seed.passphrases) {
@@ -73,12 +73,11 @@ class WalletSensitiveRepository {
           return Err('Passphrase Exists!');
         }
       }
-
-      seed.passphrases.add(passphrase);
-
+      final updatedPassphrases = List<Passphrase>.from(seed.passphrases)..add(passphrase);
+      final updatedSeed = seed.copyWith(passphrases: updatedPassphrases);
       await secureStore.saveValue(
         key: seedFingerprintIndex,
-        value: jsonEncode(seed),
+        value: jsonEncode(updatedSeed),
       );
       return null;
     } catch (e) {
