@@ -6,25 +6,31 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:hex/hex.dart';
 
 class WalletTx {
-  // THIS WORKS THE FIRST TIME, SUBSEQUENT TIMES IT BREAKS ADDRESSES
+  //
+  // THIS NEEDS WORK
+  //
   Future<(Wallet?, Err?)> getTransactions({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
   }) async {
     try {
+      var updatedWallet = wallet;
       final storedTxs = wallet.transactions;
+      final bdkNetwork = wallet.getBdkNetwork();
       final txs = await bdkWallet.listTransactions(true);
       // final x = bdk.TxBuilderResult();
-      final updatedToAddresses = wallet.toAddresses;
-      final updatedAddresses = wallet.addresses;
 
       if (txs.isEmpty) return (wallet, null);
 
       final List<Transaction> transactions = [];
       for (final tx in txs) {
+        String? label = '';
+
         final idx = storedTxs.indexWhere((t) => t.txid == tx.txid);
 
         Transaction? storedTx;
@@ -42,105 +48,211 @@ class WalletTx {
           outAddrs: storedTx?.outAddrs ?? [],
           // label: label,
         );
-
-        var label = '';
-
-        var address = wallet.getAddressFromAddresses(
-          txObj.txid,
-          isSend: !txObj.isReceived(),
-          kind: AddressKind.external,
+        final SerializedTx sTx = SerializedTx.fromJson(
+          jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
         );
-        if (!txObj.isReceived()) {
-          final SerializedTx sTx = SerializedTx.fromJson(
-            jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
-          );
-          final amount = tx.sent - (tx.received + (tx.fee ?? 0));
-          try {
-            if (sTx.output == null) throw 'No output object';
-            final scriptPubkeyString =
-                sTx.output?.firstWhere((output) => output.value == amount).scriptPubkey;
-            // also check and update your own change, for older transactions
-            // this can help keep an index of change?
-            if (scriptPubkeyString == null) {
-              throw 'No script pubkey';
-            }
+        if (idx != -1 && storedTxs[idx].label != null && storedTxs[idx].label!.isNotEmpty)
+          label = storedTxs[idx].label;
 
-            final scriptPubKey = await bdk.Script.create(
-              Uint8List.fromList(
-                utf8.encode(scriptPubkeyString),
-              ),
-            );
-            final addressStruct = await bdk.Address.fromScript(
-              scriptPubKey,
-              wallet.getBdkNetwork(),
-            );
-            address = Address(
-              address: addressStruct.toString(),
-              index: 0,
+        Address? recipientAddress;
+        Address? changeAddress;
+        Address? depositAddress;
+        const hexDecoder = HexDecoder();
+
+        if (!txObj.isReceived()) {
+          //
+          //
+          // HANDLE EXTERNAL RECIPIENT
+          //
+          //
+          recipientAddress = wallet.getAddressFromAddresses(
+            txObj.txid,
+            isSend: !txObj.isReceived(),
+            kind: AddressKind.external,
+          );
+          if (recipientAddress != null &&
+              recipientAddress.label != null &&
+              recipientAddress.label!.isNotEmpty) label = recipientAddress.label;
+
+          final amountSentToRecipient = tx.sent - (tx.received + (tx.fee ?? 0));
+
+          if (recipientAddress != null)
+            (recipientAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
+              address: (recipientAddress.index, recipientAddress.address),
+              wallet: updatedWallet,
+              spentTxId: tx.txid,
               kind: AddressKind.external,
               state: AddressStatus.used,
-              spentTxId: tx.txid,
+              spendable: false,
+              label: label,
             );
-            updatedToAddresses!.add(address);
-          } catch (e) {
-            // usually scriptpubkey not available
-            // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
-            print(e);
-          }
-        }
-        //
-        //
-        // address can be null if imported since sent addresses are not saved
-        // in this case use mempool to get address, ensure you didnt get your
-        // change address by checking the amount value
-        //
-        //
-        //
-        //
+          else {
+            try {
+              if (sTx.output == null) throw 'No output object';
+              final scriptPubkeyString = sTx.output
+                  ?.firstWhere((output) => output.value == amountSentToRecipient)
+                  .scriptPubkey;
+              // also check and update your own change, for older transactions
+              // this can help keep an index of change?
+              if (scriptPubkeyString == null) {
+                throw 'No script pubkey';
+              }
+              final scriptPubKey = await bdk.Script.create(
+                hexDecoder.convert(scriptPubkeyString) as Uint8List,
+              );
 
-        if (idx != -1 && storedTxs[idx].label != null && storedTxs[idx].label!.isNotEmpty)
-          label = storedTxs[idx].label!;
-        else if (address != null && address.label != null && address.label!.isNotEmpty) {
-          label = address.label!;
-          if (txObj.isReceived()) {
-            // Find the index of the address you want to update
-            final int indexToUpdate =
-                updatedAddresses.indexWhere((address) => address.address == address.address);
+              final addressStruct = await bdk.Address.fromScript(
+                scriptPubKey,
+                bdkNetwork,
+              );
 
-            // If the address is found in the list
-            if (indexToUpdate != -1) {
-              final Address oldAddress = updatedAddresses[indexToUpdate];
-              final Address updatedAddress = oldAddress.copyWith(state: AddressStatus.used);
-              updatedAddresses[indexToUpdate] = updatedAddress;
+              (recipientAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
+                address: (0, addressStruct.toString()),
+                wallet: updatedWallet,
+                spentTxId: tx.txid,
+                kind: AddressKind.external,
+                state: AddressStatus.used,
+                spendable: false,
+                label: label,
+              );
+              txObj = txObj.copyWith(
+                toAddress: recipientAddress.address,
+                fromAddress: '',
+              );
+            } catch (e) {
+              // usually scriptpubkey not available
+              // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
+              print(e);
             }
           }
-        }
 
-        if (txObj.isReceived()) {
-          // final fromAddress = state.wallet!.getAddressFromTxid(txObj.txid);
-          txObj = txObj.copyWith(
-            toAddress: address?.address ?? '',
-            fromAddress: '',
+          //
+          //
+          // HANDLE CHANGE
+          //
+          //
+
+          changeAddress = wallet.getAddressFromAddresses(
+            txObj.txid,
+            isSend: !txObj.isReceived(),
+            kind: AddressKind.change,
           );
-        } else {
-          final fromAddress = wallet.getAddressFromTxid(txObj.txid);
-          if (idx != -1) {
-            final broadcastTime = storedTxs[idx].broadcastTime;
-            txObj = txObj.copyWith(broadcastTime: broadcastTime);
+          if (changeAddress != null &&
+              changeAddress.label != null &&
+              changeAddress.label!.isNotEmpty) label = changeAddress.label;
+
+          final amountChange = tx.received;
+
+          if (changeAddress != null)
+            (changeAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
+              address: (changeAddress.index, changeAddress.address),
+              wallet: updatedWallet, // change and recieve are in the same if
+              // so wallet should be updatedWallet
+              spentTxId: tx.txid,
+              kind: AddressKind.change,
+              state: AddressStatus.used,
+              spendable: false,
+              label: label,
+            );
+          else {
+            try {
+              if (sTx.output == null) throw 'No output object';
+              final scriptPubkeyString =
+                  sTx.output?.firstWhere((output) => output.value == amountChange).scriptPubkey;
+
+              if (scriptPubkeyString == null) {
+                throw 'No script pubkey';
+              }
+
+              final scriptPubKey = await bdk.Script.create(
+                hexDecoder.convert(scriptPubkeyString) as Uint8List,
+              );
+              final addressStruct = await bdk.Address.fromScript(
+                scriptPubKey,
+                bdkNetwork,
+              );
+
+              (changeAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
+                address: (-1, addressStruct.toString()),
+                wallet: wallet,
+                spentTxId: tx.txid,
+                kind: AddressKind.change,
+                state: AddressStatus.used,
+                spendable: false,
+                label: label,
+              );
+            } catch (e) {
+              // usually scriptpubkey not available
+              // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
+              print(e);
+            }
           }
-          txObj = txObj.copyWith(
-            toAddress: address?.address ?? '',
-            fromAddress: fromAddress,
+        } else {
+          depositAddress = wallet.getAddressFromAddresses(
+            txObj.txid,
+            isSend: !txObj.isReceived(),
+            kind: AddressKind.deposit,
           );
+          if (depositAddress != null &&
+              depositAddress.label != null &&
+              depositAddress.label!.isNotEmpty) label = depositAddress.label;
+          // assuming deposits always exist
+          final amountReveived = tx.received;
+
+          if (depositAddress != null)
+            (depositAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
+              address: (depositAddress.index, depositAddress.address),
+              wallet: updatedWallet,
+              spentTxId: tx.txid,
+              kind: AddressKind.deposit,
+              state: AddressStatus.used,
+              spendable: false,
+              label: label,
+            );
+          else {
+            try {
+              if (sTx.output == null) throw 'No output object';
+              final scriptPubkeyString =
+                  sTx.output?.firstWhere((output) => output.value == amountReveived).scriptPubkey;
+
+              if (scriptPubkeyString == null) {
+                throw 'No script pubkey';
+              }
+
+              final scriptPubKey = await bdk.Script.create(
+                hexDecoder.convert(scriptPubkeyString) as Uint8List,
+              );
+              final addressStruct = await bdk.Address.fromScript(
+                scriptPubKey,
+                bdkNetwork,
+              );
+
+              (depositAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
+                address: (-1, addressStruct.toString()),
+                wallet: wallet,
+                spentTxId: tx.txid,
+                kind: AddressKind.deposit,
+                state: AddressStatus.used,
+                spendable: false,
+                label: label,
+              );
+              txObj = txObj.copyWith(
+                toAddress: depositAddress.address,
+                fromAddress: '',
+              );
+            } catch (e) {
+              // usually scriptpubkey not available
+              // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
+              print(e);
+            }
+          }
         }
 
         transactions.add(txObj.copyWith(label: label));
       }
 
-      final w = wallet.copyWith(
+      final Wallet w = updatedWallet.copyWith(
         transactions: transactions,
-        toAddresses: updatedToAddresses,
-        addresses: updatedAddresses,
       );
 
       return (w, null);

@@ -51,7 +51,6 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   bitcoin_utils: ^0.0.1
   permission_handler: ^10.0.0
-
   # widgetbook: ^3.0.0-beta.14
   # widgetbook_annotation: ^3.0.0-beta.7
   flutter_dotenv: ^5.1.0
@@ -61,6 +60,7 @@ dependencies:
   flutter_file_dialog: ^3.0.1
   currency_text_input_formatter: ^2.1.10
   intl: ^0.18.1
+  hex: ^0.2.0
 
   
   # currency_text_input_formatter: ^2.1.10
