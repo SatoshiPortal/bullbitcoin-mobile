@@ -50,13 +50,16 @@ class Wallet with _$Wallet {
 
     final int lastUsedIndex =
         sortedAddresses.lastIndexWhere((address) => address.state == AddressStatus.used);
+    final int lastActiveIndex =
+        sortedAddresses.lastIndexWhere((address) => address.state == AddressStatus.active);
 
+    final lastIndexForGap = (lastActiveIndex > lastUsedIndex) ? lastActiveIndex : lastUsedIndex;
     // If there's no address with status "used", return the count of all addresses as they're all unused
-    if (lastUsedIndex == -1) {
+    if (lastIndexForGap == -1) {
       return sortedAddresses.length;
     }
 
-    return sortedAddresses.length - lastUsedIndex;
+    return sortedAddresses.length - lastIndexForGap;
   }
 
   String purposePathString() {
