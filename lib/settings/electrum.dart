@@ -227,11 +227,15 @@ class NetworkConfigFields extends HookWidget {
 
     if (network == null) return const SizedBox.shrink();
 
+    final sg = context.select((SettingsCubit x) => x.state.getNetwork()?.stopGap);
+    final r = context.select((SettingsCubit x) => x.state.getNetwork()?.retry);
+    final t = context.select((SettingsCubit x) => x.state.getNetwork()?.timeout);
+
     final mainnet = useTextEditingController(text: network.mainnet);
     final testnet = useTextEditingController(text: network.testnet);
-    final stopGap = useTextEditingController(text: network.stopGap.toString());
-    final retry = useTextEditingController(text: network.retry.toString());
-    final timeout = useTextEditingController(text: network.timeout.toString());
+    final stopGap = useTextEditingController(text: sg.toString());
+    final retry = useTextEditingController(text: r.toString());
+    final timeout = useTextEditingController(text: t.toString());
     final validateDomain = useState(network.validateDomain);
 
     useEffect(

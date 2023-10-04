@@ -50,11 +50,15 @@
         "**/widgetbook": true,
         "**/maintainance": true,
         ".idea": true,
-        "**/test": true,
-        "integration_test": true,
+        // "**/test": true,
+        // "integration_test": true,
         "android": true,
         "ios": true,
+<<<<<<< Updated upstream
         "**/pubspec.yaml": false,
+=======
+        // "**/pubspec.yaml": true,
+>>>>>>> Stashed changes
         "repro": true,
         "doc": true,
         // 
