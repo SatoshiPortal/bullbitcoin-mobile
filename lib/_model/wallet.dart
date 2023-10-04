@@ -128,12 +128,20 @@ class Wallet with _$Wallet {
     for (final address in (isSend ? toAddresses : addresses) ?? <Address>[])
       if (isSend) {
         if (address.spentTxId == txid) {
-          return address;
+          if (kind == null) {
+            return address;
+          } else if (kind == address.kind) {
+            return address;
+          }
         }
       } else {
         for (final utxo in address.utxos ?? <bdk.LocalUtxo>[]) {
           if (utxo.outpoint.txid == txid) {
-            return address;
+            if (kind == null) {
+              return address;
+            } else if (kind == address.kind) {
+              return address;
+            }
           }
         }
       }

@@ -36,6 +36,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<GetAddresses>(_getAddresses);
     on<ListTransactions>(_listTransactions);
     on<GetFirstAddress>(_getFirstAddress);
+    on<UpdateUtxos>(_updateUtxos);
     // on<GetNewAddress>(_getLastUnusedAddress);
     on<SyncWallet>(_syncWallet);
     add(LoadWallet(saveDir));
@@ -132,11 +133,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       }
     }
 
-    final blockchain = settingsCubit.state.blockchain!;
+    final blockchain = settingsCubit.state.blockchain;
     final bdkWallet = state.bdkWallet!;
 
     final err = await walletSync.syncWallet(
-      blockChain: blockchain,
+      blockChain: blockchain!,
       bdkWallet: bdkWallet,
     );
 
@@ -309,6 +310,47 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
     add(GetBalance());
+  }
+
+  void _updateUtxos(UpdateUtxos event, Emitter<WalletState> emit) async {
+    emit(
+      state.copyWith(
+        syncingAddresses: true,
+        errSyncingAddresses: '',
+      ),
+    );
+
+    final (wallet, err) = await walletAddress.updateUtxos(
+      bdkWallet: state.bdkWallet!,
+      wallet: state.wallet!,
+    );
+    if (err != null)
+      emit(
+        state.copyWith(
+          errSyncingAddresses: err.toString(),
+          syncingAddresses: false,
+        ),
+      );
+    if (fromStorage) {
+      final errUpdate = await walletRepository.updateWallet(
+        wallet: wallet!,
+        hiveStore: hiveStorage,
+      );
+      if (errUpdate != null) {
+        emit(
+          state.copyWith(
+            errSyncingAddresses: errUpdate.toString(),
+            syncingAddresses: false,
+          ),
+        );
+        return;
+      }
+    }
+    emit(
+      state.copyWith(
+        wallet: wallet,
+      ),
+    );
   }
 
   void _getFirstAddress(GetFirstAddress event, Emitter<WalletState> emit) async {
