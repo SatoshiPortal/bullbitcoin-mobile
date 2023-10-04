@@ -107,7 +107,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     await Future.delayed(const Duration(microseconds: 300));
 
     add(GetFirstAddress());
-
     add(SyncWallet());
   }
 
@@ -257,6 +256,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         wallet: wallet,
       ),
     );
+    add(UpdateUtxos());
   }
 
   void _getAddresses(GetAddresses event, Emitter<WalletState> emit) async {
@@ -351,6 +351,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         wallet: wallet,
       ),
     );
+    add(UpdateWallet(wallet!));
   }
 
   void _getFirstAddress(GetFirstAddress event, Emitter<WalletState> emit) async {

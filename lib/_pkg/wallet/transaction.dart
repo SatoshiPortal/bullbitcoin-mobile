@@ -107,7 +107,7 @@ class WalletTx {
               );
 
               (recipientAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
-                address: (0, addressStruct.toString()),
+                address: (null, addressStruct.toString()),
                 wallet: updatedWallet,
                 spentTxId: tx.txid,
                 kind: AddressKind.external,
@@ -115,17 +115,16 @@ class WalletTx {
                 spendable: false,
                 label: label,
               );
-              txObj = txObj.copyWith(
-                toAddress: recipientAddress.address,
-                fromAddress: '',
-              );
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
               print(e);
             }
           }
-
+          txObj = txObj.copyWith(
+            toAddress: recipientAddress != null ? recipientAddress.address : '',
+            fromAddress: '',
+          );
           //
           //
           // HANDLE CHANGE
@@ -146,8 +145,7 @@ class WalletTx {
           if (changeAddress != null)
             (changeAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
               address: (changeAddress.index, changeAddress.address),
-              wallet: updatedWallet, // change and recieve are in the same if
-              // so wallet should be updatedWallet
+              wallet: updatedWallet,
               spentTxId: tx.txid,
               kind: AddressKind.change,
               state: AddressStatus.used,
@@ -173,7 +171,7 @@ class WalletTx {
               );
 
               (changeAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
-                address: (-1, addressStruct.toString()),
+                address: (null, addressStruct.toString()),
                 wallet: wallet,
                 spentTxId: tx.txid,
                 kind: AddressKind.change,
@@ -187,7 +185,7 @@ class WalletTx {
               print(e);
             }
           }
-        } else {
+        } else if (txObj.isReceived()) {
           depositAddress = updatedWallet.getAddressFromAddresses(
             txObj.txid,
             isSend: !txObj.isReceived(),
@@ -196,8 +194,8 @@ class WalletTx {
           if (depositAddress != null &&
               depositAddress.label != null &&
               depositAddress.label!.isNotEmpty) label = depositAddress.label;
-          // assuming deposits always exist
-          final amountReveived = tx.received;
+
+          final amountReceived = tx.received;
 
           if (depositAddress != null)
             (depositAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
@@ -213,7 +211,7 @@ class WalletTx {
             try {
               if (sTx.output == null) throw 'No output object';
               final scriptPubkeyString =
-                  sTx.output?.firstWhere((output) => output.value == amountReveived).scriptPubkey;
+                  sTx.output?.firstWhere((output) => output.value == amountReceived).scriptPubkey;
 
               if (scriptPubkeyString == null) {
                 throw 'No script pubkey';
@@ -228,7 +226,7 @@ class WalletTx {
               );
 
               (depositAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
-                address: (-1, addressStruct.toString()),
+                address: (null, addressStruct.toString()),
                 wallet: updatedWallet,
                 spentTxId: tx.txid,
                 kind: AddressKind.deposit,
@@ -236,21 +234,23 @@ class WalletTx {
                 spendable: false,
                 label: label,
               );
-              txObj = txObj.copyWith(
-                toAddress: depositAddress.address,
-                fromAddress: '',
-              );
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
               print(e);
             }
           }
+          txObj = txObj.copyWith(
+            toAddress: depositAddress != null ? depositAddress.address : '',
+            fromAddress: '',
+          );
         }
 
         transactions.add(txObj.copyWith(label: label));
+        // Future.delayed(const Duration(milliseconds: 100));
       }
 
+      // Future.delayed(const Duration(milliseconds: 200));
       final Wallet w = updatedWallet.copyWith(
         transactions: transactions,
       );

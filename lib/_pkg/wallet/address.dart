@@ -231,7 +231,7 @@ class WalletAddress {
         final addressStr = addresss.toString();
 
         late bool isRelated = false;
-        late String txLabel = '';
+        // late String txLabel = '';
         final address = addresses.firstWhere(
           (a) => a.address == addressStr,
           // if the address does not exist, its because its new change
@@ -247,7 +247,7 @@ class WalletAddress {
           for (final addrs in tx.outAddresses ?? []) {
             if (addrs == addressStr) {
               isRelated = true;
-              txLabel = tx.label ?? '';
+              // txLabel = tx.label ?? '';
             }
           }
         }
@@ -258,7 +258,7 @@ class WalletAddress {
 
         var updated = address.copyWith(
           utxos: utxos,
-          label: isRelated ? address.label : txLabel,
+          // label: isRelated ? address.label : txLabel,
           state: AddressStatus.active,
         );
 
@@ -284,7 +284,7 @@ class WalletAddress {
     required Wallet wallet,
     String? label,
     String? spentTxId,
-    AddressKind? kind,
+    required AddressKind kind,
     AddressStatus state = AddressStatus.unset,
     bool spendable = true,
   }) async {
@@ -295,39 +295,41 @@ class WalletAddress {
               : wallet.addresses.toList()) ??
           <Address>[];
 
-      Address a;
-
-      final existing = addresses.indexWhere(
+      Address updated;
+      final existingIdx = addresses.indexWhere(
         (element) => element.address == adr,
       );
-      final addressExists = existing != -1;
+      final addressExists = existingIdx != -1;
       if (addressExists) {
-        a = addresses.removeAt(existing);
-        a = a.copyWith(
-          label: label,
-          spentTxId: spentTxId,
+        final existing = addresses.removeAt(existingIdx);
+        updated = Address(
+          address: existing.address,
+          index: existing.index,
+          label: label ?? existing.label,
+          spentTxId: spentTxId ?? existing.spentTxId,
+          kind: kind,
           state: state,
           spendable: spendable,
         );
-        addresses.insert(existing, a);
+        addresses.insert(existingIdx, updated);
       } else {
-        a = Address(
+        updated = Address(
           address: adr,
           index: idx,
           label: label,
           spentTxId: spentTxId,
-          kind: kind!,
+          kind: kind,
           state: state,
           spendable: spendable,
         );
-        addresses.add(a);
+        addresses.add(updated);
       }
 
       final w = kind == AddressKind.external
           ? wallet.copyWith(toAddresses: addresses)
           : wallet.copyWith(addresses: addresses);
 
-      return (a, w);
+      return (updated, w);
     } catch (e) {
       rethrow;
     }

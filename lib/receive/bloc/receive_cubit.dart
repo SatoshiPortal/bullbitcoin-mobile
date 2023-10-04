@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
@@ -273,6 +274,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         address: (a!.index, a.address),
         wallet: walletBloc.state.wallet!,
         label: state.privateLabel,
+        kind: AddressKind.deposit,
       );
 
       final errUpdate = await walletRepository.updateWallet(
