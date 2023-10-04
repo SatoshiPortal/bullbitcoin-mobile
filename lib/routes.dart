@@ -116,14 +116,17 @@ final GoRouter router = GoRouter(
       path: '/send',
       builder: (context, state) {
         // final String? deepLinkUri = state.extra as String?;
+        final walletBloc = state.extra as WalletBloc?;
 
-        return const SelectSendWalletPage();
+        return SelectSendWalletPage(walletBloc: walletBloc);
       },
     ),
     GoRoute(
       path: '/receive',
       builder: (context, state) {
-        return const SelectReceiveWalletPage();
+        final walletBloc = state.extra as WalletBloc?;
+
+        return SelectReceiveWalletPage(walletBloc: walletBloc);
       },
     ),
     GoRoute(

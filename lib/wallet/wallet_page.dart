@@ -57,7 +57,11 @@ class _Screen extends StatelessWidget {
             ],
           ),
         ),
-        const BottomCenter(child: HomeActionButtons()),
+        BottomCenter(
+          child: HomeActionButtons(
+            walletBloc: context.read<WalletBloc>(),
+          ),
+        ),
       ],
     );
   }

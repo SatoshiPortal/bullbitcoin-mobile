@@ -19,18 +19,21 @@ class SelectSendWalletStep extends Cubit<({bool selectWallet, WalletBloc? wallet
 }
 
 class SelectSendWalletPage extends StatefulWidget {
-  const SelectSendWalletPage({super.key});
+  const SelectSendWalletPage({super.key, this.walletBloc});
+
+  final WalletBloc? walletBloc;
 
   @override
   State<SelectSendWalletPage> createState() => _SelectSendWalletPageState();
 }
 
 class _SelectSendWalletPageState extends State<SelectSendWalletPage> {
-  SelectSendWalletStep? stepBloc;
+  late SelectSendWalletStep stepBloc;
 
   @override
   void initState() {
     stepBloc = SelectSendWalletStep();
+    if (widget.walletBloc != null) stepBloc.goNext(widget.walletBloc!);
     super.initState();
   }
 
@@ -41,7 +44,7 @@ class _SelectSendWalletPageState extends State<SelectSendWalletPage> {
     return BlocProvider.value(
       value: homeCubit,
       child: BlocProvider.value(
-        value: stepBloc!,
+        value: stepBloc,
         child: const Scaffold(
           // appBar: AppBar(
           //   flexibleSpace: const SendAppBar(),

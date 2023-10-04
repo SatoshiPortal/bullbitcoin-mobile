@@ -1,10 +1,13 @@
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeActionButtons extends StatelessWidget {
-  const HomeActionButtons({super.key});
+  const HomeActionButtons({super.key, this.walletBloc});
+
+  final WalletBloc? walletBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +55,7 @@ class HomeActionButtons extends StatelessWidget {
               child: BBButton.smallRed(
                 filled: true,
                 onPressed: () async {
-                  context.push('/send');
+                  context.push('/send', extra: walletBloc);
                   // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
 
                   // await SendPage.SendPage.openSendPopUp(context, wallet);
@@ -66,7 +69,7 @@ class HomeActionButtons extends StatelessWidget {
               child: BBButton.smallRed(
                 filled: true,
                 onPressed: () async {
-                  context.push('/receive');
+                  context.push('/receive', extra: walletBloc);
                   // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
 
                   // await ReceiveScreen.openPopUp(context, wallet);
