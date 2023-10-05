@@ -19,7 +19,7 @@ class WalletUpdate {
     }
   }
 
-  (Wallet?, Err?) updateAddressesFromTxs(Wallet wallet) {
+  Future<(Wallet?, Err?)> updateAddressesFromTxs(Wallet wallet) async {
     final updatedAddresses = List<Address>.from(wallet.addresses);
     final updatedToAddresses = List<Address>.from(wallet.toAddresses ?? []);
 

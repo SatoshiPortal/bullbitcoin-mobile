@@ -235,8 +235,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       // if we return we will not update addresses
     }
 
-    final (walletUpdated, err2) = WalletUpdate().updateAddressesFromTxs(
-      state.wallet!,
+    final (walletUpdated, err2) = await WalletUpdate().updateAddressesFromTxs(
+      wallet!,
     );
 
     if (err2 != null) {

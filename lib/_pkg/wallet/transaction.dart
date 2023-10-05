@@ -12,21 +12,19 @@ import 'package:hex/hex.dart';
 
 class WalletTx {
   Transaction addOrUpdateAddressState(Address newAddress, Transaction tx) {
-    // Check if the address already exists in outAddrs
-    final index = tx.outAddrs.indexWhere(
+    final outAddrs = List<Address>.from(tx.outAddrs);
+    final index = outAddrs.indexWhere(
       (address) => address == newAddress,
     );
 
     if (index != -1) {
-      // If the address exists, update it using copyWith
-      final removedAddress = List<Address>.from(tx.outAddrs).removeAt(index);
-      final updatedAddress = removedAddress.copyWith(state: newAddress.state);
-      List<Address>.from(tx.outAddrs).add(updatedAddress);
+      final updatedAddress = outAddrs[index].copyWith(state: newAddress.state);
+      outAddrs.add(updatedAddress);
     } else {
-      // If the address doesn't exist, add it to outAddrs
-      List<Address>.from(tx.outAddrs).add(newAddress);
+      outAddrs.add(newAddress);
+      print(outAddrs);
     }
-    return tx;
+    return tx.copyWith(outAddrs: outAddrs);
   }
 
   //
@@ -238,7 +236,10 @@ class WalletTx {
             toAddress: depositAddress != null ? depositAddress.address : '',
             fromAddress: '',
           );
-          if (depositAddress != null) txObj = addOrUpdateAddressState(depositAddress, txObj);
+          if (depositAddress != null) {
+            final txObj2 = addOrUpdateAddressState(depositAddress, txObj);
+            txObj = txObj2.copyWith(outAddrs: txObj2.outAddrs);
+          }
         }
 
         transactions.add(txObj.copyWith(label: label));
