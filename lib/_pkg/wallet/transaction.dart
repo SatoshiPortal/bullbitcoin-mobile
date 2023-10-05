@@ -19,7 +19,6 @@ class WalletTx {
     required bdk.Wallet bdkWallet,
   }) async {
     try {
-      var updatedWallet = wallet;
       final storedTxs = wallet.transactions;
       final bdkNetwork = wallet.getBdkNetwork();
       final txs = await bdkWallet.listTransactions(true);
@@ -48,13 +47,15 @@ class WalletTx {
           outAddrs: storedTx?.outAddrs ?? [],
           // label: label,
         );
+        // var outAddrs;
+        // var inAddres;
         final SerializedTx sTx = SerializedTx.fromJson(
           jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
         );
         if (idx != -1 && storedTxs[idx].label != null && storedTxs[idx].label!.isNotEmpty)
           label = storedTxs[idx].label;
 
-        Address? recipientAddress;
+        Address? externalAddress;
         Address? changeAddress;
         Address? depositAddress;
         const hexDecoder = HexDecoder();
@@ -65,32 +66,23 @@ class WalletTx {
           // HANDLE EXTERNAL RECIPIENT
           //
           //
-          recipientAddress = updatedWallet.getAddressFromAddresses(
+          externalAddress = wallet.getAddressFromAddresses(
             txObj.txid,
             isSend: !txObj.isReceived(),
             kind: AddressKind.external,
           );
-          if (recipientAddress != null &&
-              recipientAddress.label != null &&
-              recipientAddress.label!.isNotEmpty) label = recipientAddress.label;
 
-          final amountSentToRecipient = tx.sent - (tx.received + (tx.fee ?? 0));
+          final amountSentToExternal = tx.sent - (tx.received + (tx.fee ?? 0));
 
-          if (recipientAddress != null)
-            (recipientAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
-              address: (recipientAddress.index, recipientAddress.address),
-              wallet: updatedWallet,
-              spentTxId: tx.txid,
-              kind: AddressKind.external,
-              state: AddressStatus.used,
-              spendable: false,
-              label: label,
-            );
-          else {
+          if (externalAddress != null) {
+            if (externalAddress.label != null && externalAddress.label!.isNotEmpty)
+              label = externalAddress.label;
+            // Future.delayed(const Duration(milliseconds: 100));
+          } else {
             try {
               if (sTx.output == null) throw 'No output object';
               final scriptPubkeyString = sTx.output
-                  ?.firstWhere((output) => output.value == amountSentToRecipient)
+                  ?.firstWhere((output) => output.value == amountSentToExternal)
                   .scriptPubkey;
               // also check and update your own change, for older transactions
               // this can help keep an index of change?
@@ -106,15 +98,16 @@ class WalletTx {
                 bdkNetwork,
               );
 
-              (recipientAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
+              (externalAddress, _) = await WalletAddress().addAddressToWallet(
                 address: (null, addressStruct.toString()),
-                wallet: updatedWallet,
+                wallet: wallet.copyWith(),
                 spentTxId: tx.txid,
                 kind: AddressKind.external,
                 state: AddressStatus.used,
                 spendable: false,
                 label: label,
               );
+              // Future.delayed(const Duration(milliseconds: 100));
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
@@ -122,37 +115,28 @@ class WalletTx {
             }
           }
           txObj = txObj.copyWith(
-            toAddress: recipientAddress != null ? recipientAddress.address : '',
+            toAddress: externalAddress != null ? externalAddress.address : '',
             fromAddress: '',
           );
+          if (externalAddress != null) txObj.addOrUpdateAddressState(externalAddress);
           //
           //
           // HANDLE CHANGE
           //
           //
 
-          changeAddress = updatedWallet.getAddressFromAddresses(
+          changeAddress = wallet.getAddressFromAddresses(
             txObj.txid,
             isSend: !txObj.isReceived(),
             kind: AddressKind.change,
           );
-          if (changeAddress != null &&
-              changeAddress.label != null &&
-              changeAddress.label!.isNotEmpty) label = changeAddress.label;
 
           final amountChange = tx.received;
 
-          if (changeAddress != null)
-            (changeAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
-              address: (changeAddress.index, changeAddress.address),
-              wallet: updatedWallet,
-              spentTxId: tx.txid,
-              kind: AddressKind.change,
-              state: AddressStatus.used,
-              spendable: false,
-              label: label,
-            );
-          else {
+          if (changeAddress != null) {
+            if (changeAddress.label != null && changeAddress.label!.isNotEmpty)
+              label = changeAddress.label;
+          } else {
             try {
               if (sTx.output == null) throw 'No output object';
               final scriptPubkeyString =
@@ -170,7 +154,7 @@ class WalletTx {
                 bdkNetwork,
               );
 
-              (changeAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
+              (changeAddress, _) = await WalletAddress().addAddressToWallet(
                 address: (null, addressStruct.toString()),
                 wallet: wallet,
                 spentTxId: tx.txid,
@@ -179,35 +163,27 @@ class WalletTx {
                 spendable: false,
                 label: label,
               );
+              // Future.delayed(const Duration(milliseconds: 100));
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
               print(e);
             }
           }
+          if (changeAddress != null) txObj.addOrUpdateAddressState(changeAddress);
         } else if (txObj.isReceived()) {
-          depositAddress = updatedWallet.getAddressFromAddresses(
+          depositAddress = wallet.getAddressFromAddresses(
             txObj.txid,
             isSend: !txObj.isReceived(),
             kind: AddressKind.deposit,
           );
-          if (depositAddress != null &&
-              depositAddress.label != null &&
-              depositAddress.label!.isNotEmpty) label = depositAddress.label;
 
           final amountReceived = tx.received;
 
-          if (depositAddress != null)
-            (depositAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
-              address: (depositAddress.index, depositAddress.address),
-              wallet: updatedWallet,
-              spentTxId: tx.txid,
-              kind: AddressKind.deposit,
-              state: AddressStatus.used,
-              spendable: false,
-              label: label,
-            );
-          else {
+          if (depositAddress != null) {
+            if (depositAddress.label != null && depositAddress.label!.isNotEmpty)
+              label = depositAddress.label;
+          } else {
             try {
               if (sTx.output == null) throw 'No output object';
               final scriptPubkeyString =
@@ -224,16 +200,16 @@ class WalletTx {
                 scriptPubKey,
                 bdkNetwork,
               );
-
-              (depositAddress, updatedWallet) = await WalletAddress().addAddressToWallet(
+              (depositAddress, _) = await WalletAddress().addAddressToWallet(
                 address: (null, addressStruct.toString()),
-                wallet: updatedWallet,
+                wallet: wallet.copyWith(),
                 spentTxId: tx.txid,
                 kind: AddressKind.deposit,
                 state: AddressStatus.used,
                 spendable: false,
                 label: label,
               );
+              // Future.delayed(const Duration(milliseconds: 100));
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
@@ -244,6 +220,7 @@ class WalletTx {
             toAddress: depositAddress != null ? depositAddress.address : '',
             fromAddress: '',
           );
+          if (depositAddress != null) txObj.addOrUpdateAddressState(depositAddress);
         }
 
         transactions.add(txObj.copyWith(label: label));
@@ -251,7 +228,7 @@ class WalletTx {
       }
 
       // Future.delayed(const Duration(milliseconds: 200));
-      final Wallet w = updatedWallet.copyWith(
+      final Wallet w = wallet.copyWith(
         transactions: transactions,
       );
 
@@ -429,6 +406,7 @@ class WalletTx {
     }
   }
 }
+
 
 // Future<(Transaction?, Err?)> updateRelatedTxLabels({
 //   required Transaction tx,

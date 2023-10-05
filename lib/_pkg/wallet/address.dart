@@ -84,7 +84,6 @@ class WalletAddress {
       final addressLastUnused = await bdkWallet.getAddress(
         addressIndex: const bdk.AddressIndex.lastUnused(),
       );
-      Wallet w;
 
       final List<Address> addresses = [...wallet.addresses];
 
@@ -105,12 +104,14 @@ class WalletAddress {
             ),
           );
       }
-
+      // Future.delayed(const Duration(milliseconds: 1600));
       addresses.sort((a, b) {
         final int indexA = a.index ?? 0;
         final int indexB = b.index ?? 0;
         return indexB.compareTo(indexA);
       });
+
+      Wallet w;
 
       if (wallet.lastGeneratedAddress == null ||
           addressLastUnused.index >= wallet.lastGeneratedAddress!.index!)
@@ -331,6 +332,8 @@ class WalletAddress {
 
       return (updated, w);
     } catch (e) {
+      print('addingAddressERROR');
+      print(e);
       rethrow;
     }
 
