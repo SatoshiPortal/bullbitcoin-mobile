@@ -10,6 +10,7 @@ import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
@@ -234,9 +235,25 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       // if we return we will not update addresses
     }
 
+    final (walletUpdated, err2) = WalletUpdate().updateAddressesFromTxs(
+      state.wallet!,
+    );
+
+    if (err2 != null) {
+      emit(
+        state.copyWith(
+          errLoadingWallet: err.toString(),
+          loadingTxs: false,
+        ),
+      );
+      return;
+      // do not return because if we do not have txs, bdk returns error
+      // if we return we will not update addresses
+    }
+
     if (fromStorage) {
       final errUpdating = await walletRepository.updateWallet(
-        wallet: wallet!,
+        wallet: walletUpdated!,
         hiveStore: hiveStorage,
       );
       if (errUpdating != null) {
@@ -253,7 +270,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(
       state.copyWith(
         loadingTxs: false,
-        wallet: wallet,
+        wallet: walletUpdated,
       ),
     );
     add(UpdateUtxos());

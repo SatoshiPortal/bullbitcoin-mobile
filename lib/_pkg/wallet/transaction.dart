@@ -11,6 +11,24 @@ import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:hex/hex.dart';
 
 class WalletTx {
+  Transaction addOrUpdateAddressState(Address newAddress, Transaction tx) {
+    // Check if the address already exists in outAddrs
+    final index = tx.outAddrs.indexWhere(
+      (address) => address == newAddress,
+    );
+
+    if (index != -1) {
+      // If the address exists, update it using copyWith
+      final removedAddress = List<Address>.from(tx.outAddrs).removeAt(index);
+      final updatedAddress = removedAddress.copyWith(state: newAddress.state);
+      List<Address>.from(tx.outAddrs).add(updatedAddress);
+    } else {
+      // If the address doesn't exist, add it to outAddrs
+      List<Address>.from(tx.outAddrs).add(newAddress);
+    }
+    return tx;
+  }
+
   //
   // THIS NEEDS WORK
   //
@@ -118,7 +136,7 @@ class WalletTx {
             toAddress: externalAddress != null ? externalAddress.address : '',
             fromAddress: '',
           );
-          if (externalAddress != null) txObj.addOrUpdateAddressState(externalAddress);
+          if (externalAddress != null) txObj = addOrUpdateAddressState(externalAddress, txObj);
           //
           //
           // HANDLE CHANGE
@@ -170,7 +188,7 @@ class WalletTx {
               print(e);
             }
           }
-          if (changeAddress != null) txObj.addOrUpdateAddressState(changeAddress);
+          if (changeAddress != null) txObj = addOrUpdateAddressState(changeAddress, txObj);
         } else if (txObj.isReceived()) {
           depositAddress = wallet.getAddressFromAddresses(
             txObj.txid,
@@ -220,7 +238,7 @@ class WalletTx {
             toAddress: depositAddress != null ? depositAddress.address : '',
             fromAddress: '',
           );
-          if (depositAddress != null) txObj.addOrUpdateAddressState(depositAddress);
+          if (depositAddress != null) txObj = addOrUpdateAddressState(depositAddress, txObj);
         }
 
         transactions.add(txObj.copyWith(label: label));

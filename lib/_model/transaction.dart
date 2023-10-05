@@ -38,23 +38,6 @@ class Transaction with _$Transaction {
 
   factory Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
 
-  void addOrUpdateAddressState(Address newAddress) {
-    // Check if the address already exists in outAddrs
-    final index = outAddrs.indexWhere(
-      (address) => address == newAddress,
-    );
-
-    if (index != -1) {
-      // If the address exists, update it using copyWith
-      final removedAddress = List<Address>.from(outAddrs).removeAt(index);
-      final updatedAddress = removedAddress.copyWith(state: newAddress.state);
-      List<Address>.from(outAddrs).add(updatedAddress);
-    } else {
-      // If the address doesn't exist, add it to outAddrs
-      List<Address>.from(outAddrs).add(newAddress);
-    }
-  }
-
   String mapOutValueToAddress(String value) {
     if (outAddresses == null) return '';
     final String address = outAddresses!.firstWhere(
