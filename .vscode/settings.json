@@ -5,7 +5,7 @@
     "explorer.fileNesting.patterns": {
         "main.dart": "routes.dart, styles.dart, locator.dart",
         "pubspec.yaml": "pubspec.lock,pubspec_overrides.yaml,.packages,.flutter-plugins,.flutter-plugins-dependencies,.metadata",
-        "*.dart": "${capture}.g.dart"
+        "*.dart": "${capture}.g.dart, ${capture}.freezed.dart"
     },
     "[dart]": {
         "editor.formatOnSave": true,
@@ -34,7 +34,7 @@
         "**/CHANGELOG.md": true,
         "l10n.yaml": true,
         "LICENSE": true,
-        "**/analysis_options.yaml": true,
+        // "**/analysis_options.yaml": true,
         "build.yaml": true,
         "**/packages": true,
         "README.md": true,

@@ -75,7 +75,7 @@ class AddressDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = context.select((ReceiveCubit x) => x.state.privateLabel ?? '');
+    final label = context.select((ReceiveCubit x) => x.state.privateLabel);
     final amount = context.select((ReceiveCubit x) => x.state.savedInvoiceAmount);
     final description = context.select((ReceiveCubit x) => x.state.savedDescription);
 

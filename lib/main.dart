@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_pkg/i18n.dart';
+import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/home/deep_linking.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/routes.dart';
@@ -39,8 +40,11 @@ class BullBitcoinWalletApp extends StatelessWidget {
 
     return LocalizationProvider(
       state: LocalizationProvider.of(context).state,
-      child: BlocProvider.value(
-        value: locator<SettingsCubit>(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: locator<SettingsCubit>()),
+          BlocProvider.value(value: locator<Logger>()),
+        ],
         child: BlocListener<SettingsCubit, SettingsState>(
           listener: (context, state) {
             if (state.language != localizationDelegate.currentLocale.languageCode)

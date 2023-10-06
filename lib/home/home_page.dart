@@ -307,20 +307,25 @@ class HomeTopBar extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Container(
-          alignment: Alignment.bottomCenter,
-          padding: const EdgeInsets.only(left: 24, bottom: 10),
-          child: pageIdx == 0
-              ? Image.asset(
-                  'assets/textlogo.png',
-                  height: 27,
-                  width: 147,
-                )
-              : const BBText.headline(
-                  'BULL BITCOIN',
-                  isRed: true,
-                  isBold: true,
-                ),
+        GestureDetector(
+          onLongPress: () {
+            context.push('/logs');
+          },
+          child: Container(
+            alignment: Alignment.bottomCenter,
+            padding: const EdgeInsets.only(left: 24, bottom: 10),
+            child: pageIdx == 0
+                ? Image.asset(
+                    'assets/textlogo.png',
+                    height: 27,
+                    width: 147,
+                  )
+                : const BBText.headline(
+                    'BULL BITCOIN',
+                    isRed: true,
+                    isBold: true,
+                  ),
+          ),
         ),
         const Spacer(),
         IconButton(

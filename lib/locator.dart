@@ -4,6 +4,7 @@ import 'package:bb_mobile/_pkg/deep_link.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
+import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/mnemonic_word.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
@@ -42,6 +43,8 @@ Future setupLocator({bool fromTest = false}) async {
     final deepLink = DeepLink();
     locator.registerSingleton<DeepLink>(deepLink);
   }
+
+  locator.registerSingleton<Logger>(Logger());
 
   locator.registerSingleton<SecureStorage>(secureStorage);
   locator.registerSingleton<HiveStorage>(hiveStorage);
