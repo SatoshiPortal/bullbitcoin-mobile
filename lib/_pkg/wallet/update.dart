@@ -12,7 +12,10 @@ class WalletUpdate {
     final existingAddressIndex =
         addressList.indexWhere((a) => a.address == address.address && a.kind == address.kind);
     if (existingAddressIndex != -1) {
-      final updatedAddress = addressList[existingAddressIndex].copyWith(state: address.state);
+      final updatedAddress = addressList[existingAddressIndex].copyWith(
+        state: address.state,
+        label: address.label,
+      );
       addressList[existingAddressIndex] = updatedAddress;
     } else {
       addressList.add(address);
