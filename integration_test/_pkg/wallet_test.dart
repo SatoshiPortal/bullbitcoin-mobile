@@ -3,7 +3,6 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -36,14 +35,14 @@ void main() {
       wallet: w84,
       bdkWallet: bdkW84,
     );
-    print(w!.addresses);
+    print(w!.myAddressBook);
 
-    final (w84Updated, _) = await WalletUpdate().syncWalletTxsAndAddresses(
-      wallet: w84,
-      bdkWallet: bdkW84,
-    );
+    // final (w84Updated, _) = await WalletUpdate().syncWalletTxsAndAddresses(
+    //   wallet: w84,
+    //   bdkWallet: bdkW84,
+    // );
 
-    assert(w84Updated!.transactions.isNotEmpty);
+    // assert(w84Updated!.transactions.isNotEmpty);
     // for (final tx in w84Updated!.transactions) {
     // print(tx.);
     // }

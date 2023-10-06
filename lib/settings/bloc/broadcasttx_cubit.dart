@@ -80,11 +80,11 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           fee: feeAmount,
           outAddresses: outAddresses,
         );
-
+        final decodedTx = hex.encode(await bdkTx.serialize());
         emit(
           state.copyWith(
             extractingTx: false,
-            tx: hex.encode(await bdkTx.serialize()),
+            tx: decodedTx,
             psbtBDK: psbt,
             transaction: transaction,
             step: BroadcastTxStep.broadcast,
@@ -119,13 +119,20 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           extractingTx: false,
           errExtractingTx: e.toString(),
           // step: BroadcastTxStep.import,
+          tx: '',
         ),
       );
     }
   }
 
   void broadcastClicked() async {
-    emit(state.copyWith(broadcastingTx: true, errBroadcastingTx: ''));
+    emit(
+      state.copyWith(
+        broadcastingTx: true,
+        errBroadcastingTx: '',
+        errExtractingTx: '',
+      ),
+    );
     final tx = state.tx;
     final bdkTx = await bdk.Transaction.create(transactionBytes: hex.decode(tx));
     final blockchain = settingsCubit.state.blockchain;
@@ -133,7 +140,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       emit(
         state.copyWith(
           broadcastingTx: false,
-          errBroadcastingTx: 'No Blockchain',
+          errBroadcastingTx: 'No Blockchain. Check Electrum Server Settings.',
         ),
       );
       return;

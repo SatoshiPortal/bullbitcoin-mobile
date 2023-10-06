@@ -20,15 +20,15 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
       name: json['name'] as String?,
       path: json['path'] as String?,
       balance: json['balance'] as int?,
-      addresses: (json['addresses'] as List<dynamic>?)
-              ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
       lastGeneratedAddress: json['lastGeneratedAddress'] == null
           ? null
           : Address.fromJson(
               json['lastGeneratedAddress'] as Map<String, dynamic>),
-      toAddresses: (json['toAddresses'] as List<dynamic>?)
+      myAddressBook: (json['myAddressBook'] as List<dynamic>?)
+              ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      externalAddressBook: (json['externalAddressBook'] as List<dynamic>?)
           ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
           .toList(),
       transactions: (json['transactions'] as List<dynamic>?)
@@ -57,9 +57,9 @@ Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
       'name': instance.name,
       'path': instance.path,
       'balance': instance.balance,
-      'addresses': instance.addresses,
       'lastGeneratedAddress': instance.lastGeneratedAddress,
-      'toAddresses': instance.toAddresses,
+      'myAddressBook': instance.myAddressBook,
+      'externalAddressBook': instance.externalAddressBook,
       'transactions': instance.transactions,
       'labelTags': instance.labelTags,
       'bip329Labels': instance.bip329Labels,

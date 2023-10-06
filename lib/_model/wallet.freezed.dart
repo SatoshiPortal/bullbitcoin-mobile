@@ -31,9 +31,9 @@ mixin _$Wallet {
   String? get name => throw _privateConstructorUsedError;
   String? get path => throw _privateConstructorUsedError;
   int? get balance => throw _privateConstructorUsedError;
-  List<Address> get addresses => throw _privateConstructorUsedError;
   Address? get lastGeneratedAddress => throw _privateConstructorUsedError;
-  List<Address>? get toAddresses => throw _privateConstructorUsedError;
+  List<Address> get myAddressBook => throw _privateConstructorUsedError;
+  List<Address>? get externalAddressBook => throw _privateConstructorUsedError;
   List<Transaction> get transactions => throw _privateConstructorUsedError;
   List<String>? get labelTags => throw _privateConstructorUsedError;
   List<Bip329Label>? get bip329Labels => throw _privateConstructorUsedError;
@@ -62,9 +62,9 @@ abstract class $WalletCopyWith<$Res> {
       String? name,
       String? path,
       int? balance,
-      List<Address> addresses,
       Address? lastGeneratedAddress,
-      List<Address>? toAddresses,
+      List<Address> myAddressBook,
+      List<Address>? externalAddressBook,
       List<Transaction> transactions,
       List<String>? labelTags,
       List<Bip329Label>? bip329Labels,
@@ -98,9 +98,9 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? name = freezed,
     Object? path = freezed,
     Object? balance = freezed,
-    Object? addresses = null,
     Object? lastGeneratedAddress = freezed,
-    Object? toAddresses = freezed,
+    Object? myAddressBook = null,
+    Object? externalAddressBook = freezed,
     Object? transactions = null,
     Object? labelTags = freezed,
     Object? bip329Labels = freezed,
@@ -152,17 +152,17 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.balance
           : balance // ignore: cast_nullable_to_non_nullable
               as int?,
-      addresses: null == addresses
-          ? _value.addresses
-          : addresses // ignore: cast_nullable_to_non_nullable
-              as List<Address>,
       lastGeneratedAddress: freezed == lastGeneratedAddress
           ? _value.lastGeneratedAddress
           : lastGeneratedAddress // ignore: cast_nullable_to_non_nullable
               as Address?,
-      toAddresses: freezed == toAddresses
-          ? _value.toAddresses
-          : toAddresses // ignore: cast_nullable_to_non_nullable
+      myAddressBook: null == myAddressBook
+          ? _value.myAddressBook
+          : myAddressBook // ignore: cast_nullable_to_non_nullable
+              as List<Address>,
+      externalAddressBook: freezed == externalAddressBook
+          ? _value.externalAddressBook
+          : externalAddressBook // ignore: cast_nullable_to_non_nullable
               as List<Address>?,
       transactions: null == transactions
           ? _value.transactions
@@ -218,9 +218,9 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       String? name,
       String? path,
       int? balance,
-      List<Address> addresses,
       Address? lastGeneratedAddress,
-      List<Address>? toAddresses,
+      List<Address> myAddressBook,
+      List<Address>? externalAddressBook,
       List<Transaction> transactions,
       List<String>? labelTags,
       List<Bip329Label>? bip329Labels,
@@ -252,9 +252,9 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? name = freezed,
     Object? path = freezed,
     Object? balance = freezed,
-    Object? addresses = null,
     Object? lastGeneratedAddress = freezed,
-    Object? toAddresses = freezed,
+    Object? myAddressBook = null,
+    Object? externalAddressBook = freezed,
     Object? transactions = null,
     Object? labelTags = freezed,
     Object? bip329Labels = freezed,
@@ -306,17 +306,17 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value.balance
           : balance // ignore: cast_nullable_to_non_nullable
               as int?,
-      addresses: null == addresses
-          ? _value._addresses
-          : addresses // ignore: cast_nullable_to_non_nullable
-              as List<Address>,
       lastGeneratedAddress: freezed == lastGeneratedAddress
           ? _value.lastGeneratedAddress
           : lastGeneratedAddress // ignore: cast_nullable_to_non_nullable
               as Address?,
-      toAddresses: freezed == toAddresses
-          ? _value._toAddresses
-          : toAddresses // ignore: cast_nullable_to_non_nullable
+      myAddressBook: null == myAddressBook
+          ? _value._myAddressBook
+          : myAddressBook // ignore: cast_nullable_to_non_nullable
+              as List<Address>,
+      externalAddressBook: freezed == externalAddressBook
+          ? _value._externalAddressBook
+          : externalAddressBook // ignore: cast_nullable_to_non_nullable
               as List<Address>?,
       transactions: null == transactions
           ? _value._transactions
@@ -357,16 +357,16 @@ class _$_Wallet extends _Wallet {
       this.name,
       this.path,
       this.balance,
-      final List<Address> addresses = const [],
       this.lastGeneratedAddress,
-      final List<Address>? toAddresses,
+      final List<Address> myAddressBook = const [],
+      final List<Address>? externalAddressBook,
       final List<Transaction> transactions = const [],
       final List<String>? labelTags,
       final List<Bip329Label>? bip329Labels,
       this.backupTested = false,
       this.hide = false})
-      : _addresses = addresses,
-        _toAddresses = toAddresses,
+      : _myAddressBook = myAddressBook,
+        _externalAddressBook = externalAddressBook,
         _transactions = transactions,
         _labelTags = labelTags,
         _bip329Labels = bip329Labels,
@@ -402,23 +402,24 @@ class _$_Wallet extends _Wallet {
   final String? path;
   @override
   final int? balance;
-  final List<Address> _addresses;
-  @override
-  @JsonKey()
-  List<Address> get addresses {
-    if (_addresses is EqualUnmodifiableListView) return _addresses;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_addresses);
-  }
-
   @override
   final Address? lastGeneratedAddress;
-  final List<Address>? _toAddresses;
+  final List<Address> _myAddressBook;
   @override
-  List<Address>? get toAddresses {
-    final value = _toAddresses;
+  @JsonKey()
+  List<Address> get myAddressBook {
+    if (_myAddressBook is EqualUnmodifiableListView) return _myAddressBook;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_myAddressBook);
+  }
+
+  final List<Address>? _externalAddressBook;
+  @override
+  List<Address>? get externalAddressBook {
+    final value = _externalAddressBook;
     if (value == null) return null;
-    if (_toAddresses is EqualUnmodifiableListView) return _toAddresses;
+    if (_externalAddressBook is EqualUnmodifiableListView)
+      return _externalAddressBook;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(value);
   }
@@ -461,7 +462,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, addresses: $addresses, lastGeneratedAddress: $lastGeneratedAddress, toAddresses: $toAddresses, transactions: $transactions, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, hide: $hide)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, transactions: $transactions, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, hide: $hide)';
   }
 
   @override
@@ -487,12 +488,12 @@ class _$_Wallet extends _Wallet {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.path, path) || other.path == path) &&
             (identical(other.balance, balance) || other.balance == balance) &&
-            const DeepCollectionEquality()
-                .equals(other._addresses, _addresses) &&
             (identical(other.lastGeneratedAddress, lastGeneratedAddress) ||
                 other.lastGeneratedAddress == lastGeneratedAddress) &&
             const DeepCollectionEquality()
-                .equals(other._toAddresses, _toAddresses) &&
+                .equals(other._myAddressBook, _myAddressBook) &&
+            const DeepCollectionEquality()
+                .equals(other._externalAddressBook, _externalAddressBook) &&
             const DeepCollectionEquality()
                 .equals(other._transactions, _transactions) &&
             const DeepCollectionEquality()
@@ -519,9 +520,9 @@ class _$_Wallet extends _Wallet {
         name,
         path,
         balance,
-        const DeepCollectionEquality().hash(_addresses),
         lastGeneratedAddress,
-        const DeepCollectionEquality().hash(_toAddresses),
+        const DeepCollectionEquality().hash(_myAddressBook),
+        const DeepCollectionEquality().hash(_externalAddressBook),
         const DeepCollectionEquality().hash(_transactions),
         const DeepCollectionEquality().hash(_labelTags),
         const DeepCollectionEquality().hash(_bip329Labels),
@@ -556,9 +557,9 @@ abstract class _Wallet extends Wallet {
       final String? name,
       final String? path,
       final int? balance,
-      final List<Address> addresses,
       final Address? lastGeneratedAddress,
-      final List<Address>? toAddresses,
+      final List<Address> myAddressBook,
+      final List<Address>? externalAddressBook,
       final List<Transaction> transactions,
       final List<String>? labelTags,
       final List<Bip329Label>? bip329Labels,
@@ -591,11 +592,11 @@ abstract class _Wallet extends Wallet {
   @override
   int? get balance;
   @override
-  List<Address> get addresses;
-  @override
   Address? get lastGeneratedAddress;
   @override
-  List<Address>? get toAddresses;
+  List<Address> get myAddressBook;
+  @override
+  List<Address>? get externalAddressBook;
   @override
   List<Transaction> get transactions;
   @override

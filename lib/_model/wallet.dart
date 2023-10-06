@@ -28,9 +28,9 @@ class Wallet with _$Wallet {
     String? name,
     String? path,
     int? balance,
-    @Default([]) List<Address> addresses,
     Address? lastGeneratedAddress,
-    List<Address>? toAddresses,
+    @Default([]) List<Address> myAddressBook,
+    List<Address>? externalAddressBook,
     @Default([]) List<Transaction> transactions,
     List<String>? labelTags,
     List<Bip329Label>? bip329Labels,
@@ -45,7 +45,7 @@ class Wallet with _$Wallet {
   }
 
   int addressGap() {
-    final List<Address> sortedAddresses = List.from(addresses)
+    final List<Address> sortedAddresses = List.from(myAddressBook)
       ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
 
     final int lastUsedIndex =
@@ -106,18 +106,18 @@ class Wallet with _$Wallet {
   }
 
   List<Address> addressesWithBalance() {
-    return addresses.where((addr) => addr.calculateBalance() > 0).toList();
+    return myAddressBook.where((addr) => addr.calculateBalance() > 0).toList();
   }
 
   List<Address> addressesWithoutBalance({bool isUsed = false}) {
     if (!isUsed)
-      return addresses.where((addr) => addr.calculateBalance() == 0).toList();
+      return myAddressBook.where((addr) => addr.calculateBalance() == 0).toList();
     else
-      return addresses.where((addr) => addr.hasSpentAndNoBalance()).toList();
+      return myAddressBook.where((addr) => addr.hasSpentAndNoBalance()).toList();
   }
 
   String getAddressFromTxid(String txid) {
-    for (final address in addresses)
+    for (final address in myAddressBook)
       for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
         if (utxo.outpoint.txid == txid) return address.address; // this will return change
 
@@ -125,7 +125,7 @@ class Wallet with _$Wallet {
   }
 
   Address? getAddressFromAddresses(String txid, {bool isSend = false, AddressKind? kind}) {
-    for (final address in (isSend ? toAddresses : addresses) ?? <Address>[])
+    for (final address in (isSend ? externalAddressBook : myAddressBook) ?? <Address>[])
       if (isSend) {
         if (address.spentTxId == txid) {
           if (kind == null) {
@@ -238,8 +238,8 @@ class Wallet with _$Wallet {
 
   List<Address> allFreezedAddresses() {
     final all = <Address>[];
-    all.addAll(addresses);
-    all.addAll(toAddresses ?? <Address>[]);
+    all.addAll(myAddressBook);
+    all.addAll(externalAddressBook ?? <Address>[]);
     return all
         .where(
           (addr) => !addr.spendable,

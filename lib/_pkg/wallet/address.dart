@@ -35,7 +35,7 @@ class WalletAddress {
   (Address?, Err?) rotateAddress(Wallet wallet, int currentIndex) {
     // Filter out addresses with AddressStatus.unused and then sort them by index
     final List<Address> sortedAddresses =
-        List.from(wallet.addresses.where((address) => address.state == AddressStatus.unused))
+        List.from(wallet.myAddressBook.where((address) => address.state == AddressStatus.unused))
           ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
 
     // Find the index of the address with the current index
@@ -61,7 +61,7 @@ class WalletAddress {
   }
 
   Future<String?> getLabel({required Wallet wallet, required String address}) async {
-    final addresses = wallet.addresses;
+    final addresses = wallet.myAddressBook;
 
     String? label;
     if (addresses.any((element) => element.address == address)) {
@@ -85,13 +85,13 @@ class WalletAddress {
         addressIndex: const bdk.AddressIndex.lastUnused(),
       );
 
-      final List<Address> addresses = [...wallet.addresses];
+      final List<Address> addresses = [...wallet.myAddressBook];
 
       for (var i = 0; i <= addressLastUnused.index; i++) {
         final address = await bdkWallet.getAddress(
           addressIndex: bdk.AddressIndex.peek(index: i),
         );
-        final contain = wallet.addresses.where(
+        final contain = wallet.myAddressBook.where(
           (element) => element.address == address.address,
         );
         if (contain.isEmpty)
@@ -116,7 +116,7 @@ class WalletAddress {
       if (wallet.lastGeneratedAddress == null ||
           addressLastUnused.index >= wallet.lastGeneratedAddress!.index!)
         w = wallet.copyWith(
-          addresses: addresses,
+          myAddressBook: addresses,
           lastGeneratedAddress: Address(
             address: addressLastUnused.address,
             index: addressLastUnused.index,
@@ -126,7 +126,7 @@ class WalletAddress {
         );
       else
         w = wallet.copyWith(
-          addresses: addresses,
+          myAddressBook: addresses,
         );
       return (w, null);
     } catch (e) {
@@ -153,8 +153,12 @@ class WalletAddress {
         state: AddressStatus.unused,
       );
 
+      final myUpdatedAddressBook = List<Address>.from(wallet.myAddressBook);
+      myUpdatedAddressBook.add(address);
+
       final Wallet w = updatedWallet.copyWith(
         lastGeneratedAddress: address,
+        myAddressBook: myUpdatedAddressBook,
       );
 
       return (w, null);
@@ -173,9 +177,9 @@ class WalletAddress {
       );
       Wallet w;
 
-      final List<Address> addresses = [...wallet.addresses];
+      final List<Address> addresses = [...wallet.myAddressBook];
 
-      final contain = wallet.addresses.where(
+      final contain = wallet.myAddressBook.where(
         (element) => element.address == addressNewIndex.address,
       );
       if (contain.isEmpty)
@@ -189,7 +193,7 @@ class WalletAddress {
         );
 
       w = wallet.copyWith(
-        addresses: addresses,
+        myAddressBook: addresses,
         lastGeneratedAddress: Address(
           address: addressNewIndex.address,
           index: addressNewIndex.index,
@@ -222,7 +226,7 @@ class WalletAddress {
   }) async {
     try {
       final unspentList = await bdkWallet.listUnspent();
-      final addresses = wallet.addresses.toList();
+      final addresses = wallet.myAddressBook.toList();
       for (final unspent in unspentList) {
         final scr = await bdk.Script.create(unspent.txout.scriptPubkey.internal);
         final addresss = await bdk.Address.fromScript(
@@ -272,7 +276,7 @@ class WalletAddress {
         addresses.removeWhere((a) => a.address == address.address);
         addresses.add(updated);
       }
-      final w = wallet.copyWith(addresses: addresses);
+      final w = wallet.copyWith(myAddressBook: addresses);
 
       return (w, null);
     } catch (e) {
@@ -292,8 +296,8 @@ class WalletAddress {
     try {
       final (idx, adr) = address;
       final addresses = (kind == AddressKind.external
-              ? wallet.toAddresses?.toList()
-              : wallet.addresses.toList()) ??
+              ? wallet.externalAddressBook?.toList()
+              : wallet.myAddressBook.toList()) ??
           <Address>[];
 
       Address updated;
@@ -327,8 +331,8 @@ class WalletAddress {
       }
 
       final w = kind == AddressKind.external
-          ? wallet.copyWith(toAddresses: addresses)
-          : wallet.copyWith(addresses: addresses);
+          ? wallet.copyWith(externalAddressBook: addresses)
+          : wallet.copyWith(myAddressBook: addresses);
 
       return (updated, w);
     } catch (e) {
