@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
@@ -56,6 +55,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(
       state.copyWith(
         errLoadingAddress: '',
+        savedInvoiceAmount: 0,
+        invoiceAmount: 0,
       ),
     );
     if (walletBloc.state.bdkWallet == null) {
@@ -114,6 +115,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       state.copyWith(
         defaultAddress: updatedWallet.lastGeneratedAddress,
         privateLabel: '',
+        savedDescription: '',
+        description: '',
       ),
     );
     walletBloc.add(UpdateWallet(updatedWallet));
@@ -217,47 +220,50 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
 
-    if (state.savedDescription.isEmpty || state.savedInvoiceAmount == 0) {
-      final (a, err) = await walletAddress.newDeposit(bdkWallet: walletBloc.state.bdkWallet!);
+    // if (state.savedDescription.isEmpty || state.savedInvoiceAmount == 0) {
+    //   final (a, err) = await walletAddress.newDeposit(bdkWallet: walletBloc.state.bdkWallet!);
 
-      if (err != null)
-        emit(
-          state.copyWith(
-            creatingInvoice: false,
-            errCreatingInvoice: err.toString(),
-          ),
-        );
+    //   if (err != null)
+    //     emit(
+    //       state.copyWith(
+    //         creatingInvoice: false,
+    //         errCreatingInvoice: err.toString(),
+    //       ),
+    //     );
 
-      final (savedAddress, w) = await walletAddress.addAddressToWallet(
-        address: (a!.index, a.address),
-        wallet: walletBloc.state.wallet!,
-        label: state.privateLabel,
-        kind: AddressKind.deposit,
-      );
+    //   final (savedAddress, w) = await walletAddress.addAddressToWallet(
+    //     address: (a!.index, a.address),
+    //     wallet: walletBloc.state.wallet!,
+    //     label: state.privateLabel,
+    //     kind: AddressKind.deposit,
+    //   );
 
-      final errUpdate = await walletRepository.updateWallet(
-        wallet: w,
-        hiveStore: hiveStorage,
-      );
-      if (errUpdate != null) {
-        emit(
-          state.copyWith(
-            creatingInvoice: false,
-            errCreatingInvoice: errUpdate.toString(),
-          ),
-        );
-        return;
-      }
+    //   final errUpdate = await walletRepository.updateWallet(
+    //     wallet: w,
+    //     hiveStore: hiveStorage,
+    //   );
+    //   if (errUpdate != null) {
+    //     emit(
+    //       state.copyWith(
+    //         creatingInvoice: false,
+    //         errCreatingInvoice: errUpdate.toString(),
+    //       ),
+    //     );
+    //     return;
+    //   }
 
-      walletBloc.add(UpdateWallet(w));
+    //   walletBloc.add(UpdateWallet(w));
 
-      emit(state.copyWith(defaultAddress: savedAddress));
-    }
+    //   emit(state.copyWith(defaultAddress: savedAddress));
+    // }
 
     // final btcAmt = (state.invoiceAmount / 100000000).toStringAsFixed(8);
 
     // final invoice = 'bitcoin:' + a.address + '?amount=' + btcAmt + '&label=' + state.description;
-
+    // final invoice = BIP21(
+    //   state.defaultAddress!.address,
+    //   {'amount': state.invoiceAmount, 'label': state.description},
+    // );
     emit(
       state.copyWith(
         creatingInvoice: false,
@@ -266,7 +272,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         description: '',
         savedInvoiceAmount: state.invoiceAmount,
         invoiceAmount: 0,
-        // invoiceAddress: invoice,
         // newInvoiceAddress: savedAddress,
         // step: ReceiveStep.showInvoice,
       ),

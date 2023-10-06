@@ -78,7 +78,14 @@ class AddressDetails extends StatelessWidget {
     final label = context.select((ReceiveCubit x) => x.state.privateLabel);
     final amount = context.select((ReceiveCubit x) => x.state.savedInvoiceAmount);
     final description = context.select((ReceiveCubit x) => x.state.savedDescription);
-
+    final amountStr = context.select(
+      (SettingsCubit cubit) => cubit.state.getAmountInUnits(
+        amount,
+        hideZero: true,
+        removeEndZeros: true,
+        isSats: true,
+      ),
+    );
     return Column(
       children: [
         if (label.isNotEmpty) ...[
@@ -99,7 +106,7 @@ class AddressDetails extends StatelessWidget {
         ],
         if (amount > 0) ...[
           _DetailRow(
-            text: amount.toStringAsFixed(8),
+            text: amountStr,
             onTap: () {
               CreateInvoice.openPopUp(context);
             },
@@ -131,7 +138,7 @@ class _DetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BBText.title(title),
+        Align(alignment: Alignment.centerLeft, child: BBText.title(title)),
         Row(
           children: [
             BBText.body(text, isBold: true),
@@ -334,7 +341,7 @@ class CreateInvoice extends StatelessWidget {
         removeText: true,
         hideZero: true,
         removeEndZeros: true,
-        isSats: false,
+        isSats: true,
       ),
     );
 

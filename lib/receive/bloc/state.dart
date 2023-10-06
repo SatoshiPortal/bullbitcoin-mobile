@@ -19,7 +19,6 @@ class ReceiveState with _$ReceiveState {
     @Default('') String savedDescription,
     @Default(true) bool creatingInvoice,
     @Default('') String errCreatingInvoice,
-    // @Default('') String invoiceAddress,
     // Address? newInvoiceAddress,
   }) = _ReceiveState;
   const ReceiveState._();
