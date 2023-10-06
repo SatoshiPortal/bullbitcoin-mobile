@@ -185,7 +185,7 @@ class AddressDetails extends StatelessWidget {
         const Gap(8),
         InlineLabel(
           title: 'Index',
-          body: address.index.toString(),
+          body: (address.index == null) ? 'N/A' : address.index.toString(),
         ),
         const Gap(8),
         InlineLabel(title: 'Balance', body: amt),

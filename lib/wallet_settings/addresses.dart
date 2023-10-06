@@ -238,7 +238,7 @@ class AddressItem extends StatelessWidget {
               AddressPopUp.openPopup(context, address);
             },
             child: BBText.body(
-              address.address,
+              address.largeString(),
               isBlue: true,
             ),
           ),
