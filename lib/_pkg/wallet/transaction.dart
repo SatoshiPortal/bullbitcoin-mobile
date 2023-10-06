@@ -93,6 +93,9 @@ class WalletTx {
           if (externalAddress != null) {
             if (externalAddress.label != null && externalAddress.label!.isNotEmpty)
               label = externalAddress.label;
+            else
+              externalAddress = externalAddress.copyWith(label: label);
+
             // Future.delayed(const Duration(milliseconds: 100));
           } else {
             try {
@@ -152,6 +155,9 @@ class WalletTx {
           if (changeAddress != null) {
             if (changeAddress.label != null && changeAddress.label!.isNotEmpty)
               label = changeAddress.label;
+            else {
+              changeAddress = changeAddress.copyWith(label: label);
+            }
           } else {
             try {
               if (sTx.output == null) throw 'No output object';
@@ -193,12 +199,13 @@ class WalletTx {
             isSend: !txObj.isReceived(),
             kind: AddressKind.deposit,
           );
-
           final amountReceived = tx.received;
 
           if (depositAddress != null) {
             if (depositAddress.label != null && depositAddress.label!.isNotEmpty)
               label = depositAddress.label;
+            else
+              depositAddress = depositAddress.copyWith(label: label);
           } else {
             try {
               if (sTx.output == null) throw 'No output object';
