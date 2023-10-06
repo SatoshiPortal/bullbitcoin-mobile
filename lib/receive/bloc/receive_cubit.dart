@@ -53,7 +53,11 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void generateNewAddress() async {
     // emit(const ReceiveState());
-    emit(state.copyWith(errLoadingAddress: ''));
+    emit(
+      state.copyWith(
+        errLoadingAddress: '',
+      ),
+    );
     if (walletBloc.state.bdkWallet == null) {
       emit(state.copyWith(errLoadingAddress: 'Wallet Sync Required'));
       return;
@@ -62,7 +66,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       wallet: walletBloc.state.wallet!,
       bdkWallet: walletBloc.state.bdkWallet!,
     );
-    // Future.delayed(const Duration(milliseconds: 100));
     if (err != null) {
       emit(
         state.copyWith(
@@ -84,6 +87,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       );
       return;
     }
+    Future.delayed(const Duration(milliseconds: 100));
+
     final addressGap = updatedWallet.addressGap();
     if (addressGap >= 5 && addressGap <= 20) {
       emit(
@@ -102,11 +107,13 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         ),
       );
       settingsCubit.updateStopGap(addressGap + 1);
+      Future.delayed(const Duration(milliseconds: 100));
     }
 
     emit(
       state.copyWith(
         defaultAddress: updatedWallet.lastGeneratedAddress,
+        privateLabel: '',
       ),
     );
     walletBloc.add(UpdateWallet(updatedWallet));
@@ -155,12 +162,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       );
       return;
     }
+    Future.delayed(const Duration(milliseconds: 100));
 
     walletBloc.add(UpdateWallet(w));
 
     emit(
       state.copyWith(
-        privateLabel: '',
         savingLabel: false,
         labelSaved: true,
         errSavingLabel: '',

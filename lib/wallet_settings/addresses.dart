@@ -20,6 +20,7 @@ class AddressesScreen extends HookWidget {
     BuildContext context,
   ) {
     final wallet = context.read<WalletBloc>();
+
     final walletSettings = context.read<WalletSettingsCubit>();
 
     return showMaterialModalBottomSheet(
