@@ -148,19 +148,22 @@ class TransactionCubit extends Cubit<TransactionState> {
       ],
     );
 
-    final err = await walletRepository.updateWallet(
-      wallet: updateWallet,
-      hiveStore: hiveStorage,
-    );
-    if (err != null) {
-      emit(
-        state.copyWith(
-          savingLabel: false,
-          errSavingLabel: err.toString(),
-        ),
-      );
-      return;
-    }
+    // final err = await walletRepository.updateWallet(
+    //   wallet: updateWallet,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (err != null) {
+    //   emit(
+    //     state.copyWith(
+    //       savingLabel: false,
+    //       errSavingLabel: err.toString(),
+    //     ),
+    //   );
+    //   return;
+    // }
+
+    walletBloc.add(UpdateWallet(updateWallet));
+    await Future.delayed(const Duration(microseconds: 300));
 
     emit(
       state.copyWith(
@@ -168,8 +171,6 @@ class TransactionCubit extends Cubit<TransactionState> {
         tx: tx,
       ),
     );
-
-    walletBloc.add(UpdateWallet(updateWallet));
   }
 
   void updateFeeRate(String feeRate) {
@@ -281,16 +282,18 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     updatedWallet = updatedWallet.copyWith(transactions: txs);
 
-    final err2 = await walletRepository.updateWallet(
-      wallet: updatedWallet,
-      hiveStore: hiveStorage,
-    );
-    if (err2 != null) {
-      emit(state.copyWith(errSendingTx: err2.toString(), sendingTx: false));
-      return;
-    }
+    // final err2 = await walletRepository.updateWallet(
+    //   wallet: updatedWallet,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (err2 != null) {
+    //   emit(state.copyWith(errSendingTx: err2.toString(), sendingTx: false));
+    //   return;
+    // }
 
     walletBloc.add(UpdateWallet(updatedWallet));
+    await Future.delayed(const Duration(microseconds: 300));
+
     walletBloc.add(SyncWallet());
 
     emit(

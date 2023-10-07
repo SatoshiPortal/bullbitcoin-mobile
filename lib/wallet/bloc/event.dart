@@ -15,8 +15,9 @@ class SyncWallet extends WalletEvent {
 }
 
 class UpdateWallet extends WalletEvent {
-  UpdateWallet(this.wallet);
+  UpdateWallet(this.wallet, {this.saveToStorage = true});
   final Wallet wallet;
+  final bool saveToStorage;
 }
 
 class GetBalance extends WalletEvent {}

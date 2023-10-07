@@ -47,19 +47,21 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(savingName: true, errSavingName: ''));
 
     final wallet = state.wallet.copyWith(name: state.name);
-    final err = await walletRepository.updateWallet(
-      wallet: wallet,
-      hiveStore: hiveStorage,
-    );
-    if (err != null) {
-      emit(
-        state.copyWith(
-          errSavingName: err.toString(),
-          savingName: false,
-        ),
-      );
-      return;
-    }
+    // final err = await walletRepository.updateWallet(
+    //   wallet: wallet,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (err != null) {
+    //   emit(
+    //     state.copyWith(
+    //       errSavingName: err.toString(),
+    //       savingName: false,
+    //     ),
+    //   );
+    //   return;
+    // }
+    walletBloc.add(UpdateWallet(wallet));
+    await Future.delayed(const Duration(seconds: 1));
 
     emit(
       state.copyWith(
@@ -69,8 +71,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       ),
     );
 
-    walletBloc.add(UpdateWallet(wallet));
-    await Future.delayed(const Duration(seconds: 1));
     emit(state.copyWith(savedName: false));
   }
 
@@ -174,21 +174,23 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
     final wallet = state.wallet.copyWith(backupTested: true);
 
-    final updateErr = await walletRepository.updateWallet(
-      wallet: wallet,
-      hiveStore: hiveStorage,
-    );
-    if (updateErr != null) {
-      emit(
-        state.copyWith(
-          errTestingBackup: updateErr.toString(),
-          testingBackup: false,
-        ),
-      );
-      return;
-    }
+    // final updateErr = await walletRepository.updateWallet(
+    //   wallet: wallet,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (updateErr != null) {
+    //   emit(
+    //     state.copyWith(
+    //       errTestingBackup: updateErr.toString(),
+    //       testingBackup: false,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     walletBloc.add(UpdateWallet(wallet));
+    await Future.delayed(const Duration(microseconds: 300));
+
     emit(
       state.copyWith(
         backupTested: true,
@@ -252,21 +254,24 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
     final wallet = state.wallet.copyWith(backupTested: true);
 
-    final updateErr = await walletRepository.updateWallet(
-      wallet: wallet,
-      hiveStore: hiveStorage,
-    );
-    if (updateErr != null) {
-      emit(
-        state.copyWith(
-          errTestingBackup: updateErr.toString(),
-          testingBackup: false,
-        ),
-      );
-      return;
-    }
+    // final updateErr = await walletRepository.updateWallet(
+    //   wallet: wallet,
+    //   hiveStore: hiveStorage,
+    // );
+
+    // if (updateErr != null) {
+    //   emit(
+    //     state.copyWith(
+    //       errTestingBackup: updateErr.toString(),
+    //       testingBackup: false,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     walletBloc.add(UpdateWallet(wallet));
+    await Future.delayed(const Duration(microseconds: 300));
+
     emit(
       state.copyWith(
         backupTested: true,

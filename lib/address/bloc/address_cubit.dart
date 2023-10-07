@@ -41,21 +41,22 @@ class AddressCubit extends Cubit<AddressState> {
       spendable: false,
     );
 
-    final errUpdate = await walletRepository.updateWallet(
-      wallet: w,
-      hiveStore: hiveStorage,
-    );
-    if (errUpdate != null) {
-      emit(
-        state.copyWith(
-          freezingAddress: false,
-          errFreezingAddress: errUpdate.toString(),
-        ),
-      );
-      return;
-    }
+    // final errUpdate = await walletRepository.updateWallet(
+    //   wallet: w,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (errUpdate != null) {
+    //   emit(
+    //     state.copyWith(
+    //       freezingAddress: false,
+    //       errFreezingAddress: errUpdate.toString(),
+    //     ),
+    //   );
+    //   return;
+    // }
 
     walletBloc.add(UpdateWallet(w));
+    await Future.delayed(const Duration(microseconds: 300));
 
     emit(state.copyWith(freezingAddress: false, frozenAddress: true, address: address));
   }
@@ -71,21 +72,22 @@ class AddressCubit extends Cubit<AddressState> {
       state: state.address!.state,
     );
 
-    final errUpdate = await walletRepository.updateWallet(
-      wallet: w,
-      hiveStore: hiveStorage,
-    );
-    if (errUpdate != null) {
-      emit(
-        state.copyWith(
-          freezingAddress: false,
-          errFreezingAddress: errUpdate.toString(),
-        ),
-      );
-      return;
-    }
+    // final errUpdate = await walletRepository.updateWallet(
+    //   wallet: w,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (errUpdate != null) {
+    //   emit(
+    //     state.copyWith(
+    //       freezingAddress: false,
+    //       errFreezingAddress: errUpdate.toString(),
+    //     ),
+    //   );
+    //   return;
+    // }
 
     walletBloc.add(UpdateWallet(w));
+    await Future.delayed(const Duration(microseconds: 300));
 
     emit(
       state.copyWith(
@@ -107,23 +109,24 @@ class AddressCubit extends Cubit<AddressState> {
       state: address.state,
     );
 
-    final errUpdate = await walletRepository.updateWallet(
-      wallet: w,
-      hiveStore: hiveStorage,
-    );
-    if (errUpdate != null) {
-      emit(
-        state.copyWith(
-          savingAddressName: false,
-          errSavingAddressName: errUpdate.toString(),
-        ),
-      );
-      await Future.delayed(const Duration(seconds: 3));
-      emit(state.copyWith(errSavingAddressName: ''));
-      return;
-    }
+    // final errUpdate = await walletRepository.updateWallet(
+    //   wallet: w,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (errUpdate != null) {
+    //   emit(
+    //     state.copyWith(
+    //       savingAddressName: false,
+    //       errSavingAddressName: errUpdate.toString(),
+    //     ),
+    //   );
+    //   await Future.delayed(const Duration(seconds: 3));
+    //   emit(state.copyWith(errSavingAddressName: ''));
+    //   return;
+    // }
 
     walletBloc.add(UpdateWallet(w));
+    await Future.delayed(const Duration(microseconds: 300));
 
     emit(
       state.copyWith(

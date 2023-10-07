@@ -58,6 +58,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final HiveStorage hiveStorage;
   final bool fromStorage;
 
+  void _updateWallet(UpdateWallet event, Emitter<WalletState> emit) async {
+    if (event.saveToStorage) {
+      final err = await walletRepository.updateWallet(
+        wallet: event.wallet,
+        hiveStore: hiveStorage,
+      );
+      if (err != null) locator<Logger>().log(err.toString());
+    }
+
+    emit(state.copyWith(wallet: event.wallet));
+  }
+
   void _loadWallet(LoadWallet event, Emitter<WalletState> emit) async {
     emit(state.copyWith(loadingWallet: true, errLoadingWallet: ''));
 
@@ -165,10 +177,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(state.copyWith(syncing: false));
   }
 
-  void _updateWallet(UpdateWallet event, Emitter<WalletState> emit) async {
-    emit(state.copyWith(wallet: event.wallet));
-  }
-
   void _getBalance(GetBalance event, Emitter<WalletState> emit) async {
     if (state.bdkWallet == null) return;
 
@@ -190,20 +198,22 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     final (wallet, balance) = w!;
     if (fromStorage) {
-      final errUpdate = await walletRepository.updateWallet(
-        wallet: wallet,
-        hiveStore: hiveStorage,
-      );
+      // final errUpdate = await walletRepository.updateWallet(
+      //   wallet: wallet,
+      //   hiveStore: hiveStorage,
+      // );
 
-      if (errUpdate != null) {
-        emit(
-          state.copyWith(
-            errLoadingBalance: errUpdate.toString(),
-            loadingBalance: false,
-          ),
-        );
-        return;
-      }
+      // if (errUpdate != null) {
+      //   emit(
+      //     state.copyWith(
+      //       errLoadingBalance: errUpdate.toString(),
+      //       loadingBalance: false,
+      //     ),
+      //   );
+      //   return;
+      // }
+      add(UpdateWallet(wallet));
+      await Future.delayed(const Duration(microseconds: 300));
     }
     emit(
       state.copyWith(
@@ -257,24 +267,27 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
 
     if (fromStorage) {
-      final errUpdating = await walletRepository.updateWallet(
-        wallet: walletUpdated!,
-        hiveStore: hiveStorage,
-      );
-      if (errUpdating != null) {
-        emit(
-          state.copyWith(
-            errLoadingWallet: errUpdating.toString(),
-            loadingTxs: false,
-          ),
-        );
-        return;
-      }
+      // final errUpdating = await walletRepository.updateWallet(
+      //   wallet: walletUpdated!,
+      //   hiveStore: hiveStorage,
+      // );
+      // if (errUpdating != null) {
+      //   emit(
+      //     state.copyWith(
+      //       errLoadingWallet: errUpdating.toString(),
+      //       loadingTxs: false,
+      //     ),
+      //   );
+      //   return;
+      // }
+
+      add(UpdateWallet(wallet));
+      await Future.delayed(const Duration(microseconds: 300));
     }
 
     emit(state.copyWith(loadingTxs: false));
 
-    add(UpdateWallet(walletUpdated!));
+    add(UpdateWallet(walletUpdated!, saveToStorage: false));
     await Future.delayed(const Duration(microseconds: 300));
 
     add(UpdateUtxos());
@@ -311,22 +324,24 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
     if (fromStorage) {
-      final errUpdate = await walletRepository.updateWallet(
-        wallet: wallet!,
-        hiveStore: hiveStorage,
-      );
-      if (errUpdate != null) {
-        emit(
-          state.copyWith(
-            errSyncingAddresses: errUpdate.toString(),
-            syncingAddresses: false,
-          ),
-        );
-        return;
-      }
+      // final errUpdate = await walletRepository.updateWallet(
+      //   wallet: wallet!,
+      //   hiveStore: hiveStorage,
+      // );
+      // if (errUpdate != null) {
+      //   emit(
+      //     state.copyWith(
+      //       errSyncingAddresses: errUpdate.toString(),
+      //       syncingAddresses: false,
+      //     ),
+      //   );
+      //   return;
+      // }
+      add(UpdateWallet(wallet!));
+      await Future.delayed(const Duration(microseconds: 300));
     }
 
-    add(UpdateWallet(wallet!));
+    add(UpdateWallet(wallet!, saveToStorage: false));
     await Future.delayed(const Duration(microseconds: 300));
 
     add(GetBalance());
@@ -352,22 +367,25 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
     if (fromStorage) {
-      final errUpdate = await walletRepository.updateWallet(
-        wallet: wallet!,
-        hiveStore: hiveStorage,
-      );
-      if (errUpdate != null) {
-        emit(
-          state.copyWith(
-            errSyncingAddresses: errUpdate.toString(),
-            syncingAddresses: false,
-          ),
-        );
-        return;
-      }
+      // final errUpdate = await walletRepository.updateWallet(
+      //   wallet: wallet!,
+      //   hiveStore: hiveStorage,
+      // );
+      // if (errUpdate != null) {
+      //   emit(
+      //     state.copyWith(
+      //       errSyncingAddresses: errUpdate.toString(),
+      //       syncingAddresses: false,
+      //     ),
+      //   );
+      //   return;
+      // }
+      add(UpdateWallet(wallet!));
+      await Future.delayed(const Duration(microseconds: 300));
+      return;
     }
 
-    add(UpdateWallet(wallet!));
+    add(UpdateWallet(wallet!, saveToStorage: false));
     await Future.delayed(const Duration(microseconds: 300));
 
     // emit(state.copyWith(wallet: wallet));

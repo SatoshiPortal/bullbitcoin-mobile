@@ -75,20 +75,21 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       );
       return;
     }
-    final errUpdate = await walletRepository.updateWallet(
-      wallet: updatedWallet!,
-      hiveStore: hiveStorage,
-    );
-    if (errUpdate != null) {
-      emit(
-        state.copyWith(
-          savingLabel: false,
-          errLoadingAddress: errUpdate.toString(),
-        ),
-      );
-      return;
-    }
-    Future.delayed(const Duration(milliseconds: 100));
+    // final errUpdate = await walletRepository.updateWallet(
+    //   wallet: updatedWallet!,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (errUpdate != null) {
+    //   emit(
+    //     state.copyWith(
+    //       savingLabel: false,
+    //       errLoadingAddress: errUpdate.toString(),
+    //     ),
+    //   );
+    //   return;
+    // }
+    walletBloc.add(UpdateWallet(updatedWallet!));
+    Future.delayed(const Duration(microseconds: 300));
 
     final addressGap = updatedWallet.addressGap();
     if (addressGap >= 5 && addressGap <= 20) {
@@ -119,7 +120,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         description: '',
       ),
     );
-    walletBloc.add(UpdateWallet(updatedWallet));
   }
 
   void updateAmount(int amt) {
@@ -152,22 +152,23 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       spendable: state.defaultAddress!.spendable,
     );
 
-    final errUpdate = await walletRepository.updateWallet(
-      wallet: w,
-      hiveStore: hiveStorage,
-    );
-    if (errUpdate != null) {
-      emit(
-        state.copyWith(
-          savingLabel: false,
-          errSavingLabel: errUpdate.toString(),
-        ),
-      );
-      return;
-    }
-    Future.delayed(const Duration(milliseconds: 100));
+    // final errUpdate = await walletRepository.updateWallet(
+    //   wallet: w,
+    //   hiveStore: hiveStorage,
+    // );
+    // if (errUpdate != null) {
+    //   emit(
+    //     state.copyWith(
+    //       savingLabel: false,
+    //       errSavingLabel: errUpdate.toString(),
+    //     ),
+    //   );
+    //   return;
+    // }
+    // Future.delayed(const Duration(milliseconds: 100));
 
     walletBloc.add(UpdateWallet(w));
+    await Future.delayed(const Duration(microseconds: 300));
 
     emit(
       state.copyWith(
