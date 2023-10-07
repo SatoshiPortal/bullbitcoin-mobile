@@ -61,6 +61,7 @@ dependencies:
   currency_text_input_formatter: ^2.1.10
   intl: ^0.18.1
   hex: ^0.2.0
+  bloc_concurrency: ^0.2.2
 
   
   # currency_text_input_formatter: ^2.1.10

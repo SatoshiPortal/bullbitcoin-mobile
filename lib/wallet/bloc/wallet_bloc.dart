@@ -16,6 +16,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
@@ -34,7 +35,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Wallet? wallet,
   }) : super(WalletState(wallet: wallet)) {
     on<LoadWallet>(_loadWallet);
-    on<UpdateWallet>(_updateWallet);
+    on<UpdateWallet>(_updateWallet, transformer: sequential());
     on<GetBalance>(_getBalance);
     on<GetAddresses>(_getAddresses);
     on<ListTransactions>(_listTransactions);
@@ -102,11 +103,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       state.copyWith(
         loadingWallet: false,
         errLoadingWallet: '',
-        wallet: wallet,
         name: wallet.name ?? '',
       ),
     );
 
+    add(UpdateWallet(wallet));
     await Future.delayed(const Duration(microseconds: 300));
 
     add(GetFirstAddress());
@@ -208,9 +209,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       state.copyWith(
         loadingBalance: false,
         balance: balance,
-        wallet: wallet,
       ),
     );
+
+    add(UpdateWallet(wallet));
+    await Future.delayed(const Duration(microseconds: 300));
 
     add(ListTransactions());
   }
@@ -269,12 +272,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       }
     }
 
-    emit(
-      state.copyWith(
-        loadingTxs: false,
-        wallet: walletUpdated,
-      ),
-    );
+    emit(state.copyWith(loadingTxs: false));
+
+    add(UpdateWallet(walletUpdated!));
+    await Future.delayed(const Duration(microseconds: 300));
+
     add(UpdateUtxos());
   }
 
@@ -323,11 +325,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         return;
       }
     }
-    emit(
-      state.copyWith(
-        wallet: wallet,
-      ),
-    );
+
+    add(UpdateWallet(wallet!));
+    await Future.delayed(const Duration(microseconds: 300));
+
     add(GetBalance());
   }
 
@@ -365,7 +366,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         return;
       }
     }
-    emit(state.copyWith(wallet: wallet));
+
+    add(UpdateWallet(wallet!));
+    await Future.delayed(const Duration(microseconds: 300));
+
+    // emit(state.copyWith(wallet: wallet));
     // add(UpdateWallet(wallet!));
   }
 
