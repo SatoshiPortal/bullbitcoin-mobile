@@ -91,7 +91,6 @@ class _Screen extends StatelessWidget {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     return Scaffold(
-      backgroundColor: sent ? Colors.green : context.colour.onPrimary,
       appBar: sent
           ? null
           : AppBar(
@@ -423,82 +422,62 @@ class TxDetailsScreen extends StatelessWidget {
   }
 }
 
-class TxSuccess extends StatefulWidget {
+class TxSuccess extends StatelessWidget {
   const TxSuccess({super.key});
-
-  @override
-  State<TxSuccess> createState() => _TxSuccessState();
-}
-
-class _TxSuccessState extends State<TxSuccess> {
-  @override
-  void initState() {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.green));
-    //SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom]);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
-
-    // SystemChrome.setEnabledSystemUIMode(
-    //   SystemUiMode.manual,
-    //   overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
-    // );
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final amount = context.select((SendCubit cubit) => cubit.state.amount);
     final amtStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(amount));
     final txid = context.select((SendCubit cubit) => cubit.state.tx);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Gap(152),
-        const Icon(Icons.check_circle, size: 120),
-        const Gap(32),
-        const BBText.body(
-          'Transaction sent',
-          textAlign: TextAlign.center,
-          isBold: true,
-        ),
-        const Gap(52),
-        BBText.titleLarge(
-          amtStr,
-          textAlign: TextAlign.center,
-          isBold: true,
-        ),
-        const Gap(15),
-        GestureDetector(
-          onTap: () {
-            final url = context.read<SettingsCubit>().state.explorerTxUrl(txid!.txid);
-            locator<Launcher>().launchApp(url);
-          },
-          child: const BBText.body(
-            'View Transaction details ->',
+    return AnnotatedRegion(
+      value: const SystemUiOverlayStyle(statusBarColor: Colors.green),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Gap(152),
+          const Icon(Icons.check_circle, size: 120),
+          const Gap(32),
+          const BBText.body(
+            'Transaction sent',
             textAlign: TextAlign.center,
-            isBlue: true,
+            isBold: true,
           ),
-        ),
-        const Gap(200),
-        const Gap(100),
-        SizedBox(
-          height: 52,
-          child: TextButton(
-            onPressed: () {
-              Navigator.pop(context);
+          const Gap(52),
+          BBText.titleLarge(
+            amtStr,
+            textAlign: TextAlign.center,
+            isBold: true,
+          ),
+          const Gap(15),
+          GestureDetector(
+            onTap: () {
+              final url = context.read<SettingsCubit>().state.explorerTxUrl(txid!.txid);
+              locator<Launcher>().launchApp(url);
             },
-            child: const BBText.titleLarge(
-              'Done',
+            child: const BBText.body(
+              'View Transaction details ->',
               textAlign: TextAlign.center,
-              isBold: true,
+              isBlue: true,
             ),
           ),
-        ),
-      ],
+          const Gap(200),
+          const Gap(100),
+          SizedBox(
+            height: 52,
+            child: TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const BBText.titleLarge(
+                'Done',
+                textAlign: TextAlign.center,
+                isBold: true,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -24,6 +24,7 @@ import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -58,6 +59,7 @@ class _Screen extends HookWidget {
 
     return Scaffold(
       appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: context.colour.background),
         shadowColor: context.colour.primary.withOpacity(0.2),
         surfaceTintColor: Colors.transparent,
         elevation: 0,
