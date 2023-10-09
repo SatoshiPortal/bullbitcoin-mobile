@@ -388,9 +388,9 @@ class WalletTx {
     try {
       final isTestnet = wallet.network == BBNetwork.Testnet;
 
-      final inputs = await tx.bdkTx!.transaction!.input();
+      final inputs = await tx.bdkTx?.transaction?.input();
       final inAddresses = await Future.wait(
-        inputs.map((txIn) async {
+        (inputs ?? []).map((txIn) async {
           final idx = txIn.previousOutput.vout;
           final txid = txIn.previousOutput.txid;
           final (addresses, err) = await mempoolAPI.getVinAddressesFromTx(txid, isTestnet);
@@ -412,9 +412,9 @@ class WalletTx {
     required Wallet wallet,
   }) async {
     try {
-      final outputs = await tx.bdkTx!.transaction!.output();
+      final outputs = await tx.bdkTx?.transaction?.output();
       final (outAddresses) = await Future.wait(
-        outputs.map((txOut) async {
+        (outputs ?? []).map((txOut) async {
           final address = await bdk.Address.fromScript(
             txOut.scriptPubkey,
             wallet.getBdkNetwork(),

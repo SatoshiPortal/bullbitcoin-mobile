@@ -31,6 +31,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.walletTransaction,
     required this.walletBalance,
     required this.walletAddress,
+    required this.walletUpdate,
     this.fromStorage = true,
     Wallet? wallet,
   }) : super(WalletState(wallet: wallet)) {
@@ -43,6 +44,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<UpdateUtxos>(_updateUtxos);
     // on<GetNewAddress>(_getLastUnusedAddress);
     on<SyncWallet>(_syncWallet);
+
     add(LoadWallet(saveDir));
   }
 
@@ -53,6 +55,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletTx walletTransaction;
   final WalletBalance walletBalance;
   final WalletAddress walletAddress;
+  final WalletUpdate walletUpdate;
 
   final SecureStorage secureStorage;
   final HiveStorage hiveStorage;
@@ -119,7 +122,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    add(UpdateWallet(wallet));
+    add(UpdateWallet(wallet, saveToStorage: fromStorage));
+
     await Future.delayed(const Duration(microseconds: 300));
 
     add(GetFirstAddress());
@@ -214,16 +218,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       // }
       add(UpdateWallet(wallet));
       await Future.delayed(const Duration(microseconds: 300));
+    } else {
+      add(UpdateWallet(wallet, saveToStorage: false));
+      await Future.delayed(const Duration(microseconds: 300));
     }
+
     emit(
       state.copyWith(
         loadingBalance: false,
         balance: balance,
       ),
     );
-
-    add(UpdateWallet(wallet));
-    await Future.delayed(const Duration(microseconds: 300));
 
     add(ListTransactions());
   }
@@ -250,7 +255,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       // if we return we will not update addresses
     }
 
-    final (walletUpdated, err2) = await WalletUpdate().updateAddressesFromTxs(
+    final (walletUpdated, err2) = await walletUpdate.updateAddressesFromTxs(
       wallet!,
     );
 
@@ -283,12 +288,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       add(UpdateWallet(wallet));
       await Future.delayed(const Duration(microseconds: 300));
+    } else {
+      add(UpdateWallet(walletUpdated!, saveToStorage: false));
+      await Future.delayed(const Duration(microseconds: 300));
     }
 
     emit(state.copyWith(loadingTxs: false));
-
-    add(UpdateWallet(walletUpdated!, saveToStorage: false));
-    await Future.delayed(const Duration(microseconds: 300));
 
     add(UpdateUtxos());
   }
@@ -339,10 +344,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       // }
       add(UpdateWallet(wallet!));
       await Future.delayed(const Duration(microseconds: 300));
+    } else {
+      add(UpdateWallet(wallet!, saveToStorage: false));
+      await Future.delayed(const Duration(microseconds: 300));
     }
-
-    add(UpdateWallet(wallet!, saveToStorage: false));
-    await Future.delayed(const Duration(microseconds: 300));
 
     add(GetBalance());
   }

@@ -549,6 +549,7 @@ class DeletePopUp extends StatelessWidget {
                     context.pop();
                   },
                   label: 'Cancel',
+                  centered: true,
                 ),
               ),
               Expanded(

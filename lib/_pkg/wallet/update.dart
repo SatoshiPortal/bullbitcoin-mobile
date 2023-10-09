@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 
@@ -71,5 +72,34 @@ class WalletUpdate {
       ),
       null
     );
+  }
+
+  Future<(Wallet?, Err?)> updateAddressesForOneTx(Wallet wallet, Transaction tx) async {
+    try {
+      final updatedAddresses = List<Address>.from(wallet.myAddressBook);
+      final updatedToAddresses = List<Address>.from(wallet.externalAddressBook ?? []);
+
+      for (final address in tx.outAddrs) {
+        if (tx.isReceived()) {
+          updateAddressList(updatedAddresses, address);
+        } else {
+          if (address.kind == AddressKind.external) {
+            updateAddressList(updatedToAddresses, address);
+          } else if (address.kind == AddressKind.change) {
+            updateAddressList(updatedAddresses, address);
+          }
+        }
+      }
+
+      return (
+        wallet.copyWith(
+          myAddressBook: updatedAddresses,
+          externalAddressBook: updatedToAddresses,
+        ),
+        null
+      );
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
   }
 }

@@ -11,6 +11,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -31,6 +32,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.walletSync,
     required this.walletCreate,
     required this.walletSensCreate,
+    required this.walletUpdate,
     required this.mempoolAPI,
     required this.settingsCubit,
   }) : super(TransactionState(tx: tx)) {
@@ -48,6 +50,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   final SecureStorage secureStorage;
   final WalletTx walletTx;
   final WalletSensitiveTx walletSensTx;
+  final WalletUpdate walletUpdate;
 
   final WalletRepository walletRepository;
 
@@ -149,8 +152,16 @@ class TransactionCubit extends Cubit<TransactionState> {
       ],
     );
 
+    // final (w, err) = await walletUpdate.updateAddressesFromTxs(updateWallet);
+    // if (err != null) {
+    //   emit(state.copyWith(errSavingLabel: err.toString(), savingLabel: false));
+    //   return;
+    // }
+
     walletBloc.add(UpdateWallet(updateWallet));
     await Future.delayed(const Duration(microseconds: 300));
+    // walletBloc.add(GetAddresses());
+    // await Future.delayed(const Duration(microseconds: 300));
 
     emit(
       state.copyWith(
@@ -192,9 +203,6 @@ class TransactionCubit extends Cubit<TransactionState> {
       emit(state.copyWith(errBuildingTx: errr.toString(), buildingTx: false));
       return;
     }
-
-    // await bdkWallet.sync();
-    // bdkWallet.
 
     final (newTx, errrr) = await walletSensTx.buildBumpFeeTx(
       tx: state.tx,

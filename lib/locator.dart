@@ -20,6 +20,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
@@ -62,6 +63,7 @@ Future setupLocator({bool fromTest = false}) async {
   locator.registerSingleton<FileStorage>(fileStorage);
   locator.registerSingleton<WalletRepository>(walletRepository);
 
+  locator.registerSingleton<WalletUpdate>(WalletUpdate());
   locator.registerSingleton<WalletBalance>(WalletBalance());
   locator.registerSingleton<WalletTx>(WalletTx());
   locator.registerSingleton<WalletAddress>(WalletAddress());

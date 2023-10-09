@@ -11,6 +11,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -44,6 +45,7 @@ class TxPage extends StatelessWidget {
       tx: tx,
       walletBloc: wallet,
       mempoolAPI: locator<MempoolAPI>(),
+      walletUpdate: locator<WalletUpdate>(),
       walletCreate: locator<WalletCreate>(),
       walletSensCreate: locator<WalletSensitiveCreate>(),
       hiveStorage: locator<HiveStorage>(),
@@ -163,7 +165,6 @@ class _Screen extends StatelessWidget {
                       'Transaction ID',
                     ),
                     const Gap(4),
-
                     InkWell(
                       onTap: () {
                         final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
@@ -171,22 +172,23 @@ class _Screen extends StatelessWidget {
                       },
                       child: BBText.body(txid, isBlue: true),
                     ),
-
                     const Gap(24),
-                    const BBText.title(
-                      'Recipient Bitcoin Address',
-                    ),
-                    // const Gap(4),
-                    InkWell(
-                      onTap: () {
-                        final url =
-                            context.read<SettingsCubit>().state.explorerAddressUrl(toAddress);
-                        locator<Launcher>().launchApp(url);
-                      },
-                      child: BBText.body(toAddress, isBlue: true),
-                    ),
+                    if (toAddress.isNotEmpty) ...[
+                      const BBText.title(
+                        'Recipient Bitcoin Address',
+                      ),
+                      // const Gap(4),
+                      InkWell(
+                        onTap: () {
+                          final url =
+                              context.read<SettingsCubit>().state.explorerAddressUrl(toAddress);
+                          locator<Launcher>().launchApp(url);
+                        },
+                        child: BBText.body(toAddress, isBlue: true),
+                      ),
 
-                    const Gap(24),
+                      const Gap(24),
+                    ],
                     const BBText.title(
                       'Status',
                     ),
@@ -266,7 +268,8 @@ class TxLabelTextField extends HookWidget {
   Widget build(BuildContext context) {
     final storedLabel = context.select((TransactionCubit x) => x.state.tx.label ?? '');
     final showButton = context.select(
-      (TransactionCubit x) => x.state.showSaveButton() && storedLabel.isEmpty,
+      (TransactionCubit x) => x.state.showSaveButton(),
+      // && storedLabel.isEmpty,
     );
     final label = context.select((TransactionCubit x) => x.state.label);
 
@@ -276,7 +279,7 @@ class TxLabelTextField extends HookWidget {
           child: SizedBox(
             height: 45,
             child: BBTextInput.small(
-              disabled: storedLabel.isNotEmpty,
+              // disabled: storedLabel.isNotEmpty,
               hint: storedLabel.isNotEmpty ? storedLabel : 'Enter Label',
               value: label,
               onChanged: (value) {
