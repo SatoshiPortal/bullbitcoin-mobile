@@ -61,7 +61,7 @@ class PSBTPopUp extends StatelessWidget {
           const BBHeader.popUpCenteredText(
             text: 'Built tx',
           ),
-          const Gap(24),
+          const Gap(16),
           const BBText.title(
             'Amount to Send',
           ),
@@ -85,7 +85,7 @@ class PSBTPopUp extends StatelessWidget {
               ),
             ],
           ),
-          const Gap(24),
+          const Gap(16),
           const BBText.title(
             'Receipent Bitcoin Address',
           ),
@@ -100,7 +100,7 @@ class PSBTPopUp extends StatelessWidget {
               isBlue: true,
             ),
           ),
-          const Gap(24),
+          const Gap(16),
           // if (outAddresses.isNotEmpty) ...[
           //   const BBText.title('Sender Bitcoin Addresses'),
           //   const Gap(4),
@@ -125,7 +125,7 @@ class PSBTPopUp extends StatelessWidget {
             'Unsigned',
             isBold: true,
           ),
-          const Gap(24),
+          const Gap(16),
           const BBText.title(
             'Network Fee',
           ),
@@ -145,9 +145,9 @@ class PSBTPopUp extends StatelessWidget {
             ),
             const Gap(24),
           ],
-          const Gap(40),
+          const Gap(32),
           const DownloadButton(),
-          const Gap(40),
+          const Gap(32),
           const Center(
             child: BBText.body(
               'Scan PSBT',
@@ -160,7 +160,6 @@ class PSBTPopUp extends StatelessWidget {
               child: QrImageView(data: psbt),
             ),
           ),
-          const Gap(60),
           const Gap(48),
         ],
       ),
@@ -175,14 +174,25 @@ class DownloadButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final downloading = context.select((SendCubit cubit) => cubit.state.downloadingFile);
     final downloaded = context.select((SendCubit cubit) => cubit.state.downloaded);
-
+    // final walletType = context.select((WalletBloc _) => _.state.wallet!);
     if (downloaded)
-      return Center(
-        child: const BBText.body(
-          'Downloaded',
-        ).animate(delay: 300.ms).fadeIn(),
+      return Column(
+        children: [
+          Center(
+            child: const BBText.body(
+              'Downloaded',
+            ).animate(delay: 300.ms).fadeIn(),
+          ),
+          Center(
+            child: const BBText.error(
+              'ColdCard Notice: Wait for a moment for psbt to load into vdisk...',
+            ).animate(delay: 300.ms).fadeIn(),
+          ),
+        ],
       );
+    // if (walletType == BBWalletType.coldcard) {
 
+    // }
     return Center(
       child: SizedBox(
         width: 250,

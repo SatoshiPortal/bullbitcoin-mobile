@@ -141,26 +141,13 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
 
     final tx = state.tx.copyWith(label: state.label);
+
     final updateWallet = walletBloc.state.wallet!.copyWith(
       transactions: [
         for (final t in walletBloc.state.wallet?.transactions ?? <Transaction>[])
           if (t.txid == tx.txid) tx else t,
       ],
     );
-
-    // final err = await walletRepository.updateWallet(
-    //   wallet: updateWallet,
-    //   hiveStore: hiveStorage,
-    // );
-    // if (err != null) {
-    //   emit(
-    //     state.copyWith(
-    //       savingLabel: false,
-    //       errSavingLabel: err.toString(),
-    //     ),
-    //   );
-    //   return;
-    // }
 
     walletBloc.add(UpdateWallet(updateWallet));
     await Future.delayed(const Duration(microseconds: 300));

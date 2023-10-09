@@ -314,7 +314,13 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void downloadPSBTClicked() async {
-    emit(state.copyWith(downloadingFile: true, errDownloadingFile: ''));
+    emit(
+      state.copyWith(
+        downloadingFile: true,
+        errDownloadingFile: '',
+        downloaded: false,
+      ),
+    );
     final psbt = state.psbt;
     if (psbt.isEmpty) {
       emit(state.copyWith(downloadingFile: false, errDownloadingFile: 'No PSBT'));
@@ -346,8 +352,8 @@ class SendCubit extends Cubit<SendState> {
     }
     await Future.delayed(const Duration(seconds: 1));
     emit(state.copyWith(downloadingFile: false, downloaded: true));
-    await Future.delayed(const Duration(seconds: 1));
-    emit(state.copyWith(downloaded: false));
+    // await Future.delayed(const Duration(seconds: 10));
+    // emit(state.copyWith(downloaded: false));
   }
 
   // SENSITIVE DATA HANDLER
