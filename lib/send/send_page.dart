@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
-import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
@@ -429,7 +428,7 @@ class TxSuccess extends StatelessWidget {
   Widget build(BuildContext context) {
     final amount = context.select((SendCubit cubit) => cubit.state.amount);
     final amtStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(amount));
-    final txid = context.select((SendCubit cubit) => cubit.state.tx);
+    //final txid = context.select((SendCubit cubit) => cubit.state.tx);
     return AnnotatedRegion(
       value: const SystemUiOverlayStyle(statusBarColor: Colors.green),
       child: Column(
@@ -452,13 +451,12 @@ class TxSuccess extends StatelessWidget {
           const Gap(15),
           GestureDetector(
             onTap: () {
-              final url = context.read<SettingsCubit>().state.explorerTxUrl(txid!.txid);
-              locator<Launcher>().launchApp(url);
+              // final url = context.read<SettingsCubit>().state.explorerTxUrl(txid!.txid);
+              // locator<Launcher>().launchApp(url);
             },
             child: const BBText.body(
               'View Transaction details ->',
               textAlign: TextAlign.center,
-              isBlue: true,
             ),
           ),
           const Gap(200),
