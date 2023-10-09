@@ -32,6 +32,8 @@ class AdvancedOptionsPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sendAll = context.select((SendCubit x) => x.state.sendAllCoin);
+
     return PopUpBorder(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -63,16 +65,17 @@ class AdvancedOptionsPopUp extends StatelessWidget {
             //   ],
             // ),
             const Gap(32),
-            CenterLeft(
-              child: BBButton.text(
-                // style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                onPressed: () {
-                  AddressSelectionPopUp.openPopup(context);
-                },
-                label: 'Manual coin selection',
-                // child: const BBText.body('Manual coin selection'),
+            if (!sendAll)
+              CenterLeft(
+                child: BBButton.text(
+                  // style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                  onPressed: () {
+                    AddressSelectionPopUp.openPopup(context);
+                  },
+                  label: 'Manual coin selection',
+                  // child: const BBText.body('Manual coin selection'),
+                ),
               ),
-            ),
             // const EnableRBFOption(),
             const Gap(8),
             const SendAllOption(),
