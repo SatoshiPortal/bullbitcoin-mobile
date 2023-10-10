@@ -64,7 +64,10 @@ class AdvancedOptionsPopUp extends StatelessWidget {
             //     ),
             //   ],
             // ),
-            const Gap(32),
+            const Gap(16),
+
+            const SendAllOption(),
+            const Gap(8),
             if (!sendAll)
               CenterLeft(
                 child: BBButton.text(
@@ -72,13 +75,12 @@ class AdvancedOptionsPopUp extends StatelessWidget {
                   onPressed: () {
                     AddressSelectionPopUp.openPopup(context);
                   },
-                  label: 'Manual coin selection',
+                  label: 'Select coins manually',
                   // child: const BBText.body('Manual coin selection'),
                 ),
               ),
             // const EnableRBFOption(),
-            const Gap(8),
-            const SendAllOption(),
+
             const Gap(40),
             Center(
               child: SizedBox(
@@ -88,7 +90,7 @@ class AdvancedOptionsPopUp extends StatelessWidget {
                   onPressed: () {
                     context.pop();
                   },
-                  label: 'Done',
+                  label: 'Confirm',
                   // child: const BBText.body('Done'),
                 ),
               ),
@@ -109,7 +111,7 @@ class SendAllOption extends StatelessWidget {
     final sendAll = context.select((SendCubit x) => x.state.sendAllCoin);
     return Row(
       children: [
-        const BBText.body('Send full wallet balance'),
+        const BBText.body('Send entire wallet balance'),
         const Spacer(),
         Switch(
           value: sendAll,
