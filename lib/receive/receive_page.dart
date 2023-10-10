@@ -24,24 +24,46 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pattern_formatter/pattern_formatter.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class ReceiveScreen extends StatelessWidget {
+class ReceiveScreen extends StatefulWidget {
   const ReceiveScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final wallet = context.select((SelectReceiveWalletStep _) => _.state.walletBloc);
+  State<ReceiveScreen> createState() => _ReceiveScreenState();
+}
 
-    if (wallet == null) return const SizedBox.shrink();
+class _ReceiveScreenState extends State<ReceiveScreen> {
+  late ReceiveCubit _cubit;
+  @override
+  void initState() {
+    final wallet = context.read<SelectReceiveWalletStep>().state.walletBloc;
+    if (wallet == null) return;
 
-    final receiveCubit = ReceiveCubit(
+    _cubit = ReceiveCubit(
       walletBloc: wallet,
       walletAddress: locator<WalletAddress>(),
       hiveStorage: locator<HiveStorage>(),
       walletRepository: locator<WalletRepository>(),
       settingsCubit: locator<SettingsCubit>(),
     );
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // final wallet = context.select((SelectReceiveWalletStep _) => _.state.walletBloc);
+
+    // if (wallet == null) return const SizedBox.shrink();
+
+    // final receiveCubit = ReceiveCubit(
+    //   walletBloc: wallet,
+    //   walletAddress: locator<WalletAddress>(),
+    //   hiveStorage: locator<HiveStorage>(),
+    //   walletRepository: locator<WalletRepository>(),
+    //   settingsCubit: locator<SettingsCubit>(),
+    // );
     return BlocProvider.value(
-      value: receiveCubit,
+      value: _cubit,
       child: const _Screen(),
     );
   }
@@ -263,7 +285,7 @@ class _DisplayAddressState extends State<DisplayAddress> {
   @override
   Widget build(BuildContext context) {
     final addressQr = context.select((ReceiveCubit x) => x.state.getQRStr());
-    final address = context.select((ReceiveCubit x) => x.state.defaultAddress);
+    // final address = context.select((ReceiveCubit x) => x.state.defaultAddress);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
@@ -272,9 +294,11 @@ class _DisplayAddressState extends State<DisplayAddress> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
+                  width: 250,
                   child: BBText.body(
-                    address!.largeString(),
-                    textAlign: TextAlign.justify,
+                    addressQr,
+                    // address!.largeString(),
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 SizedBox(
