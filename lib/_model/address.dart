@@ -75,4 +75,15 @@ class Address with _$Address {
   String largeString() {
     return address.substring(0, 10) + '[...]' + address.substring(address.length - 10);
   }
+
+  String getTypeString() {
+    switch (kind) {
+      case AddressKind.deposit:
+        return 'Receive';
+      case AddressKind.change:
+        return 'Change';
+      case AddressKind.external:
+        return 'Receive';
+    }
+  }
 }

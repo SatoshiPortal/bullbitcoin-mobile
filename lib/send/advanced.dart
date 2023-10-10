@@ -178,39 +178,41 @@ class AddressSelectionPopUp extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // const Gap(32),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     const BBText.body(
+            //       'Select Addresses',
+            //       // style: TextStyle(
+            //       //   fontSize: 20,
+            //       //   fontWeight: FontWeight.bold,
+            //       // ),
+            //     ),
+            //     const Spacer(),
+            //     IconButton(
+            //       onPressed: () {
+            //         context.pop();
+            //       },
+            //       icon: const Icon(Icons.close),
+            //     ),
+            //   ],
+            // ),
             const Gap(32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const BBText.body(
-                  'Select Addresses',
-                  // style: TextStyle(
-                  //   fontSize: 20,
-                  //   fontWeight: FontWeight.bold,
-                  // ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-            const Gap(4),
-            BBText.body(
-              'Amount required: $amt',
-              // style: const TextStyle(fontSize: 12),
-            ),
-            const Gap(32),
+            const _SelectedAddressesTotal(),
+            if (amount > 0) ...[
+              const Gap(8),
+              BBText.body(
+                'Amount requested: $amt',
+                // style: const TextStyle(fontSize: 12),
+              ),
+            ],
+            const Gap(24),
             if (addresses.isEmpty) const BBText.body('No addresses available'),
             for (final address in addresses) ...[
               AdvancedOptionAdress(address: address),
               const Gap(16),
             ],
-            const Gap(24),
-            const _SelectedAddressesTotal(),
             const Gap(40),
             Center(
               child: SizedBox(
@@ -248,6 +250,8 @@ class AdvancedOptionAdress extends StatelessWidget {
 
     final balance = address.calculateBalance();
 
+    final addressType = address.getTypeString();
+
     final amt = context.select(
       (SettingsCubit x) => x.state.getAmountInUnits(balance),
     );
@@ -271,32 +275,39 @@ class AdvancedOptionAdress extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isSelected ? context.colour.primary : context.colour.onBackground,
-              width: isSelected ? 2 : 1,
+              width: isSelected ? 3 : 3,
             ),
           ),
+          clipBehavior: Clip.antiAliasWithSaveLayer,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              BBText.body(addessStr),
+              BBText.titleLarge(amt, isBold: true, textAlign: TextAlign.center),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const BBText.body('Address: '),
+                  BBText.body(addessStr, isBold: true),
+                ],
+              ),
               const Gap(4),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const BBText.body(
-                    'Amount: ',
-                    // style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  BBText.body(amt),
+                  const BBText.body('Type: '),
+                  BBText.body(addressType, isBold: true),
                 ],
               ),
               if (label != null && label.isNotEmpty) ...[
                 const Gap(4),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const BBText.body(
                       'Label: ',
                       // style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    BBText.body(label),
+                    BBText.body(label, isBold: true),
                   ],
                 ),
               ],
@@ -318,9 +329,10 @@ class _SelectedAddressesTotal extends StatelessWidget {
       (SettingsCubit x) => x.state.getAmountInUnits(total),
     );
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: BBText.body('Total amount selected :\n$amt'),
+    return BBText.body(
+      'Amount Selected\n$amt',
+      textAlign: TextAlign.center,
+      isBold: true,
     );
   }
 }

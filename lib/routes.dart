@@ -1,9 +1,11 @@
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/import/page.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/wallet_select.dart';
 import 'package:bb_mobile/send/wallet_select.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
@@ -16,7 +18,6 @@ import 'package:bb_mobile/wallet_settings/backup.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/test-backup.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -157,7 +158,7 @@ class BBlocObserver extends BlocObserver {
   @override
   void onEvent(Bloc bloc, Object? event) {
     super.onEvent(bloc, event);
-    debugPrint('\n\n' + event.runtimeType.toString());
+    // debugPrint('\n\n' + event.runtimeType.toString());
   }
 
   @override
@@ -180,7 +181,10 @@ class BBlocObserver extends BlocObserver {
 
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    debugPrint('\n\n' + error.toString());
+    locator<Logger>().log(
+      error.toString() + '\n' + stackTrace.toString(),
+      printToConsole: true,
+    );
     super.onError(bloc, error, stackTrace);
   }
 }
