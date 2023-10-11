@@ -11,11 +11,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SelectSendWalletStep extends Cubit<({bool selectWallet, WalletBloc? walletBloc})> {
-  SelectSendWalletStep() : super((selectWallet: true, walletBloc: null));
+class SelectSendWalletStep extends Cubit<({bool selectWallet, WalletBloc? walletBloc, bool sent})> {
+  SelectSendWalletStep() : super((selectWallet: true, walletBloc: null, sent: false));
 
-  void goBack() => emit((selectWallet: true, walletBloc: null));
-  void goNext(WalletBloc bloc) => emit((selectWallet: false, walletBloc: bloc));
+  void goBack() => emit((selectWallet: true, walletBloc: null, sent: false));
+  void goNext(WalletBloc bloc) => emit((selectWallet: false, walletBloc: bloc, sent: false));
+  void sent() => emit((selectWallet: true, walletBloc: state.walletBloc, sent: true));
 }
 
 class SelectSendWalletPage extends StatefulWidget {
@@ -108,6 +109,10 @@ class SendAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sent = context.select((SelectSendWalletStep _) => _.state.sent);
+
+    if (sent) return const SizedBox.shrink();
+
     return BBAppBar(
       text: 'Send Bitcoin',
       onBack: () {

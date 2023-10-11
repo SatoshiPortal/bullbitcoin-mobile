@@ -74,7 +74,9 @@ class SendScreen extends StatelessWidget {
         value: walletBloc,
         child: BlocListener<SendCubit, SendState>(
           listenWhen: (previous, current) => previous.sent != current.sent && current.sent,
-          listener: (context, state) => {}, //context.pop(),
+          listener: (context, state) {
+            context.read<SelectSendWalletStep>().sent();
+          }, //context.pop(),
           child: const _Screen(),
         ),
       ),
@@ -89,53 +91,53 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
-    return Scaffold(
-      appBar: sent
-          ? null
-          : AppBar(
-              flexibleSpace: const SendAppBar(),
-              automaticallyImplyLeading: false,
-            ),
-      body: ColoredBox(
-        color: sent ? Colors.green : context.colour.onPrimary,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (signed) ...[
-                  if (!sent) const TxDetailsScreen() else const TxSuccess(),
-                  const Gap(48),
-                ] else ...[
-                  const Gap(24),
-                  const Center(child: WalletName()),
-                  const Gap(8),
-                  const Center(child: WalletBalance()),
-                  const Gap(48),
-                  const EnterAmount(),
-                  const Gap(24),
-                  const BBText.title('    Address'),
-                  const Gap(4),
-                  const EnterAddress(),
-                  const Gap(24),
-                  const BBText.title('    Label (optional)'),
-                  const Gap(4),
-                  const EnterNote(),
-                  const Gap(24),
-                  const SelectFeesButton(),
-                  const CoinSelectionButton(),
-                  const Gap(24),
-                  const AdvancedOptionsButton(),
-                  const Gap(8),
-                ],
-                if (!sent) const SendButton(),
-                const Gap(80),
+    // return Scaffold(
+    //   appBar: sent
+    //       ? null
+    //       : AppBar(
+    //           flexibleSpace: const SendAppBar(),
+    //           automaticallyImplyLeading: false,
+    //         ),
+    //   body:
+    return ColoredBox(
+      color: sent ? Colors.green : context.colour.onPrimary,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (signed) ...[
+                if (!sent) const TxDetailsScreen() else const TxSuccess(),
+                const Gap(48),
+              ] else ...[
+                const Gap(24),
+                const Center(child: WalletName()),
+                const Gap(8),
+                const Center(child: WalletBalance()),
+                const Gap(48),
+                const EnterAmount(),
+                const Gap(24),
+                const BBText.title('    Address'),
+                const Gap(4),
+                const EnterAddress(),
+                const Gap(24),
+                const BBText.title('    Label (optional)'),
+                const Gap(4),
+                const EnterNote(),
+                const Gap(24),
+                const SelectFeesButton(),
+                const CoinSelectionButton(),
+                const Gap(24),
+                const AdvancedOptionsButton(),
+                const Gap(8),
               ],
-            ),
+              if (!sent) const SendButton(),
+              const Gap(80),
+            ],
           ),
-        ).animate(delay: 200.ms).fadeIn(),
-      ),
+        ),
+      ).animate(delay: 200.ms).fadeIn(),
     );
   }
 }
