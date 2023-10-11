@@ -32,7 +32,7 @@ class SendState with _$SendState {
     @Default('') String errDownloadingFile,
     @Default(false) bool downloaded,
     //
-    @Default(false) bool enableRBF,
+    @Default(false) bool disableRBF,
     @Default(false) bool sendAllCoin,
     @Default([]) List<Address> selectedAddresses,
     @Default('') String errAddresses,

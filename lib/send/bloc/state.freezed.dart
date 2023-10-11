@@ -37,7 +37,7 @@ mixin _$SendState {
   bool get downloadingFile => throw _privateConstructorUsedError;
   String get errDownloadingFile => throw _privateConstructorUsedError;
   bool get downloaded => throw _privateConstructorUsedError; //
-  bool get enableRBF => throw _privateConstructorUsedError;
+  bool get disableRBF => throw _privateConstructorUsedError;
   bool get sendAllCoin => throw _privateConstructorUsedError;
   List<Address> get selectedAddresses => throw _privateConstructorUsedError;
   String get errAddresses => throw _privateConstructorUsedError; //
@@ -83,7 +83,7 @@ abstract class $SendStateCopyWith<$Res> {
       bool downloadingFile,
       String errDownloadingFile,
       bool downloaded,
-      bool enableRBF,
+      bool disableRBF,
       bool sendAllCoin,
       List<Address> selectedAddresses,
       String errAddresses,
@@ -132,7 +132,7 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? downloadingFile = null,
     Object? errDownloadingFile = null,
     Object? downloaded = null,
-    Object? enableRBF = null,
+    Object? disableRBF = null,
     Object? sendAllCoin = null,
     Object? selectedAddresses = null,
     Object? errAddresses = null,
@@ -222,9 +222,9 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.downloaded
           : downloaded // ignore: cast_nullable_to_non_nullable
               as bool,
-      enableRBF: null == enableRBF
-          ? _value.enableRBF
-          : enableRBF // ignore: cast_nullable_to_non_nullable
+      disableRBF: null == disableRBF
+          ? _value.disableRBF
+          : disableRBF // ignore: cast_nullable_to_non_nullable
               as bool,
       sendAllCoin: null == sendAllCoin
           ? _value.sendAllCoin
@@ -325,7 +325,7 @@ abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
       bool downloadingFile,
       String errDownloadingFile,
       bool downloaded,
-      bool enableRBF,
+      bool disableRBF,
       bool sendAllCoin,
       List<Address> selectedAddresses,
       String errAddresses,
@@ -374,7 +374,7 @@ class __$$_SendStateCopyWithImpl<$Res>
     Object? downloadingFile = null,
     Object? errDownloadingFile = null,
     Object? downloaded = null,
-    Object? enableRBF = null,
+    Object? disableRBF = null,
     Object? sendAllCoin = null,
     Object? selectedAddresses = null,
     Object? errAddresses = null,
@@ -464,9 +464,9 @@ class __$$_SendStateCopyWithImpl<$Res>
           ? _value.downloaded
           : downloaded // ignore: cast_nullable_to_non_nullable
               as bool,
-      enableRBF: null == enableRBF
-          ? _value.enableRBF
-          : enableRBF // ignore: cast_nullable_to_non_nullable
+      disableRBF: null == disableRBF
+          ? _value.disableRBF
+          : disableRBF // ignore: cast_nullable_to_non_nullable
               as bool,
       sendAllCoin: null == sendAllCoin
           ? _value.sendAllCoin
@@ -539,7 +539,7 @@ class _$_SendState extends _SendState {
       this.downloadingFile = false,
       this.errDownloadingFile = '',
       this.downloaded = false,
-      this.enableRBF = false,
+      this.disableRBF = false,
       this.sendAllCoin = false,
       final List<Address> selectedAddresses = const [],
       this.errAddresses = '',
@@ -625,7 +625,7 @@ class _$_SendState extends _SendState {
 //
   @override
   @JsonKey()
-  final bool enableRBF;
+  final bool disableRBF;
   @override
   @JsonKey()
   final bool sendAllCoin;
@@ -677,7 +677,7 @@ class _$_SendState extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(amount: $amount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, enableRBF: $enableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
+    return 'SendState(amount: $amount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
   }
 
   @override
@@ -714,8 +714,8 @@ class _$_SendState extends _SendState {
                 other.errDownloadingFile == errDownloadingFile) &&
             (identical(other.downloaded, downloaded) ||
                 other.downloaded == downloaded) &&
-            (identical(other.enableRBF, enableRBF) ||
-                other.enableRBF == enableRBF) &&
+            (identical(other.disableRBF, disableRBF) ||
+                other.disableRBF == disableRBF) &&
             (identical(other.sendAllCoin, sendAllCoin) ||
                 other.sendAllCoin == sendAllCoin) &&
             const DeepCollectionEquality()
@@ -759,7 +759,7 @@ class _$_SendState extends _SendState {
         downloadingFile,
         errDownloadingFile,
         downloaded,
-        enableRBF,
+        disableRBF,
         sendAllCoin,
         const DeepCollectionEquality().hash(_selectedAddresses),
         errAddresses,
@@ -801,7 +801,7 @@ abstract class _SendState extends SendState {
       final bool downloadingFile,
       final String errDownloadingFile,
       final bool downloaded,
-      final bool enableRBF,
+      final bool disableRBF,
       final bool sendAllCoin,
       final List<Address> selectedAddresses,
       final String errAddresses,
@@ -855,7 +855,7 @@ abstract class _SendState extends SendState {
   @override
   bool get downloaded;
   @override //
-  bool get enableRBF;
+  bool get disableRBF;
   @override
   bool get sendAllCoin;
   @override

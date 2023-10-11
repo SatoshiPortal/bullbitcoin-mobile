@@ -45,12 +45,12 @@ class _SelectSendWalletPageState extends State<SelectSendWalletPage> {
       value: homeCubit,
       child: BlocProvider.value(
         value: stepBloc,
-        child: const Scaffold(
-          // appBar: AppBar(
-          //   flexibleSpace: const SendAppBar(),
-          //   automaticallyImplyLeading: false,
-          // ),
-          body: SelectStepScreen(),
+        child: Scaffold(
+          appBar: AppBar(
+            flexibleSpace: const SendAppBar(),
+            automaticallyImplyLeading: false,
+          ),
+          body: const SelectStepScreen(),
         ),
       ),
     );

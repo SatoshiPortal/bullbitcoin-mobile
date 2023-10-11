@@ -68,6 +68,8 @@ class AdvancedOptionsPopUp extends StatelessWidget {
 
             const SendAllOption(),
             const Gap(8),
+            const EnableRBFOption(),
+            const Gap(8),
             if (!sendAll)
               CenterLeft(
                 child: BBButton.text(
@@ -129,15 +131,15 @@ class EnableRBFOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final enableRBF = context.select((SendCubit x) => x.state.enableRBF);
+    final disableRBF = context.select((SendCubit x) => x.state.disableRBF);
     return Row(
       children: [
-        const BBText.body('Replace-by-fee (RBF)'),
+        const BBText.body('Turn off RBF'),
         const Spacer(),
         Switch(
-          value: enableRBF,
+          value: disableRBF,
           onChanged: (e) {
-            context.read<SendCubit>().enableRBF(e);
+            context.read<SendCubit>().disableRBF(e);
           },
         ),
       ],

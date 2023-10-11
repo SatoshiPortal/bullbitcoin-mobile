@@ -69,7 +69,7 @@ class SendCubit extends Cubit<SendState> {
   void setupFees() {
     final defaultFeeOption = settingsCubit.state.selectedFeesOption;
     final defaultRBF = settingsCubit.state.defaultRBF;
-    emit(state.copyWith(selectedFeesOption: defaultFeeOption, enableRBF: defaultRBF));
+    emit(state.copyWith(selectedFeesOption: defaultFeeOption, disableRBF: !defaultRBF));
     if (defaultFeeOption == 4) emit(state.copyWith(fees: settingsCubit.state.fees));
   }
 
@@ -260,8 +260,8 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(errLoadingFees: ''));
   }
 
-  void enableRBF(bool enable) {
-    emit(state.copyWith(enableRBF: enable));
+  void disableRBF(bool disable) {
+    emit(state.copyWith(disableRBF: disable));
   }
 
   void sendAllCoin(bool sendAll) {
@@ -376,7 +376,7 @@ class SendCubit extends Cubit<SendState> {
       feeRate: state.selectedFeesOption == 4
           ? state.fees!.toDouble()
           : state.feesList![state.selectedFeesOption].toDouble(),
-      enableRbf: true,
+      enableRbf: !state.disableRBF,
       selectedAddresses: state.selectedAddresses,
     );
     if (err != null) {
