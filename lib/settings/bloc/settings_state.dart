@@ -193,10 +193,12 @@ class SettingsState with _$SettingsState {
   }) {
     final selectedCurrency = curr ?? currency;
     if (selectedCurrency == null || selectedCurrency.price == null) return '';
-    final btcAmt = (150 * feeRate) / 100000000;
+
+    final btcAmt = (140 * feeRate) / 100000000;
     final amt = (btcAmt * selectedCurrency.price!).toStringAsFixed(2);
+
     final currencyStr = selectedCurrency.shortName;
-    return '≈ $amt $currencyStr';
+    return '~ $amt $currencyStr';
   }
 }
 

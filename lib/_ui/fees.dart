@@ -128,9 +128,7 @@ class _Screen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                BBText.body(
-                  'Select Bitcoin Network Fee',
-                ),
+                BBText.body('Bitcoin Network Fee', isBold: true),
                 Spacer(),
                 LoadingFees(),
               ],
@@ -261,9 +259,7 @@ class SelectFeesItem extends StatelessWidget {
     }
 
     final fiatRateStr = context.select(
-      (SettingsCubit _) => _.state.calculateFiatPriceForFees(
-        feeRate: fee,
-      ),
+      (SettingsCubit _) => _.state.calculateFiatPriceForFees(feeRate: fee),
     );
 
     return GestureDetector(
@@ -277,8 +273,8 @@ class SelectFeesItem extends StatelessWidget {
       },
       child: Container(
         height: 148,
-        width: MediaQuery.of(context).size.width / 2 - 66,
-        padding: const EdgeInsets.all(16),
+        width: MediaQuery.of(context).size.width / 2 - 44,
+        padding: const EdgeInsets.only(left: 16, top: 16),
         margin: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -290,19 +286,15 @@ class SelectFeesItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            BBText.body(
-              title,
-            ),
+            BBText.body(title, isBold: true),
             if (!custom) ...[
-              BBText.body(
-                fee.toString() + ' sat/vB',
-              ),
+              BBText.body(fee.toString() + ' sat/vB'),
               BBText.body(
                 () {
-                  if (index == 0) return '≈ 10 min';
-                  if (index == 1) return '≈ 30 min';
-                  if (index == 2) return '≈ 60 min';
-                  return '+ 60 min';
+                  if (index == 0) return '~ 10 min';
+                  if (index == 1) return '~ 30 min';
+                  if (index == 2) return '~ 60 min';
+                  return '~ few hours';
                 }(),
               ),
               BBText.body(fiatRateStr),
@@ -359,11 +351,12 @@ class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const BBText.body('  Custom Fee'),
+        const BBText.body('  Custom Fee (sats/vbyte)'),
         const Gap(4),
         BBTextInput.big(
           focusNode: _focusNode,
           value: amt,
+          hint: 'sats/vb',
           // controller: _controller,
           // keyboardType: TextInputType.number,
           onChanged: (value) {
