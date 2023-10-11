@@ -37,6 +37,7 @@ _$_SettingsState _$$_SettingsStateFromJson(Map<String, dynamic> json) =>
       selectedNetwork: json['selectedNetwork'] as int? ?? 1,
       loadingNetworks: json['loadingNetworks'] as bool? ?? false,
       errLoadingNetworks: json['errLoadingNetworks'] as String? ?? '',
+      networkConnected: json['networkConnected'] as bool? ?? false,
       stopGap: json['stopGap'] as int? ?? 20,
       fees: json['fees'] as int?,
       feesList:
@@ -67,6 +68,7 @@ Map<String, dynamic> _$$_SettingsStateToJson(_$_SettingsState instance) =>
       'selectedNetwork': instance.selectedNetwork,
       'loadingNetworks': instance.loadingNetworks,
       'errLoadingNetworks': instance.errLoadingNetworks,
+      'networkConnected': instance.networkConnected,
       'stopGap': instance.stopGap,
       'fees': instance.fees,
       'feesList': instance.feesList,

@@ -142,7 +142,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future setupBlockchain() async {
-    emit(state.copyWith(errLoadingNetworks: ''));
+    emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
     final isTestnet = state.testnet;
     final selectedNetwork = state.networks[state.selectedNetwork];
 
@@ -164,7 +164,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
 
     loadFees();
-    emit(state.copyWith(blockchain: blockchain));
+    emit(state.copyWith(blockchain: blockchain, networkConnected: true));
   }
 
   Future loadNetworks() async {

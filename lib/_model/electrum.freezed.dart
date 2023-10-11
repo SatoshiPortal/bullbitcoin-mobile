@@ -250,7 +250,7 @@ class __$$_BullbitcoinElectrumNetworkCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_BullbitcoinElectrumNetwork implements _BullbitcoinElectrumNetwork {
+class _$_BullbitcoinElectrumNetwork extends _BullbitcoinElectrumNetwork {
   const _$_BullbitcoinElectrumNetwork(
       {this.mainnet = 'ssl://$bbelectrum:50002',
       this.testnet = 'ssl://$bbelectrum:60002',
@@ -260,7 +260,8 @@ class _$_BullbitcoinElectrumNetwork implements _BullbitcoinElectrumNetwork {
       this.validateDomain = true,
       this.name = 'bullbitcoin',
       final String? $type})
-      : $type = $type ?? 'bullbitcoin';
+      : $type = $type ?? 'bullbitcoin',
+        super._();
 
   factory _$_BullbitcoinElectrumNetwork.fromJson(Map<String, dynamic> json) =>
       _$$_BullbitcoinElectrumNetworkFromJson(json);
@@ -419,7 +420,7 @@ class _$_BullbitcoinElectrumNetwork implements _BullbitcoinElectrumNetwork {
   }
 }
 
-abstract class _BullbitcoinElectrumNetwork implements ElectrumNetwork {
+abstract class _BullbitcoinElectrumNetwork extends ElectrumNetwork {
   const factory _BullbitcoinElectrumNetwork(
       {final String mainnet,
       final String testnet,
@@ -428,6 +429,7 @@ abstract class _BullbitcoinElectrumNetwork implements ElectrumNetwork {
       final int retry,
       final bool validateDomain,
       final String name}) = _$_BullbitcoinElectrumNetwork;
+  const _BullbitcoinElectrumNetwork._() : super._();
 
   factory _BullbitcoinElectrumNetwork.fromJson(Map<String, dynamic> json) =
       _$_BullbitcoinElectrumNetwork.fromJson;
@@ -524,7 +526,7 @@ class __$$_DefaultElectrumNetworkCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_DefaultElectrumNetwork implements _DefaultElectrumNetwork {
+class _$_DefaultElectrumNetwork extends _DefaultElectrumNetwork {
   const _$_DefaultElectrumNetwork(
       {this.mainnet = 'ssl://$openelectrum:50002',
       this.testnet = 'ssl://$openelectrum:60002',
@@ -534,7 +536,8 @@ class _$_DefaultElectrumNetwork implements _DefaultElectrumNetwork {
       this.validateDomain = true,
       this.name = 'blockstream',
       final String? $type})
-      : $type = $type ?? 'defaultElectrum';
+      : $type = $type ?? 'defaultElectrum',
+        super._();
 
   factory _$_DefaultElectrumNetwork.fromJson(Map<String, dynamic> json) =>
       _$$_DefaultElectrumNetworkFromJson(json);
@@ -693,7 +696,7 @@ class _$_DefaultElectrumNetwork implements _DefaultElectrumNetwork {
   }
 }
 
-abstract class _DefaultElectrumNetwork implements ElectrumNetwork {
+abstract class _DefaultElectrumNetwork extends ElectrumNetwork {
   const factory _DefaultElectrumNetwork(
       {final String mainnet,
       final String testnet,
@@ -702,6 +705,7 @@ abstract class _DefaultElectrumNetwork implements ElectrumNetwork {
       final int retry,
       final bool validateDomain,
       final String name}) = _$_DefaultElectrumNetwork;
+  const _DefaultElectrumNetwork._() : super._();
 
   factory _DefaultElectrumNetwork.fromJson(Map<String, dynamic> json) =
       _$_DefaultElectrumNetwork.fromJson;
@@ -798,7 +802,7 @@ class __$$_CustomElectrumNetworkCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_CustomElectrumNetwork implements _CustomElectrumNetwork {
+class _$_CustomElectrumNetwork extends _CustomElectrumNetwork {
   const _$_CustomElectrumNetwork(
       {required this.mainnet,
       required this.testnet,
@@ -808,7 +812,8 @@ class _$_CustomElectrumNetwork implements _CustomElectrumNetwork {
       this.validateDomain = true,
       this.name = 'custom',
       final String? $type})
-      : $type = $type ?? 'custom';
+      : $type = $type ?? 'custom',
+        super._();
 
   factory _$_CustomElectrumNetwork.fromJson(Map<String, dynamic> json) =>
       _$$_CustomElectrumNetworkFromJson(json);
@@ -965,7 +970,7 @@ class _$_CustomElectrumNetwork implements _CustomElectrumNetwork {
   }
 }
 
-abstract class _CustomElectrumNetwork implements ElectrumNetwork {
+abstract class _CustomElectrumNetwork extends ElectrumNetwork {
   const factory _CustomElectrumNetwork(
       {required final String mainnet,
       required final String testnet,
@@ -974,6 +979,7 @@ abstract class _CustomElectrumNetwork implements ElectrumNetwork {
       final int retry,
       final bool validateDomain,
       final String name}) = _$_CustomElectrumNetwork;
+  const _CustomElectrumNetwork._() : super._();
 
   factory _CustomElectrumNetwork.fromJson(Map<String, dynamic> json) =
       _$_CustomElectrumNetwork.fromJson;

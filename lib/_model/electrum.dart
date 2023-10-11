@@ -36,5 +36,19 @@ class ElectrumNetwork with _$ElectrumNetwork {
     @Default('custom') String name,
   }) = _CustomElectrumNetwork;
 
+  const ElectrumNetwork._();
+
   factory ElectrumNetwork.fromJson(Map<String, dynamic> json) => _$ElectrumNetworkFromJson(json);
+
+  String getNetworkUrl(bool isTestnet) {
+    String url;
+    if (isTestnet)
+      url = testnet;
+    else
+      url = mainnet;
+
+    url = url.split('://')[1];
+
+    return url;
+  }
 }

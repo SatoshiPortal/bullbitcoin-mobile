@@ -40,6 +40,7 @@ class SettingsState with _$SettingsState {
     @Default(1) int selectedNetwork,
     @Default(false) bool loadingNetworks,
     @Default('') String errLoadingNetworks,
+    @Default(false) bool networkConnected,
     @Default(20) int stopGap,
     //
     int? fees,
