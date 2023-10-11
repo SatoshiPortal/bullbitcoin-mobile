@@ -260,7 +260,7 @@ class AdvancedOptionAdress extends StatelessWidget {
       (SettingsCubit x) => x.state.getAmountInUnits(balance),
     );
 
-    final label = address.label;
+    final label = address.label ?? '';
 
     final addessStr = address.address.substring(0, 5) +
         '...' +
@@ -302,7 +302,7 @@ class AdvancedOptionAdress extends StatelessWidget {
                   BBText.body(addressType, isBold: true),
                 ],
               ),
-              if (label != null && label.isNotEmpty) ...[
+              if (label.isNotEmpty) ...[
                 const Gap(4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

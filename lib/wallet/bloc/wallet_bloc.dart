@@ -251,8 +251,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
       return;
-      // do not return because if we do not have txs, bdk returns error
-      // if we return we will not update addresses
     }
 
     final (walletUpdated, err2) = await walletUpdate.updateAddressesFromTxs(
@@ -286,7 +284,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       //   return;
       // }
 
-      add(UpdateWallet(wallet));
+      add(UpdateWallet(walletUpdated!));
       await Future.delayed(const Duration(microseconds: 300));
     } else {
       add(UpdateWallet(walletUpdated!, saveToStorage: false));
