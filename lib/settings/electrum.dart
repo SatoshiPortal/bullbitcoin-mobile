@@ -342,26 +342,31 @@ class NetworkConfigFields extends HookWidget {
             BBText.error(err),
             const Gap(8),
           ],
-          BBButton.bigRed(
-            loading: loading,
-            loadingText: 'Connecting...',
-            onPressed: () async {
-              FocusScope.of(context).requestFocus(FocusNode());
-              final updatednetwork = network.copyWith(
-                mainnet: mainnet.text,
-                testnet: testnet.text,
-                // stopGap: int.tryParse(stopGap.text) ?? 20,
-                // retry: int.tryParse(retry.text) ?? 5,
-                // timeout: int.tryParse(timeout.text) ?? 5,
-                validateDomain: validateDomain.value,
-              );
-              context.read<SettingsCubit>().networkConfigsSaveClicked(updatednetwork);
-              await Future.delayed(const Duration(milliseconds: 500));
-              final err = context.read<SettingsCubit>().state.errLoadingNetworks;
-              if (err.isEmpty) context.pop();
-            },
-            label: 'SAVE',
-            filled: true,
+          Center(
+            child: SizedBox(
+              width: 250,
+              child: BBButton.bigRed(
+                loading: loading,
+                loadingText: 'Connecting...',
+                onPressed: () async {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  final updatednetwork = network.copyWith(
+                    mainnet: mainnet.text,
+                    testnet: testnet.text,
+                    // stopGap: int.tryParse(stopGap.text) ?? 20,
+                    // retry: int.tryParse(retry.text) ?? 5,
+                    // timeout: int.tryParse(timeout.text) ?? 5,
+                    validateDomain: validateDomain.value,
+                  );
+                  context.read<SettingsCubit>().networkConfigsSaveClicked(updatednetwork);
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  final err = context.read<SettingsCubit>().state.errLoadingNetworks;
+                  if (err.isEmpty) context.pop();
+                },
+                label: 'SAVE',
+                filled: true,
+              ),
+            ),
           ),
           const Gap(24),
         ],
