@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/wallet.dart';

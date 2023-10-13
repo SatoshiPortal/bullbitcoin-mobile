@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
@@ -336,8 +338,8 @@ class WalletAddress {
 
       return (updated, w);
     } catch (e) {
-      print('addingAddressERROR');
-      print(e);
+      // print('addingAddressERROR');
+      // print(e);
       rethrow;
     }
 

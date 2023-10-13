@@ -22,7 +22,7 @@ class WalletTx {
       outAddrs.add(updatedAddress);
     } else {
       outAddrs.add(newAddress);
-      print(outAddrs);
+      // print(outAddrs);
     }
     return tx.copyWith(outAddrs: outAddrs);
   }
@@ -130,7 +130,7 @@ class WalletTx {
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
-              print(e);
+              // print(e);
             }
           }
           txObj = txObj.copyWith(
@@ -189,7 +189,7 @@ class WalletTx {
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
-              print(e);
+              // print(e);
             }
           }
           if (changeAddress != null) txObj = addOrUpdateAddressState(changeAddress, txObj);
@@ -236,7 +236,7 @@ class WalletTx {
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
-              print(e);
+              // print(e);
             }
           }
           txObj = txObj.copyWith(
