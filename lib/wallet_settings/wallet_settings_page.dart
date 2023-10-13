@@ -19,7 +19,6 @@ import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/addresses.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
-import 'package:bb_mobile/wallet_settings/descriptors.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -144,10 +143,10 @@ class _Screen extends StatelessWidget {
                 const TestBackupButton(),
                 const Gap(8),
               ],
-              const PublicDescriptorButton(),
-              const Gap(8),
-              const ExtendedPublicKeyButton(),
-              const Gap(8),
+              // const PublicDescriptorButton(),
+              // const Gap(8),
+              // const ExtendedPublicKeyButton(),
+              // const Gap(8),
               const WalletDetailsButton(),
               const Gap(8),
               const AddressesButtons(),
