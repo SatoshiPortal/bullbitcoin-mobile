@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -8,6 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+
+class InfoRead extends Cubit<bool> {
+  InfoRead() : super(false);
+
+  void read() => emit(true);
+  void unread() => emit(false);
+}
 
 class BackupPage extends StatelessWidget {
   const BackupPage({super.key, required this.walletBloc, required this.walletSettings});
@@ -23,17 +31,90 @@ class BackupPage extends StatelessWidget {
       providers: [
         BlocProvider.value(value: walletBloc),
         BlocProvider.value(value: walletSettings),
+        BlocProvider.value(value: InfoRead()),
       ],
-      child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: BBAppBar(
-            text: 'Backup',
-            onBack: () {
-              context.pop();
-            },
-          ),
+      child: BlocBuilder<InfoRead, bool>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              flexibleSpace: BBAppBar(
+                text: 'Backup',
+                onBack: () {
+                  if (state)
+                    context.read<InfoRead>().unread();
+                  else
+                    context.pop();
+                },
+              ),
+            ),
+            body: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: state ? const BackupScreen() : const BackUpInfoScreen(),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class BackUpInfoScreen extends StatelessWidget {
+  const BackUpInfoScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final lastBackupTested =
+        context.select((WalletBloc cubit) => cubit.state.wallet!.lastBackupTested);
+
+    final hasPassphrase = context.select((WalletBloc cubit) => cubit.state.wallet!.hasPassphrase());
+    final instructions = backupInstructions(hasPassphrase);
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16.0, left: 24, right: 40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const BBText.titleLarge('Backup best practices'),
+            const Gap(8),
+            if (lastBackupTested != null) ...[
+              BBText.bodySmall(
+                'Last backup tested on ${lastBackupTested.toLocal()}',
+              ),
+              const Gap(8),
+            ],
+            const Gap(24),
+            for (final i in instructions) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Gap(8),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4.0),
+                    child: Icon(Icons.circle, color: Colors.black),
+                  ),
+                  const Gap(8),
+                  Expanded(child: BBText.body(i)),
+                ],
+              ),
+              const Gap(16),
+            ],
+            const Gap(24),
+            Center(
+              child: SizedBox(
+                width: 250,
+                child: BBButton.bigRed(
+                  filled: true,
+                  onPressed: () {
+                    context.read<InfoRead>().read();
+                  },
+                  label: 'Backup',
+                ),
+              ),
+            ),
+            const Gap(60),
+          ],
         ),
-        body: const BackupScreen(),
       ),
     );
   }
@@ -90,22 +171,23 @@ class BackupScreen extends StatelessWidget {
               ),
             ],
             const Gap(48),
-            Center(
-              child: SizedBox(
-                width: 200,
-                child: BBButton.bigRed(
-                  onPressed: () {
-                    context.pop();
-                  },
-                  label: 'Okay',
-                ),
-              ),
-            ),
+            // Center(
+            //   child: SizedBox(
+            //     width: 200,
+            //     child: BBButton.bigRed(
+            //       onPressed: () {
+            //         context.pop();
+            //       },
+            //       label: 'Okay',
+            //     ),
+            //   ),
+            // ),
             const Gap(24),
             Center(
               child: SizedBox(
-                width: 200,
-                child: BBButton.text(
+                width: 250,
+                child: BBButton.bigRed(
+                  filled: true,
                   onPressed: () {
                     context
                       ..pop()
@@ -119,7 +201,7 @@ class BackupScreen extends StatelessWidget {
                     // context.pop();
                     // TestBackupScreen.openPopup(context);
                   },
-                  centered: true,
+                  // centered: true,
                   label: 'Test backup',
                 ),
               ),

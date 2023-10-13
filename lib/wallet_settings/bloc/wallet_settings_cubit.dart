@@ -102,6 +102,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       state.copyWith(
         testMnemonicOrder: [],
         mnemonic: words,
+        errTestingBackup: '',
         password: seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase,
         shuffledMnemonic: shuffled,
       ),
@@ -252,7 +253,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    final wallet = state.wallet.copyWith(backupTested: true);
+    final wallet = state.wallet.copyWith(backupTested: true, lastBackupTested: DateTime.now());
 
     // final updateErr = await walletRepository.updateWallet(
     //   wallet: wallet,

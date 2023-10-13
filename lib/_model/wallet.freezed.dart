@@ -38,6 +38,7 @@ mixin _$Wallet {
   List<String>? get labelTags => throw _privateConstructorUsedError;
   List<Bip329Label>? get bip329Labels => throw _privateConstructorUsedError;
   bool get backupTested => throw _privateConstructorUsedError;
+  DateTime? get lastBackupTested => throw _privateConstructorUsedError;
   bool get hide => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -69,6 +70,7 @@ abstract class $WalletCopyWith<$Res> {
       List<String>? labelTags,
       List<Bip329Label>? bip329Labels,
       bool backupTested,
+      DateTime? lastBackupTested,
       bool hide});
 
   $AddressCopyWith<$Res>? get lastGeneratedAddress;
@@ -105,6 +107,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? labelTags = freezed,
     Object? bip329Labels = freezed,
     Object? backupTested = null,
+    Object? lastBackupTested = freezed,
     Object? hide = null,
   }) {
     return _then(_value.copyWith(
@@ -180,6 +183,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.backupTested
           : backupTested // ignore: cast_nullable_to_non_nullable
               as bool,
+      lastBackupTested: freezed == lastBackupTested
+          ? _value.lastBackupTested
+          : lastBackupTested // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       hide: null == hide
           ? _value.hide
           : hide // ignore: cast_nullable_to_non_nullable
@@ -225,6 +232,7 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       List<String>? labelTags,
       List<Bip329Label>? bip329Labels,
       bool backupTested,
+      DateTime? lastBackupTested,
       bool hide});
 
   @override
@@ -259,6 +267,7 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? labelTags = freezed,
     Object? bip329Labels = freezed,
     Object? backupTested = null,
+    Object? lastBackupTested = freezed,
     Object? hide = null,
   }) {
     return _then(_$_Wallet(
@@ -334,6 +343,10 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value.backupTested
           : backupTested // ignore: cast_nullable_to_non_nullable
               as bool,
+      lastBackupTested: freezed == lastBackupTested
+          ? _value.lastBackupTested
+          : lastBackupTested // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       hide: null == hide
           ? _value.hide
           : hide // ignore: cast_nullable_to_non_nullable
@@ -364,6 +377,7 @@ class _$_Wallet extends _Wallet {
       final List<String>? labelTags,
       final List<Bip329Label>? bip329Labels,
       this.backupTested = false,
+      this.lastBackupTested,
       this.hide = false})
       : _myAddressBook = myAddressBook,
         _externalAddressBook = externalAddressBook,
@@ -457,12 +471,14 @@ class _$_Wallet extends _Wallet {
   @JsonKey()
   final bool backupTested;
   @override
+  final DateTime? lastBackupTested;
+  @override
   @JsonKey()
   final bool hide;
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, transactions: $transactions, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, hide: $hide)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, transactions: $transactions, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide)';
   }
 
   @override
@@ -502,6 +518,8 @@ class _$_Wallet extends _Wallet {
                 .equals(other._bip329Labels, _bip329Labels) &&
             (identical(other.backupTested, backupTested) ||
                 other.backupTested == backupTested) &&
+            (identical(other.lastBackupTested, lastBackupTested) ||
+                other.lastBackupTested == lastBackupTested) &&
             (identical(other.hide, hide) || other.hide == hide));
   }
 
@@ -527,6 +545,7 @@ class _$_Wallet extends _Wallet {
         const DeepCollectionEquality().hash(_labelTags),
         const DeepCollectionEquality().hash(_bip329Labels),
         backupTested,
+        lastBackupTested,
         hide
       ]);
 
@@ -564,6 +583,7 @@ abstract class _Wallet extends Wallet {
       final List<String>? labelTags,
       final List<Bip329Label>? bip329Labels,
       final bool backupTested,
+      final DateTime? lastBackupTested,
       final bool hide}) = _$_Wallet;
   const _Wallet._() : super._();
 
@@ -605,6 +625,8 @@ abstract class _Wallet extends Wallet {
   List<Bip329Label>? get bip329Labels;
   @override
   bool get backupTested;
+  @override
+  DateTime? get lastBackupTested;
   @override
   bool get hide;
   @override

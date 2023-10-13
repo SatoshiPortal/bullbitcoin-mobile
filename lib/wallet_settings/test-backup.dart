@@ -105,31 +105,34 @@ class TestBackupScreen extends StatelessWidget {
                 ),
             const Gap(16),
             const TestBackupPassField(),
+            const Gap(48),
+
             const TestBackupConfirmButton(),
-            const Gap(24),
-            Center(
-              child: SizedBox(
-                width: 200,
-                child: BBButton.text(
-                  onPressed: () {
-                    context
-                      ..pop()
-                      ..push(
-                        '/wallet-settings/backup',
-                        extra: (
-                          context.read<WalletBloc>(),
-                          context.read<WalletSettingsCubit>(),
-                        ),
-                      );
-                    // context.pop();
-                    // BackupScreen.openPopup(context);
-                  },
-                  centered: true,
-                  label: 'View backup',
-                ),
-              ),
-            ),
-            const Gap(60),
+            const Gap(40),
+
+            // const Gap(24),
+            // Center(
+            //   child: SizedBox(
+            //     width: 200,
+            //     child: BBButton.text(
+            //       onPressed: () {
+            //         context
+            //           ..pop()
+            //           ..push(
+            //             '/wallet-settings/backup',
+            //             extra: (
+            //               context.read<WalletBloc>(),
+            //               context.read<WalletSettingsCubit>(),
+            //             ),
+            //           );
+            //         // context.pop();
+            //         // BackupScreen.openPopup(context);
+            //       },
+            //       centered: true,
+            //       label: 'View backup',
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -284,7 +287,7 @@ class TestBackupConfirmButton extends StatelessWidget {
         else
           Center(
             child: SizedBox(
-              width: 300,
+              width: 250,
               child: BBButton.bigRed(
                 disabled: testing,
                 loading: testing,

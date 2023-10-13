@@ -42,6 +42,9 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
           ?.map((e) => Bip329Label.fromJson(e as Map<String, dynamic>))
           .toList(),
       backupTested: json['backupTested'] as bool? ?? false,
+      lastBackupTested: json['lastBackupTested'] == null
+          ? null
+          : DateTime.parse(json['lastBackupTested'] as String),
       hide: json['hide'] as bool? ?? false,
     );
 
@@ -64,6 +67,7 @@ Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
       'labelTags': instance.labelTags,
       'bip329Labels': instance.bip329Labels,
       'backupTested': instance.backupTested,
+      'lastBackupTested': instance.lastBackupTested?.toIso8601String(),
       'hide': instance.hide,
     };
 
