@@ -46,7 +46,8 @@ class _Screen extends StatelessWidget {
     final addressType = context.select((WalletBloc _) => _.state.wallet!.scriptType);
     final addressTypeStr = scriptTypeString(addressType);
 
-    final derivationPath = context.select((WalletBloc _) => _.state.wallet?.path ?? '');
+    final derivationPath =
+        context.select((WalletBloc _) => _.state.wallet?.derivationPathString() ?? '');
 
     return Padding(
       padding: const EdgeInsets.all(24.0),

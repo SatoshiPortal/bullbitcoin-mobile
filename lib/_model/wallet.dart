@@ -78,6 +78,11 @@ class Wallet with _$Wallet {
     return externalPublicDescriptor.split('[')[1].split(']')[0].split('/')[3];
   }
 
+  String derivationPathString() {
+    return 'm/${purposePathString()}/${networkPathString()}/${accountPathString()}'
+        .replaceAll('h', "'");
+  }
+
   String originString() {
     return '[$sourceFingerprint/$purposePathString()/$networkPathString()/$accountPathString()]';
   }
