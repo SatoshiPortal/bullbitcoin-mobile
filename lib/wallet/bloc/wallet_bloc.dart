@@ -336,78 +336,81 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }
 
   void _updateWallet(UpdateWallet event, Emitter<WalletState> emit) async {
-    if (event.saveToStorage) {
-      if (event.updateTypes.contains(UpdateWalletTypes.load)) {
-        final err = await walletRepository.updateWallet(
-          wallet: event.wallet,
-          hiveStore: hiveStorage,
-        );
-        if (err != null) locator<Logger>().log(err.toString());
-
-        emit(state.copyWith(wallet: event.wallet));
-      } else {
-        final eventWallet = event.wallet;
-        var (storageWallet, errr) = await walletRepository.readWallet(
-          walletHashId: state.wallet!.getWalletStorageString(),
-          hiveStore: hiveStorage,
-        );
-        if (errr != null) locator<Logger>().log(errr.toString());
-
-        for (final eventType in event.updateTypes)
-          switch (eventType) {
-            case UpdateWalletTypes.load:
-              break;
-            case UpdateWalletTypes.balance:
-              if (eventWallet.balance != null)
-                storageWallet = storageWallet!.copyWith(
-                  balance: eventWallet.balance,
-                );
-            case UpdateWalletTypes.transactions:
-              if (eventWallet.transactions.isNotEmpty)
-                storageWallet = storageWallet!.copyWith(
-                  transactions: eventWallet.transactions,
-                );
-            case UpdateWalletTypes.addresses:
-              if (eventWallet.myAddressBook.isNotEmpty)
-                storageWallet = storageWallet!.copyWith(
-                  myAddressBook: eventWallet.myAddressBook,
-                );
-
-              if (eventWallet.externalAddressBook != null &&
-                  eventWallet.externalAddressBook!.isNotEmpty)
-                storageWallet = storageWallet!.copyWith(
-                  externalAddressBook: eventWallet.externalAddressBook,
-                );
-
-              if (eventWallet.lastGeneratedAddress != null)
-                storageWallet = storageWallet!.copyWith(
-                  lastGeneratedAddress: eventWallet.lastGeneratedAddress,
-                );
-
-            case UpdateWalletTypes.settings:
-              if (eventWallet.backupTested != storageWallet!.backupTested)
-                storageWallet = storageWallet.copyWith(
-                  backupTested: eventWallet.backupTested,
-                );
-
-              if (eventWallet.name != storageWallet.name)
-                storageWallet = storageWallet.copyWith(
-                  name: eventWallet.name,
-                );
-
-              if (eventWallet.lastBackupTested != null &&
-                  eventWallet.lastBackupTested != storageWallet.lastBackupTested)
-                storageWallet = storageWallet.copyWith(
-                  lastBackupTested: eventWallet.lastBackupTested,
-                );
-          }
-        final err = await walletRepository.updateWallet(
-          wallet: storageWallet!,
-          hiveStore: hiveStorage,
-        );
-        if (err != null) locator<Logger>().log(err.toString());
-      }
+    if (!event.saveToStorage) {
       emit(state.copyWith(wallet: event.wallet));
+      return;
+    }
+
+    if (event.updateTypes.contains(UpdateWalletTypes.load)) {
+      final err = await walletRepository.updateWallet(
+        wallet: event.wallet,
+        hiveStore: hiveStorage,
+      );
+      if (err != null) locator<Logger>().log(err.toString());
+
+      emit(state.copyWith(wallet: event.wallet));
+    } else {
+      final eventWallet = event.wallet;
+      var (storageWallet, errr) = await walletRepository.readWallet(
+        walletHashId: state.wallet!.getWalletStorageString(),
+        hiveStore: hiveStorage,
+      );
+      if (errr != null) locator<Logger>().log(errr.toString());
+
+      for (final eventType in event.updateTypes)
+        switch (eventType) {
+          case UpdateWalletTypes.load:
+            break;
+          case UpdateWalletTypes.balance:
+            if (eventWallet.balance != null)
+              storageWallet = storageWallet!.copyWith(
+                balance: eventWallet.balance,
+              );
+          case UpdateWalletTypes.transactions:
+            if (eventWallet.transactions.isNotEmpty)
+              storageWallet = storageWallet!.copyWith(
+                transactions: eventWallet.transactions,
+              );
+          case UpdateWalletTypes.addresses:
+            if (eventWallet.myAddressBook.isNotEmpty)
+              storageWallet = storageWallet!.copyWith(
+                myAddressBook: eventWallet.myAddressBook,
+              );
+
+            if (eventWallet.externalAddressBook != null &&
+                eventWallet.externalAddressBook!.isNotEmpty)
+              storageWallet = storageWallet!.copyWith(
+                externalAddressBook: eventWallet.externalAddressBook,
+              );
+
+            if (eventWallet.lastGeneratedAddress != null)
+              storageWallet = storageWallet!.copyWith(
+                lastGeneratedAddress: eventWallet.lastGeneratedAddress,
+              );
+
+          case UpdateWalletTypes.settings:
+            if (eventWallet.backupTested != storageWallet!.backupTested)
+              storageWallet = storageWallet.copyWith(
+                backupTested: eventWallet.backupTested,
+              );
+
+            if (eventWallet.name != storageWallet.name)
+              storageWallet = storageWallet.copyWith(
+                name: eventWallet.name,
+              );
+
+            if (eventWallet.lastBackupTested != null &&
+                eventWallet.lastBackupTested != storageWallet.lastBackupTested)
+              storageWallet = storageWallet.copyWith(
+                lastBackupTested: eventWallet.lastBackupTested,
+              );
+        }
+      final err = await walletRepository.updateWallet(
+        wallet: storageWallet!,
+        hiveStore: hiveStorage,
+      );
+      if (err != null) locator<Logger>().log(err.toString());
+      emit(state.copyWith(wallet: storageWallet));
     }
   }
 }
