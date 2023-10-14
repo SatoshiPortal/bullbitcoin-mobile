@@ -422,10 +422,11 @@ class ElectrumAdvancedOptions extends HookWidget {
 
     return PopUpBorder(
       child: Padding(
-        padding: const EdgeInsets.only(left: 8.0),
+        padding: const EdgeInsets.only(left: 24.0, right: 24),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const BBHeader.popUpCenteredText(text: 'Advanced Options'),
+            const BBHeader.popUpCenteredText(text: 'Electrum Options', isLeft: true),
             const Gap(24),
             const BBText.title('    Stop gap'),
             const Gap(4),
@@ -460,25 +461,31 @@ class ElectrumAdvancedOptions extends HookWidget {
               ),
             ),
             const Gap(32),
-            BBButton.bigRed(
-              label: 'Confirm',
-              onPressed: () async {
-                FocusScope.of(context).requestFocus(FocusNode());
-                final updatednetwork = network.copyWith(
-                  mainnet: mainnet,
-                  testnet: testnet,
-                  stopGap: int.tryParse(stopGap.text) ?? 20,
-                  retry: int.tryParse(retry.text) ?? 5,
-                  timeout: int.tryParse(timeout.text) ?? 5,
-                  validateDomain: validateDomain,
-                );
-                context.read<SettingsCubit>().networkConfigsSaveClicked(updatednetwork);
-                await Future.delayed(const Duration(milliseconds: 500));
-                final err = context.read<SettingsCubit>().state.errLoadingNetworks;
-                if (err.isEmpty) context.pop();
-              },
+            Center(
+              child: SizedBox(
+                width: 250,
+                child: BBButton.bigRed(
+                  label: 'Confirm',
+                  filled: true,
+                  onPressed: () async {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    final updatednetwork = network.copyWith(
+                      mainnet: mainnet,
+                      testnet: testnet,
+                      stopGap: int.tryParse(stopGap.text) ?? 20,
+                      retry: int.tryParse(retry.text) ?? 5,
+                      timeout: int.tryParse(timeout.text) ?? 5,
+                      validateDomain: validateDomain,
+                    );
+                    context.read<SettingsCubit>().networkConfigsSaveClicked(updatednetwork);
+                    await Future.delayed(const Duration(milliseconds: 500));
+                    final err = context.read<SettingsCubit>().state.errLoadingNetworks;
+                    if (err.isEmpty) context.pop();
+                  },
+                ),
+              ),
             ),
-            const Gap(24),
+            const Gap(48),
           ],
         ),
       ),
