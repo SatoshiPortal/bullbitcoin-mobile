@@ -61,18 +61,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final HiveStorage hiveStorage;
   final bool fromStorage;
 
-  void _updateWallet(UpdateWallet event, Emitter<WalletState> emit) async {
-    if (event.saveToStorage) {
-      final err = await walletRepository.updateWallet(
-        wallet: event.wallet,
-        hiveStore: hiveStorage,
-      );
-      if (err != null) locator<Logger>().log(err.toString());
-    }
-
-    emit(state.copyWith(wallet: event.wallet));
-  }
-
   void _loadWallet(LoadWallet event, Emitter<WalletState> emit) async {
     emit(state.copyWith(loadingWallet: true, errLoadingWallet: ''));
 
@@ -122,9 +110,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    add(UpdateWallet(wallet, saveToStorage: fromStorage));
-
-    await Future.delayed(const Duration(microseconds: 300));
+    add(UpdateWallet(wallet, saveToStorage: fromStorage, updateTypes: [UpdateWalletTypes.load]));
 
     add(GetFirstAddress());
     add(SyncWallet());
@@ -133,8 +119,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future _syncWallet(SyncWallet event, Emitter<WalletState> emit) async {
     if (state.bdkWallet == null) return;
     if (state.syncing) return;
-
-    await Future.delayed(const Duration(milliseconds: 300));
 
     emit(
       state.copyWith(
@@ -212,8 +196,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
 
-    add(UpdateWallet(wallet!, saveToStorage: fromStorage));
-    await Future.delayed(const Duration(milliseconds: 50));
+    add(
+      UpdateWallet(
+        wallet!,
+        saveToStorage: fromStorage,
+        updateTypes: [UpdateWalletTypes.addresses],
+      ),
+    );
 
     add(GetBalance());
   }
@@ -239,8 +228,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     final (wallet, balance) = w!;
 
-    add(UpdateWallet(wallet, saveToStorage: fromStorage));
-    await Future.delayed(const Duration(milliseconds: 50));
+    add(UpdateWallet(wallet, saveToStorage: fromStorage, updateTypes: [UpdateWalletTypes.balance]));
 
     emit(
       state.copyWith(
@@ -286,8 +274,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       return;
     }
 
-    add(UpdateWallet(walletUpdated!, saveToStorage: fromStorage));
-    await Future.delayed(const Duration(milliseconds: 50));
+    add(
+      UpdateWallet(
+        walletUpdated!,
+        saveToStorage: fromStorage,
+        updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.addresses],
+      ),
+    );
 
     emit(state.copyWith(loadingTxs: false));
 
@@ -313,7 +306,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
 
-    add(UpdateWallet(wallet!, saveToStorage: fromStorage));
+    add(
+      UpdateWallet(
+        wallet!,
+        saveToStorage: fromStorage,
+        updateTypes: [UpdateWalletTypes.addresses],
+      ),
+    );
   }
 
   void _getFirstAddress(GetFirstAddress event, Emitter<WalletState> emit) async {
@@ -334,5 +333,83 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       ),
     );
+  }
+
+  void _updateWallet(UpdateWallet event, Emitter<WalletState> emit) async {
+    if (event.saveToStorage) {
+      if (event.updateTypes.contains(UpdateWalletTypes.load)) {
+        final err = await walletRepository.updateWallet(
+          wallet: event.wallet,
+          hiveStore: hiveStorage,
+        );
+        if (err != null) locator<Logger>().log(err.toString());
+
+        emit(state.copyWith(wallet: event.wallet));
+      } else {
+        final eventWallet = event.wallet;
+        var (storageWallet, errr) = await walletRepository.readWallet(
+          walletHashId: state.wallet!.getWalletStorageString(),
+          hiveStore: hiveStorage,
+        );
+        if (errr != null) locator<Logger>().log(errr.toString());
+
+        for (final eventType in event.updateTypes)
+          switch (eventType) {
+            case UpdateWalletTypes.load:
+              break;
+            case UpdateWalletTypes.balance:
+              if (eventWallet.balance != null)
+                storageWallet = storageWallet!.copyWith(
+                  balance: eventWallet.balance,
+                );
+            case UpdateWalletTypes.transactions:
+              if (eventWallet.transactions.isNotEmpty)
+                storageWallet = storageWallet!.copyWith(
+                  transactions: eventWallet.transactions,
+                );
+            case UpdateWalletTypes.addresses:
+              if (eventWallet.myAddressBook.isNotEmpty)
+                storageWallet = storageWallet!.copyWith(
+                  myAddressBook: eventWallet.myAddressBook,
+                );
+
+              if (eventWallet.externalAddressBook != null &&
+                  eventWallet.externalAddressBook!.isNotEmpty)
+                storageWallet = storageWallet!.copyWith(
+                  externalAddressBook: eventWallet.externalAddressBook,
+                );
+
+              if (eventWallet.lastGeneratedAddress != null)
+                storageWallet = storageWallet!.copyWith(
+                  lastGeneratedAddress: eventWallet.lastGeneratedAddress,
+                );
+
+            case UpdateWalletTypes.settings:
+              if (eventWallet.backupTested != storageWallet!.backupTested)
+                storageWallet = storageWallet.copyWith(
+                  backupTested: eventWallet.backupTested,
+                );
+
+              if (eventWallet.name != storageWallet.name)
+                storageWallet = storageWallet.copyWith(
+                  name: eventWallet.name,
+                );
+
+              if (eventWallet.lastBackupTested != null &&
+                  eventWallet.lastBackupTested != storageWallet.lastBackupTested)
+                storageWallet = storageWallet.copyWith(
+                  lastBackupTested: eventWallet.lastBackupTested,
+                );
+          }
+
+        final err = await walletRepository.updateWallet(
+          wallet: storageWallet!,
+          hiveStore: hiveStorage,
+        );
+        if (err != null) locator<Logger>().log(err.toString());
+
+        emit(state.copyWith(wallet: storageWallet));
+      }
+    }
   }
 }

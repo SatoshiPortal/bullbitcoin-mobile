@@ -60,8 +60,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     //   );
     //   return;
     // }
-    walletBloc.add(UpdateWallet(wallet));
-    await Future.delayed(const Duration(seconds: 1));
+    walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
 
     emit(
       state.copyWith(
@@ -70,6 +69,8 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         savedName: true,
       ),
     );
+
+    await Future.delayed(const Duration(seconds: 4));
 
     emit(state.copyWith(savedName: false));
   }
@@ -189,8 +190,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     //   return;
     // }
 
-    walletBloc.add(UpdateWallet(wallet));
-    await Future.delayed(const Duration(microseconds: 300));
+    walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
 
     emit(
       state.copyWith(
@@ -270,8 +270,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     //   return;
     // }
 
-    walletBloc.add(UpdateWallet(wallet));
-    await Future.delayed(const Duration(microseconds: 300));
+    walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
 
     emit(
       state.copyWith(

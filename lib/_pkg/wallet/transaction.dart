@@ -225,7 +225,7 @@ class WalletTx {
               );
               (depositAddress, _) = await WalletAddress().addAddressToWallet(
                 address: (null, addressStruct.toString()),
-                wallet: wallet.copyWith(),
+                wallet: wallet,
                 spentTxId: tx.txid,
                 kind: AddressKind.deposit,
                 state: AddressStatus.used,
@@ -254,7 +254,7 @@ class WalletTx {
       }
 
       // Future.delayed(const Duration(milliseconds: 200));
-      final Wallet w = wallet.copyWith(
+      final w = wallet.copyWith(
         transactions: transactions,
       );
 

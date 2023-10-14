@@ -158,8 +158,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     //   return;
     // }
 
-    walletBloc.add(UpdateWallet(updateWallet));
-    await Future.delayed(const Duration(microseconds: 300));
+    walletBloc.add(UpdateWallet(updateWallet, updateTypes: [UpdateWalletTypes.transactions]));
     // walletBloc.add(GetAddresses());
     // await Future.delayed(const Duration(microseconds: 300));
 
@@ -286,8 +285,12 @@ class TransactionCubit extends Cubit<TransactionState> {
     //   return;
     // }
 
-    walletBloc.add(UpdateWallet(updatedWallet));
-    await Future.delayed(const Duration(microseconds: 300));
+    walletBloc.add(
+      UpdateWallet(
+        updatedWallet,
+        updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.addresses],
+      ),
+    );
 
     walletBloc.add(SyncWallet());
 

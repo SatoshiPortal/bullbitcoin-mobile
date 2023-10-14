@@ -88,8 +88,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     //   );
     //   return;
     // }
-    walletBloc.add(UpdateWallet(updatedWallet!));
-    Future.delayed(const Duration(microseconds: 300));
+    walletBloc.add(UpdateWallet(updatedWallet!, updateTypes: [UpdateWalletTypes.addresses]));
 
     final addressGap = updatedWallet.addressGap();
     if (addressGap >= 5 && addressGap <= 20) {
@@ -167,8 +166,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     // }
     // Future.delayed(const Duration(milliseconds: 100));
 
-    walletBloc.add(UpdateWallet(w));
-    await Future.delayed(const Duration(microseconds: 300));
+    walletBloc.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
 
     emit(
       state.copyWith(

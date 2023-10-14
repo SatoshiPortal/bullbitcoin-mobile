@@ -444,8 +444,7 @@ class SendCubit extends Cubit<SendState> {
       //   );
       //   return;
       // }
-      walletBloc.add(UpdateWallet(w));
-      await Future.delayed(const Duration(microseconds: 300));
+      walletBloc.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.transactions]));
 
       emit(
         state.copyWith(
@@ -508,8 +507,7 @@ class SendCubit extends Cubit<SendState> {
     //   return;
     // }
 
-    walletBloc.add(UpdateWallet(updatedWallet));
-    await Future.delayed(const Duration(microseconds: 300));
+    walletBloc.add(UpdateWallet(updatedWallet, updateTypes: [UpdateWalletTypes.addresses]));
 
     walletBloc.add(SyncWallet());
 

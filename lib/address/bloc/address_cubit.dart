@@ -55,9 +55,7 @@ class AddressCubit extends Cubit<AddressState> {
     //   return;
     // }
 
-    walletBloc.add(UpdateWallet(w));
-    await Future.delayed(const Duration(microseconds: 300));
-
+    walletBloc.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
     emit(state.copyWith(freezingAddress: false, frozenAddress: true, address: address));
   }
 
@@ -86,8 +84,7 @@ class AddressCubit extends Cubit<AddressState> {
     //   return;
     // }
 
-    walletBloc.add(UpdateWallet(w));
-    await Future.delayed(const Duration(microseconds: 300));
+    walletBloc.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
 
     emit(
       state.copyWith(
@@ -125,8 +122,7 @@ class AddressCubit extends Cubit<AddressState> {
     //   return;
     // }
 
-    walletBloc.add(UpdateWallet(w));
-    await Future.delayed(const Duration(microseconds: 300));
+    walletBloc.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
 
     emit(
       state.copyWith(
