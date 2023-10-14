@@ -278,10 +278,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       UpdateWallet(
         walletUpdated!,
         saveToStorage: fromStorage,
-        updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.addresses],
+        updateTypes: [
+          UpdateWalletTypes.transactions,
+          UpdateWalletTypes.addresses,
+        ],
       ),
     );
-
+    Future.delayed(const Duration(seconds: 1));
     emit(state.copyWith(loadingTxs: false));
 
     add(UpdateUtxos());

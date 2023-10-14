@@ -18,8 +18,9 @@ class WalletTx {
     );
 
     if (index != -1) {
-      final updatedAddress = outAddrs[index].copyWith(state: newAddress.state);
-      outAddrs.add(updatedAddress);
+      final updatedAddress = outAddrs.removeAt(index);
+      // (state: newAddress.state);
+      outAddrs.insert(index, updatedAddress.copyWith(state: newAddress.state));
     } else {
       outAddrs.add(newAddress);
       // print(outAddrs);

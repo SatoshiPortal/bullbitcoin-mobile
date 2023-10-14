@@ -54,6 +54,8 @@ class WalletUpdate {
     for (final tx in wallet.transactions) {
       for (final address in tx.outAddrs) {
         if (tx.isReceived()) {
+          // works since we currently do not save senders change
+          // in getTransactions we only store the address that match
           updateAddressList(updatedAddresses, address);
         } else {
           if (address.kind == AddressKind.external) {

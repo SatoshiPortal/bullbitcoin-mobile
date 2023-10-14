@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
@@ -120,7 +121,12 @@ class _Screen extends StatelessWidget {
               tx.timestamp == 0 ? 'Waiting for confirmations' : timeago.format(tx.getDateTime());
           final broadcastTime = tx.getBroadcastDateTime();
 
-          final toAddress = tx.mapOutValueToAddress((amt).toString());
+          final recipients = tx.outAddrs;
+          final recipientAddress = isReceived
+              ? tx.outAddrs.firstWhere(
+                  (element) => element.kind == AddressKind.deposit,
+                )
+              : tx.outAddrs.firstWhere((element) => element.kind == AddressKind.external);
 
           return SingleChildScrollView(
             child: Padding(
@@ -173,18 +179,20 @@ class _Screen extends StatelessWidget {
                       child: BBText.body(txid, isBlue: true),
                     ),
                     const Gap(24),
-                    if (toAddress.isNotEmpty) ...[
+                    if (recipients.isNotEmpty) ...[
                       const BBText.title(
                         'Recipient Bitcoin Address',
                       ),
                       // const Gap(4),
                       InkWell(
                         onTap: () {
-                          final url =
-                              context.read<SettingsCubit>().state.explorerAddressUrl(toAddress);
+                          final url = context
+                              .read<SettingsCubit>()
+                              .state
+                              .explorerAddressUrl(recipientAddress.address);
                           locator<Launcher>().launchApp(url);
                         },
-                        child: BBText.body(toAddress, isBlue: true),
+                        child: BBText.body(recipientAddress.address, isBlue: true),
                       ),
 
                       const Gap(24),
