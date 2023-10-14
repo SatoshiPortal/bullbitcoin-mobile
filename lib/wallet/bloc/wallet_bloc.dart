@@ -400,14 +400,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
                 storageWallet = storageWallet.copyWith(
                   lastBackupTested: eventWallet.lastBackupTested,
                 );
-              final err = await walletRepository.updateWallet(
-                wallet: storageWallet,
-                hiveStore: hiveStorage,
-              );
-              if (err != null) locator<Logger>().log(err.toString());
           }
+        final err = await walletRepository.updateWallet(
+          wallet: storageWallet!,
+          hiveStore: hiveStorage,
+        );
+        if (err != null) locator<Logger>().log(err.toString());
       }
-
       emit(state.copyWith(wallet: event.wallet));
     }
   }
