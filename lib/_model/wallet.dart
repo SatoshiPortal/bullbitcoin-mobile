@@ -77,6 +77,7 @@ class Wallet with _$Wallet {
   }
 
   String accountPathString() {
+    print(externalPublicDescriptor);
     return externalPublicDescriptor.split('[')[1].split(']')[0].split('/')[3];
   }
 

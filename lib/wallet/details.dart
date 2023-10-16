@@ -1,9 +1,11 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -35,6 +37,13 @@ class WalletDetailsPage extends StatelessWidget {
 class _Screen extends StatelessWidget {
   const _Screen();
 
+  void copy(BuildContext context, String text) async {
+    await Clipboard.setData(ClipboardData(text: text));
+    HapticFeedback.mediumImpact();
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+  }
+
   @override
   Widget build(BuildContext context) {
     final fingerPrint = context.select((WalletBloc _) => _.state.wallet?.sourceFingerprint ?? '');
@@ -60,9 +69,21 @@ class _Screen extends StatelessWidget {
             const Gap(16),
             const BBText.title('Wallet xpub'),
             BBText.body(pub, isBold: true),
+            BBButton.text(
+              label: 'Copy',
+              onPressed: () {
+                copy(context, pub);
+              },
+            ),
             const Gap(16),
             const BBText.title('Descriptor'),
             BBText.body(descriptor, isBold: true),
+            BBButton.text(
+              label: 'Copy',
+              onPressed: () {
+                copy(context, descriptor);
+              },
+            ),
             const Gap(16),
             const BBText.title('Address type'),
             BBText.body(addressTypeStr, isBold: true),
