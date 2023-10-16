@@ -71,6 +71,59 @@ String convertToXpubStr(String xpub) {
   return xpub;
 }
 
+String? convertToSlipPub(ScriptType script, BBNetwork network, String extendedKey) {
+  switch (script) {
+    case ScriptType.bip44:
+      switch (network) {
+        case BBNetwork.Testnet:
+          final result = convertVersion(
+            extendedKey,
+            Version.tPub,
+          );
+          return result;
+        case BBNetwork.Mainnet:
+          final result = convertVersion(
+            extendedKey,
+            Version.xPub,
+          );
+          return result;
+      }
+
+    // TODO: Handle this case.
+    case ScriptType.bip84:
+      switch (network) {
+        case BBNetwork.Testnet:
+          final result = convertVersion(
+            extendedKey,
+            Version.vPub,
+          );
+          return result;
+        case BBNetwork.Mainnet:
+          final result = convertVersion(
+            extendedKey,
+            Version.zPub,
+          );
+          return result;
+      }
+    // TODO: Handle this case.
+    case ScriptType.bip49:
+      switch (network) {
+        case BBNetwork.Testnet:
+          final result = convertVersion(
+            extendedKey,
+            Version.uPub,
+          );
+          return result;
+        case BBNetwork.Mainnet:
+          final result = convertVersion(
+            extendedKey,
+            Version.yPub,
+          );
+          return result;
+      }
+  }
+}
+
 String keyFromDescriptor(String descriptor) {
   final startIndex = (descriptor.contains('[')) ? descriptor.indexOf(']') : descriptor.indexOf('(');
   final cut1 = descriptor.substring(startIndex + 1);

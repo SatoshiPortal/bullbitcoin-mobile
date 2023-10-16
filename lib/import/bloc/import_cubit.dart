@@ -337,7 +337,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(
       state.copyWith(
         tempXpub: state.xpub,
-        xpub: convertToXpubStr(state.xpub),
+        xpub: state.xpub,
         importType: ImportTypes.xpub,
       ),
     );

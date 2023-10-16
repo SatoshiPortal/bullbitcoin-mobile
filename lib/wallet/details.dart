@@ -51,12 +51,13 @@ class _Screen extends StatelessWidget {
     final descriptor =
         context.select((WalletBloc _) => _.state.wallet?.externalPublicDescriptor ?? '');
     final pub = keyFromDescriptor(descriptor);
-
-    final addressType = context.select((WalletBloc _) => _.state.wallet!.scriptType);
-    final addressTypeStr = scriptTypeString(addressType);
+    final scriptType = context.select((WalletBloc _) => _.state.wallet!.scriptType);
+    final addressTypeStr = scriptTypeString(scriptType);
+    final network = context.select((WalletBloc _) => _.state.wallet!.network);
 
     final derivationPath =
         context.select((WalletBloc _) => _.state.wallet?.derivationPathString() ?? '');
+    final slipKey = convertToSlipPub(scriptType, network, pub);
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -67,12 +68,12 @@ class _Screen extends StatelessWidget {
             const BBText.title('Wallet fingerprint'),
             BBText.body(fingerPrint, isBold: true),
             const Gap(16),
-            const BBText.title('Wallet xpub'),
-            BBText.body(pub, isBold: true),
+            const BBText.title('XPub'),
+            BBText.body(slipKey ?? pub, isBold: true),
             BBButton.text(
               label: 'Copy',
               onPressed: () {
-                copy(context, pub);
+                copy(context, slipKey ?? pub);
               },
             ),
             const Gap(16),
