@@ -169,46 +169,46 @@ class WalletAddress {
     }
   }
 
-  Future<(Wallet?, Err?)> firstAddress({
-    required Wallet wallet,
-    required bdk.Wallet bdkWallet,
-  }) async {
-    try {
-      final addressNewIndex = await bdkWallet.getAddress(
-        addressIndex: const bdk.AddressIndex.peek(index: 0),
-      );
-      Wallet w;
+  // Future<(Wallet?, Err?)> firstAddress({
+  //   required Wallet wallet,
+  //   required bdk.Wallet bdkWallet,
+  // }) async {
+  //   try {
+  //     final addressNewIndex = await bdkWallet.getAddress(
+  //       addressIndex: const bdk.AddressIndex.peek(index: 0),
+  //     );
+  //     Wallet w;
 
-      final List<Address> addresses = [...wallet.myAddressBook];
+  //     final List<Address> addresses = [...wallet.myAddressBook];
 
-      final contain = wallet.myAddressBook.where(
-        (element) => element.address == addressNewIndex.address,
-      );
-      if (contain.isEmpty)
-        addresses.add(
-          Address(
-            address: addressNewIndex.address,
-            index: addressNewIndex.index,
-            kind: AddressKind.deposit,
-            state: AddressStatus.unset,
-          ),
-        );
+  //     final contain = wallet.myAddressBook.where(
+  //       (element) => element.address == addressNewIndex.address,
+  //     );
+  //     if (contain.isEmpty)
+  //       addresses.add(
+  //         Address(
+  //           address: addressNewIndex.address,
+  //           index: addressNewIndex.index,
+  //           kind: AddressKind.deposit,
+  //           state: AddressStatus.unset,
+  //         ),
+  //       );
 
-      w = wallet.copyWith(
-        myAddressBook: addresses,
-        lastGeneratedAddress: Address(
-          address: addressNewIndex.address,
-          index: addressNewIndex.index,
-          kind: AddressKind.deposit,
-          state: AddressStatus.unused,
-        ),
-      );
+  //     w = wallet.copyWith(
+  //       myAddressBook: addresses,
+  //       lastGeneratedAddress: Address(
+  //         address: addressNewIndex.address,
+  //         index: addressNewIndex.index,
+  //         kind: AddressKind.deposit,
+  //         state: AddressStatus.unused,
+  //       ),
+  //     );
 
-      return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
+  //     return (w, null);
+  //   } catch (e) {
+  //     return (null, Err(e.toString()));
+  //   }
+  // }
 
   Future<(String?, Err?)> peekIndex(bdk.Wallet bdkWallet, int idx) async {
     try {

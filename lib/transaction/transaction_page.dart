@@ -125,8 +125,20 @@ class _Screen extends StatelessWidget {
           final recipientAddress = isReceived
               ? tx.outAddrs.firstWhere(
                   (element) => element.kind == AddressKind.deposit,
+                  orElse: () => Address(
+                    address: '',
+                    kind: AddressKind.deposit,
+                    state: AddressStatus.used,
+                  ),
                 )
-              : tx.outAddrs.firstWhere((element) => element.kind == AddressKind.external);
+              : tx.outAddrs.firstWhere(
+                  (element) => element.kind == AddressKind.external,
+                  orElse: () => Address(
+                    address: '',
+                    kind: AddressKind.external,
+                    state: AddressStatus.used,
+                  ),
+                );
 
           return SingleChildScrollView(
             child: Padding(
