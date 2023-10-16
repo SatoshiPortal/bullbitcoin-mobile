@@ -37,7 +37,7 @@ mixin _$SettingsState {
   bdk.Blockchain? get blockchain => throw _privateConstructorUsedError;
   int get reloadWalletTimer => throw _privateConstructorUsedError;
   List<ElectrumNetwork> get networks => throw _privateConstructorUsedError;
-  int get selectedNetwork => throw _privateConstructorUsedError;
+  ElectrumTypes get selectedNetwork => throw _privateConstructorUsedError;
   bool get loadingNetworks => throw _privateConstructorUsedError;
   String get errLoadingNetworks => throw _privateConstructorUsedError;
   bool get networkConnected => throw _privateConstructorUsedError;
@@ -79,7 +79,7 @@ abstract class $SettingsStateCopyWith<$Res> {
       bdk.Blockchain? blockchain,
       int reloadWalletTimer,
       List<ElectrumNetwork> networks,
-      int selectedNetwork,
+      ElectrumTypes selectedNetwork,
       bool loadingNetworks,
       String errLoadingNetworks,
       bool networkConnected,
@@ -203,7 +203,7 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
       selectedNetwork: null == selectedNetwork
           ? _value.selectedNetwork
           : selectedNetwork // ignore: cast_nullable_to_non_nullable
-              as int,
+              as ElectrumTypes,
       loadingNetworks: null == loadingNetworks
           ? _value.loadingNetworks
           : loadingNetworks // ignore: cast_nullable_to_non_nullable
@@ -286,7 +286,7 @@ abstract class _$$_SettingsStateCopyWith<$Res>
       bdk.Blockchain? blockchain,
       int reloadWalletTimer,
       List<ElectrumNetwork> networks,
-      int selectedNetwork,
+      ElectrumTypes selectedNetwork,
       bool loadingNetworks,
       String errLoadingNetworks,
       bool networkConnected,
@@ -409,7 +409,7 @@ class __$$_SettingsStateCopyWithImpl<$Res>
       selectedNetwork: null == selectedNetwork
           ? _value.selectedNetwork
           : selectedNetwork // ignore: cast_nullable_to_non_nullable
-              as int,
+              as ElectrumTypes,
       loadingNetworks: null == loadingNetworks
           ? _value.loadingNetworks
           : loadingNetworks // ignore: cast_nullable_to_non_nullable
@@ -474,7 +474,7 @@ class _$_SettingsState extends _SettingsState {
       @JsonKey(includeFromJson: false, includeToJson: false) this.blockchain,
       this.reloadWalletTimer = 20,
       final List<ElectrumNetwork> networks = const [],
-      this.selectedNetwork = 1,
+      this.selectedNetwork = ElectrumTypes.bullbitcoin,
       this.loadingNetworks = false,
       this.errLoadingNetworks = '',
       this.networkConnected = false,
@@ -564,7 +564,7 @@ class _$_SettingsState extends _SettingsState {
 
   @override
   @JsonKey()
-  final int selectedNetwork;
+  final ElectrumTypes selectedNetwork;
   @override
   @JsonKey()
   final bool loadingNetworks;
@@ -732,7 +732,7 @@ abstract class _SettingsState extends SettingsState {
       final bdk.Blockchain? blockchain,
       final int reloadWalletTimer,
       final List<ElectrumNetwork> networks,
-      final int selectedNetwork,
+      final ElectrumTypes selectedNetwork,
       final bool loadingNetworks,
       final String errLoadingNetworks,
       final bool networkConnected,
@@ -782,7 +782,7 @@ abstract class _SettingsState extends SettingsState {
   @override
   List<ElectrumNetwork> get networks;
   @override
-  int get selectedNetwork;
+  ElectrumTypes get selectedNetwork;
   @override
   bool get loadingNetworks;
   @override

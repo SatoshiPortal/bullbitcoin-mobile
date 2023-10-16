@@ -38,42 +38,64 @@ mixin _$ElectrumNetwork {
   int get retry => throw _privateConstructorUsedError;
   bool get validateDomain => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  ElectrumTypes get type => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         bullbitcoin,
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         defaultElectrum,
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         custom,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         bullbitcoin,
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         defaultElectrum,
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         custom,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         bullbitcoin,
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         defaultElectrum,
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         custom,
     required TResult orElse(),
   }) =>
@@ -119,7 +141,8 @@ abstract class $ElectrumNetworkCopyWith<$Res> {
       int timeout,
       int retry,
       bool validateDomain,
-      String name});
+      String name,
+      ElectrumTypes type});
 }
 
 /// @nodoc
@@ -142,6 +165,7 @@ class _$ElectrumNetworkCopyWithImpl<$Res, $Val extends ElectrumNetwork>
     Object? retry = null,
     Object? validateDomain = null,
     Object? name = null,
+    Object? type = null,
   }) {
     return _then(_value.copyWith(
       mainnet: null == mainnet
@@ -172,6 +196,10 @@ class _$ElectrumNetworkCopyWithImpl<$Res, $Val extends ElectrumNetwork>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as ElectrumTypes,
     ) as $Val);
   }
 }
@@ -192,7 +220,8 @@ abstract class _$$_BullbitcoinElectrumNetworkCopyWith<$Res>
       int timeout,
       int retry,
       bool validateDomain,
-      String name});
+      String name,
+      ElectrumTypes type});
 }
 
 /// @nodoc
@@ -214,6 +243,7 @@ class __$$_BullbitcoinElectrumNetworkCopyWithImpl<$Res>
     Object? retry = null,
     Object? validateDomain = null,
     Object? name = null,
+    Object? type = null,
   }) {
     return _then(_$_BullbitcoinElectrumNetwork(
       mainnet: null == mainnet
@@ -244,6 +274,10 @@ class __$$_BullbitcoinElectrumNetworkCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as ElectrumTypes,
     ));
   }
 }
@@ -259,6 +293,7 @@ class _$_BullbitcoinElectrumNetwork extends _BullbitcoinElectrumNetwork {
       this.retry = 5,
       this.validateDomain = true,
       this.name = 'bullbitcoin',
+      this.type = ElectrumTypes.bullbitcoin,
       final String? $type})
       : $type = $type ?? 'bullbitcoin',
         super._();
@@ -287,13 +322,16 @@ class _$_BullbitcoinElectrumNetwork extends _BullbitcoinElectrumNetwork {
   @override
   @JsonKey()
   final String name;
+  @override
+  @JsonKey()
+  final ElectrumTypes type;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'ElectrumNetwork.bullbitcoin(mainnet: $mainnet, testnet: $testnet, stopGap: $stopGap, timeout: $timeout, retry: $retry, validateDomain: $validateDomain, name: $name)';
+    return 'ElectrumNetwork.bullbitcoin(mainnet: $mainnet, testnet: $testnet, stopGap: $stopGap, timeout: $timeout, retry: $retry, validateDomain: $validateDomain, name: $name, type: $type)';
   }
 
   @override
@@ -308,13 +346,14 @@ class _$_BullbitcoinElectrumNetwork extends _BullbitcoinElectrumNetwork {
             (identical(other.retry, retry) || other.retry == retry) &&
             (identical(other.validateDomain, validateDomain) ||
                 other.validateDomain == validateDomain) &&
-            (identical(other.name, name) || other.name == name));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.type, type) || other.type == type));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, mainnet, testnet, stopGap,
-      timeout, retry, validateDomain, name);
+      timeout, retry, validateDomain, name, type);
 
   @JsonKey(ignore: true)
   @override
@@ -326,54 +365,75 @@ class _$_BullbitcoinElectrumNetwork extends _BullbitcoinElectrumNetwork {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         bullbitcoin,
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         defaultElectrum,
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         custom,
   }) {
     return bullbitcoin(
-        mainnet, testnet, stopGap, timeout, retry, validateDomain, name);
+        mainnet, testnet, stopGap, timeout, retry, validateDomain, name, type);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         bullbitcoin,
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         defaultElectrum,
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         custom,
   }) {
     return bullbitcoin?.call(
-        mainnet, testnet, stopGap, timeout, retry, validateDomain, name);
+        mainnet, testnet, stopGap, timeout, retry, validateDomain, name, type);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         bullbitcoin,
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         defaultElectrum,
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         custom,
     required TResult orElse(),
   }) {
     if (bullbitcoin != null) {
-      return bullbitcoin(
-          mainnet, testnet, stopGap, timeout, retry, validateDomain, name);
+      return bullbitcoin(mainnet, testnet, stopGap, timeout, retry,
+          validateDomain, name, type);
     }
     return orElse();
   }
@@ -428,7 +488,8 @@ abstract class _BullbitcoinElectrumNetwork extends ElectrumNetwork {
       final int timeout,
       final int retry,
       final bool validateDomain,
-      final String name}) = _$_BullbitcoinElectrumNetwork;
+      final String name,
+      final ElectrumTypes type}) = _$_BullbitcoinElectrumNetwork;
   const _BullbitcoinElectrumNetwork._() : super._();
 
   factory _BullbitcoinElectrumNetwork.fromJson(Map<String, dynamic> json) =
@@ -448,6 +509,8 @@ abstract class _BullbitcoinElectrumNetwork extends ElectrumNetwork {
   bool get validateDomain;
   @override
   String get name;
+  @override
+  ElectrumTypes get type;
   @override
   @JsonKey(ignore: true)
   _$$_BullbitcoinElectrumNetworkCopyWith<_$_BullbitcoinElectrumNetwork>
@@ -469,7 +532,8 @@ abstract class _$$_DefaultElectrumNetworkCopyWith<$Res>
       int timeout,
       int retry,
       bool validateDomain,
-      String name});
+      String name,
+      ElectrumTypes type});
 }
 
 /// @nodoc
@@ -490,6 +554,7 @@ class __$$_DefaultElectrumNetworkCopyWithImpl<$Res>
     Object? retry = null,
     Object? validateDomain = null,
     Object? name = null,
+    Object? type = null,
   }) {
     return _then(_$_DefaultElectrumNetwork(
       mainnet: null == mainnet
@@ -520,6 +585,10 @@ class __$$_DefaultElectrumNetworkCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as ElectrumTypes,
     ));
   }
 }
@@ -535,6 +604,7 @@ class _$_DefaultElectrumNetwork extends _DefaultElectrumNetwork {
       this.retry = 5,
       this.validateDomain = true,
       this.name = 'blockstream',
+      this.type = ElectrumTypes.blockstream,
       final String? $type})
       : $type = $type ?? 'defaultElectrum',
         super._();
@@ -563,13 +633,16 @@ class _$_DefaultElectrumNetwork extends _DefaultElectrumNetwork {
   @override
   @JsonKey()
   final String name;
+  @override
+  @JsonKey()
+  final ElectrumTypes type;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'ElectrumNetwork.defaultElectrum(mainnet: $mainnet, testnet: $testnet, stopGap: $stopGap, timeout: $timeout, retry: $retry, validateDomain: $validateDomain, name: $name)';
+    return 'ElectrumNetwork.defaultElectrum(mainnet: $mainnet, testnet: $testnet, stopGap: $stopGap, timeout: $timeout, retry: $retry, validateDomain: $validateDomain, name: $name, type: $type)';
   }
 
   @override
@@ -584,13 +657,14 @@ class _$_DefaultElectrumNetwork extends _DefaultElectrumNetwork {
             (identical(other.retry, retry) || other.retry == retry) &&
             (identical(other.validateDomain, validateDomain) ||
                 other.validateDomain == validateDomain) &&
-            (identical(other.name, name) || other.name == name));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.type, type) || other.type == type));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, mainnet, testnet, stopGap,
-      timeout, retry, validateDomain, name);
+      timeout, retry, validateDomain, name, type);
 
   @JsonKey(ignore: true)
   @override
@@ -602,54 +676,75 @@ class _$_DefaultElectrumNetwork extends _DefaultElectrumNetwork {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         bullbitcoin,
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         defaultElectrum,
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         custom,
   }) {
     return defaultElectrum(
-        mainnet, testnet, stopGap, timeout, retry, validateDomain, name);
+        mainnet, testnet, stopGap, timeout, retry, validateDomain, name, type);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         bullbitcoin,
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         defaultElectrum,
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         custom,
   }) {
     return defaultElectrum?.call(
-        mainnet, testnet, stopGap, timeout, retry, validateDomain, name);
+        mainnet, testnet, stopGap, timeout, retry, validateDomain, name, type);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         bullbitcoin,
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         defaultElectrum,
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         custom,
     required TResult orElse(),
   }) {
     if (defaultElectrum != null) {
-      return defaultElectrum(
-          mainnet, testnet, stopGap, timeout, retry, validateDomain, name);
+      return defaultElectrum(mainnet, testnet, stopGap, timeout, retry,
+          validateDomain, name, type);
     }
     return orElse();
   }
@@ -704,7 +799,8 @@ abstract class _DefaultElectrumNetwork extends ElectrumNetwork {
       final int timeout,
       final int retry,
       final bool validateDomain,
-      final String name}) = _$_DefaultElectrumNetwork;
+      final String name,
+      final ElectrumTypes type}) = _$_DefaultElectrumNetwork;
   const _DefaultElectrumNetwork._() : super._();
 
   factory _DefaultElectrumNetwork.fromJson(Map<String, dynamic> json) =
@@ -724,6 +820,8 @@ abstract class _DefaultElectrumNetwork extends ElectrumNetwork {
   bool get validateDomain;
   @override
   String get name;
+  @override
+  ElectrumTypes get type;
   @override
   @JsonKey(ignore: true)
   _$$_DefaultElectrumNetworkCopyWith<_$_DefaultElectrumNetwork> get copyWith =>
@@ -745,7 +843,8 @@ abstract class _$$_CustomElectrumNetworkCopyWith<$Res>
       int timeout,
       int retry,
       bool validateDomain,
-      String name});
+      String name,
+      ElectrumTypes type});
 }
 
 /// @nodoc
@@ -766,6 +865,7 @@ class __$$_CustomElectrumNetworkCopyWithImpl<$Res>
     Object? retry = null,
     Object? validateDomain = null,
     Object? name = null,
+    Object? type = null,
   }) {
     return _then(_$_CustomElectrumNetwork(
       mainnet: null == mainnet
@@ -796,6 +896,10 @@ class __$$_CustomElectrumNetworkCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as ElectrumTypes,
     ));
   }
 }
@@ -811,6 +915,7 @@ class _$_CustomElectrumNetwork extends _CustomElectrumNetwork {
       this.retry = 5,
       this.validateDomain = true,
       this.name = 'custom',
+      this.type = ElectrumTypes.custom,
       final String? $type})
       : $type = $type ?? 'custom',
         super._();
@@ -837,13 +942,16 @@ class _$_CustomElectrumNetwork extends _CustomElectrumNetwork {
   @override
   @JsonKey()
   final String name;
+  @override
+  @JsonKey()
+  final ElectrumTypes type;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
   String toString() {
-    return 'ElectrumNetwork.custom(mainnet: $mainnet, testnet: $testnet, stopGap: $stopGap, timeout: $timeout, retry: $retry, validateDomain: $validateDomain, name: $name)';
+    return 'ElectrumNetwork.custom(mainnet: $mainnet, testnet: $testnet, stopGap: $stopGap, timeout: $timeout, retry: $retry, validateDomain: $validateDomain, name: $name, type: $type)';
   }
 
   @override
@@ -858,13 +966,14 @@ class _$_CustomElectrumNetwork extends _CustomElectrumNetwork {
             (identical(other.retry, retry) || other.retry == retry) &&
             (identical(other.validateDomain, validateDomain) ||
                 other.validateDomain == validateDomain) &&
-            (identical(other.name, name) || other.name == name));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.type, type) || other.type == type));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, mainnet, testnet, stopGap,
-      timeout, retry, validateDomain, name);
+      timeout, retry, validateDomain, name, type);
 
   @JsonKey(ignore: true)
   @override
@@ -876,54 +985,75 @@ class _$_CustomElectrumNetwork extends _CustomElectrumNetwork {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         bullbitcoin,
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         defaultElectrum,
-    required TResult Function(String mainnet, String testnet, int stopGap,
-            int timeout, int retry, bool validateDomain, String name)
+    required TResult Function(
+            String mainnet,
+            String testnet,
+            int stopGap,
+            int timeout,
+            int retry,
+            bool validateDomain,
+            String name,
+            ElectrumTypes type)
         custom,
   }) {
     return custom(
-        mainnet, testnet, stopGap, timeout, retry, validateDomain, name);
+        mainnet, testnet, stopGap, timeout, retry, validateDomain, name, type);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         bullbitcoin,
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         defaultElectrum,
     TResult? Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         custom,
   }) {
     return custom?.call(
-        mainnet, testnet, stopGap, timeout, retry, validateDomain, name);
+        mainnet, testnet, stopGap, timeout, retry, validateDomain, name, type);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         bullbitcoin,
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         defaultElectrum,
     TResult Function(String mainnet, String testnet, int stopGap, int timeout,
-            int retry, bool validateDomain, String name)?
+            int retry, bool validateDomain, String name, ElectrumTypes type)?
         custom,
     required TResult orElse(),
   }) {
     if (custom != null) {
-      return custom(
-          mainnet, testnet, stopGap, timeout, retry, validateDomain, name);
+      return custom(mainnet, testnet, stopGap, timeout, retry, validateDomain,
+          name, type);
     }
     return orElse();
   }
@@ -978,7 +1108,8 @@ abstract class _CustomElectrumNetwork extends ElectrumNetwork {
       final int timeout,
       final int retry,
       final bool validateDomain,
-      final String name}) = _$_CustomElectrumNetwork;
+      final String name,
+      final ElectrumTypes type}) = _$_CustomElectrumNetwork;
   const _CustomElectrumNetwork._() : super._();
 
   factory _CustomElectrumNetwork.fromJson(Map<String, dynamic> json) =
@@ -998,6 +1129,8 @@ abstract class _CustomElectrumNetwork extends ElectrumNetwork {
   bool get validateDomain;
   @override
   String get name;
+  @override
+  ElectrumTypes get type;
   @override
   @JsonKey(ignore: true)
   _$$_CustomElectrumNetworkCopyWith<_$_CustomElectrumNetwork> get copyWith =>

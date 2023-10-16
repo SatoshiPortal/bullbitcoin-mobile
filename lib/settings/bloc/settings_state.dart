@@ -37,7 +37,7 @@ class SettingsState with _$SettingsState {
     bdk.Blockchain? blockchain,
     @Default(20) int reloadWalletTimer,
     @Default([]) List<ElectrumNetwork> networks,
-    @Default(1) int selectedNetwork,
+    @Default(ElectrumTypes.bullbitcoin) ElectrumTypes selectedNetwork,
     @Default(false) bool loadingNetworks,
     @Default('') String errLoadingNetworks,
     @Default(false) bool networkConnected,
@@ -58,7 +58,7 @@ class SettingsState with _$SettingsState {
 
   ElectrumNetwork? getNetwork() {
     if (networks.isEmpty) return null;
-    return networks[selectedNetwork];
+    return networks.firstWhere((_) => _.type == selectedNetwork);
   }
 
   String satsFormatting(String satsAmount) {

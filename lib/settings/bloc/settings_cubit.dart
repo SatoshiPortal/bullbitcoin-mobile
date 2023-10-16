@@ -90,7 +90,10 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void updateStopGap(int gap) {
-    final updatedConfig = state.networks[state.selectedNetwork].copyWith(stopGap: gap);
+    // final network = state.networks
+    final network = state.getNetwork();
+    if (network == null) return;
+    final updatedConfig = network.copyWith(stopGap: gap);
     networkConfigsSaveClicked(updatedConfig);
   }
 
@@ -144,7 +147,9 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future setupBlockchain() async {
     emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
     final isTestnet = state.testnet;
-    final selectedNetwork = state.networks[state.selectedNetwork];
+    final selectedNetwork = state.getNetwork();
+    if (selectedNetwork == null) return;
+    // final selectedNetwork = state.networks[state.selectedNetwork];
 
     final (blockchain, err) = await walletCreate.createBlockChain(
       stopGap: selectedNetwork.stopGap,
@@ -200,15 +205,18 @@ class SettingsCubit extends Cubit<SettingsState> {
     await setupBlockchain();
   }
 
-  void changeNetwork(int index) {
-    emit(state.copyWith(selectedNetwork: index));
+  void changeNetwork(ElectrumTypes electrumType) {
+    emit(state.copyWith(selectedNetwork: electrumType));
     setupBlockchain();
   }
 
   void networkConfigsSaveClicked(ElectrumNetwork network) async {
     final networks = state.networks.toList();
-    networks.removeAt(state.selectedNetwork);
-    networks.insert(state.selectedNetwork, network);
+    final index = networks.indexWhere((element) => element.type == network.type);
+    networks.removeAt(index);
+    networks.insert(index, network);
+    // networks.removeAt(state.selectedNetwork);
+    // networks.insert(state.selectedNetwork, network);
     emit(state.copyWith(networks: networks));
     await Future.delayed(const Duration(milliseconds: 50));
     setupBlockchain();
@@ -284,5 +292,19 @@ class SettingsCubit extends Cubit<SettingsState> {
       );
     else
       emit(state.copyWith(errLoadingFees: ''));
+  }
+
+  ElectrumTypes? networkFromString(String text) {
+    final network = text.toLowerCase().replaceAll(' ', '');
+    switch (network) {
+      case 'blockstream':
+        return ElectrumTypes.blockstream;
+      case 'bullbitcoin':
+        return ElectrumTypes.bullbitcoin;
+      case 'custom':
+        return ElectrumTypes.custom;
+      default:
+        return null;
+    }
   }
 }

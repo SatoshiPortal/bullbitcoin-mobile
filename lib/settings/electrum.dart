@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/electrum.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -182,17 +183,17 @@ class SelectNetworkSegment extends StatelessWidget {
       children: [
         _SegmentButton(
           index: 0,
-          isSelected: selected == 0,
+          isSelected: selected == ElectrumTypes.blockstream,
           text: 'Blockstream',
         ),
         _SegmentButton(
           index: 1,
-          isSelected: selected == 1,
+          isSelected: selected == ElectrumTypes.bullbitcoin,
           text: 'Bull Bitcoin',
         ),
         _SegmentButton(
           index: 2,
-          isSelected: selected == 2,
+          isSelected: selected == ElectrumTypes.custom,
           text: 'Custom',
         ),
       ],
@@ -219,7 +220,9 @@ class _SegmentButton extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: () {
-          context.read<SettingsCubit>().changeNetwork(index);
+          final network = context.read<SettingsCubit>().networkFromString(text);
+          if (network == null) return;
+          context.read<SettingsCubit>().changeNetwork(network);
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
@@ -294,7 +297,7 @@ class NetworkConfigFields extends HookWidget {
               onChanged: (t) {},
               value: mainnet.text,
               controller: mainnet,
-              disabled: index != 2,
+              disabled: index != ElectrumTypes.custom,
             ),
           ),
           const Gap(16),
@@ -306,7 +309,7 @@ class NetworkConfigFields extends HookWidget {
               onChanged: (t) {},
               value: testnet.text,
               controller: testnet,
-              disabled: index != 2,
+              disabled: index != ElectrumTypes.custom,
             ),
           ),
           const Gap(16),
@@ -315,7 +318,7 @@ class NetworkConfigFields extends HookWidget {
               const BBText.body('Validate domain'),
               const Spacer(),
               IgnorePointer(
-                ignoring: index != 2,
+                ignoring: index != ElectrumTypes.custom,
                 child: Switch(
                   value: validateDomain.value,
                   onChanged: (e) {

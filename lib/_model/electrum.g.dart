@@ -16,6 +16,8 @@ _$_BullbitcoinElectrumNetwork _$$_BullbitcoinElectrumNetworkFromJson(
       retry: json['retry'] as int? ?? 5,
       validateDomain: json['validateDomain'] as bool? ?? true,
       name: json['name'] as String? ?? 'bullbitcoin',
+      type: $enumDecodeNullable(_$ElectrumTypesEnumMap, json['type']) ??
+          ElectrumTypes.bullbitcoin,
       $type: json['runtimeType'] as String?,
     );
 
@@ -29,8 +31,15 @@ Map<String, dynamic> _$$_BullbitcoinElectrumNetworkToJson(
       'retry': instance.retry,
       'validateDomain': instance.validateDomain,
       'name': instance.name,
+      'type': _$ElectrumTypesEnumMap[instance.type]!,
       'runtimeType': instance.$type,
     };
+
+const _$ElectrumTypesEnumMap = {
+  ElectrumTypes.blockstream: 'blockstream',
+  ElectrumTypes.bullbitcoin: 'bullbitcoin',
+  ElectrumTypes.custom: 'custom',
+};
 
 _$_DefaultElectrumNetwork _$$_DefaultElectrumNetworkFromJson(
         Map<String, dynamic> json) =>
@@ -42,6 +51,8 @@ _$_DefaultElectrumNetwork _$$_DefaultElectrumNetworkFromJson(
       retry: json['retry'] as int? ?? 5,
       validateDomain: json['validateDomain'] as bool? ?? true,
       name: json['name'] as String? ?? 'blockstream',
+      type: $enumDecodeNullable(_$ElectrumTypesEnumMap, json['type']) ??
+          ElectrumTypes.blockstream,
       $type: json['runtimeType'] as String?,
     );
 
@@ -55,6 +66,7 @@ Map<String, dynamic> _$$_DefaultElectrumNetworkToJson(
       'retry': instance.retry,
       'validateDomain': instance.validateDomain,
       'name': instance.name,
+      'type': _$ElectrumTypesEnumMap[instance.type]!,
       'runtimeType': instance.$type,
     };
 
@@ -68,6 +80,8 @@ _$_CustomElectrumNetwork _$$_CustomElectrumNetworkFromJson(
       retry: json['retry'] as int? ?? 5,
       validateDomain: json['validateDomain'] as bool? ?? true,
       name: json['name'] as String? ?? 'custom',
+      type: $enumDecodeNullable(_$ElectrumTypesEnumMap, json['type']) ??
+          ElectrumTypes.custom,
       $type: json['runtimeType'] as String?,
     );
 
@@ -81,5 +95,6 @@ Map<String, dynamic> _$$_CustomElectrumNetworkToJson(
       'retry': instance.retry,
       'validateDomain': instance.validateDomain,
       'name': instance.name,
+      'type': _$ElectrumTypesEnumMap[instance.type]!,
       'runtimeType': instance.$type,
     };

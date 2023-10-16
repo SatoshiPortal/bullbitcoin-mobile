@@ -34,7 +34,9 @@ _$_SettingsState _$$_SettingsStateFromJson(Map<String, dynamic> json) =>
               ?.map((e) => ElectrumNetwork.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      selectedNetwork: json['selectedNetwork'] as int? ?? 1,
+      selectedNetwork: $enumDecodeNullable(
+              _$ElectrumTypesEnumMap, json['selectedNetwork']) ??
+          ElectrumTypes.bullbitcoin,
       loadingNetworks: json['loadingNetworks'] as bool? ?? false,
       errLoadingNetworks: json['errLoadingNetworks'] as String? ?? '',
       networkConnected: json['networkConnected'] as bool? ?? false,
@@ -65,7 +67,7 @@ Map<String, dynamic> _$$_SettingsStateToJson(_$_SettingsState instance) =>
       'testnet': instance.testnet,
       'reloadWalletTimer': instance.reloadWalletTimer,
       'networks': instance.networks,
-      'selectedNetwork': instance.selectedNetwork,
+      'selectedNetwork': _$ElectrumTypesEnumMap[instance.selectedNetwork]!,
       'loadingNetworks': instance.loadingNetworks,
       'errLoadingNetworks': instance.errLoadingNetworks,
       'networkConnected': instance.networkConnected,
@@ -77,3 +79,9 @@ Map<String, dynamic> _$$_SettingsStateToJson(_$_SettingsState instance) =>
       'errLoadingFees': instance.errLoadingFees,
       'defaultRBF': instance.defaultRBF,
     };
+
+const _$ElectrumTypesEnumMap = {
+  ElectrumTypes.blockstream: 'blockstream',
+  ElectrumTypes.bullbitcoin: 'bullbitcoin',
+  ElectrumTypes.custom: 'custom',
+};

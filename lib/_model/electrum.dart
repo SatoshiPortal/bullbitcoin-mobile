@@ -4,6 +4,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'electrum.freezed.dart';
 part 'electrum.g.dart';
 
+enum ElectrumTypes { blockstream, bullbitcoin, custom }
+
 @freezed
 class ElectrumNetwork with _$ElectrumNetwork {
   const factory ElectrumNetwork.bullbitcoin({
@@ -14,6 +16,7 @@ class ElectrumNetwork with _$ElectrumNetwork {
     @Default(5) int retry,
     @Default(true) bool validateDomain,
     @Default('bullbitcoin') String name,
+    @Default(ElectrumTypes.bullbitcoin) ElectrumTypes type,
   }) = _BullbitcoinElectrumNetwork;
 
   const factory ElectrumNetwork.defaultElectrum({
@@ -24,6 +27,7 @@ class ElectrumNetwork with _$ElectrumNetwork {
     @Default(5) int retry,
     @Default(true) bool validateDomain,
     @Default('blockstream') String name,
+    @Default(ElectrumTypes.blockstream) ElectrumTypes type,
   }) = _DefaultElectrumNetwork;
 
   const factory ElectrumNetwork.custom({
@@ -34,6 +38,7 @@ class ElectrumNetwork with _$ElectrumNetwork {
     @Default(5) int retry,
     @Default(true) bool validateDomain,
     @Default('custom') String name,
+    @Default(ElectrumTypes.custom) ElectrumTypes type,
   }) = _CustomElectrumNetwork;
 
   const ElectrumNetwork._();
