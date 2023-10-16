@@ -319,15 +319,31 @@ List<String> backupInstructions(bool hasPassphrase) {
       'Anybody with access to both your 12 word backup and your passphrase can steal your bitcoins. Hide them separately.',
       'If you lose your 12 word backup or your passphrase, you will not be able to recover access to the Bitcoin Wallet. Both the 12 words and the passphrase are required.',
       'Do not make digital copies of your backup and passprhase. Write them down separately on a piece of paper, or engraved in metal.',
+      // (passphrase)
+      // Your backup is protected by passphrase.
+      // Without a backup, if you lose or break your phone, or if you uninstall the Bull Bitcoin app, your bitcoins will be lost forever.
+      // Anybody with access to both your 12 word backup and your passphrase can steal your bitcoins. Hide them separately.
+      // If you lose your 12 word backup or your passphrase, you will not be able to recover access to the Bitcoin Wallet. Both the 12 words and the passphrase are required.
+      // Do not make digital copies of your backup and passprhase. Write them down separately on a piece of paper, or engraved in metal.
     ] else ...[
       'If you lose your 12 word backup, you will not be able to recover access to the Bitcoin Wallet.',
       'Without a backup, if you lose or break your phone, or if you uninstall the Bull Bitcoin app, your bitcoins will be lost forever.',
       'Anybody with access to your 12 word backup can steal your bitcoins. Hide it well.',
       'Do not make digital copies of your backup. Write it down on a piece of paper, or engraved in metal.',
       'Your backup is not protected by passphrase. Add a passphrase to your backup later by creating a new wallet.',
+      // (No passphrase)
+      // If you lose your 12 word backup, you will not be able to recover access to the Bitcoin Wallet.
+      // Without a backup, if you lose or break your phone, or if you uninstall the Bull Bitcoin app, your bitcoins will be lost forever.
+      // Anybody with access to your 12 word backup can steal your bitcoins. Hide it well.
+      // Do not make digital copies of your backup. Write it down on a piece of paper, or engraved in metal.
+      // Your backup is not protected by passphrase. Add a passphrase to your backup later by creating a new wallet.
     ],
   ];
 }
+
+
+
+
 
 
 // segwit -> BIP84 -> m/84'/0'/0'/0-1/* -> wpkh

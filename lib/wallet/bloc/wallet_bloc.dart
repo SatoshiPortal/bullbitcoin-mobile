@@ -274,23 +274,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       return;
     }
 
-    add(
-      UpdateWallet(
-        walletUpdated!,
-        saveToStorage: fromStorage,
-        updateTypes: [
-          UpdateWalletTypes.transactions,
-          UpdateWalletTypes.addresses,
-        ],
-      ),
-    );
-    Future.delayed(const Duration(seconds: 1));
+    // add(
+    //   UpdateWallet(
+    //     walletUpdated!,
+    //     saveToStorage: fromStorage,
+    //     updateTypes: [
+    //       UpdateWalletTypes.transactions,
+    //       UpdateWalletTypes.addresses,
+    //     ],
+    //   ),
+    // );
+    // Future.delayed(const Duration(seconds: 1));
     emit(state.copyWith(loadingTxs: false));
 
-    add(UpdateUtxos());
-  }
-
-  void _updateUtxos(UpdateUtxos event, Emitter<WalletState> emit) async {
     emit(
       state.copyWith(
         syncingAddresses: true,
@@ -298,24 +294,55 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    final w = state.wallet!;
+    // final w = state.wallet!;
 
-    final (wallet, err) = await walletAddress.updateUtxos(bdkWallet: state.bdkWallet!, wallet: w);
-    if (err != null)
+    final (ww, errr) =
+        await walletAddress.updateUtxos(bdkWallet: state.bdkWallet!, wallet: walletUpdated!);
+    if (errr != null)
       emit(
         state.copyWith(
-          errSyncingAddresses: err.toString(),
+          errSyncingAddresses: errr.toString(),
           syncingAddresses: false,
         ),
       );
 
     add(
       UpdateWallet(
-        wallet!,
+        ww!,
         saveToStorage: fromStorage,
-        updateTypes: [UpdateWalletTypes.addresses],
+        updateTypes: [UpdateWalletTypes.addresses, UpdateWalletTypes.transactions],
       ),
     );
+
+    // add(UpdateUtxos());
+  }
+
+  void _updateUtxos(UpdateUtxos event, Emitter<WalletState> emit) async {
+    // emit(
+    //   state.copyWith(
+    //     syncingAddresses: true,
+    //     errSyncingAddresses: '',
+    //   ),
+    // );
+
+    // final w = state.wallet!;
+
+    // final (wallet, err) = await walletAddress.updateUtxos(bdkWallet: state.bdkWallet!, wallet: w);
+    // if (err != null)
+    //   emit(
+    //     state.copyWith(
+    //       errSyncingAddresses: err.toString(),
+    //       syncingAddresses: false,
+    //     ),
+    //   );
+
+    // add(
+    //   UpdateWallet(
+    //     wallet!,
+    //     saveToStorage: fromStorage,
+    //     updateTypes: [UpdateWalletTypes.addresses],
+    //   ),
+    // );
   }
 
   void _getFirstAddress(GetFirstAddress event, Emitter<WalletState> emit) async {
