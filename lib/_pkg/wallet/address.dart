@@ -155,12 +155,12 @@ class WalletAddress {
         state: AddressStatus.unused,
       );
 
-      final myUpdatedAddressBook = List<Address>.from(wallet.myAddressBook);
-      myUpdatedAddressBook.add(address);
+      // final myUpdatedAddressBook = List<Address>.from(wallet.myAddressBook);
+      // myUpdatedAddressBook.add(address);
 
-      final Wallet w = updatedWallet.copyWith(
+      final w = updatedWallet.copyWith(
         lastGeneratedAddress: address,
-        myAddressBook: myUpdatedAddressBook,
+        // myAddressBook: myUpdatedAddressBook,
       );
 
       return (w, null);
