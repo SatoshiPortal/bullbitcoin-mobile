@@ -88,20 +88,22 @@ class ActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backupTested = context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
+    final watchonly = context.select((WalletBloc x) => x.state.wallet?.watchOnly() ?? false);
 
     return Material(
       elevation: 1,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          BBButton.text(
-            label: 'Backup',
-            isBlue: false,
-            isRed: !backupTested,
-            onPressed: () {
-              context.push('/wallet-settings/open-backup');
-            },
-          ),
+          if (!watchonly)
+            BBButton.text(
+              label: 'Backup',
+              isBlue: false,
+              isRed: !backupTested,
+              onPressed: () {
+                context.push('/wallet-settings/open-backup');
+              },
+            ),
           BBButton.text(
             label: 'Wallet Details',
             isBlue: false,

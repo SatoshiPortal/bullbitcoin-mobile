@@ -115,6 +115,7 @@ class _Screen extends StatelessWidget {
       });
 
     final watchOnly = context.select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
