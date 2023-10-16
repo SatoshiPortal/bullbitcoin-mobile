@@ -78,7 +78,9 @@ class Wallet with _$Wallet {
 
   String accountPathString() {
     print(externalPublicDescriptor);
-    return externalPublicDescriptor.split('[')[1].split(']')[0].split('/')[3];
+    return (externalPublicDescriptor.contains('['))
+        ? externalPublicDescriptor.split('[')[1].split(']')[0].split('/')[3]
+        : "0'";
   }
 
   String derivationPathString() {

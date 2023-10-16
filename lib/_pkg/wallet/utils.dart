@@ -72,7 +72,7 @@ String convertToXpubStr(String xpub) {
 }
 
 String keyFromDescriptor(String descriptor) {
-  final startIndex = descriptor.indexOf(']');
+  final startIndex = (descriptor.contains('[')) ? descriptor.indexOf(']') : descriptor.indexOf('(');
   final cut1 = descriptor.substring(startIndex + 1);
   final endIndex = cut1.indexOf('/');
   return cut1.substring(0, endIndex);
