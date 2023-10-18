@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
@@ -219,6 +220,39 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
 
+    final (_, w) = await walletAddress.addAddressToWallet(
+      address: (state.defaultAddress!.index!, state.defaultAddress!.address),
+      wallet: walletBloc.state.wallet!,
+      label: state.description,
+      kind: AddressKind.deposit,
+      state: AddressStatus.unused,
+    );
+
+    walletBloc.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+
+    emit(
+      state.copyWith(
+        creatingInvoice: false,
+        errCreatingInvoice: '',
+        savedDescription: state.description,
+
+        description: '',
+        savedInvoiceAmount: state.invoiceAmount,
+        invoiceAmount: 0,
+        // newInvoiceAddress: savedAddress,
+        // step: ReceiveStep.showInvoice,
+      ),
+    );
+
+    // final (a, w) = await walletAddress.addAddressToWallet(
+    //   address: (state.defaultAddress!.index!, state.defaultAddress!.address),
+    //   wallet: walletBloc.state.wallet!,
+    //   label: state.savedDescription,
+    //   kind: state.defaultAddress!.kind,
+    //   state: state.defaultAddress!.state,
+    //   spendable: state.defaultAddress!.spendable,
+    // );
+
     // if (state.savedDescription.isEmpty || state.savedInvoiceAmount == 0) {
     //   final (a, err) = await walletAddress.newDeposit(bdkWallet: walletBloc.state.bdkWallet!);
 
@@ -229,13 +263,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     //         errCreatingInvoice: err.toString(),
     //       ),
     //     );
-
-    //   final (savedAddress, w) = await walletAddress.addAddressToWallet(
-    //     address: (a!.index, a.address),
-    //     wallet: walletBloc.state.wallet!,
-    //     label: state.privateLabel,
-    //     kind: AddressKind.deposit,
-    //   );
 
     //   final errUpdate = await walletRepository.updateWallet(
     //     wallet: w,
@@ -263,18 +290,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     //   state.defaultAddress!.address,
     //   {'amount': state.invoiceAmount, 'label': state.description},
     // );
-    emit(
-      state.copyWith(
-        creatingInvoice: false,
-        errCreatingInvoice: '',
-        savedDescription: state.description,
-        description: '',
-        savedInvoiceAmount: state.invoiceAmount,
-        invoiceAmount: 0,
-        // newInvoiceAddress: savedAddress,
-        // step: ReceiveStep.showInvoice,
-      ),
-    );
   }
 
   void shareClicked() {}

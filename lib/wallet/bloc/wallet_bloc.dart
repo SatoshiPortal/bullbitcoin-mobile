@@ -145,6 +145,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       blockChain: blockchain!,
       bdkWallet: bdkWallet,
     );
+    print('wallet syncing: ' + (state.wallet?.sourceFingerprint ?? ''));
 
     locator<Logger>().log('End Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''));
 

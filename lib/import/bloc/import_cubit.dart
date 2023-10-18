@@ -481,11 +481,14 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void saveClicked() async {
-    emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
     final selectedWallet = state.getSelectWalletDetails();
+    if (selectedWallet == null) return;
+
+    emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
+
     final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 
-    if (selectedWallet!.type == BBWalletType.words) {
+    if (selectedWallet.type == BBWalletType.words) {
       final mnemonic = (state.importType == ImportTypes.words12)
           ? state.words12.join(' ')
           : state.words24.join(' ');

@@ -45,7 +45,7 @@ class AddressesScreen extends HookWidget {
     final selectedOption = useState(0);
 
     var addresses = context.select((WalletBloc cubit) => cubit.state.wallet!.myAddressBook);
-
+    print('');
     addresses = addresses.toList()..sort((a, b) => (b.index ?? 0).compareTo(a.index ?? 0));
 
     return Padding(
