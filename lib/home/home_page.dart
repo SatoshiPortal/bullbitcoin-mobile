@@ -137,8 +137,12 @@ class HomeWallets extends StatelessWidget {
 
     if (!hasWallets) return const HomeNoWallets().animate().fadeIn();
 
-    final walletBlocs = createWalletBlocs(wallets);
-    context.read<HomeCubit>().updateWalletBlocs(walletBlocs);
+    final currentWalletBlocs = context.select((HomeCubit x) => x.state.walletBlocs ?? []);
+
+    if (wallets.length != currentWalletBlocs.length) {
+      final walletBlocs = createWalletBlocs(wallets);
+      context.read<HomeCubit>().updateWalletBlocs(walletBlocs);
+    }
 
     return const WalletScreen()
         .animate(

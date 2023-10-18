@@ -152,15 +152,21 @@ class TransactionCubit extends Cubit<TransactionState> {
       ],
     );
 
-    // final (w, err) = await walletUpdate.updateAddressesFromTxs(updateWallet);
-    // if (err != null) {
-    //   emit(state.copyWith(errSavingLabel: err.toString(), savingLabel: false));
-    //   return;
-    // }
+    final (w, err) = await walletUpdate.updateAddressesFromTxs(updateWallet);
+    if (err != null) {
+      emit(state.copyWith(errSavingLabel: err.toString(), savingLabel: false));
+      return;
+    }
 
-    walletBloc.add(UpdateWallet(updateWallet, updateTypes: [UpdateWalletTypes.transactions]));
-    // walletBloc.add(GetAddresses());
-    // await Future.delayed(const Duration(microseconds: 300));
+    walletBloc.add(
+      UpdateWallet(
+        w!,
+        updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.addresses],
+      ),
+    );
+
+    await Future.delayed(const Duration(seconds: 1));
+    walletBloc.add(ListTransactions());
 
     emit(
       state.copyWith(

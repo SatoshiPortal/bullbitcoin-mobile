@@ -191,10 +191,8 @@ class _Screen extends StatelessWidget {
                       child: BBText.body(txid, isBlue: true),
                     ),
                     const Gap(24),
-                    if (recipients.isNotEmpty) ...[
-                      const BBText.title(
-                        'Recipient Bitcoin Address',
-                      ),
+                    if (recipients.isNotEmpty && recipientAddress.address.isNotEmpty) ...[
+                      const BBText.title('Recipient Bitcoin Address'),
                       // const Gap(4),
                       InkWell(
                         onTap: () {
