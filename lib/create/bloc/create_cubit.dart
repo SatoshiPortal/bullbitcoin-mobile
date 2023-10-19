@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
@@ -83,12 +84,39 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     );
     if (wErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
+      return;
     }
 
     final ssErr = await walletSensRepository.newSeed(seed: seed, secureStore: secureStorage);
     if (ssErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Seed'));
+      return;
     }
+    if (state.passPhrase.isNotEmpty) {
+      final passPhrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
+
+      final passphrase = Passphrase(
+        passphrase: passPhrase,
+        sourceFingerprint: wallet!.sourceFingerprint,
+      );
+
+      final ppErr = await walletSensRepository.newPassphrase(
+        passphrase: passphrase,
+        secureStore: secureStorage,
+        seedFingerprintIndex: seed.getSeedStorageString(),
+      );
+
+      if (ppErr != null) {
+        emit(
+          state.copyWith(
+            errSaving: ppErr.toString(),
+            saving: false,
+          ),
+        );
+        return;
+      }
+    }
+
     final wsErr = await walletRepository.newWallet(wallet: wallet!, hiveStore: hiveStorage);
     if (wsErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
