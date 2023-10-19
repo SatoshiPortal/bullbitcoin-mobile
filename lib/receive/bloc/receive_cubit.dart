@@ -225,7 +225,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       wallet: walletBloc.state.wallet!,
       label: state.description,
       kind: AddressKind.deposit,
-      state: AddressStatus.unused,
     );
 
     walletBloc.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));

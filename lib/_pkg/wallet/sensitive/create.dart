@@ -167,7 +167,7 @@ class WalletSensitiveCreate {
         address: firstAddress44.address,
         index: 0,
         kind: AddressKind.deposit,
-        state: AddressStatus.unset,
+        state: AddressStatus.unused,
       ),
     );
     final wallet49HashId =
@@ -192,7 +192,7 @@ class WalletSensitiveCreate {
         address: firstAddress49.address,
         index: 0,
         kind: AddressKind.deposit,
-        state: AddressStatus.unset,
+        state: AddressStatus.unused,
       ),
     );
     final wallet84HashId =
@@ -218,7 +218,7 @@ class WalletSensitiveCreate {
         address: firstAddress84.address,
         index: 0,
         kind: AddressKind.deposit,
-        state: AddressStatus.unset,
+        state: AddressStatus.unused,
       ),
     );
     return ([wallet44, wallet49, wallet84], null);
@@ -331,7 +331,7 @@ class WalletSensitiveCreate {
         address: firstAddress.address,
         index: 0,
         kind: AddressKind.deposit,
-        state: AddressStatus.unset,
+        state: AddressStatus.unused,
       ),
     );
     return (wallet, null);

@@ -14,7 +14,6 @@ enum AddressKind {
 }
 
 enum AddressStatus {
-  unset,
   unused,
   active,
   used,

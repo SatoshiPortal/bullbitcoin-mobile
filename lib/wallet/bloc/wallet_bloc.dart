@@ -304,7 +304,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           address: address!,
           index: 0,
           kind: AddressKind.deposit,
-          state: AddressStatus.unset,
+          state: AddressStatus.unused,
         ),
       ),
     );

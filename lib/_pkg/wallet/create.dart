@@ -120,7 +120,7 @@ class WalletCreate {
         address: firstAddress44.address,
         index: 0,
         kind: AddressKind.deposit,
-        state: AddressStatus.unset,
+        state: AddressStatus.unused,
       ),
     );
 
@@ -147,7 +147,7 @@ class WalletCreate {
         address: firstAddress49.address,
         index: 0,
         kind: AddressKind.deposit,
-        state: AddressStatus.unset,
+        state: AddressStatus.unused,
       ),
     );
 
@@ -174,7 +174,7 @@ class WalletCreate {
         address: firstAddress84.address,
         index: 0,
         kind: AddressKind.deposit,
-        state: AddressStatus.unset,
+        state: AddressStatus.unused,
       ),
     );
 
@@ -259,7 +259,7 @@ class WalletCreate {
           address: firstAddress.address,
           index: 0,
           kind: AddressKind.deposit,
-          state: AddressStatus.unset,
+          state: AddressStatus.unused,
         ),
       );
 
@@ -336,7 +336,7 @@ class WalletCreate {
           address: firstAddress.address,
           index: 0,
           kind: AddressKind.deposit,
-          state: AddressStatus.unset,
+          state: AddressStatus.unused,
         ),
       );
 

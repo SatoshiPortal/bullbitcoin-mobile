@@ -152,7 +152,6 @@ class WalletAddress {
         ),
         wallet: wallet,
         kind: AddressKind.deposit,
-        state: AddressStatus.unused,
       );
 
       // final myUpdatedAddressBook = List<Address>.from(wallet.myAddressBook);
@@ -292,7 +291,7 @@ class WalletAddress {
     String? label,
     String? spentTxId,
     required AddressKind kind,
-    AddressStatus state = AddressStatus.unset,
+    AddressStatus state = AddressStatus.unused,
     bool spendable = true,
   }) async {
     try {

@@ -6,7 +6,8 @@ part of 'cold_card.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ColdCard _$$_ColdCardFromJson(Map<String, dynamic> json) => _$_ColdCard(
+_$ColdCardImpl _$$ColdCardImplFromJson(Map<String, dynamic> json) =>
+    _$ColdCardImpl(
       chain: json['chain'] as String?,
       xpub: json['xpub'] as String?,
       xfp: json['xfp'] as String?,
@@ -22,7 +23,7 @@ _$_ColdCard _$$_ColdCardFromJson(Map<String, dynamic> json) => _$_ColdCard(
           : ColdWallet.fromJson(json['bip84'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_ColdCardToJson(_$_ColdCard instance) =>
+Map<String, dynamic> _$$ColdCardImplToJson(_$ColdCardImpl instance) =>
     <String, dynamic>{
       'chain': instance.chain,
       'xpub': instance.xpub,
@@ -33,8 +34,8 @@ Map<String, dynamic> _$$_ColdCardToJson(_$_ColdCard instance) =>
       'bip84': instance.bip84,
     };
 
-_$_ColdWallet _$$_ColdWalletFromJson(Map<String, dynamic> json) =>
-    _$_ColdWallet(
+_$ColdWalletImpl _$$ColdWalletImplFromJson(Map<String, dynamic> json) =>
+    _$ColdWalletImpl(
       xpub: json['xpub'] as String?,
       first: json['first'] as String?,
       deriv: json['deriv'] as String?,
@@ -43,7 +44,7 @@ _$_ColdWallet _$$_ColdWalletFromJson(Map<String, dynamic> json) =>
       sPub: json['_pub'] as String?,
     );
 
-Map<String, dynamic> _$$_ColdWalletToJson(_$_ColdWallet instance) =>
+Map<String, dynamic> _$$ColdWalletImplToJson(_$ColdWalletImpl instance) =>
     <String, dynamic>{
       'xpub': instance.xpub,
       'first': instance.first,
