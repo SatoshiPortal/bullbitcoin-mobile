@@ -18,7 +18,7 @@ void main() {
 
     testWidgets('Check mainnet exists and no testnet wallet cards exist', (tester) async {
       await Future.delayed(const Duration(seconds: 3));
-      final mainnetCard = homepage.mainnetCard.;
+      final mainnetCard = homepage.mainnetCard;
       expect(mainnetCard, findsOneWidget);
 
       await switchToTestnetFromHomeAndReturnHome(tester);
