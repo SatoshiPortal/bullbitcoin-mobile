@@ -56,10 +56,13 @@ class WalletSettingsState with _$WalletSettingsState {
     final word = shuffledMnemonic[shuffleIdx];
     final wordCount = mnemonic.where((w) => w == word).length;
     if (wordCount == 1) return mnemonic.indexOf(word);
-    final sameWordList = testMnemonicOrder.where((w) => w.word == word).toList();
-    if (!_isSelected(shuffleIdx)) return mnemonic.indexOf(word, sameWordList.length);
-    final position = sameWordList.indexWhere((w) => w.shuffleIdx == shuffleIdx);
-    return mnemonic.indexOf(word, position);
+    // final sameWordList = testMnemonicOrder.where((w) => w.word == word).toList();
+    if (!_isSelected(shuffleIdx)) {
+      final idx = mnemonic.indexOf(word, testMnemonicOrder.length - 1);
+      return idx;
+    }
+    // final position = sameWordList.indexWhere((w) => w.shuffleIdx == shuffleIdx);
+    return mnemonic.indexOf(word, testMnemonicOrder.length - 1);
   }
 
   bool _isSelected(int shuffleIdx) {

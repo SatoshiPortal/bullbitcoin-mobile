@@ -231,7 +231,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
 
     final mne = seed!.mnemonic == words;
-    final pp = seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase;
+    // final pp = seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase;
     final psd = seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase == password;
     if (!mne) {
       {
