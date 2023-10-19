@@ -10,7 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  bdk_flutter: ^0.28.3
+  bdk_flutter: ^0.29.2
+      # ^0.28.3
       # path: ../bdk-flutter
       # git:
         # url: https://github.com/LtbLightning/bdk-flutter.git

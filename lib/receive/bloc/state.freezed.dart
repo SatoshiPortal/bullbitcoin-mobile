@@ -156,11 +156,11 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
 }
 
 /// @nodoc
-abstract class _$$ReceiveStateImplCopyWith<$Res>
+abstract class _$$_ReceiveStateCopyWith<$Res>
     implements $ReceiveStateCopyWith<$Res> {
-  factory _$$ReceiveStateImplCopyWith(
-          _$ReceiveStateImpl value, $Res Function(_$ReceiveStateImpl) then) =
-      __$$ReceiveStateImplCopyWithImpl<$Res>;
+  factory _$$_ReceiveStateCopyWith(
+          _$_ReceiveState value, $Res Function(_$_ReceiveState) then) =
+      __$$_ReceiveStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -183,11 +183,11 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$ReceiveStateImplCopyWithImpl<$Res>
-    extends _$ReceiveStateCopyWithImpl<$Res, _$ReceiveStateImpl>
-    implements _$$ReceiveStateImplCopyWith<$Res> {
-  __$$ReceiveStateImplCopyWithImpl(
-      _$ReceiveStateImpl _value, $Res Function(_$ReceiveStateImpl) _then)
+class __$$_ReceiveStateCopyWithImpl<$Res>
+    extends _$ReceiveStateCopyWithImpl<$Res, _$_ReceiveState>
+    implements _$$_ReceiveStateCopyWith<$Res> {
+  __$$_ReceiveStateCopyWithImpl(
+      _$_ReceiveState _value, $Res Function(_$_ReceiveState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -207,7 +207,7 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
   }) {
-    return _then(_$ReceiveStateImpl(
+    return _then(_$_ReceiveState(
       loadingAddress: null == loadingAddress
           ? _value.loadingAddress
           : loadingAddress // ignore: cast_nullable_to_non_nullable
@@ -266,8 +266,8 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ReceiveStateImpl extends _ReceiveState {
-  const _$ReceiveStateImpl(
+class _$_ReceiveState extends _ReceiveState {
+  const _$_ReceiveState(
       {this.loadingAddress = true,
       this.errLoadingAddress = '',
       this.defaultAddress,
@@ -331,7 +331,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ReceiveStateImpl &&
+            other is _$_ReceiveState &&
             (identical(other.loadingAddress, loadingAddress) ||
                 other.loadingAddress == loadingAddress) &&
             (identical(other.errLoadingAddress, errLoadingAddress) ||
@@ -380,8 +380,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>
-      __$$ReceiveStateImplCopyWithImpl<_$ReceiveStateImpl>(this, _$identity);
+  _$$_ReceiveStateCopyWith<_$_ReceiveState> get copyWith =>
+      __$$_ReceiveStateCopyWithImpl<_$_ReceiveState>(this, _$identity);
 }
 
 abstract class _ReceiveState extends ReceiveState {
@@ -398,7 +398,7 @@ abstract class _ReceiveState extends ReceiveState {
       final String description,
       final String savedDescription,
       final bool creatingInvoice,
-      final String errCreatingInvoice}) = _$ReceiveStateImpl;
+      final String errCreatingInvoice}) = _$_ReceiveState;
   const _ReceiveState._() : super._();
 
   @override
@@ -429,6 +429,6 @@ abstract class _ReceiveState extends ReceiveState {
   String get errCreatingInvoice;
   @override
   @JsonKey(ignore: true)
-  _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>
+  _$$_ReceiveStateCopyWith<_$_ReceiveState> get copyWith =>
       throw _privateConstructorUsedError;
 }

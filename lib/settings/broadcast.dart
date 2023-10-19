@@ -7,6 +7,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
@@ -31,6 +32,7 @@ class BroadcasePopUp extends StatelessWidget {
       settingsCubit: locator<SettingsCubit>(),
       fileStorage: locator<FileStorage>(),
       walletTx: locator<WalletTx>(),
+      homeCubit: locator<HomeCubit>(),
     );
 
     return showMaterialModalBottomSheet(
@@ -56,6 +58,8 @@ class BroadcasePopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final step = context.select((BroadcastTxCubit cubit) => cubit.state.step);
+
     return PopUpBorder(
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -67,78 +71,82 @@ class BroadcasePopUp extends StatelessWidget {
           children: [
             const BBHeader.popUpCenteredText(
               text: 'BROADCAST',
-              isLeft: true,
+              // isLeft: true,
             ),
             const Gap(16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const SizedBox(width: 14),
-                const BBText.body(
-                  'Import Transaction',
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.xmark,
-                    size: 14,
+            if (step == BroadcastTxStep.broadcast) ...[
+              const TxInfo(),
+            ] else ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(width: 14),
+                  const BBText.body(
+                    'Import Transaction',
                   ),
-                ),
-              ],
-            ),
-            const Gap(24),
-            Center(
-              child: GestureDetector(
-                onTap: () {
-                  context.read<BroadcastTxCubit>().scanQRClicked();
-                },
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.width * 0.7,
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  child: Material(
-                    borderRadius: BorderRadius.circular(24),
-                    color: context.colour.surface.withOpacity(0.3),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FaIcon(
-                            FontAwesomeIcons.camera,
-                            size: 64,
-                            color: context.colour.onPrimary,
-                          ),
-                          const Gap(8),
-                          const BBText.body(
-                            'Scan Txn',
-                          ),
-                        ],
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const FaIcon(
+                      FontAwesomeIcons.xmark,
+                      size: 14,
+                    ),
+                  ),
+                ],
+              ),
+              const Gap(24),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    context.read<BroadcastTxCubit>().scanQRClicked();
+                  },
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.width * 0.7,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    child: Material(
+                      borderRadius: BorderRadius.circular(24),
+                      color: context.colour.surface.withOpacity(0.3),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            FaIcon(
+                              FontAwesomeIcons.camera,
+                              size: 64,
+                              color: context.colour.onPrimary,
+                            ),
+                            const Gap(8),
+                            const BBText.body(
+                              'Scan Txn',
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const Gap(24),
-            Center(
-              child: SizedBox(
-                width: 300,
-                child: BBButton.bigBlack(
-                  filled: true,
-                  onPressed: () {
-                    context.read<BroadcastTxCubit>().uploadFileClicked();
-                  },
-                  label: 'UPLOAD FILE',
+              const Gap(24),
+              Center(
+                child: SizedBox(
+                  width: 300,
+                  child: BBButton.bigBlack(
+                    filled: true,
+                    onPressed: () {
+                      context.read<BroadcastTxCubit>().uploadFileClicked();
+                    },
+                    label: 'UPLOAD FILE',
+                  ),
                 ),
               ),
-            ),
-            const Gap(24),
-            const BBText.body(
-              '    Transaction',
-            ),
-            const Gap(4),
-            const _TxTextField(),
+              const Gap(24),
+              const BBText.body(
+                '    Transaction',
+              ),
+              const Gap(4),
+              const _TxTextField(),
+            ],
             const Gap(80),
             const SendButton(),
             const Gap(48),
@@ -170,105 +178,6 @@ class _TxTextFieldState extends State<_TxTextField> {
       onChanged: (value) {
         context.read<BroadcastTxCubit>().txChanged(value);
       },
-    );
-  }
-}
-
-class BroadcastSend extends StatelessWidget {
-  const BroadcastSend({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final tx = context.select((BroadcastTxCubit cubit) => cubit.state.transaction);
-    final psbt = context.select((BroadcastTxCubit cubit) => cubit.state.psbtBDK);
-    if (tx == null || psbt == null) return const SizedBox();
-
-    final txamt = context.select(
-      (BroadcastTxCubit cubit) => cubit.state.transaction?.getAmount() ?? 0,
-    );
-    final txfee = context.select((BroadcastTxCubit cubit) => cubit.state.transaction?.fee ?? 0);
-
-    final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txamt));
-    final fee = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txfee));
-    final psbtStr = psbt.psbtBase64;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 16,
-        horizontal: 32,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(width: 14),
-              const BBText.body(
-                'Broadcast tx',
-              ),
-              IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const FaIcon(
-                  FontAwesomeIcons.xmark,
-                  size: 14,
-                ),
-              ),
-            ],
-          ),
-          const Gap(24),
-          const BBText.body(
-            'Amount Send',
-          ),
-          const Gap(4),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Container(
-                transformAlignment: Alignment.center,
-                transform: Matrix4.identity()..rotateZ(-1),
-                child: const FaIcon(
-                  FontAwesomeIcons.arrowRight,
-                  size: 12,
-                ),
-              ),
-              const Gap(8),
-              BBText.body(
-                amt,
-              ),
-            ],
-          ),
-          const Gap(24),
-          const BBText.body(
-            'Network Fee',
-          ),
-          const Gap(4),
-          BBText.body(
-            fee,
-          ),
-          const Gap(24),
-          const DownloadButton(),
-          const Gap(16),
-          const Center(
-            child: BBText.body(
-              'Scan Txn',
-            ),
-          ),
-          Center(
-            child: SizedBox(
-              width: 200,
-              height: 200,
-              child: QrImageView(data: psbtStr),
-            ),
-          ),
-          const Gap(60),
-          const SendButton(),
-          const Gap(48),
-        ],
-      ),
     );
   }
 }
@@ -352,6 +261,98 @@ class SendButton extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class TxInfo extends StatelessWidget {
+  const TxInfo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final tx = context.select((BroadcastTxCubit cubit) => cubit.state.transaction);
+    final psbt = context.select((BroadcastTxCubit cubit) => cubit.state.psbtBDK);
+    if (tx == null || psbt == null) return const SizedBox();
+
+    final txamt = context.select(
+      (BroadcastTxCubit cubit) => cubit.state.amount ?? 0,
+    );
+    final txfee = context.select((BroadcastTxCubit cubit) => cubit.state.transaction?.fee ?? 0);
+
+    // final txAddress = context.select((BroadcastTxCubit _) => _.state.transaction?.outAddrs ?? []);
+
+    final toAddress = context.select((BroadcastTxCubit _) => _.state.transaction?.toAddress ?? '');
+
+    final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txamt));
+    final fee = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txfee));
+    final psbtStr = psbt.psbtBase64;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 16,
+        horizontal: 16,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // const Gap(24),
+          const BBText.title('Transaction amount'),
+          const Gap(4),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Container(
+                transformAlignment: Alignment.center,
+                transform: Matrix4.identity()..rotateZ(-1),
+                child: const FaIcon(
+                  FontAwesomeIcons.arrowRight,
+                  size: 12,
+                ),
+              ),
+              const Gap(8),
+              BBText.body(
+                amt,
+              ),
+            ],
+          ),
+          const Gap(24),
+          const BBText.title(
+            'Network Fee',
+          ),
+          const Gap(4),
+          BBText.body(
+            fee,
+          ),
+          if (toAddress.isNotEmpty) ...[
+            const Gap(24),
+            const BBText.title(
+              'Receipient Bitcoin address',
+            ),
+            const Gap(4),
+            BBText.body(toAddress),
+          ],
+          const Gap(24),
+
+          // const DownloadButton(),
+          // const Gap(16),
+          const Center(
+            child: BBText.body(
+              'Scan Txn',
+            ),
+          ),
+          Center(
+            child: SizedBox(
+              width: 200,
+              height: 200,
+              child: QrImageView(data: psbtStr),
+            ),
+          ),
+          // const Gap(60),
+          // const SendButton(),
+          // const Gap(48),
+        ],
+      ),
     );
   }
 }

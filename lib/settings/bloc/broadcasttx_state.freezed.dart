@@ -19,6 +19,7 @@ mixin _$BroadcastTxState {
   BroadcastTxStep get step => throw _privateConstructorUsedError;
   String get tx => throw _privateConstructorUsedError;
   Transaction? get transaction => throw _privateConstructorUsedError;
+  int? get amount => throw _privateConstructorUsedError;
   bool get loadingFile => throw _privateConstructorUsedError;
   String get errLoadingFile => throw _privateConstructorUsedError;
   bool get sent => throw _privateConstructorUsedError;
@@ -49,6 +50,7 @@ abstract class $BroadcastTxStateCopyWith<$Res> {
       {BroadcastTxStep step,
       String tx,
       Transaction? transaction,
+      int? amount,
       bool loadingFile,
       String errLoadingFile,
       bool sent,
@@ -82,6 +84,7 @@ class _$BroadcastTxStateCopyWithImpl<$Res, $Val extends BroadcastTxState>
     Object? step = null,
     Object? tx = null,
     Object? transaction = freezed,
+    Object? amount = freezed,
     Object? loadingFile = null,
     Object? errLoadingFile = null,
     Object? sent = null,
@@ -109,6 +112,10 @@ class _$BroadcastTxStateCopyWithImpl<$Res, $Val extends BroadcastTxState>
           ? _value.transaction
           : transaction // ignore: cast_nullable_to_non_nullable
               as Transaction?,
+      amount: freezed == amount
+          ? _value.amount
+          : amount // ignore: cast_nullable_to_non_nullable
+              as int?,
       loadingFile: null == loadingFile
           ? _value.loadingFile
           : loadingFile // ignore: cast_nullable_to_non_nullable
@@ -178,17 +185,18 @@ class _$BroadcastTxStateCopyWithImpl<$Res, $Val extends BroadcastTxState>
 }
 
 /// @nodoc
-abstract class _$$BroadcastTxStateImplCopyWith<$Res>
+abstract class _$$_BroadcastTxStateCopyWith<$Res>
     implements $BroadcastTxStateCopyWith<$Res> {
-  factory _$$BroadcastTxStateImplCopyWith(_$BroadcastTxStateImpl value,
-          $Res Function(_$BroadcastTxStateImpl) then) =
-      __$$BroadcastTxStateImplCopyWithImpl<$Res>;
+  factory _$$_BroadcastTxStateCopyWith(
+          _$_BroadcastTxState value, $Res Function(_$_BroadcastTxState) then) =
+      __$$_BroadcastTxStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
       {BroadcastTxStep step,
       String tx,
       Transaction? transaction,
+      int? amount,
       bool loadingFile,
       String errLoadingFile,
       bool sent,
@@ -208,11 +216,11 @@ abstract class _$$BroadcastTxStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$BroadcastTxStateImplCopyWithImpl<$Res>
-    extends _$BroadcastTxStateCopyWithImpl<$Res, _$BroadcastTxStateImpl>
-    implements _$$BroadcastTxStateImplCopyWith<$Res> {
-  __$$BroadcastTxStateImplCopyWithImpl(_$BroadcastTxStateImpl _value,
-      $Res Function(_$BroadcastTxStateImpl) _then)
+class __$$_BroadcastTxStateCopyWithImpl<$Res>
+    extends _$BroadcastTxStateCopyWithImpl<$Res, _$_BroadcastTxState>
+    implements _$$_BroadcastTxStateCopyWith<$Res> {
+  __$$_BroadcastTxStateCopyWithImpl(
+      _$_BroadcastTxState _value, $Res Function(_$_BroadcastTxState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -221,6 +229,7 @@ class __$$BroadcastTxStateImplCopyWithImpl<$Res>
     Object? step = null,
     Object? tx = null,
     Object? transaction = freezed,
+    Object? amount = freezed,
     Object? loadingFile = null,
     Object? errLoadingFile = null,
     Object? sent = null,
@@ -235,7 +244,7 @@ class __$$BroadcastTxStateImplCopyWithImpl<$Res>
     Object? errDownloadingFile = null,
     Object? downloaded = null,
   }) {
-    return _then(_$BroadcastTxStateImpl(
+    return _then(_$_BroadcastTxState(
       step: null == step
           ? _value.step
           : step // ignore: cast_nullable_to_non_nullable
@@ -248,6 +257,10 @@ class __$$BroadcastTxStateImplCopyWithImpl<$Res>
           ? _value.transaction
           : transaction // ignore: cast_nullable_to_non_nullable
               as Transaction?,
+      amount: freezed == amount
+          ? _value.amount
+          : amount // ignore: cast_nullable_to_non_nullable
+              as int?,
       loadingFile: null == loadingFile
           ? _value.loadingFile
           : loadingFile // ignore: cast_nullable_to_non_nullable
@@ -306,11 +319,12 @@ class __$$BroadcastTxStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$BroadcastTxStateImpl extends _BroadcastTxState {
-  const _$BroadcastTxStateImpl(
+class _$_BroadcastTxState extends _BroadcastTxState {
+  const _$_BroadcastTxState(
       {this.step = BroadcastTxStep.import,
       this.tx = '',
       this.transaction,
+      this.amount,
       this.loadingFile = false,
       this.errLoadingFile = '',
       this.sent = false,
@@ -334,6 +348,8 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
   final String tx;
   @override
   final Transaction? transaction;
+  @override
+  final int? amount;
   @override
   @JsonKey()
   final bool loadingFile;
@@ -374,18 +390,19 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
 
   @override
   String toString() {
-    return 'BroadcastTxState(step: $step, tx: $tx, transaction: $transaction, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, sent: $sent, extractingTx: $extractingTx, errExtractingTx: $errExtractingTx, psbt: $psbt, errPSBT: $errPSBT, broadcastingTx: $broadcastingTx, errBroadcastingTx: $errBroadcastingTx, psbtBDK: $psbtBDK, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded)';
+    return 'BroadcastTxState(step: $step, tx: $tx, transaction: $transaction, amount: $amount, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, sent: $sent, extractingTx: $extractingTx, errExtractingTx: $errExtractingTx, psbt: $psbt, errPSBT: $errPSBT, broadcastingTx: $broadcastingTx, errBroadcastingTx: $errBroadcastingTx, psbtBDK: $psbtBDK, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$BroadcastTxStateImpl &&
+            other is _$_BroadcastTxState &&
             (identical(other.step, step) || other.step == step) &&
             (identical(other.tx, tx) || other.tx == tx) &&
             (identical(other.transaction, transaction) ||
                 other.transaction == transaction) &&
+            (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.loadingFile, loadingFile) ||
                 other.loadingFile == loadingFile) &&
             (identical(other.errLoadingFile, errLoadingFile) ||
@@ -416,6 +433,7 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
       step,
       tx,
       transaction,
+      amount,
       loadingFile,
       errLoadingFile,
       sent,
@@ -433,9 +451,8 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$BroadcastTxStateImplCopyWith<_$BroadcastTxStateImpl> get copyWith =>
-      __$$BroadcastTxStateImplCopyWithImpl<_$BroadcastTxStateImpl>(
-          this, _$identity);
+  _$$_BroadcastTxStateCopyWith<_$_BroadcastTxState> get copyWith =>
+      __$$_BroadcastTxStateCopyWithImpl<_$_BroadcastTxState>(this, _$identity);
 }
 
 abstract class _BroadcastTxState extends BroadcastTxState {
@@ -443,6 +460,7 @@ abstract class _BroadcastTxState extends BroadcastTxState {
       {final BroadcastTxStep step,
       final String tx,
       final Transaction? transaction,
+      final int? amount,
       final bool loadingFile,
       final String errLoadingFile,
       final bool sent,
@@ -455,7 +473,7 @@ abstract class _BroadcastTxState extends BroadcastTxState {
       final bdk.PartiallySignedTransaction? psbtBDK,
       final bool downloadingFile,
       final String errDownloadingFile,
-      final bool downloaded}) = _$BroadcastTxStateImpl;
+      final bool downloaded}) = _$_BroadcastTxState;
   const _BroadcastTxState._() : super._();
 
   @override
@@ -464,6 +482,8 @@ abstract class _BroadcastTxState extends BroadcastTxState {
   String get tx;
   @override
   Transaction? get transaction;
+  @override
+  int? get amount;
   @override
   bool get loadingFile;
   @override
@@ -492,6 +512,6 @@ abstract class _BroadcastTxState extends BroadcastTxState {
   bool get downloaded;
   @override
   @JsonKey(ignore: true)
-  _$$BroadcastTxStateImplCopyWith<_$BroadcastTxStateImpl> get copyWith =>
+  _$$_BroadcastTxStateCopyWith<_$_BroadcastTxState> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -205,12 +205,12 @@ class _$ElectrumNetworkCopyWithImpl<$Res, $Val extends ElectrumNetwork>
 }
 
 /// @nodoc
-abstract class _$$BullbitcoinElectrumNetworkImplCopyWith<$Res>
+abstract class _$$_BullbitcoinElectrumNetworkCopyWith<$Res>
     implements $ElectrumNetworkCopyWith<$Res> {
-  factory _$$BullbitcoinElectrumNetworkImplCopyWith(
-          _$BullbitcoinElectrumNetworkImpl value,
-          $Res Function(_$BullbitcoinElectrumNetworkImpl) then) =
-      __$$BullbitcoinElectrumNetworkImplCopyWithImpl<$Res>;
+  factory _$$_BullbitcoinElectrumNetworkCopyWith(
+          _$_BullbitcoinElectrumNetwork value,
+          $Res Function(_$_BullbitcoinElectrumNetwork) then) =
+      __$$_BullbitcoinElectrumNetworkCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -225,13 +225,12 @@ abstract class _$$BullbitcoinElectrumNetworkImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$BullbitcoinElectrumNetworkImplCopyWithImpl<$Res>
-    extends _$ElectrumNetworkCopyWithImpl<$Res,
-        _$BullbitcoinElectrumNetworkImpl>
-    implements _$$BullbitcoinElectrumNetworkImplCopyWith<$Res> {
-  __$$BullbitcoinElectrumNetworkImplCopyWithImpl(
-      _$BullbitcoinElectrumNetworkImpl _value,
-      $Res Function(_$BullbitcoinElectrumNetworkImpl) _then)
+class __$$_BullbitcoinElectrumNetworkCopyWithImpl<$Res>
+    extends _$ElectrumNetworkCopyWithImpl<$Res, _$_BullbitcoinElectrumNetwork>
+    implements _$$_BullbitcoinElectrumNetworkCopyWith<$Res> {
+  __$$_BullbitcoinElectrumNetworkCopyWithImpl(
+      _$_BullbitcoinElectrumNetwork _value,
+      $Res Function(_$_BullbitcoinElectrumNetwork) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -246,7 +245,7 @@ class __$$BullbitcoinElectrumNetworkImplCopyWithImpl<$Res>
     Object? name = null,
     Object? type = null,
   }) {
-    return _then(_$BullbitcoinElectrumNetworkImpl(
+    return _then(_$_BullbitcoinElectrumNetwork(
       mainnet: null == mainnet
           ? _value.mainnet
           : mainnet // ignore: cast_nullable_to_non_nullable
@@ -285,8 +284,8 @@ class __$$BullbitcoinElectrumNetworkImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$BullbitcoinElectrumNetworkImpl extends _BullbitcoinElectrumNetwork {
-  const _$BullbitcoinElectrumNetworkImpl(
+class _$_BullbitcoinElectrumNetwork extends _BullbitcoinElectrumNetwork {
+  const _$_BullbitcoinElectrumNetwork(
       {this.mainnet = 'ssl://$bbelectrum:50002',
       this.testnet = 'ssl://$bbelectrum:60002',
       this.stopGap = 20,
@@ -299,9 +298,8 @@ class _$BullbitcoinElectrumNetworkImpl extends _BullbitcoinElectrumNetwork {
       : $type = $type ?? 'bullbitcoin',
         super._();
 
-  factory _$BullbitcoinElectrumNetworkImpl.fromJson(
-          Map<String, dynamic> json) =>
-      _$$BullbitcoinElectrumNetworkImplFromJson(json);
+  factory _$_BullbitcoinElectrumNetwork.fromJson(Map<String, dynamic> json) =>
+      _$$_BullbitcoinElectrumNetworkFromJson(json);
 
   @override
   @JsonKey()
@@ -340,7 +338,7 @@ class _$BullbitcoinElectrumNetworkImpl extends _BullbitcoinElectrumNetwork {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$BullbitcoinElectrumNetworkImpl &&
+            other is _$_BullbitcoinElectrumNetwork &&
             (identical(other.mainnet, mainnet) || other.mainnet == mainnet) &&
             (identical(other.testnet, testnet) || other.testnet == testnet) &&
             (identical(other.stopGap, stopGap) || other.stopGap == stopGap) &&
@@ -360,9 +358,9 @@ class _$BullbitcoinElectrumNetworkImpl extends _BullbitcoinElectrumNetwork {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$BullbitcoinElectrumNetworkImplCopyWith<_$BullbitcoinElectrumNetworkImpl>
-      get copyWith => __$$BullbitcoinElectrumNetworkImplCopyWithImpl<
-          _$BullbitcoinElectrumNetworkImpl>(this, _$identity);
+  _$$_BullbitcoinElectrumNetworkCopyWith<_$_BullbitcoinElectrumNetwork>
+      get copyWith => __$$_BullbitcoinElectrumNetworkCopyWithImpl<
+          _$_BullbitcoinElectrumNetwork>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -476,7 +474,7 @@ class _$BullbitcoinElectrumNetworkImpl extends _BullbitcoinElectrumNetwork {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$BullbitcoinElectrumNetworkImplToJson(
+    return _$$_BullbitcoinElectrumNetworkToJson(
       this,
     );
   }
@@ -491,11 +489,11 @@ abstract class _BullbitcoinElectrumNetwork extends ElectrumNetwork {
       final int retry,
       final bool validateDomain,
       final String name,
-      final ElectrumTypes type}) = _$BullbitcoinElectrumNetworkImpl;
+      final ElectrumTypes type}) = _$_BullbitcoinElectrumNetwork;
   const _BullbitcoinElectrumNetwork._() : super._();
 
   factory _BullbitcoinElectrumNetwork.fromJson(Map<String, dynamic> json) =
-      _$BullbitcoinElectrumNetworkImpl.fromJson;
+      _$_BullbitcoinElectrumNetwork.fromJson;
 
   @override
   String get mainnet;
@@ -515,17 +513,16 @@ abstract class _BullbitcoinElectrumNetwork extends ElectrumNetwork {
   ElectrumTypes get type;
   @override
   @JsonKey(ignore: true)
-  _$$BullbitcoinElectrumNetworkImplCopyWith<_$BullbitcoinElectrumNetworkImpl>
+  _$$_BullbitcoinElectrumNetworkCopyWith<_$_BullbitcoinElectrumNetwork>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$DefaultElectrumNetworkImplCopyWith<$Res>
+abstract class _$$_DefaultElectrumNetworkCopyWith<$Res>
     implements $ElectrumNetworkCopyWith<$Res> {
-  factory _$$DefaultElectrumNetworkImplCopyWith(
-          _$DefaultElectrumNetworkImpl value,
-          $Res Function(_$DefaultElectrumNetworkImpl) then) =
-      __$$DefaultElectrumNetworkImplCopyWithImpl<$Res>;
+  factory _$$_DefaultElectrumNetworkCopyWith(_$_DefaultElectrumNetwork value,
+          $Res Function(_$_DefaultElectrumNetwork) then) =
+      __$$_DefaultElectrumNetworkCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -540,12 +537,11 @@ abstract class _$$DefaultElectrumNetworkImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$DefaultElectrumNetworkImplCopyWithImpl<$Res>
-    extends _$ElectrumNetworkCopyWithImpl<$Res, _$DefaultElectrumNetworkImpl>
-    implements _$$DefaultElectrumNetworkImplCopyWith<$Res> {
-  __$$DefaultElectrumNetworkImplCopyWithImpl(
-      _$DefaultElectrumNetworkImpl _value,
-      $Res Function(_$DefaultElectrumNetworkImpl) _then)
+class __$$_DefaultElectrumNetworkCopyWithImpl<$Res>
+    extends _$ElectrumNetworkCopyWithImpl<$Res, _$_DefaultElectrumNetwork>
+    implements _$$_DefaultElectrumNetworkCopyWith<$Res> {
+  __$$_DefaultElectrumNetworkCopyWithImpl(_$_DefaultElectrumNetwork _value,
+      $Res Function(_$_DefaultElectrumNetwork) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -560,7 +556,7 @@ class __$$DefaultElectrumNetworkImplCopyWithImpl<$Res>
     Object? name = null,
     Object? type = null,
   }) {
-    return _then(_$DefaultElectrumNetworkImpl(
+    return _then(_$_DefaultElectrumNetwork(
       mainnet: null == mainnet
           ? _value.mainnet
           : mainnet // ignore: cast_nullable_to_non_nullable
@@ -599,8 +595,8 @@ class __$$DefaultElectrumNetworkImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$DefaultElectrumNetworkImpl extends _DefaultElectrumNetwork {
-  const _$DefaultElectrumNetworkImpl(
+class _$_DefaultElectrumNetwork extends _DefaultElectrumNetwork {
+  const _$_DefaultElectrumNetwork(
       {this.mainnet = 'ssl://$openelectrum:50002',
       this.testnet = 'ssl://$openelectrum:60002',
       this.stopGap = 20,
@@ -613,8 +609,8 @@ class _$DefaultElectrumNetworkImpl extends _DefaultElectrumNetwork {
       : $type = $type ?? 'defaultElectrum',
         super._();
 
-  factory _$DefaultElectrumNetworkImpl.fromJson(Map<String, dynamic> json) =>
-      _$$DefaultElectrumNetworkImplFromJson(json);
+  factory _$_DefaultElectrumNetwork.fromJson(Map<String, dynamic> json) =>
+      _$$_DefaultElectrumNetworkFromJson(json);
 
   @override
   @JsonKey()
@@ -653,7 +649,7 @@ class _$DefaultElectrumNetworkImpl extends _DefaultElectrumNetwork {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$DefaultElectrumNetworkImpl &&
+            other is _$_DefaultElectrumNetwork &&
             (identical(other.mainnet, mainnet) || other.mainnet == mainnet) &&
             (identical(other.testnet, testnet) || other.testnet == testnet) &&
             (identical(other.stopGap, stopGap) || other.stopGap == stopGap) &&
@@ -673,9 +669,9 @@ class _$DefaultElectrumNetworkImpl extends _DefaultElectrumNetwork {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$DefaultElectrumNetworkImplCopyWith<_$DefaultElectrumNetworkImpl>
-      get copyWith => __$$DefaultElectrumNetworkImplCopyWithImpl<
-          _$DefaultElectrumNetworkImpl>(this, _$identity);
+  _$$_DefaultElectrumNetworkCopyWith<_$_DefaultElectrumNetwork> get copyWith =>
+      __$$_DefaultElectrumNetworkCopyWithImpl<_$_DefaultElectrumNetwork>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -789,7 +785,7 @@ class _$DefaultElectrumNetworkImpl extends _DefaultElectrumNetwork {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$DefaultElectrumNetworkImplToJson(
+    return _$$_DefaultElectrumNetworkToJson(
       this,
     );
   }
@@ -804,11 +800,11 @@ abstract class _DefaultElectrumNetwork extends ElectrumNetwork {
       final int retry,
       final bool validateDomain,
       final String name,
-      final ElectrumTypes type}) = _$DefaultElectrumNetworkImpl;
+      final ElectrumTypes type}) = _$_DefaultElectrumNetwork;
   const _DefaultElectrumNetwork._() : super._();
 
   factory _DefaultElectrumNetwork.fromJson(Map<String, dynamic> json) =
-      _$DefaultElectrumNetworkImpl.fromJson;
+      _$_DefaultElectrumNetwork.fromJson;
 
   @override
   String get mainnet;
@@ -828,17 +824,16 @@ abstract class _DefaultElectrumNetwork extends ElectrumNetwork {
   ElectrumTypes get type;
   @override
   @JsonKey(ignore: true)
-  _$$DefaultElectrumNetworkImplCopyWith<_$DefaultElectrumNetworkImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$_DefaultElectrumNetworkCopyWith<_$_DefaultElectrumNetwork> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$CustomElectrumNetworkImplCopyWith<$Res>
+abstract class _$$_CustomElectrumNetworkCopyWith<$Res>
     implements $ElectrumNetworkCopyWith<$Res> {
-  factory _$$CustomElectrumNetworkImplCopyWith(
-          _$CustomElectrumNetworkImpl value,
-          $Res Function(_$CustomElectrumNetworkImpl) then) =
-      __$$CustomElectrumNetworkImplCopyWithImpl<$Res>;
+  factory _$$_CustomElectrumNetworkCopyWith(_$_CustomElectrumNetwork value,
+          $Res Function(_$_CustomElectrumNetwork) then) =
+      __$$_CustomElectrumNetworkCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -853,11 +848,11 @@ abstract class _$$CustomElectrumNetworkImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$CustomElectrumNetworkImplCopyWithImpl<$Res>
-    extends _$ElectrumNetworkCopyWithImpl<$Res, _$CustomElectrumNetworkImpl>
-    implements _$$CustomElectrumNetworkImplCopyWith<$Res> {
-  __$$CustomElectrumNetworkImplCopyWithImpl(_$CustomElectrumNetworkImpl _value,
-      $Res Function(_$CustomElectrumNetworkImpl) _then)
+class __$$_CustomElectrumNetworkCopyWithImpl<$Res>
+    extends _$ElectrumNetworkCopyWithImpl<$Res, _$_CustomElectrumNetwork>
+    implements _$$_CustomElectrumNetworkCopyWith<$Res> {
+  __$$_CustomElectrumNetworkCopyWithImpl(_$_CustomElectrumNetwork _value,
+      $Res Function(_$_CustomElectrumNetwork) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -872,7 +867,7 @@ class __$$CustomElectrumNetworkImplCopyWithImpl<$Res>
     Object? name = null,
     Object? type = null,
   }) {
-    return _then(_$CustomElectrumNetworkImpl(
+    return _then(_$_CustomElectrumNetwork(
       mainnet: null == mainnet
           ? _value.mainnet
           : mainnet // ignore: cast_nullable_to_non_nullable
@@ -911,8 +906,8 @@ class __$$CustomElectrumNetworkImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$CustomElectrumNetworkImpl extends _CustomElectrumNetwork {
-  const _$CustomElectrumNetworkImpl(
+class _$_CustomElectrumNetwork extends _CustomElectrumNetwork {
+  const _$_CustomElectrumNetwork(
       {required this.mainnet,
       required this.testnet,
       this.stopGap = 20,
@@ -925,8 +920,8 @@ class _$CustomElectrumNetworkImpl extends _CustomElectrumNetwork {
       : $type = $type ?? 'custom',
         super._();
 
-  factory _$CustomElectrumNetworkImpl.fromJson(Map<String, dynamic> json) =>
-      _$$CustomElectrumNetworkImplFromJson(json);
+  factory _$_CustomElectrumNetwork.fromJson(Map<String, dynamic> json) =>
+      _$$_CustomElectrumNetworkFromJson(json);
 
   @override
   final String mainnet;
@@ -963,7 +958,7 @@ class _$CustomElectrumNetworkImpl extends _CustomElectrumNetwork {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$CustomElectrumNetworkImpl &&
+            other is _$_CustomElectrumNetwork &&
             (identical(other.mainnet, mainnet) || other.mainnet == mainnet) &&
             (identical(other.testnet, testnet) || other.testnet == testnet) &&
             (identical(other.stopGap, stopGap) || other.stopGap == stopGap) &&
@@ -983,9 +978,9 @@ class _$CustomElectrumNetworkImpl extends _CustomElectrumNetwork {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$CustomElectrumNetworkImplCopyWith<_$CustomElectrumNetworkImpl>
-      get copyWith => __$$CustomElectrumNetworkImplCopyWithImpl<
-          _$CustomElectrumNetworkImpl>(this, _$identity);
+  _$$_CustomElectrumNetworkCopyWith<_$_CustomElectrumNetwork> get copyWith =>
+      __$$_CustomElectrumNetworkCopyWithImpl<_$_CustomElectrumNetwork>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1099,7 +1094,7 @@ class _$CustomElectrumNetworkImpl extends _CustomElectrumNetwork {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$CustomElectrumNetworkImplToJson(
+    return _$$_CustomElectrumNetworkToJson(
       this,
     );
   }
@@ -1114,11 +1109,11 @@ abstract class _CustomElectrumNetwork extends ElectrumNetwork {
       final int retry,
       final bool validateDomain,
       final String name,
-      final ElectrumTypes type}) = _$CustomElectrumNetworkImpl;
+      final ElectrumTypes type}) = _$_CustomElectrumNetwork;
   const _CustomElectrumNetwork._() : super._();
 
   factory _CustomElectrumNetwork.fromJson(Map<String, dynamic> json) =
-      _$CustomElectrumNetworkImpl.fromJson;
+      _$_CustomElectrumNetwork.fromJson;
 
   @override
   String get mainnet;
@@ -1138,6 +1133,6 @@ abstract class _CustomElectrumNetwork extends ElectrumNetwork {
   ElectrumTypes get type;
   @override
   @JsonKey(ignore: true)
-  _$$CustomElectrumNetworkImplCopyWith<_$CustomElectrumNetworkImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$_CustomElectrumNetworkCopyWith<_$_CustomElectrumNetwork> get copyWith =>
+      throw _privateConstructorUsedError;
 }

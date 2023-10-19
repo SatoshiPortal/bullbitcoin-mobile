@@ -125,7 +125,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
     emit(state.copyWith(testMnemonicOrder: testMnemonic));
 
-    if (testMnemonic.length == 12) testingOrderCompleted();
+    if (testMnemonic.length == 12) testBackupClicked();
   }
 
   void word24Clicked(int shuffledIdx) {
@@ -143,7 +143,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
     emit(state.copyWith(testMnemonicOrder: testMnemonic));
 
-    if (testMnemonic.length == 24) testingOrderCompleted();
+    if (testMnemonic.length == 24) testBackupClicked();
   }
 
   void invalidTestOrderClicked() async {
@@ -163,44 +163,44 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     );
   }
 
-  void testingOrderCompleted() async {
-    final words = state.testMneString();
-    final mne = state.mnemonic.join(' ');
-    if (words != mne) {
-      return;
-    }
-    if (state.password != state.testBackupPassword) {
-      return;
-    }
-    emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
+  // void testingOrderCompleted() async {
+  //   final words = state.testMneString();
+  //   final mne = state.mnemonic.join(' ');
+  //   if (words != mne) {
+  //     return;
+  //   }
+  //   if (state.password != state.testBackupPassword) {
+  //     return;
+  //   }
+  //   emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
 
-    final wallet = state.wallet.copyWith(backupTested: true);
+  //   final wallet = state.wallet.copyWith(backupTested: true);
 
-    // final updateErr = await walletRepository.updateWallet(
-    //   wallet: wallet,
-    //   hiveStore: hiveStorage,
-    // );
-    // if (updateErr != null) {
-    //   emit(
-    //     state.copyWith(
-    //       errTestingBackup: updateErr.toString(),
-    //       testingBackup: false,
-    //     ),
-    //   );
-    //   return;
-    // }
+  //   // final updateErr = await walletRepository.updateWallet(
+  //   //   wallet: wallet,
+  //   //   hiveStore: hiveStorage,
+  //   // );
+  //   // if (updateErr != null) {
+  //   //   emit(
+  //   //     state.copyWith(
+  //   //       errTestingBackup: updateErr.toString(),
+  //   //       testingBackup: false,
+  //   //     ),
+  //   //   );
+  //   //   return;
+  //   // }
 
-    walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
+  //   walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
 
-    emit(
-      state.copyWith(
-        backupTested: true,
-        testingBackup: false,
-        wallet: wallet,
-      ),
-    );
-    clearSensitive();
-  }
+  //   emit(
+  //     state.copyWith(
+  //       backupTested: true,
+  //       testingBackup: false,
+  //       wallet: wallet,
+  //     ),
+  //   );
+  //   clearSensitive();
+  // }
 
   void changePassword(String password) {
     emit(
@@ -231,6 +231,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
 
     final mne = seed!.mnemonic == words;
+    final pp = seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase;
     final psd = seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase == password;
     if (!mne) {
       {

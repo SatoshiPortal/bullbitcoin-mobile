@@ -12,6 +12,7 @@ class BroadcastTxState with _$BroadcastTxState {
     @Default(BroadcastTxStep.import) BroadcastTxStep step,
     @Default('') String tx,
     Transaction? transaction,
+    int? amount,
     @Default(false) bool loadingFile,
     @Default('') String errLoadingFile,
     @Default(false) bool sent,

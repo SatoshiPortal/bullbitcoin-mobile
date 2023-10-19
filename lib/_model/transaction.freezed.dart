@@ -178,11 +178,11 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
 }
 
 /// @nodoc
-abstract class _$$TransactionImplCopyWith<$Res>
+abstract class _$$_TransactionCopyWith<$Res>
     implements $TransactionCopyWith<$Res> {
-  factory _$$TransactionImplCopyWith(
-          _$TransactionImpl value, $Res Function(_$TransactionImpl) then) =
-      __$$TransactionImplCopyWithImpl<$Res>;
+  factory _$$_TransactionCopyWith(
+          _$_Transaction value, $Res Function(_$_Transaction) then) =
+      __$$_TransactionCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -207,11 +207,11 @@ abstract class _$$TransactionImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$TransactionImplCopyWithImpl<$Res>
-    extends _$TransactionCopyWithImpl<$Res, _$TransactionImpl>
-    implements _$$TransactionImplCopyWith<$Res> {
-  __$$TransactionImplCopyWithImpl(
-      _$TransactionImpl _value, $Res Function(_$TransactionImpl) _then)
+class __$$_TransactionCopyWithImpl<$Res>
+    extends _$TransactionCopyWithImpl<$Res, _$_Transaction>
+    implements _$$_TransactionCopyWith<$Res> {
+  __$$_TransactionCopyWithImpl(
+      _$_Transaction _value, $Res Function(_$_Transaction) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -235,7 +235,7 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? outAddrs = null,
     Object? bdkTx = freezed,
   }) {
-    return _then(_$TransactionImpl(
+    return _then(_$_Transaction(
       txid: null == txid
           ? _value.txid
           : txid // ignore: cast_nullable_to_non_nullable
@@ -310,8 +310,8 @@ class __$$TransactionImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$TransactionImpl extends _Transaction {
-  const _$TransactionImpl(
+class _$_Transaction extends _Transaction {
+  const _$_Transaction(
       {required this.txid,
       this.received,
       this.sent,
@@ -334,8 +334,8 @@ class _$TransactionImpl extends _Transaction {
         _outAddrs = outAddrs,
         super._();
 
-  factory _$TransactionImpl.fromJson(Map<String, dynamic> json) =>
-      _$$TransactionImplFromJson(json);
+  factory _$_Transaction.fromJson(Map<String, dynamic> json) =>
+      _$$_TransactionFromJson(json);
 
   @override
   final String txid;
@@ -409,7 +409,7 @@ class _$TransactionImpl extends _Transaction {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$TransactionImpl &&
+            other is _$_Transaction &&
             (identical(other.txid, txid) || other.txid == txid) &&
             (identical(other.received, received) ||
                 other.received == received) &&
@@ -462,12 +462,12 @@ class _$TransactionImpl extends _Transaction {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$TransactionImplCopyWith<_$TransactionImpl> get copyWith =>
-      __$$TransactionImplCopyWithImpl<_$TransactionImpl>(this, _$identity);
+  _$$_TransactionCopyWith<_$_Transaction> get copyWith =>
+      __$$_TransactionCopyWithImpl<_$_Transaction>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$TransactionImplToJson(
+    return _$$_TransactionToJson(
       this,
     );
   }
@@ -492,11 +492,11 @@ abstract class _Transaction extends Transaction {
       final List<String>? outAddresses,
       final List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
-      final bdk.TransactionDetails? bdkTx}) = _$TransactionImpl;
+      final bdk.TransactionDetails? bdkTx}) = _$_Transaction;
   const _Transaction._() : super._();
 
   factory _Transaction.fromJson(Map<String, dynamic> json) =
-      _$TransactionImpl.fromJson;
+      _$_Transaction.fromJson;
 
   @override
   String get txid;
@@ -535,6 +535,6 @@ abstract class _Transaction extends Transaction {
   bdk.TransactionDetails? get bdkTx;
   @override
   @JsonKey(ignore: true)
-  _$$TransactionImplCopyWith<_$TransactionImpl> get copyWith =>
+  _$$_TransactionCopyWith<_$_Transaction> get copyWith =>
       throw _privateConstructorUsedError;
 }

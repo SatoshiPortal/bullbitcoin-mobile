@@ -100,11 +100,10 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
 }
 
 /// @nodoc
-abstract class _$$HomeStateImplCopyWith<$Res>
-    implements $HomeStateCopyWith<$Res> {
-  factory _$$HomeStateImplCopyWith(
-          _$HomeStateImpl value, $Res Function(_$HomeStateImpl) then) =
-      __$$HomeStateImplCopyWithImpl<$Res>;
+abstract class _$$_HomeStateCopyWith<$Res> implements $HomeStateCopyWith<$Res> {
+  factory _$$_HomeStateCopyWith(
+          _$_HomeState value, $Res Function(_$_HomeState) then) =
+      __$$_HomeStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -118,11 +117,11 @@ abstract class _$$HomeStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$HomeStateImplCopyWithImpl<$Res>
-    extends _$HomeStateCopyWithImpl<$Res, _$HomeStateImpl>
-    implements _$$HomeStateImplCopyWith<$Res> {
-  __$$HomeStateImplCopyWithImpl(
-      _$HomeStateImpl _value, $Res Function(_$HomeStateImpl) _then)
+class __$$_HomeStateCopyWithImpl<$Res>
+    extends _$HomeStateCopyWithImpl<$Res, _$_HomeState>
+    implements _$$_HomeStateCopyWith<$Res> {
+  __$$_HomeStateCopyWithImpl(
+      _$_HomeState _value, $Res Function(_$_HomeState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -136,7 +135,7 @@ class __$$HomeStateImplCopyWithImpl<$Res>
     Object? errDeepLinking = null,
     Object? moveToIdx = freezed,
   }) {
-    return _then(_$HomeStateImpl(
+    return _then(_$_HomeState(
       wallets: freezed == wallets
           ? _value._wallets
           : wallets // ignore: cast_nullable_to_non_nullable
@@ -171,8 +170,8 @@ class __$$HomeStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$HomeStateImpl extends _HomeState {
-  const _$HomeStateImpl(
+class _$_HomeState extends _HomeState {
+  const _$_HomeState(
       {final List<Wallet>? wallets,
       final List<WalletBloc>? walletBlocs,
       this.loadingWallets = true,
@@ -228,7 +227,7 @@ class _$HomeStateImpl extends _HomeState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$HomeStateImpl &&
+            other is _$_HomeState &&
             const DeepCollectionEquality().equals(other._wallets, _wallets) &&
             const DeepCollectionEquality()
                 .equals(other._walletBlocs, _walletBlocs) &&
@@ -258,8 +257,8 @@ class _$HomeStateImpl extends _HomeState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$HomeStateImplCopyWith<_$HomeStateImpl> get copyWith =>
-      __$$HomeStateImplCopyWithImpl<_$HomeStateImpl>(this, _$identity);
+  _$$_HomeStateCopyWith<_$_HomeState> get copyWith =>
+      __$$_HomeStateCopyWithImpl<_$_HomeState>(this, _$identity);
 }
 
 abstract class _HomeState extends HomeState {
@@ -270,7 +269,7 @@ abstract class _HomeState extends HomeState {
       final String errLoadingWallets,
       final WalletBloc? selectedWalletCubit,
       final String errDeepLinking,
-      final int? moveToIdx}) = _$HomeStateImpl;
+      final int? moveToIdx}) = _$_HomeState;
   const _HomeState._() : super._();
 
   @override
@@ -289,6 +288,6 @@ abstract class _HomeState extends HomeState {
   int? get moveToIdx;
   @override
   @JsonKey(ignore: true)
-  _$$HomeStateImplCopyWith<_$HomeStateImpl> get copyWith =>
+  _$$_HomeStateCopyWith<_$_HomeState> get copyWith =>
       throw _privateConstructorUsedError;
 }

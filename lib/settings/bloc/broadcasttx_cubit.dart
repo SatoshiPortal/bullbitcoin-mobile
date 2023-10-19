@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -16,6 +17,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     required this.settingsCubit,
     required this.fileStorage,
     required this.walletTx,
+    required this.homeCubit,
   }) : super(const BroadcastTxState());
 
   final FilePick filePicker;
@@ -23,6 +25,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   final Barcode barcode;
   final FileStorage fileStorage;
   final WalletTx walletTx;
+  final HomeCubit homeCubit;
 
   void txChanged(String tx) {
     emit(state.copyWith(tx: tx));
@@ -68,17 +71,64 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         final psbt = bdk.PartiallySignedTransaction(psbtBase64: tx);
         final bdkTx = await psbt.extractTx();
         final txid = await bdkTx.txid();
-        final feeAmount = await psbt.feeAmount();
-        final outputs = await bdkTx.output();
-        final List<String> outAddresses = [];
-        for (final outpoint in outputs) {
-          outAddresses.add(outpoint.toString());
+
+        // loop wallet txs if txid match
+        // get address
+        // check if psbt outaddresses matches send tx address
+        // if not show warning
+        // if no tx matches skip checks
+        String? toAddress;
+        Transaction? transaction;
+        final wallets = homeCubit.state.walletBlocs ?? [];
+        for (final wallet in wallets) {
+          for (final tx in wallet.state.wallet?.transactions ?? <Transaction>[]) {
+            if (tx.txid == txid) {
+              transaction = tx;
+              final List<String> outAddresses = [];
+              toAddress = tx.toAddress;
+
+              final outputs = await bdkTx.output();
+              for (final outpoint in outputs) {
+                final addressStruct = await bdk.Address.fromScript(
+                  outpoint.scriptPubkey,
+                  settingsCubit.state.getBdkNetwork(),
+                );
+                outAddresses.add(addressStruct.toString());
+              }
+
+              if (!outAddresses.contains(toAddress)) {
+                emit(
+                  state.copyWith(
+                    extractingTx: false,
+                    errExtractingTx:
+                        'The send address does not match the PSBT output address.\n\nSend Address: $toAddress\n\nPSBT Output Addresses: $outAddresses',
+                  ),
+                );
+                return;
+              } else
+                continue;
+            }
+          }
         }
 
-        final transaction = Transaction(
-          txid: txid,
+        final feeAmount = await psbt.feeAmount();
+        final outputs = await bdkTx.output();
+        int amt = 0;
+        final List<String> outAddresses = [];
+        for (final outpoint in outputs) {
+          final addressStruct = await bdk.Address.fromScript(
+            outpoint.scriptPubkey,
+            settingsCubit.state.getBdkNetwork(),
+          );
+          amt += outpoint.value;
+          outAddresses.add(addressStruct.toString());
+        }
+
+        transaction ??= Transaction(txid: txid);
+        transaction = transaction.copyWith(
           fee: feeAmount,
           outAddresses: outAddresses,
+          toAddress: toAddress,
         );
         final decodedTx = hex.encode(await bdkTx.serialize());
         emit(
@@ -88,6 +138,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             psbtBDK: psbt,
             transaction: transaction,
             step: BroadcastTxStep.broadcast,
+            amount: amt,
           ),
         );
       } else {
