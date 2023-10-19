@@ -1,5 +1,5 @@
 PODS:
-  - bdk_flutter (0.28.3):
+  - bdk_flutter (0.29.2):
     - Flutter
   - DKImagePickerController/Core (4.3.4):
     - DKImagePickerController/ImageDataManager
@@ -118,7 +118,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  bdk_flutter: 8f8f084899883723cec0c1c8dd858f10ce157ecc
+  bdk_flutter: ceee48a7dbeb52ebf9774fb583f57dd50d9e9823
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   document_file_save_plus: 913d440d8b611ae19add4522ed578e3ed1483a2f

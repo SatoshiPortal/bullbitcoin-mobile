@@ -51,7 +51,7 @@
         "**/maintainance": true,
         ".idea": true,
         "**/test": true,
-        "integration_test": true,
+        // "integration_test": true,
         "android": true,
         "ios": true,
         "**/pubspec.yaml": true,
