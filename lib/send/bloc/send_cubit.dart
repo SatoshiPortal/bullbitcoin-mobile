@@ -509,9 +509,7 @@ class SendCubit extends Cubit<SendState> {
     // }
 
     walletBloc.add(UpdateWallet(updatedWallet, updateTypes: [UpdateWalletTypes.addresses]));
-
     walletBloc.add(SyncWallet());
-
     emit(state.copyWith(sending: false, sent: true));
   }
 }

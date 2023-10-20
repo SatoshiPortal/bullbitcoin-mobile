@@ -31,6 +31,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class SendScreen extends StatelessWidget {
   const SendScreen({
@@ -75,7 +76,7 @@ class SendScreen extends StatelessWidget {
         child: BlocListener<SendCubit, SendState>(
           listenWhen: (previous, current) => previous.sent != current.sent && current.sent,
           listener: (context, state) {
-            context.read<SelectSendWalletStep>().sent();
+            // context.read<SelectSendWalletStep>().sent();
           }, //context.pop(),
           child: const _Screen(),
         ),
@@ -460,13 +461,14 @@ class TxSuccess extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          const Gap(200),
-          const Gap(100),
+          const Gap(24),
           SizedBox(
             height: 52,
             child: TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                // Navigator.pop(context);
+                // context.read<SelectSendWalletStep>().sent();
+                context.push('/home');
               },
               child: const BBText.titleLarge(
                 'Done',

@@ -76,7 +76,7 @@ Future setupLocator({bool fromTest = false}) async {
   final walletSensRepo = WalletSensitiveRepository();
 
   final settings = SettingsCubit(
-    walletCreate: walletCreate,
+    walletSync: walletSync,
     hiveStorage: hiveStorage,
     mempoolAPI: mempoolAPI,
     bbAPI: bbAPI,

@@ -7,7 +7,7 @@ import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +17,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this.hiveStorage,
     required this.bbAPI,
     required this.mempoolAPI,
-    required this.walletCreate,
+    required this.walletSync,
   }) : super(const SettingsState()) {
     init();
     loadCurrencies();
@@ -26,7 +26,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final HiveStorage hiveStorage;
   final BullBitcoinAPI bbAPI;
   final MempoolAPI mempoolAPI;
-  final WalletCreate walletCreate;
+  final WalletSync walletSync;
 
   HomeCubit? homeCubit;
 
@@ -151,7 +151,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     if (selectedNetwork == null) return;
     // final selectedNetwork = state.networks[state.selectedNetwork];
 
-    final (blockchain, err) = await walletCreate.createBlockChain(
+    final (blockchain, err) = await walletSync.createBlockChain(
       stopGap: selectedNetwork.stopGap,
       timeout: selectedNetwork.timeout,
       retry: selectedNetwork.retry,

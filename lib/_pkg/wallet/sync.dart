@@ -14,6 +14,32 @@ class WalletSync {
     }
   }
 
+  Future<(bdk.Blockchain?, Err?)> createBlockChain({
+    required int stopGap,
+    required int timeout,
+    required int retry,
+    required String url,
+    required bool validateDomain,
+  }) async {
+    try {
+      final blockchain = await bdk.Blockchain.create(
+        config: bdk.BlockchainConfig.electrum(
+          config: bdk.ElectrumConfig(
+            url: url,
+            retry: retry,
+            timeout: timeout,
+            stopGap: stopGap,
+            validateDomain: validateDomain,
+          ),
+        ),
+      );
+
+      return (blockchain, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
   // Future<(ReceivePort?, Err?)> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
   //   try {
   //     final receivePort = ReceivePort();

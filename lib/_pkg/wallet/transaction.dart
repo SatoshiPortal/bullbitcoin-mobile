@@ -183,7 +183,6 @@ class WalletTx {
                 spentTxId: tx.txid,
                 kind: AddressKind.change,
                 state: AddressStatus.used,
-                spendable: false,
                 label: label,
               );
               // Future.delayed(const Duration(milliseconds: 100));

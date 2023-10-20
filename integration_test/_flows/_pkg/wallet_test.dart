@@ -17,7 +17,7 @@ void main() {
       false,
     );
     final w84 = wallet![2];
-    final (electrum, _) = await WalletCreate().createBlockChain(
+    final (electrum, _) = await WalletSync().createBlockChain(
       stopGap: 20,
       timeout: 10,
       retry: 10,
