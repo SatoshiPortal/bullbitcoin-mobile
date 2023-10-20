@@ -8,6 +8,7 @@ enum _FontTypes {
   title,
   body,
   bodySmall,
+  bodyBold,
   error,
   errorSmall,
 }
@@ -68,6 +69,17 @@ class BBText extends StatelessWidget {
     this.removeColourOpacity = false,
   }) : type = _FontTypes.bodySmall;
 
+  const BBText.bodyBold(
+    this.text, {
+    this.textAlign = TextAlign.left,
+    this.onSurface = false,
+    this.isBold = true,
+    this.isRed = false,
+    this.isBlue = false,
+    this.isGreen = false,
+    this.removeColourOpacity = false,
+  }) : type = _FontTypes.body;
+
   const BBText.error(
     this.text, {
     this.textAlign = TextAlign.left,
@@ -117,6 +129,8 @@ class BBText extends StatelessWidget {
         style = context.font.bodyLarge!;
       case _FontTypes.bodySmall:
         style = context.font.bodySmall!;
+      case _FontTypes.bodyBold:
+        style = context.font.bodyLarge!;
       case _FontTypes.error:
         style = context.font.bodyMedium!.copyWith(color: context.colour.error);
       case _FontTypes.errorSmall:

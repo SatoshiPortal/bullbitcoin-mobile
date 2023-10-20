@@ -383,31 +383,30 @@ class TxDetailsScreen extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const Gap(24),
-        const BBText.body(
+        const BBText.titleLarge(
           'Confirm Transaction',
-          textAlign: TextAlign.center,
         ),
         const Gap(32),
-        const BBText.body(
-          'You are about to send',
+        const BBText.title(
+          'Transaction Amount',
         ),
         const Gap(4),
-        BBText.body(
+        BBText.bodyBold(
           amtStr,
         ),
         BBText.body(
           '~ $amtFiat $fiatCurrency ',
         ),
         const Gap(24),
-        const BBText.body(
-          'To this Bitcoin address',
+        const BBText.title(
+          'Recipient Bitcoin Address',
         ),
         const Gap(4),
         BBText.body(
           address,
         ),
         const Gap(24),
-        const BBText.body(
+        const BBText.title(
           'Network Fee',
         ),
         const Gap(4),
