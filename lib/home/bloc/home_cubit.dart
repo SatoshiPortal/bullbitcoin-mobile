@@ -16,7 +16,7 @@ class HomeCubit extends Cubit<HomeState> {
     required this.hiveStorage,
   }) : super(const HomeState()) {
     createWalletCubitSubscription = createWalletCubit.stream.listen((state) {
-      if (state.saved) getWalletsFromStorage();
+      if (state.saved) getWalletsFromStorageExistingWallet();
     });
   }
 
@@ -31,7 +31,7 @@ class HomeCubit extends Cubit<HomeState> {
     return super.close();
   }
 
-  Future<void> getWalletsFromStorage() async {
+  Future<void> getWalletsFromStorageFirstTime() async {
     emit(state.copyWith(loadingWallets: true));
 
     final (wallets, err) = await walletRepository.readAllWallets(hiveStore: hiveStorage);
@@ -51,6 +51,24 @@ class HomeCubit extends Cubit<HomeState> {
     if (err.toString() == 'No Key')
       createWalletCubit.createMne(
         fromHome: true,
+      );
+  }
+
+  Future<void> getWalletsFromStorageExistingWallet() async {
+    emit(state.copyWith(loadingWallets: true));
+
+    final (wallets, err) = await walletRepository.readAllWallets(hiveStore: hiveStorage);
+    if (err != null) {
+      emit(state.copyWith(loadingWallets: false));
+      return;
+    }
+
+    if (wallets != null)
+      emit(
+        state.copyWith(
+          wallets: wallets,
+          loadingWallets: false,
+        ),
       );
   }
 
@@ -107,6 +125,22 @@ class HomeCubit extends Cubit<HomeState> {
       state.copyWith(
         wallets: wallets,
         loadingWallets: false,
+      ),
+    );
+  }
+
+  void removeWalletPostDelete(String id) {
+    final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+    final walletBlocs = state.walletBlocs != null ? state.walletBlocs!.toList() : <WalletBloc>[];
+    wallets.removeWhere(
+      (w) => w.id == id,
+    );
+    walletBlocs.removeWhere((wB) => wB.state.wallet!.id == id);
+    emit(
+      state.copyWith(
+        wallets: wallets,
+        walletBlocs: walletBlocs,
+        // selectedWallet: null,
       ),
     );
   }

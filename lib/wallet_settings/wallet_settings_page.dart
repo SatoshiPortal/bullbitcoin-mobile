@@ -46,6 +46,7 @@ class WalletSettingsPage extends StatelessWidget {
       fileStorage: locator<FileStorage>(),
       walletRepository: locator<WalletRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
+      homeCubit: locator<HomeCubit>(),
     );
 
     return MultiBlocProvider(
@@ -57,12 +58,12 @@ class WalletSettingsPage extends StatelessWidget {
         listeners: [
           BlocListener<WalletSettingsCubit, WalletSettingsState>(
             listenWhen: (previous, current) => previous.wallet != current.wallet,
-            listener: (context, state) {
+            listener: (context, state) async {
               if (!state.deleted)
                 home.updateSelectedWallet(wallet);
               else {
+                await home.getWalletsFromStorageExistingWallet();
                 context.pop();
-                home.getWalletsFromStorage();
               }
             },
           ),

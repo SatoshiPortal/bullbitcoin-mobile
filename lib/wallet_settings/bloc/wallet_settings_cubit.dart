@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
@@ -16,7 +17,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   WalletSettingsCubit({
     required Wallet wallet,
     required this.walletBloc,
-    // required this.walletUpdate,
+    required this.homeCubit,
     required this.hiveStorage,
     required this.walletRead,
     required this.walletRepository,
@@ -34,7 +35,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   final SecureStorage secureStorage;
   final WalletSync walletRead;
   final WalletRepository walletRepository;
-
+  final HomeCubit homeCubit;
   final WalletSensitiveRepository walletSensRepository;
 
   final FileStorage fileStorage;
@@ -397,6 +398,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
+    homeCubit.removeWalletPostDelete(state.wallet.id);
     emit(
       state.copyWith(
         deleting: false,

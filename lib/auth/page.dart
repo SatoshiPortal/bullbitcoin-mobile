@@ -36,7 +36,7 @@ class AuthPage extends StatelessWidget {
         listener: (context, state) async {
           if (state.loggedIn) {
             if (!state.fromSettings) {
-              locator<HomeCubit>().getWalletsFromStorage();
+              locator<HomeCubit>().getWalletsFromStorageFirstTime();
               context.go('/home');
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
