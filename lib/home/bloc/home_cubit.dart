@@ -149,8 +149,7 @@ class HomeCubit extends Cubit<HomeState> {
     if (removeWallet) {
       final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
       wallets.removeWhere(
-        (w) =>
-            w.mnemonicFingerprint == state.selectedWalletCubit!.state.wallet!.mnemonicFingerprint,
+        (w) => w.id == state.selectedWalletCubit!.state.wallet!.id,
       );
       emit(
         state.copyWith(

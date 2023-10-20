@@ -46,6 +46,7 @@ class ImportState with _$ImportState {
     List<Wallet>? walletDetails,
     @Default('') String customDerivation,
     @Default(0) int accountNumber,
+    String? walletLabel,
     String? manualPublicDescriptor,
     String? manualPublicChangeDescriptor,
     String? manualCombinedPublicDescriptor,
@@ -151,6 +152,7 @@ class ImportState with _$ImportState {
     }
   }
 
+  @override
   String walletName(ScriptType scriptType) => scriptTypeString(scriptType);
 
   bool isSelected(ScriptType type) => type == scriptType;

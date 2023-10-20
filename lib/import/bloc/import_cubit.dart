@@ -175,6 +175,10 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(state.copyWith(passPhrase: text));
   }
 
+  void walletLabelChanged(String text) {
+    emit(state.copyWith(walletLabel: text));
+  }
+
   void xpubChanged(String text) {
     emit(state.copyWith(xpub: text));
   }
@@ -481,8 +485,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void saveClicked() async {
-    final selectedWallet = state.getSelectWalletDetails();
+    Wallet? selectedWallet = state.getSelectWalletDetails();
     if (selectedWallet == null) return;
+    selectedWallet = (state.walletLabel != null && state.walletLabel != '')
+        ? selectedWallet.copyWith(name: state.walletLabel)
+        : selectedWallet;
 
     emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
 
@@ -495,6 +502,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       final (seed, sErr) = await walletSensCreate.mnemonicSeed(mnemonic, network);
       if (sErr != null) {
         emit(state.copyWith(errImporting: 'Error creating mnemonicSeed'));
+        return;
       }
 
       // if seed exists - this will error with Seed Exists, but we ignore it
@@ -541,12 +549,14 @@ class ImportWalletCubit extends Cubit<ImportState> {
       emit(
         state.copyWith(
           savingWallet: false,
-          savedWallet: selectedWallet,
+          savedWallet: (state.walletLabel != null && state.walletLabel != '')
+              ? selectedWallet.copyWith(name: state.walletLabel)
+              : selectedWallet,
         ),
       );
-      clearSensitive12();
-      clearSensitive24();
     }
+    clearSensitive12();
+    clearSensitive24();
   }
 
   void clearSensitive12() async {

@@ -38,6 +38,7 @@ mixin _$ImportState {
   List<Wallet>? get walletDetails => throw _privateConstructorUsedError;
   String get customDerivation => throw _privateConstructorUsedError;
   int get accountNumber => throw _privateConstructorUsedError;
+  String? get walletLabel => throw _privateConstructorUsedError;
   String? get manualPublicDescriptor => throw _privateConstructorUsedError;
   String? get manualPublicChangeDescriptor =>
       throw _privateConstructorUsedError;
@@ -76,6 +77,7 @@ abstract class $ImportStateCopyWith<$Res> {
       List<Wallet>? walletDetails,
       String customDerivation,
       int accountNumber,
+      String? walletLabel,
       String? manualPublicDescriptor,
       String? manualPublicChangeDescriptor,
       String? manualCombinedPublicDescriptor,
@@ -117,6 +119,7 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
     Object? walletDetails = freezed,
     Object? customDerivation = null,
     Object? accountNumber = null,
+    Object? walletLabel = freezed,
     Object? manualPublicDescriptor = freezed,
     Object? manualPublicChangeDescriptor = freezed,
     Object? manualCombinedPublicDescriptor = freezed,
@@ -178,6 +181,10 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
           ? _value.accountNumber
           : accountNumber // ignore: cast_nullable_to_non_nullable
               as int,
+      walletLabel: freezed == walletLabel
+          ? _value.walletLabel
+          : walletLabel // ignore: cast_nullable_to_non_nullable
+              as String?,
       manualPublicDescriptor: freezed == manualPublicDescriptor
           ? _value.manualPublicDescriptor
           : manualPublicDescriptor // ignore: cast_nullable_to_non_nullable
@@ -271,6 +278,7 @@ abstract class _$$ImportStateImplCopyWith<$Res>
       List<Wallet>? walletDetails,
       String customDerivation,
       int accountNumber,
+      String? walletLabel,
       String? manualPublicDescriptor,
       String? manualPublicChangeDescriptor,
       String? manualCombinedPublicDescriptor,
@@ -312,6 +320,7 @@ class __$$ImportStateImplCopyWithImpl<$Res>
     Object? walletDetails = freezed,
     Object? customDerivation = null,
     Object? accountNumber = null,
+    Object? walletLabel = freezed,
     Object? manualPublicDescriptor = freezed,
     Object? manualPublicChangeDescriptor = freezed,
     Object? manualCombinedPublicDescriptor = freezed,
@@ -373,6 +382,10 @@ class __$$ImportStateImplCopyWithImpl<$Res>
           ? _value.accountNumber
           : accountNumber // ignore: cast_nullable_to_non_nullable
               as int,
+      walletLabel: freezed == walletLabel
+          ? _value.walletLabel
+          : walletLabel // ignore: cast_nullable_to_non_nullable
+              as String?,
       manualPublicDescriptor: freezed == manualPublicDescriptor
           ? _value.manualPublicDescriptor
           : manualPublicDescriptor // ignore: cast_nullable_to_non_nullable
@@ -437,6 +450,7 @@ class _$ImportStateImpl extends _ImportState {
       final List<Wallet>? walletDetails,
       this.customDerivation = '',
       this.accountNumber = 0,
+      this.walletLabel,
       this.manualPublicDescriptor,
       this.manualPublicChangeDescriptor,
       this.manualCombinedPublicDescriptor,
@@ -524,6 +538,8 @@ class _$ImportStateImpl extends _ImportState {
   @JsonKey()
   final int accountNumber;
   @override
+  final String? walletLabel;
+  @override
   final String? manualPublicDescriptor;
   @override
   final String? manualPublicChangeDescriptor;
@@ -554,7 +570,7 @@ class _$ImportStateImpl extends _ImportState {
 
   @override
   String toString() {
-    return 'ImportState(words12: $words12, words24: $words24, passPhrase: $passPhrase, xpub: $xpub, tempXpub: $tempXpub, fingerprint: $fingerprint, importStep: $importStep, scriptType: $scriptType, importType: $importType, walletDetails: $walletDetails, customDerivation: $customDerivation, accountNumber: $accountNumber, manualPublicDescriptor: $manualPublicDescriptor, manualPublicChangeDescriptor: $manualPublicChangeDescriptor, manualCombinedPublicDescriptor: $manualCombinedPublicDescriptor, importing: $importing, errImporting: $errImporting, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, savingWallet: $savingWallet, errSavingWallet: $errSavingWallet, savedWallet: $savedWallet, coldCard: $coldCard)';
+    return 'ImportState(words12: $words12, words24: $words24, passPhrase: $passPhrase, xpub: $xpub, tempXpub: $tempXpub, fingerprint: $fingerprint, importStep: $importStep, scriptType: $scriptType, importType: $importType, walletDetails: $walletDetails, customDerivation: $customDerivation, accountNumber: $accountNumber, walletLabel: $walletLabel, manualPublicDescriptor: $manualPublicDescriptor, manualPublicChangeDescriptor: $manualPublicChangeDescriptor, manualCombinedPublicDescriptor: $manualCombinedPublicDescriptor, importing: $importing, errImporting: $errImporting, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, savingWallet: $savingWallet, errSavingWallet: $errSavingWallet, savedWallet: $savedWallet, coldCard: $coldCard)';
   }
 
   @override
@@ -583,6 +599,8 @@ class _$ImportStateImpl extends _ImportState {
                 other.customDerivation == customDerivation) &&
             (identical(other.accountNumber, accountNumber) ||
                 other.accountNumber == accountNumber) &&
+            (identical(other.walletLabel, walletLabel) ||
+                other.walletLabel == walletLabel) &&
             (identical(other.manualPublicDescriptor, manualPublicDescriptor) ||
                 other.manualPublicDescriptor == manualPublicDescriptor) &&
             (identical(other.manualPublicChangeDescriptor,
@@ -626,6 +644,7 @@ class _$ImportStateImpl extends _ImportState {
         const DeepCollectionEquality().hash(_walletDetails),
         customDerivation,
         accountNumber,
+        walletLabel,
         manualPublicDescriptor,
         manualPublicChangeDescriptor,
         manualCombinedPublicDescriptor,
@@ -660,6 +679,7 @@ abstract class _ImportState extends ImportState {
       final List<Wallet>? walletDetails,
       final String customDerivation,
       final int accountNumber,
+      final String? walletLabel,
       final String? manualPublicDescriptor,
       final String? manualPublicChangeDescriptor,
       final String? manualCombinedPublicDescriptor,
@@ -707,6 +727,8 @@ abstract class _ImportState extends ImportState {
   String get customDerivation;
   @override
   int get accountNumber;
+  @override
+  String? get walletLabel;
   @override
   String? get manualPublicDescriptor;
   @override

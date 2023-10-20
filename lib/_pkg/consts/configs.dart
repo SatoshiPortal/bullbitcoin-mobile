@@ -10,4 +10,4 @@ const bbelectrum = 'electrum.bullbitcoin.com';
 const openelectrum = 'electrum.blockstream.info';
 
 final exchangeapi = bbexchangeapi;
-final mempoolapi = openmempoolapi;
+final mempoolapi = bbmempoolapi;

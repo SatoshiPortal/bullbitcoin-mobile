@@ -512,8 +512,8 @@ class DeletePopUp extends StatelessWidget {
           listener: (context, state) {
             if (state.deleted) {
               final home = locator<HomeCubit>();
-              context.go('/home');
               home.clearSelectedWallet(removeWallet: true);
+              context.go('/home');
             }
           },
           child: const PopUpBorder(
