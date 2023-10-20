@@ -49,6 +49,7 @@ class ImportXpubScreen extends StatelessWidget {
           ),
           Gap(40),
           ColdCardSection(),
+          _ImportExtra(),
           _WalletLabel(),
           _ImportButtons(),
           Gap(80),
@@ -170,7 +171,7 @@ class _WalletLabel extends StatelessWidget {
     final text = context.select((ImportWalletCubit cubit) => cubit.state.walletLabel ?? '');
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
+      padding: const EdgeInsets.all(24.0),
       child: BBTextInput.big(
         value: text,
         onChanged: (value) => context.read<ImportWalletCubit>().walletLabelChanged(value),
@@ -180,8 +181,8 @@ class _WalletLabel extends StatelessWidget {
   }
 }
 
-class _ImportButtons extends StatelessWidget {
-  const _ImportButtons();
+class _ImportExtra extends StatelessWidget {
+  const _ImportExtra();
 
   @override
   Widget build(BuildContext context) {
@@ -204,15 +205,30 @@ class _ImportButtons extends StatelessWidget {
               AdvancedOptions.openPopUp(context);
             },
           ),
-          const Gap(16),
+          const Gap(8),
+          if (err.isNotEmpty) BBText.error(err, textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+}
+
+class _ImportButtons extends StatelessWidget {
+  const _ImportButtons();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
           BBButton.bigRed(
             label: 'Import',
             onPressed: () {
               context.read<ImportWalletCubit>().xpubSaveClicked();
             },
           ),
-          const Gap(8),
-          if (err.isNotEmpty) BBText.error(err, textAlign: TextAlign.center),
         ],
       ),
     );
