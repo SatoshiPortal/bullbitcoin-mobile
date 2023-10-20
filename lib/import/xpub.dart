@@ -49,6 +49,7 @@ class ImportXpubScreen extends StatelessWidget {
           ),
           Gap(40),
           ColdCardSection(),
+          _WalletLabel(),
           _ImportButtons(),
           Gap(80),
         ],
@@ -157,6 +158,24 @@ class _XpubTextFieldAreaState extends State<XpubTextFieldArea> {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _WalletLabel extends StatelessWidget {
+  const _WalletLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    final text = context.select((ImportWalletCubit cubit) => cubit.state.walletLabel ?? '');
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: BBTextInput.big(
+        value: text,
+        onChanged: (value) => context.read<ImportWalletCubit>().walletLabelChanged(value),
+        hint: 'Label your wallet',
+      ),
     );
   }
 }

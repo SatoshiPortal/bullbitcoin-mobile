@@ -33,6 +33,7 @@ mixin _$CreateWalletState {
   bool get saving => throw _privateConstructorUsedError;
   String get errSaving => throw _privateConstructorUsedError;
   bool get saved => throw _privateConstructorUsedError;
+  String? get walletLabel => throw _privateConstructorUsedError;
   Wallet? get savedWallet => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -54,6 +55,7 @@ abstract class $CreateWalletStateCopyWith<$Res> {
       bool saving,
       String errSaving,
       bool saved,
+      String? walletLabel,
       Wallet? savedWallet});
 
   $WalletCopyWith<$Res>? get savedWallet;
@@ -79,6 +81,7 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
     Object? saving = null,
     Object? errSaving = null,
     Object? saved = null,
+    Object? walletLabel = freezed,
     Object? savedWallet = freezed,
   }) {
     return _then(_value.copyWith(
@@ -110,6 +113,10 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
           ? _value.saved
           : saved // ignore: cast_nullable_to_non_nullable
               as bool,
+      walletLabel: freezed == walletLabel
+          ? _value.walletLabel
+          : walletLabel // ignore: cast_nullable_to_non_nullable
+              as String?,
       savedWallet: freezed == savedWallet
           ? _value.savedWallet
           : savedWallet // ignore: cast_nullable_to_non_nullable
@@ -146,6 +153,7 @@ abstract class _$$CreateWalletStateImplCopyWith<$Res>
       bool saving,
       String errSaving,
       bool saved,
+      String? walletLabel,
       Wallet? savedWallet});
 
   @override
@@ -170,6 +178,7 @@ class __$$CreateWalletStateImplCopyWithImpl<$Res>
     Object? saving = null,
     Object? errSaving = null,
     Object? saved = null,
+    Object? walletLabel = freezed,
     Object? savedWallet = freezed,
   }) {
     return _then(_$CreateWalletStateImpl(
@@ -201,6 +210,10 @@ class __$$CreateWalletStateImplCopyWithImpl<$Res>
           ? _value.saved
           : saved // ignore: cast_nullable_to_non_nullable
               as bool,
+      walletLabel: freezed == walletLabel
+          ? _value.walletLabel
+          : walletLabel // ignore: cast_nullable_to_non_nullable
+              as String?,
       savedWallet: freezed == savedWallet
           ? _value.savedWallet
           : savedWallet // ignore: cast_nullable_to_non_nullable
@@ -220,6 +233,7 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
       this.saving = false,
       this.errSaving = '',
       this.saved = false,
+      this.walletLabel,
       this.savedWallet})
       : _mnemonic = mnemonic,
         super._();
@@ -268,11 +282,13 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
   @JsonKey()
   final bool saved;
   @override
+  final String? walletLabel;
+  @override
   final Wallet? savedWallet;
 
   @override
   String toString() {
-    return 'CreateWalletState(mnemonic: $mnemonic, passPhrase: $passPhrase, creatingNmemonic: $creatingNmemonic, errCreatingNmemonic: $errCreatingNmemonic, saving: $saving, errSaving: $errSaving, saved: $saved, savedWallet: $savedWallet)';
+    return 'CreateWalletState(mnemonic: $mnemonic, passPhrase: $passPhrase, creatingNmemonic: $creatingNmemonic, errCreatingNmemonic: $errCreatingNmemonic, saving: $saving, errSaving: $errSaving, saved: $saved, walletLabel: $walletLabel, savedWallet: $savedWallet)';
   }
 
   @override
@@ -291,6 +307,8 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
             (identical(other.errSaving, errSaving) ||
                 other.errSaving == errSaving) &&
             (identical(other.saved, saved) || other.saved == saved) &&
+            (identical(other.walletLabel, walletLabel) ||
+                other.walletLabel == walletLabel) &&
             (identical(other.savedWallet, savedWallet) ||
                 other.savedWallet == savedWallet));
   }
@@ -305,6 +323,7 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
       saving,
       errSaving,
       saved,
+      walletLabel,
       savedWallet);
 
   @JsonKey(ignore: true)
@@ -324,6 +343,7 @@ abstract class _CreateWalletState extends CreateWalletState {
       final bool saving,
       final String errSaving,
       final bool saved,
+      final String? walletLabel,
       final Wallet? savedWallet}) = _$CreateWalletStateImpl;
   const _CreateWalletState._() : super._();
 
@@ -351,6 +371,8 @@ abstract class _CreateWalletState extends CreateWalletState {
   String get errSaving;
   @override
   bool get saved;
+  @override
+  String? get walletLabel;
   @override
   Wallet? get savedWallet;
   @override

@@ -23,6 +23,7 @@ class CreateWalletState with _$CreateWalletState {
     @Default(false) bool saving,
     @Default('') String errSaving,
     @Default(false) bool saved,
+    String? walletLabel,
     Wallet? savedWallet,
   }) = _CreateWalletState;
   const CreateWalletState._();

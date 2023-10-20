@@ -56,6 +56,9 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     emit(state.copyWith(passPhrase: text));
   }
 
+  void walletLabelChanged(String text) {
+    emit(state.copyWith(walletLabel: text));
+  }
   // void _showSavingErr(String err) {
   //   emit(
   //     state.copyWith(
@@ -86,6 +89,9 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
       return;
     }
+    final updatedWallet = (state.walletLabel != null && state.walletLabel != '')
+        ? wallet!.copyWith(name: state.walletLabel)
+        : wallet;
 
     final ssErr = await walletSensRepository.newSeed(seed: seed, secureStore: secureStorage);
     if (ssErr != null) {
@@ -117,7 +123,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       }
     }
 
-    final wsErr = await walletRepository.newWallet(wallet: wallet!, hiveStore: hiveStorage);
+    final wsErr = await walletRepository.newWallet(wallet: updatedWallet!, hiveStore: hiveStorage);
     if (wsErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }
@@ -127,7 +133,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       state.copyWith(
         saving: false,
         saved: true,
-        savedWallet: wallet,
+        savedWallet: updatedWallet,
       ),
     );
   }

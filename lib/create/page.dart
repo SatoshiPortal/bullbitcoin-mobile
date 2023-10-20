@@ -91,6 +91,8 @@ class _Screen extends StatelessWidget {
             const Words(),
             const Gap(32),
             const CreateWalletPassField(),
+            const Gap(32),
+            const _WalletLabel(),
             const Gap(40),
             const CreateWalletCreateButton(),
             const Gap(80),
@@ -147,6 +149,24 @@ class CreateWalletPassField extends HookWidget {
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _WalletLabel extends StatelessWidget {
+  const _WalletLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    final text = context.select((CreateWalletCubit cubit) => cubit.state.walletLabel ?? '');
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: BBTextInput.big(
+        value: text,
+        onChanged: (value) => context.read<CreateWalletCubit>().walletLabelChanged(value),
+        hint: 'Label your wallet',
       ),
     );
   }
