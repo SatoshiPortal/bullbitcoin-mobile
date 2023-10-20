@@ -6,7 +6,8 @@ part of 'address.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Address _$$_AddressFromJson(Map<String, dynamic> json) => _$_Address(
+_$AddressImpl _$$AddressImplFromJson(Map<String, dynamic> json) =>
+    _$AddressImpl(
       address: json['address'] as String,
       index: json['index'] as int?,
       kind: $enumDecode(_$AddressKindEnumMap, json['kind']),
@@ -19,7 +20,7 @@ _$_Address _$$_AddressFromJson(Map<String, dynamic> json) => _$_Address(
       highestPreviousBalance: json['highestPreviousBalance'] as int? ?? 0,
     );
 
-Map<String, dynamic> _$$_AddressToJson(_$_Address instance) =>
+Map<String, dynamic> _$$AddressImplToJson(_$AddressImpl instance) =>
     <String, dynamic>{
       'address': instance.address,
       'index': instance.index,

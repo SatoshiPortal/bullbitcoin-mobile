@@ -20,7 +20,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class BroadcasePopUp extends StatelessWidget {
   const BroadcasePopUp({super.key});
@@ -270,6 +269,8 @@ class TxInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bState = context.select((BroadcastTxCubit cubit) => cubit.state);
+
     final tx = context.select((BroadcastTxCubit cubit) => cubit.state.transaction);
     final psbt = context.select((BroadcastTxCubit cubit) => cubit.state.psbtBDK);
     if (tx == null || psbt == null) return const SizedBox();
@@ -282,11 +283,11 @@ class TxInfo extends StatelessWidget {
     // final txAddress = context.select((BroadcastTxCubit _) => _.state.transaction?.outAddrs ?? []);
 
     final toAddress = context.select((BroadcastTxCubit _) => _.state.transaction?.toAddress ?? '');
+    final sState = context.select((SettingsCubit cubit) => cubit.state);
 
     final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txamt));
     final fee = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txfee));
     final psbtStr = psbt.psbtBase64;
-
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 16,
@@ -296,7 +297,43 @@ class TxInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // const Gap(24),
-          const BBText.title('Transaction amount'),
+          if (bState.recognizedTx == true)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Container(
+                  transformAlignment: Alignment.center,
+                  child: const FaIcon(
+                    FontAwesomeIcons.shield,
+                    size: 12,
+                  ),
+                ),
+                const Gap(8),
+                const BBText.bodySmall(
+                  'Verified.',
+                ),
+              ],
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Container(
+                  transformAlignment: Alignment.center,
+                  child: const FaIcon(
+                    FontAwesomeIcons.commentDots,
+                    size: 12,
+                  ),
+                ),
+                const Gap(8),
+                const BBText.bodySmall(
+                  'Transaction not found locally.',
+                ),
+              ],
+            ),
+          const BBText.title('Total output amount (including change)'),
           const Gap(4),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -324,30 +361,38 @@ class TxInfo extends StatelessWidget {
           BBText.body(
             fee,
           ),
-          if (toAddress.isNotEmpty) ...[
-            const Gap(24),
-            const BBText.title(
-              'Receipient Bitcoin address',
-            ),
-            const Gap(4),
-            BBText.body(toAddress),
-          ],
           const Gap(24),
+          const BBText.title(
+            'Outputs',
+          ),
+          const Gap(4),
+          for (final address in tx.outAddrs)
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    BBText.body(address.miniString()),
+                    BBText.body(sState.getAmountInUnits(address.highestPreviousBalance)),
+                  ],
+                ),
+              ],
+            ),
 
           // const DownloadButton(),
           // const Gap(16),
-          const Center(
-            child: BBText.body(
-              'Scan Txn',
-            ),
-          ),
-          Center(
-            child: SizedBox(
-              width: 200,
-              height: 200,
-              child: QrImageView(data: psbtStr),
-            ),
-          ),
+          // const Center(
+          //   child: BBText.body(
+          //     'Scan Txn',
+          //   ),
+          // ),
+          // Center(
+          //   child: SizedBox(
+          //     width: 200,
+          //     height: 200,
+          //     child: QrImageView(data: psbtStr),
+          //   ),
+          // ),
           // const Gap(60),
           // const SendButton(),
           // const Gap(48),

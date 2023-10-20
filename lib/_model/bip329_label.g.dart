@@ -6,8 +6,8 @@ part of 'bip329_label.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Bip329Label _$$_Bip329LabelFromJson(Map<String, dynamic> json) =>
-    _$_Bip329Label(
+_$Bip329LabelImpl _$$Bip329LabelImplFromJson(Map<String, dynamic> json) =>
+    _$Bip329LabelImpl(
       type: $enumDecode(_$BIP329TypeEnumMap, json['type']),
       ref: json['ref'] as String,
       label: json['label'] as String?,
@@ -15,7 +15,7 @@ _$_Bip329Label _$$_Bip329LabelFromJson(Map<String, dynamic> json) =>
       spendable: json['spendable'] as bool?,
     );
 
-Map<String, dynamic> _$$_Bip329LabelToJson(_$_Bip329Label instance) =>
+Map<String, dynamic> _$$Bip329LabelImplToJson(_$Bip329LabelImpl instance) =>
     <String, dynamic>{
       'type': _$BIP329TypeEnumMap[instance.type]!,
       'ref': instance.ref,

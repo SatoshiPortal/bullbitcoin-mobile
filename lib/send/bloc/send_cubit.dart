@@ -351,6 +351,7 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
     await Future.delayed(const Duration(seconds: 1));
+    // save state.tx to wallet.transactions
     emit(state.copyWith(downloadingFile: false, downloaded: true));
     // await Future.delayed(const Duration(seconds: 10));
     // emit(state.copyWith(downloaded: false));

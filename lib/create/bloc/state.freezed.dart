@@ -131,11 +131,11 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
 }
 
 /// @nodoc
-abstract class _$$_CreateWalletStateCopyWith<$Res>
+abstract class _$$CreateWalletStateImplCopyWith<$Res>
     implements $CreateWalletStateCopyWith<$Res> {
-  factory _$$_CreateWalletStateCopyWith(_$_CreateWalletState value,
-          $Res Function(_$_CreateWalletState) then) =
-      __$$_CreateWalletStateCopyWithImpl<$Res>;
+  factory _$$CreateWalletStateImplCopyWith(_$CreateWalletStateImpl value,
+          $Res Function(_$CreateWalletStateImpl) then) =
+      __$$CreateWalletStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -153,11 +153,11 @@ abstract class _$$_CreateWalletStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_CreateWalletStateCopyWithImpl<$Res>
-    extends _$CreateWalletStateCopyWithImpl<$Res, _$_CreateWalletState>
-    implements _$$_CreateWalletStateCopyWith<$Res> {
-  __$$_CreateWalletStateCopyWithImpl(
-      _$_CreateWalletState _value, $Res Function(_$_CreateWalletState) _then)
+class __$$CreateWalletStateImplCopyWithImpl<$Res>
+    extends _$CreateWalletStateCopyWithImpl<$Res, _$CreateWalletStateImpl>
+    implements _$$CreateWalletStateImplCopyWith<$Res> {
+  __$$CreateWalletStateImplCopyWithImpl(_$CreateWalletStateImpl _value,
+      $Res Function(_$CreateWalletStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -172,7 +172,7 @@ class __$$_CreateWalletStateCopyWithImpl<$Res>
     Object? saved = null,
     Object? savedWallet = freezed,
   }) {
-    return _then(_$_CreateWalletState(
+    return _then(_$CreateWalletStateImpl(
       mnemonic: freezed == mnemonic
           ? _value._mnemonic
           : mnemonic // ignore: cast_nullable_to_non_nullable
@@ -211,8 +211,8 @@ class __$$_CreateWalletStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_CreateWalletState extends _CreateWalletState {
-  const _$_CreateWalletState(
+class _$CreateWalletStateImpl extends _CreateWalletState {
+  const _$CreateWalletStateImpl(
       {final List<String>? mnemonic,
       this.passPhrase = '',
       this.creatingNmemonic = true,
@@ -279,7 +279,7 @@ class _$_CreateWalletState extends _CreateWalletState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CreateWalletState &&
+            other is _$CreateWalletStateImpl &&
             const DeepCollectionEquality().equals(other._mnemonic, _mnemonic) &&
             (identical(other.passPhrase, passPhrase) ||
                 other.passPhrase == passPhrase) &&
@@ -310,8 +310,8 @@ class _$_CreateWalletState extends _CreateWalletState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CreateWalletStateCopyWith<_$_CreateWalletState> get copyWith =>
-      __$$_CreateWalletStateCopyWithImpl<_$_CreateWalletState>(
+  _$$CreateWalletStateImplCopyWith<_$CreateWalletStateImpl> get copyWith =>
+      __$$CreateWalletStateImplCopyWithImpl<_$CreateWalletStateImpl>(
           this, _$identity);
 }
 
@@ -324,7 +324,7 @@ abstract class _CreateWalletState extends CreateWalletState {
       final bool saving,
       final String errSaving,
       final bool saved,
-      final Wallet? savedWallet}) = _$_CreateWalletState;
+      final Wallet? savedWallet}) = _$CreateWalletStateImpl;
   const _CreateWalletState._() : super._();
 
   @override
@@ -355,6 +355,6 @@ abstract class _CreateWalletState extends CreateWalletState {
   Wallet? get savedWallet;
   @override
   @JsonKey(ignore: true)
-  _$$_CreateWalletStateCopyWith<_$_CreateWalletState> get copyWith =>
+  _$$CreateWalletStateImplCopyWith<_$CreateWalletStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
