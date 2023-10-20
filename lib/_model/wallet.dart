@@ -92,6 +92,10 @@ class Wallet with _$Wallet {
     return '[$sourceFingerprint/$purposePathString()/$networkPathString()/$accountPathString()]';
   }
 
+  String getDescriptorCombined() {
+    return externalPublicDescriptor.replaceAll('/0/', '/[0;1]/');
+  }
+
   // storage key
   String getRelatedSeedStorageString() {
     return mnemonicFingerprint;

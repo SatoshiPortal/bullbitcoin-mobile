@@ -48,6 +48,8 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final fingerPrint = context.select((WalletBloc _) => _.state.wallet?.sourceFingerprint ?? '');
 
+    final descriptorCombined =
+        context.select((WalletBloc _) => _.state.wallet?.getDescriptorCombined() ?? '');
     final descriptor =
         context.select((WalletBloc _) => _.state.wallet?.externalPublicDescriptor ?? '');
     final pub = keyFromDescriptor(descriptor);
@@ -68,7 +70,7 @@ class _Screen extends StatelessWidget {
             const BBText.title('Wallet fingerprint'),
             BBText.body(fingerPrint, isBold: true),
             const Gap(16),
-            const BBText.title('XPub'),
+            const BBText.title('Pubkey'),
             BBText.body(slipKey ?? pub, isBold: true),
             BBButton.text(
               label: 'Copy',
@@ -78,11 +80,11 @@ class _Screen extends StatelessWidget {
             ),
             const Gap(16),
             const BBText.title('Descriptor'),
-            BBText.body(descriptor, isBold: true),
+            BBText.body(descriptorCombined, isBold: true),
             BBButton.text(
               label: 'Copy',
               onPressed: () {
-                copy(context, descriptor);
+                copy(context, descriptorCombined);
               },
             ),
             const Gap(16),
