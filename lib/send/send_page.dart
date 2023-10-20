@@ -477,6 +477,7 @@ class TxSuccess extends StatelessWidget {
               ),
             ),
           ),
+          // const Gap(240),
         ],
       ),
     );
