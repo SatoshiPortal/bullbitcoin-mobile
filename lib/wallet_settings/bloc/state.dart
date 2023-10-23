@@ -55,39 +55,15 @@ class WalletSettingsState with _$WalletSettingsState {
   int _actualIdx(int shuffleIdx) {
     final word = shuffledMnemonic[shuffleIdx];
     final wordCount = mnemonic.where((w) => w == word).length;
-    if (wordCount == 1) {
-      final idx = mnemonic.indexOf(word);
-      return idx;
-    }
 
-    final idx = _sameWordActualIdx(shuffleIdx);
-    final isSelected = _isSelected(shuffleIdx);
-    if (isSelected) {
-      final selectedActualIdx =
-          testMnemonicOrder.firstWhere((w) => w.shuffleIdx == shuffleIdx).selectedActualIdx;
-      return selectedActualIdx!;
-    }
-    return idx;
+    if (wordCount == 1) return mnemonic.indexOf(word);
+    if (_isSelected(shuffleIdx))
+      return testMnemonicOrder.firstWhere((w) => w.shuffleIdx == shuffleIdx).selectedActualIdx!;
+    return mnemonic.indexOf(word, testMnemonicOrder.length - 1);
   }
 
-  int _sameWordActualIdx(int shuffleIdx) {
-    final word = shuffledMnemonic[shuffleIdx];
-    final wordCount = mnemonic.where((w) => w == word).length;
-    final wordInTestMneCount = testMnemonicOrder.where((w) => w.word == word).length;
-    if (wordCount == wordInTestMneCount) {
-      final idx = mnemonic.indexOf(word, testMnemonicOrder.length - 1);
-      return idx;
-    }
+  bool _isSelected(int shuffleIdx) =>
+      testMnemonicOrder.where((w) => w.shuffleIdx == shuffleIdx).isNotEmpty;
 
-    final idx = mnemonic.indexOf(word, testMnemonicOrder.length - 1);
-    return idx;
-  }
-
-  bool _isSelected(int shuffleIdx) {
-    return testMnemonicOrder.where((w) => w.shuffleIdx == shuffleIdx).isNotEmpty;
-  }
-
-  String testMneString() {
-    return testMnemonicOrder.map((w) => w.word).join(' ');
-  }
+  String testMneString() => testMnemonicOrder.map((w) => w.word).join(' ');
 }
