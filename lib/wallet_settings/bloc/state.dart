@@ -16,7 +16,7 @@ class WalletSettingsState with _$WalletSettingsState {
     @Default([]) List<String> mnemonic,
     @Default('') String password,
     @Default([]) List<String> shuffledMnemonic,
-    @Default([]) List<({String word, int shuffleIdx})> testMnemonicOrder,
+    @Default([]) List<({String word, int shuffleIdx, int? selectedActualIdx})> testMnemonicOrder,
     @Default('') String testBackupPassword,
     /**
      * 
@@ -55,14 +55,32 @@ class WalletSettingsState with _$WalletSettingsState {
   int _actualIdx(int shuffleIdx) {
     final word = shuffledMnemonic[shuffleIdx];
     final wordCount = mnemonic.where((w) => w == word).length;
-    if (wordCount == 1) return mnemonic.indexOf(word);
-    // final sameWordList = testMnemonicOrder.where((w) => w.word == word).toList();
-    if (!_isSelected(shuffleIdx)) {
+    if (wordCount == 1) {
+      final idx = mnemonic.indexOf(word);
+      return idx;
+    }
+
+    final idx = _sameWordActualIdx(shuffleIdx);
+    final isSelected = _isSelected(shuffleIdx);
+    if (isSelected) {
+      final selectedActualIdx =
+          testMnemonicOrder.firstWhere((w) => w.shuffleIdx == shuffleIdx).selectedActualIdx;
+      return selectedActualIdx!;
+    }
+    return idx;
+  }
+
+  int _sameWordActualIdx(int shuffleIdx) {
+    final word = shuffledMnemonic[shuffleIdx];
+    final wordCount = mnemonic.where((w) => w == word).length;
+    final wordInTestMneCount = testMnemonicOrder.where((w) => w.word == word).length;
+    if (wordCount == wordInTestMneCount) {
       final idx = mnemonic.indexOf(word, testMnemonicOrder.length - 1);
       return idx;
     }
-    // final position = sameWordList.indexWhere((w) => w.shuffleIdx == shuffleIdx);
-    return mnemonic.indexOf(word, testMnemonicOrder.length - 1);
+
+    final idx = mnemonic.indexOf(word, testMnemonicOrder.length - 1);
+    return idx;
   }
 
   bool _isSelected(int shuffleIdx) {
@@ -73,24 +91,3 @@ class WalletSettingsState with _$WalletSettingsState {
     return testMnemonicOrder.map((w) => w.word).join(' ');
   }
 }
-
-
-// final word = shuffledMnemonic[shuffleIdx];
-// final wordCount = mnemonic.where((w) => w == word).length;
-// final wordInTestMneCount = testMnemonicOrder.where((w) => w.$1 == word).length;
-// if (wordCount == wordInTestMneCount) return true;
-// return false;
-
-// final isSelected = testMnemonicOrder.contains(word);
-// final actualIdx = mnemonic.indexOf(word);
-
-// String elementAt(int index) {
-//   return mnemonic[index];
-// }
-
-// extension Helpers on List<String> {
-//   bool hasRepeatedWord(String word) {
-//     final count = where((w) => w == word).length;
-//     return count > 1;
-//   }
-// }

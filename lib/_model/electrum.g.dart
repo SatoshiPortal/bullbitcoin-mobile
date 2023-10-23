@@ -6,9 +6,9 @@ part of 'electrum.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$BullbitcoinElectrumNetworkImpl _$$BullbitcoinElectrumNetworkImplFromJson(
+_$_BullbitcoinElectrumNetwork _$$_BullbitcoinElectrumNetworkFromJson(
         Map<String, dynamic> json) =>
-    _$BullbitcoinElectrumNetworkImpl(
+    _$_BullbitcoinElectrumNetwork(
       mainnet: json['mainnet'] as String? ?? 'ssl://$bbelectrum:50002',
       testnet: json['testnet'] as String? ?? 'ssl://$bbelectrum:60002',
       stopGap: json['stopGap'] as int? ?? 20,
@@ -21,8 +21,8 @@ _$BullbitcoinElectrumNetworkImpl _$$BullbitcoinElectrumNetworkImplFromJson(
       $type: json['runtimeType'] as String?,
     );
 
-Map<String, dynamic> _$$BullbitcoinElectrumNetworkImplToJson(
-        _$BullbitcoinElectrumNetworkImpl instance) =>
+Map<String, dynamic> _$$_BullbitcoinElectrumNetworkToJson(
+        _$_BullbitcoinElectrumNetwork instance) =>
     <String, dynamic>{
       'mainnet': instance.mainnet,
       'testnet': instance.testnet,
@@ -41,9 +41,9 @@ const _$ElectrumTypesEnumMap = {
   ElectrumTypes.custom: 'custom',
 };
 
-_$DefaultElectrumNetworkImpl _$$DefaultElectrumNetworkImplFromJson(
+_$_DefaultElectrumNetwork _$$_DefaultElectrumNetworkFromJson(
         Map<String, dynamic> json) =>
-    _$DefaultElectrumNetworkImpl(
+    _$_DefaultElectrumNetwork(
       mainnet: json['mainnet'] as String? ?? 'ssl://$openelectrum:50002',
       testnet: json['testnet'] as String? ?? 'ssl://$openelectrum:60002',
       stopGap: json['stopGap'] as int? ?? 20,
@@ -56,8 +56,8 @@ _$DefaultElectrumNetworkImpl _$$DefaultElectrumNetworkImplFromJson(
       $type: json['runtimeType'] as String?,
     );
 
-Map<String, dynamic> _$$DefaultElectrumNetworkImplToJson(
-        _$DefaultElectrumNetworkImpl instance) =>
+Map<String, dynamic> _$$_DefaultElectrumNetworkToJson(
+        _$_DefaultElectrumNetwork instance) =>
     <String, dynamic>{
       'mainnet': instance.mainnet,
       'testnet': instance.testnet,
@@ -70,9 +70,9 @@ Map<String, dynamic> _$$DefaultElectrumNetworkImplToJson(
       'runtimeType': instance.$type,
     };
 
-_$CustomElectrumNetworkImpl _$$CustomElectrumNetworkImplFromJson(
+_$_CustomElectrumNetwork _$$_CustomElectrumNetworkFromJson(
         Map<String, dynamic> json) =>
-    _$CustomElectrumNetworkImpl(
+    _$_CustomElectrumNetwork(
       mainnet: json['mainnet'] as String,
       testnet: json['testnet'] as String,
       stopGap: json['stopGap'] as int? ?? 20,
@@ -85,8 +85,8 @@ _$CustomElectrumNetworkImpl _$$CustomElectrumNetworkImplFromJson(
       $type: json['runtimeType'] as String?,
     );
 
-Map<String, dynamic> _$$CustomElectrumNetworkImplToJson(
-        _$CustomElectrumNetworkImpl instance) =>
+Map<String, dynamic> _$$_CustomElectrumNetworkToJson(
+        _$_CustomElectrumNetwork instance) =>
     <String, dynamic>{
       'mainnet': instance.mainnet,
       'testnet': instance.testnet,

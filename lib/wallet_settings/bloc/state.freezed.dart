@@ -26,8 +26,8 @@ mixin _$WalletSettingsState {
   List<String> get mnemonic => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   List<String> get shuffledMnemonic => throw _privateConstructorUsedError;
-  List<({int shuffleIdx, String word})> get testMnemonicOrder =>
-      throw _privateConstructorUsedError;
+  List<({int? selectedActualIdx, int shuffleIdx, String word})>
+      get testMnemonicOrder => throw _privateConstructorUsedError;
   String get testBackupPassword => throw _privateConstructorUsedError;
   /**
      * 
@@ -67,7 +67,8 @@ abstract class $WalletSettingsStateCopyWith<$Res> {
       List<String> mnemonic,
       String password,
       List<String> shuffledMnemonic,
-      List<({int shuffleIdx, String word})> testMnemonicOrder,
+      List<({int? selectedActualIdx, int shuffleIdx, String word})>
+          testMnemonicOrder,
       String testBackupPassword,
       bool backup,
       bool testingBackup,
@@ -148,7 +149,7 @@ class _$WalletSettingsStateCopyWithImpl<$Res, $Val extends WalletSettingsState>
       testMnemonicOrder: null == testMnemonicOrder
           ? _value.testMnemonicOrder
           : testMnemonicOrder // ignore: cast_nullable_to_non_nullable
-              as List<({int shuffleIdx, String word})>,
+              as List<({int? selectedActualIdx, int shuffleIdx, String word})>,
       testBackupPassword: null == testBackupPassword
           ? _value.testBackupPassword
           : testBackupPassword // ignore: cast_nullable_to_non_nullable
@@ -226,11 +227,11 @@ class _$WalletSettingsStateCopyWithImpl<$Res, $Val extends WalletSettingsState>
 }
 
 /// @nodoc
-abstract class _$$WalletSettingsStateImplCopyWith<$Res>
+abstract class _$$_WalletSettingsStateCopyWith<$Res>
     implements $WalletSettingsStateCopyWith<$Res> {
-  factory _$$WalletSettingsStateImplCopyWith(_$WalletSettingsStateImpl value,
-          $Res Function(_$WalletSettingsStateImpl) then) =
-      __$$WalletSettingsStateImplCopyWithImpl<$Res>;
+  factory _$$_WalletSettingsStateCopyWith(_$_WalletSettingsState value,
+          $Res Function(_$_WalletSettingsState) then) =
+      __$$_WalletSettingsStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -239,7 +240,8 @@ abstract class _$$WalletSettingsStateImplCopyWith<$Res>
       List<String> mnemonic,
       String password,
       List<String> shuffledMnemonic,
-      List<({int shuffleIdx, String word})> testMnemonicOrder,
+      List<({int? selectedActualIdx, int shuffleIdx, String word})>
+          testMnemonicOrder,
       String testBackupPassword,
       bool backup,
       bool testingBackup,
@@ -262,11 +264,11 @@ abstract class _$$WalletSettingsStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$WalletSettingsStateImplCopyWithImpl<$Res>
-    extends _$WalletSettingsStateCopyWithImpl<$Res, _$WalletSettingsStateImpl>
-    implements _$$WalletSettingsStateImplCopyWith<$Res> {
-  __$$WalletSettingsStateImplCopyWithImpl(_$WalletSettingsStateImpl _value,
-      $Res Function(_$WalletSettingsStateImpl) _then)
+class __$$_WalletSettingsStateCopyWithImpl<$Res>
+    extends _$WalletSettingsStateCopyWithImpl<$Res, _$_WalletSettingsState>
+    implements _$$_WalletSettingsStateCopyWith<$Res> {
+  __$$_WalletSettingsStateCopyWithImpl(_$_WalletSettingsState _value,
+      $Res Function(_$_WalletSettingsState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -295,7 +297,7 @@ class __$$WalletSettingsStateImplCopyWithImpl<$Res>
     Object? errSavingFile = null,
     Object? savedFile = null,
   }) {
-    return _then(_$WalletSettingsStateImpl(
+    return _then(_$_WalletSettingsState(
       wallet: null == wallet
           ? _value.wallet
           : wallet // ignore: cast_nullable_to_non_nullable
@@ -319,7 +321,7 @@ class __$$WalletSettingsStateImplCopyWithImpl<$Res>
       testMnemonicOrder: null == testMnemonicOrder
           ? _value._testMnemonicOrder
           : testMnemonicOrder // ignore: cast_nullable_to_non_nullable
-              as List<({int shuffleIdx, String word})>,
+              as List<({int? selectedActualIdx, int shuffleIdx, String word})>,
       testBackupPassword: null == testBackupPassword
           ? _value.testBackupPassword
           : testBackupPassword // ignore: cast_nullable_to_non_nullable
@@ -390,14 +392,15 @@ class __$$WalletSettingsStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$WalletSettingsStateImpl extends _WalletSettingsState {
-  const _$WalletSettingsStateImpl(
+class _$_WalletSettingsState extends _WalletSettingsState {
+  const _$_WalletSettingsState(
       {required this.wallet,
       this.name = '',
       final List<String> mnemonic = const [],
       this.password = '',
       final List<String> shuffledMnemonic = const [],
-      final List<({int shuffleIdx, String word})> testMnemonicOrder = const [],
+      final List<({int? selectedActualIdx, int shuffleIdx, String word})>
+          testMnemonicOrder = const [],
       this.testBackupPassword = '',
       this.backup = false,
       this.testingBackup = false,
@@ -456,10 +459,12 @@ class _$WalletSettingsStateImpl extends _WalletSettingsState {
     return EqualUnmodifiableListView(_shuffledMnemonic);
   }
 
-  final List<({int shuffleIdx, String word})> _testMnemonicOrder;
+  final List<({int? selectedActualIdx, int shuffleIdx, String word})>
+      _testMnemonicOrder;
   @override
   @JsonKey()
-  List<({int shuffleIdx, String word})> get testMnemonicOrder {
+  List<({int? selectedActualIdx, int shuffleIdx, String word})>
+      get testMnemonicOrder {
     if (_testMnemonicOrder is EqualUnmodifiableListView)
       return _testMnemonicOrder;
     // ignore: implicit_dynamic_type
@@ -529,7 +534,7 @@ class _$WalletSettingsStateImpl extends _WalletSettingsState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$WalletSettingsStateImpl &&
+            other is _$_WalletSettingsState &&
             (identical(other.wallet, wallet) || other.wallet == wallet) &&
             (identical(other.name, name) || other.name == name) &&
             const DeepCollectionEquality().equals(other._mnemonic, _mnemonic) &&
@@ -601,8 +606,8 @@ class _$WalletSettingsStateImpl extends _WalletSettingsState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$WalletSettingsStateImplCopyWith<_$WalletSettingsStateImpl> get copyWith =>
-      __$$WalletSettingsStateImplCopyWithImpl<_$WalletSettingsStateImpl>(
+  _$$_WalletSettingsStateCopyWith<_$_WalletSettingsState> get copyWith =>
+      __$$_WalletSettingsStateCopyWithImpl<_$_WalletSettingsState>(
           this, _$identity);
 }
 
@@ -613,7 +618,8 @@ abstract class _WalletSettingsState extends WalletSettingsState {
       final List<String> mnemonic,
       final String password,
       final List<String> shuffledMnemonic,
-      final List<({int shuffleIdx, String word})> testMnemonicOrder,
+      final List<({int? selectedActualIdx, int shuffleIdx, String word})>
+          testMnemonicOrder,
       final String testBackupPassword,
       final bool backup,
       final bool testingBackup,
@@ -629,7 +635,7 @@ abstract class _WalletSettingsState extends WalletSettingsState {
       final bool deleted,
       final bool savingFile,
       final String errSavingFile,
-      final bool savedFile}) = _$WalletSettingsStateImpl;
+      final bool savedFile}) = _$_WalletSettingsState;
   const _WalletSettingsState._() : super._();
 
   @override
@@ -648,7 +654,8 @@ abstract class _WalletSettingsState extends WalletSettingsState {
   @override
   List<String> get shuffledMnemonic;
   @override
-  List<({int shuffleIdx, String word})> get testMnemonicOrder;
+  List<({int? selectedActualIdx, int shuffleIdx, String word})>
+      get testMnemonicOrder;
   @override
   String get testBackupPassword;
   @override
@@ -688,6 +695,6 @@ abstract class _WalletSettingsState extends WalletSettingsState {
   bool get savedFile;
   @override
   @JsonKey(ignore: true)
-  _$$WalletSettingsStateImplCopyWith<_$WalletSettingsStateImpl> get copyWith =>
+  _$$_WalletSettingsStateCopyWith<_$_WalletSettingsState> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -164,6 +164,7 @@ class BackupTestItemWord extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.fromLTRB(4, 0, 4, 24),
         child: InkWell(
+          borderRadius: BorderRadius.circular(80),
           onTap: () {
             if (mnemonic.length == 12)
               context.read<WalletSettingsCubit>().wordClicked(index);
@@ -221,6 +222,9 @@ class TestBackupPassField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tested = context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
+    if (tested) return const SizedBox.shrink();
+
     final hasPassphrase = context.select((WalletBloc x) => x.state.wallet!.hasPassphrase());
 
     if (!hasPassphrase) return const SizedBox.shrink();
