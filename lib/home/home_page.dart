@@ -23,7 +23,6 @@ import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -52,7 +51,7 @@ class HomePage extends StatelessWidget {
 class _Screen extends HookWidget {
   static const _pages = [
     HomeWallets(),
-    MarketHome(),
+    // MarketHome(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -73,30 +72,6 @@ class _Screen extends HookWidget {
       //   },
       //   pageIdx: pageIdx.value,
       // ),
-    );
-  }
-}
-
-class MarketHome extends StatelessWidget {
-  const MarketHome({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: context.colour.onBackground,
-      child: CenterLeft(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: const BBText.headline(
-            'BITCOIN\nEXCHANGE\nCOMING\nSOON!',
-            onSurface: true,
-          ).animate(delay: const Duration(milliseconds: 400)).fadeIn(),
-        ),
-      ),
     );
   }
 }
@@ -355,6 +330,17 @@ class HomeTopBar extends StatelessWidget {
           ),
           onPressed: () {
             context.push('/settings');
+          },
+        ),
+        IconButton(
+          // key: UIKeys.homeSettingsButton,
+          color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
+          icon: const Icon(
+            FontAwesomeIcons.userLarge,
+            shadows: [],
+          ),
+          onPressed: () {
+            context.push('/market');
           },
         ),
         const Gap(16),

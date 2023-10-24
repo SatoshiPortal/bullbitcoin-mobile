@@ -4,6 +4,7 @@ import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
+import 'package:bb_mobile/home/market.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/wallet_select.dart';
@@ -149,6 +150,12 @@ final GoRouter router = GoRouter(
       path: '/logs',
       builder: (context, state) {
         return const LoggerPage();
+      },
+    ),
+    GoRoute(
+      path: '/market',
+      builder: (context, state) {
+        return const MarketHome();
       },
     ),
   ],
