@@ -9,6 +9,7 @@ import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/wallet_select.dart';
 import 'package:bb_mobile/send/wallet_select.dart';
+import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -156,6 +157,12 @@ final GoRouter router = GoRouter(
       path: '/market',
       builder: (context, state) {
         return const MarketHome();
+      },
+    ),
+    GoRoute(
+      path: '/broadcast',
+      builder: (context, state) {
+        return const BroadcasePage();
       },
     ),
   ],

@@ -2,11 +2,10 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
-import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_cubit.dart';
@@ -19,12 +18,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-class BroadcasePopUp extends StatelessWidget {
-  const BroadcasePopUp({super.key});
+class BroadcasePage extends StatelessWidget {
+  const BroadcasePage({super.key});
 
-  static Future openPopUp(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     final broadcast = BroadcastTxCubit(
       barcode: locator<Barcode>(),
       filePicker: locator<FilePick>(),
@@ -34,122 +33,125 @@ class BroadcasePopUp extends StatelessWidget {
       homeCubit: locator<HomeCubit>(),
     );
 
-    return showMaterialModalBottomSheet(
-      context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
-        value: broadcast,
-        child: BlocListener<BroadcastTxCubit, BroadcastTxState>(
-          listenWhen: (previous, current) => previous.sent != current.sent,
-          listener: (context, state) async {
-            if (state.sent) {
-              await Future.delayed(3.seconds);
-              context.pop();
-            }
-          },
-          child: const BroadcasePopUp(),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final step = context.select((BroadcastTxCubit cubit) => cubit.state.step);
-
-    return PopUpBorder(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 32,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const BBHeader.popUpCenteredText(
-              text: 'BROADCAST',
-              // isLeft: true,
+    return BlocProvider.value(
+      value: broadcast,
+      child: BlocListener<BroadcastTxCubit, BroadcastTxState>(
+        listenWhen: (previous, current) => previous.sent != current.sent,
+        listener: (context, state) async {
+          if (state.sent) {
+            await Future.delayed(3.seconds);
+            context.pop();
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            flexibleSpace: BBAppBar(
+              text: 'Broadcast',
+              onBack: () {
+                context.pop();
+              },
             ),
-            const Gap(16),
-            if (step == BroadcastTxStep.broadcast) ...[
-              const TxInfo(),
-            ] else ...[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(width: 14),
-                  const BBText.body(
-                    'Import Transaction',
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const FaIcon(
-                      FontAwesomeIcons.xmark,
-                      size: 14,
-                    ),
-                  ),
-                ],
+          ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 16,
+                horizontal: 32,
               ),
-              const Gap(24),
-              Center(
-                child: GestureDetector(
-                  onTap: () {
-                    context.read<BroadcastTxCubit>().scanQRClicked();
-                  },
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.width * 0.7,
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    child: Material(
-                      borderRadius: BorderRadius.circular(24),
-                      color: context.colour.surface.withOpacity(0.3),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+              child: BlocBuilder<BroadcastTxCubit, BroadcastTxState>(
+                buildWhen: (previous, current) => previous.step != current.step,
+                builder: (context, state) {
+                  final step = state.step;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Gap(16),
+                      if (step == BroadcastTxStep.broadcast) ...[
+                        const TxInfo(),
+                      ] else ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            FaIcon(
-                              FontAwesomeIcons.camera,
-                              size: 64,
-                              color: context.colour.onPrimary,
-                            ),
-                            const Gap(8),
+                            const SizedBox(width: 14),
                             const BBText.body(
-                              'Scan Txn',
+                              'Import Transaction',
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const FaIcon(
+                                FontAwesomeIcons.xmark,
+                                size: 14,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                  ),
-                ),
+                        const Gap(24),
+                        Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              context.read<BroadcastTxCubit>().scanQRClicked();
+                            },
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.width * 0.7,
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: Material(
+                                borderRadius: BorderRadius.circular(24),
+                                color: context.colour.surface.withOpacity(0.3),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      FaIcon(
+                                        FontAwesomeIcons.camera,
+                                        size: 64,
+                                        color: context.colour.onPrimary,
+                                      ),
+                                      const Gap(8),
+                                      const BBText.body(
+                                        'Scan Txn',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Gap(24),
+                        Center(
+                          child: SizedBox(
+                            width: 300,
+                            child: BBButton.bigBlack(
+                              filled: true,
+                              onPressed: () {
+                                context.read<BroadcastTxCubit>().uploadFileClicked();
+                              },
+                              label: 'UPLOAD FILE',
+                            ),
+                          ),
+                        ),
+                        const Gap(24),
+                        const BBText.body(
+                          '    Transaction',
+                        ),
+                        const Gap(4),
+                        const _TxTextField(),
+                      ],
+                      const Gap(80),
+                      const SendButton(),
+                      const Gap(48),
+                    ],
+                  );
+                },
               ),
-              const Gap(24),
-              Center(
-                child: SizedBox(
-                  width: 300,
-                  child: BBButton.bigBlack(
-                    filled: true,
-                    onPressed: () {
-                      context.read<BroadcastTxCubit>().uploadFileClicked();
-                    },
-                    label: 'UPLOAD FILE',
-                  ),
-                ),
-              ),
-              const Gap(24),
-              const BBText.body(
-                '    Transaction',
-              ),
-              const Gap(4),
-              const _TxTextField(),
-            ],
-            const Gap(80),
-            const SendButton(),
-            const Gap(48),
-          ],
+            ),
+          ),
         ),
       ),
     );

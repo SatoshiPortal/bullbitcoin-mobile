@@ -7,7 +7,6 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/fees.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/electrum.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -230,7 +229,8 @@ class BroadCastButton extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Broadcast transaction',
       onPressed: () {
-        BroadcasePopUp.openPopUp(context);
+        context.push('/broadcast');
+        // BroadcasePage.openPopUp(context);
       },
     );
   }
