@@ -250,7 +250,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       {
         emit(
           state.copyWith(
-            errTestingBackup: 'Mnemonic does not match',
+            errTestingBackup: 'Your seed words are incorrect',
             testingBackup: false,
           ),
         );
@@ -260,7 +260,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     if (!psd) {
       emit(
         state.copyWith(
-          errTestingBackup: 'Password does not match',
+          errTestingBackup: 'Your passphrase is incorrect',
           testingBackup: false,
         ),
       );
