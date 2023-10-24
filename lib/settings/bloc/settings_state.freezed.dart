@@ -46,7 +46,8 @@ mixin _$SettingsState {
   List<int>? get feesList => throw _privateConstructorUsedError;
   int get selectedFeesOption => throw _privateConstructorUsedError; //
   bool get loadingFees => throw _privateConstructorUsedError;
-  String get errLoadingFees => throw _privateConstructorUsedError; //
+  String get errLoadingFees => throw _privateConstructorUsedError;
+  ElectrumTypes? get tempNetwork => throw _privateConstructorUsedError;
   bool get defaultRBF => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -89,6 +90,7 @@ abstract class $SettingsStateCopyWith<$Res> {
       int selectedFeesOption,
       bool loadingFees,
       String errLoadingFees,
+      ElectrumTypes? tempNetwork,
       bool defaultRBF});
 
   $CurrencyCopyWith<$Res>? get currency;
@@ -133,6 +135,7 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? selectedFeesOption = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
+    Object? tempNetwork = freezed,
     Object? defaultRBF = null,
   }) {
     return _then(_value.copyWith(
@@ -240,6 +243,10 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.errLoadingFees
           : errLoadingFees // ignore: cast_nullable_to_non_nullable
               as String,
+      tempNetwork: freezed == tempNetwork
+          ? _value.tempNetwork
+          : tempNetwork // ignore: cast_nullable_to_non_nullable
+              as ElectrumTypes?,
       defaultRBF: null == defaultRBF
           ? _value.defaultRBF
           : defaultRBF // ignore: cast_nullable_to_non_nullable
@@ -296,6 +303,7 @@ abstract class _$$_SettingsStateCopyWith<$Res>
       int selectedFeesOption,
       bool loadingFees,
       String errLoadingFees,
+      ElectrumTypes? tempNetwork,
       bool defaultRBF});
 
   @override
@@ -339,6 +347,7 @@ class __$$_SettingsStateCopyWithImpl<$Res>
     Object? selectedFeesOption = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
+    Object? tempNetwork = freezed,
     Object? defaultRBF = null,
   }) {
     return _then(_$_SettingsState(
@@ -446,6 +455,10 @@ class __$$_SettingsStateCopyWithImpl<$Res>
           ? _value.errLoadingFees
           : errLoadingFees // ignore: cast_nullable_to_non_nullable
               as String,
+      tempNetwork: freezed == tempNetwork
+          ? _value.tempNetwork
+          : tempNetwork // ignore: cast_nullable_to_non_nullable
+              as ElectrumTypes?,
       defaultRBF: null == defaultRBF
           ? _value.defaultRBF
           : defaultRBF // ignore: cast_nullable_to_non_nullable
@@ -484,6 +497,7 @@ class _$_SettingsState extends _SettingsState {
       this.selectedFeesOption = 2,
       this.loadingFees = false,
       this.errLoadingFees = '',
+      this.tempNetwork,
       this.defaultRBF = true})
       : _currencyList = currencyList,
         _languageList = languageList,
@@ -600,14 +614,15 @@ class _$_SettingsState extends _SettingsState {
   @override
   @JsonKey()
   final String errLoadingFees;
-//
+  @override
+  final ElectrumTypes? tempNetwork;
   @override
   @JsonKey()
   final bool defaultRBF;
 
   @override
   String toString() {
-    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, stopGap: $stopGap, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, defaultRBF: $defaultRBF)';
+    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, stopGap: $stopGap, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, tempNetwork: $tempNetwork, defaultRBF: $defaultRBF)';
   }
 
   @override
@@ -662,6 +677,8 @@ class _$_SettingsState extends _SettingsState {
                 other.loadingFees == loadingFees) &&
             (identical(other.errLoadingFees, errLoadingFees) ||
                 other.errLoadingFees == errLoadingFees) &&
+            (identical(other.tempNetwork, tempNetwork) ||
+                other.tempNetwork == tempNetwork) &&
             (identical(other.defaultRBF, defaultRBF) ||
                 other.defaultRBF == defaultRBF));
   }
@@ -696,6 +713,7 @@ class _$_SettingsState extends _SettingsState {
         selectedFeesOption,
         loadingFees,
         errLoadingFees,
+        tempNetwork,
         defaultRBF
       ]);
 
@@ -742,6 +760,7 @@ abstract class _SettingsState extends SettingsState {
       final int selectedFeesOption,
       final bool loadingFees,
       final String errLoadingFees,
+      final ElectrumTypes? tempNetwork,
       final bool defaultRBF}) = _$_SettingsState;
   const _SettingsState._() : super._();
 
@@ -801,7 +820,9 @@ abstract class _SettingsState extends SettingsState {
   bool get loadingFees;
   @override
   String get errLoadingFees;
-  @override //
+  @override
+  ElectrumTypes? get tempNetwork;
+  @override
   bool get defaultRBF;
   @override
   @JsonKey(ignore: true)

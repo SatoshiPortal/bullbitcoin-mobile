@@ -8,11 +8,13 @@ class BBHeader extends StatelessWidget {
     required this.text,
     this.showBack = true,
     this.isLeft = false,
+    this.onBack,
   });
 
   final String text;
   final bool showBack;
   final bool isLeft;
+  final Function? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,10 @@ class BBHeader extends StatelessWidget {
               icon: const FaIcon(FontAwesomeIcons.xmark),
               color: context.colour.onBackground,
               onPressed: () {
-                Navigator.of(context).pop();
+                if (onBack == null)
+                  Navigator.of(context).pop();
+                else
+                  onBack!();
               },
             ),
         ],

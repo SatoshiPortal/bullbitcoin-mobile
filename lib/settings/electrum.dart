@@ -116,19 +116,26 @@ class NetworkScreen extends StatelessWidget {
     final networks = context.select((SettingsCubit x) => x.state.networks);
     if (networks.isEmpty) return const SizedBox.shrink();
 
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Gap(8),
-          BBHeader.popUpCenteredText(text: 'Electrum Server', isLeft: true),
-          NetworkStatus(),
-          Gap(24),
-          SelectNetworkSegment(),
-          Gap(16),
-          NetworkConfigFields(),
-          Gap(80),
+          const Gap(8),
+          BBHeader.popUpCenteredText(
+            text: 'Electrum Server',
+            isLeft: true,
+            onBack: () {
+              context.read<SettingsCubit>().removeTempNetwork();
+              context.pop();
+            },
+          ),
+          const NetworkStatus(),
+          const Gap(24),
+          const SelectNetworkSegment(),
+          const Gap(16),
+          const NetworkConfigFields(),
+          const Gap(80),
         ],
       ),
     );
@@ -176,7 +183,10 @@ class SelectNetworkSegment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selected = context.select((SettingsCubit x) => x.state.selectedNetwork);
+    final tempSelected = context.select((SettingsCubit x) => x.state.tempNetwork);
+    final network = context.select((SettingsCubit x) => x.state.selectedNetwork);
+
+    final selected = tempSelected ?? network;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -222,7 +232,7 @@ class _SegmentButton extends StatelessWidget {
         onTap: () {
           final network = context.read<SettingsCubit>().networkFromString(text);
           if (network == null) return;
-          context.read<SettingsCubit>().changeNetwork(network);
+          context.read<SettingsCubit>().networkTypeTempChanged(network);
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
@@ -261,12 +271,14 @@ class NetworkConfigFields extends HookWidget {
   Widget build(BuildContext context) {
     final fieldWidth = MediaQuery.of(context).size.width * 0.7;
 
-    final network = context.select((SettingsCubit x) => x.state.getNetwork());
-    final index = context.select((SettingsCubit x) => x.state.selectedNetwork);
+    final network = context.select((SettingsCubit x) => x.state.getTempOrSelectedNetwork());
+    if (network == null) return const SizedBox.shrink();
+
+    final type = network.type;
+    // final index = context.select((SettingsCubit x) => x.state.selectedNetwork);
+
     final err = context.select((SettingsCubit x) => x.state.errLoadingNetworks);
     final loading = context.select((SettingsCubit x) => x.state.loadingNetworks);
-
-    if (network == null) return const SizedBox.shrink();
 
     final mainnet = useTextEditingController(text: network.mainnet);
     final testnet = useTextEditingController(text: network.testnet);
@@ -297,7 +309,7 @@ class NetworkConfigFields extends HookWidget {
               onChanged: (t) {},
               value: mainnet.text,
               controller: mainnet,
-              disabled: index != ElectrumTypes.custom,
+              disabled: type != ElectrumTypes.custom,
             ),
           ),
           const Gap(16),
@@ -309,7 +321,7 @@ class NetworkConfigFields extends HookWidget {
               onChanged: (t) {},
               value: testnet.text,
               controller: testnet,
-              disabled: index != ElectrumTypes.custom,
+              disabled: type != ElectrumTypes.custom,
             ),
           ),
           const Gap(16),
@@ -318,7 +330,7 @@ class NetworkConfigFields extends HookWidget {
               const BBText.body('Validate domain'),
               const Spacer(),
               IgnorePointer(
-                ignoring: index != ElectrumTypes.custom,
+                ignoring: type != ElectrumTypes.custom,
                 child: Switch(
                   value: validateDomain.value,
                   onChanged: (e) {

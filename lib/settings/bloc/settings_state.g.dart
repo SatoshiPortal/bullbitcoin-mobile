@@ -47,6 +47,8 @@ _$_SettingsState _$$_SettingsStateFromJson(Map<String, dynamic> json) =>
       selectedFeesOption: json['selectedFeesOption'] as int? ?? 2,
       loadingFees: json['loadingFees'] as bool? ?? false,
       errLoadingFees: json['errLoadingFees'] as String? ?? '',
+      tempNetwork:
+          $enumDecodeNullable(_$ElectrumTypesEnumMap, json['tempNetwork']),
       defaultRBF: json['defaultRBF'] as bool? ?? true,
     );
 
@@ -77,6 +79,7 @@ Map<String, dynamic> _$$_SettingsStateToJson(_$_SettingsState instance) =>
       'selectedFeesOption': instance.selectedFeesOption,
       'loadingFees': instance.loadingFees,
       'errLoadingFees': instance.errLoadingFees,
+      'tempNetwork': _$ElectrumTypesEnumMap[instance.tempNetwork],
       'defaultRBF': instance.defaultRBF,
     };
 

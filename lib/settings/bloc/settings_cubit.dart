@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/electrum.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
@@ -188,8 +189,8 @@ class SettingsCubit extends Cubit<SettingsState> {
       const ElectrumNetwork.defaultElectrum(),
       const ElectrumNetwork.bullbitcoin(),
       const ElectrumNetwork.custom(
-        mainnet: 'ssl://electrum.blockstream.info:50002',
-        testnet: 'ssl://electrum.blockstream.info:60002',
+        mainnet: 'ssl://$bbelectrum:50002',
+        testnet: 'ssl://$bbelectrum:60002',
       ),
     ];
 
@@ -211,6 +212,11 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void networkConfigsSaveClicked(ElectrumNetwork network) async {
+    if (state.tempNetwork != null) {
+      emit(state.copyWith(selectedNetwork: state.tempNetwork!));
+      await Future.delayed(const Duration(milliseconds: 50));
+      emit(state.copyWith(tempNetwork: null));
+    }
     final networks = state.networks.toList();
     final index = networks.indexWhere((element) => element.type == network.type);
     networks.removeAt(index);
@@ -221,6 +227,10 @@ class SettingsCubit extends Cubit<SettingsState> {
     await Future.delayed(const Duration(milliseconds: 50));
     setupBlockchain();
   }
+
+  void networkTypeTempChanged(ElectrumTypes types) => emit(state.copyWith(tempNetwork: types));
+
+  void removeTempNetwork() => emit(state.copyWith(tempNetwork: null));
 
   void loadFees() async {
     emit(state.copyWith(loadingFees: true, errLoadingFees: ''));

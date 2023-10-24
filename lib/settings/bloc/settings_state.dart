@@ -49,7 +49,7 @@ class SettingsState with _$SettingsState {
     //
     @Default(false) bool loadingFees,
     @Default('') String errLoadingFees,
-    //
+    ElectrumTypes? tempNetwork,
     @Default(true) bool defaultRBF,
   }) = _SettingsState;
   const SettingsState._();
@@ -59,6 +59,12 @@ class SettingsState with _$SettingsState {
   ElectrumNetwork? getNetwork() {
     if (networks.isEmpty) return null;
     return networks.firstWhere((_) => _.type == selectedNetwork);
+  }
+
+  ElectrumNetwork? getTempOrSelectedNetwork() {
+    if (networks.isEmpty) return null;
+    if (tempNetwork == null) return getNetwork();
+    return networks.firstWhere((_) => _.type == tempNetwork);
   }
 
   String satsFormatting(String satsAmount) {
