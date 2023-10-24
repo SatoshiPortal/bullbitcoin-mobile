@@ -28,7 +28,13 @@ mixin _$ReceiveState {
   String get description => throw _privateConstructorUsedError;
   String get savedDescription => throw _privateConstructorUsedError;
   bool get creatingInvoice => throw _privateConstructorUsedError;
-  String get errCreatingInvoice => throw _privateConstructorUsedError;
+  String get errCreatingInvoice =>
+      throw _privateConstructorUsedError; // Address? newInvoiceAddress,
+  Currency? get selectedCurrency => throw _privateConstructorUsedError;
+  List<Currency>? get currencyList => throw _privateConstructorUsedError;
+  bool get isSats => throw _privateConstructorUsedError;
+  bool get fiatSelected => throw _privateConstructorUsedError;
+  double get fiatAmt => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ReceiveStateCopyWith<ReceiveState> get copyWith =>
@@ -54,9 +60,15 @@ abstract class $ReceiveStateCopyWith<$Res> {
       String description,
       String savedDescription,
       bool creatingInvoice,
-      String errCreatingInvoice});
+      String errCreatingInvoice,
+      Currency? selectedCurrency,
+      List<Currency>? currencyList,
+      bool isSats,
+      bool fiatSelected,
+      double fiatAmt});
 
   $AddressCopyWith<$Res>? get defaultAddress;
+  $CurrencyCopyWith<$Res>? get selectedCurrency;
 }
 
 /// @nodoc
@@ -85,6 +97,11 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? savedDescription = null,
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
+    Object? selectedCurrency = freezed,
+    Object? currencyList = freezed,
+    Object? isSats = null,
+    Object? fiatSelected = null,
+    Object? fiatAmt = null,
   }) {
     return _then(_value.copyWith(
       loadingAddress: null == loadingAddress
@@ -139,6 +156,26 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.errCreatingInvoice
           : errCreatingInvoice // ignore: cast_nullable_to_non_nullable
               as String,
+      selectedCurrency: freezed == selectedCurrency
+          ? _value.selectedCurrency
+          : selectedCurrency // ignore: cast_nullable_to_non_nullable
+              as Currency?,
+      currencyList: freezed == currencyList
+          ? _value.currencyList
+          : currencyList // ignore: cast_nullable_to_non_nullable
+              as List<Currency>?,
+      isSats: null == isSats
+          ? _value.isSats
+          : isSats // ignore: cast_nullable_to_non_nullable
+              as bool,
+      fiatSelected: null == fiatSelected
+          ? _value.fiatSelected
+          : fiatSelected // ignore: cast_nullable_to_non_nullable
+              as bool,
+      fiatAmt: null == fiatAmt
+          ? _value.fiatAmt
+          : fiatAmt // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 
@@ -153,14 +190,26 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
       return _then(_value.copyWith(defaultAddress: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $CurrencyCopyWith<$Res>? get selectedCurrency {
+    if (_value.selectedCurrency == null) {
+      return null;
+    }
+
+    return $CurrencyCopyWith<$Res>(_value.selectedCurrency!, (value) {
+      return _then(_value.copyWith(selectedCurrency: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
-abstract class _$$ReceiveStateImplCopyWith<$Res>
+abstract class _$$_ReceiveStateCopyWith<$Res>
     implements $ReceiveStateCopyWith<$Res> {
-  factory _$$ReceiveStateImplCopyWith(
-          _$ReceiveStateImpl value, $Res Function(_$ReceiveStateImpl) then) =
-      __$$ReceiveStateImplCopyWithImpl<$Res>;
+  factory _$$_ReceiveStateCopyWith(
+          _$_ReceiveState value, $Res Function(_$_ReceiveState) then) =
+      __$$_ReceiveStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -176,18 +225,25 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       String description,
       String savedDescription,
       bool creatingInvoice,
-      String errCreatingInvoice});
+      String errCreatingInvoice,
+      Currency? selectedCurrency,
+      List<Currency>? currencyList,
+      bool isSats,
+      bool fiatSelected,
+      double fiatAmt});
 
   @override
   $AddressCopyWith<$Res>? get defaultAddress;
+  @override
+  $CurrencyCopyWith<$Res>? get selectedCurrency;
 }
 
 /// @nodoc
-class __$$ReceiveStateImplCopyWithImpl<$Res>
-    extends _$ReceiveStateCopyWithImpl<$Res, _$ReceiveStateImpl>
-    implements _$$ReceiveStateImplCopyWith<$Res> {
-  __$$ReceiveStateImplCopyWithImpl(
-      _$ReceiveStateImpl _value, $Res Function(_$ReceiveStateImpl) _then)
+class __$$_ReceiveStateCopyWithImpl<$Res>
+    extends _$ReceiveStateCopyWithImpl<$Res, _$_ReceiveState>
+    implements _$$_ReceiveStateCopyWith<$Res> {
+  __$$_ReceiveStateCopyWithImpl(
+      _$_ReceiveState _value, $Res Function(_$_ReceiveState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -206,8 +262,13 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? savedDescription = null,
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
+    Object? selectedCurrency = freezed,
+    Object? currencyList = freezed,
+    Object? isSats = null,
+    Object? fiatSelected = null,
+    Object? fiatAmt = null,
   }) {
-    return _then(_$ReceiveStateImpl(
+    return _then(_$_ReceiveState(
       loadingAddress: null == loadingAddress
           ? _value.loadingAddress
           : loadingAddress // ignore: cast_nullable_to_non_nullable
@@ -260,14 +321,34 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
           ? _value.errCreatingInvoice
           : errCreatingInvoice // ignore: cast_nullable_to_non_nullable
               as String,
+      selectedCurrency: freezed == selectedCurrency
+          ? _value.selectedCurrency
+          : selectedCurrency // ignore: cast_nullable_to_non_nullable
+              as Currency?,
+      currencyList: freezed == currencyList
+          ? _value._currencyList
+          : currencyList // ignore: cast_nullable_to_non_nullable
+              as List<Currency>?,
+      isSats: null == isSats
+          ? _value.isSats
+          : isSats // ignore: cast_nullable_to_non_nullable
+              as bool,
+      fiatSelected: null == fiatSelected
+          ? _value.fiatSelected
+          : fiatSelected // ignore: cast_nullable_to_non_nullable
+              as bool,
+      fiatAmt: null == fiatAmt
+          ? _value.fiatAmt
+          : fiatAmt // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
 
 /// @nodoc
 
-class _$ReceiveStateImpl extends _ReceiveState {
-  const _$ReceiveStateImpl(
+class _$_ReceiveState extends _ReceiveState {
+  const _$_ReceiveState(
       {this.loadingAddress = true,
       this.errLoadingAddress = '',
       this.defaultAddress,
@@ -280,8 +361,14 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.description = '',
       this.savedDescription = '',
       this.creatingInvoice = true,
-      this.errCreatingInvoice = ''})
-      : super._();
+      this.errCreatingInvoice = '',
+      this.selectedCurrency,
+      final List<Currency>? currencyList,
+      this.isSats = false,
+      this.fiatSelected = false,
+      this.fiatAmt = 0})
+      : _currencyList = currencyList,
+        super._();
 
   @override
   @JsonKey()
@@ -321,17 +408,39 @@ class _$ReceiveStateImpl extends _ReceiveState {
   @override
   @JsonKey()
   final String errCreatingInvoice;
+// Address? newInvoiceAddress,
+  @override
+  final Currency? selectedCurrency;
+  final List<Currency>? _currencyList;
+  @override
+  List<Currency>? get currencyList {
+    final value = _currencyList;
+    if (value == null) return null;
+    if (_currencyList is EqualUnmodifiableListView) return _currencyList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  @JsonKey()
+  final bool isSats;
+  @override
+  @JsonKey()
+  final bool fiatSelected;
+  @override
+  @JsonKey()
+  final double fiatAmt;
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, invoiceAmount: $invoiceAmount, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, invoiceAmount: $invoiceAmount, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ReceiveStateImpl &&
+            other is _$_ReceiveState &&
             (identical(other.loadingAddress, loadingAddress) ||
                 other.loadingAddress == loadingAddress) &&
             (identical(other.errLoadingAddress, errLoadingAddress) ||
@@ -357,7 +466,15 @@ class _$ReceiveStateImpl extends _ReceiveState {
             (identical(other.creatingInvoice, creatingInvoice) ||
                 other.creatingInvoice == creatingInvoice) &&
             (identical(other.errCreatingInvoice, errCreatingInvoice) ||
-                other.errCreatingInvoice == errCreatingInvoice));
+                other.errCreatingInvoice == errCreatingInvoice) &&
+            (identical(other.selectedCurrency, selectedCurrency) ||
+                other.selectedCurrency == selectedCurrency) &&
+            const DeepCollectionEquality()
+                .equals(other._currencyList, _currencyList) &&
+            (identical(other.isSats, isSats) || other.isSats == isSats) &&
+            (identical(other.fiatSelected, fiatSelected) ||
+                other.fiatSelected == fiatSelected) &&
+            (identical(other.fiatAmt, fiatAmt) || other.fiatAmt == fiatAmt));
   }
 
   @override
@@ -375,13 +492,18 @@ class _$ReceiveStateImpl extends _ReceiveState {
       description,
       savedDescription,
       creatingInvoice,
-      errCreatingInvoice);
+      errCreatingInvoice,
+      selectedCurrency,
+      const DeepCollectionEquality().hash(_currencyList),
+      isSats,
+      fiatSelected,
+      fiatAmt);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>
-      __$$ReceiveStateImplCopyWithImpl<_$ReceiveStateImpl>(this, _$identity);
+  _$$_ReceiveStateCopyWith<_$_ReceiveState> get copyWith =>
+      __$$_ReceiveStateCopyWithImpl<_$_ReceiveState>(this, _$identity);
 }
 
 abstract class _ReceiveState extends ReceiveState {
@@ -398,7 +520,12 @@ abstract class _ReceiveState extends ReceiveState {
       final String description,
       final String savedDescription,
       final bool creatingInvoice,
-      final String errCreatingInvoice}) = _$ReceiveStateImpl;
+      final String errCreatingInvoice,
+      final Currency? selectedCurrency,
+      final List<Currency>? currencyList,
+      final bool isSats,
+      final bool fiatSelected,
+      final double fiatAmt}) = _$_ReceiveState;
   const _ReceiveState._() : super._();
 
   @override
@@ -427,8 +554,18 @@ abstract class _ReceiveState extends ReceiveState {
   bool get creatingInvoice;
   @override
   String get errCreatingInvoice;
+  @override // Address? newInvoiceAddress,
+  Currency? get selectedCurrency;
+  @override
+  List<Currency>? get currencyList;
+  @override
+  bool get isSats;
+  @override
+  bool get fiatSelected;
+  @override
+  double get fiatAmt;
   @override
   @JsonKey(ignore: true)
-  _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>
+  _$$_ReceiveStateCopyWith<_$_ReceiveState> get copyWith =>
       throw _privateConstructorUsedError;
 }

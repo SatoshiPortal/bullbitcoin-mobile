@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
@@ -12,6 +13,7 @@ import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/receive/wallet_select.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -19,9 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:pattern_formatter/pattern_formatter.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class ReceiveScreen extends StatefulWidget {
@@ -474,6 +474,177 @@ class RenameLabel extends StatelessWidget {
   }
 }
 
+class InvoiceAmountField extends StatefulWidget {
+  const InvoiceAmountField({super.key});
+
+  @override
+  State<InvoiceAmountField> createState() => _InvoiceAmountFieldState();
+}
+
+class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  Widget build(BuildContext context) {
+    final _ = context.select((ReceiveCubit cubit) => cubit.state.selectedCurrency);
+
+    final isSats = context.select((ReceiveCubit cubit) => cubit.state.isSats);
+    final amount = context.select((ReceiveCubit cubit) => cubit.state.invoiceAmount);
+
+    final fiatSelected = context.select((ReceiveCubit cubit) => cubit.state.fiatSelected);
+    final fiatAmt = context.select((ReceiveCubit cubit) => cubit.state.fiatAmt);
+
+    var amountStr = '';
+    if (!fiatSelected)
+      amountStr = context.select(
+        (SettingsCubit cubit) => cubit.state.getAmountInUnits(
+          amount,
+          removeText: true,
+          hideZero: true,
+          removeEndZeros: true,
+          isSats: isSats,
+        ),
+      );
+    else
+      amountStr = fiatAmt.toStringAsFixed(2);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const BBText.title('    Amount'),
+        const Gap(4),
+        AnimatedOpacity(
+          duration: const Duration(milliseconds: 300),
+          opacity: 1,
+          child: Stack(
+            children: [
+              Focus(
+                focusNode: _focusNode,
+                child: BBAmountInput(
+                  disabled: false,
+                  value: amountStr,
+                  hint: 'Enter amount',
+                  onRightTap: () {
+                    // context.read<SettingsCubit>().toggleUnitsInSats();
+                  },
+                  isSats: isSats,
+                  btcFormatting: !isSats && !fiatSelected,
+                  onChanged: (txt) {
+                    // final aLen = amountStr.length;
+                    // final tLen = txt.length;
+
+                    // print('\n\n');
+                    // print('||--- $txt');
+
+                    // if ((tLen - aLen) > 1 || (aLen - tLen) > 1) {
+                    //   return;
+                    // }
+
+                    // var clean = txt.replaceAll(',', '');
+                    // if (isSats)
+                    //   clean = clean.replaceAll('.', '');
+                    // else if (!txt.contains('.')) {
+                    //   return;
+                    // }
+                    // final amt = context.read<SettingsCubit>().state.getSatsAmount(clean);
+                    // print('----- $amt');
+                    context.read<ReceiveCubit>().updateAmount(txt);
+                  },
+                ),
+              ),
+              const CenterRight(
+                child: Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: CurrencyDropDown(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Gap(4),
+        const ConversionAmt(),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+
+    super.dispose();
+  }
+}
+
+class CurrencyDropDown extends StatelessWidget {
+  const CurrencyDropDown({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final currency = context.select((ReceiveCubit cubit) => cubit.state.selectedCurrency);
+    final currencyList = context.select((ReceiveCubit cubit) => cubit.state.updatedCurrencyList());
+
+    return DropdownButton<String>(
+      value: currency?.name,
+      // icon: const Icon(Icons.arrow_downward),
+      // iconSize: 24,
+      elevation: 16,
+      style: const TextStyle(color: Colors.deepPurple),
+      underline: const ColoredBox(color: Colors.transparent),
+      onChanged: (String? amt) {
+        if (amt == null) return;
+        context.read<ReceiveCubit>().updateCurrency(amt.toLowerCase());
+      },
+      items: currencyList.map<DropdownMenuItem<String>>((Currency value) {
+        return DropdownMenuItem<String>(
+          value: value.name,
+          child: BBText.body(value.shortName),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class ConversionAmt extends StatelessWidget {
+  const ConversionAmt({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final fiatSelected = context.select((ReceiveCubit cubit) => cubit.state.fiatSelected);
+    final isDefaultSats = context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
+
+    final fiatAmt = context.select((ReceiveCubit cubit) => cubit.state.fiatAmt);
+    final satsAmt = context.select((ReceiveCubit cubit) => cubit.state.invoiceAmount);
+    final defaultCurrency = context.select((SettingsCubit cubit) => cubit.state.currency);
+
+    var amt = '';
+    var unit = '';
+
+    if (fiatSelected) {
+      unit = isDefaultSats ? 'sats' : 'BTC';
+      amt = context.select(
+        (SettingsCubit _) => _.state.getAmountInUnits(
+          satsAmt,
+          removeText: true,
+        ),
+      );
+    } else {
+      unit = defaultCurrency!.name;
+      amt = fiatAmt.toStringAsFixed(2);
+    }
+
+    return Row(
+      children: [
+        const BBText.title('    ≈ '),
+        const Gap(4),
+        BBText.title(amt),
+        const Gap(4),
+        BBText.title(unit),
+      ],
+    );
+  }
+}
+
+
 // class _Screen extends StatelessWidget {
 //   const _Screen();
 
@@ -674,124 +845,138 @@ class RenameLabel extends StatelessWidget {
 //   }
 // }
 
-class InvoiceAmountField extends StatefulWidget {
-  const InvoiceAmountField({super.key});
+// class InvoiceAmountField extends StatefulWidget {
+//   const InvoiceAmountField({super.key});
 
-  @override
-  State<InvoiceAmountField> createState() => _InvoiceAmountFieldState();
-}
+//   @override
+//   State<InvoiceAmountField> createState() => _InvoiceAmountFieldState();
+// }
 
-class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
-  final _controller = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
+// class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
+//   final _controller = TextEditingController();
+//   final FocusNode _focusNode = FocusNode();
 
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    _controller.dispose();
-    super.dispose();
-  }
+//   @override
+//   void dispose() {
+//     _focusNode.dispose();
+//     _controller.dispose();
+//     super.dispose();
+//   }
 
-  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
-    final delete = event.logicalKey == LogicalKeyboardKey.backspace;
-    if (delete) context.read<ReceiveCubit>().updateAmount(0);
-    return KeyEventResult.ignored;
-  }
+//   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+//     final delete = event.logicalKey == LogicalKeyboardKey.backspace;
+//     if (delete) context.read<ReceiveCubit>().updateAmount('0');
+//     return KeyEventResult.ignored;
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    final isSats = context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
-    final amount = context.select((ReceiveCubit cubit) => cubit.state.invoiceAmount);
-    final amountStr = context.select(
-      (SettingsCubit cubit) => cubit.state.getAmountInUnits(
-        amount,
-        removeText: true,
-        hideZero: true,
-        removeEndZeros: true,
-      ),
-    );
+//   @override
+//   Widget build(BuildContext context) {
+//     final isSats = context.select((SettingsCubit cubit) => cubit.state.unitsInSats);
+//     final amount = context.select((ReceiveCubit cubit) => cubit.state.invoiceAmount);
+//     final amountStr = context.select(
+//       (SettingsCubit cubit) => cubit.state.getAmountInUnits(
+//         amount,
+//         removeText: true,
+//         hideZero: true,
+//         removeEndZeros: true,
+//       ),
+//     );
 
-    if (_controller.text != amountStr) {
-      _controller.text = amountStr;
+//     if (_controller.text != amountStr) {
+//       _controller.text = amountStr;
 
-      if (isSats)
-        _controller.selection = TextSelection.fromPosition(
-          TextPosition(
-            offset: amountStr.length,
-          ),
-        );
-      else
-        _controller.selection = TextSelection.fromPosition(
-          TextPosition(
-            offset: _controller.text.length,
-          ),
-        );
-    }
+//       if (isSats)
+//         _controller.selection = TextSelection.fromPosition(
+//           TextPosition(
+//             offset: amountStr.length,
+//           ),
+//         );
+//       else
+//         _controller.selection = TextSelection.fromPosition(
+//           TextPosition(
+//             offset: _controller.text.length,
+//           ),
+//         );
+//     }
 
-    return Focus(
-      focusNode: _focusNode,
-      onKeyEvent: (n, e) {
-        return _handleKeyEvent(n, e);
-      },
-      child: TextField(
-        controller: _controller,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(80.0),
-          ),
-          filled: true,
-          fillColor: context.colour.onPrimary,
-          contentPadding: const EdgeInsets.only(left: 24),
-          hintText: 'Enter amount',
-          suffixText: isSats ? 'sats' : 'BTC',
-          suffixIcon: isSats
-              ? IconButton(
-                  color: context.colour.secondary,
-                  onPressed: () {
-                    context.read<SettingsCubit>().toggleUnitsInSats();
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.coins,
-                  ),
-                )
-              : IconButton(
-                  color: context.colour.secondary,
-                  onPressed: () {
-                    context.read<SettingsCubit>().toggleUnitsInSats();
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.bitcoin,
-                  ),
-                ),
-        ),
-        keyboardType: const TextInputType.numberWithOptions(
-          decimal: true,
-        ),
-        onChanged: (txt) {
-          final aLen = _controller.text.length;
-          final tLen = txt.length;
-          if (aLen > tLen || (aLen - tLen).abs() > 2) {
-            context.read<ReceiveCubit>().updateAmount(0);
-            return;
-          }
-          final clean = txt.replaceAll(',', '');
-          final amt = context.read<SettingsCubit>().state.getSatsAmount(clean, null);
-          context.read<ReceiveCubit>().updateAmount(amt);
-        },
-        inputFormatters: [
-          if (!isSats)
-            ThousandsFormatter(
-              formatter: NumberFormat()
-                ..maximumFractionDigits = 8
-                ..minimumFractionDigits = 8
-                ..turnOffGrouping(),
-              allowFraction: true,
-            ),
-        ],
-      ),
-    );
-  }
-}
+//     return Focus(
+//         focusNode: _focusNode,
+//         onKeyEvent: (n, e) {
+//           return _handleKeyEvent(n, e);
+//         },
+//         child: BBAmountInput(
+//           btcFormatting: true,
+//           value: amountStr,
+//           onRightTap: () {
+//             context.read<SettingsCubit>().toggleUnitsInSats();
+//           },
+//           disabled: false,
+//           isSats: isSats,
+//           hint: 'Enter Amount',
+//           onChanged: (txt) {
+//             context.read<ReceiveCubit>().updateAmount(txt);
+//           },
+//         )
+//         // child: TextField(
+//         //   controller: _controller,
+//         //   decoration: InputDecoration(
+//         //     border: OutlineInputBorder(
+//         //       borderRadius: BorderRadius.circular(80.0),
+//         //     ),
+//         //     filled: true,
+//         //     fillColor: context.colour.onPrimary,
+//         //     contentPadding: const EdgeInsets.only(left: 24),
+//         //     hintText: 'Enter amount',
+//         //     suffixText: isSats ? 'sats' : 'BTC',
+//         //     suffixIcon: isSats
+//         //         ? IconButton(
+//         //             color: context.colour.secondary,
+//         //             onPressed: () {
+//         //               context.read<SettingsCubit>().toggleUnitsInSats();
+//         //             },
+//         //             icon: const FaIcon(
+//         //               FontAwesomeIcons.coins,
+//         //             ),
+//         //           )
+//         //         : IconButton(
+//         //             color: context.colour.secondary,
+//         //             onPressed: () {
+//         //               context.read<SettingsCubit>().toggleUnitsInSats();
+//         //             },
+//         //             icon: const FaIcon(
+//         //               FontAwesomeIcons.bitcoin,
+//         //             ),
+//         //           ),
+//         //   ),
+//         //   keyboardType: const TextInputType.numberWithOptions(
+//         //     decimal: true,
+//         //   ),
+//         //   onChanged: (txt) {
+//         //     // final aLen = _controller.text.length;
+//         //     // final tLen = txt.length;
+//         //     // if (aLen > tLen || (aLen - tLen).abs() > 2) {
+//         //     //   context.read<ReceiveCubit>().updateAmount(0);
+//         //     //   return;
+//         //     // }
+//         //     // final clean = txt.replaceAll(',', '');
+//         //     // final amt = context.read<SettingsCubit>().state.getSatsAmount(clean, null);
+//         //     // context.read<ReceiveCubit>().updateAmount(amt);
+//         //     context.read<ReceiveCubit>().updateAmount(txt);
+//         //   },
+//         //   inputFormatters: [
+//         //     if (!isSats)
+//         //       ThousandsFormatter(
+//         //         formatter: NumberFormat()
+//         //           ..maximumFractionDigits = 8
+//         //           ..minimumFractionDigits = 8
+//         //           ..turnOffGrouping(),
+//         //         allowFraction: true,
+//         //       ),
+//         //   ],
+//         // ),
+//         );
+//   }
+// }
 
 // class InvoiceDescriptionField extends StatefulWidget {
 //   const InvoiceDescriptionField({super.key});

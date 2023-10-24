@@ -6,6 +6,7 @@ import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReceiveCubit extends Cubit<ReceiveState> {
@@ -17,6 +18,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required this.settingsCubit,
   }) : super(const ReceiveState()) {
     loadAddress();
+    loadCurrencies();
   }
   final SettingsCubit settingsCubit;
   final WalletBloc walletBloc;
@@ -122,8 +124,77 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
   }
 
-  void updateAmount(int amt) {
-    emit(state.copyWith(invoiceAmount: amt));
+  void loadCurrencies() async {
+    final currencies = settingsCubit.state.currencyList;
+    final isSats = settingsCubit.state.unitsInSats;
+
+    emit(
+      state.copyWith(
+        currencyList: currencies,
+        isSats: isSats,
+      ),
+    );
+
+    await Future.delayed(100.microseconds);
+
+    final updatedCurrenciess = state.updatedCurrencyList();
+    final selectedCurrency =
+        updatedCurrenciess.firstWhere((element) => element.name == (isSats ? 'sats' : 'btc'));
+
+    emit(state.copyWith(selectedCurrency: selectedCurrency));
+  }
+
+  void updateCurrency(String currency) {
+    emit(state.copyWith(invoiceAmount: 0, fiatAmt: 0));
+    final currencies = state.updatedCurrencyList();
+    final selectedCurrency =
+        currencies.firstWhere((element) => element.name.toLowerCase() == currency);
+
+    if (currency == 'btc' || currency == 'sats') {
+      emit(
+        state.copyWith(
+          fiatSelected: false,
+          selectedCurrency: selectedCurrency,
+          isSats: currency == 'sats',
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        fiatSelected: true,
+        selectedCurrency: selectedCurrency,
+        isSats: false,
+      ),
+    );
+  }
+
+  void updateAmount(String txt) {
+    // emit(state.copyWith(invoiceAmount: amt));
+    var clean = txt.replaceAll(',', '').replaceAll(' ', '');
+    if (state.isSats) clean = clean.replaceAll('.', '');
+    // else if (!txt.contains('.')) return;
+
+    final isFiat = state.fiatSelected;
+    if (isFiat) {
+      final currency = state.selectedCurrency ?? settingsCubit.state.currency;
+      final fiat = double.tryParse(clean);
+      if (fiat == null) return;
+      // final sats = (amount / 100000000) * currency!.price!;
+      //
+      final sats = (fiat / currency!.price!) * 100000000;
+
+      emit(state.copyWith(invoiceAmount: sats.toInt(), fiatAmt: fiat));
+      return;
+    }
+
+    final isSats = state.isSats;
+    final amt = settingsCubit.state.getSatsAmount(clean, isSats);
+    final currency = settingsCubit.state.currency;
+    final fiatAmt = currency!.price! * (amt / 100000000);
+
+    emit(state.copyWith(invoiceAmount: amt, fiatAmt: fiatAmt));
   }
 
   void descriptionChanged(String description) {
