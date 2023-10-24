@@ -162,7 +162,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/broadcast',
       builder: (context, state) {
-        return const BroadcasePage();
+        return const BroadcastPage();
       },
     ),
   ],

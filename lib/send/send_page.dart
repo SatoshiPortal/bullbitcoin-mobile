@@ -23,6 +23,7 @@ import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/send/psbt.dart';
 import 'package:bb_mobile/send/wallet_select.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -130,6 +131,7 @@ class _Screen extends StatelessWidget {
                 const SelectFeesButton(),
                 const CoinSelectionButton(),
                 const Gap(24),
+                if (!sent) const UploadTransactionButton(),
                 const AdvancedOptionsButton(),
                 const Gap(8),
               ],
@@ -311,6 +313,21 @@ class AdvancedOptionsButton extends StatelessWidget {
         AdvancedOptionsPopUp.openPopup(context);
       },
       label: text,
+    );
+  }
+}
+
+class UploadTransactionButton extends StatelessWidget {
+  const UploadTransactionButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.text(
+      centered: true,
+      onPressed: () {
+        BroadcastPopUp.openPopUp(context);
+      },
+      label: 'Upload Transaction',
     );
   }
 }
