@@ -16,7 +16,7 @@ class WalletSettingsState with _$WalletSettingsState {
     @Default([]) List<String> mnemonic,
     @Default('') String password,
     @Default([]) List<String> shuffledMnemonic,
-    @Default([]) List<({String word, int shuffleIdx, int? selectedActualIdx})> testMnemonicOrder,
+    @Default([]) List<({String word, int shuffleIdx, int selectedActualIdx})> testMnemonicOrder,
     @Default('') String testBackupPassword,
     /**
      * 
@@ -58,7 +58,7 @@ class WalletSettingsState with _$WalletSettingsState {
 
     if (wordCount == 1) return mnemonic.indexOf(word);
     if (_isSelected(shuffleIdx))
-      return testMnemonicOrder.firstWhere((w) => w.shuffleIdx == shuffleIdx).selectedActualIdx!;
+      return testMnemonicOrder.firstWhere((w) => w.shuffleIdx == shuffleIdx).selectedActualIdx;
     return mnemonic.indexOf(word, testMnemonicOrder.length - 1);
   }
 

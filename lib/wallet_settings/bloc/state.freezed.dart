@@ -26,7 +26,7 @@ mixin _$WalletSettingsState {
   List<String> get mnemonic => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   List<String> get shuffledMnemonic => throw _privateConstructorUsedError;
-  List<({int? selectedActualIdx, int shuffleIdx, String word})>
+  List<({int selectedActualIdx, int shuffleIdx, String word})>
       get testMnemonicOrder => throw _privateConstructorUsedError;
   String get testBackupPassword => throw _privateConstructorUsedError;
   /**
@@ -67,7 +67,7 @@ abstract class $WalletSettingsStateCopyWith<$Res> {
       List<String> mnemonic,
       String password,
       List<String> shuffledMnemonic,
-      List<({int? selectedActualIdx, int shuffleIdx, String word})>
+      List<({int selectedActualIdx, int shuffleIdx, String word})>
           testMnemonicOrder,
       String testBackupPassword,
       bool backup,
@@ -149,7 +149,7 @@ class _$WalletSettingsStateCopyWithImpl<$Res, $Val extends WalletSettingsState>
       testMnemonicOrder: null == testMnemonicOrder
           ? _value.testMnemonicOrder
           : testMnemonicOrder // ignore: cast_nullable_to_non_nullable
-              as List<({int? selectedActualIdx, int shuffleIdx, String word})>,
+              as List<({int selectedActualIdx, int shuffleIdx, String word})>,
       testBackupPassword: null == testBackupPassword
           ? _value.testBackupPassword
           : testBackupPassword // ignore: cast_nullable_to_non_nullable
@@ -240,7 +240,7 @@ abstract class _$$_WalletSettingsStateCopyWith<$Res>
       List<String> mnemonic,
       String password,
       List<String> shuffledMnemonic,
-      List<({int? selectedActualIdx, int shuffleIdx, String word})>
+      List<({int selectedActualIdx, int shuffleIdx, String word})>
           testMnemonicOrder,
       String testBackupPassword,
       bool backup,
@@ -321,7 +321,7 @@ class __$$_WalletSettingsStateCopyWithImpl<$Res>
       testMnemonicOrder: null == testMnemonicOrder
           ? _value._testMnemonicOrder
           : testMnemonicOrder // ignore: cast_nullable_to_non_nullable
-              as List<({int? selectedActualIdx, int shuffleIdx, String word})>,
+              as List<({int selectedActualIdx, int shuffleIdx, String word})>,
       testBackupPassword: null == testBackupPassword
           ? _value.testBackupPassword
           : testBackupPassword // ignore: cast_nullable_to_non_nullable
@@ -399,7 +399,7 @@ class _$_WalletSettingsState extends _WalletSettingsState {
       final List<String> mnemonic = const [],
       this.password = '',
       final List<String> shuffledMnemonic = const [],
-      final List<({int? selectedActualIdx, int shuffleIdx, String word})>
+      final List<({int selectedActualIdx, int shuffleIdx, String word})>
           testMnemonicOrder = const [],
       this.testBackupPassword = '',
       this.backup = false,
@@ -459,11 +459,11 @@ class _$_WalletSettingsState extends _WalletSettingsState {
     return EqualUnmodifiableListView(_shuffledMnemonic);
   }
 
-  final List<({int? selectedActualIdx, int shuffleIdx, String word})>
+  final List<({int selectedActualIdx, int shuffleIdx, String word})>
       _testMnemonicOrder;
   @override
   @JsonKey()
-  List<({int? selectedActualIdx, int shuffleIdx, String word})>
+  List<({int selectedActualIdx, int shuffleIdx, String word})>
       get testMnemonicOrder {
     if (_testMnemonicOrder is EqualUnmodifiableListView)
       return _testMnemonicOrder;
@@ -618,7 +618,7 @@ abstract class _WalletSettingsState extends WalletSettingsState {
       final List<String> mnemonic,
       final String password,
       final List<String> shuffledMnemonic,
-      final List<({int? selectedActualIdx, int shuffleIdx, String word})>
+      final List<({int selectedActualIdx, int shuffleIdx, String word})>
           testMnemonicOrder,
       final String testBackupPassword,
       final bool backup,
@@ -654,7 +654,7 @@ abstract class _WalletSettingsState extends WalletSettingsState {
   @override
   List<String> get shuffledMnemonic;
   @override
-  List<({int? selectedActualIdx, int shuffleIdx, String word})>
+  List<({int selectedActualIdx, int shuffleIdx, String word})>
       get testMnemonicOrder;
   @override
   String get testBackupPassword;
