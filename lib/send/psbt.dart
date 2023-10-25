@@ -40,15 +40,24 @@ class PSBTPopUp extends StatelessWidget {
 
     // final outAddresses = context.select((SendCubit cubit) => cubit.state.tx?.outAddresses ?? []);
 
-    final txamt = context.select(
-      (SendCubit cubit) => cubit.state.tx?.getAmount() ?? 0,
-    );
+    final txamt = tx.getAmount() ?? 0;
+    final isSats = context.select((SendCubit cubit) => cubit.state.isSats);
     final txfee = context.select((SendCubit cubit) => cubit.state.tx?.fee ?? 0);
     final toAddress = tx.toAddress ?? '';
     final label = tx.label;
 
-    final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txamt));
-    final fee = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txfee));
+    final amt = context.select(
+      (SettingsCubit cubit) => cubit.state.getAmountInUnits(
+        txamt,
+        isSats: isSats,
+      ),
+    );
+    final fee = context.select(
+      (SettingsCubit cubit) => cubit.state.getAmountInUnits(
+        txfee,
+        isSats: isSats,
+      ),
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(

@@ -52,7 +52,10 @@ class Transaction with _$Transaction {
     return outAddrs;
   }
 
-  bool isReceived() => sent == 0;
+  bool isReceived() => sent == 0 || sent != null && received != null && received! > sent!;
+
+  bool isReceivedCatchSelfPayment() =>
+      sent == 0 || sent != null && received != null && received! > sent!;
 
   int getAmount({bool sentAsTotal = false}) {
     try {
