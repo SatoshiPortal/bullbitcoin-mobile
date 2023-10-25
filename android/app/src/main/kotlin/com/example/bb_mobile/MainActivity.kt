@@ -1,4 +1,4 @@
-package com.example.bb_mobile
+package com.bullbitcoin.mobile
 
 import io.flutter.embedding.android.FlutterActivity
 
