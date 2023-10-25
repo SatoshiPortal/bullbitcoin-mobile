@@ -49,10 +49,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "mobile.bullbitcoin.com"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
+        applicationId 'com.bullbitcoin.mobile'
+
         minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
@@ -77,7 +75,7 @@ android {
         }
     }
 
-    namespace 'mobile.bullbitcoin.com'
+    namespace 'com.bullbitcoin.mobile'
 }
 
 flutter {
