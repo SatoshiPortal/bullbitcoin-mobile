@@ -50,6 +50,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> init() async {
+    Future.delayed(const Duration(milliseconds: 200));
     final (result, err) = await hiveStorage.getValue(StorageKeys.settings);
     if (err != null) {
       // first time maybe
