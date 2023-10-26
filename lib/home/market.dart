@@ -11,6 +11,7 @@ class MarketHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         flexibleSpace: BBAppBar(
           text: 'Market',
           onBack: () {

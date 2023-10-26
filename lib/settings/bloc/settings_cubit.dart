@@ -170,8 +170,8 @@ class SettingsCubit extends Cubit<SettingsState> {
       return;
     }
 
-    loadFees();
     emit(state.copyWith(blockchain: blockchain, networkConnected: true));
+    loadFees();
   }
 
   Future loadNetworks() async {
