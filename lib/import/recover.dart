@@ -133,6 +133,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
   final layerLink = LayerLink();
   final controller = TextEditingController();
   List<String> suggestions = [];
+  bool tapped = false;
 
   @override
   void initState() {
@@ -154,6 +155,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
       setState(() {
         suggestions = context.read<WordsCubit>().state.findWords(controller.text);
       });
+      if (tapped) return;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showOverLay();
       });
@@ -210,6 +212,9 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
               onTap: () {
                 context.read<ImportWalletCubit>().wordChanged12(widget.index, word, true);
                 hideOverlay();
+                setState(() {
+                  tapped = true;
+                });
                 widget.focusNode.unfocus();
                 widget.returnClicked(widget.index);
               },
@@ -262,6 +267,10 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                     onChanged: (value) {
                       context.read<ImportWalletCubit>().wordChanged12(widget.index, value, false);
                       hideOverlay();
+
+                      setState(() {
+                        tapped = false;
+                      });
                     },
                     value: word.word,
                   ),
