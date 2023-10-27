@@ -21,8 +21,10 @@ mixin _$ImportState {
      * SENSITIVE
      * 
      */
-  List<String> get words12 => throw _privateConstructorUsedError;
-  List<String> get words24 => throw _privateConstructorUsedError;
+  List<({bool tapped, String word})> get words12 =>
+      throw _privateConstructorUsedError;
+  List<({bool tapped, String word})> get words24 =>
+      throw _privateConstructorUsedError;
   String get passPhrase => throw _privateConstructorUsedError;
   /**
      * 
@@ -65,8 +67,8 @@ abstract class $ImportStateCopyWith<$Res> {
       _$ImportStateCopyWithImpl<$Res, ImportState>;
   @useResult
   $Res call(
-      {List<String> words12,
-      List<String> words24,
+      {List<({bool tapped, String word})> words12,
+      List<({bool tapped, String word})> words24,
       String passPhrase,
       String xpub,
       String tempXpub,
@@ -136,11 +138,11 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
       words12: null == words12
           ? _value.words12
           : words12 // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<({bool tapped, String word})>,
       words24: null == words24
           ? _value.words24
           : words24 // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<({bool tapped, String word})>,
       passPhrase: null == passPhrase
           ? _value.passPhrase
           : passPhrase // ignore: cast_nullable_to_non_nullable
@@ -266,8 +268,8 @@ abstract class _$$_ImportStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<String> words12,
-      List<String> words24,
+      {List<({bool tapped, String word})> words12,
+      List<({bool tapped, String word})> words24,
       String passPhrase,
       String xpub,
       String tempXpub,
@@ -337,11 +339,11 @@ class __$$_ImportStateCopyWithImpl<$Res>
       words12: null == words12
           ? _value._words12
           : words12 // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<({bool tapped, String word})>,
       words24: null == words24
           ? _value._words24
           : words24 // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<({bool tapped, String word})>,
       passPhrase: null == passPhrase
           ? _value.passPhrase
           : passPhrase // ignore: cast_nullable_to_non_nullable
@@ -438,8 +440,8 @@ class __$$_ImportStateCopyWithImpl<$Res>
 
 class _$_ImportState extends _ImportState {
   const _$_ImportState(
-      {final List<String> words12 = emptyWords12,
-      final List<String> words24 = emptyWords24,
+      {final List<({bool tapped, String word})> words12 = const [],
+      final List<({bool tapped, String word})> words24 = const [],
       this.passPhrase = '',
       this.xpub = '',
       this.tempXpub = '',
@@ -472,7 +474,7 @@ class _$_ImportState extends _ImportState {
      * SENSITIVE
      * 
      */
-  final List<String> _words12;
+  final List<({bool tapped, String word})> _words12;
 /**
      * 
      * SENSITIVE
@@ -480,16 +482,16 @@ class _$_ImportState extends _ImportState {
      */
   @override
   @JsonKey()
-  List<String> get words12 {
+  List<({bool tapped, String word})> get words12 {
     if (_words12 is EqualUnmodifiableListView) return _words12;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_words12);
   }
 
-  final List<String> _words24;
+  final List<({bool tapped, String word})> _words24;
   @override
   @JsonKey()
-  List<String> get words24 {
+  List<({bool tapped, String word})> get words24 {
     if (_words24 is EqualUnmodifiableListView) return _words24;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_words24);
@@ -667,8 +669,8 @@ class _$_ImportState extends _ImportState {
 
 abstract class _ImportState extends ImportState {
   const factory _ImportState(
-      {final List<String> words12,
-      final List<String> words24,
+      {final List<({bool tapped, String word})> words12,
+      final List<({bool tapped, String word})> words24,
       final String passPhrase,
       final String xpub,
       final String tempXpub,
@@ -699,9 +701,9 @@ abstract class _ImportState extends ImportState {
      * SENSITIVE
      * 
      */
-  List<String> get words12;
+  List<({bool tapped, String word})> get words12;
   @override
-  List<String> get words24;
+  List<({bool tapped, String word})> get words24;
   @override
   String get passPhrase;
   @override

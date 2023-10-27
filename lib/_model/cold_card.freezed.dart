@@ -144,11 +144,10 @@ class _$ColdCardCopyWithImpl<$Res, $Val extends ColdCard>
 }
 
 /// @nodoc
-abstract class _$$ColdCardImplCopyWith<$Res>
-    implements $ColdCardCopyWith<$Res> {
-  factory _$$ColdCardImplCopyWith(
-          _$ColdCardImpl value, $Res Function(_$ColdCardImpl) then) =
-      __$$ColdCardImplCopyWithImpl<$Res>;
+abstract class _$$_ColdCardCopyWith<$Res> implements $ColdCardCopyWith<$Res> {
+  factory _$$_ColdCardCopyWith(
+          _$_ColdCard value, $Res Function(_$_ColdCard) then) =
+      __$$_ColdCardCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -169,11 +168,11 @@ abstract class _$$ColdCardImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$ColdCardImplCopyWithImpl<$Res>
-    extends _$ColdCardCopyWithImpl<$Res, _$ColdCardImpl>
-    implements _$$ColdCardImplCopyWith<$Res> {
-  __$$ColdCardImplCopyWithImpl(
-      _$ColdCardImpl _value, $Res Function(_$ColdCardImpl) _then)
+class __$$_ColdCardCopyWithImpl<$Res>
+    extends _$ColdCardCopyWithImpl<$Res, _$_ColdCard>
+    implements _$$_ColdCardCopyWith<$Res> {
+  __$$_ColdCardCopyWithImpl(
+      _$_ColdCard _value, $Res Function(_$_ColdCard) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -187,7 +186,7 @@ class __$$ColdCardImplCopyWithImpl<$Res>
     Object? bip44 = freezed,
     Object? bip84 = freezed,
   }) {
-    return _then(_$ColdCardImpl(
+    return _then(_$_ColdCard(
       chain: freezed == chain
           ? _value.chain
           : chain // ignore: cast_nullable_to_non_nullable
@@ -222,8 +221,8 @@ class __$$ColdCardImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$ColdCardImpl extends _ColdCard {
-  _$ColdCardImpl(
+class _$_ColdCard extends _ColdCard {
+  _$_ColdCard(
       {this.chain,
       this.xpub,
       this.xfp,
@@ -233,8 +232,8 @@ class _$ColdCardImpl extends _ColdCard {
       this.bip84})
       : super._();
 
-  factory _$ColdCardImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ColdCardImplFromJson(json);
+  factory _$_ColdCard.fromJson(Map<String, dynamic> json) =>
+      _$$_ColdCardFromJson(json);
 
   @override
   final String? chain;
@@ -260,7 +259,7 @@ class _$ColdCardImpl extends _ColdCard {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ColdCardImpl &&
+            other is _$_ColdCard &&
             (identical(other.chain, chain) || other.chain == chain) &&
             (identical(other.xpub, xpub) || other.xpub == xpub) &&
             (identical(other.xfp, xfp) || other.xfp == xfp) &&
@@ -278,12 +277,12 @@ class _$ColdCardImpl extends _ColdCard {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ColdCardImplCopyWith<_$ColdCardImpl> get copyWith =>
-      __$$ColdCardImplCopyWithImpl<_$ColdCardImpl>(this, _$identity);
+  _$$_ColdCardCopyWith<_$_ColdCard> get copyWith =>
+      __$$_ColdCardCopyWithImpl<_$_ColdCard>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ColdCardImplToJson(
+    return _$$_ColdCardToJson(
       this,
     );
   }
@@ -297,11 +296,10 @@ abstract class _ColdCard extends ColdCard {
       final int? account,
       final ColdWallet? bip49,
       final ColdWallet? bip44,
-      final ColdWallet? bip84}) = _$ColdCardImpl;
+      final ColdWallet? bip84}) = _$_ColdCard;
   _ColdCard._() : super._();
 
-  factory _ColdCard.fromJson(Map<String, dynamic> json) =
-      _$ColdCardImpl.fromJson;
+  factory _ColdCard.fromJson(Map<String, dynamic> json) = _$_ColdCard.fromJson;
 
   @override
   String? get chain;
@@ -319,7 +317,7 @@ abstract class _ColdCard extends ColdCard {
   ColdWallet? get bip84;
   @override
   @JsonKey(ignore: true)
-  _$$ColdCardImplCopyWith<_$ColdCardImpl> get copyWith =>
+  _$$_ColdCardCopyWith<_$_ColdCard> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -408,11 +406,11 @@ class _$ColdWalletCopyWithImpl<$Res, $Val extends ColdWallet>
 }
 
 /// @nodoc
-abstract class _$$ColdWalletImplCopyWith<$Res>
+abstract class _$$_ColdWalletCopyWith<$Res>
     implements $ColdWalletCopyWith<$Res> {
-  factory _$$ColdWalletImplCopyWith(
-          _$ColdWalletImpl value, $Res Function(_$ColdWalletImpl) then) =
-      __$$ColdWalletImplCopyWithImpl<$Res>;
+  factory _$$_ColdWalletCopyWith(
+          _$_ColdWallet value, $Res Function(_$_ColdWallet) then) =
+      __$$_ColdWalletCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -425,11 +423,11 @@ abstract class _$$ColdWalletImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$ColdWalletImplCopyWithImpl<$Res>
-    extends _$ColdWalletCopyWithImpl<$Res, _$ColdWalletImpl>
-    implements _$$ColdWalletImplCopyWith<$Res> {
-  __$$ColdWalletImplCopyWithImpl(
-      _$ColdWalletImpl _value, $Res Function(_$ColdWalletImpl) _then)
+class __$$_ColdWalletCopyWithImpl<$Res>
+    extends _$ColdWalletCopyWithImpl<$Res, _$_ColdWallet>
+    implements _$$_ColdWalletCopyWith<$Res> {
+  __$$_ColdWalletCopyWithImpl(
+      _$_ColdWallet _value, $Res Function(_$_ColdWallet) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -442,7 +440,7 @@ class __$$ColdWalletImplCopyWithImpl<$Res>
     Object? name = freezed,
     Object? sPub = freezed,
   }) {
-    return _then(_$ColdWalletImpl(
+    return _then(_$_ColdWallet(
       xpub: freezed == xpub
           ? _value.xpub
           : xpub // ignore: cast_nullable_to_non_nullable
@@ -473,8 +471,8 @@ class __$$ColdWalletImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$ColdWalletImpl extends _ColdWallet {
-  _$ColdWalletImpl(
+class _$_ColdWallet extends _ColdWallet {
+  _$_ColdWallet(
       {this.xpub,
       this.first,
       this.deriv,
@@ -483,8 +481,8 @@ class _$ColdWalletImpl extends _ColdWallet {
       @JsonKey(name: '_pub') this.sPub})
       : super._();
 
-  factory _$ColdWalletImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ColdWalletImplFromJson(json);
+  factory _$_ColdWallet.fromJson(Map<String, dynamic> json) =>
+      _$$_ColdWalletFromJson(json);
 
   @override
   final String? xpub;
@@ -509,7 +507,7 @@ class _$ColdWalletImpl extends _ColdWallet {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ColdWalletImpl &&
+            other is _$_ColdWallet &&
             (identical(other.xpub, xpub) || other.xpub == xpub) &&
             (identical(other.first, first) || other.first == first) &&
             (identical(other.deriv, deriv) || other.deriv == deriv) &&
@@ -526,12 +524,12 @@ class _$ColdWalletImpl extends _ColdWallet {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ColdWalletImplCopyWith<_$ColdWalletImpl> get copyWith =>
-      __$$ColdWalletImplCopyWithImpl<_$ColdWalletImpl>(this, _$identity);
+  _$$_ColdWalletCopyWith<_$_ColdWallet> get copyWith =>
+      __$$_ColdWalletCopyWithImpl<_$_ColdWallet>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$ColdWalletImplToJson(
+    return _$$_ColdWalletToJson(
       this,
     );
   }
@@ -544,11 +542,11 @@ abstract class _ColdWallet extends ColdWallet {
       final String? deriv,
       final String? xfp,
       final String? name,
-      @JsonKey(name: '_pub') final String? sPub}) = _$ColdWalletImpl;
+      @JsonKey(name: '_pub') final String? sPub}) = _$_ColdWallet;
   _ColdWallet._() : super._();
 
   factory _ColdWallet.fromJson(Map<String, dynamic> json) =
-      _$ColdWalletImpl.fromJson;
+      _$_ColdWallet.fromJson;
 
   @override
   String? get xpub;
@@ -565,6 +563,6 @@ abstract class _ColdWallet extends ColdWallet {
   String? get sPub;
   @override
   @JsonKey(ignore: true)
-  _$$ColdWalletImplCopyWith<_$ColdWalletImpl> get copyWith =>
+  _$$_ColdWalletCopyWith<_$_ColdWallet> get copyWith =>
       throw _privateConstructorUsedError;
 }

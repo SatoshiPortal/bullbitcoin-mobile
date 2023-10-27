@@ -35,7 +35,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
               //   ...r2,
               // ],
               ),
-        );
+        ) {
+    emit(state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]));
+  }
 
   final Barcode barcode;
   final FilePick filePicker;
@@ -79,7 +81,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
             state.copyWith(
               importStep: ImportSteps.import12Words,
               importType: state.importType,
-              words12: [for (int i = 0; i < 12; i++) ''],
+              words12: [...emptyWords12],
             ),
           );
         else if (state.importType == ImportTypes.words24)
@@ -87,7 +89,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
             state.copyWith(
               importStep: ImportSteps.import24Words,
               importType: state.importType,
-              words24: [for (int i = 0; i < 23; i++) ''],
+              words24: [...emptyWords24],
             ),
           );
         else if (state.importType == ImportTypes.coldcard)
@@ -151,9 +153,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(state.copyWith(loadingFile: false));
   }
 
-  void wordChanged12(int idx, String text) {
+  void wordChanged12(int idx, String text, bool tapped) {
     final words12 = state.words12.toList();
-    words12[idx] = text;
+    words12[idx] = (word: text, tapped: tapped);
     emit(
       state.copyWith(
         words12: words12,
@@ -161,11 +163,25 @@ class ImportWalletCubit extends Cubit<ImportState> {
     );
   }
 
-  void wordChanged24(int idx, String text) {
+  void wordChanged24(int idx, String text, bool tapped) {
     final words24 = state.words24.toList();
-    words24[idx] = text;
+    words24[idx] = (word: text, tapped: tapped);
+    emit(state.copyWith(words24: words24));
+  }
+
+  void clearUntappedWords() {
+    final words12 = state.words12.toList();
+    final words24 = state.words24.toList();
+
+    for (int i = 0; i < words12.length; i++)
+      if (!words12[i].tapped) words12[i] = (word: '', tapped: false);
+
+    for (int i = 0; i < words24.length; i++)
+      if (!words24[i].tapped) words24[i] = (word: '', tapped: false);
+
     emit(
       state.copyWith(
+        words12: words12,
         words24: words24,
       ),
     );
@@ -360,7 +376,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       ),
     );
     for (final word in state.words12)
-      if (word.isEmpty) {
+      if (word.word.isEmpty) {
         emit(state.copyWith(errImporting: 'Please fill all words'));
         return;
       }
@@ -378,7 +394,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       ),
     );
     for (final word in state.words24)
-      if (word.isEmpty) {
+      if (word.word.isEmpty) {
         emit(state.copyWith(errImporting: 'Please fill all words'));
         return;
       }

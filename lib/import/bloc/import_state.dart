@@ -29,8 +29,8 @@ class ImportState with _$ImportState {
      * SENSITIVE
      * 
      */
-    @Default(emptyWords12) List<String> words12,
-    @Default(emptyWords24) List<String> words24,
+    @Default([]) List<({String word, bool tapped})> words12,
+    @Default([]) List<({String word, bool tapped})> words24,
     @Default('') String passPhrase,
     /**
      * 
@@ -69,10 +69,10 @@ class ImportState with _$ImportState {
     bool enable = true;
 
     for (final word in words12) {
-      if (word.isEmpty) enable = false;
+      if (word.word.isEmpty) enable = false;
     }
     for (final word in words24) {
-      if (word.isEmpty) enable = false;
+      if (word.word.isEmpty) enable = false;
     }
 
     return enable;
@@ -158,43 +158,10 @@ class ImportState with _$ImportState {
   bool isSelected(ScriptType type) => type == scriptType;
 }
 
-const emptyWords12 = [
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
+final emptyWords12 = [
+  for (int i = 0; i < 12; i++) (word: '', tapped: false),
 ];
-const emptyWords24 = [
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
-  '',
+
+final emptyWords24 = [
+  for (int i = 0; i < 24; i++) (word: '', tapped: false),
 ];

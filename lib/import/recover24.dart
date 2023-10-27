@@ -214,7 +214,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
             ListTile(
               title: BBText.body(word),
               onTap: () {
-                context.read<ImportWalletCubit>().wordChanged24(widget.index, word);
+                context.read<ImportWalletCubit>().wordChanged24(widget.index, word, true);
                 hideOverlay();
                 widget.focusNode.unfocus();
                 widget.returnClicked(widget.index);
@@ -227,11 +227,12 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final text = context.select(
-      (ImportWalletCubit cubit) => cubit.state.words24.elementAtOrNull(widget.index) ?? '',
+    final word = context.select(
+      (ImportWalletCubit cubit) => cubit.state.words24.elementAtOrNull(widget.index),
     );
 
-    if (controller.text != text) controller.text = text;
+    if (word == null) return const SizedBox.shrink();
+    if (controller.text != word.word) controller.text = word.word;
 
     return CompositedTransformTarget(
       link: layerLink,
@@ -255,14 +256,21 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                     if (widget.focusNode.hasFocus) widget.returnClicked(widget.index);
                   },
                 },
-                child: BBTextInput.small(
-                  focusNode: widget.focusNode,
-                  controller: controller,
-                  onChanged: (value) {
-                    context.read<ImportWalletCubit>().wordChanged24(widget.index, value);
-                    hideOverlay();
-                  },
-                  value: text,
+                child: AnimatedOpacity(
+                  duration: 200.ms,
+                  opacity: !word.tapped ? 0.5 : 1,
+                  child: BBTextInput.small(
+                    focusNode: widget.focusNode,
+                    controller: controller,
+                    onEnter: () {
+                      context.read<ImportWalletCubit>().clearUntappedWords();
+                    },
+                    onChanged: (value) {
+                      context.read<ImportWalletCubit>().wordChanged24(widget.index, value, false);
+                      hideOverlay();
+                    },
+                    value: word.word,
+                  ),
                 ),
               ),
               // ),

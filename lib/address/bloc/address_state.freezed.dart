@@ -114,11 +114,11 @@ class _$AddressStateCopyWithImpl<$Res, $Val extends AddressState>
 }
 
 /// @nodoc
-abstract class _$$AddressStateImplCopyWith<$Res>
+abstract class _$$_AddressStateCopyWith<$Res>
     implements $AddressStateCopyWith<$Res> {
-  factory _$$AddressStateImplCopyWith(
-          _$AddressStateImpl value, $Res Function(_$AddressStateImpl) then) =
-      __$$AddressStateImplCopyWithImpl<$Res>;
+  factory _$$_AddressStateCopyWith(
+          _$_AddressState value, $Res Function(_$_AddressState) then) =
+      __$$_AddressStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -135,11 +135,11 @@ abstract class _$$AddressStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$AddressStateImplCopyWithImpl<$Res>
-    extends _$AddressStateCopyWithImpl<$Res, _$AddressStateImpl>
-    implements _$$AddressStateImplCopyWith<$Res> {
-  __$$AddressStateImplCopyWithImpl(
-      _$AddressStateImpl _value, $Res Function(_$AddressStateImpl) _then)
+class __$$_AddressStateCopyWithImpl<$Res>
+    extends _$AddressStateCopyWithImpl<$Res, _$_AddressState>
+    implements _$$_AddressStateCopyWith<$Res> {
+  __$$_AddressStateCopyWithImpl(
+      _$_AddressState _value, $Res Function(_$_AddressState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -153,7 +153,7 @@ class __$$AddressStateImplCopyWithImpl<$Res>
     Object? frozenAddress = null,
     Object? address = freezed,
   }) {
-    return _then(_$AddressStateImpl(
+    return _then(_$_AddressState(
       savingAddressName: null == savingAddressName
           ? _value.savingAddressName
           : savingAddressName // ignore: cast_nullable_to_non_nullable
@@ -188,8 +188,8 @@ class __$$AddressStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$AddressStateImpl implements _AddressState {
-  const _$AddressStateImpl(
+class _$_AddressState implements _AddressState {
+  const _$_AddressState(
       {this.savingAddressName = false,
       this.errSavingAddressName = '',
       this.savedAddressName = false,
@@ -228,7 +228,7 @@ class _$AddressStateImpl implements _AddressState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AddressStateImpl &&
+            other is _$_AddressState &&
             (identical(other.savingAddressName, savingAddressName) ||
                 other.savingAddressName == savingAddressName) &&
             (identical(other.errSavingAddressName, errSavingAddressName) ||
@@ -258,8 +258,8 @@ class _$AddressStateImpl implements _AddressState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$AddressStateImplCopyWith<_$AddressStateImpl> get copyWith =>
-      __$$AddressStateImplCopyWithImpl<_$AddressStateImpl>(this, _$identity);
+  _$$_AddressStateCopyWith<_$_AddressState> get copyWith =>
+      __$$_AddressStateCopyWithImpl<_$_AddressState>(this, _$identity);
 }
 
 abstract class _AddressState implements AddressState {
@@ -270,7 +270,7 @@ abstract class _AddressState implements AddressState {
       final bool freezingAddress,
       final String errFreezingAddress,
       final bool frozenAddress,
-      final Address? address}) = _$AddressStateImpl;
+      final Address? address}) = _$_AddressState;
 
   @override
   bool get savingAddressName;
@@ -288,6 +288,6 @@ abstract class _AddressState implements AddressState {
   Address? get address;
   @override
   @JsonKey(ignore: true)
-  _$$AddressStateImplCopyWith<_$AddressStateImpl> get copyWith =>
+  _$$_AddressStateCopyWith<_$_AddressState> get copyWith =>
       throw _privateConstructorUsedError;
 }
