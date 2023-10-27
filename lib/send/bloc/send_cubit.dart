@@ -204,8 +204,8 @@ class SendCubit extends Cubit<SendState> {
     final isFiat = state.fiatSelected;
     if (isFiat) {
       final currency = state.selectedCurrency ?? settingsCubit.state.currency;
-      final fiat = double.tryParse(clean);
-      if (fiat == null) return;
+      final fiat = double.tryParse(clean) ?? 0;
+      // if (fiat == null) return;
       // final sats = (amount / 100000000) * currency!.price!;
       //
       final sats = (fiat / currency!.price!) * 100000000;

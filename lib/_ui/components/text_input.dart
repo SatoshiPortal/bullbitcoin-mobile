@@ -232,7 +232,7 @@ class BBAmountInput extends StatefulWidget {
   const BBAmountInput({
     super.key,
     required this.onChanged,
-    required this.value,
+    this.value,
     required this.hint,
     required this.onRightTap,
     required this.disabled,
@@ -241,7 +241,7 @@ class BBAmountInput extends StatefulWidget {
   });
 
   final Function(String) onChanged;
-  final String value;
+  final String? value;
   final String hint;
   final bool btcFormatting;
   final bool isSats;
@@ -264,9 +264,8 @@ class _BBAmountInputState extends State<BBAmountInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (_editingController.text != widget.value) {
-      _editingController.text = widget.value;
-    }
+    if (widget.value != null && _editingController.text != widget.value)
+      _editingController.text = widget.value!;
 
     return TextField(
       enabled: !widget.disabled,
@@ -275,24 +274,25 @@ class _BBAmountInputState extends State<BBAmountInput> {
       enableIMEPersonalizedLearning: false,
       keyboardType: TextInputType.number,
       inputFormatters: [
-        if (widget.btcFormatting)
-          CurrencyTextInputFormatter(
-            decimalDigits: 8,
-            enableNegative: false,
-            symbol: '',
-          )
-        else if (widget.isSats)
+        // if (widget.btcFormatting)
+        //   CurrencyTextInputFormatter(
+        //     decimalDigits: 8,
+        //     enableNegative: false,
+        //     symbol: '',
+        //   )
+        // else
+        if (widget.isSats)
           CurrencyTextInputFormatter(
             decimalDigits: 0,
             enableNegative: false,
             symbol: '',
-          )
-        else
-          CurrencyTextInputFormatter(
-            decimalDigits: 2,
-            enableNegative: false,
-            symbol: '',
           ),
+        // else
+        //   CurrencyTextInputFormatter(
+        //     decimalDigits: 2,
+        //     enableNegative: false,
+        //     symbol: '',
+        //   ),
       ],
       decoration: InputDecoration(
         hintText: widget.hint,

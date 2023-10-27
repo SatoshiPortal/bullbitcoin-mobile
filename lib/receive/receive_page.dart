@@ -390,9 +390,11 @@ class CreateInvoice extends StatelessWidget {
         //     context.read<ReceiveCubit>().updateAmount(amt);
         //   },
         // ),
+        const Gap(4),
         const InvoiceAmountField(),
-        const Gap(16),
+        const Gap(24),
         const BBText.title('Public description'),
+        const Gap(4),
         BBTextInput.big(
           value: description,
           hint: 'Enter description',
@@ -494,25 +496,25 @@ class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
     final fiatSelected = context.select((ReceiveCubit cubit) => cubit.state.fiatSelected);
     final fiatAmt = context.select((ReceiveCubit cubit) => cubit.state.fiatAmt);
 
-    var amountStr = '';
-    if (!fiatSelected)
-      amountStr = context.select(
-        (SettingsCubit cubit) => cubit.state.getAmountInUnits(
-          amount,
-          removeText: true,
-          hideZero: true,
-          removeEndZeros: true,
-          isSats: isSats,
-        ),
-      );
-    else
-      amountStr = fiatAmt.toStringAsFixed(2);
+    // var amountStr = '';
+    // if (!fiatSelected)
+    //   amountStr = context.select(
+    //     (SettingsCubit cubit) => cubit.state.getAmountInUnits(
+    //       amount,
+    //       removeText: true,
+    //       hideZero: true,
+    //       removeEndZeros: true,
+    //       isSats: isSats,
+    //     ),
+    //   );
+    // else
+    //   amountStr = fiatAmt.toStringAsFixed(2);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const BBText.title('    Amount'),
-        const Gap(4),
+        // const BBText.title('    Amount'),
+        // const Gap(4),
         AnimatedOpacity(
           duration: const Duration(milliseconds: 300),
           opacity: 1,
@@ -522,7 +524,7 @@ class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
                 focusNode: _focusNode,
                 child: BBAmountInput(
                   disabled: false,
-                  value: amountStr,
+                  // value: amountStr,
                   hint: 'Enter amount',
                   onRightTap: () {
                     // context.read<SettingsCubit>().toggleUnitsInSats();

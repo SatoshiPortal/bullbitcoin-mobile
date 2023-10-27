@@ -32,19 +32,19 @@ class _EnterAmountState extends State<EnterAmount> {
     final fiatSelected = context.select((SendCubit cubit) => cubit.state.fiatSelected);
     final fiatAmt = context.select((SendCubit cubit) => cubit.state.fiatAmt);
 
-    var amountStr = '';
-    if (!fiatSelected)
-      amountStr = context.select(
-        (SettingsCubit cubit) => cubit.state.getAmountInUnits(
-          sendAll ? balance : amount,
-          removeText: true,
-          hideZero: true,
-          removeEndZeros: true,
-          isSats: isSats,
-        ),
-      );
-    else
-      amountStr = fiatAmt.toStringAsFixed(2);
+    // var amountStr = '';
+    // if (!fiatSelected)
+    //   amountStr = context.select(
+    //     (SettingsCubit cubit) => cubit.state.getAmountInUnits(
+    //       sendAll ? balance : amount,
+    //       removeText: true,
+    //       hideZero: true,
+    //       removeEndZeros: true,
+    //       isSats: isSats,
+    //     ),
+    //   );
+    // else
+    //   amountStr = fiatAmt.toStringAsFixed(2);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -62,7 +62,7 @@ class _EnterAmountState extends State<EnterAmount> {
                   focusNode: _focusNode,
                   child: BBAmountInput(
                     disabled: sendAll,
-                    value: amountStr,
+                    // value: ,
                     hint: 'Enter amount',
                     onRightTap: () {
                       // context.read<SettingsCubit>().toggleUnitsInSats();
@@ -88,6 +88,7 @@ class _EnterAmountState extends State<EnterAmount> {
                       // }
                       // final amt = context.read<SettingsCubit>().state.getSatsAmount(clean);
                       // print('----- $amt');
+
                       context.read<SendCubit>().updateAmount(txt);
                     },
                   ),

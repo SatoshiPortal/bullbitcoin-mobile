@@ -4,7 +4,6 @@ import 'package:bb_mobile/_model/electrum.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 
@@ -138,13 +137,8 @@ class SettingsState with _$SettingsState {
   }
 
   int getSatsAmount(String amount, bool? unitsInSatss) {
-    try {
-      if (unitsInSatss ?? unitsInSats) return int.parse(amount);
-      return (double.parse(amount) * 100000000).toInt();
-    } catch (e) {
-      debugPrint(e.toString());
-      return 0;
-    }
+    if (unitsInSatss ?? unitsInSats) return int.tryParse(amount) ?? 0;
+    return ((double.tryParse(amount) ?? 0) * 100000000).toInt();
   }
 
   bdk.Network getBdkNetwork() {

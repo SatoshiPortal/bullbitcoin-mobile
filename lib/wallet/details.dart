@@ -21,6 +21,7 @@ class WalletDetailsPage extends StatelessWidget {
       value: walletBloc,
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           flexibleSpace: BBAppBar(
             text: 'Wallet Details',
             onBack: () {
