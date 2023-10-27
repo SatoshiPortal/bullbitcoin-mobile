@@ -102,7 +102,7 @@ class _Screen extends StatelessWidget {
     //         ),
     //   body:
     return ColoredBox(
-      color: sent ? Colors.green : context.colour.onPrimary,
+      color: sent ? Colors.green : context.colour.background,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),

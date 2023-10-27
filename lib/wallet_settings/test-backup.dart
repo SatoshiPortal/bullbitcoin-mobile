@@ -30,6 +30,7 @@ class TestBackupPage extends StatelessWidget {
       ],
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           flexibleSpace: BBAppBar(
             text: 'Test Backup',
             onBack: () {

@@ -253,8 +253,11 @@ class QRDisplay extends StatelessWidget {
     final address = context.select((ReceiveCubit x) => x.state.getQRStr());
 
     return Center(
-      child: QrImageView(
-        data: address,
+      child: ColoredBox(
+        color: Colors.white,
+        child: QrImageView(
+          data: address,
+        ),
       ),
     );
   }
