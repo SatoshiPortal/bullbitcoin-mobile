@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+function main.test {
+    err.log "Not implemented"
+    exit 1;
+}
