@@ -88,6 +88,7 @@ class _Screen extends StatelessWidget {
                     AuthKeyPad(),
                     Gap(24),
                     AuthConfirmButton(),
+                    Gap(24),
                   ],
                 ),
               ).animate(delay: 1000.milliseconds).fade(),
@@ -221,8 +222,12 @@ class AuthKeyPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final shuffledNumberButton = [
+      for (var i = 0; i < 10; i = i + 1) NumberButton(text: i.toString()),
+    ];
+    shuffledNumberButton.shuffle();
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.55,
+      height: MediaQuery.of(context).size.height * 0.65,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -234,9 +239,9 @@ class AuthKeyPad extends StatelessWidget {
             crossAxisCount: 3,
           ),
           children: [
-            for (var i = 1; i < 10; i = i + 1) NumberButton(text: i.toString()),
+            for (var i = 0; i < 9; i = i + 1) shuffledNumberButton[i],
             Container(),
-            const NumberButton(text: '0'),
+            shuffledNumberButton[9],
             Container(),
           ],
         ),
