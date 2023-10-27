@@ -413,7 +413,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
       switch (type) {
         case ImportTypes.words12:
-          final mnemonic = state.words12.join(' ');
+          final mnemonic = state.words12.map((_) => _.word).join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
           final (ws, wErrs) = await walletSensCreate.allFromBIP39(
             mnemonic,
@@ -427,7 +427,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           }
           wallets.addAll(ws!);
         case ImportTypes.words24:
-          final mnemonic = state.words24.join(' ');
+          final mnemonic = state.words24.map((_) => _.word).join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
 
           final (ws, wErrs) = await walletSensCreate.allFromBIP39(
@@ -513,8 +513,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
     if (selectedWallet.type == BBWalletType.words) {
       final mnemonic = (state.importType == ImportTypes.words12)
-          ? state.words12.join(' ')
-          : state.words24.join(' ');
+          ? state.words12.map((_) => _.word).join(' ')
+          : state.words24.map((_) => _.word).join(' ');
       final (seed, sErr) = await walletSensCreate.mnemonicSeed(mnemonic, network);
       if (sErr != null) {
         emit(state.copyWith(errImporting: 'Error creating mnemonicSeed'));
