@@ -128,7 +128,7 @@ function issue.git {
     local issue_description
     issue_description=$(input.form "Provide a description for the issue:")
     local issue_tags
-    issue_description=$(input.form "Add tags (comma separated, no spaces):")
+    issue_tags=$(input.form "Add tags (comma separated, no spaces):")
 
     GITHUB_TOKEN=$(secret.form "Enter Your Github Token:")
     # Create an array of tags from the comma-separated input

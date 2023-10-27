@@ -4,9 +4,9 @@ set -e
 function main.code {
     # Check if the 'IDE' environment variable is not set or is empty.
     if [ -z "${IDE}" ]; then
-        ide=$(input.form "Please enter the command to open your preferred IDE: ")
+        ide=$(input.form "Preferred IDE executable name (saved in .env): ")
 
-        echo "IDE=${ide}" >> "$BBM_OP_HOME/.env"
+        echo "IDE=${ide}" >> "$BBM_OP_ENV"
 
         win.log "Your IDE preference has been saved as $ide for future sessions."
 

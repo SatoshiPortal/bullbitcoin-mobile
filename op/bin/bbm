@@ -7,8 +7,8 @@ BBM_HOME=$(cd "$BBM_OP_HOME/../" && pwd)
 export BBM_OP_HOME
 export BBM_HOME
 
-export BBM_OP_ENV="$BBM_OP_HOME/bin/.env"
-
+export BBM_OP_ENV="$BBM_OP_HOME/config/.env"
+touch "$BBM_OP_ENV"
 . "$BBM_OP_ENV"
 
 current_os="$(uname)"

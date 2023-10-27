@@ -23,4 +23,5 @@ doc/api/
 .flutter-plugins-dependencies
 .DS_Store
 
-op/bin/.env
+op/config/.env
+op/builds
