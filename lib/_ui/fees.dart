@@ -38,13 +38,38 @@ class SelectFeesButton extends StatelessWidget {
       );
     }
 
-    return BBButton.textWithStatusAndRightArrow(
-      label: 'Default fee rate',
-      statusText: txt,
-      isBlue: true,
-      onPressed: () {
+    // return MediaQuery(
+    //   data: MediaQuery.of(context).copyWith(textScaleFactor: 0.9),
+    //   child: BBButton.textWithStatusAndRightArrow(
+    //     label: 'Default fee rate',
+    //     statusText: txt,
+    //     isBlue: true,
+    //     onPressed: () {
+    //       SelectFeesPopUp.openSelectFees(context, fromSettings);
+    //     },
+    //   ),
+    // );
+    return InkWell(
+      onTap: () {
         SelectFeesPopUp.openSelectFees(context, fromSettings);
       },
+      child: Row(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const BBText.title('Default fee rate'),
+              BBText.bodySmall(txt, isBlue: true),
+            ],
+          ),
+          const Spacer(),
+          FaIcon(
+            FontAwesomeIcons.chevronRight,
+            size: 16,
+            color: context.colour.onBackground,
+          ),
+        ],
+      ),
     );
   }
 }

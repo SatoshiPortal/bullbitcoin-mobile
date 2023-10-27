@@ -146,7 +146,10 @@ class BackupScreen extends StatelessWidget {
               ),
             ),
             const Gap(8),
-            if (mnemonic.length == 12) WordGrid(mne: mnemonic) else WordGrid(mne: mnemonic),
+            MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: WordGrid(mne: mnemonic),
+            ),
             if (password.isNotEmpty) ...[
               const Gap(24),
               const Padding(

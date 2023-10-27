@@ -58,13 +58,13 @@ class WordGrid extends StatelessWidget {
     if (mne.isEmpty) return const SizedBox.shrink();
     if (mne.length == 12)
       return SizedBox(
-        height: 100,
+        height: 200,
         width: double.infinity,
         child: GridView.count(
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          childAspectRatio: 5 / 1,
+          childAspectRatio: 5 / 1.5,
           children: reorderWidgets([
             for (var i = 0; i < mne.length; i++)
               _Word(
@@ -76,13 +76,13 @@ class WordGrid extends StatelessWidget {
       );
     else
       return SizedBox(
-        height: 200,
+        height: 300,
         width: double.infinity,
         child: GridView.count(
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 3,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          childAspectRatio: 5 / 1,
+          childAspectRatio: 5 / 1.5,
           children: reorderWidgets24([
             for (var i = 0; i < mne.length; i++)
               _Word(

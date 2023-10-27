@@ -39,35 +39,37 @@ class _Screen extends StatelessWidget {
         flexibleSpace: const SettingsAppBar(),
       ),
       body: const SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              Gap(8),
-              Currencyx(),
-              Gap(8),
-              Units(),
-              Gap(8),
-              TestNetButton(),
-              Gap(8),
-              DefaultRBFToggle(),
-              Gap(8),
-              ChangePin(),
-              Gap(8),
-              SelectFeesButton(fromSettings: true),
-              Gap(8),
-              BroadCastButton(),
-              Gap(8),
-              NetworkButton(),
-              Spacer(),
-              CenterLeft(
-                child: BBText.bodySmall(
-                  'Version $bbVersion',
-                  isBold: true,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                Gap(8),
+                Currencyx(),
+                Gap(8),
+                Units(),
+                Gap(8),
+                TestNetButton(),
+                Gap(8),
+                DefaultRBFToggle(),
+                Gap(8),
+                ChangePin(),
+                Gap(8),
+                SelectFeesButton(fromSettings: true),
+                Gap(8),
+                BroadCastButton(),
+                Gap(8),
+                NetworkButton(),
+                Gap(80),
+                CenterLeft(
+                  child: BBText.bodySmall(
+                    'Version $bbVersion',
+                    isBold: true,
+                  ),
                 ),
-              ),
-              Gap(24),
-            ],
+                Gap(24),
+              ],
+            ),
           ),
         ),
       ),
