@@ -11,6 +11,7 @@ class StorageKeys {
   static const seeds = 'seeds';
   static const wallets = 'wallets';
   static const settings = 'settings';
+  static const lighting = 'lighting';
   static const hiveEncryption = 'hiveEncryptionKey';
   static const version = 'version';
 }

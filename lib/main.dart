@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/home/deep_linking.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/routes.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_state.dart';
 import 'package:bb_mobile/styles.dart';
@@ -44,6 +45,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
         providers: [
           BlocProvider.value(value: locator<SettingsCubit>()),
           BlocProvider.value(value: locator<Logger>()),
+          BlocProvider.value(value: locator<Lighting>()),
         ],
         child: BlocListener<SettingsCubit, SettingsState>(
           listener: (context, state) {
@@ -51,29 +53,37 @@ class BullBitcoinWalletApp extends StatelessWidget {
               localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
           },
           child: DeepLinker(
-            child: MaterialApp.router(
-              theme: Themes.lightTheme,
-              darkTheme: Themes.darkTheme,
-              themeMode: ThemeMode.light,
-              routerConfig: router,
-              debugShowCheckedModeBanner: false,
-              localizationsDelegates: [
-                localizationDelegate,
-              ],
-              supportedLocales: localizationDelegate.supportedLocales,
-              locale: localizationDelegate.currentLocale,
-              builder: (context, child) {
-                SystemChrome.setSystemUIOverlayStyle(
-                  SystemUiOverlayStyle(
-                    statusBarColor: context.colour.background,
+            child: BlocBuilder<Lighting, ThemeLighting>(
+              builder: (context, state) {
+                return AnimatedSwitcher(
+                  duration: 600.ms,
+                  switchInCurve: Curves.decelerate,
+                  child: MaterialApp.router(
+                    theme: Themes.lightTheme,
+                    darkTheme: state.dark(),
+                    themeMode: state.mode(),
+                    routerConfig: router,
+                    debugShowCheckedModeBanner: false,
+                    localizationsDelegates: [
+                      localizationDelegate,
+                    ],
+                    supportedLocales: localizationDelegate.supportedLocales,
+                    locale: localizationDelegate.currentLocale,
+                    builder: (context, child) {
+                      SystemChrome.setSystemUIOverlayStyle(
+                        SystemUiOverlayStyle(
+                          statusBarColor: context.colour.background,
+                        ),
+                      );
+                      if (child == null) return Container();
+                      return GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                        },
+                        child: AppLifecycleOverlay(child: child),
+                      );
+                    },
                   ),
-                );
-                if (child == null) return Container();
-                return GestureDetector(
-                  onTap: () {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                  },
-                  child: AppLifecycleOverlay(child: child),
                 );
               },
             ),

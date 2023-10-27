@@ -8,6 +8,7 @@ import 'package:bb_mobile/_ui/fees.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/electrum.dart';
+import 'package:bb_mobile/settings/lighting.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,6 +61,8 @@ class _Screen extends StatelessWidget {
                 BroadCastButton(),
                 Gap(8),
                 NetworkButton(),
+                Gap(8),
+                LightingButton(),
                 Gap(80),
                 CenterLeft(
                   child: BBText.bodySmall(
@@ -259,6 +262,20 @@ class DefaultRBFToggle extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class LightingButton extends StatelessWidget {
+  const LightingButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Lighting',
+      onPressed: () {
+        LightingPopUp.openPopUp(context);
+      },
     );
   }
 }

@@ -24,6 +24,7 @@ import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -46,6 +47,7 @@ Future setupLocator({bool fromTest = false}) async {
   }
 
   locator.registerSingleton<Logger>(Logger());
+  locator.registerSingleton<Lighting>(Lighting(hiveStorage: hiveStorage));
 
   locator.registerSingleton<SecureStorage>(secureStorage);
   locator.registerSingleton<HiveStorage>(hiveStorage);

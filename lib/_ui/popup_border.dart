@@ -27,7 +27,7 @@ class PopUpBorder extends StatelessWidget {
                 ignoring: false,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: context.colour.onPrimary,
+                    color: context.colour.background,
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(25.0),
                     ),

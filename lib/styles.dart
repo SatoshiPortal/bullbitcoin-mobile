@@ -64,6 +64,34 @@ class Themes {
       backgroundColor: _Colours.black,
     ),
   );
+
+  static ThemeData dimTheme = ThemeData(
+    useMaterial3: true,
+    fontFamily: GoogleFonts.inter().fontFamily,
+    textTheme: GoogleFonts.interTextTheme(
+      ThemeData(brightness: Brightness.dark).textTheme,
+    ),
+    colorScheme: const ColorScheme(
+      brightness: Brightness.dark,
+      primary: _Colours.red,
+      onPrimary: _Colours.white,
+      secondary: _Colours.blue,
+      onSecondary: _Colours.white,
+      surface: _Colours.gray,
+      onSurface: _Colours.white,
+      background: _Colours.black,
+      onBackground: _Colours.white,
+      error: _Colours.red,
+      onError: _Colours.white,
+    ),
+    scaffoldBackgroundColor: _Colours.black,
+    visualDensity: VisualDensity.comfortable,
+    brightness: Brightness.dark,
+    appBarTheme: const AppBarTheme(
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      backgroundColor: _Colours.black,
+    ),
+  );
 }
 
 extension ThemeExtension on BuildContext {
