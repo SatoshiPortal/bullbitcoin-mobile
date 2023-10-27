@@ -12,6 +12,7 @@ enum SecurityStep {
 @freezed
 class AuthState with _$AuthState {
   const factory AuthState({
+    @Default([]) List<int> shuffledNumbers,
     @Default(SecurityStep.enterPin) SecurityStep step,
     @Default('') String pin,
     @Default('') String confirmPin,
@@ -69,5 +70,11 @@ class AuthState with _$AuthState {
       text = confirmPin;
 
     return 'x' * text.length;
+  }
+
+  List<int> generateShuffledNumbers() {
+    final numbers = List<int>.generate(10, (i) => i);
+    numbers.shuffle();
+    return numbers;
   }
 }

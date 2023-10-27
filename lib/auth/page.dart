@@ -222,10 +222,10 @@ class AuthKeyPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shuffledNumberButton = [
-      for (var i = 0; i < 10; i = i + 1) NumberButton(text: i.toString()),
+    final shuffledNumbers = context.select((AuthCubit x) => x.state.shuffledNumbers);
+    final shuffledNumberButtonList = [
+      for (final i in shuffledNumbers) NumberButton(text: i.toString()),
     ];
-    shuffledNumberButton.shuffle();
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.65,
       child: Padding(
@@ -239,9 +239,9 @@ class AuthKeyPad extends StatelessWidget {
             crossAxisCount: 3,
           ),
           children: [
-            for (var i = 0; i < 9; i = i + 1) shuffledNumberButton[i],
+            for (var i = 0; i < 9; i = i + 1) shuffledNumberButtonList[i],
             Container(),
-            shuffledNumberButton[9],
+            shuffledNumberButtonList[9],
             Container(),
           ],
         ),

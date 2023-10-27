@@ -16,6 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$AuthState {
+  List<int> get shuffledNumbers => throw _privateConstructorUsedError;
   SecurityStep get step => throw _privateConstructorUsedError;
   String get pin => throw _privateConstructorUsedError;
   String get confirmPin => throw _privateConstructorUsedError;
@@ -36,7 +37,8 @@ abstract class $AuthStateCopyWith<$Res> {
       _$AuthStateCopyWithImpl<$Res, AuthState>;
   @useResult
   $Res call(
-      {SecurityStep step,
+      {List<int> shuffledNumbers,
+      SecurityStep step,
       String pin,
       String confirmPin,
       bool checking,
@@ -59,6 +61,7 @@ class _$AuthStateCopyWithImpl<$Res, $Val extends AuthState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? shuffledNumbers = null,
     Object? step = null,
     Object? pin = null,
     Object? confirmPin = null,
@@ -69,6 +72,10 @@ class _$AuthStateCopyWithImpl<$Res, $Val extends AuthState>
     Object? onStartChecking = null,
   }) {
     return _then(_value.copyWith(
+      shuffledNumbers: null == shuffledNumbers
+          ? _value.shuffledNumbers
+          : shuffledNumbers // ignore: cast_nullable_to_non_nullable
+              as List<int>,
       step: null == step
           ? _value.step
           : step // ignore: cast_nullable_to_non_nullable
@@ -113,7 +120,8 @@ abstract class _$$_AuthStateCopyWith<$Res> implements $AuthStateCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {SecurityStep step,
+      {List<int> shuffledNumbers,
+      SecurityStep step,
       String pin,
       String confirmPin,
       bool checking,
@@ -134,6 +142,7 @@ class __$$_AuthStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? shuffledNumbers = null,
     Object? step = null,
     Object? pin = null,
     Object? confirmPin = null,
@@ -144,6 +153,10 @@ class __$$_AuthStateCopyWithImpl<$Res>
     Object? onStartChecking = null,
   }) {
     return _then(_$_AuthState(
+      shuffledNumbers: null == shuffledNumbers
+          ? _value._shuffledNumbers
+          : shuffledNumbers // ignore: cast_nullable_to_non_nullable
+              as List<int>,
       step: null == step
           ? _value.step
           : step // ignore: cast_nullable_to_non_nullable
@@ -184,7 +197,8 @@ class __$$_AuthStateCopyWithImpl<$Res>
 
 class _$_AuthState extends _AuthState {
   const _$_AuthState(
-      {this.step = SecurityStep.enterPin,
+      {final List<int> shuffledNumbers = const [],
+      this.step = SecurityStep.enterPin,
       this.pin = '',
       this.confirmPin = '',
       this.checking = true,
@@ -192,7 +206,17 @@ class _$_AuthState extends _AuthState {
       this.fromSettings = false,
       this.loggedIn = false,
       this.onStartChecking = true})
-      : super._();
+      : _shuffledNumbers = shuffledNumbers,
+        super._();
+
+  final List<int> _shuffledNumbers;
+  @override
+  @JsonKey()
+  List<int> get shuffledNumbers {
+    if (_shuffledNumbers is EqualUnmodifiableListView) return _shuffledNumbers;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_shuffledNumbers);
+  }
 
   @override
   @JsonKey()
@@ -221,7 +245,7 @@ class _$_AuthState extends _AuthState {
 
   @override
   String toString() {
-    return 'AuthState(step: $step, pin: $pin, confirmPin: $confirmPin, checking: $checking, err: $err, fromSettings: $fromSettings, loggedIn: $loggedIn, onStartChecking: $onStartChecking)';
+    return 'AuthState(shuffledNumbers: $shuffledNumbers, step: $step, pin: $pin, confirmPin: $confirmPin, checking: $checking, err: $err, fromSettings: $fromSettings, loggedIn: $loggedIn, onStartChecking: $onStartChecking)';
   }
 
   @override
@@ -229,6 +253,8 @@ class _$_AuthState extends _AuthState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_AuthState &&
+            const DeepCollectionEquality()
+                .equals(other._shuffledNumbers, _shuffledNumbers) &&
             (identical(other.step, step) || other.step == step) &&
             (identical(other.pin, pin) || other.pin == pin) &&
             (identical(other.confirmPin, confirmPin) ||
@@ -245,8 +271,17 @@ class _$_AuthState extends _AuthState {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, step, pin, confirmPin, checking,
-      err, fromSettings, loggedIn, onStartChecking);
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_shuffledNumbers),
+      step,
+      pin,
+      confirmPin,
+      checking,
+      err,
+      fromSettings,
+      loggedIn,
+      onStartChecking);
 
   @JsonKey(ignore: true)
   @override
@@ -257,7 +292,8 @@ class _$_AuthState extends _AuthState {
 
 abstract class _AuthState extends AuthState {
   const factory _AuthState(
-      {final SecurityStep step,
+      {final List<int> shuffledNumbers,
+      final SecurityStep step,
       final String pin,
       final String confirmPin,
       final bool checking,
@@ -267,6 +303,8 @@ abstract class _AuthState extends AuthState {
       final bool onStartChecking}) = _$_AuthState;
   const _AuthState._() : super._();
 
+  @override
+  List<int> get shuffledNumbers;
   @override
   SecurityStep get step;
   @override

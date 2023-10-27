@@ -8,6 +8,7 @@ class AuthCubit extends Cubit<AuthState> {
     bool fromSettings = false,
     required this.secureStorage,
   }) : super(AuthState(fromSettings: fromSettings)) {
+    emit(state.copyWith(shuffledNumbers: state.generateShuffledNumbers()));
     init();
     // scheduleMicrotask(init());
   }
@@ -80,6 +81,8 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> confirmPressed() async {
     if (!state.showButton()) return;
+    emit(state.copyWith(shuffledNumbers: state.generateShuffledNumbers()));
+
     if (!state.fromSettings)
       switch (state.step) {
         case SecurityStep.createPin:
