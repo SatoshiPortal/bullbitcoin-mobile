@@ -7,6 +7,7 @@ class _Colours {
   static const red = Color(0xFFC50909);
   static const gray = Color(0xFF666666);
   static const black = Colors.black;
+  static const darkGray = Color(0xFF333333);
   static const white = Colors.white;
 }
 
@@ -79,17 +80,17 @@ class Themes {
       onSecondary: _Colours.white,
       surface: _Colours.gray,
       onSurface: _Colours.white,
-      background: _Colours.black,
+      background: _Colours.darkGray,
       onBackground: _Colours.white,
       error: _Colours.red,
       onError: _Colours.white,
     ),
-    scaffoldBackgroundColor: _Colours.black,
+    scaffoldBackgroundColor: _Colours.darkGray,
     visualDensity: VisualDensity.comfortable,
     brightness: Brightness.dark,
     appBarTheme: const AppBarTheme(
       systemOverlayStyle: SystemUiOverlayStyle.dark,
-      backgroundColor: _Colours.black,
+      backgroundColor: _Colours.darkGray,
     ),
   );
 }
