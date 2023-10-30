@@ -215,7 +215,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
 
     final (a, w) = await walletAddress.addAddressToWallet(
-      address: (state.defaultAddress!.index!, state.defaultAddress!.address),
+      address: (state.defaultAddress!.index, state.defaultAddress!.address),
       wallet: walletBloc.state.wallet!,
       label: state.privateLabel,
       kind: state.defaultAddress!.kind,
@@ -292,7 +292,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
 
     final (_, w) = await walletAddress.addAddressToWallet(
-      address: (state.defaultAddress!.index!, state.defaultAddress!.address),
+      address: (state.defaultAddress!.index, state.defaultAddress!.address),
       wallet: walletBloc.state.wallet!,
       label: state.description,
       kind: AddressKind.deposit,
