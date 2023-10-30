@@ -4,6 +4,7 @@ import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -20,6 +21,12 @@ class LightingPopUp extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => const PopUpBorder(child: LightingPopUp()),
     );
+  }
+
+  void onClicked(BuildContext context, ThemeLighting theme) async {
+    context.pop();
+    await Future.delayed(800.ms);
+    context.read<Lighting>().toggle(theme);
   }
 
   @override
@@ -40,64 +47,56 @@ class LightingPopUp extends StatelessWidget {
           ListTile(
             title: const BBText.body('Light'),
             onTap: () async {
-              context.pop();
-              context.read<Lighting>().toggle(ThemeLighting.light);
+              onClicked(context, ThemeLighting.light);
             },
             leading: Radio<ThemeLighting>(
               fillColor: MaterialStateProperty.all(context.colour.primary),
               value: ThemeLighting.light,
               groupValue: theme,
               onChanged: (value) {
-                context.pop();
-                context.read<Lighting>().toggle(value!);
+                onClicked(context, value!);
               },
             ),
           ),
           ListTile(
             title: const BBText.body('Dark'),
             onTap: () {
-              context.pop();
-              context.read<Lighting>().toggle(ThemeLighting.dark);
+              onClicked(context, ThemeLighting.dark);
             },
             leading: Radio<ThemeLighting>(
               value: ThemeLighting.dark,
               groupValue: theme,
               fillColor: MaterialStateProperty.all(context.colour.primary),
               onChanged: (value) {
-                context.pop();
-                context.read<Lighting>().toggle(value!);
+                onClicked(context, value!);
               },
             ),
           ),
           ListTile(
-            title: const BBText.body('Dim'),
+            title: const BBText.body('Dimmed'),
             onTap: () {
-              context.pop();
-              context.read<Lighting>().toggle(ThemeLighting.dim);
+              onClicked(context, ThemeLighting.dim);
             },
             leading: Radio<ThemeLighting>(
               value: ThemeLighting.dim,
               groupValue: theme,
               fillColor: MaterialStateProperty.all(context.colour.primary),
               onChanged: (value) {
-                context.pop();
-                context.read<Lighting>().toggle(value!);
+                onClicked(context, value!);
               },
             ),
           ),
           ListTile(
             title: const BBText.body('System'),
             onTap: () {
-              context.pop();
-              context.read<Lighting>().toggle(ThemeLighting.system);
+              onClicked(context, ThemeLighting.system);
             },
             leading: Radio<ThemeLighting>(
               fillColor: MaterialStateProperty.all(context.colour.primary),
               value: ThemeLighting.system,
               groupValue: theme,
               onChanged: (value) {
-                context.pop();
-                context.read<Lighting>().toggle(value!);
+                onClicked(context, value!);
               },
             ),
           ),

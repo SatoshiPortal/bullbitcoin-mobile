@@ -1,6 +1,8 @@
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 
@@ -212,10 +214,13 @@ class BBButton extends StatelessWidget {
         }
 
       case _ButtonType.bigBlack:
+        final isDark =
+            context.select((Lighting _) => _.state.currentTheme(context) == ThemeMode.dark);
+
         final style = OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: const StadiumBorder(),
-          backgroundColor: context.colour.onBackground,
+          backgroundColor: !isDark ? context.colour.onBackground : context.colour.surface,
           foregroundColor: context.colour.onPrimary,
         );
 

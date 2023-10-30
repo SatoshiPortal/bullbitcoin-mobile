@@ -33,16 +33,32 @@ class Lighting extends Cubit<ThemeLighting> {
 
 extension X on ThemeLighting {
   ThemeData dark() => this == ThemeLighting.dim ? Themes.dimTheme : Themes.darkTheme;
+
   ThemeMode mode() {
     switch (this) {
       case ThemeLighting.light:
         return ThemeMode.light;
       case ThemeLighting.dark:
-        return ThemeMode.dark;
       case ThemeLighting.dim:
         return ThemeMode.dark;
       case ThemeLighting.system:
         return ThemeMode.system;
+      default:
+        return ThemeMode.light;
+    }
+  }
+
+  ThemeMode currentTheme(BuildContext context) {
+    switch (this) {
+      case ThemeLighting.light:
+        return ThemeMode.light;
+      case ThemeLighting.dark:
+      case ThemeLighting.dim:
+        return ThemeMode.dark;
+      case ThemeLighting.system:
+        final brightness = MediaQuery.of(context).platformBrightness;
+        final isDarkMode = brightness == Brightness.dark;
+        return isDarkMode ? ThemeMode.dark : ThemeMode.light;
       default:
         return ThemeMode.light;
     }

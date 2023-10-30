@@ -103,16 +103,19 @@ class BroadcastPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PopUpBorder(
+    return PopUpBorder(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           BBHeader.popUpCenteredText(
             text: 'BROADCAST',
+            onBack: () {
+              context.pop();
+            },
             // isLeft: true,
           ),
-          Gap(16),
-          _Screen(),
+          const Gap(16),
+          const _Screen(),
         ],
       ),
     );
@@ -141,24 +144,7 @@ class _Screen extends StatelessWidget {
               if (step == BroadcastTxStep.broadcast) ...[
                 const TxInfo(),
               ] else ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(width: 14),
-                    const BBText.body(
-                      'Import Transaction',
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const FaIcon(
-                        FontAwesomeIcons.xmark,
-                        size: 14,
-                      ),
-                    ),
-                  ],
-                ),
+                const BBText.body('Import Transaction'),
                 const Gap(24),
                 Center(
                   child: GestureDetector(

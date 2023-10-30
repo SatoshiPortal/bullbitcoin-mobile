@@ -39,7 +39,7 @@ class ImportEnterWordsScreen extends StatelessWidget {
                     context.colour.onBackground,
                   ),
                   backgroundColor: MaterialStatePropertyAll<Color>(
-                    context.colour.onPrimary,
+                    context.colour.background,
                   ),
                 ),
                 segments: <ButtonSegment<ImportTypes>>[

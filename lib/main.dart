@@ -57,7 +57,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
               builder: (context, state) {
                 return AnimatedSwitcher(
                   duration: 600.ms,
-                  switchInCurve: Curves.decelerate,
+                  switchInCurve: Curves.easeInOutCubic,
                   child: MaterialApp.router(
                     theme: Themes.lightTheme,
                     darkTheme: state.dark(),

@@ -23,6 +23,7 @@ class BarcodeScanner extends StatelessWidget {
     );
   }
 
+//U74120MH2016PTC271620
   @override
   Widget build(BuildContext context) {
     return Column(
