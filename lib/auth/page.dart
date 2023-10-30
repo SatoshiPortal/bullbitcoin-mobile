@@ -86,12 +86,12 @@ class _Screen extends StatelessWidget {
                     Gap(48),
                     AuthPasswordField(),
                     AuthKeyPad(),
-                    Gap(24),
+                    // Gap(24),
                     AuthConfirmButton(),
-                    Gap(24),
+                    Gap(40),
                   ],
                 ),
-              ).animate(delay: 1000.milliseconds).fade(),
+              ).animate(delay: 400.milliseconds).fade(),
       ),
     );
   }
