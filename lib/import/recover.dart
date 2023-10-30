@@ -202,8 +202,9 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
     }
 
     return Material(
-      elevation: 4,
+      elevation: 2,
       borderRadius: BorderRadius.circular(8),
+      shadowColor: Colors.white,
       child: Column(
         children: [
           for (final word in suggestions)

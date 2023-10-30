@@ -23,6 +23,14 @@ class HomeState with _$HomeState {
   List<Wallet> walletsFromNetwork(BBNetwork network) =>
       wallets?.where((wallet) => wallet.network == network).toList().reversed.toList() ?? [];
 
+  List<WalletBloc> walletBlocsFromNetwork(BBNetwork network) =>
+      walletBlocs
+          ?.where((wallet) => wallet.state.wallet?.network == network)
+          .toList()
+          .reversed
+          .toList() ??
+      [];
+
   Wallet? getFirstWithSpendableAndBalance(BBNetwork network, {int amt = 0}) {
     final wallets = walletsFromNetwork(network);
     if (wallets.isEmpty) return null;

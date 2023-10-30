@@ -209,7 +209,8 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
     }
 
     return Material(
-      elevation: 4,
+      elevation: 2,
+      shadowColor: Colors.white,
       borderRadius: BorderRadius.circular(8),
       child: Column(
         children: [

@@ -15,6 +15,7 @@ class LoggerPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         flexibleSpace: BBAppBar(
           text: 'Logs',
           onBack: () {

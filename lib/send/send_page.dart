@@ -333,6 +333,9 @@ class UploadTransactionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final walletType = context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
+    if (!walletType) return const SizedBox.shrink();
+
     return BBButton.text(
       centered: true,
       onPressed: () {
