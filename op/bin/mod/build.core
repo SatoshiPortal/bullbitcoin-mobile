@@ -11,6 +11,7 @@ function main.build {
     cd "$BBM_HOME/lib" || exit 1;
     flutter build appbundle
     flutter build apk --release
+    rm -rf "$v_zone_build"
     #------------------ package aab
     release_path="$BBM_HOME/build/app/outputs/bundle/release"
     cd "$release_path" || exit 1;

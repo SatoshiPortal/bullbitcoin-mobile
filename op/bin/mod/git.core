@@ -45,7 +45,6 @@ function commit.git {
     git add .
     git commit -S -m "$1"
     cd - > /dev/null 2>&1 || exit
-
 }
 
 function pull.git {
@@ -71,23 +70,23 @@ function release.git {
         err.log "Error: Please provide a version (eg: v0.1.2)"
         exit 1
     fi
+    notice.log "Ensure that you are on main. Commited and built the latest version of the codebase."
+    confirm.form
+
     version=$1
-
-    display.repos
-    repo_name=$(select.repos)
-
-    zone_build=$BBM_OP_HOME/dev/$ZONE_NAME/builds/$repo_name.$version
-    
+    zone_build=$BBM_OP_HOME/builds/$BBM.$version
+    BBM_OWNER="SatoshiPortal"
+    RELEASE_NOTES="$BBM_OP_HOME/config/release-notes.md"
     # keepassxc
 
     GITHUB_TOKEN=$(secret.form "Enter Your Github Token:")
     br.log
-    BBM_OWNER="SatoshiPortal"
-    RELEASE_NOTES="$zone_build/package.md"
-    cp "$BBM_OP_HOME/mgmt/$repo_name/package.md" "$RELEASE_NOTES"
-    sed -i "s/--version--/$version/g" "$RELEASE_NOTES"
-
-    notice.log "Opening $RELEASE_NOTES in $EDITOR."
+    git tag -s "$version" -m "Release-$version"
+    git tag --verify v0.1
+    git push --tags origin
+    # sed -i "s/--version--/$version/g" "$RELEASE_NOTES"
+    win.log "Pushed with release tag!"
+    notice.log "Release $version: Opening $RELEASE_NOTES in $EDITOR."
     confirm.form 
     
     nvim "$RELEASE_NOTES"
@@ -99,7 +98,7 @@ function release.git {
     RELEASE_BODY_JSON=$(printf '%s' "$RELEASE_BODY" | jq -s -R .)
 
 # Use a heredoc to provide the JSON data directly
-    RELEASE_RESPONSE=$(curl -H "Authorization: token $GITHUB_TOKEN" -X POST "https://api.github.com/repos/$BBM_OWNER/$repo_name/releases" -d @- <<EOF
+    RELEASE_RESPONSE=$(curl -H "Authorization: token $GITHUB_TOKEN" -X POST "https://api.github.com/repos/$BBM_OWNER/$BBM/releases" -d @- <<EOF
 {
     "tag_name": "$version",
     "target_commitish": "main",
@@ -115,7 +114,7 @@ EOF
     RELEASE_ID=$(echo "$RELEASE_RESPONSE" | jq -r '.id')
 
     # Upload the zip file as an asset
-    ASSET_UPLOAD_RESPONSE=$(curl -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/zip" --data-binary @"$zone_build.zip" "https://uploads.github.com/repos/$BBM_OWNER/$repo_name/releases/$RELEASE_ID/assets?name=bullbitcoin-mobile.$version.zip")
+    ASSET_UPLOAD_RESPONSE=$(curl -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/zip" --data-binary @"$zone_build.zip" "https://uploads.github.com/repos/$BBM_OWNER/$BBM/releases/$RELEASE_ID/assets?name=bullbitcoin-mobile.$version.zip")
 
     echo "$ASSET_UPLOAD_RESPONSE"
 
