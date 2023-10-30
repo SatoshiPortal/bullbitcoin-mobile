@@ -101,16 +101,11 @@ class HomeWallets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final network = context.select((SettingsCubit x) => x.state.getBBNetwork());
+    final wallets = context.select((HomeCubit x) => x.state.wallets ?? []);
 
-    final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
-
-    final hasWallets = wallets.isNotEmpty;
     final loading = context.select((HomeCubit x) => x.state.loadingWallets);
 
     if (loading) return Container();
-
-    if (!hasWallets) return const HomeNoWallets().animate().fadeIn();
 
     final currentWalletBlocs = context.select((HomeCubit x) => x.state.walletBlocs ?? []);
 
@@ -118,6 +113,11 @@ class HomeWallets extends StatelessWidget {
       final walletBlocs = createWalletBlocs(wallets);
       context.read<HomeCubit>().updateWalletBlocs(walletBlocs);
     }
+
+    final network = context.select((SettingsCubit x) => x.state.getBBNetwork());
+    final walletsFromNetwork =
+        context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+    if (walletsFromNetwork.isEmpty) return const HomeNoWallets().animate().fadeIn();
 
     return const WalletScreen()
         .animate(
@@ -134,7 +134,11 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletCubits = context.select((HomeCubit _) => _.state.walletBlocs ?? []);
+    final network = context.select((SettingsCubit x) => x.state.getBBNetwork());
+    // final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
+    // final walletCubits = context.select((HomeCubit _) => _.state.walletBlocs ?? []);
+    final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    // final walletCubits = wallets.map((e) => )
 
     final selectedWallet = context.select((HomeCubit x) => x.state.selectedWalletCubit);
 
@@ -209,7 +213,10 @@ class _HomeHeaderCardsState extends State<HomeHeaderCards> {
 
   @override
   Widget build(BuildContext context) {
-    final walletCubits = context.select((HomeCubit _) => _.state.walletBlocs ?? []);
+    final network = context.select((SettingsCubit x) => x.state.getBBNetwork());
+    final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+
+    // if (walletCubits.isEmpty) return const SizedBox.shrink();
 
     return BlocListener<HomeCubit, HomeState>(
       listenWhen: (previous, current) => previous.moveToIdx != current.moveToIdx,
