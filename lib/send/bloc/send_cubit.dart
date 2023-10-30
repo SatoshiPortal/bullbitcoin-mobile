@@ -318,8 +318,6 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void downloadPSBTClicked() async {
-    final localWallet = walletBloc.state.wallet;
-
     emit(
       state.copyWith(
         downloadingFile: true,
@@ -357,27 +355,6 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    // final (updatedWalletTxs, _) =
-    //     await walletTx.addTxToWallet(transaction: state.tx!, wallet: localWallet!);
-
-    // final (_, updatedWallet) = await walletAddress.addAddressToWallet(
-    //   address: (null, state.address),
-    //   wallet: updatedWalletTxs,
-    //   label: state.note,
-    //   spentTxId: txid,
-    //   kind: AddressKind.external,
-    //   state: AddressStatus.used,
-    // );
-
-    // walletBloc.add(
-    //   UpdateWallet(
-    //     updatedWallet,
-    //     updateTypes: [
-    //       UpdateWalletTypes.addresses,
-    //       UpdateWalletTypes.transactions,
-    //     ],
-    //   ),
-    // );
     await Future.delayed(const Duration(seconds: 1));
     // save state.tx to wallet.transactions
     emit(state.copyWith(downloadingFile: false, downloaded: true));

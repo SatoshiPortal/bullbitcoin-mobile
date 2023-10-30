@@ -284,15 +284,6 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     updatedWallet = updatedWallet.copyWith(transactions: txs);
 
-    // final err2 = await walletRepository.updateWallet(
-    //   wallet: updatedWallet,
-    //   hiveStore: hiveStorage,
-    // );
-    // if (err2 != null) {
-    //   emit(state.copyWith(errSendingTx: err2.toString(), sendingTx: false));
-    //   return;
-    // }
-
     walletBloc.add(
       UpdateWallet(
         updatedWallet,
@@ -311,7 +302,6 @@ class TransactionCubit extends Cubit<TransactionState> {
         sentTx: true,
       ),
     );
-    // walletBloc.updateWallet(w);
   }
 
   void cancelTx() {

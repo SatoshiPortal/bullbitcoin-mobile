@@ -106,11 +106,6 @@ class Transaction with _$Transaction {
       broadcastTime == null ? null : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
 
   bool canRBF() => rbfEnabled == true && timestamp == null || timestamp == 0;
-
-  // List<Address> outputAddressesFromSerialized() {
-  //   final serialized = bdkTx!.serializedTx;
-
-  // }
 }
 
 DateTime getDateTimeFromInt(int time) => DateTime.fromMillisecondsSinceEpoch(time * 1000);
