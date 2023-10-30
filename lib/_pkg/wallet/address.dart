@@ -274,7 +274,7 @@ class WalletAddress {
           kind: kind,
           state: state,
           spendable: spendable,
-          // highestPreviousBalance: highestPreviousBalance,
+          highestPreviousBalance: existing.highestPreviousBalance,
         );
         addresses.insert(existingIdx, updated);
       } else {
