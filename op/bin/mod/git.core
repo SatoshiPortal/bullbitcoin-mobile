@@ -66,6 +66,7 @@ function stash.git {
 }
 
 function release.git {
+    cd "$BBM_HOME" || exit 1;
     if [ -z "$1" ]; then
         err.log "Error: Please provide a version (eg: v0.1.2)"
         exit 1
@@ -81,9 +82,9 @@ function release.git {
 
     GITHUB_TOKEN=$(secret.form "Enter Your Github Token:")
     br.log
-    git tag -s "$version" -m "Release-$version"
-    git tag --verify v0.1
-    git push --tags origin
+    # git tag -s "$version" -m "Release-$version"
+    # git tag --verify "$version"
+    # git push --tags origin
     # sed -i "s/--version--/$version/g" "$RELEASE_NOTES"
     win.log "Pushed with release tag!"
     notice.log "Release $version: Opening $RELEASE_NOTES in $EDITOR."
@@ -96,6 +97,7 @@ function release.git {
     RELEASE_BODY=$(<"$RELEASE_NOTES")
 
     RELEASE_BODY_JSON=$(printf '%s' "$RELEASE_BODY" | jq -s -R .)
+    cd - > /dev/null 2>&1 || exit
 
 # Use a heredoc to provide the JSON data directly
     RELEASE_RESPONSE=$(curl -H "Authorization: token $GITHUB_TOKEN" -X POST "https://api.github.com/repos/$BBM_OWNER/$BBM/releases" -d @- <<EOF

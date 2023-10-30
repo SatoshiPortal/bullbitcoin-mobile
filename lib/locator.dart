@@ -29,7 +29,7 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
-const bbVersion = '0.1.9';
+const bbVersion = '0.1.91';
 
 GetIt locator = GetIt.instance;
 

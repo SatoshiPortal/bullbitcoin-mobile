@@ -6,8 +6,8 @@ part of 'transaction.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Transaction _$$_TransactionFromJson(Map<String, dynamic> json) =>
-    _$_Transaction(
+_$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
+    _$TransactionImpl(
       txid: json['txid'] as String,
       received: json['received'] as int?,
       sent: json['sent'] as int?,
@@ -15,25 +15,18 @@ _$_Transaction _$$_TransactionFromJson(Map<String, dynamic> json) =>
       height: json['height'] as int?,
       timestamp: json['timestamp'] as int?,
       label: json['label'] as String?,
-      fromAddress: json['fromAddress'] as String?,
       toAddress: json['toAddress'] as String?,
       psbt: json['psbt'] as String?,
       rbfEnabled: json['rbfEnabled'] as bool? ?? false,
       oldTx: json['oldTx'] as bool? ?? false,
       broadcastTime: json['broadcastTime'] as int?,
-      inAddresses: (json['inAddresses'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      outAddresses: (json['outAddresses'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
       outAddrs: (json['outAddrs'] as List<dynamic>?)
               ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
     );
 
-Map<String, dynamic> _$$_TransactionToJson(_$_Transaction instance) =>
+Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
     <String, dynamic>{
       'txid': instance.txid,
       'received': instance.received,
@@ -42,13 +35,10 @@ Map<String, dynamic> _$$_TransactionToJson(_$_Transaction instance) =>
       'height': instance.height,
       'timestamp': instance.timestamp,
       'label': instance.label,
-      'fromAddress': instance.fromAddress,
       'toAddress': instance.toAddress,
       'psbt': instance.psbt,
       'rbfEnabled': instance.rbfEnabled,
       'oldTx': instance.oldTx,
       'broadcastTime': instance.broadcastTime,
-      'inAddresses': instance.inAddresses,
-      'outAddresses': instance.outAddresses,
       'outAddrs': instance.outAddrs,
     };

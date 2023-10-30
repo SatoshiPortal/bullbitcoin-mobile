@@ -42,7 +42,6 @@ class WalletSensitiveTx {
         timestamp: txDetails.confirmationTime?.timestamp,
         label: tx.label,
         toAddress: tx.toAddress,
-        outAddresses: tx.outAddresses,
         psbt: signedPSBT.psbtBase64,
       );
       return (newTx, null);

@@ -7,6 +7,12 @@ function main.build {
     fi
     version=$1
     v_zone_build=$BBM_OP_HOME/builds/$BBM.$version
+    
+    # $SED_COMPAT "s/const bbVersion = '[^']*';/const bbVersion = '$version';/g" "$BBM_HOME/lib/locator.dart"
+    # $SED_COMPAT "s/version: [^ ]*/version: $version/g" "$BBM_HOME/pubspec.yaml"
+    # $SED_COMPAT "s/versionName \"[^\"]*\"/versionName \"$version\"/g" "$BBM_HOME/android/app/build.gradle"
+
+
     #------------------ build aab & apk
     cd "$BBM_HOME/lib" || exit 1;
     flutter build appbundle

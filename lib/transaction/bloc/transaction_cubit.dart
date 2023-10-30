@@ -68,45 +68,45 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     Future.wait([
       // loadInAddresses(),
-      loadOutAddresses(),
+      // loadOutAddresses(),
     ]);
 
     emit(state.copyWith(loadingAddresses: false));
   }
 
-  Future loadInAddresses() async {
-    final (tx, err) = await walletTx.updateTxInputAddresses(
-      tx: state.tx,
-      wallet: walletBloc.state.wallet!,
-      mempoolAPI: mempoolAPI,
-    );
-    if (err != null) {
-      emit(
-        state.copyWith(
-          errLoadingAddresses: err.toString(),
-        ),
-      );
-      return;
-    }
+  // Future loadInAddresses() async {
+  //   final (tx, err) = await walletTx.updateTxInputAddresses(
+  //     tx: state.tx,
+  //     wallet: walletBloc.state.wallet!,
+  //     mempoolAPI: mempoolAPI,
+  //   );
+  //   if (err != null) {
+  //     emit(
+  //       state.copyWith(
+  //         errLoadingAddresses: err.toString(),
+  //       ),
+  //     );
+  //     return;
+  //   }
 
-    emit(state.copyWith(tx: tx!));
-  }
+  //   emit(state.copyWith(tx: tx!));
+  // }
 
-  Future loadOutAddresses() async {
-    final (tx, err) = await walletTx.updateTxOutputAddresses(
-      tx: state.tx,
-      wallet: walletBloc.state.wallet!,
-    );
-    if (err != null) {
-      emit(
-        state.copyWith(
-          errLoadingAddresses: err.toString(),
-        ),
-      );
-      return;
-    }
-    emit(state.copyWith(tx: tx!));
-  }
+  // Future loadOutAddresses() async {
+  //   final (tx, err) = await walletTx.updateTxOutputAddresses(
+  //     tx: state.tx,
+  //     wallet: walletBloc.state.wallet!,
+  //   );
+  //   if (err != null) {
+  //     emit(
+  //       state.copyWith(
+  //         errLoadingAddresses: err.toString(),
+  //       ),
+  //     );
+  //     return;
+  //   }
+  //   emit(state.copyWith(tx: tx!));
+  // }
 
   void loadReceiveLabel() {
     final tx = state.tx;

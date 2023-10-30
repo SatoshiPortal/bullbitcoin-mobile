@@ -18,15 +18,12 @@ class Transaction with _$Transaction {
     int? height,
     int? timestamp,
     String? label,
-    String? fromAddress,
     String? toAddress,
     String? psbt,
     @Default(false) bool rbfEnabled,
     @Default(false) bool oldTx,
     int? broadcastTime,
     // String? serializedTx,
-    List<String>? inAddresses,
-    List<String>? outAddresses,
     @Default([]) List<Address> outAddrs,
     @JsonKey(
       includeFromJson: false,
@@ -38,13 +35,17 @@ class Transaction with _$Transaction {
 
   factory Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
 
-  String mapOutValueToAddress(String value) {
-    if (outAddresses == null) return '';
-    final String address = outAddresses!.firstWhere(
-      (element) => element.split(':')[1] == value,
-      orElse: () => '',
-    );
-    return address.split(':')[0];
+  Address? mapOutValueToAddress(int value) {
+    if (outAddrs.isEmpty) return null;
+    try {
+      final Address address = outAddrs.firstWhere(
+        (element) => element.highestPreviousBalance == value,
+      );
+      return address;
+    } catch (e) {
+      return null;
+    }
+    return null;
   }
 
   List<Address> createOutAddrsFromTx() {

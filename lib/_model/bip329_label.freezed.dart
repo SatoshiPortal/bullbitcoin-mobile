@@ -91,11 +91,11 @@ class _$Bip329LabelCopyWithImpl<$Res, $Val extends Bip329Label>
 }
 
 /// @nodoc
-abstract class _$$_Bip329LabelCopyWith<$Res>
+abstract class _$$Bip329LabelImplCopyWith<$Res>
     implements $Bip329LabelCopyWith<$Res> {
-  factory _$$_Bip329LabelCopyWith(
-          _$_Bip329Label value, $Res Function(_$_Bip329Label) then) =
-      __$$_Bip329LabelCopyWithImpl<$Res>;
+  factory _$$Bip329LabelImplCopyWith(
+          _$Bip329LabelImpl value, $Res Function(_$Bip329LabelImpl) then) =
+      __$$Bip329LabelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -107,11 +107,11 @@ abstract class _$$_Bip329LabelCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_Bip329LabelCopyWithImpl<$Res>
-    extends _$Bip329LabelCopyWithImpl<$Res, _$_Bip329Label>
-    implements _$$_Bip329LabelCopyWith<$Res> {
-  __$$_Bip329LabelCopyWithImpl(
-      _$_Bip329Label _value, $Res Function(_$_Bip329Label) _then)
+class __$$Bip329LabelImplCopyWithImpl<$Res>
+    extends _$Bip329LabelCopyWithImpl<$Res, _$Bip329LabelImpl>
+    implements _$$Bip329LabelImplCopyWith<$Res> {
+  __$$Bip329LabelImplCopyWithImpl(
+      _$Bip329LabelImpl _value, $Res Function(_$Bip329LabelImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -123,7 +123,7 @@ class __$$_Bip329LabelCopyWithImpl<$Res>
     Object? origin = freezed,
     Object? spendable = freezed,
   }) {
-    return _then(_$_Bip329Label(
+    return _then(_$Bip329LabelImpl(
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -150,8 +150,8 @@ class __$$_Bip329LabelCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Bip329Label extends _Bip329Label {
-  const _$_Bip329Label(
+class _$Bip329LabelImpl extends _Bip329Label {
+  const _$Bip329LabelImpl(
       {required this.type,
       required this.ref,
       this.label,
@@ -159,8 +159,8 @@ class _$_Bip329Label extends _Bip329Label {
       this.spendable})
       : super._();
 
-  factory _$_Bip329Label.fromJson(Map<String, dynamic> json) =>
-      _$$_Bip329LabelFromJson(json);
+  factory _$Bip329LabelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$Bip329LabelImplFromJson(json);
 
   @override
   final BIP329Type type;
@@ -182,7 +182,7 @@ class _$_Bip329Label extends _Bip329Label {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Bip329Label &&
+            other is _$Bip329LabelImpl &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.ref, ref) || other.ref == ref) &&
             (identical(other.label, label) || other.label == label) &&
@@ -199,12 +199,12 @@ class _$_Bip329Label extends _Bip329Label {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_Bip329LabelCopyWith<_$_Bip329Label> get copyWith =>
-      __$$_Bip329LabelCopyWithImpl<_$_Bip329Label>(this, _$identity);
+  _$$Bip329LabelImplCopyWith<_$Bip329LabelImpl> get copyWith =>
+      __$$Bip329LabelImplCopyWithImpl<_$Bip329LabelImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_Bip329LabelToJson(
+    return _$$Bip329LabelImplToJson(
       this,
     );
   }
@@ -216,11 +216,11 @@ abstract class _Bip329Label extends Bip329Label {
       required final String ref,
       final String? label,
       final String? origin,
-      final bool? spendable}) = _$_Bip329Label;
+      final bool? spendable}) = _$Bip329LabelImpl;
   const _Bip329Label._() : super._();
 
   factory _Bip329Label.fromJson(Map<String, dynamic> json) =
-      _$_Bip329Label.fromJson;
+      _$Bip329LabelImpl.fromJson;
 
   @override
   BIP329Type get type;
@@ -234,6 +234,6 @@ abstract class _Bip329Label extends Bip329Label {
   bool? get spendable;
   @override
   @JsonKey(ignore: true)
-  _$$_Bip329LabelCopyWith<_$_Bip329Label> get copyWith =>
+  _$$Bip329LabelImplCopyWith<_$Bip329LabelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

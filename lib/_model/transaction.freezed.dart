@@ -27,15 +27,12 @@ mixin _$Transaction {
   int? get height => throw _privateConstructorUsedError;
   int? get timestamp => throw _privateConstructorUsedError;
   String? get label => throw _privateConstructorUsedError;
-  String? get fromAddress => throw _privateConstructorUsedError;
   String? get toAddress => throw _privateConstructorUsedError;
   String? get psbt => throw _privateConstructorUsedError;
   bool get rbfEnabled => throw _privateConstructorUsedError;
   bool get oldTx => throw _privateConstructorUsedError;
   int? get broadcastTime =>
       throw _privateConstructorUsedError; // String? serializedTx,
-  List<String>? get inAddresses => throw _privateConstructorUsedError;
-  List<String>? get outAddresses => throw _privateConstructorUsedError;
   List<Address> get outAddrs => throw _privateConstructorUsedError;
   @JsonKey(includeFromJson: false, includeToJson: false)
   bdk.TransactionDetails? get bdkTx => throw _privateConstructorUsedError;
@@ -60,14 +57,11 @@ abstract class $TransactionCopyWith<$Res> {
       int? height,
       int? timestamp,
       String? label,
-      String? fromAddress,
       String? toAddress,
       String? psbt,
       bool rbfEnabled,
       bool oldTx,
       int? broadcastTime,
-      List<String>? inAddresses,
-      List<String>? outAddresses,
       List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       bdk.TransactionDetails? bdkTx});
@@ -93,14 +87,11 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? height = freezed,
     Object? timestamp = freezed,
     Object? label = freezed,
-    Object? fromAddress = freezed,
     Object? toAddress = freezed,
     Object? psbt = freezed,
     Object? rbfEnabled = null,
     Object? oldTx = null,
     Object? broadcastTime = freezed,
-    Object? inAddresses = freezed,
-    Object? outAddresses = freezed,
     Object? outAddrs = null,
     Object? bdkTx = freezed,
   }) {
@@ -133,10 +124,6 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
               as String?,
-      fromAddress: freezed == fromAddress
-          ? _value.fromAddress
-          : fromAddress // ignore: cast_nullable_to_non_nullable
-              as String?,
       toAddress: freezed == toAddress
           ? _value.toAddress
           : toAddress // ignore: cast_nullable_to_non_nullable
@@ -157,14 +144,6 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.broadcastTime
           : broadcastTime // ignore: cast_nullable_to_non_nullable
               as int?,
-      inAddresses: freezed == inAddresses
-          ? _value.inAddresses
-          : inAddresses // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      outAddresses: freezed == outAddresses
-          ? _value.outAddresses
-          : outAddresses // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
       outAddrs: null == outAddrs
           ? _value.outAddrs
           : outAddrs // ignore: cast_nullable_to_non_nullable
@@ -178,11 +157,11 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
 }
 
 /// @nodoc
-abstract class _$$_TransactionCopyWith<$Res>
+abstract class _$$TransactionImplCopyWith<$Res>
     implements $TransactionCopyWith<$Res> {
-  factory _$$_TransactionCopyWith(
-          _$_Transaction value, $Res Function(_$_Transaction) then) =
-      __$$_TransactionCopyWithImpl<$Res>;
+  factory _$$TransactionImplCopyWith(
+          _$TransactionImpl value, $Res Function(_$TransactionImpl) then) =
+      __$$TransactionImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -193,25 +172,22 @@ abstract class _$$_TransactionCopyWith<$Res>
       int? height,
       int? timestamp,
       String? label,
-      String? fromAddress,
       String? toAddress,
       String? psbt,
       bool rbfEnabled,
       bool oldTx,
       int? broadcastTime,
-      List<String>? inAddresses,
-      List<String>? outAddresses,
       List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       bdk.TransactionDetails? bdkTx});
 }
 
 /// @nodoc
-class __$$_TransactionCopyWithImpl<$Res>
-    extends _$TransactionCopyWithImpl<$Res, _$_Transaction>
-    implements _$$_TransactionCopyWith<$Res> {
-  __$$_TransactionCopyWithImpl(
-      _$_Transaction _value, $Res Function(_$_Transaction) _then)
+class __$$TransactionImplCopyWithImpl<$Res>
+    extends _$TransactionCopyWithImpl<$Res, _$TransactionImpl>
+    implements _$$TransactionImplCopyWith<$Res> {
+  __$$TransactionImplCopyWithImpl(
+      _$TransactionImpl _value, $Res Function(_$TransactionImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -224,18 +200,15 @@ class __$$_TransactionCopyWithImpl<$Res>
     Object? height = freezed,
     Object? timestamp = freezed,
     Object? label = freezed,
-    Object? fromAddress = freezed,
     Object? toAddress = freezed,
     Object? psbt = freezed,
     Object? rbfEnabled = null,
     Object? oldTx = null,
     Object? broadcastTime = freezed,
-    Object? inAddresses = freezed,
-    Object? outAddresses = freezed,
     Object? outAddrs = null,
     Object? bdkTx = freezed,
   }) {
-    return _then(_$_Transaction(
+    return _then(_$TransactionImpl(
       txid: null == txid
           ? _value.txid
           : txid // ignore: cast_nullable_to_non_nullable
@@ -264,10 +237,6 @@ class __$$_TransactionCopyWithImpl<$Res>
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
               as String?,
-      fromAddress: freezed == fromAddress
-          ? _value.fromAddress
-          : fromAddress // ignore: cast_nullable_to_non_nullable
-              as String?,
       toAddress: freezed == toAddress
           ? _value.toAddress
           : toAddress // ignore: cast_nullable_to_non_nullable
@@ -288,14 +257,6 @@ class __$$_TransactionCopyWithImpl<$Res>
           ? _value.broadcastTime
           : broadcastTime // ignore: cast_nullable_to_non_nullable
               as int?,
-      inAddresses: freezed == inAddresses
-          ? _value._inAddresses
-          : inAddresses // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
-      outAddresses: freezed == outAddresses
-          ? _value._outAddresses
-          : outAddresses // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
       outAddrs: null == outAddrs
           ? _value._outAddrs
           : outAddrs // ignore: cast_nullable_to_non_nullable
@@ -310,8 +271,8 @@ class __$$_TransactionCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Transaction extends _Transaction {
-  const _$_Transaction(
+class _$TransactionImpl extends _Transaction {
+  const _$TransactionImpl(
       {required this.txid,
       this.received,
       this.sent,
@@ -319,23 +280,18 @@ class _$_Transaction extends _Transaction {
       this.height,
       this.timestamp,
       this.label,
-      this.fromAddress,
       this.toAddress,
       this.psbt,
       this.rbfEnabled = false,
       this.oldTx = false,
       this.broadcastTime,
-      final List<String>? inAddresses,
-      final List<String>? outAddresses,
       final List<Address> outAddrs = const [],
       @JsonKey(includeFromJson: false, includeToJson: false) this.bdkTx})
-      : _inAddresses = inAddresses,
-        _outAddresses = outAddresses,
-        _outAddrs = outAddrs,
+      : _outAddrs = outAddrs,
         super._();
 
-  factory _$_Transaction.fromJson(Map<String, dynamic> json) =>
-      _$$_TransactionFromJson(json);
+  factory _$TransactionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TransactionImplFromJson(json);
 
   @override
   final String txid;
@@ -352,8 +308,6 @@ class _$_Transaction extends _Transaction {
   @override
   final String? label;
   @override
-  final String? fromAddress;
-  @override
   final String? toAddress;
   @override
   final String? psbt;
@@ -366,28 +320,8 @@ class _$_Transaction extends _Transaction {
   @override
   final int? broadcastTime;
 // String? serializedTx,
-  final List<String>? _inAddresses;
-// String? serializedTx,
-  @override
-  List<String>? get inAddresses {
-    final value = _inAddresses;
-    if (value == null) return null;
-    if (_inAddresses is EqualUnmodifiableListView) return _inAddresses;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  final List<String>? _outAddresses;
-  @override
-  List<String>? get outAddresses {
-    final value = _outAddresses;
-    if (value == null) return null;
-    if (_outAddresses is EqualUnmodifiableListView) return _outAddresses;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
   final List<Address> _outAddrs;
+// String? serializedTx,
   @override
   @JsonKey()
   List<Address> get outAddrs {
@@ -402,14 +336,14 @@ class _$_Transaction extends _Transaction {
 
   @override
   String toString() {
-    return 'Transaction(txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, timestamp: $timestamp, label: $label, fromAddress: $fromAddress, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, inAddresses: $inAddresses, outAddresses: $outAddresses, outAddrs: $outAddrs, bdkTx: $bdkTx)';
+    return 'Transaction(txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, timestamp: $timestamp, label: $label, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Transaction &&
+            other is _$TransactionImpl &&
             (identical(other.txid, txid) || other.txid == txid) &&
             (identical(other.received, received) ||
                 other.received == received) &&
@@ -419,8 +353,6 @@ class _$_Transaction extends _Transaction {
             (identical(other.timestamp, timestamp) ||
                 other.timestamp == timestamp) &&
             (identical(other.label, label) || other.label == label) &&
-            (identical(other.fromAddress, fromAddress) ||
-                other.fromAddress == fromAddress) &&
             (identical(other.toAddress, toAddress) ||
                 other.toAddress == toAddress) &&
             (identical(other.psbt, psbt) || other.psbt == psbt) &&
@@ -429,10 +361,6 @@ class _$_Transaction extends _Transaction {
             (identical(other.oldTx, oldTx) || other.oldTx == oldTx) &&
             (identical(other.broadcastTime, broadcastTime) ||
                 other.broadcastTime == broadcastTime) &&
-            const DeepCollectionEquality()
-                .equals(other._inAddresses, _inAddresses) &&
-            const DeepCollectionEquality()
-                .equals(other._outAddresses, _outAddresses) &&
             const DeepCollectionEquality().equals(other._outAddrs, _outAddrs) &&
             (identical(other.bdkTx, bdkTx) || other.bdkTx == bdkTx));
   }
@@ -448,26 +376,23 @@ class _$_Transaction extends _Transaction {
       height,
       timestamp,
       label,
-      fromAddress,
       toAddress,
       psbt,
       rbfEnabled,
       oldTx,
       broadcastTime,
-      const DeepCollectionEquality().hash(_inAddresses),
-      const DeepCollectionEquality().hash(_outAddresses),
       const DeepCollectionEquality().hash(_outAddrs),
       bdkTx);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_TransactionCopyWith<_$_Transaction> get copyWith =>
-      __$$_TransactionCopyWithImpl<_$_Transaction>(this, _$identity);
+  _$$TransactionImplCopyWith<_$TransactionImpl> get copyWith =>
+      __$$TransactionImplCopyWithImpl<_$TransactionImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_TransactionToJson(
+    return _$$TransactionImplToJson(
       this,
     );
   }
@@ -482,21 +407,18 @@ abstract class _Transaction extends Transaction {
       final int? height,
       final int? timestamp,
       final String? label,
-      final String? fromAddress,
       final String? toAddress,
       final String? psbt,
       final bool rbfEnabled,
       final bool oldTx,
       final int? broadcastTime,
-      final List<String>? inAddresses,
-      final List<String>? outAddresses,
       final List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
-      final bdk.TransactionDetails? bdkTx}) = _$_Transaction;
+      final bdk.TransactionDetails? bdkTx}) = _$TransactionImpl;
   const _Transaction._() : super._();
 
   factory _Transaction.fromJson(Map<String, dynamic> json) =
-      _$_Transaction.fromJson;
+      _$TransactionImpl.fromJson;
 
   @override
   String get txid;
@@ -513,8 +435,6 @@ abstract class _Transaction extends Transaction {
   @override
   String? get label;
   @override
-  String? get fromAddress;
-  @override
   String? get toAddress;
   @override
   String? get psbt;
@@ -525,16 +445,12 @@ abstract class _Transaction extends Transaction {
   @override
   int? get broadcastTime;
   @override // String? serializedTx,
-  List<String>? get inAddresses;
-  @override
-  List<String>? get outAddresses;
-  @override
   List<Address> get outAddrs;
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   bdk.TransactionDetails? get bdkTx;
   @override
   @JsonKey(ignore: true)
-  _$$_TransactionCopyWith<_$_Transaction> get copyWith =>
+  _$$TransactionImplCopyWith<_$TransactionImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -1,13 +1,14 @@
 
-bullbitcoin-mobile-v0.1.91
+## bullbitcoin-mobile-v0.1.91
 
 Minor release patching deprecated 0.1.9 due to inconsistent source.
 
-## Changelog
+### Changelog
   - fixed amount entering UX in send
   - recover backup now enforces selecting a word from the list
-
-## Required/Known-Bugs
+  - ui: 
+    - lighting
+### Required/Known-Bugs
   - bip329
   - transaction:
     - pending refactor to better store outputs and psbt data

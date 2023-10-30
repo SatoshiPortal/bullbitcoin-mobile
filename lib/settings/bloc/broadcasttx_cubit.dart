@@ -147,27 +147,103 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           ),
         );
       } else {
+        // its a hex
+
         final bdkTx = await bdk.Transaction.create(transactionBytes: hex.decode(tx));
         final txid = await bdkTx.txid();
         final outputs = await bdkTx.output();
-        final List<String> outAddresses = [];
-        for (final outpoint in outputs) {
-          outAddresses.add(outpoint.toString());
+        final serialized = await bdkTx.serialize();
+        Transaction? transaction;
+        final wallets = homeCubit.state.walletBlocs ?? [];
+        for (final wallet in wallets) {
+          for (final tx in wallet.state.wallet?.transactions ?? <Transaction>[]) {
+            if (tx.txid == txid) {
+              transaction = tx;
+            }
+          }
         }
+        int totalAmount = 0;
 
-        final transaction = Transaction(
-          txid: txid,
-          // fee: feeAmount,
-          outAddresses: outAddresses,
+        final List<Address> outAddrs = [];
+        for (final outpoint in outputs) {
+          totalAmount += outpoint.value;
+          final addressStruct = await bdk.Address.fromScript(
+            outpoint.scriptPubkey,
+            settingsCubit.state.getBdkNetwork(),
+          );
+          if (transaction != null) {
+            try {
+              final Address relatedAddress = transaction.outAddrs
+                  .firstWhere((element) => element.address == addressStruct.toString());
+              outAddrs.add(
+                relatedAddress.copyWith(
+                  highestPreviousBalance: outpoint.value,
+                ),
+              );
+            } catch (e) {
+              outAddrs.add(
+                Address(
+                  address: addressStruct.toString(),
+                  kind: AddressKind.external,
+                  state: AddressStatus.used,
+                  highestPreviousBalance: outpoint.value,
+                ),
+              );
+            }
+          } else {
+            outAddrs.add(
+              Address(
+                address: addressStruct.toString(),
+                kind: AddressKind.external,
+                state: AddressStatus.used,
+                highestPreviousBalance: outpoint.value,
+              ),
+            );
+          }
+        }
+        final int feeAmount = transaction!.fee ?? 0;
+
+        transaction ??= Transaction(txid: txid);
+        transaction = transaction.copyWith(
+          fee: feeAmount,
+          outAddrs: outAddrs,
         );
-
+        final decodedTx = hex.encode(await bdkTx.serialize());
         emit(
           state.copyWith(
             extractingTx: false,
+            tx: decodedTx,
             transaction: transaction,
             step: BroadcastTxStep.broadcast,
+            amount: totalAmount,
+            // this is the sum of outputs so its not really what we are sending
           ),
         );
+        // final outAddrsFutures = outputs.map((txOut) async {
+        //   final scriptAddress = await bdk.Address.fromScript(
+        //     txOut.scriptPubkey,
+        //     network,
+        //   );
+        //   if (txOut.value == amount! && scriptAddress.toString() == address) {
+        //     return Address(
+        //       address: scriptAddress.toString(),
+        //       kind: AddressKind.external,
+        //       state: AddressStatus.used,
+        //       highestPreviousBalance: amount,
+        //       label: note ?? '',
+        //     );
+        //   } else {
+        //     return Address(
+        //       address: scriptAddress.toString(),
+        //       kind: AddressKind.change,
+        //       state: AddressStatus.used,
+        //       highestPreviousBalance: txOut.value,
+        //       label: note ?? '',
+        //     );
+        //   }
+        // });
+
+        // final List<Address> outAddrs = await Future.wait(outAddrsFutures);
       }
     } catch (e) {
       emit(

@@ -250,8 +250,8 @@ class WalletAddress {
 
         final utxos = address.utxos?.toList() ?? [];
         for (final tx in wallet.transactions) {
-          for (final addrs in tx.outAddresses ?? []) {
-            if (addrs == addressStr) {
+          for (final addrs in tx.outAddrs) {
+            if (addrs.address == addressStr) {
               isRelated = true;
               // txLabel = tx.label ?? '';
             }

@@ -6,8 +6,8 @@ part of 'settings_state.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_SettingsState _$$_SettingsStateFromJson(Map<String, dynamic> json) =>
-    _$_SettingsState(
+_$SettingsStateImpl _$$SettingsStateImplFromJson(Map<String, dynamic> json) =>
+    _$SettingsStateImpl(
       unitsInSats: json['unitsInSats'] as bool? ?? false,
       notifications: json['notifications'] as bool? ?? false,
       privacyView: json['privacyView'] as bool? ?? false,
@@ -52,7 +52,7 @@ _$_SettingsState _$$_SettingsStateFromJson(Map<String, dynamic> json) =>
       defaultRBF: json['defaultRBF'] as bool? ?? true,
     );
 
-Map<String, dynamic> _$$_SettingsStateToJson(_$_SettingsState instance) =>
+Map<String, dynamic> _$$SettingsStateImplToJson(_$SettingsStateImpl instance) =>
     <String, dynamic>{
       'unitsInSats': instance.unitsInSats,
       'notifications': instance.notifications,

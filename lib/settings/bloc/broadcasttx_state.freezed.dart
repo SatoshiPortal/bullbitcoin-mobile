@@ -192,11 +192,11 @@ class _$BroadcastTxStateCopyWithImpl<$Res, $Val extends BroadcastTxState>
 }
 
 /// @nodoc
-abstract class _$$_BroadcastTxStateCopyWith<$Res>
+abstract class _$$BroadcastTxStateImplCopyWith<$Res>
     implements $BroadcastTxStateCopyWith<$Res> {
-  factory _$$_BroadcastTxStateCopyWith(
-          _$_BroadcastTxState value, $Res Function(_$_BroadcastTxState) then) =
-      __$$_BroadcastTxStateCopyWithImpl<$Res>;
+  factory _$$BroadcastTxStateImplCopyWith(_$BroadcastTxStateImpl value,
+          $Res Function(_$BroadcastTxStateImpl) then) =
+      __$$BroadcastTxStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -224,11 +224,11 @@ abstract class _$$_BroadcastTxStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_BroadcastTxStateCopyWithImpl<$Res>
-    extends _$BroadcastTxStateCopyWithImpl<$Res, _$_BroadcastTxState>
-    implements _$$_BroadcastTxStateCopyWith<$Res> {
-  __$$_BroadcastTxStateCopyWithImpl(
-      _$_BroadcastTxState _value, $Res Function(_$_BroadcastTxState) _then)
+class __$$BroadcastTxStateImplCopyWithImpl<$Res>
+    extends _$BroadcastTxStateCopyWithImpl<$Res, _$BroadcastTxStateImpl>
+    implements _$$BroadcastTxStateImplCopyWith<$Res> {
+  __$$BroadcastTxStateImplCopyWithImpl(_$BroadcastTxStateImpl _value,
+      $Res Function(_$BroadcastTxStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -253,7 +253,7 @@ class __$$_BroadcastTxStateCopyWithImpl<$Res>
     Object? errDownloadingFile = null,
     Object? downloaded = null,
   }) {
-    return _then(_$_BroadcastTxState(
+    return _then(_$BroadcastTxStateImpl(
       step: null == step
           ? _value.step
           : step // ignore: cast_nullable_to_non_nullable
@@ -330,8 +330,8 @@ class __$$_BroadcastTxStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_BroadcastTxState extends _BroadcastTxState {
-  const _$_BroadcastTxState(
+class _$BroadcastTxStateImpl extends _BroadcastTxState {
+  const _$BroadcastTxStateImpl(
       {this.step = BroadcastTxStep.import,
       this.tx = '',
       this.transaction,
@@ -412,7 +412,7 @@ class _$_BroadcastTxState extends _BroadcastTxState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_BroadcastTxState &&
+            other is _$BroadcastTxStateImpl &&
             (identical(other.step, step) || other.step == step) &&
             (identical(other.tx, tx) || other.tx == tx) &&
             (identical(other.transaction, transaction) ||
@@ -469,8 +469,9 @@ class _$_BroadcastTxState extends _BroadcastTxState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_BroadcastTxStateCopyWith<_$_BroadcastTxState> get copyWith =>
-      __$$_BroadcastTxStateCopyWithImpl<_$_BroadcastTxState>(this, _$identity);
+  _$$BroadcastTxStateImplCopyWith<_$BroadcastTxStateImpl> get copyWith =>
+      __$$BroadcastTxStateImplCopyWithImpl<_$BroadcastTxStateImpl>(
+          this, _$identity);
 }
 
 abstract class _BroadcastTxState extends BroadcastTxState {
@@ -492,7 +493,7 @@ abstract class _BroadcastTxState extends BroadcastTxState {
       final bdk.PartiallySignedTransaction? psbtBDK,
       final bool downloadingFile,
       final String errDownloadingFile,
-      final bool downloaded}) = _$_BroadcastTxState;
+      final bool downloaded}) = _$BroadcastTxStateImpl;
   const _BroadcastTxState._() : super._();
 
   @override
@@ -533,6 +534,6 @@ abstract class _BroadcastTxState extends BroadcastTxState {
   bool get downloaded;
   @override
   @JsonKey(ignore: true)
-  _$$_BroadcastTxStateCopyWith<_$_BroadcastTxState> get copyWith =>
+  _$$BroadcastTxStateImplCopyWith<_$BroadcastTxStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

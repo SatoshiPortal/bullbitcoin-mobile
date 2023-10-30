@@ -5,7 +5,6 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:hex/hex.dart';
@@ -136,7 +135,7 @@ class WalletTx {
           }
           txObj = txObj.copyWith(
             toAddress: externalAddress != null ? externalAddress.address : '',
-            fromAddress: '',
+            // fromAddress: '',
           );
           if (externalAddress != null) txObj = addOrUpdateAddressState(externalAddress, txObj);
           //
@@ -241,7 +240,7 @@ class WalletTx {
           }
           txObj = txObj.copyWith(
             toAddress: depositAddress != null ? depositAddress.address : '',
-            fromAddress: '',
+            // fromAddress: '',
           );
           if (depositAddress != null) {
             final txObj2 = addOrUpdateAddressState(depositAddress, txObj);
@@ -308,17 +307,42 @@ class WalletTx {
 
       final extractedTx = await txResult.psbt.extractTx();
       final outputs = await extractedTx.output();
-      final outAddresses = await Future.wait(
-        outputs.map((txOut) async {
-          final address = await bdk.Address.fromScript(
-            txOut.scriptPubkey,
-            wallet.getBdkNetwork(),
+      // final outAddresses = await Future.wait(
+      //   outputs.map((txOut) async {
+      //     final address = await bdk.Address.fromScript(
+      //       txOut.scriptPubkey,
+      //       wallet.getBdkNetwork(),
+      //     );
+      //     return address.toString();
+      //   }),
+      // );
+      final outAddrsFutures = outputs.map((txOut) async {
+        final scriptAddress = await bdk.Address.fromScript(
+          txOut.scriptPubkey,
+          wallet.getBdkNetwork(),
+        );
+        if (txOut.value == amount! && !sendAllCoin && scriptAddress.toString() == address) {
+          return Address(
+            address: scriptAddress.toString(),
+            kind: AddressKind.external,
+            state: AddressStatus.used,
+            highestPreviousBalance: amount,
+            label: note ?? '',
           );
-          return address.toString();
-        }),
-      );
+        } else {
+          return Address(
+            address: scriptAddress.toString(),
+            kind: AddressKind.change,
+            state: AddressStatus.used,
+            highestPreviousBalance: txOut.value,
+            label: note ?? '',
+          );
+        }
+      });
 
-      final tx = Transaction(
+      final List<Address> outAddrs = await Future.wait(outAddrsFutures);
+
+      final Transaction tx = Transaction(
         txid: txDetails.txid,
         rbfEnabled: enableRbf,
         received: txDetails.received,
@@ -328,7 +352,7 @@ class WalletTx {
         timestamp: txDetails.confirmationTime?.timestamp,
         label: note,
         toAddress: address,
-        outAddresses: outAddresses,
+        outAddrs: outAddrs,
         psbt: txResult.psbt.psbtBase64,
       );
       final feeAmt = await txResult.psbt.feeAmount();
@@ -380,59 +404,58 @@ class WalletTx {
     }
   }
 
-  Future<(Transaction?, Err?)> updateTxInputAddresses({
-    required Transaction tx,
-    required Wallet wallet,
-    required MempoolAPI mempoolAPI,
-  }) async {
-    try {
-      final isTestnet = wallet.network == BBNetwork.Testnet;
+  // Future<(Transaction?, Err?)> updateTxInputAddresses({
+  //   required Transaction tx,
+  //   required Wallet wallet,
+  //   required MempoolAPI mempoolAPI,
+  // }) async {
+  //   try {
+  //     final isTestnet = wallet.network == BBNetwork.Testnet;
 
-      final inputs = await tx.bdkTx?.transaction?.input();
-      final inAddresses = await Future.wait(
-        (inputs ?? []).map((txIn) async {
-          final idx = txIn.previousOutput.vout;
-          final txid = txIn.previousOutput.txid;
-          final (addresses, err) = await mempoolAPI.getVinAddressesFromTx(txid, isTestnet);
-          if (err != null) throw err;
-          return addresses![idx];
-        }),
-      );
+  //     final inputs = await tx.bdkTx?.transaction?.input();
+  //     final inAddresses = await Future.wait(
+  //       (inputs ?? []).map((txIn) async {
+  //         final idx = txIn.previousOutput.vout;
+  //         final txid = txIn.previousOutput.txid;
+  //         final (addresses, err) = await mempoolAPI.getVinAddressesFromTx(txid, isTestnet);
+  //         if (err != null) throw err;
+  //         return addresses![idx];
+  //       }),
+  //     );
 
-      final updated = tx.copyWith(inAddresses: inAddresses);
+  //     final updated = tx.copyWith(inAddresses: inAddresses);
 
-      return (updated, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
+  //     return (updated, null);
+  //   } catch (e) {
+  //     return (null, Err(e.toString()));
+  //   }
+  // }
 
-  Future<(Transaction?, Err?)> updateTxOutputAddresses({
-    required Transaction tx,
-    required Wallet wallet,
-  }) async {
-    try {
-      final outputs = await tx.bdkTx?.transaction?.output();
-      final (outAddresses) = await Future.wait(
-        (outputs ?? []).map((txOut) async {
-          final address = await bdk.Address.fromScript(
-            txOut.scriptPubkey,
-            wallet.getBdkNetwork(),
-          );
-          final value = txOut.value;
-          return address.toString() + ':' + value.toString();
-        }),
-      );
+//   Future<(Transaction?, Err?)> updateTxOutputAddresses({
+//     required Transaction tx,
+//     required Wallet wallet,
+//   }) async {
+//     try {
+//       final outputs = await tx.bdkTx?.transaction?.output();
+//       final (outAddresses) = await Future.wait(
+//         (outputs ?? []).map((txOut) async {
+//           final address = await bdk.Address.fromScript(
+//             txOut.scriptPubkey,
+//             wallet.getBdkNetwork(),
+//           );
+//           final value = txOut.value;
+//           return address.toString() + ':' + value.toString();
+//         }),
+//       );
 
-      final updated = tx.copyWith(outAddresses: outAddresses);
+//       final updated = tx.copyWith(outAddresses: outAddresses);
 
-      return (updated, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-}
-
+//       return (updated, null);
+//     } catch (e) {
+//       return (null, Err(e.toString()));
+//     }
+//   }
+// }
 
 // Future<(Transaction?, Err?)> updateRelatedTxLabels({
 //   required Transaction tx,
@@ -571,4 +594,4 @@ class WalletTx {
 //   } catch (e) {
 //     return (null, Err(e.toString(), expected: e.toString() == 'No bdk transactions found'));
 //   }
-// }
+}
