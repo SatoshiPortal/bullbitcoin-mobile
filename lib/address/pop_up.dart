@@ -149,9 +149,12 @@ class AddressQR extends StatelessWidget {
     return Column(
       children: [
         const Gap(8),
-        QrImageView(
-          data: address.address,
-          padding: EdgeInsets.zero,
+        ColoredBox(
+          color: Colors.white,
+          child: QrImageView(
+            data: address.address,
+            padding: EdgeInsets.zero,
+          ),
         ),
         const Gap(8),
         InkWell(

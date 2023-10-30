@@ -4,6 +4,7 @@ import 'package:bb_mobile/_ui/wallet_card.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
+import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -77,7 +78,9 @@ class SelectWalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocs ?? []);
+    final network = context.select((SettingsCubit _) => _.state.getBBNetwork());
+    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
