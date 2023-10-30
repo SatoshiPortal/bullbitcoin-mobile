@@ -181,6 +181,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(feeRate: amt));
   }
 
+  // SENSITIVE FX
   void buildTx() async {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
 
@@ -253,6 +254,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       address: tx.toAddress!,
       wallet: wallet,
       blockchain: blockchain,
+      transaction: tx,
     );
     if (err != null) {
       emit(
@@ -267,7 +269,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     final (w, txid) = wtxid!;
 
     var (_, updatedWallet) = await walletAddress.addAddressToWallet(
-      address: (1, tx.toAddress!),
+      address: (null, tx.toAddress!),
       wallet: w,
       label: tx.label,
       spentTxId: txid,
@@ -294,7 +296,10 @@ class TransactionCubit extends Cubit<TransactionState> {
     walletBloc.add(
       UpdateWallet(
         updatedWallet,
-        updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.addresses],
+        updateTypes: [
+          UpdateWalletTypes.transactions,
+          UpdateWalletTypes.addresses,
+        ],
       ),
     );
 

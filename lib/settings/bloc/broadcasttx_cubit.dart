@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,15 +80,30 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         // if not show warning
         // if no tx matches skip checks
         Transaction? transaction;
+        WalletBloc? relatedWallet;
         final wallets = homeCubit.state.walletBlocs ?? [];
+
         for (final wallet in wallets) {
-          for (final tx in wallet.state.wallet?.transactions ?? <Transaction>[]) {
-            if (tx.txid == txid) {
+          for (final tx in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
+            if (tx.txid == txid && !tx.isReceived()) {
               transaction = tx;
+              relatedWallet = wallet;
             }
           }
         }
-
+        if (transaction != null) {
+          emit(
+            state.copyWith(
+              recognizedTx: true,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              recognizedTx: false,
+            ),
+          );
+        }
         final feeAmount = await psbt.feeAmount();
         final outputs = await bdkTx.output();
         int totalAmount = 0;

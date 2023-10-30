@@ -35,6 +35,7 @@ mixin _$Wallet {
   List<Address> get myAddressBook => throw _privateConstructorUsedError;
   List<Address>? get externalAddressBook => throw _privateConstructorUsedError;
   List<Transaction> get transactions => throw _privateConstructorUsedError;
+  List<Transaction> get unsignedTxs => throw _privateConstructorUsedError;
   List<String>? get labelTags => throw _privateConstructorUsedError;
   List<Bip329Label>? get bip329Labels => throw _privateConstructorUsedError;
   bool get backupTested => throw _privateConstructorUsedError;
@@ -67,6 +68,7 @@ abstract class $WalletCopyWith<$Res> {
       List<Address> myAddressBook,
       List<Address>? externalAddressBook,
       List<Transaction> transactions,
+      List<Transaction> unsignedTxs,
       List<String>? labelTags,
       List<Bip329Label>? bip329Labels,
       bool backupTested,
@@ -104,6 +106,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? myAddressBook = null,
     Object? externalAddressBook = freezed,
     Object? transactions = null,
+    Object? unsignedTxs = null,
     Object? labelTags = freezed,
     Object? bip329Labels = freezed,
     Object? backupTested = null,
@@ -171,6 +174,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.transactions
           : transactions // ignore: cast_nullable_to_non_nullable
               as List<Transaction>,
+      unsignedTxs: null == unsignedTxs
+          ? _value.unsignedTxs
+          : unsignedTxs // ignore: cast_nullable_to_non_nullable
+              as List<Transaction>,
       labelTags: freezed == labelTags
           ? _value.labelTags
           : labelTags // ignore: cast_nullable_to_non_nullable
@@ -230,6 +237,7 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
       List<Address> myAddressBook,
       List<Address>? externalAddressBook,
       List<Transaction> transactions,
+      List<Transaction> unsignedTxs,
       List<String>? labelTags,
       List<Bip329Label>? bip329Labels,
       bool backupTested,
@@ -266,6 +274,7 @@ class __$$WalletImplCopyWithImpl<$Res>
     Object? myAddressBook = null,
     Object? externalAddressBook = freezed,
     Object? transactions = null,
+    Object? unsignedTxs = null,
     Object? labelTags = freezed,
     Object? bip329Labels = freezed,
     Object? backupTested = null,
@@ -333,6 +342,10 @@ class __$$WalletImplCopyWithImpl<$Res>
           ? _value._transactions
           : transactions // ignore: cast_nullable_to_non_nullable
               as List<Transaction>,
+      unsignedTxs: null == unsignedTxs
+          ? _value._unsignedTxs
+          : unsignedTxs // ignore: cast_nullable_to_non_nullable
+              as List<Transaction>,
       labelTags: freezed == labelTags
           ? _value._labelTags
           : labelTags // ignore: cast_nullable_to_non_nullable
@@ -376,6 +389,7 @@ class _$WalletImpl extends _Wallet {
       final List<Address> myAddressBook = const [],
       final List<Address>? externalAddressBook,
       final List<Transaction> transactions = const [],
+      final List<Transaction> unsignedTxs = const [],
       final List<String>? labelTags,
       final List<Bip329Label>? bip329Labels,
       this.backupTested = false,
@@ -384,6 +398,7 @@ class _$WalletImpl extends _Wallet {
       : _myAddressBook = myAddressBook,
         _externalAddressBook = externalAddressBook,
         _transactions = transactions,
+        _unsignedTxs = unsignedTxs,
         _labelTags = labelTags,
         _bip329Labels = bip329Labels,
         super._();
@@ -449,6 +464,15 @@ class _$WalletImpl extends _Wallet {
     return EqualUnmodifiableListView(_transactions);
   }
 
+  final List<Transaction> _unsignedTxs;
+  @override
+  @JsonKey()
+  List<Transaction> get unsignedTxs {
+    if (_unsignedTxs is EqualUnmodifiableListView) return _unsignedTxs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_unsignedTxs);
+  }
+
   final List<String>? _labelTags;
   @override
   List<String>? get labelTags {
@@ -480,7 +504,7 @@ class _$WalletImpl extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, transactions: $transactions, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, transactions: $transactions, unsignedTxs: $unsignedTxs, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide)';
   }
 
   @override
@@ -515,6 +539,8 @@ class _$WalletImpl extends _Wallet {
             const DeepCollectionEquality()
                 .equals(other._transactions, _transactions) &&
             const DeepCollectionEquality()
+                .equals(other._unsignedTxs, _unsignedTxs) &&
+            const DeepCollectionEquality()
                 .equals(other._labelTags, _labelTags) &&
             const DeepCollectionEquality()
                 .equals(other._bip329Labels, _bip329Labels) &&
@@ -544,6 +570,7 @@ class _$WalletImpl extends _Wallet {
         const DeepCollectionEquality().hash(_myAddressBook),
         const DeepCollectionEquality().hash(_externalAddressBook),
         const DeepCollectionEquality().hash(_transactions),
+        const DeepCollectionEquality().hash(_unsignedTxs),
         const DeepCollectionEquality().hash(_labelTags),
         const DeepCollectionEquality().hash(_bip329Labels),
         backupTested,
@@ -582,6 +609,7 @@ abstract class _Wallet extends Wallet {
       final List<Address> myAddressBook,
       final List<Address>? externalAddressBook,
       final List<Transaction> transactions,
+      final List<Transaction> unsignedTxs,
       final List<String>? labelTags,
       final List<Bip329Label>? bip329Labels,
       final bool backupTested,
@@ -621,6 +649,8 @@ abstract class _Wallet extends Wallet {
   List<Address>? get externalAddressBook;
   @override
   List<Transaction> get transactions;
+  @override
+  List<Transaction> get unsignedTxs;
   @override
   List<String>? get labelTags;
   @override

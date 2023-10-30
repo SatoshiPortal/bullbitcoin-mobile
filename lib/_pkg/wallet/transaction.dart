@@ -30,6 +30,34 @@ class WalletTx {
   //
   // THIS NEEDS WORK
   //
+  Future<(Wallet, Err?)> addUnsignedTxToWallet({
+    required Transaction transaction,
+    required Wallet wallet,
+  }) async {
+    try {
+      final unsignedTxs = List<Transaction>.from(wallet.unsignedTxs);
+      final index = unsignedTxs.indexWhere(
+        (tx) => tx.txid == transaction.txid,
+      );
+
+      List<Transaction> updatedUnsignedTxs;
+
+      if (index != -1) {
+        updatedUnsignedTxs = wallet.unsignedTxs.map((tx) {
+          return tx.txid == transaction.txid ? transaction : tx;
+        }).toList();
+      } else {
+        updatedUnsignedTxs = List.from(wallet.unsignedTxs)..add(transaction);
+      }
+
+      final updatedWallet = wallet.copyWith(unsignedTxs: updatedUnsignedTxs);
+
+      return (updatedWallet, null);
+    } catch (e) {
+      return (wallet, Err(e.toString())); // returning original wallet in case of error
+    }
+  }
+
   Future<(Wallet?, Err?)> getTransactions({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
@@ -341,13 +369,14 @@ class WalletTx {
       });
 
       final List<Address> outAddrs = await Future.wait(outAddrsFutures);
+      final feeAmt = await txResult.psbt.feeAmount();
 
       final Transaction tx = Transaction(
         txid: txDetails.txid,
         rbfEnabled: enableRbf,
         received: txDetails.received,
         sent: txDetails.sent,
-        fee: txDetails.fee ?? 0,
+        fee: feeAmt ?? 0,
         height: txDetails.confirmationTime?.height,
         timestamp: txDetails.confirmationTime?.timestamp,
         label: note,
@@ -355,7 +384,6 @@ class WalletTx {
         outAddrs: outAddrs,
         psbt: txResult.psbt.psbtBase64,
       );
-      final feeAmt = await txResult.psbt.feeAmount();
       return ((tx, feeAmt, txResult.psbt.psbtBase64), null);
     } catch (e) {
       return (null, Err(e.toString()));
@@ -367,6 +395,7 @@ class WalletTx {
     required bdk.Blockchain blockchain,
     required Wallet wallet,
     required String address,
+    required Transaction transaction,
     String? note,
   }) async {
     try {
@@ -375,7 +404,7 @@ class WalletTx {
 
       await blockchain.broadcast(tx);
       final txid = await psb.txId();
-      final newTx = Transaction(
+      final newTx = transaction.copyWith(
         txid: txid,
         label: note,
         toAddress: address,

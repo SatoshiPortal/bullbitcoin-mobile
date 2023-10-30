@@ -293,6 +293,7 @@ class WalletAddress {
     required AddressKind kind,
     AddressStatus state = AddressStatus.unused,
     bool spendable = true,
+    // int highestPreviousBalance = 0,
   }) async {
     try {
       final (idx, adr) = address;
@@ -316,6 +317,7 @@ class WalletAddress {
           kind: kind,
           state: state,
           spendable: spendable,
+          // highestPreviousBalance: highestPreviousBalance,
         );
         addresses.insert(existingIdx, updated);
       } else {
@@ -327,6 +329,7 @@ class WalletAddress {
           kind: kind,
           state: state,
           spendable: spendable,
+          // highestPreviousBalance: highestPreviousBalance,
         );
         addresses.add(updated);
       }

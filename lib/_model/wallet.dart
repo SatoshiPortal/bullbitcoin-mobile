@@ -32,6 +32,7 @@ class Wallet with _$Wallet {
     @Default([]) List<Address> myAddressBook,
     List<Address>? externalAddressBook,
     @Default([]) List<Transaction> transactions,
+    @Default([]) List<Transaction> unsignedTxs,
     List<String>? labelTags,
     List<Bip329Label>? bip329Labels,
     @Default(false) bool backupTested,

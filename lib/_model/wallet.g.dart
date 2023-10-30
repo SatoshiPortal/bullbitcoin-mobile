@@ -35,6 +35,10 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
               ?.map((e) => Transaction.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      unsignedTxs: (json['unsignedTxs'] as List<dynamic>?)
+              ?.map((e) => Transaction.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       labelTags: (json['labelTags'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
@@ -65,6 +69,7 @@ Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
       'myAddressBook': instance.myAddressBook,
       'externalAddressBook': instance.externalAddressBook,
       'transactions': instance.transactions,
+      'unsignedTxs': instance.unsignedTxs,
       'labelTags': instance.labelTags,
       'bip329Labels': instance.bip329Labels,
       'backupTested': instance.backupTested,

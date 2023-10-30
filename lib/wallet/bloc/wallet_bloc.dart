@@ -348,6 +348,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
             storageWallet = storageWallet!.copyWith(
               transactions: eventWallet.transactions,
             );
+          if (eventWallet.unsignedTxs.isNotEmpty)
+            storageWallet = storageWallet!.copyWith(
+              unsignedTxs: eventWallet.unsignedTxs,
+            );
         case UpdateWalletTypes.addresses:
           if (eventWallet.myAddressBook.isNotEmpty)
             storageWallet = storageWallet!.copyWith(
