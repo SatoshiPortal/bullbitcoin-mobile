@@ -224,6 +224,10 @@ class SendCubit extends Cubit<SendState> {
     updateShowSend();
   }
 
+  void updateAmountError(String err) {
+    emit(state.copyWith(errScanningAddress: err));
+  }
+
   void updateManualFees(String fees) {
     final feesInDouble = int.tryParse(fees);
     if (feesInDouble == null) {

@@ -46,3 +46,4 @@ class Bip329Label with _$Bip329Label {
   ///  Use comma separated string where multiple labels exist
   List<String> labelTagList() => label!.split(',');
 }
+//  4 method : readfile, writefile, encrypt, decrypt
