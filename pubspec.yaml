@@ -63,6 +63,7 @@ dependencies:
   intl: ^0.18.1
   hex: ^0.2.0
   bloc_concurrency: ^0.2.2
+  flutter_zxing: ^1.4.1
   # currency_text_input_formatter: ^2.1.10
 
 

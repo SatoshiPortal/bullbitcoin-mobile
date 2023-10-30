@@ -58,7 +58,7 @@
         "repro": true,
         "doc": true,
         ".github": true,
-        // "op":true,
+        "op":true,
         // 
         // 
         // "**/lib/auth": true,
