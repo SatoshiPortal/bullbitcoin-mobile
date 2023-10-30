@@ -13,6 +13,7 @@ class BroadcastTxState with _$BroadcastTxState {
     @Default('') String tx,
     Transaction? transaction,
     @Default(false) recognizedTx,
+    @Default(false) verified,
     int? amount,
     @Default(false) bool loadingFile,
     @Default('') String errLoadingFile,

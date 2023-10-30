@@ -340,6 +340,7 @@ class TxInfo extends StatelessWidget {
     final tx = context.select((BroadcastTxCubit cubit) => cubit.state.transaction);
     final psbt = context.select((BroadcastTxCubit cubit) => cubit.state.psbtBDK);
     if (tx == null || psbt == null) return const SizedBox();
+    final label = tx.label ?? 'No Label';
 
     final txamt = context.select(
       (BroadcastTxCubit cubit) => cubit.state.amount ?? 0,
@@ -363,7 +364,7 @@ class TxInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // const Gap(24),
-          if (bState.recognizedTx == true)
+          if (bState.recognizedTx == true) ...[
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
@@ -380,8 +381,17 @@ class TxInfo extends StatelessWidget {
                   'Verified.',
                 ),
               ],
-            )
-          else
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                BBText.bodySmall(
+                  'Label: ' + label,
+                ),
+              ],
+            ),
+          ] else
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
@@ -399,7 +409,7 @@ class TxInfo extends StatelessWidget {
                 ),
               ],
             ),
-          const BBText.title('Total output amount (including change)'),
+          const BBText.title('Total output amount'),
           const Gap(4),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -432,18 +442,20 @@ class TxInfo extends StatelessWidget {
             'Outputs',
           ),
           const Gap(4),
-          for (final address in tx.outAddrs)
-            Column(
+          for (final address in tx.outAddrs) ...[
+            BBText.body(
+              address.getKindString() + ':',
+            ),
+            const Gap(8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    BBText.body(address.miniString()),
-                    BBText.body(sState.getAmountInUnits(address.highestPreviousBalance)),
-                  ],
-                ),
+                BBText.bodySmall(address.miniString()),
+                BBText.bodyBold(sState.getAmountInUnits(address.highestPreviousBalance)),
               ],
             ),
+            const Gap(8),
+          ],
 
           // const DownloadButton(),
           // const Gap(16),

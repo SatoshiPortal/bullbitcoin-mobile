@@ -20,6 +20,7 @@ mixin _$BroadcastTxState {
   String get tx => throw _privateConstructorUsedError;
   Transaction? get transaction => throw _privateConstructorUsedError;
   dynamic get recognizedTx => throw _privateConstructorUsedError;
+  dynamic get verified => throw _privateConstructorUsedError;
   int? get amount => throw _privateConstructorUsedError;
   bool get loadingFile => throw _privateConstructorUsedError;
   String get errLoadingFile => throw _privateConstructorUsedError;
@@ -52,6 +53,7 @@ abstract class $BroadcastTxStateCopyWith<$Res> {
       String tx,
       Transaction? transaction,
       dynamic recognizedTx,
+      dynamic verified,
       int? amount,
       bool loadingFile,
       String errLoadingFile,
@@ -87,6 +89,7 @@ class _$BroadcastTxStateCopyWithImpl<$Res, $Val extends BroadcastTxState>
     Object? tx = null,
     Object? transaction = freezed,
     Object? recognizedTx = freezed,
+    Object? verified = freezed,
     Object? amount = freezed,
     Object? loadingFile = null,
     Object? errLoadingFile = null,
@@ -118,6 +121,10 @@ class _$BroadcastTxStateCopyWithImpl<$Res, $Val extends BroadcastTxState>
       recognizedTx: freezed == recognizedTx
           ? _value.recognizedTx
           : recognizedTx // ignore: cast_nullable_to_non_nullable
+              as dynamic,
+      verified: freezed == verified
+          ? _value.verified
+          : verified // ignore: cast_nullable_to_non_nullable
               as dynamic,
       amount: freezed == amount
           ? _value.amount
@@ -204,6 +211,7 @@ abstract class _$$BroadcastTxStateImplCopyWith<$Res>
       String tx,
       Transaction? transaction,
       dynamic recognizedTx,
+      dynamic verified,
       int? amount,
       bool loadingFile,
       String errLoadingFile,
@@ -238,6 +246,7 @@ class __$$BroadcastTxStateImplCopyWithImpl<$Res>
     Object? tx = null,
     Object? transaction = freezed,
     Object? recognizedTx = freezed,
+    Object? verified = freezed,
     Object? amount = freezed,
     Object? loadingFile = null,
     Object? errLoadingFile = null,
@@ -268,6 +277,7 @@ class __$$BroadcastTxStateImplCopyWithImpl<$Res>
               as Transaction?,
       recognizedTx:
           freezed == recognizedTx ? _value.recognizedTx! : recognizedTx,
+      verified: freezed == verified ? _value.verified! : verified,
       amount: freezed == amount
           ? _value.amount
           : amount // ignore: cast_nullable_to_non_nullable
@@ -336,6 +346,7 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
       this.tx = '',
       this.transaction,
       this.recognizedTx = false,
+      this.verified = false,
       this.amount,
       this.loadingFile = false,
       this.errLoadingFile = '',
@@ -363,6 +374,9 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
   @override
   @JsonKey()
   final dynamic recognizedTx;
+  @override
+  @JsonKey()
+  final dynamic verified;
   @override
   final int? amount;
   @override
@@ -405,7 +419,7 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
 
   @override
   String toString() {
-    return 'BroadcastTxState(step: $step, tx: $tx, transaction: $transaction, recognizedTx: $recognizedTx, amount: $amount, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, sent: $sent, extractingTx: $extractingTx, errExtractingTx: $errExtractingTx, psbt: $psbt, errPSBT: $errPSBT, broadcastingTx: $broadcastingTx, errBroadcastingTx: $errBroadcastingTx, psbtBDK: $psbtBDK, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded)';
+    return 'BroadcastTxState(step: $step, tx: $tx, transaction: $transaction, recognizedTx: $recognizedTx, verified: $verified, amount: $amount, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, sent: $sent, extractingTx: $extractingTx, errExtractingTx: $errExtractingTx, psbt: $psbt, errPSBT: $errPSBT, broadcastingTx: $broadcastingTx, errBroadcastingTx: $errBroadcastingTx, psbtBDK: $psbtBDK, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded)';
   }
 
   @override
@@ -419,6 +433,7 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
                 other.transaction == transaction) &&
             const DeepCollectionEquality()
                 .equals(other.recognizedTx, recognizedTx) &&
+            const DeepCollectionEquality().equals(other.verified, verified) &&
             (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.loadingFile, loadingFile) ||
                 other.loadingFile == loadingFile) &&
@@ -445,26 +460,28 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      step,
-      tx,
-      transaction,
-      const DeepCollectionEquality().hash(recognizedTx),
-      amount,
-      loadingFile,
-      errLoadingFile,
-      sent,
-      extractingTx,
-      errExtractingTx,
-      psbt,
-      errPSBT,
-      broadcastingTx,
-      errBroadcastingTx,
-      psbtBDK,
-      downloadingFile,
-      errDownloadingFile,
-      downloaded);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        step,
+        tx,
+        transaction,
+        const DeepCollectionEquality().hash(recognizedTx),
+        const DeepCollectionEquality().hash(verified),
+        amount,
+        loadingFile,
+        errLoadingFile,
+        sent,
+        extractingTx,
+        errExtractingTx,
+        psbt,
+        errPSBT,
+        broadcastingTx,
+        errBroadcastingTx,
+        psbtBDK,
+        downloadingFile,
+        errDownloadingFile,
+        downloaded
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -480,6 +497,7 @@ abstract class _BroadcastTxState extends BroadcastTxState {
       final String tx,
       final Transaction? transaction,
       final dynamic recognizedTx,
+      final dynamic verified,
       final int? amount,
       final bool loadingFile,
       final String errLoadingFile,
@@ -504,6 +522,8 @@ abstract class _BroadcastTxState extends BroadcastTxState {
   Transaction? get transaction;
   @override
   dynamic get recognizedTx;
+  @override
+  dynamic get verified;
   @override
   int? get amount;
   @override

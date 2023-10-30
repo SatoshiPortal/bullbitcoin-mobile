@@ -408,6 +408,7 @@ class SendCubit extends Cubit<SendState> {
           : state.feesList![state.selectedFeesOption].toDouble(),
       enableRbf: !state.disableRBF,
       selectedAddresses: state.selectedAddresses,
+      note: state.note,
     );
     if (err != null) {
       emit(

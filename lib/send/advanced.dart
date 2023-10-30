@@ -254,7 +254,7 @@ class AdvancedOptionAdress extends StatelessWidget {
 
     final balance = address.calculateBalance();
 
-    final addressType = address.getTypeString();
+    final addressType = address.getKindString();
 
     final amt = context.select(
       (SettingsCubit x) => x.state.getAmountInUnits(balance),

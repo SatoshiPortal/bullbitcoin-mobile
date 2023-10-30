@@ -64,6 +64,7 @@ class WalletTx {
   }) async {
     try {
       final storedTxs = wallet.transactions;
+      final unsignedTxs = wallet.unsignedTxs;
       final bdkNetwork = wallet.getBdkNetwork();
       final txs = await bdkWallet.listTransactions(true);
       // final x = bdk.TxBuilderResult();
@@ -71,14 +72,16 @@ class WalletTx {
       if (txs.isEmpty) return (wallet, null);
 
       final List<Transaction> transactions = [];
+
       for (final tx in txs) {
         String? label = '';
 
         final idx = storedTxs.indexWhere((t) => t.txid == tx.txid);
+        final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
 
         Transaction? storedTx;
         if (idx != -1) storedTx = storedTxs.elementAtOrNull(idx);
-
+        if (idxUnsignedTx != -1) unsignedTxs.removeAt(idxUnsignedTx);
         var txObj = Transaction(
           txid: tx.txid,
           received: tx.received,
@@ -283,6 +286,7 @@ class WalletTx {
       // Future.delayed(const Duration(milliseconds: 200));
       final w = wallet.copyWith(
         transactions: transactions,
+        unsignedTxs: unsignedTxs,
       );
 
       return (w, null);

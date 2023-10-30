@@ -59,7 +59,13 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
 
   void extractTxClicked() async {
     try {
-      emit(state.copyWith(extractingTx: true, errExtractingTx: ''));
+      emit(
+        state.copyWith(
+          extractingTx: true,
+          errExtractingTx: '',
+          verified: false,
+        ),
+      );
       final tx = state.tx;
       var isPsbt = false;
       try {
@@ -108,6 +114,9 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         final outputs = await bdkTx.output();
         int totalAmount = 0;
         final List<Address> outAddrs = [];
+
+        final nOutputs = outputs.length;
+        int verifiedOutputs = 0;
         for (final outpoint in outputs) {
           totalAmount += outpoint.value;
           final addressStruct = await bdk.Address.fromScript(
@@ -116,13 +125,15 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           );
           if (transaction != null) {
             try {
-              final Address relatedAddress = transaction.outAddrs
-                  .firstWhere((element) => element.address == addressStruct.toString());
-              outAddrs.add(
-                relatedAddress.copyWith(
-                  highestPreviousBalance: outpoint.value,
-                ),
+              final Address relatedAddress = transaction.outAddrs.firstWhere(
+                (element) =>
+                    element.address == addressStruct.toString() &&
+                    element.highestPreviousBalance == outpoint.value,
               );
+              outAddrs.add(
+                relatedAddress,
+              );
+              verifiedOutputs += 1;
             } catch (e) {
               outAddrs.add(
                 Address(
@@ -151,6 +162,9 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           outAddrs: outAddrs,
         );
         final decodedTx = hex.encode(await bdkTx.serialize());
+        if (verifiedOutputs == nOutputs) {
+          emit(state.copyWith(verified: true));
+        }
         emit(
           state.copyWith(
             extractingTx: false,
@@ -179,6 +193,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           }
         }
         int totalAmount = 0;
+        final nOutputs = outputs.length;
+        int verifiedOutputs = 0;
 
         final List<Address> outAddrs = [];
         for (final outpoint in outputs) {
@@ -189,13 +205,15 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           );
           if (transaction != null) {
             try {
-              final Address relatedAddress = transaction.outAddrs
-                  .firstWhere((element) => element.address == addressStruct.toString());
-              outAddrs.add(
-                relatedAddress.copyWith(
-                  highestPreviousBalance: outpoint.value,
-                ),
+              final Address relatedAddress = transaction.outAddrs.firstWhere(
+                (element) =>
+                    element.address == addressStruct.toString() &&
+                    element.highestPreviousBalance == outpoint.value,
               );
+              outAddrs.add(
+                relatedAddress,
+              );
+              verifiedOutputs += 1;
             } catch (e) {
               outAddrs.add(
                 Address(
@@ -225,6 +243,9 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           outAddrs: outAddrs,
         );
         final decodedTx = hex.encode(await bdkTx.serialize());
+        if (verifiedOutputs == nOutputs) {
+          emit(state.copyWith(verified: true));
+        }
         emit(
           state.copyWith(
             extractingTx: false,
