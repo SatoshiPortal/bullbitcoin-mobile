@@ -4,7 +4,6 @@ import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -23,9 +22,8 @@ class LightingPopUp extends StatelessWidget {
     );
   }
 
-  void onClicked(BuildContext context, ThemeLighting theme) async {
+  void onClicked(BuildContext context, ThemeLighting theme) {
     context.pop();
-    await Future.delayed(800.ms);
     context.read<Lighting>().toggle(theme);
   }
 
