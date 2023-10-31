@@ -102,7 +102,9 @@ class WalletCardDetails extends StatelessWidget {
           children: [
             TopLeft(
               child: Padding(
-                padding: const EdgeInsets.only(top: 16),
+                padding: const EdgeInsets.only(
+                  top: 12,
+                ),
                 child: BBText.titleLarge(
                   name ?? fingerprint,
                   onSurface: true,
@@ -112,7 +114,7 @@ class WalletCardDetails extends StatelessWidget {
             if (!hideSettings)
               TopRight(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 8),
+                  padding: const EdgeInsets.only(top: 6),
                   child: IconButton(
                     onPressed: () {
                       context.push('/wallet-settings');
@@ -128,6 +130,7 @@ class WalletCardDetails extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  const Gap(4),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
