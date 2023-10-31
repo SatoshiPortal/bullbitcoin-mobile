@@ -27,7 +27,10 @@ class ImportXpubScreen extends StatelessWidget {
         children: [
           Gap(32),
           Padding(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.only(
+              left: 24.0,
+              right: 24.0,
+            ),
             child: BBText.bodySmall(desc),
           ),
           Gap(16),
@@ -37,7 +40,10 @@ class ImportXpubScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 18.0),
+                  padding: EdgeInsets.only(
+                    left: 24.0,
+                    right: 24.0,
+                  ),
                   child: BBText.title(
                     'Master public key (xpub, zpub)',
                   ),
@@ -52,7 +58,7 @@ class ImportXpubScreen extends StatelessWidget {
           _ImportExtra(),
           _WalletLabel(),
           _ImportButtons(),
-          Gap(80),
+          Gap(36),
         ],
       ),
     ).animate(delay: 200.ms).fadeIn();
@@ -95,10 +101,11 @@ class ColdCardSection extends StatelessWidget {
           ),
           BBButton.textWithRightArrow(
             onPressed: () {
-              if (!scanning)
-                context.read<ImportWalletCubit>().coldCardNFCClicked();
-              else
-                context.read<ImportWalletCubit>().backClicked();
+              // if (!scanning)
+              //   context.read<ImportWalletCubit>().coldCardNFCClicked();
+              // else
+              //   context.read<ImportWalletCubit>().backClicked();
+              ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
             },
             label: 'Activate NFC',
             loading: scanning,
@@ -189,7 +196,10 @@ class _ImportExtra extends StatelessWidget {
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
 
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.only(
+        left: 24.0,
+        right: 24.0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -202,7 +212,8 @@ class _ImportExtra extends StatelessWidget {
           BBButton.text(
             label: 'Advanced Options',
             onPressed: () {
-              AdvancedOptions.openPopUp(context);
+              // AdvancedOptions.openPopUp(context);
+              ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
             },
           ),
           const Gap(8),
@@ -219,7 +230,10 @@ class _ImportButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.only(
+        left: 24.0,
+        right: 24.0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -268,7 +282,10 @@ class AdvancedOptions extends StatelessWidget {
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(
+        left: 16.0,
+        right: 16.0,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
