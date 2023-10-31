@@ -6,6 +6,7 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:hex/hex.dart';
 
@@ -308,10 +309,16 @@ class WalletTx {
     String? note,
   }) async {
     try {
+      final isMainnet = wallet.network == BBNetwork.Mainnet;
+      if (isMainnet == isMainnetAddress(address)) {
+        return (
+          null,
+          Err('Invalid Address. Network Mismatch!'),
+        );
+      }
       var txBuilder = bdk.TxBuilder();
       final bdkAddress = await bdk.Address.create(address: address);
       final script = await bdkAddress.scriptPubKey();
-
       if (sendAllCoin) {
         txBuilder = txBuilder.drainWallet().drainTo(script);
       } else {
