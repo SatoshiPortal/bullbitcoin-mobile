@@ -36,6 +36,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
               // ],
               ),
         ) {
+    clearErrors();
+    reset();
     emit(state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]));
   }
 
@@ -55,9 +57,25 @@ class ImportWalletCubit extends Cubit<ImportState> {
   void backClicked() {
     switch (state.importStep) {
       case ImportSteps.import12Words:
+        reset();
+        clearErrors();
+        emit(
+          state.copyWith(
+            importStep: ImportSteps.selectCreateType,
+          ),
+        );
       case ImportSteps.import24Words:
+        reset();
+        clearErrors();
+        emit(
+          state.copyWith(
+            importStep: ImportSteps.selectCreateType,
+          ),
+        );
       case ImportSteps.selectImportType:
       case ImportSteps.importXpub:
+        reset();
+        clearErrors();
         emit(
           state.copyWith(
             importStep: ImportSteps.selectCreateType,
@@ -67,7 +85,10 @@ class ImportWalletCubit extends Cubit<ImportState> {
         );
 
       case ImportSteps.scanningNFC:
+        clearErrors();
+
       case ImportSteps.scanningWallets:
+        clearErrors();
       case ImportSteps.selectWalletFormat:
         if (state.importType == ImportTypes.xpub)
           emit(
@@ -571,24 +592,33 @@ class ImportWalletCubit extends Cubit<ImportState> {
         ),
       );
     }
-    clearSensitive12();
-    clearSensitive24();
+    reset();
   }
 
-  void clearSensitive12() async {
+  void reset() async {
     emit(
       state.copyWith(
-        words12: [],
+        words12: [...emptyWords12],
+        words24: [...emptyWords24],
         passPhrase: '',
+        xpub: '',
+        tempXpub: '',
+        fingerprint: '',
+        customDerivation: '',
+        manualPublicDescriptor: '',
+        manualPublicChangeDescriptor: '',
+        manualCombinedPublicDescriptor: '',
+        coldCard: null,
       ),
     );
   }
 
-  void clearSensitive24() async {
+  void clearErrors() async {
     emit(
       state.copyWith(
-        words24: [],
-        passPhrase: '',
+        errImporting: '',
+        errLoadingFile: '',
+        errSavingWallet: '',
       ),
     );
   }

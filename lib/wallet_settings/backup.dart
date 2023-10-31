@@ -41,10 +41,9 @@ class BackupPage extends StatelessWidget {
               flexibleSpace: BBAppBar(
                 text: 'Backup',
                 onBack: () {
-                  if (state)
-                    context.read<InfoRead>().unread();
-                  else
-                    context.pop();
+                  if (state) context.read<InfoRead>().unread();
+                  context.read<WalletSettingsCubit>().clearSensitive();
+                  context.pop();
                 },
               ),
             ),

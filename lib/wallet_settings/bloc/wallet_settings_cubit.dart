@@ -166,7 +166,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         errTestingBackup: 'Invalid order',
       ),
     );
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(milliseconds: 500));
     final shuffled = state.mnemonic.toList()..shuffle();
     emit(
       state.copyWith(
@@ -420,10 +420,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   }
 
   void clearSensitive() {
+    clearnMnemonic();
     emit(
       state.copyWith(
-        mnemonic: [],
-        testBackupPassword: '',
         password: '',
         shuffledMnemonic: [],
         testMnemonicOrder: [],
