@@ -62,14 +62,19 @@ function keytool.keys {
             break
         fi
     done
+    br.log
 
-    mkdir -p "$KEY_PATH" || { echo "Failed to create directory"; exit 1; }
+    key_path=$(input.form "Directory to create/read keystore: ")
+    br.log
+    key_alias=$(input.form "Name of keystore file: ")
+
+    mkdir -p "$key_path" || { echo "Failed to create directory"; exit 1; }
     
     # Generate the key store
     keytool -genkey -v \
-        -keystore "$KEY_PATH/$KEY_ALIAS.jks" \
+        -keystore "$key_path/$key_alias.jks" \
         -keyalg RSA \
-        -alias "$KEY_ALIAS" \
+        -alias "$key_alias" \
         -keysize 2048 \
         -validity 10000 \
         -storepass "$store_password" \
@@ -78,9 +83,9 @@ function keytool.keys {
 
     # Export the certificate
     keytool -export -rfc \
-        -keystore "$KEY_PATH/$KEY_ALIAS.jks" \
-        -alias "$KEY_ALIAS" \
-        -file "$KEY_PATH/bullwallet_certificate.pem" \
+        -keystore "$key_path/$key_alias.jks" \
+        -alias "$key_alias" \
+        -file "$key_path/bullwallet_certificate.pem" \
         -storepass "$store_password"
 
     # Check if the key store was created successfully
@@ -89,8 +94,8 @@ function keytool.keys {
         {
             echo "storePassword=$store_password"
             echo "keyPassword=$key_password"
-            echo "keyAlias=$KEY_ALIAS"
-            echo "storeFile=$KEY_PATH/$KEY_ALIAS.jks"
+            echo "keyAlias=$key_alias"
+            echo "storeFile=$key_path/$key_alias.jks"
         } > "$key_props"
     else
         echo "An error occurred while creating the keystore."

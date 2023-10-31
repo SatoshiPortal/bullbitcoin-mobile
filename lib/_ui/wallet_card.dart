@@ -167,21 +167,23 @@ class WalletCardDetails extends StatelessWidget {
                         ),
                       ],
                     ),
-                ],
-              ),
-            ),
-            BottomRight(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 4),
-                child: Opacity(
-                  opacity: 0.7,
-                  child: BBText.bodySmall(
-                    walletStr ?? '',
-                    onSurface: true,
-                    isBold: true,
-                    textAlign: TextAlign.right,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 1),
+                        child: Opacity(
+                          opacity: 0.7,
+                          child: BBText.bodySmall(
+                            walletStr ?? '',
+                            onSurface: true,
+                            isBold: true,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                ],
               ),
             ),
           ],
