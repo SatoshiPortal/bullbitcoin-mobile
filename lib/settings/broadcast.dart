@@ -335,12 +335,10 @@ class TxInfo extends StatelessWidget {
 
     // final txAddress = context.select((BroadcastTxCubit _) => _.state.transaction?.outAddrs ?? []);
 
-    final toAddress = context.select((BroadcastTxCubit _) => _.state.transaction?.toAddress ?? '');
     final sState = context.select((SettingsCubit cubit) => cubit.state);
 
     final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txamt));
     final fee = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txfee));
-    final psbtStr = psbt.psbtBase64;
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 16,

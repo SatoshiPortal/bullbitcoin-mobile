@@ -494,24 +494,10 @@ class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
     final _ = context.select((ReceiveCubit cubit) => cubit.state.selectedCurrency);
 
     final isSats = context.select((ReceiveCubit cubit) => cubit.state.isSats);
-    final amount = context.select((ReceiveCubit cubit) => cubit.state.invoiceAmount);
+    // final amount = context.select((ReceiveCubit cubit) => cubit.state.invoiceAmount);
 
     final fiatSelected = context.select((ReceiveCubit cubit) => cubit.state.fiatSelected);
-    final fiatAmt = context.select((ReceiveCubit cubit) => cubit.state.fiatAmt);
-
-    // var amountStr = '';
-    // if (!fiatSelected)
-    //   amountStr = context.select(
-    //     (SettingsCubit cubit) => cubit.state.getAmountInUnits(
-    //       amount,
-    //       removeText: true,
-    //       hideZero: true,
-    //       removeEndZeros: true,
-    //       isSats: isSats,
-    //     ),
-    //   );
-    // else
-    //   amountStr = fiatAmt.toStringAsFixed(2);
+    // final fiatAmt = context.select((ReceiveCubit cubit) => cubit.state.fiatAmt);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

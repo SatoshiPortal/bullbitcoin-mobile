@@ -3,7 +3,6 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,12 +24,9 @@ class _EnterAmountState extends State<EnterAmount> {
 
     final sendAll = context.select((SendCubit cubit) => cubit.state.sendAllCoin);
     if (sendAll) return const SizedBox.shrink();
-    final balance = context.select((WalletBloc cubit) => cubit.state.balance?.total ?? 0);
     final isSats = context.select((SendCubit cubit) => cubit.state.isSats);
-    final amount = context.select((SendCubit cubit) => cubit.state.amount);
 
     final fiatSelected = context.select((SendCubit cubit) => cubit.state.fiatSelected);
-    final fiatAmt = context.select((SendCubit cubit) => cubit.state.fiatAmt);
 
     // var amountStr = '';
     // if (!fiatSelected)

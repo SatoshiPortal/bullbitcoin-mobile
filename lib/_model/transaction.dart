@@ -45,7 +45,6 @@ class Transaction with _$Transaction {
     } catch (e) {
       return null;
     }
-    return null;
   }
 
   List<Address> createOutAddrsFromTx() {

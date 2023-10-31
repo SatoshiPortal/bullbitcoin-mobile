@@ -152,7 +152,7 @@ class ImportState with _$ImportState {
     }
   }
 
-  @override
+  // @override
   String walletName(ScriptType scriptType) => scriptTypeString(scriptType);
 
   bool isSelected(ScriptType type) => type == scriptType;

@@ -9,7 +9,7 @@ Various bug fixes.
   - clean up cubit error states and fields in import and backup onBack and init 
   - fixed bugs in qr scanner
   - fixed bugs in freezing utxos
-  - fixed bugs in send address (allowing cross network address to be used)
+  - fixed bugs in send address (check address network)
   - display coming soon for unsupported features like nfc
   - patched wallet card formatting issues
   - all android builds now in release mode signed with jks
