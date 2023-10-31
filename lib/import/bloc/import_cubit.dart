@@ -74,21 +74,27 @@ class ImportWalletCubit extends Cubit<ImportState> {
         );
       case ImportSteps.selectImportType:
       case ImportSteps.importXpub:
+      // reset();
+      // clearErrors();
+      // emit(
+      //   state.copyWith(
+      //     importStep: ImportSteps.selectCreateType,
+      //     importType: ImportTypes.notSelected,
+      //     // words: [for (int i = 0; i < 12; i++) ''],
+      //   ),
+      // );
+
+      case ImportSteps.scanningNFC:
+      case ImportSteps.scanningWallets:
         reset();
         clearErrors();
         emit(
           state.copyWith(
             importStep: ImportSteps.selectCreateType,
             importType: ImportTypes.notSelected,
-            // words: [for (int i = 0; i < 12; i++) ''],
           ),
         );
 
-      case ImportSteps.scanningNFC:
-        clearErrors();
-
-      case ImportSteps.scanningWallets:
-        clearErrors();
       case ImportSteps.selectWalletFormat:
         if (state.importType == ImportTypes.xpub)
           emit(
