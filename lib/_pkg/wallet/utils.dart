@@ -186,3 +186,11 @@ String splitCombinedChanged(String descriptor, bool isChange) {
 
   return str;
 }
+
+bool isMainnetAddress(String address) {
+  if (address.isEmpty) {
+    return false;
+  }
+
+  return address.startsWith('bc1') || address.startsWith('3') || address.startsWith('1');
+}

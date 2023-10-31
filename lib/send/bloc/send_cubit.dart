@@ -14,6 +14,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -368,7 +369,17 @@ class SendCubit extends Cubit<SendState> {
     if (state.sending) return;
     final bdkWallet = walletBloc.state.bdkWallet;
     if (bdkWallet == null) return;
+    final isTestnet = settingsCubit.state.testnet;
 
+    if (isTestnet == isMainnetAddress(state.address)) {
+      emit(
+        state.copyWith(
+          errSending: 'Invalid Address. Network mismatch.',
+          sending: false,
+        ),
+      );
+      return;
+    }
     emit(state.copyWith(sending: true, errSending: ''));
 
     final localWallet = walletBloc.state.wallet;
