@@ -17,7 +17,7 @@ class SelectSendWalletStep extends Cubit<({bool selectWallet, WalletBloc? wallet
 
   void goBack() => emit((selectWallet: true, walletBloc: null, sent: false));
   void goNext(WalletBloc bloc) => emit((selectWallet: false, walletBloc: bloc, sent: false));
-  void sent() => emit((selectWallet: true, walletBloc: state.walletBloc, sent: true));
+  void sent() => emit((selectWallet: false, walletBloc: state.walletBloc, sent: true));
 }
 
 class SelectSendWalletPage extends StatefulWidget {
@@ -79,7 +79,8 @@ class SelectWalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final network = context.select((SettingsCubit _) => _.state.getBBNetwork());
-    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    final walletBlocs =
+        context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network)).reversed;
 
     return SingleChildScrollView(
       child: Padding(

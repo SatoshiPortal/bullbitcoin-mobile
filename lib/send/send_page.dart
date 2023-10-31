@@ -77,7 +77,7 @@ class SendScreen extends StatelessWidget {
         child: BlocListener<SendCubit, SendState>(
           listenWhen: (previous, current) => previous.sent != current.sent && current.sent,
           listener: (context, state) {
-            // context.read<SelectSendWalletStep>().sent();
+            context.read<SelectSendWalletStep>().sent();
           }, //context.pop(),
           child: const _Screen(),
         ),
@@ -498,7 +498,7 @@ class TxSuccess extends StatelessWidget {
               onPressed: () {
                 // Navigator.pop(context);
                 // context.read<SelectSendWalletStep>().sent();
-                context.push('/home');
+                context.go('/home');
               },
               child: const BBText.titleLarge(
                 'Done',
@@ -509,7 +509,7 @@ class TxSuccess extends StatelessWidget {
           ),
           // const Gap(240),
         ],
-      ),
+      ).animate().fadeIn(),
     );
   }
 }

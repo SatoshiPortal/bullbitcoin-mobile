@@ -59,6 +59,7 @@ class _Screen extends HookWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: context.colour.background),
         shadowColor: context.colour.primary.withOpacity(0.2),
         surfaceTintColor: Colors.transparent,

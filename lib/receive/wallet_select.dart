@@ -79,7 +79,8 @@ class SelectWalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final network = context.select((SettingsCubit _) => _.state.getBBNetwork());
-    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    final walletBlocs =
+        context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network).reversed);
 
     return SingleChildScrollView(
       child: Padding(
