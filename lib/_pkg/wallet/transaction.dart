@@ -310,7 +310,7 @@ class WalletTx {
   }) async {
     try {
       final isMainnet = wallet.network == BBNetwork.Mainnet;
-      if (isMainnet == isMainnetAddress(address)) {
+      if (isMainnet != isMainnetAddress(address)) {
         return (
           null,
           Err('Invalid Address. Network Mismatch!'),
