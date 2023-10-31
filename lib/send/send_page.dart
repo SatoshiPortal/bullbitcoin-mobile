@@ -11,7 +11,6 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/_ui/barcode_scanner.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -202,17 +201,17 @@ class _EnterAddressState extends State<EnterAddress> {
         color: context.colour.secondary,
       ),
       onRightTap: () {
-        // context.read<SendCubit>().scanAddress();
-        BarcodeScanner.openPopUp(
-          context,
-          (result) {
-            if (result.$2 != null) {
-              context.read<SendCubit>().updateAmountError(result.$2!.message);
-              return;
-            }
-            context.read<SendCubit>().updateAddress(result.$1!);
-          },
-        );
+        context.read<SendCubit>().scanAddress();
+        // BarcodeScanner.openPopUp(
+        //   context,
+        //   (result) {
+        //     if (result.$2 != null) {
+        //       context.read<SendCubit>().updateAmountError(result.$2!.message);
+        //       return;
+        //     }
+        //     context.read<SendCubit>().updateAddress(result.$1!);
+        //   },
+        // );
       },
       onChanged: (txt) {
         context.read<SendCubit>().updateAddress(txt);
