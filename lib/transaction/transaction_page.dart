@@ -18,6 +18,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -390,11 +391,17 @@ class BumpFeesPopup extends StatelessWidget {
     final errr = err.isNotEmpty ? err : er;
 
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const BBText.titleLarge('Bump Fees'),
+          BBHeader.popUpCenteredText(
+            isLeft: true,
+            text: 'Bump Fees',
+            onBack: () {
+              context.pop();
+            },
+          ),
           const Gap(32),
           const BBText.title('Enter Fees'),
           const Gap(4),
