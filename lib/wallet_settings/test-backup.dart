@@ -233,10 +233,7 @@ class TestBackupPassField extends HookWidget {
     final text = context.select((WalletSettingsCubit x) => x.state.testBackupPassword);
 
     return Padding(
-      padding: const EdgeInsets.only(
-        left: 32.0,
-        right: 8,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

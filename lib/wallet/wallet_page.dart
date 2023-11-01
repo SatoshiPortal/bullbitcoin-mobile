@@ -3,6 +3,7 @@ import 'package:bb_mobile/_ui/bottom_wallet_actions.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/wallet_card.dart';
 import 'package:bb_mobile/_ui/wallet_txs.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -42,28 +43,34 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final backupTested = context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
 
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              const WalletHeader(),
-              const ActionsRow(),
-              if (!backupTested) ...[
-                const Gap(24),
-                const BackupAlertBanner(),
-                // const Gap(24),
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<WalletBloc>().add(SyncWallet());
+        return;
+      },
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                const WalletHeader(),
+                const ActionsRow(),
+                if (!backupTested) ...[
+                  const Gap(24),
+                  const BackupAlertBanner(),
+                  // const Gap(24),
+                ],
+                const WalletTxList(),
               ],
-              const WalletTxList(),
-            ],
+            ),
           ),
-        ),
-        BottomCenter(
-          child: HomeActionButtons(
-            walletBloc: context.read<WalletBloc>(),
+          BottomCenter(
+            child: HomeActionButtons(
+              walletBloc: context.read<WalletBloc>(),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
