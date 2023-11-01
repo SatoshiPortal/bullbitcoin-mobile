@@ -518,4 +518,16 @@ class SendCubit extends Cubit<SendState> {
 
     emit(state.copyWith(sending: false, sent: true));
   }
+
+  void clearErrors() async {
+    emit(
+      state.copyWith(
+        errAddresses: '',
+        errDownloadingFile: '',
+        errLoadingFees: '',
+        errScanningAddress: '',
+        errSending: '',
+      ),
+    );
+  }
 }

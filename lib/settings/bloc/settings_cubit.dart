@@ -319,4 +319,15 @@ class SettingsCubit extends Cubit<SettingsState> {
         return null;
     }
   }
+
+  void clearErrors() async {
+    emit(
+      state.copyWith(
+        errLoadingCurrency: '',
+        errLoadingFees: '',
+        errLoadingLanguage: '',
+        errLoadingNetworks: '',
+      ),
+    );
+  }
 }

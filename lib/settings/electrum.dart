@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/components/utils.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -45,9 +46,14 @@ class NetworkButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final SettingsCubit cubit = context.select((SettingsCubit x) => x);
     final selectedNetwork = context.select((SettingsCubit x) => x.state.getNetwork());
     if (selectedNetwork == null) return const SizedBox.shrink();
     final err = context.select((SettingsCubit x) => x.state.errLoadingNetworks);
+
+    if (err.isNotEmpty) {
+      showErrorAlert(context, err, cubit);
+    }
 
     return Column(
       children: [
@@ -78,10 +84,6 @@ class NetworkButton extends StatelessWidget {
         //     ],
         //   ),
         // ),
-        if (err.isNotEmpty)
-          BBText.errorSmall(
-            err,
-          ),
       ],
     );
   }
@@ -147,11 +149,16 @@ class NetworkStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final SettingsCubit cubit = context.select((SettingsCubit x) => x);
     final networkConnected = context.select((SettingsCubit x) => x.state.networkConnected);
     final errLoadingNetwork = context.select((SettingsCubit x) => x.state.errLoadingNetworks);
     final isTestnet = context.select((SettingsCubit x) => x.state.testnet);
     final network =
         context.select((SettingsCubit x) => x.state.getNetwork()?.getNetworkUrl(isTestnet) ?? '');
+
+    if (errLoadingNetwork.isNotEmpty) {
+      showErrorAlert(context, errLoadingNetwork, cubit);
+    }
 
     return Column(
       children: [
@@ -169,10 +176,6 @@ class NetworkStatus extends StatelessWidget {
             BBText.body(network),
           ],
         ),
-        if (errLoadingNetwork.isNotEmpty) ...[
-          const Gap(8),
-          BBText.errorSmall(errLoadingNetwork),
-        ],
       ],
     );
   }
