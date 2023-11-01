@@ -116,14 +116,14 @@ class ReceiveAppBar extends StatelessWidget {
     return BBAppBar(
       text: 'Receive Bitcoin',
       onBack: () {
-        final walletNotSelected = context.read<SelectReceiveWalletStep>().state.selectWallet;
+        // final walletNotSelected = context.read<SelectReceiveWalletStep>().state.selectWallet;
 
-        if (walletNotSelected) {
-          context.pop();
-          return;
-        }
+        // if (walletNotSelected) {
+        context.pop();
+        // return;
+        // }
 
-        context.read<SelectReceiveWalletStep>().goBack();
+        // context.read<SelectReceiveWalletStep>().goBack();
       },
     );
   }
