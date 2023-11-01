@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
@@ -111,7 +112,7 @@ class _Screen extends StatelessWidget {
             children: [
               if (signed) ...[
                 if (!sent) const TxDetailsScreen() else const TxSuccess(),
-                const Gap(48),
+                // const Gap(48),
               ] else ...[
                 const Gap(24),
                 const Center(child: WalletName()),
@@ -135,8 +136,10 @@ class _Screen extends StatelessWidget {
                 const AdvancedOptionsButton(),
                 const Gap(8),
               ],
-              if (!sent) const SendButton(),
-              const Gap(80),
+              if (!sent) ...[
+                const SendButton(),
+                const Gap(80),
+              ],
             ],
           ),
         ),
@@ -460,56 +463,59 @@ class TxSuccess extends StatelessWidget {
   Widget build(BuildContext context) {
     final amount = context.select((SendCubit cubit) => cubit.state.amount);
     final amtStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(amount));
-    //final txid = context.select((SendCubit cubit) => cubit.state.tx);
+    final txid = context.select((SendCubit cubit) => cubit.state.tx!.txid);
     return AnnotatedRegion(
       value: const SystemUiOverlayStyle(statusBarColor: Colors.green),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Gap(152),
-          const Icon(Icons.check_circle, size: 120),
-          const Gap(32),
-          const BBText.body(
-            'Transaction sent',
-            textAlign: TextAlign.center,
-            isBold: true,
-          ),
-          const Gap(52),
-          BBText.titleLarge(
-            amtStr,
-            textAlign: TextAlign.center,
-            isBold: true,
-          ),
-          const Gap(15),
-          GestureDetector(
-            onTap: () {
-              // final url = context.read<SettingsCubit>().state.explorerTxUrl(txid!.txid);
-              // locator<Launcher>().launchApp(url);
-            },
-            child: const BBText.body(
-              'View Transaction details ->',
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Gap(152),
+            const Icon(Icons.check_circle, size: 120),
+            const Gap(32),
+            const BBText.body(
+              'Transaction sent',
               textAlign: TextAlign.center,
+              isBold: true,
             ),
-          ),
-          const Gap(24),
-          SizedBox(
-            height: 52,
-            child: TextButton(
-              onPressed: () {
-                // Navigator.pop(context);
-                // context.read<SelectSendWalletStep>().sent();
-                context.go('/home');
+            const Gap(52),
+            BBText.titleLarge(
+              amtStr,
+              textAlign: TextAlign.center,
+              isBold: true,
+            ),
+            const Gap(15),
+            InkWell(
+              onTap: () {
+                final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
+                locator<Launcher>().launchApp(url);
               },
-              child: const BBText.titleLarge(
-                'Done',
+              child: const BBText.body(
+                'View Transaction details ->',
                 textAlign: TextAlign.center,
-                isBold: true,
               ),
             ),
-          ),
-          // const Gap(240),
-        ],
-      ).animate().fadeIn(),
+            const Gap(24),
+            SizedBox(
+              height: 52,
+              child: TextButton(
+                onPressed: () {
+                  // Navigator.pop(context);
+                  // context.read<SelectSendWalletStep>().sent();
+                  context.go('/home');
+                },
+                child: const BBText.titleLarge(
+                  'Done',
+                  textAlign: TextAlign.center,
+                  isBold: true,
+                ),
+              ),
+            ),
+            // const Gap(240),
+          ],
+        ).animate().fadeIn(),
+      ),
     );
   }
 }

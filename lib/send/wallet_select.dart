@@ -115,7 +115,12 @@ class SendAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final sent = context.select((SelectSendWalletStep _) => _.state.sent);
 
-    if (sent) return const SizedBox.shrink();
+    if (sent)
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        color: Colors.green,
+      );
 
     return BBAppBar(
       text: 'Send Bitcoin',
