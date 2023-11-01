@@ -384,4 +384,16 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     await Future.delayed(const Duration(seconds: 4));
     emit(state.copyWith(downloaded: false));
   }
+
+  void clearErrors() async {
+    emit(
+      state.copyWith(
+        errExtractingTx: '',
+        errLoadingFile: '',
+        errPSBT: '',
+        errBroadcastingTx: '',
+        errDownloadingFile: '',
+      ),
+    );
+  }
 }

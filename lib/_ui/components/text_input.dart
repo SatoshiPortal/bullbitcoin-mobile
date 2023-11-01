@@ -19,6 +19,8 @@ class BBTextInput extends StatefulWidget {
     this.focusNode,
     this.hint,
     this.controller,
+    this.onSubmitted,
+    this.textInputAction,
   })  : type = _TextInputType.multiLine,
         onEnter = null;
 
@@ -29,6 +31,8 @@ class BBTextInput extends StatefulWidget {
     this.focusNode,
     this.hint,
     this.controller,
+    this.onSubmitted,
+    this.textInputAction,
   })  : type = _TextInputType.big,
         rightIcon = null,
         onRightTap = null,
@@ -43,6 +47,8 @@ class BBTextInput extends StatefulWidget {
     required this.onRightTap,
     this.hint,
     this.controller,
+    this.onSubmitted,
+    this.textInputAction,
   })  : type = _TextInputType.bigWithIcon,
         onEnter = null;
 
@@ -54,6 +60,8 @@ class BBTextInput extends StatefulWidget {
     this.hint,
     this.controller,
     this.onEnter,
+    this.onSubmitted,
+    this.textInputAction,
   })  : type = _TextInputType.small,
         rightIcon = null,
         onRightTap = null;
@@ -69,6 +77,8 @@ class BBTextInput extends StatefulWidget {
   final bool disabled;
   final FocusNode? focusNode;
   final Function? onEnter;
+  final Function(String)? onSubmitted;
+  final TextInputAction? textInputAction;
 
   @override
   State<BBTextInput> createState() => _BBTextInputState();
@@ -197,9 +207,11 @@ class _BBTextInputState extends State<BBTextInput> {
             focusNode: widget.focusNode,
             enabled: !widget.disabled,
             onChanged: widget.onChanged,
+            onSubmitted: (value) => widget.onSubmitted?.call(value),
             controller: _editingController,
             onTap: () => widget.onEnter!(),
             enableIMEPersonalizedLearning: false,
+            textInputAction: widget.textInputAction,
             decoration: InputDecoration(
               hintText: widget.hint,
               border: OutlineInputBorder(

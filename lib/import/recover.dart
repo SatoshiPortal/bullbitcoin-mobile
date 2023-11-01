@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/components/utils.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
@@ -225,6 +226,22 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
     );
   }
 
+  void onSubmit(String value) {
+    final suggestions = context.read<WordsCubit>().state.findWords(value);
+    hideOverlay();
+    if (suggestions.isNotEmpty && suggestions.contains(value)) {
+      context.read<ImportWalletCubit>().wordChanged12(widget.index, value, true);
+      setState(() {
+        tapped = true;
+      });
+    } else {
+      context.read<ImportWalletCubit>().wordChanged12(widget.index, '', false);
+      controller.clear();
+    }
+    widget.focusNode.unfocus();
+    widget.returnClicked(widget.index);
+  }
+
   @override
   Widget build(BuildContext context) {
     final word = context.select(
@@ -274,6 +291,8 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                       });
                     },
                     value: word.word,
+                    textInputAction: TextInputAction.go,
+                    onSubmitted: (String value) => onSubmit(value),
                   ),
                 ),
               ),
@@ -327,8 +346,14 @@ class _ImportWordsRecoverButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ImportWalletCubit cubit = context.select((ImportWalletCubit cubit) => cubit);
     final recovering = context.select((ImportWalletCubit cubit) => cubit.state.importing);
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+
+    if (err.isNotEmpty) {
+      showErrorAlert(context, err, cubit);
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
@@ -343,12 +368,6 @@ class _ImportWordsRecoverButton extends StatelessWidget {
               disabled: recovering,
             ),
           ),
-          if (err.isNotEmpty) ...[
-            const Gap(8),
-            BBText.error(
-              err,
-            ),
-          ],
         ],
       ),
     );
