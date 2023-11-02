@@ -288,7 +288,6 @@ class AdvancedOptionAdress extends StatelessWidget {
             children: [
               BBText.titleLarge(amt, isBold: true, textAlign: TextAlign.center),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const BBText.body('Address: '),
                   BBText.body(addessStr, isBold: true),
@@ -296,7 +295,6 @@ class AdvancedOptionAdress extends StatelessWidget {
               ),
               const Gap(4),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const BBText.body('Type: '),
                   BBText.body(addressType, isBold: true),
@@ -305,7 +303,6 @@ class AdvancedOptionAdress extends StatelessWidget {
               if (label.isNotEmpty) ...[
                 const Gap(4),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const BBText.body(
                       'Label: ',
