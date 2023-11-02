@@ -234,7 +234,7 @@ class BBAmountInput extends StatefulWidget {
     required this.onChanged,
     this.value,
     required this.hint,
-    required this.onRightTap,
+    // this.onRightTap,
     required this.disabled,
     required this.btcFormatting,
     required this.isSats,
@@ -246,7 +246,7 @@ class BBAmountInput extends StatefulWidget {
   final bool btcFormatting;
   final bool isSats;
 
-  final Function onRightTap;
+  // final Function? onRightTap;
   final bool disabled;
 
   @override

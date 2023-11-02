@@ -9,6 +9,7 @@ part 'state.freezed.dart';
 class SendState with _$SendState {
   const factory SendState({
     @Default(0) int amount,
+    String? tempAmount,
     @Default('') String address,
     @Default('') String note,
     // @Default(BTCUnit.btc) BTCUnit unit,

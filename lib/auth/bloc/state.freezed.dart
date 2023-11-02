@@ -113,11 +113,10 @@ class _$AuthStateCopyWithImpl<$Res, $Val extends AuthState>
 }
 
 /// @nodoc
-abstract class _$$AuthStateImplCopyWith<$Res>
-    implements $AuthStateCopyWith<$Res> {
-  factory _$$AuthStateImplCopyWith(
-          _$AuthStateImpl value, $Res Function(_$AuthStateImpl) then) =
-      __$$AuthStateImplCopyWithImpl<$Res>;
+abstract class _$$_AuthStateCopyWith<$Res> implements $AuthStateCopyWith<$Res> {
+  factory _$$_AuthStateCopyWith(
+          _$_AuthState value, $Res Function(_$_AuthState) then) =
+      __$$_AuthStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -133,11 +132,11 @@ abstract class _$$AuthStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$AuthStateImplCopyWithImpl<$Res>
-    extends _$AuthStateCopyWithImpl<$Res, _$AuthStateImpl>
-    implements _$$AuthStateImplCopyWith<$Res> {
-  __$$AuthStateImplCopyWithImpl(
-      _$AuthStateImpl _value, $Res Function(_$AuthStateImpl) _then)
+class __$$_AuthStateCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res, _$_AuthState>
+    implements _$$_AuthStateCopyWith<$Res> {
+  __$$_AuthStateCopyWithImpl(
+      _$_AuthState _value, $Res Function(_$_AuthState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -153,7 +152,7 @@ class __$$AuthStateImplCopyWithImpl<$Res>
     Object? loggedIn = null,
     Object? onStartChecking = null,
   }) {
-    return _then(_$AuthStateImpl(
+    return _then(_$_AuthState(
       shuffledNumbers: null == shuffledNumbers
           ? _value._shuffledNumbers
           : shuffledNumbers // ignore: cast_nullable_to_non_nullable
@@ -196,8 +195,8 @@ class __$$AuthStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$AuthStateImpl extends _AuthState {
-  const _$AuthStateImpl(
+class _$_AuthState extends _AuthState {
+  const _$_AuthState(
       {final List<int> shuffledNumbers = const [],
       this.step = SecurityStep.enterPin,
       this.pin = '',
@@ -253,7 +252,7 @@ class _$AuthStateImpl extends _AuthState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AuthStateImpl &&
+            other is _$_AuthState &&
             const DeepCollectionEquality()
                 .equals(other._shuffledNumbers, _shuffledNumbers) &&
             (identical(other.step, step) || other.step == step) &&
@@ -287,8 +286,8 @@ class _$AuthStateImpl extends _AuthState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$AuthStateImplCopyWith<_$AuthStateImpl> get copyWith =>
-      __$$AuthStateImplCopyWithImpl<_$AuthStateImpl>(this, _$identity);
+  _$$_AuthStateCopyWith<_$_AuthState> get copyWith =>
+      __$$_AuthStateCopyWithImpl<_$_AuthState>(this, _$identity);
 }
 
 abstract class _AuthState extends AuthState {
@@ -301,7 +300,7 @@ abstract class _AuthState extends AuthState {
       final String err,
       final bool fromSettings,
       final bool loggedIn,
-      final bool onStartChecking}) = _$AuthStateImpl;
+      final bool onStartChecking}) = _$_AuthState;
   const _AuthState._() : super._();
 
   @override
@@ -324,6 +323,6 @@ abstract class _AuthState extends AuthState {
   bool get onStartChecking;
   @override
   @JsonKey(ignore: true)
-  _$$AuthStateImplCopyWith<_$AuthStateImpl> get copyWith =>
+  _$$_AuthStateCopyWith<_$_AuthState> get copyWith =>
       throw _privateConstructorUsedError;
 }

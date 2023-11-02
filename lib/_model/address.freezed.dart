@@ -133,10 +133,10 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
 }
 
 /// @nodoc
-abstract class _$$AddressImplCopyWith<$Res> implements $AddressCopyWith<$Res> {
-  factory _$$AddressImplCopyWith(
-          _$AddressImpl value, $Res Function(_$AddressImpl) then) =
-      __$$AddressImplCopyWithImpl<$Res>;
+abstract class _$$_AddressCopyWith<$Res> implements $AddressCopyWith<$Res> {
+  factory _$$_AddressCopyWith(
+          _$_Address value, $Res Function(_$_Address) then) =
+      __$$_AddressCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -155,11 +155,10 @@ abstract class _$$AddressImplCopyWith<$Res> implements $AddressCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$AddressImplCopyWithImpl<$Res>
-    extends _$AddressCopyWithImpl<$Res, _$AddressImpl>
-    implements _$$AddressImplCopyWith<$Res> {
-  __$$AddressImplCopyWithImpl(
-      _$AddressImpl _value, $Res Function(_$AddressImpl) _then)
+class __$$_AddressCopyWithImpl<$Res>
+    extends _$AddressCopyWithImpl<$Res, _$_Address>
+    implements _$$_AddressCopyWith<$Res> {
+  __$$_AddressCopyWithImpl(_$_Address _value, $Res Function(_$_Address) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -177,7 +176,7 @@ class __$$AddressImplCopyWithImpl<$Res>
     Object? highestPreviousBalance = null,
     Object? utxos = freezed,
   }) {
-    return _then(_$AddressImpl(
+    return _then(_$_Address(
       address: null == address
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
@@ -228,8 +227,8 @@ class __$$AddressImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$AddressImpl extends _Address {
-  _$AddressImpl(
+class _$_Address extends _Address {
+  _$_Address(
       {required this.address,
       this.index,
       required this.kind,
@@ -245,8 +244,8 @@ class _$AddressImpl extends _Address {
       : _utxos = utxos,
         super._();
 
-  factory _$AddressImpl.fromJson(Map<String, dynamic> json) =>
-      _$$AddressImplFromJson(json);
+  factory _$_Address.fromJson(Map<String, dynamic> json) =>
+      _$$_AddressFromJson(json);
 
   @override
   final String address;
@@ -292,7 +291,7 @@ class _$AddressImpl extends _Address {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AddressImpl &&
+            other is _$_Address &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.index, index) || other.index == index) &&
             (identical(other.kind, kind) || other.kind == kind) &&
@@ -329,12 +328,12 @@ class _$AddressImpl extends _Address {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$AddressImplCopyWith<_$AddressImpl> get copyWith =>
-      __$$AddressImplCopyWithImpl<_$AddressImpl>(this, _$identity);
+  _$$_AddressCopyWith<_$_Address> get copyWith =>
+      __$$_AddressCopyWithImpl<_$_Address>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$AddressImplToJson(
+    return _$$_AddressToJson(
       this,
     );
   }
@@ -353,10 +352,10 @@ abstract class _Address extends Address {
       final String errSaving,
       final int highestPreviousBalance,
       @JsonKey(includeFromJson: false, includeToJson: false)
-      final List<LocalUtxo>? utxos}) = _$AddressImpl;
+      final List<LocalUtxo>? utxos}) = _$_Address;
   _Address._() : super._();
 
-  factory _Address.fromJson(Map<String, dynamic> json) = _$AddressImpl.fromJson;
+  factory _Address.fromJson(Map<String, dynamic> json) = _$_Address.fromJson;
 
   @override
   String get address;
@@ -383,6 +382,6 @@ abstract class _Address extends Address {
   List<LocalUtxo>? get utxos;
   @override
   @JsonKey(ignore: true)
-  _$$AddressImplCopyWith<_$AddressImpl> get copyWith =>
+  _$$_AddressCopyWith<_$_Address> get copyWith =>
       throw _privateConstructorUsedError;
 }

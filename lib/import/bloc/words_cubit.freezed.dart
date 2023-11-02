@@ -79,22 +79,22 @@ class _$WordsStateCopyWithImpl<$Res, $Val extends WordsState>
 }
 
 /// @nodoc
-abstract class _$$WordsStateImplCopyWith<$Res>
+abstract class _$$_WordsStateCopyWith<$Res>
     implements $WordsStateCopyWith<$Res> {
-  factory _$$WordsStateImplCopyWith(
-          _$WordsStateImpl value, $Res Function(_$WordsStateImpl) then) =
-      __$$WordsStateImplCopyWithImpl<$Res>;
+  factory _$$_WordsStateCopyWith(
+          _$_WordsState value, $Res Function(_$_WordsState) then) =
+      __$$_WordsStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({List<String>? words, String err, bool loading});
 }
 
 /// @nodoc
-class __$$WordsStateImplCopyWithImpl<$Res>
-    extends _$WordsStateCopyWithImpl<$Res, _$WordsStateImpl>
-    implements _$$WordsStateImplCopyWith<$Res> {
-  __$$WordsStateImplCopyWithImpl(
-      _$WordsStateImpl _value, $Res Function(_$WordsStateImpl) _then)
+class __$$_WordsStateCopyWithImpl<$Res>
+    extends _$WordsStateCopyWithImpl<$Res, _$_WordsState>
+    implements _$$_WordsStateCopyWith<$Res> {
+  __$$_WordsStateCopyWithImpl(
+      _$_WordsState _value, $Res Function(_$_WordsState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -104,7 +104,7 @@ class __$$WordsStateImplCopyWithImpl<$Res>
     Object? err = null,
     Object? loading = null,
   }) {
-    return _then(_$WordsStateImpl(
+    return _then(_$_WordsState(
       words: freezed == words
           ? _value._words
           : words // ignore: cast_nullable_to_non_nullable
@@ -123,8 +123,8 @@ class __$$WordsStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$WordsStateImpl extends _WordsState {
-  const _$WordsStateImpl(
+class _$_WordsState extends _WordsState {
+  const _$_WordsState(
       {final List<String>? words, this.err = '', this.loading = false})
       : _words = words,
         super._();
@@ -170,7 +170,7 @@ class _$WordsStateImpl extends _WordsState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$WordsStateImpl &&
+            other is _$_WordsState &&
             const DeepCollectionEquality().equals(other._words, _words) &&
             (identical(other.err, err) || other.err == err) &&
             (identical(other.loading, loading) || other.loading == loading));
@@ -183,15 +183,15 @@ class _$WordsStateImpl extends _WordsState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$WordsStateImplCopyWith<_$WordsStateImpl> get copyWith =>
-      __$$WordsStateImplCopyWithImpl<_$WordsStateImpl>(this, _$identity);
+  _$$_WordsStateCopyWith<_$_WordsState> get copyWith =>
+      __$$_WordsStateCopyWithImpl<_$_WordsState>(this, _$identity);
 }
 
 abstract class _WordsState extends WordsState {
   const factory _WordsState(
       {final List<String>? words,
       final String err,
-      final bool loading}) = _$WordsStateImpl;
+      final bool loading}) = _$_WordsState;
   const _WordsState._() : super._();
 
   @override
@@ -212,6 +212,6 @@ abstract class _WordsState extends WordsState {
   bool get loading;
   @override
   @JsonKey(ignore: true)
-  _$$WordsStateImplCopyWith<_$WordsStateImpl> get copyWith =>
+  _$$_WordsStateCopyWith<_$_WordsState> get copyWith =>
       throw _privateConstructorUsedError;
 }

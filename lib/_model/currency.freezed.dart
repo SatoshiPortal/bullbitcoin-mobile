@@ -73,22 +73,21 @@ class _$CurrencyCopyWithImpl<$Res, $Val extends Currency>
 }
 
 /// @nodoc
-abstract class _$$CurrencyImplCopyWith<$Res>
-    implements $CurrencyCopyWith<$Res> {
-  factory _$$CurrencyImplCopyWith(
-          _$CurrencyImpl value, $Res Function(_$CurrencyImpl) then) =
-      __$$CurrencyImplCopyWithImpl<$Res>;
+abstract class _$$_CurrencyCopyWith<$Res> implements $CurrencyCopyWith<$Res> {
+  factory _$$_CurrencyCopyWith(
+          _$_Currency value, $Res Function(_$_Currency) then) =
+      __$$_CurrencyCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String name, double? price, String shortName});
 }
 
 /// @nodoc
-class __$$CurrencyImplCopyWithImpl<$Res>
-    extends _$CurrencyCopyWithImpl<$Res, _$CurrencyImpl>
-    implements _$$CurrencyImplCopyWith<$Res> {
-  __$$CurrencyImplCopyWithImpl(
-      _$CurrencyImpl _value, $Res Function(_$CurrencyImpl) _then)
+class __$$_CurrencyCopyWithImpl<$Res>
+    extends _$CurrencyCopyWithImpl<$Res, _$_Currency>
+    implements _$$_CurrencyCopyWith<$Res> {
+  __$$_CurrencyCopyWithImpl(
+      _$_Currency _value, $Res Function(_$_Currency) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -98,7 +97,7 @@ class __$$CurrencyImplCopyWithImpl<$Res>
     Object? price = freezed,
     Object? shortName = null,
   }) {
-    return _then(_$CurrencyImpl(
+    return _then(_$_Currency(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -117,13 +116,13 @@ class __$$CurrencyImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$CurrencyImpl extends _Currency {
-  const _$CurrencyImpl(
+class _$_Currency extends _Currency {
+  const _$_Currency(
       {required this.name, required this.price, required this.shortName})
       : super._();
 
-  factory _$CurrencyImpl.fromJson(Map<String, dynamic> json) =>
-      _$$CurrencyImplFromJson(json);
+  factory _$_Currency.fromJson(Map<String, dynamic> json) =>
+      _$$_CurrencyFromJson(json);
 
   @override
   final String name;
@@ -141,7 +140,7 @@ class _$CurrencyImpl extends _Currency {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$CurrencyImpl &&
+            other is _$_Currency &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.price, price) || other.price == price) &&
             (identical(other.shortName, shortName) ||
@@ -155,12 +154,12 @@ class _$CurrencyImpl extends _Currency {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$CurrencyImplCopyWith<_$CurrencyImpl> get copyWith =>
-      __$$CurrencyImplCopyWithImpl<_$CurrencyImpl>(this, _$identity);
+  _$$_CurrencyCopyWith<_$_Currency> get copyWith =>
+      __$$_CurrencyCopyWithImpl<_$_Currency>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$CurrencyImplToJson(
+    return _$$_CurrencyToJson(
       this,
     );
   }
@@ -170,11 +169,10 @@ abstract class _Currency extends Currency {
   const factory _Currency(
       {required final String name,
       required final double? price,
-      required final String shortName}) = _$CurrencyImpl;
+      required final String shortName}) = _$_Currency;
   const _Currency._() : super._();
 
-  factory _Currency.fromJson(Map<String, dynamic> json) =
-      _$CurrencyImpl.fromJson;
+  factory _Currency.fromJson(Map<String, dynamic> json) = _$_Currency.fromJson;
 
   @override
   String get name;
@@ -184,6 +182,6 @@ abstract class _Currency extends Currency {
   String get shortName;
   @override
   @JsonKey(ignore: true)
-  _$$CurrencyImplCopyWith<_$CurrencyImpl> get copyWith =>
+  _$$_CurrencyCopyWith<_$_Currency> get copyWith =>
       throw _privateConstructorUsedError;
 }

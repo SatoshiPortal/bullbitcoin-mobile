@@ -82,10 +82,9 @@ class _$SeedCopyWithImpl<$Res, $Val extends Seed>
 }
 
 /// @nodoc
-abstract class _$$SeedImplCopyWith<$Res> implements $SeedCopyWith<$Res> {
-  factory _$$SeedImplCopyWith(
-          _$SeedImpl value, $Res Function(_$SeedImpl) then) =
-      __$$SeedImplCopyWithImpl<$Res>;
+abstract class _$$_SeedCopyWith<$Res> implements $SeedCopyWith<$Res> {
+  factory _$$_SeedCopyWith(_$_Seed value, $Res Function(_$_Seed) then) =
+      __$$_SeedCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -96,10 +95,9 @@ abstract class _$$SeedImplCopyWith<$Res> implements $SeedCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$SeedImplCopyWithImpl<$Res>
-    extends _$SeedCopyWithImpl<$Res, _$SeedImpl>
-    implements _$$SeedImplCopyWith<$Res> {
-  __$$SeedImplCopyWithImpl(_$SeedImpl _value, $Res Function(_$SeedImpl) _then)
+class __$$_SeedCopyWithImpl<$Res> extends _$SeedCopyWithImpl<$Res, _$_Seed>
+    implements _$$_SeedCopyWith<$Res> {
+  __$$_SeedCopyWithImpl(_$_Seed _value, $Res Function(_$_Seed) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -110,7 +108,7 @@ class __$$SeedImplCopyWithImpl<$Res>
     Object? network = null,
     Object? passphrases = null,
   }) {
-    return _then(_$SeedImpl(
+    return _then(_$_Seed(
       mnemonic: null == mnemonic
           ? _value.mnemonic
           : mnemonic // ignore: cast_nullable_to_non_nullable
@@ -133,8 +131,8 @@ class __$$SeedImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$SeedImpl extends _Seed {
-  const _$SeedImpl(
+class _$_Seed extends _Seed {
+  const _$_Seed(
       {this.mnemonic = '',
       this.mnemonicFingerprint = '',
       required this.network,
@@ -142,8 +140,7 @@ class _$SeedImpl extends _Seed {
       : _passphrases = passphrases,
         super._();
 
-  factory _$SeedImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SeedImplFromJson(json);
+  factory _$_Seed.fromJson(Map<String, dynamic> json) => _$$_SeedFromJson(json);
 
   @override
   @JsonKey()
@@ -170,7 +167,7 @@ class _$SeedImpl extends _Seed {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SeedImpl &&
+            other is _$_Seed &&
             (identical(other.mnemonic, mnemonic) ||
                 other.mnemonic == mnemonic) &&
             (identical(other.mnemonicFingerprint, mnemonicFingerprint) ||
@@ -188,12 +185,12 @@ class _$SeedImpl extends _Seed {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$SeedImplCopyWith<_$SeedImpl> get copyWith =>
-      __$$SeedImplCopyWithImpl<_$SeedImpl>(this, _$identity);
+  _$$_SeedCopyWith<_$_Seed> get copyWith =>
+      __$$_SeedCopyWithImpl<_$_Seed>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SeedImplToJson(
+    return _$$_SeedToJson(
       this,
     );
   }
@@ -204,10 +201,10 @@ abstract class _Seed extends Seed {
       {final String mnemonic,
       final String mnemonicFingerprint,
       required final BBNetwork network,
-      required final List<Passphrase> passphrases}) = _$SeedImpl;
+      required final List<Passphrase> passphrases}) = _$_Seed;
   const _Seed._() : super._();
 
-  factory _Seed.fromJson(Map<String, dynamic> json) = _$SeedImpl.fromJson;
+  factory _Seed.fromJson(Map<String, dynamic> json) = _$_Seed.fromJson;
 
   @override
   String get mnemonic;
@@ -219,8 +216,7 @@ abstract class _Seed extends Seed {
   List<Passphrase> get passphrases;
   @override
   @JsonKey(ignore: true)
-  _$$SeedImplCopyWith<_$SeedImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$_SeedCopyWith<_$_Seed> get copyWith => throw _privateConstructorUsedError;
 }
 
 Passphrase _$PassphraseFromJson(Map<String, dynamic> json) {
@@ -277,22 +273,22 @@ class _$PassphraseCopyWithImpl<$Res, $Val extends Passphrase>
 }
 
 /// @nodoc
-abstract class _$$PassphraseImplCopyWith<$Res>
+abstract class _$$_PassphraseCopyWith<$Res>
     implements $PassphraseCopyWith<$Res> {
-  factory _$$PassphraseImplCopyWith(
-          _$PassphraseImpl value, $Res Function(_$PassphraseImpl) then) =
-      __$$PassphraseImplCopyWithImpl<$Res>;
+  factory _$$_PassphraseCopyWith(
+          _$_Passphrase value, $Res Function(_$_Passphrase) then) =
+      __$$_PassphraseCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String passphrase, String sourceFingerprint});
 }
 
 /// @nodoc
-class __$$PassphraseImplCopyWithImpl<$Res>
-    extends _$PassphraseCopyWithImpl<$Res, _$PassphraseImpl>
-    implements _$$PassphraseImplCopyWith<$Res> {
-  __$$PassphraseImplCopyWithImpl(
-      _$PassphraseImpl _value, $Res Function(_$PassphraseImpl) _then)
+class __$$_PassphraseCopyWithImpl<$Res>
+    extends _$PassphraseCopyWithImpl<$Res, _$_Passphrase>
+    implements _$$_PassphraseCopyWith<$Res> {
+  __$$_PassphraseCopyWithImpl(
+      _$_Passphrase _value, $Res Function(_$_Passphrase) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -301,7 +297,7 @@ class __$$PassphraseImplCopyWithImpl<$Res>
     Object? passphrase = null,
     Object? sourceFingerprint = null,
   }) {
-    return _then(_$PassphraseImpl(
+    return _then(_$_Passphrase(
       passphrase: null == passphrase
           ? _value.passphrase
           : passphrase // ignore: cast_nullable_to_non_nullable
@@ -316,13 +312,12 @@ class __$$PassphraseImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$PassphraseImpl extends _Passphrase {
-  const _$PassphraseImpl(
-      {this.passphrase = '', required this.sourceFingerprint})
+class _$_Passphrase extends _Passphrase {
+  const _$_Passphrase({this.passphrase = '', required this.sourceFingerprint})
       : super._();
 
-  factory _$PassphraseImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PassphraseImplFromJson(json);
+  factory _$_Passphrase.fromJson(Map<String, dynamic> json) =>
+      _$$_PassphraseFromJson(json);
 
   @override
   @JsonKey()
@@ -339,7 +334,7 @@ class _$PassphraseImpl extends _Passphrase {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$PassphraseImpl &&
+            other is _$_Passphrase &&
             (identical(other.passphrase, passphrase) ||
                 other.passphrase == passphrase) &&
             (identical(other.sourceFingerprint, sourceFingerprint) ||
@@ -353,12 +348,12 @@ class _$PassphraseImpl extends _Passphrase {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$PassphraseImplCopyWith<_$PassphraseImpl> get copyWith =>
-      __$$PassphraseImplCopyWithImpl<_$PassphraseImpl>(this, _$identity);
+  _$$_PassphraseCopyWith<_$_Passphrase> get copyWith =>
+      __$$_PassphraseCopyWithImpl<_$_Passphrase>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PassphraseImplToJson(
+    return _$$_PassphraseToJson(
       this,
     );
   }
@@ -367,11 +362,11 @@ class _$PassphraseImpl extends _Passphrase {
 abstract class _Passphrase extends Passphrase {
   const factory _Passphrase(
       {final String passphrase,
-      required final String sourceFingerprint}) = _$PassphraseImpl;
+      required final String sourceFingerprint}) = _$_Passphrase;
   const _Passphrase._() : super._();
 
   factory _Passphrase.fromJson(Map<String, dynamic> json) =
-      _$PassphraseImpl.fromJson;
+      _$_Passphrase.fromJson;
 
   @override
   String get passphrase;
@@ -379,6 +374,6 @@ abstract class _Passphrase extends Passphrase {
   String get sourceFingerprint;
   @override
   @JsonKey(ignore: true)
-  _$$PassphraseImplCopyWith<_$PassphraseImpl> get copyWith =>
+  _$$_PassphraseCopyWith<_$_Passphrase> get copyWith =>
       throw _privateConstructorUsedError;
 }

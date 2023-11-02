@@ -515,9 +515,9 @@ class _InvoiceAmountFieldState extends State<InvoiceAmountField> {
                   disabled: false,
                   // value: amountStr,
                   hint: 'Enter amount',
-                  onRightTap: () {
-                    // context.read<SettingsCubit>().toggleUnitsInSats();
-                  },
+                  // onRightTap: () {
+                  //   // context.read<SettingsCubit>().toggleUnitsInSats();
+                  // },
                   isSats: isSats,
                   btcFormatting: !isSats && !fiatSelected,
                   onChanged: (txt) {

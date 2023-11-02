@@ -17,6 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$SendState {
   int get amount => throw _privateConstructorUsedError;
+  String? get tempAmount => throw _privateConstructorUsedError;
   String get address => throw _privateConstructorUsedError;
   String get note =>
       throw _privateConstructorUsedError; // @Default(BTCUnit.btc) BTCUnit unit,
@@ -65,6 +66,7 @@ abstract class $SendStateCopyWith<$Res> {
   @useResult
   $Res call(
       {int amount,
+      String? tempAmount,
       String address,
       String note,
       int? fees,
@@ -114,6 +116,7 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
   @override
   $Res call({
     Object? amount = null,
+    Object? tempAmount = freezed,
     Object? address = null,
     Object? note = null,
     Object? fees = freezed,
@@ -150,6 +153,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.amount
           : amount // ignore: cast_nullable_to_non_nullable
               as int,
+      tempAmount: freezed == tempAmount
+          ? _value.tempAmount
+          : tempAmount // ignore: cast_nullable_to_non_nullable
+              as String?,
       address: null == address
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
@@ -299,15 +306,15 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
 }
 
 /// @nodoc
-abstract class _$$SendStateImplCopyWith<$Res>
-    implements $SendStateCopyWith<$Res> {
-  factory _$$SendStateImplCopyWith(
-          _$SendStateImpl value, $Res Function(_$SendStateImpl) then) =
-      __$$SendStateImplCopyWithImpl<$Res>;
+abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
+  factory _$$_SendStateCopyWith(
+          _$_SendState value, $Res Function(_$_SendState) then) =
+      __$$_SendStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
       {int amount,
+      String? tempAmount,
       String address,
       String note,
       int? fees,
@@ -346,17 +353,18 @@ abstract class _$$SendStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$SendStateImplCopyWithImpl<$Res>
-    extends _$SendStateCopyWithImpl<$Res, _$SendStateImpl>
-    implements _$$SendStateImplCopyWith<$Res> {
-  __$$SendStateImplCopyWithImpl(
-      _$SendStateImpl _value, $Res Function(_$SendStateImpl) _then)
+class __$$_SendStateCopyWithImpl<$Res>
+    extends _$SendStateCopyWithImpl<$Res, _$_SendState>
+    implements _$$_SendStateCopyWith<$Res> {
+  __$$_SendStateCopyWithImpl(
+      _$_SendState _value, $Res Function(_$_SendState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? amount = null,
+    Object? tempAmount = freezed,
     Object? address = null,
     Object? note = null,
     Object? fees = freezed,
@@ -388,11 +396,15 @@ class __$$SendStateImplCopyWithImpl<$Res>
     Object? fiatSelected = null,
     Object? fiatAmt = null,
   }) {
-    return _then(_$SendStateImpl(
+    return _then(_$_SendState(
       amount: null == amount
           ? _value.amount
           : amount // ignore: cast_nullable_to_non_nullable
               as int,
+      tempAmount: freezed == tempAmount
+          ? _value.tempAmount
+          : tempAmount // ignore: cast_nullable_to_non_nullable
+              as String?,
       address: null == address
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
@@ -519,9 +531,10 @@ class __$$SendStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$SendStateImpl extends _SendState {
-  const _$SendStateImpl(
+class _$_SendState extends _SendState {
+  const _$_SendState(
       {this.amount = 0,
+      this.tempAmount,
       this.address = '',
       this.note = '',
       this.fees,
@@ -560,6 +573,8 @@ class _$SendStateImpl extends _SendState {
   @override
   @JsonKey()
   final int amount;
+  @override
+  final String? tempAmount;
   @override
   @JsonKey()
   final String address;
@@ -678,15 +693,17 @@ class _$SendStateImpl extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(amount: $amount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
+    return 'SendState(amount: $amount, tempAmount: $tempAmount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SendStateImpl &&
+            other is _$_SendState &&
             (identical(other.amount, amount) || other.amount == amount) &&
+            (identical(other.tempAmount, tempAmount) ||
+                other.tempAmount == tempAmount) &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.note, note) || other.note == note) &&
             (identical(other.fees, fees) || other.fees == fees) &&
@@ -742,6 +759,7 @@ class _$SendStateImpl extends _SendState {
   int get hashCode => Object.hashAll([
         runtimeType,
         amount,
+        tempAmount,
         address,
         note,
         fees,
@@ -777,13 +795,14 @@ class _$SendStateImpl extends _SendState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>
-      __$$SendStateImplCopyWithImpl<_$SendStateImpl>(this, _$identity);
+  _$$_SendStateCopyWith<_$_SendState> get copyWith =>
+      __$$_SendStateCopyWithImpl<_$_SendState>(this, _$identity);
 }
 
 abstract class _SendState extends SendState {
   const factory _SendState(
       {final int amount,
+      final String? tempAmount,
       final String address,
       final String note,
       final int? fees,
@@ -813,11 +832,13 @@ abstract class _SendState extends SendState {
       final List<Currency>? currencyList,
       final bool isSats,
       final bool fiatSelected,
-      final double fiatAmt}) = _$SendStateImpl;
+      final double fiatAmt}) = _$_SendState;
   const _SendState._() : super._();
 
   @override
   int get amount;
+  @override
+  String? get tempAmount;
   @override
   String get address;
   @override
@@ -883,6 +904,6 @@ abstract class _SendState extends SendState {
   double get fiatAmt;
   @override
   @JsonKey(ignore: true)
-  _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>
+  _$$_SendStateCopyWith<_$_SendState> get copyWith =>
       throw _privateConstructorUsedError;
 }

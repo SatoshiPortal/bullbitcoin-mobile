@@ -27,6 +27,7 @@ class _EnterAmountState extends State<EnterAmount> {
     final isSats = context.select((SendCubit cubit) => cubit.state.isSats);
 
     final fiatSelected = context.select((SendCubit cubit) => cubit.state.fiatSelected);
+    final tempAmt = context.select((SendCubit cubit) => cubit.state.tempAmount);
 
     // var amountStr = '';
     // if (!fiatSelected)
@@ -58,11 +59,11 @@ class _EnterAmountState extends State<EnterAmount> {
                   focusNode: _focusNode,
                   child: BBAmountInput(
                     disabled: sendAll,
-                    // value: ,
+                    value: tempAmt,
                     hint: 'Enter amount',
-                    onRightTap: () {
-                      // context.read<SettingsCubit>().toggleUnitsInSats();
-                    },
+                    // onRightTap: () {
+                    //   // context.read<SettingsCubit>().toggleUnitsInSats();
+                    // },
                     isSats: isSats,
                     btcFormatting: !isSats && !fiatSelected,
                     onChanged: (txt) {

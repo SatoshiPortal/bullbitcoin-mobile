@@ -103,6 +103,7 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(address: newAddress));
         final amount = bip21Obj.options['amount'] as num?;
         if (amount != null) {
+          _btcToCurrentTempAmount(amount.toDouble());
           final amountInSats = (amount * 100000000).toInt();
           emit(state.copyWith(amount: amountInSats));
         }
@@ -181,6 +182,7 @@ class SendCubit extends Cubit<SendState> {
           fiatSelected: false,
           selectedCurrency: selectedCurrency,
           isSats: currency == 'sats',
+          tempAmount: '',
         ),
       );
       return;
@@ -191,27 +193,42 @@ class SendCubit extends Cubit<SendState> {
         fiatSelected: true,
         selectedCurrency: selectedCurrency,
         isSats: false,
+        tempAmount: '',
       ),
     );
-    updateShowSend();
+    _updateShowSend();
+  }
+
+  void _btcToCurrentTempAmount(double btcAmt) {
+    String amt = '';
+
+    if (state.fiatSelected) {
+      final currency = state.selectedCurrency ?? settingsCubit.state.currency;
+      final fiatAmt = currency!.price! * btcAmt;
+      amt = fiatAmt.toStringAsFixed(2);
+      emit(state.copyWith(tempAmount: amt));
+    } else {
+      if (state.isSats)
+        amt = (btcAmt * 100000000).toStringAsFixed(0);
+      else
+        amt = btcAmt.toString();
+      emit(state.copyWith(tempAmount: amt));
+    }
+
+    updateAmount(amt);
   }
 
   void updateAmount(String txt) {
     var clean = txt.replaceAll(',', '').replaceAll(' ', '');
     if (state.isSats) clean = clean.replaceAll('.', '');
-    // else if (!txt.contains('.')) return;
 
     final isFiat = state.fiatSelected;
     if (isFiat) {
       final currency = state.selectedCurrency ?? settingsCubit.state.currency;
       final fiat = double.tryParse(clean) ?? 0;
-      // if (fiat == null) return;
-      // final sats = (amount / 100000000) * currency!.price!;
-      //
       final sats = (fiat / currency!.price!) * 100000000;
-
       emit(state.copyWith(amount: sats.toInt(), fiatAmt: fiat));
-      updateShowSend();
+      _updateShowSend();
       return;
     }
 
@@ -221,7 +238,7 @@ class SendCubit extends Cubit<SendState> {
     final fiatAmt = currency!.price! * (amt / 100000000);
 
     emit(state.copyWith(amount: amt, fiatAmt: fiatAmt));
-    updateShowSend();
+    _updateShowSend();
   }
 
   void updateAmountError(String err) {
@@ -256,7 +273,6 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           errLoadingFees:
               "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
-          // 'Minimum fees is $minFees sats/vbyte',
           selectedFeesOption: 2,
         ),
       );
@@ -276,7 +292,7 @@ class SendCubit extends Cubit<SendState> {
         amount: sendAll ? balance : 0,
       ),
     );
-    updateShowSend();
+    _updateShowSend();
   }
 
   void utxoAddressSelected(Address address) {
@@ -288,19 +304,14 @@ class SendCubit extends Cubit<SendState> {
 
     emit(state.copyWith(selectedAddresses: selectedAddresses));
 
-    // if (selectedAddresses.isNotEmpty) {
-    //   final total = state.calculateTotalSelected();
-    //   // emit(state.copyWith(amount: total)); //totalSelectedAmount
-    // }
-
-    updateShowSend();
+    _updateShowSend();
   }
 
   void clearSelectedUTXOAddresses() {
     emit(state.copyWith(selectedAddresses: []));
   }
 
-  void updateShowSend() {
+  void _updateShowSend() {
     final amount = state.amount;
     if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
@@ -336,18 +347,9 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    // final (appDocDir, err) = await fileStorage.getAppDirectory();
-    // if (err != null) {
-    //   emit(state.copyWith(downloadingFile: false, errDownloadingFile: err.toString()));
-    //   return;
-    // }
-    // final file = File(appDocDir! + '/bullbitcoin_psbt/$txid.psbt');
     final errSave = await fileStorage.savePSBT(
       psbt: psbt,
       txid: txid,
-      // txt: psbt,
-      // fileName: '$txid.psbt',
-      // mime: 'text/psbt',
     );
 
     if (errSave != null) {
@@ -356,14 +358,10 @@ class SendCubit extends Cubit<SendState> {
     }
 
     await Future.delayed(const Duration(seconds: 1));
-    // save state.tx to wallet.transactions
-    emit(state.copyWith(downloadingFile: false, downloaded: true));
 
-    // await Future.delayed(const Duration(seconds: 10));
-    // emit(state.copyWith(downloaded: false));
+    emit(state.copyWith(downloadingFile: false, downloaded: true));
   }
 
-  // SENSITIVE DATA HANDLER
   void confirmClickedd() async {
     if (state.sending) return;
     final bdkWallet = walletBloc.state.bdkWallet;
@@ -400,7 +398,6 @@ class SendCubit extends Cubit<SendState> {
     final (tx, feeAmt, psbt) = buildResp!;
 
     if (localWallet.type == BBWalletType.newSeed || localWallet.type == BBWalletType.words) {
-      // sign
       final (seed, sErr) = await walletSensRepository.readSeed(
         fingerprintIndex: walletBloc.state.wallet!.getRelatedSeedStorageString(),
         secureStore: secureStorage,
@@ -435,10 +432,9 @@ class SendCubit extends Cubit<SendState> {
         ),
       );
     } else {
-      // watch only
       final txs = localWallet.transactions.toList();
       txs.add(tx!);
-      // final w = localWallet.copyWith(transactions: txs);
+
       final (w, _) = await walletTx.addUnsignedTxToWallet(transaction: tx, wallet: localWallet);
       walletBloc.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.transactions]));
       await Future.delayed(const Duration(seconds: 1));
@@ -446,7 +442,6 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(
           sending: false,
-          // sent: true,
           psbt: psbt,
           tx: tx,
         ),
@@ -471,22 +466,7 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final (wallet, txid) = wtxid!;
-    // final (bdkWallet, errr) = await walletCreate.loadPublicBdkWallet(wallet);
-    // if (errr != null) {
-    //   emit(state.copyWith(errSending: errr.toString(), signed: false));
-    //   return;
-    // }
-    // sync update labels for change
-    // final (changeUWallet, cErr) = await walletAddress.updateChangeLabel(
-    //   wallet: wallet,
-    //   bdkWallet: bdkWallet!,
-    //   txid: txid,
-    //   label: state.note,
-    // );
-    // if (cErr != null) {
-    //   emit(state.copyWith(errSending: errr.toString()));
-    //   return;
-    // }
+
     final (_, updatedWallet) = await walletAddress.addAddressToWallet(
       address: (null, state.address),
       wallet: wallet,
@@ -495,15 +475,6 @@ class SendCubit extends Cubit<SendState> {
       kind: AddressKind.external,
       state: AddressStatus.used,
     );
-
-    // final err2 = await walletRepository.updateWallet(
-    //   wallet: updatedWallet,
-    //   hiveStore: hiveStorage,
-    // );
-    // if (err2 != null) {
-    //   emit(state.copyWith(errSending: err2.toString(), sending: false));
-    //   return;
-    // }
 
     walletBloc.add(
       UpdateWallet(
