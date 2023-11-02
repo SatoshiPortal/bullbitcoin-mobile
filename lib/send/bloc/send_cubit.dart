@@ -288,6 +288,7 @@ class SendCubit extends Cubit<SendState> {
   void checkMinimumFees() async {
     await Future.delayed(50.ms);
     final minFees = state.feesList!.last;
+    final max = state.feesList!.first * 2;
 
     // if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
     if (state.tempFees != null && state.tempFees! < minFees && state.tempSelectedFeesOption == 4)
@@ -295,6 +296,15 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           errLoadingFees:
               "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
+          // selectedFeesOption: 2,
+          tempSelectedFeesOption: 2,
+        ),
+      );
+    else if (state.tempFees != null && state.tempFees! > max && state.tempSelectedFeesOption == 4)
+      emit(
+        state.copyWith(
+          errLoadingFees:
+              'The selected fee is too high. Please select a lower fee than $max sats/vbyte .',
           // selectedFeesOption: 2,
           tempSelectedFeesOption: 2,
         ),
@@ -311,7 +321,9 @@ class SendCubit extends Cubit<SendState> {
         // return;
       } else {
         emit(state.copyWith(selectedFeesOption: state.tempSelectedFeesOption!, fees: null));
-        if (state.tempSelectedFeesOption == 4 && state.tempFees != null)
+        if (state.tempSelectedFeesOption == 4 &&
+            state.tempFees != null &&
+            state.tempFees! <= (state.feesList!.first * 2))
           emit(state.copyWith(fees: state.tempFees));
       }
     }
