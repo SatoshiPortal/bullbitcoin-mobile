@@ -259,18 +259,24 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(errScanningAddress: err));
   }
 
-  void updateManualFees(String fees) {
+  void updateManualFees(String fees) async {
     final feesInDouble = int.tryParse(fees);
     if (feesInDouble == null) {
-      emit(state.copyWith(fees: -1, selectedFeesOption: 2));
+      // emit(state.copyWith(fees: 000, selectedFeesOption: 2));
+      emit(state.copyWith(tempFees: 000, tempSelectedFeesOption: 2));
+      await Future.delayed(const Duration(milliseconds: 50));
+      // emit(state.copyWith(fees: null));
       return;
     }
-    emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
+    // emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
+    emit(state.copyWith(tempFees: feesInDouble, tempSelectedFeesOption: 4));
     checkMinimumFees();
   }
 
   void feeOptionSelected(int index) {
-    emit(state.copyWith(selectedFeesOption: index));
+    emit(state.copyWith(tempSelectedFeesOption: index));
+    // emit(state.copyWith(selectedFeesOption: index));
+
     checkMinimumFees();
   }
 
@@ -279,20 +285,79 @@ class SendCubit extends Cubit<SendState> {
       feeOptionSelected(2);
   }
 
-  void checkMinimumFees() {
+  void checkMinimumFees() async {
+    await Future.delayed(50.ms);
     final minFees = state.feesList!.last;
 
-    if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
+    // if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
+    if (state.tempFees != null && state.tempFees! < minFees && state.tempSelectedFeesOption == 4)
       emit(
         state.copyWith(
           errLoadingFees:
               "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
-          selectedFeesOption: 2,
+          // selectedFeesOption: 2,
+          tempSelectedFeesOption: 2,
         ),
       );
     else
       emit(state.copyWith(errLoadingFees: ''));
   }
+
+  void confirmFeeClicked() {
+    if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
+    if (state.tempSelectedFeesOption != null) {
+      if (state.tempSelectedFeesOption == 4 && (state.tempFees == null || state.tempFees == 0)) {
+        // clearTempFeeValues();
+        // return;
+      } else {
+        emit(state.copyWith(selectedFeesOption: state.tempSelectedFeesOption!, fees: null));
+        if (state.tempSelectedFeesOption == 4 && state.tempFees != null)
+          emit(state.copyWith(fees: state.tempFees));
+      }
+    }
+    emit(state.copyWith(feesSaved: true));
+    clearTempFeeValues();
+  }
+
+  void clearTempFeeValues() async {
+    await Future.delayed(200.ms);
+    emit(state.copyWith(tempFees: null, tempSelectedFeesOption: null, feesSaved: false));
+  }
+
+  // void updateManualFees(String fees) {
+  //   final feesInDouble = int.tryParse(fees);
+  //   if (feesInDouble == null) {
+  //     emit(state.copyWith(fees: -1, selectedFeesOption: 2));
+  //     return;
+  //   }
+  //   emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
+  //   checkMinimumFees();
+  // }
+
+  // void feeOptionSelected(int index) {
+  //   emit(state.copyWith(selectedFeesOption: index));
+  //   checkMinimumFees();
+  // }
+
+  // void checkFees() {
+  //   if (state.selectedFeesOption == 4 && (state.fees == null || state.fees == 0))
+  //     feeOptionSelected(2);
+  // }
+
+  // void checkMinimumFees() {
+  //   final minFees = state.feesList!.last;
+
+  //   if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
+  //     emit(
+  //       state.copyWith(
+  //         errLoadingFees:
+  //             "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
+  //         selectedFeesOption: 2,
+  //       ),
+  //     );
+  //   else
+  //     emit(state.copyWith(errLoadingFees: ''));
+  // }
 
   void disableRBF(bool disable) {
     emit(state.copyWith(disableRBF: disable));

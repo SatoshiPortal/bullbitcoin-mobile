@@ -44,7 +44,10 @@ mixin _$SettingsState {
   int get stopGap => throw _privateConstructorUsedError; //
   int? get fees => throw _privateConstructorUsedError;
   List<int>? get feesList => throw _privateConstructorUsedError;
-  int get selectedFeesOption => throw _privateConstructorUsedError; //
+  int get selectedFeesOption => throw _privateConstructorUsedError;
+  int? get tempFees => throw _privateConstructorUsedError;
+  int? get tempSelectedFeesOption => throw _privateConstructorUsedError;
+  bool get feesSaved => throw _privateConstructorUsedError; //
   bool get loadingFees => throw _privateConstructorUsedError;
   String get errLoadingFees => throw _privateConstructorUsedError;
   ElectrumTypes? get tempNetwork => throw _privateConstructorUsedError;
@@ -88,6 +91,9 @@ abstract class $SettingsStateCopyWith<$Res> {
       int? fees,
       List<int>? feesList,
       int selectedFeesOption,
+      int? tempFees,
+      int? tempSelectedFeesOption,
+      bool feesSaved,
       bool loadingFees,
       String errLoadingFees,
       ElectrumTypes? tempNetwork,
@@ -133,6 +139,9 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? fees = freezed,
     Object? feesList = freezed,
     Object? selectedFeesOption = null,
+    Object? tempFees = freezed,
+    Object? tempSelectedFeesOption = freezed,
+    Object? feesSaved = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
     Object? tempNetwork = freezed,
@@ -235,6 +244,18 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.selectedFeesOption
           : selectedFeesOption // ignore: cast_nullable_to_non_nullable
               as int,
+      tempFees: freezed == tempFees
+          ? _value.tempFees
+          : tempFees // ignore: cast_nullable_to_non_nullable
+              as int?,
+      tempSelectedFeesOption: freezed == tempSelectedFeesOption
+          ? _value.tempSelectedFeesOption
+          : tempSelectedFeesOption // ignore: cast_nullable_to_non_nullable
+              as int?,
+      feesSaved: null == feesSaved
+          ? _value.feesSaved
+          : feesSaved // ignore: cast_nullable_to_non_nullable
+              as bool,
       loadingFees: null == loadingFees
           ? _value.loadingFees
           : loadingFees // ignore: cast_nullable_to_non_nullable
@@ -301,6 +322,9 @@ abstract class _$$_SettingsStateCopyWith<$Res>
       int? fees,
       List<int>? feesList,
       int selectedFeesOption,
+      int? tempFees,
+      int? tempSelectedFeesOption,
+      bool feesSaved,
       bool loadingFees,
       String errLoadingFees,
       ElectrumTypes? tempNetwork,
@@ -345,6 +369,9 @@ class __$$_SettingsStateCopyWithImpl<$Res>
     Object? fees = freezed,
     Object? feesList = freezed,
     Object? selectedFeesOption = null,
+    Object? tempFees = freezed,
+    Object? tempSelectedFeesOption = freezed,
+    Object? feesSaved = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
     Object? tempNetwork = freezed,
@@ -447,6 +474,18 @@ class __$$_SettingsStateCopyWithImpl<$Res>
           ? _value.selectedFeesOption
           : selectedFeesOption // ignore: cast_nullable_to_non_nullable
               as int,
+      tempFees: freezed == tempFees
+          ? _value.tempFees
+          : tempFees // ignore: cast_nullable_to_non_nullable
+              as int?,
+      tempSelectedFeesOption: freezed == tempSelectedFeesOption
+          ? _value.tempSelectedFeesOption
+          : tempSelectedFeesOption // ignore: cast_nullable_to_non_nullable
+              as int?,
+      feesSaved: null == feesSaved
+          ? _value.feesSaved
+          : feesSaved // ignore: cast_nullable_to_non_nullable
+              as bool,
       loadingFees: null == loadingFees
           ? _value.loadingFees
           : loadingFees // ignore: cast_nullable_to_non_nullable
@@ -495,6 +534,9 @@ class _$_SettingsState extends _SettingsState {
       this.fees,
       final List<int>? feesList,
       this.selectedFeesOption = 2,
+      this.tempFees,
+      this.tempSelectedFeesOption,
+      this.feesSaved = false,
       this.loadingFees = false,
       this.errLoadingFees = '',
       this.tempNetwork,
@@ -607,6 +649,13 @@ class _$_SettingsState extends _SettingsState {
   @override
   @JsonKey()
   final int selectedFeesOption;
+  @override
+  final int? tempFees;
+  @override
+  final int? tempSelectedFeesOption;
+  @override
+  @JsonKey()
+  final bool feesSaved;
 //
   @override
   @JsonKey()
@@ -622,7 +671,7 @@ class _$_SettingsState extends _SettingsState {
 
   @override
   String toString() {
-    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, stopGap: $stopGap, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, tempNetwork: $tempNetwork, defaultRBF: $defaultRBF)';
+    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, stopGap: $stopGap, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, tempFees: $tempFees, tempSelectedFeesOption: $tempSelectedFeesOption, feesSaved: $feesSaved, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, tempNetwork: $tempNetwork, defaultRBF: $defaultRBF)';
   }
 
   @override
@@ -673,6 +722,12 @@ class _$_SettingsState extends _SettingsState {
             const DeepCollectionEquality().equals(other._feesList, _feesList) &&
             (identical(other.selectedFeesOption, selectedFeesOption) ||
                 other.selectedFeesOption == selectedFeesOption) &&
+            (identical(other.tempFees, tempFees) ||
+                other.tempFees == tempFees) &&
+            (identical(other.tempSelectedFeesOption, tempSelectedFeesOption) ||
+                other.tempSelectedFeesOption == tempSelectedFeesOption) &&
+            (identical(other.feesSaved, feesSaved) ||
+                other.feesSaved == feesSaved) &&
             (identical(other.loadingFees, loadingFees) ||
                 other.loadingFees == loadingFees) &&
             (identical(other.errLoadingFees, errLoadingFees) ||
@@ -711,6 +766,9 @@ class _$_SettingsState extends _SettingsState {
         fees,
         const DeepCollectionEquality().hash(_feesList),
         selectedFeesOption,
+        tempFees,
+        tempSelectedFeesOption,
+        feesSaved,
         loadingFees,
         errLoadingFees,
         tempNetwork,
@@ -758,6 +816,9 @@ abstract class _SettingsState extends SettingsState {
       final int? fees,
       final List<int>? feesList,
       final int selectedFeesOption,
+      final int? tempFees,
+      final int? tempSelectedFeesOption,
+      final bool feesSaved,
       final bool loadingFees,
       final String errLoadingFees,
       final ElectrumTypes? tempNetwork,
@@ -816,6 +877,12 @@ abstract class _SettingsState extends SettingsState {
   List<int>? get feesList;
   @override
   int get selectedFeesOption;
+  @override
+  int? get tempFees;
+  @override
+  int? get tempSelectedFeesOption;
+  @override
+  bool get feesSaved;
   @override //
   bool get loadingFees;
   @override

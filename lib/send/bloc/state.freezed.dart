@@ -24,7 +24,10 @@ mixin _$SendState {
 //
   int? get fees => throw _privateConstructorUsedError;
   List<int>? get feesList => throw _privateConstructorUsedError;
-  int get selectedFeesOption => throw _privateConstructorUsedError; //
+  int get selectedFeesOption => throw _privateConstructorUsedError;
+  int? get tempFees => throw _privateConstructorUsedError;
+  int? get tempSelectedFeesOption => throw _privateConstructorUsedError;
+  bool get feesSaved => throw _privateConstructorUsedError; //
   bool get loadingFees => throw _privateConstructorUsedError;
   String get errLoadingFees => throw _privateConstructorUsedError;
   bool get scanningAddress => throw _privateConstructorUsedError;
@@ -72,6 +75,9 @@ abstract class $SendStateCopyWith<$Res> {
       int? fees,
       List<int>? feesList,
       int selectedFeesOption,
+      int? tempFees,
+      int? tempSelectedFeesOption,
+      bool feesSaved,
       bool loadingFees,
       String errLoadingFees,
       bool scanningAddress,
@@ -122,6 +128,9 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? fees = freezed,
     Object? feesList = freezed,
     Object? selectedFeesOption = null,
+    Object? tempFees = freezed,
+    Object? tempSelectedFeesOption = freezed,
+    Object? feesSaved = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
     Object? scanningAddress = null,
@@ -177,6 +186,18 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.selectedFeesOption
           : selectedFeesOption // ignore: cast_nullable_to_non_nullable
               as int,
+      tempFees: freezed == tempFees
+          ? _value.tempFees
+          : tempFees // ignore: cast_nullable_to_non_nullable
+              as int?,
+      tempSelectedFeesOption: freezed == tempSelectedFeesOption
+          ? _value.tempSelectedFeesOption
+          : tempSelectedFeesOption // ignore: cast_nullable_to_non_nullable
+              as int?,
+      feesSaved: null == feesSaved
+          ? _value.feesSaved
+          : feesSaved // ignore: cast_nullable_to_non_nullable
+              as bool,
       loadingFees: null == loadingFees
           ? _value.loadingFees
           : loadingFees // ignore: cast_nullable_to_non_nullable
@@ -320,6 +341,9 @@ abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
       int? fees,
       List<int>? feesList,
       int selectedFeesOption,
+      int? tempFees,
+      int? tempSelectedFeesOption,
+      bool feesSaved,
       bool loadingFees,
       String errLoadingFees,
       bool scanningAddress,
@@ -370,6 +394,9 @@ class __$$_SendStateCopyWithImpl<$Res>
     Object? fees = freezed,
     Object? feesList = freezed,
     Object? selectedFeesOption = null,
+    Object? tempFees = freezed,
+    Object? tempSelectedFeesOption = freezed,
+    Object? feesSaved = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
     Object? scanningAddress = null,
@@ -425,6 +452,18 @@ class __$$_SendStateCopyWithImpl<$Res>
           ? _value.selectedFeesOption
           : selectedFeesOption // ignore: cast_nullable_to_non_nullable
               as int,
+      tempFees: freezed == tempFees
+          ? _value.tempFees
+          : tempFees // ignore: cast_nullable_to_non_nullable
+              as int?,
+      tempSelectedFeesOption: freezed == tempSelectedFeesOption
+          ? _value.tempSelectedFeesOption
+          : tempSelectedFeesOption // ignore: cast_nullable_to_non_nullable
+              as int?,
+      feesSaved: null == feesSaved
+          ? _value.feesSaved
+          : feesSaved // ignore: cast_nullable_to_non_nullable
+              as bool,
       loadingFees: null == loadingFees
           ? _value.loadingFees
           : loadingFees // ignore: cast_nullable_to_non_nullable
@@ -540,6 +579,9 @@ class _$_SendState extends _SendState {
       this.fees,
       final List<int>? feesList,
       this.selectedFeesOption = 2,
+      this.tempFees,
+      this.tempSelectedFeesOption,
+      this.feesSaved = false,
       this.loadingFees = false,
       this.errLoadingFees = '',
       this.scanningAddress = false,
@@ -598,6 +640,13 @@ class _$_SendState extends _SendState {
   @override
   @JsonKey()
   final int selectedFeesOption;
+  @override
+  final int? tempFees;
+  @override
+  final int? tempSelectedFeesOption;
+  @override
+  @JsonKey()
+  final bool feesSaved;
 //
   @override
   @JsonKey()
@@ -693,7 +742,7 @@ class _$_SendState extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(amount: $amount, tempAmount: $tempAmount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
+    return 'SendState(amount: $amount, tempAmount: $tempAmount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, tempFees: $tempFees, tempSelectedFeesOption: $tempSelectedFeesOption, feesSaved: $feesSaved, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
   }
 
   @override
@@ -710,6 +759,12 @@ class _$_SendState extends _SendState {
             const DeepCollectionEquality().equals(other._feesList, _feesList) &&
             (identical(other.selectedFeesOption, selectedFeesOption) ||
                 other.selectedFeesOption == selectedFeesOption) &&
+            (identical(other.tempFees, tempFees) ||
+                other.tempFees == tempFees) &&
+            (identical(other.tempSelectedFeesOption, tempSelectedFeesOption) ||
+                other.tempSelectedFeesOption == tempSelectedFeesOption) &&
+            (identical(other.feesSaved, feesSaved) ||
+                other.feesSaved == feesSaved) &&
             (identical(other.loadingFees, loadingFees) ||
                 other.loadingFees == loadingFees) &&
             (identical(other.errLoadingFees, errLoadingFees) ||
@@ -765,6 +820,9 @@ class _$_SendState extends _SendState {
         fees,
         const DeepCollectionEquality().hash(_feesList),
         selectedFeesOption,
+        tempFees,
+        tempSelectedFeesOption,
+        feesSaved,
         loadingFees,
         errLoadingFees,
         scanningAddress,
@@ -808,6 +866,9 @@ abstract class _SendState extends SendState {
       final int? fees,
       final List<int>? feesList,
       final int selectedFeesOption,
+      final int? tempFees,
+      final int? tempSelectedFeesOption,
+      final bool feesSaved,
       final bool loadingFees,
       final String errLoadingFees,
       final bool scanningAddress,
@@ -850,6 +911,12 @@ abstract class _SendState extends SendState {
   List<int>? get feesList;
   @override
   int get selectedFeesOption;
+  @override
+  int? get tempFees;
+  @override
+  int? get tempSelectedFeesOption;
+  @override
+  bool get feesSaved;
   @override //
   bool get loadingFees;
   @override

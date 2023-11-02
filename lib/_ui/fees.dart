@@ -2,9 +2,13 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
+import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/settings/bloc/settings_state.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -83,6 +87,7 @@ class SelectFeesPopUp extends StatelessWidget {
   ) {
     if (!fromSettings) {
       final send = context.read<SendCubit>();
+      send.clearTempFeeValues();
       return showMaterialModalBottomSheet(
         context: context,
         isDismissible: false,
@@ -106,6 +111,7 @@ class SelectFeesPopUp extends StatelessWidget {
 
     final settings = context.read<SettingsCubit>();
     settings.loadFees();
+    settings.clearTempFeeValues();
     return showMaterialModalBottomSheet(
       context: context,
       isDismissible: false,
@@ -145,20 +151,22 @@ class _Screen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Gap(32),
-          const Padding(
-            padding: EdgeInsets.only(
-              left: 24.0,
-              right: 32,
-            ),
-            child: Row(
-              children: [
-                BBText.body('Bitcoin Network Fee', isBold: true),
-                Spacer(),
-                LoadingFees(),
-              ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: BBHeader.popUpCenteredText(
+              text: 'Bitcoin Network Fee',
+              isLeft: true,
+              onBack: () {
+                final fromSettings = context.read<FeesCubit>().state;
+                if (fromSettings)
+                  context.read<SettingsCubit>().clearTempFeeValues();
+                else
+                  context.read<SendCubit>().clearTempFeeValues();
+                context.pop();
+              },
             ),
           ),
+          const LoadingFees(),
           const Gap(32),
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -194,21 +202,61 @@ class _Screen extends StatelessWidget {
             ),
           ),
           const Gap(48),
-          Center(
-            child: SizedBox(
-              width: 200,
-              child: BBButton.bigRed(
-                onPressed: () {
-                  context.pop();
-                },
-                label: 'Done',
-              ),
-            ),
-          ),
+          const DoneButton(),
           const Gap(48),
         ],
       ),
     );
+  }
+}
+
+class DoneButton extends StatelessWidget {
+  const DoneButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fromSettings = context.read<FeesCubit>().state;
+
+    if (fromSettings)
+      return BlocListener<SettingsCubit, SettingsState>(
+        listenWhen: (previous, current) =>
+            previous.feesSaved != current.feesSaved && current.feesSaved,
+        listener: (context, state) {
+          context.pop();
+        },
+        child: Center(
+          child: SizedBox(
+            width: 200,
+            child: BBButton.bigRed(
+              onPressed: () {
+                context.read<SettingsCubit>().confirmFeeClicked();
+              },
+              label: 'Done',
+            ),
+          ),
+        ),
+      );
+    else
+      return BlocListener<SendCubit, SendState>(
+        listenWhen: (previous, current) =>
+            previous.feesSaved != current.feesSaved && current.feesSaved,
+        listener: (context, state) {
+          context.pop();
+        },
+        child: Center(
+          child: SizedBox(
+            width: 200,
+            child: BBButton.bigRed(
+              onPressed: () {
+                context.read<SendCubit>().confirmFeeClicked();
+              },
+              label: 'Done',
+            ),
+          ),
+        ),
+      );
   }
 }
 
@@ -225,27 +273,29 @@ class LoadingFees extends StatelessWidget {
     else
       loading = context.select((SettingsCubit x) => x.state.loadingFees);
 
-    return Center(
+    return CenterLeft(
       child: SizedBox(
-        height: 16,
-        width: 16,
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 800),
-          child: loading
-              ? const CircularProgressIndicator(strokeWidth: 2)
-              : InkWell(
-                  onTap: () {
-                    if (!fromSettings)
-                      context.read<SendCubit>().loadFees();
-                    else
-                      context.read<SettingsCubit>().loadFees();
-                  },
-                  child: FaIcon(
-                    FontAwesomeIcons.rotate,
-                    size: 16,
-                    color: context.colour.error,
+        height: 24,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 24),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 800),
+            child: loading
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : BBButton.text(
+                    label: 'Refresh',
+                    onPressed: () {
+                      if (!fromSettings)
+                        context.read<SendCubit>().loadFees();
+                      else
+                        context.read<SettingsCubit>().loadFees();
+                    },
                   ),
-                ),
+          ),
         ),
       ),
     );
@@ -270,9 +320,9 @@ class SelectFeesItem extends StatelessWidget {
 
     var selected = false;
     if (!fromSettings)
-      selected = context.select((SendCubit x) => x.state.selectedFeesOption == index);
+      selected = context.select((SendCubit x) => x.state.feeOption() == index);
     else
-      selected = context.select((SettingsCubit x) => x.state.selectedFeesOption == index);
+      selected = context.select((SettingsCubit x) => x.state.feeOption() == index);
 
     var fee = 0;
     if (!custom) {

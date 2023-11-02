@@ -12,6 +12,7 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
@@ -134,16 +135,21 @@ class SettingsCubit extends Cubit<SettingsState> {
 
     emit(
       state.copyWith(
-        currency: results.first,
-        currencyList: results,
+        currency: results.isNotEmpty ? results.first : state.currency,
+        currencyList: results.isEmpty ? results : state.currencyList,
         loadingCurrency: false,
         lastUpdatedCurrency: DateTime.now(),
       ),
     );
 
     if (state.currency != null) {
-      final currency = results.firstWhere((element) => element.name == state.currency!.name);
+      final currency = results.firstWhere(
+        (_) => _.name == state.currency!.name,
+        orElse: () => state.currency!,
+      );
       emit(state.copyWith(currency: currency));
+      if (results.isEmpty && state.currencyList == null)
+        emit(state.copyWith(currencyList: [currency]));
     }
   }
 
@@ -272,17 +278,20 @@ class SettingsCubit extends Cubit<SettingsState> {
   void updateManualFees(String fees) async {
     final feesInDouble = int.tryParse(fees);
     if (feesInDouble == null) {
-      emit(state.copyWith(fees: 000, selectedFeesOption: 2));
+      // emit(state.copyWith(fees: 000, selectedFeesOption: 2));
+      emit(state.copyWith(tempFees: 000, tempSelectedFeesOption: 2));
       await Future.delayed(const Duration(milliseconds: 50));
-      emit(state.copyWith(fees: null));
+      // emit(state.copyWith(fees: null));
       return;
     }
-    emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
+    // emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
+    emit(state.copyWith(tempFees: feesInDouble, tempSelectedFeesOption: 4));
     checkMinimumFees();
   }
 
   void feeOptionSelected(int index) {
-    emit(state.copyWith(selectedFeesOption: index));
+    emit(state.copyWith(tempSelectedFeesOption: index));
+    // emit(state.copyWith(selectedFeesOption: index));
     checkMinimumFees();
   }
 
@@ -291,19 +300,44 @@ class SettingsCubit extends Cubit<SettingsState> {
       feeOptionSelected(2);
   }
 
-  void checkMinimumFees() {
+  void checkMinimumFees() async {
+    await Future.delayed(50.ms);
     final minFees = state.feesList!.last;
 
-    if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
+    // if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
+    if (state.tempFees != null && state.tempFees! < minFees && state.tempSelectedFeesOption == 4)
       emit(
         state.copyWith(
           errLoadingFees:
               "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
-          selectedFeesOption: 2,
+          // selectedFeesOption: 2,
+          tempSelectedFeesOption: 2,
         ),
       );
     else
       emit(state.copyWith(errLoadingFees: ''));
+  }
+
+  void confirmFeeClicked() {
+    if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
+    if (state.tempSelectedFeesOption != null) {
+      if (state.tempFees == 4 && (state.tempFees == null || state.tempFees == 0)) {
+        print('');
+        // clearTempFeeValues();
+        // return;
+      } else {
+        emit(state.copyWith(selectedFeesOption: state.tempSelectedFeesOption!, fees: null));
+        if (state.tempSelectedFeesOption == 4 && state.tempFees != null)
+          emit(state.copyWith(fees: state.tempFees));
+      }
+    }
+    emit(state.copyWith(feesSaved: true));
+    clearTempFeeValues();
+  }
+
+  void clearTempFeeValues() async {
+    await Future.delayed(200.ms);
+    emit(state.copyWith(tempFees: null, tempSelectedFeesOption: null, feesSaved: false));
   }
 
   ElectrumTypes? networkFromString(String text) {

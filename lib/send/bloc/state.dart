@@ -17,6 +17,10 @@ class SendState with _$SendState {
     int? fees,
     List<int>? feesList,
     @Default(2) int selectedFeesOption,
+    int? tempFees,
+    int? tempSelectedFeesOption,
+    @Default(false) bool feesSaved,
+
     //
     @Default(false) bool loadingFees,
     @Default('') String errLoadingFees,
@@ -81,12 +85,13 @@ class SendState with _$SendState {
   String feeButtonText() {
     var str = '';
     try {
-      if (selectedFeesOption == 0) str = 'Fastest (' + feesList![0].toString();
-      if (selectedFeesOption == 1) str = 'Fast (' + feesList![1].toString();
-      if (selectedFeesOption == 2) str = 'Medium (' + feesList![2].toString();
-      if (selectedFeesOption == 3) str = 'Slow (' + feesList![3].toString();
+      final selectedOption = feeOption();
+      if (selectedOption == 0) str = 'Fastest (' + feesList![0].toString();
+      if (selectedOption == 1) str = 'Fast (' + feesList![1].toString();
+      if (selectedOption == 2) str = 'Medium (' + feesList![2].toString();
+      if (selectedOption == 3) str = 'Slow (' + feesList![3].toString();
 
-      if (selectedFeesOption == 4) str = 'Manual (' + fees.toString();
+      if (selectedOption == 4) str = 'Manual (' + fees.toString();
       return str + ' sat/vByte)';
     } catch (e) {
       return 'Select fee rate';
@@ -110,4 +115,7 @@ class SendState with _$SendState {
 
     return list;
   }
+
+  int feeOption() => tempSelectedFeesOption ?? selectedFeesOption;
+  int fee() => tempFees ?? fees ?? 0;
 }

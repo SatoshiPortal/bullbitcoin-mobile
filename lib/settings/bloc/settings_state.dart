@@ -45,6 +45,9 @@ class SettingsState with _$SettingsState {
     int? fees,
     List<int>? feesList,
     @Default(2) int selectedFeesOption,
+    int? tempFees,
+    int? tempSelectedFeesOption,
+    @Default(false) bool feesSaved,
     //
     @Default(false) bool loadingFees,
     @Default('') String errLoadingFees,
@@ -161,10 +164,12 @@ class SettingsState with _$SettingsState {
   String feeButtonText() {
     var str = '';
     try {
-      if (selectedFeesOption == 0) str = 'Fastest fee rate: ' + feesList![0].toString();
-      if (selectedFeesOption == 1) str = 'Fast fee rate: ' + feesList![1].toString();
-      if (selectedFeesOption == 2) str = 'Medium fee rate: ' + feesList![2].toString();
-      if (selectedFeesOption == 3) str = 'Slow fee rate: ' + feesList![3].toString();
+      final selectedOption = feeOption();
+
+      if (selectedOption == 0) str = 'Fastest fee rate: ' + feesList![0].toString();
+      if (selectedOption == 1) str = 'Fast fee rate: ' + feesList![1].toString();
+      if (selectedOption == 2) str = 'Medium fee rate: ' + feesList![2].toString();
+      if (selectedOption == 3) str = 'Slow fee rate: ' + feesList![3].toString();
 
       if (selectedFeesOption == 4) str = 'Manual fee rate: ' + fees.toString();
       return str + ' sat/vByte';
@@ -176,11 +181,12 @@ class SettingsState with _$SettingsState {
   String defaultFeeStatus() {
     try {
       var str = '';
-      if (selectedFeesOption == 0) str = feesList![0].toString();
-      if (selectedFeesOption == 1) str = feesList![1].toString();
-      if (selectedFeesOption == 2) str = feesList![2].toString();
-      if (selectedFeesOption == 3) str = feesList![3].toString();
-      if (selectedFeesOption == 4) str = fees.toString();
+      final selectedOption = feeOption();
+      if (selectedOption == 0) str = feesList![0].toString();
+      if (selectedOption == 1) str = feesList![1].toString();
+      if (selectedOption == 2) str = feesList![2].toString();
+      if (selectedOption == 3) str = feesList![3].toString();
+      if (selectedOption == 4) str = fees.toString();
 
       return str + ' sats/vbyte';
     } catch (e) {
@@ -201,6 +207,9 @@ class SettingsState with _$SettingsState {
     final currencyStr = selectedCurrency.shortName;
     return '~ $amt $currencyStr';
   }
+
+  int feeOption() => tempSelectedFeesOption ?? selectedFeesOption;
+  int fee() => tempFees ?? fees ?? 0;
 }
 
 extension StringRegEx on String {
