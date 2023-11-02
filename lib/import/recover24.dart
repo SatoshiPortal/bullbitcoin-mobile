@@ -269,6 +269,14 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                   child: BBTextInput.small(
                     focusNode: widget.focusNode,
                     controller: controller,
+                    onDone: (value) {
+                      if (suggestions.contains(value)) {
+                        context.read<ImportWalletCubit>().wordChanged12(widget.index, value, true);
+                        hideOverlay();
+                        widget.returnClicked(widget.index);
+                      } else
+                        context.read<ImportWalletCubit>().clearUntappedWords();
+                    },
                     onEnter: () {
                       context.read<ImportWalletCubit>().clearUntappedWords();
                     },

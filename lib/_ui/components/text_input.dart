@@ -20,7 +20,8 @@ class BBTextInput extends StatefulWidget {
     this.hint,
     this.controller,
   })  : type = _TextInputType.multiLine,
-        onEnter = null;
+        onEnter = null,
+        onDone = null;
 
   const BBTextInput.big({
     required this.onChanged,
@@ -32,7 +33,8 @@ class BBTextInput extends StatefulWidget {
   })  : type = _TextInputType.big,
         rightIcon = null,
         onRightTap = null,
-        onEnter = null;
+        onEnter = null,
+        onDone = null;
 
   const BBTextInput.bigWithIcon({
     required this.onChanged,
@@ -44,7 +46,8 @@ class BBTextInput extends StatefulWidget {
     this.hint,
     this.controller,
   })  : type = _TextInputType.bigWithIcon,
-        onEnter = null;
+        onEnter = null,
+        onDone = null;
 
   const BBTextInput.small({
     required this.onChanged,
@@ -54,6 +57,7 @@ class BBTextInput extends StatefulWidget {
     this.hint,
     this.controller,
     this.onEnter,
+    this.onDone,
   })  : type = _TextInputType.small,
         rightIcon = null,
         onRightTap = null;
@@ -69,6 +73,7 @@ class BBTextInput extends StatefulWidget {
   final bool disabled;
   final FocusNode? focusNode;
   final Function? onEnter;
+  final Function(String)? onDone;
 
   @override
   State<BBTextInput> createState() => _BBTextInputState();
@@ -198,6 +203,8 @@ class _BBTextInputState extends State<BBTextInput> {
             enabled: !widget.disabled,
             onChanged: widget.onChanged,
             controller: _editingController,
+            onSubmitted: (value) => widget.onDone?.call(value),
+            // widget.onDone != null ? widget.onDone!(value) : null,
             onTap: () => widget.onEnter!(),
             enableIMEPersonalizedLearning: false,
             decoration: InputDecoration(
