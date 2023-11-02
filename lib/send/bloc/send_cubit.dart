@@ -171,12 +171,12 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void updateCurrency(String currency) {
-    emit(state.copyWith(amount: 0, fiatAmt: 0));
+    // emit(state.copyWith(amount: 0, fiatAmt: 0));
     final currencies = state.updatedCurrencyList();
     final selectedCurrency =
         currencies.firstWhere((element) => element.name.toLowerCase() == currency);
 
-    if (currency == 'btc' || currency == 'sats') {
+    if (currency == 'btc' || currency == 'sats')
       emit(
         state.copyWith(
           fiatSelected: false,
@@ -185,18 +185,35 @@ class SendCubit extends Cubit<SendState> {
           tempAmount: '',
         ),
       );
-      return;
-    }
+    else
+      emit(
+        state.copyWith(
+          fiatSelected: true,
+          selectedCurrency: selectedCurrency,
+          isSats: false,
+          tempAmount: '',
+        ),
+      );
+    _convertAmtOnCurrencyChange();
+    // _updateShowSend();
+  }
 
-    emit(
-      state.copyWith(
-        fiatSelected: true,
-        selectedCurrency: selectedCurrency,
-        isSats: false,
-        tempAmount: '',
-      ),
-    );
-    _updateShowSend();
+  void _convertAmtOnCurrencyChange() async {
+    await Future.delayed(300.ms);
+    final satsAmt = state.amount;
+    String amt = '';
+    if (state.fiatSelected) {
+      final currency = state.selectedCurrency ?? settingsCubit.state.currency;
+      final fiatAmt = currency!.price! * (satsAmt / 100000000);
+      amt = fiatAmt.toStringAsFixed(2);
+    } else {
+      if (state.isSats)
+        amt = satsAmt.toString();
+      else
+        amt = (satsAmt / 100000000).toStringAsFixed(8);
+    }
+    emit(state.copyWith(tempAmount: amt));
+    updateAmount(amt);
   }
 
   void _btcToCurrentTempAmount(double btcAmt) {
