@@ -270,12 +270,13 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                     focusNode: widget.focusNode,
                     controller: controller,
                     onDone: (value) {
-                      if (suggestions.contains(value)) {
-                        context.read<ImportWalletCubit>().wordChanged12(widget.index, value, true);
-                        hideOverlay();
-                        widget.returnClicked(widget.index);
-                      } else
-                        context.read<ImportWalletCubit>().clearUntappedWords();
+                      if (suggestions.isEmpty) return;
+                      final firstSuggestion = suggestions.first;
+                      context
+                          .read<ImportWalletCubit>()
+                          .wordChanged24(widget.index, firstSuggestion, true);
+                      hideOverlay();
+                      widget.returnClicked(widget.index);
                     },
                     onEnter: () {
                       context.read<ImportWalletCubit>().clearUntappedWords();
