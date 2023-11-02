@@ -23,7 +23,7 @@ class _EnterAmountState extends State<EnterAmount> {
     final _ = context.select((SendCubit cubit) => cubit.state.selectedCurrency);
 
     final sendAll = context.select((SendCubit cubit) => cubit.state.sendAllCoin);
-    if (sendAll) return const SizedBox.shrink();
+    // if (sendAll) return const SizedBox.shrink();
     final isSats = context.select((SendCubit cubit) => cubit.state.isSats);
 
     final fiatSelected = context.select((SendCubit cubit) => cubit.state.fiatSelected);
@@ -48,60 +48,65 @@ class _EnterAmountState extends State<EnterAmount> {
       children: [
         const BBText.title('    Amount'),
         const Gap(4),
-        IgnorePointer(
-          ignoring: sendAll,
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: sendAll ? 0.5 : 1,
-            child: Stack(
-              children: [
-                Focus(
-                  focusNode: _focusNode,
-                  child: BBAmountInput(
-                    disabled: sendAll,
-                    value: tempAmt,
-                    hint: 'Enter amount',
-                    // onRightTap: () {
-                    //   // context.read<SettingsCubit>().toggleUnitsInSats();
-                    // },
-                    isSats: isSats,
-                    btcFormatting: !isSats && !fiatSelected,
-                    onChanged: (txt) {
-                      // final aLen = amountStr.length;
-                      // final tLen = txt.length;
+        if (sendAll) ...[
+          const Gap(4),
+          const BBText.bodySmall('    Entire balance will be sent'),
+          const Gap(4),
+        ] else
+          IgnorePointer(
+            ignoring: sendAll,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 300),
+              opacity: sendAll ? 0.5 : 1,
+              child: Stack(
+                children: [
+                  Focus(
+                    focusNode: _focusNode,
+                    child: BBAmountInput(
+                      disabled: sendAll,
+                      value: tempAmt,
+                      hint: 'Enter amount',
+                      // onRightTap: () {
+                      //   // context.read<SettingsCubit>().toggleUnitsInSats();
+                      // },
+                      isSats: isSats,
+                      btcFormatting: !isSats && !fiatSelected,
+                      onChanged: (txt) {
+                        // final aLen = amountStr.length;
+                        // final tLen = txt.length;
 
-                      // print('\n\n');
-                      // print('||--- $txt');
+                        // print('\n\n');
+                        // print('||--- $txt');
 
-                      // if ((tLen - aLen) > 1 || (aLen - tLen) > 1) {
-                      //   return;
-                      // }
+                        // if ((tLen - aLen) > 1 || (aLen - tLen) > 1) {
+                        //   return;
+                        // }
 
-                      // var clean = txt.replaceAll(',', '');
-                      // if (isSats)
-                      //   clean = clean.replaceAll('.', '');
-                      // else if (!txt.contains('.')) {
-                      //   return;
-                      // }
-                      // final amt = context.read<SettingsCubit>().state.getSatsAmount(clean);
-                      // print('----- $amt');
+                        // var clean = txt.replaceAll(',', '');
+                        // if (isSats)
+                        //   clean = clean.replaceAll('.', '');
+                        // else if (!txt.contains('.')) {
+                        //   return;
+                        // }
+                        // final amt = context.read<SettingsCubit>().state.getSatsAmount(clean);
+                        // print('----- $amt');
 
-                      context.read<SendCubit>().updateAmount(txt);
-                    },
+                        context.read<SendCubit>().updateAmount(txt);
+                      },
+                    ),
                   ),
-                ),
-                const CenterRight(
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 16),
-                    child: CurrencyDropDown(),
+                  const CenterRight(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 16),
+                      child: CurrencyDropDown(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
         const Gap(4),
-        const ConversionAmt(),
+        if (!sendAll) const ConversionAmt(),
       ],
     );
   }

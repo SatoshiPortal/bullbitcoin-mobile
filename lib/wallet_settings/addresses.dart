@@ -47,6 +47,8 @@ class AddressesScreen extends HookWidget {
     var addresses = context.select((WalletBloc cubit) => cubit.state.wallet!.myAddressBook);
     print('');
     addresses = addresses.toList()..sort((a, b) => (b.index ?? 0).compareTo(a.index ?? 0));
+    final recieveEmpty = addresses.where((element) => element.kind == AddressKind.deposit).isEmpty;
+    final changeEmpty = addresses.where((element) => element.kind == AddressKind.change).isEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -86,6 +88,14 @@ class AddressesScreen extends HookWidget {
           ),
           const Gap(32),
           if (selectedOption.value == 0) ...[
+            if (recieveEmpty) ...[
+              const Gap(16),
+              const BBText.title(
+                'No addresses yet',
+                textAlign: TextAlign.center,
+              ),
+              const Gap(8),
+            ],
             if (addresses
                 .where(
                   (element) =>
@@ -135,6 +145,14 @@ class AddressesScreen extends HookWidget {
               const Gap(16),
             ],
           ] else ...[
+            if (changeEmpty) ...[
+              const Gap(16),
+              const BBText.title(
+                'No addresses yet',
+                textAlign: TextAlign.center,
+              ),
+              const Gap(8),
+            ],
             if (addresses
                 .where(
                   (element) =>
