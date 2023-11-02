@@ -59,11 +59,11 @@ void main() {
 //   return words.indexOf(word, position);
 // }
 
-int idxOf(List<String> words, String word, {int start = 0}) {
-// use forloop
+// int idxOf(List<String> words, String word, {int start = 0}) {
+// // use forloop
 
-  for (var i = start; i < words.length; i++) {
-    if (words[i] == word) return i;
-  }
-  return -1;
-}
+//   for (var i = start; i < words.length; i++) {
+//     if (words[i] == word) return i;
+//   }
+//   return -1;
+// }

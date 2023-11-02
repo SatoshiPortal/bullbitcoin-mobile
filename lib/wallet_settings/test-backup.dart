@@ -28,17 +28,22 @@ class TestBackupPage extends StatelessWidget {
         BlocProvider.value(value: walletBloc),
         BlocProvider.value(value: walletSettings),
       ],
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          flexibleSpace: BBAppBar(
-            text: 'Test Backup',
-            onBack: () {
-              context.pop();
-            },
-          ),
-        ),
-        body: const TestBackupScreen(),
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              flexibleSpace: BBAppBar(
+                text: 'Test Backup',
+                onBack: () {
+                  context.pop();
+                  context.read<WalletSettingsCubit>().resetBackupTested();
+                },
+              ),
+            ),
+            body: const TestBackupScreen(),
+          );
+        },
       ),
     );
   }
@@ -49,63 +54,65 @@ class TestBackupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mnemonic = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.mnemonic,
-    );
+    final mnemonic = context.select((WalletSettingsCubit cubit) => cubit.state.mnemonic);
+    final tested = context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Gap(16),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: BBText.bodySmall(
-                'Your seed words are displayed below in a randomized order. Tap on the words in the correct sequence to prove you’ve done your backup correctly.',
+            if (!tested) ...[
+              const Gap(16),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: BBText.bodySmall(
+                  'Your seed words are displayed below in a randomized order. Tap on the words in the correct sequence to prove you’ve done your backup correctly.',
+                ),
               ),
-            ),
-            // const Gap(4),
-            // Padding(
-            //   padding: const EdgeInsets.only(left: 16.0),
-            //   child: CenterLeft(
-            //     child: BBButton.text(
-            //       label: 'Reset Order',
-            //       onPressed: () => context.read<WalletSettingsCubit>().loadBackupClicked(),
-            //     ),
-            //   ),
-            // ),
-            const Gap(32),
-            if (mnemonic.length == 12)
-              for (var i = 0; i < 6; i++)
-                Row(
-                  children: [
-                    for (var j = 0; j < 2; j++)
-                      BackupTestItemWord(
-                        index: i == 0 ? j : i * 2 + j,
-                        // isSelected: context
-                        //     .select<WalletSettingsCubit>()
-                        //     .state
-                        //     .shuffleIsSelected(i == 0 ? j : i * 2 + j),
-                      ),
-                  ],
-                ),
-            if (mnemonic.length == 24)
-              for (var i = 0; i < 12; i++)
-                Row(
-                  children: [
-                    for (var j = 0; j < 2; j++)
-                      BackupTestItemWord(
-                        index: i == 0 ? j : i * 2 + j,
-                        // isSelected: context
-                        //     .select<WalletSettingsCubit>()
-                        //     .state
-                        //     .shuffleIsSelected(i == 0 ? j : i * 2 + j),
-                      ),
-                  ],
-                ),
-            const Gap(16),
-            const TestBackupPassField(),
+              // const Gap(4),
+              // Padding(
+              //   padding: const EdgeInsets.only(left: 16.0),
+              //   child: CenterLeft(
+              //     child: BBButton.text(
+              //       label: 'Reset Order',
+              //       onPressed: () => context.read<WalletSettingsCubit>().loadBackupClicked(),
+              //     ),
+              //   ),
+              // ),
+              const Gap(32),
+              if (mnemonic.length == 12)
+                for (var i = 0; i < 6; i++)
+                  Row(
+                    children: [
+                      for (var j = 0; j < 2; j++)
+                        BackupTestItemWord(
+                          index: i == 0 ? j : i * 2 + j,
+                          // isSelected: context
+                          //     .select<WalletSettingsCubit>()
+                          //     .state
+                          //     .shuffleIsSelected(i == 0 ? j : i * 2 + j),
+                        ),
+                    ],
+                  ),
+              if (mnemonic.length == 24)
+                for (var i = 0; i < 12; i++)
+                  Row(
+                    children: [
+                      for (var j = 0; j < 2; j++)
+                        BackupTestItemWord(
+                          index: i == 0 ? j : i * 2 + j,
+                          // isSelected: context
+                          //     .select<WalletSettingsCubit>()
+                          //     .state
+                          //     .shuffleIsSelected(i == 0 ? j : i * 2 + j),
+                        ),
+                    ],
+                  ),
+              const Gap(16),
+              const TestBackupPassField(),
+            ],
             const Gap(48),
 
             const TestBackupConfirmButton(),
@@ -280,8 +287,10 @@ class TestBackupConfirmButton extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Center(
-                child: const BBText.body(
-                  'Success! Your backup test worked.',
+                child: const BBText.titleLarge(
+                  'Success!\nYour backup test worked.',
+                  isBold: true,
+                  textAlign: TextAlign.center,
                 ).animate(delay: 300.ms).fadeIn(),
               ),
             ),

@@ -235,7 +235,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         }
         final int feeAmount = transaction!.fee ?? 0;
 
-        transaction ??= Transaction(txid: txid);
+        // transaction ??= Transaction(txid: txid);
         transaction = transaction.copyWith(
           fee: feeAmount,
           outAddrs: outAddrs,

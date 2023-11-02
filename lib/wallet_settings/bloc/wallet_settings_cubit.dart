@@ -296,6 +296,11 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     clearSensitive();
   }
 
+  void resetBackupTested() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    emit(state.copyWith(backupTested: false));
+  }
+
   void clearnMnemonic() {
     emit(
       state.copyWith(

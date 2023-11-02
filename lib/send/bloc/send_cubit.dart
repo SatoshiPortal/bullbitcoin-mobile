@@ -201,20 +201,17 @@ class SendCubit extends Cubit<SendState> {
 
   void _btcToCurrentTempAmount(double btcAmt) {
     String amt = '';
-
     if (state.fiatSelected) {
       final currency = state.selectedCurrency ?? settingsCubit.state.currency;
       final fiatAmt = currency!.price! * btcAmt;
       amt = fiatAmt.toStringAsFixed(2);
-      emit(state.copyWith(tempAmount: amt));
     } else {
       if (state.isSats)
         amt = (btcAmt * 100000000).toStringAsFixed(0);
       else
         amt = btcAmt.toString();
-      emit(state.copyWith(tempAmount: amt));
     }
-
+    emit(state.copyWith(tempAmount: amt));
     updateAmount(amt);
   }
 
