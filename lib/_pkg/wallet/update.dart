@@ -15,7 +15,7 @@ class WalletUpdate {
     if (existingAddressIndex != -1) {
       final updatedAddress = addressList[existingAddressIndex].copyWith(
         state: address.state,
-        label: address.label,
+        label: addressList[existingAddressIndex].label ?? address.label,
       );
       addressList[existingAddressIndex] = updatedAddress;
     } else {

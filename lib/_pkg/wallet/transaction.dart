@@ -28,9 +28,6 @@ class WalletTx {
     return tx.copyWith(outAddrs: outAddrs);
   }
 
-  //
-  // THIS NEEDS WORK
-  //
   Future<(Wallet, Err?)> addUnsignedTxToWallet({
     required Transaction transaction,
     required Wallet wallet,
@@ -59,6 +56,9 @@ class WalletTx {
     }
   }
 
+  //
+  // THIS NEEDS WORK
+  //
   Future<(Wallet?, Err?)> getTransactions({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
