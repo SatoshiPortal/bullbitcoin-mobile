@@ -381,7 +381,7 @@ class WalletTx {
         sent: txDetails.sent,
         fee: feeAmt ?? 0,
         height: txDetails.confirmationTime?.height,
-        timestamp: txDetails.confirmationTime?.timestamp,
+        timestamp: txDetails.confirmationTime?.timestamp ?? DateTime.now().microsecondsSinceEpoch,
         label: note,
         toAddress: address,
         outAddrs: outAddrs,

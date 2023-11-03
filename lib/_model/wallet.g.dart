@@ -6,7 +6,7 @@ part of 'wallet.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
+_$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
       id: json['id'] as String? ?? '',
       externalPublicDescriptor:
           json['externalPublicDescriptor'] as String? ?? '',
@@ -52,7 +52,8 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
       hide: json['hide'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
+Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'externalPublicDescriptor': instance.externalPublicDescriptor,
       'internalPublicDescriptor': instance.internalPublicDescriptor,

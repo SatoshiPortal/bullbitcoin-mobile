@@ -155,7 +155,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           }
         }
 
-        transaction ??= Transaction(txid: txid);
+        transaction ??= Transaction(txid: txid, timestamp: DateTime.now().microsecondsSinceEpoch);
         transaction = transaction.copyWith(
           fee: feeAmount,
           outAddrs: outAddrs,

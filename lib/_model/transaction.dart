@@ -11,12 +11,12 @@ part 'transaction.g.dart';
 @freezed
 class Transaction with _$Transaction {
   const factory Transaction({
+    required int timestamp,
     required String txid,
     int? received,
     int? sent,
     int? fee,
     int? height,
-    int? timestamp,
     String? label,
     String? toAddress,
     String? psbt,
