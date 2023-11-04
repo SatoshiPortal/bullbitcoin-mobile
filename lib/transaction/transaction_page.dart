@@ -21,6 +21,7 @@ import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
@@ -59,6 +60,7 @@ class TxPage extends StatelessWidget {
       walletSensRepository: locator<WalletSensitiveRepository>(),
       walletAddress: locator<WalletAddress>(),
       settingsCubit: locator<SettingsCubit>(),
+      networkCubit: locator<NetworkCubit>(),
     );
     return MultiBlocProvider(
       providers: [
@@ -186,7 +188,7 @@ class _Screen extends StatelessWidget {
                     const Gap(4),
                     InkWell(
                       onTap: () {
-                        final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
+                        final url = context.read<NetworkCubit>().state.explorerTxUrl(txid);
                         locator<Launcher>().launchApp(url);
                       },
                       child: BBText.body(txid, isBlue: true),
@@ -198,7 +200,7 @@ class _Screen extends StatelessWidget {
                       InkWell(
                         onTap: () {
                           final url = context
-                              .read<SettingsCubit>()
+                              .read<NetworkCubit>()
                               .state
                               .explorerAddressUrl(recipientAddress.address);
                           locator<Launcher>().launchApp(url);

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/_pkg/deep_link.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/material.dart';
 
 class DeepLinker extends StatefulWidget {
@@ -31,7 +31,8 @@ class _DeepLinkerState extends State<DeepLinker> {
     final homeCubit = locator<HomeCubit>();
     final err = await locator<DeepLink>().handleUri(
       link: link,
-      settingsCubit: locator<SettingsCubit>(),
+      // settingsCubit: locator<SettingsCubit>(),
+      networkCubit: locator<NetworkCubit>(),
       homeCubit: homeCubit,
       context: context,
     );

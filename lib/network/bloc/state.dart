@@ -1,10 +1,12 @@
 // ignore_for_file: invalid_annotation_target
 
+import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/electrum.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:intl/intl.dart';
 
 part 'state.freezed.dart';
 part 'state.g.dart';
@@ -71,5 +73,21 @@ class NetworkState with _$NetworkState {
       default:
         return null;
     }
+  }
+
+  String calculatePrice(int sats, Currency? currency) {
+    if (currency == null) return '';
+    if (testnet) return currency.getSymbol() + '0';
+    return currency.getSymbol() +
+        fiatFormatting(
+          (sats / 100000000 * currency.price!).toStringAsFixed(2),
+        );
+  }
+
+  String fiatFormatting(String fiatAmount) {
+    final currency = NumberFormat('#,##0.00', 'en_US');
+    return currency.format(
+      double.parse(fiatAmount),
+    );
   }
 }

@@ -14,6 +14,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -38,6 +39,7 @@ class SendCubit extends Cubit<SendState> {
     required this.walletSensCreate,
     required this.mempoolAPI,
     required this.fileStorage,
+    required this.networkCubit,
   }) : super(const SendState()) {
     setupFees();
     loadFees();
@@ -55,8 +57,8 @@ class SendCubit extends Cubit<SendState> {
   final WalletSensitiveTx walletSensTx;
   final WalletRepository walletRepository;
   final WalletSensitiveRepository walletSensRepository;
-
   final WalletCreate walletCreate;
+  final NetworkCubit networkCubit;
 
   final WalletSensitiveCreate walletSensCreate;
   final MempoolAPI mempoolAPI;
@@ -75,7 +77,7 @@ class SendCubit extends Cubit<SendState> {
 
   void loadFees() async {
     emit(state.copyWith(loadingFees: true));
-    final isTestnet = settingsCubit.state.testnet;
+    final isTestnet = networkCubit.state.testnet;
     final (fees, err) = await mempoolAPI.getFees(isTestnet);
     if (err != null) {
       emit(
@@ -545,7 +547,7 @@ class SendCubit extends Cubit<SendState> {
 
     final (wtxid, err) = await walletTx.broadcastTxWithWallet(
       psbt: state.psbtSigned!,
-      blockchain: settingsCubit.state.blockchain!,
+      blockchain: networkCubit.state.blockchain!,
       wallet: walletBloc.state.wallet!,
       address: state.address,
       note: state.note,

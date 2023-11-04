@@ -1,9 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/electrum.dart';
-import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/consts/configs.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 
@@ -23,24 +20,14 @@ class SettingsState with _$SettingsState {
     @Default(false) bool loadingCurrency,
     @Default('') String errLoadingCurrency,
     //
+    @Default(20) int reloadWalletTimer,
+
+    //
     String? language,
     List<String>? languageList,
     @Default(false) bool loadingLanguage,
     @Default('') String errLoadingLanguage,
-    //
-    @Default(false) bool testnet,
-    @JsonKey(
-      includeFromJson: false,
-      includeToJson: false,
-    )
-    bdk.Blockchain? blockchain,
-    @Default(20) int reloadWalletTimer,
-    @Default([]) List<ElectrumNetwork> networks,
-    @Default(ElectrumTypes.bullbitcoin) ElectrumTypes selectedNetwork,
-    @Default(false) bool loadingNetworks,
-    @Default('') String errLoadingNetworks,
-    @Default(false) bool networkConnected,
-    @Default(20) int stopGap,
+
     //
     int? fees,
     List<int>? feesList,
@@ -51,23 +38,12 @@ class SettingsState with _$SettingsState {
     //
     @Default(false) bool loadingFees,
     @Default('') String errLoadingFees,
-    ElectrumTypes? tempNetwork,
+    // ElectrumTypes? tempNetwork,
     @Default(true) bool defaultRBF,
   }) = _SettingsState;
   const SettingsState._();
 
   factory SettingsState.fromJson(Map<String, dynamic> json) => _$SettingsStateFromJson(json);
-
-  ElectrumNetwork? getNetwork() {
-    if (networks.isEmpty) return null;
-    return networks.firstWhere((_) => _.type == selectedNetwork);
-  }
-
-  ElectrumNetwork? getTempOrSelectedNetwork() {
-    if (networks.isEmpty) return null;
-    if (tempNetwork == null) return getNetwork();
-    return networks.firstWhere((_) => _.type == tempNetwork);
-  }
 
   String satsFormatting(String satsAmount) {
     final currency = NumberFormat('#,##0', 'en_US');
@@ -127,13 +103,6 @@ class SettingsState with _$SettingsState {
     return amt;
   }
 
-  String calculatePrice(int sats) {
-    if (currency == null) return '';
-    if (testnet) return currency!.getSymbol() + '0';
-    return currency!.getSymbol() +
-        fiatFormatting((sats / 100000000 * currency!.price!).toStringAsFixed(2));
-  }
-
   String getUnitString() {
     if (unitsInSats) return 'sats';
     return 'BTC';
@@ -144,22 +113,22 @@ class SettingsState with _$SettingsState {
     return ((double.tryParse(amount) ?? 0) * 100000000).toInt();
   }
 
-  bdk.Network getBdkNetwork() {
-    if (testnet) return bdk.Network.Testnet;
-    return bdk.Network.Bitcoin;
-  }
+  // bdk.Network getBdkNetwork() {
+  //   if (testnet) return bdk.Network.Testnet;
+  //   return bdk.Network.Bitcoin;
+  // }
 
-  BBNetwork getBBNetwork() {
-    if (testnet) return BBNetwork.Testnet;
-    return BBNetwork.Mainnet;
-  }
+  // BBNetwork getBBNetwork() {
+  //   if (testnet) return BBNetwork.Testnet;
+  //   return BBNetwork.Mainnet;
+  // }
 
-  String explorerTxUrl(String txid) =>
-      testnet ? 'https://$mempoolapi/testnet/tx/$txid' : 'https://$mempoolapi/tx/$txid';
+  // String explorerTxUrl(String txid) =>
+  //     testnet ? 'https://$mempoolapi/testnet/tx/$txid' : 'https://$mempoolapi/tx/$txid';
 
-  String explorerAddressUrl(String address) => testnet
-      ? 'https://$mempoolapi/testnet/address/$address'
-      : 'https://$mempoolapi/address/$address';
+  // String explorerAddressUrl(String address) => testnet
+  //     ? 'https://$mempoolapi/testnet/address/$address'
+  //     : 'https://$mempoolapi/address/$address';
 
   String feeButtonText() {
     var str = '';

@@ -12,6 +12,7 @@ import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/address/bloc/address_cubit.dart';
 import 'package:bb_mobile/address/bloc/address_state.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -143,7 +144,7 @@ class AddressQR extends StatelessWidget {
   Widget build(BuildContext context) {
     final address = context.select((AddressCubit cubit) => cubit.state.address!);
     final url = context.select(
-      (SettingsCubit _) => _.state.explorerAddressUrl(address.address),
+      (NetworkCubit _) => _.state.explorerAddressUrl(address.address),
     );
 
     return Column(

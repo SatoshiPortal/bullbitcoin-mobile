@@ -8,6 +8,7 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/receive/wallet_select.dart';
@@ -44,6 +45,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
       hiveStorage: locator<HiveStorage>(),
       walletRepository: locator<WalletRepository>(),
       settingsCubit: locator<SettingsCubit>(),
+      networkCubit: locator<NetworkCubit>(),
     );
 
     super.initState();

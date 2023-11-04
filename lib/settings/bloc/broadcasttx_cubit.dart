@@ -5,8 +5,8 @@ import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,18 +15,18 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   BroadcastTxCubit({
     required this.barcode,
     required this.filePicker,
-    required this.settingsCubit,
     required this.fileStorage,
     required this.walletTx,
     required this.homeCubit,
+    required this.networkCubit,
   }) : super(const BroadcastTxState());
 
   final FilePick filePicker;
-  final SettingsCubit settingsCubit;
   final Barcode barcode;
   final FileStorage fileStorage;
   final WalletTx walletTx;
   final HomeCubit homeCubit;
+  final NetworkCubit networkCubit;
 
   void txChanged(String tx) {
     emit(state.copyWith(tx: tx));
@@ -120,7 +120,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           totalAmount += outpoint.value;
           final addressStruct = await bdk.Address.fromScript(
             outpoint.scriptPubkey,
-            settingsCubit.state.getBdkNetwork(),
+            networkCubit.state.getBdkNetwork(),
           );
           if (transaction != null) {
             try {
@@ -199,7 +199,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           totalAmount += outpoint.value;
           final addressStruct = await bdk.Address.fromScript(
             outpoint.scriptPubkey,
-            settingsCubit.state.getBdkNetwork(),
+            networkCubit.state.getBdkNetwork(),
           );
           if (transaction != null) {
             try {
@@ -302,7 +302,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     );
     final tx = state.tx;
     final bdkTx = await bdk.Transaction.create(transactionBytes: hex.decode(tx));
-    final blockchain = settingsCubit.state.blockchain;
+    final blockchain = networkCubit.state.blockchain;
     if (blockchain == null) {
       emit(
         state.copyWith(

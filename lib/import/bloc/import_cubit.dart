@@ -14,6 +14,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,6 +30,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required this.secureStorage,
     required this.walletRepository,
     required this.walletSensRepository,
+    required this.networkCubit,
   }) : super(
           const ImportState(
               // words: [
@@ -51,8 +53,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
   final WalletRepository walletRepository;
-
   final WalletSensitiveRepository walletSensRepository;
+  final NetworkCubit networkCubit;
 
   void backClicked() {
     switch (state.importStep) {
@@ -436,7 +438,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       final type = state.importType;
 
       final wallets = <Wallet>[];
-      final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+      final network = networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 
       switch (type) {
         case ImportTypes.words12:
@@ -536,7 +538,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
     emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
 
-    final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final network = networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 
     if (selectedWallet.type == BBWalletType.words) {
       final mnemonic = (state.importType == ImportTypes.words12)

@@ -12,6 +12,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -35,6 +36,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.walletUpdate,
     required this.mempoolAPI,
     required this.settingsCubit,
+    required this.networkCubit,
   }) : super(TransactionState(tx: tx)) {
     if (tx.isReceived())
       loadReceiveLabel();
@@ -62,6 +64,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   final WalletSensitiveCreate walletSensCreate;
   final SettingsCubit settingsCubit;
+  final NetworkCubit networkCubit;
 
   void loadTx() async {
     emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));
@@ -248,7 +251,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(sendingTx: true, errSendingTx: ''));
     final tx = state.updatedTx!;
     final wallet = walletBloc.state.wallet!;
-    final blockchain = settingsCubit.state.blockchain!;
+    final blockchain = networkCubit.state.blockchain!;
     final (wtxid, err) = await walletTx.broadcastTxWithWallet(
       psbt: tx.psbt!,
       address: tx.toAddress!,

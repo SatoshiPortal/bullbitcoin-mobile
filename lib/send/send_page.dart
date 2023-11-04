@@ -16,6 +16,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/send/advanced.dart';
 import 'package:bb_mobile/send/amount.dart';
@@ -67,6 +68,7 @@ class SendScreen extends StatelessWidget {
       fileStorage: locator<FileStorage>(),
       walletRepository: locator<WalletRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
+      networkCubit: locator<NetworkCubit>(),
     );
 
     // if (deepLinkUri != null) sendCubit.updateAddress(deepLinkUri!);
@@ -405,10 +407,15 @@ class TxDetailsScreen extends StatelessWidget {
     final address = context.select((SendCubit cubit) => cubit.state.address);
     final amount = context.select((SendCubit cubit) => cubit.state.amount);
     final amtStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(amount));
-    final amtFiat = context.select((SettingsCubit cubit) => cubit.state.calculatePrice(amount));
     final fee = context.select((SendCubit cubit) => cubit.state.psbtSignedFeeAmount ?? 0);
     final feeStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(fee));
-    final feeFiat = context.select((SettingsCubit cubit) => cubit.state.calculatePrice(fee));
+
+    final currency = context.select((SettingsCubit _) => _.state.currency);
+    final amtFiat =
+        context.select((NetworkCubit cubit) => cubit.state.calculatePrice(amount, currency));
+    final feeFiat =
+        context.select((NetworkCubit cubit) => cubit.state.calculatePrice(fee, currency));
+
     final fiatCurrency =
         context.select((SettingsCubit cubit) => cubit.state.currency?.shortName ?? '');
 
@@ -488,7 +495,7 @@ class TxSuccess extends StatelessWidget {
             const Gap(15),
             InkWell(
               onTap: () {
-                final url = context.read<SettingsCubit>().state.explorerTxUrl(txid);
+                final url = context.read<NetworkCubit>().state.explorerTxUrl(txid);
                 locator<Launcher>().launchApp(url);
               },
               child: const BBText.body(

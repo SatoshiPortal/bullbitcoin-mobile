@@ -10,6 +10,7 @@ import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -30,7 +31,8 @@ class BroadcastPage extends StatelessWidget {
     final broadcast = BroadcastTxCubit(
       barcode: locator<Barcode>(),
       filePicker: locator<FilePick>(),
-      settingsCubit: locator<SettingsCubit>(),
+      // settingsCubit: locator<SettingsCubit>(),
+      networkCubit: locator<NetworkCubit>(),
       fileStorage: locator<FileStorage>(),
       walletTx: locator<WalletTx>(),
       homeCubit: locator<HomeCubit>(),
@@ -74,7 +76,8 @@ class BroadcastPopUp extends StatelessWidget {
     final broadcast = BroadcastTxCubit(
       barcode: locator<Barcode>(),
       filePicker: locator<FilePick>(),
-      settingsCubit: locator<SettingsCubit>(),
+      // settingsCubit: locator<SettingsCubit>(),
+      networkCubit: locator<NetworkCubit>(),
       fileStorage: locator<FileStorage>(),
       walletTx: locator<WalletTx>(),
       homeCubit: locator<HomeCubit>(),

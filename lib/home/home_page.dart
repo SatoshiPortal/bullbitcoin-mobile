@@ -17,6 +17,7 @@ import 'package:bb_mobile/_ui/wallet_txs.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 // import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -95,6 +96,7 @@ class HomeWallets extends StatelessWidget {
           walletBalance: locator<WalletBalance>(),
           walletAddress: locator<WalletAddress>(),
           walletUpdate: locator<WalletUpdate>(),
+          networkCubit: locator<NetworkCubit>(),
         ),
     ];
     return walletCubits;
@@ -115,7 +117,7 @@ class HomeWallets extends StatelessWidget {
       context.read<HomeCubit>().updateWalletBlocs(walletBlocs);
     }
 
-    final network = context.select((SettingsCubit x) => x.state.getBBNetwork());
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final walletsFromNetwork =
         context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
     if (walletsFromNetwork.isEmpty) return const HomeNoWallets().animate().fadeIn();
@@ -135,7 +137,7 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final network = context.select((SettingsCubit x) => x.state.getBBNetwork());
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     // final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
     // final walletCubits = context.select((HomeCubit _) => _.state.walletBlocs ?? []);
     final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
@@ -214,7 +216,7 @@ class _HomeHeaderCardsState extends State<HomeHeaderCards> {
 
   @override
   Widget build(BuildContext context) {
-    final network = context.select((SettingsCubit x) => x.state.getBBNetwork());
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
 
     // if (walletCubits.isEmpty) return const SizedBox.shrink();

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 // import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -78,7 +79,7 @@ class WalletCardDetails extends StatelessWidget {
     final unit = context.select((SettingsCubit x) => x.state.getUnitString());
 
     final currency = context.select((SettingsCubit x) => x.state.currency);
-    final fiatAmt = context.select((SettingsCubit x) => x.state.calculatePrice(sats));
+    final fiatAmt = context.select((NetworkCubit x) => x.state.calculatePrice(sats, currency));
 
     return DecoratedBox(
       decoration: BoxDecoration(

@@ -28,20 +28,11 @@ mixin _$SettingsState {
   DateTime? get lastUpdatedCurrency => throw _privateConstructorUsedError;
   bool get loadingCurrency => throw _privateConstructorUsedError;
   String get errLoadingCurrency => throw _privateConstructorUsedError; //
+  int get reloadWalletTimer => throw _privateConstructorUsedError; //
   String? get language => throw _privateConstructorUsedError;
   List<String>? get languageList => throw _privateConstructorUsedError;
   bool get loadingLanguage => throw _privateConstructorUsedError;
   String get errLoadingLanguage => throw _privateConstructorUsedError; //
-  bool get testnet => throw _privateConstructorUsedError;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  bdk.Blockchain? get blockchain => throw _privateConstructorUsedError;
-  int get reloadWalletTimer => throw _privateConstructorUsedError;
-  List<ElectrumNetwork> get networks => throw _privateConstructorUsedError;
-  ElectrumTypes get selectedNetwork => throw _privateConstructorUsedError;
-  bool get loadingNetworks => throw _privateConstructorUsedError;
-  String get errLoadingNetworks => throw _privateConstructorUsedError;
-  bool get networkConnected => throw _privateConstructorUsedError;
-  int get stopGap => throw _privateConstructorUsedError; //
   int? get fees => throw _privateConstructorUsedError;
   List<int>? get feesList => throw _privateConstructorUsedError;
   int get selectedFeesOption => throw _privateConstructorUsedError;
@@ -49,8 +40,8 @@ mixin _$SettingsState {
   int? get tempSelectedFeesOption => throw _privateConstructorUsedError;
   bool get feesSaved => throw _privateConstructorUsedError; //
   bool get loadingFees => throw _privateConstructorUsedError;
-  String get errLoadingFees => throw _privateConstructorUsedError;
-  ElectrumTypes? get tempNetwork => throw _privateConstructorUsedError;
+  String get errLoadingFees =>
+      throw _privateConstructorUsedError; // ElectrumTypes? tempNetwork,
   bool get defaultRBF => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -74,20 +65,11 @@ abstract class $SettingsStateCopyWith<$Res> {
       DateTime? lastUpdatedCurrency,
       bool loadingCurrency,
       String errLoadingCurrency,
+      int reloadWalletTimer,
       String? language,
       List<String>? languageList,
       bool loadingLanguage,
       String errLoadingLanguage,
-      bool testnet,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      bdk.Blockchain? blockchain,
-      int reloadWalletTimer,
-      List<ElectrumNetwork> networks,
-      ElectrumTypes selectedNetwork,
-      bool loadingNetworks,
-      String errLoadingNetworks,
-      bool networkConnected,
-      int stopGap,
       int? fees,
       List<int>? feesList,
       int selectedFeesOption,
@@ -96,7 +78,6 @@ abstract class $SettingsStateCopyWith<$Res> {
       bool feesSaved,
       bool loadingFees,
       String errLoadingFees,
-      ElectrumTypes? tempNetwork,
       bool defaultRBF});
 
   $CurrencyCopyWith<$Res>? get currency;
@@ -123,19 +104,11 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? lastUpdatedCurrency = freezed,
     Object? loadingCurrency = null,
     Object? errLoadingCurrency = null,
+    Object? reloadWalletTimer = null,
     Object? language = freezed,
     Object? languageList = freezed,
     Object? loadingLanguage = null,
     Object? errLoadingLanguage = null,
-    Object? testnet = null,
-    Object? blockchain = freezed,
-    Object? reloadWalletTimer = null,
-    Object? networks = null,
-    Object? selectedNetwork = null,
-    Object? loadingNetworks = null,
-    Object? errLoadingNetworks = null,
-    Object? networkConnected = null,
-    Object? stopGap = null,
     Object? fees = freezed,
     Object? feesList = freezed,
     Object? selectedFeesOption = null,
@@ -144,7 +117,6 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? feesSaved = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
-    Object? tempNetwork = freezed,
     Object? defaultRBF = null,
   }) {
     return _then(_value.copyWith(
@@ -180,6 +152,10 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.errLoadingCurrency
           : errLoadingCurrency // ignore: cast_nullable_to_non_nullable
               as String,
+      reloadWalletTimer: null == reloadWalletTimer
+          ? _value.reloadWalletTimer
+          : reloadWalletTimer // ignore: cast_nullable_to_non_nullable
+              as int,
       language: freezed == language
           ? _value.language
           : language // ignore: cast_nullable_to_non_nullable
@@ -196,42 +172,6 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.errLoadingLanguage
           : errLoadingLanguage // ignore: cast_nullable_to_non_nullable
               as String,
-      testnet: null == testnet
-          ? _value.testnet
-          : testnet // ignore: cast_nullable_to_non_nullable
-              as bool,
-      blockchain: freezed == blockchain
-          ? _value.blockchain
-          : blockchain // ignore: cast_nullable_to_non_nullable
-              as bdk.Blockchain?,
-      reloadWalletTimer: null == reloadWalletTimer
-          ? _value.reloadWalletTimer
-          : reloadWalletTimer // ignore: cast_nullable_to_non_nullable
-              as int,
-      networks: null == networks
-          ? _value.networks
-          : networks // ignore: cast_nullable_to_non_nullable
-              as List<ElectrumNetwork>,
-      selectedNetwork: null == selectedNetwork
-          ? _value.selectedNetwork
-          : selectedNetwork // ignore: cast_nullable_to_non_nullable
-              as ElectrumTypes,
-      loadingNetworks: null == loadingNetworks
-          ? _value.loadingNetworks
-          : loadingNetworks // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errLoadingNetworks: null == errLoadingNetworks
-          ? _value.errLoadingNetworks
-          : errLoadingNetworks // ignore: cast_nullable_to_non_nullable
-              as String,
-      networkConnected: null == networkConnected
-          ? _value.networkConnected
-          : networkConnected // ignore: cast_nullable_to_non_nullable
-              as bool,
-      stopGap: null == stopGap
-          ? _value.stopGap
-          : stopGap // ignore: cast_nullable_to_non_nullable
-              as int,
       fees: freezed == fees
           ? _value.fees
           : fees // ignore: cast_nullable_to_non_nullable
@@ -264,10 +204,6 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.errLoadingFees
           : errLoadingFees // ignore: cast_nullable_to_non_nullable
               as String,
-      tempNetwork: freezed == tempNetwork
-          ? _value.tempNetwork
-          : tempNetwork // ignore: cast_nullable_to_non_nullable
-              as ElectrumTypes?,
       defaultRBF: null == defaultRBF
           ? _value.defaultRBF
           : defaultRBF // ignore: cast_nullable_to_non_nullable
@@ -305,20 +241,11 @@ abstract class _$$_SettingsStateCopyWith<$Res>
       DateTime? lastUpdatedCurrency,
       bool loadingCurrency,
       String errLoadingCurrency,
+      int reloadWalletTimer,
       String? language,
       List<String>? languageList,
       bool loadingLanguage,
       String errLoadingLanguage,
-      bool testnet,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      bdk.Blockchain? blockchain,
-      int reloadWalletTimer,
-      List<ElectrumNetwork> networks,
-      ElectrumTypes selectedNetwork,
-      bool loadingNetworks,
-      String errLoadingNetworks,
-      bool networkConnected,
-      int stopGap,
       int? fees,
       List<int>? feesList,
       int selectedFeesOption,
@@ -327,7 +254,6 @@ abstract class _$$_SettingsStateCopyWith<$Res>
       bool feesSaved,
       bool loadingFees,
       String errLoadingFees,
-      ElectrumTypes? tempNetwork,
       bool defaultRBF});
 
   @override
@@ -353,19 +279,11 @@ class __$$_SettingsStateCopyWithImpl<$Res>
     Object? lastUpdatedCurrency = freezed,
     Object? loadingCurrency = null,
     Object? errLoadingCurrency = null,
+    Object? reloadWalletTimer = null,
     Object? language = freezed,
     Object? languageList = freezed,
     Object? loadingLanguage = null,
     Object? errLoadingLanguage = null,
-    Object? testnet = null,
-    Object? blockchain = freezed,
-    Object? reloadWalletTimer = null,
-    Object? networks = null,
-    Object? selectedNetwork = null,
-    Object? loadingNetworks = null,
-    Object? errLoadingNetworks = null,
-    Object? networkConnected = null,
-    Object? stopGap = null,
     Object? fees = freezed,
     Object? feesList = freezed,
     Object? selectedFeesOption = null,
@@ -374,7 +292,6 @@ class __$$_SettingsStateCopyWithImpl<$Res>
     Object? feesSaved = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
-    Object? tempNetwork = freezed,
     Object? defaultRBF = null,
   }) {
     return _then(_$_SettingsState(
@@ -410,6 +327,10 @@ class __$$_SettingsStateCopyWithImpl<$Res>
           ? _value.errLoadingCurrency
           : errLoadingCurrency // ignore: cast_nullable_to_non_nullable
               as String,
+      reloadWalletTimer: null == reloadWalletTimer
+          ? _value.reloadWalletTimer
+          : reloadWalletTimer // ignore: cast_nullable_to_non_nullable
+              as int,
       language: freezed == language
           ? _value.language
           : language // ignore: cast_nullable_to_non_nullable
@@ -426,42 +347,6 @@ class __$$_SettingsStateCopyWithImpl<$Res>
           ? _value.errLoadingLanguage
           : errLoadingLanguage // ignore: cast_nullable_to_non_nullable
               as String,
-      testnet: null == testnet
-          ? _value.testnet
-          : testnet // ignore: cast_nullable_to_non_nullable
-              as bool,
-      blockchain: freezed == blockchain
-          ? _value.blockchain
-          : blockchain // ignore: cast_nullable_to_non_nullable
-              as bdk.Blockchain?,
-      reloadWalletTimer: null == reloadWalletTimer
-          ? _value.reloadWalletTimer
-          : reloadWalletTimer // ignore: cast_nullable_to_non_nullable
-              as int,
-      networks: null == networks
-          ? _value._networks
-          : networks // ignore: cast_nullable_to_non_nullable
-              as List<ElectrumNetwork>,
-      selectedNetwork: null == selectedNetwork
-          ? _value.selectedNetwork
-          : selectedNetwork // ignore: cast_nullable_to_non_nullable
-              as ElectrumTypes,
-      loadingNetworks: null == loadingNetworks
-          ? _value.loadingNetworks
-          : loadingNetworks // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errLoadingNetworks: null == errLoadingNetworks
-          ? _value.errLoadingNetworks
-          : errLoadingNetworks // ignore: cast_nullable_to_non_nullable
-              as String,
-      networkConnected: null == networkConnected
-          ? _value.networkConnected
-          : networkConnected // ignore: cast_nullable_to_non_nullable
-              as bool,
-      stopGap: null == stopGap
-          ? _value.stopGap
-          : stopGap // ignore: cast_nullable_to_non_nullable
-              as int,
       fees: freezed == fees
           ? _value.fees
           : fees // ignore: cast_nullable_to_non_nullable
@@ -494,10 +379,6 @@ class __$$_SettingsStateCopyWithImpl<$Res>
           ? _value.errLoadingFees
           : errLoadingFees // ignore: cast_nullable_to_non_nullable
               as String,
-      tempNetwork: freezed == tempNetwork
-          ? _value.tempNetwork
-          : tempNetwork // ignore: cast_nullable_to_non_nullable
-              as ElectrumTypes?,
       defaultRBF: null == defaultRBF
           ? _value.defaultRBF
           : defaultRBF // ignore: cast_nullable_to_non_nullable
@@ -518,19 +399,11 @@ class _$_SettingsState extends _SettingsState {
       this.lastUpdatedCurrency,
       this.loadingCurrency = false,
       this.errLoadingCurrency = '',
+      this.reloadWalletTimer = 20,
       this.language,
       final List<String>? languageList,
       this.loadingLanguage = false,
       this.errLoadingLanguage = '',
-      this.testnet = false,
-      @JsonKey(includeFromJson: false, includeToJson: false) this.blockchain,
-      this.reloadWalletTimer = 20,
-      final List<ElectrumNetwork> networks = const [],
-      this.selectedNetwork = ElectrumTypes.bullbitcoin,
-      this.loadingNetworks = false,
-      this.errLoadingNetworks = '',
-      this.networkConnected = false,
-      this.stopGap = 20,
       this.fees,
       final List<int>? feesList,
       this.selectedFeesOption = 2,
@@ -539,11 +412,9 @@ class _$_SettingsState extends _SettingsState {
       this.feesSaved = false,
       this.loadingFees = false,
       this.errLoadingFees = '',
-      this.tempNetwork,
       this.defaultRBF = true})
       : _currencyList = currencyList,
         _languageList = languageList,
-        _networks = networks,
         _feesList = feesList,
         super._();
 
@@ -582,6 +453,10 @@ class _$_SettingsState extends _SettingsState {
   final String errLoadingCurrency;
 //
   @override
+  @JsonKey()
+  final int reloadWalletTimer;
+//
+  @override
   final String? language;
   final List<String>? _languageList;
   @override
@@ -599,40 +474,6 @@ class _$_SettingsState extends _SettingsState {
   @override
   @JsonKey()
   final String errLoadingLanguage;
-//
-  @override
-  @JsonKey()
-  final bool testnet;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final bdk.Blockchain? blockchain;
-  @override
-  @JsonKey()
-  final int reloadWalletTimer;
-  final List<ElectrumNetwork> _networks;
-  @override
-  @JsonKey()
-  List<ElectrumNetwork> get networks {
-    if (_networks is EqualUnmodifiableListView) return _networks;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_networks);
-  }
-
-  @override
-  @JsonKey()
-  final ElectrumTypes selectedNetwork;
-  @override
-  @JsonKey()
-  final bool loadingNetworks;
-  @override
-  @JsonKey()
-  final String errLoadingNetworks;
-  @override
-  @JsonKey()
-  final bool networkConnected;
-  @override
-  @JsonKey()
-  final int stopGap;
 //
   @override
   final int? fees;
@@ -663,15 +504,14 @@ class _$_SettingsState extends _SettingsState {
   @override
   @JsonKey()
   final String errLoadingFees;
-  @override
-  final ElectrumTypes? tempNetwork;
+// ElectrumTypes? tempNetwork,
   @override
   @JsonKey()
   final bool defaultRBF;
 
   @override
   String toString() {
-    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, stopGap: $stopGap, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, tempFees: $tempFees, tempSelectedFeesOption: $tempSelectedFeesOption, feesSaved: $feesSaved, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, tempNetwork: $tempNetwork, defaultRBF: $defaultRBF)';
+    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, tempFees: $tempFees, tempSelectedFeesOption: $tempSelectedFeesOption, feesSaved: $feesSaved, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, defaultRBF: $defaultRBF)';
   }
 
   @override
@@ -695,6 +535,8 @@ class _$_SettingsState extends _SettingsState {
                 other.loadingCurrency == loadingCurrency) &&
             (identical(other.errLoadingCurrency, errLoadingCurrency) ||
                 other.errLoadingCurrency == errLoadingCurrency) &&
+            (identical(other.reloadWalletTimer, reloadWalletTimer) ||
+                other.reloadWalletTimer == reloadWalletTimer) &&
             (identical(other.language, language) ||
                 other.language == language) &&
             const DeepCollectionEquality()
@@ -703,21 +545,6 @@ class _$_SettingsState extends _SettingsState {
                 other.loadingLanguage == loadingLanguage) &&
             (identical(other.errLoadingLanguage, errLoadingLanguage) ||
                 other.errLoadingLanguage == errLoadingLanguage) &&
-            (identical(other.testnet, testnet) || other.testnet == testnet) &&
-            (identical(other.blockchain, blockchain) ||
-                other.blockchain == blockchain) &&
-            (identical(other.reloadWalletTimer, reloadWalletTimer) ||
-                other.reloadWalletTimer == reloadWalletTimer) &&
-            const DeepCollectionEquality().equals(other._networks, _networks) &&
-            (identical(other.selectedNetwork, selectedNetwork) ||
-                other.selectedNetwork == selectedNetwork) &&
-            (identical(other.loadingNetworks, loadingNetworks) ||
-                other.loadingNetworks == loadingNetworks) &&
-            (identical(other.errLoadingNetworks, errLoadingNetworks) ||
-                other.errLoadingNetworks == errLoadingNetworks) &&
-            (identical(other.networkConnected, networkConnected) ||
-                other.networkConnected == networkConnected) &&
-            (identical(other.stopGap, stopGap) || other.stopGap == stopGap) &&
             (identical(other.fees, fees) || other.fees == fees) &&
             const DeepCollectionEquality().equals(other._feesList, _feesList) &&
             (identical(other.selectedFeesOption, selectedFeesOption) ||
@@ -732,8 +559,6 @@ class _$_SettingsState extends _SettingsState {
                 other.loadingFees == loadingFees) &&
             (identical(other.errLoadingFees, errLoadingFees) ||
                 other.errLoadingFees == errLoadingFees) &&
-            (identical(other.tempNetwork, tempNetwork) ||
-                other.tempNetwork == tempNetwork) &&
             (identical(other.defaultRBF, defaultRBF) ||
                 other.defaultRBF == defaultRBF));
   }
@@ -750,19 +575,11 @@ class _$_SettingsState extends _SettingsState {
         lastUpdatedCurrency,
         loadingCurrency,
         errLoadingCurrency,
+        reloadWalletTimer,
         language,
         const DeepCollectionEquality().hash(_languageList),
         loadingLanguage,
         errLoadingLanguage,
-        testnet,
-        blockchain,
-        reloadWalletTimer,
-        const DeepCollectionEquality().hash(_networks),
-        selectedNetwork,
-        loadingNetworks,
-        errLoadingNetworks,
-        networkConnected,
-        stopGap,
         fees,
         const DeepCollectionEquality().hash(_feesList),
         selectedFeesOption,
@@ -771,7 +588,6 @@ class _$_SettingsState extends _SettingsState {
         feesSaved,
         loadingFees,
         errLoadingFees,
-        tempNetwork,
         defaultRBF
       ]);
 
@@ -799,20 +615,11 @@ abstract class _SettingsState extends SettingsState {
       final DateTime? lastUpdatedCurrency,
       final bool loadingCurrency,
       final String errLoadingCurrency,
+      final int reloadWalletTimer,
       final String? language,
       final List<String>? languageList,
       final bool loadingLanguage,
       final String errLoadingLanguage,
-      final bool testnet,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      final bdk.Blockchain? blockchain,
-      final int reloadWalletTimer,
-      final List<ElectrumNetwork> networks,
-      final ElectrumTypes selectedNetwork,
-      final bool loadingNetworks,
-      final String errLoadingNetworks,
-      final bool networkConnected,
-      final int stopGap,
       final int? fees,
       final List<int>? feesList,
       final int selectedFeesOption,
@@ -821,7 +628,6 @@ abstract class _SettingsState extends SettingsState {
       final bool feesSaved,
       final bool loadingFees,
       final String errLoadingFees,
-      final ElectrumTypes? tempNetwork,
       final bool defaultRBF}) = _$_SettingsState;
   const _SettingsState._() : super._();
 
@@ -845,6 +651,8 @@ abstract class _SettingsState extends SettingsState {
   @override
   String get errLoadingCurrency;
   @override //
+  int get reloadWalletTimer;
+  @override //
   String? get language;
   @override
   List<String>? get languageList;
@@ -852,25 +660,6 @@ abstract class _SettingsState extends SettingsState {
   bool get loadingLanguage;
   @override
   String get errLoadingLanguage;
-  @override //
-  bool get testnet;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  bdk.Blockchain? get blockchain;
-  @override
-  int get reloadWalletTimer;
-  @override
-  List<ElectrumNetwork> get networks;
-  @override
-  ElectrumTypes get selectedNetwork;
-  @override
-  bool get loadingNetworks;
-  @override
-  String get errLoadingNetworks;
-  @override
-  bool get networkConnected;
-  @override
-  int get stopGap;
   @override //
   int? get fees;
   @override
@@ -887,9 +676,7 @@ abstract class _SettingsState extends SettingsState {
   bool get loadingFees;
   @override
   String get errLoadingFees;
-  @override
-  ElectrumTypes? get tempNetwork;
-  @override
+  @override // ElectrumTypes? tempNetwork,
   bool get defaultRBF;
   @override
   @JsonKey(ignore: true)

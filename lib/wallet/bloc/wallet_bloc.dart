@@ -13,6 +13,7 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
@@ -32,6 +33,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.walletBalance,
     required this.walletAddress,
     required this.walletUpdate,
+    required this.networkCubit,
     this.fromStorage = true,
     Wallet? wallet,
   }) : super(WalletState(wallet: wallet)) {
@@ -56,6 +58,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletBalance walletBalance;
   final WalletAddress walletAddress;
   final WalletUpdate walletUpdate;
+  final NetworkCubit networkCubit;
 
   final SecureStorage secureStorage;
   final HiveStorage hiveStorage;
@@ -127,16 +130,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    if (settingsCubit.state.blockchain == null) {
-      await settingsCubit.loadNetworks();
+    if (networkCubit.state.blockchain == null) {
+      await networkCubit.loadNetworks();
       await Future.delayed(const Duration(milliseconds: 300));
-      if (settingsCubit.state.blockchain == null) {
+      if (networkCubit.state.blockchain == null) {
         emit(state.copyWith(syncing: false));
         return;
       }
     }
 
-    final blockchain = settingsCubit.state.blockchain;
+    final blockchain = networkCubit.state.blockchain;
     final bdkWallet = state.bdkWallet!;
 
     locator<Logger>().log('Start Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''));

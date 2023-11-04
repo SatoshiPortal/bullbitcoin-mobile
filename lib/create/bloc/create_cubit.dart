@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,6 +18,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     required this.secureStorage,
     required this.walletRepository,
     required this.walletSensRepository,
+    required this.networkCubit,
     bool fromHome = false,
   }) : super(const CreateWalletState()) {
     createMne(fromHome: fromHome);
@@ -28,6 +30,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final SecureStorage secureStorage;
   final WalletRepository walletRepository;
   final WalletSensitiveRepository walletSensRepository;
+  final NetworkCubit networkCubit;
 
   void createMne({bool fromHome = false}) async {
     emit(state.copyWith(creatingNmemonic: true));
@@ -72,7 +75,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (state.mnemonic == null) return;
     emit(state.copyWith(saving: true, errSaving: ''));
 
-    final network = settingsCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final network = networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
     final mnemonic = state.mnemonic!.join(' ');
     final (seed, sErr) = await walletSensCreate.mnemonicSeed(mnemonic, network);
     if (sErr != null) {

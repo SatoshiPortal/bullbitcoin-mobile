@@ -4,6 +4,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,7 @@ class NetworkScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final networks = context.select((SettingsCubit x) => x.state.networks);
+    final networks = context.select((NetworkCubit _) => _.state.networks);
     if (networks.isEmpty) return const SizedBox.shrink();
 
     return Padding(
@@ -52,7 +53,7 @@ class NetworkScreen extends StatelessWidget {
             text: 'Electrum Server',
             isLeft: true,
             onBack: () {
-              context.read<SettingsCubit>().removeTempNetwork();
+              context.read<NetworkCubit>().removeTempNetwork();
               context.pop();
             },
           ),
@@ -73,11 +74,11 @@ class NetworkStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final networkConnected = context.select((SettingsCubit x) => x.state.networkConnected);
-    final errLoadingNetwork = context.select((SettingsCubit x) => x.state.errLoadingNetworks);
-    final isTestnet = context.select((SettingsCubit x) => x.state.testnet);
+    final networkConnected = context.select((NetworkCubit x) => x.state.networkConnected);
+    final errLoadingNetwork = context.select((NetworkCubit x) => x.state.errLoadingNetworks);
+    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
     final network =
-        context.select((SettingsCubit x) => x.state.getNetwork()?.getNetworkUrl(isTestnet) ?? '');
+        context.select((NetworkCubit x) => x.state.getNetwork()?.getNetworkUrl(isTestnet) ?? '');
 
     return Column(
       children: [
@@ -109,8 +110,8 @@ class SelectNetworkSegment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tempSelected = context.select((SettingsCubit x) => x.state.tempNetwork);
-    final network = context.select((SettingsCubit x) => x.state.selectedNetwork);
+    final tempSelected = context.select((NetworkCubit x) => x.state.tempNetwork);
+    final network = context.select((NetworkCubit x) => x.state.selectedNetwork);
 
     final selected = tempSelected ?? network;
 
@@ -158,7 +159,7 @@ class _SegmentButton extends StatelessWidget {
         onTap: () {
           final network = context.read<SettingsCubit>().state.networkFromString(text);
           if (network == null) return;
-          context.read<SettingsCubit>().networkTypeTempChanged(network);
+          context.read<NetworkCubit>().networkTypeTempChanged(network);
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
@@ -197,14 +198,14 @@ class NetworkConfigFields extends HookWidget {
   Widget build(BuildContext context) {
     final fieldWidth = MediaQuery.of(context).size.width * 0.7;
 
-    final network = context.select((SettingsCubit x) => x.state.getTempOrSelectedNetwork());
+    final network = context.select((NetworkCubit x) => x.state.getTempOrSelectedNetwork());
     if (network == null) return const SizedBox.shrink();
 
     final type = network.type;
     // final index = context.select((SettingsCubit x) => x.state.selectedNetwork);
 
-    final err = context.select((SettingsCubit x) => x.state.errLoadingNetworks);
-    final loading = context.select((SettingsCubit x) => x.state.loadingNetworks);
+    final err = context.select((NetworkCubit x) => x.state.errLoadingNetworks);
+    final loading = context.select((NetworkCubit x) => x.state.loadingNetworks);
 
     final mainnet = useTextEditingController(text: network.mainnet);
     final testnet = useTextEditingController(text: network.testnet);
@@ -299,9 +300,9 @@ class NetworkConfigFields extends HookWidget {
                     // timeout: int.tryParse(timeout.text) ?? 5,
                     validateDomain: validateDomain.value,
                   );
-                  context.read<SettingsCubit>().networkConfigsSaveClicked(updatednetwork);
+                  context.read<NetworkCubit>().networkConfigsSaveClicked(updatednetwork);
                   await Future.delayed(const Duration(milliseconds: 500));
-                  final err = context.read<SettingsCubit>().state.errLoadingNetworks;
+                  final err = context.read<NetworkCubit>().state.errLoadingNetworks;
                   if (err.isEmpty) context.pop();
                 },
                 label: 'SAVE',
@@ -342,12 +343,12 @@ class ElectrumAdvancedOptions extends HookWidget {
   Widget build(BuildContext context) {
     final fieldWidth = MediaQuery.of(context).size.width * 0.7;
 
-    final network = context.select((SettingsCubit x) => x.state.getNetwork());
+    final network = context.select((NetworkCubit x) => x.state.getNetwork());
     if (network == null) return const SizedBox.shrink();
 
-    final sg = context.select((SettingsCubit x) => x.state.getNetwork()?.stopGap);
-    final r = context.select((SettingsCubit x) => x.state.getNetwork()?.retry);
-    final t = context.select((SettingsCubit x) => x.state.getNetwork()?.timeout);
+    final sg = context.select((NetworkCubit x) => x.state.getNetwork()?.stopGap);
+    final r = context.select((NetworkCubit x) => x.state.getNetwork()?.retry);
+    final t = context.select((NetworkCubit x) => x.state.getNetwork()?.timeout);
     final stopGap = useTextEditingController(text: sg.toString());
     final retry = useTextEditingController(text: r.toString());
     final timeout = useTextEditingController(text: t.toString());
@@ -418,9 +419,9 @@ class ElectrumAdvancedOptions extends HookWidget {
                       timeout: int.tryParse(timeout.text) ?? 5,
                       validateDomain: validateDomain,
                     );
-                    context.read<SettingsCubit>().networkConfigsSaveClicked(updatednetwork);
+                    context.read<NetworkCubit>().networkConfigsSaveClicked(updatednetwork);
                     await Future.delayed(const Duration(milliseconds: 500));
-                    final err = context.read<SettingsCubit>().state.errLoadingNetworks;
+                    final err = context.read<NetworkCubit>().state.errLoadingNetworks;
                     if (err.isEmpty) context.pop();
                   },
                 ),

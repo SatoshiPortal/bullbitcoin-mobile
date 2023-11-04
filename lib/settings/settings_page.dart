@@ -5,6 +5,7 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network/popup.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -285,7 +286,7 @@ class TestNetButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final testnet = context.select((SettingsCubit x) => x.state.testnet);
+    final testnet = context.select((NetworkCubit _) => _.state.testnet);
 
     return Row(
       children: [
@@ -298,7 +299,7 @@ class TestNetButton extends StatelessWidget {
           key: UIKeys.settingsTestnetSwitch,
           value: testnet,
           onChanged: (e) {
-            context.read<SettingsCubit>().toggleTestnet();
+            context.read<NetworkCubit>().toggleTestnet();
           },
         ),
       ],
@@ -311,9 +312,9 @@ class NetworkButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedNetwork = context.select((SettingsCubit x) => x.state.getNetwork());
+    final selectedNetwork = context.select((NetworkCubit _) => _.state.getNetwork());
     if (selectedNetwork == null) return const SizedBox.shrink();
-    final err = context.select((SettingsCubit x) => x.state.errLoadingNetworks);
+    final err = context.select((NetworkCubit _) => _.state.errLoadingNetworks);
 
     return Column(
       children: [

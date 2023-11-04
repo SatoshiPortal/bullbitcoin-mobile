@@ -17,6 +17,7 @@ import 'package:bb_mobile/import/recover24.dart';
 import 'package:bb_mobile/import/wallet_type_selection.dart';
 import 'package:bb_mobile/import/xpub.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,6 +48,7 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
       secureStorage: locator<SecureStorage>(),
       walletRepository: locator<WalletRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
+      networkCubit: locator<NetworkCubit>(),
     );
 
     wordsCubit = locator<WordsCubit>();
