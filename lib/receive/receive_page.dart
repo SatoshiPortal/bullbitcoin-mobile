@@ -367,7 +367,7 @@ class CreateInvoice extends StatelessWidget {
         const Gap(40),
         const BBText.title('Amount'),
         const Gap(4),
-        const InvoiceAmountField(),
+        const EnterAmount(),
         const Gap(24),
         const BBText.title('Public description'),
         const Gap(4),

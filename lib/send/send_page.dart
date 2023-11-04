@@ -148,7 +148,7 @@ class _Screen extends StatelessWidget {
                 const Gap(8),
                 const Center(child: WalletBalance()),
                 const Gap(48),
-                const EnterSendAmount(),
+                const EnterAmount(),
                 const Gap(24),
                 const BBText.title('    Address'),
                 const Gap(4),

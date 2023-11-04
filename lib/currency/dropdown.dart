@@ -5,37 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class SendCurrencyDropDown extends StatelessWidget {
-  const SendCurrencyDropDown({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final currency = context.select((CurrencyCubit cubit) => cubit.state.currency);
-    final currencyList = context.select((CurrencyCubit cubit) => cubit.state.updatedCurrencyList());
-
-    return DropdownButton<String>(
-      value: currency?.name,
-      // icon: const Icon(Icons.arrow_downward),
-      // iconSize: 24,
-      elevation: 16,
-      style: const TextStyle(color: Colors.deepPurple),
-      underline: const ColoredBox(color: Colors.transparent),
-      onChanged: (String? amt) {
-        if (amt == null) return;
-        context.read<CurrencyCubit>().updateAmountCurrency(amt.toLowerCase());
-      },
-      items: currencyList.map<DropdownMenuItem<String>>((Currency value) {
-        return DropdownMenuItem<String>(
-          value: value.name,
-          child: BBText.body(value.shortName),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class ReceiveCurrencyDropDown extends StatelessWidget {
-  const ReceiveCurrencyDropDown({super.key});
+class CurrencyDropDown extends StatelessWidget {
+  const CurrencyDropDown({super.key});
 
   @override
   Widget build(BuildContext context) {
