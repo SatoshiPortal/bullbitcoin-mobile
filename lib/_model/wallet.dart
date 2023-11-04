@@ -233,7 +233,7 @@ class Wallet with _$Wallet {
 
   List<Transaction> getConfirmedTxs() {
     final txs = transactions.where((tx) => tx.timestamp != 0 && !tx.oldTx).toList();
-    txs.sort((a, b) => b.timestamp?.compareTo(a.timestamp ?? 0) ?? 0);
+    txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return txs;
   }
 

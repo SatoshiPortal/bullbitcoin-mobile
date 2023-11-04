@@ -76,7 +76,7 @@ class Transaction with _$Transaction {
   //         : (sent! - fee!);
 
   DateTime getDateTime() {
-    return DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000);
+    return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
   }
 
   static const months = [
@@ -95,7 +95,7 @@ class Transaction with _$Transaction {
   ];
 
   String getDateTimeStr() {
-    final dt = DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000);
+    final dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     if (dt.isAfter(DateTime.now().subtract(const Duration(days: 2)))) return timeago.format(dt);
     final day = dt.day.toString().length == 1 ? '0${dt.day}' : dt.day.toString();
     return months[dt.month - 1] + ' ' + day + ', ' + dt.year.toString();
@@ -104,7 +104,7 @@ class Transaction with _$Transaction {
   DateTime? getBroadcastDateTime() =>
       broadcastTime == null ? null : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
 
-  bool canRBF() => rbfEnabled == true && timestamp == null || timestamp == 0;
+  bool canRBF() => rbfEnabled == true && timestamp == 0;
 }
 
 DateTime getDateTimeFromInt(int time) => DateTime.fromMillisecondsSinceEpoch(time * 1000);

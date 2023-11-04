@@ -4,10 +4,10 @@ import 'package:bb_mobile/_pkg/extensions.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/_ui/fees.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/popup.dart';
+import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/settings/electrum.dart';
 import 'package:bb_mobile/settings/lighting.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -276,6 +276,79 @@ class LightingButton extends StatelessWidget {
       onPressed: () {
         LightingPopUp.openPopUp(context);
       },
+    );
+  }
+}
+
+class TestNetButton extends StatelessWidget {
+  const TestNetButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final testnet = context.select((SettingsCubit x) => x.state.testnet);
+
+    return Row(
+      children: [
+        // const Gap(8),
+        const BBText.body(
+          'Testnet mode',
+        ),
+        const Spacer(),
+        Switch(
+          key: UIKeys.settingsTestnetSwitch,
+          value: testnet,
+          onChanged: (e) {
+            context.read<SettingsCubit>().toggleTestnet();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class NetworkButton extends StatelessWidget {
+  const NetworkButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedNetwork = context.select((SettingsCubit x) => x.state.getNetwork());
+    if (selectedNetwork == null) return const SizedBox.shrink();
+    final err = context.select((SettingsCubit x) => x.state.errLoadingNetworks);
+
+    return Column(
+      children: [
+        BBButton.textWithStatusAndRightArrow(
+          label: 'Electrum Server',
+          onPressed: () {
+            NetworkPopup.openPopUp(context);
+          },
+        ),
+        // InkWell(
+        //   onTap: () {
+        //     NetworkPopup.openPopUp(context);
+        //   },
+        //   child: Row(
+        //     children: [
+        //       BBButton.text(
+        //         onPressed: () {
+        //           NetworkPopup.openPopUp(context);
+        //         },
+        //         label: 'Electrum server',
+        //       ),
+        //       const Gap(6),
+        //       FaIcon(
+        //         FontAwesomeIcons.angleRight,
+        //         size: 14,
+        //         color: context.colour.secondary,
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        if (err.isNotEmpty)
+          BBText.errorSmall(
+            err,
+          ),
+      ],
     );
   }
 }

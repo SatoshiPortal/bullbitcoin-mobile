@@ -148,7 +148,7 @@ class HomeTxItem extends StatelessWidget {
               )
             else
               BBText.bodySmall(
-                (tx.timestamp == null || tx.timestamp == 0) ? 'Pending' : tx.getDateTimeStr(),
+                (tx.timestamp == 0) ? 'Pending' : tx.getDateTimeStr(),
                 // : timeago.format(tx.getDateTime()),
                 removeColourOpacity: true,
               ),
