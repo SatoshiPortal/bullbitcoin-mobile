@@ -15,8 +15,8 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/currency/ui.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
@@ -148,7 +148,7 @@ class _Screen extends StatelessWidget {
                 const Gap(8),
                 const Center(child: WalletBalance()),
                 const Gap(48),
-                const EnterAmount(),
+                const EnterSendAmount(),
                 const Gap(24),
                 const BBText.title('    Address'),
                 const Gap(4),

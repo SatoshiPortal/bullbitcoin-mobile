@@ -4,7 +4,7 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/currency/ui.dart';
+import 'package:bb_mobile/currency/dropdown.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network/popup.dart';
@@ -48,7 +48,7 @@ class _Screen extends StatelessWidget {
             child: Column(
               children: [
                 Gap(8),
-                Currencyx(),
+                SettingsCurrencyDropDown(),
                 Gap(8),
                 Units(),
                 Gap(8),
