@@ -51,15 +51,11 @@ class SettingsCubit extends Cubit<SettingsState> {
     Future.delayed(const Duration(milliseconds: 200));
     final (result, err) = await hiveStorage.getValue(StorageKeys.settings);
     if (err != null) {
-      // first time maybe
-      // loadNetworks();
       return;
     }
 
     final settings = SettingsState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
     emit(settings);
-    // await Future.delayed(const Duration(milliseconds: 50));
-    // loadNetworks();
   }
 
   void toggleUnitsInSats() {
@@ -74,14 +70,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(state.copyWith(privacyView: !state.privacyView));
   }
 
-  // void toggleTestnet() async {
-  //   final isTestnet = state.testnet;
-  //   emit(state.copyWith(testnet: !isTestnet));
-  //   await Future.delayed(const Duration(milliseconds: 50));
-  //   setupBlockchain();
-  //   homeCubit?.clearSelectedWallet();
-  // }
-
   void toggleDefaultRBF() {
     emit(state.copyWith(defaultRBF: !state.defaultRBF));
   }
@@ -89,14 +77,6 @@ class SettingsCubit extends Cubit<SettingsState> {
   void changeLanguage(String language) {
     emit(state.copyWith(language: language));
   }
-
-  // void updateStopGap(int gap) {
-  //   // final network = state.networks
-  //   final network = state.getNetwork();
-  //   if (network == null) return;
-  //   final updatedConfig = network.copyWith(stopGap: gap);
-  //   networkConfigsSaveClicked(updatedConfig);
-  // }
 
   void updateReloadWalletTimer(int value) {
     emit(state.copyWith(reloadWalletTimer: value));
@@ -118,14 +98,13 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(state.copyWith(loadingCurrency: true));
     final (cad, _) = await bbAPI.getExchangeRate(toCurrency: 'CAD');
     final (usd, _) = await bbAPI.getExchangeRate(toCurrency: 'USD');
-    // final (eur, _) = await bbAPI.getExchangeRate(toCurrency: 'EUR');
+
     final (crc, _) = await bbAPI.getExchangeRate(toCurrency: 'CRC');
     final (inr, _) = await bbAPI.getExchangeRate(toCurrency: 'INR');
 
     final results = [
       if (cad != null) cad,
       if (usd != null) usd,
-      // if (eur != null) eur,
       if (crc != null) crc,
       if (inr != null) inr,
     ];
@@ -149,201 +128,4 @@ class SettingsCubit extends Cubit<SettingsState> {
         emit(state.copyWith(currencyList: [currency]));
     }
   }
-
-  // Future setupBlockchain() async {
-  //   emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
-  //   final isTestnet = state.testnet;
-  //   final selectedNetwork = state.getNetwork();
-  //   if (selectedNetwork == null) return;
-  //   // final selectedNetwork = state.networks[state.selectedNetwork];
-
-  //   final (blockchain, err) = await walletSync.createBlockChain(
-  //     stopGap: selectedNetwork.stopGap,
-  //     timeout: selectedNetwork.timeout,
-  //     retry: selectedNetwork.retry,
-  //     url: isTestnet ? selectedNetwork.testnet : selectedNetwork.mainnet,
-  //     validateDomain: selectedNetwork.validateDomain,
-  //   );
-  //   if (err != null) {
-  //     emit(
-  //       state.copyWith(
-  //         blockchain: null,
-  //         errLoadingNetworks: err.toString(),
-  //       ),
-  //     );
-  //     return;
-  //   }
-
-  //   emit(state.copyWith(blockchain: blockchain, networkConnected: true));
-  //   loadFees();
-  // }
-
-  // Future loadNetworks() async {
-  //   if (state.loadingNetworks) return;
-  //   emit(state.copyWith(loadingNetworks: true));
-
-  //   final networks = state.networks;
-
-  //   if (networks.isNotEmpty) {
-  //     emit(state.copyWith(loadingNetworks: false));
-  //     setupBlockchain();
-  //     return;
-  //   }
-
-  //   final newNetworks = [
-  //     const ElectrumNetwork.defaultElectrum(),
-  //     const ElectrumNetwork.bullbitcoin(),
-  //     const ElectrumNetwork.custom(
-  //       mainnet: 'ssl://$bbelectrum:50002',
-  //       testnet: 'ssl://$bbelectrum:60002',
-  //     ),
-  //   ];
-
-  //   emit(
-  //     state.copyWith(
-  //       loadingNetworks: false,
-  //       networks: newNetworks,
-  //     ),
-  //   );
-
-  //   await Future.delayed(const Duration(milliseconds: 50));
-
-  //   await setupBlockchain();
-  // }
-
-  // void changeNetwork(ElectrumTypes electrumType) {
-  //   emit(state.copyWith(selectedNetwork: electrumType));
-  //   setupBlockchain();
-  // }
-
-  // void networkConfigsSaveClicked(ElectrumNetwork network) async {
-  //   if (state.tempNetwork != null) {
-  //     emit(state.copyWith(selectedNetwork: state.tempNetwork!));
-  //     await Future.delayed(const Duration(milliseconds: 50));
-  //     emit(state.copyWith(tempNetwork: null));
-  //   }
-  //   final networks = state.networks.toList();
-  //   final index = networks.indexWhere((element) => element.type == network.type);
-  //   networks.removeAt(index);
-  //   networks.insert(index, network);
-  //   // networks.removeAt(state.selectedNetwork);
-  //   // networks.insert(state.selectedNetwork, network);
-  //   emit(state.copyWith(networks: networks));
-  //   await Future.delayed(const Duration(milliseconds: 50));
-  //   setupBlockchain();
-  // }
-
-  // void networkTypeTempChanged(ElectrumTypes types) => emit(state.copyWith(tempNetwork: types));
-
-  // void removeTempNetwork() => emit(state.copyWith(tempNetwork: null));
-
-  void loadFees() async {
-    // emit(state.copyWith(loadingFees: true, errLoadingFees: ''));
-
-    // final (fees, err) = await mempoolAPI.getFees(state.testnet);
-    // if (err != null) {
-    //   emit(
-    //     state.copyWith(
-    //       errLoadingFees: err.toString(),
-    //       loadingFees: false,
-    //     ),
-    //   );
-    //   return;
-    // }
-
-    // // final blockchain = state.blockchain;
-    // // if (blockchain == null) throw 'No Blockchain';
-
-    // // final fast = await blockchain.estimateFee(1);
-    // // final medium = await blockchain.estimateFee(6);
-    // // final slow = await blockchain.estimateFee(12);
-
-    // // final fees = [
-    // //   fast.asSatPerVb().round(),
-    // //   medium.asSatPerVb().round(),
-    // //   slow.asSatPerVb().round(),
-    // // ];
-
-    // emit(
-    //   state.copyWith(
-    //     feesList: fees,
-    //     loadingFees: false,
-    //   ),
-    // );
-  }
-
-  // void updateManualFees(String fees) async {
-  //   final feesInDouble = int.tryParse(fees);
-  //   if (feesInDouble == null) {
-  //     // emit(state.copyWith(fees: 000, selectedFeesOption: 2));
-  //     emit(state.copyWith(tempFees: 000, tempSelectedFeesOption: 2));
-  //     await Future.delayed(const Duration(milliseconds: 50));
-  //     // emit(state.copyWith(fees: null));
-  //     return;
-  //   }
-  //   // emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
-  //   emit(state.copyWith(tempFees: feesInDouble, tempSelectedFeesOption: 4));
-  //   checkMinimumFees();
-  // }
-
-  // void feeOptionSelected(int index) {
-  //   emit(state.copyWith(tempSelectedFeesOption: index));
-  //   // emit(state.copyWith(selectedFeesOption: index));
-  //   checkMinimumFees();
-  // }
-
-  // void checkFees() {
-  //   if (state.selectedFeesOption == 4 && (state.fees == null || state.fees == 0))
-  //     feeOptionSelected(2);
-  // }
-
-  // void checkMinimumFees() async {
-  //   await Future.delayed(50.ms);
-  //   final minFees = state.feesList!.last;
-  //   const max = 50;
-
-  //   // if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
-  //   if (state.tempFees != null && state.tempFees! < minFees && state.tempSelectedFeesOption == 4)
-  //     emit(
-  //       state.copyWith(
-  //         errLoadingFees:
-  //             "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
-  //         // selectedFeesOption: 2,
-  //         tempSelectedFeesOption: 2,
-  //       ),
-  //     );
-  //   else if (state.tempFees != null && state.tempFees! > max && state.tempSelectedFeesOption == 4)
-  //     emit(
-  //       state.copyWith(
-  //         errLoadingFees:
-  //             'The default selected fee is too high. Please select a lower fee than $max sats/vbyte .',
-  //         // selectedFeesOption: 2,
-  //         tempSelectedFeesOption: 2,
-  //       ),
-  //     );
-  //   else
-  //     emit(state.copyWith(errLoadingFees: ''));
-  // }
-
-  // void confirmFeeClicked() {
-  //   if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
-  //   if (state.tempSelectedFeesOption != null) {
-  //     if (state.tempFees == 4 && (state.tempFees == null || state.tempFees == 0)) {
-  //       print('');
-  //       // clearTempFeeValues();
-  //       // return;
-  //     } else {
-  //       emit(state.copyWith(selectedFeesOption: state.tempSelectedFeesOption!, fees: null));
-  //       if (state.tempSelectedFeesOption == 4 && state.tempFees != null && state.tempFees! <= 50)
-  //         emit(state.copyWith(fees: state.tempFees));
-  //     }
-  //   }
-  //   emit(state.copyWith(feesSaved: true));
-  //   clearTempFeeValues();
-  // }
-
-  // void clearTempFeeValues() async {
-  //   await Future.delayed(200.ms);
-  //   emit(state.copyWith(tempFees: null, tempSelectedFeesOption: null, feesSaved: false));
-  // }
 }

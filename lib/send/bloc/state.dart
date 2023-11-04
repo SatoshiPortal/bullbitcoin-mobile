@@ -12,21 +12,8 @@ class SendState with _$SendState {
     String? tempAmount,
     @Default('') String address,
     @Default('') String note,
-    // @Default(BTCUnit.btc) BTCUnit unit,
-    //
-    // int? fees,
-    // List<int>? feesList,
-    // @Default(2) int selectedFeesOption,
-    // int? tempFees,
-    // int? tempSelectedFeesOption,
-    // @Default(false) bool feesSaved,
-
-    // //
-    // @Default(false) bool loadingFees,
-    // @Default('') String errLoadingFees,
     @Default(false) bool scanningAddress,
     @Default('') String errScanningAddress,
-    //
     @Default(false) bool showSendButton,
     @Default(false) bool sending,
     @Default('') String errSending,
@@ -36,18 +23,13 @@ class SendState with _$SendState {
     @Default(false) bool downloadingFile,
     @Default('') String errDownloadingFile,
     @Default(false) bool downloaded,
-    //
     @Default(false) bool disableRBF,
     @Default(false) bool sendAllCoin,
     @Default([]) List<Address> selectedAddresses,
     @Default('') String errAddresses,
-    //
     @Default(false) bool signed,
     String? psbtSigned,
     int? psbtSignedFeeAmount,
-    // @Default(false) bool signing,
-    // @Default('') String errSigning,
-    //
     Currency? selectedCurrency,
     List<Currency>? currencyList,
     @Default(false) bool isSats,
@@ -82,28 +64,10 @@ class SendState with _$SendState {
     return selectedAddresses.contains(address);
   }
 
-  // String feeButtonText() {
-  //   var str = '';
-  //   try {
-  //     final selectedOption = feeOption();
-  //     if (selectedOption == 0) str = 'Fastest (' + feesList![0].toString();
-  //     if (selectedOption == 1) str = 'Fast (' + feesList![1].toString();
-  //     if (selectedOption == 2) str = 'Medium (' + feesList![2].toString();
-  //     if (selectedOption == 3) str = 'Slow (' + feesList![3].toString();
-
-  //     if (selectedOption == 4) str = 'Manual (' + fees.toString();
-  //     return str + ' sat/vByte)';
-  //   } catch (e) {
-  //     return 'Select fee rate';
-  //   }
-  // }
-
   String advancedOptionsButtonText() {
     if (selectedAddresses.isEmpty) return 'Advanced options';
-    // if (selectedAddressesHasEnoughCoins())
+
     return 'Selected ${selectedAddresses.length} addresses';
-    // else
-    // return 'Selected ${selectedAddresses.length} addresses (not enough coins)';
   }
 
   List<Currency> updatedCurrencyList() {
@@ -115,7 +79,4 @@ class SendState with _$SendState {
 
     return list;
   }
-
-  // int feeOption() => tempSelectedFeesOption ?? selectedFeesOption;
-  // int fee() => tempFees ?? fees ?? 0;
 }

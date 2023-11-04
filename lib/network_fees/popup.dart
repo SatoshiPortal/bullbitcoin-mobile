@@ -1,12 +1,8 @@
-import 'package:bb_mobile/_pkg/mempool_api.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
-import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -18,10 +14,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-
-class FeesCubit extends Cubit<bool> {
-  FeesCubit(super.initialState);
-}
 
 class SelectFeesButton extends StatelessWidget {
   const SelectFeesButton({super.key, this.fromSettings = false});
@@ -45,17 +37,6 @@ class SelectFeesButton extends StatelessWidget {
       );
     }
 
-    // return MediaQuery(
-    //   data: MediaQuery.of(context).copyWith(textScaleFactor: 0.9),
-    //   child: BBButton.textWithStatusAndRightArrow(
-    //     label: 'Default fee rate',
-    //     statusText: txt,
-    //     isBlue: true,
-    //     onPressed: () {
-    //       SelectFeesPopUp.openSelectFees(context, fromSettings);
-    //     },
-    //   ),
-    // );
     return InkWell(
       onTap: () {
         SelectFeesPopUp.openSelectFees(context, fromSettings);
@@ -89,14 +70,9 @@ class SelectFeesPopUp extends StatelessWidget {
     bool fromSettings,
   ) {
     if (!fromSettings) {
-      final defaultNetworkFees = context.read<NetworkFeesCubit>();
-      defaultNetworkFees.clearTempFeeValues();
-      final fees = NetworkFeesCubit(
-        hiveStorage: locator<HiveStorage>(),
-        mempoolAPI: locator<MempoolAPI>(),
-        networkCubit: context.read<NetworkCubit>(),
-        defaultNetworkFeesCubit: defaultNetworkFees,
-      );
+      final fees = context.read<NetworkFeesCubit>();
+      fees.clearTempFeeValues();
+
       return showMaterialModalBottomSheet(
         context: context,
         isDismissible: false,
@@ -105,11 +81,10 @@ class SelectFeesPopUp extends StatelessWidget {
         builder: (context) => MultiBlocProvider(
           providers: [
             BlocProvider.value(value: fees),
-            BlocProvider.value(value: FeesCubit(false)),
           ],
           child: WillPopScope(
             onWillPop: () async {
-              defaultNetworkFees.checkFees();
+              fees.checkFees();
               return true;
             },
             child: const SelectFeesPopUp(),
@@ -129,7 +104,6 @@ class SelectFeesPopUp extends StatelessWidget {
       builder: (context) => MultiBlocProvider(
         providers: [
           BlocProvider.value(value: defaultFees),
-          BlocProvider.value(value: FeesCubit(true)),
         ],
         child: WillPopScope(
           onWillPop: () async {
@@ -166,13 +140,8 @@ class _Screen extends StatelessWidget {
               text: 'Bitcoin Network Fee',
               isLeft: true,
               onBack: () {
-                // final fromSettings = context.read<FeesCubit>().state;
                 context.read<NetworkFeesCubit>().clearTempFeeValues();
 
-                // if (fromSettings)
-                //   context.read<SettingsCubit>().clearTempFeeValues();
-                // else
-                //   context.read<SendCubit>().clearTempFeeValues();
                 context.pop();
               },
             ),
@@ -228,46 +197,24 @@ class DoneButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fromSettings = context.read<FeesCubit>().state;
-
-    if (fromSettings)
-      return BlocListener<NetworkFeesCubit, NetworkFeesState>(
-        listenWhen: (previous, current) =>
-            previous.feesSaved != current.feesSaved && current.feesSaved,
-        listener: (context, state) {
-          context.pop();
-        },
-        child: Center(
-          child: SizedBox(
-            width: 200,
-            child: BBButton.bigRed(
-              onPressed: () {
-                context.read<NetworkFeesCubit>().confirmFeeClicked();
-              },
-              label: 'Done',
-            ),
+    return BlocListener<NetworkFeesCubit, NetworkFeesState>(
+      listenWhen: (previous, current) =>
+          previous.feesSaved != current.feesSaved && current.feesSaved,
+      listener: (context, state) {
+        context.pop();
+      },
+      child: Center(
+        child: SizedBox(
+          width: 200,
+          child: BBButton.bigRed(
+            onPressed: () {
+              context.read<NetworkFeesCubit>().confirmFeeClicked();
+            },
+            label: 'Done',
           ),
         ),
-      );
-    else
-      return BlocListener<NetworkFeesCubit, NetworkFeesState>(
-        listenWhen: (previous, current) =>
-            previous.feesSaved != current.feesSaved && current.feesSaved,
-        listener: (context, state) {
-          context.pop();
-        },
-        child: Center(
-          child: SizedBox(
-            width: 200,
-            child: BBButton.bigRed(
-              onPressed: () {
-                context.read<NetworkFeesCubit>().confirmFeeClicked();
-              },
-              label: 'Done',
-            ),
-          ),
-        ),
-      );
+      ),
+    );
   }
 }
 
@@ -276,13 +223,9 @@ class LoadingFees extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fromSettings = context.read<FeesCubit>().state;
     var loading = false;
 
-    // if (!fromSettings)
     loading = context.select((NetworkFeesCubit x) => x.state.loadingFees);
-    // else
-    // loading = context.select((SettingsCubit x) => x.state.loadingFees);
 
     return CenterLeft(
       child: SizedBox(
@@ -300,10 +243,7 @@ class LoadingFees extends StatelessWidget {
                 : BBButton.text(
                     label: 'Refresh',
                     onPressed: () {
-                      if (!fromSettings)
-                        context.read<NetworkFeesCubit>().loadFees();
-                      else
-                        context.read<SettingsCubit>().loadFees();
+                      context.read<NetworkFeesCubit>().loadFees();
                     },
                   ),
           ),
@@ -327,21 +267,13 @@ class SelectFeesItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fromSettings = context.read<FeesCubit>().state;
-
     var selected = false;
-    if (!fromSettings)
-      selected = context.select((NetworkFeesCubit x) => x.state.feeOption() == index);
-    else
-      selected = context.select((NetworkFeesCubit x) => x.state.feeOption() == index);
+
+    selected = context.select((NetworkFeesCubit x) => x.state.feeOption() == index);
 
     var fee = 0;
     if (!custom) {
-      if (!fromSettings) {
-        fee = context.select((NetworkFeesCubit x) => x.state.feesList?[index] ?? 0);
-      } else {
-        fee = context.select((NetworkFeesCubit x) => x.state.feesList?[index] ?? 0);
-      }
+      fee = context.select((NetworkFeesCubit x) => x.state.feesList?[index] ?? 0);
     }
 
     final fiatRateStr = context.select(
@@ -350,10 +282,7 @@ class SelectFeesItem extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // if (!fromSettings)
         context.read<NetworkFeesCubit>().feeOptionSelected(index);
-        // else
-        // context.read<SettingsCubit>().feeOptionSelected(index);
 
         FocusScope.of(context).unfocus();
       },
@@ -403,36 +332,25 @@ class CustomFeeTextField extends StatefulWidget {
 }
 
 class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
-  // final _controller = TextEditingController();
   final _focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
-    // final fromSettings = context.read<FeesCubit>().state;
-
     var err = '';
-    // if (!fromSettings)
+
     err = context.select((NetworkFeesCubit x) => x.state.errLoadingFees);
-    // else
-    // err = context.select((NetworkFeesCubit x) => x.state.errLoadingFees);
 
     var selected = false;
-    // if (!fromSettings)
+
     selected = context.select((NetworkFeesCubit x) => x.state.selectedFeesOption == 4);
-    // else
-    // selected = context.select((SettingsCubit x) => x.state.selectedFeesOption == 4);
 
     if (selected && !_focusNode.hasFocus) _focusNode.requestFocus();
 
     var amt = '';
     int? amtt;
-    // if (!fromSettings)
+
     amtt = context.select((NetworkFeesCubit x) => x.state.fees);
-    // else
-    // amtt = context.select((SettingsCubit x) => x.state.fees);
 
     if (amtt != null) amt = amtt.toString();
-
-    // if (amt != _controller.text) _controller.text = amt;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,13 +361,8 @@ class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
           focusNode: _focusNode,
           value: amt,
           hint: 'sats/vb',
-          // controller: _controller,
-          // keyboardType: TextInputType.number,
           onChanged: (value) {
-            // if (!fromSettings)
             context.read<NetworkFeesCubit>().updateManualFees(value);
-            // else
-            // context.read<SettingsCubit>().updateManualFees(value);
           },
         ),
         if (err.isNotEmpty) ...[

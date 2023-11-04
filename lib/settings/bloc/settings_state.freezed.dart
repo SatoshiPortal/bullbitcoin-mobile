@@ -22,27 +22,17 @@ SettingsState _$SettingsStateFromJson(Map<String, dynamic> json) {
 mixin _$SettingsState {
   bool get unitsInSats => throw _privateConstructorUsedError;
   bool get notifications => throw _privateConstructorUsedError;
-  bool get privacyView => throw _privateConstructorUsedError; //
+  bool get privacyView => throw _privateConstructorUsedError;
   Currency? get currency => throw _privateConstructorUsedError;
   List<Currency>? get currencyList => throw _privateConstructorUsedError;
   DateTime? get lastUpdatedCurrency => throw _privateConstructorUsedError;
   bool get loadingCurrency => throw _privateConstructorUsedError;
-  String get errLoadingCurrency => throw _privateConstructorUsedError; //
-  int get reloadWalletTimer => throw _privateConstructorUsedError; //
+  String get errLoadingCurrency => throw _privateConstructorUsedError;
+  int get reloadWalletTimer => throw _privateConstructorUsedError;
   String? get language => throw _privateConstructorUsedError;
   List<String>? get languageList => throw _privateConstructorUsedError;
   bool get loadingLanguage => throw _privateConstructorUsedError;
-  String get errLoadingLanguage => throw _privateConstructorUsedError; //
-// int? fees,
-// List<int>? feesList,
-// @Default(2) int selectedFeesOption,
-// int? tempFees,
-// int? tempSelectedFeesOption,
-// @Default(false) bool feesSaved,
-// //
-// @Default(false) bool loadingFees,
-// @Default('') String errLoadingFees,
-// ElectrumTypes? tempNetwork,
+  String get errLoadingLanguage => throw _privateConstructorUsedError;
   bool get defaultRBF => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -326,7 +316,6 @@ class _$_SettingsState extends _SettingsState {
   @override
   @JsonKey()
   final bool privacyView;
-//
   @override
   final Currency? currency;
   final List<Currency>? _currencyList;
@@ -347,11 +336,9 @@ class _$_SettingsState extends _SettingsState {
   @override
   @JsonKey()
   final String errLoadingCurrency;
-//
   @override
   @JsonKey()
   final int reloadWalletTimer;
-//
   @override
   final String? language;
   final List<String>? _languageList;
@@ -370,17 +357,6 @@ class _$_SettingsState extends _SettingsState {
   @override
   @JsonKey()
   final String errLoadingLanguage;
-//
-// int? fees,
-// List<int>? feesList,
-// @Default(2) int selectedFeesOption,
-// int? tempFees,
-// int? tempSelectedFeesOption,
-// @Default(false) bool feesSaved,
-// //
-// @Default(false) bool loadingFees,
-// @Default('') String errLoadingFees,
-// ElectrumTypes? tempNetwork,
   @override
   @JsonKey()
   final bool defaultRBF;
@@ -485,7 +461,7 @@ abstract class _SettingsState extends SettingsState {
   bool get notifications;
   @override
   bool get privacyView;
-  @override //
+  @override
   Currency? get currency;
   @override
   List<Currency>? get currencyList;
@@ -495,9 +471,9 @@ abstract class _SettingsState extends SettingsState {
   bool get loadingCurrency;
   @override
   String get errLoadingCurrency;
-  @override //
+  @override
   int get reloadWalletTimer;
-  @override //
+  @override
   String? get language;
   @override
   List<String>? get languageList;
@@ -505,17 +481,7 @@ abstract class _SettingsState extends SettingsState {
   bool get loadingLanguage;
   @override
   String get errLoadingLanguage;
-  @override //
-// int? fees,
-// List<int>? feesList,
-// @Default(2) int selectedFeesOption,
-// int? tempFees,
-// int? tempSelectedFeesOption,
-// @Default(false) bool feesSaved,
-// //
-// @Default(false) bool loadingFees,
-// @Default('') String errLoadingFees,
-// ElectrumTypes? tempNetwork,
+  @override
   bool get defaultRBF;
   @override
   @JsonKey(ignore: true)

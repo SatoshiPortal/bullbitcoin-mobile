@@ -1,4 +1,3 @@
-// ignore_for_file: invalid_annotation_target
 import 'package:bb_mobile/_model/currency.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
@@ -12,32 +11,16 @@ class SettingsState with _$SettingsState {
     @Default(false) bool unitsInSats,
     @Default(false) bool notifications,
     @Default(false) bool privacyView,
-    //
     Currency? currency,
     List<Currency>? currencyList,
     DateTime? lastUpdatedCurrency,
     @Default(false) bool loadingCurrency,
     @Default('') String errLoadingCurrency,
-    //
     @Default(20) int reloadWalletTimer,
-
-    //
     String? language,
     List<String>? languageList,
     @Default(false) bool loadingLanguage,
     @Default('') String errLoadingLanguage,
-
-    //
-    // int? fees,
-    // List<int>? feesList,
-    // @Default(2) int selectedFeesOption,
-    // int? tempFees,
-    // int? tempSelectedFeesOption,
-    // @Default(false) bool feesSaved,
-    // //
-    // @Default(false) bool loadingFees,
-    // @Default('') String errLoadingFees,
-    // ElectrumTypes? tempNetwork,
     @Default(true) bool defaultRBF,
   }) = _SettingsState;
   const SettingsState._();
@@ -76,7 +59,7 @@ class SettingsState with _$SettingsState {
     bool? isSats,
     bool removeText = false,
     bool hideZero = false,
-    bool removeEndZeros = false, // we should never removeEndZeros for BTC
+    bool removeEndZeros = false,
   }) {
     String amt = '';
     if (isSats ?? unitsInSats)
@@ -87,7 +70,7 @@ class SettingsState with _$SettingsState {
         b = (amount / 100000000).toStringAsFixed(8);
       else
         b = (amount / 100000000).toStringAsFixed(8);
-      amt = b + ' BTC'; // applying btc formatting breaks
+      amt = b + ' BTC';
     }
 
     if (removeText) {
@@ -112,56 +95,6 @@ class SettingsState with _$SettingsState {
     return ((double.tryParse(amount) ?? 0) * 100000000).toInt();
   }
 
-  // bdk.Network getBdkNetwork() {
-  //   if (testnet) return bdk.Network.Testnet;
-  //   return bdk.Network.Bitcoin;
-  // }
-
-  // BBNetwork getBBNetwork() {
-  //   if (testnet) return BBNetwork.Testnet;
-  //   return BBNetwork.Mainnet;
-  // }
-
-  // String explorerTxUrl(String txid) =>
-  //     testnet ? 'https://$mempoolapi/testnet/tx/$txid' : 'https://$mempoolapi/tx/$txid';
-
-  // String explorerAddressUrl(String address) => testnet
-  //     ? 'https://$mempoolapi/testnet/address/$address'
-  //     : 'https://$mempoolapi/address/$address';
-
-  // String feeButtonText() {
-  //   var str = '';
-  //   try {
-  //     final selectedOption = feeOption();
-
-  //     if (selectedOption == 0) str = 'Fastest fee rate: ' + feesList![0].toString();
-  //     if (selectedOption == 1) str = 'Fast fee rate: ' + feesList![1].toString();
-  //     if (selectedOption == 2) str = 'Medium fee rate: ' + feesList![2].toString();
-  //     if (selectedOption == 3) str = 'Slow fee rate: ' + feesList![3].toString();
-
-  //     if (selectedFeesOption == 4) str = 'Manual fee rate: ' + fees.toString();
-  //     return str + ' sat/vByte';
-  //   } catch (e) {
-  //     return 'Select fee rate';
-  //   }
-  // }
-
-  // String defaultFeeStatus() {
-  //   try {
-  //     var str = '';
-  //     final selectedOption = feeOption();
-  //     if (selectedOption == 0) str = feesList![0].toString();
-  //     if (selectedOption == 1) str = feesList![1].toString();
-  //     if (selectedOption == 2) str = feesList![2].toString();
-  //     if (selectedOption == 3) str = feesList![3].toString();
-  //     if (selectedOption == 4) str = fees.toString();
-
-  //     return str + ' sats/vbyte';
-  //   } catch (e) {
-  //     return '';
-  //   }
-  // }
-
   String calculateFiatPriceForFees({
     required int feeRate,
     Currency? curr,
@@ -175,23 +108,6 @@ class SettingsState with _$SettingsState {
     final currencyStr = selectedCurrency.shortName;
     return '~ $amt $currencyStr';
   }
-
-  // int feeOption() => tempSelectedFeesOption ?? selectedFeesOption;
-  // int fee() => tempFees ?? fees ?? 0;
-
-  // ElectrumTypes? networkFromString(String text) {
-  //   final network = text.toLowerCase().replaceAll(' ', '');
-  //   switch (network) {
-  //     case 'blockstream':
-  //       return ElectrumTypes.blockstream;
-  //     case 'bullbitcoin':
-  //       return ElectrumTypes.bullbitcoin;
-  //     case 'custom':
-  //       return ElectrumTypes.custom;
-  //     default:
-  //       return null;
-  //   }
-  // }
 }
 
 extension StringRegEx on String {

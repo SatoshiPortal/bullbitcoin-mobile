@@ -19,20 +19,9 @@ mixin _$SendState {
   int get amount => throw _privateConstructorUsedError;
   String? get tempAmount => throw _privateConstructorUsedError;
   String get address => throw _privateConstructorUsedError;
-  String get note =>
-      throw _privateConstructorUsedError; // @Default(BTCUnit.btc) BTCUnit unit,
-//
-// int? fees,
-// List<int>? feesList,
-// @Default(2) int selectedFeesOption,
-// int? tempFees,
-// int? tempSelectedFeesOption,
-// @Default(false) bool feesSaved,
-// //
-// @Default(false) bool loadingFees,
-// @Default('') String errLoadingFees,
+  String get note => throw _privateConstructorUsedError;
   bool get scanningAddress => throw _privateConstructorUsedError;
-  String get errScanningAddress => throw _privateConstructorUsedError; //
+  String get errScanningAddress => throw _privateConstructorUsedError;
   bool get showSendButton => throw _privateConstructorUsedError;
   bool get sending => throw _privateConstructorUsedError;
   String get errSending => throw _privateConstructorUsedError;
@@ -41,17 +30,14 @@ mixin _$SendState {
   Transaction? get tx => throw _privateConstructorUsedError;
   bool get downloadingFile => throw _privateConstructorUsedError;
   String get errDownloadingFile => throw _privateConstructorUsedError;
-  bool get downloaded => throw _privateConstructorUsedError; //
+  bool get downloaded => throw _privateConstructorUsedError;
   bool get disableRBF => throw _privateConstructorUsedError;
   bool get sendAllCoin => throw _privateConstructorUsedError;
   List<Address> get selectedAddresses => throw _privateConstructorUsedError;
-  String get errAddresses => throw _privateConstructorUsedError; //
+  String get errAddresses => throw _privateConstructorUsedError;
   bool get signed => throw _privateConstructorUsedError;
   String? get psbtSigned => throw _privateConstructorUsedError;
-  int? get psbtSignedFeeAmount =>
-      throw _privateConstructorUsedError; // @Default(false) bool signing,
-// @Default('') String errSigning,
-//
+  int? get psbtSignedFeeAmount => throw _privateConstructorUsedError;
   Currency? get selectedCurrency => throw _privateConstructorUsedError;
   List<Currency>? get currencyList => throw _privateConstructorUsedError;
   bool get isSats => throw _privateConstructorUsedError;
@@ -519,24 +505,12 @@ class _$_SendState extends _SendState {
   @override
   @JsonKey()
   final String note;
-// @Default(BTCUnit.btc) BTCUnit unit,
-//
-// int? fees,
-// List<int>? feesList,
-// @Default(2) int selectedFeesOption,
-// int? tempFees,
-// int? tempSelectedFeesOption,
-// @Default(false) bool feesSaved,
-// //
-// @Default(false) bool loadingFees,
-// @Default('') String errLoadingFees,
   @override
   @JsonKey()
   final bool scanningAddress;
   @override
   @JsonKey()
   final String errScanningAddress;
-//
   @override
   @JsonKey()
   final bool showSendButton;
@@ -563,7 +537,6 @@ class _$_SendState extends _SendState {
   @override
   @JsonKey()
   final bool downloaded;
-//
   @override
   @JsonKey()
   final bool disableRBF;
@@ -583,7 +556,6 @@ class _$_SendState extends _SendState {
   @override
   @JsonKey()
   final String errAddresses;
-//
   @override
   @JsonKey()
   final bool signed;
@@ -591,9 +563,6 @@ class _$_SendState extends _SendState {
   final String? psbtSigned;
   @override
   final int? psbtSignedFeeAmount;
-// @Default(false) bool signing,
-// @Default('') String errSigning,
-//
   @override
   final Currency? selectedCurrency;
   final List<Currency>? _currencyList;
@@ -750,21 +719,11 @@ abstract class _SendState extends SendState {
   String get address;
   @override
   String get note;
-  @override // @Default(BTCUnit.btc) BTCUnit unit,
-//
-// int? fees,
-// List<int>? feesList,
-// @Default(2) int selectedFeesOption,
-// int? tempFees,
-// int? tempSelectedFeesOption,
-// @Default(false) bool feesSaved,
-// //
-// @Default(false) bool loadingFees,
-// @Default('') String errLoadingFees,
+  @override
   bool get scanningAddress;
   @override
   String get errScanningAddress;
-  @override //
+  @override
   bool get showSendButton;
   @override
   bool get sending;
@@ -782,7 +741,7 @@ abstract class _SendState extends SendState {
   String get errDownloadingFile;
   @override
   bool get downloaded;
-  @override //
+  @override
   bool get disableRBF;
   @override
   bool get sendAllCoin;
@@ -790,15 +749,13 @@ abstract class _SendState extends SendState {
   List<Address> get selectedAddresses;
   @override
   String get errAddresses;
-  @override //
+  @override
   bool get signed;
   @override
   String? get psbtSigned;
   @override
   int? get psbtSignedFeeAmount;
-  @override // @Default(false) bool signing,
-// @Default('') String errSigning,
-//
+  @override
   Currency? get selectedCurrency;
   @override
   List<Currency>? get currencyList;
