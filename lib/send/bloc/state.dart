@@ -7,7 +7,6 @@ part 'state.freezed.dart';
 @freezed
 class SendState with _$SendState {
   const factory SendState({
-    String? tempAmount,
     @Default('') String address,
     @Default('') String note,
     @Default(false) bool scanningAddress,

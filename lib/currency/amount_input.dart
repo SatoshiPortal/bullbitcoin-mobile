@@ -3,14 +3,15 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/currency/conversion.dart';
 import 'package:bb_mobile/currency/dropdown.dart';
-import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class EnterAmount extends StatefulWidget {
-  const EnterAmount({super.key});
+  const EnterAmount({super.key, this.sendAll = false});
+
+  final bool sendAll;
 
   @override
   State<EnterAmount> createState() => _EnterAmountState();
@@ -23,12 +24,12 @@ class _EnterAmountState extends State<EnterAmount> {
   Widget build(BuildContext context) {
     final _ = context.select((CurrencyCubit cubit) => cubit.state.currency);
 
-    final sendAll = context.select((SendCubit cubit) => cubit.state.sendAllCoin);
+    final sendAll = widget.sendAll;
 
     final isSats = context.select((CurrencyCubit cubit) => cubit.state.unitsInSats);
 
     final fiatSelected = context.select((CurrencyCubit cubit) => cubit.state.fiatSelected);
-    final tempAmt = context.select((SendCubit cubit) => cubit.state.tempAmount);
+    final tempAmt = context.select((CurrencyCubit cubit) => cubit.state.tempAmount);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -63,7 +64,7 @@ class _EnterAmountState extends State<EnterAmount> {
                   const CenterRight(
                     child: Padding(
                       padding: EdgeInsets.only(right: 16),
-                      child: CurrencyDropDown(),
+                      child: AmountCurrencyDropDown(),
                     ),
                   ),
                 ],

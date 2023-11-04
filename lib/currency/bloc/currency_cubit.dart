@@ -15,7 +15,12 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     this.defaultCurrencyCubit,
   }) : super(const CurrencyState()) {
     init();
-    loadCurrencies();
+    if (defaultCurrencyCubit == null)
+      loadCurrencies();
+    else {
+      reset();
+      loadCurrencyForAmount();
+    }
   }
 
   final HiveStorage hiveStorage;
@@ -41,8 +46,17 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     final (result, err) = await hiveStorage.getValue(StorageKeys.currency);
     if (err != null) return;
 
-    final settings = CurrencyState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
-    emit(settings);
+    final currency = CurrencyState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
+    emit(currency);
+  }
+
+  void loadCurrencyForAmount() async {
+    await Future.delayed(300.ms);
+    final updatedCurrenciess = state.updatedCurrencyList();
+    final selectedCurrency = updatedCurrenciess
+        .firstWhere((element) => element.name == (state.unitsInSats ? 'sats' : 'btc'));
+
+    emit(state.copyWith(currency: selectedCurrency));
   }
 
   void toggleUnitsInSats() {
@@ -50,7 +64,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   }
 
   void changeDefaultCurrency(Currency currency) {
-    emit(state.copyWith(currency: currency));
+    emit(state.copyWith(defaultFiatCurrency: currency));
   }
 
   void loadCurrencies() async {
@@ -71,6 +85,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     emit(
       state.copyWith(
         currency: results.isNotEmpty ? results.first : state.currency,
+        defaultFiatCurrency: state.defaultFiatCurrency ?? results.first,
         currencyList: results.isNotEmpty ? results : state.currencyList,
         loadingCurrency: false,
         lastUpdatedCurrency: DateTime.now(),
@@ -82,7 +97,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
         (_) => _.name == state.currency!.name,
         orElse: () => state.currency!,
       );
-      emit(state.copyWith(currency: currency));
+      emit(state.copyWith(currency: currency, defaultFiatCurrency: currency));
       if (results.isEmpty && state.currencyList == null)
         emit(state.copyWith(currencyList: [currency]));
     }
@@ -163,7 +178,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
 
     final isSats = state.unitsInSats;
     final amt = state.getSatsAmount(clean, isSats);
-    final currency = state.currency;
+    final currency = state.defaultFiatCurrency;
     final fiatAmt = currency!.price! * (amt / 100000000);
 
     emit(state.copyWith(amount: amt, fiatAmt: fiatAmt));
@@ -174,5 +189,16 @@ class CurrencyCubit extends Cubit<CurrencyState> {
 
   void updateAmountError(String err) {
     emit(state.copyWith(errAmount: err));
+  }
+
+  void reset() {
+    emit(
+      state.copyWith(
+        amount: 0,
+        fiatAmt: 0,
+        tempAmount: '',
+        errAmount: '',
+      ),
+    );
   }
 }

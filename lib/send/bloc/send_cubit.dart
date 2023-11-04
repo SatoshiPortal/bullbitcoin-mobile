@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
@@ -45,6 +47,10 @@ class SendCubit extends Cubit<SendState> {
     required this.currencyCubit,
   }) : super(const SendState()) {
     emit(state.copyWith(disableRBF: !settingsCubit.state.defaultRBF));
+
+    currencyCubitSub = currencyCubit.stream.listen((_) {
+      _updateShowSend();
+    });
   }
 
   final Barcode barcode;
@@ -62,10 +68,16 @@ class SendCubit extends Cubit<SendState> {
   final NetworkCubit networkCubit;
   final NetworkFeesCubit networkFeesCubit;
   final CurrencyCubit currencyCubit;
+  late StreamSubscription currencyCubitSub;
 
   final WalletSensitiveCreate walletSensCreate;
   final MempoolAPI mempoolAPI;
   final FileStorage fileStorage;
+
+  void dispose() {
+    currencyCubitSub.cancel();
+    super.close();
+  }
 
   void loadAddressesAndBalances() {
     walletBloc.add(GetAddresses());

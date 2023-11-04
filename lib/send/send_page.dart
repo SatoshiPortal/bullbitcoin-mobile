@@ -148,7 +148,7 @@ class _Screen extends StatelessWidget {
                 const Gap(8),
                 const Center(child: WalletBalance()),
                 const Gap(48),
-                const EnterAmount(),
+                const AmountEntry(),
                 const Gap(24),
                 const BBText.title('    Address'),
                 const Gap(4),
@@ -174,6 +174,16 @@ class _Screen extends StatelessWidget {
         ),
       ).animate(delay: 200.ms).fadeIn(),
     );
+  }
+}
+
+class AmountEntry extends StatelessWidget {
+  const AmountEntry({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final sendAll = context.select((SendCubit cubit) => cubit.state.sendAllCoin);
+    return EnterAmount(sendAll: sendAll);
   }
 }
 
@@ -437,14 +447,14 @@ class TxDetailsScreen extends StatelessWidget {
     final fee = context.select((SendCubit cubit) => cubit.state.psbtSignedFeeAmount ?? 0);
     final feeStr = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
 
-    final currency = context.select((CurrencyCubit _) => _.state.currency);
+    final currency = context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
     final amtFiat =
         context.select((NetworkCubit cubit) => cubit.state.calculatePrice(amount, currency));
     final feeFiat =
         context.select((NetworkCubit cubit) => cubit.state.calculatePrice(fee, currency));
 
     final fiatCurrency =
-        context.select((CurrencyCubit cubit) => cubit.state.currency?.shortName ?? '');
+        context.select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency?.shortName ?? '');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class CurrencyDropDown extends StatelessWidget {
-  const CurrencyDropDown({super.key});
+class AmountCurrencyDropDown extends StatelessWidget {
+  const AmountCurrencyDropDown({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class SettingsCurrencyDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currency = context.select((CurrencyCubit x) => x.state.currency);
+    final currency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
     final currencies = context.select((CurrencyCubit x) => x.state.currencyList ?? []);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

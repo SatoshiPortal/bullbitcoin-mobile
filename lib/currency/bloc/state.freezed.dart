@@ -23,6 +23,7 @@ mixin _$CurrencyState {
   bool get unitsInSats => throw _privateConstructorUsedError;
   bool get fiatSelected => throw _privateConstructorUsedError;
   Currency? get currency => throw _privateConstructorUsedError;
+  Currency? get defaultFiatCurrency => throw _privateConstructorUsedError;
   List<Currency>? get currencyList => throw _privateConstructorUsedError;
   DateTime? get lastUpdatedCurrency => throw _privateConstructorUsedError;
   bool get loadingCurrency => throw _privateConstructorUsedError;
@@ -48,6 +49,7 @@ abstract class $CurrencyStateCopyWith<$Res> {
       {bool unitsInSats,
       bool fiatSelected,
       Currency? currency,
+      Currency? defaultFiatCurrency,
       List<Currency>? currencyList,
       DateTime? lastUpdatedCurrency,
       bool loadingCurrency,
@@ -58,6 +60,7 @@ abstract class $CurrencyStateCopyWith<$Res> {
       String errAmount});
 
   $CurrencyCopyWith<$Res>? get currency;
+  $CurrencyCopyWith<$Res>? get defaultFiatCurrency;
 }
 
 /// @nodoc
@@ -76,6 +79,7 @@ class _$CurrencyStateCopyWithImpl<$Res, $Val extends CurrencyState>
     Object? unitsInSats = null,
     Object? fiatSelected = null,
     Object? currency = freezed,
+    Object? defaultFiatCurrency = freezed,
     Object? currencyList = freezed,
     Object? lastUpdatedCurrency = freezed,
     Object? loadingCurrency = null,
@@ -97,6 +101,10 @@ class _$CurrencyStateCopyWithImpl<$Res, $Val extends CurrencyState>
       currency: freezed == currency
           ? _value.currency
           : currency // ignore: cast_nullable_to_non_nullable
+              as Currency?,
+      defaultFiatCurrency: freezed == defaultFiatCurrency
+          ? _value.defaultFiatCurrency
+          : defaultFiatCurrency // ignore: cast_nullable_to_non_nullable
               as Currency?,
       currencyList: freezed == currencyList
           ? _value.currencyList
@@ -144,6 +152,18 @@ class _$CurrencyStateCopyWithImpl<$Res, $Val extends CurrencyState>
       return _then(_value.copyWith(currency: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $CurrencyCopyWith<$Res>? get defaultFiatCurrency {
+    if (_value.defaultFiatCurrency == null) {
+      return null;
+    }
+
+    return $CurrencyCopyWith<$Res>(_value.defaultFiatCurrency!, (value) {
+      return _then(_value.copyWith(defaultFiatCurrency: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -158,6 +178,7 @@ abstract class _$$_CurrencyStateCopyWith<$Res>
       {bool unitsInSats,
       bool fiatSelected,
       Currency? currency,
+      Currency? defaultFiatCurrency,
       List<Currency>? currencyList,
       DateTime? lastUpdatedCurrency,
       bool loadingCurrency,
@@ -169,6 +190,8 @@ abstract class _$$_CurrencyStateCopyWith<$Res>
 
   @override
   $CurrencyCopyWith<$Res>? get currency;
+  @override
+  $CurrencyCopyWith<$Res>? get defaultFiatCurrency;
 }
 
 /// @nodoc
@@ -185,6 +208,7 @@ class __$$_CurrencyStateCopyWithImpl<$Res>
     Object? unitsInSats = null,
     Object? fiatSelected = null,
     Object? currency = freezed,
+    Object? defaultFiatCurrency = freezed,
     Object? currencyList = freezed,
     Object? lastUpdatedCurrency = freezed,
     Object? loadingCurrency = null,
@@ -206,6 +230,10 @@ class __$$_CurrencyStateCopyWithImpl<$Res>
       currency: freezed == currency
           ? _value.currency
           : currency // ignore: cast_nullable_to_non_nullable
+              as Currency?,
+      defaultFiatCurrency: freezed == defaultFiatCurrency
+          ? _value.defaultFiatCurrency
+          : defaultFiatCurrency // ignore: cast_nullable_to_non_nullable
               as Currency?,
       currencyList: freezed == currencyList
           ? _value._currencyList
@@ -250,6 +278,7 @@ class _$_CurrencyState extends _CurrencyState {
       {this.unitsInSats = false,
       this.fiatSelected = false,
       this.currency,
+      this.defaultFiatCurrency,
       final List<Currency>? currencyList,
       this.lastUpdatedCurrency,
       this.loadingCurrency = false,
@@ -272,6 +301,8 @@ class _$_CurrencyState extends _CurrencyState {
   final bool fiatSelected;
   @override
   final Currency? currency;
+  @override
+  final Currency? defaultFiatCurrency;
   final List<Currency>? _currencyList;
   @override
   List<Currency>? get currencyList {
@@ -304,7 +335,7 @@ class _$_CurrencyState extends _CurrencyState {
 
   @override
   String toString() {
-    return 'CurrencyState(unitsInSats: $unitsInSats, fiatSelected: $fiatSelected, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, fiatAmt: $fiatAmt, amount: $amount, tempAmount: $tempAmount, errAmount: $errAmount)';
+    return 'CurrencyState(unitsInSats: $unitsInSats, fiatSelected: $fiatSelected, currency: $currency, defaultFiatCurrency: $defaultFiatCurrency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, fiatAmt: $fiatAmt, amount: $amount, tempAmount: $tempAmount, errAmount: $errAmount)';
   }
 
   @override
@@ -318,6 +349,8 @@ class _$_CurrencyState extends _CurrencyState {
                 other.fiatSelected == fiatSelected) &&
             (identical(other.currency, currency) ||
                 other.currency == currency) &&
+            (identical(other.defaultFiatCurrency, defaultFiatCurrency) ||
+                other.defaultFiatCurrency == defaultFiatCurrency) &&
             const DeepCollectionEquality()
                 .equals(other._currencyList, _currencyList) &&
             (identical(other.lastUpdatedCurrency, lastUpdatedCurrency) ||
@@ -341,6 +374,7 @@ class _$_CurrencyState extends _CurrencyState {
       unitsInSats,
       fiatSelected,
       currency,
+      defaultFiatCurrency,
       const DeepCollectionEquality().hash(_currencyList),
       lastUpdatedCurrency,
       loadingCurrency,
@@ -369,6 +403,7 @@ abstract class _CurrencyState extends CurrencyState {
       {final bool unitsInSats,
       final bool fiatSelected,
       final Currency? currency,
+      final Currency? defaultFiatCurrency,
       final List<Currency>? currencyList,
       final DateTime? lastUpdatedCurrency,
       final bool loadingCurrency,
@@ -388,6 +423,8 @@ abstract class _CurrencyState extends CurrencyState {
   bool get fiatSelected;
   @override
   Currency? get currency;
+  @override
+  Currency? get defaultFiatCurrency;
   @override
   List<Currency>? get currencyList;
   @override

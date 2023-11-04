@@ -330,6 +330,7 @@ class CreateInvoice extends StatelessWidget {
 
   static Future openPopUp(BuildContext context) async {
     final receiveCubit = context.read<ReceiveCubit>();
+    final currencyCubit = context.read<CurrencyCubit>();
 
     return showMaterialModalBottomSheet(
       context: context,
@@ -338,17 +339,20 @@ class CreateInvoice extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => BlocProvider.value(
         value: receiveCubit,
-        child: BlocListener<ReceiveCubit, ReceiveState>(
-          listenWhen: (previous, current) =>
-              previous.savedInvoiceAmount != current.savedInvoiceAmount ||
-              previous.savedDescription != current.savedDescription,
-          listener: (context, state) {
-            context.pop();
-          },
-          child: const PopUpBorder(
-            child: Padding(
-              padding: EdgeInsets.all(30),
-              child: CreateInvoice(),
+        child: BlocProvider.value(
+          value: currencyCubit,
+          child: BlocListener<ReceiveCubit, ReceiveState>(
+            listenWhen: (previous, current) =>
+                previous.savedInvoiceAmount != current.savedInvoiceAmount ||
+                previous.savedDescription != current.savedDescription,
+            listener: (context, state) {
+              context.pop();
+            },
+            child: const PopUpBorder(
+              child: Padding(
+                padding: EdgeInsets.all(30),
+                child: CreateInvoice(),
+              ),
             ),
           ),
         ),
@@ -365,11 +369,11 @@ class CreateInvoice extends StatelessWidget {
       children: [
         const BBHeader.popUpCenteredText(text: 'Request a Payment'),
         const Gap(40),
-        const BBText.title('Amount'),
+        // const BBText.title('Amount'),
         const Gap(4),
         const EnterAmount(),
         const Gap(24),
-        const BBText.title('Public description'),
+        const BBText.title('   Public description'),
         const Gap(4),
         BBTextInput.big(
           value: description,

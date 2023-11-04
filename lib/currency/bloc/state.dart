@@ -11,6 +11,7 @@ class CurrencyState with _$CurrencyState {
     @Default(false) bool unitsInSats,
     @Default(false) bool fiatSelected,
     Currency? currency,
+    Currency? defaultFiatCurrency,
     List<Currency>? currencyList,
     DateTime? lastUpdatedCurrency,
     @Default(false) bool loadingCurrency,
@@ -56,22 +57,30 @@ class CurrencyState with _$CurrencyState {
     bool? isSats,
     bool removeText = false,
     bool hideZero = false,
+    bool removeEndZeros = false,
   }) {
-    if (isSats ?? unitsInSats) {
-      if (amount == 0 && hideZero) {
-        return '';
-      } else {
-        return removeText ? amount.toString() : satsFormatting(amount.toString()) + ' sats';
-      }
-    } else {
-      if (amount == 0 && hideZero) {
-        return '';
-      } else {
-        return removeText
-            ? (amount / 100000000).toString()
-            : fiatFormatting((amount / 100000000).toString()) + ' btc';
-      }
+    String amt = '';
+    if (isSats ?? unitsInSats)
+      amt = satsFormatting(amount.toString()) + ' sats';
+    else {
+      String b = '';
+      if (!removeEndZeros)
+        b = (amount / 100000000).toStringAsFixed(8);
+      else
+        b = (amount / 100000000).toStringAsFixed(8);
+      amt = b + ' BTC';
     }
+
+    if (removeText) {
+      amt = amt.replaceAll(' sats', '');
+      amt = amt.replaceAll(' BTC', '');
+    }
+
+    if (hideZero && amount == 0) amt = '';
+
+    amt.replaceAll('-', '');
+
+    return amt;
   }
 
   String getUnitString() {

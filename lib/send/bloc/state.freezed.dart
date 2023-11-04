@@ -16,7 +16,6 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$SendState {
-  String? get tempAmount => throw _privateConstructorUsedError;
   String get address => throw _privateConstructorUsedError;
   String get note => throw _privateConstructorUsedError;
   bool get scanningAddress => throw _privateConstructorUsedError;
@@ -49,8 +48,7 @@ abstract class $SendStateCopyWith<$Res> {
       _$SendStateCopyWithImpl<$Res, SendState>;
   @useResult
   $Res call(
-      {String? tempAmount,
-      String address,
+      {String address,
       String note,
       bool scanningAddress,
       String errScanningAddress,
@@ -87,7 +85,6 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? tempAmount = freezed,
     Object? address = null,
     Object? note = null,
     Object? scanningAddress = null,
@@ -110,10 +107,6 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? psbtSignedFeeAmount = freezed,
   }) {
     return _then(_value.copyWith(
-      tempAmount: freezed == tempAmount
-          ? _value.tempAmount
-          : tempAmount // ignore: cast_nullable_to_non_nullable
-              as String?,
       address: null == address
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
@@ -218,8 +211,7 @@ abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {String? tempAmount,
-      String address,
+      {String address,
       String note,
       bool scanningAddress,
       String errScanningAddress,
@@ -255,7 +247,6 @@ class __$$_SendStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? tempAmount = freezed,
     Object? address = null,
     Object? note = null,
     Object? scanningAddress = null,
@@ -278,10 +269,6 @@ class __$$_SendStateCopyWithImpl<$Res>
     Object? psbtSignedFeeAmount = freezed,
   }) {
     return _then(_$_SendState(
-      tempAmount: freezed == tempAmount
-          ? _value.tempAmount
-          : tempAmount // ignore: cast_nullable_to_non_nullable
-              as String?,
       address: null == address
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
@@ -370,8 +357,7 @@ class __$$_SendStateCopyWithImpl<$Res>
 
 class _$_SendState extends _SendState {
   const _$_SendState(
-      {this.tempAmount,
-      this.address = '',
+      {this.address = '',
       this.note = '',
       this.scanningAddress = false,
       this.errScanningAddress = '',
@@ -394,8 +380,6 @@ class _$_SendState extends _SendState {
       : _selectedAddresses = selectedAddresses,
         super._();
 
-  @override
-  final String? tempAmount;
   @override
   @JsonKey()
   final String address;
@@ -463,7 +447,7 @@ class _$_SendState extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(tempAmount: $tempAmount, address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount)';
+    return 'SendState(address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount)';
   }
 
   @override
@@ -471,8 +455,6 @@ class _$_SendState extends _SendState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_SendState &&
-            (identical(other.tempAmount, tempAmount) ||
-                other.tempAmount == tempAmount) &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.note, note) || other.note == note) &&
             (identical(other.scanningAddress, scanningAddress) ||
@@ -511,7 +493,6 @@ class _$_SendState extends _SendState {
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        tempAmount,
         address,
         note,
         scanningAddress,
@@ -543,8 +524,7 @@ class _$_SendState extends _SendState {
 
 abstract class _SendState extends SendState {
   const factory _SendState(
-      {final String? tempAmount,
-      final String address,
+      {final String address,
       final String note,
       final bool scanningAddress,
       final String errScanningAddress,
@@ -566,8 +546,6 @@ abstract class _SendState extends SendState {
       final int? psbtSignedFeeAmount}) = _$_SendState;
   const _SendState._() : super._();
 
-  @override
-  String? get tempAmount;
   @override
   String get address;
   @override

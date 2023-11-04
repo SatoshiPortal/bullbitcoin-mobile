@@ -14,7 +14,8 @@ class ConversionAmt extends StatelessWidget {
 
     final fiatAmt = context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
     final satsAmt = context.select((CurrencyCubit cubit) => cubit.state.amount);
-    final defaultCurrency = context.select((CurrencyCubit cubit) => cubit.state.currency);
+    final defaultCurrency =
+        context.select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
 
     var amt = '';
     var unit = '';

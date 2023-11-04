@@ -13,6 +13,10 @@ _$_CurrencyState _$$_CurrencyStateFromJson(Map<String, dynamic> json) =>
       currency: json['currency'] == null
           ? null
           : Currency.fromJson(json['currency'] as Map<String, dynamic>),
+      defaultFiatCurrency: json['defaultFiatCurrency'] == null
+          ? null
+          : Currency.fromJson(
+              json['defaultFiatCurrency'] as Map<String, dynamic>),
       currencyList: (json['currencyList'] as List<dynamic>?)
           ?.map((e) => Currency.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -32,6 +36,7 @@ Map<String, dynamic> _$$_CurrencyStateToJson(_$_CurrencyState instance) =>
       'unitsInSats': instance.unitsInSats,
       'fiatSelected': instance.fiatSelected,
       'currency': instance.currency,
+      'defaultFiatCurrency': instance.defaultFiatCurrency,
       'currencyList': instance.currencyList,
       'lastUpdatedCurrency': instance.lastUpdatedCurrency?.toIso8601String(),
       'loadingCurrency': instance.loadingCurrency,
