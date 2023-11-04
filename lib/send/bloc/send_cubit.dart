@@ -14,13 +14,13 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState> {
@@ -42,10 +42,9 @@ class SendCubit extends Cubit<SendState> {
     required this.fileStorage,
     required this.networkCubit,
     required this.networkFeesCubit,
+    required this.currencyCubit,
   }) : super(const SendState()) {
-    init();
-
-    loadCurrencies();
+    emit(state.copyWith(disableRBF: !settingsCubit.state.defaultRBF));
   }
 
   final Barcode barcode;
@@ -62,15 +61,11 @@ class SendCubit extends Cubit<SendState> {
   final WalletCreate walletCreate;
   final NetworkCubit networkCubit;
   final NetworkFeesCubit networkFeesCubit;
+  final CurrencyCubit currencyCubit;
 
   final WalletSensitiveCreate walletSensCreate;
   final MempoolAPI mempoolAPI;
   final FileStorage fileStorage;
-
-  void init() {
-    final defaultRBF = settingsCubit.state.defaultRBF;
-    emit(state.copyWith(disableRBF: !defaultRBF));
-  }
 
   void loadAddressesAndBalances() {
     walletBloc.add(GetAddresses());
@@ -84,9 +79,10 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(address: newAddress));
         final amount = bip21Obj.options['amount'] as num?;
         if (amount != null) {
-          _btcToCurrentTempAmount(amount.toDouble());
+          currencyCubit.btcToCurrentTempAmount(amount.toDouble());
           final amountInSats = (amount * 100000000).toInt();
-          emit(state.copyWith(amount: amountInSats));
+
+          currencyCubit.updateAmountDirect(amountInSats);
         }
         final label = bip21Obj.options['label'] as String?;
         if (label != null) {
@@ -99,10 +95,10 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           address: '',
           note: '',
-          amount: 0,
           errScanningAddress: e.toString(),
         ),
       );
+      currencyCubit.updateAmountDirect(0);
     }
   }
 
@@ -131,113 +127,6 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(note: note));
   }
 
-  void loadCurrencies() async {
-    final currencies = settingsCubit.state.currencyList;
-    final isSats = settingsCubit.state.unitsInSats;
-
-    emit(
-      state.copyWith(
-        currencyList: currencies,
-        isSats: isSats,
-      ),
-    );
-
-    await Future.delayed(100.microseconds);
-
-    final updatedCurrenciess = state.updatedCurrencyList();
-    final selectedCurrency =
-        updatedCurrenciess.firstWhere((element) => element.name == (isSats ? 'sats' : 'btc'));
-
-    emit(state.copyWith(selectedCurrency: selectedCurrency));
-  }
-
-  void updateCurrency(String currency) {
-    final currencies = state.updatedCurrencyList();
-    final selectedCurrency =
-        currencies.firstWhere((element) => element.name.toLowerCase() == currency);
-
-    if (currency == 'btc' || currency == 'sats')
-      emit(
-        state.copyWith(
-          fiatSelected: false,
-          selectedCurrency: selectedCurrency,
-          isSats: currency == 'sats',
-          tempAmount: '',
-        ),
-      );
-    else
-      emit(
-        state.copyWith(
-          fiatSelected: true,
-          selectedCurrency: selectedCurrency,
-          isSats: false,
-          tempAmount: '',
-        ),
-      );
-    _convertAmtOnCurrencyChange();
-  }
-
-  void _convertAmtOnCurrencyChange() async {
-    await Future.delayed(300.ms);
-    final satsAmt = state.amount;
-    String amt = '';
-    if (state.fiatSelected) {
-      final currency = state.selectedCurrency ?? settingsCubit.state.currency;
-      final fiatAmt = currency!.price! * (satsAmt / 100000000);
-      amt = fiatAmt.toStringAsFixed(2);
-    } else {
-      if (state.isSats)
-        amt = satsAmt.toString();
-      else
-        amt = (satsAmt / 100000000).toStringAsFixed(8);
-    }
-    emit(state.copyWith(tempAmount: amt));
-    updateAmount(amt);
-  }
-
-  void _btcToCurrentTempAmount(double btcAmt) {
-    String amt = '';
-    if (state.fiatSelected) {
-      final currency = state.selectedCurrency ?? settingsCubit.state.currency;
-      final fiatAmt = currency!.price! * btcAmt;
-      amt = fiatAmt.toStringAsFixed(2);
-    } else {
-      if (state.isSats)
-        amt = (btcAmt * 100000000).toStringAsFixed(0);
-      else
-        amt = btcAmt.toString();
-    }
-    emit(state.copyWith(tempAmount: amt));
-    updateAmount(amt);
-  }
-
-  void updateAmount(String txt) {
-    var clean = txt.replaceAll(',', '').replaceAll(' ', '');
-    if (state.isSats) clean = clean.replaceAll('.', '');
-
-    final isFiat = state.fiatSelected;
-    if (isFiat) {
-      final currency = state.selectedCurrency ?? settingsCubit.state.currency;
-      final fiat = double.tryParse(clean) ?? 0;
-      final sats = (fiat / currency!.price!) * 100000000;
-      emit(state.copyWith(amount: sats.toInt(), fiatAmt: fiat));
-      _updateShowSend();
-      return;
-    }
-
-    final isSats = state.isSats;
-    final amt = settingsCubit.state.getSatsAmount(clean, isSats);
-    final currency = settingsCubit.state.currency;
-    final fiatAmt = currency!.price! * (amt / 100000000);
-
-    emit(state.copyWith(amount: amt, fiatAmt: fiatAmt));
-    _updateShowSend();
-  }
-
-  void updateAmountError(String err) {
-    emit(state.copyWith(errScanningAddress: err));
-  }
-
   void disableRBF(bool disable) {
     emit(state.copyWith(disableRBF: disable));
   }
@@ -247,9 +136,9 @@ class SendCubit extends Cubit<SendState> {
     emit(
       state.copyWith(
         sendAllCoin: sendAll,
-        amount: sendAll ? balance : 0,
       ),
     );
+    currencyCubit.updateAmountDirect(sendAll ? balance : 0);
     _updateShowSend();
   }
 
@@ -270,7 +159,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void _updateShowSend() {
-    final amount = state.amount;
+    final amount = currencyCubit.state.amount;
     if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
       return;
@@ -281,7 +170,7 @@ class SendCubit extends Cubit<SendState> {
       else
         emit(state.copyWith(showSendButton: false));
     } else {
-      final hasEnoughCoinns = state.selectedAddressesHasEnoughCoins();
+      final hasEnoughCoinns = state.selectedAddressesHasEnoughCoins(amount);
       emit(state.copyWith(showSendButton: hasEnoughCoinns));
     }
   }
@@ -334,7 +223,7 @@ class SendCubit extends Cubit<SendState> {
       pubWallet: walletBloc.state.bdkWallet!,
       isManualSend: state.selectedAddresses.isNotEmpty,
       address: state.address,
-      amount: state.amount,
+      amount: currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
       feeRate: networkFeesCubit.state.selectedFeesOption == 4
           ? networkFeesCubit.state.fees!.toDouble()

@@ -11,6 +11,7 @@ import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/address/bloc/address_cubit.dart';
 import 'package:bb_mobile/address/bloc/address_state.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -181,7 +182,7 @@ class AddressDetails extends StatelessWidget {
     final label = address.label ?? '';
     final isReceive = address.kind == AddressKind.deposit;
     final balance = address.calculateBalance();
-    final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(balance));
+    final amt = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(balance));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

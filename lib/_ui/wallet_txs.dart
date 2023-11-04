@@ -1,8 +1,7 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-// import 'package:bb_mobile/send/send_page.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
@@ -105,7 +104,7 @@ class HomeTxItem extends StatelessWidget {
     final label = tx.label ?? '';
 
     final amount = context
-        .select((SettingsCubit x) => x.state.getAmountInUnits(tx.getAmount(sentAsTotal: true)));
+        .select((CurrencyCubit x) => x.state.getAmountInUnits(tx.getAmount(sentAsTotal: true)));
 
     final isReceive = tx.isReceived();
 

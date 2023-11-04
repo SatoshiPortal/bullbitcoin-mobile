@@ -8,12 +8,12 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -338,10 +338,10 @@ class TxInfo extends StatelessWidget {
 
     // final txAddress = context.select((BroadcastTxCubit _) => _.state.transaction?.outAddrs ?? []);
 
-    final sState = context.select((SettingsCubit cubit) => cubit.state);
+    final cState = context.select((CurrencyCubit cubit) => cubit.state);
 
-    final amt = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txamt));
-    final fee = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(txfee));
+    final amt = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(txamt));
+    final fee = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(txfee));
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 16,
@@ -438,7 +438,7 @@ class TxInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 BBText.bodySmall(address.miniString()),
-                BBText.bodyBold(sState.getAmountInUnits(address.highestPreviousBalance)),
+                BBText.bodyBold(cState.getAmountInUnits(address.highestPreviousBalance)),
               ],
             ),
             const Gap(8),

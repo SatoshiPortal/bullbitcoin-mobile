@@ -16,7 +16,6 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$SendState {
-  int get amount => throw _privateConstructorUsedError;
   String? get tempAmount => throw _privateConstructorUsedError;
   String get address => throw _privateConstructorUsedError;
   String get note => throw _privateConstructorUsedError;
@@ -38,11 +37,6 @@ mixin _$SendState {
   bool get signed => throw _privateConstructorUsedError;
   String? get psbtSigned => throw _privateConstructorUsedError;
   int? get psbtSignedFeeAmount => throw _privateConstructorUsedError;
-  Currency? get selectedCurrency => throw _privateConstructorUsedError;
-  List<Currency>? get currencyList => throw _privateConstructorUsedError;
-  bool get isSats => throw _privateConstructorUsedError;
-  bool get fiatSelected => throw _privateConstructorUsedError;
-  double get fiatAmt => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SendStateCopyWith<SendState> get copyWith =>
@@ -55,8 +49,7 @@ abstract class $SendStateCopyWith<$Res> {
       _$SendStateCopyWithImpl<$Res, SendState>;
   @useResult
   $Res call(
-      {int amount,
-      String? tempAmount,
+      {String? tempAmount,
       String address,
       String note,
       bool scanningAddress,
@@ -76,15 +69,9 @@ abstract class $SendStateCopyWith<$Res> {
       String errAddresses,
       bool signed,
       String? psbtSigned,
-      int? psbtSignedFeeAmount,
-      Currency? selectedCurrency,
-      List<Currency>? currencyList,
-      bool isSats,
-      bool fiatSelected,
-      double fiatAmt});
+      int? psbtSignedFeeAmount});
 
   $TransactionCopyWith<$Res>? get tx;
-  $CurrencyCopyWith<$Res>? get selectedCurrency;
 }
 
 /// @nodoc
@@ -100,7 +87,6 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? amount = null,
     Object? tempAmount = freezed,
     Object? address = null,
     Object? note = null,
@@ -122,17 +108,8 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? signed = null,
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
-    Object? selectedCurrency = freezed,
-    Object? currencyList = freezed,
-    Object? isSats = null,
-    Object? fiatSelected = null,
-    Object? fiatAmt = null,
   }) {
     return _then(_value.copyWith(
-      amount: null == amount
-          ? _value.amount
-          : amount // ignore: cast_nullable_to_non_nullable
-              as int,
       tempAmount: freezed == tempAmount
           ? _value.tempAmount
           : tempAmount // ignore: cast_nullable_to_non_nullable
@@ -217,26 +194,6 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.psbtSignedFeeAmount
           : psbtSignedFeeAmount // ignore: cast_nullable_to_non_nullable
               as int?,
-      selectedCurrency: freezed == selectedCurrency
-          ? _value.selectedCurrency
-          : selectedCurrency // ignore: cast_nullable_to_non_nullable
-              as Currency?,
-      currencyList: freezed == currencyList
-          ? _value.currencyList
-          : currencyList // ignore: cast_nullable_to_non_nullable
-              as List<Currency>?,
-      isSats: null == isSats
-          ? _value.isSats
-          : isSats // ignore: cast_nullable_to_non_nullable
-              as bool,
-      fiatSelected: null == fiatSelected
-          ? _value.fiatSelected
-          : fiatSelected // ignore: cast_nullable_to_non_nullable
-              as bool,
-      fiatAmt: null == fiatAmt
-          ? _value.fiatAmt
-          : fiatAmt // ignore: cast_nullable_to_non_nullable
-              as double,
     ) as $Val);
   }
 
@@ -251,18 +208,6 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
       return _then(_value.copyWith(tx: value) as $Val);
     });
   }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $CurrencyCopyWith<$Res>? get selectedCurrency {
-    if (_value.selectedCurrency == null) {
-      return null;
-    }
-
-    return $CurrencyCopyWith<$Res>(_value.selectedCurrency!, (value) {
-      return _then(_value.copyWith(selectedCurrency: value) as $Val);
-    });
-  }
 }
 
 /// @nodoc
@@ -273,8 +218,7 @@ abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {int amount,
-      String? tempAmount,
+      {String? tempAmount,
       String address,
       String note,
       bool scanningAddress,
@@ -294,17 +238,10 @@ abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
       String errAddresses,
       bool signed,
       String? psbtSigned,
-      int? psbtSignedFeeAmount,
-      Currency? selectedCurrency,
-      List<Currency>? currencyList,
-      bool isSats,
-      bool fiatSelected,
-      double fiatAmt});
+      int? psbtSignedFeeAmount});
 
   @override
   $TransactionCopyWith<$Res>? get tx;
-  @override
-  $CurrencyCopyWith<$Res>? get selectedCurrency;
 }
 
 /// @nodoc
@@ -318,7 +255,6 @@ class __$$_SendStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? amount = null,
     Object? tempAmount = freezed,
     Object? address = null,
     Object? note = null,
@@ -340,17 +276,8 @@ class __$$_SendStateCopyWithImpl<$Res>
     Object? signed = null,
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
-    Object? selectedCurrency = freezed,
-    Object? currencyList = freezed,
-    Object? isSats = null,
-    Object? fiatSelected = null,
-    Object? fiatAmt = null,
   }) {
     return _then(_$_SendState(
-      amount: null == amount
-          ? _value.amount
-          : amount // ignore: cast_nullable_to_non_nullable
-              as int,
       tempAmount: freezed == tempAmount
           ? _value.tempAmount
           : tempAmount // ignore: cast_nullable_to_non_nullable
@@ -435,26 +362,6 @@ class __$$_SendStateCopyWithImpl<$Res>
           ? _value.psbtSignedFeeAmount
           : psbtSignedFeeAmount // ignore: cast_nullable_to_non_nullable
               as int?,
-      selectedCurrency: freezed == selectedCurrency
-          ? _value.selectedCurrency
-          : selectedCurrency // ignore: cast_nullable_to_non_nullable
-              as Currency?,
-      currencyList: freezed == currencyList
-          ? _value._currencyList
-          : currencyList // ignore: cast_nullable_to_non_nullable
-              as List<Currency>?,
-      isSats: null == isSats
-          ? _value.isSats
-          : isSats // ignore: cast_nullable_to_non_nullable
-              as bool,
-      fiatSelected: null == fiatSelected
-          ? _value.fiatSelected
-          : fiatSelected // ignore: cast_nullable_to_non_nullable
-              as bool,
-      fiatAmt: null == fiatAmt
-          ? _value.fiatAmt
-          : fiatAmt // ignore: cast_nullable_to_non_nullable
-              as double,
     ));
   }
 }
@@ -463,8 +370,7 @@ class __$$_SendStateCopyWithImpl<$Res>
 
 class _$_SendState extends _SendState {
   const _$_SendState(
-      {this.amount = 0,
-      this.tempAmount,
+      {this.tempAmount,
       this.address = '',
       this.note = '',
       this.scanningAddress = false,
@@ -484,19 +390,10 @@ class _$_SendState extends _SendState {
       this.errAddresses = '',
       this.signed = false,
       this.psbtSigned,
-      this.psbtSignedFeeAmount,
-      this.selectedCurrency,
-      final List<Currency>? currencyList,
-      this.isSats = false,
-      this.fiatSelected = false,
-      this.fiatAmt = 0})
+      this.psbtSignedFeeAmount})
       : _selectedAddresses = selectedAddresses,
-        _currencyList = currencyList,
         super._();
 
-  @override
-  @JsonKey()
-  final int amount;
   @override
   final String? tempAmount;
   @override
@@ -563,31 +460,10 @@ class _$_SendState extends _SendState {
   final String? psbtSigned;
   @override
   final int? psbtSignedFeeAmount;
-  @override
-  final Currency? selectedCurrency;
-  final List<Currency>? _currencyList;
-  @override
-  List<Currency>? get currencyList {
-    final value = _currencyList;
-    if (value == null) return null;
-    if (_currencyList is EqualUnmodifiableListView) return _currencyList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  @override
-  @JsonKey()
-  final bool isSats;
-  @override
-  @JsonKey()
-  final bool fiatSelected;
-  @override
-  @JsonKey()
-  final double fiatAmt;
 
   @override
   String toString() {
-    return 'SendState(amount: $amount, tempAmount: $tempAmount, address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
+    return 'SendState(tempAmount: $tempAmount, address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount)';
   }
 
   @override
@@ -595,7 +471,6 @@ class _$_SendState extends _SendState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_SendState &&
-            (identical(other.amount, amount) || other.amount == amount) &&
             (identical(other.tempAmount, tempAmount) ||
                 other.tempAmount == tempAmount) &&
             (identical(other.address, address) || other.address == address) &&
@@ -630,21 +505,12 @@ class _$_SendState extends _SendState {
             (identical(other.psbtSigned, psbtSigned) ||
                 other.psbtSigned == psbtSigned) &&
             (identical(other.psbtSignedFeeAmount, psbtSignedFeeAmount) ||
-                other.psbtSignedFeeAmount == psbtSignedFeeAmount) &&
-            (identical(other.selectedCurrency, selectedCurrency) ||
-                other.selectedCurrency == selectedCurrency) &&
-            const DeepCollectionEquality()
-                .equals(other._currencyList, _currencyList) &&
-            (identical(other.isSats, isSats) || other.isSats == isSats) &&
-            (identical(other.fiatSelected, fiatSelected) ||
-                other.fiatSelected == fiatSelected) &&
-            (identical(other.fiatAmt, fiatAmt) || other.fiatAmt == fiatAmt));
+                other.psbtSignedFeeAmount == psbtSignedFeeAmount));
   }
 
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        amount,
         tempAmount,
         address,
         note,
@@ -665,12 +531,7 @@ class _$_SendState extends _SendState {
         errAddresses,
         signed,
         psbtSigned,
-        psbtSignedFeeAmount,
-        selectedCurrency,
-        const DeepCollectionEquality().hash(_currencyList),
-        isSats,
-        fiatSelected,
-        fiatAmt
+        psbtSignedFeeAmount
       ]);
 
   @JsonKey(ignore: true)
@@ -682,8 +543,7 @@ class _$_SendState extends _SendState {
 
 abstract class _SendState extends SendState {
   const factory _SendState(
-      {final int amount,
-      final String? tempAmount,
+      {final String? tempAmount,
       final String address,
       final String note,
       final bool scanningAddress,
@@ -703,16 +563,9 @@ abstract class _SendState extends SendState {
       final String errAddresses,
       final bool signed,
       final String? psbtSigned,
-      final int? psbtSignedFeeAmount,
-      final Currency? selectedCurrency,
-      final List<Currency>? currencyList,
-      final bool isSats,
-      final bool fiatSelected,
-      final double fiatAmt}) = _$_SendState;
+      final int? psbtSignedFeeAmount}) = _$_SendState;
   const _SendState._() : super._();
 
-  @override
-  int get amount;
   @override
   String? get tempAmount;
   @override
@@ -755,16 +608,6 @@ abstract class _SendState extends SendState {
   String? get psbtSigned;
   @override
   int? get psbtSignedFeeAmount;
-  @override
-  Currency? get selectedCurrency;
-  @override
-  List<Currency>? get currencyList;
-  @override
-  bool get isSats;
-  @override
-  bool get fiatSelected;
-  @override
-  double get fiatAmt;
   @override
   @JsonKey(ignore: true)
   _$$_SendStateCopyWith<_$_SendState> get copyWith =>

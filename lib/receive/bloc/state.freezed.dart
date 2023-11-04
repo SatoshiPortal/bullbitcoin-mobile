@@ -23,18 +23,11 @@ mixin _$ReceiveState {
   bool get savingLabel => throw _privateConstructorUsedError;
   String get errSavingLabel => throw _privateConstructorUsedError;
   bool get labelSaved => throw _privateConstructorUsedError;
-  int get invoiceAmount => throw _privateConstructorUsedError;
   int get savedInvoiceAmount => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   String get savedDescription => throw _privateConstructorUsedError;
   bool get creatingInvoice => throw _privateConstructorUsedError;
-  String get errCreatingInvoice =>
-      throw _privateConstructorUsedError; // Address? newInvoiceAddress,
-  Currency? get selectedCurrency => throw _privateConstructorUsedError;
-  List<Currency>? get currencyList => throw _privateConstructorUsedError;
-  bool get isSats => throw _privateConstructorUsedError;
-  bool get fiatSelected => throw _privateConstructorUsedError;
-  double get fiatAmt => throw _privateConstructorUsedError;
+  String get errCreatingInvoice => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ReceiveStateCopyWith<ReceiveState> get copyWith =>
@@ -55,20 +48,13 @@ abstract class $ReceiveStateCopyWith<$Res> {
       bool savingLabel,
       String errSavingLabel,
       bool labelSaved,
-      int invoiceAmount,
       int savedInvoiceAmount,
       String description,
       String savedDescription,
       bool creatingInvoice,
-      String errCreatingInvoice,
-      Currency? selectedCurrency,
-      List<Currency>? currencyList,
-      bool isSats,
-      bool fiatSelected,
-      double fiatAmt});
+      String errCreatingInvoice});
 
   $AddressCopyWith<$Res>? get defaultAddress;
-  $CurrencyCopyWith<$Res>? get selectedCurrency;
 }
 
 /// @nodoc
@@ -91,17 +77,11 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? savingLabel = null,
     Object? errSavingLabel = null,
     Object? labelSaved = null,
-    Object? invoiceAmount = null,
     Object? savedInvoiceAmount = null,
     Object? description = null,
     Object? savedDescription = null,
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
-    Object? selectedCurrency = freezed,
-    Object? currencyList = freezed,
-    Object? isSats = null,
-    Object? fiatSelected = null,
-    Object? fiatAmt = null,
   }) {
     return _then(_value.copyWith(
       loadingAddress: null == loadingAddress
@@ -132,10 +112,6 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.labelSaved
           : labelSaved // ignore: cast_nullable_to_non_nullable
               as bool,
-      invoiceAmount: null == invoiceAmount
-          ? _value.invoiceAmount
-          : invoiceAmount // ignore: cast_nullable_to_non_nullable
-              as int,
       savedInvoiceAmount: null == savedInvoiceAmount
           ? _value.savedInvoiceAmount
           : savedInvoiceAmount // ignore: cast_nullable_to_non_nullable
@@ -156,26 +132,6 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.errCreatingInvoice
           : errCreatingInvoice // ignore: cast_nullable_to_non_nullable
               as String,
-      selectedCurrency: freezed == selectedCurrency
-          ? _value.selectedCurrency
-          : selectedCurrency // ignore: cast_nullable_to_non_nullable
-              as Currency?,
-      currencyList: freezed == currencyList
-          ? _value.currencyList
-          : currencyList // ignore: cast_nullable_to_non_nullable
-              as List<Currency>?,
-      isSats: null == isSats
-          ? _value.isSats
-          : isSats // ignore: cast_nullable_to_non_nullable
-              as bool,
-      fiatSelected: null == fiatSelected
-          ? _value.fiatSelected
-          : fiatSelected // ignore: cast_nullable_to_non_nullable
-              as bool,
-      fiatAmt: null == fiatAmt
-          ? _value.fiatAmt
-          : fiatAmt // ignore: cast_nullable_to_non_nullable
-              as double,
     ) as $Val);
   }
 
@@ -188,18 +144,6 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
 
     return $AddressCopyWith<$Res>(_value.defaultAddress!, (value) {
       return _then(_value.copyWith(defaultAddress: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $CurrencyCopyWith<$Res>? get selectedCurrency {
-    if (_value.selectedCurrency == null) {
-      return null;
-    }
-
-    return $CurrencyCopyWith<$Res>(_value.selectedCurrency!, (value) {
-      return _then(_value.copyWith(selectedCurrency: value) as $Val);
     });
   }
 }
@@ -220,22 +164,14 @@ abstract class _$$_ReceiveStateCopyWith<$Res>
       bool savingLabel,
       String errSavingLabel,
       bool labelSaved,
-      int invoiceAmount,
       int savedInvoiceAmount,
       String description,
       String savedDescription,
       bool creatingInvoice,
-      String errCreatingInvoice,
-      Currency? selectedCurrency,
-      List<Currency>? currencyList,
-      bool isSats,
-      bool fiatSelected,
-      double fiatAmt});
+      String errCreatingInvoice});
 
   @override
   $AddressCopyWith<$Res>? get defaultAddress;
-  @override
-  $CurrencyCopyWith<$Res>? get selectedCurrency;
 }
 
 /// @nodoc
@@ -256,17 +192,11 @@ class __$$_ReceiveStateCopyWithImpl<$Res>
     Object? savingLabel = null,
     Object? errSavingLabel = null,
     Object? labelSaved = null,
-    Object? invoiceAmount = null,
     Object? savedInvoiceAmount = null,
     Object? description = null,
     Object? savedDescription = null,
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
-    Object? selectedCurrency = freezed,
-    Object? currencyList = freezed,
-    Object? isSats = null,
-    Object? fiatSelected = null,
-    Object? fiatAmt = null,
   }) {
     return _then(_$_ReceiveState(
       loadingAddress: null == loadingAddress
@@ -297,10 +227,6 @@ class __$$_ReceiveStateCopyWithImpl<$Res>
           ? _value.labelSaved
           : labelSaved // ignore: cast_nullable_to_non_nullable
               as bool,
-      invoiceAmount: null == invoiceAmount
-          ? _value.invoiceAmount
-          : invoiceAmount // ignore: cast_nullable_to_non_nullable
-              as int,
       savedInvoiceAmount: null == savedInvoiceAmount
           ? _value.savedInvoiceAmount
           : savedInvoiceAmount // ignore: cast_nullable_to_non_nullable
@@ -321,26 +247,6 @@ class __$$_ReceiveStateCopyWithImpl<$Res>
           ? _value.errCreatingInvoice
           : errCreatingInvoice // ignore: cast_nullable_to_non_nullable
               as String,
-      selectedCurrency: freezed == selectedCurrency
-          ? _value.selectedCurrency
-          : selectedCurrency // ignore: cast_nullable_to_non_nullable
-              as Currency?,
-      currencyList: freezed == currencyList
-          ? _value._currencyList
-          : currencyList // ignore: cast_nullable_to_non_nullable
-              as List<Currency>?,
-      isSats: null == isSats
-          ? _value.isSats
-          : isSats // ignore: cast_nullable_to_non_nullable
-              as bool,
-      fiatSelected: null == fiatSelected
-          ? _value.fiatSelected
-          : fiatSelected // ignore: cast_nullable_to_non_nullable
-              as bool,
-      fiatAmt: null == fiatAmt
-          ? _value.fiatAmt
-          : fiatAmt // ignore: cast_nullable_to_non_nullable
-              as double,
     ));
   }
 }
@@ -356,19 +262,12 @@ class _$_ReceiveState extends _ReceiveState {
       this.savingLabel = false,
       this.errSavingLabel = '',
       this.labelSaved = false,
-      this.invoiceAmount = 0,
       this.savedInvoiceAmount = 0,
       this.description = '',
       this.savedDescription = '',
       this.creatingInvoice = true,
-      this.errCreatingInvoice = '',
-      this.selectedCurrency,
-      final List<Currency>? currencyList,
-      this.isSats = false,
-      this.fiatSelected = false,
-      this.fiatAmt = 0})
-      : _currencyList = currencyList,
-        super._();
+      this.errCreatingInvoice = ''})
+      : super._();
 
   @override
   @JsonKey()
@@ -392,9 +291,6 @@ class _$_ReceiveState extends _ReceiveState {
   final bool labelSaved;
   @override
   @JsonKey()
-  final int invoiceAmount;
-  @override
-  @JsonKey()
   final int savedInvoiceAmount;
   @override
   @JsonKey()
@@ -408,32 +304,10 @@ class _$_ReceiveState extends _ReceiveState {
   @override
   @JsonKey()
   final String errCreatingInvoice;
-// Address? newInvoiceAddress,
-  @override
-  final Currency? selectedCurrency;
-  final List<Currency>? _currencyList;
-  @override
-  List<Currency>? get currencyList {
-    final value = _currencyList;
-    if (value == null) return null;
-    if (_currencyList is EqualUnmodifiableListView) return _currencyList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  @override
-  @JsonKey()
-  final bool isSats;
-  @override
-  @JsonKey()
-  final bool fiatSelected;
-  @override
-  @JsonKey()
-  final double fiatAmt;
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, invoiceAmount: $invoiceAmount, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice)';
   }
 
   @override
@@ -455,8 +329,6 @@ class _$_ReceiveState extends _ReceiveState {
                 other.errSavingLabel == errSavingLabel) &&
             (identical(other.labelSaved, labelSaved) ||
                 other.labelSaved == labelSaved) &&
-            (identical(other.invoiceAmount, invoiceAmount) ||
-                other.invoiceAmount == invoiceAmount) &&
             (identical(other.savedInvoiceAmount, savedInvoiceAmount) ||
                 other.savedInvoiceAmount == savedInvoiceAmount) &&
             (identical(other.description, description) ||
@@ -466,15 +338,7 @@ class _$_ReceiveState extends _ReceiveState {
             (identical(other.creatingInvoice, creatingInvoice) ||
                 other.creatingInvoice == creatingInvoice) &&
             (identical(other.errCreatingInvoice, errCreatingInvoice) ||
-                other.errCreatingInvoice == errCreatingInvoice) &&
-            (identical(other.selectedCurrency, selectedCurrency) ||
-                other.selectedCurrency == selectedCurrency) &&
-            const DeepCollectionEquality()
-                .equals(other._currencyList, _currencyList) &&
-            (identical(other.isSats, isSats) || other.isSats == isSats) &&
-            (identical(other.fiatSelected, fiatSelected) ||
-                other.fiatSelected == fiatSelected) &&
-            (identical(other.fiatAmt, fiatAmt) || other.fiatAmt == fiatAmt));
+                other.errCreatingInvoice == errCreatingInvoice));
   }
 
   @override
@@ -487,17 +351,11 @@ class _$_ReceiveState extends _ReceiveState {
       savingLabel,
       errSavingLabel,
       labelSaved,
-      invoiceAmount,
       savedInvoiceAmount,
       description,
       savedDescription,
       creatingInvoice,
-      errCreatingInvoice,
-      selectedCurrency,
-      const DeepCollectionEquality().hash(_currencyList),
-      isSats,
-      fiatSelected,
-      fiatAmt);
+      errCreatingInvoice);
 
   @JsonKey(ignore: true)
   @override
@@ -515,17 +373,11 @@ abstract class _ReceiveState extends ReceiveState {
       final bool savingLabel,
       final String errSavingLabel,
       final bool labelSaved,
-      final int invoiceAmount,
       final int savedInvoiceAmount,
       final String description,
       final String savedDescription,
       final bool creatingInvoice,
-      final String errCreatingInvoice,
-      final Currency? selectedCurrency,
-      final List<Currency>? currencyList,
-      final bool isSats,
-      final bool fiatSelected,
-      final double fiatAmt}) = _$_ReceiveState;
+      final String errCreatingInvoice}) = _$_ReceiveState;
   const _ReceiveState._() : super._();
 
   @override
@@ -543,8 +395,6 @@ abstract class _ReceiveState extends ReceiveState {
   @override
   bool get labelSaved;
   @override
-  int get invoiceAmount;
-  @override
   int get savedInvoiceAmount;
   @override
   String get description;
@@ -554,16 +404,6 @@ abstract class _ReceiveState extends ReceiveState {
   bool get creatingInvoice;
   @override
   String get errCreatingInvoice;
-  @override // Address? newInvoiceAddress,
-  Currency? get selectedCurrency;
-  @override
-  List<Currency>? get currencyList;
-  @override
-  bool get isSats;
-  @override
-  bool get fiatSelected;
-  @override
-  double get fiatAmt;
   @override
   @JsonKey(ignore: true)
   _$$_ReceiveStateCopyWith<_$_ReceiveState> get copyWith =>

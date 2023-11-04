@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -20,7 +19,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     required this.walletSync,
   }) : super(const SettingsState()) {
     init();
-    loadCurrencies();
   }
 
   final HiveStorage hiveStorage;
@@ -58,10 +56,6 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(settings);
   }
 
-  void toggleUnitsInSats() {
-    emit(state.copyWith(unitsInSats: !state.unitsInSats));
-  }
-
   void toggleNotifications() {
     emit(state.copyWith(notifications: !state.notifications));
   }
@@ -88,44 +82,5 @@ class SettingsCubit extends Cubit<SettingsState> {
     _timer = Timer.periodic(Duration(seconds: state.reloadWalletTimer), (timer) {
       homeCubit?.state.selectedWalletCubit?.add(SyncWallet());
     });
-  }
-
-  void changeCurrency(Currency currency) {
-    emit(state.copyWith(currency: currency));
-  }
-
-  void loadCurrencies() async {
-    emit(state.copyWith(loadingCurrency: true));
-    final (cad, _) = await bbAPI.getExchangeRate(toCurrency: 'CAD');
-    final (usd, _) = await bbAPI.getExchangeRate(toCurrency: 'USD');
-
-    final (crc, _) = await bbAPI.getExchangeRate(toCurrency: 'CRC');
-    final (inr, _) = await bbAPI.getExchangeRate(toCurrency: 'INR');
-
-    final results = [
-      if (cad != null) cad,
-      if (usd != null) usd,
-      if (crc != null) crc,
-      if (inr != null) inr,
-    ];
-
-    emit(
-      state.copyWith(
-        currency: results.isNotEmpty ? results.first : state.currency,
-        currencyList: results.isEmpty ? results : state.currencyList,
-        loadingCurrency: false,
-        lastUpdatedCurrency: DateTime.now(),
-      ),
-    );
-
-    if (state.currency != null) {
-      final currency = results.firstWhere(
-        (_) => _.name == state.currency!.name,
-        orElse: () => state.currency!,
-      );
-      emit(state.copyWith(currency: currency));
-      if (results.isEmpty && state.currencyList == null)
-        emit(state.copyWith(currencyList: [currency]));
-    }
   }
 }

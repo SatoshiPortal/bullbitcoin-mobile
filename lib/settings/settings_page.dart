@@ -1,9 +1,10 @@
-import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/extensions.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/currency/ui.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network/popup.dart';
@@ -98,58 +99,12 @@ class SettingsAppBar extends StatelessWidget {
   }
 }
 
-class Currencyx extends StatelessWidget {
-  const Currencyx({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final currency = context.select((SettingsCubit x) => x.state.currency);
-    final currencies = context.select((SettingsCubit x) => x.state.currencyList ?? []);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const BBText.body(
-          'Currency',
-        ),
-        const Gap(4),
-        SizedBox(
-          height: 60,
-          child: InputDecorator(
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(40.0),
-              ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<Currency>(
-                items: currencies
-                    .map(
-                      (c) => DropdownMenuItem<Currency>(
-                        value: c,
-                        child: BBText.body(c.getFullName()),
-                      ),
-                    )
-                    .toList(),
-                value: currency,
-                onChanged: (c) {
-                  if (c != null) context.read<SettingsCubit>().changeCurrency(c);
-                },
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class Units extends StatelessWidget {
   const Units({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isSats = context.select((SettingsCubit x) => x.state.unitsInSats);
+    final isSats = context.select((CurrencyCubit x) => x.state.unitsInSats);
 
     return Row(
       children: [
@@ -160,7 +115,7 @@ class Units extends StatelessWidget {
         Switch(
           value: isSats,
           onChanged: (e) {
-            context.read<SettingsCubit>().toggleUnitsInSats();
+            context.read<CurrencyCubit>().toggleUnitsInSats();
           },
         ),
       ],

@@ -3,8 +3,8 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -170,10 +170,10 @@ class AddressSelectionPopUp extends StatelessWidget {
   Widget build(BuildContext context) {
     final addresses =
         context.select((SendCubit x) => x.walletBloc.state.wallet!.addressesWithBalance());
-    final amount = context.select((SendCubit x) => x.state.amount);
+    final amount = context.select((CurrencyCubit x) => x.state.amount);
 
     final amt = context.select(
-      (SettingsCubit x) => x.state.getAmountInUnits(amount),
+      (CurrencyCubit x) => x.state.getAmountInUnits(amount),
     );
 
     return PopUpBorder(
@@ -257,7 +257,7 @@ class AdvancedOptionAdress extends StatelessWidget {
     final addressType = address.getKindString();
 
     final amt = context.select(
-      (SettingsCubit x) => x.state.getAmountInUnits(balance),
+      (CurrencyCubit x) => x.state.getAmountInUnits(balance),
     );
 
     final label = address.label ?? '';
@@ -327,7 +327,7 @@ class _SelectedAddressesTotal extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = context.select((SendCubit x) => x.state.calculateTotalSelected());
     final amt = context.select(
-      (SettingsCubit x) => x.state.getAmountInUnits(total),
+      (CurrencyCubit x) => x.state.getAmountInUnits(total),
     );
 
     return BBText.body(

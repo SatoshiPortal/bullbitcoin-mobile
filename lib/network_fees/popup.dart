@@ -3,9 +3,9 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/state.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -276,8 +276,11 @@ class SelectFeesItem extends StatelessWidget {
       fee = context.select((NetworkFeesCubit x) => x.state.feesList?[index] ?? 0);
     }
 
+    final currency = context.select((CurrencyCubit x) => x.state.currency);
+
     final fiatRateStr = context.select(
-      (SettingsCubit _) => _.state.calculateFiatPriceForFees(feeRate: fee),
+      (NetworkFeesCubit _) =>
+          _.state.calculateFiatPriceForFees(feeRate: fee, selectedCurrency: currency),
     );
 
     return GestureDetector(

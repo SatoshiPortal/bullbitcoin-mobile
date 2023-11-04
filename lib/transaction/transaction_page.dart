@@ -19,6 +19,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -111,13 +112,13 @@ class _Screen extends StatelessWidget {
           final isReceived = tx.isReceived();
           final fees = tx.fee ?? 0;
           final amtStr = context.select(
-            (SettingsCubit cubit) => cubit.state.getAmountInUnits(amt, removeText: true),
+            (CurrencyCubit cubit) => cubit.state.getAmountInUnits(amt, removeText: true),
           );
           final feeStr = context.select(
-            (SettingsCubit cubit) => cubit.state.getAmountInUnits(fees, removeText: true),
+            (CurrencyCubit cubit) => cubit.state.getAmountInUnits(fees, removeText: true),
           );
           final units = context.select(
-            (SettingsCubit cubit) => cubit.state.getUnitString(),
+            (CurrencyCubit cubit) => cubit.state.getUnitString(),
           );
           final status = tx.timestamp == 0 ? 'Pending' : 'Confirmed';
           final time =

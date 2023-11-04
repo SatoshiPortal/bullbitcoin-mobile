@@ -22,6 +22,7 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -91,6 +92,12 @@ Future setupLocator({bool fromTest = false}) async {
     networkCubit: networkCubit,
   );
   locator.registerSingleton<NetworkFeesCubit>(networkFeesCubit);
+
+  final currencyCubit = CurrencyCubit(
+    hiveStorage: hiveStorage,
+    bbAPI: bbAPI,
+  );
+  locator.registerSingleton<CurrencyCubit>(currencyCubit);
 
   final settings = SettingsCubit(
     walletSync: walletSync,

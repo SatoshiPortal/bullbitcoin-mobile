@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,28 +40,28 @@ class _Screen extends StatelessWidget {
     final walletName = context.select((WalletBloc _) => _.state.name);
     final totalBalance = context.select((WalletBloc _) => _.state.balance?.total ?? 0);
     final totalStr = context.select(
-      (SettingsCubit _) => _.state.getAmountInUnits(totalBalance, removeText: true),
+      (CurrencyCubit _) => _.state.getAmountInUnits(totalBalance, removeText: true),
     );
     final confirmedBalance = context.select((WalletBloc _) => _.state.balance?.confirmed ?? 0);
     final confirmedStr = context.select(
-      (SettingsCubit _) => _.state.getAmountInUnits(confirmedBalance, removeText: true),
+      (CurrencyCubit _) => _.state.getAmountInUnits(confirmedBalance, removeText: true),
     );
     final unconfirmedBalance =
         context.select((WalletBloc _) => _.state.balance?.untrustedPending ?? 0);
     final unconfirmedStr = context.select(
-      (SettingsCubit _) => _.state.getAmountInUnits(unconfirmedBalance, removeText: true),
+      (CurrencyCubit _) => _.state.getAmountInUnits(unconfirmedBalance, removeText: true),
     );
     final amtSent = context.select(
       (WalletBloc cubit) => cubit.state.wallet!.totalSent(),
     );
     final sentStr = context.select(
-      (SettingsCubit _) => _.state.getAmountInUnits(amtSent, removeText: true),
+      (CurrencyCubit _) => _.state.getAmountInUnits(amtSent, removeText: true),
     );
     final amtReceived = context.select(
       (WalletBloc cubit) => cubit.state.wallet!.totalReceived(),
     );
     final receivedStr = context.select(
-      (SettingsCubit _) => _.state.getAmountInUnits(amtReceived, removeText: true),
+      (CurrencyCubit _) => _.state.getAmountInUnits(amtReceived, removeText: true),
     );
     final txsReceivedCount = context.select(
       (WalletBloc _) => _.state.wallet?.txReceivedCount() ?? 0,
@@ -69,7 +69,7 @@ class _Screen extends StatelessWidget {
     final txsSentCount = context.select(
       (WalletBloc _) => _.state.wallet?.txSentCount() ?? 0,
     );
-    final units = context.select((SettingsCubit x) => x.state.getUnitString());
+    final units = context.select((CurrencyCubit x) => x.state.getUnitString());
 
     return SingleChildScrollView(
       child: Padding(

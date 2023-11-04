@@ -12,9 +12,9 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/addresses.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
@@ -280,14 +280,14 @@ class Balances extends StatelessWidget {
     );
 
     final inAmt = context.select(
-      (SettingsCubit x) => x.state.getAmountInUnits(amtReceived, removeText: true),
+      (CurrencyCubit x) => x.state.getAmountInUnits(amtReceived, removeText: true),
     );
 
     final outAmt = context.select(
-      (SettingsCubit x) => x.state.getAmountInUnits(amtSent, removeText: true),
+      (CurrencyCubit x) => x.state.getAmountInUnits(amtSent, removeText: true),
     );
 
-    final units = context.select((SettingsCubit x) => x.state.getUnitString());
+    final units = context.select((CurrencyCubit x) => x.state.getUnitString());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

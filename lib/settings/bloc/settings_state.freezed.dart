@@ -20,14 +20,8 @@ SettingsState _$SettingsStateFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$SettingsState {
-  bool get unitsInSats => throw _privateConstructorUsedError;
   bool get notifications => throw _privateConstructorUsedError;
   bool get privacyView => throw _privateConstructorUsedError;
-  Currency? get currency => throw _privateConstructorUsedError;
-  List<Currency>? get currencyList => throw _privateConstructorUsedError;
-  DateTime? get lastUpdatedCurrency => throw _privateConstructorUsedError;
-  bool get loadingCurrency => throw _privateConstructorUsedError;
-  String get errLoadingCurrency => throw _privateConstructorUsedError;
   int get reloadWalletTimer => throw _privateConstructorUsedError;
   String? get language => throw _privateConstructorUsedError;
   List<String>? get languageList => throw _privateConstructorUsedError;
@@ -48,22 +42,14 @@ abstract class $SettingsStateCopyWith<$Res> {
       _$SettingsStateCopyWithImpl<$Res, SettingsState>;
   @useResult
   $Res call(
-      {bool unitsInSats,
-      bool notifications,
+      {bool notifications,
       bool privacyView,
-      Currency? currency,
-      List<Currency>? currencyList,
-      DateTime? lastUpdatedCurrency,
-      bool loadingCurrency,
-      String errLoadingCurrency,
       int reloadWalletTimer,
       String? language,
       List<String>? languageList,
       bool loadingLanguage,
       String errLoadingLanguage,
       bool defaultRBF});
-
-  $CurrencyCopyWith<$Res>? get currency;
 }
 
 /// @nodoc
@@ -79,14 +65,8 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? unitsInSats = null,
     Object? notifications = null,
     Object? privacyView = null,
-    Object? currency = freezed,
-    Object? currencyList = freezed,
-    Object? lastUpdatedCurrency = freezed,
-    Object? loadingCurrency = null,
-    Object? errLoadingCurrency = null,
     Object? reloadWalletTimer = null,
     Object? language = freezed,
     Object? languageList = freezed,
@@ -95,10 +75,6 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? defaultRBF = null,
   }) {
     return _then(_value.copyWith(
-      unitsInSats: null == unitsInSats
-          ? _value.unitsInSats
-          : unitsInSats // ignore: cast_nullable_to_non_nullable
-              as bool,
       notifications: null == notifications
           ? _value.notifications
           : notifications // ignore: cast_nullable_to_non_nullable
@@ -107,26 +83,6 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.privacyView
           : privacyView // ignore: cast_nullable_to_non_nullable
               as bool,
-      currency: freezed == currency
-          ? _value.currency
-          : currency // ignore: cast_nullable_to_non_nullable
-              as Currency?,
-      currencyList: freezed == currencyList
-          ? _value.currencyList
-          : currencyList // ignore: cast_nullable_to_non_nullable
-              as List<Currency>?,
-      lastUpdatedCurrency: freezed == lastUpdatedCurrency
-          ? _value.lastUpdatedCurrency
-          : lastUpdatedCurrency // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      loadingCurrency: null == loadingCurrency
-          ? _value.loadingCurrency
-          : loadingCurrency // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errLoadingCurrency: null == errLoadingCurrency
-          ? _value.errLoadingCurrency
-          : errLoadingCurrency // ignore: cast_nullable_to_non_nullable
-              as String,
       reloadWalletTimer: null == reloadWalletTimer
           ? _value.reloadWalletTimer
           : reloadWalletTimer // ignore: cast_nullable_to_non_nullable
@@ -153,18 +109,6 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
               as bool,
     ) as $Val);
   }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $CurrencyCopyWith<$Res>? get currency {
-    if (_value.currency == null) {
-      return null;
-    }
-
-    return $CurrencyCopyWith<$Res>(_value.currency!, (value) {
-      return _then(_value.copyWith(currency: value) as $Val);
-    });
-  }
 }
 
 /// @nodoc
@@ -176,23 +120,14 @@ abstract class _$$_SettingsStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {bool unitsInSats,
-      bool notifications,
+      {bool notifications,
       bool privacyView,
-      Currency? currency,
-      List<Currency>? currencyList,
-      DateTime? lastUpdatedCurrency,
-      bool loadingCurrency,
-      String errLoadingCurrency,
       int reloadWalletTimer,
       String? language,
       List<String>? languageList,
       bool loadingLanguage,
       String errLoadingLanguage,
       bool defaultRBF});
-
-  @override
-  $CurrencyCopyWith<$Res>? get currency;
 }
 
 /// @nodoc
@@ -206,14 +141,8 @@ class __$$_SettingsStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? unitsInSats = null,
     Object? notifications = null,
     Object? privacyView = null,
-    Object? currency = freezed,
-    Object? currencyList = freezed,
-    Object? lastUpdatedCurrency = freezed,
-    Object? loadingCurrency = null,
-    Object? errLoadingCurrency = null,
     Object? reloadWalletTimer = null,
     Object? language = freezed,
     Object? languageList = freezed,
@@ -222,10 +151,6 @@ class __$$_SettingsStateCopyWithImpl<$Res>
     Object? defaultRBF = null,
   }) {
     return _then(_$_SettingsState(
-      unitsInSats: null == unitsInSats
-          ? _value.unitsInSats
-          : unitsInSats // ignore: cast_nullable_to_non_nullable
-              as bool,
       notifications: null == notifications
           ? _value.notifications
           : notifications // ignore: cast_nullable_to_non_nullable
@@ -234,26 +159,6 @@ class __$$_SettingsStateCopyWithImpl<$Res>
           ? _value.privacyView
           : privacyView // ignore: cast_nullable_to_non_nullable
               as bool,
-      currency: freezed == currency
-          ? _value.currency
-          : currency // ignore: cast_nullable_to_non_nullable
-              as Currency?,
-      currencyList: freezed == currencyList
-          ? _value._currencyList
-          : currencyList // ignore: cast_nullable_to_non_nullable
-              as List<Currency>?,
-      lastUpdatedCurrency: freezed == lastUpdatedCurrency
-          ? _value.lastUpdatedCurrency
-          : lastUpdatedCurrency // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      loadingCurrency: null == loadingCurrency
-          ? _value.loadingCurrency
-          : loadingCurrency // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errLoadingCurrency: null == errLoadingCurrency
-          ? _value.errLoadingCurrency
-          : errLoadingCurrency // ignore: cast_nullable_to_non_nullable
-              as String,
       reloadWalletTimer: null == reloadWalletTimer
           ? _value.reloadWalletTimer
           : reloadWalletTimer // ignore: cast_nullable_to_non_nullable
@@ -286,22 +191,15 @@ class __$$_SettingsStateCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_SettingsState extends _SettingsState {
   const _$_SettingsState(
-      {this.unitsInSats = false,
-      this.notifications = false,
+      {this.notifications = false,
       this.privacyView = false,
-      this.currency,
-      final List<Currency>? currencyList,
-      this.lastUpdatedCurrency,
-      this.loadingCurrency = false,
-      this.errLoadingCurrency = '',
       this.reloadWalletTimer = 20,
       this.language,
       final List<String>? languageList,
       this.loadingLanguage = false,
       this.errLoadingLanguage = '',
       this.defaultRBF = true})
-      : _currencyList = currencyList,
-        _languageList = languageList,
+      : _languageList = languageList,
         super._();
 
   factory _$_SettingsState.fromJson(Map<String, dynamic> json) =>
@@ -309,33 +207,10 @@ class _$_SettingsState extends _SettingsState {
 
   @override
   @JsonKey()
-  final bool unitsInSats;
-  @override
-  @JsonKey()
   final bool notifications;
   @override
   @JsonKey()
   final bool privacyView;
-  @override
-  final Currency? currency;
-  final List<Currency>? _currencyList;
-  @override
-  List<Currency>? get currencyList {
-    final value = _currencyList;
-    if (value == null) return null;
-    if (_currencyList is EqualUnmodifiableListView) return _currencyList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  @override
-  final DateTime? lastUpdatedCurrency;
-  @override
-  @JsonKey()
-  final bool loadingCurrency;
-  @override
-  @JsonKey()
-  final String errLoadingCurrency;
   @override
   @JsonKey()
   final int reloadWalletTimer;
@@ -363,7 +238,7 @@ class _$_SettingsState extends _SettingsState {
 
   @override
   String toString() {
-    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, defaultRBF: $defaultRBF)';
+    return 'SettingsState(notifications: $notifications, privacyView: $privacyView, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, defaultRBF: $defaultRBF)';
   }
 
   @override
@@ -371,22 +246,10 @@ class _$_SettingsState extends _SettingsState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_SettingsState &&
-            (identical(other.unitsInSats, unitsInSats) ||
-                other.unitsInSats == unitsInSats) &&
             (identical(other.notifications, notifications) ||
                 other.notifications == notifications) &&
             (identical(other.privacyView, privacyView) ||
                 other.privacyView == privacyView) &&
-            (identical(other.currency, currency) ||
-                other.currency == currency) &&
-            const DeepCollectionEquality()
-                .equals(other._currencyList, _currencyList) &&
-            (identical(other.lastUpdatedCurrency, lastUpdatedCurrency) ||
-                other.lastUpdatedCurrency == lastUpdatedCurrency) &&
-            (identical(other.loadingCurrency, loadingCurrency) ||
-                other.loadingCurrency == loadingCurrency) &&
-            (identical(other.errLoadingCurrency, errLoadingCurrency) ||
-                other.errLoadingCurrency == errLoadingCurrency) &&
             (identical(other.reloadWalletTimer, reloadWalletTimer) ||
                 other.reloadWalletTimer == reloadWalletTimer) &&
             (identical(other.language, language) ||
@@ -405,14 +268,8 @@ class _$_SettingsState extends _SettingsState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      unitsInSats,
       notifications,
       privacyView,
-      currency,
-      const DeepCollectionEquality().hash(_currencyList),
-      lastUpdatedCurrency,
-      loadingCurrency,
-      errLoadingCurrency,
       reloadWalletTimer,
       language,
       const DeepCollectionEquality().hash(_languageList),
@@ -436,14 +293,8 @@ class _$_SettingsState extends _SettingsState {
 
 abstract class _SettingsState extends SettingsState {
   const factory _SettingsState(
-      {final bool unitsInSats,
-      final bool notifications,
+      {final bool notifications,
       final bool privacyView,
-      final Currency? currency,
-      final List<Currency>? currencyList,
-      final DateTime? lastUpdatedCurrency,
-      final bool loadingCurrency,
-      final String errLoadingCurrency,
       final int reloadWalletTimer,
       final String? language,
       final List<String>? languageList,
@@ -456,21 +307,9 @@ abstract class _SettingsState extends SettingsState {
       _$_SettingsState.fromJson;
 
   @override
-  bool get unitsInSats;
-  @override
   bool get notifications;
   @override
   bool get privacyView;
-  @override
-  Currency? get currency;
-  @override
-  List<Currency>? get currencyList;
-  @override
-  DateTime? get lastUpdatedCurrency;
-  @override
-  bool get loadingCurrency;
-  @override
-  String get errLoadingCurrency;
   @override
   int get reloadWalletTimer;
   @override

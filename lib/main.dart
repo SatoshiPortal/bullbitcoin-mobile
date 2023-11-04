@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/i18n.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/deep_linking.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -50,6 +51,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
           BlocProvider.value(value: locator<Lighting>()),
           BlocProvider.value(value: locator<NetworkCubit>()),
           BlocProvider.value(value: locator<NetworkFeesCubit>()),
+          BlocProvider.value(value: locator<CurrencyCubit>()),
         ],
         child: BlocListener<SettingsCubit, SettingsState>(
           listener: (context, state) {

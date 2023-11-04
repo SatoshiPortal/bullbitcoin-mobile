@@ -15,12 +15,13 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/currency/ui.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/send/advanced.dart';
-import 'package:bb_mobile/send/amount.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/send/psbt.dart';
@@ -37,23 +38,27 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SendScreen extends StatelessWidget {
+class SendScreen extends StatefulWidget {
   const SendScreen({
     super.key,
     // required this.walletBloc,
     // this.deepLinkUri,
   });
 
-  // final WalletBloc walletBloc;
-  // final String? deepLinkUri;
+  @override
+  State<SendScreen> createState() => _SendScreenState();
+}
+
+class _SendScreenState extends State<SendScreen> {
+  late SendCubit sendCubit;
 
   @override
-  Widget build(BuildContext context) {
-    final walletBloc = context.select((SelectSendWalletStep _) => _.state.walletBloc);
+  void initState() {
+    final walletBloc = context.read<SelectSendWalletStep>().state.walletBloc;
+    // context.select((SelectSendWalletStep _) => _.state.walletBloc);
+    if (walletBloc == null) return;
 
-    if (walletBloc == null) return const SizedBox.shrink();
-
-    final sendCubit = SendCubit(
+    sendCubit = SendCubit(
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletAddress: locator<WalletAddress>(),
@@ -76,21 +81,36 @@ class SendScreen extends StatelessWidget {
         networkCubit: locator<NetworkCubit>(),
         defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
       ),
+      currencyCubit: CurrencyCubit(
+        hiveStorage: locator<HiveStorage>(),
+        bbAPI: locator<BullBitcoinAPI>(),
+        defaultCurrencyCubit: context.read<CurrencyCubit>(),
+      ),
     );
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final walletBloc = context.select((SelectSendWalletStep _) => _.state.walletBloc);
+    if (walletBloc == null) return const SizedBox.shrink();
 
     // if (deepLinkUri != null) sendCubit.updateAddress(deepLinkUri!);
 
-    return BlocProvider.value(
-      value: sendCubit,
-      child: BlocProvider.value(
-        value: walletBloc,
-        child: BlocListener<SendCubit, SendState>(
-          listenWhen: (previous, current) => previous.sent != current.sent && current.sent,
-          listener: (context, state) {
-            context.read<SelectSendWalletStep>().sent();
-          }, //context.pop(),
-          child: const _Screen(),
-        ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: sendCubit),
+        BlocProvider.value(value: sendCubit.currencyCubit),
+        BlocProvider.value(value: sendCubit.networkFeesCubit),
+        BlocProvider.value(value: walletBloc),
+      ],
+      child: BlocListener<SendCubit, SendState>(
+        listenWhen: (previous, current) => previous.sent != current.sent && current.sent,
+        listener: (context, state) {
+          context.read<SelectSendWalletStep>().sent();
+        }, //context.pop(),
+        child: const _Screen(),
       ),
     );
   }
@@ -180,7 +200,7 @@ class WalletBalance extends StatelessWidget {
   Widget build(BuildContext context) {
     final balance = context.select((WalletBloc cubit) => cubit.state.balance?.total ?? 0);
 
-    final balStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(balance));
+    final balStr = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(balance));
 
     return BBText.body(balStr, isBold: true);
   }
@@ -369,7 +389,7 @@ class CoinSelectionButton extends StatelessWidget {
 
     final totalSelected = context.select((SendCubit cubit) => cubit.state.calculateTotalSelected());
     final amtStr = context
-        .select((SettingsCubit _) => _.state.getAmountInUnits(totalSelected, removeText: true));
+        .select((CurrencyCubit _) => _.state.getAmountInUnits(totalSelected, removeText: true));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -412,19 +432,19 @@ class TxDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final address = context.select((SendCubit cubit) => cubit.state.address);
-    final amount = context.select((SendCubit cubit) => cubit.state.amount);
-    final amtStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(amount));
+    final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
+    final amtStr = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
     final fee = context.select((SendCubit cubit) => cubit.state.psbtSignedFeeAmount ?? 0);
-    final feeStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(fee));
+    final feeStr = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
 
-    final currency = context.select((SettingsCubit _) => _.state.currency);
+    final currency = context.select((CurrencyCubit _) => _.state.currency);
     final amtFiat =
         context.select((NetworkCubit cubit) => cubit.state.calculatePrice(amount, currency));
     final feeFiat =
         context.select((NetworkCubit cubit) => cubit.state.calculatePrice(fee, currency));
 
     final fiatCurrency =
-        context.select((SettingsCubit cubit) => cubit.state.currency?.shortName ?? '');
+        context.select((CurrencyCubit cubit) => cubit.state.currency?.shortName ?? '');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -475,8 +495,8 @@ class TxSuccess extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amount = context.select((SendCubit cubit) => cubit.state.amount);
-    final amtStr = context.select((SettingsCubit cubit) => cubit.state.getAmountInUnits(amount));
+    final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
+    final amtStr = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
     final txid = context.select((SendCubit cubit) => cubit.state.tx!.txid);
     return AnnotatedRegion(
       value: const SystemUiOverlayStyle(statusBarColor: Colors.green),

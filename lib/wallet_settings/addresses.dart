@@ -4,7 +4,7 @@ import 'package:bb_mobile/_ui/inline_label.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/address/pop_up.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -245,7 +245,7 @@ class AddressItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final balance = address.calculateBalance();
     final amt = context.select(
-      (SettingsCubit x) => x.state.getAmountInUnits(balance),
+      (CurrencyCubit x) => x.state.getAmountInUnits(balance),
     );
 
     return Padding(

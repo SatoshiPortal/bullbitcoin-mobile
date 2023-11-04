@@ -3,10 +3,10 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,19 +42,19 @@ class PSBTPopUp extends StatelessWidget {
     // final outAddresses = context.select((SendCubit cubit) => cubit.state.tx?.outAddresses ?? []);
 
     final txamt = tx.getAmount();
-    final isSats = context.select((SendCubit cubit) => cubit.state.isSats);
+    final isSats = context.select((CurrencyCubit cubit) => cubit.state.unitsInSats);
     final txfee = context.select((SendCubit cubit) => cubit.state.tx?.fee ?? 0);
     final toAddress = tx.toAddress ?? '';
     final label = tx.label;
 
     final amt = context.select(
-      (SettingsCubit cubit) => cubit.state.getAmountInUnits(
+      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
         txamt,
         isSats: isSats,
       ),
     );
     final fee = context.select(
-      (SettingsCubit cubit) => cubit.state.getAmountInUnits(
+      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
         txfee,
         isSats: isSats,
       ),
