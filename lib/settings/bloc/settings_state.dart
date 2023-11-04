@@ -1,6 +1,5 @@
 // ignore_for_file: invalid_annotation_target
 import 'package:bb_mobile/_model/currency.dart';
-import 'package:bb_mobile/_model/electrum.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 
@@ -29,15 +28,15 @@ class SettingsState with _$SettingsState {
     @Default('') String errLoadingLanguage,
 
     //
-    int? fees,
-    List<int>? feesList,
-    @Default(2) int selectedFeesOption,
-    int? tempFees,
-    int? tempSelectedFeesOption,
-    @Default(false) bool feesSaved,
-    //
-    @Default(false) bool loadingFees,
-    @Default('') String errLoadingFees,
+    // int? fees,
+    // List<int>? feesList,
+    // @Default(2) int selectedFeesOption,
+    // int? tempFees,
+    // int? tempSelectedFeesOption,
+    // @Default(false) bool feesSaved,
+    // //
+    // @Default(false) bool loadingFees,
+    // @Default('') String errLoadingFees,
     // ElectrumTypes? tempNetwork,
     @Default(true) bool defaultRBF,
   }) = _SettingsState;
@@ -130,38 +129,38 @@ class SettingsState with _$SettingsState {
   //     ? 'https://$mempoolapi/testnet/address/$address'
   //     : 'https://$mempoolapi/address/$address';
 
-  String feeButtonText() {
-    var str = '';
-    try {
-      final selectedOption = feeOption();
+  // String feeButtonText() {
+  //   var str = '';
+  //   try {
+  //     final selectedOption = feeOption();
 
-      if (selectedOption == 0) str = 'Fastest fee rate: ' + feesList![0].toString();
-      if (selectedOption == 1) str = 'Fast fee rate: ' + feesList![1].toString();
-      if (selectedOption == 2) str = 'Medium fee rate: ' + feesList![2].toString();
-      if (selectedOption == 3) str = 'Slow fee rate: ' + feesList![3].toString();
+  //     if (selectedOption == 0) str = 'Fastest fee rate: ' + feesList![0].toString();
+  //     if (selectedOption == 1) str = 'Fast fee rate: ' + feesList![1].toString();
+  //     if (selectedOption == 2) str = 'Medium fee rate: ' + feesList![2].toString();
+  //     if (selectedOption == 3) str = 'Slow fee rate: ' + feesList![3].toString();
 
-      if (selectedFeesOption == 4) str = 'Manual fee rate: ' + fees.toString();
-      return str + ' sat/vByte';
-    } catch (e) {
-      return 'Select fee rate';
-    }
-  }
+  //     if (selectedFeesOption == 4) str = 'Manual fee rate: ' + fees.toString();
+  //     return str + ' sat/vByte';
+  //   } catch (e) {
+  //     return 'Select fee rate';
+  //   }
+  // }
 
-  String defaultFeeStatus() {
-    try {
-      var str = '';
-      final selectedOption = feeOption();
-      if (selectedOption == 0) str = feesList![0].toString();
-      if (selectedOption == 1) str = feesList![1].toString();
-      if (selectedOption == 2) str = feesList![2].toString();
-      if (selectedOption == 3) str = feesList![3].toString();
-      if (selectedOption == 4) str = fees.toString();
+  // String defaultFeeStatus() {
+  //   try {
+  //     var str = '';
+  //     final selectedOption = feeOption();
+  //     if (selectedOption == 0) str = feesList![0].toString();
+  //     if (selectedOption == 1) str = feesList![1].toString();
+  //     if (selectedOption == 2) str = feesList![2].toString();
+  //     if (selectedOption == 3) str = feesList![3].toString();
+  //     if (selectedOption == 4) str = fees.toString();
 
-      return str + ' sats/vbyte';
-    } catch (e) {
-      return '';
-    }
-  }
+  //     return str + ' sats/vbyte';
+  //   } catch (e) {
+  //     return '';
+  //   }
+  // }
 
   String calculateFiatPriceForFees({
     required int feeRate,
@@ -177,22 +176,22 @@ class SettingsState with _$SettingsState {
     return '~ $amt $currencyStr';
   }
 
-  int feeOption() => tempSelectedFeesOption ?? selectedFeesOption;
-  int fee() => tempFees ?? fees ?? 0;
+  // int feeOption() => tempSelectedFeesOption ?? selectedFeesOption;
+  // int fee() => tempFees ?? fees ?? 0;
 
-  ElectrumTypes? networkFromString(String text) {
-    final network = text.toLowerCase().replaceAll(' ', '');
-    switch (network) {
-      case 'blockstream':
-        return ElectrumTypes.blockstream;
-      case 'bullbitcoin':
-        return ElectrumTypes.bullbitcoin;
-      case 'custom':
-        return ElectrumTypes.custom;
-      default:
-        return null;
-    }
-  }
+  // ElectrumTypes? networkFromString(String text) {
+  //   final network = text.toLowerCase().replaceAll(' ', '');
+  //   switch (network) {
+  //     case 'blockstream':
+  //       return ElectrumTypes.blockstream;
+  //     case 'bullbitcoin':
+  //       return ElectrumTypes.bullbitcoin;
+  //     case 'custom':
+  //       return ElectrumTypes.custom;
+  //     default:
+  //       return null;
+  //   }
+  // }
 }
 
 extension StringRegEx on String {

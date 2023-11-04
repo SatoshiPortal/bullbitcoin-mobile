@@ -15,6 +15,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -40,9 +41,11 @@ class SendCubit extends Cubit<SendState> {
     required this.mempoolAPI,
     required this.fileStorage,
     required this.networkCubit,
+    required this.networkFeesCubit,
   }) : super(const SendState()) {
-    setupFees();
-    loadFees();
+    init();
+    // setupFees();
+    // loadFees();
     loadCurrencies();
   }
 
@@ -59,43 +62,49 @@ class SendCubit extends Cubit<SendState> {
   final WalletSensitiveRepository walletSensRepository;
   final WalletCreate walletCreate;
   final NetworkCubit networkCubit;
+  final NetworkFeesCubit networkFeesCubit;
 
   final WalletSensitiveCreate walletSensCreate;
   final MempoolAPI mempoolAPI;
   final FileStorage fileStorage;
 
+  void init() {
+    final defaultRBF = settingsCubit.state.defaultRBF;
+    emit(state.copyWith(disableRBF: !defaultRBF));
+  }
+
   void loadAddressesAndBalances() {
     walletBloc.add(GetAddresses());
   }
 
-  void setupFees() {
-    final defaultFeeOption = settingsCubit.state.selectedFeesOption;
-    final defaultRBF = settingsCubit.state.defaultRBF;
-    emit(state.copyWith(selectedFeesOption: defaultFeeOption, disableRBF: !defaultRBF));
-    if (defaultFeeOption == 4) emit(state.copyWith(fees: settingsCubit.state.fees));
-  }
+  // void setupFees() {
+  //   final defaultFeeOption = settingsCubit.state.selectedFeesOption;
+  //   final defaultRBF = settingsCubit.state.defaultRBF;
+  //   emit(state.copyWith(selectedFeesOption: defaultFeeOption, disableRBF: !defaultRBF));
+  //   if (defaultFeeOption == 4) emit(state.copyWith(fees: settingsCubit.state.fees));
+  // }
 
-  void loadFees() async {
-    emit(state.copyWith(loadingFees: true));
-    final isTestnet = networkCubit.state.testnet;
-    final (fees, err) = await mempoolAPI.getFees(isTestnet);
-    if (err != null) {
-      emit(
-        state.copyWith(
-          errLoadingFees: err.toString(),
-          loadingFees: false,
-        ),
-      );
-      return;
-    }
+  // void loadFees() async {
+  //   emit(state.copyWith(loadingFees: true));
+  //   final isTestnet = networkCubit.state.testnet;
+  //   final (fees, err) = await mempoolAPI.getFees(isTestnet);
+  //   if (err != null) {
+  //     emit(
+  //       state.copyWith(
+  //         errLoadingFees: err.toString(),
+  //         loadingFees: false,
+  //       ),
+  //     );
+  //     return;
+  //   }
 
-    emit(
-      state.copyWith(
-        feesList: fees,
-        loadingFees: false,
-      ),
-    );
-  }
+  //   emit(
+  //     state.copyWith(
+  //       feesList: fees,
+  //       loadingFees: false,
+  //     ),
+  //   );
+  // }
 
   void updateAddress(String address) {
     try {
@@ -261,82 +270,82 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(errScanningAddress: err));
   }
 
-  void updateManualFees(String fees) async {
-    final feesInDouble = int.tryParse(fees);
-    if (feesInDouble == null) {
-      // emit(state.copyWith(fees: 000, selectedFeesOption: 2));
-      emit(state.copyWith(tempFees: 000, tempSelectedFeesOption: 2));
-      await Future.delayed(const Duration(milliseconds: 50));
-      // emit(state.copyWith(fees: null));
-      return;
-    }
-    // emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
-    emit(state.copyWith(tempFees: feesInDouble, tempSelectedFeesOption: 4));
-    checkMinimumFees();
-  }
+  // void updateManualFees(String fees) async {
+  //   final feesInDouble = int.tryParse(fees);
+  //   if (feesInDouble == null) {
+  //     // emit(state.copyWith(fees: 000, selectedFeesOption: 2));
+  //     emit(state.copyWith(tempFees: 000, tempSelectedFeesOption: 2));
+  //     await Future.delayed(const Duration(milliseconds: 50));
+  //     // emit(state.copyWith(fees: null));
+  //     return;
+  //   }
+  //   // emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
+  //   emit(state.copyWith(tempFees: feesInDouble, tempSelectedFeesOption: 4));
+  //   checkMinimumFees();
+  // }
 
-  void feeOptionSelected(int index) {
-    emit(state.copyWith(tempSelectedFeesOption: index));
-    // emit(state.copyWith(selectedFeesOption: index));
+  // void feeOptionSelected(int index) {
+  //   emit(state.copyWith(tempSelectedFeesOption: index));
+  //   // emit(state.copyWith(selectedFeesOption: index));
 
-    checkMinimumFees();
-  }
+  //   checkMinimumFees();
+  // }
 
-  void checkFees() {
-    if (state.selectedFeesOption == 4 && (state.fees == null || state.fees == 0))
-      feeOptionSelected(2);
-  }
+  // void checkFees() {
+  //   if (state.selectedFeesOption == 4 && (state.fees == null || state.fees == 0))
+  //     feeOptionSelected(2);
+  // }
 
-  void checkMinimumFees() async {
-    await Future.delayed(50.ms);
-    final minFees = state.feesList!.last;
-    final max = state.feesList!.first * 2;
+  // void checkMinimumFees() async {
+  //   await Future.delayed(50.ms);
+  //   final minFees = state.feesList!.last;
+  //   final max = state.feesList!.first * 2;
 
-    // if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
-    if (state.tempFees != null && state.tempFees! < minFees && state.tempSelectedFeesOption == 4)
-      emit(
-        state.copyWith(
-          errLoadingFees:
-              "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
-          // selectedFeesOption: 2,
-          tempSelectedFeesOption: 2,
-        ),
-      );
-    else if (state.tempFees != null && state.tempFees! > max && state.tempSelectedFeesOption == 4)
-      emit(
-        state.copyWith(
-          errLoadingFees:
-              'The selected fee is too high. Please select a lower fee than $max sats/vbyte .',
-          // selectedFeesOption: 2,
-          tempSelectedFeesOption: 2,
-        ),
-      );
-    else
-      emit(state.copyWith(errLoadingFees: ''));
-  }
+  //   // if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
+  //   if (state.tempFees != null && state.tempFees! < minFees && state.tempSelectedFeesOption == 4)
+  //     emit(
+  //       state.copyWith(
+  //         errLoadingFees:
+  //             "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
+  //         // selectedFeesOption: 2,
+  //         tempSelectedFeesOption: 2,
+  //       ),
+  //     );
+  //   else if (state.tempFees != null && state.tempFees! > max && state.tempSelectedFeesOption == 4)
+  //     emit(
+  //       state.copyWith(
+  //         errLoadingFees:
+  //             'The selected fee is too high. Please select a lower fee than $max sats/vbyte .',
+  //         // selectedFeesOption: 2,
+  //         tempSelectedFeesOption: 2,
+  //       ),
+  //     );
+  //   else
+  //     emit(state.copyWith(errLoadingFees: ''));
+  // }
 
-  void confirmFeeClicked() {
-    if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
-    if (state.tempSelectedFeesOption != null) {
-      if (state.tempSelectedFeesOption == 4 && (state.tempFees == null || state.tempFees == 0)) {
-        // clearTempFeeValues();
-        // return;
-      } else {
-        emit(state.copyWith(selectedFeesOption: state.tempSelectedFeesOption!, fees: null));
-        if (state.tempSelectedFeesOption == 4 &&
-            state.tempFees != null &&
-            state.tempFees! <= (state.feesList!.first * 2))
-          emit(state.copyWith(fees: state.tempFees));
-      }
-    }
-    emit(state.copyWith(feesSaved: true));
-    clearTempFeeValues();
-  }
+  // void confirmFeeClicked() {
+  //   if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
+  //   if (state.tempSelectedFeesOption != null) {
+  //     if (state.tempSelectedFeesOption == 4 && (state.tempFees == null || state.tempFees == 0)) {
+  //       // clearTempFeeValues();
+  //       // return;
+  //     } else {
+  //       emit(state.copyWith(selectedFeesOption: state.tempSelectedFeesOption!, fees: null));
+  //       if (state.tempSelectedFeesOption == 4 &&
+  //           state.tempFees != null &&
+  //           state.tempFees! <= (state.feesList!.first * 2))
+  //         emit(state.copyWith(fees: state.tempFees));
+  //     }
+  //   }
+  //   emit(state.copyWith(feesSaved: true));
+  //   clearTempFeeValues();
+  // }
 
-  void clearTempFeeValues() async {
-    await Future.delayed(200.ms);
-    emit(state.copyWith(tempFees: null, tempSelectedFeesOption: null, feesSaved: false));
-  }
+  // void clearTempFeeValues() async {
+  //   await Future.delayed(200.ms);
+  //   emit(state.copyWith(tempFees: null, tempSelectedFeesOption: null, feesSaved: false));
+  // }
 
   // void updateManualFees(String fees) {
   //   final feesInDouble = int.tryParse(fees);
@@ -471,9 +480,9 @@ class SendCubit extends Cubit<SendState> {
       address: state.address,
       amount: state.amount,
       sendAllCoin: state.sendAllCoin,
-      feeRate: state.selectedFeesOption == 4
-          ? state.fees!.toDouble()
-          : state.feesList![state.selectedFeesOption].toDouble(),
+      feeRate: networkFeesCubit.state.selectedFeesOption == 4
+          ? networkFeesCubit.state.fees!.toDouble()
+          : networkFeesCubit.state.feesList![networkFeesCubit.state.selectedFeesOption].toDouble(),
       enableRbf: !state.disableRBF,
       selectedAddresses: state.selectedAddresses,
       note: state.note,

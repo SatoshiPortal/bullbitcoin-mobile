@@ -5,7 +5,6 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -157,7 +156,7 @@ class _SegmentButton extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: () {
-          final network = context.read<SettingsCubit>().state.networkFromString(text);
+          final network = context.read<NetworkCubit>().state.networkFromString(text);
           if (network == null) return;
           context.read<NetworkCubit>().networkTypeTempChanged(network);
         },

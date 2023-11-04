@@ -1,12 +1,15 @@
+import 'package:bb_mobile/_pkg/mempool_api.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
-import 'package:bb_mobile/send/bloc/send_cubit.dart';
-import 'package:bb_mobile/send/bloc/state.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
+import 'package:bb_mobile/network_fees/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_state.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +32,9 @@ class SelectFeesButton extends StatelessWidget {
   Widget build(BuildContext context) {
     var txt = '';
     if (!fromSettings)
-      txt = context.select((SendCubit cubit) => cubit.state.feeButtonText());
+      txt = context.select((NetworkFeesCubit _) => _.state.feeSendButtonText());
     else {
-      txt = context.select((SettingsCubit cubit) => cubit.state.defaultFeeStatus());
+      txt = context.select((NetworkFeesCubit _) => _.state.defaultFeeStatus());
 
       return BBButton.textWithStatusAndRightArrow(
         label: 'Default fee rate',
@@ -86,8 +89,14 @@ class SelectFeesPopUp extends StatelessWidget {
     bool fromSettings,
   ) {
     if (!fromSettings) {
-      final send = context.read<SendCubit>();
-      send.clearTempFeeValues();
+      final defaultNetworkFees = context.read<NetworkFeesCubit>();
+      defaultNetworkFees.clearTempFeeValues();
+      final fees = NetworkFeesCubit(
+        hiveStorage: locator<HiveStorage>(),
+        mempoolAPI: locator<MempoolAPI>(),
+        networkCubit: context.read<NetworkCubit>(),
+        defaultNetworkFeesCubit: defaultNetworkFees,
+      );
       return showMaterialModalBottomSheet(
         context: context,
         isDismissible: false,
@@ -95,12 +104,12 @@ class SelectFeesPopUp extends StatelessWidget {
         backgroundColor: Colors.transparent,
         builder: (context) => MultiBlocProvider(
           providers: [
-            BlocProvider.value(value: send),
+            BlocProvider.value(value: fees),
             BlocProvider.value(value: FeesCubit(false)),
           ],
           child: WillPopScope(
             onWillPop: () async {
-              send.checkFees();
+              defaultNetworkFees.checkFees();
               return true;
             },
             child: const SelectFeesPopUp(),
@@ -109,9 +118,9 @@ class SelectFeesPopUp extends StatelessWidget {
       );
     }
 
-    final settings = context.read<SettingsCubit>();
-    settings.loadFees();
-    settings.clearTempFeeValues();
+    final defaultFees = context.read<NetworkFeesCubit>();
+    defaultFees.loadFees();
+    defaultFees.clearTempFeeValues();
     return showMaterialModalBottomSheet(
       context: context,
       isDismissible: false,
@@ -119,12 +128,12 @@ class SelectFeesPopUp extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => MultiBlocProvider(
         providers: [
-          BlocProvider.value(value: settings),
+          BlocProvider.value(value: defaultFees),
           BlocProvider.value(value: FeesCubit(true)),
         ],
         child: WillPopScope(
           onWillPop: () async {
-            settings.checkFees();
+            defaultFees.checkFees();
             return true;
           },
           child: const SelectFeesPopUp(),
@@ -157,11 +166,13 @@ class _Screen extends StatelessWidget {
               text: 'Bitcoin Network Fee',
               isLeft: true,
               onBack: () {
-                final fromSettings = context.read<FeesCubit>().state;
-                if (fromSettings)
-                  context.read<SettingsCubit>().clearTempFeeValues();
-                else
-                  context.read<SendCubit>().clearTempFeeValues();
+                // final fromSettings = context.read<FeesCubit>().state;
+                context.read<NetworkFeesCubit>().clearTempFeeValues();
+
+                // if (fromSettings)
+                //   context.read<SettingsCubit>().clearTempFeeValues();
+                // else
+                //   context.read<SendCubit>().clearTempFeeValues();
                 context.pop();
               },
             ),
@@ -220,7 +231,7 @@ class DoneButton extends StatelessWidget {
     final fromSettings = context.read<FeesCubit>().state;
 
     if (fromSettings)
-      return BlocListener<SettingsCubit, SettingsState>(
+      return BlocListener<NetworkFeesCubit, NetworkFeesState>(
         listenWhen: (previous, current) =>
             previous.feesSaved != current.feesSaved && current.feesSaved,
         listener: (context, state) {
@@ -231,7 +242,7 @@ class DoneButton extends StatelessWidget {
             width: 200,
             child: BBButton.bigRed(
               onPressed: () {
-                context.read<SettingsCubit>().confirmFeeClicked();
+                context.read<NetworkFeesCubit>().confirmFeeClicked();
               },
               label: 'Done',
             ),
@@ -239,7 +250,7 @@ class DoneButton extends StatelessWidget {
         ),
       );
     else
-      return BlocListener<SendCubit, SendState>(
+      return BlocListener<NetworkFeesCubit, NetworkFeesState>(
         listenWhen: (previous, current) =>
             previous.feesSaved != current.feesSaved && current.feesSaved,
         listener: (context, state) {
@@ -250,7 +261,7 @@ class DoneButton extends StatelessWidget {
             width: 200,
             child: BBButton.bigRed(
               onPressed: () {
-                context.read<SendCubit>().confirmFeeClicked();
+                context.read<NetworkFeesCubit>().confirmFeeClicked();
               },
               label: 'Done',
             ),
@@ -268,10 +279,10 @@ class LoadingFees extends StatelessWidget {
     final fromSettings = context.read<FeesCubit>().state;
     var loading = false;
 
-    if (!fromSettings)
-      loading = context.select((SendCubit x) => x.state.loadingFees);
-    else
-      loading = context.select((SettingsCubit x) => x.state.loadingFees);
+    // if (!fromSettings)
+    loading = context.select((NetworkFeesCubit x) => x.state.loadingFees);
+    // else
+    // loading = context.select((SettingsCubit x) => x.state.loadingFees);
 
     return CenterLeft(
       child: SizedBox(
@@ -290,7 +301,7 @@ class LoadingFees extends StatelessWidget {
                     label: 'Refresh',
                     onPressed: () {
                       if (!fromSettings)
-                        context.read<SendCubit>().loadFees();
+                        context.read<NetworkFeesCubit>().loadFees();
                       else
                         context.read<SettingsCubit>().loadFees();
                     },
@@ -320,16 +331,16 @@ class SelectFeesItem extends StatelessWidget {
 
     var selected = false;
     if (!fromSettings)
-      selected = context.select((SendCubit x) => x.state.feeOption() == index);
+      selected = context.select((NetworkFeesCubit x) => x.state.feeOption() == index);
     else
-      selected = context.select((SettingsCubit x) => x.state.feeOption() == index);
+      selected = context.select((NetworkFeesCubit x) => x.state.feeOption() == index);
 
     var fee = 0;
     if (!custom) {
       if (!fromSettings) {
-        fee = context.select((SendCubit x) => x.state.feesList?[index] ?? 0);
+        fee = context.select((NetworkFeesCubit x) => x.state.feesList?[index] ?? 0);
       } else {
-        fee = context.select((SettingsCubit x) => x.state.feesList?[index] ?? 0);
+        fee = context.select((NetworkFeesCubit x) => x.state.feesList?[index] ?? 0);
       }
     }
 
@@ -339,10 +350,10 @@ class SelectFeesItem extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        if (!fromSettings)
-          context.read<SendCubit>().feeOptionSelected(index);
-        else
-          context.read<SettingsCubit>().feeOptionSelected(index);
+        // if (!fromSettings)
+        context.read<NetworkFeesCubit>().feeOptionSelected(index);
+        // else
+        // context.read<SettingsCubit>().feeOptionSelected(index);
 
         FocusScope.of(context).unfocus();
       },
@@ -396,28 +407,28 @@ class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
   final _focusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
-    final fromSettings = context.read<FeesCubit>().state;
+    // final fromSettings = context.read<FeesCubit>().state;
 
     var err = '';
-    if (!fromSettings)
-      err = context.select((SendCubit x) => x.state.errLoadingFees);
-    else
-      err = context.select((SettingsCubit x) => x.state.errLoadingFees);
+    // if (!fromSettings)
+    err = context.select((NetworkFeesCubit x) => x.state.errLoadingFees);
+    // else
+    // err = context.select((NetworkFeesCubit x) => x.state.errLoadingFees);
 
     var selected = false;
-    if (!fromSettings)
-      selected = context.select((SendCubit x) => x.state.selectedFeesOption == 4);
-    else
-      selected = context.select((SettingsCubit x) => x.state.selectedFeesOption == 4);
+    // if (!fromSettings)
+    selected = context.select((NetworkFeesCubit x) => x.state.selectedFeesOption == 4);
+    // else
+    // selected = context.select((SettingsCubit x) => x.state.selectedFeesOption == 4);
 
     if (selected && !_focusNode.hasFocus) _focusNode.requestFocus();
 
     var amt = '';
     int? amtt;
-    if (!fromSettings)
-      amtt = context.select((SendCubit x) => x.state.fees);
-    else
-      amtt = context.select((SettingsCubit x) => x.state.fees);
+    // if (!fromSettings)
+    amtt = context.select((NetworkFeesCubit x) => x.state.fees);
+    // else
+    // amtt = context.select((SettingsCubit x) => x.state.fees);
 
     if (amtt != null) amt = amtt.toString();
 
@@ -435,10 +446,10 @@ class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
           // controller: _controller,
           // keyboardType: TextInputType.number,
           onChanged: (value) {
-            if (!fromSettings)
-              context.read<SendCubit>().updateManualFees(value);
-            else
-              context.read<SettingsCubit>().updateManualFees(value);
+            // if (!fromSettings)
+            context.read<NetworkFeesCubit>().updateManualFees(value);
+            // else
+            // context.read<SettingsCubit>().updateManualFees(value);
           },
         ),
         if (err.isNotEmpty) ...[

@@ -14,16 +14,16 @@ class SendState with _$SendState {
     @Default('') String note,
     // @Default(BTCUnit.btc) BTCUnit unit,
     //
-    int? fees,
-    List<int>? feesList,
-    @Default(2) int selectedFeesOption,
-    int? tempFees,
-    int? tempSelectedFeesOption,
-    @Default(false) bool feesSaved,
+    // int? fees,
+    // List<int>? feesList,
+    // @Default(2) int selectedFeesOption,
+    // int? tempFees,
+    // int? tempSelectedFeesOption,
+    // @Default(false) bool feesSaved,
 
-    //
-    @Default(false) bool loadingFees,
-    @Default('') String errLoadingFees,
+    // //
+    // @Default(false) bool loadingFees,
+    // @Default('') String errLoadingFees,
     @Default(false) bool scanningAddress,
     @Default('') String errScanningAddress,
     //
@@ -82,21 +82,21 @@ class SendState with _$SendState {
     return selectedAddresses.contains(address);
   }
 
-  String feeButtonText() {
-    var str = '';
-    try {
-      final selectedOption = feeOption();
-      if (selectedOption == 0) str = 'Fastest (' + feesList![0].toString();
-      if (selectedOption == 1) str = 'Fast (' + feesList![1].toString();
-      if (selectedOption == 2) str = 'Medium (' + feesList![2].toString();
-      if (selectedOption == 3) str = 'Slow (' + feesList![3].toString();
+  // String feeButtonText() {
+  //   var str = '';
+  //   try {
+  //     final selectedOption = feeOption();
+  //     if (selectedOption == 0) str = 'Fastest (' + feesList![0].toString();
+  //     if (selectedOption == 1) str = 'Fast (' + feesList![1].toString();
+  //     if (selectedOption == 2) str = 'Medium (' + feesList![2].toString();
+  //     if (selectedOption == 3) str = 'Slow (' + feesList![3].toString();
 
-      if (selectedOption == 4) str = 'Manual (' + fees.toString();
-      return str + ' sat/vByte)';
-    } catch (e) {
-      return 'Select fee rate';
-    }
-  }
+  //     if (selectedOption == 4) str = 'Manual (' + fees.toString();
+  //     return str + ' sat/vByte)';
+  //   } catch (e) {
+  //     return 'Select fee rate';
+  //   }
+  // }
 
   String advancedOptionsButtonText() {
     if (selectedAddresses.isEmpty) return 'Advanced options';
@@ -116,6 +116,6 @@ class SendState with _$SendState {
     return list;
   }
 
-  int feeOption() => tempSelectedFeesOption ?? selectedFeesOption;
-  int fee() => tempFees ?? fees ?? 0;
+  // int feeOption() => tempSelectedFeesOption ?? selectedFeesOption;
+  // int fee() => tempFees ?? fees ?? 0;
 }

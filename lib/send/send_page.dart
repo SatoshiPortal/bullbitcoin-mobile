@@ -17,6 +17,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/send/advanced.dart';
 import 'package:bb_mobile/send/amount.dart';
@@ -69,6 +70,12 @@ class SendScreen extends StatelessWidget {
       walletRepository: locator<WalletRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
       networkCubit: locator<NetworkCubit>(),
+      networkFeesCubit: NetworkFeesCubit(
+        hiveStorage: locator<HiveStorage>(),
+        mempoolAPI: locator<MempoolAPI>(),
+        networkCubit: locator<NetworkCubit>(),
+        defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
+      ),
     );
 
     // if (deepLinkUri != null) sendCubit.updateAddress(deepLinkUri!);

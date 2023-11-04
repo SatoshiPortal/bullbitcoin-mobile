@@ -29,15 +29,6 @@ _$_SettingsState _$$_SettingsStateFromJson(Map<String, dynamic> json) =>
           .toList(),
       loadingLanguage: json['loadingLanguage'] as bool? ?? false,
       errLoadingLanguage: json['errLoadingLanguage'] as String? ?? '',
-      fees: json['fees'] as int?,
-      feesList:
-          (json['feesList'] as List<dynamic>?)?.map((e) => e as int).toList(),
-      selectedFeesOption: json['selectedFeesOption'] as int? ?? 2,
-      tempFees: json['tempFees'] as int?,
-      tempSelectedFeesOption: json['tempSelectedFeesOption'] as int?,
-      feesSaved: json['feesSaved'] as bool? ?? false,
-      loadingFees: json['loadingFees'] as bool? ?? false,
-      errLoadingFees: json['errLoadingFees'] as String? ?? '',
       defaultRBF: json['defaultRBF'] as bool? ?? true,
     );
 
@@ -56,13 +47,5 @@ Map<String, dynamic> _$$_SettingsStateToJson(_$_SettingsState instance) =>
       'languageList': instance.languageList,
       'loadingLanguage': instance.loadingLanguage,
       'errLoadingLanguage': instance.errLoadingLanguage,
-      'fees': instance.fees,
-      'feesList': instance.feesList,
-      'selectedFeesOption': instance.selectedFeesOption,
-      'tempFees': instance.tempFees,
-      'tempSelectedFeesOption': instance.tempSelectedFeesOption,
-      'feesSaved': instance.feesSaved,
-      'loadingFees': instance.loadingFees,
-      'errLoadingFees': instance.errLoadingFees,
       'defaultRBF': instance.defaultRBF,
     };

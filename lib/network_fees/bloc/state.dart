@@ -37,6 +37,22 @@ class NetworkFeesState with _$NetworkFeesState {
     }
   }
 
+  String feeSendButtonText() {
+    var str = '';
+    try {
+      final selectedOption = feeOption();
+      if (selectedOption == 0) str = 'Fastest (' + feesList![0].toString();
+      if (selectedOption == 1) str = 'Fast (' + feesList![1].toString();
+      if (selectedOption == 2) str = 'Medium (' + feesList![2].toString();
+      if (selectedOption == 3) str = 'Slow (' + feesList![3].toString();
+
+      if (selectedOption == 4) str = 'Manual (' + fees.toString();
+      return str + ' sat/vByte)';
+    } catch (e) {
+      return 'Select fee rate';
+    }
+  }
+
   String defaultFeeStatus() {
     try {
       var str = '';

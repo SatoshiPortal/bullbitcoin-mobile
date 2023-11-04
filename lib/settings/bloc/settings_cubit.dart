@@ -10,7 +10,6 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
@@ -273,78 +272,78 @@ class SettingsCubit extends Cubit<SettingsState> {
     // );
   }
 
-  void updateManualFees(String fees) async {
-    final feesInDouble = int.tryParse(fees);
-    if (feesInDouble == null) {
-      // emit(state.copyWith(fees: 000, selectedFeesOption: 2));
-      emit(state.copyWith(tempFees: 000, tempSelectedFeesOption: 2));
-      await Future.delayed(const Duration(milliseconds: 50));
-      // emit(state.copyWith(fees: null));
-      return;
-    }
-    // emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
-    emit(state.copyWith(tempFees: feesInDouble, tempSelectedFeesOption: 4));
-    checkMinimumFees();
-  }
+  // void updateManualFees(String fees) async {
+  //   final feesInDouble = int.tryParse(fees);
+  //   if (feesInDouble == null) {
+  //     // emit(state.copyWith(fees: 000, selectedFeesOption: 2));
+  //     emit(state.copyWith(tempFees: 000, tempSelectedFeesOption: 2));
+  //     await Future.delayed(const Duration(milliseconds: 50));
+  //     // emit(state.copyWith(fees: null));
+  //     return;
+  //   }
+  //   // emit(state.copyWith(fees: feesInDouble, selectedFeesOption: 4));
+  //   emit(state.copyWith(tempFees: feesInDouble, tempSelectedFeesOption: 4));
+  //   checkMinimumFees();
+  // }
 
-  void feeOptionSelected(int index) {
-    emit(state.copyWith(tempSelectedFeesOption: index));
-    // emit(state.copyWith(selectedFeesOption: index));
-    checkMinimumFees();
-  }
+  // void feeOptionSelected(int index) {
+  //   emit(state.copyWith(tempSelectedFeesOption: index));
+  //   // emit(state.copyWith(selectedFeesOption: index));
+  //   checkMinimumFees();
+  // }
 
-  void checkFees() {
-    if (state.selectedFeesOption == 4 && (state.fees == null || state.fees == 0))
-      feeOptionSelected(2);
-  }
+  // void checkFees() {
+  //   if (state.selectedFeesOption == 4 && (state.fees == null || state.fees == 0))
+  //     feeOptionSelected(2);
+  // }
 
-  void checkMinimumFees() async {
-    await Future.delayed(50.ms);
-    final minFees = state.feesList!.last;
-    const max = 50;
+  // void checkMinimumFees() async {
+  //   await Future.delayed(50.ms);
+  //   final minFees = state.feesList!.last;
+  //   const max = 50;
 
-    // if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
-    if (state.tempFees != null && state.tempFees! < minFees && state.tempSelectedFeesOption == 4)
-      emit(
-        state.copyWith(
-          errLoadingFees:
-              "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
-          // selectedFeesOption: 2,
-          tempSelectedFeesOption: 2,
-        ),
-      );
-    else if (state.tempFees != null && state.tempFees! > max && state.tempSelectedFeesOption == 4)
-      emit(
-        state.copyWith(
-          errLoadingFees:
-              'The default selected fee is too high. Please select a lower fee than $max sats/vbyte .',
-          // selectedFeesOption: 2,
-          tempSelectedFeesOption: 2,
-        ),
-      );
-    else
-      emit(state.copyWith(errLoadingFees: ''));
-  }
+  //   // if (state.fees != null && state.fees! < minFees && state.selectedFeesOption == 4)
+  //   if (state.tempFees != null && state.tempFees! < minFees && state.tempSelectedFeesOption == 4)
+  //     emit(
+  //       state.copyWith(
+  //         errLoadingFees:
+  //             "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
+  //         // selectedFeesOption: 2,
+  //         tempSelectedFeesOption: 2,
+  //       ),
+  //     );
+  //   else if (state.tempFees != null && state.tempFees! > max && state.tempSelectedFeesOption == 4)
+  //     emit(
+  //       state.copyWith(
+  //         errLoadingFees:
+  //             'The default selected fee is too high. Please select a lower fee than $max sats/vbyte .',
+  //         // selectedFeesOption: 2,
+  //         tempSelectedFeesOption: 2,
+  //       ),
+  //     );
+  //   else
+  //     emit(state.copyWith(errLoadingFees: ''));
+  // }
 
-  void confirmFeeClicked() {
-    if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
-    if (state.tempSelectedFeesOption != null) {
-      if (state.tempFees == 4 && (state.tempFees == null || state.tempFees == 0)) {
-        print('');
-        // clearTempFeeValues();
-        // return;
-      } else {
-        emit(state.copyWith(selectedFeesOption: state.tempSelectedFeesOption!, fees: null));
-        if (state.tempSelectedFeesOption == 4 && state.tempFees != null && state.tempFees! <= 50)
-          emit(state.copyWith(fees: state.tempFees));
-      }
-    }
-    emit(state.copyWith(feesSaved: true));
-    clearTempFeeValues();
-  }
+  // void confirmFeeClicked() {
+  //   if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
+  //   if (state.tempSelectedFeesOption != null) {
+  //     if (state.tempFees == 4 && (state.tempFees == null || state.tempFees == 0)) {
+  //       print('');
+  //       // clearTempFeeValues();
+  //       // return;
+  //     } else {
+  //       emit(state.copyWith(selectedFeesOption: state.tempSelectedFeesOption!, fees: null));
+  //       if (state.tempSelectedFeesOption == 4 && state.tempFees != null && state.tempFees! <= 50)
+  //         emit(state.copyWith(fees: state.tempFees));
+  //     }
+  //   }
+  //   emit(state.copyWith(feesSaved: true));
+  //   clearTempFeeValues();
+  // }
 
-  void clearTempFeeValues() async {
-    await Future.delayed(200.ms);
-    emit(state.copyWith(tempFees: null, tempSelectedFeesOption: null, feesSaved: false));
-  }
+  // void clearTempFeeValues() async {
+  //   await Future.delayed(200.ms);
+  //   emit(state.copyWith(tempFees: null, tempSelectedFeesOption: null, feesSaved: false));
+  // }
 }

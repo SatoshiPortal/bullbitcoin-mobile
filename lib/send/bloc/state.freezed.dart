@@ -22,14 +22,15 @@ mixin _$SendState {
   String get note =>
       throw _privateConstructorUsedError; // @Default(BTCUnit.btc) BTCUnit unit,
 //
-  int? get fees => throw _privateConstructorUsedError;
-  List<int>? get feesList => throw _privateConstructorUsedError;
-  int get selectedFeesOption => throw _privateConstructorUsedError;
-  int? get tempFees => throw _privateConstructorUsedError;
-  int? get tempSelectedFeesOption => throw _privateConstructorUsedError;
-  bool get feesSaved => throw _privateConstructorUsedError; //
-  bool get loadingFees => throw _privateConstructorUsedError;
-  String get errLoadingFees => throw _privateConstructorUsedError;
+// int? fees,
+// List<int>? feesList,
+// @Default(2) int selectedFeesOption,
+// int? tempFees,
+// int? tempSelectedFeesOption,
+// @Default(false) bool feesSaved,
+// //
+// @Default(false) bool loadingFees,
+// @Default('') String errLoadingFees,
   bool get scanningAddress => throw _privateConstructorUsedError;
   String get errScanningAddress => throw _privateConstructorUsedError; //
   bool get showSendButton => throw _privateConstructorUsedError;
@@ -72,14 +73,6 @@ abstract class $SendStateCopyWith<$Res> {
       String? tempAmount,
       String address,
       String note,
-      int? fees,
-      List<int>? feesList,
-      int selectedFeesOption,
-      int? tempFees,
-      int? tempSelectedFeesOption,
-      bool feesSaved,
-      bool loadingFees,
-      String errLoadingFees,
       bool scanningAddress,
       String errScanningAddress,
       bool showSendButton,
@@ -125,14 +118,6 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? tempAmount = freezed,
     Object? address = null,
     Object? note = null,
-    Object? fees = freezed,
-    Object? feesList = freezed,
-    Object? selectedFeesOption = null,
-    Object? tempFees = freezed,
-    Object? tempSelectedFeesOption = freezed,
-    Object? feesSaved = null,
-    Object? loadingFees = null,
-    Object? errLoadingFees = null,
     Object? scanningAddress = null,
     Object? errScanningAddress = null,
     Object? showSendButton = null,
@@ -173,38 +158,6 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
       note: null == note
           ? _value.note
           : note // ignore: cast_nullable_to_non_nullable
-              as String,
-      fees: freezed == fees
-          ? _value.fees
-          : fees // ignore: cast_nullable_to_non_nullable
-              as int?,
-      feesList: freezed == feesList
-          ? _value.feesList
-          : feesList // ignore: cast_nullable_to_non_nullable
-              as List<int>?,
-      selectedFeesOption: null == selectedFeesOption
-          ? _value.selectedFeesOption
-          : selectedFeesOption // ignore: cast_nullable_to_non_nullable
-              as int,
-      tempFees: freezed == tempFees
-          ? _value.tempFees
-          : tempFees // ignore: cast_nullable_to_non_nullable
-              as int?,
-      tempSelectedFeesOption: freezed == tempSelectedFeesOption
-          ? _value.tempSelectedFeesOption
-          : tempSelectedFeesOption // ignore: cast_nullable_to_non_nullable
-              as int?,
-      feesSaved: null == feesSaved
-          ? _value.feesSaved
-          : feesSaved // ignore: cast_nullable_to_non_nullable
-              as bool,
-      loadingFees: null == loadingFees
-          ? _value.loadingFees
-          : loadingFees // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errLoadingFees: null == errLoadingFees
-          ? _value.errLoadingFees
-          : errLoadingFees // ignore: cast_nullable_to_non_nullable
               as String,
       scanningAddress: null == scanningAddress
           ? _value.scanningAddress
@@ -338,14 +291,6 @@ abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
       String? tempAmount,
       String address,
       String note,
-      int? fees,
-      List<int>? feesList,
-      int selectedFeesOption,
-      int? tempFees,
-      int? tempSelectedFeesOption,
-      bool feesSaved,
-      bool loadingFees,
-      String errLoadingFees,
       bool scanningAddress,
       String errScanningAddress,
       bool showSendButton,
@@ -391,14 +336,6 @@ class __$$_SendStateCopyWithImpl<$Res>
     Object? tempAmount = freezed,
     Object? address = null,
     Object? note = null,
-    Object? fees = freezed,
-    Object? feesList = freezed,
-    Object? selectedFeesOption = null,
-    Object? tempFees = freezed,
-    Object? tempSelectedFeesOption = freezed,
-    Object? feesSaved = null,
-    Object? loadingFees = null,
-    Object? errLoadingFees = null,
     Object? scanningAddress = null,
     Object? errScanningAddress = null,
     Object? showSendButton = null,
@@ -439,38 +376,6 @@ class __$$_SendStateCopyWithImpl<$Res>
       note: null == note
           ? _value.note
           : note // ignore: cast_nullable_to_non_nullable
-              as String,
-      fees: freezed == fees
-          ? _value.fees
-          : fees // ignore: cast_nullable_to_non_nullable
-              as int?,
-      feesList: freezed == feesList
-          ? _value._feesList
-          : feesList // ignore: cast_nullable_to_non_nullable
-              as List<int>?,
-      selectedFeesOption: null == selectedFeesOption
-          ? _value.selectedFeesOption
-          : selectedFeesOption // ignore: cast_nullable_to_non_nullable
-              as int,
-      tempFees: freezed == tempFees
-          ? _value.tempFees
-          : tempFees // ignore: cast_nullable_to_non_nullable
-              as int?,
-      tempSelectedFeesOption: freezed == tempSelectedFeesOption
-          ? _value.tempSelectedFeesOption
-          : tempSelectedFeesOption // ignore: cast_nullable_to_non_nullable
-              as int?,
-      feesSaved: null == feesSaved
-          ? _value.feesSaved
-          : feesSaved // ignore: cast_nullable_to_non_nullable
-              as bool,
-      loadingFees: null == loadingFees
-          ? _value.loadingFees
-          : loadingFees // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errLoadingFees: null == errLoadingFees
-          ? _value.errLoadingFees
-          : errLoadingFees // ignore: cast_nullable_to_non_nullable
               as String,
       scanningAddress: null == scanningAddress
           ? _value.scanningAddress
@@ -576,14 +481,6 @@ class _$_SendState extends _SendState {
       this.tempAmount,
       this.address = '',
       this.note = '',
-      this.fees,
-      final List<int>? feesList,
-      this.selectedFeesOption = 2,
-      this.tempFees,
-      this.tempSelectedFeesOption,
-      this.feesSaved = false,
-      this.loadingFees = false,
-      this.errLoadingFees = '',
       this.scanningAddress = false,
       this.errScanningAddress = '',
       this.showSendButton = false,
@@ -607,8 +504,7 @@ class _$_SendState extends _SendState {
       this.isSats = false,
       this.fiatSelected = false,
       this.fiatAmt = 0})
-      : _feesList = feesList,
-        _selectedAddresses = selectedAddresses,
+      : _selectedAddresses = selectedAddresses,
         _currencyList = currencyList,
         super._();
 
@@ -625,35 +521,15 @@ class _$_SendState extends _SendState {
   final String note;
 // @Default(BTCUnit.btc) BTCUnit unit,
 //
-  @override
-  final int? fees;
-  final List<int>? _feesList;
-  @override
-  List<int>? get feesList {
-    final value = _feesList;
-    if (value == null) return null;
-    if (_feesList is EqualUnmodifiableListView) return _feesList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  @override
-  @JsonKey()
-  final int selectedFeesOption;
-  @override
-  final int? tempFees;
-  @override
-  final int? tempSelectedFeesOption;
-  @override
-  @JsonKey()
-  final bool feesSaved;
-//
-  @override
-  @JsonKey()
-  final bool loadingFees;
-  @override
-  @JsonKey()
-  final String errLoadingFees;
+// int? fees,
+// List<int>? feesList,
+// @Default(2) int selectedFeesOption,
+// int? tempFees,
+// int? tempSelectedFeesOption,
+// @Default(false) bool feesSaved,
+// //
+// @Default(false) bool loadingFees,
+// @Default('') String errLoadingFees,
   @override
   @JsonKey()
   final bool scanningAddress;
@@ -742,7 +618,7 @@ class _$_SendState extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(amount: $amount, tempAmount: $tempAmount, address: $address, note: $note, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, tempFees: $tempFees, tempSelectedFeesOption: $tempSelectedFeesOption, feesSaved: $feesSaved, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
+    return 'SendState(amount: $amount, tempAmount: $tempAmount, address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedCurrency: $selectedCurrency, currencyList: $currencyList, isSats: $isSats, fiatSelected: $fiatSelected, fiatAmt: $fiatAmt)';
   }
 
   @override
@@ -755,20 +631,6 @@ class _$_SendState extends _SendState {
                 other.tempAmount == tempAmount) &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.note, note) || other.note == note) &&
-            (identical(other.fees, fees) || other.fees == fees) &&
-            const DeepCollectionEquality().equals(other._feesList, _feesList) &&
-            (identical(other.selectedFeesOption, selectedFeesOption) ||
-                other.selectedFeesOption == selectedFeesOption) &&
-            (identical(other.tempFees, tempFees) ||
-                other.tempFees == tempFees) &&
-            (identical(other.tempSelectedFeesOption, tempSelectedFeesOption) ||
-                other.tempSelectedFeesOption == tempSelectedFeesOption) &&
-            (identical(other.feesSaved, feesSaved) ||
-                other.feesSaved == feesSaved) &&
-            (identical(other.loadingFees, loadingFees) ||
-                other.loadingFees == loadingFees) &&
-            (identical(other.errLoadingFees, errLoadingFees) ||
-                other.errLoadingFees == errLoadingFees) &&
             (identical(other.scanningAddress, scanningAddress) ||
                 other.scanningAddress == scanningAddress) &&
             (identical(other.errScanningAddress, errScanningAddress) ||
@@ -817,14 +679,6 @@ class _$_SendState extends _SendState {
         tempAmount,
         address,
         note,
-        fees,
-        const DeepCollectionEquality().hash(_feesList),
-        selectedFeesOption,
-        tempFees,
-        tempSelectedFeesOption,
-        feesSaved,
-        loadingFees,
-        errLoadingFees,
         scanningAddress,
         errScanningAddress,
         showSendButton,
@@ -863,14 +717,6 @@ abstract class _SendState extends SendState {
       final String? tempAmount,
       final String address,
       final String note,
-      final int? fees,
-      final List<int>? feesList,
-      final int selectedFeesOption,
-      final int? tempFees,
-      final int? tempSelectedFeesOption,
-      final bool feesSaved,
-      final bool loadingFees,
-      final String errLoadingFees,
       final bool scanningAddress,
       final String errScanningAddress,
       final bool showSendButton,
@@ -906,22 +752,15 @@ abstract class _SendState extends SendState {
   String get note;
   @override // @Default(BTCUnit.btc) BTCUnit unit,
 //
-  int? get fees;
-  @override
-  List<int>? get feesList;
-  @override
-  int get selectedFeesOption;
-  @override
-  int? get tempFees;
-  @override
-  int? get tempSelectedFeesOption;
-  @override
-  bool get feesSaved;
-  @override //
-  bool get loadingFees;
-  @override
-  String get errLoadingFees;
-  @override
+// int? fees,
+// List<int>? feesList,
+// @Default(2) int selectedFeesOption,
+// int? tempFees,
+// int? tempSelectedFeesOption,
+// @Default(false) bool feesSaved,
+// //
+// @Default(false) bool loadingFees,
+// @Default('') String errLoadingFees,
   bool get scanningAddress;
   @override
   String get errScanningAddress;

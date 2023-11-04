@@ -33,15 +33,16 @@ mixin _$SettingsState {
   List<String>? get languageList => throw _privateConstructorUsedError;
   bool get loadingLanguage => throw _privateConstructorUsedError;
   String get errLoadingLanguage => throw _privateConstructorUsedError; //
-  int? get fees => throw _privateConstructorUsedError;
-  List<int>? get feesList => throw _privateConstructorUsedError;
-  int get selectedFeesOption => throw _privateConstructorUsedError;
-  int? get tempFees => throw _privateConstructorUsedError;
-  int? get tempSelectedFeesOption => throw _privateConstructorUsedError;
-  bool get feesSaved => throw _privateConstructorUsedError; //
-  bool get loadingFees => throw _privateConstructorUsedError;
-  String get errLoadingFees =>
-      throw _privateConstructorUsedError; // ElectrumTypes? tempNetwork,
+// int? fees,
+// List<int>? feesList,
+// @Default(2) int selectedFeesOption,
+// int? tempFees,
+// int? tempSelectedFeesOption,
+// @Default(false) bool feesSaved,
+// //
+// @Default(false) bool loadingFees,
+// @Default('') String errLoadingFees,
+// ElectrumTypes? tempNetwork,
   bool get defaultRBF => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -70,14 +71,6 @@ abstract class $SettingsStateCopyWith<$Res> {
       List<String>? languageList,
       bool loadingLanguage,
       String errLoadingLanguage,
-      int? fees,
-      List<int>? feesList,
-      int selectedFeesOption,
-      int? tempFees,
-      int? tempSelectedFeesOption,
-      bool feesSaved,
-      bool loadingFees,
-      String errLoadingFees,
       bool defaultRBF});
 
   $CurrencyCopyWith<$Res>? get currency;
@@ -109,14 +102,6 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? languageList = freezed,
     Object? loadingLanguage = null,
     Object? errLoadingLanguage = null,
-    Object? fees = freezed,
-    Object? feesList = freezed,
-    Object? selectedFeesOption = null,
-    Object? tempFees = freezed,
-    Object? tempSelectedFeesOption = freezed,
-    Object? feesSaved = null,
-    Object? loadingFees = null,
-    Object? errLoadingFees = null,
     Object? defaultRBF = null,
   }) {
     return _then(_value.copyWith(
@@ -172,38 +157,6 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.errLoadingLanguage
           : errLoadingLanguage // ignore: cast_nullable_to_non_nullable
               as String,
-      fees: freezed == fees
-          ? _value.fees
-          : fees // ignore: cast_nullable_to_non_nullable
-              as int?,
-      feesList: freezed == feesList
-          ? _value.feesList
-          : feesList // ignore: cast_nullable_to_non_nullable
-              as List<int>?,
-      selectedFeesOption: null == selectedFeesOption
-          ? _value.selectedFeesOption
-          : selectedFeesOption // ignore: cast_nullable_to_non_nullable
-              as int,
-      tempFees: freezed == tempFees
-          ? _value.tempFees
-          : tempFees // ignore: cast_nullable_to_non_nullable
-              as int?,
-      tempSelectedFeesOption: freezed == tempSelectedFeesOption
-          ? _value.tempSelectedFeesOption
-          : tempSelectedFeesOption // ignore: cast_nullable_to_non_nullable
-              as int?,
-      feesSaved: null == feesSaved
-          ? _value.feesSaved
-          : feesSaved // ignore: cast_nullable_to_non_nullable
-              as bool,
-      loadingFees: null == loadingFees
-          ? _value.loadingFees
-          : loadingFees // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errLoadingFees: null == errLoadingFees
-          ? _value.errLoadingFees
-          : errLoadingFees // ignore: cast_nullable_to_non_nullable
-              as String,
       defaultRBF: null == defaultRBF
           ? _value.defaultRBF
           : defaultRBF // ignore: cast_nullable_to_non_nullable
@@ -246,14 +199,6 @@ abstract class _$$_SettingsStateCopyWith<$Res>
       List<String>? languageList,
       bool loadingLanguage,
       String errLoadingLanguage,
-      int? fees,
-      List<int>? feesList,
-      int selectedFeesOption,
-      int? tempFees,
-      int? tempSelectedFeesOption,
-      bool feesSaved,
-      bool loadingFees,
-      String errLoadingFees,
       bool defaultRBF});
 
   @override
@@ -284,14 +229,6 @@ class __$$_SettingsStateCopyWithImpl<$Res>
     Object? languageList = freezed,
     Object? loadingLanguage = null,
     Object? errLoadingLanguage = null,
-    Object? fees = freezed,
-    Object? feesList = freezed,
-    Object? selectedFeesOption = null,
-    Object? tempFees = freezed,
-    Object? tempSelectedFeesOption = freezed,
-    Object? feesSaved = null,
-    Object? loadingFees = null,
-    Object? errLoadingFees = null,
     Object? defaultRBF = null,
   }) {
     return _then(_$_SettingsState(
@@ -347,38 +284,6 @@ class __$$_SettingsStateCopyWithImpl<$Res>
           ? _value.errLoadingLanguage
           : errLoadingLanguage // ignore: cast_nullable_to_non_nullable
               as String,
-      fees: freezed == fees
-          ? _value.fees
-          : fees // ignore: cast_nullable_to_non_nullable
-              as int?,
-      feesList: freezed == feesList
-          ? _value._feesList
-          : feesList // ignore: cast_nullable_to_non_nullable
-              as List<int>?,
-      selectedFeesOption: null == selectedFeesOption
-          ? _value.selectedFeesOption
-          : selectedFeesOption // ignore: cast_nullable_to_non_nullable
-              as int,
-      tempFees: freezed == tempFees
-          ? _value.tempFees
-          : tempFees // ignore: cast_nullable_to_non_nullable
-              as int?,
-      tempSelectedFeesOption: freezed == tempSelectedFeesOption
-          ? _value.tempSelectedFeesOption
-          : tempSelectedFeesOption // ignore: cast_nullable_to_non_nullable
-              as int?,
-      feesSaved: null == feesSaved
-          ? _value.feesSaved
-          : feesSaved // ignore: cast_nullable_to_non_nullable
-              as bool,
-      loadingFees: null == loadingFees
-          ? _value.loadingFees
-          : loadingFees // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errLoadingFees: null == errLoadingFees
-          ? _value.errLoadingFees
-          : errLoadingFees // ignore: cast_nullable_to_non_nullable
-              as String,
       defaultRBF: null == defaultRBF
           ? _value.defaultRBF
           : defaultRBF // ignore: cast_nullable_to_non_nullable
@@ -404,18 +309,9 @@ class _$_SettingsState extends _SettingsState {
       final List<String>? languageList,
       this.loadingLanguage = false,
       this.errLoadingLanguage = '',
-      this.fees,
-      final List<int>? feesList,
-      this.selectedFeesOption = 2,
-      this.tempFees,
-      this.tempSelectedFeesOption,
-      this.feesSaved = false,
-      this.loadingFees = false,
-      this.errLoadingFees = '',
       this.defaultRBF = true})
       : _currencyList = currencyList,
         _languageList = languageList,
-        _feesList = feesList,
         super._();
 
   factory _$_SettingsState.fromJson(Map<String, dynamic> json) =>
@@ -475,35 +371,15 @@ class _$_SettingsState extends _SettingsState {
   @JsonKey()
   final String errLoadingLanguage;
 //
-  @override
-  final int? fees;
-  final List<int>? _feesList;
-  @override
-  List<int>? get feesList {
-    final value = _feesList;
-    if (value == null) return null;
-    if (_feesList is EqualUnmodifiableListView) return _feesList;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  @override
-  @JsonKey()
-  final int selectedFeesOption;
-  @override
-  final int? tempFees;
-  @override
-  final int? tempSelectedFeesOption;
-  @override
-  @JsonKey()
-  final bool feesSaved;
-//
-  @override
-  @JsonKey()
-  final bool loadingFees;
-  @override
-  @JsonKey()
-  final String errLoadingFees;
+// int? fees,
+// List<int>? feesList,
+// @Default(2) int selectedFeesOption,
+// int? tempFees,
+// int? tempSelectedFeesOption,
+// @Default(false) bool feesSaved,
+// //
+// @Default(false) bool loadingFees,
+// @Default('') String errLoadingFees,
 // ElectrumTypes? tempNetwork,
   @override
   @JsonKey()
@@ -511,7 +387,7 @@ class _$_SettingsState extends _SettingsState {
 
   @override
   String toString() {
-    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, tempFees: $tempFees, tempSelectedFeesOption: $tempSelectedFeesOption, feesSaved: $feesSaved, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees, defaultRBF: $defaultRBF)';
+    return 'SettingsState(unitsInSats: $unitsInSats, notifications: $notifications, privacyView: $privacyView, currency: $currency, currencyList: $currencyList, lastUpdatedCurrency: $lastUpdatedCurrency, loadingCurrency: $loadingCurrency, errLoadingCurrency: $errLoadingCurrency, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, defaultRBF: $defaultRBF)';
   }
 
   @override
@@ -545,51 +421,28 @@ class _$_SettingsState extends _SettingsState {
                 other.loadingLanguage == loadingLanguage) &&
             (identical(other.errLoadingLanguage, errLoadingLanguage) ||
                 other.errLoadingLanguage == errLoadingLanguage) &&
-            (identical(other.fees, fees) || other.fees == fees) &&
-            const DeepCollectionEquality().equals(other._feesList, _feesList) &&
-            (identical(other.selectedFeesOption, selectedFeesOption) ||
-                other.selectedFeesOption == selectedFeesOption) &&
-            (identical(other.tempFees, tempFees) ||
-                other.tempFees == tempFees) &&
-            (identical(other.tempSelectedFeesOption, tempSelectedFeesOption) ||
-                other.tempSelectedFeesOption == tempSelectedFeesOption) &&
-            (identical(other.feesSaved, feesSaved) ||
-                other.feesSaved == feesSaved) &&
-            (identical(other.loadingFees, loadingFees) ||
-                other.loadingFees == loadingFees) &&
-            (identical(other.errLoadingFees, errLoadingFees) ||
-                other.errLoadingFees == errLoadingFees) &&
             (identical(other.defaultRBF, defaultRBF) ||
                 other.defaultRBF == defaultRBF));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hashAll([
-        runtimeType,
-        unitsInSats,
-        notifications,
-        privacyView,
-        currency,
-        const DeepCollectionEquality().hash(_currencyList),
-        lastUpdatedCurrency,
-        loadingCurrency,
-        errLoadingCurrency,
-        reloadWalletTimer,
-        language,
-        const DeepCollectionEquality().hash(_languageList),
-        loadingLanguage,
-        errLoadingLanguage,
-        fees,
-        const DeepCollectionEquality().hash(_feesList),
-        selectedFeesOption,
-        tempFees,
-        tempSelectedFeesOption,
-        feesSaved,
-        loadingFees,
-        errLoadingFees,
-        defaultRBF
-      ]);
+  int get hashCode => Object.hash(
+      runtimeType,
+      unitsInSats,
+      notifications,
+      privacyView,
+      currency,
+      const DeepCollectionEquality().hash(_currencyList),
+      lastUpdatedCurrency,
+      loadingCurrency,
+      errLoadingCurrency,
+      reloadWalletTimer,
+      language,
+      const DeepCollectionEquality().hash(_languageList),
+      loadingLanguage,
+      errLoadingLanguage,
+      defaultRBF);
 
   @JsonKey(ignore: true)
   @override
@@ -620,14 +473,6 @@ abstract class _SettingsState extends SettingsState {
       final List<String>? languageList,
       final bool loadingLanguage,
       final String errLoadingLanguage,
-      final int? fees,
-      final List<int>? feesList,
-      final int selectedFeesOption,
-      final int? tempFees,
-      final int? tempSelectedFeesOption,
-      final bool feesSaved,
-      final bool loadingFees,
-      final String errLoadingFees,
       final bool defaultRBF}) = _$_SettingsState;
   const _SettingsState._() : super._();
 
@@ -661,22 +506,16 @@ abstract class _SettingsState extends SettingsState {
   @override
   String get errLoadingLanguage;
   @override //
-  int? get fees;
-  @override
-  List<int>? get feesList;
-  @override
-  int get selectedFeesOption;
-  @override
-  int? get tempFees;
-  @override
-  int? get tempSelectedFeesOption;
-  @override
-  bool get feesSaved;
-  @override //
-  bool get loadingFees;
-  @override
-  String get errLoadingFees;
-  @override // ElectrumTypes? tempNetwork,
+// int? fees,
+// List<int>? feesList,
+// @Default(2) int selectedFeesOption,
+// int? tempFees,
+// int? tempSelectedFeesOption,
+// @Default(false) bool feesSaved,
+// //
+// @Default(false) bool loadingFees,
+// @Default('') String errLoadingFees,
+// ElectrumTypes? tempNetwork,
   bool get defaultRBF;
   @override
   @JsonKey(ignore: true)
