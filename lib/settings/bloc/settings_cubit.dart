@@ -349,18 +349,4 @@ class SettingsCubit extends Cubit<SettingsState> {
     await Future.delayed(200.ms);
     emit(state.copyWith(tempFees: null, tempSelectedFeesOption: null, feesSaved: false));
   }
-
-  ElectrumTypes? networkFromString(String text) {
-    final network = text.toLowerCase().replaceAll(' ', '');
-    switch (network) {
-      case 'blockstream':
-        return ElectrumTypes.blockstream;
-      case 'bullbitcoin':
-        return ElectrumTypes.bullbitcoin;
-      case 'custom':
-        return ElectrumTypes.custom;
-      default:
-        return null;
-    }
-  }
 }

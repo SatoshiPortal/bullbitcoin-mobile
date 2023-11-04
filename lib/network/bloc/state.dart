@@ -58,4 +58,18 @@ class NetworkState with _$NetworkState {
   String explorerAddressUrl(String address) => testnet
       ? 'https://$mempoolapi/testnet/address/$address'
       : 'https://$mempoolapi/address/$address';
+
+  ElectrumTypes? networkFromString(String text) {
+    final network = text.toLowerCase().replaceAll(' ', '');
+    switch (network) {
+      case 'blockstream':
+        return ElectrumTypes.blockstream;
+      case 'bullbitcoin':
+        return ElectrumTypes.bullbitcoin;
+      case 'custom':
+        return ElectrumTypes.custom;
+      default:
+        return null;
+    }
+  }
 }

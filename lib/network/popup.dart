@@ -156,7 +156,7 @@ class _SegmentButton extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: () {
-          final network = context.read<SettingsCubit>().networkFromString(text);
+          final network = context.read<SettingsCubit>().state.networkFromString(text);
           if (network == null) return;
           context.read<SettingsCubit>().networkTypeTempChanged(network);
         },

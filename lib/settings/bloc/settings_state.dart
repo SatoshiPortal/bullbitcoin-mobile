@@ -210,6 +210,20 @@ class SettingsState with _$SettingsState {
 
   int feeOption() => tempSelectedFeesOption ?? selectedFeesOption;
   int fee() => tempFees ?? fees ?? 0;
+
+  ElectrumTypes? networkFromString(String text) {
+    final network = text.toLowerCase().replaceAll(' ', '');
+    switch (network) {
+      case 'blockstream':
+        return ElectrumTypes.blockstream;
+      case 'bullbitcoin':
+        return ElectrumTypes.bullbitcoin;
+      case 'custom':
+        return ElectrumTypes.custom;
+      default:
+        return null;
+    }
+  }
 }
 
 extension StringRegEx on String {
