@@ -42,12 +42,14 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     Future.delayed(const Duration(milliseconds: 200));
     final (result, err) = await hiveStorage.getValue(StorageKeys.networkFees);
     if (err != null) {
+      loadFees();
       return;
     }
 
     final networkFees = NetworkFeesState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
     emit(networkFees);
     await Future.delayed(const Duration(milliseconds: 50));
+    loadFees();
   }
 
   void loadFees() async {
