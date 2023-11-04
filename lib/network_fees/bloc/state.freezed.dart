@@ -20,12 +20,12 @@ NetworkFeesState _$NetworkFeesStateFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$NetworkFeesState {
-  int get fees => throw _privateConstructorUsedError;
-  List<int> get feesList => throw _privateConstructorUsedError;
+  int? get fees => throw _privateConstructorUsedError;
+  List<int>? get feesList => throw _privateConstructorUsedError;
   int get selectedFeesOption => throw _privateConstructorUsedError;
-  int get tempFees => throw _privateConstructorUsedError;
-  int get tempSelectedFeesOption => throw _privateConstructorUsedError;
-  bool get feesSaved => throw _privateConstructorUsedError; //
+  int? get tempFees => throw _privateConstructorUsedError;
+  int? get tempSelectedFeesOption => throw _privateConstructorUsedError;
+  bool get feesSaved => throw _privateConstructorUsedError;
   bool get loadingFees => throw _privateConstructorUsedError;
   String get errLoadingFees => throw _privateConstructorUsedError;
 
@@ -42,11 +42,11 @@ abstract class $NetworkFeesStateCopyWith<$Res> {
       _$NetworkFeesStateCopyWithImpl<$Res, NetworkFeesState>;
   @useResult
   $Res call(
-      {int fees,
-      List<int> feesList,
+      {int? fees,
+      List<int>? feesList,
       int selectedFeesOption,
-      int tempFees,
-      int tempSelectedFeesOption,
+      int? tempFees,
+      int? tempSelectedFeesOption,
       bool feesSaved,
       bool loadingFees,
       String errLoadingFees});
@@ -65,36 +65,36 @@ class _$NetworkFeesStateCopyWithImpl<$Res, $Val extends NetworkFeesState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? fees = null,
-    Object? feesList = null,
+    Object? fees = freezed,
+    Object? feesList = freezed,
     Object? selectedFeesOption = null,
-    Object? tempFees = null,
-    Object? tempSelectedFeesOption = null,
+    Object? tempFees = freezed,
+    Object? tempSelectedFeesOption = freezed,
     Object? feesSaved = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
   }) {
     return _then(_value.copyWith(
-      fees: null == fees
+      fees: freezed == fees
           ? _value.fees
           : fees // ignore: cast_nullable_to_non_nullable
-              as int,
-      feesList: null == feesList
+              as int?,
+      feesList: freezed == feesList
           ? _value.feesList
           : feesList // ignore: cast_nullable_to_non_nullable
-              as List<int>,
+              as List<int>?,
       selectedFeesOption: null == selectedFeesOption
           ? _value.selectedFeesOption
           : selectedFeesOption // ignore: cast_nullable_to_non_nullable
               as int,
-      tempFees: null == tempFees
+      tempFees: freezed == tempFees
           ? _value.tempFees
           : tempFees // ignore: cast_nullable_to_non_nullable
-              as int,
-      tempSelectedFeesOption: null == tempSelectedFeesOption
+              as int?,
+      tempSelectedFeesOption: freezed == tempSelectedFeesOption
           ? _value.tempSelectedFeesOption
           : tempSelectedFeesOption // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       feesSaved: null == feesSaved
           ? _value.feesSaved
           : feesSaved // ignore: cast_nullable_to_non_nullable
@@ -120,11 +120,11 @@ abstract class _$$_NetworkFeesStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int fees,
-      List<int> feesList,
+      {int? fees,
+      List<int>? feesList,
       int selectedFeesOption,
-      int tempFees,
-      int tempSelectedFeesOption,
+      int? tempFees,
+      int? tempSelectedFeesOption,
       bool feesSaved,
       bool loadingFees,
       String errLoadingFees});
@@ -141,36 +141,36 @@ class __$$_NetworkFeesStateCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? fees = null,
-    Object? feesList = null,
+    Object? fees = freezed,
+    Object? feesList = freezed,
     Object? selectedFeesOption = null,
-    Object? tempFees = null,
-    Object? tempSelectedFeesOption = null,
+    Object? tempFees = freezed,
+    Object? tempSelectedFeesOption = freezed,
     Object? feesSaved = null,
     Object? loadingFees = null,
     Object? errLoadingFees = null,
   }) {
     return _then(_$_NetworkFeesState(
-      fees: null == fees
+      fees: freezed == fees
           ? _value.fees
           : fees // ignore: cast_nullable_to_non_nullable
-              as int,
-      feesList: null == feesList
+              as int?,
+      feesList: freezed == feesList
           ? _value._feesList
           : feesList // ignore: cast_nullable_to_non_nullable
-              as List<int>,
+              as List<int>?,
       selectedFeesOption: null == selectedFeesOption
           ? _value.selectedFeesOption
           : selectedFeesOption // ignore: cast_nullable_to_non_nullable
               as int,
-      tempFees: null == tempFees
+      tempFees: freezed == tempFees
           ? _value.tempFees
           : tempFees // ignore: cast_nullable_to_non_nullable
-              as int,
-      tempSelectedFeesOption: null == tempSelectedFeesOption
+              as int?,
+      tempSelectedFeesOption: freezed == tempSelectedFeesOption
           ? _value.tempSelectedFeesOption
           : tempSelectedFeesOption // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       feesSaved: null == feesSaved
           ? _value.feesSaved
           : feesSaved // ignore: cast_nullable_to_non_nullable
@@ -191,11 +191,11 @@ class __$$_NetworkFeesStateCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_NetworkFeesState extends _NetworkFeesState {
   const _$_NetworkFeesState(
-      {this.fees = 0,
-      final List<int> feesList = const [],
+      {this.fees,
+      final List<int>? feesList,
       this.selectedFeesOption = 2,
-      this.tempFees = 0,
-      this.tempSelectedFeesOption = 2,
+      this.tempFees,
+      this.tempSelectedFeesOption,
       this.feesSaved = false,
       this.loadingFees = false,
       this.errLoadingFees = ''})
@@ -206,30 +206,27 @@ class _$_NetworkFeesState extends _NetworkFeesState {
       _$$_NetworkFeesStateFromJson(json);
 
   @override
-  @JsonKey()
-  final int fees;
-  final List<int> _feesList;
+  final int? fees;
+  final List<int>? _feesList;
   @override
-  @JsonKey()
-  List<int> get feesList {
+  List<int>? get feesList {
+    final value = _feesList;
+    if (value == null) return null;
     if (_feesList is EqualUnmodifiableListView) return _feesList;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_feesList);
+    return EqualUnmodifiableListView(value);
   }
 
   @override
   @JsonKey()
   final int selectedFeesOption;
   @override
-  @JsonKey()
-  final int tempFees;
+  final int? tempFees;
   @override
-  @JsonKey()
-  final int tempSelectedFeesOption;
+  final int? tempSelectedFeesOption;
   @override
   @JsonKey()
   final bool feesSaved;
-//
   @override
   @JsonKey()
   final bool loadingFees;
@@ -292,11 +289,11 @@ class _$_NetworkFeesState extends _NetworkFeesState {
 
 abstract class _NetworkFeesState extends NetworkFeesState {
   const factory _NetworkFeesState(
-      {final int fees,
-      final List<int> feesList,
+      {final int? fees,
+      final List<int>? feesList,
       final int selectedFeesOption,
-      final int tempFees,
-      final int tempSelectedFeesOption,
+      final int? tempFees,
+      final int? tempSelectedFeesOption,
       final bool feesSaved,
       final bool loadingFees,
       final String errLoadingFees}) = _$_NetworkFeesState;
@@ -306,18 +303,18 @@ abstract class _NetworkFeesState extends NetworkFeesState {
       _$_NetworkFeesState.fromJson;
 
   @override
-  int get fees;
+  int? get fees;
   @override
-  List<int> get feesList;
+  List<int>? get feesList;
   @override
   int get selectedFeesOption;
   @override
-  int get tempFees;
+  int? get tempFees;
   @override
-  int get tempSelectedFeesOption;
+  int? get tempSelectedFeesOption;
   @override
   bool get feesSaved;
-  @override //
+  @override
   bool get loadingFees;
   @override
   String get errLoadingFees;

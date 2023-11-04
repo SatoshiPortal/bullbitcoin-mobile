@@ -8,13 +8,12 @@ part of 'state.dart';
 
 _$_NetworkFeesState _$$_NetworkFeesStateFromJson(Map<String, dynamic> json) =>
     _$_NetworkFeesState(
-      fees: json['fees'] as int? ?? 0,
+      fees: json['fees'] as int?,
       feesList:
-          (json['feesList'] as List<dynamic>?)?.map((e) => e as int).toList() ??
-              const [],
+          (json['feesList'] as List<dynamic>?)?.map((e) => e as int).toList(),
       selectedFeesOption: json['selectedFeesOption'] as int? ?? 2,
-      tempFees: json['tempFees'] as int? ?? 0,
-      tempSelectedFeesOption: json['tempSelectedFeesOption'] as int? ?? 2,
+      tempFees: json['tempFees'] as int?,
+      tempSelectedFeesOption: json['tempSelectedFeesOption'] as int?,
       feesSaved: json['feesSaved'] as bool? ?? false,
       loadingFees: json['loadingFees'] as bool? ?? false,
       errLoadingFees: json['errLoadingFees'] as String? ?? '',
