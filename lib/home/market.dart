@@ -13,7 +13,7 @@ class MarketHome extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         flexibleSpace: BBAppBar(
-          text: 'Market',
+          text: 'Exchange',
           onBack: () {
             context.pop();
           },
@@ -36,7 +36,7 @@ class MarketHome extends StatelessWidget {
               ],
             ),
             const BBText.headline(
-              'MARKET',
+              'EXCHANGE',
               isBold: true,
             ),
             const Gap(40),
