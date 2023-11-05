@@ -184,7 +184,9 @@ class WalletAddress {
   }) async {
     try {
       final unspentList = await bdkWallet.listUnspent();
-      final addresses = wallet.myAddressBook.toList();
+      final utxoUpdatedAddresses =
+          wallet.myAddressBook.map((item) => item.copyWith(utxos: null)).toList();
+
       for (final unspent in unspentList) {
         final scr = await bdk.Script.create(unspent.txout.scriptPubkey.internal);
         final addresss = await bdk.Address.fromScript(
@@ -195,7 +197,7 @@ class WalletAddress {
 
         late bool isRelated = false;
         // late String txLabel = '';
-        final address = addresses.firstWhere(
+        final address = utxoUpdatedAddresses.firstWhere(
           (a) => a.address == addressStr,
           // if the address does not exist, its because its new change
           orElse: () => Address(
@@ -205,7 +207,7 @@ class WalletAddress {
           ),
         );
 
-        final utxos = address.utxos?.toList() ?? [];
+        final List<bdk.LocalUtxo> utxos = address.utxos ?? [];
         for (final tx in wallet.transactions) {
           for (final addrs in tx.outAddrs) {
             if (addrs.address == addressStr) {
@@ -231,10 +233,10 @@ class WalletAddress {
             highestPreviousBalance: updated.calculateBalance(),
           );
 
-        addresses.removeWhere((a) => a.address == address.address);
-        addresses.add(updated);
+        utxoUpdatedAddresses.removeWhere((a) => a.address == address.address);
+        utxoUpdatedAddresses.add(updated);
       }
-      final w = wallet.copyWith(myAddressBook: addresses);
+      final w = wallet.copyWith(myAddressBook: utxoUpdatedAddresses);
 
       return (w, null);
     } catch (e) {

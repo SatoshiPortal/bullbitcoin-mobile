@@ -181,6 +181,7 @@ class WalletSensitiveCreate {
       network: network,
       type: BBWalletType.words,
       scriptType: ScriptType.bip49,
+      backupTested: isImported,
     );
     final (bdkWallet49, errBdk49) = await WalletCreate().loadPublicBdkWallet(wallet49);
     final firstAddress49 = await bdkWallet49!.getAddress(

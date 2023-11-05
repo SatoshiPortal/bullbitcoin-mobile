@@ -142,11 +142,20 @@ class TransactionCubit extends Cubit<TransactionState> {
   }
 
   void saveLabelClicked() async {
-    final label = state.tx.label ?? '';
+    final label = state.tx.label;
     if (label == state.label) return;
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
 
-    final tx = state.tx.copyWith(label: state.label);
+    final tx = state.tx.copyWith(
+      label: state.label,
+      outAddrs: state.tx.outAddrs
+          .map(
+            (out) => out.copyWith(
+              label: out.label ?? label,
+            ),
+          )
+          .toList(),
+    );
 
     final updateWallet = walletBloc.state.wallet!.copyWith(
       transactions: [

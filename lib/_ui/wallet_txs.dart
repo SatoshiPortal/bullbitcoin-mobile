@@ -172,7 +172,7 @@ class BackupAlertBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _ = context.select((WalletBloc x) => x.state.wallet);
-    final backupTested = context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
+    final backupTested = context.select((WalletBloc x) => x.state.wallet?.backupTested ?? true);
 
     if (backupTested) return const SizedBox.shrink();
 
@@ -182,7 +182,7 @@ class BackupAlertBanner extends StatelessWidget {
         InkWell(
           borderRadius: BorderRadius.circular(10),
           onTap: () {
-            context.push('/wallet-settings/open-test-backup');
+            context.push('/wallet-settings/open-backup');
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

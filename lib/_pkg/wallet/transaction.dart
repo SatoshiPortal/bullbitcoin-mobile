@@ -75,14 +75,16 @@ class WalletTx {
       final List<Transaction> transactions = [];
 
       for (final tx in txs) {
-        String? label = '';
+        String? label;
 
-        final idx = storedTxs.indexWhere((t) => t.txid == tx.txid);
+        final storedTxIdx = storedTxs.indexWhere((t) => t.txid == tx.txid);
         final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
 
         Transaction? storedTx;
-        if (idx != -1) storedTx = storedTxs.elementAtOrNull(idx);
-        if (idxUnsignedTx != -1) unsignedTxs.removeAt(idxUnsignedTx);
+        if (storedTxIdx != -1) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
+        if (idxUnsignedTx != -1) {
+          if (tx.txid == unsignedTxs[idxUnsignedTx].txid) unsignedTxs.removeAt(idxUnsignedTx);
+        }
         var txObj = Transaction(
           txid: tx.txid,
           received: tx.received,
@@ -93,15 +95,15 @@ class WalletTx {
           bdkTx: tx,
           rbfEnabled: storedTx?.rbfEnabled ?? false,
           outAddrs: storedTx?.outAddrs ?? [],
-          // label: label,
         );
         // var outAddrs;
         // var inAddres;
         final SerializedTx sTx = SerializedTx.fromJson(
           jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
         );
-        if (idx != -1 && storedTxs[idx].label != null && storedTxs[idx].label!.isNotEmpty)
-          label = storedTxs[idx].label;
+        if (storedTxIdx != -1 &&
+            storedTxs[storedTxIdx].label != null &&
+            storedTxs[storedTxIdx].label!.isNotEmpty) label = storedTxs[storedTxIdx].label;
 
         Address? externalAddress;
         Address? changeAddress;
@@ -279,6 +281,10 @@ class WalletTx {
             txObj = txObj2.copyWith(outAddrs: txObj2.outAddrs);
           }
         }
+
+        if (storedTxIdx != -1 &&
+            storedTxs[storedTxIdx].label != null &&
+            storedTxs[storedTxIdx].label!.isNotEmpty) label = storedTxs[storedTxIdx].label;
 
         transactions.add(txObj.copyWith(label: label));
         // Future.delayed(const Duration(milliseconds: 100));
