@@ -85,7 +85,8 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     emit(
       state.copyWith(
         currency: results.isNotEmpty ? results.first : state.currency,
-        defaultFiatCurrency: state.defaultFiatCurrency ?? results.first,
+        defaultFiatCurrency:
+            state.defaultFiatCurrency ?? (results.isNotEmpty ? results.first : null),
         currencyList: results.isNotEmpty ? results : state.currencyList,
         loadingCurrency: false,
         lastUpdatedCurrency: DateTime.now(),

@@ -29,7 +29,8 @@ class ConversionAmt extends StatelessWidget {
         ),
       );
     } else {
-      unit = defaultCurrency!.name;
+      if (defaultCurrency == null) return const SizedBox.shrink();
+      unit = defaultCurrency.name;
       amt = fiatAmt.toStringAsFixed(2);
     }
 

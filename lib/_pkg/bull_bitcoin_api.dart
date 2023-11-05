@@ -1,7 +1,5 @@
 // ignore_for_file: constant_identifier_names
 
-import 'dart:math';
-
 import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
@@ -38,9 +36,9 @@ class BullBitcoinAPI {
       final data = resp.data as Map<String, dynamic>;
       final result = data['result'] as Map<String, dynamic>;
 
-      final rate = result['price'] as int;
-      final toPrecision = result['to']['precision'] as int;
-      final rateDouble = rate / pow(10, toPrecision);
+      final rateDouble = result['indexPrice'] as double;
+      // final toPrecision = result['to']['precision'] as int;
+      // final rateDouble = rate / pow(10, toPrecision);
 
       final currency = Currency(
         name: toCurrency,
