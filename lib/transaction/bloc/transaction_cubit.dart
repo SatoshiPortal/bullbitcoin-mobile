@@ -194,14 +194,14 @@ class TransactionCubit extends Cubit<TransactionState> {
     );
   }
 
-  void updateFeeRate(String feeRate) {
-    final amt = int.tryParse(feeRate) ?? 0;
-    emit(state.copyWith(feeRate: amt));
-  }
+  // void updateFeeRate(String feeRate) {
+  //   final amt = int.tryParse(feeRate) ?? 0;
+  //   emit(state.copyWith(feeRate: amt));
+  // }
 
-  void updateFeeRateInt(int feeRate) {
-    emit(state.copyWith(feeRate: feeRate));
-  }
+  // void updateFeeRateInt(int feeRate) {
+  //   emit(state.copyWith(feeRate: feeRate));
+  // }
 
   // SENSITIVE FX
   void buildTx() async {
