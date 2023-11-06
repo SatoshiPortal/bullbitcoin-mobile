@@ -245,6 +245,7 @@ class BBAmountInput extends StatefulWidget {
     required this.disabled,
     required this.btcFormatting,
     required this.isSats,
+    this.focusNode,
   });
 
   final Function(String) onChanged;
@@ -255,6 +256,7 @@ class BBAmountInput extends StatefulWidget {
 
   // final Function? onRightTap;
   final bool disabled;
+  final FocusNode? focusNode;
 
   @override
   State<BBAmountInput> createState() => _BBAmountInputState();
@@ -280,6 +282,8 @@ class _BBAmountInputState extends State<BBAmountInput> {
       controller: _editingController,
       enableIMEPersonalizedLearning: false,
       keyboardType: TextInputType.number,
+      focusNode: widget.focusNode,
+      scrollPadding: const EdgeInsets.only(bottom: 100),
       inputFormatters: [
         // if (widget.btcFormatting)
         //   CurrencyTextInputFormatter(
@@ -319,6 +323,7 @@ class _BBAmountInputState extends State<BBAmountInput> {
           ),
         ),
         contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
+        // scrollPadding: EdgeInsets.only(bottom:40),
       ),
     );
   }

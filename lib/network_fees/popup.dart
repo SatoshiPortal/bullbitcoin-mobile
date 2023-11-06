@@ -118,7 +118,7 @@ class SelectFeesPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PopUpBorder(child: _Screen());
+    return const PopUpBorder(scrollToBottom: true, child: _Screen());
   }
 }
 
@@ -360,8 +360,18 @@ class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
       children: [
         const BBText.body('  Custom Fee (sats/vbyte)'),
         const Gap(4),
-        BBTextInput.big(
-          focusNode: _focusNode,
+        // BBTextInput.big(
+        //   focusNode: _focusNode,
+        //   value: amt,
+        //   hint: 'sats/vb',
+        //   onChanged: (value) {
+        //     context.read<NetworkFeesCubit>().updateManualFees(value);
+        //   },
+        // ),
+        BBAmountInput(
+          btcFormatting: false,
+          isSats: true,
+          disabled: false,
           value: amt,
           hint: 'sats/vb',
           onChanged: (value) {

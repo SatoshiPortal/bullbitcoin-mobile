@@ -44,6 +44,8 @@ PODS:
     - Flutter
   - flutter_file_dialog (0.0.1):
     - Flutter
+  - flutter_keyboard_visibility (0.0.1):
+    - Flutter
   - flutter_native_splash (0.0.1):
     - Flutter
   - flutter_secure_storage (6.0.0):
@@ -78,6 +80,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_barcode_scanner (from `.symlinks/plugins/flutter_barcode_scanner/ios`)
   - flutter_file_dialog (from `.symlinks/plugins/flutter_file_dialog/ios`)
+  - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - flutter_zxing (from `.symlinks/plugins/flutter_zxing/ios`)
@@ -111,6 +114,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_barcode_scanner/ios"
   flutter_file_dialog:
     :path: ".symlinks/plugins/flutter_file_dialog/ios"
+  flutter_keyboard_visibility:
+    :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
   flutter_native_splash:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
   flutter_secure_storage:
@@ -142,6 +147,7 @@ SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_barcode_scanner: 7a1144744c28dc0c57a8de7218ffe5ec59a9e4bf
   flutter_file_dialog: 4c014a45b105709a27391e266c277d7e588e9299
+  flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   flutter_zxing: 19a866d17c8a87ee1026d68521c69d2f008635f6
