@@ -118,37 +118,49 @@ class SelectFeesPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PopUpBorder(scrollToBottom: true, child: _Screen());
+    return PopUpBorder(
+      scrollToBottom: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: BBHeader.popUpCenteredText(
+                text: 'Bitcoin Network Fee',
+                isLeft: true,
+                onBack: () {
+                  context.read<NetworkFeesCubit>().clearTempFeeValues();
+
+                  context.pop();
+                },
+              ),
+            ),
+            const FeesSelectionOptions(),
+            const DoneButton(),
+            const Gap(48),
+          ],
+        ),
+      ),
+    );
   }
 }
 
-class _Screen extends StatelessWidget {
-  const _Screen();
+class FeesSelectionOptions extends StatelessWidget {
+  const FeesSelectionOptions();
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
+    return const Padding(
+      padding: EdgeInsets.symmetric(
         vertical: 16,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: BBHeader.popUpCenteredText(
-              text: 'Bitcoin Network Fee',
-              isLeft: true,
-              onBack: () {
-                context.read<NetworkFeesCubit>().clearTempFeeValues();
-
-                context.pop();
-              },
-            ),
-          ),
-          const LoadingFees(),
-          const Gap(32),
-          const Row(
+          LoadingFees(),
+          Gap(32),
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SelectFeesItem(
@@ -161,7 +173,7 @@ class _Screen extends StatelessWidget {
               ),
             ],
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SelectFeesItem(
@@ -174,16 +186,14 @@ class _Screen extends StatelessWidget {
               ),
             ],
           ),
-          const Gap(24),
-          const Center(
+          Gap(24),
+          Center(
             child: SizedBox(
               width: 250,
               child: CustomFeeTextField(),
             ),
           ),
-          const Gap(48),
-          const DoneButton(),
-          const Gap(48),
+          Gap(48),
         ],
       ),
     );

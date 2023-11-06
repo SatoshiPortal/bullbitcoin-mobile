@@ -23,6 +23,8 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
+import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
@@ -45,6 +47,13 @@ class TxPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final home = locator<HomeCubit>();
     final wallet = home.state.selectedWalletCubit!;
+    final networkFees = NetworkFeesCubit(
+      hiveStorage: locator<HiveStorage>(),
+      mempoolAPI: locator<MempoolAPI>(),
+      networkCubit: locator<NetworkCubit>(),
+      defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
+    );
+
     final txCubit = TransactionCubit(
       tx: tx,
       walletBloc: wallet,
@@ -62,11 +71,14 @@ class TxPage extends StatelessWidget {
       walletAddress: locator<WalletAddress>(),
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
+      networkFeesCubit: networkFees,
     );
+
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: txCubit),
         BlocProvider.value(value: wallet),
+        BlocProvider.value(value: networkFees),
       ],
       child: BlocListener<TransactionCubit, TransactionState>(
         listenWhen: (previous, current) => previous.tx != current.tx,
@@ -333,27 +345,18 @@ class BumpFeesButton extends StatelessWidget {
     final isReceive = context.select((TransactionCubit x) => x.state.tx.isReceived());
     if (!canRbf) return const SizedBox.shrink();
 
-    return BlocListener<TransactionCubit, TransactionState>(
-      listenWhen: (previous, current) => previous.sentTx != current.sentTx,
-      listener: (context, state) async {
-        if (state.sentTx)
-          context
-            ..pop()
-            ..pop();
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (!isReceive)
-            BBButton.bigRed(
-              label: 'Bump Fees',
-              onPressed: () async {
-                await BumpFeesPopup.showPopUp(context);
-              },
-            ),
-          const Gap(24),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (!isReceive)
+          BBButton.bigRed(
+            label: 'Bump Fees',
+            onPressed: () async {
+              await BumpFeesPopup.showPopUp(context);
+            },
+          ),
+        const Gap(24),
+      ],
     );
   }
 }
@@ -364,6 +367,7 @@ class BumpFeesPopup extends StatelessWidget {
   static Future showPopUp(BuildContext context) async {
     final tx = context.read<TransactionCubit>();
     final wallet = context.read<WalletBloc>();
+    final networkFees = context.read<NetworkFeesCubit>();
 
     return showMaterialModalBottomSheet(
       context: context,
@@ -374,9 +378,19 @@ class BumpFeesPopup extends StatelessWidget {
         providers: [
           BlocProvider.value(value: wallet),
           BlocProvider.value(value: tx),
+          BlocProvider.value(value: networkFees),
         ],
-        child: const PopUpBorder(
-          child: BumpFeesPopup(),
+        child: BlocListener<TransactionCubit, TransactionState>(
+          listenWhen: (previous, current) => previous.sentTx != current.sentTx,
+          listener: (context, state) async {
+            if (state.sentTx)
+              context
+                ..pop()
+                ..pop();
+          },
+          child: const PopUpBorder(
+            child: BumpFeesPopup(),
+          ),
         ),
       ),
     );
@@ -384,9 +398,11 @@ class BumpFeesPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amt = context.select((TransactionCubit x) => x.state.feeRate?.toString() ?? '');
-    final built = context.select((TransactionCubit x) => x.state.updatedTx != null);
+    // final amt = context.select((TransactionCubit x) => x.state.feeRate?.toString() ?? '');
+    // final built = context.select((TransactionCubit x) => x.state.updatedTx != null);
     final sending = context.select((TransactionCubit x) => x.state.sendingTx);
+    final building = context.select((TransactionCubit x) => x.state.buildingTx);
+    final loading = building || sending;
 
     final er = context.select((TransactionCubit x) => x.state.errSendingTx);
     final err = context.select((TransactionCubit x) => x.state.errBuildingTx);
@@ -405,31 +421,33 @@ class BumpFeesPopup extends StatelessWidget {
               context.pop();
             },
           ),
-          const Gap(32),
-          const BBText.title('Enter Fees'),
-          const Gap(4),
-          BBAmountInput(
-            hint: 'update sats/vb',
-            disabled: false,
-            btcFormatting: false,
-            isSats: true,
-            onChanged: (e) {
-              context.read<TransactionCubit>().updateFeeRate(e);
-            },
-            value: amt,
-          ),
-          const Gap(32),
+          // const Gap(32),
+          // const BBText.title('Enter Fees'),
+          // const Gap(4),
+          const FeesSelectionOptions(),
+          // BBAmountInput(
+          //   hint: 'update sats/vb',
+          //   disabled: false,
+          //   btcFormatting: false,
+          //   isSats: true,
+          //   onChanged: (e) {
+          //     context.read<TransactionCubit>().updateFeeRate(e);
+          //   },
+          //   value: amt,
+          // ),
+          // const Gap(32),
           if (errr.isNotEmpty) BBText.errorSmall(errr),
           const Gap(8),
           BBButton.bigRed(
-            label: built ? 'Send Transaction' : 'Build Transaction',
-            loading: sending,
-            disabled: sending,
+            label: 'Bump Fees',
+            // label: built ? 'Send Transaction' : 'Build Transaction',
+            loading: loading,
+            disabled: loading,
             onPressed: () {
-              if (!built)
-                context.read<TransactionCubit>().buildTx();
-              else
-                context.read<TransactionCubit>().sendTx();
+              // if (!built)
+              context.read<TransactionCubit>().buildTx();
+              // else
+              //   context.read<TransactionCubit>().sendTx();
             },
           ),
           const Gap(80),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
@@ -13,10 +15,12 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransactionCubit extends Cubit<TransactionState> {
@@ -37,6 +41,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.mempoolAPI,
     required this.settingsCubit,
     required this.networkCubit,
+    required this.networkFeesCubit,
   }) : super(TransactionState(tx: tx)) {
     if (tx.isReceived())
       loadReceiveLabel();
@@ -65,6 +70,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   final WalletSensitiveCreate walletSensCreate;
   final SettingsCubit settingsCubit;
   final NetworkCubit networkCubit;
+  final NetworkFeesCubit networkFeesCubit;
 
   void loadTx() async {
     emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));
@@ -193,9 +199,30 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(feeRate: amt));
   }
 
+  void updateFeeRateInt(int feeRate) {
+    emit(state.copyWith(feeRate: feeRate));
+  }
+
   // SENSITIVE FX
   void buildTx() async {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
+
+    final isManualFees = networkFeesCubit.state.feeOption() == 4;
+    int fees = 0;
+    if (!isManualFees)
+      fees = networkFeesCubit.state.feesList?[networkFeesCubit.state.feeOption()] ?? 0;
+    else
+      fees = networkFeesCubit.state.fee();
+
+    if (fees == 0) {
+      emit(
+        state.copyWith(
+          buildingTx: false,
+          errBuildingTx: 'Fee rate must be greater than 0',
+        ),
+      );
+      return;
+    }
 
     final (wallet, err) = await walletRepository.readWallet(
       walletHashId: walletBloc.state.wallet!.getWalletStorageString(),
@@ -224,7 +251,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final (newTx, errrr) = await walletSensTx.buildBumpFeeTx(
       tx: state.tx,
-      feeRate: state.feeRate!.toDouble(),
+      feeRate: fees.toDouble(),
       signingWallet: bdkSignerWallet!,
       pubWallet: walletBloc.state.bdkWallet!,
     );
@@ -250,14 +277,16 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     emit(
       state.copyWith(
-        buildingTx: false,
+        // buildingTx: false,
         updatedTx: newTx,
       ),
     );
+    await Future.delayed(200.ms);
+    sendTx();
   }
 
   void sendTx() async {
-    emit(state.copyWith(sendingTx: true, errSendingTx: ''));
+    emit(state.copyWith(sendingTx: true, errSendingTx: '', buildingTx: false));
     final tx = state.updatedTx!;
     final wallet = walletBloc.state.wallet!;
     final blockchain = networkCubit.state.blockchain!;
@@ -291,8 +320,11 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final txs = walletBloc.state.wallet!.transactions.toList();
     final idx = txs.indexWhere((element) => element.txid == tx.txid);
-    txs.removeAt(idx);
-    txs.insert(idx, state.tx.copyWith(oldTx: true));
+    if (idx != -1) {
+      txs.removeAt(idx);
+      txs.insert(idx, state.tx.copyWith(oldTx: true));
+    } else
+      txs.add(state.tx.copyWith(oldTx: true));
 
     updatedWallet = updatedWallet.copyWith(transactions: txs);
 
