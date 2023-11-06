@@ -122,6 +122,7 @@ Future setupLocator({bool fromTest = false}) async {
   );
 
   settings.homeCubit = homeCubit;
+  networkCubit.homeCubit = homeCubit;
   settings.loadTimer();
 
   locator.registerSingleton<SettingsCubit>(settings);
