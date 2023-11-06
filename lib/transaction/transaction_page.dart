@@ -408,7 +408,11 @@ class BumpFeesPopup extends StatelessWidget {
           const Gap(32),
           const BBText.title('Enter Fees'),
           const Gap(4),
-          BBTextInput.big(
+          BBAmountInput(
+            hint: 'update sats/vb',
+            disabled: false,
+            btcFormatting: false,
+            isSats: true,
             onChanged: (e) {
               context.read<TransactionCubit>().updateFeeRate(e);
             },

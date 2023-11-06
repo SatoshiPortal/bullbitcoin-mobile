@@ -77,7 +77,12 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   void updateManualFees(String fees) async {
     final feesInDouble = int.tryParse(fees);
     if (feesInDouble == null) {
-      emit(state.copyWith(tempFees: 000, tempSelectedFeesOption: 2));
+      emit(
+        state.copyWith(
+          tempFees: 000,
+          // tempSelectedFeesOption: 2,
+        ),
+      );
       await Future.delayed(const Duration(milliseconds: 50));
       return;
     }
@@ -106,7 +111,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
         state.copyWith(
           errLoadingFees:
               "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
-          tempSelectedFeesOption: 2,
+          // tempSelectedFeesOption: 2,
         ),
       );
     else if (state.tempFees != null && state.tempFees! > max && state.tempSelectedFeesOption == 4)
@@ -114,7 +119,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
         state.copyWith(
           errLoadingFees:
               'The default selected fee is too high. Please select a lower fee than $max sats/vbyte .',
-          tempSelectedFeesOption: 2,
+          // tempSelectedFeesOption: 2,
         ),
       );
     else
