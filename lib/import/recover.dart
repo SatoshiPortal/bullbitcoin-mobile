@@ -268,7 +268,11 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                       context
                           .read<ImportWalletCubit>()
                           .wordChanged12(widget.index, firstSuggestion, true);
-                      hideOverlay();
+
+                      setState(() {
+                        tapped = true;
+                      });
+                      widget.focusNode.unfocus();
                       widget.returnClicked(widget.index);
                     },
                     onEnter: () {

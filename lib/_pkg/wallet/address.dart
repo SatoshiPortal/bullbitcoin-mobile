@@ -207,7 +207,7 @@ class WalletAddress {
           ),
         );
 
-        final List<bdk.LocalUtxo> utxos = address.utxos ?? [];
+        final List<bdk.LocalUtxo> utxos = address.utxos?.toList() ?? [];
         for (final tx in wallet.transactions) {
           for (final addrs in tx.outAddrs) {
             if (addrs.address == addressStr) {
