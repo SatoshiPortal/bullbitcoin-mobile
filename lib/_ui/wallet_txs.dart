@@ -182,7 +182,9 @@ class BackupAlertBanner extends StatelessWidget {
         InkWell(
           borderRadius: BorderRadius.circular(10),
           onTap: () {
-            context.push('/wallet-settings/open-backup');
+            final walletBloc = context.read<WalletBloc>();
+
+            context.push('/wallet-settings/open-backup', extra: walletBloc);
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

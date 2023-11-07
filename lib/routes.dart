@@ -72,19 +72,21 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/wallet-settings',
       builder: (context, state) {
-        return const WalletSettingsPage();
+        final walletBloc = state.extra! as WalletBloc;
+        return WalletSettingsPage(walletBloc: walletBloc);
       },
     ),
-    GoRoute(
-      path: '/wallet-settings/open-test-backup',
-      builder: (context, state) {
-        return const WalletSettingsPage(openTestBackup: true);
-      },
-    ),
+    // GoRoute(
+    //   path: '/wallet-settings/open-test-backup',
+    //   builder: (context, state) {
+    //     return const WalletSettingsPage(openTestBackup: true);
+    //   },
+    // ),
     GoRoute(
       path: '/wallet-settings/open-backup',
       builder: (context, state) {
-        return const WalletSettingsPage(openBackup: true);
+        final walletBloc = state.extra! as WalletBloc;
+        return WalletSettingsPage(openBackup: true, walletBloc: walletBloc);
       },
     ),
     GoRoute(
@@ -202,3 +204,13 @@ class BBlocObserver extends BlocObserver {
     super.onError(bloc, error, stackTrace);
   }
 }
+
+// extension GoRouterExtension on GoRouter {
+//   String location() {
+//     final  lastMatch = routerDelegate.currentConfiguration.last;
+//     final  matchList =
+//         lastMatch is ImperativeRouteMatch ? lastMatch.matches : routerDelegate.currentConfiguration;
+//     final String location = matchList.uri.toString();
+//     return location;
+//   }
+// }

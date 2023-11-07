@@ -28,21 +28,27 @@ import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class WalletSettingsPage extends StatelessWidget {
-  const WalletSettingsPage({super.key, this.openTestBackup = false, this.openBackup = false});
+  const WalletSettingsPage({
+    super.key,
+    required this.walletBloc,
+    // this.openTestBackup = false,
+    this.openBackup = false,
+  });
 
-  final bool openTestBackup;
+  // final bool openTestBackup;
   final bool openBackup;
+  final WalletBloc walletBloc;
 
   @override
   Widget build(BuildContext context) {
     final home = locator<HomeCubit>();
-    final wallet = home.state.selectedWalletCubit!;
+    // final wallet = home.state.selectedWalletCubit!;
     final walletSettings = WalletSettingsCubit(
-      wallet: wallet.state.wallet!,
+      wallet: walletBloc.state.wallet!,
       walletRead: locator<WalletSync>(),
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
-      walletBloc: wallet,
+      walletBloc: walletBloc,
       fileStorage: locator<FileStorage>(),
       walletRepository: locator<WalletRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
@@ -51,7 +57,7 @@ class WalletSettingsPage extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: wallet),
+        BlocProvider.value(value: walletBloc),
         BlocProvider.value(value: walletSettings),
       ],
       child: MultiBlocListener(
@@ -60,7 +66,7 @@ class WalletSettingsPage extends StatelessWidget {
             listenWhen: (previous, current) => previous.wallet != current.wallet,
             listener: (context, state) async {
               if (!state.deleted)
-                home.updateSelectedWallet(wallet);
+                home.updateSelectedWallet(walletBloc);
               else {
                 await home.getWalletsFromStorageExistingWallet();
                 context.pop();
@@ -75,7 +81,7 @@ class WalletSettingsPage extends StatelessWidget {
           ),
         ],
         child: _Screen(
-          openTestBackup: openTestBackup,
+          // openTestBackup: openTestBackup,
           openBackup: openBackup,
         ),
       ),
@@ -83,27 +89,20 @@ class WalletSettingsPage extends StatelessWidget {
   }
 }
 
-class _Screen extends StatelessWidget {
-  const _Screen({required this.openTestBackup, required this.openBackup});
+class _Screen extends StatefulWidget {
+  const _Screen({required this.openBackup});
 
-  final bool openTestBackup;
+  // final bool openTestBackup;
   final bool openBackup;
 
   @override
-  Widget build(BuildContext context) {
-    if (openTestBackup)
-      scheduleMicrotask(() async {
-        await Future.delayed(const Duration(milliseconds: 300));
-        await context.push(
-          '/wallet-settings/test-backup',
-          extra: (
-            context.read<WalletBloc>(),
-            context.read<WalletSettingsCubit>(),
-          ),
-        );
-      });
+  State<_Screen> createState() => _ScreenState();
+}
 
-    if (openBackup)
+class _ScreenState extends State<_Screen> {
+  @override
+  void initState() {
+    if (widget.openBackup)
       scheduleMicrotask(() async {
         await Future.delayed(const Duration(milliseconds: 300));
         await context.push(
@@ -115,6 +114,11 @@ class _Screen extends StatelessWidget {
         );
       });
 
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final watchOnly = context.select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
 
     return Scaffold(

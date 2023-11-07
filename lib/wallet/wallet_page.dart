@@ -109,7 +109,8 @@ class ActionsRow extends StatelessWidget {
               isBlue: false,
               isRed: !backupTested,
               onPressed: () {
-                context.push('/wallet-settings/open-backup');
+                final walletBloc = context.read<WalletBloc>();
+                context.push('/wallet-settings/open-backup', extra: walletBloc);
               },
             ),
           BBButton.text(
@@ -123,7 +124,8 @@ class ActionsRow extends StatelessWidget {
             label: 'Settings',
             isBlue: false,
             onPressed: () {
-              context.push('/wallet-settings');
+              final walletBloc = context.read<WalletBloc>();
+              context.push('/wallet-settings', extra: walletBloc);
             },
           ),
         ],

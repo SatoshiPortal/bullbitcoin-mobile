@@ -117,7 +117,8 @@ class WalletCardDetails extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 4),
                   child: IconButton(
                     onPressed: () {
-                      context.push('/wallet-settings');
+                      final walletBloc = context.read<WalletBloc>();
+                      context.push('/wallet-settings', extra: walletBloc);
                     },
                     color: context.colour.onPrimary,
                     icon: const FaIcon(
