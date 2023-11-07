@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -363,6 +364,8 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
   void deleteWalletClicked() async {
     emit(state.copyWith(deleting: true, errDeleting: ''));
+    final mnemonicFingerprint = state.wallet.getRelatedSeedStorageString();
+    final sourceFingerprint = state.wallet.sourceFingerprint;
 
     final err = await walletRepository.deleteWallet(
       walletHashId: state.wallet.getWalletStorageString(),
@@ -374,20 +377,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         state.copyWith(
           deleting: false,
           errDeleting: err.toString(),
-        ),
-      );
-      return;
-    }
-
-    final errr = await walletSensRepository.deleteSeed(
-      fingerprint: state.wallet.getRelatedSeedStorageString(),
-      storage: secureStorage,
-    );
-    if (errr != null) {
-      emit(
-        state.copyWith(
-          deleting: false,
-          errDeleting: errr.toString(),
         ),
       );
       return;
@@ -416,6 +405,53 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
 
     homeCubit.removeWalletPostDelete(state.wallet.id);
+
+    if (state.wallet.hasPassphrase()) {
+      final errr = await walletSensRepository.deletePassphrase(
+        passphraseFingerprintIndex: sourceFingerprint,
+        seedFingerprintIndex: mnemonicFingerprint,
+        secureStore: secureStorage,
+      );
+      if (errr != null) {
+        emit(
+          state.copyWith(
+            deleting: false,
+            errDeleting: errr.toString(),
+          ),
+        );
+        return;
+      }
+    }
+    final (wallets, wErrs) = await walletRepository.readAllWallets(
+      hiveStore: hiveStorage,
+    );
+    if (wErrs != null) {
+      emit(
+        state.copyWith(
+          deleting: false,
+          errDeleting: 'Could not read wallets from storage',
+        ),
+      );
+      return;
+    }
+
+    final exists = await WalletUpdate().walletExists(mnemonicFingerprint, wallets!);
+    if (!exists) {
+      final errr = await walletSensRepository.deleteSeed(
+        fingerprint: state.wallet.getRelatedSeedStorageString(),
+        storage: secureStorage,
+      );
+      if (errr != null) {
+        emit(
+          state.copyWith(
+            deleting: false,
+            errDeleting: errr.toString(),
+          ),
+        );
+        return;
+      }
+    }
+
     emit(
       state.copyWith(
         deleting: false,

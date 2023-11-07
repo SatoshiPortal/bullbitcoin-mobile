@@ -80,4 +80,11 @@ class WalletUpdate {
       return (null, Err(e.toString()));
     }
   }
+
+  Future<bool> walletExists(String mnemonicFingerprint, List<Wallet> wallets) async {
+    for (final wallet in wallets) {
+      if (wallet.mnemonicFingerprint == mnemonicFingerprint) return true;
+    }
+    return false;
+  }
 }

@@ -57,6 +57,19 @@ class Transaction with _$Transaction {
   bool isReceivedCatchSelfPayment() =>
       sent == 0 || sent != null && received != null && received! > sent!;
 
+  bool isToSelf() {
+    if (!isReceived()) {
+      final index = outAddrs.indexWhere(
+        (element) => element.kind == AddressKind.deposit,
+      );
+      if (index == -1)
+        return false;
+      else
+        return true;
+    } else
+      return false;
+  }
+
   int getAmount({bool sentAsTotal = false}) {
     try {
       return isReceived()
