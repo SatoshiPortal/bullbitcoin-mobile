@@ -404,8 +404,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    homeCubit.removeWalletPostDelete(state.wallet.id);
-
     if (hasPassphrase) {
       final errr = await walletSensRepository.deletePassphrase(
         passphraseFingerprintIndex: sourceFingerprint,
@@ -419,9 +417,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
             errDeleting: errr.toString(),
           ),
         );
-        return;
       }
     }
+
     final (wallets, wErrs) = await walletRepository.readAllWallets(
       hiveStore: hiveStorage,
     );
@@ -432,10 +430,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
           errDeleting: 'Could not read wallets from storage',
         ),
       );
-      return;
     }
 
-    final exists = await WalletUpdate().walletExists(mnemonicFingerprint, wallets!);
+    final exists = await WalletUpdate().walletExists(mnemonicFingerprint, wallets ?? []);
     if (!exists) {
       final errr = await walletSensRepository.deleteSeed(
         fingerprint: state.wallet.getRelatedSeedStorageString(),
@@ -448,9 +445,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
             errDeleting: errr.toString(),
           ),
         );
-        return;
       }
     }
+    homeCubit.removeWalletPostDelete(state.wallet.id);
 
     emit(
       state.copyWith(
