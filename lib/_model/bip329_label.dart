@@ -1,6 +1,12 @@
 // ignore_for_file: invalid_annotation_target
 
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pointycastle/export.dart' as pc;
 
 part 'bip329_label.freezed.dart';
 part 'bip329_label.g.dart';
@@ -47,3 +53,54 @@ class Bip329Label with _$Bip329Label {
   List<String> labelTagList() => label!.split(',');
 }
 //  4 method : readfile, writefile, encrypt, decrypt
+// Existing Bip329Label class and other code...
+
+extension Bip329LabelHelpers on Bip329Label {
+  // Method to read labels from a file
+  static Future<List<Bip329Label>> readFile(String fileName) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/$fileName');
+    final contents = await file.readAsString();
+    // Assuming the file contains JSON Lines format
+    final lines = contents.trim().split('\n');
+    return lines
+        .map((line) => Bip329Label.fromJson(jsonDecode(line) as Map<String, dynamic>))
+        .toList();
+  }
+
+  // Method to write labels to a file
+  static Future<void> writeFile(String fileName, List<Bip329Label> labels) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/$fileName');
+    final lines = labels.map((label) => jsonEncode(label.toJson())).join('\n');
+    await file.writeAsString(lines);
+  }
+
+  String encrypt(String plainText, String key) {
+    // Initialize the encryption algorithm with your key
+    final keyBytes = Uint8List.fromList(utf8.encode(key));
+    final keyParam = pc.KeyParameter(keyBytes);
+    final blockCipher = pc.BlockCipher('AES')..init(true, keyParam);
+
+    // Encrypt the text
+    final input = Uint8List.fromList(utf8.encode(plainText));
+    final encrypted = blockCipher.process(input);
+
+    return base64Encode(encrypted); // Encode encrypted bytes to Base64
+  }
+
+  String decrypt(String encryptedBase64Text, String key) {
+    // Decode Base64 encoded string to bytes
+    final encryptedBytes = base64Decode(encryptedBase64Text);
+
+    // Initialize the decryption algorithm with your key
+    final keyBytes = Uint8List.fromList(utf8.encode(key));
+    final keyParam = pc.KeyParameter(keyBytes);
+    final blockCipher = pc.BlockCipher('AES')..init(false, keyParam);
+
+    // Decrypt the bytes
+    final decrypted = blockCipher.process(encryptedBytes);
+
+    return utf8.decode(decrypted); // Decode decrypted bytes to String
+  }
+}

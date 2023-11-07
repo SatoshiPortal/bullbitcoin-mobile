@@ -1,60 +1,62 @@
-// class WalletLabels {
+import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/bip329_label.dart';
+import 'package:bb_mobile/_model/transaction.dart';
 
-//   Future<(Wallet?, Err?)> updateChangeLabel({
-//     required Wallet wallet,
-//     required bdk.Wallet bdkWallet,
-//     // ignore: type_annotate_public_apis
-//     required String txid,
-//     required String label,
-//   }) async {
-//     try {
-//       final utxos = await bdkWallet.listUnspent();
-//       final addresses = wallet.addresses?.toList() ?? [];
+class WalletLabels {
+  Future<List<Bip329Label>> txsToBip329(List<Transaction> txs, String origin) async {
+    return txs
+        .where((tx) => tx.label != null)
+        .map(
+          (tx) => Bip329Label(
+            type: BIP329Type.tx,
+            ref: tx.txid,
+            label: tx.label,
+            origin: origin,
+          ),
+        )
+        .toList();
+  }
 
-//       final newChange = utxos.firstWhere(
-//         (element) => element.keychain == bdk.KeychainKind.Internal && element.outpoint.txid == txid,
-//       );
+  List<Transaction> txsFromBip329(List<Bip329Label> labels) {
+    return labels
+        .where((label) => label.type == BIP329Type.tx)
+        .map(
+          (label) => Transaction(
+            timestamp: 0,
+            txid: label.ref,
+            label: label.label,
+          ),
+        )
+        .toList();
+  }
 
-//       final scr = await bdk.Script.create(newChange.txout.scriptPubkey.internal);
-//       final addresss = await bdk.Address.fromScript(
-//         scr,
-//         wallet.getBdkNetwork(),
-//       );
-//       final a = Address(address: addresss.toString(), index: -1, label: label);
-//       // final addressStr = addresss.toString();
-//       addresses.add(a);
-//       final w = wallet.copyWith(addresses: addresses);
-//       return (w, null);
-//     } catch (e) {
-//       return (null, Err(e.toString()));
-//     }
-//   }
-//   Future<(Wallet?, Err?)> updateRelatedLabels({
-//     required Wallet wallet,
-//     required bdk.Wallet bdkWallet,
-//     // ignore: type_annotate_public_apis
-//   }) async {
-//     try {
-//       late bool isRelated = false;
+  Future<List<Bip329Label>> addressesToBip329(List<Address> addresses, String origin) async {
+    return addresses
+        .where((address) => address.label != null)
+        .map(
+          (address) => Bip329Label(
+            type: BIP329Type.address,
+            ref: address.address,
+            label: address.label,
+            spendable: address.spendable,
+            origin: origin,
+          ),
+        )
+        .toList();
+  }
 
-//       for (final element in tx.inAddresses!) {
-//         if (element == address) {
-//           isRelated = true;
-//         }
-//       }
-
-//       for (final element in tx.outAddresses!) {
-//         if (element == address) {
-//           isRelated = true;
-//         }
-//       }
-
-//       if (isRelated) {
-//         return (tx.copyWith(label: label), null);
-//       }
-//       return (tx, null);
-//     } catch (e) {
-//       return (null, Err(e.toString()));
-//     }
-//   }
-// }
+  List<Address> addressesFromBip329(List<Bip329Label> labels) {
+    return labels
+        .where((label) => label.type == BIP329Type.address)
+        .map(
+          (label) => Address(
+            address: label.ref,
+            kind: AddressKind.deposit,
+            state: AddressStatus.unused,
+            label: label.label,
+            spendable: label.spendable ?? true,
+          ),
+        )
+        .toList();
+  }
+}
