@@ -1,44 +1,39 @@
+// import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockStorage extends Mock implements HiveStorage {
-  @override
-  Future<(String?, Err?)> getValue(String key) async {
-    return (null, Err('', expected: true));
-  }
-
-  @override
-  Future<Err?> saveValue({required String key, required String value}) async {
-    return null;
-  }
-}
+class MockStorage extends Mock implements HiveStorage {}
 
 void main() {
   group('Lighting Cubit Tests', () {
-    blocTest(
-      'load lighting cubit',
-      build: () => Lighting(hiveStorage: MockStorage()),
-      expect: () => [ThemeLighting.light],
-      verify: (_) {
-        // verify(
-        //   () => _.hiveStorage.getValue(StorageKeys.lighting),
-        // ).called(1);
-
-        // verify(
-        //   () => _.hiveStorage.saveValue(
-        //     key: StorageKeys.lighting,
-        //     value: ThemeLighting.light.toString(),
-        //   ).called(1),
-      },
-    );
+    final mockStorage = MockStorage();
 
     blocTest(
       'toggle lighting cubit',
-      build: () => Lighting(hiveStorage: MockStorage()),
+      build: () => Lighting(hiveStorage: mockStorage),
+      setUp: () {
+        when(() => mockStorage.getValue(StorageKeys.lighting))
+            .thenAnswer((_) async => (null, Err('', expected: true)));
+
+        when(
+          () => mockStorage.saveValue(
+            key: StorageKeys.lighting,
+            value: ThemeLighting.dark.toString(),
+          ),
+        ).thenAnswer((_) async => null);
+
+        when(
+          () => mockStorage.saveValue(
+            key: StorageKeys.lighting,
+            value: ThemeLighting.dim.toString(),
+          ),
+        ).thenAnswer((_) async => null);
+      },
       act: (_) => _
         ..toggle(ThemeLighting.dark)
         ..toggle(ThemeLighting.dim),
@@ -47,19 +42,18 @@ void main() {
         ThemeLighting.dim,
       ],
       verify: (_) {
-        // verify(
-        //   () => _.hiveStorage.saveValue(
-        //     key: StorageKeys.lighting,
-        //     value: ThemeLighting.dark.toString(),
-        //   ),
-        // ).called(1);
-
-        // verify(
-        //   () => _.hiveStorage.saveValue(
-        //     key: StorageKeys.lighting,
-        //     value: ThemeLighting.dim.toString(),
-        //   ),
-        // ).called(1);
+        verify(
+          () => _.hiveStorage.saveValue(
+            key: StorageKeys.lighting,
+            value: ThemeLighting.dark.toString(),
+          ),
+        ).called(1);
+        verify(
+          () => _.hiveStorage.saveValue(
+            key: StorageKeys.lighting,
+            value: ThemeLighting.dim.toString(),
+          ),
+        ).called(1);
       },
     );
   });
