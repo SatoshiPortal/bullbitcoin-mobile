@@ -20,6 +20,7 @@ class WalletTx {
     if (index != -1) {
       final updatedAddress = outAddrs.removeAt(index);
       // (state: newAddress.state);
+      // outAddrs[index] = newAddress;
       outAddrs.insert(index, updatedAddress.copyWith(state: newAddress.state));
     } else {
       outAddrs.add(newAddress);
@@ -399,6 +400,35 @@ class WalletTx {
     }
   }
 
+  Future<(bdk.Transaction?, Err?)> finalizeTx({
+    required String psbt,
+    // required bdk.Blockchain blockchain,
+    required bdk.Wallet bdkWallet,
+    // required String address,
+  }) async {
+    try {
+      final psbtStruct = bdk.PartiallySignedTransaction(psbtBase64: psbt);
+      // final tx = await psbtStruct.extractTx();
+      final finalized = await bdkWallet.sign(
+        psbt: psbtStruct,
+        signOptions: const bdk.SignOptions(
+          isMultiSig: false,
+          trustWitnessUtxo: false,
+          allowAllSighashes: false,
+          removePartialSigs: true,
+          tryFinalize: true,
+          signWithTapInternalKey: false,
+          allowGrinding: true,
+        ),
+      );
+      final extracted = await finalized.extractTx();
+
+      return (extracted, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
   Future<((Wallet, String)?, Err?)> broadcastTxWithWallet({
     required String psbt,
     required bdk.Blockchain blockchain,
@@ -408,11 +438,11 @@ class WalletTx {
     String? note,
   }) async {
     try {
-      final psb = bdk.PartiallySignedTransaction(psbtBase64: psbt);
-      final tx = await psb.extractTx();
+      final psbtStruct = bdk.PartiallySignedTransaction(psbtBase64: psbt);
+      final tx = await psbtStruct.extractTx();
 
       await blockchain.broadcast(tx);
-      final txid = await psb.txId();
+      final txid = await psbtStruct.txId();
       final newTx = transaction.copyWith(
         txid: txid,
         label: note,

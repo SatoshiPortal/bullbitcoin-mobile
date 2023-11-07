@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -76,7 +77,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
 
       if (isPsbt) {
         final psbt = bdk.PartiallySignedTransaction(psbtBase64: tx);
-        final bdkTx = await psbt.extractTx();
+        bdk.Transaction bdkTx = await psbt.extractTx();
         final txid = await bdkTx.txid();
 
         // loop wallet txs if txid match
@@ -85,14 +86,14 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         // if not show warning
         // if no tx matches skip checks
         Transaction? transaction;
-        // WalletBloc? relatedWallet;
+        WalletBloc? relatedWallet;
         final wallets = homeCubit.state.walletBlocs ?? [];
 
         for (final wallet in wallets) {
           for (final tx in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
             if (tx.txid == txid && !tx.isReceived()) {
               transaction = tx;
-              // relatedWallet = wallet;
+              relatedWallet = wallet;
             }
           }
         }
@@ -102,6 +103,27 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
               recognizedTx: true,
             ),
           );
+          if (relatedWallet == null) {
+            emit(
+              state.copyWith(
+                errExtractingTx: 'Could not load related wallet',
+              ),
+            );
+            return;
+          }
+          final (bdkTxFin, txErr) = await walletTx.finalizeTx(
+            psbt: tx,
+            bdkWallet: relatedWallet.state.bdkWallet!,
+          );
+          if (txErr != null) {
+            emit(
+              state.copyWith(
+                errExtractingTx: 'Error finalizing psbt. Ensure the psbt is signed.',
+              ),
+            );
+            return;
+          } else
+            bdkTx = bdkTxFin!;
         } else {
           emit(
             state.copyWith(
@@ -111,6 +133,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         }
         final feeAmount = await psbt.feeAmount();
         final outputs = await bdkTx.output();
+
         int totalAmount = 0;
         final List<Address> outAddrs = [];
 
