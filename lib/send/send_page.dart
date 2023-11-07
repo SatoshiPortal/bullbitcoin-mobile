@@ -315,36 +315,41 @@ class SendButton extends StatelessWidget {
         Center(
           child: SizedBox(
             width: 250,
-            child: BBButton.bigRed(
-              disabled: !showSend,
-              loading: sending,
-              onPressed: () async {
-                if (sending) return;
-                if (!signed)
-                  context.read<SendCubit>().confirmClickedd();
-                else
-                  context.read<SendCubit>().sendClicked();
-                if (err.isEmpty && watchOnly) {
-                  await Future.delayed(100.ms);
-                  PSBTPopUp.openPopUp(context);
-                }
+            child: BlocListener<SendCubit, SendState>(
+              listenWhen: (previous, current) =>
+                  previous.tx != current.tx &&
+                  current.psbt.isNotEmpty &&
+                  current.errSending.isEmpty,
+              listener: (context, state) {
+                PSBTPopUp.openPopUp(context);
               },
-              label: watchOnly
-                  ? 'Generate PSBT'
-                  : signed
-                      ? sending
-                          ? 'Broadcasting'
-                          : 'Confirm'
-                      : sending
-                          ? 'Building Tx'
-                          : 'Send',
+              child: BBButton.bigRed(
+                disabled: !showSend,
+                loading: sending,
+                onPressed: () async {
+                  if (sending) return;
+                  if (!signed)
+                    context.read<SendCubit>().confirmClickedd();
+                  else
+                    context.read<SendCubit>().sendClicked();
+                },
+                label: watchOnly
+                    ? 'Generate PSBT'
+                    : signed
+                        ? sending
+                            ? 'Broadcasting'
+                            : 'Confirm'
+                        : sending
+                            ? 'Building Tx'
+                            : 'Send',
+              ),
             ),
           ),
         ),
-        const Gap(8),
+        const Gap(16),
         if (err.isNotEmpty)
           Center(
-            child: BBText.body(
+            child: BBText.error(
               err,
             ),
           ),
