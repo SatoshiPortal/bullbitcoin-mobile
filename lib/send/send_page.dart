@@ -324,7 +324,7 @@ class SendButton extends StatelessWidget {
                   context.read<SendCubit>().confirmClickedd();
                 else
                   context.read<SendCubit>().sendClicked();
-                if (watchOnly) {
+                if (err.isEmpty && watchOnly) {
                   await Future.delayed(100.ms);
                   PSBTPopUp.openPopUp(context);
                 }

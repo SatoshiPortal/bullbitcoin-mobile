@@ -481,7 +481,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
               emit(state.copyWith(errImporting: 'Error creating Wallets from Xpub'));
               return;
             }
-            wallets.addAll([wxpub!]);
+            scriptTypeChanged(wxpub!.scriptType);
+            wallets.addAll([wxpub]);
           } else {
             final (wxpub, wErrs) = await walletCreate.oneFromSlip132Pub(
               state.xpub,
@@ -490,7 +491,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
               emit(state.copyWith(errImporting: 'Error creating Wallets from Xpub'));
               return;
             }
-            wallets.addAll([wxpub!]);
+            scriptTypeChanged(wxpub!.scriptType);
+            wallets.addAll([wxpub]);
           }
         case ImportTypes.coldcard:
           final coldcard = state.coldCard!;
@@ -530,13 +532,13 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void saveClicked() async {
+    emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
+
     Wallet? selectedWallet = state.getSelectWalletDetails();
     if (selectedWallet == null) return;
     selectedWallet = (state.walletLabel != null && state.walletLabel != '')
         ? selectedWallet.copyWith(name: state.walletLabel)
         : selectedWallet;
-
-    emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
 
     final network = networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 

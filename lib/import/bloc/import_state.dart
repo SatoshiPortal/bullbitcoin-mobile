@@ -144,11 +144,11 @@ class ImportState with _$ImportState {
 
     switch (scriptType) {
       case ScriptType.bip84:
-        return walletDetails?.where((e) => e.scriptType == ScriptType.bip84).first;
+        return walletDetails?.firstWhere((e) => e.scriptType == ScriptType.bip84);
       case ScriptType.bip49:
-        return walletDetails?.where((e) => e.scriptType == ScriptType.bip49).first;
+        return walletDetails?.firstWhere((e) => e.scriptType == ScriptType.bip49);
       case ScriptType.bip44:
-        return walletDetails?.where((e) => e.scriptType == ScriptType.bip44).first;
+        return walletDetails?.firstWhere((e) => e.scriptType == ScriptType.bip44);
     }
   }
 

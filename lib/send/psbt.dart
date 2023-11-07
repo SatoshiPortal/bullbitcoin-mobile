@@ -37,6 +37,7 @@ class PSBTPopUp extends StatelessWidget {
   Widget build(BuildContext context) {
     final tx = context.select((SendCubit cubit) => cubit.state.tx);
     final psbt = context.select((SendCubit cubit) => cubit.state.psbt);
+
     if (tx == null || psbt.isEmpty) return const SizedBox();
 
     // final outAddresses = context.select((SendCubit cubit) => cubit.state.tx?.outAddresses ?? []);

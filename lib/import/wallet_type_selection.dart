@@ -88,8 +88,8 @@ class _ScreenState extends State<_Screen> {
 
   @override
   Widget build(BuildContext context) {
-    // final step = context.select((ImportWalletCubit cubit) => cubit.state.importStep);
-
+    final saving = context.select((ImportWalletCubit cubit) => cubit.state.savingWallet);
+    // final
     // if (step == ImportSteps.scanningWallets) {
     //   final listeners = [
     //     for (final walletBloc in widget.walletCubits)
@@ -139,6 +139,7 @@ class _ScreenState extends State<_Screen> {
             SizedBox(
               width: 250,
               child: BBButton.bigRed(
+                disabled: saving,
                 filled: true,
                 onPressed: () {
                   context.read<ImportWalletCubit>().saveClicked();
