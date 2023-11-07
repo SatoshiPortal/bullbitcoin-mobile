@@ -366,7 +366,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(deleting: true, errDeleting: ''));
     final mnemonicFingerprint = state.wallet.getRelatedSeedStorageString();
     final sourceFingerprint = state.wallet.sourceFingerprint;
-
+    final hasPassphrase = state.wallet.hasPassphrase();
     final err = await walletRepository.deleteWallet(
       walletHashId: state.wallet.getWalletStorageString(),
       storage: hiveStorage,
@@ -406,7 +406,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
     homeCubit.removeWalletPostDelete(state.wallet.id);
 
-    if (state.wallet.hasPassphrase()) {
+    if (hasPassphrase) {
       final errr = await walletSensRepository.deletePassphrase(
         passphraseFingerprintIndex: sourceFingerprint,
         seedFingerprintIndex: mnemonicFingerprint,
