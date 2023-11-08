@@ -361,7 +361,7 @@ class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
     var amt = '';
     int? amtt;
 
-    amtt = context.select((NetworkFeesCubit x) => x.state.fees);
+    amtt = context.select((NetworkFeesCubit x) => x.state.fee());
 
     if (amtt != null) amt = amtt.toString();
 
