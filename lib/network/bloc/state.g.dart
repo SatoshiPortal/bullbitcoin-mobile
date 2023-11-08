@@ -6,8 +6,8 @@ part of 'state.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_NetworkState _$$_NetworkStateFromJson(Map<String, dynamic> json) =>
-    _$_NetworkState(
+_$NetworkStateImpl _$$NetworkStateImplFromJson(Map<String, dynamic> json) =>
+    _$NetworkStateImpl(
       testnet: json['testnet'] as bool? ?? false,
       reloadWalletTimer: json['reloadWalletTimer'] as int? ?? 20,
       networks: (json['networks'] as List<dynamic>?)
@@ -25,7 +25,7 @@ _$_NetworkState _$$_NetworkStateFromJson(Map<String, dynamic> json) =>
           $enumDecodeNullable(_$ElectrumTypesEnumMap, json['tempNetwork']),
     );
 
-Map<String, dynamic> _$$_NetworkStateToJson(_$_NetworkState instance) =>
+Map<String, dynamic> _$$NetworkStateImplToJson(_$NetworkStateImpl instance) =>
     <String, dynamic>{
       'testnet': instance.testnet,
       'reloadWalletTimer': instance.reloadWalletTimer,

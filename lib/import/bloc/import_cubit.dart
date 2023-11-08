@@ -151,6 +151,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       state.copyWith(
         importStep: ImportSteps.import12Words,
         importType: ImportTypes.words12,
+        words12: emptyWords12,
       ),
     );
   }
@@ -160,6 +161,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       state.copyWith(
         importStep: ImportSteps.import24Words,
         importType: ImportTypes.words24,
+        words24: emptyWords24,
       ),
     );
   }
