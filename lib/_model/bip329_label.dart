@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/_pkg/error.dart';
@@ -88,10 +89,7 @@ extension Bip329LabelHelpers on Bip329Label {
 
 String _encrypt(String plainText, String key) {
   final keyBytes = Uint8List.fromList(_hexToIntList(key));
-  final keyParam = pc.KeyParameter(keyBytes);
-
-  // Create a CBC block cipher with PKCS7 padding
-  final iv = Uint8List(16); // You should generate a random IV for each encryption
+  final iv = generateRandomIV(16);
   final params = PaddedBlockCipherParameters(
     ParametersWithIV(KeyParameter(keyBytes), iv),
     null,
@@ -129,7 +127,6 @@ String _decrypt(String encryptedBase64Text, String key) {
   return utf8.decode(decrypted);
 }
 
-// Helper function to convert hex string to int list
 List<int> _hexToIntList(String hex) {
   final bytes = <int>[];
   for (var i = 0; i < hex.length; i += 2) {
@@ -138,4 +135,13 @@ List<int> _hexToIntList(String hex) {
     bytes.add(byte);
   }
   return bytes;
+}
+
+Uint8List generateRandomIV(int length) {
+  final Random secureRandom = Random.secure();
+  final Uint8List randomIV = Uint8List(length);
+  for (int i = 0; i < length; i++) {
+    randomIV[i] = secureRandom.nextInt(256);
+  }
+  return randomIV;
 }

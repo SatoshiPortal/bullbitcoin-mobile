@@ -507,6 +507,20 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
     final List<Transaction> importedTxs = walletLabels.txsFromBip329(importedLabels!);
     final List<Address> importedAddresses = walletLabels.addressesFromBip329(importedLabels);
+    final (updatedAddressWallet, _) =
+        await WalletUpdate().updateAddressLabels(wallet, importedAddresses);
+    final (updatedWallet, _) =
+        await WalletUpdate().updateTransactionLabels(updatedAddressWallet!, importedTxs);
+
+    walletBloc.add(
+      UpdateWallet(
+        updatedWallet!,
+        updateTypes: [
+          UpdateWalletTypes.addresses,
+          UpdateWalletTypes.transactions,
+        ],
+      ),
+    );
 
     return;
     // Update the wallet with imported data

@@ -23,6 +23,54 @@ class WalletUpdate {
     }
   }
 
+  Future<(Wallet?, Err?)> updateAddressLabels(Wallet wallet, List<Address> addresses) async {
+    List<Address> myAddressBook = [];
+    List<Address> externalAddressBook = [];
+    myAddressBook = [...wallet.myAddressBook];
+    externalAddressBook = [...wallet.externalAddressBook ?? []];
+    for (final address in addresses) {
+      final existingMyAddressIndex = myAddressBook.indexWhere((a) => a.address == address.address);
+      if (existingMyAddressIndex != -1) {
+        final updatedAddress = myAddressBook[existingMyAddressIndex].copyWith(
+          label: address.label,
+        );
+        myAddressBook[existingMyAddressIndex] = updatedAddress;
+      }
+
+      final existingExternalAddressIndex =
+          externalAddressBook.indexWhere((a) => a.address == address.address);
+
+      if (existingExternalAddressIndex != -1) {
+        final updatedAddress = externalAddressBook[existingExternalAddressIndex].copyWith(
+          label: address.label,
+        );
+        externalAddressBook[existingExternalAddressIndex] = updatedAddress;
+      }
+    }
+    final w = wallet.copyWith(
+      myAddressBook: myAddressBook,
+      externalAddressBook: externalAddressBook,
+    );
+    return (w, null);
+  }
+
+  Future<(Wallet?, Err?)> updateTransactionLabels(Wallet wallet, List<Transaction> txs) async {
+    List<Transaction> transactions = [];
+    transactions = [...wallet.transactions];
+    for (final tx in txs) {
+      final txIndex = transactions.indexWhere((a) => a.txid == tx.txid);
+      if (txIndex != -1) {
+        final updatedTx = transactions[txIndex].copyWith(
+          label: tx.label,
+          outAddrs: tx.outAddrs.map((addr) => addr.copyWith(label: tx.label)).toList(),
+        );
+        transactions[txIndex] = updatedTx;
+      }
+    }
+    final w = wallet.copyWith(transactions: transactions);
+    return (w, null);
+  }
+
   Future<(Wallet?, Err?)> updateAddressesFromTxs(Wallet wallet) async {
     final updatedAddresses = List<Address>.from(wallet.myAddressBook);
     final updatedToAddresses = List<Address>.from(wallet.externalAddressBook ?? []);
