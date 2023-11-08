@@ -227,7 +227,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
 
     final ad = context.select((WalletBloc cubit) => cubit.state.firstAddress);
 
-    final balance = context.select((WalletBloc cubit) => cubit.state.balance);
+    final balance = context.select((WalletBloc cubit) => cubit.state.wallet?.fullBalance);
 
     final hasTxs = context.select(
       (WalletBloc cubit) => cubit.state.wallet?.transactions.isNotEmpty ?? false,

@@ -11,7 +11,7 @@ class WalletState with _$WalletState {
     Wallet? wallet,
     bdk.Wallet? bdkWallet,
     // List<Transaction>? txs,
-    Balance? balance,
+    // Balance? balance,
     @Default('') String name,
     @Default(true) bool loadingWallet,
     @Default('') String errLoadingWallet,

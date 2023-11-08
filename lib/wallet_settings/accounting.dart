@@ -38,16 +38,17 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final walletName = context.select((WalletBloc _) => _.state.name);
-    final totalBalance = context.select((WalletBloc _) => _.state.balance?.total ?? 0);
+    final totalBalance = context.select((WalletBloc _) => _.state.wallet?.fullBalance?.total ?? 0);
     final totalStr = context.select(
       (CurrencyCubit _) => _.state.getAmountInUnits(totalBalance, removeText: true),
     );
-    final confirmedBalance = context.select((WalletBloc _) => _.state.balance?.confirmed ?? 0);
+    final confirmedBalance =
+        context.select((WalletBloc _) => _.state.wallet?.fullBalance?.confirmed ?? 0);
     final confirmedStr = context.select(
       (CurrencyCubit _) => _.state.getAmountInUnits(confirmedBalance, removeText: true),
     );
     final unconfirmedBalance =
-        context.select((WalletBloc _) => _.state.balance?.untrustedPending ?? 0);
+        context.select((WalletBloc _) => _.state.wallet?.fullBalance?.untrustedPending ?? 0);
     final unconfirmedStr = context.select(
       (CurrencyCubit _) => _.state.getAmountInUnits(unconfirmedBalance, removeText: true),
     );

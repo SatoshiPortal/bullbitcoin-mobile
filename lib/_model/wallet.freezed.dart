@@ -31,6 +31,7 @@ mixin _$Wallet {
   String? get name => throw _privateConstructorUsedError;
   String? get path => throw _privateConstructorUsedError;
   int? get balance => throw _privateConstructorUsedError;
+  Balance? get fullBalance => throw _privateConstructorUsedError;
   Address? get lastGeneratedAddress => throw _privateConstructorUsedError;
   List<Address> get myAddressBook => throw _privateConstructorUsedError;
   List<Address>? get externalAddressBook => throw _privateConstructorUsedError;
@@ -64,6 +65,7 @@ abstract class $WalletCopyWith<$Res> {
       String? name,
       String? path,
       int? balance,
+      Balance? fullBalance,
       Address? lastGeneratedAddress,
       List<Address> myAddressBook,
       List<Address>? externalAddressBook,
@@ -75,6 +77,7 @@ abstract class $WalletCopyWith<$Res> {
       DateTime? lastBackupTested,
       bool hide});
 
+  $BalanceCopyWith<$Res>? get fullBalance;
   $AddressCopyWith<$Res>? get lastGeneratedAddress;
 }
 
@@ -102,6 +105,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? name = freezed,
     Object? path = freezed,
     Object? balance = freezed,
+    Object? fullBalance = freezed,
     Object? lastGeneratedAddress = freezed,
     Object? myAddressBook = null,
     Object? externalAddressBook = freezed,
@@ -158,6 +162,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.balance
           : balance // ignore: cast_nullable_to_non_nullable
               as int?,
+      fullBalance: freezed == fullBalance
+          ? _value.fullBalance
+          : fullBalance // ignore: cast_nullable_to_non_nullable
+              as Balance?,
       lastGeneratedAddress: freezed == lastGeneratedAddress
           ? _value.lastGeneratedAddress
           : lastGeneratedAddress // ignore: cast_nullable_to_non_nullable
@@ -203,6 +211,18 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
 
   @override
   @pragma('vm:prefer-inline')
+  $BalanceCopyWith<$Res>? get fullBalance {
+    if (_value.fullBalance == null) {
+      return null;
+    }
+
+    return $BalanceCopyWith<$Res>(_value.fullBalance!, (value) {
+      return _then(_value.copyWith(fullBalance: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
   $AddressCopyWith<$Res>? get lastGeneratedAddress {
     if (_value.lastGeneratedAddress == null) {
       return null;
@@ -232,6 +252,7 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       String? name,
       String? path,
       int? balance,
+      Balance? fullBalance,
       Address? lastGeneratedAddress,
       List<Address> myAddressBook,
       List<Address>? externalAddressBook,
@@ -243,6 +264,8 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
       DateTime? lastBackupTested,
       bool hide});
 
+  @override
+  $BalanceCopyWith<$Res>? get fullBalance;
   @override
   $AddressCopyWith<$Res>? get lastGeneratedAddress;
 }
@@ -268,6 +291,7 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? name = freezed,
     Object? path = freezed,
     Object? balance = freezed,
+    Object? fullBalance = freezed,
     Object? lastGeneratedAddress = freezed,
     Object? myAddressBook = null,
     Object? externalAddressBook = freezed,
@@ -324,6 +348,10 @@ class __$$_WalletCopyWithImpl<$Res>
           ? _value.balance
           : balance // ignore: cast_nullable_to_non_nullable
               as int?,
+      fullBalance: freezed == fullBalance
+          ? _value.fullBalance
+          : fullBalance // ignore: cast_nullable_to_non_nullable
+              as Balance?,
       lastGeneratedAddress: freezed == lastGeneratedAddress
           ? _value.lastGeneratedAddress
           : lastGeneratedAddress // ignore: cast_nullable_to_non_nullable
@@ -383,6 +411,7 @@ class _$_Wallet extends _Wallet {
       this.name,
       this.path,
       this.balance,
+      this.fullBalance,
       this.lastGeneratedAddress,
       final List<Address> myAddressBook = const [],
       final List<Address>? externalAddressBook,
@@ -431,6 +460,8 @@ class _$_Wallet extends _Wallet {
   final String? path;
   @override
   final int? balance;
+  @override
+  final Balance? fullBalance;
   @override
   final Address? lastGeneratedAddress;
   final List<Address> _myAddressBook;
@@ -502,7 +533,7 @@ class _$_Wallet extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, transactions: $transactions, unsignedTxs: $unsignedTxs, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, transactions: $transactions, unsignedTxs: $unsignedTxs, labelTags: $labelTags, bip329Labels: $bip329Labels, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide)';
   }
 
   @override
@@ -528,6 +559,8 @@ class _$_Wallet extends _Wallet {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.path, path) || other.path == path) &&
             (identical(other.balance, balance) || other.balance == balance) &&
+            (identical(other.fullBalance, fullBalance) ||
+                other.fullBalance == fullBalance) &&
             (identical(other.lastGeneratedAddress, lastGeneratedAddress) ||
                 other.lastGeneratedAddress == lastGeneratedAddress) &&
             const DeepCollectionEquality()
@@ -564,6 +597,7 @@ class _$_Wallet extends _Wallet {
         name,
         path,
         balance,
+        fullBalance,
         lastGeneratedAddress,
         const DeepCollectionEquality().hash(_myAddressBook),
         const DeepCollectionEquality().hash(_externalAddressBook),
@@ -603,6 +637,7 @@ abstract class _Wallet extends Wallet {
       final String? name,
       final String? path,
       final int? balance,
+      final Balance? fullBalance,
       final Address? lastGeneratedAddress,
       final List<Address> myAddressBook,
       final List<Address>? externalAddressBook,
@@ -640,6 +675,8 @@ abstract class _Wallet extends Wallet {
   @override
   int? get balance;
   @override
+  Balance? get fullBalance;
+  @override
   Address? get lastGeneratedAddress;
   @override
   List<Address> get myAddressBook;
@@ -665,6 +702,10 @@ abstract class _Wallet extends Wallet {
       throw _privateConstructorUsedError;
 }
 
+Balance _$BalanceFromJson(Map<String, dynamic> json) {
+  return _Balance.fromJson(json);
+}
+
 /// @nodoc
 mixin _$Balance {
   int get immature => throw _privateConstructorUsedError;
@@ -674,6 +715,7 @@ mixin _$Balance {
   int get spendable => throw _privateConstructorUsedError;
   int get total => throw _privateConstructorUsedError;
 
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $BalanceCopyWith<Balance> get copyWith => throw _privateConstructorUsedError;
 }
@@ -804,15 +846,19 @@ class __$$_BalanceCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
-class _$_Balance implements _Balance {
+@JsonSerializable()
+class _$_Balance extends _Balance {
   const _$_Balance(
       {required this.immature,
       required this.trustedPending,
       required this.untrustedPending,
       required this.confirmed,
       required this.spendable,
-      required this.total});
+      required this.total})
+      : super._();
+
+  factory _$_Balance.fromJson(Map<String, dynamic> json) =>
+      _$$_BalanceFromJson(json);
 
   @override
   final int immature;
@@ -850,6 +896,7 @@ class _$_Balance implements _Balance {
             (identical(other.total, total) || other.total == total));
   }
 
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, immature, trustedPending,
       untrustedPending, confirmed, spendable, total);
@@ -859,9 +906,16 @@ class _$_Balance implements _Balance {
   @pragma('vm:prefer-inline')
   _$$_BalanceCopyWith<_$_Balance> get copyWith =>
       __$$_BalanceCopyWithImpl<_$_Balance>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$_BalanceToJson(
+      this,
+    );
+  }
 }
 
-abstract class _Balance implements Balance {
+abstract class _Balance extends Balance {
   const factory _Balance(
       {required final int immature,
       required final int trustedPending,
@@ -869,6 +923,9 @@ abstract class _Balance implements Balance {
       required final int confirmed,
       required final int spendable,
       required final int total}) = _$_Balance;
+  const _Balance._() : super._();
+
+  factory _Balance.fromJson(Map<String, dynamic> json) = _$_Balance.fromJson;
 
   @override
   int get immature;

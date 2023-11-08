@@ -19,7 +19,7 @@ class WalletBalance {
         total: bdkbalance.total,
       );
 
-      final w = wallet.copyWith(balance: balance.total);
+      final w = wallet.copyWith(balance: balance.total, fullBalance: balance);
 
       return ((w, balance), null);
     } catch (e) {
