@@ -205,7 +205,7 @@ class _BBTextInputState extends State<BBTextInput> {
             controller: _editingController,
             onSubmitted: (value) => widget.onDone?.call(value),
             // widget.onDone != null ? widget.onDone!(value) : null,
-            onTap: () => widget.onEnter!(),
+            onTap: () => widget.onEnter?.call(),
             enableIMEPersonalizedLearning: false,
             decoration: InputDecoration(
               hintText: widget.hint,
