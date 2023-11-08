@@ -74,12 +74,14 @@ class CurrencyCubit extends Cubit<CurrencyState> {
 
     final (crc, _) = await bbAPI.getExchangeRate(toCurrency: 'CRC');
     final (inr, _) = await bbAPI.getExchangeRate(toCurrency: 'INR');
+    final (eur, _) = await bbAPI.getExchangeRate(toCurrency: 'EUR');
 
     final results = [
       if (cad != null) cad,
       if (usd != null) usd,
       if (crc != null) crc,
       if (inr != null) inr,
+      if (eur != null) eur,
     ];
 
     emit(
