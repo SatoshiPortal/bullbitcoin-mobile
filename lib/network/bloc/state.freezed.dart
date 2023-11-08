@@ -128,11 +128,11 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
 }
 
 /// @nodoc
-abstract class _$$_NetworkStateCopyWith<$Res>
+abstract class _$$NetworkStateImplCopyWith<$Res>
     implements $NetworkStateCopyWith<$Res> {
-  factory _$$_NetworkStateCopyWith(
-          _$_NetworkState value, $Res Function(_$_NetworkState) then) =
-      __$$_NetworkStateCopyWithImpl<$Res>;
+  factory _$$NetworkStateImplCopyWith(
+          _$NetworkStateImpl value, $Res Function(_$NetworkStateImpl) then) =
+      __$$NetworkStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -150,11 +150,11 @@ abstract class _$$_NetworkStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_NetworkStateCopyWithImpl<$Res>
-    extends _$NetworkStateCopyWithImpl<$Res, _$_NetworkState>
-    implements _$$_NetworkStateCopyWith<$Res> {
-  __$$_NetworkStateCopyWithImpl(
-      _$_NetworkState _value, $Res Function(_$_NetworkState) _then)
+class __$$NetworkStateImplCopyWithImpl<$Res>
+    extends _$NetworkStateCopyWithImpl<$Res, _$NetworkStateImpl>
+    implements _$$NetworkStateImplCopyWith<$Res> {
+  __$$NetworkStateImplCopyWithImpl(
+      _$NetworkStateImpl _value, $Res Function(_$NetworkStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -171,7 +171,7 @@ class __$$_NetworkStateCopyWithImpl<$Res>
     Object? stopGap = null,
     Object? tempNetwork = freezed,
   }) {
-    return _then(_$_NetworkState(
+    return _then(_$NetworkStateImpl(
       testnet: null == testnet
           ? _value.testnet
           : testnet // ignore: cast_nullable_to_non_nullable
@@ -218,8 +218,8 @@ class __$$_NetworkStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_NetworkState extends _NetworkState {
-  const _$_NetworkState(
+class _$NetworkStateImpl extends _NetworkState {
+  const _$NetworkStateImpl(
       {this.testnet = false,
       @JsonKey(includeFromJson: false, includeToJson: false) this.blockchain,
       this.reloadWalletTimer = 20,
@@ -233,8 +233,8 @@ class _$_NetworkState extends _NetworkState {
       : _networks = networks,
         super._();
 
-  factory _$_NetworkState.fromJson(Map<String, dynamic> json) =>
-      _$$_NetworkStateFromJson(json);
+  factory _$NetworkStateImpl.fromJson(Map<String, dynamic> json) =>
+      _$$NetworkStateImplFromJson(json);
 
   @override
   @JsonKey()
@@ -281,7 +281,7 @@ class _$_NetworkState extends _NetworkState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_NetworkState &&
+            other is _$NetworkStateImpl &&
             (identical(other.testnet, testnet) || other.testnet == testnet) &&
             (identical(other.blockchain, blockchain) ||
                 other.blockchain == blockchain) &&
@@ -319,12 +319,12 @@ class _$_NetworkState extends _NetworkState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_NetworkStateCopyWith<_$_NetworkState> get copyWith =>
-      __$$_NetworkStateCopyWithImpl<_$_NetworkState>(this, _$identity);
+  _$$NetworkStateImplCopyWith<_$NetworkStateImpl> get copyWith =>
+      __$$NetworkStateImplCopyWithImpl<_$NetworkStateImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_NetworkStateToJson(
+    return _$$NetworkStateImplToJson(
       this,
     );
   }
@@ -342,11 +342,11 @@ abstract class _NetworkState extends NetworkState {
       final String errLoadingNetworks,
       final bool networkConnected,
       final int stopGap,
-      final ElectrumTypes? tempNetwork}) = _$_NetworkState;
+      final ElectrumTypes? tempNetwork}) = _$NetworkStateImpl;
   const _NetworkState._() : super._();
 
   factory _NetworkState.fromJson(Map<String, dynamic> json) =
-      _$_NetworkState.fromJson;
+      _$NetworkStateImpl.fromJson;
 
   @override
   bool get testnet;
@@ -371,6 +371,6 @@ abstract class _NetworkState extends NetworkState {
   ElectrumTypes? get tempNetwork;
   @override
   @JsonKey(ignore: true)
-  _$$_NetworkStateCopyWith<_$_NetworkState> get copyWith =>
+  _$$NetworkStateImplCopyWith<_$NetworkStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

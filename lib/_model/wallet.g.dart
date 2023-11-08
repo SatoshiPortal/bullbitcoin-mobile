@@ -6,7 +6,7 @@ part of 'wallet.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
+_$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
       id: json['id'] as String? ?? '',
       externalPublicDescriptor:
           json['externalPublicDescriptor'] as String? ?? '',
@@ -39,12 +39,6 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
               ?.map((e) => Transaction.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      labelTags: (json['labelTags'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      bip329Labels: (json['bip329Labels'] as List<dynamic>?)
-          ?.map((e) => Bip329Label.fromJson(e as Map<String, dynamic>))
-          .toList(),
       backupTested: json['backupTested'] as bool? ?? false,
       lastBackupTested: json['lastBackupTested'] == null
           ? null
@@ -52,7 +46,8 @@ _$_Wallet _$$_WalletFromJson(Map<String, dynamic> json) => _$_Wallet(
       hide: json['hide'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
+Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'externalPublicDescriptor': instance.externalPublicDescriptor,
       'internalPublicDescriptor': instance.internalPublicDescriptor,
@@ -69,8 +64,6 @@ Map<String, dynamic> _$$_WalletToJson(_$_Wallet instance) => <String, dynamic>{
       'externalAddressBook': instance.externalAddressBook,
       'transactions': instance.transactions,
       'unsignedTxs': instance.unsignedTxs,
-      'labelTags': instance.labelTags,
-      'bip329Labels': instance.bip329Labels,
       'backupTested': instance.backupTested,
       'lastBackupTested': instance.lastBackupTested?.toIso8601String(),
       'hide': instance.hide,

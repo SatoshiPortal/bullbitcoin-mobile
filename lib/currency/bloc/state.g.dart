@@ -6,8 +6,8 @@ part of 'state.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_CurrencyState _$$_CurrencyStateFromJson(Map<String, dynamic> json) =>
-    _$_CurrencyState(
+_$CurrencyStateImpl _$$CurrencyStateImplFromJson(Map<String, dynamic> json) =>
+    _$CurrencyStateImpl(
       unitsInSats: json['unitsInSats'] as bool? ?? false,
       fiatSelected: json['fiatSelected'] as bool? ?? false,
       currency: json['currency'] == null
@@ -31,7 +31,7 @@ _$_CurrencyState _$$_CurrencyStateFromJson(Map<String, dynamic> json) =>
       errAmount: json['errAmount'] as String? ?? '',
     );
 
-Map<String, dynamic> _$$_CurrencyStateToJson(_$_CurrencyState instance) =>
+Map<String, dynamic> _$$CurrencyStateImplToJson(_$CurrencyStateImpl instance) =>
     <String, dynamic>{
       'unitsInSats': instance.unitsInSats,
       'fiatSelected': instance.fiatSelected,

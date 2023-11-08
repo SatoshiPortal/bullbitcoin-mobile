@@ -157,6 +157,10 @@ class _ScreenState extends State<_Screen> {
               const Gap(8),
               const AddressesButtons(),
               const Gap(8),
+              const LabelsExportButton(),
+              const Gap(8),
+              const LabelsImportButton(),
+              const Gap(8),
               const AccountingButton(),
               const Gap(8),
               const DeleteButton(),
@@ -564,6 +568,119 @@ class DeletePopUp extends StatelessWidget {
                     context.read<WalletSettingsCubit>().deleteWalletClicked();
                   },
                   label: 'Delete',
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Gap(40),
+      ],
+    );
+  }
+}
+
+class LabelsExportButton extends StatelessWidget {
+  const LabelsExportButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CenterLeft(
+      child: BBButton.text(
+        isRed: true,
+        onPressed: () {
+          context.read<WalletSettingsCubit>().exportLabelsClicked();
+        },
+        label: 'Export Labels',
+      ),
+    );
+  }
+}
+
+class LabelsImportButton extends StatelessWidget {
+  const LabelsImportButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CenterLeft(
+      child: BBButton.text(
+        isRed: true,
+        onPressed: () {
+          LabelsImportPopup.openPopUp(context);
+        },
+        label: 'Import Labels',
+      ),
+    );
+  }
+}
+
+class LabelsImportPopup extends StatelessWidget {
+  const LabelsImportPopup({super.key});
+
+  static Future openPopUp(BuildContext context) {
+    final settings = context.read<WalletSettingsCubit>();
+
+    return showMaterialModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: settings),
+        ],
+        child: BlocListener<WalletSettingsCubit, WalletSettingsState>(
+          listenWhen: (previous, current) => previous.deleted != current.deleted,
+          listener: (context, state) {
+            // if (state.deleted) {
+            //   final home = locator<HomeCubit>();
+            //   home.clearSelectedWallet(removeWallet: true);
+            //   context.go('/home');
+            // }
+          },
+          child: const PopUpBorder(
+            child: LabelsImportButton(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Gap(32),
+        const BBText.body(
+          'Import Labels',
+        ),
+        const Gap(24),
+        const BBText.body(
+          'Importing labels will override existing labels. Continue?',
+          textAlign: TextAlign.center,
+        ),
+        const Gap(40),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(
+                child: BBButton.text(
+                  onPressed: () {
+                    context.pop();
+                  },
+                  label: 'Cancel',
+                  centered: true,
+                ),
+              ),
+              Expanded(
+                child: BBButton.smallRed(
+                  filled: true,
+                  onPressed: () {
+                    context.read<WalletSettingsCubit>().importLabelsClicked();
+                  },
+                  label: 'Import',
                 ),
               ),
             ],

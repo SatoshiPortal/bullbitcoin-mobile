@@ -1,9 +1,13 @@
 import 'dart:io';
 
+import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/bip329_label.dart';
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/labels.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
@@ -432,7 +436,13 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       );
     }
 
-    final exists = await WalletUpdate().walletExists(mnemonicFingerprint, wallets ?? []);
+    final List<Wallet> networkSpecificWallets = (wallets != null)
+        ? wallets.where((wallet) => wallet.network == state.wallet.network).toList()
+        : [];
+    final exists = await WalletUpdate().walletExists(
+      mnemonicFingerprint,
+      networkSpecificWallets,
+    );
     if (!exists) {
       final errr = await walletSensRepository.deleteSeed(
         fingerprint: state.wallet.getRelatedSeedStorageString(),
@@ -455,6 +465,45 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         deleted: true,
       ),
     );
+  }
+
+  void exportLabelsClicked() async {
+    // Fetch encryption key and filename
+    final String key = state.wallet.generateBIP329Key();
+    final String fileName = state.wallet.id;
+    final WalletLabels walletLabels = WalletLabels();
+    final List<Bip329Label> labelsToExport = await walletLabels.txsToBip329(
+      state.wallet.transactions,
+      state.wallet.originString(),
+    )
+      ..addAll(
+        await walletLabels.addressesToBip329(
+          state.wallet.myAddressBook,
+          state.wallet.originString(),
+        ),
+      );
+    await Bip329LabelHelpers.encryptWrite(
+      fileName,
+      labelsToExport,
+      key,
+    );
+  }
+
+  void importLabelsClicked() async {
+    // Fetch encryption key and filename
+    final wallet = state.wallet;
+    final String key = wallet.generateBIP329Key();
+    final String fileName = wallet.id;
+    final WalletLabels walletLabels = WalletLabels();
+    final List<Bip329Label> importedLabels = await Bip329LabelHelpers.decryptRead(
+      fileName,
+      key,
+    );
+    final List<Transaction> importedTxs = walletLabels.txsFromBip329(importedLabels);
+    final List<Address> importedAddresses = walletLabels.addressesFromBip329(importedLabels);
+
+    // Update the wallet with imported data
+    // ...
   }
 
   void clearSensitive() {

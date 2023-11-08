@@ -57,50 +57,45 @@ class Bip329Label with _$Bip329Label {
 
 extension Bip329LabelHelpers on Bip329Label {
   // Method to read labels from a file
-  static Future<List<Bip329Label>> readFile(String fileName) async {
+  static Future<List<Bip329Label>> decryptRead(String fileName, String key) async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/$fileName');
-    final contents = await file.readAsString();
-    // Assuming the file contains JSON Lines format
-    final lines = contents.trim().split('\n');
+    final encryptedContents = await file.readAsString();
+    final decryptedContents = _decrypt(encryptedContents, key);
+    final lines = LineSplitter.split(decryptedContents);
     return lines
         .map((line) => Bip329Label.fromJson(jsonDecode(line) as Map<String, dynamic>))
         .toList();
   }
 
-  // Method to write labels to a file
-  static Future<void> writeFile(String fileName, List<Bip329Label> labels) async {
+  static Future<void> encryptWrite(String fileName, List<Bip329Label> labels, String key) async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/$fileName');
-    final lines = labels.map((label) => jsonEncode(label.toJson())).join('\n');
-    await file.writeAsString(lines);
+    final dataToEncrypt = labels.map((label) => jsonEncode(label.toJson())).join('\n');
+    final encryptedData = _encrypt(dataToEncrypt, key);
+    await file.writeAsString(encryptedData);
   }
+}
 
-  String encrypt(String plainText, String key) {
-    // Initialize the encryption algorithm with your key
-    final keyBytes = Uint8List.fromList(utf8.encode(key));
-    final keyParam = pc.KeyParameter(keyBytes);
-    final blockCipher = pc.BlockCipher('AES')..init(true, keyParam);
+String _encrypt(String plainText, String key) {
+  final keyBytes = Uint8List.fromList(utf8.encode(key));
+  final keyParam = pc.KeyParameter(keyBytes);
+  final blockCipher = pc.BlockCipher('AES')..init(true, keyParam);
 
-    // Encrypt the text
-    final input = Uint8List.fromList(utf8.encode(plainText));
-    final encrypted = blockCipher.process(input);
+  final input = Uint8List.fromList(utf8.encode(plainText));
+  final encrypted = blockCipher.process(input);
 
-    return base64Encode(encrypted); // Encode encrypted bytes to Base64
-  }
+  return base64Encode(encrypted);
+}
 
-  String decrypt(String encryptedBase64Text, String key) {
-    // Decode Base64 encoded string to bytes
-    final encryptedBytes = base64Decode(encryptedBase64Text);
+String _decrypt(String encryptedBase64Text, String key) {
+  final encryptedBytes = base64Decode(encryptedBase64Text);
 
-    // Initialize the decryption algorithm with your key
-    final keyBytes = Uint8List.fromList(utf8.encode(key));
-    final keyParam = pc.KeyParameter(keyBytes);
-    final blockCipher = pc.BlockCipher('AES')..init(false, keyParam);
+  final keyBytes = Uint8List.fromList(utf8.encode(key));
+  final keyParam = pc.KeyParameter(keyBytes);
+  final blockCipher = pc.BlockCipher('AES')..init(false, keyParam);
 
-    // Decrypt the bytes
-    final decrypted = blockCipher.process(encryptedBytes);
+  final decrypted = blockCipher.process(encryptedBytes);
 
-    return utf8.decode(decrypted); // Decode decrypted bytes to String
-  }
+  return utf8.decode(decrypted);
 }

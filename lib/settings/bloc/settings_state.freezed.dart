@@ -112,11 +112,11 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
 }
 
 /// @nodoc
-abstract class _$$_SettingsStateCopyWith<$Res>
+abstract class _$$SettingsStateImplCopyWith<$Res>
     implements $SettingsStateCopyWith<$Res> {
-  factory _$$_SettingsStateCopyWith(
-          _$_SettingsState value, $Res Function(_$_SettingsState) then) =
-      __$$_SettingsStateCopyWithImpl<$Res>;
+  factory _$$SettingsStateImplCopyWith(
+          _$SettingsStateImpl value, $Res Function(_$SettingsStateImpl) then) =
+      __$$SettingsStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -131,11 +131,11 @@ abstract class _$$_SettingsStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_SettingsStateCopyWithImpl<$Res>
-    extends _$SettingsStateCopyWithImpl<$Res, _$_SettingsState>
-    implements _$$_SettingsStateCopyWith<$Res> {
-  __$$_SettingsStateCopyWithImpl(
-      _$_SettingsState _value, $Res Function(_$_SettingsState) _then)
+class __$$SettingsStateImplCopyWithImpl<$Res>
+    extends _$SettingsStateCopyWithImpl<$Res, _$SettingsStateImpl>
+    implements _$$SettingsStateImplCopyWith<$Res> {
+  __$$SettingsStateImplCopyWithImpl(
+      _$SettingsStateImpl _value, $Res Function(_$SettingsStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -150,7 +150,7 @@ class __$$_SettingsStateCopyWithImpl<$Res>
     Object? errLoadingLanguage = null,
     Object? defaultRBF = null,
   }) {
-    return _then(_$_SettingsState(
+    return _then(_$SettingsStateImpl(
       notifications: null == notifications
           ? _value.notifications
           : notifications // ignore: cast_nullable_to_non_nullable
@@ -189,8 +189,8 @@ class __$$_SettingsStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_SettingsState extends _SettingsState {
-  const _$_SettingsState(
+class _$SettingsStateImpl extends _SettingsState {
+  const _$SettingsStateImpl(
       {this.notifications = false,
       this.privacyView = false,
       this.reloadWalletTimer = 20,
@@ -202,8 +202,8 @@ class _$_SettingsState extends _SettingsState {
       : _languageList = languageList,
         super._();
 
-  factory _$_SettingsState.fromJson(Map<String, dynamic> json) =>
-      _$$_SettingsStateFromJson(json);
+  factory _$SettingsStateImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SettingsStateImplFromJson(json);
 
   @override
   @JsonKey()
@@ -245,7 +245,7 @@ class _$_SettingsState extends _SettingsState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SettingsState &&
+            other is _$SettingsStateImpl &&
             (identical(other.notifications, notifications) ||
                 other.notifications == notifications) &&
             (identical(other.privacyView, privacyView) ||
@@ -280,12 +280,12 @@ class _$_SettingsState extends _SettingsState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SettingsStateCopyWith<_$_SettingsState> get copyWith =>
-      __$$_SettingsStateCopyWithImpl<_$_SettingsState>(this, _$identity);
+  _$$SettingsStateImplCopyWith<_$SettingsStateImpl> get copyWith =>
+      __$$SettingsStateImplCopyWithImpl<_$SettingsStateImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SettingsStateToJson(
+    return _$$SettingsStateImplToJson(
       this,
     );
   }
@@ -300,11 +300,11 @@ abstract class _SettingsState extends SettingsState {
       final List<String>? languageList,
       final bool loadingLanguage,
       final String errLoadingLanguage,
-      final bool defaultRBF}) = _$_SettingsState;
+      final bool defaultRBF}) = _$SettingsStateImpl;
   const _SettingsState._() : super._();
 
   factory _SettingsState.fromJson(Map<String, dynamic> json) =
-      _$_SettingsState.fromJson;
+      _$SettingsStateImpl.fromJson;
 
   @override
   bool get notifications;
@@ -324,6 +324,6 @@ abstract class _SettingsState extends SettingsState {
   bool get defaultRBF;
   @override
   @JsonKey(ignore: true)
-  _$$_SettingsStateCopyWith<_$_SettingsState> get copyWith =>
+  _$$SettingsStateImplCopyWith<_$SettingsStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -6,8 +6,9 @@ part of 'state.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_NetworkFeesState _$$_NetworkFeesStateFromJson(Map<String, dynamic> json) =>
-    _$_NetworkFeesState(
+_$NetworkFeesStateImpl _$$NetworkFeesStateImplFromJson(
+        Map<String, dynamic> json) =>
+    _$NetworkFeesStateImpl(
       fees: json['fees'] as int?,
       feesList:
           (json['feesList'] as List<dynamic>?)?.map((e) => e as int).toList(),
@@ -19,7 +20,8 @@ _$_NetworkFeesState _$$_NetworkFeesStateFromJson(Map<String, dynamic> json) =>
       errLoadingFees: json['errLoadingFees'] as String? ?? '',
     );
 
-Map<String, dynamic> _$$_NetworkFeesStateToJson(_$_NetworkFeesState instance) =>
+Map<String, dynamic> _$$NetworkFeesStateImplToJson(
+        _$NetworkFeesStateImpl instance) =>
     <String, dynamic>{
       'fees': instance.fees,
       'feesList': instance.feesList,

@@ -112,11 +112,11 @@ class _$NetworkFeesStateCopyWithImpl<$Res, $Val extends NetworkFeesState>
 }
 
 /// @nodoc
-abstract class _$$_NetworkFeesStateCopyWith<$Res>
+abstract class _$$NetworkFeesStateImplCopyWith<$Res>
     implements $NetworkFeesStateCopyWith<$Res> {
-  factory _$$_NetworkFeesStateCopyWith(
-          _$_NetworkFeesState value, $Res Function(_$_NetworkFeesState) then) =
-      __$$_NetworkFeesStateCopyWithImpl<$Res>;
+  factory _$$NetworkFeesStateImplCopyWith(_$NetworkFeesStateImpl value,
+          $Res Function(_$NetworkFeesStateImpl) then) =
+      __$$NetworkFeesStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -131,11 +131,11 @@ abstract class _$$_NetworkFeesStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_NetworkFeesStateCopyWithImpl<$Res>
-    extends _$NetworkFeesStateCopyWithImpl<$Res, _$_NetworkFeesState>
-    implements _$$_NetworkFeesStateCopyWith<$Res> {
-  __$$_NetworkFeesStateCopyWithImpl(
-      _$_NetworkFeesState _value, $Res Function(_$_NetworkFeesState) _then)
+class __$$NetworkFeesStateImplCopyWithImpl<$Res>
+    extends _$NetworkFeesStateCopyWithImpl<$Res, _$NetworkFeesStateImpl>
+    implements _$$NetworkFeesStateImplCopyWith<$Res> {
+  __$$NetworkFeesStateImplCopyWithImpl(_$NetworkFeesStateImpl _value,
+      $Res Function(_$NetworkFeesStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -150,7 +150,7 @@ class __$$_NetworkFeesStateCopyWithImpl<$Res>
     Object? loadingFees = null,
     Object? errLoadingFees = null,
   }) {
-    return _then(_$_NetworkFeesState(
+    return _then(_$NetworkFeesStateImpl(
       fees: freezed == fees
           ? _value.fees
           : fees // ignore: cast_nullable_to_non_nullable
@@ -189,8 +189,8 @@ class __$$_NetworkFeesStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_NetworkFeesState extends _NetworkFeesState {
-  const _$_NetworkFeesState(
+class _$NetworkFeesStateImpl extends _NetworkFeesState {
+  const _$NetworkFeesStateImpl(
       {this.fees,
       final List<int>? feesList,
       this.selectedFeesOption = 2,
@@ -202,8 +202,8 @@ class _$_NetworkFeesState extends _NetworkFeesState {
       : _feesList = feesList,
         super._();
 
-  factory _$_NetworkFeesState.fromJson(Map<String, dynamic> json) =>
-      _$$_NetworkFeesStateFromJson(json);
+  factory _$NetworkFeesStateImpl.fromJson(Map<String, dynamic> json) =>
+      _$$NetworkFeesStateImplFromJson(json);
 
   @override
   final int? fees;
@@ -243,7 +243,7 @@ class _$_NetworkFeesState extends _NetworkFeesState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_NetworkFeesState &&
+            other is _$NetworkFeesStateImpl &&
             (identical(other.fees, fees) || other.fees == fees) &&
             const DeepCollectionEquality().equals(other._feesList, _feesList) &&
             (identical(other.selectedFeesOption, selectedFeesOption) ||
@@ -276,12 +276,13 @@ class _$_NetworkFeesState extends _NetworkFeesState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_NetworkFeesStateCopyWith<_$_NetworkFeesState> get copyWith =>
-      __$$_NetworkFeesStateCopyWithImpl<_$_NetworkFeesState>(this, _$identity);
+  _$$NetworkFeesStateImplCopyWith<_$NetworkFeesStateImpl> get copyWith =>
+      __$$NetworkFeesStateImplCopyWithImpl<_$NetworkFeesStateImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_NetworkFeesStateToJson(
+    return _$$NetworkFeesStateImplToJson(
       this,
     );
   }
@@ -296,11 +297,11 @@ abstract class _NetworkFeesState extends NetworkFeesState {
       final int? tempSelectedFeesOption,
       final bool feesSaved,
       final bool loadingFees,
-      final String errLoadingFees}) = _$_NetworkFeesState;
+      final String errLoadingFees}) = _$NetworkFeesStateImpl;
   const _NetworkFeesState._() : super._();
 
   factory _NetworkFeesState.fromJson(Map<String, dynamic> json) =
-      _$_NetworkFeesState.fromJson;
+      _$NetworkFeesStateImpl.fromJson;
 
   @override
   int? get fees;
@@ -320,6 +321,6 @@ abstract class _NetworkFeesState extends NetworkFeesState {
   String get errLoadingFees;
   @override
   @JsonKey(ignore: true)
-  _$$_NetworkFeesStateCopyWith<_$_NetworkFeesState> get copyWith =>
+  _$$NetworkFeesStateImplCopyWith<_$NetworkFeesStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

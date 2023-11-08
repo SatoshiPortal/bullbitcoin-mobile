@@ -167,11 +167,11 @@ class _$CurrencyStateCopyWithImpl<$Res, $Val extends CurrencyState>
 }
 
 /// @nodoc
-abstract class _$$_CurrencyStateCopyWith<$Res>
+abstract class _$$CurrencyStateImplCopyWith<$Res>
     implements $CurrencyStateCopyWith<$Res> {
-  factory _$$_CurrencyStateCopyWith(
-          _$_CurrencyState value, $Res Function(_$_CurrencyState) then) =
-      __$$_CurrencyStateCopyWithImpl<$Res>;
+  factory _$$CurrencyStateImplCopyWith(
+          _$CurrencyStateImpl value, $Res Function(_$CurrencyStateImpl) then) =
+      __$$CurrencyStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -195,11 +195,11 @@ abstract class _$$_CurrencyStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_CurrencyStateCopyWithImpl<$Res>
-    extends _$CurrencyStateCopyWithImpl<$Res, _$_CurrencyState>
-    implements _$$_CurrencyStateCopyWith<$Res> {
-  __$$_CurrencyStateCopyWithImpl(
-      _$_CurrencyState _value, $Res Function(_$_CurrencyState) _then)
+class __$$CurrencyStateImplCopyWithImpl<$Res>
+    extends _$CurrencyStateCopyWithImpl<$Res, _$CurrencyStateImpl>
+    implements _$$CurrencyStateImplCopyWith<$Res> {
+  __$$CurrencyStateImplCopyWithImpl(
+      _$CurrencyStateImpl _value, $Res Function(_$CurrencyStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -218,7 +218,7 @@ class __$$_CurrencyStateCopyWithImpl<$Res>
     Object? tempAmount = freezed,
     Object? errAmount = null,
   }) {
-    return _then(_$_CurrencyState(
+    return _then(_$CurrencyStateImpl(
       unitsInSats: null == unitsInSats
           ? _value.unitsInSats
           : unitsInSats // ignore: cast_nullable_to_non_nullable
@@ -273,8 +273,8 @@ class __$$_CurrencyStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_CurrencyState extends _CurrencyState {
-  const _$_CurrencyState(
+class _$CurrencyStateImpl extends _CurrencyState {
+  const _$CurrencyStateImpl(
       {this.unitsInSats = false,
       this.fiatSelected = false,
       this.currency,
@@ -290,8 +290,8 @@ class _$_CurrencyState extends _CurrencyState {
       : _currencyList = currencyList,
         super._();
 
-  factory _$_CurrencyState.fromJson(Map<String, dynamic> json) =>
-      _$$_CurrencyStateFromJson(json);
+  factory _$CurrencyStateImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CurrencyStateImplFromJson(json);
 
   @override
   @JsonKey()
@@ -342,7 +342,7 @@ class _$_CurrencyState extends _CurrencyState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CurrencyState &&
+            other is _$CurrencyStateImpl &&
             (identical(other.unitsInSats, unitsInSats) ||
                 other.unitsInSats == unitsInSats) &&
             (identical(other.fiatSelected, fiatSelected) ||
@@ -387,12 +387,12 @@ class _$_CurrencyState extends _CurrencyState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CurrencyStateCopyWith<_$_CurrencyState> get copyWith =>
-      __$$_CurrencyStateCopyWithImpl<_$_CurrencyState>(this, _$identity);
+  _$$CurrencyStateImplCopyWith<_$CurrencyStateImpl> get copyWith =>
+      __$$CurrencyStateImplCopyWithImpl<_$CurrencyStateImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CurrencyStateToJson(
+    return _$$CurrencyStateImplToJson(
       this,
     );
   }
@@ -411,11 +411,11 @@ abstract class _CurrencyState extends CurrencyState {
       final double fiatAmt,
       final int amount,
       final String? tempAmount,
-      final String errAmount}) = _$_CurrencyState;
+      final String errAmount}) = _$CurrencyStateImpl;
   const _CurrencyState._() : super._();
 
   factory _CurrencyState.fromJson(Map<String, dynamic> json) =
-      _$_CurrencyState.fromJson;
+      _$CurrencyStateImpl.fromJson;
 
   @override
   bool get unitsInSats;
@@ -443,6 +443,6 @@ abstract class _CurrencyState extends CurrencyState {
   String get errAmount;
   @override
   @JsonKey(ignore: true)
-  _$$_CurrencyStateCopyWith<_$_CurrencyState> get copyWith =>
+  _$$CurrencyStateImplCopyWith<_$CurrencyStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

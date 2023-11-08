@@ -1,8 +1,10 @@
 // ignore_for_file: constant_identifier_names
+import 'dart:convert';
+
 import 'package:bb_mobile/_model/address.dart';
-import 'package:bb_mobile/_model/bip329_label.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:crypto/crypto.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -33,8 +35,8 @@ class Wallet with _$Wallet {
     List<Address>? externalAddressBook,
     @Default([]) List<Transaction> transactions,
     @Default([]) List<Transaction> unsignedTxs,
-    List<String>? labelTags,
-    List<Bip329Label>? bip329Labels,
+    // List<String>? labelTags,
+    // List<Bip329Label>? bip329Labels,
     @Default(false) bool backupTested,
     DateTime? lastBackupTested,
     @Default(false) bool hide,
@@ -90,11 +92,24 @@ class Wallet with _$Wallet {
   }
 
   String originString() {
+    if (sourceFingerprint == '') return 'unknown';
     return '[$sourceFingerprint/$purposePathString()/$networkPathString()/$accountPathString()]';
   }
 
   String getDescriptorCombined() {
     return externalPublicDescriptor.replaceAll('/0/', '/[0;1]/');
+  }
+
+  String generateBIP329Key() {
+    final exDescDerivedKey = sha1
+        .convert(
+          utf8.encode(
+            // allows passing either internal or external descriptor
+            externalPublicDescriptor,
+          ),
+        )
+        .toString();
+    return exDescDerivedKey;
   }
 
   // storage key

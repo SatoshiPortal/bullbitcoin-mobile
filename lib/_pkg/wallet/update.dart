@@ -82,6 +82,7 @@ class WalletUpdate {
   }
 
   Future<bool> walletExists(String mnemonicFingerprint, List<Wallet> wallets) async {
+    if (wallets.isEmpty) return false;
     for (final wallet in wallets) {
       if (wallet.mnemonicFingerprint == mnemonicFingerprint) return true;
     }
