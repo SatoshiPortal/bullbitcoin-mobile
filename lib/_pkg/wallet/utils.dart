@@ -52,7 +52,7 @@ String fingerPrintFromXKeyDesc(
   String xkey,
 ) {
   final startIndex = xkey.indexOf('[');
-  if (startIndex == -1) return '';
+  if (startIndex == -1) return 'Unknown';
   final fingerPrintEndIndex = xkey.indexOf('/');
   final fingerPrint = xkey.substring(startIndex + 1, fingerPrintEndIndex);
   return fingerPrint;
