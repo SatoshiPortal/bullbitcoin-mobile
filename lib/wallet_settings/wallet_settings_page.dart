@@ -740,7 +740,7 @@ class LabelSettingPopup extends StatelessWidget {
           ),
           const Gap(24),
           const BBText.bodySmall(
-            'Importing labels will override existing labels.',
+            'Importing labels will override existing wallet labels.',
           ),
           const Gap(8),
           AnimatedSwitcher(
@@ -763,7 +763,7 @@ class LabelSettingPopup extends StatelessWidget {
           ),
           const Gap(40),
           const BBText.bodySmall(
-            'Exporting labels will create a backup file.',
+            'Exporting labels will create a backup file or overwrite an existing file.',
           ),
           const Gap(8),
           AnimatedSwitcher(
