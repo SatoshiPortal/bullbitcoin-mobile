@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
@@ -53,8 +54,13 @@ class WalletCardDetails extends StatelessWidget {
     final isTestnet = wallet.network == BBNetwork.Testnet;
     final isWatchOnly = wallet.watchOnly();
 
-    if (isWatchOnly && !isTestnet) return (context.colour.onBackground, 'mainnet_watchonly');
-    if (isWatchOnly && isTestnet) return (context.colour.onBackground, 'testnet_watchonly');
+    final darkMode =
+        context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
+
+    final watchonlyColor = darkMode ? context.colour.surface : context.colour.onBackground;
+
+    if (isWatchOnly && !isTestnet) return (watchonlyColor, 'mainnet_watchonly');
+    if (isWatchOnly && isTestnet) return (watchonlyColor, 'testnet_watchonly');
 
     if (isTestnet) return (context.colour.surface, 'testnet');
     return (context.colour.primary, 'mainnet');
