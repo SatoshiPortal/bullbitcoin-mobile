@@ -256,8 +256,12 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             );
           }
         }
-        final int feeAmount = transaction!.fee ?? 0;
-
+        final int feeAmount = transaction?.fee ?? 0;
+        // TODO: timestamp needs to be properly set
+        transaction ??= Transaction(
+          txid: txid,
+          timestamp: DateTime.now().millisecondsSinceEpoch,
+        );
         // transaction ??= Transaction(txid: txid);
         transaction = transaction.copyWith(
           fee: feeAmount,
