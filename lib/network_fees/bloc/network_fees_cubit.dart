@@ -105,7 +105,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   void checkMinimumFees() async {
     await Future.delayed(50.ms);
     final minFees = state.feesList!.last;
-    const max = 50;
+    final max = state.feesList!.first * 2;
 
     if (state.tempFees != null && state.tempFees! < minFees && state.tempSelectedFeesOption == 4)
       emit(
