@@ -75,8 +75,9 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   }
 
   void updateManualFees(String fees) async {
-    final feesInDouble = int.tryParse(fees);
-    if (feesInDouble == null) {
+    final clean = fees.replaceAll(',', '');
+    final feesInInt = int.tryParse(clean);
+    if (feesInInt == null) {
       emit(
         state.copyWith(
           tempFees: 000,
@@ -87,7 +88,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
       return;
     }
 
-    emit(state.copyWith(tempFees: feesInDouble, tempSelectedFeesOption: 4));
+    emit(state.copyWith(tempFees: feesInInt, tempSelectedFeesOption: 4));
     checkMinimumFees();
   }
 
@@ -128,6 +129,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
 
   void confirmFeeClicked() {
     if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
+    if (state.errLoadingFees.isNotEmpty) return;
     if (state.tempSelectedFeesOption != null) {
       if (state.tempFees == 4 && (state.tempFees == null || state.tempFees == 0)) {
         print('');
