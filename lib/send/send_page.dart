@@ -208,7 +208,8 @@ class WalletBalance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balance = context.select((WalletBloc cubit) => cubit.state.balance?.total ?? 0);
+    final balance =
+        context.select((WalletBloc cubit) => cubit.state.wallet?.fullBalance?.total ?? 0);
 
     final balStr = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(balance));
 

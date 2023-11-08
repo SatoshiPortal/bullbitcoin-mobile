@@ -30,6 +30,7 @@ class Wallet with _$Wallet {
     String? name,
     String? path,
     int? balance,
+    Balance? fullBalance,
     Address? lastGeneratedAddress,
     @Default([]) List<Address> myAddressBook,
     List<Address>? externalAddressBook,
@@ -266,6 +267,11 @@ class Wallet with _$Wallet {
     }
   }
 
+  bool isSameNetwork(bool isTestnet) {
+    return (isTestnet && network == BBNetwork.Testnet) ||
+        (!isTestnet && network == BBNetwork.Mainnet);
+  }
+
   List<Address> allFreezedAddresses() {
     final all = <Address>[];
     all.addAll(myAddressBook);
@@ -303,6 +309,9 @@ class Balance with _$Balance {
     required int spendable,
     required int total,
   }) = _Balance;
+  const Balance._();
+
+  factory Balance.fromJson(Map<String, dynamic> json) => _$BalanceFromJson(json);
 }
 
 String scriptTypeString(ScriptType scriptType) {

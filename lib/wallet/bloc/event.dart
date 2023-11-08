@@ -23,7 +23,7 @@ class UpdateWallet extends WalletEvent {
 
 class GetBalance extends WalletEvent {}
 
-class GetAddresses extends WalletEvent {}
+// class GetAddresses extends WalletEvent {}
 
 class UpdateUtxos extends WalletEvent {}
 

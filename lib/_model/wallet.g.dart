@@ -20,6 +20,9 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
       name: json['name'] as String?,
       path: json['path'] as String?,
       balance: json['balance'] as int?,
+      fullBalance: json['fullBalance'] == null
+          ? null
+          : Balance.fromJson(json['fullBalance'] as Map<String, dynamic>),
       lastGeneratedAddress: json['lastGeneratedAddress'] == null
           ? null
           : Address.fromJson(
@@ -59,6 +62,7 @@ Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
       'name': instance.name,
       'path': instance.path,
       'balance': instance.balance,
+      'fullBalance': instance.fullBalance,
       'lastGeneratedAddress': instance.lastGeneratedAddress,
       'myAddressBook': instance.myAddressBook,
       'externalAddressBook': instance.externalAddressBook,
@@ -87,3 +91,23 @@ const _$ScriptTypeEnumMap = {
   ScriptType.bip49: 'bip49',
   ScriptType.bip44: 'bip44',
 };
+
+_$BalanceImpl _$$BalanceImplFromJson(Map<String, dynamic> json) =>
+    _$BalanceImpl(
+      immature: json['immature'] as int,
+      trustedPending: json['trustedPending'] as int,
+      untrustedPending: json['untrustedPending'] as int,
+      confirmed: json['confirmed'] as int,
+      spendable: json['spendable'] as int,
+      total: json['total'] as int,
+    );
+
+Map<String, dynamic> _$$BalanceImplToJson(_$BalanceImpl instance) =>
+    <String, dynamic>{
+      'immature': instance.immature,
+      'trustedPending': instance.trustedPending,
+      'untrustedPending': instance.untrustedPending,
+      'confirmed': instance.confirmed,
+      'spendable': instance.spendable,
+      'total': instance.total,
+    };

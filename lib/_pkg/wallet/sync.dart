@@ -2,15 +2,15 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletSync {
-  Future<Err?> syncWallet({
+  Future<(bdk.Wallet?, Err?)> syncWallet({
     required bdk.Wallet bdkWallet,
     required bdk.Blockchain blockChain,
   }) async {
     try {
       await bdkWallet.sync(blockChain);
-      return null;
+      return (bdkWallet, null);
     } catch (e) {
-      return Err(e.toString());
+      return (null, Err(e.toString()));
     }
   }
 

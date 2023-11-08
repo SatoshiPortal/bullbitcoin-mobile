@@ -30,13 +30,14 @@ class BullBitcoinAPI {
           },
         },
       );
+
       if (resp.statusCode == null || resp.statusCode != 200) {
         throw 'Error Occured.';
       }
       final data = resp.data as Map<String, dynamic>;
       final result = data['result'] as Map<String, dynamic>;
 
-      final rateDouble = result['indexPrice'] as double;
+      final rateDouble = (result['indexPrice'] as num).toDouble();
       // final toPrecision = result['to']['precision'] as int;
       // final rateDouble = rate / pow(10, toPrecision);
 

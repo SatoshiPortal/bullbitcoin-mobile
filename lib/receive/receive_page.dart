@@ -131,7 +131,7 @@ class AddressDetails extends StatelessWidget {
           _DetailRow(
             text: amountStr,
             onTap: () {
-              CreateInvoice.openPopUp(context);
+              // CreateInvoice.openPopUp(context);
             },
             title: 'Amount Request',
           ),
@@ -140,7 +140,7 @@ class AddressDetails extends StatelessWidget {
           _DetailRow(
             text: description,
             onTap: () {
-              CreateInvoice.openPopUp(context);
+              // CreateInvoice.openPopUp(context);
             },
             title: 'Public Description',
           ),
@@ -331,6 +331,7 @@ class CreateInvoice extends StatelessWidget {
   static Future openPopUp(BuildContext context) async {
     final receiveCubit = context.read<ReceiveCubit>();
     final currencyCubit = context.read<CurrencyCubit>();
+    currencyCubit.reset();
 
     return showMaterialModalBottomSheet(
       context: context,
