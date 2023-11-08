@@ -102,7 +102,7 @@ class Wallet with _$Wallet {
   }
 
   String generateBIP329Key() {
-    final exDescDerivedKey = sha1
+    final exDescDerivedKey = sha256
         .convert(
           utf8.encode(
             // allows passing either internal or external descriptor

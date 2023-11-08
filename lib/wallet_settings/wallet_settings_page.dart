@@ -157,11 +157,12 @@ class _ScreenState extends State<_Screen> {
               const Gap(8),
               const AddressesButtons(),
               const Gap(8),
+
+              const AccountingButton(),
+              const Gap(8),
               const LabelsExportButton(),
               const Gap(8),
               const LabelsImportButton(),
-              const Gap(8),
-              const AccountingButton(),
               const Gap(8),
               const DeleteButton(),
               const Gap(24),
@@ -586,7 +587,6 @@ class LabelsExportButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CenterLeft(
       child: BBButton.text(
-        isRed: true,
         onPressed: () {
           context.read<WalletSettingsCubit>().exportLabelsClicked();
         },
@@ -603,9 +603,8 @@ class LabelsImportButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return CenterLeft(
       child: BBButton.text(
-        isRed: true,
         onPressed: () {
-          LabelsImportPopup.openPopUp(context);
+          context.read<WalletSettingsCubit>().importLabelsClicked();
         },
         label: 'Import Labels',
       ),
@@ -628,27 +627,26 @@ class LabelsImportPopup extends StatelessWidget {
         providers: [
           BlocProvider.value(value: settings),
         ],
-        child: BlocListener<WalletSettingsCubit, WalletSettingsState>(
-          listenWhen: (previous, current) => previous.deleted != current.deleted,
-          listener: (context, state) {
-            // if (state.deleted) {
-            //   final home = locator<HomeCubit>();
-            //   home.clearSelectedWallet(removeWallet: true);
-            //   context.go('/home');
-            // }
-          },
-          child: const PopUpBorder(
-            child: LabelsImportButton(),
-          ),
+        // child: BlocListener<WalletSettingsCubit, WalletSettingsState>(
+        //   listenWhen: (previous, current) => previous.deleted != current.deleted,
+        //   listener: (context, state) {
+        //     // if (state.deleted) {
+        //     //   final home = locator<HomeCubit>();
+        //     //   home.clearSelectedWallet(removeWallet: true);
+        //     //   context.go('/home');
+        //     // }
+        //   },
+        child: const PopUpBorder(
+          child: LabelsImportButton(),
         ),
       ),
+      // ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
         const Gap(32),
         const BBText.body(

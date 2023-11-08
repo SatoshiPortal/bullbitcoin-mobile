@@ -482,11 +482,14 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
           state.wallet.originString(),
         ),
       );
-    await Bip329LabelHelpers.encryptWrite(
+    final err = await Bip329LabelHelpers.encryptWrite(
       fileName,
       labelsToExport,
       key,
     );
+    if (err != null) {
+      return;
+    }
   }
 
   void importLabelsClicked() async {
@@ -495,13 +498,17 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final String key = wallet.generateBIP329Key();
     final String fileName = wallet.id;
     final WalletLabels walletLabels = WalletLabels();
-    final List<Bip329Label> importedLabels = await Bip329LabelHelpers.decryptRead(
+    final (List<Bip329Label>? importedLabels, iErr) = await Bip329LabelHelpers.decryptRead(
       fileName,
       key,
     );
-    final List<Transaction> importedTxs = walletLabels.txsFromBip329(importedLabels);
+    if (iErr != null) {
+      return;
+    }
+    final List<Transaction> importedTxs = walletLabels.txsFromBip329(importedLabels!);
     final List<Address> importedAddresses = walletLabels.addressesFromBip329(importedLabels);
 
+    return;
     // Update the wallet with imported data
     // ...
   }

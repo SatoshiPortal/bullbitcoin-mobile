@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:bb_mobile/_pkg/error.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pointycastle/api.dart';
 import 'package:pointycastle/export.dart' as pc;
 
 part 'bip329_label.freezed.dart';
@@ -52,50 +54,88 @@ class Bip329Label with _$Bip329Label {
   ///  Use comma separated string where multiple labels exist
   List<String> labelTagList() => label!.split(',');
 }
-//  4 method : readfile, writefile, encrypt, decrypt
-// Existing Bip329Label class and other code...
 
 extension Bip329LabelHelpers on Bip329Label {
-  // Method to read labels from a file
-  static Future<List<Bip329Label>> decryptRead(String fileName, String key) async {
+  static Future<(List<Bip329Label>?, Err?)> decryptRead(String fileName, String key) async {
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/$fileName');
+    final file = File('${directory.path}/$fileName.export.bip329');
+    if (await file.exists()) {
+    } else {
+      return (
+        null,
+        Err('No Label Export File Found!'),
+      );
+    }
     final encryptedContents = await file.readAsString();
     final decryptedContents = _decrypt(encryptedContents, key);
     final lines = LineSplitter.split(decryptedContents);
-    return lines
-        .map((line) => Bip329Label.fromJson(jsonDecode(line) as Map<String, dynamic>))
-        .toList();
+    return (
+      lines.map((line) => Bip329Label.fromJson(jsonDecode(line) as Map<String, dynamic>)).toList(),
+      null
+    );
   }
 
-  static Future<void> encryptWrite(String fileName, List<Bip329Label> labels, String key) async {
+  static Future<Err?> encryptWrite(String fileName, List<Bip329Label> labels, String key) async {
+    if (labels.isEmpty) return Err('No Labels To Write.');
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/$fileName');
+    final file = File('${directory.path}/$fileName.export.bip329');
     final dataToEncrypt = labels.map((label) => jsonEncode(label.toJson())).join('\n');
     final encryptedData = _encrypt(dataToEncrypt, key);
     await file.writeAsString(encryptedData);
+    return null;
   }
 }
 
 String _encrypt(String plainText, String key) {
-  final keyBytes = Uint8List.fromList(utf8.encode(key));
+  final keyBytes = Uint8List.fromList(_hexToIntList(key));
   final keyParam = pc.KeyParameter(keyBytes);
-  final blockCipher = pc.BlockCipher('AES')..init(true, keyParam);
+
+  // Create a CBC block cipher with PKCS7 padding
+  final iv = Uint8List(16); // You should generate a random IV for each encryption
+  final params = PaddedBlockCipherParameters(
+    ParametersWithIV(KeyParameter(keyBytes), iv),
+    null,
+  );
+  final paddedBlockCipher = pc.PaddedBlockCipher('AES/CBC/PKCS7')
+    ..init(
+      true,
+      params,
+    );
 
   final input = Uint8List.fromList(utf8.encode(plainText));
-  final encrypted = blockCipher.process(input);
+  final encrypted = paddedBlockCipher.process(input);
 
-  return base64Encode(encrypted);
+  return base64Encode(iv) + ',' + base64Encode(encrypted);
 }
 
 String _decrypt(String encryptedBase64Text, String key) {
-  final encryptedBytes = base64Decode(encryptedBase64Text);
+  final keyBytes = Uint8List.fromList(_hexToIntList(key));
 
-  final keyBytes = Uint8List.fromList(utf8.encode(key));
-  final keyParam = pc.KeyParameter(keyBytes);
-  final blockCipher = pc.BlockCipher('AES')..init(false, keyParam);
+  final parts = encryptedBase64Text.split(',');
+  final iv = base64Decode(parts[0]);
+  final encrypted = base64Decode(parts[1]);
+  final params = PaddedBlockCipherParameters(
+    ParametersWithIV(KeyParameter(keyBytes), iv),
+    null,
+  );
+  final paddedBlockCipher = pc.PaddedBlockCipher('AES/CBC/PKCS7')
+    ..init(
+      false,
+      params,
+    );
 
-  final decrypted = blockCipher.process(encryptedBytes);
+  final decrypted = paddedBlockCipher.process(encrypted);
 
   return utf8.decode(decrypted);
+}
+
+// Helper function to convert hex string to int list
+List<int> _hexToIntList(String hex) {
+  final bytes = <int>[];
+  for (var i = 0; i < hex.length; i += 2) {
+    final byteString = hex.substring(i, i + 2);
+    final byte = int.parse(byteString, radix: 16);
+    bytes.add(byte);
+  }
+  return bytes;
 }
