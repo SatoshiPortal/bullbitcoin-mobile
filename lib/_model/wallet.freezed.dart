@@ -223,10 +223,9 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
 }
 
 /// @nodoc
-abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
-  factory _$$WalletImplCopyWith(
-          _$WalletImpl value, $Res Function(_$WalletImpl) then) =
-      __$$WalletImplCopyWithImpl<$Res>;
+abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
+  factory _$$_WalletCopyWith(_$_Wallet value, $Res Function(_$_Wallet) then) =
+      __$$_WalletCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -258,11 +257,10 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$WalletImplCopyWithImpl<$Res>
-    extends _$WalletCopyWithImpl<$Res, _$WalletImpl>
-    implements _$$WalletImplCopyWith<$Res> {
-  __$$WalletImplCopyWithImpl(
-      _$WalletImpl _value, $Res Function(_$WalletImpl) _then)
+class __$$_WalletCopyWithImpl<$Res>
+    extends _$WalletCopyWithImpl<$Res, _$_Wallet>
+    implements _$$_WalletCopyWith<$Res> {
+  __$$_WalletCopyWithImpl(_$_Wallet _value, $Res Function(_$_Wallet) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -289,7 +287,7 @@ class __$$WalletImplCopyWithImpl<$Res>
     Object? lastBackupTested = freezed,
     Object? hide = null,
   }) {
-    return _then(_$WalletImpl(
+    return _then(_$_Wallet(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -376,8 +374,8 @@ class __$$WalletImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$WalletImpl extends _Wallet {
-  const _$WalletImpl(
+class _$_Wallet extends _Wallet {
+  const _$_Wallet(
       {this.id = '',
       this.externalPublicDescriptor = '',
       this.internalPublicDescriptor = '',
@@ -404,8 +402,8 @@ class _$WalletImpl extends _Wallet {
         _unsignedTxs = unsignedTxs,
         super._();
 
-  factory _$WalletImpl.fromJson(Map<String, dynamic> json) =>
-      _$$WalletImplFromJson(json);
+  factory _$_Wallet.fromJson(Map<String, dynamic> json) =>
+      _$$_WalletFromJson(json);
 
   @override
   @JsonKey()
@@ -496,7 +494,7 @@ class _$WalletImpl extends _Wallet {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$WalletImpl &&
+            other is _$_Wallet &&
             (identical(other.id, id) || other.id == id) &&
             (identical(
                     other.externalPublicDescriptor, externalPublicDescriptor) ||
@@ -563,12 +561,12 @@ class _$WalletImpl extends _Wallet {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$WalletImplCopyWith<_$WalletImpl> get copyWith =>
-      __$$WalletImplCopyWithImpl<_$WalletImpl>(this, _$identity);
+  _$$_WalletCopyWith<_$_Wallet> get copyWith =>
+      __$$_WalletCopyWithImpl<_$_Wallet>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$WalletImplToJson(
+    return _$$_WalletToJson(
       this,
     );
   }
@@ -595,10 +593,10 @@ abstract class _Wallet extends Wallet {
       final List<Transaction> unsignedTxs,
       final bool backupTested,
       final DateTime? lastBackupTested,
-      final bool hide}) = _$WalletImpl;
+      final bool hide}) = _$_Wallet;
   const _Wallet._() : super._();
 
-  factory _Wallet.fromJson(Map<String, dynamic> json) = _$WalletImpl.fromJson;
+  factory _Wallet.fromJson(Map<String, dynamic> json) = _$_Wallet.fromJson;
 
   @override
   String get id;
@@ -643,7 +641,7 @@ abstract class _Wallet extends Wallet {
   bool get hide;
   @override
   @JsonKey(ignore: true)
-  _$$WalletImplCopyWith<_$WalletImpl> get copyWith =>
+  _$$_WalletCopyWith<_$_Wallet> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -729,10 +727,10 @@ class _$BalanceCopyWithImpl<$Res, $Val extends Balance>
 }
 
 /// @nodoc
-abstract class _$$BalanceImplCopyWith<$Res> implements $BalanceCopyWith<$Res> {
-  factory _$$BalanceImplCopyWith(
-          _$BalanceImpl value, $Res Function(_$BalanceImpl) then) =
-      __$$BalanceImplCopyWithImpl<$Res>;
+abstract class _$$_BalanceCopyWith<$Res> implements $BalanceCopyWith<$Res> {
+  factory _$$_BalanceCopyWith(
+          _$_Balance value, $Res Function(_$_Balance) then) =
+      __$$_BalanceCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -745,11 +743,10 @@ abstract class _$$BalanceImplCopyWith<$Res> implements $BalanceCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$BalanceImplCopyWithImpl<$Res>
-    extends _$BalanceCopyWithImpl<$Res, _$BalanceImpl>
-    implements _$$BalanceImplCopyWith<$Res> {
-  __$$BalanceImplCopyWithImpl(
-      _$BalanceImpl _value, $Res Function(_$BalanceImpl) _then)
+class __$$_BalanceCopyWithImpl<$Res>
+    extends _$BalanceCopyWithImpl<$Res, _$_Balance>
+    implements _$$_BalanceCopyWith<$Res> {
+  __$$_BalanceCopyWithImpl(_$_Balance _value, $Res Function(_$_Balance) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -762,7 +759,7 @@ class __$$BalanceImplCopyWithImpl<$Res>
     Object? spendable = null,
     Object? total = null,
   }) {
-    return _then(_$BalanceImpl(
+    return _then(_$_Balance(
       immature: null == immature
           ? _value.immature
           : immature // ignore: cast_nullable_to_non_nullable
@@ -793,8 +790,8 @@ class __$$BalanceImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$BalanceImpl extends _Balance {
-  const _$BalanceImpl(
+class _$_Balance extends _Balance {
+  const _$_Balance(
       {required this.immature,
       required this.trustedPending,
       required this.untrustedPending,
@@ -803,8 +800,8 @@ class _$BalanceImpl extends _Balance {
       required this.total})
       : super._();
 
-  factory _$BalanceImpl.fromJson(Map<String, dynamic> json) =>
-      _$$BalanceImplFromJson(json);
+  factory _$_Balance.fromJson(Map<String, dynamic> json) =>
+      _$$_BalanceFromJson(json);
 
   @override
   final int immature;
@@ -828,7 +825,7 @@ class _$BalanceImpl extends _Balance {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$BalanceImpl &&
+            other is _$_Balance &&
             (identical(other.immature, immature) ||
                 other.immature == immature) &&
             (identical(other.trustedPending, trustedPending) ||
@@ -850,12 +847,12 @@ class _$BalanceImpl extends _Balance {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$BalanceImplCopyWith<_$BalanceImpl> get copyWith =>
-      __$$BalanceImplCopyWithImpl<_$BalanceImpl>(this, _$identity);
+  _$$_BalanceCopyWith<_$_Balance> get copyWith =>
+      __$$_BalanceCopyWithImpl<_$_Balance>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$BalanceImplToJson(
+    return _$$_BalanceToJson(
       this,
     );
   }
@@ -868,10 +865,10 @@ abstract class _Balance extends Balance {
       required final int untrustedPending,
       required final int confirmed,
       required final int spendable,
-      required final int total}) = _$BalanceImpl;
+      required final int total}) = _$_Balance;
   const _Balance._() : super._();
 
-  factory _Balance.fromJson(Map<String, dynamic> json) = _$BalanceImpl.fromJson;
+  factory _Balance.fromJson(Map<String, dynamic> json) = _$_Balance.fromJson;
 
   @override
   int get immature;
@@ -887,6 +884,6 @@ abstract class _Balance extends Balance {
   int get total;
   @override
   @JsonKey(ignore: true)
-  _$$BalanceImplCopyWith<_$BalanceImpl> get copyWith =>
+  _$$_BalanceCopyWith<_$_Balance> get copyWith =>
       throw _privateConstructorUsedError;
 }

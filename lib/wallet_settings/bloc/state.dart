@@ -38,6 +38,12 @@ class WalletSettingsState with _$WalletSettingsState {
     @Default(false) bool savingFile,
     @Default('') String errSavingFile,
     @Default(false) bool savedFile,
+    @Default('') String errImporting,
+    @Default(false) bool importing,
+    @Default(false) bool imported,
+    @Default('') String errExporting,
+    @Default(false) bool exporting,
+    @Default(false) bool exported,
   }) = _WalletSettingsState;
   const WalletSettingsState._();
 

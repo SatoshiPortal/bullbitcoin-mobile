@@ -260,11 +260,11 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
 }
 
 /// @nodoc
-abstract class _$$ImportStateImplCopyWith<$Res>
+abstract class _$$_ImportStateCopyWith<$Res>
     implements $ImportStateCopyWith<$Res> {
-  factory _$$ImportStateImplCopyWith(
-          _$ImportStateImpl value, $Res Function(_$ImportStateImpl) then) =
-      __$$ImportStateImplCopyWithImpl<$Res>;
+  factory _$$_ImportStateCopyWith(
+          _$_ImportState value, $Res Function(_$_ImportState) then) =
+      __$$_ImportStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -300,11 +300,11 @@ abstract class _$$ImportStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$ImportStateImplCopyWithImpl<$Res>
-    extends _$ImportStateCopyWithImpl<$Res, _$ImportStateImpl>
-    implements _$$ImportStateImplCopyWith<$Res> {
-  __$$ImportStateImplCopyWithImpl(
-      _$ImportStateImpl _value, $Res Function(_$ImportStateImpl) _then)
+class __$$_ImportStateCopyWithImpl<$Res>
+    extends _$ImportStateCopyWithImpl<$Res, _$_ImportState>
+    implements _$$_ImportStateCopyWith<$Res> {
+  __$$_ImportStateCopyWithImpl(
+      _$_ImportState _value, $Res Function(_$_ImportState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -335,7 +335,7 @@ class __$$ImportStateImplCopyWithImpl<$Res>
     Object? savedWallet = freezed,
     Object? coldCard = freezed,
   }) {
-    return _then(_$ImportStateImpl(
+    return _then(_$_ImportState(
       words12: null == words12
           ? _value._words12
           : words12 // ignore: cast_nullable_to_non_nullable
@@ -438,8 +438,8 @@ class __$$ImportStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ImportStateImpl extends _ImportState {
-  const _$ImportStateImpl(
+class _$_ImportState extends _ImportState {
+  const _$_ImportState(
       {final List<({bool tapped, String word})> words12 = const [],
       final List<({bool tapped, String word})> words24 = const [],
       this.passPhrase = '',
@@ -579,7 +579,7 @@ class _$ImportStateImpl extends _ImportState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ImportStateImpl &&
+            other is _$_ImportState &&
             const DeepCollectionEquality().equals(other._words12, _words12) &&
             const DeepCollectionEquality().equals(other._words24, _words24) &&
             (identical(other.passPhrase, passPhrase) ||
@@ -663,8 +663,8 @@ class _$ImportStateImpl extends _ImportState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$ImportStateImplCopyWith<_$ImportStateImpl> get copyWith =>
-      __$$ImportStateImplCopyWithImpl<_$ImportStateImpl>(this, _$identity);
+  _$$_ImportStateCopyWith<_$_ImportState> get copyWith =>
+      __$$_ImportStateCopyWithImpl<_$_ImportState>(this, _$identity);
 }
 
 abstract class _ImportState extends ImportState {
@@ -692,7 +692,7 @@ abstract class _ImportState extends ImportState {
       final bool savingWallet,
       final String errSavingWallet,
       final Wallet? savedWallet,
-      final ColdCard? coldCard}) = _$ImportStateImpl;
+      final ColdCard? coldCard}) = _$_ImportState;
   const _ImportState._() : super._();
 
   @override
@@ -755,6 +755,6 @@ abstract class _ImportState extends ImportState {
   ColdCard? get coldCard;
   @override
   @JsonKey(ignore: true)
-  _$$ImportStateImplCopyWith<_$ImportStateImpl> get copyWith =>
+  _$$_ImportStateCopyWith<_$_ImportState> get copyWith =>
       throw _privateConstructorUsedError;
 }

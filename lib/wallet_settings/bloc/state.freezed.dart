@@ -49,6 +49,12 @@ mixin _$WalletSettingsState {
   bool get savingFile => throw _privateConstructorUsedError;
   String get errSavingFile => throw _privateConstructorUsedError;
   bool get savedFile => throw _privateConstructorUsedError;
+  String get errImporting => throw _privateConstructorUsedError;
+  bool get importing => throw _privateConstructorUsedError;
+  bool get imported => throw _privateConstructorUsedError;
+  String get errExporting => throw _privateConstructorUsedError;
+  bool get exporting => throw _privateConstructorUsedError;
+  bool get exported => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $WalletSettingsStateCopyWith<WalletSettingsState> get copyWith =>
@@ -84,7 +90,13 @@ abstract class $WalletSettingsStateCopyWith<$Res> {
       bool deleted,
       bool savingFile,
       String errSavingFile,
-      bool savedFile});
+      bool savedFile,
+      String errImporting,
+      bool importing,
+      bool imported,
+      String errExporting,
+      bool exporting,
+      bool exported});
 
   $WalletCopyWith<$Res> get wallet;
 }
@@ -124,6 +136,12 @@ class _$WalletSettingsStateCopyWithImpl<$Res, $Val extends WalletSettingsState>
     Object? savingFile = null,
     Object? errSavingFile = null,
     Object? savedFile = null,
+    Object? errImporting = null,
+    Object? importing = null,
+    Object? imported = null,
+    Object? errExporting = null,
+    Object? exporting = null,
+    Object? exported = null,
   }) {
     return _then(_value.copyWith(
       wallet: null == wallet
@@ -214,6 +232,30 @@ class _$WalletSettingsStateCopyWithImpl<$Res, $Val extends WalletSettingsState>
           ? _value.savedFile
           : savedFile // ignore: cast_nullable_to_non_nullable
               as bool,
+      errImporting: null == errImporting
+          ? _value.errImporting
+          : errImporting // ignore: cast_nullable_to_non_nullable
+              as String,
+      importing: null == importing
+          ? _value.importing
+          : importing // ignore: cast_nullable_to_non_nullable
+              as bool,
+      imported: null == imported
+          ? _value.imported
+          : imported // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errExporting: null == errExporting
+          ? _value.errExporting
+          : errExporting // ignore: cast_nullable_to_non_nullable
+              as String,
+      exporting: null == exporting
+          ? _value.exporting
+          : exporting // ignore: cast_nullable_to_non_nullable
+              as bool,
+      exported: null == exported
+          ? _value.exported
+          : exported // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -227,11 +269,11 @@ class _$WalletSettingsStateCopyWithImpl<$Res, $Val extends WalletSettingsState>
 }
 
 /// @nodoc
-abstract class _$$WalletSettingsStateImplCopyWith<$Res>
+abstract class _$$_WalletSettingsStateCopyWith<$Res>
     implements $WalletSettingsStateCopyWith<$Res> {
-  factory _$$WalletSettingsStateImplCopyWith(_$WalletSettingsStateImpl value,
-          $Res Function(_$WalletSettingsStateImpl) then) =
-      __$$WalletSettingsStateImplCopyWithImpl<$Res>;
+  factory _$$_WalletSettingsStateCopyWith(_$_WalletSettingsState value,
+          $Res Function(_$_WalletSettingsState) then) =
+      __$$_WalletSettingsStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -257,18 +299,24 @@ abstract class _$$WalletSettingsStateImplCopyWith<$Res>
       bool deleted,
       bool savingFile,
       String errSavingFile,
-      bool savedFile});
+      bool savedFile,
+      String errImporting,
+      bool importing,
+      bool imported,
+      String errExporting,
+      bool exporting,
+      bool exported});
 
   @override
   $WalletCopyWith<$Res> get wallet;
 }
 
 /// @nodoc
-class __$$WalletSettingsStateImplCopyWithImpl<$Res>
-    extends _$WalletSettingsStateCopyWithImpl<$Res, _$WalletSettingsStateImpl>
-    implements _$$WalletSettingsStateImplCopyWith<$Res> {
-  __$$WalletSettingsStateImplCopyWithImpl(_$WalletSettingsStateImpl _value,
-      $Res Function(_$WalletSettingsStateImpl) _then)
+class __$$_WalletSettingsStateCopyWithImpl<$Res>
+    extends _$WalletSettingsStateCopyWithImpl<$Res, _$_WalletSettingsState>
+    implements _$$_WalletSettingsStateCopyWith<$Res> {
+  __$$_WalletSettingsStateCopyWithImpl(_$_WalletSettingsState _value,
+      $Res Function(_$_WalletSettingsState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -296,8 +344,14 @@ class __$$WalletSettingsStateImplCopyWithImpl<$Res>
     Object? savingFile = null,
     Object? errSavingFile = null,
     Object? savedFile = null,
+    Object? errImporting = null,
+    Object? importing = null,
+    Object? imported = null,
+    Object? errExporting = null,
+    Object? exporting = null,
+    Object? exported = null,
   }) {
-    return _then(_$WalletSettingsStateImpl(
+    return _then(_$_WalletSettingsState(
       wallet: null == wallet
           ? _value.wallet
           : wallet // ignore: cast_nullable_to_non_nullable
@@ -386,14 +440,38 @@ class __$$WalletSettingsStateImplCopyWithImpl<$Res>
           ? _value.savedFile
           : savedFile // ignore: cast_nullable_to_non_nullable
               as bool,
+      errImporting: null == errImporting
+          ? _value.errImporting
+          : errImporting // ignore: cast_nullable_to_non_nullable
+              as String,
+      importing: null == importing
+          ? _value.importing
+          : importing // ignore: cast_nullable_to_non_nullable
+              as bool,
+      imported: null == imported
+          ? _value.imported
+          : imported // ignore: cast_nullable_to_non_nullable
+              as bool,
+      errExporting: null == errExporting
+          ? _value.errExporting
+          : errExporting // ignore: cast_nullable_to_non_nullable
+              as String,
+      exporting: null == exporting
+          ? _value.exporting
+          : exporting // ignore: cast_nullable_to_non_nullable
+              as bool,
+      exported: null == exported
+          ? _value.exported
+          : exported // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
 
 /// @nodoc
 
-class _$WalletSettingsStateImpl extends _WalletSettingsState {
-  const _$WalletSettingsStateImpl(
+class _$_WalletSettingsState extends _WalletSettingsState {
+  const _$_WalletSettingsState(
       {required this.wallet,
       this.name = '',
       final List<String> mnemonic = const [],
@@ -416,7 +494,13 @@ class _$WalletSettingsStateImpl extends _WalletSettingsState {
       this.deleted = false,
       this.savingFile = false,
       this.errSavingFile = '',
-      this.savedFile = false})
+      this.savedFile = false,
+      this.errImporting = '',
+      this.importing = false,
+      this.imported = false,
+      this.errExporting = '',
+      this.exporting = false,
+      this.exported = false})
       : _mnemonic = mnemonic,
         _shuffledMnemonic = shuffledMnemonic,
         _testMnemonicOrder = testMnemonicOrder,
@@ -524,17 +608,35 @@ class _$WalletSettingsStateImpl extends _WalletSettingsState {
   @override
   @JsonKey()
   final bool savedFile;
+  @override
+  @JsonKey()
+  final String errImporting;
+  @override
+  @JsonKey()
+  final bool importing;
+  @override
+  @JsonKey()
+  final bool imported;
+  @override
+  @JsonKey()
+  final String errExporting;
+  @override
+  @JsonKey()
+  final bool exporting;
+  @override
+  @JsonKey()
+  final bool exported;
 
   @override
   String toString() {
-    return 'WalletSettingsState(wallet: $wallet, name: $name, mnemonic: $mnemonic, password: $password, shuffledMnemonic: $shuffledMnemonic, testMnemonicOrder: $testMnemonicOrder, testBackupPassword: $testBackupPassword, backup: $backup, testingBackup: $testingBackup, errTestingBackup: $errTestingBackup, backupTested: $backupTested, gettingAddresses: $gettingAddresses, errGettingAddresses: $errGettingAddresses, savingName: $savingName, errSavingName: $errSavingName, savedName: $savedName, deleting: $deleting, errDeleting: $errDeleting, deleted: $deleted, savingFile: $savingFile, errSavingFile: $errSavingFile, savedFile: $savedFile)';
+    return 'WalletSettingsState(wallet: $wallet, name: $name, mnemonic: $mnemonic, password: $password, shuffledMnemonic: $shuffledMnemonic, testMnemonicOrder: $testMnemonicOrder, testBackupPassword: $testBackupPassword, backup: $backup, testingBackup: $testingBackup, errTestingBackup: $errTestingBackup, backupTested: $backupTested, gettingAddresses: $gettingAddresses, errGettingAddresses: $errGettingAddresses, savingName: $savingName, errSavingName: $errSavingName, savedName: $savedName, deleting: $deleting, errDeleting: $errDeleting, deleted: $deleted, savingFile: $savingFile, errSavingFile: $errSavingFile, savedFile: $savedFile, errImporting: $errImporting, importing: $importing, imported: $imported, errExporting: $errExporting, exporting: $exporting, exported: $exported)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$WalletSettingsStateImpl &&
+            other is _$_WalletSettingsState &&
             (identical(other.wallet, wallet) || other.wallet == wallet) &&
             (identical(other.name, name) || other.name == name) &&
             const DeepCollectionEquality().equals(other._mnemonic, _mnemonic) &&
@@ -573,7 +675,19 @@ class _$WalletSettingsStateImpl extends _WalletSettingsState {
             (identical(other.errSavingFile, errSavingFile) ||
                 other.errSavingFile == errSavingFile) &&
             (identical(other.savedFile, savedFile) ||
-                other.savedFile == savedFile));
+                other.savedFile == savedFile) &&
+            (identical(other.errImporting, errImporting) ||
+                other.errImporting == errImporting) &&
+            (identical(other.importing, importing) ||
+                other.importing == importing) &&
+            (identical(other.imported, imported) ||
+                other.imported == imported) &&
+            (identical(other.errExporting, errExporting) ||
+                other.errExporting == errExporting) &&
+            (identical(other.exporting, exporting) ||
+                other.exporting == exporting) &&
+            (identical(other.exported, exported) ||
+                other.exported == exported));
   }
 
   @override
@@ -600,14 +714,20 @@ class _$WalletSettingsStateImpl extends _WalletSettingsState {
         deleted,
         savingFile,
         errSavingFile,
-        savedFile
+        savedFile,
+        errImporting,
+        importing,
+        imported,
+        errExporting,
+        exporting,
+        exported
       ]);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$WalletSettingsStateImplCopyWith<_$WalletSettingsStateImpl> get copyWith =>
-      __$$WalletSettingsStateImplCopyWithImpl<_$WalletSettingsStateImpl>(
+  _$$_WalletSettingsStateCopyWith<_$_WalletSettingsState> get copyWith =>
+      __$$_WalletSettingsStateCopyWithImpl<_$_WalletSettingsState>(
           this, _$identity);
 }
 
@@ -635,7 +755,13 @@ abstract class _WalletSettingsState extends WalletSettingsState {
       final bool deleted,
       final bool savingFile,
       final String errSavingFile,
-      final bool savedFile}) = _$WalletSettingsStateImpl;
+      final bool savedFile,
+      final String errImporting,
+      final bool importing,
+      final bool imported,
+      final String errExporting,
+      final bool exporting,
+      final bool exported}) = _$_WalletSettingsState;
   const _WalletSettingsState._() : super._();
 
   @override
@@ -694,7 +820,19 @@ abstract class _WalletSettingsState extends WalletSettingsState {
   @override
   bool get savedFile;
   @override
+  String get errImporting;
+  @override
+  bool get importing;
+  @override
+  bool get imported;
+  @override
+  String get errExporting;
+  @override
+  bool get exporting;
+  @override
+  bool get exported;
+  @override
   @JsonKey(ignore: true)
-  _$$WalletSettingsStateImplCopyWith<_$WalletSettingsStateImpl> get copyWith =>
+  _$$_WalletSettingsStateCopyWith<_$_WalletSettingsState> get copyWith =>
       throw _privateConstructorUsedError;
 }

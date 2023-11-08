@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/bip329_label.dart';
-import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -16,6 +14,7 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WalletSettingsCubit extends Cubit<WalletSettingsState> {
@@ -468,63 +467,84 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   }
 
   void exportLabelsClicked() async {
-    // Fetch encryption key and filename
-    final String key = state.wallet.generateBIP329Key();
-    final String fileName = state.wallet.id;
-    final WalletLabels walletLabels = WalletLabels();
-    final List<Bip329Label> labelsToExport = await walletLabels.txsToBip329(
-      state.wallet.transactions,
-      state.wallet.originString(),
-    )
-      ..addAll(
-        await walletLabels.addressesToBip329(
-          state.wallet.myAddressBook,
-          state.wallet.originString(),
-        ),
+    try {
+      emit(state.copyWith(exporting: true, errExporting: '', errImporting: ''));
+      final key = state.wallet.generateBIP329Key();
+      final fileName = state.wallet.id;
+      final walletLabels = WalletLabels();
+      final labelsToExport = await walletLabels.txsToBip329(
+        state.wallet.transactions,
+        state.wallet.originString(),
+      )
+        ..addAll(
+          await walletLabels.addressesToBip329(
+            state.wallet.myAddressBook,
+            state.wallet.originString(),
+          ),
+        );
+      final err = await Bip329LabelHelpers.encryptWrite(
+        fileName,
+        labelsToExport,
+        key,
       );
-    final err = await Bip329LabelHelpers.encryptWrite(
-      fileName,
-      labelsToExport,
-      key,
-    );
-    if (err != null) {
-      return;
+      if (err != null) {
+        emit(state.copyWith(errExporting: err.toString(), exporting: false));
+        return;
+      }
+      emit(state.copyWith(exporting: false, exported: true));
+      await Future.delayed(2.seconds);
+      emit(state.copyWith(exported: false));
+    } catch (e) {
+      emit(state.copyWith(errExporting: e.toString(), exporting: false));
     }
   }
 
   void importLabelsClicked() async {
-    // Fetch encryption key and filename
-    final wallet = state.wallet;
-    final String key = wallet.generateBIP329Key();
-    final String fileName = wallet.id;
-    final WalletLabels walletLabels = WalletLabels();
-    final (List<Bip329Label>? importedLabels, iErr) = await Bip329LabelHelpers.decryptRead(
-      fileName,
-      key,
-    );
-    if (iErr != null) {
-      return;
+    try {
+      emit(state.copyWith(importing: true, errImporting: '', errExporting: ''));
+      final wallet = state.wallet;
+      final key = wallet.generateBIP329Key();
+      final fileName = wallet.id;
+      final walletLabels = WalletLabels();
+      final (importedLabels, iErr) = await Bip329LabelHelpers.decryptRead(
+        fileName,
+        key,
+      );
+      if (iErr != null) {
+        emit(state.copyWith(errImporting: iErr.toString(), importing: false));
+        return;
+      }
+      final importedTxs = walletLabels.txsFromBip329(importedLabels!);
+      final importedAddresses = walletLabels.addressesFromBip329(importedLabels);
+      final (updatedAddressWallet, err) =
+          await WalletUpdate().updateAddressLabels(wallet, importedAddresses);
+      if (err != null) {
+        emit(state.copyWith(errImporting: err.toString(), importing: false));
+        return;
+      }
+      final (updatedWallet, err2) =
+          await WalletUpdate().updateTransactionLabels(updatedAddressWallet!, importedTxs);
+      if (err2 != null) {
+        emit(state.copyWith(errImporting: err2.toString(), importing: false));
+        return;
+      }
+
+      walletBloc.add(
+        UpdateWallet(
+          updatedWallet!,
+          updateTypes: [
+            UpdateWalletTypes.addresses,
+            UpdateWalletTypes.transactions,
+          ],
+        ),
+      );
+
+      emit(state.copyWith(importing: false, imported: true));
+      await Future.delayed(2.seconds);
+      emit(state.copyWith(imported: false));
+    } catch (e) {
+      emit(state.copyWith(errImporting: e.toString(), importing: false));
     }
-    final List<Transaction> importedTxs = walletLabels.txsFromBip329(importedLabels!);
-    final List<Address> importedAddresses = walletLabels.addressesFromBip329(importedLabels);
-    final (updatedAddressWallet, _) =
-        await WalletUpdate().updateAddressLabels(wallet, importedAddresses);
-    final (updatedWallet, _) =
-        await WalletUpdate().updateTransactionLabels(updatedAddressWallet!, importedTxs);
-
-    walletBloc.add(
-      UpdateWallet(
-        updatedWallet!,
-        updateTypes: [
-          UpdateWalletTypes.addresses,
-          UpdateWalletTypes.transactions,
-        ],
-      ),
-    );
-
-    return;
-    // Update the wallet with imported data
-    // ...
   }
 
   void clearSensitive() {

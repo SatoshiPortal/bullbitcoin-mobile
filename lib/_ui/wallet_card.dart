@@ -77,7 +77,8 @@ class WalletCardDetails extends StatelessWidget {
         context.select((CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true));
     final unit = context.select((CurrencyCubit x) => x.state.getUnitString());
 
-    final currency = context.select((CurrencyCubit x) => x.state.currency);
+    final currency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
+
     final fiatAmt = context.select((NetworkCubit x) => x.state.calculatePrice(sats, currency));
 
     return DecoratedBox(

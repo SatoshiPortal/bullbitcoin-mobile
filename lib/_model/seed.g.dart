@@ -6,7 +6,7 @@ part of 'seed.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$SeedImpl _$$SeedImplFromJson(Map<String, dynamic> json) => _$SeedImpl(
+_$_Seed _$$_SeedFromJson(Map<String, dynamic> json) => _$_Seed(
       mnemonic: json['mnemonic'] as String? ?? '',
       mnemonicFingerprint: json['mnemonicFingerprint'] as String? ?? '',
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
@@ -15,8 +15,7 @@ _$SeedImpl _$$SeedImplFromJson(Map<String, dynamic> json) => _$SeedImpl(
           .toList(),
     );
 
-Map<String, dynamic> _$$SeedImplToJson(_$SeedImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$$_SeedToJson(_$_Seed instance) => <String, dynamic>{
       'mnemonic': instance.mnemonic,
       'mnemonicFingerprint': instance.mnemonicFingerprint,
       'network': _$BBNetworkEnumMap[instance.network]!,
@@ -28,13 +27,13 @@ const _$BBNetworkEnumMap = {
   BBNetwork.Mainnet: 'Mainnet',
 };
 
-_$PassphraseImpl _$$PassphraseImplFromJson(Map<String, dynamic> json) =>
-    _$PassphraseImpl(
+_$_Passphrase _$$_PassphraseFromJson(Map<String, dynamic> json) =>
+    _$_Passphrase(
       passphrase: json['passphrase'] as String? ?? '',
       sourceFingerprint: json['sourceFingerprint'] as String,
     );
 
-Map<String, dynamic> _$$PassphraseImplToJson(_$PassphraseImpl instance) =>
+Map<String, dynamic> _$$_PassphraseToJson(_$_Passphrase instance) =>
     <String, dynamic>{
       'passphrase': instance.passphrase,
       'sourceFingerprint': instance.sourceFingerprint,
