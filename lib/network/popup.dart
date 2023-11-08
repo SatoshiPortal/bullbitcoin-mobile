@@ -299,6 +299,12 @@ class NetworkConfigFields extends HookWidget {
                     // timeout: int.tryParse(timeout.text) ?? 5,
                     validateDomain: validateDomain.value,
                   );
+
+                  if (type == ElectrumTypes.custom) {
+                    await PrivacyNoticePopUp.openPopUp(context, updatednetwork);
+                    return;
+                  }
+
                   context.read<NetworkCubit>().networkConfigsSaveClicked(updatednetwork);
                   await Future.delayed(const Duration(milliseconds: 500));
                   final err = context.read<NetworkCubit>().state.errLoadingNetworks;
@@ -311,6 +317,79 @@ class NetworkConfigFields extends HookWidget {
           ),
           const Gap(24),
         ],
+      ),
+    );
+  }
+}
+
+class PrivacyNoticePopUp extends StatelessWidget {
+  const PrivacyNoticePopUp({super.key, required this.updatedNetwork});
+
+  final ElectrumNetwork updatedNetwork;
+
+  static Future openPopUp(BuildContext context, ElectrumNetwork updatedNetwork) {
+    return showMaterialModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) => PrivacyNoticePopUp(updatedNetwork: updatedNetwork),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopUpBorder(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BBHeader.popUpCenteredText(
+              text: 'Privacy Notice',
+              isLeft: true,
+              onBack: () {
+                context.pop();
+              },
+            ),
+            const Gap(16),
+            const BBText.body('''
+Privacy Notice: Using your own node ensures that no third party can link your IP address, with your transactions. 
+
+However, if you view transactions via mempool by clicking your Transaction ID or Recipient Bitcoin Address in the Transaction Details page, this information will be known to BullBitcoin.'''),
+            const Gap(40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                BBButton.text(
+                  label: 'CANCEL',
+                  onPressed: () {
+                    context.pop();
+                  },
+                ),
+                SizedBox(
+                  width: 150,
+                  child: BBButton.bigRed(
+                    label: 'SAVE',
+                    filled: true,
+                    onPressed: () async {
+                      context.read<NetworkCubit>().networkConfigsSaveClicked(updatedNetwork);
+                      await Future.delayed(const Duration(milliseconds: 500));
+                      final err = context.read<NetworkCubit>().state.errLoadingNetworks;
+                      if (err.isNotEmpty)
+                        context.pop();
+                      else
+                        context
+                          ..pop()
+                          ..pop();
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const Gap(40),
+          ],
+        ),
       ),
     );
   }
