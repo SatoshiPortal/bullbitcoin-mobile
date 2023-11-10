@@ -2,6 +2,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/components/utils.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/_ui/toast.dart';
@@ -70,11 +71,16 @@ class ColdCardSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ImportWalletCubit cubit = context.select((ImportWalletCubit cubit) => cubit);
     final loading = context.select((ImportWalletCubit cubit) => cubit.state.loadingFile);
     final scanning = context
         .select((ImportWalletCubit cubit) => cubit.state.importStep == ImportSteps.scanningNFC);
 
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errLoadingFile);
+
+    if (err.isNotEmpty) {
+      showErrorAlert(context, err, cubit);
+    }
 
     if (loading)
       return const Center(child: CircularProgressIndicator()).animate(delay: 300.ms).fadeIn();
@@ -112,10 +118,6 @@ class ColdCardSection extends StatelessWidget {
             loadingText: 'Stop Scanning',
           ),
           const Gap(24),
-          if (err.isNotEmpty)
-            BBText.error(
-              err,
-            ),
           const Opacity(opacity: 0.3, child: Divider()),
         ],
       ),
@@ -193,7 +195,12 @@ class _ImportExtra extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ImportWalletCubit cubit = context.select((ImportWalletCubit cubit) => cubit);
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+
+    if (err.isNotEmpty) {
+      showErrorAlert(context, err, cubit);
+    }
 
     return Padding(
       padding: const EdgeInsets.only(
@@ -217,7 +224,6 @@ class _ImportExtra extends StatelessWidget {
             },
           ),
           const Gap(8),
-          if (err.isNotEmpty) BBText.error(err, textAlign: TextAlign.center),
         ],
       ),
     );
@@ -270,6 +276,7 @@ class AdvancedOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ImportWalletCubit cubit = context.select((ImportWalletCubit cubit) => cubit);
     final xpub = context.select((ImportWalletCubit cubit) => cubit.state.xpub);
     final path = context.select((ImportWalletCubit x) => x.state.customDerivation);
     final fingerprint = context.select((ImportWalletCubit x) => x.state.fingerprint);
@@ -280,6 +287,10 @@ class AdvancedOptions extends StatelessWidget {
         context.select((ImportWalletCubit x) => x.state.manualCombinedPublicDescriptor ?? '');
 
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+
+    if (err.isNotEmpty) {
+      showErrorAlert(context, err, cubit);
+    }
 
     return Padding(
       padding: const EdgeInsets.only(
@@ -361,8 +372,6 @@ class AdvancedOptions extends StatelessWidget {
               context.read<ImportWalletCubit>().xpubSaveClicked();
             },
           ),
-          const Gap(16),
-          if (err.isNotEmpty) BBText.error(err, textAlign: TextAlign.center),
           const Gap(80),
         ],
       ),

@@ -134,4 +134,13 @@ class AddressCubit extends Cubit<AddressState> {
     await Future.delayed(const Duration(seconds: 3));
     emit(state.copyWith(savedAddressName: false));
   }
+
+  void clearErrors() async {
+    emit(
+      state.copyWith(
+        errSavingAddressName: '',
+        errFreezingAddress: '',
+      ),
+    );
+  }
 }

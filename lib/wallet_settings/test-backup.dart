@@ -2,6 +2,7 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/components/utils.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
@@ -266,22 +267,17 @@ class TestBackupConfirmButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.select((WalletSettingsCubit cubit) => cubit);
     final testing = context.select((WalletSettingsCubit cubit) => cubit.state.testingBackup);
     final err = context.select((WalletSettingsCubit cubit) => cubit.state.errTestingBackup);
     final tested = context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
 
+    if (err.isNotEmpty) {
+      showErrorAlert(context, err, cubit);
+    }
+
     return Column(
       children: [
-        if (err.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Center(
-              child: BBText.error(
-                err,
-              ).animate().fadeIn(),
-            ),
-          ),
-        const Gap(40),
         if (tested)
           Center(
             child: Padding(

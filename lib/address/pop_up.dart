@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/components/utils.dart';
 import 'package:bb_mobile/_ui/inline_label.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
@@ -393,10 +394,15 @@ class _AddressLabelTextFieldState extends State<AddressLabelTextField> {
   final _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final AddressCubit cubit = context.select((AddressCubit cubit) => cubit);
     final saving = context.select((AddressCubit cubit) => cubit.state.savingAddressName);
     final err = context.select((AddressCubit cubit) => cubit.state.errSavingAddressName);
     final saved = context.select((AddressCubit cubit) => cubit.state.savedAddressName);
     final _ = widget.address.label ?? 'Enter Label';
+
+    if (err.isNotEmpty) {
+      showErrorAlert(context, err, cubit);
+    }
 
     if (saved) const Center(child: BBText.body('Saved!')).animate(delay: 300.ms).fadeIn();
     return Column(
@@ -408,12 +414,6 @@ class _AddressLabelTextFieldState extends State<AddressLabelTextField> {
           ),
         ),
         const Gap(60),
-        if (err.isNotEmpty) ...[
-          BBText.body(
-            err,
-          ),
-          const Gap(16),
-        ],
         Center(
           child: SizedBox(
             width: 250,

@@ -17,6 +17,7 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/components/utils.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -113,11 +114,16 @@ class _Screen extends StatelessWidget {
       body: BlocBuilder<TransactionCubit, TransactionState>(
         // buildWhen: (previous, current) => previous.tx != current.tx,
         builder: (context, state) {
+          final cubit = context.select((TransactionCubit cubit) => cubit);
           final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
 
           // final toAddresses = tx.outAddresses ?? [];
 
           final err = context.select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
+
+          if (err.isNotEmpty) {
+            showErrorAlert(context, err, cubit);
+          }
 
           final txid = tx.txid;
           final amt = tx.getAmount().abs();
@@ -276,13 +282,6 @@ class _Screen extends StatelessWidget {
                     ),
                     const Gap(4),
                     const TxLabelTextField(),
-                    const Gap(24),
-                    if (err.isNotEmpty) ...[
-                      const Gap(32),
-                      BBText.errorSmall(
-                        err,
-                      ),
-                    ],
                     const Gap(100),
                   ],
                 ),
@@ -404,10 +403,15 @@ class BumpFeesPopup extends StatelessWidget {
     final building = context.select((TransactionCubit x) => x.state.buildingTx);
     final loading = building || sending;
 
+    final cubit = context.select((TransactionCubit x) => x);
     final er = context.select((TransactionCubit x) => x.state.errSendingTx);
     final err = context.select((TransactionCubit x) => x.state.errBuildingTx);
 
     final errr = err.isNotEmpty ? err : er;
+
+    if (errr.isNotEmpty) {
+      showErrorAlert(context, errr, cubit);
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -436,8 +440,7 @@ class BumpFeesPopup extends StatelessWidget {
           //   value: amt,
           // ),
           // const Gap(32),
-          if (errr.isNotEmpty) BBText.errorSmall(errr),
-          const Gap(8),
+          const Gap(32),
           BBButton.bigRed(
             label: 'Bump Fees',
             // label: built ? 'Send Transaction' : 'Build Transaction',
