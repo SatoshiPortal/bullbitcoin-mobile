@@ -145,6 +145,7 @@ class CreateWalletPassField extends HookWidget {
           const Gap(8),
           BBTextInput.big(
             value: text,
+            maxLength: 32,
             hint: 'Enter passphrase',
             onChanged: (t) {
               context.read<CreateWalletCubit>().passPhraseChanged(t);

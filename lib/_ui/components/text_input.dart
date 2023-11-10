@@ -21,7 +21,8 @@ class BBTextInput extends StatefulWidget {
     this.controller,
   })  : type = _TextInputType.multiLine,
         onEnter = null,
-        onDone = null;
+        onDone = null,
+        maxLength = null;
 
   const BBTextInput.big({
     required this.onChanged,
@@ -30,6 +31,7 @@ class BBTextInput extends StatefulWidget {
     this.focusNode,
     this.hint,
     this.controller,
+    this.maxLength,
   })  : type = _TextInputType.big,
         rightIcon = null,
         onRightTap = null,
@@ -47,7 +49,8 @@ class BBTextInput extends StatefulWidget {
     this.controller,
   })  : type = _TextInputType.bigWithIcon,
         onEnter = null,
-        onDone = null;
+        onDone = null,
+        maxLength = null;
 
   const BBTextInput.small({
     required this.onChanged,
@@ -60,7 +63,8 @@ class BBTextInput extends StatefulWidget {
     this.onDone,
   })  : type = _TextInputType.small,
         rightIcon = null,
-        onRightTap = null;
+        onRightTap = null,
+        maxLength = null;
 
   final _TextInputType type;
 
@@ -74,6 +78,7 @@ class BBTextInput extends StatefulWidget {
   final FocusNode? focusNode;
   final Function? onEnter;
   final Function(String)? onDone;
+  final int? maxLength;
 
   @override
   State<BBTextInput> createState() => _BBTextInputState();
@@ -131,10 +136,12 @@ class _BBTextInputState extends State<BBTextInput> {
           enabled: !widget.disabled,
           focusNode: widget.focusNode,
           onChanged: widget.onChanged,
+          maxLength: widget.maxLength,
           enableIMEPersonalizedLearning: false,
           controller: _editingController,
           decoration: InputDecoration(
             hintText: widget.hint,
+            counterText: '',
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(80.0),
             ),
