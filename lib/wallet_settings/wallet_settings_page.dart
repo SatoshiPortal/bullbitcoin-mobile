@@ -523,8 +523,8 @@ class DeletePopUp extends StatelessWidget {
           listenWhen: (previous, current) => previous.deleted != current.deleted,
           listener: (context, state) {
             if (state.deleted) {
-              final home = locator<HomeCubit>();
-              home.clearSelectedWallet(removeWallet: true);
+              final walletBloc = settings.walletBloc;
+              context.read<HomeCubit>().clearWallet(walletBloc);
               context.go('/home');
             }
           },

@@ -166,4 +166,10 @@ class HomeCubit extends Cubit<HomeState> {
         ),
       );
   }
+
+  void clearWallet(WalletBloc walletBloc) {
+    final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+    wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
+    emit(state.copyWith(wallets: wallets));
+  }
 }
