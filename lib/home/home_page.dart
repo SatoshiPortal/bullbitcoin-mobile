@@ -188,11 +188,13 @@ class WalletScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const PositionedDirectional(
+              PositionedDirectional(
                 bottom: 0,
                 start: 0,
                 end: 0,
-                child: HomeActionButtons(),
+                child: HomeActionButtons(
+                  walletBloc: walletCubits.length == 1 ? walletCubits[0] : null,
+                ),
               ),
             ],
           ),

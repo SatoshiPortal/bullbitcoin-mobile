@@ -125,14 +125,14 @@ class SendAppBar extends StatelessWidget {
     return BBAppBar(
       text: 'Send Bitcoin',
       onBack: () {
-        final walletNotSelected = context.read<SelectSendWalletStep>().state.selectWallet;
+        // final walletNotSelected = context.read<SelectSendWalletStep>().state.selectWallet;
 
-        if (walletNotSelected) {
-          context.pop();
-          return;
-        }
+        // if (walletNotSelected) {
+        context.pop();
+        //   return;
+        // }
 
-        context.read<SelectSendWalletStep>().goBack();
+        // context.read<SelectSendWalletStep>().goBack();
       },
     );
   }
