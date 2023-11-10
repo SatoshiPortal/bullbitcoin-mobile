@@ -7,7 +7,9 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/currency/dropdown.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/state.dart';
 import 'package:bb_mobile/network/popup.dart';
+import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/lighting.dart';
@@ -243,21 +245,27 @@ class TestNetButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final testnet = context.select((NetworkCubit _) => _.state.testnet);
 
-    return Row(
-      children: [
-        // const Gap(8),
-        const BBText.body(
-          'Testnet mode',
-        ),
-        const Spacer(),
-        Switch(
-          key: UIKeys.settingsTestnetSwitch,
-          value: testnet,
-          onChanged: (e) {
-            context.read<NetworkCubit>().toggleTestnet();
-          },
-        ),
-      ],
+    return BlocListener<NetworkCubit, NetworkState>(
+      listenWhen: (previous, current) => previous.testnet != current.testnet,
+      listener: (context, state) {
+        context.read<NetworkFeesCubit>().loadFees();
+      },
+      child: Row(
+        children: [
+          // const Gap(8),
+          const BBText.body(
+            'Testnet mode',
+          ),
+          const Spacer(),
+          Switch(
+            key: UIKeys.settingsTestnetSwitch,
+            value: testnet,
+            onChanged: (e) {
+              context.read<NetworkCubit>().toggleTestnet();
+            },
+          ),
+        ],
+      ),
     );
   }
 }
