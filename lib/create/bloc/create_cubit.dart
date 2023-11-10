@@ -80,6 +80,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     final (seed, sErr) = await walletSensCreate.mnemonicSeed(mnemonic, network);
     if (sErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
+      return;
     }
     final (wallet, wErr) = await walletSensCreate.oneFromBIP39(
       seed!,
