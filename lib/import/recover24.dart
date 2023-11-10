@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/components/utils.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
@@ -155,7 +156,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
     });
 
     controller.addListener(() {
-      if (suggestions.isNotEmpty && suggestions.contains(controller.text)) return;
+      // if (suggestions.isNotEmpty && suggestions.contains(controller.text)) return;
 
       hideOverlay();
       setState(() {
@@ -347,8 +348,14 @@ class _ImportWordsRecoverButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ImportWalletCubit cubit = context.select((ImportWalletCubit cubit) => cubit);
     final recovering = context.select((ImportWalletCubit cubit) => cubit.state.importing);
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+
+    if (err.isNotEmpty) {
+      showErrorAlert(context, err, cubit);
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(

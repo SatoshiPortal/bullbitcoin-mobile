@@ -83,4 +83,12 @@ class SettingsCubit extends Cubit<SettingsState> {
       homeCubit?.state.selectedWalletCubit?.add(SyncWallet());
     });
   }
+
+  void clearErrors() async {
+    emit(
+      state.copyWith(
+        errLoadingLanguage: '',
+      ),
+    );
+  }
 }

@@ -351,4 +351,15 @@ class TransactionCubit extends Cubit<TransactionState> {
   void cancelTx() {
     emit(state.copyWith(updatedTx: null));
   }
+
+  void clearErrors() async {
+    emit(
+      state.copyWith(
+        errBuildingTx: '',
+        errLoadingAddresses: '',
+        errSavingLabel: '',
+        errSendingTx: '',
+      ),
+    );
+  }
 }

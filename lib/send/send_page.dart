@@ -17,6 +17,8 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/_ui/components/utils.dart';
+import 'package:bb_mobile/_ui/fees.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
@@ -304,11 +306,15 @@ class SendButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final watchOnly = context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
 
+    final SendCubit cubit = context.select((SendCubit cubit) => cubit);
     final sending = context.select((SendCubit cubit) => cubit.state.sending);
     final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);
     final err = context.select((SendCubit cubit) => cubit.state.errSending);
-
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
+
+    if (err.isNotEmpty) {
+      showErrorAlert(context, err, cubit);
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -347,13 +353,7 @@ class SendButton extends StatelessWidget {
             ),
           ),
         ),
-        const Gap(16),
-        if (err.isNotEmpty)
-          Center(
-            child: BBText.error(
-              err,
-            ),
-          ),
+        const Gap(8),
       ],
     );
   }

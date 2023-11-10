@@ -193,4 +193,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   void shareClicked() {}
+
+  void clearErrors() async {
+    emit(
+      state.copyWith(
+        errCreatingInvoice: '',
+        errLoadingAddress: '',
+        errSavingLabel: '',
+      ),
+    );
+  }
 }

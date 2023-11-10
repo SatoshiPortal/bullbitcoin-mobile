@@ -5,6 +5,7 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/components/utils.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
@@ -188,8 +189,13 @@ class Actions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ReceiveCubit cubit = context.select((ReceiveCubit x) => x);
     final showRequestButton = context.select((ReceiveCubit x) => x.state.showNewRequestButton());
     final errLoadingAddress = context.select((ReceiveCubit x) => x.state.errLoadingAddress);
+
+    if (errLoadingAddress.isNotEmpty) {
+      showErrorAlert(context, errLoadingAddress, cubit);
+    }
 
     return Column(
       children: [
@@ -206,7 +212,6 @@ class Actions extends StatelessWidget {
             context.read<ReceiveCubit>().generateNewAddress();
           },
         ),
-        BBText.errorSmall(errLoadingAddress),
       ],
     );
   }

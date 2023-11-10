@@ -6,6 +6,7 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/components/utils.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -272,9 +273,14 @@ class SendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final BroadcastTxCubit cubit = context.select((BroadcastTxCubit cubit) => cubit);
     final step = context.select((BroadcastTxCubit cubit) => cubit.state.step);
     final hasErr = context.select((BroadcastTxCubit cubit) => cubit.state.hasErr());
     final err = context.select((BroadcastTxCubit cubit) => cubit.state.getErrors());
+
+    if (hasErr) {
+      showErrorAlert(context, err, cubit);
+    }
 
     final broadcasting = context.select((BroadcastTxCubit cubit) => cubit.state.broadcastingTx);
     final extractingTx = context.select((BroadcastTxCubit cubit) => cubit.state.extractingTx);
@@ -292,12 +298,6 @@ class SendButton extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (hasErr) ...[
-          BBText.error(
-            err,
-          ),
-          const Gap(16),
-        ],
         Center(
           child: SizedBox(
             width: 300,

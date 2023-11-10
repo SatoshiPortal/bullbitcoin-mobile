@@ -557,6 +557,18 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       ),
     );
   }
+
+  void clearErrors() async {
+    emit(
+      state.copyWith(
+        errDeleting: '',
+        errGettingAddresses: '',
+        errSavingFile: '',
+        errSavingName: '',
+        errTestingBackup: '',
+      ),
+    );
+  }
 }
 
 const mn1 = [
