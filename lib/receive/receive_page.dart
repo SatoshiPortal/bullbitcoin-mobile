@@ -252,10 +252,19 @@ class QRDisplay extends StatelessWidget {
     final address = context.select((ReceiveCubit x) => x.state.getQRStr());
 
     return Center(
-      child: ColoredBox(
-        color: Colors.white,
-        child: QrImageView(
-          data: address,
+      child: GestureDetector(
+        onTap: () async {
+          await Clipboard.setData(ClipboardData(text: address));
+          SystemSound.play(SystemSoundType.click);
+          HapticFeedback.selectionClick();
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+        },
+        child: ColoredBox(
+          color: Colors.white,
+          child: QrImageView(
+            data: address,
+          ),
         ),
       ),
     );
