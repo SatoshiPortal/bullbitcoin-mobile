@@ -131,7 +131,7 @@ class AddressDetails extends StatelessWidget {
           _DetailRow(
             text: amountStr,
             onTap: () {
-              // CreateInvoice.openPopUp(context);
+              CreateInvoice.openPopUp(context);
             },
             title: 'Amount Request',
           ),
@@ -140,7 +140,7 @@ class AddressDetails extends StatelessWidget {
           _DetailRow(
             text: description,
             onTap: () {
-              // CreateInvoice.openPopUp(context);
+              CreateInvoice.openPopUp(context);
             },
             title: 'Public Description',
           ),
@@ -167,10 +167,14 @@ class _DetailRow extends StatelessWidget {
             BBText.body(text, isBold: true),
             const Gap(4),
             IconButton(
+              iconSize: 16,
               onPressed: () {
                 onTap();
               },
-              icon: const FaIcon(FontAwesomeIcons.penToSquare),
+              icon: FaIcon(
+                FontAwesomeIcons.penToSquare,
+                color: context.colour.secondary,
+              ),
             ),
           ],
         ),
@@ -340,7 +344,10 @@ class CreateInvoice extends StatelessWidget {
   static Future openPopUp(BuildContext context) async {
     final receiveCubit = context.read<ReceiveCubit>();
     final currencyCubit = context.read<CurrencyCubit>();
-    currencyCubit.reset();
+    // currencyCubit.reset();
+    // currencyCubit.updateAmountDirect(receiveCubit.state.savedInvoiceAmount);
+    // currencyCubit.updateAmount(receiveCubit.state.savedInvoiceAmount.toString());
+    if (currencyCubit.state.amount > 0) currencyCubit.convertAmtOnCurrencyChange();
 
     return showMaterialModalBottomSheet(
       context: context,
