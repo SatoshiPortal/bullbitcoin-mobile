@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -17,6 +18,8 @@ class ConversionAmt extends StatelessWidget {
     final defaultCurrency =
         context.select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
 
+    final isTestNet = context.select((NetworkCubit cubit) => cubit.state.testnet);
+
     var amt = '';
     var unit = '';
 
@@ -31,7 +34,7 @@ class ConversionAmt extends StatelessWidget {
     } else {
       if (defaultCurrency == null) return const SizedBox.shrink();
       unit = defaultCurrency.name;
-      amt = fiatAmt.toStringAsFixed(2);
+      amt = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
     }
 
     return Row(
