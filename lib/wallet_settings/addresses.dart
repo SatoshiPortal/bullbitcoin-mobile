@@ -185,6 +185,22 @@ class AddressesScreen extends HookWidget {
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],
+            if (addresses
+                .where(
+                  (element) =>
+                      element.kind == AddressKind.change && element.state == AddressStatus.unused,
+                )
+                .isNotEmpty) ...[
+              const BBText.title(
+                'Unused',
+              ),
+              const Gap(8),
+              for (var i = 0; i < addresses.length; i++)
+                if (addresses[i].kind == AddressKind.change &&
+                    addresses[i].state == AddressStatus.unused)
+                  AddressItem(address: addresses[i]),
+              const Gap(16),
+            ],
           ],
           const Gap(100),
         ],

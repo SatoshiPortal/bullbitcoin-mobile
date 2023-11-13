@@ -105,6 +105,14 @@ class WalletAddress {
               state: AddressStatus.unused,
             ),
           );
+        else {
+          // migration for existing users so their change index is updated
+          // index used to be null
+          final index =
+              wallet.myAddressBook.indexWhere((element) => element.address == address.address);
+          final change = addresses.removeAt(index);
+          addresses.add(change.copyWith(index: i));
+        }
       }
       // Future.delayed(const Duration(milliseconds: 1600));
       addresses.sort((a, b) {
