@@ -23,11 +23,11 @@ class WalletSensitiveTx {
     required bdk.Wallet pubWallet,
   }) async {
     try {
-      final txBuilder = bdk.BumpFeeTxBuilder(
+      var txBuilder = bdk.BumpFeeTxBuilder(
         txid: tx.txid,
         feeRate: feeRate,
       );
-
+      txBuilder = txBuilder.enableRbf();
       final txResult = await txBuilder.finish(pubWallet);
       final signedPSBT = await signingWallet.sign(psbt: txResult.psbt);
 
