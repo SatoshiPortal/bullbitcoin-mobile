@@ -303,6 +303,124 @@ class WalletTx {
     }
   }
 
+  Future<(Wallet?, Err?)> getTransactionsNew({
+    required Wallet wallet,
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final storedTxs = wallet.transactions;
+      final unsignedTxs = wallet.unsignedTxs;
+      final bdkNetwork = wallet.getBdkNetwork();
+      final txs = await bdkWallet.listTransactions(true);
+      // final x = bdk.TxBuilderResult();
+
+      if (txs.isEmpty) return (wallet, null);
+
+      final List<Transaction> transactions = [];
+
+      for (final tx in txs) {
+        String? label;
+
+        final storedTxIdx = storedTxs.indexWhere((t) => t.txid == tx.txid);
+        final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
+
+        Transaction? storedTx;
+        if (storedTxIdx != -1) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
+        if (idxUnsignedTx != -1) {
+          if (tx.txid == unsignedTxs[idxUnsignedTx].txid) unsignedTxs.removeAt(idxUnsignedTx);
+        }
+        var txObj = Transaction(
+          txid: tx.txid,
+          received: tx.received,
+          sent: tx.sent,
+          fee: tx.fee ?? 0,
+          height: tx.confirmationTime?.height ?? 0,
+          timestamp: tx.confirmationTime?.timestamp ?? 0,
+          bdkTx: tx,
+          rbfEnabled: storedTx?.rbfEnabled ?? false,
+          outAddrs: storedTx?.outAddrs ?? [],
+        );
+
+        final SerializedTx sTx = SerializedTx.fromJson(
+          jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
+        );
+
+        const hexDecoder = HexDecoder();
+        final outputs = sTx.output;
+
+        for (final output in outputs!) {
+          final scriptPubKey = await bdk.Script.create(
+            hexDecoder.convert(output.scriptPubkey!) as Uint8List,
+          );
+
+          final addressStruct = await bdk.Address.fromScript(
+            scriptPubKey,
+            bdkNetwork,
+          );
+          // search for addressStruct in addressBooks
+
+          final existing = wallet.findAddressInWallet(addressStruct.toString());
+          if (existing != null) {
+            txObj.outAddrs.add(existing);
+          } else {
+            if (txObj.isReceived()) {
+              // AddressKind.deposit should exist in the addressBook
+              // may not be applicable for payjoin
+            } else {
+              // AddressKind.external wont exist for imported wallets and must be added here
+              // AddressKind.change should exist in the addressBook
+              final (externalAddress, _) = await WalletAddress().addAddressToWallet(
+                address: (null, addressStruct.toString()),
+                wallet: wallet,
+                spentTxId: tx.txid,
+                kind: AddressKind.external,
+                state: AddressStatus.used,
+                spendable: false,
+                label: label,
+              );
+              txObj.outAddrs.add(externalAddress);
+            }
+          }
+        }
+
+        if (txObj.isReceived()) {
+          final recipients = txObj.outAddrs
+              .where((element) => element.kind == AddressKind.deposit)
+              .toList()
+              .map((e) => e.address);
+          // may break for payjoin
+
+          txObj = txObj.copyWith(
+            toAddress: recipients.toString(),
+          );
+        } else {
+          final recipients = txObj.outAddrs
+              .where((element) => element.kind == AddressKind.external)
+              .toList()
+              .map((e) => e.address);
+          txObj = txObj.copyWith(
+            toAddress: recipients.toString(),
+          );
+        }
+
+        if (storedTxIdx != -1 &&
+            storedTxs[storedTxIdx].label != null &&
+            storedTxs[storedTxIdx].label!.isNotEmpty) label = storedTxs[storedTxIdx].label;
+
+        transactions.add(txObj.copyWith(label: label));
+      }
+
+      final w = wallet.copyWith(
+        transactions: transactions,
+        unsignedTxs: unsignedTxs,
+      );
+
+      return (w, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
   Future<((Transaction?, int?, String)?, Err?)> buildTx({
     required Wallet wallet,
     required bdk.Wallet pubWallet,

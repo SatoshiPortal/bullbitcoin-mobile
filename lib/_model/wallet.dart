@@ -151,8 +151,15 @@ class Wallet with _$Wallet {
     for (final address in myAddressBook)
       for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
         if (utxo.outpoint.txid == txid) return address.address; // this will return change
-
     return '';
+  }
+
+  Address? findAddressInWallet(String address) {
+    final completeAddressBook = [...externalAddressBook ?? [], ...myAddressBook];
+    for (final existingAddress in completeAddressBook) {
+      if (address == existingAddress.address) return existingAddress;
+    }
+    return null;
   }
 
   Address? getAddressFromAddresses(String txid, {bool isSend = false, AddressKind? kind}) {
