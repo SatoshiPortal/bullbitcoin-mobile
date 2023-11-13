@@ -79,9 +79,9 @@ class SendCubit extends Cubit<SendState> {
     super.close();
   }
 
-  void loadAddressesAndBalances() {
-    walletBloc.add(GetBalance());
-  }
+  // void loadAddressesAndBalances() {
+  //   walletBloc.add(GetBalance());
+  // }
 
   void updateAddress(String address) {
     try {

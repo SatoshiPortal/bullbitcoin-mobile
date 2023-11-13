@@ -304,6 +304,15 @@ class Wallet with _$Wallet {
   int txReceivedCount() {
     return transactions.where((tx) => tx.isReceived()).toList().length;
   }
+
+  int frozenUTXOTotal() {
+    final addresses = <Address>[...myAddressBook, ...externalAddressBook ?? <Address>[]];
+    final unspendable = addresses.where((_) => !_.spendable).toList();
+    final totalFrozen = unspendable.fold<int>(0, (value, _) => value + _.calculateBalance());
+    return totalFrozen;
+  }
+
+  int balanceWithoutFrozenUTXOs() => (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
 }
 
 @freezed
