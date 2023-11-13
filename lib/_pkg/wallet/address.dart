@@ -34,6 +34,20 @@ class WalletAddress {
     }
   }
 
+  Future<(({int index, String address})?, Err?)> lastUnusedChange({
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final address = await bdkWallet.getInternalAddress(
+        addressIndex: const bdk.AddressIndex.lastUnused(),
+      );
+
+      return ((index: address.index, address: address.address), null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
   (Address?, Err?) rotateAddress(Wallet wallet, int currentIndex) {
     // Filter out addresses with AddressStatus.unused and then sort them by index
     final List<Address> sortedAddresses =
@@ -128,6 +142,52 @@ class WalletAddress {
         w = wallet.copyWith(
           myAddressBook: addresses,
         );
+      return (w, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(Wallet?, Err?)> loadChangeAddresses({
+    required Wallet wallet,
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final addressLastUnused = await bdkWallet.getInternalAddress(
+        addressIndex: const bdk.AddressIndex.lastUnused(),
+      );
+
+      final List<Address> addresses = [...wallet.myAddressBook];
+
+      for (var i = 0; i <= addressLastUnused.index; i++) {
+        final address = await bdkWallet.getInternalAddress(
+          addressIndex: bdk.AddressIndex.peek(index: i),
+        );
+        final contain = wallet.myAddressBook.where(
+          (element) => element.address == address.address,
+        );
+        if (contain.isEmpty)
+          addresses.add(
+            Address(
+              address: address.address,
+              index: address.index,
+              kind: AddressKind.change,
+              state: AddressStatus.unused,
+            ),
+          );
+      }
+      // Future.delayed(const Duration(milliseconds: 1600));
+      addresses.sort((a, b) {
+        final int indexA = a.index ?? 0;
+        final int indexB = b.index ?? 0;
+        return indexB.compareTo(indexA);
+      });
+
+      Wallet w;
+
+      w = wallet.copyWith(
+        myAddressBook: addresses,
+      );
       return (w, null);
     } catch (e) {
       return (null, Err(e.toString()));
