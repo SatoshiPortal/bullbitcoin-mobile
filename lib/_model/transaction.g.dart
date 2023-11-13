@@ -6,8 +6,8 @@ part of 'transaction.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
-    _$TransactionImpl(
+_$_Transaction _$$_TransactionFromJson(Map<String, dynamic> json) =>
+    _$_Transaction(
       timestamp: json['timestamp'] as int,
       txid: json['txid'] as String,
       received: json['received'] as int?,
@@ -17,7 +17,7 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
       label: json['label'] as String?,
       toAddress: json['toAddress'] as String?,
       psbt: json['psbt'] as String?,
-      rbfEnabled: json['rbfEnabled'] as bool? ?? false,
+      rbfEnabled: json['rbfEnabled'] as bool? ?? true,
       oldTx: json['oldTx'] as bool? ?? false,
       broadcastTime: json['broadcastTime'] as int?,
       outAddrs: (json['outAddrs'] as List<dynamic>?)
@@ -26,7 +26,7 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
           const [],
     );
 
-Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
+Map<String, dynamic> _$$_TransactionToJson(_$_Transaction instance) =>
     <String, dynamic>{
       'timestamp': instance.timestamp,
       'txid': instance.txid,

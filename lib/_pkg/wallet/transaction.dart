@@ -506,7 +506,7 @@ class WalletTx {
         sent: txDetails.sent,
         fee: feeAmt ?? 0,
         height: txDetails.confirmationTime?.height,
-        timestamp: txDetails.confirmationTime?.timestamp ?? DateTime.now().microsecondsSinceEpoch,
+        timestamp: txDetails.confirmationTime?.timestamp ?? 0,
         label: note,
         toAddress: address,
         outAddrs: outAddrs,
@@ -566,10 +566,18 @@ class WalletTx {
         label: note,
         toAddress: address,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,
+        oldTx: false,
       );
 
       final txs = wallet.transactions.toList();
-      txs.add(newTx);
+      // final txs = walletBloc.state.wallet!.transactions.toList();
+      final idx = txs.indexWhere((element) => element.txid == newTx.txid);
+      if (idx != -1) {
+        txs.removeAt(idx);
+        txs.insert(idx, newTx);
+      } else
+        txs.add(newTx);
+      // txs.add(newTx);
       final w = wallet.copyWith(transactions: txs);
 
       return ((w, txid), null);

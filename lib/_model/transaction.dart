@@ -20,7 +20,7 @@ class Transaction with _$Transaction {
     String? label,
     String? toAddress,
     String? psbt,
-    @Default(false) bool rbfEnabled,
+    @Default(true) bool rbfEnabled,
     @Default(false) bool oldTx,
     int? broadcastTime,
     // String? serializedTx,

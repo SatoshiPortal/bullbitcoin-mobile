@@ -259,7 +259,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       emit(
         state.copyWith(
           buildingTx: false,
-          errBuildingTx: err.toString(),
+          errBuildingTx: errrr.toString(),
         ),
       );
       return;
@@ -309,7 +309,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final (w, txid) = wtxid!;
 
-    var (_, updatedWallet) = await walletAddress.addAddressToWallet(
+    final (_, updatedWallet) = await walletAddress.addAddressToWallet(
       address: (null, tx.toAddress!),
       wallet: w,
       label: tx.label,
@@ -318,15 +318,15 @@ class TransactionCubit extends Cubit<TransactionState> {
       state: AddressStatus.used,
     );
 
-    final txs = walletBloc.state.wallet!.transactions.toList();
-    final idx = txs.indexWhere((element) => element.txid == tx.txid);
-    if (idx != -1) {
-      txs.removeAt(idx);
-      txs.insert(idx, state.tx.copyWith(oldTx: true));
-    } else
-      txs.add(state.tx.copyWith(oldTx: true));
+    // final txs = walletBloc.state.wallet!.transactions.toList();
+    // final idx = txs.indexWhere((element) => element.txid == tx.txid);
+    // if (idx != -1) {
+    //   txs.removeAt(idx);
+    //   txs.insert(idx, state.tx.copyWith(oldTx: true));
+    // } else
+    //   txs.add(state.tx.copyWith(oldTx: true));
 
-    updatedWallet = updatedWallet.copyWith(transactions: txs);
+    // updatedWallet = updatedWallet.copyWith(transactions: txs);
 
     walletBloc.add(
       UpdateWallet(
