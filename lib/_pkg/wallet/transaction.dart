@@ -484,6 +484,7 @@ class WalletTx {
             state: AddressStatus.used,
             highestPreviousBalance: amount,
             label: note ?? '',
+            spendable: false,
           );
         } else {
           return Address(
