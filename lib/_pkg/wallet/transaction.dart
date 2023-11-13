@@ -11,7 +11,7 @@ import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:hex/hex.dart';
 
 class WalletTx {
-  Transaction addOrUpdateAddressState(Address newAddress, Transaction tx) {
+  Transaction addOutputAddresses(Address newAddress, Transaction tx) {
     final outAddrs = List<Address>.from(tx.outAddrs);
     final index = outAddrs.indexWhere(
       (address) => address == newAddress,
@@ -172,7 +172,7 @@ class WalletTx {
             toAddress: externalAddress != null ? externalAddress.address : '',
             // fromAddress: '',
           );
-          if (externalAddress != null) txObj = addOrUpdateAddressState(externalAddress, txObj);
+          if (externalAddress != null) txObj = addOutputAddresses(externalAddress, txObj);
           //
           //
           // HANDLE CHANGE
@@ -226,7 +226,7 @@ class WalletTx {
               // print(e);
             }
           }
-          if (changeAddress != null) txObj = addOrUpdateAddressState(changeAddress, txObj);
+          if (changeAddress != null) txObj = addOutputAddresses(changeAddress, txObj);
         } else if (txObj.isReceived()) {
           depositAddress = wallet.getAddressFromAddresses(
             txObj.txid,
@@ -278,7 +278,7 @@ class WalletTx {
             // fromAddress: '',
           );
           if (depositAddress != null) {
-            final txObj2 = addOrUpdateAddressState(depositAddress, txObj);
+            final txObj2 = addOutputAddresses(depositAddress, txObj);
             txObj = txObj2.copyWith(outAddrs: txObj2.outAddrs);
           }
         }
@@ -341,6 +341,10 @@ class WalletTx {
           outAddrs: storedTx?.outAddrs ?? [],
         );
 
+        if (storedTxIdx != -1 &&
+            storedTxs[storedTxIdx].label != null &&
+            storedTxs[storedTxIdx].label!.isNotEmpty) label = storedTxs[storedTxIdx].label;
+
         final SerializedTx sTx = SerializedTx.fromJson(
           jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
         );
@@ -357,11 +361,16 @@ class WalletTx {
             scriptPubKey,
             bdkNetwork,
           );
-          // search for addressStruct in addressBooks
 
           final existing = wallet.findAddressInWallet(addressStruct.toString());
           if (existing != null) {
-            txObj.outAddrs.add(existing);
+            // txObj.outAddrs.add(existing);
+            if (existing.label == null && existing.label!.isEmpty)
+              txObj = addOutputAddresses(existing.copyWith(label: label), txObj);
+            else {
+              label ??= existing.label;
+              txObj = addOutputAddresses(existing, txObj);
+            }
           } else {
             if (txObj.isReceived()) {
               // AddressKind.deposit should exist in the addressBook
@@ -378,7 +387,7 @@ class WalletTx {
                 spendable: false,
                 label: label,
               );
-              txObj.outAddrs.add(externalAddress);
+              txObj = addOutputAddresses(externalAddress, txObj);
             }
           }
         }
@@ -402,10 +411,6 @@ class WalletTx {
             toAddress: recipients.toString(),
           );
         }
-
-        if (storedTxIdx != -1 &&
-            storedTxs[storedTxIdx].label != null &&
-            storedTxs[storedTxIdx].label!.isNotEmpty) label = storedTxs[storedTxIdx].label;
 
         transactions.add(txObj.copyWith(label: label));
       }
