@@ -71,9 +71,11 @@ class NetworkFeesState with _$NetworkFeesState {
 
   String calculateFiatPriceForFees({
     required int feeRate,
+    required bool isTestnet,
     Currency? selectedCurrency,
   }) {
     if (selectedCurrency == null || selectedCurrency.price == null) return '';
+    if (isTestnet) return '~ 0 ${selectedCurrency.shortName}';
 
     final btcAmt = (140 * feeRate) / 100000000;
     final amt = (btcAmt * selectedCurrency.price!).toStringAsFixed(2);

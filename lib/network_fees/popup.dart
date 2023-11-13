@@ -23,6 +23,8 @@ class SelectFeesButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loading = context.select((NetworkFeesCubit _) => _.state.loadingFees);
+
     var txt = '';
     if (!fromSettings)
       txt = context.select((NetworkFeesCubit _) => _.state.feeSendButtonText());
@@ -32,6 +34,7 @@ class SelectFeesButton extends StatelessWidget {
       return BBButton.textWithStatusAndRightArrow(
         label: 'Default fee rate',
         statusText: txt,
+        loading: loading,
         onPressed: () {
           SelectFeesPopUp.openSelectFees(context, fromSettings);
         },
@@ -290,11 +293,13 @@ class SelectFeesItem extends StatelessWidget {
     final currency = context.select((CurrencyCubit x) => x.state.currency);
 
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
-    if (isTestnet) fee = 0;
 
     final fiatRateStr = context.select(
-      (NetworkFeesCubit _) =>
-          _.state.calculateFiatPriceForFees(feeRate: fee, selectedCurrency: currency),
+      (NetworkFeesCubit _) => _.state.calculateFiatPriceForFees(
+        feeRate: fee,
+        selectedCurrency: currency,
+        isTestnet: isTestnet,
+      ),
     );
 
     return GestureDetector(
