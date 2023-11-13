@@ -172,6 +172,7 @@ class SendCubit extends Cubit<SendState> {
 
   void _updateShowSend() {
     final amount = currencyCubit.state.amount;
+    emit(state.copyWith(errSending: ''));
     if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
       return;
@@ -184,6 +185,8 @@ class SendCubit extends Cubit<SendState> {
     } else {
       final hasEnoughCoinns = state.selectedAddressesHasEnoughCoins(amount);
       emit(state.copyWith(showSendButton: hasEnoughCoinns));
+      if (!hasEnoughCoinns)
+        emit(state.copyWith(errSending: 'Selected UTXOs do not cover Transaction Amount & Fees'));
     }
   }
 
