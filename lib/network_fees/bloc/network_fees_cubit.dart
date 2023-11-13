@@ -80,7 +80,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     if (feesInInt == null) {
       emit(
         state.copyWith(
-          tempFees: 000,
+          tempFees: 0,
           // tempSelectedFeesOption: 2,
         ),
       );
@@ -128,6 +128,8 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   }
 
   void confirmFeeClicked() {
+    // final minFees = state.feesList!.last;
+    final max = state.feesList!.first * 2;
     if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
     if (state.errLoadingFees.isNotEmpty) return;
     if (state.tempSelectedFeesOption != null) {
@@ -135,7 +137,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
         print('');
       } else {
         emit(state.copyWith(selectedFeesOption: state.tempSelectedFeesOption!, fees: null));
-        if (state.tempSelectedFeesOption == 4 && state.tempFees != null && state.tempFees! <= 50)
+        if (state.tempSelectedFeesOption == 4 && state.tempFees != null && state.tempFees! <= max)
           emit(state.copyWith(fees: state.tempFees));
       }
     }
