@@ -194,6 +194,7 @@ class WalletAddress {
             address: addressStr,
             kind: AddressKind.change,
             state: AddressStatus.active,
+            highestPreviousBalance: unspent.txout.value,
           ),
         );
 
@@ -215,6 +216,7 @@ class WalletAddress {
           utxos: utxos,
           // label: isRelated ? address.label : txLabel,
           state: AddressStatus.active,
+          highestPreviousBalance: unspent.txout.value,
         );
 
         if (updated.calculateBalance() > 0 &&
