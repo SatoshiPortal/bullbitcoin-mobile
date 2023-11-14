@@ -135,6 +135,8 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
+  void updateAddressError(String err) => emit(state.copyWith(errScanningAddress: err));
+
   void updateNote(String note) {
     emit(state.copyWith(note: note));
   }
