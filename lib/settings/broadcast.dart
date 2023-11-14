@@ -131,8 +131,6 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final BroadcastTxCubit cubit = context.select((BroadcastTxCubit cubit) => cubit);
-
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 16,
@@ -147,7 +145,9 @@ class _Screen extends StatelessWidget {
             listenWhen: (previous, current) =>
                 previous.hasErr() == false && current.hasErr() == true,
             listener: (context, state) async {
-              showErrorAlert(context, state.getErrors(), cubit);
+              showErrorAlert(context, state.getErrors(), () {
+                context.read<BroadcastTxCubit>().clearErrors();
+              });
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

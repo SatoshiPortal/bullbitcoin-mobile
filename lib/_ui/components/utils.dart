@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
 
-// TODO: How to make 3rd param as Cubit and still call clearErrors()
-Function showErrorAlert = (BuildContext context, String err, dynamic cubit) {
+void showErrorAlert(BuildContext context, String err, [Function? onClose]) {
   SchedulerBinding.instance.addPostFrameCallback((_) {
     Alert.openPopUp(
       context,
@@ -20,8 +19,10 @@ Function showErrorAlert = (BuildContext context, String err, dynamic cubit) {
                 label: 'Okay',
                 filled: true,
                 onPressed: () {
-                  cubit.clearErrors();
                   context.pop();
+                  if (onClose != null) {
+                    onClose();
+                  }
                 },
               ),
             ),
@@ -30,4 +31,4 @@ Function showErrorAlert = (BuildContext context, String err, dynamic cubit) {
       ),
     );
   });
-};
+}
