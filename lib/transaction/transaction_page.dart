@@ -30,6 +30,7 @@ import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -383,10 +384,12 @@ class BumpFeesPopup extends StatelessWidget {
         child: BlocListener<TransactionCubit, TransactionState>(
           listenWhen: (previous, current) => previous.sentTx != current.sentTx,
           listener: (context, state) async {
-            if (state.sentTx)
+            if (state.sentTx) {
+              await Future.delayed(2.seconds);
               context
                 ..pop()
                 ..pop();
+            }
           },
           child: const PopUpBorder(
             child: BumpFeesPopup(),
@@ -400,6 +403,7 @@ class BumpFeesPopup extends StatelessWidget {
   Widget build(BuildContext context) {
     // final amt = context.select((TransactionCubit x) => x.state.feeRate?.toString() ?? '');
     // final built = context.select((TransactionCubit x) => x.state.updatedTx != null);
+    final sent = context.select((TransactionCubit x) => x.state.sentTx);
     final sending = context.select((TransactionCubit x) => x.state.sendingTx);
     final building = context.select((TransactionCubit x) => x.state.buildingTx);
     final loading = building || sending;
@@ -414,42 +418,57 @@ class BumpFeesPopup extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBHeader.popUpCenteredText(
-            isLeft: true,
-            text: 'Bump Fees',
-            onBack: () {
-              context.pop();
-            },
-          ),
-          // const Gap(32),
-          // const BBText.title('Enter Fees'),
-          // const Gap(4),
-          const FeesSelectionOptions(),
-          // BBAmountInput(
-          //   hint: 'update sats/vb',
-          //   disabled: false,
-          //   btcFormatting: false,
-          //   isSats: true,
-          //   onChanged: (e) {
-          //     context.read<TransactionCubit>().updateFeeRate(e);
-          //   },
-          //   value: amt,
-          // ),
-          // const Gap(32),
-          if (errr.isNotEmpty) BBText.errorSmall(errr),
-          const Gap(8),
-          BBButton.bigRed(
-            label: 'Bump Fees',
-            // label: built ? 'Send Transaction' : 'Build Transaction',
-            loading: loading,
-            disabled: loading,
-            onPressed: () {
-              // if (!built)
-              context.read<TransactionCubit>().buildTx();
-              // else
-              //   context.read<TransactionCubit>().sendTx();
-            },
-          ),
+          if (sent) ...[
+            const BBHeader.popUpCenteredText(isLeft: true, text: 'Bump Fees'),
+            const Gap(32),
+            const Center(
+              child: FaIcon(
+                FontAwesomeIcons.circleCheck,
+                size: 64,
+                color: Colors.green,
+              ),
+            ).animate(delay: 100.ms).scale().fadeIn(),
+            const Center(child: BBText.title('Fees Bumped Successfully')).animate().fadeIn(),
+            const Gap(32),
+            const Center(child: BBText.bodySmall('You will be redirected in 2 seconds')),
+          ] else ...[
+            BBHeader.popUpCenteredText(
+              isLeft: true,
+              text: 'Bump Fees',
+              onBack: () {
+                context.pop();
+              },
+            ),
+            // const Gap(32),
+            // const BBText.title('Enter Fees'),
+            // const Gap(4),
+            const FeesSelectionOptions(),
+            // BBAmountInput(
+            //   hint: 'update sats/vb',
+            //   disabled: false,
+            //   btcFormatting: false,
+            //   isSats: true,
+            //   onChanged: (e) {
+            //     context.read<TransactionCubit>().updateFeeRate(e);
+            //   },
+            //   value: amt,
+            // ),
+            // const Gap(32),
+            if (errr.isNotEmpty) BBText.errorSmall(errr),
+            const Gap(8),
+            BBButton.bigRed(
+              label: 'Bump Fees',
+              // label: built ? 'Send Transaction' : 'Build Transaction',
+              loading: loading,
+              disabled: loading || sent,
+              onPressed: () {
+                // if (!built)
+                context.read<TransactionCubit>().buildTx();
+                // else
+                //   context.read<TransactionCubit>().sendTx();
+              },
+            ),
+          ],
           const Gap(80),
         ],
       ),
