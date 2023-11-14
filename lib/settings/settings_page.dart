@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/extensions.dart';
+import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -58,9 +59,9 @@ class _Screen extends StatelessWidget {
                 Gap(8),
                 DefaultRBFToggle(),
                 Gap(8),
-                ChangePin(),
-                Gap(8),
                 SelectFeesButton(fromSettings: true),
+                Gap(8),
+                ChangePin(),
                 Gap(8),
                 BroadCastButton(),
                 Gap(8),
@@ -74,10 +75,33 @@ class _Screen extends StatelessWidget {
                     isBold: true,
                   ),
                 ),
+                Gap(4),
+                SourceCodeButton(),
                 Gap(24),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class SourceCodeButton extends StatelessWidget {
+  const SourceCodeButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CenterLeft(
+      child: InkWell(
+        onTap: () {
+          const link = 'https://github.com/SatoshiPortal/bullbitcoin-mobile';
+          locator<Launcher>().launchApp(link);
+        },
+        child: const BBText.bodySmall(
+          'Source',
+          isBold: true,
+          isBlue: true,
         ),
       ),
     );
