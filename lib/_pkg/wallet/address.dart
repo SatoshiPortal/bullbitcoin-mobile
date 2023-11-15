@@ -6,62 +6,6 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletAddress {
-  Future<(({int index, String address})?, Err?)> newDeposit({
-    required bdk.Wallet bdkWallet,
-  }) async {
-    try {
-      final address = await bdkWallet.getAddress(
-        addressIndex: const bdk.AddressIndex.new(),
-      );
-
-      return ((index: address.index, address: address.address), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-
-  Future<(({int index, String address})?, Err?)> lastUnused({
-    required bdk.Wallet bdkWallet,
-  }) async {
-    try {
-      final address = await bdkWallet.getAddress(
-        addressIndex: const bdk.AddressIndex.lastUnused(),
-      );
-
-      return ((index: address.index, address: address.address), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-
-  (Address?, Err?) rotateAddress(Wallet wallet, int currentIndex) {
-    // Filter out addresses with AddressStatus.unused and then sort them by index
-    final List<Address> sortedAddresses =
-        List.from(wallet.myAddressBook.where((address) => address.state == AddressStatus.unused))
-          ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
-
-    // Find the index of the address with the current index
-    final int foundIndex = sortedAddresses.indexWhere((address) => address.index == currentIndex);
-
-    // If not found, throw an error or handle it accordingly
-    if (foundIndex == -1) {
-      // ignore: unnecessary_statements
-      return (
-        null,
-        Err(
-          'Wallet not synced. Sync wallet on home page to load more addresses.',
-        ),
-      );
-    }
-
-    // Get the next unused address. If it's the last unused address, wrap around to 0 index
-    if (foundIndex + 1 < sortedAddresses.length) {
-      return (sortedAddresses[foundIndex + 1], null);
-    } else {
-      return (sortedAddresses[0], null);
-    }
-  }
-
   Future<String?> getLabel({required Wallet wallet, required String address}) async {
     final addresses = wallet.myAddressBook;
 
@@ -129,8 +73,76 @@ class WalletAddress {
           myAddressBook: addresses,
         );
       return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while loading addresses',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
+
+  Future<(Wallet?, Err?)> loadChangeAddresses({
+    required Wallet wallet,
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final addressLastUnused = await bdkWallet.getInternalAddress(
+        addressIndex: const bdk.AddressIndex.lastUnused(),
+      );
+
+      final List<Address> addresses = [...wallet.myAddressBook];
+
+      for (var i = 0; i <= addressLastUnused.index; i++) {
+        final address = await bdkWallet.getInternalAddress(
+          addressIndex: bdk.AddressIndex.peek(index: i),
+        );
+        final contain = wallet.myAddressBook.where(
+          (element) => element.address == address.address,
+        );
+        if (contain.isEmpty)
+          addresses.add(
+            Address(
+              address: address.address,
+              index: address.index,
+              kind: AddressKind.change,
+              state: AddressStatus.unused,
+            ),
+          );
+        else {
+          // migration for existing users so their change index is updated
+          // index used to be null
+          final index =
+              wallet.myAddressBook.indexWhere((element) => element.address == address.address);
+          final change = addresses.removeAt(index);
+          addresses.add(change.copyWith(index: i));
+        }
+      }
+      // Future.delayed(const Duration(milliseconds: 1600));
+      addresses.sort((a, b) {
+        final int indexA = a.index ?? 0;
+        final int indexB = b.index ?? 0;
+        return indexB.compareTo(indexA);
+      });
+
+      Wallet w;
+
+      w = wallet.copyWith(
+        myAddressBook: addresses,
+      );
+      return (w, null);
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while loading addresses',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -161,8 +173,15 @@ class WalletAddress {
       );
 
       return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while generating new address',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -173,8 +192,15 @@ class WalletAddress {
       );
 
       return (address.address, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while getting address',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -204,6 +230,7 @@ class WalletAddress {
             address: addressStr,
             kind: AddressKind.change,
             state: AddressStatus.active,
+            highestPreviousBalance: unspent.txout.value,
           ),
         );
 
@@ -225,6 +252,7 @@ class WalletAddress {
           utxos: utxos,
           // label: isRelated ? address.label : txLabel,
           state: AddressStatus.active,
+          highestPreviousBalance: unspent.txout.value,
         );
 
         if (updated.calculateBalance() > 0 &&
@@ -239,8 +267,15 @@ class WalletAddress {
       final w = wallet.copyWith(myAddressBook: utxoUpdatedAddresses);
 
       return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while updating utxos',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 

@@ -12,8 +12,6 @@ import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/bottom_wallet_actions.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/_ui/wallet_card.dart';
-import 'package:bb_mobile/_ui/wallet_txs.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/locator.dart';
@@ -23,6 +21,8 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/wallet/wallet_card.dart';
+import 'package:bb_mobile/wallet/wallet_txs.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -188,11 +188,13 @@ class WalletScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const PositionedDirectional(
+              PositionedDirectional(
                 bottom: 0,
                 start: 0,
                 end: 0,
-                child: HomeActionButtons(),
+                child: HomeActionButtons(
+                  walletBloc: walletCubits.length == 1 ? walletCubits[0] : null,
+                ),
               ),
             ],
           ),
@@ -322,6 +324,7 @@ class HomeTopBar extends StatelessWidget {
         ),
         const Spacer(),
         IconButton(
+          key: UIKeys.importImportButton,
           color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
           icon: const Icon(
             FontAwesomeIcons.circlePlus,

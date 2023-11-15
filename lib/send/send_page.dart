@@ -12,6 +12,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_ui/barcode_scanner.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -208,12 +209,32 @@ class WalletBalance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balance =
-        context.select((WalletBloc cubit) => cubit.state.wallet?.fullBalance?.total ?? 0);
+    final totalFrozen =
+        context.select((WalletBloc cubit) => cubit.state.wallet?.frozenUTXOTotal() ?? 0);
 
-    final balStr = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(balance));
+    if (totalFrozen == 0) {
+      final balance =
+          context.select((WalletBloc cubit) => cubit.state.wallet?.fullBalance?.total ?? 0);
 
-    return BBText.body(balStr, isBold: true);
+      final balStr = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(balance));
+      return BBText.body(balStr, isBold: true);
+    } else {
+      final balanceWithoutFrozenUTXOs = context
+          .select((WalletBloc cubit) => cubit.state.wallet?.balanceWithoutFrozenUTXOs() ?? 0);
+      final balStr = context
+          .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(balanceWithoutFrozenUTXOs));
+      final frozenStr =
+          context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(totalFrozen));
+
+      return Column(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BBText.body(balStr, isBold: true),
+          const Gap(4),
+          BBText.bodySmall('Frozen Balance $frozenStr'),
+        ],
+      );
+    }
   }
 }
 
@@ -244,17 +265,17 @@ class _EnterAddressState extends State<EnterAddress> {
         color: context.colour.secondary,
       ),
       onRightTap: () {
-        context.read<SendCubit>().scanAddress();
-        // BarcodeScanner.openPopUp(
-        //   context,
-        //   (result) {
-        //     if (result.$2 != null) {
-        //       context.read<SendCubit>().updateAmountError(result.$2!.message);
-        //       return;
-        //     }
-        //     context.read<SendCubit>().updateAddress(result.$1!);
-        //   },
-        // );
+        // context.read<SendCubit>().scanAddress();
+        BarcodeScanner.openPopUp(
+          context,
+          (result) {
+            if (result.$2 != null) {
+              context.read<SendCubit>().updateAddressError(result.$2!.message);
+              return;
+            }
+            context.read<SendCubit>().updateAddress(result.$1!);
+          },
+        );
       },
       onChanged: (txt) {
         context.read<SendCubit>().updateAddress(txt);

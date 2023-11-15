@@ -79,9 +79,9 @@ class SendCubit extends Cubit<SendState> {
     super.close();
   }
 
-  void loadAddressesAndBalances() {
-    walletBloc.add(GetBalance());
-  }
+  // void loadAddressesAndBalances() {
+  //   walletBloc.add(GetBalance());
+  // }
 
   void updateAddress(String address) {
     try {
@@ -135,6 +135,8 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
+  void updateAddressError(String err) => emit(state.copyWith(errScanningAddress: err));
+
   void updateNote(String note) {
     emit(state.copyWith(note: note));
   }
@@ -172,6 +174,7 @@ class SendCubit extends Cubit<SendState> {
 
   void _updateShowSend() {
     final amount = currencyCubit.state.amount;
+    emit(state.copyWith(errSending: ''));
     if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
       return;
@@ -184,6 +187,8 @@ class SendCubit extends Cubit<SendState> {
     } else {
       final hasEnoughCoinns = state.selectedAddressesHasEnoughCoins(amount);
       emit(state.copyWith(showSendButton: hasEnoughCoinns));
+      if (!hasEnoughCoinns)
+        emit(state.copyWith(errSending: 'Selected UTXOs do not cover Transaction Amount & Fees'));
     }
   }
 

@@ -22,8 +22,6 @@ Future main({bool fromTest = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = BBlocObserver();
 
-  // DateFormat.in
-
   await setupLocator(fromTest: fromTest);
   final delegate = await Localise.getDelegate();
 

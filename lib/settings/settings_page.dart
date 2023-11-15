@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/extensions.dart';
+import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -7,7 +8,9 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/currency/dropdown.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/state.dart';
 import 'package:bb_mobile/network/popup.dart';
+import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/lighting.dart';
@@ -56,9 +59,9 @@ class _Screen extends StatelessWidget {
                 Gap(8),
                 DefaultRBFToggle(),
                 Gap(8),
-                ChangePin(),
-                Gap(8),
                 SelectFeesButton(fromSettings: true),
+                Gap(8),
+                ChangePin(),
                 Gap(8),
                 BroadCastButton(),
                 Gap(8),
@@ -72,10 +75,33 @@ class _Screen extends StatelessWidget {
                     isBold: true,
                   ),
                 ),
+                Gap(4),
+                SourceCodeButton(),
                 Gap(24),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class SourceCodeButton extends StatelessWidget {
+  const SourceCodeButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CenterLeft(
+      child: InkWell(
+        onTap: () {
+          const link = 'https://github.com/SatoshiPortal/bullbitcoin-mobile';
+          locator<Launcher>().launchApp(link);
+        },
+        child: const BBText.bodySmall(
+          'Source',
+          isBold: true,
+          isBlue: true,
         ),
       ),
     );
@@ -243,21 +269,27 @@ class TestNetButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final testnet = context.select((NetworkCubit _) => _.state.testnet);
 
-    return Row(
-      children: [
-        // const Gap(8),
-        const BBText.body(
-          'Testnet mode',
-        ),
-        const Spacer(),
-        Switch(
-          key: UIKeys.settingsTestnetSwitch,
-          value: testnet,
-          onChanged: (e) {
-            context.read<NetworkCubit>().toggleTestnet();
-          },
-        ),
-      ],
+    return BlocListener<NetworkCubit, NetworkState>(
+      listenWhen: (previous, current) => previous.testnet != current.testnet,
+      listener: (context, state) {
+        context.read<NetworkFeesCubit>().loadFees();
+      },
+      child: Row(
+        children: [
+          // const Gap(8),
+          const BBText.body(
+            'Testnet mode',
+          ),
+          const Spacer(),
+          Switch(
+            key: UIKeys.settingsTestnetSwitch,
+            value: testnet,
+            onChanged: (e) {
+              context.read<NetworkCubit>().toggleTestnet();
+            },
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,10 +1,10 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_wallet_actions.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
-import 'package:bb_mobile/_ui/wallet_card.dart';
-import 'package:bb_mobile/_ui/wallet_txs.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/wallet/wallet_card.dart';
+import 'package:bb_mobile/wallet/wallet_txs.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

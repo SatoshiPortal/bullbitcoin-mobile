@@ -16,8 +16,15 @@ class WalletNames {
       }
       final walletNames = wallets!.map((wallet) => wallet.name!).toList();
       return (walletNames, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while getting wallet names',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 }

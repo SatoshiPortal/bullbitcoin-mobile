@@ -15,8 +15,15 @@ class WalletSensitiveCreate {
       final mneList = mne.asString().split(' ');
 
       return (mneList, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while creating mnemonic',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -41,8 +48,15 @@ class WalletSensitiveCreate {
       final fgnr = fingerPrintFromXKeyDesc(edesc);
 
       return (fgnr, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while creating fingerprint',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -62,8 +76,15 @@ class WalletSensitiveCreate {
         network: network,
       );
       return (seed, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while creating seed',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -411,8 +432,15 @@ class WalletSensitiveCreate {
       );
 
       return (bdkWallet, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while loading wallet',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 }

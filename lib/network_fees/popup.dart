@@ -1,9 +1,10 @@
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
-import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/state.dart';
 import 'package:bb_mobile/styles.dart';
@@ -22,6 +23,8 @@ class SelectFeesButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loading = context.select((NetworkFeesCubit _) => _.state.loadingFees);
+
     var txt = '';
     if (!fromSettings)
       txt = context.select((NetworkFeesCubit _) => _.state.feeSendButtonText());
@@ -31,6 +34,7 @@ class SelectFeesButton extends StatelessWidget {
       return BBButton.textWithStatusAndRightArrow(
         label: 'Default fee rate',
         statusText: txt,
+        loading: loading,
         onPressed: () {
           SelectFeesPopUp.openSelectFees(context, fromSettings);
         },
@@ -288,9 +292,14 @@ class SelectFeesItem extends StatelessWidget {
 
     final currency = context.select((CurrencyCubit x) => x.state.currency);
 
+    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
+
     final fiatRateStr = context.select(
-      (NetworkFeesCubit _) =>
-          _.state.calculateFiatPriceForFees(feeRate: fee, selectedCurrency: currency),
+      (NetworkFeesCubit _) => _.state.calculateFiatPriceForFees(
+        feeRate: fee,
+        selectedCurrency: currency,
+        isTestnet: isTestnet,
+      ),
     );
 
     return GestureDetector(

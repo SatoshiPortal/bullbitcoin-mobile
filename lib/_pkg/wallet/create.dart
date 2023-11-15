@@ -240,8 +240,15 @@ class WalletCreate {
       wallet = wallet.copyWith(name: wallet.defaultNameString());
 
       return (wallet, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while creating wallet',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -315,8 +322,15 @@ class WalletCreate {
       );
 
       return (wallet, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while creating wallet',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -351,8 +365,15 @@ class WalletCreate {
       );
 
       return (bdkWallet, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while creating wallet',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 }

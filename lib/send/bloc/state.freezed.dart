@@ -204,11 +204,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
 }
 
 /// @nodoc
-abstract class _$$SendStateImplCopyWith<$Res>
-    implements $SendStateCopyWith<$Res> {
-  factory _$$SendStateImplCopyWith(
-          _$SendStateImpl value, $Res Function(_$SendStateImpl) then) =
-      __$$SendStateImplCopyWithImpl<$Res>;
+abstract class _$$_SendStateCopyWith<$Res> implements $SendStateCopyWith<$Res> {
+  factory _$$_SendStateCopyWith(
+          _$_SendState value, $Res Function(_$_SendState) then) =
+      __$$_SendStateCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -238,11 +237,11 @@ abstract class _$$SendStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$SendStateImplCopyWithImpl<$Res>
-    extends _$SendStateCopyWithImpl<$Res, _$SendStateImpl>
-    implements _$$SendStateImplCopyWith<$Res> {
-  __$$SendStateImplCopyWithImpl(
-      _$SendStateImpl _value, $Res Function(_$SendStateImpl) _then)
+class __$$_SendStateCopyWithImpl<$Res>
+    extends _$SendStateCopyWithImpl<$Res, _$_SendState>
+    implements _$$_SendStateCopyWith<$Res> {
+  __$$_SendStateCopyWithImpl(
+      _$_SendState _value, $Res Function(_$_SendState) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -269,7 +268,7 @@ class __$$SendStateImplCopyWithImpl<$Res>
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
   }) {
-    return _then(_$SendStateImpl(
+    return _then(_$_SendState(
       address: null == address
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
@@ -356,8 +355,8 @@ class __$$SendStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$SendStateImpl extends _SendState {
-  const _$SendStateImpl(
+class _$_SendState extends _SendState {
+  const _$_SendState(
       {this.address = '',
       this.note = '',
       this.scanningAddress = false,
@@ -455,7 +454,7 @@ class _$SendStateImpl extends _SendState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SendStateImpl &&
+            other is _$_SendState &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.note, note) || other.note == note) &&
             (identical(other.scanningAddress, scanningAddress) ||
@@ -519,8 +518,8 @@ class _$SendStateImpl extends _SendState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>
-      __$$SendStateImplCopyWithImpl<_$SendStateImpl>(this, _$identity);
+  _$$_SendStateCopyWith<_$_SendState> get copyWith =>
+      __$$_SendStateCopyWithImpl<_$_SendState>(this, _$identity);
 }
 
 abstract class _SendState extends SendState {
@@ -544,7 +543,7 @@ abstract class _SendState extends SendState {
       final String errAddresses,
       final bool signed,
       final String? psbtSigned,
-      final int? psbtSignedFeeAmount}) = _$SendStateImpl;
+      final int? psbtSignedFeeAmount}) = _$_SendState;
   const _SendState._() : super._();
 
   @override
@@ -589,6 +588,6 @@ abstract class _SendState extends SendState {
   int? get psbtSignedFeeAmount;
   @override
   @JsonKey(ignore: true)
-  _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>
+  _$$_SendStateCopyWith<_$_SendState> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -5,8 +5,8 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
-import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -131,7 +131,7 @@ class AddressDetails extends StatelessWidget {
           _DetailRow(
             text: amountStr,
             onTap: () {
-              // CreateInvoice.openPopUp(context);
+              CreateInvoice.openPopUp(context);
             },
             title: 'Amount Request',
           ),
@@ -140,7 +140,7 @@ class AddressDetails extends StatelessWidget {
           _DetailRow(
             text: description,
             onTap: () {
-              // CreateInvoice.openPopUp(context);
+              CreateInvoice.openPopUp(context);
             },
             title: 'Public Description',
           ),
@@ -167,10 +167,14 @@ class _DetailRow extends StatelessWidget {
             BBText.body(text, isBold: true),
             const Gap(4),
             IconButton(
+              iconSize: 16,
               onPressed: () {
                 onTap();
               },
-              icon: const FaIcon(FontAwesomeIcons.penToSquare),
+              icon: FaIcon(
+                FontAwesomeIcons.penToSquare,
+                color: context.colour.secondary,
+              ),
             ),
           ],
         ),
@@ -252,10 +256,19 @@ class QRDisplay extends StatelessWidget {
     final address = context.select((ReceiveCubit x) => x.state.getQRStr());
 
     return Center(
-      child: ColoredBox(
-        color: Colors.white,
-        child: QrImageView(
-          data: address,
+      child: GestureDetector(
+        onTap: () async {
+          await Clipboard.setData(ClipboardData(text: address));
+          SystemSound.play(SystemSoundType.click);
+          HapticFeedback.selectionClick();
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+        },
+        child: ColoredBox(
+          color: Colors.white,
+          child: QrImageView(
+            data: address,
+          ),
         ),
       ),
     );
@@ -331,7 +344,10 @@ class CreateInvoice extends StatelessWidget {
   static Future openPopUp(BuildContext context) async {
     final receiveCubit = context.read<ReceiveCubit>();
     final currencyCubit = context.read<CurrencyCubit>();
-    currencyCubit.reset();
+    // currencyCubit.reset();
+    // currencyCubit.updateAmountDirect(receiveCubit.state.savedInvoiceAmount);
+    // currencyCubit.updateAmount(receiveCubit.state.savedInvoiceAmount.toString());
+    if (currencyCubit.state.amount > 0) currencyCubit.convertAmtOnCurrencyChange();
 
     return showMaterialModalBottomSheet(
       context: context,

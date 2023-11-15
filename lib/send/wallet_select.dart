@@ -1,11 +1,11 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/_ui/wallet_card.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/wallet/wallet_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -125,14 +125,14 @@ class SendAppBar extends StatelessWidget {
     return BBAppBar(
       text: 'Send Bitcoin',
       onBack: () {
-        final walletNotSelected = context.read<SelectSendWalletStep>().state.selectWallet;
+        // final walletNotSelected = context.read<SelectSendWalletStep>().state.selectWallet;
 
-        if (walletNotSelected) {
-          context.pop();
-          return;
-        }
+        // if (walletNotSelected) {
+        context.pop();
+        //   return;
+        // }
 
-        context.read<SelectSendWalletStep>().goBack();
+        // context.read<SelectSendWalletStep>().goBack();
       },
     );
   }

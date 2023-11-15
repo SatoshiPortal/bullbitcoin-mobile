@@ -59,13 +59,6 @@ class ImportWalletCubit extends Cubit<ImportState> {
   void backClicked() {
     switch (state.importStep) {
       case ImportSteps.import12Words:
-        reset();
-        clearErrors();
-        emit(
-          state.copyWith(
-            importStep: ImportSteps.selectCreateType,
-          ),
-        );
       case ImportSteps.import24Words:
         reset();
         clearErrors();
@@ -76,18 +69,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
         );
       case ImportSteps.selectImportType:
       case ImportSteps.importXpub:
-      // reset();
-      // clearErrors();
-      // emit(
-      //   state.copyWith(
-      //     importStep: ImportSteps.selectCreateType,
-      //     importType: ImportTypes.notSelected,
-      //     // words: [for (int i = 0; i < 12; i++) ''],
-      //   ),
-      // );
-
       case ImportSteps.scanningNFC:
       case ImportSteps.scanningWallets:
+        stopScanningNFC();
         reset();
         clearErrors();
         emit(

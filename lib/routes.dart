@@ -20,10 +20,14 @@ import 'package:bb_mobile/wallet_settings/backup.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/test-backup.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 final GoRouter router = GoRouter(
+  navigatorKey: navigatorKey,
   initialLocation: '/',
   routes: <RouteBase>[
     GoRoute(

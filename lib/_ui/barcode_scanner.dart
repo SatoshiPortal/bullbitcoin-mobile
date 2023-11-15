@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
-import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
 import 'package:go_router/go_router.dart';

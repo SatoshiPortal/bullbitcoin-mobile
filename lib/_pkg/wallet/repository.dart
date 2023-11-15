@@ -51,8 +51,12 @@ class WalletRepository {
         value: jsonEncode(wallet),
       );
       return null;
-    } catch (e) {
-      return Err(e.toString());
+    } on Exception catch (e) {
+      return Err(
+        e.message,
+        title: 'Error occurred while saving wallet',
+        solution: 'Please try again.',
+      );
     }
   }
 
@@ -124,8 +128,12 @@ class WalletRepository {
         ),
       );
       return null;
-    } catch (e) {
-      return Err(e.toString());
+    } on Exception catch (e) {
+      return Err(
+        e.message,
+        title: 'Error occurred while updating wallet',
+        solution: 'Please try again.',
+      );
     }
   }
 
@@ -163,8 +171,12 @@ class WalletRepository {
       await dbDir.delete();
       // await dbDirSigner.delete();
       return null;
-    } catch (e) {
-      return Err(e.toString());
+    } on Exception catch (e) {
+      return Err(
+        e.message,
+        title: 'Error occurred while deleting wallet',
+        solution: 'Please try again.',
+      );
     }
   }
 }

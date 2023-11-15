@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/_ui/inline_label.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
-import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/address/pop_up.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -182,6 +182,22 @@ class AddressesScreen extends HookWidget {
               for (var i = 0; i < addresses.length; i++)
                 if (addresses[i].kind == AddressKind.change &&
                     addresses[i].state == AddressStatus.used)
+                  AddressItem(address: addresses[i]),
+              const Gap(16),
+            ],
+            if (addresses
+                .where(
+                  (element) =>
+                      element.kind == AddressKind.change && element.state == AddressStatus.unused,
+                )
+                .isNotEmpty) ...[
+              const BBText.title(
+                'Unused',
+              ),
+              const Gap(8),
+              for (var i = 0; i < addresses.length; i++)
+                if (addresses[i].kind == AddressKind.change &&
+                    addresses[i].state == AddressStatus.unused)
                   AddressItem(address: addresses[i]),
               const Gap(16),
             ],

@@ -124,8 +124,15 @@ class WalletUpdate {
         ),
         null
       );
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while updating addresses',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 

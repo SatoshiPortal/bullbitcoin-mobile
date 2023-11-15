@@ -167,7 +167,7 @@ String buildDescriptorVanilla({
 
     return descriptor;
   } catch (e) {
-    // return (null, Err(e.toString()));
+    // return (null, Err(e.message,
     rethrow;
   }
 }

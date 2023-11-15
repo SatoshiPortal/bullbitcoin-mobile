@@ -11,8 +11,15 @@ class WalletSensitiveTx {
       final psbt = bdk.PartiallySignedTransaction(psbtBase64: unsignedPSBT);
       final signedPSBT = await signingWallet.sign(psbt: psbt);
       return (signedPSBT.psbtBase64, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while signing transaction',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -23,11 +30,11 @@ class WalletSensitiveTx {
     required bdk.Wallet pubWallet,
   }) async {
     try {
-      final txBuilder = bdk.BumpFeeTxBuilder(
+      var txBuilder = bdk.BumpFeeTxBuilder(
         txid: tx.txid,
         feeRate: feeRate,
       );
-
+      txBuilder = txBuilder.enableRbf();
       final txResult = await txBuilder.finish(pubWallet);
       final signedPSBT = await signingWallet.sign(psbt: txResult.psbt);
 
@@ -39,14 +46,21 @@ class WalletSensitiveTx {
         sent: txDetails.sent,
         fee: txDetails.fee ?? 0,
         height: txDetails.confirmationTime?.height,
-        timestamp: txDetails.confirmationTime?.timestamp ?? DateTime.now().microsecondsSinceEpoch,
+        timestamp: txDetails.confirmationTime?.timestamp ?? 0,
         label: tx.label,
         toAddress: tx.toAddress,
         psbt: signedPSBT.psbtBase64,
       );
       return (newTx, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while building transaction',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 }

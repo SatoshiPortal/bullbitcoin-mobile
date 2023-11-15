@@ -11,7 +11,7 @@ import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:hex/hex.dart';
 
 class WalletTx {
-  Transaction addOrUpdateAddressState(Address newAddress, Transaction tx) {
+  Transaction addOutputAddresses(Address newAddress, Transaction tx) {
     final outAddrs = List<Address>.from(tx.outAddrs);
     final index = outAddrs.indexWhere(
       (address) => address == newAddress,
@@ -52,8 +52,15 @@ class WalletTx {
       final updatedWallet = wallet.copyWith(unsignedTxs: updatedUnsignedTxs);
 
       return (updatedWallet, null);
-    } catch (e) {
-      return (wallet, Err(e.toString())); // returning original wallet in case of error
+    } on Exception catch (e) {
+      return (
+        wallet,
+        Err(
+          e.message,
+          title: 'Error occurred while adding unsigned transaction',
+          solution: 'Please try again.',
+        )
+      ); // returning original wallet in case of error
     }
   }
 
@@ -172,7 +179,7 @@ class WalletTx {
             toAddress: externalAddress != null ? externalAddress.address : '',
             // fromAddress: '',
           );
-          if (externalAddress != null) txObj = addOrUpdateAddressState(externalAddress, txObj);
+          if (externalAddress != null) txObj = addOutputAddresses(externalAddress, txObj);
           //
           //
           // HANDLE CHANGE
@@ -226,7 +233,7 @@ class WalletTx {
               // print(e);
             }
           }
-          if (changeAddress != null) txObj = addOrUpdateAddressState(changeAddress, txObj);
+          if (changeAddress != null) txObj = addOutputAddresses(changeAddress, txObj);
         } else if (txObj.isReceived()) {
           depositAddress = wallet.getAddressFromAddresses(
             txObj.txid,
@@ -278,7 +285,7 @@ class WalletTx {
             // fromAddress: '',
           );
           if (depositAddress != null) {
-            final txObj2 = addOrUpdateAddressState(depositAddress, txObj);
+            final txObj2 = addOutputAddresses(depositAddress, txObj);
             txObj = txObj2.copyWith(outAddrs: txObj2.outAddrs);
           }
         }
@@ -298,8 +305,145 @@ class WalletTx {
       );
 
       return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while getting transactions',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
+
+  Future<(Wallet?, Err?)> getTransactionsNew({
+    required Wallet wallet,
+    required bdk.Wallet bdkWallet,
+  }) async {
+    try {
+      final storedTxs = wallet.transactions;
+      final unsignedTxs = wallet.unsignedTxs;
+      final bdkNetwork = wallet.getBdkNetwork();
+      final txs = await bdkWallet.listTransactions(true);
+      // final x = bdk.TxBuilderResult();
+
+      if (txs.isEmpty) return (wallet, null);
+
+      final List<Transaction> transactions = [];
+
+      for (final tx in txs) {
+        String? label;
+
+        final storedTxIdx = storedTxs.indexWhere((t) => t.txid == tx.txid);
+        final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
+
+        Transaction? storedTx;
+        if (storedTxIdx != -1) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
+        if (idxUnsignedTx != -1) {
+          if (tx.txid == unsignedTxs[idxUnsignedTx].txid) unsignedTxs.removeAt(idxUnsignedTx);
+        }
+        var txObj = Transaction(
+          txid: tx.txid,
+          received: tx.received,
+          sent: tx.sent,
+          fee: tx.fee ?? 0,
+          height: tx.confirmationTime?.height ?? 0,
+          timestamp: tx.confirmationTime?.timestamp ?? 0,
+          bdkTx: tx,
+          rbfEnabled: storedTx?.rbfEnabled ?? false,
+          outAddrs: storedTx?.outAddrs ?? [],
+        );
+
+        if (storedTxIdx != -1 &&
+            storedTxs[storedTxIdx].label != null &&
+            storedTxs[storedTxIdx].label!.isNotEmpty) label = storedTxs[storedTxIdx].label;
+
+        final SerializedTx sTx = SerializedTx.fromJson(
+          jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
+        );
+
+        const hexDecoder = HexDecoder();
+        final outputs = sTx.output;
+
+        for (final output in outputs!) {
+          final scriptPubKey = await bdk.Script.create(
+            hexDecoder.convert(output.scriptPubkey!) as Uint8List,
+          );
+
+          final addressStruct = await bdk.Address.fromScript(
+            scriptPubKey,
+            bdkNetwork,
+          );
+
+          final existing = wallet.findAddressInWallet(addressStruct.toString());
+          if (existing != null) {
+            // txObj.outAddrs.add(existing);
+            if (existing.label == null && existing.label!.isEmpty)
+              txObj = addOutputAddresses(existing.copyWith(label: label), txObj);
+            else {
+              label ??= existing.label;
+              txObj = addOutputAddresses(existing, txObj);
+            }
+          } else {
+            if (txObj.isReceived()) {
+              // AddressKind.deposit should exist in the addressBook
+              // may not be applicable for payjoin
+            } else {
+              // AddressKind.external wont exist for imported wallets and must be added here
+              // AddressKind.change should exist in the addressBook
+              final (externalAddress, _) = await WalletAddress().addAddressToWallet(
+                address: (null, addressStruct.toString()),
+                wallet: wallet,
+                spentTxId: tx.txid,
+                kind: AddressKind.external,
+                state: AddressStatus.used,
+                spendable: false,
+                label: label,
+              );
+              txObj = addOutputAddresses(externalAddress, txObj);
+            }
+          }
+        }
+
+        if (txObj.isReceived()) {
+          final recipients = txObj.outAddrs
+              .where((element) => element.kind == AddressKind.deposit)
+              .toList()
+              .map((e) => e.address);
+          // may break for payjoin
+
+          txObj = txObj.copyWith(
+            toAddress: recipients.toString(),
+          );
+        } else {
+          final recipients = txObj.outAddrs
+              .where((element) => element.kind == AddressKind.external)
+              .toList()
+              .map((e) => e.address);
+          txObj = txObj.copyWith(
+            toAddress: recipients.toString(),
+          );
+        }
+
+        transactions.add(txObj.copyWith(label: label));
+      }
+
+      final w = wallet.copyWith(
+        transactions: transactions,
+        unsignedTxs: unsignedTxs,
+      );
+
+      return (w, null);
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while getting transactions',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -366,6 +510,7 @@ class WalletTx {
             state: AddressStatus.used,
             highestPreviousBalance: amount,
             label: note ?? '',
+            spendable: false,
           );
         } else {
           return Address(
@@ -388,15 +533,22 @@ class WalletTx {
         sent: txDetails.sent,
         fee: feeAmt ?? 0,
         height: txDetails.confirmationTime?.height,
-        timestamp: txDetails.confirmationTime?.timestamp ?? DateTime.now().microsecondsSinceEpoch,
+        timestamp: txDetails.confirmationTime?.timestamp ?? 0,
         label: note,
         toAddress: address,
         outAddrs: outAddrs,
         psbt: txResult.psbt.psbtBase64,
       );
       return ((tx, feeAmt, txResult.psbt.psbtBase64), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while building transaction',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -424,8 +576,15 @@ class WalletTx {
       final extracted = await finalized.extractTx();
 
       return (extracted, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while signing transaction',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -448,15 +607,30 @@ class WalletTx {
         label: note,
         toAddress: address,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,
+        oldTx: false,
       );
 
       final txs = wallet.transactions.toList();
-      txs.add(newTx);
+      // final txs = walletBloc.state.wallet!.transactions.toList();
+      final idx = txs.indexWhere((element) => element.txid == newTx.txid);
+      if (idx != -1) {
+        txs.removeAt(idx);
+        txs.insert(idx, newTx);
+      } else
+        txs.add(newTx);
+      // txs.add(newTx);
       final w = wallet.copyWith(transactions: txs);
 
       return ((w, txid), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while broadcasting transaction',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -467,8 +641,12 @@ class WalletTx {
     try {
       await blockchain.broadcast(tx);
       return null;
-    } catch (e) {
-      return Err(e.toString());
+    } on Exception catch (e) {
+      return Err(
+        e.message,
+        title: 'Error occurred while broadcasting transaction',
+        solution: 'Please try again.',
+      );
     }
   }
 }

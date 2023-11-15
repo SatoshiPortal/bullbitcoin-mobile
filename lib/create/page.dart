@@ -8,7 +8,7 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
-import 'package:bb_mobile/_ui/templates/headers.dart';
+import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/_ui/word_grid.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
@@ -145,6 +145,7 @@ class CreateWalletPassField extends HookWidget {
           const Gap(8),
           BBTextInput.big(
             value: text,
+            maxLength: 32,
             hint: 'Enter passphrase',
             onChanged: (t) {
               context.read<CreateWalletCubit>().passPhraseChanged(t);

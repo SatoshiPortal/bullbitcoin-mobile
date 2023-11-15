@@ -221,7 +221,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    final (walletWithAddresses, err1) = await walletAddress.loadAddresses(
+    final (walletWithDepositAddresses, err1) = await walletAddress.loadAddresses(
       wallet: state.wallet!,
       bdkWallet: state.bdkWallet!,
     );
@@ -234,31 +234,43 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
       return;
     }
-
+    final (walletWithAddresses, err2) = await walletAddress.loadChangeAddresses(
+      wallet: walletWithDepositAddresses!,
+      bdkWallet: state.bdkWallet!,
+    );
+    if (err2 != null) {
+      emit(
+        state.copyWith(
+          errSyncingAddresses: err2.toString(),
+          syncingAddresses: false,
+        ),
+      );
+      return;
+    }
     emit(state.copyWith(loadingTxs: true, errLoadingWallet: ''));
 
-    final (walletWithTxs, err2) = await walletTransaction.getTransactions(
+    final (walletWithTxs, err3) = await walletTransaction.getTransactions(
       bdkWallet: state.bdkWallet!,
       wallet: walletWithAddresses!,
     );
 
-    if (err2 != null) {
+    if (err3 != null) {
       emit(
         state.copyWith(
-          errLoadingWallet: err2.toString(),
+          errLoadingWallet: err3.toString(),
           loadingTxs: false,
         ),
       );
       return;
     }
 
-    final (walletWithTxAndAddresses, err3) =
+    final (walletWithTxAndAddresses, err4) =
         await walletUpdate.updateAddressesFromTxs(walletWithTxs!);
 
-    if (err3 != null) {
+    if (err4 != null) {
       emit(
         state.copyWith(
-          errLoadingWallet: err3.toString(),
+          errLoadingWallet: err4.toString(),
           loadingTxs: false,
         ),
       );
@@ -274,14 +286,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    final (walletWithUtxos, err4) = await walletAddress.updateUtxos(
+    final (walletWithUtxos, err5) = await walletAddress.updateUtxos(
       bdkWallet: state.bdkWallet!,
       wallet: walletWithTxAndAddresses!,
     );
-    if (err4 != null) {
+    if (err5 != null) {
       emit(
         state.copyWith(
-          errSyncingAddresses: err4.toString(),
+          errSyncingAddresses: err5.toString(),
           syncingAddresses: false,
         ),
       );

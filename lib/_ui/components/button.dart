@@ -2,6 +2,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
@@ -145,16 +146,28 @@ class BBButton extends StatelessWidget {
           style: TextButton.styleFrom(padding: EdgeInsets.zero),
           onPressed: disabled ? null : () => onPressed(),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               BBText.body(label),
               const Spacer(),
               if (statusText != null)
-                BBText.title(
-                  statusText!,
-                  isBold: true,
-                  isBlue: isBlue ?? false,
-                  isRed: isRed ?? false,
+                AnimatedSwitcher(
+                  duration: 600.ms,
+                  child: !loading
+                      ? BBText.title(
+                          statusText!,
+                          isBold: true,
+                          isBlue: isBlue ?? false,
+                          isRed: isRed ?? false,
+                        )
+                      : SizedBox(
+                          height: 8,
+                          width: 66,
+                          child: LinearProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(context.colour.primary),
+                            backgroundColor: context.colour.background,
+                          ),
+                        ),
                 ),
               const Gap(8),
               FaIcon(

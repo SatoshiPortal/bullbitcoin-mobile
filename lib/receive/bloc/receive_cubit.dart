@@ -185,11 +185,11 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         creatingInvoice: false,
         errCreatingInvoice: '',
         savedDescription: state.description,
-        description: '',
+        // description: '',
         savedInvoiceAmount: currencyCubit.state.amount,
       ),
     );
-    currencyCubit.updateAmountDirect(0);
+    // currencyCubit.updateAmountDirect(0);
   }
 
   void shareClicked() {}

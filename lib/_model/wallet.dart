@@ -151,8 +151,15 @@ class Wallet with _$Wallet {
     for (final address in myAddressBook)
       for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
         if (utxo.outpoint.txid == txid) return address.address; // this will return change
-
     return '';
+  }
+
+  Address? findAddressInWallet(String address) {
+    final completeAddressBook = [...externalAddressBook ?? [], ...myAddressBook];
+    for (final existingAddress in completeAddressBook) {
+      if (address == existingAddress.address) return existingAddress;
+    }
+    return null;
   }
 
   Address? getAddressFromAddresses(String txid, {bool isSend = false, AddressKind? kind}) {
@@ -297,6 +304,15 @@ class Wallet with _$Wallet {
   int txReceivedCount() {
     return transactions.where((tx) => tx.isReceived()).toList().length;
   }
+
+  int frozenUTXOTotal() {
+    final addresses = <Address>[...myAddressBook, ...externalAddressBook ?? <Address>[]];
+    final unspendable = addresses.where((_) => !_.spendable).toList();
+    final totalFrozen = unspendable.fold<int>(0, (value, _) => value + _.calculateBalance());
+    return totalFrozen;
+  }
+
+  int balanceWithoutFrozenUTXOs() => (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
 }
 
 @freezed

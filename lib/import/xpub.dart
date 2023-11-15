@@ -2,8 +2,8 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/_ui/popup_border.dart';
-import 'package:bb_mobile/_ui/templates/headers.dart';
 import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
@@ -101,11 +101,11 @@ class ColdCardSection extends StatelessWidget {
           ),
           BBButton.textWithRightArrow(
             onPressed: () {
-              // if (!scanning)
-              //   context.read<ImportWalletCubit>().coldCardNFCClicked();
-              // else
-              //   context.read<ImportWalletCubit>().backClicked();
-              ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
+              if (!scanning)
+                context.read<ImportWalletCubit>().coldCardNFCClicked();
+              else
+                context.read<ImportWalletCubit>().backClicked();
+              // ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
             },
             label: 'Activate NFC',
             loading: scanning,

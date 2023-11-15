@@ -456,7 +456,8 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         );
       }
     }
-    homeCubit.removeWalletPostDelete(state.wallet.id);
+    homeCubit.removeWallet(walletBloc);
+    // homeCubit.removeWalletPostDelete(state.wallet.id);
 
     emit(
       state.copyWith(

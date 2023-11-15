@@ -129,41 +129,27 @@ class HomeCubit extends Cubit<HomeState> {
     );
   }
 
-  void removeWalletPostDelete(String id) {
-    final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-    final walletBlocs = state.walletBlocs != null ? state.walletBlocs!.toList() : <WalletBloc>[];
-    wallets.removeWhere(
-      (w) => w.id == id,
-    );
-    walletBlocs.removeWhere((wB) => wB.state.wallet!.id == id);
-    emit(
-      state.copyWith(
-        wallets: wallets,
-        walletBlocs: walletBlocs,
-        // selectedWallet: null,
-      ),
-    );
-  }
+  // void removeWalletPostDelete(String id) {
+  //   final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+  //   final walletBlocs = state.walletBlocs != null ? state.walletBlocs!.toList() : <WalletBloc>[];
+  //   wallets.removeWhere(
+  //     (w) => w.id == id,
+  //   );
+  //   walletBlocs.removeWhere((wB) => wB.state.wallet!.id == id);
+  //   emit(
+  //     state.copyWith(
+  //       wallets: wallets,
+  //       walletBlocs: walletBlocs,
+  //       // selectedWallet: null,
+  //     ),
+  //   );
+  // }
 
-  void clearSelectedWallet({bool removeWallet = false}) {
-    if (removeWallet) {
-      final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-      wallets.removeWhere(
-        (w) => w.id == state.selectedWalletCubit!.state.wallet!.id,
-      );
-      emit(
-        state.copyWith(
-          wallets: wallets,
-          selectedWalletCubit: null,
-          // selectedWallet: null,
-        ),
-      );
-    } else
-      emit(
-        state.copyWith(
-          selectedWalletCubit: null,
-          // selectedWallet: null,
-        ),
-      );
+  void clearSelectedWallet() => emit(state.copyWith(selectedWalletCubit: null));
+
+  void removeWallet(WalletBloc walletBloc) {
+    final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+    wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
+    emit(state.copyWith(wallets: wallets, selectedWalletCubit: null));
   }
 }
