@@ -73,8 +73,15 @@ class WalletAddress {
           myAddressBook: addresses,
         );
       return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -127,8 +134,15 @@ class WalletAddress {
         myAddressBook: addresses,
       );
       return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -159,8 +173,15 @@ class WalletAddress {
       );
 
       return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -171,8 +192,15 @@ class WalletAddress {
       );
 
       return (address.address, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -239,8 +267,15 @@ class WalletAddress {
       final w = wallet.copyWith(myAddressBook: utxoUpdatedAddresses);
 
       return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 

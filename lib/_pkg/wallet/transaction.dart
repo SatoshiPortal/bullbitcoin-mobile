@@ -52,8 +52,15 @@ class WalletTx {
       final updatedWallet = wallet.copyWith(unsignedTxs: updatedUnsignedTxs);
 
       return (updatedWallet, null);
-    } catch (e) {
-      return (wallet, Err(e.toString())); // returning original wallet in case of error
+    } on Exception catch (e) {
+      return (
+        wallet,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      ); // returning original wallet in case of error
     }
   }
 
@@ -298,8 +305,15 @@ class WalletTx {
       );
 
       return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -421,8 +435,15 @@ class WalletTx {
       );
 
       return (w, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -519,8 +540,15 @@ class WalletTx {
         psbt: txResult.psbt.psbtBase64,
       );
       return ((tx, feeAmt, txResult.psbt.psbtBase64), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -548,8 +576,15 @@ class WalletTx {
       final extracted = await finalized.extractTx();
 
       return (extracted, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -587,8 +622,15 @@ class WalletTx {
       final w = wallet.copyWith(transactions: txs);
 
       return ((w, txid), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -599,8 +641,12 @@ class WalletTx {
     try {
       await blockchain.broadcast(tx);
       return null;
-    } catch (e) {
-      return Err(e.toString());
+    } on Exception catch (e) {
+      return Err(
+        e.message,
+        title: '',
+        solution: 'Please try again.',
+      );
     }
   }
 }

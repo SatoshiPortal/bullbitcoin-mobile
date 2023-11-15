@@ -49,8 +49,12 @@ class WalletSensitiveRepository {
         value: jsonEncode(seed),
       );
       return null;
-    } catch (e) {
-      return Err(e.toString());
+    } on Exception catch (e) {
+      return Err(
+        e.message,
+        title: '',
+        solution: 'Please try again.',
+      );
     }
   }
 
@@ -80,8 +84,12 @@ class WalletSensitiveRepository {
         value: jsonEncode(updatedSeed),
       );
       return null;
-    } catch (e) {
-      return Err(e.toString());
+    } on Exception catch (e) {
+      return Err(
+        e.message,
+        title: '',
+        solution: 'Please try again.',
+      );
     }
   }
 
@@ -123,8 +131,12 @@ class WalletSensitiveRepository {
         ),
       );
       return null;
-    } catch (e) {
-      return Err(e.toString());
+    } on Exception catch (e) {
+      return Err(
+        e.message,
+        title: '',
+        solution: 'Please try again.',
+      );
     }
   }
 
@@ -157,8 +169,12 @@ class WalletSensitiveRepository {
       await storage.deleteValue(fingerprint);
 
       return null;
-    } catch (e) {
-      return Err(e.toString());
+    } on Exception catch (e) {
+      return Err(
+        e.message,
+        title: '',
+        solution: 'Please try again.',
+      );
     }
   }
 
@@ -191,8 +207,12 @@ class WalletSensitiveRepository {
         value: jsonEncode(seed),
       );
       return null;
-    } catch (e) {
-      return Err(e.toString());
+    } on Exception catch (e) {
+      return Err(
+        e.message,
+        title: '',
+        solution: 'Please try again.',
+      );
     }
   }
 }

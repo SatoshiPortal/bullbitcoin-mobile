@@ -22,8 +22,15 @@ class WalletBalance {
       final w = wallet.copyWith(balance: balance.total, fullBalance: balance);
 
       return ((w, balance), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 }

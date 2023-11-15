@@ -9,8 +9,15 @@ class WalletSync {
     try {
       await bdkWallet.sync(blockChain);
       return (bdkWallet, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -35,8 +42,9 @@ class WalletSync {
       );
 
       return (blockchain, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (r) {
+      // r.toString().replaceFirst('Exception: ', '');
+      return (null, Err(r.toString()));
     }
   }
 
@@ -46,7 +54,9 @@ class WalletSync {
   //     await Isolate.spawn(_sync, [receivePort.sendPort, wallet, blockchain]);
   //     return (receivePort, null);
   //   } catch (e) {
-  //     return (null, Err(e.toString()));
+  //     return (null, Err(e.message,
+  // title: '',
+  // solution: 'Please try again.',));
   //   }
   // }
 }
@@ -82,7 +92,9 @@ class WalletSync {
 
       return ((w, balance), null);
     } catch (e) {
-      return (null, Err(e.toString()));
+      return (null, Err(e.message,
+          title: '',
+          solution: 'Please try again.',));
     }
   }
 
@@ -96,7 +108,9 @@ class WalletSync {
 
       return ((index: address.index, address: address.address), null);
     } catch (e) {
-      return (null, Err(e.toString()));
+      return (null, Err(e.message,
+          title: '',
+          solution: 'Please try again.',));
     }
   }
 
@@ -124,7 +138,9 @@ class WalletSync {
 
       return ((address.index, address.address), null);
     } catch (e) {
-      return (null, Err(e.toString()));
+      return (null, Err(e.message,
+          title: '',
+          solution: 'Please try again.',));
     }
   }
 
@@ -136,7 +152,9 @@ class WalletSync {
 
       return (address.address, null);
     } catch (e) {
-      return (null, Err(e.toString()));
+      return (null, Err(e.message,
+          title: '',
+          solution: 'Please try again.',));
     }
   }
 
@@ -183,7 +201,9 @@ class WalletSync {
 
       return (w, null);
     } catch (e) {
-      return (null, Err(e.toString()));
+      return (null, Err(e.message,
+          title: '',
+          solution: 'Please try again.',));
     }
   }
 
@@ -282,7 +302,9 @@ class WalletSync {
 
       return (updated, null);
     } catch (e) {
-      return (null, Err(e.toString()));
+      return (null, Err(e.message,
+          title: '',
+          solution: 'Please try again.',));
     }
   }
 
@@ -308,7 +330,9 @@ class WalletSync {
 
       return (updated, null);
     } catch (e) {
-      return (null, Err(e.toString()));
+      return (null, Err(e.message,
+          title: '',
+          solution: 'Please try again.',));
     }
   }
 */

@@ -11,8 +11,15 @@ class WalletSensitiveTx {
       final psbt = bdk.PartiallySignedTransaction(psbtBase64: unsignedPSBT);
       final signedPSBT = await signingWallet.sign(psbt: psbt);
       return (signedPSBT.psbtBase64, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 
@@ -45,8 +52,15 @@ class WalletSensitiveTx {
         psbt: signedPSBT.psbtBase64,
       );
       return (newTx, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: '',
+          solution: 'Please try again.',
+        )
+      );
     }
   }
 }

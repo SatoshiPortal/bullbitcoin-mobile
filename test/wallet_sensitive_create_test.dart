@@ -43,10 +43,10 @@ class FakePathProviderPlatform extends Fake
     return kApplicationDocumentsPath;
   }
 
-  @override
-  Future<String?> getApplicationDocumentsDirectory() async {
-    return kApplicationDocumentsPath;
-  }
+  // @override
+  // Future<String?> getApplicationDocumentsDirectory() async {
+  //   return kApplicationDocumentsPath;
+  // }
 
   @override
   Future<String?> getExternalStoragePath() async {
@@ -73,7 +73,7 @@ class FakePathProviderPlatform extends Fake
 
 // TODO: Not testing for exception cases. Guess Exception handling is to be re-defined, so will handle those later.
 void main() {
-  var locator;
+  // var locator;
   final mockPathProvider = FakePathProviderPlatform();
 
   setUpAll(() {
