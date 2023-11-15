@@ -69,6 +69,9 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     emit(
       state.copyWith(
         feesList: fees,
+        fees: null,
+        tempFees: null,
+        selectedFeesOption: 2,
         loadingFees: false,
       ),
     );
