@@ -143,11 +143,15 @@ class _Screen extends StatelessWidget {
 
           return BlocListener<BroadcastTxCubit, BroadcastTxState>(
             listenWhen: (previous, current) =>
-                previous.hasErr() == false && current.hasErr() == true,
+                previous.hasErr() != current.hasErr() && current.hasErr(),
             listener: (context, state) async {
-              showErrorAlert(context, state.getErrors(), () {
-                context.read<BroadcastTxCubit>().clearErrors();
-              });
+              Alert.showErrorAlert(
+                context,
+                err: state.getErrors(),
+                onClose: () {
+                  context.read<BroadcastTxCubit>().clearErrors();
+                },
+              );
             },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

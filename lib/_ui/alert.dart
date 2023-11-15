@@ -46,6 +46,35 @@ class Alert extends StatelessWidget {
     );
   }
 
+  static void showErrorAlert(BuildContext context, {required String err, Function? onClose}) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Alert.openPopUp(
+        context,
+        AlertData(
+          title: 'Error',
+          text: err,
+          actionButtonsBuilder: (context) {
+            return [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: BBButton.bigBlack(
+                  label: 'Okay',
+                  filled: true,
+                  onPressed: () {
+                    context.pop();
+                    if (onClose != null) {
+                      onClose();
+                    }
+                  },
+                ),
+              ),
+            ];
+          },
+        ),
+      );
+    });
+  }
+
   final String? title;
   final String text;
   final List<Widget> buttons;
@@ -67,33 +96,4 @@ class Alert extends StatelessWidget {
       ),
     );
   }
-}
-
-void showErrorAlert(BuildContext context, String err, [Function? onClose]) {
-  SchedulerBinding.instance.addPostFrameCallback((_) {
-    Alert.openPopUp(
-      context,
-      AlertData(
-        title: 'Error',
-        text: err,
-        actionButtonsBuilder: (context) {
-          return [
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: BBButton.bigBlack(
-                label: 'Okay',
-                filled: true,
-                onPressed: () {
-                  context.pop();
-                  if (onClose != null) {
-                    onClose();
-                  }
-                },
-              ),
-            ),
-          ];
-        },
-      ),
-    );
-  });
 }
