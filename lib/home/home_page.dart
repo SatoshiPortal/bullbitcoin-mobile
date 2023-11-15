@@ -324,6 +324,7 @@ class HomeTopBar extends StatelessWidget {
         ),
         const Spacer(),
         IconButton(
+          key: UIKeys.importImportButton,
           color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
           icon: const Icon(
             FontAwesomeIcons.circlePlus,

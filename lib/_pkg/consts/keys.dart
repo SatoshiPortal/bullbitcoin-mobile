@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:flutter/material.dart';
 
 class UIKeys {
@@ -14,5 +15,11 @@ class UIKeys {
   static const importXpubConfirmButton = Key('import_xpub_confirm_button');
   static const importWalletSelectionOption = Key('import_wallet_selection_option');
   static const importWalletSelectionSyncing = Key('import_wallet_selection_syncing');
+
+  static Key importRecoverField(int index) => Key('import_recover_field_$index');
+  static const importRecoverButton = Key('import_recover_button');
+  static Key importWalletSelectionCard(ScriptType type) =>
+      Key('import_wallet_selection_option_${type.toString().split('.').last}');
   static const importWalletSelectionConfirmButton = Key('import_wallet_selection_confirm_button');
+  static Key homeCardWithName(String name) => Key('home_card_with_name_$name');
 }
