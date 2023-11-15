@@ -26,7 +26,10 @@ class Err {
   final bool showAlert;
 
   @override
-  String toString() => (title != null ? '$title\nDetails: ' : '') + message;
+  String toString() =>
+      (title != null ? '$title\nDetails: ' : '') +
+      message +
+      (solution != null ? '\nSolution: $solution' : '');
 
   void openAlert() => BBAlert.showErrorAlert(navigatorKey.currentContext!, err: toString());
 }
