@@ -21,7 +21,7 @@ class WalletNames {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while getting wallet names',
           solution: 'Please try again.',
         )
       );

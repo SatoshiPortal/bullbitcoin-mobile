@@ -78,7 +78,7 @@ class WalletAddress {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while loading addresses',
           solution: 'Please try again.',
         )
       );
@@ -139,7 +139,7 @@ class WalletAddress {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while loading addresses',
           solution: 'Please try again.',
         )
       );
@@ -178,7 +178,7 @@ class WalletAddress {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while generating new address',
           solution: 'Please try again.',
         )
       );
@@ -197,7 +197,7 @@ class WalletAddress {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while getting address',
           solution: 'Please try again.',
         )
       );
@@ -272,7 +272,7 @@ class WalletAddress {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while updating utxos',
           solution: 'Please try again.',
         )
       );

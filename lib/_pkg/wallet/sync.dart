@@ -14,7 +14,7 @@ class WalletSync {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while syncing wallet',
           solution: 'Please try again.',
         )
       );

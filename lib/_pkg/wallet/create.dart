@@ -245,7 +245,7 @@ class WalletCreate {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while creating wallet',
           solution: 'Please try again.',
         )
       );
@@ -327,7 +327,7 @@ class WalletCreate {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while creating wallet',
           solution: 'Please try again.',
         )
       );
@@ -370,7 +370,7 @@ class WalletCreate {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while creating wallet',
           solution: 'Please try again.',
         )
       );

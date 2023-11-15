@@ -16,7 +16,7 @@ class Err {
   final String? solution;
 
   @override
-  String toString() => message;
+  String toString() => (title != null ? '$title\nDetails: ' : '') + message;
 }
 
 extension X on Exception {

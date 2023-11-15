@@ -52,7 +52,7 @@ class WalletSensitiveRepository {
     } on Exception catch (e) {
       return Err(
         e.message,
-        title: '',
+        title: 'Error occurred while saving seed',
         solution: 'Please try again.',
       );
     }
@@ -87,7 +87,7 @@ class WalletSensitiveRepository {
     } on Exception catch (e) {
       return Err(
         e.message,
-        title: '',
+        title: 'Error occurred while saving passphrase',
         solution: 'Please try again.',
       );
     }
@@ -111,34 +111,34 @@ class WalletSensitiveRepository {
     }
   }
 
-  Future<Err?> updateSeed({
-    required Seed seed,
-    required SecureStorage secureStore,
-  }) async {
-    try {
-      final (_, err) = await readSeed(
-        fingerprintIndex: seed.getSeedStorageString(),
-        secureStore: secureStore,
-      );
-      if (err != null) throw err;
-      // improve this error
-      // does not exist to update, use create
+  // Future<Err?> updateSeed({
+  //   required Seed seed,
+  //   required SecureStorage secureStore,
+  // }) async {
+  //   try {
+  //     final (_, err) = await readSeed(
+  //       fingerprintIndex: seed.getSeedStorageString(),
+  //       secureStore: secureStore,
+  //     );
+  //     if (err != null) throw err;
+  //     // improve this error
+  //     // does not exist to update, use create
 
-      final _ = await secureStore.saveValue(
-        key: seed.getSeedStorageString(),
-        value: jsonEncode(
-          seed,
-        ),
-      );
-      return null;
-    } on Exception catch (e) {
-      return Err(
-        e.message,
-        title: '',
-        solution: 'Please try again.',
-      );
-    }
-  }
+  //     final _ = await secureStore.saveValue(
+  //       key: seed.getSeedStorageString(),
+  //       value: jsonEncode(
+  //         seed,
+  //       ),
+  //     );
+  //     return null;
+  //   } on Exception catch (e) {
+  //     return Err(
+  //       e.message,
+  //       title: 'Error ',
+  //       solution: 'Please try again.',
+  //     );
+  //   }
+  // }
 
   Future<Err?> deleteSeed({
     required String fingerprint,
@@ -172,7 +172,7 @@ class WalletSensitiveRepository {
     } on Exception catch (e) {
       return Err(
         e.message,
-        title: '',
+        title: 'Error occurred while deleting seed',
         solution: 'Please try again.',
       );
     }
@@ -210,7 +210,7 @@ class WalletSensitiveRepository {
     } on Exception catch (e) {
       return Err(
         e.message,
-        title: '',
+        title: 'Error occurred while deleting passphrase',
         solution: 'Please try again.',
       );
     }

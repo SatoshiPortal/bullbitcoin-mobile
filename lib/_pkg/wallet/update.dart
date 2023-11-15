@@ -129,7 +129,7 @@ class WalletUpdate {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while updating addresses',
           solution: 'Please try again.',
         )
       );

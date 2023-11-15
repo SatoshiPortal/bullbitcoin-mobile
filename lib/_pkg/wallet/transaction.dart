@@ -57,7 +57,7 @@ class WalletTx {
         wallet,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while adding unsigned transaction',
           solution: 'Please try again.',
         )
       ); // returning original wallet in case of error
@@ -310,7 +310,7 @@ class WalletTx {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while getting transactions',
           solution: 'Please try again.',
         )
       );
@@ -440,7 +440,7 @@ class WalletTx {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while getting transactions',
           solution: 'Please try again.',
         )
       );
@@ -545,7 +545,7 @@ class WalletTx {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while building transaction',
           solution: 'Please try again.',
         )
       );
@@ -581,7 +581,7 @@ class WalletTx {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while signing transaction',
           solution: 'Please try again.',
         )
       );
@@ -627,7 +627,7 @@ class WalletTx {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while broadcasting transaction',
           solution: 'Please try again.',
         )
       );
@@ -644,7 +644,7 @@ class WalletTx {
     } on Exception catch (e) {
       return Err(
         e.message,
-        title: '',
+        title: 'Error occurred while broadcasting transaction',
         solution: 'Please try again.',
       );
     }

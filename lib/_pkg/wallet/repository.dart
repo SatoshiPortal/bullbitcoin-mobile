@@ -54,7 +54,7 @@ class WalletRepository {
     } on Exception catch (e) {
       return Err(
         e.message,
-        title: '',
+        title: 'Error occurred while saving wallet',
         solution: 'Please try again.',
       );
     }
@@ -131,7 +131,7 @@ class WalletRepository {
     } on Exception catch (e) {
       return Err(
         e.message,
-        title: '',
+        title: 'Error occurred while updating wallet',
         solution: 'Please try again.',
       );
     }
@@ -174,7 +174,7 @@ class WalletRepository {
     } on Exception catch (e) {
       return Err(
         e.message,
-        title: '',
+        title: 'Error occurred while deleting wallet',
         solution: 'Please try again.',
       );
     }

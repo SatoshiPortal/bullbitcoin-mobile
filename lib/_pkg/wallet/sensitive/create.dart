@@ -20,7 +20,7 @@ class WalletSensitiveCreate {
         null,
         Err(
           e.message,
-          title: 'Error creating mnemonic',
+          title: 'Error occurred while creating mnemonic',
           solution: 'Please try again.',
         )
       );
@@ -53,7 +53,7 @@ class WalletSensitiveCreate {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while creating fingerprint',
           solution: 'Please try again.',
         )
       );
@@ -81,7 +81,7 @@ class WalletSensitiveCreate {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while creating seed',
           solution: 'Please try again.',
         )
       );
@@ -437,7 +437,7 @@ class WalletSensitiveCreate {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while loading wallet',
           solution: 'Please try again.',
         )
       );

@@ -16,7 +16,7 @@ class WalletSensitiveTx {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while signing transaction',
           solution: 'Please try again.',
         )
       );
@@ -57,7 +57,7 @@ class WalletSensitiveTx {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while building transaction',
           solution: 'Please try again.',
         )
       );

@@ -27,7 +27,7 @@ class WalletBalance {
         null,
         Err(
           e.message,
-          title: '',
+          title: 'Error occurred while getting balance',
           solution: 'Please try again.',
         )
       );
