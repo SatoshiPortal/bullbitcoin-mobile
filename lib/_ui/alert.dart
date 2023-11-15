@@ -1,4 +1,6 @@
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -19,11 +21,11 @@ class AlertData {
 class Alert extends StatelessWidget {
   const Alert({this.title, required this.text, required this.buttons});
 
-  static Future openPopUp(BuildContext context, AlertData alertData) {
+  static Future _openPopUp(BuildContext context, AlertData alertData) {
     return showGeneralDialog(
       barrierLabel: 'showGeneralDialog',
       barrierDismissible: false,
-      transitionDuration: const Duration(milliseconds: 200),
+      transitionDuration: const Duration(milliseconds: 600),
       context: context,
       pageBuilder: (context, _, __) {
         return Align(
@@ -46,9 +48,44 @@ class Alert extends StatelessWidget {
     );
   }
 
+  static void showErrorAlertPopUp({
+    String title = 'Error',
+    required String err,
+    Function? onClose,
+  }) {
+    if (navigatorKey.currentContext == null) return;
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Alert._openPopUp(
+        navigatorKey.currentContext!,
+        AlertData(
+          title: title,
+          text: err,
+          actionButtonsBuilder: (context) {
+            return [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: BBButton.bigBlack(
+                  label: 'Okay',
+                  filled: true,
+                  onPressed: () {
+                    context.pop();
+                    if (onClose != null) {
+                      onClose();
+                    }
+                  },
+                ),
+              ),
+            ];
+          },
+        ),
+      );
+    });
+  }
+
   static void showErrorAlert(BuildContext context, {required String err, Function? onClose}) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      Alert.openPopUp(
+      Alert._openPopUp(
         context,
         AlertData(
           title: 'Error',
@@ -85,13 +122,14 @@ class Alert extends StatelessWidget {
 
     return IntrinsicHeight(
       child: SizedBox(
-        width: width * (95 / 100),
+        width: width,
         child: AlertDialog(
-          backgroundColor: context.colour.onPrimary,
-          title: title != null ? Text(title ?? '') : Container(),
-          content: Text(text),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          backgroundColor: context.colour.background,
+          title: title != null ? BBText.titleLarge(title ?? '') : Container(),
+          content: BBText.error(text),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           actions: buttons,
+          surfaceTintColor: context.colour.background,
         ),
       ),
     );

@@ -1,15 +1,18 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
+import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:convert/convert.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BroadcastTxCubit extends Cubit<BroadcastTxState> {
@@ -29,11 +32,29 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   final HomeCubit homeCubit;
   final NetworkCubit networkCubit;
 
+  @override
+  void onChange(Change<BroadcastTxState> change) {
+    final current = change.currentState;
+    final next = change.nextState;
+
+    if (current.hasErr() != next.hasErr() && next.hasErr()) {
+      Alert.showErrorAlertPopUp(
+        err: next.getErrors(),
+        onClose: () {
+          clearErrors();
+        },
+      );
+    }
+
+    super.onChange(change);
+  }
+
   void txChanged(String tx) {
     emit(state.copyWith(tx: tx));
   }
 
   void scanQRClicked() async {
+    await clearErrors();
     emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
     final (file, err) = await barcode.scan();
     if (err != null) {
@@ -46,6 +67,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   }
 
   void uploadFileClicked() async {
+    await clearErrors();
     emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
     final (file, err) = await filePicker.pickFile();
     if (err != null) {
@@ -59,6 +81,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
 
   void extractTxClicked() async {
     try {
+      await clearErrors();
       emit(
         state.copyWith(
           extractingTx: true,
@@ -307,11 +330,20 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
 
         // final List<Address> outAddrs = await Future.wait(outAddrsFutures);
       }
-    } catch (e) {
+    } on bdk.EncodeException {
       emit(
         state.copyWith(
           extractingTx: false,
-          errExtractingTx: e.toString(),
+          errExtractingTx: 'Error decoding transaction. Ensure the transaction is valid.',
+          // step: BroadcastTxStep.import,
+          tx: '',
+        ),
+      );
+    } on Exception catch (e) {
+      emit(
+        state.copyWith(
+          extractingTx: false,
+          errExtractingTx: e.message,
           // step: BroadcastTxStep.import,
           tx: '',
         ),
@@ -320,6 +352,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   }
 
   void broadcastClicked() async {
+    await clearErrors();
     emit(
       state.copyWith(
         broadcastingTx: true,
@@ -359,6 +392,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   }
 
   void downloadPSBTClicked() async {
+    await clearErrors();
     emit(state.copyWith(downloadingFile: true, errDownloadingFile: ''));
     final psbt = state.psbtBDK?.psbtBase64;
     if (psbt == null || psbt.isEmpty) {
@@ -412,7 +446,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     emit(state.copyWith(downloaded: false));
   }
 
-  void clearErrors() async {
+  Future clearErrors() async {
     emit(
       state.copyWith(
         errBroadcastingTx: '',
@@ -422,5 +456,6 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         errDownloadingFile: '',
       ),
     );
+    await Future.delayed(50.ms);
   }
 }
