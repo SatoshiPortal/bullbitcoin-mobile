@@ -38,7 +38,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     final next = change.nextState;
 
     if (current.hasErr() != next.hasErr() && next.hasErr()) {
-      Alert.showErrorAlertPopUp(
+      BBAlert.showErrorAlertPopUp(
         err: next.getErrors(),
         onClose: () {
           clearErrors();

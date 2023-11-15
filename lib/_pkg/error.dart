@@ -28,7 +28,7 @@ class Err {
   @override
   String toString() => (title != null ? '$title\nDetails: ' : '') + message;
 
-  void openAlert() => Alert.showErrorAlert(navigatorKey.currentContext!, err: toString());
+  void openAlert() => BBAlert.showErrorAlert(navigatorKey.currentContext!, err: toString());
 }
 
 extension X on Exception {

@@ -18,8 +18,8 @@ class AlertData {
   final List<Widget> Function(BuildContext)? actionButtonsBuilder;
 }
 
-class Alert extends StatelessWidget {
-  const Alert({this.title, required this.text, required this.buttons});
+class BBAlert extends StatelessWidget {
+  const BBAlert({this.title, required this.text, required this.buttons});
 
   static Future _openPopUp(BuildContext context, AlertData alertData) {
     return showGeneralDialog(
@@ -30,7 +30,7 @@ class Alert extends StatelessWidget {
       pageBuilder: (context, _, __) {
         return Align(
           alignment: Alignment.bottomCenter,
-          child: Alert(
+          child: BBAlert(
             title: alertData.title,
             text: alertData.text,
             buttons: alertData.actionButtonsBuilder != null
@@ -56,7 +56,7 @@ class Alert extends StatelessWidget {
     if (navigatorKey.currentContext == null) return;
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      Alert._openPopUp(
+      BBAlert._openPopUp(
         navigatorKey.currentContext!,
         AlertData(
           title: title,
@@ -85,7 +85,7 @@ class Alert extends StatelessWidget {
 
   static void showErrorAlert(BuildContext context, {required String err, Function? onClose}) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      Alert._openPopUp(
+      BBAlert._openPopUp(
         context,
         AlertData(
           title: 'Error',
