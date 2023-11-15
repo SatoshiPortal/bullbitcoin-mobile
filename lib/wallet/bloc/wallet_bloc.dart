@@ -221,7 +221,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    final (walletWithDepositAddresses, err1) = await walletAddress.loadAddresses(
+    final (walletWithAddresses, err1) = await walletAddress.loadAddresses(
       wallet: state.wallet!,
       bdkWallet: state.bdkWallet!,
     );
@@ -234,19 +234,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
       return;
     }
-    final (walletWithAddresses, err2) = await walletAddress.loadChangeAddresses(
-      wallet: walletWithDepositAddresses!,
-      bdkWallet: state.bdkWallet!,
-    );
-    if (err2 != null) {
-      emit(
-        state.copyWith(
-          errSyncingAddresses: err2.toString(),
-          syncingAddresses: false,
-        ),
-      );
-      return;
-    }
+    // final (walletWithAddresses, err2) = await walletAddress.loadChangeAddresses(
+    //   wallet: walletWithDepositAddresses!,
+    //   bdkWallet: state.bdkWallet!,
+    // );
+    // if (err2 != null) {
+    //   emit(
+    //     state.copyWith(
+    //       errSyncingAddresses: err2.toString(),
+    //       syncingAddresses: false,
+    //     ),
+    //   );
+    //   return;
+    // }
     emit(state.copyWith(loadingTxs: true, errLoadingWallet: ''));
 
     final (walletWithTxs, err3) = await walletTransaction.getTransactions(
