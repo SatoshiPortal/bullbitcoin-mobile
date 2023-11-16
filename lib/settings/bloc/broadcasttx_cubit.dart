@@ -398,7 +398,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         state.copyWith(
           broadcastingTx: false,
           errBroadcastingTx:
-              'Failed to Broadcast.\n\nCheck the following:\n- Internet connection\n- PSBT must be unspent, signed & finalized\n- Electrum server availability\nColdCard: Use the -final.txn file.',
+              'Failed to Broadcast.\n\nCheck the following:\n- Internet connection\n- PSBT must be unspent & signed\n- Electrum server availability\n- Additional Info: $err',
         ),
       );
       return;
