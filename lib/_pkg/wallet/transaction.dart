@@ -72,8 +72,8 @@ class WalletTx {
     required bdk.Wallet bdkWallet,
   }) async {
     try {
-      final storedTxs = wallet.transactions;
-      final unsignedTxs = wallet.unsignedTxs;
+      final storedTxs = wallet.transactions.toList();
+      final unsignedTxs = wallet.unsignedTxs.toList();
       final bdkNetwork = wallet.getBdkNetwork();
       final txs = await bdkWallet.listTransactions(true);
       // final x = bdk.TxBuilderResult();

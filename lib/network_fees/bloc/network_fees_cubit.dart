@@ -139,7 +139,12 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
       if (state.tempFees == 4 && (state.tempFees == null || state.tempFees == 0)) {
         print('');
       } else {
-        emit(state.copyWith(selectedFeesOption: state.tempSelectedFeesOption!, fees: null));
+        emit(
+          state.copyWith(
+            selectedFeesOption: state.tempSelectedFeesOption!,
+            fees: state.tempFees,
+          ),
+        );
         if (state.tempSelectedFeesOption == 4 && state.tempFees != null && state.tempFees! <= max)
           emit(state.copyWith(fees: state.tempFees));
       }
