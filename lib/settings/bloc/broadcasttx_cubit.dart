@@ -24,14 +24,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     required this.homeCubit,
     required this.networkCubit,
   }) : super(const BroadcastTxState()) {
-    emit(
-      state.copyWith(
-        extractingTx: false,
-        errExtractingTx: 'Error decoding transaction. Ensure the transaction is valid.',
-        // step: BroadcastTxStep.import,
-        tx: '',
-      ),
-    );
+    clearErrors();
   }
 
   final FilePick filePicker;
@@ -316,6 +309,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           }
         }
         final int feeAmount = transaction?.fee ?? 0;
+        // sum of input values - output values = fees
+
         // TODO: timestamp needs to be properly set
         transaction ??= Transaction(
           txid: txid,

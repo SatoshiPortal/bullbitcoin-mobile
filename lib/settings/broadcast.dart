@@ -340,19 +340,16 @@ class TxInfo extends StatelessWidget {
     final bState = context.select((BroadcastTxCubit cubit) => cubit.state);
 
     final tx = context.select((BroadcastTxCubit cubit) => cubit.state.transaction);
-    final psbt = context.select((BroadcastTxCubit cubit) => cubit.state.psbtBDK);
-    if (tx == null || psbt == null) return const SizedBox();
+    // final psbt = context.select((BroadcastTxCubit cubit) => cubit.state.psbtBDK);
+    if (tx == null) return const SizedBox();
     final label = tx.label ?? 'No Label';
 
     final txamt = context.select(
       (BroadcastTxCubit cubit) => cubit.state.amount ?? 0,
     );
     final txfee = context.select((BroadcastTxCubit cubit) => cubit.state.transaction?.fee ?? 0);
-
     // final txAddress = context.select((BroadcastTxCubit _) => _.state.transaction?.outAddrs ?? []);
-
     final cState = context.select((CurrencyCubit cubit) => cubit.state);
-
     final amt = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(txamt));
     final fee = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(txfee));
     return Padding(
@@ -391,7 +388,7 @@ class TxInfo extends StatelessWidget {
                 ),
               ],
             ),
-          ] else
+          ] else ...[
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
@@ -409,6 +406,7 @@ class TxInfo extends StatelessWidget {
                 ),
               ],
             ),
+          ],
           const BBText.title('Total output amount'),
           const Gap(4),
           Row(
