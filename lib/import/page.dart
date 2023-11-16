@@ -118,11 +118,11 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final step = context.select((ImportWalletCubit cubit) => cubit.state.importStep);
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      onPopInvoked: (_) async {
         if (step == ImportSteps.selectCreateType) context.pop();
         context.read<ImportWalletCubit>().backClicked();
-        return false;
+        // return false;
       },
       child: () {
         switch (step) {

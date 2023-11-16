@@ -40,6 +40,8 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   Future<void> init() async {
     if (defaultCurrencyCubit != null) {
       emit(defaultCurrencyCubit!.state);
+      reset();
+      loadCurrencyForAmount();
       return;
     }
     Future.delayed(const Duration(milliseconds: 200));
@@ -48,6 +50,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
 
     final currency = CurrencyState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
     emit(currency);
+    loadCurrencies();
   }
 
   void loadCurrencyForAmount() async {
@@ -63,15 +66,13 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     emit(state.copyWith(unitsInSats: !state.unitsInSats));
   }
 
-  void changeDefaultCurrency(Currency currency) {
-    emit(state.copyWith(defaultFiatCurrency: currency));
-  }
+  void changeDefaultCurrency(Currency currency) =>
+      emit(state.copyWith(defaultFiatCurrency: currency));
 
   void loadCurrencies() async {
     emit(state.copyWith(loadingCurrency: true));
     final (cad, _) = await bbAPI.getExchangeRate(toCurrency: 'CAD');
     final (usd, _) = await bbAPI.getExchangeRate(toCurrency: 'USD');
-
     final (crc, _) = await bbAPI.getExchangeRate(toCurrency: 'CRC');
     final (inr, _) = await bbAPI.getExchangeRate(toCurrency: 'INR');
     final (eur, _) = await bbAPI.getExchangeRate(toCurrency: 'EUR');
@@ -95,14 +96,22 @@ class CurrencyCubit extends Cubit<CurrencyState> {
       ),
     );
 
-    if (state.currency != null) {
+    // if (state.currency != null) {
+    //   final currency = results.firstWhere(
+    //     (_) => _.name == state.currency!.name,
+    //     orElse: () => state.currency!,
+    //   );
+    //   emit(state.copyWith(currency: currency, defaultFiatCurrency: currency));
+    //   if (results.isEmpty && state.currencyList == null)
+    //     emit(state.copyWith(currencyList: [currency]));
+    // }
+
+    if (state.defaultFiatCurrency != null) {
       final currency = results.firstWhere(
-        (_) => _.name == state.currency!.name,
-        orElse: () => state.currency!,
+        (_) => _.name == state.defaultFiatCurrency!.name,
+        orElse: () => state.defaultFiatCurrency!,
       );
-      emit(state.copyWith(currency: currency, defaultFiatCurrency: currency));
-      if (results.isEmpty && state.currencyList == null)
-        emit(state.copyWith(currencyList: [currency]));
+      emit(state.copyWith(defaultFiatCurrency: currency));
     }
   }
 

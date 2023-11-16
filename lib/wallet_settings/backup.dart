@@ -146,7 +146,7 @@ class BackupScreen extends StatelessWidget {
             ),
             const Gap(8),
             MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
               child: WordGrid(mne: mnemonic),
             ),
             if (password.isNotEmpty) ...[

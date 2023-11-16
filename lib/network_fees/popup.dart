@@ -86,10 +86,10 @@ class SelectFeesPopUp extends StatelessWidget {
           providers: [
             BlocProvider.value(value: fees),
           ],
-          child: WillPopScope(
-            onWillPop: () async {
+          child: PopScope(
+            onPopInvoked: (_) async {
               fees.checkFees();
-              return true;
+              return;
             },
             child: const SelectFeesPopUp(),
           ),
@@ -109,10 +109,10 @@ class SelectFeesPopUp extends StatelessWidget {
         providers: [
           BlocProvider.value(value: defaultFees),
         ],
-        child: WillPopScope(
-          onWillPop: () async {
+        child: PopScope(
+          onPopInvoked: (_) async {
             defaultFees.checkFees();
-            return true;
+            return;
           },
           child: const SelectFeesPopUp(),
         ),
