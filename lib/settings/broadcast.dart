@@ -305,12 +305,12 @@ class SendButton extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (hasErr) ...[
-          BBText.error(
-            err,
-          ),
-          const Gap(16),
-        ],
+        // if (hasErr) ...[
+        //   BBText.error(
+        //     err,
+        //   ),
+        //   const Gap(16),
+        // ],
         Center(
           child: SizedBox(
             width: 300,

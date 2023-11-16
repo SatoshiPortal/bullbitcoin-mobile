@@ -23,7 +23,16 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     required this.walletTx,
     required this.homeCubit,
     required this.networkCubit,
-  }) : super(const BroadcastTxState());
+  }) : super(const BroadcastTxState()) {
+    emit(
+      state.copyWith(
+        extractingTx: false,
+        errExtractingTx: 'Error decoding transaction. Ensure the transaction is valid.',
+        // step: BroadcastTxStep.import,
+        tx: '',
+      ),
+    );
+  }
 
   final FilePick filePicker;
   final Barcode barcode;
@@ -201,7 +210,10 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           }
         }
 
-        transaction ??= Transaction(txid: txid, timestamp: DateTime.now().microsecondsSinceEpoch);
+        transaction ??= Transaction(
+          txid: txid,
+          timestamp: DateTime.now().millisecondsSinceEpoch,
+        );
         transaction = transaction.copyWith(
           fee: feeAmount,
           outAddrs: outAddrs,
@@ -223,19 +235,43 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         );
       } else {
         // its a hex
-
         final bdkTx = await bdk.Transaction.create(transactionBytes: hex.decode(tx));
         final txid = await bdkTx.txid();
         final outputs = await bdkTx.output();
         Transaction? transaction;
+        WalletBloc? relatedWallet;
+
         final wallets = homeCubit.state.walletBlocs ?? [];
         for (final wallet in wallets) {
-          for (final tx in wallet.state.wallet?.transactions ?? <Transaction>[]) {
-            if (tx.txid == txid) {
+          for (final tx in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
+            if (tx.txid == txid && !tx.isReceived()) {
               transaction = tx;
+              relatedWallet = wallet;
             }
           }
         }
+        if (transaction != null) {
+          emit(
+            state.copyWith(
+              recognizedTx: true,
+            ),
+          );
+          if (relatedWallet == null) {
+            emit(
+              state.copyWith(
+                errExtractingTx: 'Could not load related wallet',
+              ),
+            );
+            return;
+          }
+        } else {
+          emit(
+            state.copyWith(
+              recognizedTx: false,
+            ),
+          );
+        }
+
         int totalAmount = 0;
         final nOutputs = outputs.length;
         int verifiedOutputs = 0;
@@ -304,31 +340,6 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             // this is the sum of outputs so its not really what we are sending
           ),
         );
-        // final outAddrsFutures = outputs.map((txOut) async {
-        //   final scriptAddress = await bdk.Address.fromScript(
-        //     txOut.scriptPubkey,
-        //     network,
-        //   );
-        //   if (txOut.value == amount! && scriptAddress.toString() == address) {
-        //     return Address(
-        //       address: scriptAddress.toString(),
-        //       kind: AddressKind.external,
-        //       state: AddressStatus.used,
-        //       highestPreviousBalance: amount,
-        //       label: note ?? '',
-        //     );
-        //   } else {
-        //     return Address(
-        //       address: scriptAddress.toString(),
-        //       kind: AddressKind.change,
-        //       state: AddressStatus.used,
-        //       highestPreviousBalance: txOut.value,
-        //       label: note ?? '',
-        //     );
-        //   }
-        // });
-
-        // final List<Address> outAddrs = await Future.wait(outAddrsFutures);
       }
     } on bdk.EncodeException {
       emit(
@@ -344,6 +355,15 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         state.copyWith(
           extractingTx: false,
           errExtractingTx: e.message,
+          // step: BroadcastTxStep.import,
+          tx: '',
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          extractingTx: false,
+          errExtractingTx: e.toString(),
           // step: BroadcastTxStep.import,
           tx: '',
         ),

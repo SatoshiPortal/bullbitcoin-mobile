@@ -18,6 +18,7 @@ function main.build {
     flutter build appbundle
     flutter build apk --release
     rm -rf "$v_zone_build"
+    mkdir -p "$v_zone_build"
     #------------------ package aab
     release_path="$BBM_HOME/build/app/outputs/bundle/release"
     cd "$release_path" || exit 1;
@@ -38,8 +39,7 @@ function main.build {
 
     sign.build "$release_path/$version"
 
-    mkdir -p "$v_zone_build/apk"
-    cp -r . "$v_zone_build/apk"
+    cp -r . "$v_zone_build"
     #------------------ package build
     cd "$v_zone_build" && cd .. || exit
     zip -r "$v_zone_build.zip" "$BBM.$version"
