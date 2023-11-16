@@ -134,7 +134,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     // final minFees = state.feesList!.last;
     final max = state.feesList!.first * 2;
     if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
-    if (state.tempFees! >= max) return;
+    if (state.tempFees! > max) return;
     if (state.tempSelectedFeesOption != null) {
       if (state.tempFees == 4 && (state.tempFees == null || state.tempFees == 0)) {
         print('');
