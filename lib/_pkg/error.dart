@@ -35,5 +35,12 @@ class Err {
 }
 
 extension X on Exception {
-  String get message => (this as dynamic).message as String;
+  String get message {
+    try {
+      final msg = (this as dynamic).message as String;
+      return msg;
+    } catch (e) {
+      return toString();
+    }
+  }
 }

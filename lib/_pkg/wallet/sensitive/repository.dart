@@ -189,18 +189,16 @@ class WalletSensitiveRepository {
         // no seeds exist
         return Err('No Seed Exists!');
       }
-      final seedJson = jsonDecode(seedString!) as Map<String, String>;
-      final seed = Seed.fromJson(seedJson);
+      final seedJson = jsonDecode(seedString!);
+      var seed = Seed.fromJson(seedJson as Map<String, dynamic>);
 
-      final existingPassphrases = seed.passphrases;
+      final existingPassphrases = seed.passphrases.toList();
 
-      seed.passphrases.clear();
+      final List<Passphrase> passphrases = [];
+      for (final pp in existingPassphrases)
+        if (pp.sourceFingerprint != passphraseFingerprintIndex) passphrases.add(pp);
 
-      for (final pp in existingPassphrases) {
-        if (pp.sourceFingerprint != passphraseFingerprintIndex) {
-          seed.passphrases.add(pp);
-        }
-      }
+      seed = seed.copyWith(passphrases: passphrases);
 
       await secureStore.saveValue(
         key: seedFingerprintIndex,
