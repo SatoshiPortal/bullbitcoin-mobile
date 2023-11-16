@@ -19,7 +19,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   flutter_bloc: ^8.1.2
-  freezed: ^2.2.1
+  freezed: ^2.4.5
   get_it: ^7.2.0
   extra_alignments: ^1.0.0+1
   flextras: ^1.0.0
