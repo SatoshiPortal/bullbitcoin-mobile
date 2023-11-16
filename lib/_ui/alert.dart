@@ -127,7 +127,7 @@ class BBAlert extends StatelessWidget {
           backgroundColor: context.colour.background,
           title: title != null ? BBText.titleLarge(title ?? '') : Container(),
           content: BBText.error(text),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
           actions: buttons,
           surfaceTintColor: context.colour.background,
         ),
