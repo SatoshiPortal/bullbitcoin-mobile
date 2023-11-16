@@ -116,6 +116,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   }
 
   void wordClicked(int shuffledIdx) {
+    emit(state.copyWith(errTestingBackup: ''));
     final testMnemonic = state.testMnemonicOrder.toList();
     if (testMnemonic.length == 12) return;
 
@@ -140,6 +141,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   }
 
   void word24Clicked(int shuffledIdx) {
+    emit(state.copyWith(errTestingBackup: ''));
     final testMnemonic = state.testMnemonicOrder.toList();
     if (testMnemonic.length == 24) return;
 
@@ -174,7 +176,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final shuffled = state.mnemonic.toList()..shuffle();
     emit(
       state.copyWith(
-        errTestingBackup: '',
         shuffledMnemonic: shuffled,
       ),
     );
