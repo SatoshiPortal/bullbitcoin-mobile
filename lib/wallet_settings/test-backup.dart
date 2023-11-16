@@ -267,21 +267,10 @@ class TestBackupConfirmButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final testing = context.select((WalletSettingsCubit cubit) => cubit.state.testingBackup);
-    final err = context.select((WalletSettingsCubit cubit) => cubit.state.errTestingBackup);
     final tested = context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
 
     return Column(
       children: [
-        if (err.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Center(
-              child: BBText.error(
-                err,
-              ).animate().fadeIn(),
-            ),
-          ),
-        const Gap(40),
         if (tested)
           Center(
             child: Padding(
