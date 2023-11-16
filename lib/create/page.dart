@@ -18,6 +18,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -111,6 +112,27 @@ class Words extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mne = context.select((CreateWalletCubit cubit) => cubit.state.mnemonic ?? []);
+    final loading = context.select((CreateWalletCubit cubit) => cubit.state.creatingNmemonic);
+
+    if (loading)
+      return const Padding(
+        padding: EdgeInsets.only(left: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CenterLeft(
+              child: SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            Gap(8),
+            BBText.bodySmall('Generating mnemonic...'),
+          ],
+        ),
+      );
+
     return WordGrid(mne: mne);
   }
 }
