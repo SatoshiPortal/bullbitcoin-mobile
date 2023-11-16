@@ -17,6 +17,7 @@ import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
 class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   WalletSettingsCubit({
@@ -393,17 +394,10 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    final (appDocDir, errDir) = await fileStorage.getAppDirectory();
-    if (errDir != null) {
-      emit(
-        state.copyWith(
-          deleting: false,
-          errDeleting: errDir.toString(),
-        ),
-      );
-      return;
-    }
-    final dbDir = appDocDir! + '/' + state.wallet.getWalletStorageString();
+    final appDocDir = await getApplicationDocumentsDirectory();
+
+    final dbDir = appDocDir.path + '/' + state.wallet.getWalletStorageString();
+
     final errDeleting = await fileStorage.deleteFile(dbDir);
     if (errDeleting != null) {
       emit(
@@ -450,7 +444,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       mnemonicFingerprint,
       networkSpecificWallets,
     );
-    if (!exists) {
+    if (exists) {
       final errr = await walletSensRepository.deleteSeed(
         fingerprint: state.wallet.getRelatedSeedStorageString(),
         storage: secureStorage,
