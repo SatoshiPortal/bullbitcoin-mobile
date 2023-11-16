@@ -10,6 +10,7 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -171,6 +172,12 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         testMnemonicOrder: [],
         errTestingBackup: 'Invalid order',
       ),
+    );
+    BBAlert.showErrorAlertPopUp(
+      err: 'Invalid mnemonic order.',
+      onClose: () {
+        emit(state.copyWith(errTestingBackup: ''));
+      },
     );
     await Future.delayed(const Duration(milliseconds: 500));
     final shuffled = state.mnemonic.toList()..shuffle();
