@@ -393,9 +393,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       );
       return;
     }
+    await Future.delayed(const Duration(seconds: 1));
 
     final appDocDir = await getApplicationDocumentsDirectory();
-
     final dbDir = appDocDir.path + '/' + state.wallet.getWalletStorageString();
 
     final errDeleting = await fileStorage.deleteFile(dbDir);
@@ -440,11 +440,12 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final List<Wallet> networkSpecificWallets = (wallets != null)
         ? wallets.where((wallet) => wallet.network == state.wallet.network).toList()
         : [];
-    final exists = await WalletUpdate().walletExists(
+    // check if a wallet exists for this seed, if it does we should not delete the seed
+    final walletInUse = await WalletUpdate().walletExists(
       mnemonicFingerprint,
       networkSpecificWallets,
     );
-    if (exists) {
+    if (!walletInUse) {
       final errr = await walletSensRepository.deleteSeed(
         fingerprint: state.wallet.getRelatedSeedStorageString(),
         storage: secureStorage,
