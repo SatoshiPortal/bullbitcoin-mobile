@@ -25,13 +25,13 @@ dependencies:
   flextras: ^1.0.0
   flutter_animate: ^4.1.0
   gap: ^3.0.1
-  go_router: ^9.0.0
-  google_fonts: ^4.0.4
-  flutter_secure_storage: ^8.0.0
+  go_router: ^12.1.1
+  google_fonts: ^6.1.0
+  flutter_secure_storage: ^9.0.0
 
       
   json_annotation: ^4.7.0
-  flutter_hooks: ^0.18.5+1
+  flutter_hooks: ^0.20.3
   flutter_barcode_scanner: ^2.0.0
   # file_picker: ^5.2.3
   nfc_manager: ^3.2.0
@@ -48,10 +48,10 @@ dependencies:
   pattern_formatter: ^3.0.0
   flutter_native_splash: ^2.2.17
   url_launcher: ^6.1.10
-  file_picker: ^5.2.5
+  file_picker: ^6.1.1
   loading_animation_widget: ^1.2.0+4
   bitcoin_utils: ^0.0.1
-  permission_handler: ^10.0.0
+  permission_handler: ^11.0.1
   # widgetbook: ^3.0.0-beta.14
   # widgetbook_annotation: ^3.0.0-beta.7
   flutter_dotenv: ^5.1.0
