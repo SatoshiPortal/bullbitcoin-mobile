@@ -205,7 +205,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
 
         transaction ??= Transaction(
           txid: txid,
-          timestamp: DateTime.now().millisecondsSinceEpoch,
+          timestamp: 0,
         );
         transaction = transaction.copyWith(
           fee: feeAmount,
@@ -314,7 +314,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         // TODO: timestamp needs to be properly set
         transaction ??= Transaction(
           txid: txid,
-          timestamp: DateTime.now().millisecondsSinceEpoch,
+          timestamp: 0,
         );
         // transaction ??= Transaction(txid: txid);
         transaction = transaction.copyWith(
