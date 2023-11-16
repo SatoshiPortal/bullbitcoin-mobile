@@ -135,7 +135,6 @@ class SelectFeesPopUp extends StatelessWidget {
                 isLeft: true,
                 onBack: () {
                   context.read<NetworkFeesCubit>().clearTempFeeValues();
-
                   context.pop();
                 },
               ),
