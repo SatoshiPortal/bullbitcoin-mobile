@@ -25,6 +25,7 @@ class BBButton extends StatelessWidget {
     this.disabled = false,
     this.filled = false,
     this.loading = false,
+    this.buttonKey,
     this.loadingText,
   })  : type = _ButtonType.smallRed,
         isBlue = null,
@@ -35,6 +36,7 @@ class BBButton extends StatelessWidget {
   const BBButton.smallBlack({
     required this.label,
     required this.onPressed,
+    this.buttonKey,
     this.disabled = false,
     this.filled = false,
     this.loading = false,
@@ -48,6 +50,7 @@ class BBButton extends StatelessWidget {
   const BBButton.bigRed({
     required this.label,
     required this.onPressed,
+    this.buttonKey,
     this.disabled = false,
     this.filled = false,
     this.loading = false,
@@ -65,6 +68,7 @@ class BBButton extends StatelessWidget {
     this.filled = false,
     this.loading = false,
     this.loadingText,
+    this.buttonKey,
   })  : type = _ButtonType.bigBlack,
         isBlue = null,
         isRed = null,
@@ -80,6 +84,7 @@ class BBButton extends StatelessWidget {
     this.isRed = false,
     this.isBlue = true,
     this.centered = false,
+    this.buttonKey,
   })  : type = _ButtonType.text,
         filled = false,
         statusText = null;
@@ -90,6 +95,7 @@ class BBButton extends StatelessWidget {
     this.disabled = false,
     this.loading = false,
     this.loadingText,
+    this.buttonKey,
   })  : type = _ButtonType.textWithRightArrow,
         filled = false,
         isBlue = null,
@@ -103,6 +109,7 @@ class BBButton extends StatelessWidget {
     this.disabled = false,
     this.loading = false,
     this.loadingText,
+    this.buttonKey,
   })  : type = _ButtonType.textWithLeftArrow,
         filled = false,
         isBlue = null,
@@ -119,6 +126,7 @@ class BBButton extends StatelessWidget {
     this.isBlue = false,
     this.isRed = false,
     this.statusText,
+    this.buttonKey,
   })  : type = _ButtonType.textWithStatusAndRightArrow,
         filled = false,
         centered = null;
@@ -135,6 +143,8 @@ class BBButton extends StatelessWidget {
 
   final bool loading;
   final String? loadingText;
+
+  final Key? buttonKey;
 
   @override
   Widget build(BuildContext context) {
@@ -191,6 +201,7 @@ class BBButton extends StatelessWidget {
 
         if (!loading)
           widget = OutlinedButton(
+            key: buttonKey,
             style: style,
             onPressed: disabled ? null : () => onPressed(),
             child: BBText.titleLarge(

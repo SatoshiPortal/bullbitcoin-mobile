@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -32,6 +33,7 @@ class ImportEnterWordsScreen24 extends StatelessWidget {
       radius: const Radius.circular(4),
       scrollbarOrientation: ScrollbarOrientation.right,
       child: SingleChildScrollView(
+        key: UIKeys.importRecoverScrollable,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Column(
@@ -85,6 +87,7 @@ class ImportEnterWordsScreen24 extends StatelessWidget {
                       children: [
                         for (var i = 0; i < 12; i++)
                           ImportWordTextField(
+                            key: UIKeys.importRecoverField(i),
                             index: i,
                             focusNode: focusNodes[i],
                             returnClicked: returnClicked,
@@ -97,6 +100,7 @@ class ImportEnterWordsScreen24 extends StatelessWidget {
                       children: [
                         for (var i = 12; i < 24; i++)
                           ImportWordTextField(
+                            key: UIKeys.importRecoverField(i),
                             index: i,
                             focusNode: focusNodes[i],
                             returnClicked: returnClicked,

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
+import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -180,6 +181,7 @@ class _CreateSelectionScreen extends StatelessWidget {
           ),
           const Gap(16),
           BBButton.bigRed(
+            buttonKey: UIKeys.importRecoverButton,
             onPressed: () {
               context.read<ImportWalletCubit>().recoverClicked();
             },

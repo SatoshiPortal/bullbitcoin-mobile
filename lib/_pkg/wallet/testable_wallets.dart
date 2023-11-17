@@ -121,20 +121,20 @@ const cc3 = {
 //   'cinnamon',
 // ];
 
-// const r2 = [
-//   'upper',
-//   'suffer',
-//   'lab',
-//   'cute',
-//   'ostrich',
-//   'uniform',
-//   'flame',
-//   'team',
-//   'swing',
-//   'road',
-//   'tilt',
-//   'ugly',
-// ];
+const r2 = [
+  'upper',
+  'suffer',
+  'lab',
+  'cute',
+  'ostrich',
+  'uniform',
+  'flame',
+  'team',
+  'swing',
+  'road',
+  'tilt',
+  'ugly',
+];
 
 // const x1 = [];
 

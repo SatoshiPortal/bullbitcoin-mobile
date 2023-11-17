@@ -13,10 +13,11 @@ void main() {
 
     setUp(() async {
       app.main(fromTest: true);
-      homepage = THomePage();
     });
 
     testWidgets('Check mainnet exists and no testnet wallet cards exist', (tester) async {
+      homepage = THomePage(tester: tester);
+
       await Future.delayed(const Duration(seconds: 3));
       final mainnetCard = homepage.mainnetCard;
       expect(mainnetCard, findsOneWidget);

@@ -16,8 +16,14 @@ class UIKeys {
   static const importWalletSelectionOption = Key('import_wallet_selection_option');
   static const importWalletSelectionSyncing = Key('import_wallet_selection_syncing');
 
+  static const importRecoverScrollable = Key('import_recover_scrollable');
+
   static Key importRecoverField(int index) => Key('import_recover_field_$index');
+  static const firstSuggestionWord = Key('first_suggestion_word');
+
   static const importRecoverButton = Key('import_recover_button');
+  static const importRecoverConfirmButton = Key('import_recover_confirm_button');
+
   static Key importWalletSelectionCard(ScriptType type) =>
       Key('import_wallet_selection_option_${type.toString().split('.').last}');
   static const importWalletSelectionConfirmButton = Key('import_wallet_selection_confirm_button');

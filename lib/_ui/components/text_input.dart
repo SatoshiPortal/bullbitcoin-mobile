@@ -19,6 +19,7 @@ class BBTextInput extends StatefulWidget {
     this.focusNode,
     this.hint,
     this.controller,
+    this.uiKey,
   })  : type = _TextInputType.multiLine,
         onEnter = null,
         onDone = null,
@@ -32,6 +33,7 @@ class BBTextInput extends StatefulWidget {
     this.hint,
     this.controller,
     this.maxLength,
+    this.uiKey,
   })  : type = _TextInputType.big,
         rightIcon = null,
         onRightTap = null,
@@ -46,6 +48,7 @@ class BBTextInput extends StatefulWidget {
     required this.rightIcon,
     required this.onRightTap,
     this.hint,
+    this.uiKey,
     this.controller,
   })  : type = _TextInputType.bigWithIcon,
         onEnter = null,
@@ -55,6 +58,7 @@ class BBTextInput extends StatefulWidget {
   const BBTextInput.small({
     required this.onChanged,
     required this.value,
+    this.uiKey,
     this.disabled = false,
     this.focusNode,
     this.hint,
@@ -67,6 +71,8 @@ class BBTextInput extends StatefulWidget {
         maxLength = null;
 
   final _TextInputType type;
+
+  final Key? uiKey;
 
   final TextEditingController? controller;
   final Function(String) onChanged;
@@ -206,6 +212,7 @@ class _BBTextInputState extends State<BBTextInput> {
         widgett = SizedBox(
           height: 40,
           child: TextField(
+            key: widget.uiKey,
             focusNode: widget.focusNode,
             enabled: !widget.disabled,
             onChanged: widget.onChanged,
@@ -333,5 +340,19 @@ class _BBAmountInputState extends State<BBAmountInput> {
         // scrollPadding: EdgeInsets.only(bottom:40),
       ),
     );
+  }
+}
+
+class MyWidget extends StatefulWidget {
+  const MyWidget({super.key});
+
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

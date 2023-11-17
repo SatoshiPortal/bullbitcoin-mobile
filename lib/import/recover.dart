@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -25,6 +26,7 @@ class ImportEnterWordsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     const ImportTypes importwords = ImportTypes.words12;
     return SingleChildScrollView(
+      key: UIKeys.importRecoverScrollable,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
@@ -78,6 +80,7 @@ class ImportEnterWordsScreen extends StatelessWidget {
                     children: [
                       for (var i = 0; i < 6; i++)
                         ImportWordTextField(
+                          uiKey: UIKeys.importRecoverField(i),
                           index: i,
                           focusNode: focusNodes[i],
                           returnClicked: returnClicked,
@@ -90,6 +93,7 @@ class ImportEnterWordsScreen extends StatelessWidget {
                     children: [
                       for (var i = 6; i < 12; i++)
                         ImportWordTextField(
+                          uiKey: UIKeys.importRecoverField(i),
                           index: i,
                           focusNode: focusNodes[i],
                           returnClicked: returnClicked,
@@ -114,11 +118,13 @@ class ImportEnterWordsScreen extends StatelessWidget {
 
 class ImportWordTextField extends StatefulWidget {
   const ImportWordTextField({
-    super.key,
+    this.uiKey,
     required this.index,
     required this.focusNode,
     required this.returnClicked,
   });
+
+  final Key? uiKey;
 
   final int index;
   final FocusNode focusNode;
@@ -195,6 +201,10 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
     entry = null;
   }
 
+  bool checkFirstSuggestionWord(String word) {
+    return suggestions.isNotEmpty && suggestions.first == word;
+  }
+
   Widget buildOverlay() {
     if (suggestions.isEmpty) {
       hideOverlay();
@@ -207,11 +217,12 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
       shadowColor: Colors.white,
       child: Column(
         children: [
-          for (final word in suggestions)
+          for (int i = 0; i < suggestions.length; i++)
             ListTile(
-              title: BBText.body(word),
+              key: i == 0 ? UIKeys.firstSuggestionWord : null,
+              title: BBText.body(suggestions[i]),
               onTap: () {
-                context.read<ImportWalletCubit>().wordChanged12(widget.index, word, true);
+                context.read<ImportWalletCubit>().wordChanged12(widget.index, suggestions[i], true);
                 hideOverlay();
                 setState(() {
                   tapped = true;
@@ -260,6 +271,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                   duration: 200.ms,
                   opacity: !word.tapped ? 0.5 : 1,
                   child: BBTextInput.small(
+                    uiKey: widget.uiKey,
                     focusNode: widget.focusNode,
                     controller: controller,
                     onDone: (value) {
@@ -349,6 +361,7 @@ class _ImportWordsRecoverButton extends StatelessWidget {
           SizedBox(
             width: 250,
             child: BBButton.bigRed(
+              buttonKey: UIKeys.importRecoverConfirmButton,
               label: 'Recover',
               onPressed: () {
                 context.read<ImportWalletCubit>().recoverWallet12Clicked();
