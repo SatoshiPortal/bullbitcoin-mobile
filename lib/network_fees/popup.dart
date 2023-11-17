@@ -89,7 +89,6 @@ class SelectFeesPopUp extends StatelessWidget {
           child: PopScope(
             onPopInvoked: (_) async {
               fees.checkFees();
-              return;
             },
             child: const SelectFeesPopUp(),
           ),
@@ -112,7 +111,6 @@ class SelectFeesPopUp extends StatelessWidget {
         child: PopScope(
           onPopInvoked: (_) async {
             defaultFees.checkFees();
-            return;
           },
           child: const SelectFeesPopUp(),
         ),
