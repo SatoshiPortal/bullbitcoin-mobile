@@ -115,7 +115,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
 
     add(UpdateWallet(wallet, saveToStorage: fromStorage, updateTypes: [UpdateWalletTypes.load]));
-
+    await Future.delayed(50.ms);
     add(GetFirstAddress());
     add(SyncWallet());
   }

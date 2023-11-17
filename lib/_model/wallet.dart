@@ -137,7 +137,7 @@ class Wallet with _$Wallet {
   }
 
   List<Address> addressesWithBalance() {
-    return myAddressBook.where((addr) => addr.calculateBalance() > 0).toList();
+    return myAddressBook.where((addr) => addr.calculateBalanceLocal() > 0).toList();
   }
 
   List<Address> addressesWithoutBalance({bool isUsed = false}) {

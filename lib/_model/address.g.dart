@@ -18,6 +18,9 @@ _$AddressImpl _$$AddressImplFromJson(Map<String, dynamic> json) =>
       saving: json['saving'] as bool? ?? false,
       errSaving: json['errSaving'] as String? ?? '',
       highestPreviousBalance: json['highestPreviousBalance'] as int? ?? 0,
+      localUtxos: (json['localUtxos'] as List<dynamic>?)
+          ?.map((e) => UTXO.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$$AddressImplToJson(_$AddressImpl instance) =>
@@ -32,6 +35,7 @@ Map<String, dynamic> _$$AddressImplToJson(_$AddressImpl instance) =>
       'saving': instance.saving,
       'errSaving': instance.errSaving,
       'highestPreviousBalance': instance.highestPreviousBalance,
+      'localUtxos': instance.localUtxos,
     };
 
 const _$AddressKindEnumMap = {
@@ -46,3 +50,16 @@ const _$AddressStatusEnumMap = {
   AddressStatus.used: 'used',
   AddressStatus.copied: 'copied',
 };
+
+_$UTXOImpl _$$UTXOImplFromJson(Map<String, dynamic> json) => _$UTXOImpl(
+      txid: json['txid'] as String,
+      isSpent: json['isSpent'] as bool,
+      value: json['value'] as int,
+    );
+
+Map<String, dynamic> _$$UTXOImplToJson(_$UTXOImpl instance) =>
+    <String, dynamic>{
+      'txid': instance.txid,
+      'isSpent': instance.isSpent,
+      'value': instance.value,
+    };

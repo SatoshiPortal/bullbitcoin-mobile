@@ -250,6 +250,7 @@ class WalletAddress {
 
         var updated = address.copyWith(
           utxos: utxos,
+          localUtxos: UTXO.fromUTXOList(utxos),
           // label: isRelated ? address.label : txLabel,
           state: AddressStatus.active,
           highestPreviousBalance: unspent.txout.value,
@@ -313,6 +314,7 @@ class WalletAddress {
           spendable: spendable,
           highestPreviousBalance: existing.highestPreviousBalance,
           utxos: existing.utxos,
+          localUtxos: UTXO.fromUTXOList(existing.utxos ?? []),
         );
         addresses.insert(existingIdx, updated);
       } else {

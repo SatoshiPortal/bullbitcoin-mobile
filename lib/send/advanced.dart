@@ -6,6 +6,7 @@ import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,13 +19,17 @@ class AdvancedOptionsPopUp extends StatelessWidget {
 
   static Future openPopup(BuildContext context) {
     final send = context.read<SendCubit>();
+    final wallet = context.read<WalletBloc>();
     return showMaterialModalBottomSheet(
       context: context,
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
-        value: send,
+      builder: (context) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: send),
+          BlocProvider.value(value: wallet),
+        ],
         child: const AdvancedOptionsPopUp(),
       ),
     );
@@ -154,13 +159,17 @@ class AddressSelectionPopUp extends StatelessWidget {
     BuildContext context,
   ) {
     final send = context.read<SendCubit>();
+    final wallet = context.read<WalletBloc>();
     return showMaterialModalBottomSheet(
       context: context,
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
-        value: send,
+      builder: (context) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: send),
+          BlocProvider.value(value: wallet),
+        ],
         child: const AddressSelectionPopUp(),
       ),
     );
@@ -168,9 +177,8 @@ class AddressSelectionPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final addresses =
-        context.select((SendCubit x) => x.walletBloc.state.wallet!.addressesWithBalance());
-    final amount = context.select((CurrencyCubit x) => x.state.amount);
+    final addresses = context.select((WalletBloc _) => _.state.wallet!.addressesWithBalance());
+    final amount = context.select((CurrencyCubit _) => _.state.amount);
 
     final amt = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amount),
@@ -252,7 +260,7 @@ class AdvancedOptionAdress extends StatelessWidget {
       (SendCubit x) => x.state.addressIsSelected(address),
     );
 
-    final balance = address.calculateBalance();
+    final balance = address.calculateBalanceLocal();
 
     final addressType = address.getKindString();
 

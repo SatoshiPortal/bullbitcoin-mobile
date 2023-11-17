@@ -193,11 +193,11 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
 }
 
 /// @nodoc
-abstract class _$$_WalletStateCopyWith<$Res>
+abstract class _$$WalletStateImplCopyWith<$Res>
     implements $WalletStateCopyWith<$Res> {
-  factory _$$_WalletStateCopyWith(
-          _$_WalletState value, $Res Function(_$_WalletState) then) =
-      __$$_WalletStateCopyWithImpl<$Res>;
+  factory _$$WalletStateImplCopyWith(
+          _$WalletStateImpl value, $Res Function(_$WalletStateImpl) then) =
+      __$$WalletStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -225,11 +225,11 @@ abstract class _$$_WalletStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_WalletStateCopyWithImpl<$Res>
-    extends _$WalletStateCopyWithImpl<$Res, _$_WalletState>
-    implements _$$_WalletStateCopyWith<$Res> {
-  __$$_WalletStateCopyWithImpl(
-      _$_WalletState _value, $Res Function(_$_WalletState) _then)
+class __$$WalletStateImplCopyWithImpl<$Res>
+    extends _$WalletStateCopyWithImpl<$Res, _$WalletStateImpl>
+    implements _$$WalletStateImplCopyWith<$Res> {
+  __$$WalletStateImplCopyWithImpl(
+      _$WalletStateImpl _value, $Res Function(_$WalletStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -252,7 +252,7 @@ class __$$_WalletStateCopyWithImpl<$Res>
     Object? errSavingName = null,
     Object? firstAddress = freezed,
   }) {
-    return _then(_$_WalletState(
+    return _then(_$WalletStateImpl(
       wallet: freezed == wallet
           ? _value.wallet
           : wallet // ignore: cast_nullable_to_non_nullable
@@ -323,8 +323,8 @@ class __$$_WalletStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_WalletState extends _WalletState {
-  const _$_WalletState(
+class _$WalletStateImpl extends _WalletState {
+  const _$WalletStateImpl(
       {this.wallet,
       this.bdkWallet,
       this.name = '',
@@ -401,7 +401,7 @@ class _$_WalletState extends _WalletState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WalletState &&
+            other is _$WalletStateImpl &&
             (identical(other.wallet, wallet) || other.wallet == wallet) &&
             (identical(other.bdkWallet, bdkWallet) ||
                 other.bdkWallet == bdkWallet) &&
@@ -456,8 +456,8 @@ class _$_WalletState extends _WalletState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WalletStateCopyWith<_$_WalletState> get copyWith =>
-      __$$_WalletStateCopyWithImpl<_$_WalletState>(this, _$identity);
+  _$$WalletStateImplCopyWith<_$WalletStateImpl> get copyWith =>
+      __$$WalletStateImplCopyWithImpl<_$WalletStateImpl>(this, _$identity);
 }
 
 abstract class _WalletState extends WalletState {
@@ -477,7 +477,7 @@ abstract class _WalletState extends WalletState {
       final String errSyncingAddresses,
       final bool savingName,
       final String errSavingName,
-      final Address? firstAddress}) = _$_WalletState;
+      final Address? firstAddress}) = _$WalletStateImpl;
   const _WalletState._() : super._();
 
   @override
@@ -515,6 +515,6 @@ abstract class _WalletState extends WalletState {
   Address? get firstAddress;
   @override
   @JsonKey(ignore: true)
-  _$$_WalletStateCopyWith<_$_WalletState> get copyWith =>
+  _$$WalletStateImplCopyWith<_$WalletStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
