@@ -43,7 +43,6 @@ class WalletSync {
 
       return (blockchain, null);
     } on Exception catch (r) {
-      // r.toString().replaceFirst('Exception: ', '');
       return (null, Err(r.message, showAlert: true, title: 'Failed to connect to electrum'));
     }
   }
