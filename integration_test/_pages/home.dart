@@ -16,5 +16,9 @@ class THomePage {
     await tester.pumpAndSettle();
   }
 
+  Future checkPageHasTestnetCard() async {
+    expect(testnetCard, findsNWidgets(1));
+  }
+
   Future checkWalletCardWithName(String name) async {}
 }

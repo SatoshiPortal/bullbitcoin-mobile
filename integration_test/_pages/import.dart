@@ -11,18 +11,15 @@ class TImportPage {
   Finder get importButton => find.byKey(UIKeys.importImportButton);
   Finder get xpubField => find.byKey(UIKeys.importXpubField);
   Finder get xpubConfirmButton => find.byKey(UIKeys.importXpubConfirmButton);
-  Finder get walletSelectionOption => find.byKey(UIKeys.importWalletSelectionOption);
-  Finder get walletSelectionSyncing => find.byKey(UIKeys.importWalletSelectionSyncing);
   Finder get recoverButton => find.byKey(UIKeys.importRecoverButton);
   Finder get walletSelectionConfirmButton => find.byKey(UIKeys.importWalletSelectionConfirmButton);
-
   Finder importRecoverField(int index) => find.byKey(UIKeys.importRecoverField(index));
+  Finder get importRecoverScrollable => find.byKey(UIKeys.importRecoverScrollable);
+  Finder get importRecoverConfirmButton => find.byKey(UIKeys.importRecoverConfirmButton);
   Finder importWalletSelectionCard(ScriptType type) =>
       find.byKey(UIKeys.importWalletSelectionCard(type));
-  Finder get importRecoverScrollable => find.byKey(UIKeys.importRecoverScrollable);
-
-  Finder get importRecoverConfirmButton => find.byKey(UIKeys.importRecoverConfirmButton);
-
+  Finder get walletSelectionOption => find.byKey(UIKeys.importWalletSelectionOption);
+  Finder get walletSelectionSyncing => find.byKey(UIKeys.importWalletSelectionSyncing);
   Finder homeCardWithName(String name) => find.byKey(UIKeys.homeCardWithName(name));
   Finder firstSuggestionWord = find.byKey(UIKeys.firstSuggestionWord);
 
@@ -61,9 +58,15 @@ class TImportPage {
     await tester.pumpAndSettle();
   }
 
-  Future waitForWalletsToSync() async {}
+  Future waitForWalletsToSync() async {
+    await tester.pumpAndSettle();
+  }
 
-  Future selectWalletWithTxs() async {}
+  Future selectWalletWithMostTxs() async {
+    await tester.pumpAndSettle();
+  }
 
-  Future tapWalletSelectionConfirmButton() async {}
+  Future tapWalletSelectionConfirmButton() async {
+    await tester.pumpAndSettle();
+  }
 }
