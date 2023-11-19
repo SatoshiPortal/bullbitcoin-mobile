@@ -29,7 +29,6 @@ void main() {
       await importPage.tapRecoverConfirmButton();
       await importPage.waitForWalletsToSync();
       await importPage.tapSegwitWallet();
-      await importPage.scrollToBottomOfWalletSelection();
       await importPage.tapWalletSelectionConfirmButton();
       await homePage.checkPageHasTestnetCard();
     });

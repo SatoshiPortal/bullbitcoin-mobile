@@ -33,6 +33,25 @@ const cc3 = {
         'vpub5ZfDe915NQqkxrE1gTevHwiM4BQJfGWEFYEAybeFTAwphjCSTGbCywd1QnutrLc15Mj2w5MYL2Zt7MS2Qu6gAxL8fio7kpsGXfmAc5Uzctv',
   },
 };
+
+const r2 = [
+  'upper',
+  'suffer',
+  'lab',
+  'cute',
+  'ostrich',
+  'uniform',
+  'flame',
+  'team',
+  'swing',
+  'road',
+  'tilt',
+  'ugly',
+];
+
+const xpub1 =
+    'tpubDC5phKKvZNyMBySbRhQW6t1AkutpvxpAbPacFw38eM2DpiMRZAUBXooGNaBUzVKsST56w1osYwEuRtmqsEpKw4fw8mYWm3jbsjMGnYrgbUz';
+
 // const cc2 = {
 //   'chain': 'BTC',
 //   'xfp': 'BF92D765',
@@ -120,21 +139,6 @@ const cc3 = {
 //   'shield',
 //   'cinnamon',
 // ];
-
-const r2 = [
-  'upper',
-  'suffer',
-  'lab',
-  'cute',
-  'ostrich',
-  'uniform',
-  'flame',
-  'team',
-  'swing',
-  'road',
-  'tilt',
-  'ugly',
-];
 
 // const x1 = [];
 

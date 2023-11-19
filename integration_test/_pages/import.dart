@@ -64,11 +64,6 @@ class TImportPage {
     await tester.pumpAndSettle();
   }
 
-  Future scrollToBottomOfWalletSelection() async {
-    await tester.drag(importWalletSelectionScrollable, const Offset(0, -500));
-    await tester.pumpAndSettle();
-  }
-
   Future waitForWalletsToSync() async {
     await waitForAllToDisappear(tester, importWalletSelectionLoader);
     await tester.pumpAndSettle();
@@ -84,8 +79,20 @@ class TImportPage {
   }
 
   Future tapWalletSelectionConfirmButton() async {
+    await tester.drag(importWalletSelectionScrollable, const Offset(0, -500));
+    await tester.pumpAndSettle();
     await tester.tap(walletSelectionConfirmButton);
     await tester.pumpAndSettle();
     await Future.delayed(1.seconds);
+  }
+
+  Future enterTextInXpubField(String xpub) async {
+    await tester.enterText(xpubField, xpub);
+    await tester.pumpAndSettle();
+  }
+
+  Future tapxPubConfirmButton() async {
+    await tester.tap(xpubConfirmButton);
+    await tester.pumpAndSettle();
   }
 }
