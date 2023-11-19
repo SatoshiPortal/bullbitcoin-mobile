@@ -67,6 +67,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    super.key,
   }) : type = _FontTypes.bodySmall;
 
   const BBText.bodyBold(

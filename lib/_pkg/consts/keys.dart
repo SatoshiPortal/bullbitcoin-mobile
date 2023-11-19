@@ -27,5 +27,9 @@ class UIKeys {
   static Key importWalletSelectionCard(ScriptType type) =>
       Key('import_wallet_selection_option_${type.toString().split('.').last}');
   static const importWalletSelectionConfirmButton = Key('import_wallet_selection_confirm_button');
+  static const importWalletSelectionLoader = Key('import_wallet_selection_loader');
+
   static Key homeCardWithName(String name) => Key('home_card_with_name_$name');
+
+  static Key importWalletSelectionScrollable = const Key('import_wallet_selection_scrollable');
 }

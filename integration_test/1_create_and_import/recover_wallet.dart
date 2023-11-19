@@ -3,7 +3,7 @@ import 'package:bb_mobile/main.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../_flows/switchToTestnet.dart';
-import '../_pages/_utils.dart';
+import '../_flows/utils.dart';
 import '../_pages/home.dart';
 import '../_pages/import.dart';
 
@@ -24,14 +24,13 @@ void main() {
 
       await homePage.tapPlusButton();
       await importPage.tapRecoverButton();
-      await importPage.scrollToBottom();
+      await importPage.scrollToBottomOfRecoverWords();
       await importPage.enterWordsIntoFields(r2);
       await importPage.tapRecoverConfirmButton();
-
       await importPage.waitForWalletsToSync();
-      await importPage.selectWalletWithMostTxs();
+      await importPage.tapSegwitWallet();
+      await importPage.scrollToBottomOfWalletSelection();
       await importPage.tapWalletSelectionConfirmButton();
-
       await homePage.checkPageHasTestnetCard();
     });
   });

@@ -3,6 +3,8 @@ import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../_flows/utils.dart';
+
 class TImportPage {
   TImportPage({required this.tester});
 
@@ -22,6 +24,10 @@ class TImportPage {
   Finder get walletSelectionSyncing => find.byKey(UIKeys.importWalletSelectionSyncing);
   Finder homeCardWithName(String name) => find.byKey(UIKeys.homeCardWithName(name));
   Finder firstSuggestionWord = find.byKey(UIKeys.firstSuggestionWord);
+  Finder get importWalletSelectionLoader => find.byKey(UIKeys.importWalletSelectionLoader);
+  Finder get importWalletSelectionScrollable => find.byKey(UIKeys.importWalletSelectionScrollable);
+  Finder get importWalletSelectionConfirmButton =>
+      find.byKey(UIKeys.importWalletSelectionConfirmButton);
 
   Future tapImportButton() async {
     await tester.tap(importButton);
@@ -53,12 +59,18 @@ class TImportPage {
     await tester.pumpAndSettle();
   }
 
-  Future scrollToBottom() async {
+  Future scrollToBottomOfRecoverWords() async {
     await tester.drag(importRecoverScrollable, const Offset(0, -500));
     await tester.pumpAndSettle();
   }
 
+  Future scrollToBottomOfWalletSelection() async {
+    await tester.drag(importWalletSelectionScrollable, const Offset(0, -500));
+    await tester.pumpAndSettle();
+  }
+
   Future waitForWalletsToSync() async {
+    await waitForAllToDisappear(tester, importWalletSelectionLoader);
     await tester.pumpAndSettle();
   }
 
@@ -66,7 +78,14 @@ class TImportPage {
     await tester.pumpAndSettle();
   }
 
-  Future tapWalletSelectionConfirmButton() async {
+  Future tapSegwitWallet() async {
+    await tester.tap(importWalletSelectionCard(ScriptType.bip84));
     await tester.pumpAndSettle();
+  }
+
+  Future tapWalletSelectionConfirmButton() async {
+    await tester.tap(walletSelectionConfirmButton);
+    await tester.pumpAndSettle();
+    await Future.delayed(1.seconds);
   }
 }

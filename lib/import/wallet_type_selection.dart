@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
@@ -115,6 +116,7 @@ class _ScreenState extends State<_Screen> {
     // }
 
     return SingleChildScrollView(
+      key: UIKeys.importWalletSelectionScrollable,
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -139,6 +141,7 @@ class _ScreenState extends State<_Screen> {
             SizedBox(
               width: 250,
               child: BBButton.bigRed(
+                buttonKey: UIKeys.importWalletSelectionConfirmButton,
                 disabled: saving,
                 filled: true,
                 onPressed: () {
@@ -247,6 +250,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 40),
                   child: InkWell(
+                    key: UIKeys.importWalletSelectionCard(scriptType),
                     borderRadius: BorderRadius.circular(32),
                     onTap: () {
                       context.read<ImportWalletCubit>().scriptTypeChanged(scriptType);
@@ -378,6 +382,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                           if (syncing) ...[
                             const BBText.bodySmall(
                               'Scanning wallet ...',
+                              key: UIKeys.importWalletSelectionLoader,
                             ),
                           ],
                         ],

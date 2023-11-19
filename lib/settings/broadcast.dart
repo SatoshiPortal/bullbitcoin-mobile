@@ -286,8 +286,8 @@ class SendButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final step = context.select((BroadcastTxCubit cubit) => cubit.state.step);
-    final hasErr = context.select((BroadcastTxCubit cubit) => cubit.state.hasErr());
-    final err = context.select((BroadcastTxCubit cubit) => cubit.state.getErrors());
+    final _ = context.select((BroadcastTxCubit cubit) => cubit.state.hasErr());
+    final __ = context.select((BroadcastTxCubit cubit) => cubit.state.getErrors());
 
     final broadcasting = context.select((BroadcastTxCubit cubit) => cubit.state.broadcastingTx);
     final extractingTx = context.select((BroadcastTxCubit cubit) => cubit.state.extractingTx);
