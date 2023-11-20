@@ -384,7 +384,13 @@ class CreateInvoice extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const BBHeader.popUpCenteredText(text: 'Request a Payment'),
+        BBHeader.popUpCenteredText(
+          text: 'Request a Payment',
+          onBack: () {
+            context.read<ReceiveCubit>().clearInvoiceFields();
+            context.pop();
+          },
+        ),
         const Gap(40),
         // const BBText.title('Amount'),
         const Gap(4),

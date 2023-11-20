@@ -160,7 +160,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void clearInvoiceFields() {
     emit(state.copyWith(description: ''));
-    currencyCubit.updateAmountDirect(0);
+    currencyCubit.reset();
+    // currencyCubit.updateAmountDirect(0);
   }
 
   void saveFinalInvoiceClicked() async {
