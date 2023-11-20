@@ -145,7 +145,14 @@ class HomeCubit extends Cubit<HomeState> {
   //   );
   // }
 
-  void clearSelectedWallet() => emit(state.copyWith(selectedWalletCubit: null));
+  void networkChanged(BBNetwork network) async {
+    final wallets = state.walletBlocsFromNetwork(network);
+    if (wallets.isEmpty) {
+      emit(state.copyWith(selectedWalletCubit: null));
+      return;
+    }
+    emit(state.copyWith(selectedWalletCubit: wallets.first));
+  }
 
   void removeWallet(WalletBloc walletBloc) {
     final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];

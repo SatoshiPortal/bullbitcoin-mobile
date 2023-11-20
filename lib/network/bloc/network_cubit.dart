@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/_model/electrum.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
@@ -49,8 +50,9 @@ class NetworkCubit extends Cubit<NetworkState> {
     final isTestnet = state.testnet;
     emit(state.copyWith(testnet: !isTestnet));
     await Future.delayed(const Duration(milliseconds: 50));
-    setupBlockchain();
-    homeCubit?.clearSelectedWallet();
+    await setupBlockchain();
+    await Future.delayed(const Duration(milliseconds: 50));
+    homeCubit?.networkChanged(isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet);
   }
 
   void updateStopGap(int gap) {
