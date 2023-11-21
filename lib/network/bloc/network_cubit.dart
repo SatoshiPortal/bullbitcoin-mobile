@@ -52,7 +52,7 @@ class NetworkCubit extends Cubit<NetworkState> {
     await Future.delayed(const Duration(milliseconds: 50));
     await setupBlockchain();
     await Future.delayed(const Duration(milliseconds: 50));
-    homeCubit?.networkChanged(isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet);
+    homeCubit?.networkChanged(state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet);
   }
 
   void updateStopGap(int gap) {
