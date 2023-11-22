@@ -256,6 +256,22 @@ class TransactionCubit extends Cubit<TransactionState> {
       pubWallet: walletBloc.state.bdkWallet!,
     );
     if (errrr != null) {
+      // Handle Tx confirmation
+      final bdkTxList = await walletBloc.state.bdkWallet?.listTransactions(true);
+      if (bdkTxList != null) {
+        for (final bdkTx in bdkTxList) {
+          if (bdkTx.txid == state.tx.txid && bdkTx.confirmationTime?.height != 0) {
+            emit(
+              state.copyWith(
+                buildingTx: false,
+                errBuildingTx:
+                    'Transaction got confirmed in block ${bdkTx.confirmationTime?.height}. Cannot bump',
+              ),
+            );
+            return;
+          }
+        }
+      }
       emit(
         state.copyWith(
           buildingTx: false,
