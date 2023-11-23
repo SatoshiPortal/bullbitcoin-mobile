@@ -102,22 +102,11 @@ class WalletCardDetails extends StatelessWidget {
         padding: const EdgeInsets.only(
           top: 8,
           right: 16.0,
-          left: 32,
-          bottom: 32,
+          left: 24,
+          bottom: 8,
         ),
         child: Stack(
           children: [
-            TopLeft(
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  top: 8,
-                ),
-                child: BBText.titleLarge(
-                  name ?? fingerprint,
-                  onSurface: true,
-                ),
-              ),
-            ),
             if (!hideSettings)
               TopRight(
                 child: Padding(
@@ -134,67 +123,85 @@ class WalletCardDetails extends StatelessWidget {
                   ),
                 ),
               ),
-            BottomLeft(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      BBText.titleLarge(
-                        balance,
-                        onSurface: true,
-                        isBold: true,
-                      ),
-                      const Gap(4),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 1),
-                        child: BBText.title(
-                          unit,
-                          onSurface: true,
-                          isBold: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (currency != null)
+            // TopLeft(
+            //   child: Padding(
+            //     padding: const EdgeInsets.only(
+            //       top: 8,
+            //     ),
+            //     child: BBText.titleLarge(
+            //       name ?? fingerprint,
+            //       onSurface: true,
+            //     ),
+            //   ),
+            // ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                BBText.titleLarge(
+                  name ?? fingerprint,
+                  onSurface: true,
+                ),
+                Column(
+                  children: [
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        BBText.body(
-                          fiatAmt,
+                        BBText.titleLarge(
+                          balance,
                           onSurface: true,
                           isBold: true,
                         ),
                         const Gap(4),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 1),
-                          child: BBText.bodySmall(
-                            currency.shortName.toUpperCase(),
+                          child: BBText.title(
+                            unit,
                             onSurface: true,
                             isBold: true,
                           ),
                         ),
                       ],
                     ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 1),
-                        child: Opacity(
-                          opacity: 0.7,
-                          child: BBText.bodySmall(
-                            walletStr ?? '',
+                    if (currency != null)
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          BBText.body(
+                            fiatAmt,
                             onSurface: true,
                             isBold: true,
                           ),
+                          const Gap(4),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 1),
+                            child: BBText.bodySmall(
+                              currency.shortName.toUpperCase(),
+                              onSurface: true,
+                              isBold: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 1),
+                      child: Opacity(
+                        opacity: 0.7,
+                        child: BBText.bodySmall(
+                          walletStr ?? '',
+                          onSurface: true,
+                          isBold: true,
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),

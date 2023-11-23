@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -145,10 +146,12 @@ class BBText extends StatelessWidget {
     if (isBold) style = style.copyWith(fontWeight: FontWeight.bold);
     if (removeColourOpacity) style = style.copyWith(color: context.colour.onBackground);
 
-    return Text(
+    return AutoSizeText(
       text,
       style: style,
       textAlign: textAlign,
+      maxFontSize: 24,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }
