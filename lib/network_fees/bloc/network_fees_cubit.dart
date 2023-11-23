@@ -27,15 +27,11 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   void onChange(Change<NetworkFeesState> change) {
     super.onChange(change);
     if (defaultNetworkFeesCubit != null) return;
-    try {
-      hiveStorage.saveValue(
-        key: StorageKeys.networkFees,
-        value: jsonEncode(change.nextState.toJson()),
-      );
-    } catch (e) {
-      final s = change.nextState;
-      print(s);
-    }
+
+    hiveStorage.saveValue(
+      key: StorageKeys.networkFees,
+      value: jsonEncode(change.nextState.toJson()),
+    );
   }
 
   Future<void> init() async {
