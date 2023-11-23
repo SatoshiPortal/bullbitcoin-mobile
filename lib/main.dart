@@ -79,6 +79,9 @@ class BullBitcoinWalletApp extends StatelessWidget {
                           statusBarColor: context.colour.background,
                         ),
                       );
+                      SystemChrome.setPreferredOrientations([
+                        DeviceOrientation.portraitUp,
+                      ]);
                       if (child == null) return Container();
                       return GestureDetector(
                         onTap: () {
