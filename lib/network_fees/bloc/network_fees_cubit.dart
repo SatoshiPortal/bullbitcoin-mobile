@@ -27,10 +27,15 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   void onChange(Change<NetworkFeesState> change) {
     super.onChange(change);
     if (defaultNetworkFeesCubit != null) return;
-    hiveStorage.saveValue(
-      key: StorageKeys.networkFees,
-      value: jsonEncode(change.nextState.toJson()),
-    );
+    try {
+      hiveStorage.saveValue(
+        key: StorageKeys.networkFees,
+        value: jsonEncode(change.nextState.toJson()),
+      );
+    } catch (e) {
+      final s = change.nextState;
+      print(s);
+    }
   }
 
   Future<void> init() async {
@@ -39,7 +44,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
       return;
     }
 
-    Future.delayed(const Duration(milliseconds: 200));
+    Future.delayed(const Duration(milliseconds: 50));
     final (result, err) = await hiveStorage.getValue(StorageKeys.networkFees);
     if (err != null) {
       loadFees();
@@ -49,10 +54,10 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     final networkFees = NetworkFeesState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
     emit(networkFees);
     await Future.delayed(const Duration(milliseconds: 50));
-    loadFees();
+    await loadFees();
   }
 
-  void loadFees() async {
+  Future loadFees() async {
     emit(state.copyWith(loadingFees: true, errLoadingFees: ''));
     final testnet = networkCubit.state.testnet;
     final (fees, err) = await mempoolAPI.getFees(testnet);
@@ -95,7 +100,8 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     checkMinimumFees();
   }
 
-  void feeOptionSelected(int index) {
+  Future feeOptionSelected(int index) async {
+    await Future.delayed(100.ms);
     emit(state.copyWith(tempSelectedFeesOption: index));
     checkMinimumFees();
   }
@@ -130,7 +136,9 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
       emit(state.copyWith(errLoadingFees: ''));
   }
 
-  void confirmFeeClicked() {
+  Future confirmFeeClicked() async {
+    await Future.delayed(200.ms);
+    if (state.feesList == null) return;
     // final minFees = state.feesList!.last;
     final max = state.feesList!.first * 2;
     if (state.tempFees == null && state.tempSelectedFeesOption == null) return;
@@ -143,6 +151,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
           state.copyWith(
             selectedFeesOption: state.tempSelectedFeesOption!,
             fees: state.tempFees,
+            tempSelectedFeesOption: null,
           ),
         );
         if (state.tempSelectedFeesOption == 4 && state.tempFees != null && state.tempFees! <= max)
@@ -154,7 +163,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   }
 
   void clearTempFeeValues() async {
-    await Future.delayed(200.ms);
+    await Future.delayed(100.ms);
     emit(state.copyWith(tempFees: null, tempSelectedFeesOption: null, feesSaved: false));
   }
 }
