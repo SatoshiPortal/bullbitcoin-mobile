@@ -109,47 +109,32 @@ void main() {
         await cubit.confirmFeeClicked();
       },
       setUp: () {
-        when(() => storage.getValue(StorageKeys.networkFees)).thenAnswer(
-          (_) async => (
-            null,
-            Err(
-              'Empty',
-              expected: true,
-            )
-          ),
-        );
+        when(() => storage.getValue(StorageKeys.networkFees))
+            .thenAnswer((_) async => (null, Err('Empty', expected: true)));
 
         when(
           () => storage.saveValue(
             key: StorageKeys.networkFees,
-            value: jsonEncode(
-              const NetworkFeesState(
-                loadingFees: true,
-              ).toJson(),
-            ),
+            value: jsonEncode(const NetworkFeesState(loadingFees: true).toJson()),
           ),
         ).thenAnswer((_) async => null);
 
-        when(() => networkCubit.state).thenReturn(
-          const NetworkState(
-            testnet: true,
-          ),
-        );
+        when(() => networkCubit.state).thenReturn(const NetworkState(testnet: true));
 
-        when(() => mempoolAPI.getFees(true)).thenAnswer(
-          (_) async => (
-            [5, 4, 3, 2, 1],
-            null,
+        when(() => mempoolAPI.getFees(true)).thenAnswer((_) async => ([5, 4, 3, 2, 1], null));
+
+        when(
+          () => storage.saveValue(
+            key: StorageKeys.networkFees,
+            value: jsonEncode(const NetworkFeesState(feesList: [5, 4, 3, 2, 1]).toJson()),
           ),
-        );
+        ).thenAnswer((_) async => null);
 
         when(
           () => storage.saveValue(
             key: StorageKeys.networkFees,
             value: jsonEncode(
-              const NetworkFeesState(
-                feesList: [5, 4, 3, 2, 1],
-              ).toJson(),
+              const NetworkFeesState(feesList: [5, 4, 3, 2, 1], tempSelectedFeesOption: 1).toJson(),
             ),
           ),
         ).thenAnswer((_) async => null);
@@ -158,22 +143,7 @@ void main() {
           () => storage.saveValue(
             key: StorageKeys.networkFees,
             value: jsonEncode(
-              const NetworkFeesState(
-                feesList: [5, 4, 3, 2, 1],
-                tempSelectedFeesOption: 1,
-              ).toJson(),
-            ),
-          ),
-        ).thenAnswer((_) async => null);
-
-        when(
-          () => storage.saveValue(
-            key: StorageKeys.networkFees,
-            value: jsonEncode(
-              const NetworkFeesState(
-                feesList: [5, 4, 3, 2, 1],
-                tempSelectedFeesOption: 4,
-              ).toJson(),
+              const NetworkFeesState(feesList: [5, 4, 3, 2, 1], tempSelectedFeesOption: 4).toJson(),
             ),
           ),
         ).thenAnswer((_) async => null);
@@ -195,22 +165,7 @@ void main() {
           () => storage.saveValue(
             key: StorageKeys.networkFees,
             value: jsonEncode(
-              const NetworkFeesState(
-                feesList: [5, 4, 3, 2, 1],
-                selectedFeesOption: 4,
-              ).toJson(),
-            ),
-          ),
-        ).thenAnswer((_) async => null);
-
-        when(
-          () => storage.saveValue(
-            key: StorageKeys.networkFees,
-            value: jsonEncode(
-              const NetworkFeesState(
-                feesList: [5, 4, 3, 2, 1],
-                selectedFeesOption: 4,
-              ).toJson(),
+              const NetworkFeesState(feesList: [5, 4, 3, 2, 1], selectedFeesOption: 4).toJson(),
             ),
           ),
         ).thenAnswer((_) async => null);
