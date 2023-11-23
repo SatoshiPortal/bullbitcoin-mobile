@@ -40,47 +40,28 @@ void main() {
       act: (_) => _,
       setUp: () {
         when(() => storage.getValue(StorageKeys.networkFees)).thenAnswer(
-          (_) async => (
-            null,
-            Err(
-              'Empty',
-              expected: true,
-            )
-          ),
+          (_) async => (null, Err('Empty', expected: true)),
         );
 
         when(
           () => storage.saveValue(
             key: StorageKeys.networkFees,
             value: jsonEncode(
-              const NetworkFeesState(
-                loadingFees: true,
-              ).toJson(),
+              const NetworkFeesState(loadingFees: true).toJson(),
             ),
           ),
         ).thenAnswer((_) async => null);
 
         when(() => networkCubit.state).thenReturn(
-          const NetworkState(
-            testnet: true,
-          ),
+          const NetworkState(testnet: true),
         );
 
-        when(() => mempoolAPI.getFees(true)).thenAnswer(
-          (_) async => (
-            [5, 4, 3, 2, 1],
-            null,
-          ),
-        );
+        when(() => mempoolAPI.getFees(true)).thenAnswer((_) async => ([5, 4, 3, 2, 1], null));
 
         when(
           () => storage.saveValue(
             key: StorageKeys.networkFees,
-            value: jsonEncode(
-              const NetworkFeesState(
-                feesList: [5, 4, 3, 2, 1],
-              ).toJson(),
-            ),
+            value: jsonEncode(const NetworkFeesState(feesList: [5, 4, 3, 2, 1]).toJson()),
           ),
         ).thenAnswer((_) async => null);
       },
@@ -183,6 +164,53 @@ void main() {
         verify(() => _.hiveStorage.getValue(StorageKeys.networkFees)).called(1);
         verify(() => _.networkCubit.state).called(1);
         verify(() => _.mempoolAPI.getFees(true)).called(1);
+
+        verify(
+          () => _.hiveStorage.saveValue(
+            key: StorageKeys.networkFees,
+            value: jsonEncode(const NetworkFeesState(feesList: [5, 4, 3, 2, 1]).toJson()),
+          ),
+        ).called(1);
+
+        verify(
+          () => _.hiveStorage.saveValue(
+            key: StorageKeys.networkFees,
+            value: jsonEncode(
+              const NetworkFeesState(feesList: [5, 4, 3, 2, 1], tempSelectedFeesOption: 1).toJson(),
+            ),
+          ),
+        ).called(1);
+
+        verify(
+          () => _.hiveStorage.saveValue(
+            key: StorageKeys.networkFees,
+            value: jsonEncode(
+              const NetworkFeesState(feesList: [5, 4, 3, 2, 1], tempSelectedFeesOption: 4).toJson(),
+            ),
+          ),
+        ).called(1);
+
+        verify(
+          () => _.hiveStorage.saveValue(
+            key: StorageKeys.networkFees,
+            value: jsonEncode(
+              const NetworkFeesState(
+                feesList: [5, 4, 3, 2, 1],
+                selectedFeesOption: 4,
+                feesSaved: true,
+              ).toJson(),
+            ),
+          ),
+        ).called(1);
+
+        verify(
+          () => _.hiveStorage.saveValue(
+            key: StorageKeys.networkFees,
+            value: jsonEncode(
+              const NetworkFeesState(feesList: [5, 4, 3, 2, 1], selectedFeesOption: 4).toJson(),
+            ),
+          ),
+        ).called(2);
       },
     );
 
