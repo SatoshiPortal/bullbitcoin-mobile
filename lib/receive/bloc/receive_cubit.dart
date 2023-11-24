@@ -100,7 +100,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
               'WARNING! Electrum stop gap has been increased to $addressGap. This will affect your wallet sync time.\nGoto WalletSettings->Addresses to see all generated addresses.',
         ),
       );
-      networkCubit.updateStopGap(addressGap + 1);
+      networkCubit.updateStopGapAndSave(addressGap + 1);
       Future.delayed(const Duration(milliseconds: 100));
     }
 

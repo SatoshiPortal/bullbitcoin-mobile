@@ -26,8 +26,9 @@ class NetworkState with _$NetworkState {
     @Default(false) bool loadingNetworks,
     @Default('') String errLoadingNetworks,
     @Default(false) bool networkConnected,
-    @Default(20) int stopGap,
+    // @Default(20) int stopGap,
     ElectrumTypes? tempNetwork,
+    ElectrumNetwork? tempNetworkDetails,
   }) = _NetworkState;
   const NetworkState._();
 
@@ -40,8 +41,12 @@ class NetworkState with _$NetworkState {
 
   ElectrumNetwork? getTempOrSelectedNetwork() {
     if (networks.isEmpty) return null;
+    // return tempNetwork ?? selectedNetwork;
     if (tempNetwork == null) return getNetwork();
-    return networks.firstWhere((_) => _.type == tempNetwork);
+    final n = networks;
+    final t = tempNetwork;
+
+    return n.firstWhere((_) => _.type == t);
   }
 
   bdk.Network getBdkNetwork() {

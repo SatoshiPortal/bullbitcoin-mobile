@@ -55,12 +55,10 @@ class NetworkCubit extends Cubit<NetworkState> {
     homeCubit?.networkChanged(state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet);
   }
 
-  void updateStopGap(int gap) {
-    // final network = state.networks
-    final network = state.getNetwork();
-    if (network == null) return;
-    final updatedConfig = network.copyWith(stopGap: gap);
-    networkConfigsSaveClicked(updatedConfig);
+  void updateStopGapAndSave(int gap) async {
+    updateTempStopGap(gap);
+    await Future.delayed(const Duration(milliseconds: 50));
+    networkConfigsSaveClicked();
   }
 
   Future setupBlockchain() async {
@@ -68,7 +66,6 @@ class NetworkCubit extends Cubit<NetworkState> {
     final isTestnet = state.testnet;
     final selectedNetwork = state.getNetwork();
     if (selectedNetwork == null) return;
-    // final selectedNetwork = state.networks[state.selectedNetwork];
 
     final (blockchain, err) = await walletSync.createBlockChain(
       stopGap: selectedNetwork.stopGap,
@@ -88,7 +85,6 @@ class NetworkCubit extends Cubit<NetworkState> {
     }
 
     emit(state.copyWith(blockchain: blockchain, networkConnected: true));
-    // loadFees();
   }
 
   Future loadNetworks() async {
@@ -98,7 +94,14 @@ class NetworkCubit extends Cubit<NetworkState> {
     final networks = state.networks;
 
     if (networks.isNotEmpty) {
-      emit(state.copyWith(loadingNetworks: false));
+      final selectedNetwork = networks.firstWhere((_) => _.type == state.selectedNetwork);
+
+      emit(
+        state.copyWith(
+          loadingNetworks: false,
+          tempNetworkDetails: selectedNetwork,
+        ),
+      );
       setupBlockchain();
       return;
     }
@@ -112,10 +115,13 @@ class NetworkCubit extends Cubit<NetworkState> {
       ),
     ];
 
+    final selectedNetwork = newNetworks.firstWhere((_) => _.type == state.selectedNetwork);
+
     emit(
       state.copyWith(
         loadingNetworks: false,
         networks: newNetworks,
+        tempNetworkDetails: selectedNetwork,
       ),
     );
 
@@ -124,27 +130,78 @@ class NetworkCubit extends Cubit<NetworkState> {
     await setupBlockchain();
   }
 
-  void changeNetwork(ElectrumTypes electrumType) {
-    emit(state.copyWith(selectedNetwork: electrumType));
-    setupBlockchain();
+  void networkTypeTempChanged(ElectrumTypes type) {
+    final network = state.networks.firstWhere((_) => _.type == type);
+
+    emit(
+      state.copyWith(
+        tempNetwork: type,
+        tempNetworkDetails: network,
+      ),
+    );
   }
 
-  void networkConfigsSaveClicked(ElectrumNetwork network) async {
-    if (state.tempNetwork != null) {
-      emit(state.copyWith(selectedNetwork: state.tempNetwork!));
-      await Future.delayed(const Duration(milliseconds: 50));
-      emit(state.copyWith(tempNetwork: null));
-    }
+  void updateTempMainnet(String mainnet) {
+    final network = state.tempNetworkDetails;
+    if (network == null) return;
+    final updatedConfig = network.copyWith(mainnet: mainnet);
+    emit(state.copyWith(tempNetworkDetails: updatedConfig));
+  }
+
+  void updateTempTestnet(String testnet) {
+    final network = state.tempNetworkDetails;
+    if (network == null) return;
+    final updatedConfig = network.copyWith(testnet: testnet);
+    emit(state.copyWith(tempNetworkDetails: updatedConfig));
+  }
+
+  void updateTempStopGap(int gap) {
+    final network = state.tempNetworkDetails;
+    if (network == null) return;
+    final updatedConfig = network.copyWith(stopGap: gap);
+    emit(state.copyWith(tempNetworkDetails: updatedConfig));
+  }
+
+  void updateTempTimeout(int timeout) {
+    final network = state.tempNetworkDetails;
+    if (network == null) return;
+    final updatedConfig = network.copyWith(timeout: timeout);
+    emit(state.copyWith(tempNetworkDetails: updatedConfig));
+  }
+
+  void updateTempRetry(int retry) {
+    final network = state.tempNetworkDetails;
+    if (network == null) return;
+    final updatedConfig = network.copyWith(retry: retry);
+    emit(state.copyWith(tempNetworkDetails: updatedConfig));
+  }
+
+  void updateTempValidateDomain(bool validateDomain) {
+    final network = state.tempNetworkDetails;
+    if (network == null) return;
+    final updatedConfig = network.copyWith(validateDomain: validateDomain);
+    emit(state.copyWith(tempNetworkDetails: updatedConfig));
+  }
+
+  void networkConfigsSaveClicked() async {
+    if (state.tempNetwork == null) return;
     final networks = state.networks.toList();
-    final index = networks.indexWhere((element) => element.type == network.type);
+    final tempNetwork = state.tempNetworkDetails!;
+    final index = networks.indexWhere((element) => element.type == state.tempNetwork);
     networks.removeAt(index);
-    networks.insert(index, network);
-    emit(state.copyWith(networks: networks));
+    networks.insert(index, state.tempNetworkDetails!);
+    emit(state.copyWith(networks: networks, selectedNetwork: tempNetwork.type));
     await Future.delayed(const Duration(milliseconds: 50));
     setupBlockchain();
   }
 
-  void networkTypeTempChanged(ElectrumTypes types) => emit(state.copyWith(tempNetwork: types));
-
-  void removeTempNetwork() => emit(state.copyWith(tempNetwork: null));
+  void resetTempNetwork() {
+    final selectedNetwork = state.getNetwork();
+    emit(
+      state.copyWith(
+        tempNetworkDetails: selectedNetwork,
+        tempNetwork: null,
+      ),
+    );
+  }
 }

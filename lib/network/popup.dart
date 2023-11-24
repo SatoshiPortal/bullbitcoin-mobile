@@ -52,7 +52,7 @@ class NetworkScreen extends StatelessWidget {
             text: 'Electrum Server',
             isLeft: true,
             onBack: () {
-              context.read<NetworkCubit>().removeTempNetwork();
+              context.read<NetworkCubit>().resetTempNetwork();
               context.pop();
             },
           ),
@@ -162,7 +162,6 @@ class _SegmentButton extends StatelessWidget {
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          // width: double.infinity,
           decoration: BoxDecoration(
             color: isSelected ? selectedBGColour : unselectedBGColour,
             borderRadius: BorderRadius.only(
@@ -176,7 +175,6 @@ class _SegmentButton extends StatelessWidget {
               BBText.bodySmall(text, removeColourOpacity: true),
               Gap(isSelected ? 7 : 8),
               Container(
-                // width: double.infinity,
                 height: isSelected ? 2 : 1,
                 color: isSelected ? context.colour.primary : context.colour.surface,
               ),
@@ -200,26 +198,13 @@ class NetworkConfigFields extends HookWidget {
     final network = context.select((NetworkCubit x) => x.state.getTempOrSelectedNetwork());
     if (network == null) return const SizedBox.shrink();
 
+    final tempNetworkDetails = context.select((NetworkCubit x) => x.state.tempNetworkDetails);
+    if (tempNetworkDetails == null) return const SizedBox.shrink();
+
     final type = network.type;
-    // final index = context.select((SettingsCubit x) => x.state.selectedNetwork);
 
     final err = context.select((NetworkCubit x) => x.state.errLoadingNetworks);
     final loading = context.select((NetworkCubit x) => x.state.loadingNetworks);
-
-    final mainnet = useTextEditingController(text: network.mainnet);
-    final testnet = useTextEditingController(text: network.testnet);
-
-    final validateDomain = useState(network.validateDomain);
-
-    useEffect(
-      () {
-        mainnet.text = network.mainnet;
-        testnet.text = network.testnet;
-        validateDomain.value = network.validateDomain;
-        return null;
-      },
-      [network],
-    );
 
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),
@@ -232,9 +217,10 @@ class NetworkConfigFields extends HookWidget {
           SizedBox(
             width: fieldWidth,
             child: BBTextInput.big(
-              onChanged: (t) {},
-              value: mainnet.text,
-              controller: mainnet,
+              onChanged: (t) {
+                context.read<NetworkCubit>().updateTempMainnet(t);
+              },
+              value: tempNetworkDetails.mainnet,
               disabled: type != ElectrumTypes.custom,
             ),
           ),
@@ -244,9 +230,10 @@ class NetworkConfigFields extends HookWidget {
           SizedBox(
             width: fieldWidth,
             child: BBTextInput.big(
-              onChanged: (t) {},
-              value: testnet.text,
-              controller: testnet,
+              onChanged: (t) {
+                context.read<NetworkCubit>().updateTempTestnet(t);
+              },
+              value: tempNetworkDetails.testnet,
               disabled: type != ElectrumTypes.custom,
             ),
           ),
@@ -258,9 +245,9 @@ class NetworkConfigFields extends HookWidget {
               IgnorePointer(
                 ignoring: type != ElectrumTypes.custom,
                 child: Switch(
-                  value: validateDomain.value,
+                  value: tempNetworkDetails.validateDomain,
                   onChanged: (e) {
-                    validateDomain.value = e;
+                    context.read<NetworkCubit>().updateTempValidateDomain(e);
                   },
                 ),
               ),
@@ -270,12 +257,7 @@ class NetworkConfigFields extends HookWidget {
           BBButton.textWithRightArrow(
             label: 'Advanced Options',
             onPressed: () {
-              ElectrumAdvancedOptions.openPopUp(
-                context,
-                mainnet: mainnet.text,
-                testnet: testnet.text,
-                validateDomain: validateDomain.value,
-              );
+              ElectrumAdvancedOptions.openPopUp(context);
             },
           ),
           const Gap(40),
@@ -291,21 +273,13 @@ class NetworkConfigFields extends HookWidget {
                 loadingText: 'Connecting...',
                 onPressed: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
-                  final updatednetwork = network.copyWith(
-                    mainnet: mainnet.text,
-                    testnet: testnet.text,
-                    // stopGap: int.tryParse(stopGap.text) ?? 20,
-                    // retry: int.tryParse(retry.text) ?? 5,
-                    // timeout: int.tryParse(timeout.text) ?? 5,
-                    validateDomain: validateDomain.value,
-                  );
 
                   if (type == ElectrumTypes.custom) {
-                    await PrivacyNoticePopUp.openPopUp(context, updatednetwork);
+                    await PrivacyNoticePopUp.openPopUp(context);
                     return;
                   }
 
-                  context.read<NetworkCubit>().networkConfigsSaveClicked(updatednetwork);
+                  context.read<NetworkCubit>().networkConfigsSaveClicked();
                   await Future.delayed(const Duration(milliseconds: 500));
                   final err = context.read<NetworkCubit>().state.errLoadingNetworks;
                   if (err.isEmpty) context.pop();
@@ -323,17 +297,15 @@ class NetworkConfigFields extends HookWidget {
 }
 
 class PrivacyNoticePopUp extends StatelessWidget {
-  const PrivacyNoticePopUp({super.key, required this.updatedNetwork});
+  const PrivacyNoticePopUp({super.key});
 
-  final ElectrumNetwork updatedNetwork;
-
-  static Future openPopUp(BuildContext context, ElectrumNetwork updatedNetwork) {
+  static Future openPopUp(BuildContext context) {
     return showMaterialModalBottomSheet(
       context: context,
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
-      builder: (context) => PrivacyNoticePopUp(updatedNetwork: updatedNetwork),
+      builder: (context) => const PrivacyNoticePopUp(),
     );
   }
 
@@ -359,7 +331,7 @@ Privacy Notice: Using your own node ensures that no third party can link your IP
 However, if you view transactions via mempool by clicking your Transaction ID or Recipient Bitcoin Address in the Transaction Details page, this information will be known to BullBitcoin.'''),
             const Gap(40),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 BBButton.text(
                   label: 'CANCEL',
@@ -373,7 +345,7 @@ However, if you view transactions via mempool by clicking your Transaction ID or
                     label: 'SAVE',
                     filled: true,
                     onPressed: () async {
-                      context.read<NetworkCubit>().networkConfigsSaveClicked(updatedNetwork);
+                      context.read<NetworkCubit>().networkConfigsSaveClicked();
                       await Future.delayed(const Duration(milliseconds: 500));
                       final err = context.read<NetworkCubit>().state.errLoadingNetworks;
                       if (err.isNotEmpty)
@@ -396,49 +368,27 @@ However, if you view transactions via mempool by clicking your Transaction ID or
 }
 
 class ElectrumAdvancedOptions extends HookWidget {
-  const ElectrumAdvancedOptions(this.mainnet, this.testnet, this.validateDomain, {super.key});
+  const ElectrumAdvancedOptions({super.key});
 
   static Future openPopUp(
-    BuildContext context, {
-    required String mainnet,
-    required String testnet,
-    required bool validateDomain,
-  }) {
+    BuildContext context,
+  ) {
     return showMaterialModalBottomSheet(
       context: context,
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
-      builder: (context) => ElectrumAdvancedOptions(mainnet, testnet, validateDomain),
+      builder: (context) => const ElectrumAdvancedOptions(),
     );
   }
-
-  final String mainnet;
-  final String testnet;
-  final bool validateDomain;
 
   @override
   Widget build(BuildContext context) {
     final fieldWidth = MediaQuery.of(context).size.width * 0.7;
 
-    final network = context.select((NetworkCubit x) => x.state.getNetwork());
-    if (network == null) return const SizedBox.shrink();
-
-    final sg = context.select((NetworkCubit x) => x.state.getNetwork()?.stopGap);
-    final r = context.select((NetworkCubit x) => x.state.getNetwork()?.retry);
-    final t = context.select((NetworkCubit x) => x.state.getNetwork()?.timeout);
-    final stopGap = useTextEditingController(text: sg.toString());
-    final retry = useTextEditingController(text: r.toString());
-    final timeout = useTextEditingController(text: t.toString());
-
-    useEffect(
-      () {
-        retry.text = network.retry.toString();
-        timeout.text = network.timeout.toString();
-        return null;
-      },
-      [network],
-    );
+    final sg = context.select((NetworkCubit x) => x.state.tempNetworkDetails?.stopGap);
+    final r = context.select((NetworkCubit x) => x.state.tempNetworkDetails?.retry);
+    final t = context.select((NetworkCubit x) => x.state.tempNetworkDetails?.timeout);
 
     return PopUpBorder(
       child: Padding(
@@ -446,16 +396,23 @@ class ElectrumAdvancedOptions extends HookWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const BBHeader.popUpCenteredText(text: 'Electrum Options', isLeft: true),
+            BBHeader.popUpCenteredText(
+              text: 'Electrum Options',
+              isLeft: true,
+              onBack: () {
+                context.pop();
+              },
+            ),
             const Gap(24),
             const BBText.title('    Stop gap'),
             const Gap(4),
             SizedBox(
               width: fieldWidth,
               child: BBTextInput.big(
-                onChanged: (t) {},
-                value: stopGap.text,
-                controller: stopGap,
+                onChanged: (t) {
+                  context.read<NetworkCubit>().updateTempStopGap(int.tryParse(t) ?? 20);
+                },
+                value: sg.toString(),
               ),
             ),
             const Gap(16),
@@ -464,9 +421,10 @@ class ElectrumAdvancedOptions extends HookWidget {
             SizedBox(
               width: fieldWidth,
               child: BBTextInput.big(
-                onChanged: (t) {},
-                value: retry.text,
-                controller: retry,
+                onChanged: (t) {
+                  context.read<NetworkCubit>().updateTempRetry(int.tryParse(t) ?? 5);
+                },
+                value: r.toString(),
               ),
             ),
             const Gap(16),
@@ -475,9 +433,10 @@ class ElectrumAdvancedOptions extends HookWidget {
             SizedBox(
               width: fieldWidth,
               child: BBTextInput.big(
-                onChanged: (t) {},
-                value: timeout.text,
-                controller: timeout,
+                onChanged: (t) {
+                  context.read<NetworkCubit>().updateTempTimeout(int.tryParse(t) ?? 5);
+                },
+                value: t.toString(),
               ),
             ),
             const Gap(32),
@@ -489,18 +448,7 @@ class ElectrumAdvancedOptions extends HookWidget {
                   filled: true,
                   onPressed: () async {
                     FocusScope.of(context).requestFocus(FocusNode());
-                    final updatednetwork = network.copyWith(
-                      mainnet: mainnet,
-                      testnet: testnet,
-                      stopGap: int.tryParse(stopGap.text) ?? 20,
-                      retry: int.tryParse(retry.text) ?? 5,
-                      timeout: int.tryParse(timeout.text) ?? 5,
-                      validateDomain: validateDomain,
-                    );
-                    context.read<NetworkCubit>().networkConfigsSaveClicked(updatednetwork);
-                    await Future.delayed(const Duration(milliseconds: 500));
-                    final err = context.read<NetworkCubit>().state.errLoadingNetworks;
-                    if (err.isEmpty) context.pop();
+                    context.pop();
                   },
                 ),
               ),

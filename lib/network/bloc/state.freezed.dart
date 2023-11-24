@@ -28,9 +28,10 @@ mixin _$NetworkState {
   ElectrumTypes get selectedNetwork => throw _privateConstructorUsedError;
   bool get loadingNetworks => throw _privateConstructorUsedError;
   String get errLoadingNetworks => throw _privateConstructorUsedError;
-  bool get networkConnected => throw _privateConstructorUsedError;
-  int get stopGap => throw _privateConstructorUsedError;
+  bool get networkConnected =>
+      throw _privateConstructorUsedError; // @Default(20) int stopGap,
   ElectrumTypes? get tempNetwork => throw _privateConstructorUsedError;
+  ElectrumNetwork? get tempNetworkDetails => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -54,8 +55,10 @@ abstract class $NetworkStateCopyWith<$Res> {
       bool loadingNetworks,
       String errLoadingNetworks,
       bool networkConnected,
-      int stopGap,
-      ElectrumTypes? tempNetwork});
+      ElectrumTypes? tempNetwork,
+      ElectrumNetwork? tempNetworkDetails});
+
+  $ElectrumNetworkCopyWith<$Res>? get tempNetworkDetails;
 }
 
 /// @nodoc
@@ -79,8 +82,8 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
     Object? loadingNetworks = null,
     Object? errLoadingNetworks = null,
     Object? networkConnected = null,
-    Object? stopGap = null,
     Object? tempNetwork = freezed,
+    Object? tempNetworkDetails = freezed,
   }) {
     return _then(_value.copyWith(
       testnet: null == testnet
@@ -115,15 +118,27 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
           ? _value.networkConnected
           : networkConnected // ignore: cast_nullable_to_non_nullable
               as bool,
-      stopGap: null == stopGap
-          ? _value.stopGap
-          : stopGap // ignore: cast_nullable_to_non_nullable
-              as int,
       tempNetwork: freezed == tempNetwork
           ? _value.tempNetwork
           : tempNetwork // ignore: cast_nullable_to_non_nullable
               as ElectrumTypes?,
+      tempNetworkDetails: freezed == tempNetworkDetails
+          ? _value.tempNetworkDetails
+          : tempNetworkDetails // ignore: cast_nullable_to_non_nullable
+              as ElectrumNetwork?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ElectrumNetworkCopyWith<$Res>? get tempNetworkDetails {
+    if (_value.tempNetworkDetails == null) {
+      return null;
+    }
+
+    return $ElectrumNetworkCopyWith<$Res>(_value.tempNetworkDetails!, (value) {
+      return _then(_value.copyWith(tempNetworkDetails: value) as $Val);
+    });
   }
 }
 
@@ -145,8 +160,11 @@ abstract class _$$NetworkStateImplCopyWith<$Res>
       bool loadingNetworks,
       String errLoadingNetworks,
       bool networkConnected,
-      int stopGap,
-      ElectrumTypes? tempNetwork});
+      ElectrumTypes? tempNetwork,
+      ElectrumNetwork? tempNetworkDetails});
+
+  @override
+  $ElectrumNetworkCopyWith<$Res>? get tempNetworkDetails;
 }
 
 /// @nodoc
@@ -168,8 +186,8 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
     Object? loadingNetworks = null,
     Object? errLoadingNetworks = null,
     Object? networkConnected = null,
-    Object? stopGap = null,
     Object? tempNetwork = freezed,
+    Object? tempNetworkDetails = freezed,
   }) {
     return _then(_$NetworkStateImpl(
       testnet: null == testnet
@@ -204,14 +222,14 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
           ? _value.networkConnected
           : networkConnected // ignore: cast_nullable_to_non_nullable
               as bool,
-      stopGap: null == stopGap
-          ? _value.stopGap
-          : stopGap // ignore: cast_nullable_to_non_nullable
-              as int,
       tempNetwork: freezed == tempNetwork
           ? _value.tempNetwork
           : tempNetwork // ignore: cast_nullable_to_non_nullable
               as ElectrumTypes?,
+      tempNetworkDetails: freezed == tempNetworkDetails
+          ? _value.tempNetworkDetails
+          : tempNetworkDetails // ignore: cast_nullable_to_non_nullable
+              as ElectrumNetwork?,
     ));
   }
 }
@@ -228,8 +246,8 @@ class _$NetworkStateImpl extends _NetworkState {
       this.loadingNetworks = false,
       this.errLoadingNetworks = '',
       this.networkConnected = false,
-      this.stopGap = 20,
-      this.tempNetwork})
+      this.tempNetwork,
+      this.tempNetworkDetails})
       : _networks = networks,
         super._();
 
@@ -266,15 +284,15 @@ class _$NetworkStateImpl extends _NetworkState {
   @override
   @JsonKey()
   final bool networkConnected;
-  @override
-  @JsonKey()
-  final int stopGap;
+// @Default(20) int stopGap,
   @override
   final ElectrumTypes? tempNetwork;
+  @override
+  final ElectrumNetwork? tempNetworkDetails;
 
   @override
   String toString() {
-    return 'NetworkState(testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, stopGap: $stopGap, tempNetwork: $tempNetwork)';
+    return 'NetworkState(testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, tempNetwork: $tempNetwork, tempNetworkDetails: $tempNetworkDetails)';
   }
 
   @override
@@ -296,9 +314,10 @@ class _$NetworkStateImpl extends _NetworkState {
                 other.errLoadingNetworks == errLoadingNetworks) &&
             (identical(other.networkConnected, networkConnected) ||
                 other.networkConnected == networkConnected) &&
-            (identical(other.stopGap, stopGap) || other.stopGap == stopGap) &&
             (identical(other.tempNetwork, tempNetwork) ||
-                other.tempNetwork == tempNetwork));
+                other.tempNetwork == tempNetwork) &&
+            (identical(other.tempNetworkDetails, tempNetworkDetails) ||
+                other.tempNetworkDetails == tempNetworkDetails));
   }
 
   @JsonKey(ignore: true)
@@ -313,8 +332,8 @@ class _$NetworkStateImpl extends _NetworkState {
       loadingNetworks,
       errLoadingNetworks,
       networkConnected,
-      stopGap,
-      tempNetwork);
+      tempNetwork,
+      tempNetworkDetails);
 
   @JsonKey(ignore: true)
   @override
@@ -341,8 +360,8 @@ abstract class _NetworkState extends NetworkState {
       final bool loadingNetworks,
       final String errLoadingNetworks,
       final bool networkConnected,
-      final int stopGap,
-      final ElectrumTypes? tempNetwork}) = _$NetworkStateImpl;
+      final ElectrumTypes? tempNetwork,
+      final ElectrumNetwork? tempNetworkDetails}) = _$NetworkStateImpl;
   const _NetworkState._() : super._();
 
   factory _NetworkState.fromJson(Map<String, dynamic> json) =
@@ -365,10 +384,10 @@ abstract class _NetworkState extends NetworkState {
   String get errLoadingNetworks;
   @override
   bool get networkConnected;
-  @override
-  int get stopGap;
-  @override
+  @override // @Default(20) int stopGap,
   ElectrumTypes? get tempNetwork;
+  @override
+  ElectrumNetwork? get tempNetworkDetails;
   @override
   @JsonKey(ignore: true)
   _$$NetworkStateImplCopyWith<_$NetworkStateImpl> get copyWith =>

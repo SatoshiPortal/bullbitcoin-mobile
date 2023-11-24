@@ -20,9 +20,12 @@ _$NetworkStateImpl _$$NetworkStateImplFromJson(Map<String, dynamic> json) =>
       loadingNetworks: json['loadingNetworks'] as bool? ?? false,
       errLoadingNetworks: json['errLoadingNetworks'] as String? ?? '',
       networkConnected: json['networkConnected'] as bool? ?? false,
-      stopGap: json['stopGap'] as int? ?? 20,
       tempNetwork:
           $enumDecodeNullable(_$ElectrumTypesEnumMap, json['tempNetwork']),
+      tempNetworkDetails: json['tempNetworkDetails'] == null
+          ? null
+          : ElectrumNetwork.fromJson(
+              json['tempNetworkDetails'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$NetworkStateImplToJson(_$NetworkStateImpl instance) =>
@@ -34,8 +37,8 @@ Map<String, dynamic> _$$NetworkStateImplToJson(_$NetworkStateImpl instance) =>
       'loadingNetworks': instance.loadingNetworks,
       'errLoadingNetworks': instance.errLoadingNetworks,
       'networkConnected': instance.networkConnected,
-      'stopGap': instance.stopGap,
       'tempNetwork': _$ElectrumTypesEnumMap[instance.tempNetwork],
+      'tempNetworkDetails': instance.tempNetworkDetails,
     };
 
 const _$ElectrumTypesEnumMap = {
