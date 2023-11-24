@@ -14,7 +14,9 @@
         android:requestLegacyExternalStorage="true"
         android:label="Bull Bitcoin"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_icon"
+        android:enableOnBackInvokedCallback="true"
+        >
 
         <activity
             android:name=".MainActivity"
