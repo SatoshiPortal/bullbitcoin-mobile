@@ -28,7 +28,8 @@ mixin _$NetworkState {
   ElectrumTypes get selectedNetwork => throw _privateConstructorUsedError;
   bool get loadingNetworks => throw _privateConstructorUsedError;
   String get errLoadingNetworks => throw _privateConstructorUsedError;
-  bool get networkConnected =>
+  bool get networkConnected => throw _privateConstructorUsedError;
+  bool get networkErrorOpened =>
       throw _privateConstructorUsedError; // @Default(20) int stopGap,
   ElectrumTypes? get tempNetwork => throw _privateConstructorUsedError;
   ElectrumNetwork? get tempNetworkDetails => throw _privateConstructorUsedError;
@@ -55,6 +56,7 @@ abstract class $NetworkStateCopyWith<$Res> {
       bool loadingNetworks,
       String errLoadingNetworks,
       bool networkConnected,
+      bool networkErrorOpened,
       ElectrumTypes? tempNetwork,
       ElectrumNetwork? tempNetworkDetails});
 
@@ -82,6 +84,7 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
     Object? loadingNetworks = null,
     Object? errLoadingNetworks = null,
     Object? networkConnected = null,
+    Object? networkErrorOpened = null,
     Object? tempNetwork = freezed,
     Object? tempNetworkDetails = freezed,
   }) {
@@ -117,6 +120,10 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
       networkConnected: null == networkConnected
           ? _value.networkConnected
           : networkConnected // ignore: cast_nullable_to_non_nullable
+              as bool,
+      networkErrorOpened: null == networkErrorOpened
+          ? _value.networkErrorOpened
+          : networkErrorOpened // ignore: cast_nullable_to_non_nullable
               as bool,
       tempNetwork: freezed == tempNetwork
           ? _value.tempNetwork
@@ -160,6 +167,7 @@ abstract class _$$NetworkStateImplCopyWith<$Res>
       bool loadingNetworks,
       String errLoadingNetworks,
       bool networkConnected,
+      bool networkErrorOpened,
       ElectrumTypes? tempNetwork,
       ElectrumNetwork? tempNetworkDetails});
 
@@ -186,6 +194,7 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
     Object? loadingNetworks = null,
     Object? errLoadingNetworks = null,
     Object? networkConnected = null,
+    Object? networkErrorOpened = null,
     Object? tempNetwork = freezed,
     Object? tempNetworkDetails = freezed,
   }) {
@@ -222,6 +231,10 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
           ? _value.networkConnected
           : networkConnected // ignore: cast_nullable_to_non_nullable
               as bool,
+      networkErrorOpened: null == networkErrorOpened
+          ? _value.networkErrorOpened
+          : networkErrorOpened // ignore: cast_nullable_to_non_nullable
+              as bool,
       tempNetwork: freezed == tempNetwork
           ? _value.tempNetwork
           : tempNetwork // ignore: cast_nullable_to_non_nullable
@@ -246,6 +259,7 @@ class _$NetworkStateImpl extends _NetworkState {
       this.loadingNetworks = false,
       this.errLoadingNetworks = '',
       this.networkConnected = false,
+      this.networkErrorOpened = false,
       this.tempNetwork,
       this.tempNetworkDetails})
       : _networks = networks,
@@ -284,6 +298,9 @@ class _$NetworkStateImpl extends _NetworkState {
   @override
   @JsonKey()
   final bool networkConnected;
+  @override
+  @JsonKey()
+  final bool networkErrorOpened;
 // @Default(20) int stopGap,
   @override
   final ElectrumTypes? tempNetwork;
@@ -292,7 +309,7 @@ class _$NetworkStateImpl extends _NetworkState {
 
   @override
   String toString() {
-    return 'NetworkState(testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, tempNetwork: $tempNetwork, tempNetworkDetails: $tempNetworkDetails)';
+    return 'NetworkState(testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, networkErrorOpened: $networkErrorOpened, tempNetwork: $tempNetwork, tempNetworkDetails: $tempNetworkDetails)';
   }
 
   @override
@@ -314,6 +331,8 @@ class _$NetworkStateImpl extends _NetworkState {
                 other.errLoadingNetworks == errLoadingNetworks) &&
             (identical(other.networkConnected, networkConnected) ||
                 other.networkConnected == networkConnected) &&
+            (identical(other.networkErrorOpened, networkErrorOpened) ||
+                other.networkErrorOpened == networkErrorOpened) &&
             (identical(other.tempNetwork, tempNetwork) ||
                 other.tempNetwork == tempNetwork) &&
             (identical(other.tempNetworkDetails, tempNetworkDetails) ||
@@ -332,6 +351,7 @@ class _$NetworkStateImpl extends _NetworkState {
       loadingNetworks,
       errLoadingNetworks,
       networkConnected,
+      networkErrorOpened,
       tempNetwork,
       tempNetworkDetails);
 
@@ -360,6 +380,7 @@ abstract class _NetworkState extends NetworkState {
       final bool loadingNetworks,
       final String errLoadingNetworks,
       final bool networkConnected,
+      final bool networkErrorOpened,
       final ElectrumTypes? tempNetwork,
       final ElectrumNetwork? tempNetworkDetails}) = _$NetworkStateImpl;
   const _NetworkState._() : super._();
@@ -384,6 +405,8 @@ abstract class _NetworkState extends NetworkState {
   String get errLoadingNetworks;
   @override
   bool get networkConnected;
+  @override
+  bool get networkErrorOpened;
   @override // @Default(20) int stopGap,
   ElectrumTypes? get tempNetwork;
   @override

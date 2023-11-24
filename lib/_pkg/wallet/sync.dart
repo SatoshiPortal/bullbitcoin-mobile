@@ -43,7 +43,14 @@ class WalletSync {
 
       return (blockchain, null);
     } on Exception catch (r) {
-      return (null, Err(r.message, showAlert: true, title: 'Failed to connect to electrum'));
+      return (
+        null,
+        Err(
+          r.message,
+          // showAlert: true,
+          title: 'Failed to connect to electrum',
+        )
+      );
     }
   }
 

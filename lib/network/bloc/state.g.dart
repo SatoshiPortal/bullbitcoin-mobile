@@ -20,6 +20,7 @@ _$NetworkStateImpl _$$NetworkStateImplFromJson(Map<String, dynamic> json) =>
       loadingNetworks: json['loadingNetworks'] as bool? ?? false,
       errLoadingNetworks: json['errLoadingNetworks'] as String? ?? '',
       networkConnected: json['networkConnected'] as bool? ?? false,
+      networkErrorOpened: json['networkErrorOpened'] as bool? ?? false,
       tempNetwork:
           $enumDecodeNullable(_$ElectrumTypesEnumMap, json['tempNetwork']),
       tempNetworkDetails: json['tempNetworkDetails'] == null
@@ -37,6 +38,7 @@ Map<String, dynamic> _$$NetworkStateImplToJson(_$NetworkStateImpl instance) =>
       'loadingNetworks': instance.loadingNetworks,
       'errLoadingNetworks': instance.errLoadingNetworks,
       'networkConnected': instance.networkConnected,
+      'networkErrorOpened': instance.networkErrorOpened,
       'tempNetwork': _$ElectrumTypesEnumMap[instance.tempNetwork],
       'tempNetworkDetails': instance.tempNetworkDetails,
     };

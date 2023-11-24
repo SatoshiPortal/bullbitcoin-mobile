@@ -26,6 +26,8 @@ class NetworkState with _$NetworkState {
     @Default(false) bool loadingNetworks,
     @Default('') String errLoadingNetworks,
     @Default(false) bool networkConnected,
+    @Default(false) bool networkErrorOpened,
+
     // @Default(20) int stopGap,
     ElectrumTypes? tempNetwork,
     ElectrumNetwork? tempNetworkDetails,

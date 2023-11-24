@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,6 +62,8 @@ class NetworkCubit extends Cubit<NetworkState> {
     networkConfigsSaveClicked();
   }
 
+  void closeNetworkError() => emit(state.copyWith(networkErrorOpened: false));
+
   Future setupBlockchain() async {
     emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
     final isTestnet = state.testnet;
@@ -75,10 +78,18 @@ class NetworkCubit extends Cubit<NetworkState> {
       validateDomain: selectedNetwork.validateDomain,
     );
     if (err != null) {
+      if (!state.networkErrorOpened)
+        BBAlert.showErrorAlertPopUp(
+          title: err.title ?? '',
+          err: err.message,
+          onClose: closeNetworkError,
+        );
+
       emit(
         state.copyWith(
           blockchain: null,
           errLoadingNetworks: err.toString(),
+          networkErrorOpened: true,
         ),
       );
       return;
