@@ -31,7 +31,23 @@ class AuthPage extends StatelessWidget {
 
     return BlocProvider.value(
       value: authCubit,
-      child: const _Screen(),
+      child: BlocListener<AuthCubit, AuthState>(
+        listenWhen: (previous, current) => previous.loggedIn != current.loggedIn,
+        listener: (context, state) async {
+          if (state.loggedIn) {
+            if (!state.fromSettings) {
+              locator<HomeCubit>().getWalletsFromStorageFirstTime();
+              context.go('/home');
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                context.showToast('Pin Changed'),
+              );
+              context.pop();
+            }
+          }
+        },
+        child: const _Screen(),
+      ),
     );
   }
 }
@@ -246,33 +262,17 @@ class AuthConfirmButton extends StatelessWidget {
         ),
       );
 
-    return BlocListener<AuthCubit, AuthState>(
-      listenWhen: (previous, current) => previous.loggedIn != current.loggedIn,
-      listener: (context, state) async {
-        if (state.loggedIn) {
-          if (!state.fromSettings) {
-            locator<HomeCubit>().getWalletsFromStorageFirstTime();
-            context.go('/home');
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              context.showToast('Pin Changed'),
-            );
-            context.pop();
-          }
-        }
-      },
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: SizedBox(
-          width: 250,
-          child: BBButton.bigRed(
-            filled: true,
-            disabled: !showButton,
-            onPressed: () {
-              if (showButton) context.read<AuthCubit>().confirmPressed();
-            },
-            label: 'auth.button'.translate,
-          ),
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: SizedBox(
+        width: 250,
+        child: BBButton.bigRed(
+          filled: true,
+          disabled: !showButton,
+          onPressed: () {
+            if (showButton) context.read<AuthCubit>().confirmPressed();
+          },
+          label: 'auth.button'.translate,
         ),
       ),
     );
