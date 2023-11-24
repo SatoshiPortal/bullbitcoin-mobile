@@ -22,6 +22,8 @@ mixin _$HomeState {
   String get errLoadingWallets =>
       throw _privateConstructorUsedError; // Wallet? selectedWallet,
   WalletBloc? get selectedWalletCubit => throw _privateConstructorUsedError;
+  int? get lastTestnetWalletIdx => throw _privateConstructorUsedError;
+  int? get lastMainnetWalletIdx => throw _privateConstructorUsedError;
   String get errDeepLinking => throw _privateConstructorUsedError;
   int? get moveToIdx => throw _privateConstructorUsedError;
 
@@ -41,6 +43,8 @@ abstract class $HomeStateCopyWith<$Res> {
       bool loadingWallets,
       String errLoadingWallets,
       WalletBloc? selectedWalletCubit,
+      int? lastTestnetWalletIdx,
+      int? lastMainnetWalletIdx,
       String errDeepLinking,
       int? moveToIdx});
 }
@@ -63,6 +67,8 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
     Object? loadingWallets = null,
     Object? errLoadingWallets = null,
     Object? selectedWalletCubit = freezed,
+    Object? lastTestnetWalletIdx = freezed,
+    Object? lastMainnetWalletIdx = freezed,
     Object? errDeepLinking = null,
     Object? moveToIdx = freezed,
   }) {
@@ -87,6 +93,14 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
           ? _value.selectedWalletCubit
           : selectedWalletCubit // ignore: cast_nullable_to_non_nullable
               as WalletBloc?,
+      lastTestnetWalletIdx: freezed == lastTestnetWalletIdx
+          ? _value.lastTestnetWalletIdx
+          : lastTestnetWalletIdx // ignore: cast_nullable_to_non_nullable
+              as int?,
+      lastMainnetWalletIdx: freezed == lastMainnetWalletIdx
+          ? _value.lastMainnetWalletIdx
+          : lastMainnetWalletIdx // ignore: cast_nullable_to_non_nullable
+              as int?,
       errDeepLinking: null == errDeepLinking
           ? _value.errDeepLinking
           : errDeepLinking // ignore: cast_nullable_to_non_nullable
@@ -113,6 +127,8 @@ abstract class _$$HomeStateImplCopyWith<$Res>
       bool loadingWallets,
       String errLoadingWallets,
       WalletBloc? selectedWalletCubit,
+      int? lastTestnetWalletIdx,
+      int? lastMainnetWalletIdx,
       String errDeepLinking,
       int? moveToIdx});
 }
@@ -133,6 +149,8 @@ class __$$HomeStateImplCopyWithImpl<$Res>
     Object? loadingWallets = null,
     Object? errLoadingWallets = null,
     Object? selectedWalletCubit = freezed,
+    Object? lastTestnetWalletIdx = freezed,
+    Object? lastMainnetWalletIdx = freezed,
     Object? errDeepLinking = null,
     Object? moveToIdx = freezed,
   }) {
@@ -157,6 +175,14 @@ class __$$HomeStateImplCopyWithImpl<$Res>
           ? _value.selectedWalletCubit
           : selectedWalletCubit // ignore: cast_nullable_to_non_nullable
               as WalletBloc?,
+      lastTestnetWalletIdx: freezed == lastTestnetWalletIdx
+          ? _value.lastTestnetWalletIdx
+          : lastTestnetWalletIdx // ignore: cast_nullable_to_non_nullable
+              as int?,
+      lastMainnetWalletIdx: freezed == lastMainnetWalletIdx
+          ? _value.lastMainnetWalletIdx
+          : lastMainnetWalletIdx // ignore: cast_nullable_to_non_nullable
+              as int?,
       errDeepLinking: null == errDeepLinking
           ? _value.errDeepLinking
           : errDeepLinking // ignore: cast_nullable_to_non_nullable
@@ -178,6 +204,8 @@ class _$HomeStateImpl extends _HomeState {
       this.loadingWallets = true,
       this.errLoadingWallets = '',
       this.selectedWalletCubit,
+      this.lastTestnetWalletIdx,
+      this.lastMainnetWalletIdx,
       this.errDeepLinking = '',
       this.moveToIdx})
       : _wallets = wallets,
@@ -214,6 +242,10 @@ class _$HomeStateImpl extends _HomeState {
   @override
   final WalletBloc? selectedWalletCubit;
   @override
+  final int? lastTestnetWalletIdx;
+  @override
+  final int? lastMainnetWalletIdx;
+  @override
   @JsonKey()
   final String errDeepLinking;
   @override
@@ -221,7 +253,7 @@ class _$HomeStateImpl extends _HomeState {
 
   @override
   String toString() {
-    return 'HomeState(wallets: $wallets, walletBlocs: $walletBlocs, loadingWallets: $loadingWallets, errLoadingWallets: $errLoadingWallets, selectedWalletCubit: $selectedWalletCubit, errDeepLinking: $errDeepLinking, moveToIdx: $moveToIdx)';
+    return 'HomeState(wallets: $wallets, walletBlocs: $walletBlocs, loadingWallets: $loadingWallets, errLoadingWallets: $errLoadingWallets, selectedWalletCubit: $selectedWalletCubit, lastTestnetWalletIdx: $lastTestnetWalletIdx, lastMainnetWalletIdx: $lastMainnetWalletIdx, errDeepLinking: $errDeepLinking, moveToIdx: $moveToIdx)';
   }
 
   @override
@@ -238,6 +270,10 @@ class _$HomeStateImpl extends _HomeState {
                 other.errLoadingWallets == errLoadingWallets) &&
             (identical(other.selectedWalletCubit, selectedWalletCubit) ||
                 other.selectedWalletCubit == selectedWalletCubit) &&
+            (identical(other.lastTestnetWalletIdx, lastTestnetWalletIdx) ||
+                other.lastTestnetWalletIdx == lastTestnetWalletIdx) &&
+            (identical(other.lastMainnetWalletIdx, lastMainnetWalletIdx) ||
+                other.lastMainnetWalletIdx == lastMainnetWalletIdx) &&
             (identical(other.errDeepLinking, errDeepLinking) ||
                 other.errDeepLinking == errDeepLinking) &&
             (identical(other.moveToIdx, moveToIdx) ||
@@ -252,6 +288,8 @@ class _$HomeStateImpl extends _HomeState {
       loadingWallets,
       errLoadingWallets,
       selectedWalletCubit,
+      lastTestnetWalletIdx,
+      lastMainnetWalletIdx,
       errDeepLinking,
       moveToIdx);
 
@@ -269,6 +307,8 @@ abstract class _HomeState extends HomeState {
       final bool loadingWallets,
       final String errLoadingWallets,
       final WalletBloc? selectedWalletCubit,
+      final int? lastTestnetWalletIdx,
+      final int? lastMainnetWalletIdx,
       final String errDeepLinking,
       final int? moveToIdx}) = _$HomeStateImpl;
   const _HomeState._() : super._();
@@ -283,6 +323,10 @@ abstract class _HomeState extends HomeState {
   String get errLoadingWallets;
   @override // Wallet? selectedWallet,
   WalletBloc? get selectedWalletCubit;
+  @override
+  int? get lastTestnetWalletIdx;
+  @override
+  int? get lastMainnetWalletIdx;
   @override
   String get errDeepLinking;
   @override

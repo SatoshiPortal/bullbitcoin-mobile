@@ -21,6 +21,7 @@ Future main({bool fromTest = false}) async {
   await dotenv.load(isOptional: true);
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = BBlocObserver();
+  // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
 
   await setupLocator(fromTest: fromTest);
   final delegate = await Localise.getDelegate();

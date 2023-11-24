@@ -207,8 +207,6 @@ class WalletScreen extends StatelessWidget {
 class HomeHeaderCards extends StatefulWidget {
   const HomeHeaderCards({super.key});
 
-  // final List<WalletBloc> walletCubits;
-
   @override
   State<HomeHeaderCards> createState() => _HomeHeaderCardsState();
 }
@@ -221,15 +219,13 @@ class _HomeHeaderCardsState extends State<HomeHeaderCards> {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
 
-    // if (walletCubits.isEmpty) return const SizedBox.shrink();
-
     return BlocListener<HomeCubit, HomeState>(
       listenWhen: (previous, current) => previous.moveToIdx != current.moveToIdx,
       listener: (context, state) {
         final moveToIdx = state.moveToIdx;
         if (moveToIdx == null) return;
-        _carouselController.animateToPage(0);
-        final selected = walletCubits[0];
+        _carouselController.animateToPage(moveToIdx);
+        final selected = walletCubits[moveToIdx];
         context.read<HomeCubit>().walletSelected(selected);
       },
       child: CarouselSlider(

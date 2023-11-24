@@ -266,6 +266,7 @@ class AuthConfirmButton extends StatelessWidget {
         child: SizedBox(
           width: 250,
           child: BBButton.bigRed(
+            filled: true,
             disabled: !showButton,
             onPressed: () {
               if (showButton) context.read<AuthCubit>().confirmPressed();

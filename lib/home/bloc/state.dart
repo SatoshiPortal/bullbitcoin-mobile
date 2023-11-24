@@ -13,6 +13,8 @@ class HomeState with _$HomeState {
     @Default('') String errLoadingWallets,
     // Wallet? selectedWallet,
     WalletBloc? selectedWalletCubit,
+    int? lastTestnetWalletIdx,
+    int? lastMainnetWalletIdx,
     @Default('') String errDeepLinking,
     int? moveToIdx,
   }) = _HomeState;
@@ -47,17 +49,33 @@ class HomeState with _$HomeState {
     return wallet;
   }
 
-  static int? selectedWalletIdx({
-    required WalletBloc selectedWalletCubit,
-    required List<WalletBloc> walletCubits,
-  }) {
-    final wallet = selectedWalletCubit.state.wallet;
-    if (wallet == null) return -1;
-
-    for (var i = 0; i < walletCubits.length; i++)
-      if (walletCubits[i].state.wallet!.getWalletStorageString() == wallet.getWalletStorageString())
-        return i;
-
-    return null;
+  int? getLastWalletIdx(BBNetwork network) {
+    if (network == BBNetwork.Testnet) return lastTestnetWalletIdx;
+    return lastMainnetWalletIdx;
   }
+
+  // int? selectedWalletIdx(BBNetwork network) {
+  //   final wallet = selectedWalletCubit?.state.wallet;
+  //   if (wallet == null) return null;
+
+  //   final wallets = walletsFromNetwork(network);
+  //   for (var i = 0; i < wallets.length; i++)
+  //     if (wallets[i].getWalletStorageString() == wallet.getWalletStorageString()) return i;
+
+  //   return null;
+  // }
+
+  // static int? selectedWalletIdx({
+  //   required WalletBloc selectedWalletCubit,
+  //   required List<WalletBloc> walletCubits,
+  // }) {
+  //   final wallet = selectedWalletCubit.state.wallet;
+  //   if (wallet == null) return -1;
+
+  //   for (var i = 0; i < walletCubits.length; i++)
+  //     if (walletCubits[i].state.wallet!.getWalletStorageString() == wallet.getWalletStorageString())
+  //       return i;
+
+  //   return null;
+  // }
 }
