@@ -69,6 +69,15 @@ class HomeState with _$HomeState {
     return idx;
   }
 
+  int? getSelectedWalletIdx() {
+    if (selectedWalletCubit == null) return null;
+    final walletsFromNetwork = walletBlocsFromNetwork(selectedWalletCubit!.state.wallet!.network);
+    final idx = walletsFromNetwork
+        .indexWhere((w) => w.state.wallet!.id == selectedWalletCubit!.state.wallet!.id);
+    if (idx == -1) return null;
+    return idx;
+  }
+
   // int? selectedWalletIdx(BBNetwork network) {
   //   final wallet = selectedWalletCubit?.state.wallet;
   //   if (wallet == null) return null;

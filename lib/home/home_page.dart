@@ -218,20 +218,25 @@ class _HomeHeaderCardsState extends State<HomeHeaderCards> {
   Widget build(BuildContext context) {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    final selectedWalletIdx = context.select((HomeCubit _) => _.state.getSelectedWalletIdx());
 
     return BlocListener<HomeCubit, HomeState>(
       listenWhen: (previous, current) => previous.moveToIdx != current.moveToIdx,
       listener: (context, state) {
         final moveToIdx = state.moveToIdx;
         if (moveToIdx == null) return;
-        _carouselController.animateToPage(moveToIdx);
+        _carouselController.animateToPage(
+          moveToIdx,
+          curve: Curves.easeInOut,
+          duration: 600.milliseconds,
+        );
         final selected = walletCubits[moveToIdx];
         context.read<HomeCubit>().walletSelected(selected);
       },
       child: CarouselSlider(
         carouselController: _carouselController,
         options: CarouselOptions(
-          initialPage: walletCubits.length - 1,
+          initialPage: selectedWalletIdx ?? (walletCubits.length - 1),
           enlargeStrategy: CenterPageEnlargeStrategy.zoom,
           reverse: true,
           enableInfiniteScroll: false,
