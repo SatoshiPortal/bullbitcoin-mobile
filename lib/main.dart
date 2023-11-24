@@ -146,8 +146,7 @@ class _AppLifecycleOverlayState extends State<AppLifecycleOverlay> with WidgetsB
   Widget build(BuildContext context) {
     return ColoredBox(
       color: context.colour.primary,
-      child: AnimatedOpacity(
-        duration: 300.ms,
+      child: Opacity(
         opacity: shouldBlur ? 0 : 1,
         child: widget.child,
       ),
