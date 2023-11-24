@@ -54,6 +54,21 @@ class HomeState with _$HomeState {
     return lastMainnetWalletIdx;
   }
 
+  int? getWalletIdx(Wallet wallet) {
+    final walletsFromNetwork = walletBlocsFromNetwork(wallet.network);
+    final idx = walletsFromNetwork.indexWhere((w) => w.state.wallet!.id == wallet.id);
+    if (idx == -1) return null;
+    return idx;
+  }
+
+  int? getWalletBlocIdx(WalletBloc walletBloc) {
+    final walletsFromNetwork = walletBlocsFromNetwork(walletBloc.state.wallet!.network);
+    final idx =
+        walletsFromNetwork.indexWhere((w) => w.state.wallet!.id == walletBloc.state.wallet!.id);
+    if (idx == -1) return null;
+    return idx;
+  }
+
   // int? selectedWalletIdx(BBNetwork network) {
   //   final wallet = selectedWalletCubit?.state.wallet;
   //   if (wallet == null) return null;

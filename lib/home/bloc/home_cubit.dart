@@ -128,23 +128,19 @@ class HomeCubit extends Cubit<HomeState> {
     await Future.delayed(500.microseconds);
     emit(state.copyWith(selectedWalletCubit: walletBloc));
 
-    final wallet = walletBloc.state.wallet!;
-    final network = wallet.network;
-    final walletsFromNetwork = state.walletBlocsFromNetwork(network);
-    final walletIdx = walletsFromNetwork.indexWhere((w) => w.state.wallet!.id == wallet.id);
+    final network = walletBloc.state.wallet!.network;
+    final idx = state.getWalletBlocIdx(walletBloc);
 
     emit(
       state.copyWith(
-        lastMainnetWalletIdx: network == BBNetwork.Mainnet ? walletIdx : state.lastMainnetWalletIdx,
-        lastTestnetWalletIdx: network == BBNetwork.Testnet ? walletIdx : state.lastTestnetWalletIdx,
+        lastMainnetWalletIdx: network == BBNetwork.Mainnet ? idx : state.lastMainnetWalletIdx,
+        lastTestnetWalletIdx: network == BBNetwork.Testnet ? idx : state.lastTestnetWalletIdx,
       ),
     );
   }
 
   void changeMoveToIdx(Wallet wallet) async {
-    final network = wallet.network;
-    final walletsFromNetwork = state.walletBlocsFromNetwork(network);
-    final idx = walletsFromNetwork.indexWhere((w) => w.state.wallet!.id == wallet.id);
+    final idx = state.getWalletIdx(wallet);
     emit(state.copyWith(moveToIdx: idx));
     await Future.delayed(const Duration(seconds: 5));
     emit(state.copyWith(moveToIdx: null));
