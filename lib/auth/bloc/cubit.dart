@@ -79,9 +79,14 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  void shuffleWords() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    emit(state.copyWith(shuffledNumbers: state.generateShuffledNumbers()));
+  }
+
   Future<void> confirmPressed() async {
     if (!state.showButton()) return;
-    emit(state.copyWith(shuffledNumbers: state.generateShuffledNumbers()));
+    shuffleWords();
 
     if (!state.fromSettings)
       switch (state.step) {

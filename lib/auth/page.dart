@@ -31,23 +31,7 @@ class AuthPage extends StatelessWidget {
 
     return BlocProvider.value(
       value: authCubit,
-      child: BlocListener<AuthCubit, AuthState>(
-        listenWhen: (previous, current) => previous.loggedIn != current.loggedIn,
-        listener: (context, state) async {
-          if (state.loggedIn) {
-            if (!state.fromSettings) {
-              locator<HomeCubit>().getWalletsFromStorageFirstTime();
-              context.go('/home');
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                context.showToast('Pin Changed'),
-              );
-              context.pop();
-            }
-          }
-        },
-        child: const _Screen(),
-      ),
+      child: const _Screen(),
     );
   }
 }
@@ -86,7 +70,7 @@ class _Screen extends StatelessWidget {
                     Gap(48),
                     AuthPasswordField(),
                     AuthKeyPad(),
-                    // Gap(24),
+                    Gap(24),
                     AuthConfirmButton(),
                     Gap(40),
                   ],
@@ -226,25 +210,22 @@ class AuthKeyPad extends StatelessWidget {
     final shuffledNumberButtonList = [
       for (final i in shuffledNumbers) NumberButton(text: i.toString()),
     ];
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.65,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      child: GridView(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
         ),
-        child: GridView(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-          ),
-          children: [
-            for (var i = 0; i < 9; i = i + 1) shuffledNumberButtonList[i],
-            Container(),
-            shuffledNumberButtonList[9],
-            Container(),
-          ],
-        ),
+        children: [
+          for (var i = 0; i < 9; i = i + 1) shuffledNumberButtonList[i],
+          Container(),
+          shuffledNumberButtonList[9],
+          Container(),
+        ],
       ),
     );
   }
@@ -265,16 +246,32 @@ class AuthConfirmButton extends StatelessWidget {
         ),
       );
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.6,
-        child: BBButton.bigRed(
-          disabled: !showButton,
-          onPressed: () {
-            if (showButton) context.read<AuthCubit>().confirmPressed();
-          },
-          label: 'auth.button'.translate,
+    return BlocListener<AuthCubit, AuthState>(
+      listenWhen: (previous, current) => previous.loggedIn != current.loggedIn,
+      listener: (context, state) async {
+        if (state.loggedIn) {
+          if (!state.fromSettings) {
+            locator<HomeCubit>().getWalletsFromStorageFirstTime();
+            context.go('/home');
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              context.showToast('Pin Changed'),
+            );
+            context.pop();
+          }
+        }
+      },
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: SizedBox(
+          width: 250,
+          child: BBButton.bigRed(
+            disabled: !showButton,
+            onPressed: () {
+              if (showButton) context.read<AuthCubit>().confirmPressed();
+            },
+            label: 'auth.button'.translate,
+          ),
         ),
       ),
     );
