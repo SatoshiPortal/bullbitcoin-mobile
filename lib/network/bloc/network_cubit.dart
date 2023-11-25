@@ -37,14 +37,59 @@ class NetworkCubit extends Cubit<NetworkState> {
     final (result, err) = await hiveStorage.getValue(StorageKeys.network);
     if (err != null) {
       loadNetworks();
-
       return;
     }
 
     final network = NetworkState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
     emit(network);
-    await Future.delayed(const Duration(milliseconds: 50));
+    await Future.delayed(const Duration(milliseconds: 100));
     loadNetworks();
+  }
+
+  Future loadNetworks() async {
+    if (state.loadingNetworks) return;
+    emit(state.copyWith(loadingNetworks: true));
+
+    final networks = state.networks;
+
+    if (networks.isNotEmpty) {
+      final selectedNetwork = networks.firstWhere((_) => _.type == state.selectedNetwork);
+
+      emit(
+        state.copyWith(
+          loadingNetworks: false,
+          tempNetworkDetails: selectedNetwork,
+          tempNetwork: selectedNetwork.type,
+        ),
+      );
+      await Future.delayed(const Duration(milliseconds: 100));
+      setupBlockchain();
+      return;
+    }
+
+    final newNetworks = [
+      const ElectrumNetwork.defaultElectrum(),
+      const ElectrumNetwork.bullbitcoin(),
+      const ElectrumNetwork.custom(
+        mainnet: 'ssl://$bbelectrum:50002',
+        testnet: 'ssl://$bbelectrum:60002',
+      ),
+    ];
+
+    final selectedNetwork = newNetworks.firstWhere((_) => _.type == state.selectedNetwork);
+
+    emit(
+      state.copyWith(
+        loadingNetworks: false,
+        networks: newNetworks,
+        tempNetworkDetails: selectedNetwork,
+        tempNetwork: selectedNetwork.type,
+      ),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 50));
+
+    await setupBlockchain();
   }
 
   void toggleTestnet() async {
@@ -96,49 +141,6 @@ class NetworkCubit extends Cubit<NetworkState> {
     }
 
     emit(state.copyWith(blockchain: blockchain, networkConnected: true));
-  }
-
-  Future loadNetworks() async {
-    if (state.loadingNetworks) return;
-    emit(state.copyWith(loadingNetworks: true));
-
-    final networks = state.networks;
-
-    if (networks.isNotEmpty) {
-      final selectedNetwork = networks.firstWhere((_) => _.type == state.selectedNetwork);
-
-      emit(
-        state.copyWith(
-          loadingNetworks: false,
-          tempNetworkDetails: selectedNetwork,
-        ),
-      );
-      setupBlockchain();
-      return;
-    }
-
-    final newNetworks = [
-      const ElectrumNetwork.defaultElectrum(),
-      const ElectrumNetwork.bullbitcoin(),
-      const ElectrumNetwork.custom(
-        mainnet: 'ssl://$bbelectrum:50002',
-        testnet: 'ssl://$bbelectrum:60002',
-      ),
-    ];
-
-    final selectedNetwork = newNetworks.firstWhere((_) => _.type == state.selectedNetwork);
-
-    emit(
-      state.copyWith(
-        loadingNetworks: false,
-        networks: newNetworks,
-        tempNetworkDetails: selectedNetwork,
-      ),
-    );
-
-    await Future.delayed(const Duration(milliseconds: 50));
-
-    await setupBlockchain();
   }
 
   void networkTypeTempChanged(ElectrumTypes type) {
@@ -202,7 +204,7 @@ class NetworkCubit extends Cubit<NetworkState> {
     networks.removeAt(index);
     networks.insert(index, state.tempNetworkDetails!);
     emit(state.copyWith(networks: networks, selectedNetwork: tempNetwork.type));
-    await Future.delayed(const Duration(milliseconds: 50));
+    await Future.delayed(const Duration(milliseconds: 100));
     setupBlockchain();
   }
 
