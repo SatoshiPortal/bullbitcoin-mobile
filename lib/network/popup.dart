@@ -8,7 +8,6 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -186,7 +185,7 @@ class _SegmentButton extends StatelessWidget {
   }
 }
 
-class NetworkConfigFields extends HookWidget {
+class NetworkConfigFields extends StatelessWidget {
   const NetworkConfigFields({
     super.key,
   });
@@ -367,7 +366,7 @@ However, if you view transactions via mempool by clicking your Transaction ID or
   }
 }
 
-class ElectrumAdvancedOptions extends HookWidget {
+class ElectrumAdvancedOptions extends StatelessWidget {
   const ElectrumAdvancedOptions({super.key});
 
   static Future openPopUp(
@@ -409,8 +408,11 @@ class ElectrumAdvancedOptions extends HookWidget {
             SizedBox(
               width: fieldWidth,
               child: BBTextInput.big(
+                onlyNumbers: true,
                 onChanged: (t) {
-                  context.read<NetworkCubit>().updateTempStopGap(int.tryParse(t) ?? 20);
+                  final sg = int.tryParse(t);
+                  if (sg == null) return;
+                  context.read<NetworkCubit>().updateTempStopGap(sg);
                 },
                 value: sg.toString(),
               ),
@@ -421,8 +423,11 @@ class ElectrumAdvancedOptions extends HookWidget {
             SizedBox(
               width: fieldWidth,
               child: BBTextInput.big(
+                onlyNumbers: true,
                 onChanged: (t) {
-                  context.read<NetworkCubit>().updateTempRetry(int.tryParse(t) ?? 5);
+                  final r = int.tryParse(t);
+                  if (r == null) return;
+                  context.read<NetworkCubit>().updateTempRetry(r);
                 },
                 value: r.toString(),
               ),
@@ -433,8 +438,11 @@ class ElectrumAdvancedOptions extends HookWidget {
             SizedBox(
               width: fieldWidth,
               child: BBTextInput.big(
+                onlyNumbers: true,
                 onChanged: (t) {
-                  context.read<NetworkCubit>().updateTempTimeout(int.tryParse(t) ?? 5);
+                  final tt = int.tryParse(t);
+                  if (tt == null) return;
+                  context.read<NetworkCubit>().updateTempTimeout(tt);
                 },
                 value: t.toString(),
               ),

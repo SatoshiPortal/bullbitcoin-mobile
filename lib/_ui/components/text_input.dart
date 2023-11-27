@@ -23,12 +23,14 @@ class BBTextInput extends StatefulWidget {
   })  : type = _TextInputType.multiLine,
         onEnter = null,
         onDone = null,
-        maxLength = null;
+        maxLength = null,
+        onlyNumbers = false;
 
   const BBTextInput.big({
     required this.onChanged,
     required this.value,
     this.disabled = false,
+    this.onlyNumbers = false,
     this.focusNode,
     this.hint,
     this.controller,
@@ -43,6 +45,7 @@ class BBTextInput extends StatefulWidget {
   const BBTextInput.bigWithIcon({
     required this.onChanged,
     required this.value,
+    this.onlyNumbers = false,
     this.disabled = false,
     this.focusNode,
     required this.rightIcon,
@@ -59,6 +62,7 @@ class BBTextInput extends StatefulWidget {
     required this.onChanged,
     required this.value,
     this.uiKey,
+    this.onlyNumbers = false,
     this.disabled = false,
     this.focusNode,
     this.hint,
@@ -85,6 +89,7 @@ class BBTextInput extends StatefulWidget {
   final Function? onEnter;
   final Function(String)? onDone;
   final int? maxLength;
+  final bool onlyNumbers;
 
   @override
   State<BBTextInput> createState() => _BBTextInputState();
@@ -145,6 +150,7 @@ class _BBTextInputState extends State<BBTextInput> {
           maxLength: widget.maxLength,
           enableIMEPersonalizedLearning: false,
           controller: _editingController,
+          keyboardType: widget.onlyNumbers ? TextInputType.number : null,
           decoration: InputDecoration(
             hintText: widget.hint,
             counterText: '',
@@ -180,6 +186,7 @@ class _BBTextInputState extends State<BBTextInput> {
           onChanged: widget.onChanged,
           controller: _editingController,
           enableIMEPersonalizedLearning: false,
+          keyboardType: widget.onlyNumbers ? TextInputType.number : null,
           decoration: InputDecoration(
             hintText: widget.hint,
             suffixIcon: IconButton(
@@ -217,6 +224,8 @@ class _BBTextInputState extends State<BBTextInput> {
             enabled: !widget.disabled,
             onChanged: widget.onChanged,
             controller: _editingController,
+            keyboardType: widget.onlyNumbers ? TextInputType.number : null,
+
             onSubmitted: (value) => widget.onDone?.call(value),
             // widget.onDone != null ? widget.onDone!(value) : null,
             onTap: () => widget.onEnter?.call(),
