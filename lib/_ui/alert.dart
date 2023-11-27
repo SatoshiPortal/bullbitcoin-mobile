@@ -4,6 +4,7 @@ import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class AlertData {
@@ -52,6 +53,7 @@ class BBAlert extends StatelessWidget {
     String title = 'Error',
     required String err,
     Function? onClose,
+    Function? onRetry,
   }) {
     if (navigatorKey.currentContext == null) return;
 
@@ -63,19 +65,59 @@ class BBAlert extends StatelessWidget {
           text: err,
           actionButtonsBuilder: (context) {
             return [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: BBButton.bigBlack(
-                  label: 'Okay',
-                  filled: true,
-                  onPressed: () {
-                    context.pop();
-                    if (onClose != null) {
-                      onClose();
-                    }
-                  },
+              if (onClose != null && onRetry != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    BBButton.text(
+                      label: 'Okay',
+                      onPressed: () {
+                        onClose();
+                        context.pop();
+                      },
+                    ),
+                    const Gap(16),
+                    SizedBox(
+                      width: 100,
+                      child: BBButton.smallBlack(
+                        label: 'Retry',
+                        filled: true,
+                        onPressed: () {
+                          onRetry();
+                          context.pop();
+                        },
+                      ),
+                    ),
+                  ],
+                )
+              else if (onClose != null)
+                Center(
+                  child: SizedBox(
+                    width: 200,
+                    child: BBButton.bigBlack(
+                      label: 'Okay',
+                      filled: true,
+                      onPressed: () {
+                        onClose();
+                        context.pop();
+                      },
+                    ),
+                  ),
+                )
+              else if (onRetry != null)
+                Center(
+                  child: SizedBox(
+                    width: 200,
+                    child: BBButton.bigBlack(
+                      label: 'Retry',
+                      filled: true,
+                      onPressed: () {
+                        onRetry();
+                        context.pop();
+                      },
+                    ),
+                  ),
                 ),
-              ),
             ];
           },
         ),

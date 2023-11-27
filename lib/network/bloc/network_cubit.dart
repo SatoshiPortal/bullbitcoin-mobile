@@ -26,6 +26,7 @@ class NetworkCubit extends Cubit<NetworkState> {
   @override
   void onChange(Change<NetworkState> change) {
     super.onChange(change);
+    if (state.networkErrorOpened) return;
     hiveStorage.saveValue(
       key: StorageKeys.network,
       value: jsonEncode(change.nextState.toJson()),
@@ -41,7 +42,7 @@ class NetworkCubit extends Cubit<NetworkState> {
     }
 
     final network = NetworkState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
-    emit(network);
+    emit(network.copyWith(networkErrorOpened: false));
     await Future.delayed(const Duration(milliseconds: 100));
     loadNetworks();
   }
@@ -107,7 +108,16 @@ class NetworkCubit extends Cubit<NetworkState> {
     networkConfigsSaveClicked();
   }
 
-  void closeNetworkError() => emit(state.copyWith(networkErrorOpened: false));
+  void closeNetworkError() async {
+    await Future.delayed(const Duration(seconds: 20));
+    emit(state.copyWith(networkErrorOpened: false));
+  }
+
+  void retryNetwork() async {
+    emit(state.copyWith(networkErrorOpened: false));
+    await Future.delayed(const Duration(milliseconds: 100));
+    setupBlockchain();
+  }
 
   Future setupBlockchain() async {
     emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
@@ -123,12 +133,14 @@ class NetworkCubit extends Cubit<NetworkState> {
       validateDomain: selectedNetwork.validateDomain,
     );
     if (err != null) {
-      if (!state.networkErrorOpened)
+      if (!state.networkErrorOpened) {
         BBAlert.showErrorAlertPopUp(
           title: err.title ?? '',
           err: err.message,
           onClose: closeNetworkError,
+          onRetry: retryNetwork,
         );
+      }
 
       emit(
         state.copyWith(
