@@ -12,22 +12,22 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockStorage extends Mock implements HiveStorage {}
+class _MockStorage extends Mock implements HiveStorage {}
 
-class MockMempoolAPI extends Mock implements MempoolAPI {}
+class _MockMempoolAPI extends Mock implements MempoolAPI {}
 
-class MockNetworkCubit extends Mock implements NetworkCubit {}
+class _MockNetworkCubit extends Mock implements NetworkCubit {}
 
 void main() {
-  group('Network fees cubit test', () {
+  group('Network fees cubit tests', () {
     late HiveStorage storage;
     late MempoolAPI mempoolAPI;
     late NetworkCubit networkCubit;
 
     setUp(() {
-      storage = MockStorage();
-      mempoolAPI = MockMempoolAPI();
-      networkCubit = MockNetworkCubit();
+      storage = _MockStorage();
+      mempoolAPI = _MockMempoolAPI();
+      networkCubit = _MockNetworkCubit();
     });
 
     blocTest(
@@ -162,8 +162,8 @@ void main() {
       ],
       verify: (_) {
         verify(() => _.hiveStorage.getValue(StorageKeys.networkFees)).called(1);
-        verify(() => _.networkCubit.state).called(1);
         verify(() => _.mempoolAPI.getFees(true)).called(1);
+        verify(() => _.networkCubit.state.testnet).called(3);
 
         verify(
           () => _.hiveStorage.saveValue(
@@ -216,6 +216,32 @@ void main() {
 
     blocTest(
       'Change manual fees',
+      build: () => NetworkFeesCubit(
+        hiveStorage: storage,
+        mempoolAPI: mempoolAPI,
+        networkCubit: networkCubit,
+      ),
+      setUp: () {},
+      act: (_) {},
+      expect: () {},
+      verify: (_) {},
+    );
+
+    blocTest(
+      'Error on max and min fees excessed on testnet',
+      build: () => NetworkFeesCubit(
+        hiveStorage: storage,
+        mempoolAPI: mempoolAPI,
+        networkCubit: networkCubit,
+      ),
+      setUp: () {},
+      act: (_) {},
+      expect: () {},
+      verify: (_) {},
+    );
+
+    blocTest(
+      'Error on max and min fees excessed on mainnet',
       build: () => NetworkFeesCubit(
         hiveStorage: storage,
         mempoolAPI: mempoolAPI,
