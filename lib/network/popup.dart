@@ -205,6 +205,8 @@ class NetworkConfigFields extends StatelessWidget {
     final err = context.select((NetworkCubit x) => x.state.errLoadingNetworks);
     final loading = context.select((NetworkCubit x) => x.state.loadingNetworks);
 
+    final showButton = context.select((NetworkCubit x) => x.state.showConfirmButton());
+
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),
       child: Column(
@@ -264,12 +266,17 @@ class NetworkConfigFields extends StatelessWidget {
             BBText.error(err),
             const Gap(8),
           ],
+          if (showButton.err != null) ...[
+            BBText.error(showButton.err!),
+            const Gap(8),
+          ],
           Center(
             child: SizedBox(
               width: 250,
               child: BBButton.bigRed(
                 loading: loading,
                 loadingText: 'Connecting...',
+                disabled: !showButton.show,
                 onPressed: () async {
                   FocusScope.of(context).requestFocus(FocusNode());
 
@@ -389,6 +396,8 @@ class ElectrumAdvancedOptions extends StatelessWidget {
     final r = context.select((NetworkCubit x) => x.state.tempNetworkDetails?.retry);
     final t = context.select((NetworkCubit x) => x.state.tempNetworkDetails?.timeout);
 
+    final showButton = context.select((NetworkCubit x) => x.state.showConfirmButton());
+
     return PopUpBorder(
       child: Padding(
         padding: const EdgeInsets.only(left: 24.0, right: 24),
@@ -411,7 +420,10 @@ class ElectrumAdvancedOptions extends StatelessWidget {
                 onlyNumbers: true,
                 onChanged: (t) {
                   final sg = int.tryParse(t);
-                  if (sg == null) return;
+                  if (sg == null) {
+                    context.read<NetworkCubit>().updateTempStopGap(0);
+                    return;
+                  }
                   context.read<NetworkCubit>().updateTempStopGap(sg);
                 },
                 value: sg.toString(),
@@ -426,7 +438,10 @@ class ElectrumAdvancedOptions extends StatelessWidget {
                 onlyNumbers: true,
                 onChanged: (t) {
                   final r = int.tryParse(t);
-                  if (r == null) return;
+                  if (r == null) {
+                    context.read<NetworkCubit>().updateTempRetry(0);
+                    return;
+                  }
                   context.read<NetworkCubit>().updateTempRetry(r);
                 },
                 value: r.toString(),
@@ -441,19 +456,27 @@ class ElectrumAdvancedOptions extends StatelessWidget {
                 onlyNumbers: true,
                 onChanged: (t) {
                   final tt = int.tryParse(t);
-                  if (tt == null) return;
+                  if (tt == null) {
+                    context.read<NetworkCubit>().updateTempTimeout(0);
+                    return;
+                  }
                   context.read<NetworkCubit>().updateTempTimeout(tt);
                 },
                 value: t.toString(),
               ),
             ),
             const Gap(32),
+            if (showButton.err != null) ...[
+              BBText.errorSmall(showButton.err!),
+              const Gap(8),
+            ],
             Center(
               child: SizedBox(
                 width: 250,
                 child: BBButton.bigRed(
                   label: 'Confirm',
                   filled: true,
+                  disabled: !showButton.show,
                   onPressed: () async {
                     FocusScope.of(context).requestFocus(FocusNode());
                     context.pop();

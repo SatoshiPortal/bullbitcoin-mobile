@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Test Create Blockchain', () {
-    test('connect to bb electrum', () async {
+    test('connect to electrum', () async {
       final walletSync = WalletSync();
       const bb = ElectrumNetwork.bullbitcoin();
 

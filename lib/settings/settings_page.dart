@@ -254,7 +254,7 @@ class LightingButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.textWithStatusAndRightArrow(
-      label: 'Lighting',
+      label: 'App Themes',
       onPressed: () {
         LightingPopUp.openPopUp(context);
       },

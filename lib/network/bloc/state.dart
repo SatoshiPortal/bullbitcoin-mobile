@@ -97,4 +97,15 @@ class NetworkState with _$NetworkState {
       double.parse(fiatAmount),
     );
   }
+
+  ({bool show, String? err}) showConfirmButton() {
+    final temp = tempNetworkDetails;
+    if (temp == null) return (show: false, err: '');
+
+    if (temp.retry == 0) return (show: false, err: 'Retry cannot be 0');
+    if (temp.stopGap == 0) return (show: false, err: 'Stop gap cannot be 0');
+    if (temp.timeout == 0) return (show: false, err: 'Timeout cannot be 0');
+
+    return (show: true, err: null);
+  }
 }
