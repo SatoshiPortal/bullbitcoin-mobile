@@ -2,10 +2,10 @@ import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
 import 'package:bb_mobile/main.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 
-import '../_flows/switchToTestnet.dart';
-import '../_flows/utils.dart';
-import '../_pages/home.dart';
-import '../_pages/import.dart';
+import '../../test/__flows/switchToTestnet.dart';
+import '../../test/__flows/utils.dart';
+import '../../test/__pages/home.dart';
+import '../../test/__pages/import.dart';
 
 void main() {
   setupUITest();

@@ -27,11 +27,7 @@ class NetworkCubit extends Cubit<NetworkState> {
   void onChange(Change<NetworkState> change) {
     super.onChange(change);
     final state = change.nextState;
-    print('\n' + state.toJson().toString());
     if (state.networkErrorOpened) return;
-    if (state.networkConnected) {
-      print('');
-    }
     hiveStorage.saveValue(
       key: StorageKeys.network,
       value: jsonEncode(change.nextState.toJson()),

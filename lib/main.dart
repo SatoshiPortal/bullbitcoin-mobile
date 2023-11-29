@@ -19,7 +19,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 
 Future main({bool fromTest = false}) async {
   await dotenv.load(isOptional: true);
-  WidgetsFlutterBinding.ensureInitialized();
+  if (!fromTest) WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = BBlocObserver();
   // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
 

@@ -1,11 +1,8 @@
-import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
 import 'package:bb_mobile/main.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 
-import '../_flows/switchToTestnet.dart';
-import '../_flows/utils.dart';
-import '../_pages/home.dart';
-import '../_pages/import.dart';
+import '../../test/__flows/utils.dart';
+import '../../test/import/recover_widget_test.dart';
 
 void main() {
   group('Import - Recover tests', () {
@@ -15,22 +12,6 @@ void main() {
       app.main(fromTest: true);
     });
 
-    testWidgets('Recover testnet wallet with 12 word mnemonic', (tester) async {
-      final homePage = THomePage(tester: tester);
-      final importPage = TImportPage(tester: tester);
-      await Future.delayed(const Duration(seconds: 3));
-
-      await switchToTestnetFromHomeAndReturnHome(tester);
-
-      await homePage.tapPlusButton();
-      await importPage.tapRecoverButton();
-      await importPage.scrollToBottomOfRecoverWords();
-      await importPage.enterWordsIntoFields(r2);
-      await importPage.tapRecoverConfirmButton();
-      await importPage.waitForWalletsToSync();
-      await importPage.tapSegwitWallet();
-      await importPage.tapWalletSelectionConfirmButton();
-      await homePage.checkPageHasTestnetCard();
-    });
+    testWidgets('Recover testnet wallet with 12 word mnemonic', recoverWalletSteps);
   });
 }

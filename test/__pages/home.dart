@@ -12,19 +12,23 @@ class THomePage {
   Finder get plusButton => find.byKey(UIKeys.homeImportButton);
 
   Future tapPlusButton() async {
+    print('tapPlusButton');
     await tester.tap(plusButton);
     await tester.pumpAndSettle();
   }
 
   Future checkPageHasMainnetCard() async {
+    print('checkPageHasMainnetCard');
     expect(mainnetCard, findsNWidgets(1));
   }
 
   Future checkPageHasTestnetCard() async {
+    print('checkPageHasTestnetCard');
     expect(testnetCard, findsNWidgets(1));
   }
 
   Future checkPageHasNoTestnetCard() async {
+    print('checkPageHasNoTestnetCard');
     expect(testnetCard, findsNWidgets(0));
   }
 
