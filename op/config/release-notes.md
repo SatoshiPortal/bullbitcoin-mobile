@@ -1,22 +1,17 @@
 
-## bullbitcoin-mobile-v0.1.95
+## bullbitcoin-mobile-v0.1.98
 
-Various bug fixes.
 
 ### Changelog
-  - Finalize psbt for coldcard broadcast
-  - Various UI Fixes
-  - Fixes in delete wallet
-  - Patches in RBF
-  - Fixes in xyzpub for legacy wallets
+  - fixed bugs in fee selection
+  - added screen protection in task switcher
+  - improved error handling
+  - various fixes/improvements in electrum client
+  - save currency on app restarts
+  - improved test backup ux
+  - various fixes in rbf
 
 ### Required/Known-Bugs
-  - bip329
   - transaction:
     - recognize transactions to self (these currently show up as the fee amount)
-  - working but buggy coldcard vdisk flow
   - tests on descriptor imports
-  - electrum: 
-    - sometimes electrum errors and wallet can get stuck, goto settings and 
-    click save again
-
