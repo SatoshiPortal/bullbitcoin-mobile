@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/routes.dart';
 
 class Err {
@@ -27,12 +28,12 @@ class Err {
       if (locator.isRegistered<Logger>()) locator<Logger>().log('Error: $message \n$trace');
     }
     if (showAlert) openAlert();
-    // if (message.contains('Panic')) _handleElectrumException();
+    if (message.contains('Panic')) _handleElectrumException();
   }
 
-  // void _handleElectrumException() {
-  //   if (locator.isRegistered<NetworkCubit>()) locator<NetworkCubit>().setupBlockchain();
-  // }
+  void _handleElectrumException() {
+    if (locator.isRegistered<NetworkCubit>()) locator<NetworkCubit>().setupBlockchain();
+  }
 
   @override
   String toString() =>

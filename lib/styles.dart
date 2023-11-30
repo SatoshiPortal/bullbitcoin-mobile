@@ -100,3 +100,14 @@ extension ThemeExtension on BuildContext {
   TextTheme get font => theme.textTheme;
   ColorScheme get colour => theme.colorScheme;
 }
+
+(TextTheme, String) buildFonts(bool isTest) {
+  final family = GoogleFonts.inter().fontFamily!;
+  final theme = GoogleFonts.interTextTheme();
+
+  if (isTest) {
+    return (theme, family);
+  }
+
+  return (theme, family);
+}
