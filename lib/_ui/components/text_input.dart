@@ -268,6 +268,7 @@ class BBAmountInput extends StatefulWidget {
     required this.disabled,
     required this.btcFormatting,
     required this.isSats,
+    this.selected = false,
     this.focusNode,
   });
 
@@ -276,6 +277,7 @@ class BBAmountInput extends StatefulWidget {
   final String hint;
   final bool btcFormatting;
   final bool isSats;
+  final bool selected;
 
   // final Function? onRightTap;
   final bool disabled;
@@ -298,6 +300,9 @@ class _BBAmountInputState extends State<BBAmountInput> {
   Widget build(BuildContext context) {
     if (widget.value != null && _editingController.text != widget.value)
       _editingController.text = widget.value!;
+
+    final borderColor =
+        widget.selected ? context.colour.primary : context.colour.onBackground.withOpacity(0.2);
 
     return TextField(
       enabled: !widget.disabled,
@@ -332,18 +337,15 @@ class _BBAmountInputState extends State<BBAmountInput> {
         hintText: widget.hint,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(80.0),
+          borderSide: BorderSide(color: borderColor),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(80.0),
-          borderSide: BorderSide(
-            color: context.colour.onBackground.withOpacity(0.2),
-          ),
+          borderSide: BorderSide(color: borderColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(80.0),
-          borderSide: BorderSide(
-            color: context.colour.onBackground,
-          ),
+          borderSide: BorderSide(color: borderColor),
         ),
         contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
         // scrollPadding: EdgeInsets.only(bottom:40),

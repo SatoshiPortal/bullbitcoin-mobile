@@ -360,7 +360,7 @@ class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
 
     var selected = false;
 
-    selected = context.select((NetworkFeesCubit x) => x.state.selectedFeesOption == 4);
+    selected = context.select((NetworkFeesCubit x) => x.state.feeOption() == 4);
 
     if (selected && !_focusNode.hasFocus) _focusNode.requestFocus();
 
@@ -388,6 +388,7 @@ class _CustomFeeTextFieldState extends State<CustomFeeTextField> {
           btcFormatting: false,
           isSats: true,
           disabled: false,
+          selected: selected,
           value: amt,
           hint: 'sats/vb',
           onChanged: (value) {
