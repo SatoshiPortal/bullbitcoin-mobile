@@ -185,13 +185,23 @@ class CreateWalletLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = context.select((CreateWalletCubit cubit) => cubit.state.walletLabel ?? '');
+    final err = context.select((CreateWalletCubit cubit) => cubit.state.errSaving);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: BBTextInput.big(
-        value: text,
-        onChanged: (value) => context.read<CreateWalletCubit>().walletLabelChanged(value),
-        hint: 'Label your wallet',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BBTextInput.big(
+            value: text,
+            onChanged: (value) => context.read<CreateWalletCubit>().walletLabelChanged(value),
+            hint: 'Label your wallet',
+          ),
+          if (err.isNotEmpty) ...[
+            const Gap(8),
+            Center(child: BBText.error(err)),
+          ],
+        ],
       ),
     );
   }
@@ -283,7 +293,10 @@ class CreateWalletCreateButton extends StatelessWidget {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.7,
       child: BBButton.bigRed(
-        onPressed: () {
+        onPressed: () async {
+          await context.read<CreateWalletCubit>().checkWalletLabel();
+          final err = context.read<CreateWalletCubit>().state.errSaving;
+          if (err.isNotEmpty) return;
           CreateWalletConfirmPopUp.showPopup(context);
         },
         label: 'create.button'.translate,

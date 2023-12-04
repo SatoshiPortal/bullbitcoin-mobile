@@ -5,6 +5,7 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
+import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -106,7 +107,7 @@ class ImportEnterWordsScreen extends StatelessWidget {
             const Gap(32),
             const _ImportWordsPassphrase(),
             const Gap(32),
-            const _WalletLabel(),
+            const WalletLabel(),
             const Gap(80),
             const _ImportWordsRecoverButton(),
           ],
@@ -324,24 +325,6 @@ class _ImportWordsPassphrase extends StatelessWidget {
         value: text,
         onChanged: (value) => context.read<ImportWalletCubit>().passPhraseChanged(value),
         hint: 'Enter passphrase if needed',
-      ),
-    );
-  }
-}
-
-class _WalletLabel extends StatelessWidget {
-  const _WalletLabel();
-
-  @override
-  Widget build(BuildContext context) {
-    final text = context.select((ImportWalletCubit cubit) => cubit.state.walletLabel ?? '');
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: BBTextInput.big(
-        value: text,
-        onChanged: (value) => context.read<ImportWalletCubit>().walletLabelChanged(value),
-        hint: 'Label your wallet',
       ),
     );
   }

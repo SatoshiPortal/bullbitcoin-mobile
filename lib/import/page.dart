@@ -10,6 +10,8 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
@@ -187,6 +189,34 @@ class _CreateSelectionScreen extends StatelessWidget {
             },
             label: 'Recover backup',
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class WalletLabel extends StatelessWidget {
+  const WalletLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    final text = context.select((ImportWalletCubit cubit) => cubit.state.walletLabel ?? '');
+    final err = context.select((ImportWalletCubit cubit) => cubit.state.errSavingWallet);
+
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BBTextInput.big(
+            value: text,
+            onChanged: (value) => context.read<ImportWalletCubit>().walletLabelChanged(value),
+            hint: 'Label your wallet',
+          ),
+          if (err.isNotEmpty) ...[
+            const Gap(8),
+            Center(child: BBText.error(err)),
+          ],
         ],
       ),
     );

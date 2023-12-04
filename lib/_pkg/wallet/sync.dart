@@ -1,4 +1,6 @@
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/logger.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletSync {
@@ -29,6 +31,9 @@ class WalletSync {
     required bool validateDomain,
   }) async {
     try {
+      Uri.parse(url);
+      locator.get<Logger>().log('Connecting to $url');
+
       final blockchain = await bdk.Blockchain.create(
         config: bdk.BlockchainConfig.electrum(
           config: bdk.ElectrumConfig(

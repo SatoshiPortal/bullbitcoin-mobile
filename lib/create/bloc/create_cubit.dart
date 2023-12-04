@@ -71,9 +71,27 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   //   );
   // }
 
+  Future checkWalletLabel() async {
+    final label = state.walletLabel;
+    if (label == null || label == '')
+      emit(state.copyWith(errSaving: 'Wallet Label is required'));
+    else if (label.length < 3)
+      emit(state.copyWith(errSaving: 'Wallet Label must be at least 3 characters'));
+    else if (label.length > 20)
+      emit(state.copyWith(errSaving: 'Wallet Label must be less than 20 characters'));
+    else
+      emit(state.copyWith(errSaving: ''));
+  }
+
   void confirmClicked() async {
     if (state.mnemonic == null) return;
     emit(state.copyWith(saving: true, errSaving: ''));
+
+    final label = state.walletLabel;
+    if (label == null || label == '') {
+      emit(state.copyWith(saving: false, errSaving: 'Wallet Label is required'));
+      return;
+    }
 
     final network = networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
     final mnemonic = state.mnemonic!.join(' ');

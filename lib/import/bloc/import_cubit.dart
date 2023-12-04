@@ -361,6 +361,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void xpubSaveClicked() async {
+    await checkWalletLabel();
+    if (state.errSavingWallet.isNotEmpty) return;
+
     emit(state.copyWith(errImporting: ''));
     if (state.xpub.isEmpty) {
       emit(state.copyWith(errImporting: 'Please enter xpub'));
@@ -382,6 +385,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void recoverWallet12Clicked() async {
+    await checkWalletLabel();
+    if (state.errSavingWallet.isNotEmpty) return;
+
     emit(
       state.copyWith(
         importType: ImportTypes.words12,
@@ -400,6 +406,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void recoverWallet24Clicked() async {
+    await checkWalletLabel();
+    if (state.errSavingWallet.isNotEmpty) return;
+
     emit(
       state.copyWith(
         importType: ImportTypes.words24,
@@ -513,6 +522,18 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
   void scriptTypeChanged(ScriptType scriptType) {
     emit(state.copyWith(scriptType: scriptType));
+  }
+
+  Future checkWalletLabel() async {
+    final label = state.walletLabel;
+    if (label == null || label == '')
+      emit(state.copyWith(errSavingWallet: 'Wallet Label is required'));
+    else if (label.length < 3)
+      emit(state.copyWith(errSavingWallet: 'Wallet Label must be at least 3 characters'));
+    else if (label.length > 20)
+      emit(state.copyWith(errSavingWallet: 'Wallet Label must be less than 20 characters'));
+    else
+      emit(state.copyWith(errSavingWallet: ''));
   }
 
   void saveClicked() async {
