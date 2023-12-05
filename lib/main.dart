@@ -16,6 +16,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:no_screenshot/no_screenshot.dart';
 
 Future main({bool fromTest = false}) async {
   await dotenv.load(isOptional: true);
@@ -118,6 +119,7 @@ class AppLifecycleOverlay extends StatefulWidget {
 
 class _AppLifecycleOverlayState extends State<AppLifecycleOverlay> with WidgetsBindingObserver {
   bool shouldBlur = false;
+  final _noScreenshot = NoScreenshot.instance;
 
   @override
   void initState() {
@@ -133,8 +135,8 @@ class _AppLifecycleOverlayState extends State<AppLifecycleOverlay> with WidgetsB
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _noScreenshot.screenshotOff();
     setState(() {
-      // if (!kDebugMode)
       shouldBlur = state == AppLifecycleState.inactive ||
           state == AppLifecycleState.paused ||
           state == AppLifecycleState.hidden ||

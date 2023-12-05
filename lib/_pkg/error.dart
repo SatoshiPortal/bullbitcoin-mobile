@@ -54,3 +54,5 @@ extension X on Exception {
     }
   }
 }
+
+typedef Result<T> = Future<(T? value, Err? err)>;

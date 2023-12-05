@@ -7,7 +7,9 @@ class MempoolAPI {
 
   final Dio http;
 
-  Future<(List<int>?, Err?)> getFees(bool isTestnet) async {
+  // Future<(List<int>?, Err?)>
+
+  Result<List<int>> getFees(bool isTestnet) async {
     try {
       final testnet = isTestnet ? '/testnet' : '';
       final url = 'https://$mempoolapi$testnet/api/v1/fees/recommended';
