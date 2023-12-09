@@ -11,7 +11,7 @@ class LoggerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logs = context.select((Logger logger) => logger.state);
+    final logs = context.select((Logger logger) => logger.state.reversed.toList());
 
     return Scaffold(
       appBar: AppBar(

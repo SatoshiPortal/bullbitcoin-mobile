@@ -53,9 +53,9 @@
         // 
         // 
         ".github": true,
-        "repro": true,
-        "doc": true,
-        "op": true,
+        // "repro": true,
+        // "doc": true,
+        // "op": true,
         // 
         // 
         // "android": true,
