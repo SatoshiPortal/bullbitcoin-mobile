@@ -11,6 +11,7 @@ import '../__pages/import.dart';
 void main() {
   setUp(() async {
     PathProviderPlatform.instance = FakePathProviderPlatform();
+    TestWidgetsFlutterBinding.ensureInitialized();
     app.main(fromTest: true);
   });
 

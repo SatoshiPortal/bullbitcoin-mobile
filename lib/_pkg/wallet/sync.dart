@@ -32,7 +32,7 @@ class WalletSync {
   }) async {
     try {
       Uri.parse(url);
-      locator.get<Logger>().log('Connecting to $url');
+      if (locator.isRegistered<Logger>()) locator.get<Logger>().log('Connecting to $url');
 
       final blockchain = await bdk.Blockchain.create(
         config: bdk.BlockchainConfig.electrum(

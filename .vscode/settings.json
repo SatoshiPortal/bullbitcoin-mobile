@@ -15,10 +15,10 @@
         "editor.suggest.snippetsPreventQuickSuggestions": false,
         "editor.suggestSelection": "first",
         "editor.tabCompletion": "onlySnippets",
-        "editor.wordBasedSuggestions": false,
+        "editor.wordBasedSuggestions": "off",
         "editor.codeActionsOnSave": {
-            "source.fixAll": true,
-            "source.organizeImports": true,
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
         },
     },
     "dart.lineLength": 100,
@@ -62,7 +62,7 @@
         "ios": true,
         // 
         // 
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
         // 
         // 
         // "**/test": true,

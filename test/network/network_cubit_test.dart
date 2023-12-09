@@ -58,7 +58,7 @@ void main() {
       expect: () => [
         const NetworkState(loadingNetworks: true),
         n1,
-        // n2,
+        n2,
       ],
       verify: (_) {
         // verify(() => _.hiveStorage.getValue(StorageKeys.network)).called(1);

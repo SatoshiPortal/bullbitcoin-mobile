@@ -59,9 +59,7 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
     );
     await hiveStorage.init(password: password);
   } else
-    await hiveStorage.init(
-      password: base64Url.decode(password!),
-    );
+    await hiveStorage.init(password: base64Url.decode(password!));
 
   // if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
 
