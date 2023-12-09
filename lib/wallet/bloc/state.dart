@@ -25,6 +25,7 @@ class WalletState with _$WalletState {
     @Default('') String errSyncingAddresses,
     @Default(false) bool savingName,
     @Default('') String errSavingName,
+    @Default(0) int syncErrCount,
     // Address? newAddress,
     Address? firstAddress,
   }) = _WalletState;

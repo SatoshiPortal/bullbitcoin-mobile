@@ -28,7 +28,7 @@ class Err {
       if (locator.isRegistered<Logger>()) locator<Logger>().log('Error: $message \n$trace');
     }
     if (showAlert) openAlert();
-    if (message.contains('Panic')) _handleElectrumException();
+    if (message.toLowerCase().contains('panic')) _handleElectrumException();
   }
 
   void _handleElectrumException() {

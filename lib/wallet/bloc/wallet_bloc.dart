@@ -159,6 +159,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     locator<Logger>().log('End Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''));
 
     if (err != null) {
+      if (err.message.toLowerCase().contains('panic') && state.syncErrCount < 5) {
+        await networkCubit.loadNetworks();
+        await Future.delayed(const Duration(milliseconds: 300));
+        emit(state.copyWith(syncErrCount: state.syncErrCount + 1));
+        add(SyncWallet());
+        return;
+      }
+
       emit(
         state.copyWith(
           errSyncing: err.toString(),
@@ -169,7 +177,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       return;
     }
 
-    emit(state.copyWith(syncing: false, bdkWallet: bdkW));
+    emit(state.copyWith(syncing: false, bdkWallet: bdkW, syncErrCount: 0));
     await Future.delayed(100.ms);
 
     if (!fromStorage) add(GetFirstAddress());
