@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/deep_link.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
@@ -137,6 +138,7 @@ Future setupLocator({bool fromTest = false}) async {
   locator.registerSingleton<Launcher>(Launcher());
   locator.registerSingleton<NFCPicker>(NFCPicker());
   locator.registerSingleton<FilePick>(FilePick());
+  locator.registerSingleton<Clippboard>(Clippboard());
   locator.registerSingleton<WordsCubit>(
     WordsCubit(
       mnemonicWords: MnemonicWords(),

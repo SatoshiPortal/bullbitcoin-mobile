@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -8,6 +9,7 @@ import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/page.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -151,14 +153,31 @@ class _XpubTextFieldAreaState extends State<XpubTextFieldArea> {
                 onChanged: (value) {
                   context.read<ImportWalletCubit>().xpubChanged(value);
                 },
-                rightIcon: IconButton(
-                  icon: FaIcon(
-                    FontAwesomeIcons.qrcode,
-                    color: context.colour.surface,
-                  ),
-                  onPressed: () {
-                    context.read<ImportWalletCubit>().scanQRClicked();
-                  },
+                rightIcon: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: FaIcon(
+                        FontAwesomeIcons.qrcode,
+                        color: context.colour.surface,
+                      ),
+                      onPressed: () {
+                        context.read<ImportWalletCubit>().scanQRClicked();
+                      },
+                    ),
+                    const Gap(4),
+                    IconButton(
+                      onPressed: () async {
+                        if (!locator.isRegistered<Clippboard>()) return;
+                        final data = await locator<Clippboard>().paste();
+                        if (data == null) return;
+                        context.read<ImportWalletCubit>().xpubChanged(data);
+                      },
+                      iconSize: 20,
+                      color: context.colour.surface,
+                      icon: const FaIcon(FontAwesomeIcons.paste),
+                    ),
+                  ],
                 ),
                 hint: 'Paste or scan xpub',
               ),

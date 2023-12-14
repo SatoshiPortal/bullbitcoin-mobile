@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
@@ -17,7 +18,6 @@ import 'package:bb_mobile/receive/wallet_select.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -258,9 +258,7 @@ class QRDisplay extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () async {
-          await Clipboard.setData(ClipboardData(text: address));
-          SystemSound.play(SystemSoundType.click);
-          HapticFeedback.selectionClick();
+          if (locator.isRegistered<Clippboard>()) await locator<Clippboard>().copy(address);
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
         },
@@ -318,9 +316,9 @@ class _DisplayAddressState extends State<DisplayAddress> {
                   width: 50,
                   child: IconButton(
                     onPressed: () async {
-                      await Clipboard.setData(ClipboardData(text: addressQr));
-                      SystemSound.play(SystemSoundType.click);
-                      HapticFeedback.selectionClick();
+                      if (locator.isRegistered<Clippboard>())
+                        await locator<Clippboard>().copy(addressQr);
+
                       _copyClicked();
                     },
                     iconSize: 30,

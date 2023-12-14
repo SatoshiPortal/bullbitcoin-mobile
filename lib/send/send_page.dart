@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
@@ -150,7 +151,7 @@ class _Screen extends StatelessWidget {
                 const Gap(48),
                 const AmountEntry(),
                 const Gap(24),
-                const BBText.title('    Address'),
+                const AddressTitle(),
                 const Gap(4),
                 const EnterAddress(),
                 const Gap(24),
@@ -173,6 +174,36 @@ class _Screen extends StatelessWidget {
           ),
         ),
       ).animate(delay: 200.ms).fadeIn(),
+    );
+  }
+}
+
+class AddressTitle extends StatelessWidget {
+  const AddressTitle({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const BBText.title('    Address'),
+        const Spacer(),
+        IconButton(
+          onPressed: () async {
+            if (!locator.isRegistered<Clippboard>()) return;
+            final data = await locator<Clippboard>().paste();
+            if (data == null) return;
+            context.read<SendCubit>().updateAddress(data);
+          },
+          iconSize: 16,
+          visualDensity: VisualDensity.compact,
+          padding: EdgeInsets.zero,
+          color: context.colour.secondary,
+          icon: const FaIcon(FontAwesomeIcons.paste),
+        ),
+        const Gap(16),
+      ],
     );
   }
 }

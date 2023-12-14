@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
@@ -19,7 +20,6 @@ import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -284,8 +284,9 @@ class _CopyButtonState extends State<CopyButton> {
                     setState(() {
                       _copied = true;
                     });
-                    Clipboard.setData(ClipboardData(text: address.address));
-                    HapticFeedback.mediumImpact();
+                    if (locator.isRegistered<Clippboard>())
+                      locator<Clippboard>().copy(address.address);
+
                     Future.delayed(const Duration(seconds: 2), () {
                       setState(() {
                         _copied = false;

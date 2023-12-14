@@ -1,11 +1,12 @@
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -39,8 +40,8 @@ class _Screen extends StatelessWidget {
   const _Screen();
 
   void copy(BuildContext context, String text) async {
-    await Clipboard.setData(ClipboardData(text: text));
-    HapticFeedback.mediumImpact();
+    if (locator.isRegistered<Clippboard>()) await locator<Clippboard>().copy(text);
+
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
   }
