@@ -136,8 +136,12 @@ class Wallet with _$Wallet {
     return amt;
   }
 
-  List<Address> addressesWithBalance() {
-    return myAddressBook.where((addr) => addr.calculateBalanceLocal() > 0).toList();
+  List<Address> addressesWithBalanceAndActive() {
+    return myAddressBook
+        .where(
+          (addr) => addr.calculateBalanceLocal() > 0 && addr.state == AddressStatus.active,
+        )
+        .toList();
   }
 
   List<Address> addressesWithoutBalance({bool isUsed = false}) {
