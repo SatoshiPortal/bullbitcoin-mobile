@@ -104,13 +104,13 @@ class ColdCardSection extends StatelessWidget {
           ),
           BBButton.textWithRightArrow(
             onPressed: () {
-              if (!scanning)
-                context.read<ImportWalletCubit>().coldCardNFCClicked();
-              else
-                context.read<ImportWalletCubit>().backClicked();
+              // if (!scanning)
+              //   context.read<ImportWalletCubit>().coldCardNFCClicked();
+              // else
+              //   context.read<ImportWalletCubit>().backClicked();
               // ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
             },
-            label: 'Activate NFC',
+            label: 'Activate NFC (coming soon...)',
             loading: scanning,
             loadingText: 'Stop Scanning',
           ),
