@@ -8,7 +8,18 @@ void main() {
     final blockchain = await _createBlockchain();
     wallet1.sync(blockchain);
     final _ = await wallet1.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
-    print('if this message comes before "sync complete" messages test passed');
+    print('this message should omes before "sync complete" message or test passed');
+  });
+
+  test('getAddress waits for multiple wallets to sync', () async {
+    final wallet1 = await _createWallet(mne: r2.join(' '));
+    final wallet2 = await _createWallet();
+    final blockchain = await _createBlockchain();
+    wallet1.sync(blockchain);
+    wallet2.sync(blockchain);
+    await wallet1.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
+    // await wallet2.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
+    print('this message should comes before "sync complete" message or test passed');
   });
 }
 
