@@ -120,6 +120,14 @@ class UTXO with _$UTXO {
   }
 }
 
+extension X on List<Address> {
+  bool containsAddress(Address address) =>
+      where((addr) => addr.address == address.address).isNotEmpty;
+
+  List<Address> removeAddress(Address address) =>
+      where((addr) => addr.address != address.address).toList();
+}
+
 // @freezed
 // class TxOut with _$TxOut {
 //   factory TxOut({

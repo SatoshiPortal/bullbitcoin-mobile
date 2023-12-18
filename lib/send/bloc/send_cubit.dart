@@ -157,9 +157,10 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void utxoAddressSelected(Address address) {
-    final selectedAddresses = state.selectedAddresses.toList();
-    if (selectedAddresses.contains(address))
-      selectedAddresses.remove(address);
+    var selectedAddresses = state.selectedAddresses.toList();
+
+    if (selectedAddresses.containsAddress(address))
+      selectedAddresses = selectedAddresses.removeAddress(address);
     else
       selectedAddresses.add(address);
 

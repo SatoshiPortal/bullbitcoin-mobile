@@ -52,9 +52,7 @@ class SendState with _$SendState {
     );
   }
 
-  bool addressIsSelected(Address address) {
-    return selectedAddresses.contains(address);
-  }
+  bool addressIsSelected(Address address) => selectedAddresses.containsAddress(address);
 
   String advancedOptionsButtonText() {
     if (selectedAddresses.isEmpty) return 'Advanced options';
