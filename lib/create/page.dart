@@ -9,6 +9,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
+import 'package:bb_mobile/_ui/page_template.dart';
 import 'package:bb_mobile/_ui/word_grid.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
@@ -77,29 +78,32 @@ class _Screen extends StatelessWidget {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Gap(24),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
+      body: StackedPage(
+        bottomChild: const CreateWalletCreateButton(),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const Gap(24),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                ),
+                child: BBText.bodySmall(
+                  'create.disclaimer'.translate,
+                  isBold: true,
+                ),
               ),
-              child: BBText.bodySmall(
-                'create.disclaimer'.translate,
-                isBold: true,
-              ),
-            ),
-            const Gap(24),
-            const Words(),
-            const Gap(32),
-            const CreateWalletPassField(),
-            const Gap(12),
-            const CreateWalletLabel(),
-            const Gap(40),
-            const CreateWalletCreateButton(),
-            const Gap(80),
-          ],
+              const Gap(24),
+              const Words(),
+              const Gap(32),
+              const CreateWalletPassField(),
+              const Gap(12),
+              const CreateWalletLabel(),
+              const Gap(40),
+              // const CreateWalletCreateButton(),
+              // const Gap(80),
+            ],
+          ),
         ),
       ),
     );

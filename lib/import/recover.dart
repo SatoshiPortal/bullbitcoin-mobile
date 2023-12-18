@@ -2,6 +2,7 @@ import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/page_template.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
@@ -26,94 +27,97 @@ class ImportEnterWordsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const ImportTypes importwords = ImportTypes.words12;
-    return SingleChildScrollView(
-      key: UIKeys.importRecoverScrollable,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(22),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: SegmentedButton(
-                style: ButtonStyle(
-                  iconColor: MaterialStatePropertyAll<Color>(
-                    context.colour.onBackground,
-                  ),
-                  backgroundColor: MaterialStatePropertyAll<Color>(
-                    context.colour.background,
-                  ),
-                ),
-                segments: <ButtonSegment<ImportTypes>>[
-                  ButtonSegment(
-                    value: ImportTypes.words12,
-                    label: Text(
-                      '12 words',
-                      style: TextStyle(
-                        color: context.colour.onBackground,
-                      ),
+    return StackedPage(
+      bottomChild: const _ImportWordsRecoverButton(),
+      child: SingleChildScrollView(
+        key: UIKeys.importRecoverScrollable,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Gap(22),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: SegmentedButton(
+                  style: ButtonStyle(
+                    iconColor: MaterialStatePropertyAll<Color>(
+                      context.colour.onBackground,
+                    ),
+                    backgroundColor: MaterialStatePropertyAll<Color>(
+                      context.colour.background,
                     ),
                   ),
-                  ButtonSegment(
-                    value: ImportTypes.words24,
-                    label: Text(
-                      '24 words',
-                      style: TextStyle(
-                        color: context.colour.onBackground,
+                  segments: <ButtonSegment<ImportTypes>>[
+                    ButtonSegment(
+                      value: ImportTypes.words12,
+                      label: Text(
+                        '12 words',
+                        style: TextStyle(
+                          color: context.colour.onBackground,
+                        ),
                       ),
+                    ),
+                    ButtonSegment(
+                      value: ImportTypes.words24,
+                      label: Text(
+                        '24 words',
+                        style: TextStyle(
+                          color: context.colour.onBackground,
+                        ),
+                      ),
+                    ),
+                  ],
+                  selected: const <ImportTypes>{
+                    importwords,
+                  },
+                  onSelectionChanged: (p0) {
+                    context.read<ImportWalletCubit>().recoverClicked24();
+                  },
+                ),
+              ),
+              const Gap(25),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        for (var i = 0; i < 6; i++)
+                          ImportWordTextField(
+                            uiKey: UIKeys.importRecoverField(i),
+                            index: i,
+                            focusNode: focusNodes[i],
+                            returnClicked: returnClicked,
+                          ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        for (var i = 6; i < 12; i++)
+                          ImportWordTextField(
+                            uiKey: UIKeys.importRecoverField(i),
+                            index: i,
+                            focusNode: focusNodes[i],
+                            returnClicked: returnClicked,
+                          ),
+                      ],
                     ),
                   ),
                 ],
-                selected: const <ImportTypes>{
-                  importwords,
-                },
-                onSelectionChanged: (p0) {
-                  context.read<ImportWalletCubit>().recoverClicked24();
-                },
               ),
-            ),
-            const Gap(25),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      for (var i = 0; i < 6; i++)
-                        ImportWordTextField(
-                          uiKey: UIKeys.importRecoverField(i),
-                          index: i,
-                          focusNode: focusNodes[i],
-                          returnClicked: returnClicked,
-                        ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      for (var i = 6; i < 12; i++)
-                        ImportWordTextField(
-                          uiKey: UIKeys.importRecoverField(i),
-                          index: i,
-                          focusNode: focusNodes[i],
-                          returnClicked: returnClicked,
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const Gap(32),
-            const _ImportWordsPassphrase(),
-            const Gap(32),
-            const WalletLabel(),
-            const Gap(80),
-            const _ImportWordsRecoverButton(),
-          ],
+              const Gap(32),
+              const _ImportWordsPassphrase(),
+              const Gap(32),
+              const WalletLabel(),
+              const Gap(80),
+              // const _ImportWordsRecoverButton(),
+            ],
+          ),
         ),
-      ),
-    ).animate(delay: 200.ms).fadeIn();
+      ).animate(delay: 200.ms).fadeIn(),
+    );
   }
 }
 
@@ -340,7 +344,14 @@ class _ImportWordsRecoverButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          if (err.isNotEmpty) ...[
+            const Gap(8),
+            BBText.error(
+              err,
+            ),
+          ],
           SizedBox(
             width: 250,
             child: BBButton.bigRed(
@@ -352,12 +363,6 @@ class _ImportWordsRecoverButton extends StatelessWidget {
               disabled: recovering,
             ),
           ),
-          if (err.isNotEmpty) ...[
-            const Gap(8),
-            BBText.error(
-              err,
-            ),
-          ],
         ],
       ),
     );

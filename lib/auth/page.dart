@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/page_template.dart';
 import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/auth/bloc/cubit.dart';
 import 'package:bb_mobile/auth/bloc/state.dart';
@@ -72,26 +73,29 @@ class _Screen extends StatelessWidget {
                 },
               ),
             ),
-      body: SingleChildScrollView(
-        child: starting
-            ? Container()
-            : const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Gap(60),
-                    AuthTitleText(),
-                    Gap(48),
-                    AuthPasswordField(),
-                    AuthKeyPad(),
-                    Gap(24),
-                    AuthConfirmButton(),
-                    Gap(40),
-                  ],
-                ),
-              ).animate(delay: 400.milliseconds).fade(),
+      body: StackedPage(
+        bottomChild: const AuthConfirmButton(),
+        child: SingleChildScrollView(
+          child: starting
+              ? Container()
+              : const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Gap(60),
+                      AuthTitleText(),
+                      Gap(48),
+                      AuthPasswordField(),
+                      AuthKeyPad(),
+                      Gap(24),
+                      // AuthConfirmButton(),
+                      // Gap(40),
+                    ],
+                  ),
+                ).animate(delay: 400.milliseconds).fade(),
+        ),
       ),
     );
   }
