@@ -15,9 +15,7 @@ class UIKeys {
   static const importXpubConfirmButton = Key('import_xpub_confirm_button');
   static const importWalletSelectionOption = Key('import_wallet_selection_option');
   static const importWalletSelectionSyncing = Key('import_wallet_selection_syncing');
-
   static const importRecoverScrollable = Key('import_recover_scrollable');
-
   static Key importRecoverField(int index) => Key('import_recover_field_$index');
   static const firstSuggestionWord = Key('first_suggestion_word');
 
@@ -32,4 +30,12 @@ class UIKeys {
   static Key homeCardWithName(String name) => Key('home_card_with_name_$name');
 
   static Key importWalletSelectionScrollable = const Key('import_wallet_selection_scrollable');
+
+  static const receiveQRDisplay = Key('receive_qr_display');
+  static const receiveAddressDisplay = Key('receive_address_display');
+  static const receiveGenerateAddressButton = Key('receive_generate_address_button');
+  static const receiveRequestPaymentButton = Key('receive_request_payment_button');
+  static const receiveAmountField = Key('receive_amount_field');
+  static const receiveDescriptionField = Key('receive_description_field');
+  static const receiveSavePaymentButton = Key('receive_save_payment_button');
 }
