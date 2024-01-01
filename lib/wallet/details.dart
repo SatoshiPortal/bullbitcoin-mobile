@@ -70,10 +70,10 @@ class _Screen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const BBText.title('Wallet fingerprint'),
-            BBText.body(fingerPrint, isBold: true),
+            BBText.bodySmall(fingerPrint),
             const Gap(16),
             const BBText.title('Pubkey'),
-            BBText.body(slipKey ?? pub, isBold: true),
+            BBText.bodySmall(slipKey ?? pub),
             BBButton.text(
               label: 'Copy',
               onPressed: () {
@@ -82,7 +82,7 @@ class _Screen extends StatelessWidget {
             ),
             const Gap(16),
             const BBText.title('Descriptor'),
-            BBText.body(descriptorCombined, isBold: true),
+            BBText.bodySmall(descriptorCombined),
             BBButton.text(
               label: 'Copy',
               onPressed: () {
@@ -91,11 +91,11 @@ class _Screen extends StatelessWidget {
             ),
             const Gap(16),
             const BBText.title('Address type'),
-            BBText.body(addressTypeStr, isBold: true),
+            BBText.bodySmall(addressTypeStr),
             const Gap(16),
             if (derivationPath.isNotEmpty) ...[
               const BBText.title('Derivation Path'),
-              BBText.body(derivationPath, isBold: true),
+              BBText.bodySmall(derivationPath),
               const Gap(16),
             ],
           ],
