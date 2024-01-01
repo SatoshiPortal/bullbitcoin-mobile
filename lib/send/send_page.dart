@@ -284,7 +284,7 @@ class _EnterAddressState extends State<EnterAddress> {
     final address = context.select((SendCubit cubit) => cubit.state.address);
     if (_controller.text != address) {
       _controller.text = address;
-      _focusNode.unfocus();
+      // _focusNode.unfocus();
     }
     return BBTextInput.bigWithIcon(
       focusNode: _focusNode,
