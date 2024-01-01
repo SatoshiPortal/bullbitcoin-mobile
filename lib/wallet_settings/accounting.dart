@@ -37,7 +37,7 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletName = context.select((WalletBloc _) => _.state.name);
+    final walletName = context.select((WalletBloc _) => _.state.wallet?.name ?? '');
     final totalBalance = context.select((WalletBloc _) => _.state.wallet?.fullBalance?.total ?? 0);
     final totalStr = context.select(
       (CurrencyCubit _) => _.state.getAmountInUnits(totalBalance, removeText: true),
