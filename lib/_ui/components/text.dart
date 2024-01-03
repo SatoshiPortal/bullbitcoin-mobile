@@ -22,6 +22,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.uiKey,
   })  : type = _FontTypes.headline,
         textAlign = TextAlign.left;
 
@@ -34,6 +35,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.uiKey,
   }) : type = _FontTypes.titleLarge;
 
   const BBText.title(
@@ -45,6 +47,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.uiKey,
   }) : type = _FontTypes.title;
 
   const BBText.body(
@@ -56,6 +59,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.uiKey,
   }) : type = _FontTypes.body;
 
   const BBText.bodySmall(
@@ -67,7 +71,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
-    super.key,
+    this.uiKey,
   }) : type = _FontTypes.bodySmall;
 
   const BBText.bodyBold(
@@ -79,6 +83,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.uiKey,
   }) : type = _FontTypes.body;
 
   const BBText.error(
@@ -90,6 +95,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.uiKey,
   }) : type = _FontTypes.error;
 
   const BBText.errorSmall(
@@ -101,6 +107,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.removeColourOpacity = false,
     this.isGreen = false,
+    this.uiKey,
   }) : type = _FontTypes.errorSmall;
 
   final String text;
@@ -112,6 +119,7 @@ class BBText extends StatelessWidget {
   final bool isBlue;
   final bool isGreen;
   final bool removeColourOpacity;
+  final Key? uiKey;
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +156,7 @@ class BBText extends StatelessWidget {
     return Text(
       text,
       style: style,
+      key: uiKey,
       textAlign: textAlign,
     );
   }

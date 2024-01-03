@@ -264,6 +264,7 @@ class BBButton extends StatelessWidget {
         );
 
         widget = OutlinedButton(
+          key: buttonKey,
           style: style,
           onPressed: disabled ? null : () => onPressed(),
           child: Padding(
@@ -309,6 +310,7 @@ class BBButton extends StatelessWidget {
 
       case _ButtonType.textWithRightArrow:
         widget = TextButton(
+          key: buttonKey,
           style: TextButton.styleFrom(padding: EdgeInsets.zero),
           onPressed: disabled ? null : () => onPressed(),
           child: Row(

@@ -144,6 +144,7 @@ class _BBTextInputState extends State<BBTextInput> {
 
       case _TextInputType.big:
         widgett = TextField(
+          key: widget.uiKey,
           enabled: !widget.disabled,
           focusNode: widget.focusNode,
           onChanged: widget.onChanged,
@@ -260,7 +261,6 @@ class _BBTextInputState extends State<BBTextInput> {
 
 class BBAmountInput extends StatefulWidget {
   const BBAmountInput({
-    super.key,
     required this.onChanged,
     this.value,
     required this.hint,
@@ -270,6 +270,7 @@ class BBAmountInput extends StatefulWidget {
     required this.isSats,
     this.selected = false,
     this.focusNode,
+    this.uiKey,
   });
 
   final Function(String) onChanged;
@@ -282,6 +283,7 @@ class BBAmountInput extends StatefulWidget {
   // final Function? onRightTap;
   final bool disabled;
   final FocusNode? focusNode;
+  final Key? uiKey;
 
   @override
   State<BBAmountInput> createState() => _BBAmountInputState();
@@ -305,6 +307,7 @@ class _BBAmountInputState extends State<BBAmountInput> {
         widget.selected ? context.colour.primary : context.colour.onBackground.withOpacity(0.2);
 
     return TextField(
+      key: widget.uiKey,
       enabled: !widget.disabled,
       onChanged: widget.onChanged,
       controller: _editingController,

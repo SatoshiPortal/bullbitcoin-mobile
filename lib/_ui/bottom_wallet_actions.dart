@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -67,6 +68,7 @@ class HomeActionButtons extends StatelessWidget {
             SizedBox(
               width: buttonWidth,
               child: BBButton.smallRed(
+                buttonKey: UIKeys.homeReceiveButton,
                 filled: true,
                 onPressed: () async {
                   context.push('/receive', extra: walletBloc);

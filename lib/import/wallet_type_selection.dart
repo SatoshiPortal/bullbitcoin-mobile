@@ -383,7 +383,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                           if (syncing) ...[
                             const BBText.bodySmall(
                               'Scanning wallet ...',
-                              key: UIKeys.importWalletSelectionLoader,
+                              uiKey: UIKeys.importWalletSelectionLoader,
                             ),
                           ],
                         ],

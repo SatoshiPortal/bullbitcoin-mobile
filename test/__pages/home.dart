@@ -10,6 +10,13 @@ class THomePage {
   Finder get testnetCard => find.byKey(UIKeys.homeCardTestnet);
   Finder get settingsButton => find.byKey(UIKeys.homeSettingsButton);
   Finder get plusButton => find.byKey(UIKeys.homeImportButton);
+  Finder get receiveButton => find.byKey(UIKeys.homeReceiveButton);
+
+  Future tapReceiveButton() async {
+    print('tapReceiveButton');
+    await tester.tap(receiveButton);
+    await tester.pumpAndSettle();
+  }
 
   Future tapPlusButton() async {
     print('tapPlusButton');

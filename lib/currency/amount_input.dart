@@ -9,9 +9,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class EnterAmount extends StatefulWidget {
-  const EnterAmount({super.key, this.sendAll = false});
+  const EnterAmount({
+    this.sendAll = false,
+    this.uiKey,
+  });
 
   final bool sendAll;
+  final Key? uiKey;
 
   @override
   State<EnterAmount> createState() => _EnterAmountState();
@@ -51,6 +55,7 @@ class _EnterAmountState extends State<EnterAmount> {
                   Focus(
                     focusNode: _focusNode,
                     child: BBAmountInput(
+                      uiKey: widget.uiKey,
                       disabled: sendAll,
                       value: tempAmt,
                       hint: 'Enter amount',

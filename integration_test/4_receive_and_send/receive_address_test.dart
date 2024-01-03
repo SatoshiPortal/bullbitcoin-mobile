@@ -1,32 +1,19 @@
 import 'package:bb_mobile/main.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../test/__flows/switchToTestnet.dart';
 import '../../test/__flows/utils.dart';
-import '../../test/__pages/home.dart';
-import '../../test/__pages/receive.dart';
+import '../../test/receive/receive_address_test.dart';
 
 void main() {
-  group('First Time Launch Wallets Tests', () {
+  group('Receive Tests', () {
     setupUITest();
 
     setUp(() async {
       app.main(fromTest: true);
     });
 
-    testWidgets('Check mainnet exists and no testnet wallet cards exist', (tester) async {
-      final homepage = THomePage(tester: tester);
-      await Future.delayed(const Duration(seconds: 3));
-
-      await homepage.checkPageHasMainnetCard();
-      await switchToTestnetFromHomeAndReturnHome(tester);
-      await homepage.checkPageHasNoTestnetCard();
+    testWidgets('Check receive qr and address is displayed', (tester) async {
+      await receiveAddressSteps(tester);
     });
   });
-}
-
-Future receiveAddressSteps(WidgetTester tester) async {
-  final homePage = THomePage(tester: tester);
-  final receivePage = TReceivePage(tester: tester);
-  await Future.delayed(const Duration(seconds: 3));
 }

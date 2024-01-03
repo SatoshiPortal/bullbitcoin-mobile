@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
+import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
@@ -195,12 +196,14 @@ class Actions extends StatelessWidget {
       children: [
         if (showRequestButton)
           BBButton.textWithRightArrow(
+            buttonKey: UIKeys.receiveRequestPaymentButton,
             label: 'Request a payment',
             onPressed: () {
               CreateInvoice.openPopUp(context);
             },
           ),
         BBButton.textWithRightArrow(
+          buttonKey: UIKeys.receiveGenerateAddressButton,
           label: 'Generate a new address',
           onPressed: () {
             context.read<ReceiveCubit>().generateNewAddress();
@@ -265,6 +268,7 @@ class QRDisplay extends StatelessWidget {
         child: ColoredBox(
           color: Colors.white,
           child: QrImageView(
+            key: UIKeys.receiveQRDisplay,
             data: address,
           ),
         ),
@@ -310,6 +314,7 @@ class _DisplayAddressState extends State<DisplayAddress> {
                   child: BBText.body(
                     addressQr,
                     textAlign: TextAlign.center,
+                    uiKey: UIKeys.receiveAddressDisplay,
                   ),
                 ),
                 SizedBox(
@@ -392,11 +397,12 @@ class CreateInvoice extends StatelessWidget {
         const Gap(40),
         // const BBText.title('Amount'),
         const Gap(4),
-        const EnterAmount(),
+        const EnterAmount(uiKey: UIKeys.receiveAmountField),
         const Gap(24),
         const BBText.title('   Public description'),
         const Gap(4),
         BBTextInput.big(
+          uiKey: UIKeys.receiveDescriptionField,
           value: description,
           hint: 'Enter description',
           onChanged: (txt) {
@@ -405,6 +411,7 @@ class CreateInvoice extends StatelessWidget {
         ),
         const Gap(40),
         BBButton.bigRed(
+          buttonKey: UIKeys.receiveSavePaymentButton,
           label: 'Save',
           onPressed: () {
             context.read<ReceiveCubit>().saveFinalInvoiceClicked();

@@ -6,6 +6,7 @@ class UIKeys {
   static const homeCardMainnet = Key('home_card_mainnet');
   static const homeSettingsButton = Key('settings_button');
   static const homeImportButton = Key('home_import_button');
+  static const homeReceiveButton = Key('home_receive_button');
 
   static const settingsBackButton = Key('settings_back_button');
   static const settingsTestnetSwitch = Key('testnet_switch');
