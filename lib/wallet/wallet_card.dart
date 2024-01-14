@@ -83,9 +83,9 @@ class WalletCardDetails extends StatelessWidget {
         context.select((CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true));
     final unit = context.select((CurrencyCubit x) => x.state.getUnitString());
 
-    final currency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
+    final fiatCurrency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
 
-    final fiatAmt = context.select((NetworkCubit x) => x.state.calculatePrice(sats, currency));
+    final fiatAmt = context.select((NetworkCubit x) => x.state.calculatePrice(sats, fiatCurrency));
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -163,7 +163,7 @@ class WalletCardDetails extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (currency != null)
+                    if (fiatCurrency != null)
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -176,7 +176,7 @@ class WalletCardDetails extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 1),
                             child: BBText.bodySmall(
-                              currency.shortName.toUpperCase(),
+                              fiatCurrency.shortName.toUpperCase(),
                               onSurface: true,
                               isBold: true,
                             ),

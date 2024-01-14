@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -30,6 +31,7 @@ class Transaction with _$Transaction {
       includeToJson: false,
     )
     bdk.TransactionDetails? bdkTx,
+    Wallet? wallet,
   }) = _Transaction;
   const Transaction._();
 

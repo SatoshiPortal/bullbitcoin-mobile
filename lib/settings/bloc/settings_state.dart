@@ -14,6 +14,7 @@ class SettingsState with _$SettingsState {
     @Default(false) bool loadingLanguage,
     @Default('') String errLoadingLanguage,
     @Default(true) bool defaultRBF,
+    @Default(0) int homeLayout,
   }) = _SettingsState;
   const SettingsState._();
 

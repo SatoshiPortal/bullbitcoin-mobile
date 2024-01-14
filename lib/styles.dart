@@ -11,6 +11,11 @@ class _Colours {
   static const white = Colors.white;
 }
 
+class NewColours {
+  static const offWhite = Color(0xFFFBFBFB);
+  static const lightGray = Color(0xFFC4C4C4);
+}
+
 class Themes {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,

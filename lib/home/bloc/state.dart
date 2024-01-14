@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -76,6 +77,27 @@ class HomeState with _$HomeState {
         .indexWhere((w) => w.state.wallet!.id == selectedWalletCubit!.state.wallet!.id);
     if (idx == -1) return null;
     return idx;
+  }
+
+  List<Transaction> allTxs(BBNetwork network) {
+    final txs = <Transaction>[];
+    for (final walletBloc in walletBlocsFromNetwork(network)) {
+      final walletTxs = walletBloc.state.wallet?.transactions ?? <Transaction>[];
+      final wallet = walletBloc.state.wallet;
+      for (final tx in walletTxs) txs.add(tx.copyWith(wallet: wallet));
+    }
+    txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    return txs;
+  }
+
+  int totalBalanceSats(BBNetwork network) {
+    var total = 0;
+    for (final walletBloc in walletBlocsFromNetwork(network)) {
+      final wallet = walletBloc.state.wallet;
+      if (wallet == null) continue;
+      total += wallet.balance ?? 0;
+    }
+    return total;
   }
 
   // int? selectedWalletIdx(BBNetwork network) {

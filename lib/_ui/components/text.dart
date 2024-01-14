@@ -22,6 +22,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.fontSize,
     this.uiKey,
   })  : type = _FontTypes.headline,
         textAlign = TextAlign.left;
@@ -35,6 +36,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.fontSize,
     this.uiKey,
   }) : type = _FontTypes.titleLarge;
 
@@ -47,6 +49,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.fontSize,
     this.uiKey,
   }) : type = _FontTypes.title;
 
@@ -59,6 +62,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.fontSize,
     this.uiKey,
   }) : type = _FontTypes.body;
 
@@ -71,6 +75,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.fontSize,
     this.uiKey,
   }) : type = _FontTypes.bodySmall;
 
@@ -83,6 +88,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.fontSize,
     this.uiKey,
   }) : type = _FontTypes.body;
 
@@ -95,6 +101,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.isGreen = false,
     this.removeColourOpacity = false,
+    this.fontSize,
     this.uiKey,
   }) : type = _FontTypes.error;
 
@@ -107,6 +114,7 @@ class BBText extends StatelessWidget {
     this.isBlue = false,
     this.removeColourOpacity = false,
     this.isGreen = false,
+    this.fontSize,
     this.uiKey,
   }) : type = _FontTypes.errorSmall;
 
@@ -120,6 +128,7 @@ class BBText extends StatelessWidget {
   final bool isGreen;
   final bool removeColourOpacity;
   final Key? uiKey;
+  final double? fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +161,7 @@ class BBText extends StatelessWidget {
     if (isGreen) style = style.copyWith(color: Colors.green);
     if (isBold) style = style.copyWith(fontWeight: FontWeight.bold);
     if (removeColourOpacity) style = style.copyWith(color: context.colour.onBackground);
+    if (fontSize != null) style = style.copyWith(fontSize: fontSize);
 
     return Text(
       text,

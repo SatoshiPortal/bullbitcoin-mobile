@@ -14,6 +14,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
+import 'package:bb_mobile/home/home2.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 // import 'package:bb_mobile/send/send_page.dart';
@@ -27,57 +28,12 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final homeCubit = locator<HomeCubit>();
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: homeCubit),
-        BlocProvider.value(value: homeCubit.createWalletCubit),
-      ],
-      child: _Screen(),
-    );
-  }
-}
-
-class _Screen extends HookWidget {
-  static const _pages = [
-    HomeWallets(),
-    // MarketHome(),
-  ];
-  @override
-  Widget build(BuildContext context) {
-    final pageIdx = useState(0);
-
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        shadowColor: context.colour.primary.withOpacity(0.2),
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: HomeTopBar(pageIdx: pageIdx.value),
-      ),
-      body: _pages.elementAt(pageIdx.value),
-      // bottomNavigationBar: BottomBar(
-      //   pageChanged: (idx) {
-      //     pageIdx.value = idx;
-      //   },
-      //   pageIdx: pageIdx.value,
-      // ),
-    );
-  }
-}
-
-class HomeWallets extends StatelessWidget {
-  const HomeWallets({super.key});
 
   static List<WalletBloc> createWalletBlocs(List<Wallet> wallets) {
     final walletCubits = [
@@ -100,16 +56,12 @@ class HomeWallets extends StatelessWidget {
     return walletCubits;
   }
 
-  @override
-  Widget build(BuildContext context) {
+  static Widget? setupHomeWallets(BuildContext context) {
     final wallets = context.select((HomeCubit x) => x.state.wallets ?? []);
-
     final loading = context.select((HomeCubit x) => x.state.loadingWallets);
-
     if (loading) return Container();
 
     final currentWalletBlocs = context.select((HomeCubit x) => x.state.walletBlocs ?? []);
-
     if (wallets.length != currentWalletBlocs.length) {
       final walletBlocs = createWalletBlocs(wallets);
       context.read<HomeCubit>().updateWalletBlocs(walletBlocs);
@@ -119,6 +71,82 @@ class HomeWallets extends StatelessWidget {
     final walletsFromNetwork =
         context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
     if (walletsFromNetwork.isEmpty) return const HomeNoWallets().animate().fadeIn();
+
+    return null;
+  }
+
+  static ({WalletBloc? selectedWallet, List<WalletBloc> walletCubits}) selectHomeBlocs(
+    BuildContext context,
+  ) {
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    // final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
+    final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+
+    final selectedWallet = context.select((HomeCubit x) => x.state.selectedWalletCubit);
+    if (selectedWallet == null && walletCubits.isNotEmpty)
+      context.read<HomeCubit>().walletSelected(walletCubits[walletCubits.length - 1]);
+
+    return (selectedWallet: selectedWallet, walletCubits: walletCubits);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final homeCubit = locator<HomeCubit>();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: homeCubit),
+        BlocProvider.value(value: homeCubit.createWalletCubit),
+      ],
+      child: _Screen(),
+    );
+  }
+}
+
+class _Screen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final homeLayout = context.select((SettingsCubit _) => _.state.homeLayout);
+
+    if (homeLayout == 1) return const HomePage2();
+
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        shadowColor: context.colour.primary.withOpacity(0.2),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: const HomeTopBar(pageIdx: 0),
+      ),
+      body: const HomeWallets(),
+    );
+  }
+}
+
+class HomeWallets extends StatelessWidget {
+  const HomeWallets({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // final wallets = context.select((HomeCubit x) => x.state.wallets ?? []);
+
+    // final loading = context.select((HomeCubit x) => x.state.loadingWallets);
+
+    // if (loading) return Container();
+
+    // final currentWalletBlocs = context.select((HomeCubit x) => x.state.walletBlocs ?? []);
+
+    // if (wallets.length != currentWalletBlocs.length) {
+    //   final walletBlocs = createWalletBlocs(wallets);
+    //   context.read<HomeCubit>().updateWalletBlocs(walletBlocs);
+    // }
+
+    // final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    // final walletsFromNetwork =
+    //     context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+    // if (walletsFromNetwork.isEmpty) return const HomeNoWallets().animate().fadeIn();
+
+    final walletScreen = HomePage.setupHomeWallets(context);
+    if (walletScreen != null) return walletScreen;
 
     return const WalletScreen()
         .animate(
@@ -135,17 +163,37 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    // final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
-    // final walletCubits = context.select((HomeCubit _) => _.state.walletBlocs ?? []);
-    final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
-    // final walletCubits = wallets.map((e) => )
+    // final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    // // final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
+    // // final walletCubits = context.select((HomeCubit _) => _.state.walletBlocs ?? []);
+    // final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    // // final walletCubits = wallets.map((e) => )
 
-    final selectedWallet = context.select((HomeCubit x) => x.state.selectedWalletCubit);
+    // final selectedWallet = context.select((HomeCubit x) => x.state.selectedWalletCubit);
 
-    if (selectedWallet == null && walletCubits.isNotEmpty)
-      context.read<HomeCubit>().walletSelected(walletCubits[walletCubits.length - 1]);
+    // if (selectedWallet == null && walletCubits.isNotEmpty)
+    //   context.read<HomeCubit>().walletSelected(walletCubits[walletCubits.length - 1]);
 
+    final homeWallets = HomePage.selectHomeBlocs(context);
+
+    return _HomeLayout1(
+      selectedWallet: homeWallets.selectedWallet,
+      walletCubits: homeWallets.walletCubits,
+    );
+  }
+}
+
+class _HomeLayout1 extends StatelessWidget {
+  const _HomeLayout1({
+    required this.selectedWallet,
+    required this.walletCubits,
+  });
+
+  final WalletBloc? selectedWallet;
+  final List<WalletBloc> walletCubits;
+
+  @override
+  Widget build(BuildContext context) {
     return SafeArea(
       bottom: false,
       child: GlowingOverscrollIndicator(
@@ -171,14 +219,14 @@ class WalletScreen extends StatelessWidget {
                       const Gap(16),
                       if (selectedWallet != null) ...[
                         BlocProvider.value(
-                          value: selectedWallet,
+                          value: selectedWallet!,
                           child: const BackupAlertBanner(),
                         ),
                       ],
                       const HomeHeaderCards(),
                       if (selectedWallet != null) ...[
                         BlocProvider.value(
-                          value: selectedWallet,
+                          value: selectedWallet!,
                           child: const WalletTxList(),
                         ),
                       ],

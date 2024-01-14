@@ -4,6 +4,8 @@ import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/headers.dart';
+import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/currency/dropdown.dart';
 import 'package:bb_mobile/locator.dart';
@@ -14,11 +16,13 @@ import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/lighting.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -68,6 +72,8 @@ class _Screen extends StatelessWidget {
                 NetworkButton(),
                 Gap(8),
                 LightingButton(),
+                Gap(8),
+                SelectHomeLayoutButton(),
                 Gap(80),
                 CenterLeft(
                   child: BBText.bodySmall(
@@ -337,6 +343,68 @@ class NetworkButton extends StatelessWidget {
             err,
           ),
       ],
+    );
+  }
+}
+
+class SelectHomeLayoutButton extends StatelessWidget {
+  const SelectHomeLayoutButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Home Layout',
+      onPressed: () {
+        SelectHomeLayoutPopUp.openPopUp(context);
+      },
+    );
+  }
+}
+
+class SelectHomeLayoutPopUp extends StatelessWidget {
+  const SelectHomeLayoutPopUp({super.key});
+
+  static Future openPopUp(BuildContext context) async {
+    return showMaterialModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const PopUpBorder(child: SelectHomeLayoutPopUp()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final layoutIdx = context.select((SettingsCubit _) => _.state.homeLayout);
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0, bottom: 56, left: 24, right: 24),
+      child: Column(
+        children: [
+          BBHeader.popUpCenteredText(
+            text: 'Home Layout',
+            isLeft: true,
+            onBack: () => context.pop(),
+          ),
+          const Gap(8),
+          for (int i = 0; i < 2; i++)
+            ListTile(
+              title: BBText.body('$i'),
+              onTap: () async {
+                context.read<SettingsCubit>().updateHomeLayout(i);
+              },
+              leading: Radio<int>(
+                fillColor: MaterialStateProperty.all(context.colour.primary),
+                value: i,
+                groupValue: layoutIdx,
+                onChanged: (value) {
+                  context.read<SettingsCubit>().updateHomeLayout(value!);
+                },
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

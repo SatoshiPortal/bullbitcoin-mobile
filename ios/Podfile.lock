@@ -63,8 +63,6 @@ PODS:
     - SDWebImage/Core (= 5.13.5)
   - SDWebImage/Core (5.13.5)
   - SwiftyGif (5.4.3)
-  - uni_links (0.0.1):
-    - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
 
@@ -82,7 +80,6 @@ DEPENDENCIES:
   - nfc_manager (from `.symlinks/plugins/nfc_manager/ios`)
   - no_screenshot (from `.symlinks/plugins/no_screenshot/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
-  - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
@@ -120,8 +117,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/no_screenshot/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
-  uni_links:
-    :path: ".symlinks/plugins/uni_links/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
@@ -144,7 +139,6 @@ SPEC CHECKSUMS:
   ScreenProtectorKit: 823e5b0342eea5acd7e9b8d92956a5a7f9c2ce40
   SDWebImage: 23d714cd599354ee7906dbae26dff89b421c4370
   SwiftyGif: 6c3eafd0ce693cad58bb63d2b2fb9bacb8552780
-  uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3

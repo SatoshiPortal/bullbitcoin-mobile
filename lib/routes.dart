@@ -45,6 +45,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/home',
       builder: (context, state) {
+        // return const HomePage2();
         return const HomePage();
       },
     ),

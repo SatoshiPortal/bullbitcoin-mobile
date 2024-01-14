@@ -77,6 +77,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     loadTimer();
   }
 
+  void updateHomeLayout(int value) => emit(state.copyWith(homeLayout: value));
+
   void loadTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: state.reloadWalletTimer), (timer) {

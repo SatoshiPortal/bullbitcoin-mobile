@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: 'none' 
-version: 0.1.98-1.1+13
+version: 0.1.99
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -55,7 +55,7 @@ dependencies:
   # widgetbook: ^3.0.0-beta.14
   # widgetbook_annotation: ^3.0.0-beta.7
   flutter_dotenv: ^5.1.0
-  uni_links: ^0.5.1
+  # uni_links: ^0.5.1
   document_file_save_plus: ^2.0.0
   hive: ^2.2.3
   flutter_file_dialog: ^3.0.1
@@ -91,6 +91,7 @@ flutter:
     - assets/textlogo.png
     - assets/nfc_scan.png
     - assets/cc-logo.png
+    - assets/bb-logo2.png
     - assets/bip39_english.txt
 
 flutter_native_splash:

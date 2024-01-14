@@ -28,6 +28,7 @@ mixin _$SettingsState {
   bool get loadingLanguage => throw _privateConstructorUsedError;
   String get errLoadingLanguage => throw _privateConstructorUsedError;
   bool get defaultRBF => throw _privateConstructorUsedError;
+  int get homeLayout => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -49,7 +50,8 @@ abstract class $SettingsStateCopyWith<$Res> {
       List<String>? languageList,
       bool loadingLanguage,
       String errLoadingLanguage,
-      bool defaultRBF});
+      bool defaultRBF,
+      int homeLayout});
 }
 
 /// @nodoc
@@ -73,6 +75,7 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? loadingLanguage = null,
     Object? errLoadingLanguage = null,
     Object? defaultRBF = null,
+    Object? homeLayout = null,
   }) {
     return _then(_value.copyWith(
       notifications: null == notifications
@@ -107,6 +110,10 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.defaultRBF
           : defaultRBF // ignore: cast_nullable_to_non_nullable
               as bool,
+      homeLayout: null == homeLayout
+          ? _value.homeLayout
+          : homeLayout // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -127,7 +134,8 @@ abstract class _$$SettingsStateImplCopyWith<$Res>
       List<String>? languageList,
       bool loadingLanguage,
       String errLoadingLanguage,
-      bool defaultRBF});
+      bool defaultRBF,
+      int homeLayout});
 }
 
 /// @nodoc
@@ -149,6 +157,7 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
     Object? loadingLanguage = null,
     Object? errLoadingLanguage = null,
     Object? defaultRBF = null,
+    Object? homeLayout = null,
   }) {
     return _then(_$SettingsStateImpl(
       notifications: null == notifications
@@ -183,6 +192,10 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
           ? _value.defaultRBF
           : defaultRBF // ignore: cast_nullable_to_non_nullable
               as bool,
+      homeLayout: null == homeLayout
+          ? _value.homeLayout
+          : homeLayout // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -198,7 +211,8 @@ class _$SettingsStateImpl extends _SettingsState {
       final List<String>? languageList,
       this.loadingLanguage = false,
       this.errLoadingLanguage = '',
-      this.defaultRBF = true})
+      this.defaultRBF = true,
+      this.homeLayout = 0})
       : _languageList = languageList,
         super._();
 
@@ -235,10 +249,13 @@ class _$SettingsStateImpl extends _SettingsState {
   @override
   @JsonKey()
   final bool defaultRBF;
+  @override
+  @JsonKey()
+  final int homeLayout;
 
   @override
   String toString() {
-    return 'SettingsState(notifications: $notifications, privacyView: $privacyView, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, defaultRBF: $defaultRBF)';
+    return 'SettingsState(notifications: $notifications, privacyView: $privacyView, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, defaultRBF: $defaultRBF, homeLayout: $homeLayout)';
   }
 
   @override
@@ -261,7 +278,9 @@ class _$SettingsStateImpl extends _SettingsState {
             (identical(other.errLoadingLanguage, errLoadingLanguage) ||
                 other.errLoadingLanguage == errLoadingLanguage) &&
             (identical(other.defaultRBF, defaultRBF) ||
-                other.defaultRBF == defaultRBF));
+                other.defaultRBF == defaultRBF) &&
+            (identical(other.homeLayout, homeLayout) ||
+                other.homeLayout == homeLayout));
   }
 
   @JsonKey(ignore: true)
@@ -275,7 +294,8 @@ class _$SettingsStateImpl extends _SettingsState {
       const DeepCollectionEquality().hash(_languageList),
       loadingLanguage,
       errLoadingLanguage,
-      defaultRBF);
+      defaultRBF,
+      homeLayout);
 
   @JsonKey(ignore: true)
   @override
@@ -300,7 +320,8 @@ abstract class _SettingsState extends SettingsState {
       final List<String>? languageList,
       final bool loadingLanguage,
       final String errLoadingLanguage,
-      final bool defaultRBF}) = _$SettingsStateImpl;
+      final bool defaultRBF,
+      final int homeLayout}) = _$SettingsStateImpl;
   const _SettingsState._() : super._();
 
   factory _SettingsState.fromJson(Map<String, dynamic> json) =
@@ -322,6 +343,8 @@ abstract class _SettingsState extends SettingsState {
   String get errLoadingLanguage;
   @override
   bool get defaultRBF;
+  @override
+  int get homeLayout;
   @override
   @JsonKey(ignore: true)
   _$$SettingsStateImplCopyWith<_$SettingsStateImpl> get copyWith =>
