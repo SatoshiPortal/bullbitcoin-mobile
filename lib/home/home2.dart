@@ -339,12 +339,37 @@ class Transactions extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(left: 24.0, bottom: 8),
-          child: BBText.titleLarge(
-            'Latest Transactions',
-            isBold: true,
-            fontSize: 16,
+        Padding(
+          padding: const EdgeInsets.only(left: 24.0, bottom: 8, right: 24),
+          child: Row(
+            children: [
+              const BBText.titleLarge(
+                'Latest Transactions',
+                isBold: true,
+                fontSize: 16,
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () {
+                  context.push('/transactions');
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const BBText.bodySmall(
+                      'view all',
+                      isBlue: true,
+                    ),
+                    const Gap(4),
+                    Icon(
+                      FontAwesomeIcons.arrowRight,
+                      size: 10,
+                      color: context.colour.secondary,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
         Expanded(
@@ -416,7 +441,7 @@ class HomeTxItem2 extends StatelessWidget {
           top: 8,
           bottom: 16,
           left: 24,
-          right: 32,
+          right: 24,
         ),
         child: Row(
           children: [
