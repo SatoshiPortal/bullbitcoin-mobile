@@ -36,6 +36,7 @@ mixin _$SendState {
   bool get signed => throw _privateConstructorUsedError;
   String? get psbtSigned => throw _privateConstructorUsedError;
   int? get psbtSignedFeeAmount => throw _privateConstructorUsedError;
+  WalletBloc? get selectedWalletBloc => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SendStateCopyWith<SendState> get copyWith =>
@@ -67,7 +68,8 @@ abstract class $SendStateCopyWith<$Res> {
       String errAddresses,
       bool signed,
       String? psbtSigned,
-      int? psbtSignedFeeAmount});
+      int? psbtSignedFeeAmount,
+      WalletBloc? selectedWalletBloc});
 
   $TransactionCopyWith<$Res>? get tx;
 }
@@ -105,6 +107,7 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? signed = null,
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
+    Object? selectedWalletBloc = freezed,
   }) {
     return _then(_value.copyWith(
       address: null == address
@@ -187,6 +190,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.psbtSignedFeeAmount
           : psbtSignedFeeAmount // ignore: cast_nullable_to_non_nullable
               as int?,
+      selectedWalletBloc: freezed == selectedWalletBloc
+          ? _value.selectedWalletBloc
+          : selectedWalletBloc // ignore: cast_nullable_to_non_nullable
+              as WalletBloc?,
     ) as $Val);
   }
 
@@ -231,7 +238,8 @@ abstract class _$$SendStateImplCopyWith<$Res>
       String errAddresses,
       bool signed,
       String? psbtSigned,
-      int? psbtSignedFeeAmount});
+      int? psbtSignedFeeAmount,
+      WalletBloc? selectedWalletBloc});
 
   @override
   $TransactionCopyWith<$Res>? get tx;
@@ -268,6 +276,7 @@ class __$$SendStateImplCopyWithImpl<$Res>
     Object? signed = null,
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
+    Object? selectedWalletBloc = freezed,
   }) {
     return _then(_$SendStateImpl(
       address: null == address
@@ -350,6 +359,10 @@ class __$$SendStateImplCopyWithImpl<$Res>
           ? _value.psbtSignedFeeAmount
           : psbtSignedFeeAmount // ignore: cast_nullable_to_non_nullable
               as int?,
+      selectedWalletBloc: freezed == selectedWalletBloc
+          ? _value.selectedWalletBloc
+          : selectedWalletBloc // ignore: cast_nullable_to_non_nullable
+              as WalletBloc?,
     ));
   }
 }
@@ -377,7 +390,8 @@ class _$SendStateImpl extends _SendState {
       this.errAddresses = '',
       this.signed = false,
       this.psbtSigned,
-      this.psbtSignedFeeAmount})
+      this.psbtSignedFeeAmount,
+      this.selectedWalletBloc})
       : _selectedAddresses = selectedAddresses,
         super._();
 
@@ -445,10 +459,12 @@ class _$SendStateImpl extends _SendState {
   final String? psbtSigned;
   @override
   final int? psbtSignedFeeAmount;
+  @override
+  final WalletBloc? selectedWalletBloc;
 
   @override
   String toString() {
-    return 'SendState(address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount)';
+    return 'SendState(address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedWalletBloc: $selectedWalletBloc)';
   }
 
   @override
@@ -488,7 +504,9 @@ class _$SendStateImpl extends _SendState {
             (identical(other.psbtSigned, psbtSigned) ||
                 other.psbtSigned == psbtSigned) &&
             (identical(other.psbtSignedFeeAmount, psbtSignedFeeAmount) ||
-                other.psbtSignedFeeAmount == psbtSignedFeeAmount));
+                other.psbtSignedFeeAmount == psbtSignedFeeAmount) &&
+            (identical(other.selectedWalletBloc, selectedWalletBloc) ||
+                other.selectedWalletBloc == selectedWalletBloc));
   }
 
   @override
@@ -513,7 +531,8 @@ class _$SendStateImpl extends _SendState {
         errAddresses,
         signed,
         psbtSigned,
-        psbtSignedFeeAmount
+        psbtSignedFeeAmount,
+        selectedWalletBloc
       ]);
 
   @JsonKey(ignore: true)
@@ -544,7 +563,8 @@ abstract class _SendState extends SendState {
       final String errAddresses,
       final bool signed,
       final String? psbtSigned,
-      final int? psbtSignedFeeAmount}) = _$SendStateImpl;
+      final int? psbtSignedFeeAmount,
+      final WalletBloc? selectedWalletBloc}) = _$SendStateImpl;
   const _SendState._() : super._();
 
   @override
@@ -587,6 +607,8 @@ abstract class _SendState extends SendState {
   String? get psbtSigned;
   @override
   int? get psbtSignedFeeAmount;
+  @override
+  WalletBloc? get selectedWalletBloc;
   @override
   @JsonKey(ignore: true)
   _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>

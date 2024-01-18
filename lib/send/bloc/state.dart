@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
@@ -27,6 +28,7 @@ class SendState with _$SendState {
     @Default(false) bool signed,
     String? psbtSigned,
     int? psbtSignedFeeAmount,
+    WalletBloc? selectedWalletBloc,
   }) = _SendState;
   const SendState._();
 
