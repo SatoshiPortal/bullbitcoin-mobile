@@ -26,6 +26,7 @@ import 'package:bb_mobile/send/advanced.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/send/psbt.dart';
+import 'package:bb_mobile/send/send_page2.dart';
 import 'package:bb_mobile/send/wallet_select.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
@@ -38,6 +39,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+
+class SendPage extends StatelessWidget {
+  const SendPage({super.key, this.walletBloc});
+
+  final WalletBloc? walletBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    final homeLayout = context.select((SettingsCubit _) => _.state.homeLayout);
+    if (homeLayout == 0) return SelectSendWalletPage(walletBloc: walletBloc);
+    return const SendPage2();
+  }
+}
 
 class SendScreen extends StatefulWidget {
   const SendScreen({

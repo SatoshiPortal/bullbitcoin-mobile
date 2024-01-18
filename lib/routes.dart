@@ -9,7 +9,7 @@ import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/wallet_select.dart';
-import 'package:bb_mobile/send/wallet_select.dart';
+import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
@@ -130,7 +130,7 @@ final GoRouter router = GoRouter(
         // final String? deepLinkUri = state.extra as String?;
         final walletBloc = state.extra as WalletBloc?;
 
-        return SelectSendWalletPage(walletBloc: walletBloc);
+        return SendPage(walletBloc: walletBloc);
       },
     ),
     GoRoute(
