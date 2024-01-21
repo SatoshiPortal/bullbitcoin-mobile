@@ -213,7 +213,7 @@ class _Screen extends StatelessWidget {
                   const _TxTextField(),
                 ],
                 const Gap(80),
-                const SendButton(),
+                const BroadcastSendButton(),
                 const Gap(48),
               ],
             ),
@@ -280,8 +280,8 @@ class DownloadButton extends StatelessWidget {
   }
 }
 
-class SendButton extends StatelessWidget {
-  const SendButton({super.key});
+class BroadcastSendButton extends StatelessWidget {
+  const BroadcastSendButton({super.key});
 
   @override
   Widget build(BuildContext context) {

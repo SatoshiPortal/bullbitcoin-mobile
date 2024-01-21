@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -12,12 +13,17 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
+import 'package:bb_mobile/network_fees/popup.dart';
+import 'package:bb_mobile/send/advanced.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -25,6 +31,7 @@ import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -62,12 +69,17 @@ class SendPage2 extends StatelessWidget {
       ),
     );
 
+    final home = locator<HomeCubit>();
+    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final walletBlocs = home.state.walletBlocsFromNetwork(network);
+
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: send),
         BlocProvider.value(value: send.currencyCubit),
         BlocProvider.value(value: send.networkFeesCubit),
-        BlocProvider.value(value: locator<HomeCubit>()),
+        BlocProvider.value(value: home),
+        if (walletBlocs.isNotEmpty) BlocProvider.value(value: walletBlocs.first),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -105,14 +117,18 @@ class _Screen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Gap(24),
+            Gap(32),
             WalletSelectionDropDown(),
-            Gap(16),
+            Gap(48),
             AddressField(),
-            Gap(16),
+            Gap(24),
             AmountField(),
-            // NetworkFees(),
-            // SendButton(),
+            Gap(24),
+            NetworkFees(),
+            Gap(8),
+            AdvancedOptions(),
+            Gap(48),
+            _SendButton(),
           ],
         ),
       ),
@@ -152,26 +168,24 @@ class WalletSelectionDropDown extends StatelessWidget {
         child: Material(
           elevation: 2,
           clipBehavior: Clip.antiAlias,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(8),
           child: DropdownButtonFormField<WalletBloc>(
             padding: EdgeInsets.zero,
             elevation: 4,
-            borderRadius: BorderRadius.circular(4),
-            alignment: Alignment.center,
+            borderRadius: BorderRadius.circular(8),
             isExpanded: true,
             decoration: InputDecoration(
-              // alignLabelWithHint: false,
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(
                   color: NewColours.lightGray,
                 ),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(8),
               ),
               border: OutlineInputBorder(
                 borderSide: const BorderSide(
                   color: NewColours.lightGray,
                 ),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(8),
               ),
               filled: true,
               fillColor: NewColours.offWhite,
@@ -182,7 +196,6 @@ class WalletSelectionDropDown extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-              floatingLabelAlignment: FloatingLabelAlignment.center,
             ),
             value: walletBloc,
             onChanged: (value) {
@@ -193,12 +206,8 @@ class WalletSelectionDropDown extends StatelessWidget {
               final name = wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint;
               return DropdownMenuItem<WalletBloc>(
                 value: wallet,
-                alignment: Alignment.center,
                 child: Center(
-                  child: BBText.body(
-                    name,
-                    textAlign: TextAlign.center,
-                  ),
+                  child: BBText.body(name),
                 ),
               );
             }).toList(),
@@ -209,12 +218,75 @@ class WalletSelectionDropDown extends StatelessWidget {
   }
 }
 
-class AddressField extends StatelessWidget {
+class AddressField extends StatefulWidget {
   const AddressField({super.key});
 
   @override
+  State<AddressField> createState() => _AddressFieldState();
+}
+
+class _AddressFieldState extends State<AddressField> {
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
+  @override
   Widget build(BuildContext context) {
-    return const EnterAddress();
+    final address = context.select((SendCubit cubit) => cubit.state.address);
+    if (_controller.text != address) {
+      _controller.text = address;
+      // _focusNode.unfocus();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const BBText.title('Bitcoin payment address or invoice'),
+        const Gap(4),
+        BBTextInput.bigWithIcon2(
+          focusNode: _focusNode,
+          hint: 'Enter address',
+          value: address,
+          rightIcon: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: () async {
+                  if (!locator.isRegistered<Clippboard>()) return;
+                  final data = await locator<Clippboard>().paste();
+                  if (data == null) return;
+                  context.read<SendCubit>().updateAddress(data);
+                },
+                iconSize: 16,
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                color: context.colour.onBackground,
+                icon: const FaIcon(FontAwesomeIcons.paste),
+              ),
+              IconButton(
+                onPressed: () {
+                  context.read<SendCubit>().scanAddress();
+                },
+                icon: FaIcon(
+                  FontAwesomeIcons.barcode,
+                  color: context.colour.onBackground,
+                ),
+              ),
+            ],
+          ),
+          onChanged: (txt) {
+            context.read<SendCubit>().updateAddress(txt);
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    _controller.dispose();
+    super.dispose();
   }
 }
 
@@ -223,7 +295,15 @@ class AmountField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AmountEntry();
+    final sendAll = context.select((SendCubit cubit) => cubit.state.sendAllCoin);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const BBText.title('Amount to send'),
+        const Gap(4),
+        EnterAmount2(sendAll: sendAll),
+      ],
+    );
   }
 }
 
@@ -232,16 +312,32 @@ class NetworkFees extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const SelectFeesButton();
   }
 }
 
-class SendButton extends StatelessWidget {
-  const SendButton({super.key});
+class AdvancedOptions extends StatelessWidget {
+  const AdvancedOptions({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final text = context.select((SendCubit cubit) => cubit.state.advancedOptionsButtonText());
+    return BBButton.text(
+      // centered: true,
+      onPressed: () {
+        AdvancedOptionsPopUp.openPopup(context);
+      },
+      label: text,
+    );
+  }
+}
+
+class _SendButton extends StatelessWidget {
+  const _SendButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SendButton();
   }
 }
 
