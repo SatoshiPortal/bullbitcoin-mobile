@@ -161,7 +161,7 @@ class _Screen extends StatelessWidget {
                 const Gap(24),
                 const Center(child: WalletName()),
                 const Gap(8),
-                const Center(child: WalletBalance()),
+                const Center(child: SendWalletBalance()),
                 const Gap(48),
                 const AmountEntry(),
                 const Gap(24),
@@ -248,8 +248,8 @@ class WalletName extends StatelessWidget {
   }
 }
 
-class WalletBalance extends StatelessWidget {
-  const WalletBalance({super.key});
+class SendWalletBalance extends StatelessWidget {
+  const SendWalletBalance({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -273,7 +273,7 @@ class WalletBalance extends StatelessWidget {
       return Column(
         // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText.body(balStr, isBold: true),
+          BBText.bodySmall(balStr),
           const Gap(4),
           BBText.bodySmall('Frozen Balance $frozenStr'),
         ],

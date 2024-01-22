@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -703,46 +704,6 @@ class ScanButton extends StatelessWidget {
           FontAwesomeIcons.barcode,
           color: context.colour.onBackground,
           size: 24,
-        ),
-      ),
-    );
-  }
-}
-
-class LongButton extends StatelessWidget {
-  const LongButton({
-    super.key,
-    required this.text,
-    required this.onPressed,
-    this.disabled = false,
-  });
-
-  final String text;
-  final Function onPressed;
-  final bool disabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Opacity(
-        opacity: disabled ? 0.4 : 1,
-        child: ElevatedButton(
-          onPressed: () {
-            onPressed();
-          },
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
-            side: const BorderSide(color: NewColours.lightGray),
-            backgroundColor: NewColours.offWhite,
-            surfaceTintColor: NewColours.offWhite.withOpacity(0.5),
-            elevation: 2,
-          ),
-          child: BBText.title(
-            text,
-            fontSize: 16,
-          ),
         ),
       ),
     );

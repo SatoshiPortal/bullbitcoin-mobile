@@ -12,6 +12,7 @@ enum _ButtonType {
   smallBlack,
   bigRed,
   bigBlack,
+  big2,
   text,
   textWithRightArrow,
   textWithLeftArrow,
@@ -56,6 +57,20 @@ class BBButton extends StatelessWidget {
     this.loading = false,
     this.loadingText,
   })  : type = _ButtonType.bigRed,
+        isBlue = null,
+        isRed = null,
+        statusText = null,
+        centered = null;
+
+  const BBButton.big2({
+    required this.label,
+    required this.onPressed,
+    this.buttonKey,
+    this.disabled = false,
+    this.filled = false,
+    this.loading = false,
+    this.loadingText,
+  })  : type = _ButtonType.big2,
         isBlue = null,
         isRed = null,
         statusText = null,
@@ -237,6 +252,62 @@ class BBButton extends StatelessWidget {
           );
         }
 
+      case _ButtonType.big2:
+        final style = ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          side: const BorderSide(color: NewColours.lightGray),
+          backgroundColor: NewColours.offWhite,
+          surfaceTintColor: NewColours.offWhite.withOpacity(0.5),
+          elevation: 2,
+          // disabledForegroundColor: context.colour.onBackground,
+        );
+
+        if (!loading)
+          widget = ElevatedButton(
+            key: buttonKey,
+            style: style,
+            onPressed: disabled ? null : () => onPressed(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.send,
+                  color: context.colour.onBackground,
+                ),
+                const Gap(24),
+                BBText.titleLarge(label),
+              ],
+            ),
+          );
+        else {
+          widget = ElevatedButton(
+            style: style,
+            onPressed: () {},
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Gap(8),
+                SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(context.colour.primary),
+                  ),
+                ),
+                const Gap(8),
+                BBText.title(
+                  loadingText ?? label,
+                  isRed: !filled,
+                  onSurface: filled,
+                ),
+              ],
+            ),
+          );
+        }
+
       case _ButtonType.bigBlack:
         final isDark =
             context.select((Lighting _) => _.state.currentTheme(context) == ThemeMode.dark);
@@ -352,6 +423,46 @@ class BBButton extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           child: widget,
+        ),
+      ),
+    );
+  }
+}
+
+class LongButton extends StatelessWidget {
+  const LongButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.disabled = false,
+  });
+
+  final String text;
+  final Function onPressed;
+  final bool disabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Opacity(
+        opacity: disabled ? 0.4 : 1,
+        child: ElevatedButton(
+          onPressed: () {
+            onPressed();
+          },
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            side: const BorderSide(color: NewColours.lightGray),
+            backgroundColor: NewColours.offWhite,
+            surfaceTintColor: NewColours.offWhite.withOpacity(0.5),
+            elevation: 2,
+          ),
+          child: BBText.title(
+            text,
+            fontSize: 16,
+          ),
         ),
       ),
     );

@@ -12,7 +12,6 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -25,7 +24,10 @@ import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/send/advanced.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
+import 'package:bb_mobile/send/bloc/state.dart';
+import 'package:bb_mobile/send/psbt.dart';
 import 'package:bb_mobile/send/send_page.dart';
+import 'package:bb_mobile/send/wallet_select.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -33,14 +35,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
-class SendPage2 extends StatelessWidget {
+class SendPage2 extends StatefulWidget {
   const SendPage2({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final send = SendCubit(
+  State<SendPage2> createState() => _SendPage2State();
+}
+
+class _SendPage2State extends State<SendPage2> {
+  late SendCubit send;
+  late HomeCubit home;
+
+  @override
+  void initState() {
+    send = SendCubit(
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletAddress: locator<WalletAddress>(),
@@ -69,7 +78,13 @@ class SendPage2 extends StatelessWidget {
       ),
     );
 
-    final home = locator<HomeCubit>();
+    home = locator<HomeCubit>();
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = home.state.walletBlocsFromNetwork(network);
 
@@ -83,7 +98,7 @@ class SendPage2 extends StatelessWidget {
       ],
       child: Scaffold(
         appBar: AppBar(
-          flexibleSpace: const TopBar(),
+          flexibleSpace: const SendAppBar(),
           automaticallyImplyLeading: false,
         ),
         body: const _WalletProvider(child: _Screen()),
@@ -111,41 +126,43 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Gap(32),
-            WalletSelectionDropDown(),
-            Gap(48),
-            AddressField(),
-            Gap(24),
-            AmountField(),
-            Gap(24),
-            NetworkFees(),
-            Gap(8),
-            AdvancedOptions(),
-            Gap(48),
-            _SendButton(),
-          ],
+    final signed = context.select((SendCubit cubit) => cubit.state.signed);
+    final sent = context.select((SendCubit cubit) => cubit.state.sent);
+
+    return ColoredBox(
+      color: sent ? Colors.green : context.colour.background,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (signed) ...[
+                if (!sent) const TxDetailsScreen() else const TxSuccess(),
+                // const Gap(48),
+              ] else ...[
+                const Gap(32),
+                const WalletSelectionDropDown(),
+                const Gap(8),
+                const _Balance(),
+                const Gap(48),
+                const AddressField(),
+                const Gap(24),
+                const AmountField(),
+                const Gap(24),
+                const NetworkFees(),
+                const Gap(8),
+                const AdvancedOptions(),
+                const Gap(48),
+              ],
+              if (!sent) ...[
+                const _SendButton(),
+                const Gap(80),
+              ],
+            ],
+          ),
         ),
       ),
-    );
-  }
-}
-
-class TopBar extends StatelessWidget {
-  const TopBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BBAppBar(
-      text: 'Send Bitcoin',
-      onBack: () {
-        context.pop();
-      },
     );
   }
 }
@@ -215,6 +232,15 @@ class WalletSelectionDropDown extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _Balance extends StatelessWidget {
+  const _Balance();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: SendWalletBalance());
   }
 }
 
@@ -337,7 +363,61 @@ class _SendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SendButton();
+    final watchOnly = context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
+
+    final sending = context.select((SendCubit cubit) => cubit.state.sending);
+    final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);
+    final err = context.select((SendCubit cubit) => cubit.state.errSending);
+
+    final signed = context.select((SendCubit cubit) => cubit.state.signed);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: SizedBox(
+            width: 250,
+            height: 44,
+            child: BlocListener<SendCubit, SendState>(
+              listenWhen: (previous, current) =>
+                  previous.tx != current.tx &&
+                  current.psbt.isNotEmpty &&
+                  current.errSending.isEmpty,
+              listener: (context, state) {
+                PSBTPopUp.openPopUp(context);
+              },
+              child: BBButton.big2(
+                disabled: !showSend,
+                loading: sending,
+                onPressed: () async {
+                  if (sending) return;
+                  if (!signed)
+                    context.read<SendCubit>().confirmClickedd();
+                  else
+                    context.read<SendCubit>().sendClicked();
+                },
+                label: watchOnly
+                    ? 'Generate PSBT'
+                    : signed
+                        ? sending
+                            ? 'Broadcasting'
+                            : 'Confirm'
+                        : sending
+                            ? 'Building Tx'
+                            : 'Send',
+              ),
+            ),
+          ),
+        ),
+        const Gap(16),
+        if (err.isNotEmpty)
+          Center(
+            child: BBText.error(
+              err,
+            ),
+          ),
+      ],
+    );
   }
 }
 
