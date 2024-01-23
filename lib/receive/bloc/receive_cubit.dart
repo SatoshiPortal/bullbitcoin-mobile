@@ -12,28 +12,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReceiveCubit extends Cubit<ReceiveState> {
   ReceiveCubit({
-    required this.walletBloc,
+    WalletBloc? walletBloc,
     required this.hiveStorage,
     required this.walletAddress,
     required this.walletRepository,
     required this.settingsCubit,
     required this.networkCubit,
     required this.currencyCubit,
-  }) : super(const ReceiveState()) {
+  }) : super(ReceiveState(walletBloc: walletBloc)) {
     loadAddress();
   }
   final SettingsCubit settingsCubit;
-  final WalletBloc walletBloc;
+  // final WalletBloc walletBloc;
   final WalletAddress walletAddress;
   final HiveStorage hiveStorage;
   final WalletRepository walletRepository;
   final NetworkCubit networkCubit;
   final CurrencyCubit currencyCubit;
 
+  void updateWalletBloc(WalletBloc walletBloc) {
+    emit(state.copyWith(walletBloc: walletBloc));
+  }
+
   void loadAddress() async {
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
+    if (state.walletBloc == null) return;
 
-    final address = walletBloc.state.wallet!.lastGeneratedAddress;
+    final address = state.walletBloc!.state.wallet!.lastGeneratedAddress;
 
     emit(
       state.copyWith(
@@ -42,7 +47,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
     final label = await walletAddress.getLabel(
       address: address!.address,
-      wallet: walletBloc.state.wallet!,
+      wallet: state.walletBloc!.state.wallet!,
     );
     final labelUpdated = address.copyWith(label: label);
 
@@ -64,13 +69,16 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       ),
     );
     currencyCubit.updateAmountDirect(0);
-    if (walletBloc.state.bdkWallet == null) {
+
+    if (state.walletBloc == null) return;
+
+    if (state.walletBloc!.state.bdkWallet == null) {
       emit(state.copyWith(errLoadingAddress: 'Wallet Sync Required'));
       return;
     }
     final (updatedWallet, err) = await walletAddress.newAddress(
-      wallet: walletBloc.state.wallet!,
-      bdkWallet: walletBloc.state.bdkWallet!,
+      wallet: state.walletBloc!.state.wallet!,
+      bdkWallet: state.walletBloc!.state.bdkWallet!,
     );
     if (err != null) {
       emit(
@@ -81,7 +89,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    walletBloc.add(UpdateWallet(updatedWallet!, updateTypes: [UpdateWalletTypes.addresses]));
+    state.walletBloc!.add(UpdateWallet(updatedWallet!, updateTypes: [UpdateWalletTypes.addresses]));
 
     final addressGap = updatedWallet.addressGap();
     if (addressGap >= 5 && addressGap <= 20) {
@@ -127,20 +135,22 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   void saveDefaultAddressLabel() async {
+    if (state.walletBloc == null) return;
+
     if (state.privateLabel == (state.defaultAddress?.label ?? '')) return;
 
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
 
     final (a, w) = await walletAddress.addAddressToWallet(
       address: (state.defaultAddress!.index, state.defaultAddress!.address),
-      wallet: walletBloc.state.wallet!,
+      wallet: state.walletBloc!.state.wallet!,
       label: state.privateLabel,
       kind: state.defaultAddress!.kind,
       state: state.defaultAddress!.state,
       spendable: state.defaultAddress!.spendable,
     );
 
-    walletBloc.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+    state.walletBloc!.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
 
     emit(
       state.copyWith(
@@ -165,6 +175,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   void saveFinalInvoiceClicked() async {
+    if (state.walletBloc == null) return;
+
     if (currencyCubit.state.amount <= 0) {
       emit(state.copyWith(errCreatingInvoice: 'Enter correct amount'));
       return;
@@ -174,12 +186,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     final (_, w) = await walletAddress.addAddressToWallet(
       address: (state.defaultAddress!.index, state.defaultAddress!.address),
-      wallet: walletBloc.state.wallet!,
+      wallet: state.walletBloc!.state.wallet!,
       label: state.description,
       kind: AddressKind.deposit,
     );
 
-    walletBloc.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+    state.walletBloc!.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
 
     emit(
       state.copyWith(

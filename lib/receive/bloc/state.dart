@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
@@ -18,6 +19,7 @@ class ReceiveState with _$ReceiveState {
     @Default('') String savedDescription,
     @Default(true) bool creatingInvoice,
     @Default('') String errCreatingInvoice,
+    WalletBloc? walletBloc,
     // Address? newInvoiceAddress,
   }) = _ReceiveState;
   const ReceiveState._();

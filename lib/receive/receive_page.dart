@@ -222,10 +222,10 @@ class _WalletName extends StatelessWidget {
   Widget build(BuildContext context) {
     final loading = context.select((ReceiveCubit x) => x.state.loadingAddress);
 
-    final walletName = context.select((ReceiveCubit x) => x.walletBloc.state.wallet?.name);
+    final walletName = context.select((ReceiveCubit _) => _.state.walletBloc?.state.wallet?.name);
 
-    final fingerprint =
-        context.select((ReceiveCubit x) => x.walletBloc.state.wallet?.sourceFingerprint ?? '');
+    final fingerprint = context
+        .select((ReceiveCubit _) => _.state.walletBloc?.state.wallet?.sourceFingerprint ?? '');
 
     return AnimatedContainer(
       duration: 500.ms,
