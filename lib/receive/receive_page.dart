@@ -15,9 +15,11 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
+import 'package:bb_mobile/receive/receive_page2.dart';
 import 'package:bb_mobile/receive/wallet_select.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +28,19 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+
+class ReceivePage extends StatelessWidget {
+  const ReceivePage({super.key, this.walletBloc});
+
+  final WalletBloc? walletBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    final homeLayout = context.select((SettingsCubit _) => _.state.homeLayout);
+    if (homeLayout == 0) return SelectReceiveWalletPage(walletBloc: walletBloc);
+    return const ReceivePage2();
+  }
+}
 
 class ReceiveScreen extends StatefulWidget {
   const ReceiveScreen({super.key});
@@ -83,8 +98,8 @@ class _Screen extends StatelessWidget {
           children: [
             Gap(24),
             _WalletName(),
-            QRDisplay(),
-            DisplayAddress(),
+            ReceiveQRDisplay(),
+            ReceiveDisplayAddress(),
             Gap(24),
             AddressDetails(),
             Actions(),
@@ -251,8 +266,8 @@ class _WalletName extends StatelessWidget {
   }
 }
 
-class QRDisplay extends StatelessWidget {
-  const QRDisplay({super.key});
+class ReceiveQRDisplay extends StatelessWidget {
+  const ReceiveQRDisplay({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -277,14 +292,14 @@ class QRDisplay extends StatelessWidget {
   }
 }
 
-class DisplayAddress extends StatefulWidget {
-  const DisplayAddress({super.key});
+class ReceiveDisplayAddress extends StatefulWidget {
+  const ReceiveDisplayAddress({super.key});
 
   @override
-  State<DisplayAddress> createState() => _DisplayAddressState();
+  State<ReceiveDisplayAddress> createState() => _ReceiveDisplayAddressState();
 }
 
-class _DisplayAddressState extends State<DisplayAddress> {
+class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
   bool showToast = false;
 
   void _copyClicked() async {

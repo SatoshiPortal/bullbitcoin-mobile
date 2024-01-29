@@ -14,7 +14,7 @@ dependencies:
       # ^0.28.3
       # path: ../bdk-flutter
       # git:
-        # url: https://github.com/LtbLightning/bdk-flutter.git
+      #   url: https://github.com/LtbLightning/bdk-flutter.git
       #   # ref: v0.28.3
 
   cupertino_icons: ^1.0.2

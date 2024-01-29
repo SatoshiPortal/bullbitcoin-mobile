@@ -12,6 +12,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -27,7 +28,6 @@ import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/send/psbt.dart';
 import 'package:bb_mobile/send/send_page.dart';
-import 'package:bb_mobile/send/wallet_select.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -35,6 +35,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class SendPage2 extends StatefulWidget {
   const SendPage2({super.key});
@@ -98,7 +99,7 @@ class _SendPage2State extends State<SendPage2> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          flexibleSpace: const SendAppBar(),
+          flexibleSpace: const _SendAppBar(),
           automaticallyImplyLeading: false,
         ),
         body: const _WalletProvider(child: _Screen()),
@@ -436,5 +437,19 @@ class PaymentSent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
+  }
+}
+
+class _SendAppBar extends StatelessWidget {
+  const _SendAppBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBAppBar(
+      text: 'Send bitcoin',
+      onBack: () {
+        context.pop();
+      },
+    );
   }
 }

@@ -31,12 +31,21 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final CurrencyCubit currencyCubit;
 
   void updateWalletBloc(WalletBloc walletBloc) {
-    emit(state.copyWith(walletBloc: walletBloc));
+    emit(
+      state.copyWith(
+        walletBloc: walletBloc,
+        defaultAddress: null,
+        privateLabel: '',
+        savedDescription: '',
+        description: '',
+      ),
+    );
+    loadAddress();
   }
 
   void loadAddress() async {
-    emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
     if (state.walletBloc == null) return;
+    emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
 
     final address = state.walletBloc!.state.wallet!.lastGeneratedAddress;
 
