@@ -214,7 +214,7 @@ class WalletAddress {
           wallet.myAddressBook.map((item) => item.copyWith(utxos: null)).toList();
 
       for (final unspent in unspentList) {
-        final scr = await bdk.Script.create(unspent.txout.scriptPubkey.internal);
+        final scr = await bdk.Script.create(unspent.txout.scriptPubkey.inner);
         final addresss = await bdk.Address.fromScript(
           scr,
           wallet.getBdkNetwork(),
