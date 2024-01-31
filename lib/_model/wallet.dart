@@ -12,7 +12,7 @@ part 'wallet.g.dart';
 
 enum BBNetwork { Testnet, Mainnet }
 
-enum BBWalletType { newSeed, xpub, descriptors, words, coldcard }
+enum BBWalletType { newSeed, xpub, descriptors, words, coldcard, instant }
 
 enum ScriptType { bip84, bip49, bip44 }
 
@@ -215,6 +215,8 @@ class Wallet with _$Wallet {
 
       case BBWalletType.descriptors:
         str = 'Imported Descriptors';
+      case BBWalletType.instant:
+      // TODO: Handle this case.
     }
 
     return str;
@@ -234,6 +236,8 @@ class Wallet with _$Wallet {
         str = 'Coldcard' + ':' + id.substring(0, 5);
       case BBWalletType.descriptors:
         str = 'Imported Descriptor' + ':' + id.substring(0, 5);
+      case BBWalletType.instant:
+        str = 'Instant' + ':' + id.substring(0, 5);
     }
 
     return str;
@@ -251,6 +255,8 @@ class Wallet with _$Wallet {
 
       case BBWalletType.descriptors:
         return 'Watch Only';
+      case BBWalletType.instant:
+        return 'Instant';
     }
   }
 

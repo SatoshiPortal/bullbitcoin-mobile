@@ -17,7 +17,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(BtcLnSwap?, Err?)> swap({
+  Future<(BtcLnSwap?, Err?)> send({
     required String mnemonic,
     required int index,
     required String invoice,
@@ -40,7 +40,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(BtcLnSwap?, Err?)> reverse({
+  Future<(BtcLnSwap?, Err?)> receive({
     required String mnemonic,
     required int index,
     required int outAmount,
