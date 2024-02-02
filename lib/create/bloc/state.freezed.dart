@@ -28,13 +28,14 @@ mixin _$CreateWalletState {
      * SENSITIVE
      * 
      */
+  bool get isInstant => throw _privateConstructorUsedError;
   bool get creatingNmemonic => throw _privateConstructorUsedError;
   String get errCreatingNmemonic => throw _privateConstructorUsedError;
   bool get saving => throw _privateConstructorUsedError;
   String get errSaving => throw _privateConstructorUsedError;
   bool get saved => throw _privateConstructorUsedError;
   String? get walletLabel => throw _privateConstructorUsedError;
-  Wallet? get savedWallet => throw _privateConstructorUsedError;
+  List<Wallet>? get savedWallets => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $CreateWalletStateCopyWith<CreateWalletState> get copyWith =>
@@ -50,15 +51,14 @@ abstract class $CreateWalletStateCopyWith<$Res> {
   $Res call(
       {List<String>? mnemonic,
       String passPhrase,
+      bool isInstant,
       bool creatingNmemonic,
       String errCreatingNmemonic,
       bool saving,
       String errSaving,
       bool saved,
       String? walletLabel,
-      Wallet? savedWallet});
-
-  $WalletCopyWith<$Res>? get savedWallet;
+      List<Wallet>? savedWallets});
 }
 
 /// @nodoc
@@ -76,13 +76,14 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
   $Res call({
     Object? mnemonic = freezed,
     Object? passPhrase = null,
+    Object? isInstant = null,
     Object? creatingNmemonic = null,
     Object? errCreatingNmemonic = null,
     Object? saving = null,
     Object? errSaving = null,
     Object? saved = null,
     Object? walletLabel = freezed,
-    Object? savedWallet = freezed,
+    Object? savedWallets = freezed,
   }) {
     return _then(_value.copyWith(
       mnemonic: freezed == mnemonic
@@ -93,6 +94,10 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
           ? _value.passPhrase
           : passPhrase // ignore: cast_nullable_to_non_nullable
               as String,
+      isInstant: null == isInstant
+          ? _value.isInstant
+          : isInstant // ignore: cast_nullable_to_non_nullable
+              as bool,
       creatingNmemonic: null == creatingNmemonic
           ? _value.creatingNmemonic
           : creatingNmemonic // ignore: cast_nullable_to_non_nullable
@@ -117,23 +122,11 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
           ? _value.walletLabel
           : walletLabel // ignore: cast_nullable_to_non_nullable
               as String?,
-      savedWallet: freezed == savedWallet
-          ? _value.savedWallet
-          : savedWallet // ignore: cast_nullable_to_non_nullable
-              as Wallet?,
+      savedWallets: freezed == savedWallets
+          ? _value.savedWallets
+          : savedWallets // ignore: cast_nullable_to_non_nullable
+              as List<Wallet>?,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $WalletCopyWith<$Res>? get savedWallet {
-    if (_value.savedWallet == null) {
-      return null;
-    }
-
-    return $WalletCopyWith<$Res>(_value.savedWallet!, (value) {
-      return _then(_value.copyWith(savedWallet: value) as $Val);
-    });
   }
 }
 
@@ -148,16 +141,14 @@ abstract class _$$CreateWalletStateImplCopyWith<$Res>
   $Res call(
       {List<String>? mnemonic,
       String passPhrase,
+      bool isInstant,
       bool creatingNmemonic,
       String errCreatingNmemonic,
       bool saving,
       String errSaving,
       bool saved,
       String? walletLabel,
-      Wallet? savedWallet});
-
-  @override
-  $WalletCopyWith<$Res>? get savedWallet;
+      List<Wallet>? savedWallets});
 }
 
 /// @nodoc
@@ -173,13 +164,14 @@ class __$$CreateWalletStateImplCopyWithImpl<$Res>
   $Res call({
     Object? mnemonic = freezed,
     Object? passPhrase = null,
+    Object? isInstant = null,
     Object? creatingNmemonic = null,
     Object? errCreatingNmemonic = null,
     Object? saving = null,
     Object? errSaving = null,
     Object? saved = null,
     Object? walletLabel = freezed,
-    Object? savedWallet = freezed,
+    Object? savedWallets = freezed,
   }) {
     return _then(_$CreateWalletStateImpl(
       mnemonic: freezed == mnemonic
@@ -190,6 +182,10 @@ class __$$CreateWalletStateImplCopyWithImpl<$Res>
           ? _value.passPhrase
           : passPhrase // ignore: cast_nullable_to_non_nullable
               as String,
+      isInstant: null == isInstant
+          ? _value.isInstant
+          : isInstant // ignore: cast_nullable_to_non_nullable
+              as bool,
       creatingNmemonic: null == creatingNmemonic
           ? _value.creatingNmemonic
           : creatingNmemonic // ignore: cast_nullable_to_non_nullable
@@ -214,10 +210,10 @@ class __$$CreateWalletStateImplCopyWithImpl<$Res>
           ? _value.walletLabel
           : walletLabel // ignore: cast_nullable_to_non_nullable
               as String?,
-      savedWallet: freezed == savedWallet
-          ? _value.savedWallet
-          : savedWallet // ignore: cast_nullable_to_non_nullable
-              as Wallet?,
+      savedWallets: freezed == savedWallets
+          ? _value._savedWallets
+          : savedWallets // ignore: cast_nullable_to_non_nullable
+              as List<Wallet>?,
     ));
   }
 }
@@ -228,14 +224,16 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
   const _$CreateWalletStateImpl(
       {final List<String>? mnemonic,
       this.passPhrase = '',
+      this.isInstant = false,
       this.creatingNmemonic = true,
       this.errCreatingNmemonic = '',
       this.saving = false,
       this.errSaving = '',
       this.saved = false,
       this.walletLabel,
-      this.savedWallet})
+      final List<Wallet>? savedWallets})
       : _mnemonic = mnemonic,
+        _savedWallets = savedWallets,
         super._();
 
 /**
@@ -268,6 +266,9 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
      */
   @override
   @JsonKey()
+  final bool isInstant;
+  @override
+  @JsonKey()
   final bool creatingNmemonic;
   @override
   @JsonKey()
@@ -283,12 +284,19 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
   final bool saved;
   @override
   final String? walletLabel;
+  final List<Wallet>? _savedWallets;
   @override
-  final Wallet? savedWallet;
+  List<Wallet>? get savedWallets {
+    final value = _savedWallets;
+    if (value == null) return null;
+    if (_savedWallets is EqualUnmodifiableListView) return _savedWallets;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'CreateWalletState(mnemonic: $mnemonic, passPhrase: $passPhrase, creatingNmemonic: $creatingNmemonic, errCreatingNmemonic: $errCreatingNmemonic, saving: $saving, errSaving: $errSaving, saved: $saved, walletLabel: $walletLabel, savedWallet: $savedWallet)';
+    return 'CreateWalletState(mnemonic: $mnemonic, passPhrase: $passPhrase, isInstant: $isInstant, creatingNmemonic: $creatingNmemonic, errCreatingNmemonic: $errCreatingNmemonic, saving: $saving, errSaving: $errSaving, saved: $saved, walletLabel: $walletLabel, savedWallets: $savedWallets)';
   }
 
   @override
@@ -299,6 +307,8 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
             const DeepCollectionEquality().equals(other._mnemonic, _mnemonic) &&
             (identical(other.passPhrase, passPhrase) ||
                 other.passPhrase == passPhrase) &&
+            (identical(other.isInstant, isInstant) ||
+                other.isInstant == isInstant) &&
             (identical(other.creatingNmemonic, creatingNmemonic) ||
                 other.creatingNmemonic == creatingNmemonic) &&
             (identical(other.errCreatingNmemonic, errCreatingNmemonic) ||
@@ -309,8 +319,8 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
             (identical(other.saved, saved) || other.saved == saved) &&
             (identical(other.walletLabel, walletLabel) ||
                 other.walletLabel == walletLabel) &&
-            (identical(other.savedWallet, savedWallet) ||
-                other.savedWallet == savedWallet));
+            const DeepCollectionEquality()
+                .equals(other._savedWallets, _savedWallets));
   }
 
   @override
@@ -318,13 +328,14 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
       runtimeType,
       const DeepCollectionEquality().hash(_mnemonic),
       passPhrase,
+      isInstant,
       creatingNmemonic,
       errCreatingNmemonic,
       saving,
       errSaving,
       saved,
       walletLabel,
-      savedWallet);
+      const DeepCollectionEquality().hash(_savedWallets));
 
   @JsonKey(ignore: true)
   @override
@@ -338,13 +349,14 @@ abstract class _CreateWalletState extends CreateWalletState {
   const factory _CreateWalletState(
       {final List<String>? mnemonic,
       final String passPhrase,
+      final bool isInstant,
       final bool creatingNmemonic,
       final String errCreatingNmemonic,
       final bool saving,
       final String errSaving,
       final bool saved,
       final String? walletLabel,
-      final Wallet? savedWallet}) = _$CreateWalletStateImpl;
+      final List<Wallet>? savedWallets}) = _$CreateWalletStateImpl;
   const _CreateWalletState._() : super._();
 
   @override
@@ -362,6 +374,8 @@ abstract class _CreateWalletState extends CreateWalletState {
      * SENSITIVE
      * 
      */
+  bool get isInstant;
+  @override
   bool get creatingNmemonic;
   @override
   String get errCreatingNmemonic;
@@ -374,7 +388,7 @@ abstract class _CreateWalletState extends CreateWalletState {
   @override
   String? get walletLabel;
   @override
-  Wallet? get savedWallet;
+  List<Wallet>? get savedWallets;
   @override
   @JsonKey(ignore: true)
   _$$CreateWalletStateImplCopyWith<_$CreateWalletStateImpl> get copyWith =>

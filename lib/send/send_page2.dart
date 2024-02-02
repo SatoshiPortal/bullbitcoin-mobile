@@ -441,7 +441,7 @@ class PaymentSent extends StatelessWidget {
 }
 
 class _SendAppBar extends StatelessWidget {
-  const _SendAppBar({super.key});
+  const _SendAppBar();
 
   @override
   Widget build(BuildContext context) {

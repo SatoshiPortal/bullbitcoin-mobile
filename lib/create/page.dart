@@ -49,10 +49,11 @@ class CreateWalletPage extends StatelessWidget {
         listenWhen: (previous, current) => previous.saved != current.saved,
         listener: (context, state) async {
           if (state.saved) {
-            final wallet = state.savedWallet!;
-            locator<HomeCubit>().addWallet(wallet);
+            if (state.savedWallets == null) return;
+            final wallets = state.savedWallets!;
+            locator<HomeCubit>().addWallets(wallets);
             await Future.delayed(500.milliseconds);
-            locator<HomeCubit>().changeMoveToIdx(wallet);
+            locator<HomeCubit>().changeMoveToIdx(wallets.first);
             // await Future.delayed(300.milliseconds);
             context.go('/home');
           }

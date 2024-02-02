@@ -48,7 +48,7 @@
         "**/analysis_options.yaml": true,
         "build.yaml": true,
         "**/build": true,
-        // "**/assets": true,
+        "**/assets": true,
         "l10n.yaml": true,
         // 
         // 
@@ -59,13 +59,13 @@
         // 
         // 
         "android": true,
-        // "ios": true,
+        "ios": true,
         // 
         // 
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
         // 
         // 
-        // "**/test": true,
-        // "integration_test": true,
+        "**/test": true,
+        "integration_test": true,
     },
 }

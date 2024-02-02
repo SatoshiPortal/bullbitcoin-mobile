@@ -18,13 +18,14 @@ class CreateWalletState with _$CreateWalletState {
      * SENSITIVE
      * 
      */
+    @Default(false) bool isInstant,
     @Default(true) bool creatingNmemonic,
     @Default('') String errCreatingNmemonic,
     @Default(false) bool saving,
     @Default('') String errSaving,
     @Default(false) bool saved,
     String? walletLabel,
-    Wallet? savedWallet,
+    List<Wallet>? savedWallets,
   }) = _CreateWalletState;
   const CreateWalletState._();
 }

@@ -59,7 +59,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
       listener: (context, state) async {
         if (state.savedWallet == null) return;
         final wallet = state.savedWallet!;
-        locator<HomeCubit>().addWallet(wallet);
+        locator<HomeCubit>().addWallets([wallet]);
         await Future.delayed(300.milliseconds);
         locator<HomeCubit>().changeMoveToIdx(wallet);
         await Future.delayed(300.milliseconds);

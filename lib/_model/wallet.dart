@@ -12,7 +12,7 @@ part 'wallet.g.dart';
 
 enum BBNetwork { Testnet, Mainnet }
 
-enum BBWalletType { newSeed, xpub, descriptors, words, coldcard, instant }
+enum BBWalletType { secure, xpub, descriptors, words, coldcard, instant }
 
 enum ScriptType { bip84, bip49, bip44 }
 
@@ -195,7 +195,7 @@ class Wallet with _$Wallet {
     String str = '';
 
     switch (type) {
-      case BBWalletType.newSeed:
+      case BBWalletType.secure:
         str = 'Bull Bitcoin Wallet';
         if (hasPassphrase())
           str += '\n(Passphrase Protected)';
@@ -226,7 +226,7 @@ class Wallet with _$Wallet {
     String str = '';
 
     switch (type) {
-      case BBWalletType.newSeed:
+      case BBWalletType.secure:
         str = 'Bull Wallet' + ':' + id.substring(0, 5);
       case BBWalletType.xpub:
         str = 'Xpub' + ':' + id.substring(0, 5);
@@ -245,7 +245,7 @@ class Wallet with _$Wallet {
 
   String getWalletTypeShortString() {
     switch (type) {
-      case BBWalletType.newSeed:
+      case BBWalletType.secure:
       case BBWalletType.words:
         return 'Spendable on-chain';
       case BBWalletType.xpub:

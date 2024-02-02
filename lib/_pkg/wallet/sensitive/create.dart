@@ -246,13 +246,14 @@ class WalletSensitiveCreate {
     return ([wallet44, wallet49, wallet84], null);
   }
 
-  Future<(Wallet?, Err?)> oneFromBIP39(
-    Seed seed,
-    String passphrase,
-    ScriptType scriptType,
-    BBNetwork network,
-    bool isImported,
-  ) async {
+  Future<(Wallet?, Err?)> oneFromBIP39({
+    required Seed seed,
+    required String passphrase,
+    required ScriptType scriptType,
+    required BBWalletType walletType,
+    required BBNetwork network,
+    // bool isImported,
+  }) async {
     final bdkMnemonic = await bdk.Mnemonic.fromString(seed.mnemonic);
     final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
     final rootXprv = await bdk.DescriptorSecretKey.create(
@@ -332,6 +333,8 @@ class WalletSensitiveCreate {
     }
 
     final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
+    // final type = isImported ? BBWalletType.words : BBWalletType.newSeed;
+
     var wallet = Wallet(
       id: descHashId,
       externalPublicDescriptor: await external.asString(),
@@ -339,9 +342,11 @@ class WalletSensitiveCreate {
       mnemonicFingerprint: seed.mnemonicFingerprint,
       sourceFingerprint: sourceFingerprint,
       network: network,
-      type: isImported ? BBWalletType.words : BBWalletType.newSeed,
+      type: walletType,
+      // type: isImported ? BBWalletType.words : BBWalletType.newSeed,
       scriptType: scriptType,
-      backupTested: isImported,
+      // backupTested: false,
+      // backupTested: isImported,
     );
     final (bdkWallet, errBdk) = await WalletCreate().loadPublicBdkWallet(wallet);
     final firstAddress = await bdkWallet!.getAddress(

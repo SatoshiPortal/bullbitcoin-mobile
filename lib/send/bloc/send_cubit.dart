@@ -275,7 +275,7 @@ class SendCubit extends Cubit<SendState> {
 
     final (tx, feeAmt, psbt) = buildResp!;
 
-    if (localWallet.type == BBWalletType.newSeed || localWallet.type == BBWalletType.words) {
+    if (localWallet.type == BBWalletType.secure || localWallet.type == BBWalletType.words) {
       final (seed, sErr) = await walletSensRepository.readSeed(
         fingerprintIndex: state.selectedWalletBloc!.state.wallet!.getRelatedSeedStorageString(),
         secureStore: secureStorage,
