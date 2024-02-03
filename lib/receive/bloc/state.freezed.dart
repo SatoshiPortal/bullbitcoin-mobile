@@ -29,6 +29,9 @@ mixin _$ReceiveState {
   bool get creatingInvoice => throw _privateConstructorUsedError;
   String get errCreatingInvoice => throw _privateConstructorUsedError;
   WalletBloc? get walletBloc => throw _privateConstructorUsedError;
+  ReceiveWalletType get walletType => throw _privateConstructorUsedError;
+  String get errGeneratingInvoice => throw _privateConstructorUsedError;
+  bool get generatingInvoice => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ReceiveStateCopyWith<ReceiveState> get copyWith =>
@@ -54,7 +57,10 @@ abstract class $ReceiveStateCopyWith<$Res> {
       String savedDescription,
       bool creatingInvoice,
       String errCreatingInvoice,
-      WalletBloc? walletBloc});
+      WalletBloc? walletBloc,
+      ReceiveWalletType walletType,
+      String errGeneratingInvoice,
+      bool generatingInvoice});
 
   $AddressCopyWith<$Res>? get defaultAddress;
 }
@@ -85,6 +91,9 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
+    Object? walletType = null,
+    Object? errGeneratingInvoice = null,
+    Object? generatingInvoice = null,
   }) {
     return _then(_value.copyWith(
       loadingAddress: null == loadingAddress
@@ -139,6 +148,18 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.walletBloc
           : walletBloc // ignore: cast_nullable_to_non_nullable
               as WalletBloc?,
+      walletType: null == walletType
+          ? _value.walletType
+          : walletType // ignore: cast_nullable_to_non_nullable
+              as ReceiveWalletType,
+      errGeneratingInvoice: null == errGeneratingInvoice
+          ? _value.errGeneratingInvoice
+          : errGeneratingInvoice // ignore: cast_nullable_to_non_nullable
+              as String,
+      generatingInvoice: null == generatingInvoice
+          ? _value.generatingInvoice
+          : generatingInvoice // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -176,7 +197,10 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       String savedDescription,
       bool creatingInvoice,
       String errCreatingInvoice,
-      WalletBloc? walletBloc});
+      WalletBloc? walletBloc,
+      ReceiveWalletType walletType,
+      String errGeneratingInvoice,
+      bool generatingInvoice});
 
   @override
   $AddressCopyWith<$Res>? get defaultAddress;
@@ -206,6 +230,9 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
+    Object? walletType = null,
+    Object? errGeneratingInvoice = null,
+    Object? generatingInvoice = null,
   }) {
     return _then(_$ReceiveStateImpl(
       loadingAddress: null == loadingAddress
@@ -260,6 +287,18 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
           ? _value.walletBloc
           : walletBloc // ignore: cast_nullable_to_non_nullable
               as WalletBloc?,
+      walletType: null == walletType
+          ? _value.walletType
+          : walletType // ignore: cast_nullable_to_non_nullable
+              as ReceiveWalletType,
+      errGeneratingInvoice: null == errGeneratingInvoice
+          ? _value.errGeneratingInvoice
+          : errGeneratingInvoice // ignore: cast_nullable_to_non_nullable
+              as String,
+      generatingInvoice: null == generatingInvoice
+          ? _value.generatingInvoice
+          : generatingInvoice // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -280,7 +319,10 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.savedDescription = '',
       this.creatingInvoice = true,
       this.errCreatingInvoice = '',
-      this.walletBloc})
+      this.walletBloc,
+      this.walletType = ReceiveWalletType.secure,
+      this.errGeneratingInvoice = '',
+      this.generatingInvoice = false})
       : super._();
 
   @override
@@ -320,10 +362,19 @@ class _$ReceiveStateImpl extends _ReceiveState {
   final String errCreatingInvoice;
   @override
   final WalletBloc? walletBloc;
+  @override
+  @JsonKey()
+  final ReceiveWalletType walletType;
+  @override
+  @JsonKey()
+  final String errGeneratingInvoice;
+  @override
+  @JsonKey()
+  final bool generatingInvoice;
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, walletType: $walletType, errGeneratingInvoice: $errGeneratingInvoice, generatingInvoice: $generatingInvoice)';
   }
 
   @override
@@ -356,7 +407,13 @@ class _$ReceiveStateImpl extends _ReceiveState {
             (identical(other.errCreatingInvoice, errCreatingInvoice) ||
                 other.errCreatingInvoice == errCreatingInvoice) &&
             (identical(other.walletBloc, walletBloc) ||
-                other.walletBloc == walletBloc));
+                other.walletBloc == walletBloc) &&
+            (identical(other.walletType, walletType) ||
+                other.walletType == walletType) &&
+            (identical(other.errGeneratingInvoice, errGeneratingInvoice) ||
+                other.errGeneratingInvoice == errGeneratingInvoice) &&
+            (identical(other.generatingInvoice, generatingInvoice) ||
+                other.generatingInvoice == generatingInvoice));
   }
 
   @override
@@ -374,7 +431,10 @@ class _$ReceiveStateImpl extends _ReceiveState {
       savedDescription,
       creatingInvoice,
       errCreatingInvoice,
-      walletBloc);
+      walletBloc,
+      walletType,
+      errGeneratingInvoice,
+      generatingInvoice);
 
   @JsonKey(ignore: true)
   @override
@@ -397,7 +457,10 @@ abstract class _ReceiveState extends ReceiveState {
       final String savedDescription,
       final bool creatingInvoice,
       final String errCreatingInvoice,
-      final WalletBloc? walletBloc}) = _$ReceiveStateImpl;
+      final WalletBloc? walletBloc,
+      final ReceiveWalletType walletType,
+      final String errGeneratingInvoice,
+      final bool generatingInvoice}) = _$ReceiveStateImpl;
   const _ReceiveState._() : super._();
 
   @override
@@ -426,6 +489,12 @@ abstract class _ReceiveState extends ReceiveState {
   String get errCreatingInvoice;
   @override
   WalletBloc? get walletBloc;
+  @override
+  ReceiveWalletType get walletType;
+  @override
+  String get errGeneratingInvoice;
+  @override
+  bool get generatingInvoice;
   @override
   @JsonKey(ignore: true)
   _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>

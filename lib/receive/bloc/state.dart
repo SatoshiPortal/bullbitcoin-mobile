@@ -4,6 +4,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
 
+enum ReceiveWalletType { secure, lightning }
+
 @freezed
 class ReceiveState with _$ReceiveState {
   const factory ReceiveState({
@@ -20,6 +22,9 @@ class ReceiveState with _$ReceiveState {
     @Default(true) bool creatingInvoice,
     @Default('') String errCreatingInvoice,
     WalletBloc? walletBloc,
+    @Default(ReceiveWalletType.secure) ReceiveWalletType walletType,
+    @Default('') String errGeneratingInvoice,
+    @Default(false) bool generatingInvoice,
     // Address? newInvoiceAddress,
   }) = _ReceiveState;
   const ReceiveState._();

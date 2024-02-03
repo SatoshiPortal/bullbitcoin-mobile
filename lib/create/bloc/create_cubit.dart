@@ -188,20 +188,20 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       return;
     }
 
-    var (walletInstant, errCreating2) = await walletSensCreate.oneFromBIP39(
-      seed: seed,
-      passphrase: '',
-      scriptType: ScriptType.bip84,
-      network: BBNetwork.Mainnet,
-      walletType: BBWalletType.instant,
-    );
-    if (errCreating2 != null) {
-      emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
-      return;
-    }
+    // var (walletInstant, errCreating2) = await walletSensCreate.oneFromBIP39(
+    //   seed: seed,
+    //   passphrase: '',
+    //   scriptType: ScriptType.bip84,
+    //   network: BBNetwork.Mainnet,
+    //   walletType: BBWalletType.instant,
+    // );
+    // if (errCreating2 != null) {
+    //   emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
+    //   return;
+    // }
 
     walletSecure = walletSecure!.copyWith(name: 'Bull Wallet');
-    walletInstant = walletInstant!.copyWith(name: 'Instant Wallet');
+    // walletInstant = walletInstant!.copyWith(name: 'Instant Wallet');
 
     final errSavingSeed =
         await walletSensRepository.newSeed(seed: seed, secureStore: secureStorage);
@@ -214,17 +214,17 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (errSaving1 != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }
-    final errSaving2 =
-        await walletRepository.newWallet(wallet: walletInstant, hiveStore: hiveStorage);
-    if (errSaving2 != null) {
-      emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
-    }
+    // final errSaving2 =
+    //     await walletRepository.newWallet(wallet: walletInstant, hiveStore: hiveStorage);
+    // if (errSaving2 != null) {
+    //   emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
+    // }
 
     clearSensitive();
 
     emit(
       state.copyWith(
-        savedWallets: [walletSecure, walletInstant],
+        savedWallets: [walletSecure],
         saving: false,
         saved: true,
       ),

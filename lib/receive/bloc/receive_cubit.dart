@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
@@ -19,6 +20,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required this.settingsCubit,
     required this.networkCubit,
     required this.currencyCubit,
+    required this.swapBoltz,
   }) : super(ReceiveState(walletBloc: walletBloc)) {
     loadAddress();
   }
@@ -29,6 +31,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final WalletRepository walletRepository;
   final NetworkCubit networkCubit;
   final CurrencyCubit currencyCubit;
+  final SwapBoltz swapBoltz;
 
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(
