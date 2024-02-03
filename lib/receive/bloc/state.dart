@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:boltz_dart/boltz_dart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
@@ -25,6 +26,7 @@ class ReceiveState with _$ReceiveState {
     @Default(ReceiveWalletType.secure) ReceiveWalletType walletType,
     @Default('') String errGeneratingInvoice,
     @Default(false) bool generatingInvoice,
+    BtcLnSwap? btcLnSwap,
     // Address? newInvoiceAddress,
   }) = _ReceiveState;
   const ReceiveState._();

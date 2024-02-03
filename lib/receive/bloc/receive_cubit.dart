@@ -46,6 +46,13 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     loadAddress();
   }
 
+  void updateWalletType(ReceiveWalletType walletType) {
+    emit(state.copyWith(walletType: walletType));
+    if (walletType == ReceiveWalletType.lightning) createLightningInvoice();
+  }
+
+  void createLightningInvoice() {}
+
   void loadAddress() async {
     if (state.walletBloc == null) return;
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));

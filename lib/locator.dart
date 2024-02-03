@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
+import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/deep_link.dart';
@@ -73,6 +74,7 @@ Future setupLocator({bool fromTest = false}) async {
   locator.registerSingleton<WalletBalance>(WalletBalance());
   locator.registerSingleton<WalletTx>(WalletTx());
   locator.registerSingleton<WalletAddress>(WalletAddress());
+  locator.registerSingleton<SwapBoltz>(SwapBoltz());
 
   final walletSync = WalletSync();
 

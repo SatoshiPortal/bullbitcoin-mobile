@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
@@ -61,6 +62,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
       walletAddress: locator<WalletAddress>(),
       hiveStorage: locator<HiveStorage>(),
       walletRepository: locator<WalletRepository>(),
+      swapBoltz: locator<SwapBoltz>(),
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       currencyCubit: CurrencyCubit(

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -39,6 +40,7 @@ class _ReceivePage2State extends State<ReceivePage2> {
       walletRepository: locator<WalletRepository>(),
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
+      swapBoltz: locator<SwapBoltz>(),
       currencyCubit: CurrencyCubit(
         hiveStorage: locator<HiveStorage>(),
         bbAPI: locator<BullBitcoinAPI>(),
