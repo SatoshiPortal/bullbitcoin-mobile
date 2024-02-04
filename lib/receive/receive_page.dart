@@ -3,8 +3,10 @@ import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -61,6 +63,8 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
       walletBloc: wallet,
       walletAddress: locator<WalletAddress>(),
       hiveStorage: locator<HiveStorage>(),
+      secureStorage: locator<SecureStorage>(),
+      walletSensitiveRepository: locator<WalletSensitiveRepository>(),
       walletRepository: locator<WalletRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       settingsCubit: locator<SettingsCubit>(),

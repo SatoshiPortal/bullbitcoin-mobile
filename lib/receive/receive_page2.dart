@@ -2,8 +2,10 @@ import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -12,10 +14,12 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
+import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -41,6 +45,8 @@ class _ReceivePage2State extends State<ReceivePage2> {
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
+      secureStorage: locator<SecureStorage>(),
+      walletSensitiveRepository: locator<WalletSensitiveRepository>(),
       currencyCubit: CurrencyCubit(
         hiveStorage: locator<HiveStorage>(),
         bbAPI: locator<BullBitcoinAPI>(),
@@ -124,6 +130,8 @@ class _Screen extends StatelessWidget {
           children: [
             Gap(32),
             ReceiveWalletsDropDown(),
+            Gap(24),
+            SelectWalletType(),
             Gap(48),
             ReceiveQRImage(),
             ReceiveAddressText(),
@@ -260,5 +268,38 @@ class WalletActions extends StatelessWidget {
         BBText.errorSmall(errLoadingAddress),
       ],
     );
+  }
+}
+
+class SelectWalletType extends StatelessWidget {
+  const SelectWalletType({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isTestnet = context.select((NetworkCubit _) => _.state.testnet);
+    final walletType = context.select((ReceiveCubit x) => x.state.walletType);
+
+    if (!isTestnet) return const SizedBox.shrink();
+
+    return CupertinoSlidingSegmentedControl(
+      groupValue: walletType,
+      children: const {
+        ReceiveWalletType.secure: Text('Secure'),
+        ReceiveWalletType.lightning: Text('Lightning'),
+      },
+      onValueChanged: (value) {
+        if (value == null) return;
+        context.read<ReceiveCubit>().updateWalletType(value);
+      },
+    );
+  }
+}
+
+class CreateLightningInvoice extends StatelessWidget {
+  const CreateLightningInvoice({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

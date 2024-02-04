@@ -51,6 +51,12 @@ class NetworkState with _$NetworkState {
     return n.firstWhere((_) => _.type == t);
   }
 
+  String getNetworkUrl() {
+    final network = getNetwork();
+    if (network == null) return '';
+    return network.getNetworkUrl(testnet, split: false);
+  }
+
   bdk.Network getBdkNetwork() {
     if (testnet) return bdk.Network.Testnet;
     return bdk.Network.Bitcoin;
@@ -60,6 +66,11 @@ class NetworkState with _$NetworkState {
     if (testnet) return BBNetwork.Testnet;
     return BBNetwork.Mainnet;
   }
+
+  // boltz.Chain getBoltzChain() {
+  // if (testnet) return boltz.Chain.Testnet;
+  // return boltz.Chain.Bitcoin;
+  // }
 
   String explorerTxUrl(String txid) =>
       testnet ? 'https://$mempoolapi/testnet/tx/$txid' : 'https://$mempoolapi/tx/$txid';
