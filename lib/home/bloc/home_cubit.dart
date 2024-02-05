@@ -83,12 +83,12 @@ class HomeCubit extends Cubit<HomeState> {
   void addWallets(List<Wallet> wallets) {
     emit(state.copyWith(loadingWallets: true));
 
-    final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-    wallets.addAll(wallets);
+    final walletss = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+    walletss.addAll(wallets);
 
     emit(
       state.copyWith(
-        wallets: wallets,
+        wallets: walletss,
         loadingWallets: false,
       ),
     );

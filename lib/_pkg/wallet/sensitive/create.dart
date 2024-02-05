@@ -65,10 +65,12 @@ class WalletSensitiveCreate {
     BBNetwork network,
   ) async {
     try {
-      final (mnemonicFingerprint, _) = await getFingerprint(
+      final (mnemonicFingerprint, err) = await getFingerprint(
         mnemonic: mnemonic,
         passphrase: '',
       );
+      if (err != null) throw err;
+
       final seed = Seed(
         mnemonic: mnemonic,
         mnemonicFingerprint: mnemonicFingerprint!,
@@ -76,11 +78,11 @@ class WalletSensitiveCreate {
         network: network,
       );
       return (seed, null);
-    } on Exception catch (e) {
+    } catch (e) {
       return (
         null,
         Err(
-          e.message,
+          e.toString(),
           title: 'Error occurred while creating seed',
           solution: 'Please try again.',
         )

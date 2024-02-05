@@ -3,6 +3,7 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -32,6 +33,9 @@ class Transaction with _$Transaction {
     )
     bdk.TransactionDetails? bdkTx,
     Wallet? wallet,
+    @Default(false) isSwap,
+    int? swapIndex,
+    // boltz.BtcLnSwap? btcLnSwap,
   }) = _Transaction;
   const Transaction._();
 

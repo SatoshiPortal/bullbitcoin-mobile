@@ -24,10 +24,10 @@
     "dart.lineLength": 100,
     "files.exclude": {
         "**/.metadata": true,
-        "**/.packages": true,
-        "**/pubspec.lock": true,
-        "**/.flutter-plugins": true,
-        "**/.dart_tool": true,
+        // "**/.packages": true,
+        // "**/pubspec.lock": true,
+        // "**/.flutter-plugins": true,
+        // "**/.dart_tool": true,
         "**/.flutter-plugins-dependencies": true,
         "**/generated_plugin_registrant.dart": true,
         "**/CHANGELOG.md": true,
@@ -62,7 +62,7 @@
         "ios": true,
         // 
         // 
-        "**/pubspec.yaml": true,
+        // "**/pubspec.yaml": true,
         // 
         // 
         "**/test": true,

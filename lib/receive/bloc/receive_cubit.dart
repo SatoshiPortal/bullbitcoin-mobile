@@ -76,7 +76,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     final (swap, errCreatingInv) = await swapBoltz.receive(
       mnemonic: seed!.mnemonic,
       index: 1,
-      outAmount: 1000,
+      outAmount: 50000,
       network: Chain.Testnet,
       electrumUrl: networkCubit.state.getNetworkUrl(),
       boltzUrl: boltzTestnet,
