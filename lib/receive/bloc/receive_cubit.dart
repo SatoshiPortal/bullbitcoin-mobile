@@ -72,14 +72,23 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       emit(state.copyWith(errCreatingInvoice: errReadingSeed.toString(), creatingInvoice: false));
       return;
     }
-
+    const outAmount = 50000;
+    final (fees, errFees) = await SwapBoltz.getFeesAndLimits(
+      boltzUrl: boltzTestnet,
+      outAmount: outAmount,
+    );
+    if (errFees != null) {
+      emit(state.copyWith(errCreatingInvoice: errFees.toString(), creatingInvoice: false));
+      return;
+    }
     final (swap, errCreatingInv) = await swapBoltz.receive(
       mnemonic: seed!.mnemonic,
       index: 1,
-      outAmount: 50000,
+      outAmount: outAmount,
       network: Chain.Testnet,
       electrumUrl: networkCubit.state.getNetworkUrl(),
       boltzUrl: boltzTestnet,
+      pairHash: fees!.btcPairHash,
     );
     if (errCreatingInv != null) {
       emit(state.copyWith(errCreatingInvoice: errCreatingInv.toString(), creatingInvoice: false));

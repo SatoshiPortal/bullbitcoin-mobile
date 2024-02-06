@@ -2,7 +2,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 
 class SwapBoltz {
-  static Future<(AllFees?, Err?)> estimateFee({
+  static Future<(AllFees?, Err?)> getFeesAndLimits({
     required String boltzUrl,
     required int outputAmount,
   }) async {
@@ -24,6 +24,7 @@ class SwapBoltz {
     required Chain network,
     required String electrumUrl,
     required String boltzUrl,
+    required String pairHash,
   }) async {
     try {
       final res = await BtcLnSwap.newSubmarine(
@@ -33,6 +34,7 @@ class SwapBoltz {
         network: network,
         electrumUrl: electrumUrl,
         boltzUrl: boltzUrl,
+        pairHash: pairHash,
       );
       return (res, null);
     } catch (e) {
@@ -47,6 +49,7 @@ class SwapBoltz {
     required Chain network,
     required String electrumUrl,
     required String boltzUrl,
+    required String pairHash,
   }) async {
     try {
       final res = await BtcLnSwap.newReverse(
@@ -56,6 +59,7 @@ class SwapBoltz {
         network: network,
         electrumUrl: electrumUrl,
         boltzUrl: boltzUrl,
+        pairHash: pairHash,
       );
       return (res, null);
     } catch (e) {
