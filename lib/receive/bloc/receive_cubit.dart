@@ -75,7 +75,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     const outAmount = 50000;
     final (fees, errFees) = await SwapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
-      outputAmount: outAmount,
+      outAmount: outAmount,
     );
     if (errFees != null) {
       emit(state.copyWith(errCreatingInvoice: errFees.toString(), creatingInvoice: false));

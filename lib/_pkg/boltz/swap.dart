@@ -4,12 +4,12 @@ import 'package:boltz_dart/boltz_dart.dart';
 class SwapBoltz {
   static Future<(AllFees?, Err?)> getFeesAndLimits({
     required String boltzUrl,
-    required int outputAmount,
+    required int outAmount,
   }) async {
     try {
       final res = await AllSwapFees.estimateFee(
         boltzUrl: boltzUrl,
-        outputAmount: outputAmount,
+        outputAmount: outAmount,
       );
       return (res, null);
     } catch (e) {
