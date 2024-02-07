@@ -138,7 +138,16 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
   }
 
+  void generateNewLightningInvoice() async {}
+
+  void watchInvoiceStatus() {}
+
   void generateNewAddress() async {
+    if (state.walletType == ReceiveWalletType.lightning) {
+      generateNewLightningInvoice();
+      return;
+    }
+
     emit(
       state.copyWith(
         errLoadingAddress: '',

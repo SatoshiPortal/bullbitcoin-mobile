@@ -47,6 +47,7 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
           ? null
           : DateTime.parse(json['lastBackupTested'] as String),
       hide: json['hide'] as bool? ?? false,
+      swapTxCount: json['swapTxCount'] as int? ?? 0,
     );
 
 Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
@@ -71,6 +72,7 @@ Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
       'backupTested': instance.backupTested,
       'lastBackupTested': instance.lastBackupTested?.toIso8601String(),
       'hide': instance.hide,
+      'swapTxCount': instance.swapTxCount,
     };
 
 const _$BBNetworkEnumMap = {

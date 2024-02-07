@@ -41,6 +41,7 @@ class Wallet with _$Wallet {
     @Default(false) bool backupTested,
     DateTime? lastBackupTested,
     @Default(false) bool hide,
+    @Default(0) int swapTxCount,
   }) = _Wallet;
   const Wallet._();
 

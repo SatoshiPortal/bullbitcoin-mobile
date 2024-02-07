@@ -40,6 +40,11 @@ class Transaction with _$Transaction {
       includeToJson: false,
     )
     boltz.BtcLnSwap? btcLnSwap,
+    @JsonKey(
+      includeFromJson: false,
+      includeToJson: false,
+    )
+    boltz.LbtcLnSwap? lbtcLnSwap,
   }) = _Transaction;
   const Transaction._();
 

@@ -66,4 +66,17 @@ class SwapBoltz {
       return (null, Err(e.toString()));
     }
   }
+
+  Future<Err?> watchSwap({required String swapId, required Function(bool) onConfirmed}) async {
+    try {
+      // BoltzApi().getSwapStatusStream(swapId).listen((event) {
+      //   if (event.status == SwapStatus.confirmed) {
+      //     onConfirmed(true);
+      //   }
+      // });
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
 }

@@ -42,6 +42,7 @@ mixin _$Wallet {
   bool get backupTested => throw _privateConstructorUsedError;
   DateTime? get lastBackupTested => throw _privateConstructorUsedError;
   bool get hide => throw _privateConstructorUsedError;
+  int get swapTxCount => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -73,7 +74,8 @@ abstract class $WalletCopyWith<$Res> {
       List<Transaction> unsignedTxs,
       bool backupTested,
       DateTime? lastBackupTested,
-      bool hide});
+      bool hide,
+      int swapTxCount});
 
   $BalanceCopyWith<$Res>? get fullBalance;
   $AddressCopyWith<$Res>? get lastGeneratedAddress;
@@ -112,6 +114,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? backupTested = null,
     Object? lastBackupTested = freezed,
     Object? hide = null,
+    Object? swapTxCount = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -194,6 +197,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.hide
           : hide // ignore: cast_nullable_to_non_nullable
               as bool,
+      swapTxCount: null == swapTxCount
+          ? _value.swapTxCount
+          : swapTxCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 
@@ -249,7 +256,8 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
       List<Transaction> unsignedTxs,
       bool backupTested,
       DateTime? lastBackupTested,
-      bool hide});
+      bool hide,
+      int swapTxCount});
 
   @override
   $BalanceCopyWith<$Res>? get fullBalance;
@@ -288,6 +296,7 @@ class __$$WalletImplCopyWithImpl<$Res>
     Object? backupTested = null,
     Object? lastBackupTested = freezed,
     Object? hide = null,
+    Object? swapTxCount = null,
   }) {
     return _then(_$WalletImpl(
       id: null == id
@@ -370,6 +379,10 @@ class __$$WalletImplCopyWithImpl<$Res>
           ? _value.hide
           : hide // ignore: cast_nullable_to_non_nullable
               as bool,
+      swapTxCount: null == swapTxCount
+          ? _value.swapTxCount
+          : swapTxCount // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -397,7 +410,8 @@ class _$WalletImpl extends _Wallet {
       final List<Transaction> unsignedTxs = const [],
       this.backupTested = false,
       this.lastBackupTested,
-      this.hide = false})
+      this.hide = false,
+      this.swapTxCount = 0})
       : _myAddressBook = myAddressBook,
         _externalAddressBook = externalAddressBook,
         _transactions = transactions,
@@ -486,10 +500,13 @@ class _$WalletImpl extends _Wallet {
   @override
   @JsonKey()
   final bool hide;
+  @override
+  @JsonKey()
+  final int swapTxCount;
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, transactions: $transactions, unsignedTxs: $unsignedTxs, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, transactions: $transactions, unsignedTxs: $unsignedTxs, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide, swapTxCount: $swapTxCount)';
   }
 
   @override
@@ -531,7 +548,9 @@ class _$WalletImpl extends _Wallet {
                 other.backupTested == backupTested) &&
             (identical(other.lastBackupTested, lastBackupTested) ||
                 other.lastBackupTested == lastBackupTested) &&
-            (identical(other.hide, hide) || other.hide == hide));
+            (identical(other.hide, hide) || other.hide == hide) &&
+            (identical(other.swapTxCount, swapTxCount) ||
+                other.swapTxCount == swapTxCount));
   }
 
   @JsonKey(ignore: true)
@@ -557,7 +576,8 @@ class _$WalletImpl extends _Wallet {
         const DeepCollectionEquality().hash(_unsignedTxs),
         backupTested,
         lastBackupTested,
-        hide
+        hide,
+        swapTxCount
       ]);
 
   @JsonKey(ignore: true)
@@ -595,7 +615,8 @@ abstract class _Wallet extends Wallet {
       final List<Transaction> unsignedTxs,
       final bool backupTested,
       final DateTime? lastBackupTested,
-      final bool hide}) = _$WalletImpl;
+      final bool hide,
+      final int swapTxCount}) = _$WalletImpl;
   const _Wallet._() : super._();
 
   factory _Wallet.fromJson(Map<String, dynamic> json) = _$WalletImpl.fromJson;
@@ -641,6 +662,8 @@ abstract class _Wallet extends Wallet {
   DateTime? get lastBackupTested;
   @override
   bool get hide;
+  @override
+  int get swapTxCount;
   @override
   @JsonKey(ignore: true)
   _$$WalletImplCopyWith<_$WalletImpl> get copyWith =>

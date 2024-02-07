@@ -74,16 +74,10 @@ dependencies:
       git:
         url: https://github.com/SatoshiPortal/boltz-dart.git
         ref: trunk
-<<<<<<< Updated upstream
-  lwk_dart: 
-      git:
-        url: https://github.com/SatoshiPortal/lwk-dart
-=======
 
   lwk_dart: 
       git:
         url: https://github.com/SatoshiPortal/lwk-dart.git
->>>>>>> Stashed changes
         ref: trunk
       
   
