@@ -63,6 +63,18 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void createLightningInvoice() async {
     if (!networkCubit.state.testnet) return;
+
+    final outAmount = currencyCubit.state.amount;
+    if (outAmount < 50000) {
+      emit(
+        state.copyWith(
+          errCreatingInvoice: 'Amount should be greater than 50000',
+          creatingInvoice: false,
+        ),
+      );
+      return;
+    }
+
     emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
     final (seed, errReadingSeed) = await walletSensitiveRepository.readSeed(
       fingerprintIndex: state.walletBloc!.state.wallet!.getRelatedSeedStorageString(),
@@ -72,7 +84,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       emit(state.copyWith(errCreatingInvoice: errReadingSeed.toString(), creatingInvoice: false));
       return;
     }
-    const outAmount = 50000;
     final (fees, errFees) = await SwapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
       outAmount: outAmount,
@@ -96,17 +107,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    final invoice = swap!.btcLnSwap.invoice;
-    final addr = Address(
-      address: invoice,
-      kind: AddressKind.deposit,
-      state: AddressStatus.unused,
-    );
     emit(
       state.copyWith(
         creatingInvoice: false,
         errCreatingInvoice: '',
-        defaultAddress: addr,
+        defaultAddress: null,
+        btcLnSwap: swap,
       ),
     );
   }

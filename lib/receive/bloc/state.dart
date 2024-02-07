@@ -32,7 +32,10 @@ class ReceiveState with _$ReceiveState {
   const ReceiveState._();
 
   String getQRStr() {
-    if (defaultAddress == null) return '';
+    if (defaultAddress == null) {
+      if (btcLnSwap == null) return '';
+      return btcLnSwap!.btcLnSwap.invoice;
+    }
 
     if (savedInvoiceAmount > 0 || savedDescription.isNotEmpty) {
       final btcAmt = (savedInvoiceAmount / 100000000).toStringAsFixed(8);

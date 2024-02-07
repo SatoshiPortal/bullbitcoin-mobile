@@ -9,6 +9,8 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -306,6 +308,30 @@ class CreateLightningInvoice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const TextField();
+    final description = context.select((ReceiveCubit _) => _.state.description);
+    final err = context.select((ReceiveCubit _) => _.state.errGeneratingInvoice);
+
+    return Column(
+      children: [
+        const EnterAmount2(),
+        BBTextInput.big(
+          uiKey: UIKeys.receiveDescriptionField,
+          value: description,
+          hint: 'Enter description',
+          onChanged: (txt) {
+            context.read<ReceiveCubit>().descriptionChanged(txt);
+          },
+        ),
+        BBButton.bigRed(
+          buttonKey: UIKeys.receiveSavePaymentButton,
+          label: 'Save',
+          onPressed: () {
+            context.read<ReceiveCubit>().createLightningInvoice();
+          },
+        ),
+        BBText.errorSmall(err),
+        const Gap(40),
+      ],
+    );
   }
 }
