@@ -39,6 +39,8 @@ mixin _$Transaction {
   Wallet? get wallet => throw _privateConstructorUsedError;
   dynamic get isSwap => throw _privateConstructorUsedError;
   int? get swapIndex => throw _privateConstructorUsedError;
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  boltz.BtcLnSwap? get btcLnSwap => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -70,7 +72,9 @@ abstract class $TransactionCopyWith<$Res> {
       bdk.TransactionDetails? bdkTx,
       Wallet? wallet,
       dynamic isSwap,
-      int? swapIndex});
+      int? swapIndex,
+      @JsonKey(includeFromJson: false, includeToJson: false)
+      boltz.BtcLnSwap? btcLnSwap});
 
   $WalletCopyWith<$Res>? get wallet;
 }
@@ -105,6 +109,7 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? wallet = freezed,
     Object? isSwap = freezed,
     Object? swapIndex = freezed,
+    Object? btcLnSwap = freezed,
   }) {
     return _then(_value.copyWith(
       timestamp: null == timestamp
@@ -175,6 +180,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.swapIndex
           : swapIndex // ignore: cast_nullable_to_non_nullable
               as int?,
+      btcLnSwap: freezed == btcLnSwap
+          ? _value.btcLnSwap
+          : btcLnSwap // ignore: cast_nullable_to_non_nullable
+              as boltz.BtcLnSwap?,
     ) as $Val);
   }
 
@@ -217,7 +226,9 @@ abstract class _$$TransactionImplCopyWith<$Res>
       bdk.TransactionDetails? bdkTx,
       Wallet? wallet,
       dynamic isSwap,
-      int? swapIndex});
+      int? swapIndex,
+      @JsonKey(includeFromJson: false, includeToJson: false)
+      boltz.BtcLnSwap? btcLnSwap});
 
   @override
   $WalletCopyWith<$Res>? get wallet;
@@ -251,6 +262,7 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? wallet = freezed,
     Object? isSwap = freezed,
     Object? swapIndex = freezed,
+    Object? btcLnSwap = freezed,
   }) {
     return _then(_$TransactionImpl(
       timestamp: null == timestamp
@@ -318,6 +330,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.swapIndex
           : swapIndex // ignore: cast_nullable_to_non_nullable
               as int?,
+      btcLnSwap: freezed == btcLnSwap
+          ? _value.btcLnSwap
+          : btcLnSwap // ignore: cast_nullable_to_non_nullable
+              as boltz.BtcLnSwap?,
     ));
   }
 }
@@ -342,7 +358,8 @@ class _$TransactionImpl extends _Transaction {
       @JsonKey(includeFromJson: false, includeToJson: false) this.bdkTx,
       this.wallet,
       this.isSwap = false,
-      this.swapIndex})
+      this.swapIndex,
+      @JsonKey(includeFromJson: false, includeToJson: false) this.btcLnSwap})
       : _outAddrs = outAddrs,
         super._();
 
@@ -396,10 +413,13 @@ class _$TransactionImpl extends _Transaction {
   final dynamic isSwap;
   @override
   final int? swapIndex;
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final boltz.BtcLnSwap? btcLnSwap;
 
   @override
   String toString() {
-    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapIndex: $swapIndex)';
+    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapIndex: $swapIndex, btcLnSwap: $btcLnSwap)';
   }
 
   @override
@@ -429,7 +449,9 @@ class _$TransactionImpl extends _Transaction {
             (identical(other.wallet, wallet) || other.wallet == wallet) &&
             const DeepCollectionEquality().equals(other.isSwap, isSwap) &&
             (identical(other.swapIndex, swapIndex) ||
-                other.swapIndex == swapIndex));
+                other.swapIndex == swapIndex) &&
+            (identical(other.btcLnSwap, btcLnSwap) ||
+                other.btcLnSwap == btcLnSwap));
   }
 
   @JsonKey(ignore: true)
@@ -452,7 +474,8 @@ class _$TransactionImpl extends _Transaction {
       bdkTx,
       wallet,
       const DeepCollectionEquality().hash(isSwap),
-      swapIndex);
+      swapIndex,
+      btcLnSwap);
 
   @JsonKey(ignore: true)
   @override
@@ -487,7 +510,9 @@ abstract class _Transaction extends Transaction {
       final bdk.TransactionDetails? bdkTx,
       final Wallet? wallet,
       final dynamic isSwap,
-      final int? swapIndex}) = _$TransactionImpl;
+      final int? swapIndex,
+      @JsonKey(includeFromJson: false, includeToJson: false)
+      final boltz.BtcLnSwap? btcLnSwap}) = _$TransactionImpl;
   const _Transaction._() : super._();
 
   factory _Transaction.fromJson(Map<String, dynamic> json) =
@@ -528,6 +553,9 @@ abstract class _Transaction extends Transaction {
   dynamic get isSwap;
   @override
   int? get swapIndex;
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  boltz.BtcLnSwap? get btcLnSwap;
   @override
   @JsonKey(ignore: true)
   _$$TransactionImplCopyWith<_$TransactionImpl> get copyWith =>

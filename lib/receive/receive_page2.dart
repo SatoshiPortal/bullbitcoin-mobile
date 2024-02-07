@@ -122,22 +122,28 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
+    final showQR = context.select((ReceiveCubit x) => x.state.showQR());
+    return SingleChildScrollView(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Gap(32),
-            ReceiveWalletsDropDown(),
-            Gap(24),
-            SelectWalletType(),
-            Gap(48),
-            ReceiveQRImage(),
-            ReceiveAddressText(),
-            Gap(48),
-            WalletActions(),
-            Gap(32),
+            const Gap(32),
+            const ReceiveWalletsDropDown(),
+            const Gap(24),
+            const SelectWalletType(),
+            const Gap(48),
+            if (showQR) ...[
+              const ReceiveQRImage(),
+              const ReceiveAddressText(),
+            ] else ...[
+              const BBText.body('Lightning invoice'),
+              const CreateLightningInvoice(),
+            ],
+            const Gap(48),
+            const WalletActions(),
+            const Gap(32),
           ],
         ),
       ),
@@ -300,6 +306,6 @@ class CreateLightningInvoice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const TextField();
   }
 }

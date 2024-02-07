@@ -23,6 +23,7 @@ linter:
     unnecessary_string_escapes: false
     avoid_dynamic_calls: false
     non_constant_identifier_names: false
+    no_wildcard_variable_uses: false
     
 
 

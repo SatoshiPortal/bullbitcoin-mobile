@@ -47,4 +47,8 @@ class ReceiveState with _$ReceiveState {
   }
 
   bool showNewRequestButton() => savedDescription.isEmpty && savedInvoiceAmount == 0;
+
+  bool showQR() =>
+      (btcLnSwap != null && walletType == ReceiveWalletType.lightning) ||
+      (btcLnSwap == null && walletType == ReceiveWalletType.secure);
 }

@@ -35,7 +35,11 @@ class Transaction with _$Transaction {
     Wallet? wallet,
     @Default(false) isSwap,
     int? swapIndex,
-    // boltz.BtcLnSwap? btcLnSwap,
+    @JsonKey(
+      includeFromJson: false,
+      includeToJson: false,
+    )
+    boltz.BtcLnSwap? btcLnSwap,
   }) = _Transaction;
   const Transaction._();
 
