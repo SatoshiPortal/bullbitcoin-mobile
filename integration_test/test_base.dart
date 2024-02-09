@@ -61,6 +61,22 @@ Future<LbtcLnSwap> setupLSubmarine(String invoice) async {
   return lbtcLnSubmarineSwap;
 }
 
+Future<LbtcLnSwap> setupLReverseSubmarine(int amount) async {
+  final fees = await AllSwapFees.estimateFee(boltzUrl: boltzUrl, outputAmount: amount);
+
+  final lbtcLnReverseSwap = await LbtcLnSwap.newReverse(
+    mnemonic: swapMnemonic,
+    index: swapIndex,
+    outAmount: amount,
+    network: Chain.LiquidTestnet,
+    electrumUrl: electrumUrl,
+    boltzUrl: boltzUrl,
+    pairHash: fees.lbtcPairHash,
+  );
+
+  return lbtcLnReverseSwap;
+}
+
 Future<String> sendLiquid(LiquidWallet wallet, String address, int amount) async {
   const absFee = 300.0;
   final pset = await wallet.build(

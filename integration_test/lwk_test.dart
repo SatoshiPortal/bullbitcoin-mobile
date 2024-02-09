@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lwk_dart/lwk_dart.dart';
@@ -200,6 +202,61 @@ void main() {
         expect(receivedEvents[2].status, equals(SwapStatus.invoicePending));
         expect(receivedEvents[3].status, equals(SwapStatus.invoicePaid));
         expect(receivedEvents[4].status, equals(SwapStatus.txnClaimed));
+      },
+      skip: true,
+      timeout: testTimeout,
+    );
+  });
+  group('LN-LBTC Reverse Submarine', () {
+    test(
+      'Positive',
+      () async {
+        const int lbtcLnReverseSwapAmount = 2000;
+        const String lBtcReceiveAddress = fundingWalletAddress;
+        final LbtcLnSwap lbtcLnSubmarine = await setupLReverseSubmarine(lbtcLnReverseSwapAmount);
+
+        const expectedSecretKey =
+            'a0a62dd7225288f41a741c293a3220035b4c71686dc34c01ec84cbe6ab11b4e1';
+
+        final swap = lbtcLnSubmarine.lbtcLnSwap;
+        print('SWAP CREATED SUCCESSFULLY: ${swap.id}');
+        expect(swap.keys.secretKey, expectedSecretKey);
+
+        print('Pay this invoice: ${swap.invoice}');
+
+        final completer = Completer();
+        final receivedEvents = <dynamic>[];
+        final api = await BoltzApi.newBoltzApi();
+        final sub = api.getSwapStatusStream(swap.id).listen((event) async {
+          receivedEvents.add(event);
+          if (event.status == SwapStatus.txnMempool) {
+            await Future.delayed(const Duration(seconds: 20));
+
+            final fees = await AllSwapFees.estimateFee(
+              boltzUrl: boltzUrl,
+              outputAmount: lbtcLnReverseSwapAmount,
+            );
+            final claimFeesEstimate = fees.lbtcReverse.claimFeesEstimate;
+
+            final String txnId = await lbtcLnSubmarine.claim(
+              outAddress: lBtcReceiveAddress,
+              absFee: claimFeesEstimate,
+            );
+            print(txnId);
+          }
+          if (event.status == SwapStatus.invoiceSettled) {
+            completer.complete();
+          }
+        });
+        await completer.future;
+
+        await sub.cancel();
+
+        print(receivedEvents);
+        // expect(receivedEvents[0].status, equals(SwapStatus.invoiceSet));
+        // expect(receivedEvents[0].status, equals(SwapStatus.swapCreated));
+        // expect(receivedEvents[1].status, equals(SwapStatus.txnMempool));
+        // expect(receivedEvents[2].status, equals(SwapStatus.invoiceSettled));
       },
       skip: true,
       timeout: testTimeout,
