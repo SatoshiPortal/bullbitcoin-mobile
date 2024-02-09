@@ -1,17 +1,18 @@
-import 'package:boltz_dart/boltz_dart.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:lwk_dart/lwk_dart.dart';
+const baconWalletAddress =
+    'tlq1qqgtpd4256nmfcp0et0tz2v5emnt0ruman92s0r7m8z3q59vdzg5hcdhdalz5d09hgwdkqr24ar7hfspm906e25ce3tj4r6zkd';
 
-const lNetwork = LiquidNetwork.Testnet;
-const lElectrumUrl = 'blockstream.info:465';
+const invoice600 =
+    'lntb6u1pjutxvqpp5d4pj08qm6rutz0qyyucugjrm93jxvpnrcksumlzpfunj2gz4wpaqdqqcqzzsxqyjw5qsp5etd3uzhg4ctn32pmjnzduddn8yl7fhgw7vmsz6wa0jut06zfm67s9qyyssqseq9lpn3nftsq9sqgmsvhxgd783826gdmqzs5dceg37gwsdhyv3jvzjl3kywfey4gh2e8vn6rrmxv6gnx56nstwec249lywu4l6g8rqqueuffh';
+const invoice600Amount = 600;
 
-const swapMnemonic =
-    'bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon bacon';
-const swapIndex = 0;
-const network = Chain.Testnet;
-const electrumUrl = 'electrum.bullbitcoin.com:60002';
-const boltzUrl = 'https://api.testnet.boltz.exchange';
-const testTimeout = Timeout(Duration(minutes: 30));
+const invoice26mAmount = 26000000;
+const invoice26m =
+    'lntb260m1pjmwkv7pp5g8hy6pe8md7rz6jwcgvntgsqwr2eck0rcvj8trqkuehuvl9g2w4qdqqcqzzsxqyjw5qsp59fq60rmf6mkx9hhkcdw4akl7ksgzl3rfchgj94f6vfwzq9x7wvps9qyyssq2mkjtc67ktcnxf0cch8d66fkxlx9fyryy2k79cqv8gzjxw7wmh7xm3qdra7lawm6nvjrs2zyu50qf428uzqu25mxmvev6zckzt8ew7gp0xfna2';
 
-const fundingLWalletMnemonic =
-    'fossil install fever ticket wisdom outer broken aspect lucky still flavor dial';
+const usedInvoice =
+    'lntb510u1pjmwkmspp5hqxwu96lhqzvvv9gxul8memmkj833fsdu32aw4llgf37jrfx0m5qdqqcqzzsxqyjw5qsp55djvsgh0eyypz2l28cyhxajuudy8z27ge5ss82k80kdefzn3de6s9qyyssq9s0lqcr00e0raj86tde8zq6jnft5fq3xyqhjc4jzpcndqvkjtsuh9tmd4rhk52zc6tkgf3h9hk7pcuzxprmsfj5rmghl2jyzga3d8vqq5785ee';
+
+const expiredInvoice =
+    'lntb510u1pjm0z48pp5p3frf3ngtfxfu2fpdv5jefdk5d4r5es6ad350jelq64kwj3z7jvqdqqcqzzsxqp9sp5fw6a2zjmlhx59k2x7rmv46aus79walrmlvmqhvpcy0wwhtwx68qs9qyyssqq9denfcmlnf37djfkxu0rr7c5gy0ad969cylhmuzyeusp9g3ecus0zyv4kugdcle438ujnn948whzrtev04sq889lnp959ns6ymdpwcpwvyszt';
+
+const invalidInvoice = 'lntbinvalidinvoice';
