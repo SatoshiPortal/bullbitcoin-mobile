@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 
@@ -42,7 +43,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(BtcLnSwap?, Err?)> receive({
+  Future<(SwapTx?, Err?)> receive({
     required String mnemonic,
     required int index,
     required int outAmount,
@@ -61,14 +62,21 @@ class SwapBoltz {
         boltzUrl: boltzUrl,
         pairHash: pairHash,
       );
-      return (res, null);
+      final swap = SwapTx.fromBtcLnSwap(res);
+      return (swap, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
   }
 
-  Future<Err?> watchSwap({required String swapId, required Function(bool) onConfirmed}) async {
+  Future<Err?> watchSwap({
+    required String swapId,
+    required Function(SwapStatus) onConfirmed,
+  }) async {
     try {
+      final api = await BoltzApi.newBoltzApi();
+      // final status = api.getSwapStatusStream(swapId);
+      //   .getSwapStatusStream(swapId);
       // BoltzApi().getSwapStatusStream(swapId).listen((event) {
       //   if (event.status == SwapStatus.confirmed) {
       //     onConfirmed(true);

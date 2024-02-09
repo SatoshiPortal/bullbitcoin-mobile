@@ -212,12 +212,14 @@ class WalletAddress {
       final unspentList = await bdkWallet.listUnspent();
       final utxoUpdatedAddresses =
           wallet.myAddressBook.map((item) => item.copyWith(utxos: null)).toList();
+      final network = wallet.getBdkNetwork();
+      if (network == null) return (null, Err('Network is null'));
 
       for (final unspent in unspentList) {
         final scr = await bdk.Script.create(unspent.txout.scriptPubkey.inner);
         final addresss = await bdk.Address.fromScript(
           scr,
-          wallet.getBdkNetwork(),
+          network,
         );
         final addressStr = addresss.toString();
 

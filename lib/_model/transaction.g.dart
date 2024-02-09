@@ -29,6 +29,9 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
           : Wallet.fromJson(json['wallet'] as Map<String, dynamic>),
       isSwap: json['isSwap'] ?? false,
       swapIndex: json['swapIndex'] as int?,
+      swapTx: json['swapTx'] == null
+          ? null
+          : SwapTx.fromJson(json['swapTx'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
@@ -49,4 +52,49 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'wallet': instance.wallet,
       'isSwap': instance.isSwap,
       'swapIndex': instance.swapIndex,
+      'swapTx': instance.swapTx,
     };
+
+_$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
+      id: json['id'] as String,
+      isSubmarine: json['isSubmarine'] as bool,
+      network: $enumDecode(_$BBNetworkEnumMap, json['network']),
+      secretKey: json['secretKey'] as String,
+      publicKey: json['publicKey'] as String,
+      value: json['value'] as String,
+      sha256: json['sha256'] as String,
+      hash160: json['hash160'] as String,
+      redeemScript: json['redeemScript'] as String,
+      invoice: json['invoice'] as String,
+      outAmount: json['outAmount'] as int,
+      scriptAddress: json['scriptAddress'] as String,
+      electrumUrl: json['electrumUrl'] as String,
+      boltzUrl: json['boltzUrl'] as String,
+      blindingKey: json['blindingKey'] as String?,
+    );
+
+Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'isSubmarine': instance.isSubmarine,
+      'network': _$BBNetworkEnumMap[instance.network]!,
+      'secretKey': instance.secretKey,
+      'publicKey': instance.publicKey,
+      'value': instance.value,
+      'sha256': instance.sha256,
+      'hash160': instance.hash160,
+      'redeemScript': instance.redeemScript,
+      'invoice': instance.invoice,
+      'outAmount': instance.outAmount,
+      'scriptAddress': instance.scriptAddress,
+      'electrumUrl': instance.electrumUrl,
+      'boltzUrl': instance.boltzUrl,
+      'blindingKey': instance.blindingKey,
+    };
+
+const _$BBNetworkEnumMap = {
+  BBNetwork.Testnet: 'Testnet',
+  BBNetwork.Mainnet: 'Mainnet',
+  BBNetwork.LTestnet: 'LTestnet',
+  BBNetwork.LMainnet: 'LMainnet',
+};

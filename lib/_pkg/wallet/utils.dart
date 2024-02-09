@@ -87,6 +87,9 @@ String? convertToSlipPub(ScriptType script, BBNetwork network, String extendedKe
             Version.xPub,
           );
           return result;
+        case BBNetwork.LTestnet:
+        case BBNetwork.LMainnet:
+          return null;
       }
 
     // TODO: Handle this case.
@@ -104,6 +107,10 @@ String? convertToSlipPub(ScriptType script, BBNetwork network, String extendedKe
             Version.zPub,
           );
           return result;
+
+        case BBNetwork.LTestnet:
+        case BBNetwork.LMainnet:
+          return null;
       }
     // TODO: Handle this case.
     case ScriptType.bip49:
@@ -120,6 +127,9 @@ String? convertToSlipPub(ScriptType script, BBNetwork network, String extendedKe
             Version.yPub,
           );
           return result;
+        case BBNetwork.LTestnet:
+        case BBNetwork.LMainnet:
+          return null;
       }
   }
 }

@@ -39,10 +39,7 @@ mixin _$Transaction {
   Wallet? get wallet => throw _privateConstructorUsedError;
   dynamic get isSwap => throw _privateConstructorUsedError;
   int? get swapIndex => throw _privateConstructorUsedError;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  boltz.BtcLnSwap? get btcLnSwap => throw _privateConstructorUsedError;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  boltz.LbtcLnSwap? get lbtcLnSwap => throw _privateConstructorUsedError;
+  SwapTx? get swapTx => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -75,12 +72,10 @@ abstract class $TransactionCopyWith<$Res> {
       Wallet? wallet,
       dynamic isSwap,
       int? swapIndex,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      boltz.BtcLnSwap? btcLnSwap,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      boltz.LbtcLnSwap? lbtcLnSwap});
+      SwapTx? swapTx});
 
   $WalletCopyWith<$Res>? get wallet;
+  $SwapTxCopyWith<$Res>? get swapTx;
 }
 
 /// @nodoc
@@ -113,8 +108,7 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? wallet = freezed,
     Object? isSwap = freezed,
     Object? swapIndex = freezed,
-    Object? btcLnSwap = freezed,
-    Object? lbtcLnSwap = freezed,
+    Object? swapTx = freezed,
   }) {
     return _then(_value.copyWith(
       timestamp: null == timestamp
@@ -185,14 +179,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.swapIndex
           : swapIndex // ignore: cast_nullable_to_non_nullable
               as int?,
-      btcLnSwap: freezed == btcLnSwap
-          ? _value.btcLnSwap
-          : btcLnSwap // ignore: cast_nullable_to_non_nullable
-              as boltz.BtcLnSwap?,
-      lbtcLnSwap: freezed == lbtcLnSwap
-          ? _value.lbtcLnSwap
-          : lbtcLnSwap // ignore: cast_nullable_to_non_nullable
-              as boltz.LbtcLnSwap?,
+      swapTx: freezed == swapTx
+          ? _value.swapTx
+          : swapTx // ignore: cast_nullable_to_non_nullable
+              as SwapTx?,
     ) as $Val);
   }
 
@@ -205,6 +195,18 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
 
     return $WalletCopyWith<$Res>(_value.wallet!, (value) {
       return _then(_value.copyWith(wallet: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $SwapTxCopyWith<$Res>? get swapTx {
+    if (_value.swapTx == null) {
+      return null;
+    }
+
+    return $SwapTxCopyWith<$Res>(_value.swapTx!, (value) {
+      return _then(_value.copyWith(swapTx: value) as $Val);
     });
   }
 }
@@ -236,13 +238,12 @@ abstract class _$$TransactionImplCopyWith<$Res>
       Wallet? wallet,
       dynamic isSwap,
       int? swapIndex,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      boltz.BtcLnSwap? btcLnSwap,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      boltz.LbtcLnSwap? lbtcLnSwap});
+      SwapTx? swapTx});
 
   @override
   $WalletCopyWith<$Res>? get wallet;
+  @override
+  $SwapTxCopyWith<$Res>? get swapTx;
 }
 
 /// @nodoc
@@ -273,8 +274,7 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? wallet = freezed,
     Object? isSwap = freezed,
     Object? swapIndex = freezed,
-    Object? btcLnSwap = freezed,
-    Object? lbtcLnSwap = freezed,
+    Object? swapTx = freezed,
   }) {
     return _then(_$TransactionImpl(
       timestamp: null == timestamp
@@ -342,14 +342,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.swapIndex
           : swapIndex // ignore: cast_nullable_to_non_nullable
               as int?,
-      btcLnSwap: freezed == btcLnSwap
-          ? _value.btcLnSwap
-          : btcLnSwap // ignore: cast_nullable_to_non_nullable
-              as boltz.BtcLnSwap?,
-      lbtcLnSwap: freezed == lbtcLnSwap
-          ? _value.lbtcLnSwap
-          : lbtcLnSwap // ignore: cast_nullable_to_non_nullable
-              as boltz.LbtcLnSwap?,
+      swapTx: freezed == swapTx
+          ? _value.swapTx
+          : swapTx // ignore: cast_nullable_to_non_nullable
+              as SwapTx?,
     ));
   }
 }
@@ -375,8 +371,7 @@ class _$TransactionImpl extends _Transaction {
       this.wallet,
       this.isSwap = false,
       this.swapIndex,
-      @JsonKey(includeFromJson: false, includeToJson: false) this.btcLnSwap,
-      @JsonKey(includeFromJson: false, includeToJson: false) this.lbtcLnSwap})
+      this.swapTx})
       : _outAddrs = outAddrs,
         super._();
 
@@ -431,15 +426,11 @@ class _$TransactionImpl extends _Transaction {
   @override
   final int? swapIndex;
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final boltz.BtcLnSwap? btcLnSwap;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final boltz.LbtcLnSwap? lbtcLnSwap;
+  final SwapTx? swapTx;
 
   @override
   String toString() {
-    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapIndex: $swapIndex, btcLnSwap: $btcLnSwap, lbtcLnSwap: $lbtcLnSwap)';
+    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapIndex: $swapIndex, swapTx: $swapTx)';
   }
 
   @override
@@ -470,36 +461,31 @@ class _$TransactionImpl extends _Transaction {
             const DeepCollectionEquality().equals(other.isSwap, isSwap) &&
             (identical(other.swapIndex, swapIndex) ||
                 other.swapIndex == swapIndex) &&
-            (identical(other.btcLnSwap, btcLnSwap) ||
-                other.btcLnSwap == btcLnSwap) &&
-            (identical(other.lbtcLnSwap, lbtcLnSwap) ||
-                other.lbtcLnSwap == lbtcLnSwap));
+            (identical(other.swapTx, swapTx) || other.swapTx == swapTx));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hashAll([
-        runtimeType,
-        timestamp,
-        txid,
-        received,
-        sent,
-        fee,
-        height,
-        label,
-        toAddress,
-        psbt,
-        rbfEnabled,
-        oldTx,
-        broadcastTime,
-        const DeepCollectionEquality().hash(_outAddrs),
-        bdkTx,
-        wallet,
-        const DeepCollectionEquality().hash(isSwap),
-        swapIndex,
-        btcLnSwap,
-        lbtcLnSwap
-      ]);
+  int get hashCode => Object.hash(
+      runtimeType,
+      timestamp,
+      txid,
+      received,
+      sent,
+      fee,
+      height,
+      label,
+      toAddress,
+      psbt,
+      rbfEnabled,
+      oldTx,
+      broadcastTime,
+      const DeepCollectionEquality().hash(_outAddrs),
+      bdkTx,
+      wallet,
+      const DeepCollectionEquality().hash(isSwap),
+      swapIndex,
+      swapTx);
 
   @JsonKey(ignore: true)
   @override
@@ -535,10 +521,7 @@ abstract class _Transaction extends Transaction {
       final Wallet? wallet,
       final dynamic isSwap,
       final int? swapIndex,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      final boltz.BtcLnSwap? btcLnSwap,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      final boltz.LbtcLnSwap? lbtcLnSwap}) = _$TransactionImpl;
+      final SwapTx? swapTx}) = _$TransactionImpl;
   const _Transaction._() : super._();
 
   factory _Transaction.fromJson(Map<String, dynamic> json) =
@@ -580,13 +563,452 @@ abstract class _Transaction extends Transaction {
   @override
   int? get swapIndex;
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  boltz.BtcLnSwap? get btcLnSwap;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  boltz.LbtcLnSwap? get lbtcLnSwap;
+  SwapTx? get swapTx;
   @override
   @JsonKey(ignore: true)
   _$$TransactionImplCopyWith<_$TransactionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+SwapTx _$SwapTxFromJson(Map<String, dynamic> json) {
+  return _SwapTx.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SwapTx {
+  String get id => throw _privateConstructorUsedError;
+  bool get isSubmarine => throw _privateConstructorUsedError;
+  BBNetwork get network => throw _privateConstructorUsedError;
+  String get secretKey => throw _privateConstructorUsedError;
+  String get publicKey => throw _privateConstructorUsedError;
+  String get value => throw _privateConstructorUsedError;
+  String get sha256 => throw _privateConstructorUsedError;
+  String get hash160 => throw _privateConstructorUsedError;
+  String get redeemScript => throw _privateConstructorUsedError;
+  String get invoice => throw _privateConstructorUsedError;
+  int get outAmount => throw _privateConstructorUsedError;
+  String get scriptAddress => throw _privateConstructorUsedError;
+  String get electrumUrl => throw _privateConstructorUsedError;
+  String get boltzUrl => throw _privateConstructorUsedError;
+  String? get blindingKey => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $SwapTxCopyWith<SwapTx> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SwapTxCopyWith<$Res> {
+  factory $SwapTxCopyWith(SwapTx value, $Res Function(SwapTx) then) =
+      _$SwapTxCopyWithImpl<$Res, SwapTx>;
+  @useResult
+  $Res call(
+      {String id,
+      bool isSubmarine,
+      BBNetwork network,
+      String secretKey,
+      String publicKey,
+      String value,
+      String sha256,
+      String hash160,
+      String redeemScript,
+      String invoice,
+      int outAmount,
+      String scriptAddress,
+      String electrumUrl,
+      String boltzUrl,
+      String? blindingKey});
+}
+
+/// @nodoc
+class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
+    implements $SwapTxCopyWith<$Res> {
+  _$SwapTxCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? isSubmarine = null,
+    Object? network = null,
+    Object? secretKey = null,
+    Object? publicKey = null,
+    Object? value = null,
+    Object? sha256 = null,
+    Object? hash160 = null,
+    Object? redeemScript = null,
+    Object? invoice = null,
+    Object? outAmount = null,
+    Object? scriptAddress = null,
+    Object? electrumUrl = null,
+    Object? boltzUrl = null,
+    Object? blindingKey = freezed,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      isSubmarine: null == isSubmarine
+          ? _value.isSubmarine
+          : isSubmarine // ignore: cast_nullable_to_non_nullable
+              as bool,
+      network: null == network
+          ? _value.network
+          : network // ignore: cast_nullable_to_non_nullable
+              as BBNetwork,
+      secretKey: null == secretKey
+          ? _value.secretKey
+          : secretKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicKey: null == publicKey
+          ? _value.publicKey
+          : publicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as String,
+      sha256: null == sha256
+          ? _value.sha256
+          : sha256 // ignore: cast_nullable_to_non_nullable
+              as String,
+      hash160: null == hash160
+          ? _value.hash160
+          : hash160 // ignore: cast_nullable_to_non_nullable
+              as String,
+      redeemScript: null == redeemScript
+          ? _value.redeemScript
+          : redeemScript // ignore: cast_nullable_to_non_nullable
+              as String,
+      invoice: null == invoice
+          ? _value.invoice
+          : invoice // ignore: cast_nullable_to_non_nullable
+              as String,
+      outAmount: null == outAmount
+          ? _value.outAmount
+          : outAmount // ignore: cast_nullable_to_non_nullable
+              as int,
+      scriptAddress: null == scriptAddress
+          ? _value.scriptAddress
+          : scriptAddress // ignore: cast_nullable_to_non_nullable
+              as String,
+      electrumUrl: null == electrumUrl
+          ? _value.electrumUrl
+          : electrumUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      boltzUrl: null == boltzUrl
+          ? _value.boltzUrl
+          : boltzUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      blindingKey: freezed == blindingKey
+          ? _value.blindingKey
+          : blindingKey // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
+  factory _$$SwapTxImplCopyWith(
+          _$SwapTxImpl value, $Res Function(_$SwapTxImpl) then) =
+      __$$SwapTxImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      bool isSubmarine,
+      BBNetwork network,
+      String secretKey,
+      String publicKey,
+      String value,
+      String sha256,
+      String hash160,
+      String redeemScript,
+      String invoice,
+      int outAmount,
+      String scriptAddress,
+      String electrumUrl,
+      String boltzUrl,
+      String? blindingKey});
+}
+
+/// @nodoc
+class __$$SwapTxImplCopyWithImpl<$Res>
+    extends _$SwapTxCopyWithImpl<$Res, _$SwapTxImpl>
+    implements _$$SwapTxImplCopyWith<$Res> {
+  __$$SwapTxImplCopyWithImpl(
+      _$SwapTxImpl _value, $Res Function(_$SwapTxImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? isSubmarine = null,
+    Object? network = null,
+    Object? secretKey = null,
+    Object? publicKey = null,
+    Object? value = null,
+    Object? sha256 = null,
+    Object? hash160 = null,
+    Object? redeemScript = null,
+    Object? invoice = null,
+    Object? outAmount = null,
+    Object? scriptAddress = null,
+    Object? electrumUrl = null,
+    Object? boltzUrl = null,
+    Object? blindingKey = freezed,
+  }) {
+    return _then(_$SwapTxImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      isSubmarine: null == isSubmarine
+          ? _value.isSubmarine
+          : isSubmarine // ignore: cast_nullable_to_non_nullable
+              as bool,
+      network: null == network
+          ? _value.network
+          : network // ignore: cast_nullable_to_non_nullable
+              as BBNetwork,
+      secretKey: null == secretKey
+          ? _value.secretKey
+          : secretKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicKey: null == publicKey
+          ? _value.publicKey
+          : publicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as String,
+      sha256: null == sha256
+          ? _value.sha256
+          : sha256 // ignore: cast_nullable_to_non_nullable
+              as String,
+      hash160: null == hash160
+          ? _value.hash160
+          : hash160 // ignore: cast_nullable_to_non_nullable
+              as String,
+      redeemScript: null == redeemScript
+          ? _value.redeemScript
+          : redeemScript // ignore: cast_nullable_to_non_nullable
+              as String,
+      invoice: null == invoice
+          ? _value.invoice
+          : invoice // ignore: cast_nullable_to_non_nullable
+              as String,
+      outAmount: null == outAmount
+          ? _value.outAmount
+          : outAmount // ignore: cast_nullable_to_non_nullable
+              as int,
+      scriptAddress: null == scriptAddress
+          ? _value.scriptAddress
+          : scriptAddress // ignore: cast_nullable_to_non_nullable
+              as String,
+      electrumUrl: null == electrumUrl
+          ? _value.electrumUrl
+          : electrumUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      boltzUrl: null == boltzUrl
+          ? _value.boltzUrl
+          : boltzUrl // ignore: cast_nullable_to_non_nullable
+              as String,
+      blindingKey: freezed == blindingKey
+          ? _value.blindingKey
+          : blindingKey // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SwapTxImpl extends _SwapTx {
+  const _$SwapTxImpl(
+      {required this.id,
+      required this.isSubmarine,
+      required this.network,
+      required this.secretKey,
+      required this.publicKey,
+      required this.value,
+      required this.sha256,
+      required this.hash160,
+      required this.redeemScript,
+      required this.invoice,
+      required this.outAmount,
+      required this.scriptAddress,
+      required this.electrumUrl,
+      required this.boltzUrl,
+      this.blindingKey})
+      : super._();
+
+  factory _$SwapTxImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SwapTxImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final bool isSubmarine;
+  @override
+  final BBNetwork network;
+  @override
+  final String secretKey;
+  @override
+  final String publicKey;
+  @override
+  final String value;
+  @override
+  final String sha256;
+  @override
+  final String hash160;
+  @override
+  final String redeemScript;
+  @override
+  final String invoice;
+  @override
+  final int outAmount;
+  @override
+  final String scriptAddress;
+  @override
+  final String electrumUrl;
+  @override
+  final String boltzUrl;
+  @override
+  final String? blindingKey;
+
+  @override
+  String toString() {
+    return 'SwapTx(id: $id, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, blindingKey: $blindingKey)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SwapTxImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.isSubmarine, isSubmarine) ||
+                other.isSubmarine == isSubmarine) &&
+            (identical(other.network, network) || other.network == network) &&
+            (identical(other.secretKey, secretKey) ||
+                other.secretKey == secretKey) &&
+            (identical(other.publicKey, publicKey) ||
+                other.publicKey == publicKey) &&
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.sha256, sha256) || other.sha256 == sha256) &&
+            (identical(other.hash160, hash160) || other.hash160 == hash160) &&
+            (identical(other.redeemScript, redeemScript) ||
+                other.redeemScript == redeemScript) &&
+            (identical(other.invoice, invoice) || other.invoice == invoice) &&
+            (identical(other.outAmount, outAmount) ||
+                other.outAmount == outAmount) &&
+            (identical(other.scriptAddress, scriptAddress) ||
+                other.scriptAddress == scriptAddress) &&
+            (identical(other.electrumUrl, electrumUrl) ||
+                other.electrumUrl == electrumUrl) &&
+            (identical(other.boltzUrl, boltzUrl) ||
+                other.boltzUrl == boltzUrl) &&
+            (identical(other.blindingKey, blindingKey) ||
+                other.blindingKey == blindingKey));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      isSubmarine,
+      network,
+      secretKey,
+      publicKey,
+      value,
+      sha256,
+      hash160,
+      redeemScript,
+      invoice,
+      outAmount,
+      scriptAddress,
+      electrumUrl,
+      boltzUrl,
+      blindingKey);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SwapTxImplCopyWith<_$SwapTxImpl> get copyWith =>
+      __$$SwapTxImplCopyWithImpl<_$SwapTxImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SwapTxImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _SwapTx extends SwapTx {
+  const factory _SwapTx(
+      {required final String id,
+      required final bool isSubmarine,
+      required final BBNetwork network,
+      required final String secretKey,
+      required final String publicKey,
+      required final String value,
+      required final String sha256,
+      required final String hash160,
+      required final String redeemScript,
+      required final String invoice,
+      required final int outAmount,
+      required final String scriptAddress,
+      required final String electrumUrl,
+      required final String boltzUrl,
+      final String? blindingKey}) = _$SwapTxImpl;
+  const _SwapTx._() : super._();
+
+  factory _SwapTx.fromJson(Map<String, dynamic> json) = _$SwapTxImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  bool get isSubmarine;
+  @override
+  BBNetwork get network;
+  @override
+  String get secretKey;
+  @override
+  String get publicKey;
+  @override
+  String get value;
+  @override
+  String get sha256;
+  @override
+  String get hash160;
+  @override
+  String get redeemScript;
+  @override
+  String get invoice;
+  @override
+  int get outAmount;
+  @override
+  String get scriptAddress;
+  @override
+  String get electrumUrl;
+  @override
+  String get boltzUrl;
+  @override
+  String? get blindingKey;
+  @override
+  @JsonKey(ignore: true)
+  _$$SwapTxImplCopyWith<_$SwapTxImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

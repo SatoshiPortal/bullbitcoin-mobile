@@ -326,7 +326,7 @@ class CreateLightningInvoice extends StatelessWidget {
           buttonKey: UIKeys.receiveSavePaymentButton,
           label: 'Save',
           onPressed: () {
-            context.read<ReceiveCubit>().createLightningInvoice();
+            context.read<ReceiveCubit>().createBtcLightningInvoice();
           },
         ),
         BBText.errorSmall(err),

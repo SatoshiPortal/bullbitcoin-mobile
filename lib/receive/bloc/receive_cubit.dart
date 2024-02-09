@@ -58,10 +58,10 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(walletType: walletType));
     if (!networkCubit.state.testnet) return;
 
-    if (walletType == ReceiveWalletType.lightning) createLightningInvoice();
+    if (walletType == ReceiveWalletType.lightning) createBtcLightningInvoice();
   }
 
-  void createLightningInvoice() async {
+  void createBtcLightningInvoice() async {
     if (!networkCubit.state.testnet) return;
 
     final outAmount = currencyCubit.state.amount;
@@ -112,7 +112,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         creatingInvoice: false,
         errCreatingInvoice: '',
         defaultAddress: null,
-        btcLnSwap: swap,
+        swapTx: swap,
       ),
     );
   }

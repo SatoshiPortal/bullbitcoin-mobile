@@ -35,16 +35,7 @@ class Transaction with _$Transaction {
     Wallet? wallet,
     @Default(false) isSwap,
     int? swapIndex,
-    @JsonKey(
-      includeFromJson: false,
-      includeToJson: false,
-    )
-    boltz.BtcLnSwap? btcLnSwap,
-    @JsonKey(
-      includeFromJson: false,
-      includeToJson: false,
-    )
-    boltz.LbtcLnSwap? lbtcLnSwap,
+    SwapTx? swapTx,
   }) = _Transaction;
   const Transaction._();
 
@@ -185,4 +176,48 @@ class Output {
   }
   int? value;
   String? scriptPubkey;
+}
+
+@freezed
+class SwapTx with _$SwapTx {
+  const factory SwapTx({
+    required String id,
+    required bool isSubmarine,
+    required BBNetwork network,
+    required String secretKey,
+    required String publicKey,
+    required String value,
+    required String sha256,
+    required String hash160,
+    required String redeemScript,
+    required String invoice,
+    required int outAmount,
+    required String scriptAddress,
+    required String electrumUrl,
+    required String boltzUrl,
+    String? blindingKey,
+  }) = _SwapTx;
+  const SwapTx._();
+
+  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
+
+  factory SwapTx.fromBtcLnSwap(boltz.BtcLnSwap result) {
+    final swap = result.btcLnSwap;
+    return SwapTx(
+      id: swap.id,
+      isSubmarine: swap.kind == boltz.SwapType.Submarine,
+      network: swap.network == boltz.Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
+      secretKey: swap.keys.secretKey,
+      publicKey: swap.keys.publicKey,
+      value: swap.preimage.value,
+      sha256: swap.preimage.sha256,
+      hash160: swap.preimage.hash160,
+      redeemScript: swap.redeemScript,
+      invoice: swap.invoice,
+      outAmount: swap.outAmount,
+      scriptAddress: swap.scriptAddress,
+      electrumUrl: swap.electrumUrl,
+      boltzUrl: swap.boltzUrl,
+    );
+  }
 }

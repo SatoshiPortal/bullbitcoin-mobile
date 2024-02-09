@@ -75,6 +75,8 @@ class WalletTx {
       final storedTxs = wallet.transactions.toList();
       final unsignedTxs = wallet.unsignedTxs.toList();
       final bdkNetwork = wallet.getBdkNetwork();
+      if (bdkNetwork == null) throw 'No bdkNetwork';
+
       final txs = await bdkWallet.listTransactions(true);
       // final x = bdk.TxBuilderResult();
 
@@ -213,6 +215,7 @@ class WalletTx {
               final scriptPubKey = await bdk.Script.create(
                 hexDecoder.convert(scriptPubkeyString) as Uint8List,
               );
+
               final addressStruct = await bdk.Address.fromScript(
                 scriptPubKey,
                 bdkNetwork,
@@ -325,6 +328,8 @@ class WalletTx {
       final storedTxs = wallet.transactions;
       final unsignedTxs = wallet.unsignedTxs;
       final bdkNetwork = wallet.getBdkNetwork();
+      if (bdkNetwork == null) throw 'No bdkNetwork';
+
       final txs = await bdkWallet.listTransactions(true);
       // final x = bdk.TxBuilderResult();
 
@@ -498,10 +503,13 @@ class WalletTx {
       final extractedTx = await txResult.psbt.extractTx();
       final outputs = await extractedTx.output();
 
+      final bdkNetwork = wallet.getBdkNetwork();
+      if (bdkNetwork == null) throw 'No bdkNetwork';
+
       final outAddrsFutures = outputs.map((txOut) async {
         final scriptAddress = await bdk.Address.fromScript(
           txOut.scriptPubkey,
-          wallet.getBdkNetwork(),
+          bdkNetwork,
         );
         if (txOut.value == amount! && !sendAllCoin && scriptAddress.toString() == address) {
           return Address(
