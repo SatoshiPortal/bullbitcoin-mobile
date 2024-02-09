@@ -16,3 +16,9 @@ const expiredInvoice =
     'lntb510u1pjm0z48pp5p3frf3ngtfxfu2fpdv5jefdk5d4r5es6ad350jelq64kwj3z7jvqdqqcqzzsxqp9sp5fw6a2zjmlhx59k2x7rmv46aus79walrmlvmqhvpcy0wwhtwx68qs9qyyssqq9denfcmlnf37djfkxu0rr7c5gy0ad969cylhmuzyeusp9g3ecus0zyv4kugdcle438ujnn948whzrtev04sq889lnp959ns6ymdpwcpwvyszt';
 
 const invalidInvoice = 'lntbinvalidinvoice';
+
+// Update this after each use
+const workingFreshInvoice1 = '';
+const workingFreshInvoice2 = '';
+
+const invoiceWith2minExpiry = '';

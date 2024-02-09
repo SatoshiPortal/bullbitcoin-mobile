@@ -105,10 +105,7 @@ void main() {
     test(
       'Neg: Send less on-chain sats',
       () async {
-        const invoice =
-            'lntb12360n1pjuty4wpp5eg9ap5x0un6lhxsklhelqvlg9wm3xphgm5ccdtu0v2awh38v7wlsdqqcqzzsxqyjw5qsp5x22jz7yusynfyycxsdw870pmztcx2655cdzjs6m2vz6h3k8d5u8q9qyyssqk3lz5m3xsm774zlngkwm98jt9qw7p5mgtmnc04q7jfl5ffk7j0u4m6ggh6d3h4ltntmnjfful7gx92suf39adjrdntemxxgt2nd7zxqqu9vs2m';
-
-        final LbtcLnSwap lbtcLnSubmarine = await setupLSubmarine(invoice);
+        final LbtcLnSwap lbtcLnSubmarine = await setupLSubmarine(workingFreshInvoice1);
 
         const expectedSecretKey =
             '9b496356fbb59d95656acc879a5d7a9169eb3d77e5b7c511aeb827925e5b49e9';
@@ -141,10 +138,7 @@ void main() {
     test(
       'Neg: LN Invoice expires',
       () async {
-        const invoice =
-            'lntb12330n1pjut2ntpp5ndqw5cn8rwk3dv8nwztsyu4l4gxhttnzvjnwrls0xt3nazvy45fqdqqcqzzsxqzrcsp57ssuj3f9jj7mes4ggy5pd7z68vmcxaexrmyfk5uqfhkmhd2ectzs9qyyssqrtfej2f0mynq95499v3q6wczues6q27g72y3qnwn7y4k6hhgzpvx7lkp04wape39lntf65azghql92qfvec0xvk7hrqrkcuypkty45qpvvkcm6';
-
-        final LbtcLnSwap lbtcLnSubmarine = await setupLSubmarine(invoice);
+        final LbtcLnSwap lbtcLnSubmarine = await setupLSubmarine(invoiceWith2minExpiry);
 
         const expectedSecretKey =
             '9b496356fbb59d95656acc879a5d7a9169eb3d77e5b7c511aeb827925e5b49e9';
@@ -153,7 +147,7 @@ void main() {
         print('SWAP CREATED SUCCESSFULLY: ${swap.id}');
 
         final (receivedEvents, completer, sub) =
-            await listenForEventInitiate(swap.id, SwapStatus.txnLockupFailed);
+            await listenForEventInitiate(swap.id, SwapStatus.invoiceFailedToPay);
 
         final paymentDetails = await lbtcLnSubmarine.paymentDetails();
         expect(swap.keys.secretKey, expectedSecretKey);
@@ -180,10 +174,7 @@ void main() {
     test(
       'Positive',
       () async {
-        const invoice =
-            'lntb70u1pjut9xmpp5pwqmjsf9a4xstlqvxpzg30zrcvauum5l4tz0a3jy9ck2dv2s9hzsdqqcqzzsxqyjw5qsp5wund45fwl8g4nwp9usyqed6ar66e2qhx9fdv0wzc6vuxc0jyg7zq9qyyssq20nq335yyykpndjduxc7h0dvyvj3jwchfemuf6l03ejjxdrhm2mr228ftpxgme97cvp9ck9clmqpcxwhc7hs54zedqe5fvypcmrtx7cqstzeen';
-
-        final LbtcLnSwap lbtcLnSubmarine = await setupLSubmarine(invoice);
+        final LbtcLnSwap lbtcLnSubmarine = await setupLSubmarine(workingFreshInvoice2);
 
         const expectedSecretKey =
             '9b496356fbb59d95656acc879a5d7a9169eb3d77e5b7c511aeb827925e5b49e9';

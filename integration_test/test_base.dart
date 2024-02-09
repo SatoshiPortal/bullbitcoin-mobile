@@ -101,6 +101,8 @@ Future<(List<dynamic>, Completer, StreamSubscription)> listenForEventInitiate(
 }
 
 Future<void> listenForEventClosure(Completer completer, StreamSubscription sub) async {
-  await completer.future;
+  if (!completer.isCompleted) {
+    await completer.future;
+  }
   await sub.cancel();
 }
