@@ -65,7 +65,5 @@
         // "**/pubspec.yaml": true,
         // 
         // 
-        "**/test": true,
-        "integration_test": true,
     },
 }

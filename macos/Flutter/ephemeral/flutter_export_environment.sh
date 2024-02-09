@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Users/mj/development/flutter"
-export "FLUTTER_APPLICATION_PATH=/Users/mj/code/bb/bullbitcoin-mobile"
+export "FLUTTER_ROOT=/Users/saiy2k/projects/tools/flutter"
+export "FLUTTER_APPLICATION_PATH=/Users/saiy2k/bb/bullbitcoin-mobile"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=0.1.99"
