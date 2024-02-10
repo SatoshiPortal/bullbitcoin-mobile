@@ -75,10 +75,10 @@ class SwapBoltz {
 
   Future<Err?> watchSwap({
     required String swapId,
-    required Function({
-      required String id,
-      required SwapStatus status,
-    }) onConfirmed,
+    required void Function(
+      String id,
+      SwapStatus status,
+    ) onUpdate,
   }) async {
     try {
       final api = await BoltzApi.newBoltzApi();
@@ -89,7 +89,7 @@ class SwapBoltz {
         (
           swapId,
           api.getSwapStatusStream(swapId).listen((event) {
-            onConfirmed(id: swapId, status: event.status);
+            onUpdate(swapId, event.status);
           })
         ),
       );

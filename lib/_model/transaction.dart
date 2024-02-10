@@ -41,6 +41,15 @@ class Transaction with _$Transaction {
 
   factory Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
 
+  factory Transaction.fromSwapTx(SwapTx swapTx) {
+    return Transaction(
+      timestamp: DateTime.now().millisecondsSinceEpoch,
+      txid: swapTx.id,
+      swapTx: swapTx,
+      isSwap: true,
+    );
+  }
+
   Address? mapOutValueToAddress(int value) {
     if (outAddrs.isEmpty) return null;
     try {
@@ -195,6 +204,8 @@ class SwapTx with _$SwapTx {
     required String scriptAddress,
     required String electrumUrl,
     required String boltzUrl,
+    @Default(false) bool isListening,
+    boltz.SwapStatus? status,
     String? blindingKey,
   }) = _SwapTx;
   const SwapTx._();

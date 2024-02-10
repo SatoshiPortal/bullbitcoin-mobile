@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -6,6 +7,7 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
@@ -27,6 +29,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required this.networkCubit,
     required this.currencyCubit,
     required this.swapBoltz,
+    required this.walletTx,
   }) : super(ReceiveState(walletBloc: walletBloc)) {
     loadAddress();
   }
@@ -40,6 +43,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final NetworkCubit networkCubit;
   final CurrencyCubit currencyCubit;
   final SwapBoltz swapBoltz;
+  final WalletTx walletTx;
 
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(
@@ -115,6 +119,66 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         swapTx: swap,
       ),
     );
+    _watchInvoiceStatus();
+    _saveSwapInvoiceToWallet();
+  }
+
+  void _saveSwapInvoiceToWallet() async {
+    if (state.swapTx == null) return;
+    if (state.walletBloc == null) return;
+    final (updatedWallet, err) = await walletTx.addUnsignedTxToWallet(
+      wallet: state.walletBloc!.state.wallet!,
+      transaction: Transaction.fromSwapTx(state.swapTx!),
+    );
+    if (err != null) {
+      emit(state.copyWith(errCreatingInvoice: err.toString(), creatingInvoice: false));
+      return;
+    }
+
+    final errr = await walletRepository.updateWallet(
+      wallet: updatedWallet,
+      hiveStore: hiveStorage,
+    );
+    if (errr != null) {
+      emit(state.copyWith(errCreatingInvoice: errr.toString(), creatingInvoice: false));
+      return;
+    }
+
+    state.walletBloc!.add(
+      UpdateWallet(
+        updatedWallet,
+        updateTypes: [UpdateWalletTypes.transactions],
+      ),
+    );
+  }
+
+  void _watchInvoiceStatus() async {
+    if (state.swapTx == null) return;
+    final swap = state.swapTx!;
+    emit(state.copyWith(swapTx: swap.copyWith(isListening: true)));
+    final err = await swapBoltz.watchSwap(
+      swapId: state.swapTx!.id,
+      onUpdate: handleSwapStatusChange,
+    );
+    if (err != null) {
+      emit(state.copyWith(errCreatingInvoice: err.toString(), creatingInvoice: false));
+      return;
+    }
+  }
+
+  void handleSwapStatusChange(String id, SwapStatus status) async {
+    if (state.swapTx == null) return;
+    if (state.swapTx!.id != id) return;
+    final swap = state.swapTx!.copyWith(status: status);
+    emit(state.copyWith(swapTx: swap));
+    if (status == SwapStatus.invoiceSettled) {
+      emit(state.copyWith(swapTx: swap.copyWith(isListening: false)));
+      final err = swapBoltz.closeStream(swap.id);
+      if (err != null) {
+        emit(state.copyWith(errCreatingInvoice: err.toString()));
+        return;
+      }
+    }
   }
 
   void loadAddress() async {
@@ -145,8 +209,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   void generateNewLightningInvoice() async {}
-
-  void watchInvoiceStatus() {}
 
   void generateNewAddress() async {
     if (state.walletType == ReceiveWalletType.lightning) {

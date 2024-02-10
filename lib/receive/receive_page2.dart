@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -49,6 +50,7 @@ class _ReceivePage2State extends State<ReceivePage2> {
       swapBoltz: locator<SwapBoltz>(),
       secureStorage: locator<SecureStorage>(),
       walletSensitiveRepository: locator<WalletSensitiveRepository>(),
+      walletTx: locator<WalletTx>(),
       currencyCubit: CurrencyCubit(
         hiveStorage: locator<HiveStorage>(),
         bbAPI: locator<BullBitcoinAPI>(),

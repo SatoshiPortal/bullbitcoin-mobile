@@ -590,6 +590,8 @@ mixin _$SwapTx {
   String get scriptAddress => throw _privateConstructorUsedError;
   String get electrumUrl => throw _privateConstructorUsedError;
   String get boltzUrl => throw _privateConstructorUsedError;
+  bool get isListening => throw _privateConstructorUsedError;
+  boltz.SwapStatus? get status => throw _privateConstructorUsedError;
   String? get blindingKey => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -617,6 +619,8 @@ abstract class $SwapTxCopyWith<$Res> {
       String scriptAddress,
       String electrumUrl,
       String boltzUrl,
+      bool isListening,
+      boltz.SwapStatus? status,
       String? blindingKey});
 }
 
@@ -647,6 +651,8 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? scriptAddress = null,
     Object? electrumUrl = null,
     Object? boltzUrl = null,
+    Object? isListening = null,
+    Object? status = freezed,
     Object? blindingKey = freezed,
   }) {
     return _then(_value.copyWith(
@@ -706,6 +712,14 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.boltzUrl
           : boltzUrl // ignore: cast_nullable_to_non_nullable
               as String,
+      isListening: null == isListening
+          ? _value.isListening
+          : isListening // ignore: cast_nullable_to_non_nullable
+              as bool,
+      status: freezed == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as boltz.SwapStatus?,
       blindingKey: freezed == blindingKey
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
@@ -736,6 +750,8 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String scriptAddress,
       String electrumUrl,
       String boltzUrl,
+      bool isListening,
+      boltz.SwapStatus? status,
       String? blindingKey});
 }
 
@@ -764,6 +780,8 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? scriptAddress = null,
     Object? electrumUrl = null,
     Object? boltzUrl = null,
+    Object? isListening = null,
+    Object? status = freezed,
     Object? blindingKey = freezed,
   }) {
     return _then(_$SwapTxImpl(
@@ -823,6 +841,14 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.boltzUrl
           : boltzUrl // ignore: cast_nullable_to_non_nullable
               as String,
+      isListening: null == isListening
+          ? _value.isListening
+          : isListening // ignore: cast_nullable_to_non_nullable
+              as bool,
+      status: freezed == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as boltz.SwapStatus?,
       blindingKey: freezed == blindingKey
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
@@ -849,6 +875,8 @@ class _$SwapTxImpl extends _SwapTx {
       required this.scriptAddress,
       required this.electrumUrl,
       required this.boltzUrl,
+      this.isListening = false,
+      this.status,
       this.blindingKey})
       : super._();
 
@@ -884,11 +912,16 @@ class _$SwapTxImpl extends _SwapTx {
   @override
   final String boltzUrl;
   @override
+  @JsonKey()
+  final bool isListening;
+  @override
+  final boltz.SwapStatus? status;
+  @override
   final String? blindingKey;
 
   @override
   String toString() {
-    return 'SwapTx(id: $id, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, blindingKey: $blindingKey)';
+    return 'SwapTx(id: $id, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, isListening: $isListening, status: $status, blindingKey: $blindingKey)';
   }
 
   @override
@@ -918,6 +951,9 @@ class _$SwapTxImpl extends _SwapTx {
                 other.electrumUrl == electrumUrl) &&
             (identical(other.boltzUrl, boltzUrl) ||
                 other.boltzUrl == boltzUrl) &&
+            (identical(other.isListening, isListening) ||
+                other.isListening == isListening) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.blindingKey, blindingKey) ||
                 other.blindingKey == blindingKey));
   }
@@ -940,6 +976,8 @@ class _$SwapTxImpl extends _SwapTx {
       scriptAddress,
       electrumUrl,
       boltzUrl,
+      isListening,
+      status,
       blindingKey);
 
   @JsonKey(ignore: true)
@@ -972,6 +1010,8 @@ abstract class _SwapTx extends SwapTx {
       required final String scriptAddress,
       required final String electrumUrl,
       required final String boltzUrl,
+      final bool isListening,
+      final boltz.SwapStatus? status,
       final String? blindingKey}) = _$SwapTxImpl;
   const _SwapTx._() : super._();
 
@@ -1005,6 +1045,10 @@ abstract class _SwapTx extends SwapTx {
   String get electrumUrl;
   @override
   String get boltzUrl;
+  @override
+  bool get isListening;
+  @override
+  boltz.SwapStatus? get status;
   @override
   String? get blindingKey;
   @override

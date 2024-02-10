@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -62,6 +63,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
     _cubit = ReceiveCubit(
       walletBloc: wallet,
       walletAddress: locator<WalletAddress>(),
+      walletTx: locator<WalletTx>(),
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletSensitiveRepository: locator<WalletSensitiveRepository>(),
