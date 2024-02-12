@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
@@ -347,6 +348,57 @@ class CreateLightningInvoice extends StatelessWidget {
         ),
         BBText.errorSmall(err),
         const Gap(40),
+      ],
+    );
+  }
+}
+
+class SwapTxList extends StatelessWidget {
+  const SwapTxList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final txs = context.select((ReceiveCubit _) => _.state.swapTxs);
+    if (txs == null) return const SizedBox.shrink();
+
+    return ListView.builder(
+      itemCount: txs.length,
+      itemBuilder: (context, i) {
+        final tx = txs[i];
+        return SwapTxItem(tx: tx);
+      },
+    );
+  }
+}
+
+class SwapTxItem extends StatelessWidget {
+  const SwapTxItem({super.key, required this.tx});
+
+  final Transaction tx;
+
+  @override
+  Widget build(BuildContext context) {
+    final swapTx = tx.swapTx;
+    if (swapTx == null) return const SizedBox.shrink();
+
+    final time = tx.getDateTimeStr();
+    final invoice = swapTx.invoice;
+    final status = swapTx.status?.toString() ?? '';
+
+    return Row(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BBText.body(invoice),
+            BBText.bodySmall(status),
+          ],
+        ),
+        Column(
+          children: [
+            BBText.bodySmall(time),
+          ],
+        ),
       ],
     );
   }
