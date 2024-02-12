@@ -125,8 +125,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   void _saveSwapInvoiceToWallet() async {
     if (state.swapTx == null) return;
     if (state.walletBloc == null) return;
+
+    final wallet = state.walletBloc!.state.wallet!;
+    final swapTxCount = wallet.swapTxCount + 1;
+
     final (updatedWallet, err) = await walletTx.addUnsignedTxToWallet(
-      wallet: state.walletBloc!.state.wallet!,
+      wallet: wallet.copyWith(swapTxCount: swapTxCount),
       transaction: Transaction.fromSwapTx(state.swapTx!),
     );
     if (err != null) {
@@ -143,11 +147,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    final swapTxCount = updatedWallet.swapTxCount + 1;
-
     state.walletBloc!.add(
       UpdateWallet(
-        updatedWallet.copyWith(swapTxCount: swapTxCount),
+        updatedWallet,
         updateTypes: [UpdateWalletTypes.transactions],
       ),
     );
