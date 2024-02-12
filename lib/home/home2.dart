@@ -624,18 +624,22 @@ class HomeBottomBar2 extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    LongButton(
-                      text: 'Receive',
-                      onPressed: () {
-                        context.push('/receive', extra: walletBloc);
-                      },
+                    Expanded(
+                      child: BBButton.bigNoIcon(
+                        label: 'Receive',
+                        onPressed: () {
+                          context.push('/receive', extra: walletBloc);
+                        },
+                      ),
                     ),
                     const Gap(8),
-                    LongButton(
-                      text: 'Send',
-                      onPressed: () {
-                        context.push('/send', extra: walletBloc);
-                      },
+                    Expanded(
+                      child: BBButton.bigNoIcon(
+                        label: 'Send',
+                        onPressed: () {
+                          context.push('/send', extra: walletBloc);
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -643,20 +647,24 @@ class HomeBottomBar2 extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    LongButton(
-                      text: 'Buy',
-                      onPressed: () {
-                        context.push('/market');
-                      },
-                      disabled: true,
+                    Expanded(
+                      child: BBButton.bigNoIcon(
+                        label: 'Buy',
+                        onPressed: () {
+                          context.push('/market');
+                        },
+                        disabled: true,
+                      ),
                     ),
                     const Gap(8),
-                    LongButton(
-                      text: 'Sell',
-                      onPressed: () {
-                        context.push('/market');
-                      },
-                      disabled: true,
+                    Expanded(
+                      child: BBButton.bigNoIcon(
+                        label: 'Sell',
+                        onPressed: () {
+                          context.push('/market');
+                        },
+                        disabled: true,
+                      ),
                     ),
                   ],
                 ),

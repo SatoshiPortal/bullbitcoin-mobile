@@ -13,6 +13,7 @@ enum _ButtonType {
   bigRed,
   bigBlack,
   big2,
+  bigNoIcon,
   text,
   textWithRightArrow,
   textWithLeftArrow,
@@ -32,7 +33,8 @@ class BBButton extends StatelessWidget {
         isBlue = null,
         isRed = null,
         statusText = null,
-        centered = null;
+        centered = null,
+        leftIcon = null;
 
   const BBButton.smallBlack({
     required this.label,
@@ -46,7 +48,8 @@ class BBButton extends StatelessWidget {
         isBlue = null,
         isRed = null,
         statusText = null,
-        centered = null;
+        centered = null,
+        leftIcon = null;
 
   const BBButton.bigRed({
     required this.label,
@@ -60,11 +63,13 @@ class BBButton extends StatelessWidget {
         isBlue = null,
         isRed = null,
         statusText = null,
-        centered = null;
+        centered = null,
+        leftIcon = null;
 
   const BBButton.big2({
     required this.label,
     required this.onPressed,
+    required this.leftIcon,
     this.buttonKey,
     this.disabled = false,
     this.filled = false,
@@ -75,6 +80,21 @@ class BBButton extends StatelessWidget {
         isRed = null,
         statusText = null,
         centered = null;
+
+  const BBButton.bigNoIcon({
+    required this.label,
+    required this.onPressed,
+    this.buttonKey,
+    this.disabled = false,
+    this.filled = false,
+    this.loading = false,
+    this.loadingText,
+  })  : type = _ButtonType.bigNoIcon,
+        isBlue = null,
+        isRed = null,
+        statusText = null,
+        centered = null,
+        leftIcon = null;
 
   const BBButton.bigBlack({
     required this.label,
@@ -88,7 +108,8 @@ class BBButton extends StatelessWidget {
         isBlue = null,
         isRed = null,
         statusText = null,
-        centered = null;
+        centered = null,
+        leftIcon = null;
 
   const BBButton.text({
     required this.label,
@@ -102,7 +123,8 @@ class BBButton extends StatelessWidget {
     this.buttonKey,
   })  : type = _ButtonType.text,
         filled = false,
-        statusText = null;
+        statusText = null,
+        leftIcon = null;
 
   const BBButton.textWithRightArrow({
     required this.label,
@@ -116,7 +138,8 @@ class BBButton extends StatelessWidget {
         isBlue = null,
         isRed = null,
         statusText = null,
-        centered = null;
+        centered = null,
+        leftIcon = null;
 
   const BBButton.textWithLeftArrow({
     required this.label,
@@ -130,7 +153,8 @@ class BBButton extends StatelessWidget {
         isBlue = null,
         isRed = null,
         statusText = null,
-        centered = null;
+        centered = null,
+        leftIcon = null;
 
   const BBButton.textWithStatusAndRightArrow({
     required this.label,
@@ -144,7 +168,8 @@ class BBButton extends StatelessWidget {
     this.buttonKey,
   })  : type = _ButtonType.textWithStatusAndRightArrow,
         filled = false,
-        centered = null;
+        centered = null,
+        leftIcon = null;
 
   final String label;
   final String? statusText;
@@ -155,6 +180,7 @@ class BBButton extends StatelessWidget {
   final bool disabled;
   final bool? centered;
   final _ButtonType type;
+  final IconData? leftIcon;
 
   final bool loading;
   final String? loadingText;
@@ -261,6 +287,7 @@ class BBButton extends StatelessWidget {
           backgroundColor: NewColours.offWhite,
           surfaceTintColor: NewColours.offWhite.withOpacity(0.5),
           elevation: 2,
+          padding: const EdgeInsets.symmetric(vertical: 8),
           // disabledForegroundColor: context.colour.onBackground,
         );
 
@@ -273,10 +300,61 @@ class BBButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.send,
+                  leftIcon,
                   color: context.colour.onBackground,
                 ),
                 const Gap(24),
+                BBText.titleLarge(label),
+              ],
+            ),
+          );
+        else {
+          widget = ElevatedButton(
+            style: style,
+            onPressed: () {},
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Gap(8),
+                SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(context.colour.primary),
+                  ),
+                ),
+                const Gap(8),
+                BBText.title(
+                  loadingText ?? label,
+                  isRed: !filled,
+                  onSurface: filled,
+                ),
+              ],
+            ),
+          );
+        }
+
+      case _ButtonType.bigNoIcon:
+        final style = ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          side: const BorderSide(color: NewColours.lightGray),
+          backgroundColor: NewColours.offWhite,
+          surfaceTintColor: NewColours.offWhite.withOpacity(0.5),
+          elevation: 2,
+          // disabledForegroundColor: context.colour.onBackground,
+        );
+
+        if (!loading)
+          widget = ElevatedButton(
+            key: buttonKey,
+            style: style,
+            onPressed: disabled ? null : () => onPressed(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 BBText.titleLarge(label),
               ],
             ),
@@ -423,46 +501,6 @@ class BBButton extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           child: widget,
-        ),
-      ),
-    );
-  }
-}
-
-class LongButton extends StatelessWidget {
-  const LongButton({
-    super.key,
-    required this.text,
-    required this.onPressed,
-    this.disabled = false,
-  });
-
-  final String text;
-  final Function onPressed;
-  final bool disabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Opacity(
-        opacity: disabled ? 0.4 : 1,
-        child: ElevatedButton(
-          onPressed: () {
-            onPressed();
-          },
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
-            side: const BorderSide(color: NewColours.lightGray),
-            backgroundColor: NewColours.offWhite,
-            surfaceTintColor: NewColours.offWhite.withOpacity(0.5),
-            elevation: 2,
-          ),
-          child: BBText.title(
-            text,
-            fontSize: 16,
-          ),
         ),
       ),
     );

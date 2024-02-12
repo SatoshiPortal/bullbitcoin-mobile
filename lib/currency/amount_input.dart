@@ -134,7 +134,7 @@ class _EnterAmountState2 extends State<EnterAmount2> {
                 children: [
                   Focus(
                     focusNode: _focusNode,
-                    child: BBAmountInput2(
+                    child: BBAmountInput(
                       uiKey: widget.uiKey,
                       disabled: sendAll,
                       value: tempAmt,

@@ -205,6 +205,10 @@ class SwapTx with _$SwapTx {
     required String electrumUrl,
     required String boltzUrl,
     @Default(false) bool isListening,
+    @JsonKey(
+      includeFromJson: false,
+      includeToJson: false,
+    )
     boltz.SwapStatus? status,
     String? blindingKey,
   }) = _SwapTx;

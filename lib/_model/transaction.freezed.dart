@@ -594,6 +594,7 @@ mixin _$SwapTx {
   String get electrumUrl => throw _privateConstructorUsedError;
   String get boltzUrl => throw _privateConstructorUsedError;
   bool get isListening => throw _privateConstructorUsedError;
+  @JsonKey(includeFromJson: false, includeToJson: false)
   boltz.SwapStatus? get status => throw _privateConstructorUsedError;
   String? get blindingKey => throw _privateConstructorUsedError;
 
@@ -623,6 +624,7 @@ abstract class $SwapTxCopyWith<$Res> {
       String electrumUrl,
       String boltzUrl,
       bool isListening,
+      @JsonKey(includeFromJson: false, includeToJson: false)
       boltz.SwapStatus? status,
       String? blindingKey});
 }
@@ -754,6 +756,7 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String electrumUrl,
       String boltzUrl,
       bool isListening,
+      @JsonKey(includeFromJson: false, includeToJson: false)
       boltz.SwapStatus? status,
       String? blindingKey});
 }
@@ -879,7 +882,7 @@ class _$SwapTxImpl extends _SwapTx {
       required this.electrumUrl,
       required this.boltzUrl,
       this.isListening = false,
-      this.status,
+      @JsonKey(includeFromJson: false, includeToJson: false) this.status,
       this.blindingKey})
       : super._();
 
@@ -918,6 +921,7 @@ class _$SwapTxImpl extends _SwapTx {
   @JsonKey()
   final bool isListening;
   @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   final boltz.SwapStatus? status;
   @override
   final String? blindingKey;
@@ -1014,6 +1018,7 @@ abstract class _SwapTx extends SwapTx {
       required final String electrumUrl,
       required final String boltzUrl,
       final bool isListening,
+      @JsonKey(includeFromJson: false, includeToJson: false)
       final boltz.SwapStatus? status,
       final String? blindingKey}) = _$SwapTxImpl;
   const _SwapTx._() : super._();
@@ -1051,6 +1056,7 @@ abstract class _SwapTx extends SwapTx {
   @override
   bool get isListening;
   @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   boltz.SwapStatus? get status;
   @override
   String? get blindingKey;

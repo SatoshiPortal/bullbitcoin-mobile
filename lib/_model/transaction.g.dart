@@ -71,7 +71,6 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       electrumUrl: json['electrumUrl'] as String,
       boltzUrl: json['boltzUrl'] as String,
       isListening: json['isListening'] as bool? ?? false,
-      status: $enumDecodeNullable(_$SwapStatusEnumMap, json['status']),
       blindingKey: json['blindingKey'] as String?,
     );
 
@@ -92,7 +91,6 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
       'electrumUrl': instance.electrumUrl,
       'boltzUrl': instance.boltzUrl,
       'isListening': instance.isListening,
-      'status': _$SwapStatusEnumMap[instance.status],
       'blindingKey': instance.blindingKey,
     };
 
@@ -101,24 +99,4 @@ const _$BBNetworkEnumMap = {
   BBNetwork.Mainnet: 'Mainnet',
   BBNetwork.LTestnet: 'LTestnet',
   BBNetwork.LMainnet: 'LMainnet',
-};
-
-const _$SwapStatusEnumMap = {
-  SwapStatus.swapCreated: 'swap.created',
-  SwapStatus.swapExpired: 'swap.expired',
-  SwapStatus.swapRefunded: 'swap.refunded',
-  SwapStatus.txnMempool: 'transaction.mempool',
-  SwapStatus.txnClaimPending: 'transaction.claim.pending',
-  SwapStatus.txnClaimed: 'transaction.claimed',
-  SwapStatus.txnConfirmed: 'transaction.confirmed',
-  SwapStatus.txnRefunded: 'transaction.refunded',
-  SwapStatus.txnFailed: 'transaction.failed',
-  SwapStatus.txnLockupFailed: 'transaction.lockupFailed',
-  SwapStatus.invoiceSet: 'invoice.set',
-  SwapStatus.invoicePending: 'invoice.pending',
-  SwapStatus.invoicePaid: 'invoice.paid',
-  SwapStatus.invoiceFailedToPay: 'invoice.failedToPay',
-  SwapStatus.invoiceSettled: 'invoice.settled',
-  SwapStatus.invoiceExpired: 'invoice.expired',
-  SwapStatus.minerfeePaid: 'minerfee.paid',
 };

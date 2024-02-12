@@ -25,6 +25,7 @@ import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -140,9 +141,10 @@ class _Screen extends StatelessWidget {
             const Gap(48),
             if (showQR) ...[
               const ReceiveQRImage(),
+              const Gap(8),
               const ReceiveAddressText(),
             ] else ...[
-              const BBText.body('Lightning invoice'),
+              const Gap(24),
               const CreateLightningInvoice(),
             ],
             const Gap(48),
@@ -258,6 +260,7 @@ class WalletActions extends StatelessWidget {
             child: BBButton.big2(
               buttonKey: UIKeys.receiveRequestPaymentButton,
               label: 'Request payment',
+              leftIcon: Icons.send,
               onPressed: () {
                 CreateInvoice.openPopUp(context);
               },
@@ -270,6 +273,7 @@ class WalletActions extends StatelessWidget {
           child: BBButton.big2(
             buttonKey: UIKeys.receiveGenerateAddressButton,
             label: 'Get new address',
+            leftIcon: Icons.send,
             onPressed: () {
               context.read<ReceiveCubit>().generateNewAddress();
             },
@@ -314,8 +318,10 @@ class CreateLightningInvoice extends StatelessWidget {
     final err = context.select((ReceiveCubit _) => _.state.errGeneratingInvoice);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const EnterAmount2(),
+        const Gap(24),
         BBTextInput.big(
           uiKey: UIKeys.receiveDescriptionField,
           value: description,
@@ -324,12 +330,20 @@ class CreateLightningInvoice extends StatelessWidget {
             context.read<ReceiveCubit>().descriptionChanged(txt);
           },
         ),
-        BBButton.bigRed(
-          buttonKey: UIKeys.receiveSavePaymentButton,
-          label: 'Save',
-          onPressed: () {
-            context.read<ReceiveCubit>().createBtcLightningInvoice();
-          },
+        const Gap(24),
+        Center(
+          child: SizedBox(
+            width: 300,
+            height: 44,
+            child: BBButton.big2(
+              leftIcon: FontAwesomeIcons.receipt,
+              buttonKey: UIKeys.receiveSavePaymentButton,
+              label: 'Create Invoice',
+              onPressed: () {
+                context.read<ReceiveCubit>().createBtcLightningInvoice();
+              },
+            ),
+          ),
         ),
         BBText.errorSmall(err),
         const Gap(40),
