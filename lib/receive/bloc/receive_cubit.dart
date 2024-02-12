@@ -34,7 +34,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     loadAddress();
   }
   final SettingsCubit settingsCubit;
-  // final WalletBloc walletBloc;
   final WalletAddress walletAddress;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
@@ -99,7 +98,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     final (swap, errCreatingInv) = await swapBoltz.receive(
       mnemonic: seed!.mnemonic,
-      index: 1,
+      index: state.walletBloc!.state.wallet!.swapTxCount,
       outAmount: outAmount,
       network: Chain.Testnet,
       electrumUrl: networkCubit.state.getNetworkUrl(),
@@ -144,9 +143,11 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
+    final swapTxCount = updatedWallet.swapTxCount + 1;
+
     state.walletBloc!.add(
       UpdateWallet(
-        updatedWallet,
+        updatedWallet.copyWith(swapTxCount: swapTxCount),
         updateTypes: [UpdateWalletTypes.transactions],
       ),
     );
@@ -181,6 +182,28 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     }
   }
 
+  void resetToNewLnInvoice() async {
+    if (state.walletBloc == null) return;
+
+    emit(
+      state.copyWith(
+        errLoadingAddress: '',
+        savedInvoiceAmount: 0,
+        creatingInvoice: true,
+        errCreatingInvoice: '',
+        defaultAddress: null,
+        swapTx: null,
+      ),
+    );
+    currencyCubit.reset();
+  }
+
+  void loadAllSwapTxs() {
+    if (state.walletBloc == null) return;
+    final swapTxs = state.walletBloc!.state.wallet!.transactions.where((tx) => tx.isSwap).toList();
+    emit(state.copyWith(swapTxs: swapTxs));
+  }
+
   void loadAddress() async {
     if (state.walletBloc == null) return;
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
@@ -208,11 +231,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
   }
 
-  void generateNewLightningInvoice() async {}
-
   void generateNewAddress() async {
     if (state.walletType == ReceiveWalletType.lightning) {
-      generateNewLightningInvoice();
+      resetToNewLnInvoice();
       return;
     }
 

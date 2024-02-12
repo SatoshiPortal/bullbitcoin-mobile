@@ -27,7 +27,7 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
       wallet: json['wallet'] == null
           ? null
           : Wallet.fromJson(json['wallet'] as Map<String, dynamic>),
-      isSwap: json['isSwap'] ?? false,
+      isSwap: json['isSwap'] as bool? ?? false,
       swapIndex: json['swapIndex'] as int?,
       swapTx: json['swapTx'] == null
           ? null

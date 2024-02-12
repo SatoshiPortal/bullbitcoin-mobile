@@ -33,7 +33,7 @@ class Transaction with _$Transaction {
     )
     bdk.TransactionDetails? bdkTx,
     Wallet? wallet,
-    @Default(false) isSwap,
+    @Default(false) bool isSwap,
     int? swapIndex,
     SwapTx? swapTx,
   }) = _Transaction;

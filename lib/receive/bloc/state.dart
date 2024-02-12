@@ -27,9 +27,7 @@ class ReceiveState with _$ReceiveState {
     @Default('') String errGeneratingInvoice,
     @Default(false) bool generatingInvoice,
     SwapTx? swapTx,
-    // BtcLnSwap? btcLnSwap,
-    // LbtcLnSwap? lbtcLnSwap,
-    // Address? newInvoiceAddress,
+    List<Transaction>? swapTxs,
   }) = _ReceiveState;
   const ReceiveState._();
 
