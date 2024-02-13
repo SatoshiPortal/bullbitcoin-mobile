@@ -33,7 +33,7 @@
         "**/CHANGELOG.md": true,
         "LICENSE": true,
         "**/packages": true,
-        "README.md": true,
+        // "README.md": true,
         "**/**.g.dart": true,
         "**/**.freezed.dart": true,
         "windows": true,
