@@ -146,4 +146,4 @@ When spending or selling Bitcoin, the exchange will create a payment invoice (BI
 - Thanks to the Mempool project for their fee estimation API and blockchain explorer interface.
 - Thanks to the Bitcoin Core developers for the underlying node software. 
 - Thanks to Blue Wallet for the inspiration for the user interface.
-- This project is tested with Browserstack.
+- This project is tested with BrowserStack.
