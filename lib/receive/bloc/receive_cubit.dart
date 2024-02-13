@@ -55,13 +55,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       ),
     );
     loadAddress();
+    loadAllSwapTxs();
   }
 
   void updateWalletType(ReceiveWalletType walletType) {
     emit(state.copyWith(walletType: walletType));
     if (!networkCubit.state.testnet) return;
 
-    // if (walletType == ReceiveWalletType.lightning) createBtcLightningInvoice();
+    if (walletType == ReceiveWalletType.lightning) loadAllSwapTxs();
   }
 
   void createBtcLightningInvoice() async {
@@ -128,10 +129,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     final wallet = state.walletBloc!.state.wallet!;
     final swapTxCount = wallet.swapTxCount + 1;
+    final tx = Transaction.fromSwapTx(state.swapTx!).copyWith(
+      isSwap: true,
+      swapIndex: wallet.swapTxCount,
+    );
 
     final (updatedWallet, err) = await walletTx.addUnsignedTxToWallet(
       wallet: wallet.copyWith(swapTxCount: swapTxCount),
-      transaction: Transaction.fromSwapTx(state.swapTx!),
+      transaction: tx,
     );
     if (err != null) {
       emit(state.copyWith(errCreatingSwapInv: err.toString(), generatingSwapInv: false));
@@ -201,8 +206,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void loadAllSwapTxs() {
     if (state.walletBloc == null) return;
-    final swapTxs = state.walletBloc!.state.wallet!.transactions.where((tx) => tx.isSwap).toList();
-    emit(state.copyWith(swapTxs: swapTxs));
+    if (state.walletType == ReceiveWalletType.secure) return;
+    final swapTxs =
+        state.walletBloc!.state.wallet!.transactions.where((tx) => tx.swapTx != null).toList();
+    final swapTxsUnsigned =
+        state.walletBloc!.state.wallet!.unsignedTxs.where((tx) => tx.swapTx != null).toList();
+
+    final allTxs = swapTxs + swapTxsUnsigned;
+    emit(state.copyWith(swapTxs: allTxs));
   }
 
   void loadAddress() async {

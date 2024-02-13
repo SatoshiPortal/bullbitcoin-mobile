@@ -149,6 +149,8 @@ class _Screen extends StatelessWidget {
             ] else ...[
               const Gap(24),
               const CreateLightningInvoice(),
+              const Gap(24),
+              const SwapHistoryButton(),
             ],
             const Gap(48),
             const WalletActions(),
@@ -251,8 +253,8 @@ class WalletActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((ReceiveCubit _) => _.state.swapTx);
-    if (swapTx == null) return const SizedBox.shrink();
+    final show = context.select((ReceiveCubit _) => _.state.showActionButtons());
+    if (!show) return const SizedBox.shrink();
 
     final showRequestButton = context.select((ReceiveCubit x) => x.state.showNewRequestButton());
     final errLoadingAddress = context.select((ReceiveCubit x) => x.state.errLoadingAddress);
@@ -399,20 +401,26 @@ class SwapTxList extends StatelessWidget {
     final txs = context.select((ReceiveCubit _) => _.state.swapTxs);
     if (txs == null || txs.isEmpty) return const SizedBox.shrink();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const BBHeader.popUpCenteredText(text: 'Swap History', isLeft: true),
-        const Gap(16),
-        ListView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: txs.length,
-          itemBuilder: (context, i) {
-            final tx = txs[i];
-            return SwapTxItem(tx: tx);
-          },
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const BBHeader.popUpCenteredText(text: 'Swap History', isLeft: true),
+          const Gap(16),
+          for (final tx in txs) SwapTxItem(tx: tx),
+          // ListView.builder(
+          //   physics: const NeverScrollableScrollPhysics(),
+          //   shrinkWrap: true,
+          //   primary: false,
+          //   itemCount: txs.length,
+          //   itemBuilder: (context, i) {
+          //     final tx = txs[i];
+          //     return SwapTxItem(tx: tx);
+          //   },
+          // ),
+        ],
+      ),
     );
   }
 }
@@ -429,23 +437,34 @@ class SwapTxItem extends StatelessWidget {
 
     final time = tx.getDateTimeStr();
     final invoice = swapTx.invoice;
+    final amount = swapTx.outAmount.toString() + ' sats';
+    final idx = tx.swapIndex?.toString() ?? '00';
     final status = swapTx.status?.toString() ?? '';
 
-    return Row(
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            BBText.body(invoice),
-            BBText.bodySmall(status),
-          ],
-        ),
-        Column(
-          children: [
-            BBText.bodySmall(time),
-          ],
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BBText.body(invoice, fontSize: 8),
+                BBText.bodySmall(amount),
+                BBText.bodySmall(status),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              BBText.bodySmall(time),
+              BBText.bodySmall('index ' + idx),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
