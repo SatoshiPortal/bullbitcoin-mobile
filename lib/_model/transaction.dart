@@ -4,6 +4,7 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:boltz_dart/boltz_dart.dart' as boltz;
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -211,10 +212,13 @@ class SwapTx with _$SwapTx {
     )
     boltz.SwapStatus? status,
     String? blindingKey,
+    String? statusStr,
   }) = _SwapTx;
   const SwapTx._();
 
-  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
+  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json).copyWith(
+        status: _addSwapStatus(json),
+      );
 
   factory SwapTx.fromBtcLnSwap(boltz.BtcLnSwap result) {
     final swap = result.btcLnSwap;
@@ -233,6 +237,21 @@ class SwapTx with _$SwapTx {
       scriptAddress: swap.scriptAddress,
       electrumUrl: swap.electrumUrl,
       boltzUrl: swap.boltzUrl,
+      status: boltz.SwapStatus.swapCreated,
+      statusStr: swapStatusToString(boltz.SwapStatus.swapCreated),
     );
   }
+}
+
+String swapStatusToString(boltz.SwapStatus swap) {
+  debugPrint('swapToJson');
+  final value = swap.toJson();
+  return value;
+}
+
+boltz.SwapStatus? _addSwapStatus(Map<String, dynamic> json) {
+  if (!json.containsKey('statusStr')) return null;
+
+  final value = boltz.getSwapStatusFromString(json['statusStr'] as String);
+  return value;
 }

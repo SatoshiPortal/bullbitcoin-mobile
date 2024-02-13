@@ -362,6 +362,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       hiveStore: hiveStorage,
     );
     if (errr != null) locator<Logger>().log(errr.toString());
+    if (storageWallet == null) return;
 
     for (final eventType in event.updateTypes)
       switch (eventType) {

@@ -177,7 +177,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   void handleSwapStatusChange(String id, SwapStatus status) async {
     if (state.swapTx == null) return;
     if (state.swapTx!.id != id) return;
-    final swap = state.swapTx!.copyWith(status: status);
+    final swap = state.swapTx!.copyWith(status: status, statusStr: swapStatusToString(status));
     emit(state.copyWith(swapTx: swap));
     if (status == SwapStatus.invoiceSettled) {
       emit(state.copyWith(swapTx: swap.copyWith(isListening: false)));

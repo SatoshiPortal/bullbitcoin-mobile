@@ -406,7 +406,7 @@ class SwapTxList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const BBHeader.popUpCenteredText(text: 'Swap History', isLeft: true),
+          const BBHeader.popUpCenteredText(text: 'Lightning Invoices', isLeft: true),
           const Gap(16),
           for (final tx in txs) SwapTxItem(tx: tx),
           // ListView.builder(

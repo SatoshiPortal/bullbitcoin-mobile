@@ -355,7 +355,7 @@ class __$$TransactionImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$TransactionImpl extends _Transaction {
+class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
   const _$TransactionImpl(
       {required this.timestamp,
       required this.txid,
@@ -432,8 +432,33 @@ class _$TransactionImpl extends _Transaction {
   final SwapTx? swapTx;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapIndex: $swapIndex, swapTx: $swapTx)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'Transaction'))
+      ..add(DiagnosticsProperty('timestamp', timestamp))
+      ..add(DiagnosticsProperty('txid', txid))
+      ..add(DiagnosticsProperty('received', received))
+      ..add(DiagnosticsProperty('sent', sent))
+      ..add(DiagnosticsProperty('fee', fee))
+      ..add(DiagnosticsProperty('height', height))
+      ..add(DiagnosticsProperty('label', label))
+      ..add(DiagnosticsProperty('toAddress', toAddress))
+      ..add(DiagnosticsProperty('psbt', psbt))
+      ..add(DiagnosticsProperty('rbfEnabled', rbfEnabled))
+      ..add(DiagnosticsProperty('oldTx', oldTx))
+      ..add(DiagnosticsProperty('broadcastTime', broadcastTime))
+      ..add(DiagnosticsProperty('outAddrs', outAddrs))
+      ..add(DiagnosticsProperty('bdkTx', bdkTx))
+      ..add(DiagnosticsProperty('wallet', wallet))
+      ..add(DiagnosticsProperty('isSwap', isSwap))
+      ..add(DiagnosticsProperty('swapIndex', swapIndex))
+      ..add(DiagnosticsProperty('swapTx', swapTx));
   }
 
   @override
@@ -597,6 +622,7 @@ mixin _$SwapTx {
   @JsonKey(includeFromJson: false, includeToJson: false)
   boltz.SwapStatus? get status => throw _privateConstructorUsedError;
   String? get blindingKey => throw _privateConstructorUsedError;
+  String? get statusStr => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -626,7 +652,8 @@ abstract class $SwapTxCopyWith<$Res> {
       bool isListening,
       @JsonKey(includeFromJson: false, includeToJson: false)
       boltz.SwapStatus? status,
-      String? blindingKey});
+      String? blindingKey,
+      String? statusStr});
 }
 
 /// @nodoc
@@ -659,6 +686,7 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? isListening = null,
     Object? status = freezed,
     Object? blindingKey = freezed,
+    Object? statusStr = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -729,6 +757,10 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
               as String?,
+      statusStr: freezed == statusStr
+          ? _value.statusStr
+          : statusStr // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -758,7 +790,8 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       bool isListening,
       @JsonKey(includeFromJson: false, includeToJson: false)
       boltz.SwapStatus? status,
-      String? blindingKey});
+      String? blindingKey,
+      String? statusStr});
 }
 
 /// @nodoc
@@ -789,6 +822,7 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? isListening = null,
     Object? status = freezed,
     Object? blindingKey = freezed,
+    Object? statusStr = freezed,
   }) {
     return _then(_$SwapTxImpl(
       id: null == id
@@ -859,13 +893,17 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
               as String?,
+      statusStr: freezed == statusStr
+          ? _value.statusStr
+          : statusStr // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$SwapTxImpl extends _SwapTx {
+class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   const _$SwapTxImpl(
       {required this.id,
       required this.isSubmarine,
@@ -883,7 +921,8 @@ class _$SwapTxImpl extends _SwapTx {
       required this.boltzUrl,
       this.isListening = false,
       @JsonKey(includeFromJson: false, includeToJson: false) this.status,
-      this.blindingKey})
+      this.blindingKey,
+      this.statusStr})
       : super._();
 
   factory _$SwapTxImpl.fromJson(Map<String, dynamic> json) =>
@@ -925,10 +964,37 @@ class _$SwapTxImpl extends _SwapTx {
   final boltz.SwapStatus? status;
   @override
   final String? blindingKey;
+  @override
+  final String? statusStr;
 
   @override
-  String toString() {
-    return 'SwapTx(id: $id, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, isListening: $isListening, status: $status, blindingKey: $blindingKey)';
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'SwapTx(id: $id, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, isListening: $isListening, status: $status, blindingKey: $blindingKey, statusStr: $statusStr)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'SwapTx'))
+      ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('isSubmarine', isSubmarine))
+      ..add(DiagnosticsProperty('network', network))
+      ..add(DiagnosticsProperty('secretKey', secretKey))
+      ..add(DiagnosticsProperty('publicKey', publicKey))
+      ..add(DiagnosticsProperty('value', value))
+      ..add(DiagnosticsProperty('sha256', sha256))
+      ..add(DiagnosticsProperty('hash160', hash160))
+      ..add(DiagnosticsProperty('redeemScript', redeemScript))
+      ..add(DiagnosticsProperty('invoice', invoice))
+      ..add(DiagnosticsProperty('outAmount', outAmount))
+      ..add(DiagnosticsProperty('scriptAddress', scriptAddress))
+      ..add(DiagnosticsProperty('electrumUrl', electrumUrl))
+      ..add(DiagnosticsProperty('boltzUrl', boltzUrl))
+      ..add(DiagnosticsProperty('isListening', isListening))
+      ..add(DiagnosticsProperty('status', status))
+      ..add(DiagnosticsProperty('blindingKey', blindingKey))
+      ..add(DiagnosticsProperty('statusStr', statusStr));
   }
 
   @override
@@ -962,7 +1028,9 @@ class _$SwapTxImpl extends _SwapTx {
                 other.isListening == isListening) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.blindingKey, blindingKey) ||
-                other.blindingKey == blindingKey));
+                other.blindingKey == blindingKey) &&
+            (identical(other.statusStr, statusStr) ||
+                other.statusStr == statusStr));
   }
 
   @JsonKey(ignore: true)
@@ -985,7 +1053,8 @@ class _$SwapTxImpl extends _SwapTx {
       boltzUrl,
       isListening,
       status,
-      blindingKey);
+      blindingKey,
+      statusStr);
 
   @JsonKey(ignore: true)
   @override
@@ -1020,7 +1089,8 @@ abstract class _SwapTx extends SwapTx {
       final bool isListening,
       @JsonKey(includeFromJson: false, includeToJson: false)
       final boltz.SwapStatus? status,
-      final String? blindingKey}) = _$SwapTxImpl;
+      final String? blindingKey,
+      final String? statusStr}) = _$SwapTxImpl;
   const _SwapTx._() : super._();
 
   factory _SwapTx.fromJson(Map<String, dynamic> json) = _$SwapTxImpl.fromJson;
@@ -1060,6 +1130,8 @@ abstract class _SwapTx extends SwapTx {
   boltz.SwapStatus? get status;
   @override
   String? get blindingKey;
+  @override
+  String? get statusStr;
   @override
   @JsonKey(ignore: true)
   _$$SwapTxImplCopyWith<_$SwapTxImpl> get copyWith =>
