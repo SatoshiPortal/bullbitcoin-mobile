@@ -1,10 +1,10 @@
 import 'package:bb_mobile/_pkg/clipboard.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
@@ -17,7 +17,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class ImportXpubScreen extends StatelessWidget {
   const ImportXpubScreen({super.key});
@@ -256,16 +255,11 @@ class AdvancedOptions extends StatelessWidget {
 
   static Future openPopUp(BuildContext context) async {
     final import = context.read<ImportWalletCubit>();
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
+      child: BlocProvider.value(
         value: import,
-        child: const PopUpBorder(
-          child: AdvancedOptions(),
-        ),
+        child: const AdvancedOptions(),
       ),
     );
   }

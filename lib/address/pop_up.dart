@@ -5,11 +5,11 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/_ui/inline_label.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/address/bloc/address_cubit.dart';
 import 'package:bb_mobile/address/bloc/address_state.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -25,7 +25,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class AddressPopUp extends StatelessWidget {
@@ -48,12 +47,9 @@ class AddressPopUp extends StatelessWidget {
       walletRepository: locator<WalletRepository>(),
     );
 
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
-      isDismissible: false,
-      enableDrag: false,
-      builder: (context) => MultiBlocProvider(
+      child: MultiBlocProvider(
         providers: [
           BlocProvider.value(value: settings),
           BlocProvider.value(value: wallet),
@@ -67,7 +63,7 @@ class AddressPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PopUpBorder(child: _Screen());
+    return const _Screen();
   }
 }
 
@@ -315,12 +311,9 @@ class AddressLabelFieldPopUp extends StatelessWidget {
     final walletSettings = context.read<WalletSettingsCubit>();
     final addressCubit = context.read<AddressCubit>();
 
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
-      isDismissible: false,
-      enableDrag: false,
-      builder: (context) => MultiBlocProvider(
+      child: MultiBlocProvider(
         providers: [
           BlocProvider.value(value: settings),
           BlocProvider.value(value: wallet),
@@ -334,9 +327,7 @@ class AddressLabelFieldPopUp extends StatelessWidget {
 
             context.pop();
           },
-          child: PopUpBorder(
-            child: AddressLabelFieldPopUp(address: address),
-          ),
+          child: AddressLabelFieldPopUp(address: address),
         ),
       ),
     );

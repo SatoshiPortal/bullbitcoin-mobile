@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/_ui/inline_label.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/address/pop_up.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class AddressesScreen extends HookWidget {
   const AddressesScreen({super.key});
@@ -23,19 +22,14 @@ class AddressesScreen extends HookWidget {
 
     final walletSettings = context.read<WalletSettingsCubit>();
 
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => MultiBlocProvider(
+      child: MultiBlocProvider(
         providers: [
           BlocProvider.value(value: wallet),
           BlocProvider.value(value: walletSettings),
         ],
-        child: const PopUpBorder(
-          child: AddressesScreen(),
-        ),
+        child: const AddressesScreen(),
       ),
     );
   }

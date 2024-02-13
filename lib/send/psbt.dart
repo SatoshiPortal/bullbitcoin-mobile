@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_pkg/launcher.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -12,7 +12,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class PSBTPopUp extends StatelessWidget {
@@ -21,14 +20,11 @@ class PSBTPopUp extends StatelessWidget {
   static Future openPopUp(BuildContext context) {
     final send = context.read<SendCubit>();
 
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
+      child: BlocProvider.value(
         value: send,
-        child: const PopUpBorder(child: PSBTPopUp()),
+        child: const PSBTPopUp(),
       ),
     );
   }

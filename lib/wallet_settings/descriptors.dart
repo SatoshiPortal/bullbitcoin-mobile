@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class PublicDescriptorButton extends StatelessWidget {
@@ -69,16 +68,11 @@ class PublicDataPopUp extends StatelessWidget {
     String publicKeyData,
     String title,
   ) {
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => PopUpBorder(
-        child: PublicDataPopUp(
-          publicKeyData: publicKeyData,
-          title: title,
-        ),
+      child: PublicDataPopUp(
+        publicKeyData: publicKeyData,
+        title: title,
       ),
     );
   }

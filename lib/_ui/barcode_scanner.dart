@@ -12,7 +12,7 @@
 //   final Function((String?, Err?)) onScan;
 
 //   static Future openPopUp(BuildContext context, Function((String?, Err?)) onScan) async {
-//     return showMaterialModalBottomSheet(
+//     return showMatdderialModddalBottomSheet(
 //       context: context,
 //       isDismissible: false,
 //       enableDrag: false,

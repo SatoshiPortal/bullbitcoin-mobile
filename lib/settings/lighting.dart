@@ -1,24 +1,20 @@
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class LightingPopUp extends StatelessWidget {
   const LightingPopUp({super.key});
 
   static Future openPopUp(BuildContext context) async {
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const PopUpBorder(child: LightingPopUp()),
+      child: const LightingPopUp(),
     );
   }
 

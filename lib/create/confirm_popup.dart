@@ -1,22 +1,18 @@
-import 'package:bb_mobile/_ui/popup_border.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class CreateWalletConfirmPopUp extends StatelessWidget {
   const CreateWalletConfirmPopUp({super.key});
 
   static Future showPopup(BuildContext context) async {
     final cubit = context.read<CreateWalletCubit>();
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
+      child: BlocProvider.value(
         value: cubit,
         child: const CreateWalletConfirmPopUp(),
       ),
@@ -25,7 +21,7 @@ class CreateWalletConfirmPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PopUpBorder(child: _Screen());
+    return const _Screen();
   }
 }
 

@@ -3,11 +3,11 @@ import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -21,7 +21,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class BroadcastPage extends StatelessWidget {
   const BroadcastPage({super.key});
@@ -83,12 +82,9 @@ class BroadcastPopUp extends StatelessWidget {
       homeCubit: locator<HomeCubit>(),
     );
 
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
+      child: BlocProvider.value(
         value: broadcast,
         child: BlocListener<BroadcastTxCubit, BroadcastTxState>(
           listenWhen: (previous, current) => previous.sent != current.sent,
@@ -106,21 +102,19 @@ class BroadcastPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopUpBorder(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BBHeader.popUpCenteredText(
-            text: 'BROADCAST',
-            onBack: () {
-              context.pop();
-            },
-            // isLeft: true,
-          ),
-          const Gap(16),
-          const _Screen(),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BBHeader.popUpCenteredText(
+          text: 'BROADCAST',
+          onBack: () {
+            context.pop();
+          },
+          // isLeft: true,
+        ),
+        const Gap(16),
+        const _Screen(),
+      ],
     );
   }
 }

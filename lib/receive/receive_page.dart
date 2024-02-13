@@ -8,11 +8,11 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -30,7 +30,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class ReceivePage extends StatelessWidget {
@@ -375,12 +374,9 @@ class CreateInvoice extends StatelessWidget {
     // currencyCubit.updateAmount(receiveCubit.state.savedInvoiceAmount.toString());
     if (currencyCubit.state.amount > 0) currencyCubit.convertAmtOnCurrencyChange();
 
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
+      child: BlocProvider.value(
         value: receiveCubit,
         child: BlocProvider.value(
           value: currencyCubit,
@@ -391,11 +387,9 @@ class CreateInvoice extends StatelessWidget {
             listener: (context, state) {
               context.pop();
             },
-            child: const PopUpBorder(
-              child: Padding(
-                padding: EdgeInsets.all(30),
-                child: CreateInvoice(),
-              ),
+            child: const Padding(
+              padding: EdgeInsets.all(30),
+              child: CreateInvoice(),
             ),
           ),
         ),
@@ -452,12 +446,9 @@ class RenameLabel extends StatelessWidget {
   static Future openPopUp(BuildContext context) async {
     final receiveCubit = context.read<ReceiveCubit>();
 
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
+      child: BlocProvider.value(
         value: receiveCubit,
         child: BlocListener<ReceiveCubit, ReceiveState>(
           listenWhen: (previous, current) =>
@@ -465,11 +456,9 @@ class RenameLabel extends StatelessWidget {
           listener: (context, state) {
             context.pop();
           },
-          child: const PopUpBorder(
-            child: Padding(
-              padding: EdgeInsets.all(30),
-              child: RenameLabel(),
-            ),
+          child: const Padding(
+            padding: EdgeInsets.all(30),
+            child: RenameLabel(),
           ),
         ),
       ),

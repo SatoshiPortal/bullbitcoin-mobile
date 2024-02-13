@@ -1,8 +1,8 @@
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
@@ -14,7 +14,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class SelectFeesButton extends StatelessWidget {
   const SelectFeesButton({super.key, this.fromSettings = false});
@@ -77,12 +76,10 @@ class SelectFeesPopUp extends StatelessWidget {
       final fees = context.read<NetworkFeesCubit>();
       fees.clearTempFeeValues();
 
-      return showMaterialModalBottomSheet(
+      return showBBBottomSheet(
         context: context,
-        isDismissible: false,
-        enableDrag: false,
-        backgroundColor: Colors.transparent,
-        builder: (context) => MultiBlocProvider(
+        scrollToBottom: true,
+        child: MultiBlocProvider(
           providers: [
             BlocProvider.value(value: fees),
           ],
@@ -99,12 +96,10 @@ class SelectFeesPopUp extends StatelessWidget {
     final defaultFees = context.read<NetworkFeesCubit>();
     defaultFees.loadFees();
     defaultFees.clearTempFeeValues();
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => MultiBlocProvider(
+      scrollToBottom: true,
+      child: MultiBlocProvider(
         providers: [
           BlocProvider.value(value: defaultFees),
         ],
@@ -120,28 +115,25 @@ class SelectFeesPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PopUpBorder(
-      scrollToBottom: true,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: BBHeader.popUpCenteredText(
-                text: 'Bitcoin Network Fee',
-                isLeft: true,
-                onBack: () {
-                  context.read<NetworkFeesCubit>().clearTempFeeValues();
-                  context.pop();
-                },
-              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: BBHeader.popUpCenteredText(
+              text: 'Bitcoin Network Fee',
+              isLeft: true,
+              onBack: () {
+                context.read<NetworkFeesCubit>().clearTempFeeValues();
+                context.pop();
+              },
             ),
-            const FeesSelectionOptions(),
-            const DoneButton(),
-            const Gap(48),
-          ],
-        ),
+          ),
+          const FeesSelectionOptions(),
+          const DoneButton(),
+          const Gap(48),
+        ],
       ),
     );
   }

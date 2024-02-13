@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class AdvancedOptionsPopUp extends StatelessWidget {
   const AdvancedOptionsPopUp({super.key});
@@ -20,12 +19,9 @@ class AdvancedOptionsPopUp extends StatelessWidget {
   static Future openPopup(BuildContext context) {
     final send = context.read<SendCubit>();
     final wallet = context.read<WalletBloc>();
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => MultiBlocProvider(
+      child: MultiBlocProvider(
         providers: [
           BlocProvider.value(value: send),
           BlocProvider.value(value: wallet),
@@ -39,72 +35,70 @@ class AdvancedOptionsPopUp extends StatelessWidget {
   Widget build(BuildContext context) {
     final sendAll = context.select((SendCubit x) => x.state.sendAllCoin);
 
-    return PopUpBorder(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // const Gap(32),
-            const BBHeader.popUpCenteredText(
-              text: 'ADVANCED OPTIONS',
-              isLeft: true,
-            ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     const BBText.body(
-            //       'Advanced Options',
-            //       // style: TextStyle(
-            //       //   fontSize: 20,
-            //       //   fontWeight: FontWeight.bold,
-            //       // ),
-            //     ),
-            //     const Spacer(),
-            //     IconButton(
-            //       onPressed: () {
-            //         context.pop();
-            //       },
-            //       icon: const Icon(Icons.close),
-            //     ),
-            //   ],
-            // ),
-            const Gap(16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // const Gap(32),
+          const BBHeader.popUpCenteredText(
+            text: 'ADVANCED OPTIONS',
+            isLeft: true,
+          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     const BBText.body(
+          //       'Advanced Options',
+          //       // style: TextStyle(
+          //       //   fontSize: 20,
+          //       //   fontWeight: FontWeight.bold,
+          //       // ),
+          //     ),
+          //     const Spacer(),
+          //     IconButton(
+          //       onPressed: () {
+          //         context.pop();
+          //       },
+          //       icon: const Icon(Icons.close),
+          //     ),
+          //   ],
+          // ),
+          const Gap(16),
 
-            const SendAllOption(),
-            const Gap(8),
-            const EnableRBFOption(),
-            const Gap(8),
-            if (!sendAll)
-              CenterLeft(
-                child: BBButton.text(
-                  // style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                  onPressed: () {
-                    AddressSelectionPopUp.openPopup(context);
-                  },
-                  label: 'Select coins manually',
-                  // child: const BBText.body('Manual coin selection'),
-                ),
-              ),
-            // const EnableRBFOption(),
-
-            const Gap(40),
-            Center(
-              child: SizedBox(
-                width: 250,
-                child: BBButton.bigRed(
-                  // style: Buttons.outlinedButtonBorderRed,
-                  onPressed: () {
-                    context.pop();
-                  },
-                  label: 'Confirm',
-                  // child: const BBText.body('Done'),
-                ),
+          const SendAllOption(),
+          const Gap(8),
+          const EnableRBFOption(),
+          const Gap(8),
+          if (!sendAll)
+            CenterLeft(
+              child: BBButton.text(
+                // style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                onPressed: () {
+                  AddressSelectionPopUp.openPopup(context);
+                },
+                label: 'Select coins manually',
+                // child: const BBText.body('Manual coin selection'),
               ),
             ),
-            const Gap(80),
-          ],
-        ),
+          // const EnableRBFOption(),
+
+          const Gap(40),
+          Center(
+            child: SizedBox(
+              width: 250,
+              child: BBButton.bigRed(
+                // style: Buttons.outlinedButtonBorderRed,
+                onPressed: () {
+                  context.pop();
+                },
+                label: 'Confirm',
+                // child: const BBText.body('Done'),
+              ),
+            ),
+          ),
+          const Gap(80),
+        ],
       ),
     );
   }
@@ -160,12 +154,9 @@ class AddressSelectionPopUp extends StatelessWidget {
   ) {
     final send = context.read<SendCubit>();
     final wallet = context.read<WalletBloc>();
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => MultiBlocProvider(
+      child: MultiBlocProvider(
         providers: [
           BlocProvider.value(value: send),
           BlocProvider.value(value: wallet),
@@ -185,64 +176,62 @@ class AddressSelectionPopUp extends StatelessWidget {
       (CurrencyCubit x) => x.state.getAmountInUnits(amount),
     );
 
-    return PopUpBorder(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // const Gap(32),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     const BBText.body(
-            //       'Select Addresses',
-            //       // style: TextStyle(
-            //       //   fontSize: 20,
-            //       //   fontWeight: FontWeight.bold,
-            //       // ),
-            //     ),
-            //     const Spacer(),
-            //     IconButton(
-            //       onPressed: () {
-            //         context.pop();
-            //       },
-            //       icon: const Icon(Icons.close),
-            //     ),
-            //   ],
-            // ),
-            const Gap(32),
-            const _SelectedAddressesTotal(),
-            if (amount > 0) ...[
-              const Gap(8),
-              BBText.body(
-                'Amount requested: $amt',
-                // style: const TextStyle(fontSize: 12),
-              ),
-            ],
-            const Gap(24),
-            if (addresses.isEmpty) const BBText.body('No addresses available'),
-            for (final address in addresses) ...[
-              AdvancedOptionAdress(address: address),
-              const Gap(16),
-            ],
-            const Gap(40),
-            Center(
-              child: SizedBox(
-                width: 200,
-                child: BBButton.bigRed(
-                  // style: Buttons.outlinedButtonBorderRed,
-                  onPressed: () {
-                    context.pop();
-                  },
-                  label: 'Done',
-                  // child: const BBText.body('Done'),
-                ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // const Gap(32),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     const BBText.body(
+          //       'Select Addresses',
+          //       // style: TextStyle(
+          //       //   fontSize: 20,
+          //       //   fontWeight: FontWeight.bold,
+          //       // ),
+          //     ),
+          //     const Spacer(),
+          //     IconButton(
+          //       onPressed: () {
+          //         context.pop();
+          //       },
+          //       icon: const Icon(Icons.close),
+          //     ),
+          //   ],
+          // ),
+          const Gap(32),
+          const _SelectedAddressesTotal(),
+          if (amount > 0) ...[
+            const Gap(8),
+            BBText.body(
+              'Amount requested: $amt',
+              // style: const TextStyle(fontSize: 12),
+            ),
+          ],
+          const Gap(24),
+          if (addresses.isEmpty) const BBText.body('No addresses available'),
+          for (final address in addresses) ...[
+            AdvancedOptionAdress(address: address),
+            const Gap(16),
+          ],
+          const Gap(40),
+          Center(
+            child: SizedBox(
+              width: 200,
+              child: BBButton.bigRed(
+                // style: Buttons.outlinedButtonBorderRed,
+                onPressed: () {
+                  context.pop();
+                },
+                label: 'Done',
+                // child: const BBText.body('Done'),
               ),
             ),
-            const Gap(80),
-          ],
-        ),
+          ),
+          const Gap(80),
+        ],
       ),
     );
   }

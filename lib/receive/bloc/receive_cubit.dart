@@ -191,7 +191,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       state.copyWith(
         errLoadingAddress: '',
         savedInvoiceAmount: 0,
-        creatingInvoice: true,
         errCreatingInvoice: '',
         defaultAddress: null,
         swapTx: null,

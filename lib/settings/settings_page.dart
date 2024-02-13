@@ -2,10 +2,10 @@ import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/extensions.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/currency/dropdown.dart';
 import 'package:bb_mobile/locator.dart';
@@ -22,7 +22,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -365,12 +364,9 @@ class SelectHomeLayoutPopUp extends StatelessWidget {
   const SelectHomeLayoutPopUp({super.key});
 
   static Future openPopUp(BuildContext context) async {
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const PopUpBorder(child: SelectHomeLayoutPopUp()),
+      child: const SelectHomeLayoutPopUp(),
     );
   }
 

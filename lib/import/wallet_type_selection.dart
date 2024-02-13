@@ -9,9 +9,9 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
@@ -25,7 +25,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class ImportSelectWalletTypeScreen extends StatelessWidget {
   const ImportSelectWalletTypeScreen({super.key});
@@ -411,12 +410,9 @@ class ImportWalletDetailsPopUp extends StatelessWidget {
     final wallet = import.state.getWalletDetails(scriptType);
     if (wallet == null) return;
 
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => BlocProvider.value(
+      child: BlocProvider.value(
         value: import,
         child: ImportWalletDetailsPopUp(
           wallet: wallet,
@@ -432,69 +428,67 @@ class ImportWalletDetailsPopUp extends StatelessWidget {
       (ImportWalletCubit cubit) => cubit.state.walletName(scriptType),
     );
 
-    return PopUpBorder(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                BBText.body(
-                  title,
-                ),
-                IconButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-            const Gap(32),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              BBText.body(
+                title,
+              ),
+              IconButton(
+                onPressed: () {
+                  context.pop();
+                },
+                icon: const Icon(Icons.close),
+              ),
+            ],
+          ),
+          const Gap(32),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const BBText.body(
+                'First Address',
+              ),
+              const BBText.body(
+                'wallet.firstAddress',
+              ),
+              const Gap(16),
+              if (wallet.mnemonicFingerprint.isNotEmpty) ...[
                 const BBText.body(
-                  'First Address',
-                ),
-                const BBText.body(
-                  'wallet.firstAddress',
-                ),
-                const Gap(16),
-                if (wallet.mnemonicFingerprint.isNotEmpty) ...[
-                  const BBText.body(
-                    'Wallet fingerprint (XFP)',
-                  ),
-                  BBText.body(
-                    wallet.mnemonicFingerprint,
-                  ),
-                  const Gap(16),
-                ],
-                const Gap(16),
-                const BBText.body(
-                  'Derivation Path',
+                  'Wallet fingerprint (XFP)',
                 ),
                 BBText.body(
-                  wallet.path!,
+                  wallet.mnemonicFingerprint,
                 ),
-                const Gap(48),
-                Center(
-                  child: SizedBox(
-                    width: 250,
-                    child: BBButton.bigRed(
-                      onPressed: () {
-                        context.pop();
-                      },
-                      label: 'Done',
-                    ),
+                const Gap(16),
+              ],
+              const Gap(16),
+              const BBText.body(
+                'Derivation Path',
+              ),
+              BBText.body(
+                wallet.path!,
+              ),
+              const Gap(48),
+              Center(
+                child: SizedBox(
+                  width: 250,
+                  child: BBButton.bigRed(
+                    onPressed: () {
+                      context.pop();
+                    },
+                    label: 'Done',
                   ),
                 ),
-                const Gap(48),
-              ],
-            ),
-          ],
-        ),
+              ),
+              const Gap(48),
+            ],
+          ),
+        ],
       ),
     );
   }

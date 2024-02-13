@@ -1,35 +1,29 @@
 import 'package:bb_mobile/_model/electrum.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class NetworkPopup extends StatelessWidget {
   const NetworkPopup({super.key});
 
   static Future openPopUp(BuildContext context) {
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const NetworkPopup(),
+      child: const NetworkPopup(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return const PopUpBorder(
-      child: NetworkScreen(),
-    );
+    return const NetworkScreen();
   }
 }
 
@@ -306,68 +300,63 @@ class PrivacyNoticePopUp extends StatelessWidget {
   const PrivacyNoticePopUp({super.key});
 
   static Future openPopUp(BuildContext context) {
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const PrivacyNoticePopUp(),
+      child: const PrivacyNoticePopUp(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopUpBorder(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            BBHeader.popUpCenteredText(
-              text: 'Privacy Notice',
-              isLeft: true,
-              onBack: () {
-                context.pop();
-              },
-            ),
-            const Gap(16),
-            const BBText.body('''
-Privacy Notice: Using your own node ensures that no third party can link your IP address, with your transactions. 
-
-However, if you view transactions via mempool by clicking your Transaction ID or Recipient Bitcoin Address in the Transaction Details page, this information will be known to BullBitcoin.'''),
-            const Gap(40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                BBButton.text(
-                  label: 'CANCEL',
-                  onPressed: () {
-                    context.pop();
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BBHeader.popUpCenteredText(
+            text: 'Privacy Notice',
+            isLeft: true,
+            onBack: () {
+              context.pop();
+            },
+          ),
+          const Gap(16),
+          const BBText.body('''
+    Privacy Notice: Using your own node ensures that no third party can link your IP address, with your transactions. 
+    
+    However, if you view transactions via mempool by clicking your Transaction ID or Recipient Bitcoin Address in the Transaction Details page, this information will be known to BullBitcoin.'''),
+          const Gap(40),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              BBButton.text(
+                label: 'CANCEL',
+                onPressed: () {
+                  context.pop();
+                },
+              ),
+              SizedBox(
+                width: 150,
+                child: BBButton.bigRed(
+                  label: 'SAVE',
+                  filled: true,
+                  onPressed: () async {
+                    context.read<NetworkCubit>().networkConfigsSaveClicked();
+                    await Future.delayed(const Duration(milliseconds: 500));
+                    final err = context.read<NetworkCubit>().state.errLoadingNetworks;
+                    if (err.isNotEmpty)
+                      context.pop();
+                    else
+                      context
+                        ..pop()
+                        ..pop();
                   },
                 ),
-                SizedBox(
-                  width: 150,
-                  child: BBButton.bigRed(
-                    label: 'SAVE',
-                    filled: true,
-                    onPressed: () async {
-                      context.read<NetworkCubit>().networkConfigsSaveClicked();
-                      await Future.delayed(const Duration(milliseconds: 500));
-                      final err = context.read<NetworkCubit>().state.errLoadingNetworks;
-                      if (err.isNotEmpty)
-                        context.pop();
-                      else
-                        context
-                          ..pop()
-                          ..pop();
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const Gap(40),
-          ],
-        ),
+              ),
+            ],
+          ),
+          const Gap(40),
+        ],
       ),
     );
   }
@@ -379,12 +368,9 @@ class ElectrumAdvancedOptions extends StatelessWidget {
   static Future openPopUp(
     BuildContext context,
   ) {
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const ElectrumAdvancedOptions(),
+      child: const ElectrumAdvancedOptions(),
     );
   }
 
@@ -398,95 +384,93 @@ class ElectrumAdvancedOptions extends StatelessWidget {
 
     final showButton = context.select((NetworkCubit x) => x.state.showConfirmButton());
 
-    return PopUpBorder(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 24.0, right: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            BBHeader.popUpCenteredText(
-              text: 'Electrum Options',
-              isLeft: true,
-              onBack: () {
-                context.pop();
+    return Padding(
+      padding: const EdgeInsets.only(left: 24.0, right: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          BBHeader.popUpCenteredText(
+            text: 'Electrum Options',
+            isLeft: true,
+            onBack: () {
+              context.pop();
+            },
+          ),
+          const Gap(24),
+          const BBText.title('    Stop gap'),
+          const Gap(4),
+          SizedBox(
+            width: fieldWidth,
+            child: BBTextInput.big(
+              onlyNumbers: true,
+              onChanged: (t) {
+                final sg = int.tryParse(t);
+                if (sg == null) {
+                  context.read<NetworkCubit>().updateTempStopGap(0);
+                  return;
+                }
+                context.read<NetworkCubit>().updateTempStopGap(sg);
               },
+              value: sg.toString(),
             ),
-            const Gap(24),
-            const BBText.title('    Stop gap'),
-            const Gap(4),
-            SizedBox(
-              width: fieldWidth,
-              child: BBTextInput.big(
-                onlyNumbers: true,
-                onChanged: (t) {
-                  final sg = int.tryParse(t);
-                  if (sg == null) {
-                    context.read<NetworkCubit>().updateTempStopGap(0);
-                    return;
-                  }
-                  context.read<NetworkCubit>().updateTempStopGap(sg);
-                },
-                value: sg.toString(),
-              ),
+          ),
+          const Gap(16),
+          const BBText.title('    Retry'),
+          const Gap(4),
+          SizedBox(
+            width: fieldWidth,
+            child: BBTextInput.big(
+              onlyNumbers: true,
+              onChanged: (t) {
+                final r = int.tryParse(t);
+                if (r == null) {
+                  context.read<NetworkCubit>().updateTempRetry(0);
+                  return;
+                }
+                context.read<NetworkCubit>().updateTempRetry(r);
+              },
+              value: r.toString(),
             ),
-            const Gap(16),
-            const BBText.title('    Retry'),
-            const Gap(4),
-            SizedBox(
-              width: fieldWidth,
-              child: BBTextInput.big(
-                onlyNumbers: true,
-                onChanged: (t) {
-                  final r = int.tryParse(t);
-                  if (r == null) {
-                    context.read<NetworkCubit>().updateTempRetry(0);
-                    return;
-                  }
-                  context.read<NetworkCubit>().updateTempRetry(r);
-                },
-                value: r.toString(),
-              ),
+          ),
+          const Gap(16),
+          const BBText.title('    Timeout'),
+          const Gap(4),
+          SizedBox(
+            width: fieldWidth,
+            child: BBTextInput.big(
+              onlyNumbers: true,
+              onChanged: (t) {
+                final tt = int.tryParse(t);
+                if (tt == null) {
+                  context.read<NetworkCubit>().updateTempTimeout(0);
+                  return;
+                }
+                context.read<NetworkCubit>().updateTempTimeout(tt);
+              },
+              value: t.toString(),
             ),
-            const Gap(16),
-            const BBText.title('    Timeout'),
-            const Gap(4),
-            SizedBox(
-              width: fieldWidth,
-              child: BBTextInput.big(
-                onlyNumbers: true,
-                onChanged: (t) {
-                  final tt = int.tryParse(t);
-                  if (tt == null) {
-                    context.read<NetworkCubit>().updateTempTimeout(0);
-                    return;
-                  }
-                  context.read<NetworkCubit>().updateTempTimeout(tt);
-                },
-                value: t.toString(),
-              ),
-            ),
-            const Gap(32),
-            if (showButton.err != null) ...[
-              BBText.errorSmall(showButton.err!),
-              const Gap(8),
-            ],
-            Center(
-              child: SizedBox(
-                width: 250,
-                child: BBButton.bigRed(
-                  label: 'Confirm',
-                  filled: true,
-                  disabled: !showButton.show,
-                  onPressed: () async {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    context.pop();
-                  },
-                ),
-              ),
-            ),
-            const Gap(48),
+          ),
+          const Gap(32),
+          if (showButton.err != null) ...[
+            BBText.errorSmall(showButton.err!),
+            const Gap(8),
           ],
-        ),
+          Center(
+            child: SizedBox(
+              width: 250,
+              child: BBButton.bigRed(
+                label: 'Confirm',
+                filled: true,
+                disabled: !showButton.show,
+                onPressed: () async {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  context.pop();
+                },
+              ),
+            ),
+          ),
+          const Gap(48),
+        ],
       ),
     );
   }

@@ -14,11 +14,11 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/popup_border.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -36,7 +36,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class TxPage extends StatelessWidget {
@@ -370,12 +369,9 @@ class BumpFeesPopup extends StatelessWidget {
     final wallet = context.read<WalletBloc>();
     final networkFees = context.read<NetworkFeesCubit>();
 
-    return showMaterialModalBottomSheet(
+    return showBBBottomSheet(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: Colors.transparent,
-      builder: (context) => MultiBlocProvider(
+      child: MultiBlocProvider(
         providers: [
           BlocProvider.value(value: wallet),
           BlocProvider.value(value: tx),
@@ -391,9 +387,7 @@ class BumpFeesPopup extends StatelessWidget {
                 ..pop();
             }
           },
-          child: const PopUpBorder(
-            child: BumpFeesPopup(),
-          ),
+          child: const BumpFeesPopup(),
         ),
       ),
     );

@@ -9,9 +9,11 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -249,6 +251,9 @@ class WalletActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final swapTx = context.select((ReceiveCubit _) => _.state.swapTx);
+    if (swapTx == null) return const SizedBox.shrink();
+
     final showRequestButton = context.select((ReceiveCubit x) => x.state.showNewRequestButton());
     final errLoadingAddress = context.select((ReceiveCubit x) => x.state.errLoadingAddress);
 
@@ -353,20 +358,57 @@ class CreateLightningInvoice extends StatelessWidget {
   }
 }
 
-class SwapTxList extends StatelessWidget {
-  const SwapTxList({super.key});
+class SwapHistoryButton extends StatelessWidget {
+  const SwapHistoryButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     final txs = context.select((ReceiveCubit _) => _.state.swapTxs);
-    if (txs == null) return const SizedBox.shrink();
+    if (txs == null || txs.isEmpty) return const SizedBox.shrink();
 
-    return ListView.builder(
-      itemCount: txs.length,
-      itemBuilder: (context, i) {
-        final tx = txs[i];
-        return SwapTxItem(tx: tx);
+    return BBButton.bigNoIcon(
+      label: 'View History',
+      onPressed: () {
+        SwapTxList.openPopUp(context);
       },
+    );
+  }
+}
+
+class SwapTxList extends StatelessWidget {
+  const SwapTxList({super.key});
+
+  static Future openPopUp(BuildContext context) {
+    final receive = context.read<ReceiveCubit>();
+
+    return showBBBottomSheet(
+      context: context,
+      child: BlocProvider.value(
+        value: receive,
+        child: const SwapTxList(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final txs = context.select((ReceiveCubit _) => _.state.swapTxs);
+    if (txs == null || txs.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const BBHeader.popUpCenteredText(text: 'Swap History', isLeft: true),
+        const Gap(16),
+        ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: txs.length,
+          itemBuilder: (context, i) {
+            final tx = txs[i];
+            return SwapTxItem(tx: tx);
+          },
+        ),
+      ],
     );
   }
 }
