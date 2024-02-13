@@ -321,7 +321,8 @@ class CreateLightningInvoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description = context.select((ReceiveCubit _) => _.state.description);
-    final err = context.select((ReceiveCubit _) => _.state.errGeneratingInvoice);
+    final err = context.select((ReceiveCubit _) => _.state.errCreatingSwapInv);
+    final creatingInv = context.select((ReceiveCubit _) => _.state.generatingSwapInv);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -344,14 +345,17 @@ class CreateLightningInvoice extends StatelessWidget {
             child: BBButton.big2(
               leftIcon: FontAwesomeIcons.receipt,
               buttonKey: UIKeys.receiveSavePaymentButton,
+              loading: creatingInv,
               label: 'Create Invoice',
+              loadingText: 'Creating Invoice',
               onPressed: () {
                 context.read<ReceiveCubit>().createBtcLightningInvoice();
               },
             ),
           ),
         ),
-        BBText.errorSmall(err),
+        const Gap(16),
+        BBText.errorSmall(err, textAlign: TextAlign.center),
         const Gap(40),
       ],
     );

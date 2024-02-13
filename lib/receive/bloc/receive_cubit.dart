@@ -61,30 +61,30 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(walletType: walletType));
     if (!networkCubit.state.testnet) return;
 
-    if (walletType == ReceiveWalletType.lightning) createBtcLightningInvoice();
+    // if (walletType == ReceiveWalletType.lightning) createBtcLightningInvoice();
   }
 
   void createBtcLightningInvoice() async {
     if (!networkCubit.state.testnet) return;
 
     final outAmount = currencyCubit.state.amount;
-    if (outAmount < 50000) {
+    if (outAmount < 50000 || outAmount > 25000000) {
       emit(
         state.copyWith(
-          errCreatingInvoice: 'Amount should be greater than 50000',
-          creatingInvoice: false,
+          errCreatingSwapInv: 'Amount should be greater than 50000 and less than 25000000 sats',
+          generatingSwapInv: false,
         ),
       );
       return;
     }
 
-    emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
+    emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
     final (seed, errReadingSeed) = await walletSensitiveRepository.readSeed(
       fingerprintIndex: state.walletBloc!.state.wallet!.getRelatedSeedStorageString(),
       secureStore: secureStorage,
     );
     if (errReadingSeed != null) {
-      emit(state.copyWith(errCreatingInvoice: errReadingSeed.toString(), creatingInvoice: false));
+      emit(state.copyWith(errCreatingSwapInv: errReadingSeed.toString(), generatingSwapInv: false));
       return;
     }
     final (fees, errFees) = await SwapBoltz.getFeesAndLimits(
@@ -92,7 +92,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       outAmount: outAmount,
     );
     if (errFees != null) {
-      emit(state.copyWith(errCreatingInvoice: errFees.toString(), creatingInvoice: false));
+      emit(state.copyWith(errCreatingSwapInv: errFees.toString(), generatingSwapInv: false));
       return;
     }
 
@@ -106,14 +106,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       pairHash: fees!.btcPairHash,
     );
     if (errCreatingInv != null) {
-      emit(state.copyWith(errCreatingInvoice: errCreatingInv.toString(), creatingInvoice: false));
+      emit(state.copyWith(errCreatingSwapInv: errCreatingInv.toString(), generatingSwapInv: false));
       return;
     }
 
     emit(
       state.copyWith(
-        creatingInvoice: false,
-        errCreatingInvoice: '',
+        generatingSwapInv: false,
+        errCreatingSwapInv: '',
         defaultAddress: null,
         swapTx: swap,
       ),
@@ -134,7 +134,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       transaction: Transaction.fromSwapTx(state.swapTx!),
     );
     if (err != null) {
-      emit(state.copyWith(errCreatingInvoice: err.toString(), creatingInvoice: false));
+      emit(state.copyWith(errCreatingSwapInv: err.toString(), generatingSwapInv: false));
       return;
     }
 
@@ -143,7 +143,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       hiveStore: hiveStorage,
     );
     if (errr != null) {
-      emit(state.copyWith(errCreatingInvoice: errr.toString(), creatingInvoice: false));
+      emit(state.copyWith(errCreatingSwapInv: errr.toString(), generatingSwapInv: false));
       return;
     }
 
@@ -164,7 +164,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       onUpdate: handleSwapStatusChange,
     );
     if (err != null) {
-      emit(state.copyWith(errCreatingInvoice: err.toString(), creatingInvoice: false));
+      emit(state.copyWith(errCreatingSwapInv: err.toString(), generatingSwapInv: false));
       return;
     }
   }
@@ -178,7 +178,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       emit(state.copyWith(swapTx: swap.copyWith(isListening: false)));
       final err = swapBoltz.closeStream(swap.id);
       if (err != null) {
-        emit(state.copyWith(errCreatingInvoice: err.toString()));
+        emit(state.copyWith(errCreatingSwapInv: err.toString()));
         return;
       }
     }
@@ -191,7 +191,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       state.copyWith(
         errLoadingAddress: '',
         savedInvoiceAmount: 0,
-        errCreatingInvoice: '',
+        errCreatingSwapInv: '',
         defaultAddress: null,
         swapTx: null,
       ),

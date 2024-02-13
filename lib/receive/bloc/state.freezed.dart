@@ -30,8 +30,8 @@ mixin _$ReceiveState {
   String get errCreatingInvoice => throw _privateConstructorUsedError;
   WalletBloc? get walletBloc => throw _privateConstructorUsedError;
   ReceiveWalletType get walletType => throw _privateConstructorUsedError;
-  String get errGeneratingInvoice => throw _privateConstructorUsedError;
-  bool get generatingInvoice => throw _privateConstructorUsedError;
+  String get errCreatingSwapInv => throw _privateConstructorUsedError;
+  bool get generatingSwapInv => throw _privateConstructorUsedError;
   SwapTx? get swapTx => throw _privateConstructorUsedError;
   List<Transaction>? get swapTxs => throw _privateConstructorUsedError;
 
@@ -61,8 +61,8 @@ abstract class $ReceiveStateCopyWith<$Res> {
       String errCreatingInvoice,
       WalletBloc? walletBloc,
       ReceiveWalletType walletType,
-      String errGeneratingInvoice,
-      bool generatingInvoice,
+      String errCreatingSwapInv,
+      bool generatingSwapInv,
       SwapTx? swapTx,
       List<Transaction>? swapTxs});
 
@@ -97,8 +97,8 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
     Object? walletType = null,
-    Object? errGeneratingInvoice = null,
-    Object? generatingInvoice = null,
+    Object? errCreatingSwapInv = null,
+    Object? generatingSwapInv = null,
     Object? swapTx = freezed,
     Object? swapTxs = freezed,
   }) {
@@ -159,13 +159,13 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.walletType
           : walletType // ignore: cast_nullable_to_non_nullable
               as ReceiveWalletType,
-      errGeneratingInvoice: null == errGeneratingInvoice
-          ? _value.errGeneratingInvoice
-          : errGeneratingInvoice // ignore: cast_nullable_to_non_nullable
+      errCreatingSwapInv: null == errCreatingSwapInv
+          ? _value.errCreatingSwapInv
+          : errCreatingSwapInv // ignore: cast_nullable_to_non_nullable
               as String,
-      generatingInvoice: null == generatingInvoice
-          ? _value.generatingInvoice
-          : generatingInvoice // ignore: cast_nullable_to_non_nullable
+      generatingSwapInv: null == generatingSwapInv
+          ? _value.generatingSwapInv
+          : generatingSwapInv // ignore: cast_nullable_to_non_nullable
               as bool,
       swapTx: freezed == swapTx
           ? _value.swapTx
@@ -226,8 +226,8 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       String errCreatingInvoice,
       WalletBloc? walletBloc,
       ReceiveWalletType walletType,
-      String errGeneratingInvoice,
-      bool generatingInvoice,
+      String errCreatingSwapInv,
+      bool generatingSwapInv,
       SwapTx? swapTx,
       List<Transaction>? swapTxs});
 
@@ -262,8 +262,8 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
     Object? walletType = null,
-    Object? errGeneratingInvoice = null,
-    Object? generatingInvoice = null,
+    Object? errCreatingSwapInv = null,
+    Object? generatingSwapInv = null,
     Object? swapTx = freezed,
     Object? swapTxs = freezed,
   }) {
@@ -324,13 +324,13 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
           ? _value.walletType
           : walletType // ignore: cast_nullable_to_non_nullable
               as ReceiveWalletType,
-      errGeneratingInvoice: null == errGeneratingInvoice
-          ? _value.errGeneratingInvoice
-          : errGeneratingInvoice // ignore: cast_nullable_to_non_nullable
+      errCreatingSwapInv: null == errCreatingSwapInv
+          ? _value.errCreatingSwapInv
+          : errCreatingSwapInv // ignore: cast_nullable_to_non_nullable
               as String,
-      generatingInvoice: null == generatingInvoice
-          ? _value.generatingInvoice
-          : generatingInvoice // ignore: cast_nullable_to_non_nullable
+      generatingSwapInv: null == generatingSwapInv
+          ? _value.generatingSwapInv
+          : generatingSwapInv // ignore: cast_nullable_to_non_nullable
               as bool,
       swapTx: freezed == swapTx
           ? _value.swapTx
@@ -362,8 +362,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.errCreatingInvoice = '',
       this.walletBloc,
       this.walletType = ReceiveWalletType.secure,
-      this.errGeneratingInvoice = '',
-      this.generatingInvoice = false,
+      this.errCreatingSwapInv = '',
+      this.generatingSwapInv = false,
       this.swapTx,
       final List<Transaction>? swapTxs})
       : _swapTxs = swapTxs,
@@ -411,10 +411,10 @@ class _$ReceiveStateImpl extends _ReceiveState {
   final ReceiveWalletType walletType;
   @override
   @JsonKey()
-  final String errGeneratingInvoice;
+  final String errCreatingSwapInv;
   @override
   @JsonKey()
-  final bool generatingInvoice;
+  final bool generatingSwapInv;
   @override
   final SwapTx? swapTx;
   final List<Transaction>? _swapTxs;
@@ -429,7 +429,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, walletType: $walletType, errGeneratingInvoice: $errGeneratingInvoice, generatingInvoice: $generatingInvoice, swapTx: $swapTx, swapTxs: $swapTxs)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, walletType: $walletType, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, swapTx: $swapTx, swapTxs: $swapTxs)';
   }
 
   @override
@@ -465,10 +465,10 @@ class _$ReceiveStateImpl extends _ReceiveState {
                 other.walletBloc == walletBloc) &&
             (identical(other.walletType, walletType) ||
                 other.walletType == walletType) &&
-            (identical(other.errGeneratingInvoice, errGeneratingInvoice) ||
-                other.errGeneratingInvoice == errGeneratingInvoice) &&
-            (identical(other.generatingInvoice, generatingInvoice) ||
-                other.generatingInvoice == generatingInvoice) &&
+            (identical(other.errCreatingSwapInv, errCreatingSwapInv) ||
+                other.errCreatingSwapInv == errCreatingSwapInv) &&
+            (identical(other.generatingSwapInv, generatingSwapInv) ||
+                other.generatingSwapInv == generatingSwapInv) &&
             (identical(other.swapTx, swapTx) || other.swapTx == swapTx) &&
             const DeepCollectionEquality().equals(other._swapTxs, _swapTxs));
   }
@@ -490,8 +490,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
       errCreatingInvoice,
       walletBloc,
       walletType,
-      errGeneratingInvoice,
-      generatingInvoice,
+      errCreatingSwapInv,
+      generatingSwapInv,
       swapTx,
       const DeepCollectionEquality().hash(_swapTxs));
 
@@ -518,8 +518,8 @@ abstract class _ReceiveState extends ReceiveState {
       final String errCreatingInvoice,
       final WalletBloc? walletBloc,
       final ReceiveWalletType walletType,
-      final String errGeneratingInvoice,
-      final bool generatingInvoice,
+      final String errCreatingSwapInv,
+      final bool generatingSwapInv,
       final SwapTx? swapTx,
       final List<Transaction>? swapTxs}) = _$ReceiveStateImpl;
   const _ReceiveState._() : super._();
@@ -553,9 +553,9 @@ abstract class _ReceiveState extends ReceiveState {
   @override
   ReceiveWalletType get walletType;
   @override
-  String get errGeneratingInvoice;
+  String get errCreatingSwapInv;
   @override
-  bool get generatingInvoice;
+  bool get generatingSwapInv;
   @override
   SwapTx? get swapTx;
   @override
