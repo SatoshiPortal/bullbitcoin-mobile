@@ -46,9 +46,9 @@ class WalletUtxo {
             }
           } else {
             if (addr.state == AddressStatus.active) {
-              updatedAddress = updated.copyWith(state: AddressStatus.used, balance: 0);
+              updatedAddress = addr.copyWith(state: AddressStatus.used, balance: 0);
             } else {
-              updatedAddress = updated.copyWith(balance: 0);
+              updatedAddress = addr.copyWith(balance: 0);
             }
           }
           newAddresses.add(updatedAddress);
@@ -102,7 +102,6 @@ class WalletUtxo {
 
       //   newAddresses.add(updated);
       // }
-
 
       final w = wallet.copyWith(utxos: list, myAddressBook: newAddresses);
       return (w, null);
