@@ -259,9 +259,9 @@ class AdvancedOptionAdress extends StatelessWidget {
 
     final label = utxo.label ?? '';
 
-    final addessStr = utxo.address.address.substring(0, 5) +
+    final addessStr = utxo.txid.substring(0, 5) +
         '...' +
-        utxo.address.address.substring(utxo.address.address.length - 5) +
+        utxo.txid.substring(utxo.txid.length - 5) +
         ':' +
         utxo.txIndex.toString();
 
@@ -288,8 +288,17 @@ class AdvancedOptionAdress extends StatelessWidget {
               BBText.titleLarge(amt, isBold: true, textAlign: TextAlign.center),
               Row(
                 children: [
-                  const BBText.body('Address: '),
+                  const BBText.body('Utxo: '),
                   BBText.body(addessStr, isBold: true),
+                ],
+              ),
+              Row(
+                children: [
+                  const BBText.body('Address (debug): '),
+                  BBText.body(
+                    utxo.address.address.substring(utxo.address.address.length - 5),
+                    isBold: true,
+                  ),
                 ],
               ),
               const Gap(4),
