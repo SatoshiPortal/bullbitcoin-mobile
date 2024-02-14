@@ -27,6 +27,7 @@ class WalletUtxo {
         final addressStr = addresss.toString();
         AddressKind addressKind = AddressKind.deposit;
         String addressLabel = '';
+        bool spendable = true;
         for (final addr in myAddresses) {
           if (addr.address == addressStr) {
             addressLabel = addr.label ?? '';
@@ -36,6 +37,7 @@ class WalletUtxo {
               addressKind = AddressKind.deposit;
             }
           }
+          spendable = addr.spendable;
         }
         utxo = UTXO(
           txid: unspent.outpoint.txid,
@@ -43,7 +45,7 @@ class WalletUtxo {
           isSpent: unspent.isSpent,
           value: unspent.txout.value,
           label: addressLabel,
-          spendable: true,
+          spendable: spendable,
           address: Address(
             address: addressStr,
             kind: addressKind,
