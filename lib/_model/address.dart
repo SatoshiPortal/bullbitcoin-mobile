@@ -32,6 +32,7 @@ class Address with _$Address {
     // @Default(false) bool saving,
     // @Default('') String errSaving,
     @Default(0) int highestPreviousBalance,
+    @Default(0) int balance,
     // @JsonKey(
     //   includeFromJson: false,
     //   includeToJson: false,
@@ -44,7 +45,7 @@ class Address with _$Address {
   factory Address.fromJson(Map<String, dynamic> json) => _$AddressFromJson(json);
 
   int calculateBalance() {
-    return 0;
+    return balance;
     // TODO: UTXO
     /*
     return utxos?.fold(
@@ -56,7 +57,8 @@ class Address with _$Address {
   }
 
   int calculateBalanceLocal() {
-    return 0;
+    print('calculateBalanceLocal: $balance');
+    return balance;
     /*
     // TODO: UTXO
     return localUtxos?.fold(
@@ -115,6 +117,7 @@ class Address with _$Address {
 class UTXO with _$UTXO {
   factory UTXO({
     required String txid,
+    required int txIndex,
     required bool isSpent,
     required int value,
     required String label,
@@ -128,6 +131,7 @@ class UTXO with _$UTXO {
         .map(
           (utxo) => UTXO(
             txid: utxo.outpoint.txid,
+            txIndex: utxo.outpoint.vout,
             isSpent: utxo.isSpent,
             value: utxo.txout.value,
             label: '',

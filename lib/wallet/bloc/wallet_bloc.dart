@@ -328,7 +328,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     add(
       UpdateWallet(
-        walletWithTxAndAddresses, // TODO: UTXO
+        walletwithUtxos!, // TODO: UTXO
         // walletWithUtxos!, // TODO: UTXO
         saveToStorage: fromStorage,
         updateTypes: [UpdateWalletTypes.addresses, UpdateWalletTypes.transactions],

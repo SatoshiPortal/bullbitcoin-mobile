@@ -10,7 +10,8 @@ class WalletUtxo {
   }) async {
     try {
       final unspentList = await bdkWallet.listUnspent();
-      final myAddress = wallet.myAddressBook;
+      final List<Address> myAddresses = wallet.myAddressBook.toList();
+      final List<Address> newAddresses = [];
       // update these addresses state based on :
       // if state is used | unused && hasUtxos -> update to active
       // if state is active && !hasUtxos -> update to used
@@ -18,20 +19,56 @@ class WalletUtxo {
       final network = wallet.getBdkNetwork();
       if (network == null) return (null, Err('Network is null'));
 
+      final List<UTXO> list = [];
+
       for (final unspent in unspentList) {
         final UTXO utxo = UTXO(
           txid: unspent.outpoint.txid,
+          txIndex: unspent.outpoint.vout,
           isSpent: unspent.isSpent,
-          value: unspent.outpoint.vout,
+          value: unspent.txout.value,
           label: '',
         );
+        list.add(utxo);
       }
+
+      for (final addr in myAddresses) {
+        final List<UTXO> associatedUtxos = [];
+        int utxoIndex = 0;
+        for (final unspent in unspentList) {
+          final scr = await bdk.Script.create(unspent.txout.scriptPubkey.inner);
+          final addresss = await bdk.Address.fromScript(
+            scr,
+            network,
+          );
+          final addressStr = addresss.toString();
+
+          if (addr.address == addressStr) {
+            associatedUtxos.add(list[utxoIndex]);
+          }
+
+          utxoIndex++;
+        }
+
+        Address updated;
+        final int balance =
+            associatedUtxos.fold(0, (previousValue, element) => previousValue + element.value);
+        updated = addr.copyWith(balance: balance);
+        if ((addr.state == AddressStatus.used || addr.state == AddressStatus.unused) &&
+            associatedUtxos.isNotEmpty) {
+          updated = addr.copyWith(state: AddressStatus.active);
+          // TODO: Potential Issue: what happens when an existing wallet is synced freshly
+        } else if (addr.state == AddressStatus.active && associatedUtxos.isEmpty) {
+          updated = addr.copyWith(state: AddressStatus.used);
+        }
+
+        newAddresses.add(updated);
+      }
+      final w = wallet.copyWith(utxos: list, myAddressBook: newAddresses);
+      return (w, null);
       /*
-    final unspentList = await bdkWallet.listUnspent();
     final utxoUpdatedAddresses =
         wallet.myAddressBook.map((item) => item.copyWith(utxos: null)).toList();
-    final network = wallet.getBdkNetwork();
-    if (network == null) return (null, Err('Network is null'));
 
     for (final unspent in unspentList) {
       final scr = await bdk.Script.create(unspent.txout.scriptPubkey.inner);
@@ -87,8 +124,6 @@ class WalletUtxo {
     }
     final w = wallet.copyWith(myAddressBook: utxoUpdatedAddresses);
     */
-
-      return (wallet, null);
     } on Exception catch (e) {
       return (
         null,
