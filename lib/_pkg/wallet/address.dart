@@ -320,7 +320,7 @@ class WalletAddress {
           kind: kind,
           state: state,
           spendable: spendable,
-          highestPreviousBalance: existing.highestPreviousBalance,
+          highestPreviousBalance: existing.balance,
           // utxos: existing.utxos, // TODO: UTXO
           // localUtxos: UTXO.fromUTXOList(existing.utxos ?? []), // TODO: UTXO
         );

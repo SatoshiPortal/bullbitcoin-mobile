@@ -188,6 +188,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
                   kind: AddressKind.external,
                   state: AddressStatus.used,
                   highestPreviousBalance: outpoint.value,
+                  balance: outpoint.value,
                 ),
               );
             }
@@ -198,6 +199,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
                 kind: AddressKind.external,
                 state: AddressStatus.used,
                 highestPreviousBalance: outpoint.value,
+                balance: outpoint.value,
               ),
             );
           }
@@ -294,6 +296,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
                   kind: AddressKind.external,
                   state: AddressStatus.used,
                   highestPreviousBalance: outpoint.value,
+                  balance: outpoint.value,
                 ),
               );
             }
@@ -304,6 +307,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
                 kind: AddressKind.external,
                 state: AddressStatus.used,
                 highestPreviousBalance: outpoint.value,
+                balance: outpoint.value,
               ),
             );
           }

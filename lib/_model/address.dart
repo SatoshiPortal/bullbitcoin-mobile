@@ -122,6 +122,7 @@ class UTXO with _$UTXO {
     required int value,
     required String label,
     required Address address,
+    required bool spendable,
   }) = _UTXO;
   const UTXO._();
 
@@ -144,12 +145,19 @@ class UTXO with _$UTXO {
   */
 }
 
+// TODO: UTXO (Remove)
 extension X on List<Address> {
   bool containsAddress(Address address) =>
       where((addr) => addr.address == address.address).isNotEmpty;
 
   List<Address> removeAddress(Address address) =>
       where((addr) => addr.address != address.address).toList();
+}
+
+extension Y on List<UTXO> {
+  bool containsUtxo(UTXO utxo) => where((utx) => utx.address == utxo.address).isNotEmpty;
+
+  List<UTXO> removeUtxo(UTXO utxo) => where((utx) => utx.address != utxo.address).toList();
 }
 
 // @freezed

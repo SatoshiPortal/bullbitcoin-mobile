@@ -517,6 +517,7 @@ class WalletTx {
             kind: AddressKind.external,
             state: AddressStatus.used,
             highestPreviousBalance: amount,
+            balance: amount,
             label: note ?? '',
             spendable: false,
           );
@@ -526,6 +527,7 @@ class WalletTx {
             kind: AddressKind.change,
             state: AddressStatus.used,
             highestPreviousBalance: txOut.value,
+            balance: txOut.value,
             label: note ?? '',
           );
         }

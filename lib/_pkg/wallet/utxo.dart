@@ -28,6 +28,7 @@ class WalletUtxo {
           isSpent: unspent.isSpent,
           value: unspent.txout.value,
           label: '',
+          spendable: true,
           address: Address(
             address: '',
             kind: AddressKind.change,
@@ -50,7 +51,7 @@ class WalletUtxo {
 
           if (addr.address == addressStr) {
             associatedUtxos.add(list[utxoIndex]);
-            list[utxoIndex] = list[utxoIndex].copyWith(address: addr);
+            list[utxoIndex] = list[utxoIndex].copyWith(address: addr, spendable: addr.spendable);
           }
 
           utxoIndex++;

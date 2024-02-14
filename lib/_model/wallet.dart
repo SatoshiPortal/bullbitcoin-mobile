@@ -34,7 +34,7 @@ class Wallet with _$Wallet {
     Address? lastGeneratedAddress,
     @Default([]) List<Address> myAddressBook,
     List<Address>? externalAddressBook,
-    List<UTXO>? utxos,
+    @Default([]) List<UTXO> utxos,
     @Default([]) List<Transaction> transactions,
     @Default([]) List<Transaction> unsignedTxs,
     // List<String>? labelTags,

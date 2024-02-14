@@ -464,7 +464,7 @@ class CoinSelectionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalUTXOsSelected =
-        context.select((SendCubit cubit) => cubit.state.totalUTXOsSelected());
+        context.select((SendCubit cubit) => cubit.state.selectedUtxos.length);
 
     if (totalUTXOsSelected == 0) return Container();
 

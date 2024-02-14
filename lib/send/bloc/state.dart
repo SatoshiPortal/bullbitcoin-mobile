@@ -23,7 +23,7 @@ class SendState with _$SendState {
     @Default(false) bool downloaded,
     @Default(false) bool disableRBF,
     @Default(false) bool sendAllCoin,
-    @Default([]) List<Address> selectedAddresses,
+    @Default([]) List<UTXO> selectedUtxos,
     @Default('') String errAddresses,
     @Default(false) bool signed,
     String? psbtSigned,
@@ -33,36 +33,21 @@ class SendState with _$SendState {
   const SendState._();
 
   bool selectedAddressesHasEnoughCoins(int amount) {
-    final totalSelected = selectedAddresses.fold<int>(
-      0,
-      (previousValue, element) => previousValue + element.calculateBalance(),
-    );
-    return totalSelected >= amount;
+    return calculateTotalSelected() >= amount;
   }
 
   int calculateTotalSelected() {
-    return selectedAddresses.fold<int>(
+    return selectedUtxos.fold<int>(
       0,
-      (previousValue, element) => previousValue + element.calculateBalance(),
+      (previousValue, element) => previousValue + element.value,
     );
   }
 
-  int totalUTXOsSelected() {
-    return selectedAddresses.length;
-    /*
-    // TODO: UTXO
-    return selectedAddresses.fold<int>(
-      0,
-      (previousValue, element) => previousValue + (element.utxos ?? []).length,
-    );
-    */
-  }
-
-  bool addressIsSelected(Address address) => selectedAddresses.containsAddress(address);
+  bool utxoIsSelected(UTXO utxo) => selectedUtxos.containsUtxo(utxo);
 
   String advancedOptionsButtonText() {
-    if (selectedAddresses.isEmpty) return 'Advanced options';
+    if (selectedUtxos.isEmpty) return 'Advanced options';
 
-    return 'Selected ${selectedAddresses.length} addresses';
+    return 'Selected ${selectedUtxos.length} addresses';
   }
 }
