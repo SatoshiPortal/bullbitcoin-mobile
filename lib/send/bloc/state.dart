@@ -48,7 +48,7 @@ class SendState with _$SendState {
   }
 
   int totalUTXOsSelected() {
-    return 0;
+    return selectedAddresses.length;
     /*
     // TODO: UTXO
     return selectedAddresses.fold<int>(

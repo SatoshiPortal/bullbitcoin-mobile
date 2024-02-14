@@ -28,6 +28,11 @@ class WalletUtxo {
           isSpent: unspent.isSpent,
           value: unspent.txout.value,
           label: '',
+          address: Address(
+            address: '',
+            kind: AddressKind.change,
+            state: AddressStatus.active,
+          ),
         );
         list.add(utxo);
       }
@@ -45,6 +50,7 @@ class WalletUtxo {
 
           if (addr.address == addressStr) {
             associatedUtxos.add(list[utxoIndex]);
+            list[utxoIndex] = list[utxoIndex].copyWith(address: addr);
           }
 
           utxoIndex++;
@@ -57,7 +63,7 @@ class WalletUtxo {
         if ((addr.state == AddressStatus.used || addr.state == AddressStatus.unused) &&
             associatedUtxos.isNotEmpty) {
           updated = addr.copyWith(state: AddressStatus.active);
-          // TODO: Potential Issue: what happens when an existing wallet is synced freshly
+          // TODO: Potential Issue: what happens when an existing wallet is synced freshly, where status is unused, since sync is yet to complete
         } else if (addr.state == AddressStatus.active && associatedUtxos.isEmpty) {
           updated = addr.copyWith(state: AddressStatus.used);
         }

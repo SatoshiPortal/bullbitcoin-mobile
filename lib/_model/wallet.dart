@@ -56,13 +56,12 @@ class Wallet with _$Wallet {
     final List<Address> sortedAddresses = List.from(myAddressBook)
       ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
 
-    final int lastUsedIndex = sortedAddresses
-        .lastIndexWhere((address) => address.state == AddressStatus.used);
-    final int lastActiveIndex = sortedAddresses
-        .lastIndexWhere((address) => address.state == AddressStatus.active);
+    final int lastUsedIndex =
+        sortedAddresses.lastIndexWhere((address) => address.state == AddressStatus.used);
+    final int lastActiveIndex =
+        sortedAddresses.lastIndexWhere((address) => address.state == AddressStatus.active);
 
-    final lastIndexForGap =
-        (lastActiveIndex > lastUsedIndex) ? lastActiveIndex : lastUsedIndex;
+    final lastIndexForGap = (lastActiveIndex > lastUsedIndex) ? lastActiveIndex : lastUsedIndex;
     // If there's no address with status "used", return the count of all addresses as they're all unused
     if (lastIndexForGap == -1) {
       return sortedAddresses.length;
@@ -139,12 +138,15 @@ class Wallet with _$Wallet {
     return amt;
   }
 
+  // TODO: UTXO
+  // 1. Can rename this function to `getUTXOs`?
+  // 2. Rather than fetching this from address book, why can't we just return `utxos`?
+  // 3. Since each UTXO pay to a single address, have the address reference in UTXO itself.
+  // 4. Done as a new function
   List<Address> addressesWithBalanceAndActive() {
     return myAddressBook
         .where(
-          (addr) =>
-              addr.calculateBalanceLocal() > 0 &&
-              addr.state == AddressStatus.active,
+          (addr) => addr.calculateBalanceLocal() > 0 && addr.state == AddressStatus.active,
         )
         .toList();
   }
@@ -152,13 +154,9 @@ class Wallet with _$Wallet {
   List<Address> addressesWithoutBalance({bool isUsed = false}) {
     // TODO: UTXO
     if (!isUsed)
-      return myAddressBook
-          .where((addr) => addr.calculateBalance() == 0)
-          .toList();
+      return myAddressBook.where((addr) => addr.calculateBalance() == 0).toList();
     else
-      return myAddressBook
-          .where((addr) => addr.hasSpentAndNoBalance())
-          .toList();
+      return myAddressBook.where((addr) => addr.hasSpentAndNoBalance()).toList();
   }
 
   String getAddressFromTxid(String txid) {
@@ -172,7 +170,7 @@ class Wallet with _$Wallet {
   Address? findAddressInWallet(String address) {
     final completeAddressBook = [
       ...externalAddressBook ?? [],
-      ...myAddressBook
+      ...myAddressBook,
     ];
     for (final existingAddress in completeAddressBook) {
       if (address == existingAddress.address) return existingAddress;
@@ -180,10 +178,12 @@ class Wallet with _$Wallet {
     return null;
   }
 
-  Address? getAddressFromAddresses(String txid,
-      {bool isSend = false, AddressKind? kind}) {
-    for (final address
-        in (isSend ? externalAddressBook : myAddressBook) ?? <Address>[])
+  Address? getAddressFromAddresses(
+    String txid, {
+    bool isSend = false,
+    AddressKind? kind,
+  }) {
+    for (final address in (isSend ? externalAddressBook : myAddressBook) ?? <Address>[])
       if (isSend) {
         if (address.spentTxId == txid) {
           if (kind == null) {
@@ -281,16 +281,11 @@ class Wallet with _$Wallet {
   }
 
   List<Transaction> getPendingTxs() {
-    return transactions
-        .where((tx) => tx.timestamp == 0 && !tx.oldTx)
-        .toList()
-        .reversed
-        .toList();
+    return transactions.where((tx) => tx.timestamp == 0 && !tx.oldTx).toList().reversed.toList();
   }
 
   List<Transaction> getConfirmedTxs() {
-    final txs =
-        transactions.where((tx) => tx.timestamp != 0 && !tx.oldTx).toList();
+    final txs = transactions.where((tx) => tx.timestamp != 0 && !tx.oldTx).toList();
     txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return txs;
   }
@@ -347,16 +342,14 @@ class Wallet with _$Wallet {
   int frozenUTXOTotal() {
     final addresses = <Address>[
       ...myAddressBook,
-      ...externalAddressBook ?? <Address>[]
+      ...externalAddressBook ?? <Address>[],
     ];
     final unspendable = addresses.where((_) => !_.spendable).toList();
-    final totalFrozen =
-        unspendable.fold<int>(0, (value, _) => value + _.calculateBalance());
+    final totalFrozen = unspendable.fold<int>(0, (value, _) => value + _.calculateBalance());
     return totalFrozen;
   }
 
-  int balanceWithoutFrozenUTXOs() =>
-      (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
+  int balanceWithoutFrozenUTXOs() => (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
 }
 
 @freezed
@@ -371,8 +364,7 @@ class Balance with _$Balance {
   }) = _Balance;
   const Balance._();
 
-  factory Balance.fromJson(Map<String, dynamic> json) =>
-      _$BalanceFromJson(json);
+  factory Balance.fromJson(Map<String, dynamic> json) => _$BalanceFromJson(json);
 }
 
 String scriptTypeString(ScriptType scriptType) {
@@ -431,11 +423,6 @@ List<String> backupInstructions(bool hasPassphrase) {
   ];
 }
 
-
-
-
-
-
 // segwit -> BIP84 -> m/84'/0'/0'/0-1/* -> wpkh
 // compatible -> BIP49 -> m/49'/0'/0'/0-1/* -> sh-wpkh
-// legacy -> BIP44 -> m/44'/0'/0'/0-1/* -> pkh 
+// legacy -> BIP44 -> m/44'/0'/0'/0-1/* -> pkh

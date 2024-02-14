@@ -121,11 +121,13 @@ class UTXO with _$UTXO {
     required bool isSpent,
     required int value,
     required String label,
+    required Address address,
   }) = _UTXO;
   const UTXO._();
 
   factory UTXO.fromJson(Map<String, dynamic> json) => _$UTXOFromJson(json);
 
+/*
   static List<UTXO> fromUTXOList(List<bdk.LocalUtxo> utxos) {
     return utxos
         .map(
@@ -139,6 +141,7 @@ class UTXO with _$UTXO {
         )
         .toList();
   }
+  */
 }
 
 extension X on List<Address> {
