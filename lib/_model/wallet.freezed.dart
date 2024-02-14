@@ -35,7 +35,7 @@ mixin _$Wallet {
   Address? get lastGeneratedAddress => throw _privateConstructorUsedError;
   List<Address> get myAddressBook => throw _privateConstructorUsedError;
   List<Address>? get externalAddressBook => throw _privateConstructorUsedError;
-  List<UTXO>? get utxos => throw _privateConstructorUsedError;
+  List<UTXO> get utxos => throw _privateConstructorUsedError;
   List<Transaction> get transactions => throw _privateConstructorUsedError;
   List<Transaction> get unsignedTxs =>
       throw _privateConstructorUsedError; // List<String>? labelTags,
@@ -71,7 +71,7 @@ abstract class $WalletCopyWith<$Res> {
       Address? lastGeneratedAddress,
       List<Address> myAddressBook,
       List<Address>? externalAddressBook,
-      List<UTXO>? utxos,
+      List<UTXO> utxos,
       List<Transaction> transactions,
       List<Transaction> unsignedTxs,
       bool backupTested,
@@ -111,7 +111,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? lastGeneratedAddress = freezed,
     Object? myAddressBook = null,
     Object? externalAddressBook = freezed,
-    Object? utxos = freezed,
+    Object? utxos = null,
     Object? transactions = null,
     Object? unsignedTxs = null,
     Object? backupTested = null,
@@ -180,10 +180,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.externalAddressBook
           : externalAddressBook // ignore: cast_nullable_to_non_nullable
               as List<Address>?,
-      utxos: freezed == utxos
+      utxos: null == utxos
           ? _value.utxos
           : utxos // ignore: cast_nullable_to_non_nullable
-              as List<UTXO>?,
+              as List<UTXO>,
       transactions: null == transactions
           ? _value.transactions
           : transactions // ignore: cast_nullable_to_non_nullable
@@ -259,7 +259,7 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
       Address? lastGeneratedAddress,
       List<Address> myAddressBook,
       List<Address>? externalAddressBook,
-      List<UTXO>? utxos,
+      List<UTXO> utxos,
       List<Transaction> transactions,
       List<Transaction> unsignedTxs,
       bool backupTested,
@@ -299,7 +299,7 @@ class __$$WalletImplCopyWithImpl<$Res>
     Object? lastGeneratedAddress = freezed,
     Object? myAddressBook = null,
     Object? externalAddressBook = freezed,
-    Object? utxos = freezed,
+    Object? utxos = null,
     Object? transactions = null,
     Object? unsignedTxs = null,
     Object? backupTested = null,
@@ -368,10 +368,10 @@ class __$$WalletImplCopyWithImpl<$Res>
           ? _value._externalAddressBook
           : externalAddressBook // ignore: cast_nullable_to_non_nullable
               as List<Address>?,
-      utxos: freezed == utxos
+      utxos: null == utxos
           ? _value._utxos
           : utxos // ignore: cast_nullable_to_non_nullable
-              as List<UTXO>?,
+              as List<UTXO>,
       transactions: null == transactions
           ? _value._transactions
           : transactions // ignore: cast_nullable_to_non_nullable
@@ -419,7 +419,7 @@ class _$WalletImpl extends _Wallet {
       this.lastGeneratedAddress,
       final List<Address> myAddressBook = const [],
       final List<Address>? externalAddressBook,
-      final List<UTXO>? utxos,
+      final List<UTXO> utxos = const [],
       final List<Transaction> transactions = const [],
       final List<Transaction> unsignedTxs = const [],
       this.backupTested = false,
@@ -487,14 +487,13 @@ class _$WalletImpl extends _Wallet {
     return EqualUnmodifiableListView(value);
   }
 
-  final List<UTXO>? _utxos;
+  final List<UTXO> _utxos;
   @override
-  List<UTXO>? get utxos {
-    final value = _utxos;
-    if (value == null) return null;
+  @JsonKey()
+  List<UTXO> get utxos {
     if (_utxos is EqualUnmodifiableListView) return _utxos;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
+    return EqualUnmodifiableListView(_utxos);
   }
 
   final List<Transaction> _transactions;
@@ -638,7 +637,7 @@ abstract class _Wallet extends Wallet {
       final Address? lastGeneratedAddress,
       final List<Address> myAddressBook,
       final List<Address>? externalAddressBook,
-      final List<UTXO>? utxos,
+      final List<UTXO> utxos,
       final List<Transaction> transactions,
       final List<Transaction> unsignedTxs,
       final bool backupTested,
@@ -680,7 +679,7 @@ abstract class _Wallet extends Wallet {
   @override
   List<Address>? get externalAddressBook;
   @override
-  List<UTXO>? get utxos;
+  List<UTXO> get utxos;
   @override
   List<Transaction> get transactions;
   @override

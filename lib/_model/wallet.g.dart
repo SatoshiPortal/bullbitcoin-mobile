@@ -35,8 +35,9 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
           ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
           .toList(),
       utxos: (json['utxos'] as List<dynamic>?)
-          ?.map((e) => UTXO.fromJson(e as Map<String, dynamic>))
-          .toList(),
+              ?.map((e) => UTXO.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       transactions: (json['transactions'] as List<dynamic>?)
               ?.map((e) => Transaction.fromJson(e as Map<String, dynamic>))
               .toList() ??

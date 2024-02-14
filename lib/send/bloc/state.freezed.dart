@@ -31,7 +31,7 @@ mixin _$SendState {
   bool get downloaded => throw _privateConstructorUsedError;
   bool get disableRBF => throw _privateConstructorUsedError;
   bool get sendAllCoin => throw _privateConstructorUsedError;
-  List<Address> get selectedAddresses => throw _privateConstructorUsedError;
+  List<UTXO> get selectedUtxos => throw _privateConstructorUsedError;
   String get errAddresses => throw _privateConstructorUsedError;
   bool get signed => throw _privateConstructorUsedError;
   String? get psbtSigned => throw _privateConstructorUsedError;
@@ -64,7 +64,7 @@ abstract class $SendStateCopyWith<$Res> {
       bool downloaded,
       bool disableRBF,
       bool sendAllCoin,
-      List<Address> selectedAddresses,
+      List<UTXO> selectedUtxos,
       String errAddresses,
       bool signed,
       String? psbtSigned,
@@ -102,7 +102,7 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? downloaded = null,
     Object? disableRBF = null,
     Object? sendAllCoin = null,
-    Object? selectedAddresses = null,
+    Object? selectedUtxos = null,
     Object? errAddresses = null,
     Object? signed = null,
     Object? psbtSigned = freezed,
@@ -170,10 +170,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.sendAllCoin
           : sendAllCoin // ignore: cast_nullable_to_non_nullable
               as bool,
-      selectedAddresses: null == selectedAddresses
-          ? _value.selectedAddresses
-          : selectedAddresses // ignore: cast_nullable_to_non_nullable
-              as List<Address>,
+      selectedUtxos: null == selectedUtxos
+          ? _value.selectedUtxos
+          : selectedUtxos // ignore: cast_nullable_to_non_nullable
+              as List<UTXO>,
       errAddresses: null == errAddresses
           ? _value.errAddresses
           : errAddresses // ignore: cast_nullable_to_non_nullable
@@ -234,7 +234,7 @@ abstract class _$$SendStateImplCopyWith<$Res>
       bool downloaded,
       bool disableRBF,
       bool sendAllCoin,
-      List<Address> selectedAddresses,
+      List<UTXO> selectedUtxos,
       String errAddresses,
       bool signed,
       String? psbtSigned,
@@ -271,7 +271,7 @@ class __$$SendStateImplCopyWithImpl<$Res>
     Object? downloaded = null,
     Object? disableRBF = null,
     Object? sendAllCoin = null,
-    Object? selectedAddresses = null,
+    Object? selectedUtxos = null,
     Object? errAddresses = null,
     Object? signed = null,
     Object? psbtSigned = freezed,
@@ -339,10 +339,10 @@ class __$$SendStateImplCopyWithImpl<$Res>
           ? _value.sendAllCoin
           : sendAllCoin // ignore: cast_nullable_to_non_nullable
               as bool,
-      selectedAddresses: null == selectedAddresses
-          ? _value._selectedAddresses
-          : selectedAddresses // ignore: cast_nullable_to_non_nullable
-              as List<Address>,
+      selectedUtxos: null == selectedUtxos
+          ? _value._selectedUtxos
+          : selectedUtxos // ignore: cast_nullable_to_non_nullable
+              as List<UTXO>,
       errAddresses: null == errAddresses
           ? _value.errAddresses
           : errAddresses // ignore: cast_nullable_to_non_nullable
@@ -386,13 +386,13 @@ class _$SendStateImpl extends _SendState {
       this.downloaded = false,
       this.disableRBF = false,
       this.sendAllCoin = false,
-      final List<Address> selectedAddresses = const [],
+      final List<UTXO> selectedUtxos = const [],
       this.errAddresses = '',
       this.signed = false,
       this.psbtSigned,
       this.psbtSignedFeeAmount,
       this.selectedWalletBloc})
-      : _selectedAddresses = selectedAddresses,
+      : _selectedUtxos = selectedUtxos,
         super._();
 
   @override
@@ -439,14 +439,13 @@ class _$SendStateImpl extends _SendState {
   @override
   @JsonKey()
   final bool sendAllCoin;
-  final List<Address> _selectedAddresses;
+  final List<UTXO> _selectedUtxos;
   @override
   @JsonKey()
-  List<Address> get selectedAddresses {
-    if (_selectedAddresses is EqualUnmodifiableListView)
-      return _selectedAddresses;
+  List<UTXO> get selectedUtxos {
+    if (_selectedUtxos is EqualUnmodifiableListView) return _selectedUtxos;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_selectedAddresses);
+    return EqualUnmodifiableListView(_selectedUtxos);
   }
 
   @override
@@ -464,7 +463,7 @@ class _$SendStateImpl extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedAddresses: $selectedAddresses, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedWalletBloc: $selectedWalletBloc)';
+    return 'SendState(address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedWalletBloc: $selectedWalletBloc)';
   }
 
   @override
@@ -497,7 +496,7 @@ class _$SendStateImpl extends _SendState {
             (identical(other.sendAllCoin, sendAllCoin) ||
                 other.sendAllCoin == sendAllCoin) &&
             const DeepCollectionEquality()
-                .equals(other._selectedAddresses, _selectedAddresses) &&
+                .equals(other._selectedUtxos, _selectedUtxos) &&
             (identical(other.errAddresses, errAddresses) ||
                 other.errAddresses == errAddresses) &&
             (identical(other.signed, signed) || other.signed == signed) &&
@@ -527,7 +526,7 @@ class _$SendStateImpl extends _SendState {
         downloaded,
         disableRBF,
         sendAllCoin,
-        const DeepCollectionEquality().hash(_selectedAddresses),
+        const DeepCollectionEquality().hash(_selectedUtxos),
         errAddresses,
         signed,
         psbtSigned,
@@ -559,7 +558,7 @@ abstract class _SendState extends SendState {
       final bool downloaded,
       final bool disableRBF,
       final bool sendAllCoin,
-      final List<Address> selectedAddresses,
+      final List<UTXO> selectedUtxos,
       final String errAddresses,
       final bool signed,
       final String? psbtSigned,
@@ -598,7 +597,7 @@ abstract class _SendState extends SendState {
   @override
   bool get sendAllCoin;
   @override
-  List<Address> get selectedAddresses;
+  List<UTXO> get selectedUtxos;
   @override
   String get errAddresses;
   @override
