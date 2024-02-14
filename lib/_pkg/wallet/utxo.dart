@@ -63,10 +63,10 @@ class WalletUtxo {
         updated = addr.copyWith(balance: balance);
         if ((addr.state == AddressStatus.used || addr.state == AddressStatus.unused) &&
             associatedUtxos.isNotEmpty) {
-          updated = addr.copyWith(state: AddressStatus.active);
+          updated = updated.copyWith(state: AddressStatus.active);
           // TODO: Potential Issue: what happens when an existing wallet is synced freshly, where status is unused, since sync is yet to complete
         } else if (addr.state == AddressStatus.active && associatedUtxos.isEmpty) {
-          updated = addr.copyWith(state: AddressStatus.used);
+          updated = updated.copyWith(state: AddressStatus.used);
         }
 
         newAddresses.add(updated);

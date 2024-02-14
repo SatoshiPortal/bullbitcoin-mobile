@@ -331,7 +331,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         walletwithUtxos!, // TODO: UTXO
         // walletWithUtxos!, // TODO: UTXO
         saveToStorage: fromStorage,
-        updateTypes: [UpdateWalletTypes.addresses, UpdateWalletTypes.transactions],
+        updateTypes: [
+          UpdateWalletTypes.addresses,
+          UpdateWalletTypes.transactions,
+          UpdateWalletTypes.utxos
+        ],
       ),
     );
   }
@@ -417,6 +421,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           if (eventWallet.lastGeneratedAddress != null)
             storageWallet = storageWallet!.copyWith(
               lastGeneratedAddress: eventWallet.lastGeneratedAddress,
+            );
+
+        case UpdateWalletTypes.utxos:
+          if (eventWallet.utxos.isNotEmpty)
+            storageWallet = storageWallet!.copyWith(
+              utxos: eventWallet.utxos,
             );
 
         case UpdateWalletTypes.settings:

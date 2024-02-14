@@ -210,7 +210,7 @@ class AddressSelectionPopUp extends StatelessWidget {
             ),
           ],
           const Gap(24),
-          if (utxos.isEmpty) const BBText.body('No addresses available'),
+          if (utxos.isEmpty) const BBText.body('No utxos available'),
           for (final utxo in utxos) ...[
             AdvancedOptionAdress(utxo: utxo),
             const Gap(16),
@@ -261,7 +261,9 @@ class AdvancedOptionAdress extends StatelessWidget {
 
     final addessStr = utxo.address.address.substring(0, 5) +
         '...' +
-        utxo.address.address.substring(utxo.address.address.length - 5);
+        utxo.address.address.substring(utxo.address.address.length - 5) +
+        ':' +
+        utxo.txIndex.toString();
 
     return AnimatedOpacity(
       opacity: isFrozen ? 0.5 : 1,

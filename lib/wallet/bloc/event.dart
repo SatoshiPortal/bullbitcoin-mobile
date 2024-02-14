@@ -33,4 +33,4 @@ class GetFirstAddress extends WalletEvent {}
 
 class GetNewAddress extends WalletEvent {}
 
-enum UpdateWalletTypes { load, balance, transactions, addresses, settings }
+enum UpdateWalletTypes { load, balance, transactions, addresses, settings, utxos }
