@@ -48,10 +48,14 @@ class SendState with _$SendState {
   }
 
   int totalUTXOsSelected() {
+    return 0;
+    /*
+    // TODO: UTXO
     return selectedAddresses.fold<int>(
       0,
       (previousValue, element) => previousValue + (element.utxos ?? []).length,
     );
+    */
   }
 
   bool addressIsSelected(Address address) => selectedAddresses.containsAddress(address);

@@ -204,6 +204,7 @@ class WalletAddress {
     }
   }
 
+/*
   Future<(Wallet?, Err?)> updateUtxos({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
@@ -215,7 +216,9 @@ class WalletAddress {
       final network = wallet.getBdkNetwork();
       if (network == null) return (null, Err('Network is null'));
 
+      // For each unspent from bdk
       for (final unspent in unspentList) {
+        // Find the received Address in txout
         final scr = await bdk.Script.create(unspent.txout.scriptPubkey.inner);
         final addresss = await bdk.Address.fromScript(
           scr,
@@ -225,6 +228,7 @@ class WalletAddress {
 
         late bool isRelated = false;
         // late String txLabel = '';
+        // find any address in myAddressBook that matches the received address. If not, create a new change address
         final address = utxoUpdatedAddresses.firstWhere(
           (a) => a.address == addressStr,
           // if the address does not exist, its because its new change
@@ -236,6 +240,7 @@ class WalletAddress {
           ),
         );
 
+        // match this address with txn list in wallet.
         final List<bdk.LocalUtxo> utxos = address.utxos?.toList() ?? [];
         for (final tx in wallet.transactions) {
           for (final addrs in tx.outAddrs) {
@@ -281,6 +286,7 @@ class WalletAddress {
       );
     }
   }
+  */
 
   Future<(Address, Wallet)> addAddressToWallet({
     required (int?, String) address,
@@ -315,8 +321,8 @@ class WalletAddress {
           state: state,
           spendable: spendable,
           highestPreviousBalance: existing.highestPreviousBalance,
-          utxos: existing.utxos,
-          localUtxos: UTXO.fromUTXOList(existing.utxos ?? []),
+          // utxos: existing.utxos, // TODO: UTXO
+          // localUtxos: UTXO.fromUTXOList(existing.utxos ?? []), // TODO: UTXO
         );
         addresses.insert(existingIdx, updated);
       } else {

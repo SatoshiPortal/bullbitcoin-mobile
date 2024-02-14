@@ -26,13 +26,10 @@ mixin _$Address {
   AddressStatus get state => throw _privateConstructorUsedError;
   String? get label => throw _privateConstructorUsedError;
   String? get spentTxId => throw _privateConstructorUsedError;
-  bool get spendable => throw _privateConstructorUsedError;
-  bool get saving => throw _privateConstructorUsedError;
-  String get errSaving => throw _privateConstructorUsedError;
+  bool get spendable =>
+      throw _privateConstructorUsedError; // @Default(false) bool saving,
+// @Default('') String errSaving,
   int get highestPreviousBalance => throw _privateConstructorUsedError;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  List<LocalUtxo>? get utxos => throw _privateConstructorUsedError;
-  List<UTXO>? get localUtxos => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -52,12 +49,7 @@ abstract class $AddressCopyWith<$Res> {
       String? label,
       String? spentTxId,
       bool spendable,
-      bool saving,
-      String errSaving,
-      int highestPreviousBalance,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      List<LocalUtxo>? utxos,
-      List<UTXO>? localUtxos});
+      int highestPreviousBalance});
 }
 
 /// @nodoc
@@ -80,11 +72,7 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
     Object? label = freezed,
     Object? spentTxId = freezed,
     Object? spendable = null,
-    Object? saving = null,
-    Object? errSaving = null,
     Object? highestPreviousBalance = null,
-    Object? utxos = freezed,
-    Object? localUtxos = freezed,
   }) {
     return _then(_value.copyWith(
       address: null == address
@@ -115,26 +103,10 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
           ? _value.spendable
           : spendable // ignore: cast_nullable_to_non_nullable
               as bool,
-      saving: null == saving
-          ? _value.saving
-          : saving // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errSaving: null == errSaving
-          ? _value.errSaving
-          : errSaving // ignore: cast_nullable_to_non_nullable
-              as String,
       highestPreviousBalance: null == highestPreviousBalance
           ? _value.highestPreviousBalance
           : highestPreviousBalance // ignore: cast_nullable_to_non_nullable
               as int,
-      utxos: freezed == utxos
-          ? _value.utxos
-          : utxos // ignore: cast_nullable_to_non_nullable
-              as List<LocalUtxo>?,
-      localUtxos: freezed == localUtxos
-          ? _value.localUtxos
-          : localUtxos // ignore: cast_nullable_to_non_nullable
-              as List<UTXO>?,
     ) as $Val);
   }
 }
@@ -154,12 +126,7 @@ abstract class _$$AddressImplCopyWith<$Res> implements $AddressCopyWith<$Res> {
       String? label,
       String? spentTxId,
       bool spendable,
-      bool saving,
-      String errSaving,
-      int highestPreviousBalance,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      List<LocalUtxo>? utxos,
-      List<UTXO>? localUtxos});
+      int highestPreviousBalance});
 }
 
 /// @nodoc
@@ -180,11 +147,7 @@ class __$$AddressImplCopyWithImpl<$Res>
     Object? label = freezed,
     Object? spentTxId = freezed,
     Object? spendable = null,
-    Object? saving = null,
-    Object? errSaving = null,
     Object? highestPreviousBalance = null,
-    Object? utxos = freezed,
-    Object? localUtxos = freezed,
   }) {
     return _then(_$AddressImpl(
       address: null == address
@@ -215,26 +178,10 @@ class __$$AddressImplCopyWithImpl<$Res>
           ? _value.spendable
           : spendable // ignore: cast_nullable_to_non_nullable
               as bool,
-      saving: null == saving
-          ? _value.saving
-          : saving // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errSaving: null == errSaving
-          ? _value.errSaving
-          : errSaving // ignore: cast_nullable_to_non_nullable
-              as String,
       highestPreviousBalance: null == highestPreviousBalance
           ? _value.highestPreviousBalance
           : highestPreviousBalance // ignore: cast_nullable_to_non_nullable
               as int,
-      utxos: freezed == utxos
-          ? _value._utxos
-          : utxos // ignore: cast_nullable_to_non_nullable
-              as List<LocalUtxo>?,
-      localUtxos: freezed == localUtxos
-          ? _value._localUtxos
-          : localUtxos // ignore: cast_nullable_to_non_nullable
-              as List<UTXO>?,
     ));
   }
 }
@@ -250,15 +197,8 @@ class _$AddressImpl extends _Address {
       this.label,
       this.spentTxId,
       this.spendable = true,
-      this.saving = false,
-      this.errSaving = '',
-      this.highestPreviousBalance = 0,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      final List<LocalUtxo>? utxos,
-      final List<UTXO>? localUtxos})
-      : _utxos = utxos,
-        _localUtxos = localUtxos,
-        super._();
+      this.highestPreviousBalance = 0})
+      : super._();
 
   factory _$AddressImpl.fromJson(Map<String, dynamic> json) =>
       _$$AddressImplFromJson(json);
@@ -278,39 +218,15 @@ class _$AddressImpl extends _Address {
   @override
   @JsonKey()
   final bool spendable;
-  @override
-  @JsonKey()
-  final bool saving;
-  @override
-  @JsonKey()
-  final String errSaving;
+// @Default(false) bool saving,
+// @Default('') String errSaving,
   @override
   @JsonKey()
   final int highestPreviousBalance;
-  final List<LocalUtxo>? _utxos;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  List<LocalUtxo>? get utxos {
-    final value = _utxos;
-    if (value == null) return null;
-    if (_utxos is EqualUnmodifiableListView) return _utxos;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-  final List<UTXO>? _localUtxos;
-  @override
-  List<UTXO>? get localUtxos {
-    final value = _localUtxos;
-    if (value == null) return null;
-    if (_localUtxos is EqualUnmodifiableListView) return _localUtxos;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
 
   @override
   String toString() {
-    return 'Address(address: $address, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, saving: $saving, errSaving: $errSaving, highestPreviousBalance: $highestPreviousBalance, utxos: $utxos, localUtxos: $localUtxos)';
+    return 'Address(address: $address, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, highestPreviousBalance: $highestPreviousBalance)';
   }
 
   @override
@@ -327,32 +243,14 @@ class _$AddressImpl extends _Address {
                 other.spentTxId == spentTxId) &&
             (identical(other.spendable, spendable) ||
                 other.spendable == spendable) &&
-            (identical(other.saving, saving) || other.saving == saving) &&
-            (identical(other.errSaving, errSaving) ||
-                other.errSaving == errSaving) &&
             (identical(other.highestPreviousBalance, highestPreviousBalance) ||
-                other.highestPreviousBalance == highestPreviousBalance) &&
-            const DeepCollectionEquality().equals(other._utxos, _utxos) &&
-            const DeepCollectionEquality()
-                .equals(other._localUtxos, _localUtxos));
+                other.highestPreviousBalance == highestPreviousBalance));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      address,
-      index,
-      kind,
-      state,
-      label,
-      spentTxId,
-      spendable,
-      saving,
-      errSaving,
-      highestPreviousBalance,
-      const DeepCollectionEquality().hash(_utxos),
-      const DeepCollectionEquality().hash(_localUtxos));
+  int get hashCode => Object.hash(runtimeType, address, index, kind, state,
+      label, spentTxId, spendable, highestPreviousBalance);
 
   @JsonKey(ignore: true)
   @override
@@ -377,12 +275,7 @@ abstract class _Address extends Address {
       final String? label,
       final String? spentTxId,
       final bool spendable,
-      final bool saving,
-      final String errSaving,
-      final int highestPreviousBalance,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      final List<LocalUtxo>? utxos,
-      final List<UTXO>? localUtxos}) = _$AddressImpl;
+      final int highestPreviousBalance}) = _$AddressImpl;
   _Address._() : super._();
 
   factory _Address.fromJson(Map<String, dynamic> json) = _$AddressImpl.fromJson;
@@ -401,17 +294,9 @@ abstract class _Address extends Address {
   String? get spentTxId;
   @override
   bool get spendable;
-  @override
-  bool get saving;
-  @override
-  String get errSaving;
-  @override
+  @override // @Default(false) bool saving,
+// @Default('') String errSaving,
   int get highestPreviousBalance;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  List<LocalUtxo>? get utxos;
-  @override
-  List<UTXO>? get localUtxos;
   @override
   @JsonKey(ignore: true)
   _$$AddressImplCopyWith<_$AddressImpl> get copyWith =>
@@ -427,6 +312,7 @@ mixin _$UTXO {
   String get txid => throw _privateConstructorUsedError;
   bool get isSpent => throw _privateConstructorUsedError;
   int get value => throw _privateConstructorUsedError;
+  String get label => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -438,7 +324,7 @@ abstract class $UTXOCopyWith<$Res> {
   factory $UTXOCopyWith(UTXO value, $Res Function(UTXO) then) =
       _$UTXOCopyWithImpl<$Res, UTXO>;
   @useResult
-  $Res call({String txid, bool isSpent, int value});
+  $Res call({String txid, bool isSpent, int value, String label});
 }
 
 /// @nodoc
@@ -457,6 +343,7 @@ class _$UTXOCopyWithImpl<$Res, $Val extends UTXO>
     Object? txid = null,
     Object? isSpent = null,
     Object? value = null,
+    Object? label = null,
   }) {
     return _then(_value.copyWith(
       txid: null == txid
@@ -471,6 +358,10 @@ class _$UTXOCopyWithImpl<$Res, $Val extends UTXO>
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
               as int,
+      label: null == label
+          ? _value.label
+          : label // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -482,7 +373,7 @@ abstract class _$$UTXOImplCopyWith<$Res> implements $UTXOCopyWith<$Res> {
       __$$UTXOImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String txid, bool isSpent, int value});
+  $Res call({String txid, bool isSpent, int value, String label});
 }
 
 /// @nodoc
@@ -498,6 +389,7 @@ class __$$UTXOImplCopyWithImpl<$Res>
     Object? txid = null,
     Object? isSpent = null,
     Object? value = null,
+    Object? label = null,
   }) {
     return _then(_$UTXOImpl(
       txid: null == txid
@@ -512,6 +404,10 @@ class __$$UTXOImplCopyWithImpl<$Res>
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
               as int,
+      label: null == label
+          ? _value.label
+          : label // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -519,7 +415,11 @@ class __$$UTXOImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$UTXOImpl extends _UTXO {
-  _$UTXOImpl({required this.txid, required this.isSpent, required this.value})
+  _$UTXOImpl(
+      {required this.txid,
+      required this.isSpent,
+      required this.value,
+      required this.label})
       : super._();
 
   factory _$UTXOImpl.fromJson(Map<String, dynamic> json) =>
@@ -531,10 +431,12 @@ class _$UTXOImpl extends _UTXO {
   final bool isSpent;
   @override
   final int value;
+  @override
+  final String label;
 
   @override
   String toString() {
-    return 'UTXO(txid: $txid, isSpent: $isSpent, value: $value)';
+    return 'UTXO(txid: $txid, isSpent: $isSpent, value: $value, label: $label)';
   }
 
   @override
@@ -544,12 +446,13 @@ class _$UTXOImpl extends _UTXO {
             other is _$UTXOImpl &&
             (identical(other.txid, txid) || other.txid == txid) &&
             (identical(other.isSpent, isSpent) || other.isSpent == isSpent) &&
-            (identical(other.value, value) || other.value == value));
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.label, label) || other.label == label));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, txid, isSpent, value);
+  int get hashCode => Object.hash(runtimeType, txid, isSpent, value, label);
 
   @JsonKey(ignore: true)
   @override
@@ -569,7 +472,8 @@ abstract class _UTXO extends UTXO {
   factory _UTXO(
       {required final String txid,
       required final bool isSpent,
-      required final int value}) = _$UTXOImpl;
+      required final int value,
+      required final String label}) = _$UTXOImpl;
   _UTXO._() : super._();
 
   factory _UTXO.fromJson(Map<String, dynamic> json) = _$UTXOImpl.fromJson;
@@ -580,6 +484,8 @@ abstract class _UTXO extends UTXO {
   bool get isSpent;
   @override
   int get value;
+  @override
+  String get label;
   @override
   @JsonKey(ignore: true)
   _$$UTXOImplCopyWith<_$UTXOImpl> get copyWith =>

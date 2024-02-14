@@ -214,8 +214,8 @@ class AddressActions extends StatelessWidget {
       (AddressCubit cubit) => cubit.state.address!.spendable == false,
     );
     final freezing = context.select((AddressCubit cubit) => cubit.state.freezingAddress);
-    final hasUtxos =
-        context.select((AddressCubit cubit) => cubit.state.address!.utxos?.isNotEmpty ?? false);
+    const hasUtxos = false;
+    //TODO: UTXO context.select((AddressCubit cubit) => cubit.state.address!.utxos?.isNotEmpty ?? false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

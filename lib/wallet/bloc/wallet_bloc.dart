@@ -12,6 +12,7 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/utxo.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -33,6 +34,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.walletTransaction,
     required this.walletBalance,
     required this.walletAddress,
+    required this.walletUtxo,
     required this.walletUpdate,
     required this.networkCubit,
     this.fromStorage = true,
@@ -58,6 +60,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletTx walletTransaction;
   final WalletBalance walletBalance;
   final WalletAddress walletAddress;
+  final WalletUtxo walletUtxo;
   final WalletUpdate walletUpdate;
   final NetworkCubit networkCubit;
 
@@ -294,6 +297,20 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
+    final (walletwithUtxos, err5) =
+        await walletUtxo.loadUtxos(wallet: walletWithTxAndAddresses!, bdkWallet: state.bdkWallet!);
+    if (err5 != null) {
+      emit(
+        state.copyWith(
+          errSyncingAddresses: err5.toString(),
+          syncingAddresses: false,
+        ),
+      );
+      return;
+    }
+
+    // TODO: UTXO
+    /*
     final (walletWithUtxos, err5) = await walletAddress.updateUtxos(
       bdkWallet: state.bdkWallet!,
       wallet: walletWithTxAndAddresses!,
@@ -307,10 +324,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
       return;
     }
+    */
 
     add(
       UpdateWallet(
-        walletWithUtxos!,
+        walletWithTxAndAddresses, // TODO: UTXO
+        // walletWithUtxos!, // TODO: UTXO
         saveToStorage: fromStorage,
         updateTypes: [UpdateWalletTypes.addresses, UpdateWalletTypes.transactions],
       ),

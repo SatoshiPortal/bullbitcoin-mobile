@@ -35,6 +35,7 @@ mixin _$Wallet {
   Address? get lastGeneratedAddress => throw _privateConstructorUsedError;
   List<Address> get myAddressBook => throw _privateConstructorUsedError;
   List<Address>? get externalAddressBook => throw _privateConstructorUsedError;
+  List<UTXO>? get utxos => throw _privateConstructorUsedError;
   List<Transaction> get transactions => throw _privateConstructorUsedError;
   List<Transaction> get unsignedTxs =>
       throw _privateConstructorUsedError; // List<String>? labelTags,
@@ -70,6 +71,7 @@ abstract class $WalletCopyWith<$Res> {
       Address? lastGeneratedAddress,
       List<Address> myAddressBook,
       List<Address>? externalAddressBook,
+      List<UTXO>? utxos,
       List<Transaction> transactions,
       List<Transaction> unsignedTxs,
       bool backupTested,
@@ -109,6 +111,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? lastGeneratedAddress = freezed,
     Object? myAddressBook = null,
     Object? externalAddressBook = freezed,
+    Object? utxos = freezed,
     Object? transactions = null,
     Object? unsignedTxs = null,
     Object? backupTested = null,
@@ -177,6 +180,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.externalAddressBook
           : externalAddressBook // ignore: cast_nullable_to_non_nullable
               as List<Address>?,
+      utxos: freezed == utxos
+          ? _value.utxos
+          : utxos // ignore: cast_nullable_to_non_nullable
+              as List<UTXO>?,
       transactions: null == transactions
           ? _value.transactions
           : transactions // ignore: cast_nullable_to_non_nullable
@@ -252,6 +259,7 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
       Address? lastGeneratedAddress,
       List<Address> myAddressBook,
       List<Address>? externalAddressBook,
+      List<UTXO>? utxos,
       List<Transaction> transactions,
       List<Transaction> unsignedTxs,
       bool backupTested,
@@ -291,6 +299,7 @@ class __$$WalletImplCopyWithImpl<$Res>
     Object? lastGeneratedAddress = freezed,
     Object? myAddressBook = null,
     Object? externalAddressBook = freezed,
+    Object? utxos = freezed,
     Object? transactions = null,
     Object? unsignedTxs = null,
     Object? backupTested = null,
@@ -359,6 +368,10 @@ class __$$WalletImplCopyWithImpl<$Res>
           ? _value._externalAddressBook
           : externalAddressBook // ignore: cast_nullable_to_non_nullable
               as List<Address>?,
+      utxos: freezed == utxos
+          ? _value._utxos
+          : utxos // ignore: cast_nullable_to_non_nullable
+              as List<UTXO>?,
       transactions: null == transactions
           ? _value._transactions
           : transactions // ignore: cast_nullable_to_non_nullable
@@ -406,6 +419,7 @@ class _$WalletImpl extends _Wallet {
       this.lastGeneratedAddress,
       final List<Address> myAddressBook = const [],
       final List<Address>? externalAddressBook,
+      final List<UTXO>? utxos,
       final List<Transaction> transactions = const [],
       final List<Transaction> unsignedTxs = const [],
       this.backupTested = false,
@@ -414,6 +428,7 @@ class _$WalletImpl extends _Wallet {
       this.swapTxCount = 0})
       : _myAddressBook = myAddressBook,
         _externalAddressBook = externalAddressBook,
+        _utxos = utxos,
         _transactions = transactions,
         _unsignedTxs = unsignedTxs,
         super._();
@@ -472,6 +487,16 @@ class _$WalletImpl extends _Wallet {
     return EqualUnmodifiableListView(value);
   }
 
+  final List<UTXO>? _utxos;
+  @override
+  List<UTXO>? get utxos {
+    final value = _utxos;
+    if (value == null) return null;
+    if (_utxos is EqualUnmodifiableListView) return _utxos;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   final List<Transaction> _transactions;
   @override
   @JsonKey()
@@ -506,7 +531,7 @@ class _$WalletImpl extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, transactions: $transactions, unsignedTxs: $unsignedTxs, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide, swapTxCount: $swapTxCount)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, utxos: $utxos, transactions: $transactions, unsignedTxs: $unsignedTxs, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide, swapTxCount: $swapTxCount)';
   }
 
   @override
@@ -540,6 +565,7 @@ class _$WalletImpl extends _Wallet {
                 .equals(other._myAddressBook, _myAddressBook) &&
             const DeepCollectionEquality()
                 .equals(other._externalAddressBook, _externalAddressBook) &&
+            const DeepCollectionEquality().equals(other._utxos, _utxos) &&
             const DeepCollectionEquality()
                 .equals(other._transactions, _transactions) &&
             const DeepCollectionEquality()
@@ -572,6 +598,7 @@ class _$WalletImpl extends _Wallet {
         lastGeneratedAddress,
         const DeepCollectionEquality().hash(_myAddressBook),
         const DeepCollectionEquality().hash(_externalAddressBook),
+        const DeepCollectionEquality().hash(_utxos),
         const DeepCollectionEquality().hash(_transactions),
         const DeepCollectionEquality().hash(_unsignedTxs),
         backupTested,
@@ -611,6 +638,7 @@ abstract class _Wallet extends Wallet {
       final Address? lastGeneratedAddress,
       final List<Address> myAddressBook,
       final List<Address>? externalAddressBook,
+      final List<UTXO>? utxos,
       final List<Transaction> transactions,
       final List<Transaction> unsignedTxs,
       final bool backupTested,
@@ -651,6 +679,8 @@ abstract class _Wallet extends Wallet {
   List<Address> get myAddressBook;
   @override
   List<Address>? get externalAddressBook;
+  @override
+  List<UTXO>? get utxos;
   @override
   List<Transaction> get transactions;
   @override

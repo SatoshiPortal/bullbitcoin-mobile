@@ -1,7 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'address.freezed.dart';
@@ -30,50 +29,66 @@ class Address with _$Address {
     String? label,
     String? spentTxId,
     @Default(true) bool spendable,
-    @Default(false) bool saving,
-    @Default('') String errSaving,
+    // @Default(false) bool saving,
+    // @Default('') String errSaving,
     @Default(0) int highestPreviousBalance,
-    @JsonKey(
-      includeFromJson: false,
-      includeToJson: false,
-    )
-    List<bdk.LocalUtxo>? utxos,
-    List<UTXO>? localUtxos,
+    // @JsonKey(
+    //   includeFromJson: false,
+    //   includeToJson: false,
+    // )
+    // List<bdk.LocalUtxo>? utxos,
+    // List<UTXO>? localUtxos,
   }) = _Address;
   const Address._();
 
   factory Address.fromJson(Map<String, dynamic> json) => _$AddressFromJson(json);
 
   int calculateBalance() {
+    return 0;
+    // TODO: UTXO
+    /*
     return utxos?.fold(
           0,
           (amt, tx) => tx.isSpent ? amt : (amt ?? 0) + tx.txout.value,
         ) ??
         0;
+    */
   }
 
   int calculateBalanceLocal() {
+    return 0;
+    /*
+    // TODO: UTXO
     return localUtxos?.fold(
           0,
           (amt, tx) => tx.isSpent ? amt : (amt ?? 0) + tx.value,
         ) ??
         0;
+    */
   }
 
   List<bdk.OutPoint> getUnspentUtxosOutpoints() {
-    return utxos?.where((tx) => !tx.isSpent).map((tx) => tx.outpoint).toList() ?? [];
+    return [];
+    // TODO: UTXO
+    // return utxos?.where((tx) => !tx.isSpent).map((tx) => tx.outpoint).toList() ?? [];
   }
 
   bool hasSpentAndNoBalance() {
-    return (utxos?.where((tx) => tx.isSpent).isNotEmpty ?? false) && calculateBalance() == 0;
+    return false;
+    // TODO: UTXO
+    // return (utxos?.where((tx) => tx.isSpent).isNotEmpty ?? false) && calculateBalance() == 0;
   }
 
   bool hasInternal() {
-    return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.Internal).isNotEmpty ?? false;
+    return false;
+    // TODO: UTXO
+    // return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.Internal).isNotEmpty ?? false;
   }
 
   bool hasExternal() {
-    return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.External).isNotEmpty ?? false;
+    return false;
+    // TODO: UTXO
+    // return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.External).isNotEmpty ?? false;
   }
 
   String miniString() {
@@ -102,6 +117,7 @@ class UTXO with _$UTXO {
     required String txid,
     required bool isSpent,
     required int value,
+    required String label,
   }) = _UTXO;
   const UTXO._();
 
@@ -114,6 +130,7 @@ class UTXO with _$UTXO {
             txid: utxo.outpoint.txid,
             isSpent: utxo.isSpent,
             value: utxo.txout.value,
+            label: '',
           ),
         )
         .toList();

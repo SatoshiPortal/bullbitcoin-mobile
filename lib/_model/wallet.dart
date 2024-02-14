@@ -34,6 +34,7 @@ class Wallet with _$Wallet {
     Address? lastGeneratedAddress,
     @Default([]) List<Address> myAddressBook,
     List<Address>? externalAddressBook,
+    List<UTXO>? utxos,
     @Default([]) List<Transaction> transactions,
     @Default([]) List<Transaction> unsignedTxs,
     // List<String>? labelTags,
@@ -146,6 +147,7 @@ class Wallet with _$Wallet {
   }
 
   List<Address> addressesWithoutBalance({bool isUsed = false}) {
+    // TODO: UTXO
     if (!isUsed)
       return myAddressBook.where((addr) => addr.calculateBalance() == 0).toList();
     else
@@ -153,9 +155,10 @@ class Wallet with _$Wallet {
   }
 
   String getAddressFromTxid(String txid) {
-    for (final address in myAddressBook)
-      for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
-        if (utxo.outpoint.txid == txid) return address.address; // this will return change
+    // TODO: UTXO
+    // for (final address in myAddressBook)
+    //   for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
+    //     if (utxo.outpoint.txid == txid) return address.address; // this will return change
     return '';
   }
 
@@ -178,6 +181,8 @@ class Wallet with _$Wallet {
           }
         }
       } else {
+        // TODO: UTXO
+        /*
         for (final utxo in address.utxos ?? <bdk.LocalUtxo>[]) {
           if (utxo.outpoint.txid == txid) {
             if (kind == null) {
@@ -187,6 +192,8 @@ class Wallet with _$Wallet {
             }
           }
         }
+        */
+        return null;
       }
 
     return null;
