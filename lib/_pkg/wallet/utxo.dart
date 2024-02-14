@@ -11,6 +11,10 @@ class WalletUtxo {
     try {
       final unspentList = await bdkWallet.listUnspent();
       final myAddress = wallet.myAddressBook;
+      // update these addresses state based on :
+      // if state is used | unused && hasUtxos -> update to active
+      // if state is active && !hasUtxos -> update to used
+      // also update highestPreviousBalance with utxo.value for matching address
       final network = wallet.getBdkNetwork();
       if (network == null) return (null, Err('Network is null'));
 
@@ -96,4 +100,9 @@ class WalletUtxo {
       );
     }
   }
+
+  // Future<(Wallet?, Err? ) updateAddressStates(    required Wallet wallet,
+  //   required bdk.Wallet bdkWallet,){
+
+  // }
 }
