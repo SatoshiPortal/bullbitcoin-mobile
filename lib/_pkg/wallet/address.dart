@@ -204,6 +204,48 @@ class WalletAddress {
     }
   }
 
+  Future<(Wallet?, Err?)> updateUtxoAddresses({
+    required Wallet wallet,
+  }) async {
+    try {
+      final List<UTXO> utxos = wallet.utxos.toList();
+      final List<Address> myAddresses = wallet.myAddressBook.toList();
+      final List<Address> updatedAddresses = [];
+
+      for (final addr in myAddresses) {
+        Address updatedAddress = addr;
+        for (final utxo in utxos) {
+          final addressStr = utxo.address.address;
+          if (addr.address == addressStr) {
+            updatedAddress = addr.copyWith(
+              state: AddressStatus.active,
+              balance: utxo.value + updatedAddress.balance,
+            );
+          } else {
+            if (addr.state == AddressStatus.active) {
+              updatedAddress = addr.copyWith(state: AddressStatus.used, balance: 0);
+            } else {
+              updatedAddress = addr.copyWith(balance: 0);
+            }
+          }
+        }
+        updatedAddresses.add(updatedAddress);
+      }
+      final w = wallet.copyWith(
+        myAddressBook: updatedAddresses,
+      );
+      return (w, null);
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while updated utxo address',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
 /*
   Future<(Wallet?, Err?)> updateUtxos({
     required Wallet wallet,

@@ -11,11 +11,7 @@ class WalletUtxo {
     try {
       final unspentList = await bdkWallet.listUnspent();
       final List<Address> myAddresses = wallet.myAddressBook.toList();
-      final List<Address> newAddresses = [];
-      // update these addresses state based on :
-      // if state is used | unused && hasUtxos -> update to active
-      // if state is active && !hasUtxos -> update to used
-      // also update highestPreviousBalance with utxo.value for matching address
+
       final network = wallet.getBdkNetwork();
       if (network == null) return (null, Err('Network is null'));
 
@@ -32,26 +28,14 @@ class WalletUtxo {
         AddressKind addressKind = AddressKind.deposit;
         String addressLabel = '';
         for (final addr in myAddresses) {
-          Address updatedAddress;
           if (addr.address == addressStr) {
-            updatedAddress = addr.copyWith(
-              state: AddressStatus.active,
-              balance: unspent.txout.value + addr.balance,
-            );
             addressLabel = addr.label ?? '';
             if (addr.kind == AddressKind.change) {
               addressKind = AddressKind.change;
             } else {
               addressKind = AddressKind.deposit;
             }
-          } else {
-            if (addr.state == AddressStatus.active) {
-              updatedAddress = addr.copyWith(state: AddressStatus.used, balance: 0);
-            } else {
-              updatedAddress = addr.copyWith(balance: 0);
-            }
           }
-          newAddresses.add(updatedAddress);
         }
         utxo = UTXO(
           txid: unspent.outpoint.txid,
@@ -103,7 +87,7 @@ class WalletUtxo {
       //   newAddresses.add(updated);
       // }
 
-      final w = wallet.copyWith(utxos: list, myAddressBook: newAddresses);
+      final w = wallet.copyWith(utxos: list);
       return (w, null);
       /*
     final utxoUpdatedAddresses =
