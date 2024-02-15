@@ -245,7 +245,7 @@ class AddressActions extends StatelessWidget {
                 context.read<AddressCubit>().freezeAddress();
             },
             child: BBText.body(
-              frozen ? 'Unfreeze utxo' : 'Freeze utxo',
+              frozen ? 'Unfreeze address' : 'Freeze address',
               isBlue: true,
             ),
           ),
