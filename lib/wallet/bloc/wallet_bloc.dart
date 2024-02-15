@@ -12,6 +12,7 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/utxo.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -33,6 +34,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.walletTransaction,
     required this.walletBalance,
     required this.walletAddress,
+    required this.walletUtxo,
     required this.walletUpdate,
     required this.networkCubit,
     this.fromStorage = true,
@@ -58,6 +60,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletTx walletTransaction;
   final WalletBalance walletBalance;
   final WalletAddress walletAddress;
+  final WalletUtxo walletUtxo;
   final WalletUpdate walletUpdate;
   final NetworkCubit networkCubit;
 
@@ -229,7 +232,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    final (walletWithAddresses, err1) = await walletAddress.loadAddresses(
+    final (walletWithDepositAddresses, err1) = await walletAddress.loadAddresses(
       wallet: state.wallet!,
       bdkWallet: state.bdkWallet!,
     );
@@ -242,24 +245,24 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
       return;
     }
-    // final (walletWithAddresses, err2) = await walletAddress.loadChangeAddresses(
-    //   wallet: walletWithDepositAddresses!,
-    //   bdkWallet: state.bdkWallet!,
-    // );
-    // if (err2 != null) {
-    //   emit(
-    //     state.copyWith(
-    //       errSyncingAddresses: err2.toString(),
-    //       syncingAddresses: false,
-    //     ),
-    //   );
-    //   return;
-    // }
+    final (walletWithChangeAddresses, err2) = await walletAddress.loadChangeAddresses(
+      wallet: walletWithDepositAddresses!,
+      bdkWallet: state.bdkWallet!,
+    );
+    if (err2 != null) {
+      emit(
+        state.copyWith(
+          errSyncingAddresses: err2.toString(),
+          syncingAddresses: false,
+        ),
+      );
+      return;
+    }
     emit(state.copyWith(loadingTxs: true, errLoadingWallet: ''));
 
     final (walletWithTxs, err3) = await walletTransaction.getTransactions(
       bdkWallet: state.bdkWallet!,
-      wallet: walletWithAddresses!,
+      wallet: walletWithChangeAddresses!,
     );
 
     if (err3 != null) {
@@ -294,10 +297,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    final (walletWithUtxos, err5) = await walletAddress.updateUtxos(
-      bdkWallet: state.bdkWallet!,
-      wallet: walletWithTxAndAddresses!,
-    );
+    final (walletwithUtxos, err5) =
+        await walletUtxo.loadUtxos(wallet: walletWithTxAndAddresses!, bdkWallet: state.bdkWallet!);
     if (err5 != null) {
       emit(
         state.copyWith(
@@ -308,11 +309,27 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       return;
     }
 
+    final (walletUpdatedAddressesAndUtxos, err6) =
+        await walletAddress.updateUtxoAddresses(wallet: walletwithUtxos!);
+    if (err6 != null) {
+      emit(
+        state.copyWith(
+          errSyncingAddresses: err6.toString(),
+          syncingAddresses: false,
+        ),
+      );
+      return;
+    }
+
     add(
       UpdateWallet(
-        walletWithUtxos!,
+        walletUpdatedAddressesAndUtxos!,
         saveToStorage: fromStorage,
-        updateTypes: [UpdateWalletTypes.addresses, UpdateWalletTypes.transactions],
+        updateTypes: [
+          UpdateWalletTypes.addresses,
+          UpdateWalletTypes.transactions,
+          UpdateWalletTypes.utxos,
+        ],
       ),
     );
   }
@@ -398,6 +415,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           if (eventWallet.lastGeneratedAddress != null)
             storageWallet = storageWallet!.copyWith(
               lastGeneratedAddress: eventWallet.lastGeneratedAddress,
+            );
+
+        case UpdateWalletTypes.utxos:
+          if (eventWallet.utxos.isNotEmpty)
+            storageWallet = storageWallet!.copyWith(
+              utxos: eventWallet.utxos,
             );
 
         case UpdateWalletTypes.settings:

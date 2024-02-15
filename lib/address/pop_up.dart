@@ -177,7 +177,7 @@ class AddressDetails extends StatelessWidget {
     final address = context.select((AddressCubit cubit) => cubit.state.address!);
     final label = address.label ?? '';
     final isReceive = address.kind == AddressKind.deposit;
-    final balance = address.calculateBalance();
+    final balance = address.balance;
     final amt = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(balance));
 
     return Column(
@@ -215,7 +215,8 @@ class AddressActions extends StatelessWidget {
     );
     final freezing = context.select((AddressCubit cubit) => cubit.state.freezingAddress);
     final hasUtxos =
-        context.select((AddressCubit cubit) => cubit.state.address!.utxos?.isNotEmpty ?? false);
+        context.select((AddressCubit cubit) => cubit.state.address?.state == AddressStatus.active);
+    //TODO: UTXO context.select((AddressCubit cubit) => cubit.state.address!.utxos?.isNotEmpty ?? false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

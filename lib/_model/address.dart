@@ -1,7 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'address.freezed.dart';
@@ -30,50 +29,21 @@ class Address with _$Address {
     String? label,
     String? spentTxId,
     @Default(true) bool spendable,
-    @Default(false) bool saving,
-    @Default('') String errSaving,
     @Default(0) int highestPreviousBalance,
-    @JsonKey(
-      includeFromJson: false,
-      includeToJson: false,
-    )
-    List<bdk.LocalUtxo>? utxos,
-    List<UTXO>? localUtxos,
+    @Default(0) int balance,
   }) = _Address;
   const Address._();
 
   factory Address.fromJson(Map<String, dynamic> json) => _$AddressFromJson(json);
 
-  int calculateBalance() {
-    return utxos?.fold(
-          0,
-          (amt, tx) => tx.isSpent ? amt : (amt ?? 0) + tx.txout.value,
-        ) ??
-        0;
-  }
-
-  int calculateBalanceLocal() {
-    return localUtxos?.fold(
-          0,
-          (amt, tx) => tx.isSpent ? amt : (amt ?? 0) + tx.value,
-        ) ??
-        0;
-  }
-
-  List<bdk.OutPoint> getUnspentUtxosOutpoints() {
-    return utxos?.where((tx) => !tx.isSpent).map((tx) => tx.outpoint).toList() ?? [];
-  }
-
-  bool hasSpentAndNoBalance() {
-    return (utxos?.where((tx) => tx.isSpent).isNotEmpty ?? false) && calculateBalance() == 0;
-  }
-
-  bool hasInternal() {
-    return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.Internal).isNotEmpty ?? false;
-  }
-
-  bool hasExternal() {
-    return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.External).isNotEmpty ?? false;
+  // TODO: UTXO
+  // Updated with UTXO change
+  List<bdk.OutPoint> getUnspentUtxosOutpoints(List<UTXO> utxos) {
+    return utxos
+        .where((ut) => ut.address.address == address)
+        .map((e) => bdk.OutPoint(txid: e.txid, vout: e.txIndex))
+        .toList();
+    // return utxos?.where((tx) => !tx.isSpent).map((tx) => tx.outpoint).toList() ?? [];
   }
 
   String miniString() {
@@ -82,6 +52,10 @@ class Address with _$Address {
 
   String largeString() {
     return address.substring(0, 10) + '[...]' + address.substring(address.length - 10);
+  }
+
+  String toShortString() {
+    return address.substring(0, 5) + '...' + address.substring(address.length - 5);
   }
 
   String getKindString() {
@@ -100,71 +74,25 @@ class Address with _$Address {
 class UTXO with _$UTXO {
   factory UTXO({
     required String txid,
+    required int txIndex,
     required bool isSpent,
     required int value,
+    required String label,
+    required Address address,
+    required bool spendable,
   }) = _UTXO;
   const UTXO._();
 
   factory UTXO.fromJson(Map<String, dynamic> json) => _$UTXOFromJson(json);
 
-  static List<UTXO> fromUTXOList(List<bdk.LocalUtxo> utxos) {
-    return utxos
-        .map(
-          (utxo) => UTXO(
-            txid: utxo.outpoint.txid,
-            isSpent: utxo.isSpent,
-            value: utxo.txout.value,
-          ),
-        )
-        .toList();
+  @override
+  String toString() {
+    return '$txid:$txIndex';
   }
 }
 
-extension X on List<Address> {
-  bool containsAddress(Address address) =>
-      where((addr) => addr.address == address.address).isNotEmpty;
+extension Y on List<UTXO> {
+  bool containsUtxo(UTXO utxo) => where((utx) => utx.toString() == utxo.toString()).isNotEmpty;
 
-  List<Address> removeAddress(Address address) =>
-      where((addr) => addr.address != address.address).toList();
+  List<UTXO> removeUtxo(UTXO utxo) => where((utx) => utx.toString() != utxo.toString()).toList();
 }
-
-// @freezed
-// class TxOut with _$TxOut {
-//   factory TxOut({
-//     required int value,
-//     required bdk.Script scriptPubkey,
-//   }) = _TxOut;
-//   const TxOut._();
-
-//   factory TxOut.fromJson(Map<String, dynamic> json) => _$TxOutFromJson(json);
-// }
-
-// @freezed
-// class OutPoint with _$OutPoint {
-//   factory OutPoint({
-//     required String txid,
-//     required int vout,
-//   }) = _OutPoint;
-//   const OutPoint._();
-
-//   factory OutPoint.fromJson(Map<String, dynamic> json) => _$OutPointFromJson(json);
-// }
-
-// class LocalUtxo {
-//   /// Reference to a transaction output
-//   final OutPoint outpoint;
-
-//   ///Transaction output
-//   final TxOut txout;
-
-//   ///Whether this UTXO is spent or not
-//   final bool isSpent;
-//   final KeychainKind keychain;
-
-//   const LocalUtxo({
-//     required this.outpoint,
-//     required this.txout,
-//     required this.isSpent,
-//     required this.keychain,
-//   });
-// }

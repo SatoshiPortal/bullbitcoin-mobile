@@ -165,21 +165,21 @@ class SendCubit extends Cubit<SendState> {
     _updateShowSend();
   }
 
-  void utxoAddressSelected(Address address) {
-    var selectedAddresses = state.selectedAddresses.toList();
+  void utxoSelected(UTXO utxo) {
+    var selectedUtxos = state.selectedUtxos.toList();
 
-    if (selectedAddresses.containsAddress(address))
-      selectedAddresses = selectedAddresses.removeAddress(address);
+    if (selectedUtxos.containsUtxo(utxo))
+      selectedUtxos = selectedUtxos.removeUtxo(utxo);
     else
-      selectedAddresses.add(address);
+      selectedUtxos.add(utxo);
 
-    emit(state.copyWith(selectedAddresses: selectedAddresses));
+    emit(state.copyWith(selectedUtxos: selectedUtxos));
 
     _updateShowSend();
   }
 
-  void clearSelectedUTXOAddresses() {
-    emit(state.copyWith(selectedAddresses: []));
+  void clearSelectedUtxos() {
+    emit(state.copyWith(selectedUtxos: []));
   }
 
   void _updateShowSend() {
@@ -189,7 +189,7 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(showSendButton: false));
       return;
     }
-    if (state.selectedAddresses.isEmpty) {
+    if (state.selectedUtxos.isEmpty) {
       if (state.selectedWalletBloc == null) return;
 
       if (amount > 0 && state.selectedWalletBloc!.state.balanceSats() >= amount)
@@ -252,7 +252,7 @@ class SendCubit extends Cubit<SendState> {
     final (buildResp, err) = await walletTx.buildTx(
       wallet: localWallet!,
       pubWallet: state.selectedWalletBloc!.state.bdkWallet!,
-      isManualSend: state.selectedAddresses.isNotEmpty,
+      isManualSend: state.selectedUtxos.isNotEmpty,
       address: state.address,
       amount: currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
@@ -260,7 +260,7 @@ class SendCubit extends Cubit<SendState> {
           ? networkFeesCubit.state.fees!.toDouble()
           : networkFeesCubit.state.feesList![networkFeesCubit.state.selectedFeesOption].toDouble(),
       enableRbf: !state.disableRBF,
-      selectedAddresses: state.selectedAddresses,
+      selectedUtxos: state.selectedUtxos,
       note: state.note,
     );
     if (err != null) {

@@ -168,8 +168,7 @@ class AddressSelectionPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final addresses =
-        context.select((WalletBloc _) => _.state.wallet!.addressesWithBalanceAndActive());
+    final utxos = context.select((WalletBloc _) => _.state.wallet!.utxos);
     final amount = context.select((CurrencyCubit _) => _.state.amount);
 
     final amt = context.select(
@@ -211,9 +210,9 @@ class AddressSelectionPopUp extends StatelessWidget {
             ),
           ],
           const Gap(24),
-          if (addresses.isEmpty) const BBText.body('No addresses available'),
-          for (final address in addresses) ...[
-            AdvancedOptionAdress(address: address),
+          if (utxos.isEmpty) const BBText.body('No utxos available'),
+          for (final utxo in utxos) ...[
+            AdvancedOptionAdress(utxo: utxo),
             const Gap(16),
           ],
           const Gap(40),
@@ -238,38 +237,37 @@ class AddressSelectionPopUp extends StatelessWidget {
 }
 
 class AdvancedOptionAdress extends StatelessWidget {
-  const AdvancedOptionAdress({super.key, required this.address});
+  const AdvancedOptionAdress({super.key, required this.utxo});
 
-  final Address address;
+  final UTXO utxo;
 
   @override
   Widget build(BuildContext context) {
-    final isFrozen = address.spendable == false;
+    final isFrozen = utxo.spendable == false;
 
     final isSelected = context.select(
-      (SendCubit x) => x.state.addressIsSelected(address),
+      (SendCubit x) => x.state.utxoIsSelected(utxo),
     );
 
-    final balance = address.calculateBalanceLocal();
+    final balance = utxo.value;
 
-    final addressType = address.getKindString();
+    final addressType = utxo.address.getKindString();
 
     final amt = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(balance),
     );
 
-    final label = address.label ?? '';
+    final label = utxo.label ?? '';
 
-    final addessStr = address.address.substring(0, 5) +
-        '...' +
-        address.address.substring(address.address.length - 5);
+    final addessStr =
+        utxo.address.toShortString() + (utxo.address.label != null ? utxo.address.label! : '');
 
     return AnimatedOpacity(
       opacity: isFrozen ? 0.5 : 1,
       duration: const Duration(milliseconds: 300),
       child: InkWell(
         onTap: () {
-          if (!isFrozen) context.read<SendCubit>().utxoAddressSelected(address);
+          if (!isFrozen) context.read<SendCubit>().utxoSelected(utxo);
         },
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -288,7 +286,10 @@ class AdvancedOptionAdress extends StatelessWidget {
               Row(
                 children: [
                   const BBText.body('Address: '),
-                  BBText.body(addessStr, isBold: true),
+                  BBText.body(
+                    addessStr,
+                    isBold: true,
+                  ),
                 ],
               ),
               const Gap(4),

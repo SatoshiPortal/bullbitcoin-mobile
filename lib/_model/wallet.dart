@@ -34,6 +34,7 @@ class Wallet with _$Wallet {
     Address? lastGeneratedAddress,
     @Default([]) List<Address> myAddressBook,
     List<Address>? externalAddressBook,
+    @Default([]) List<UTXO> utxos,
     @Default([]) List<Transaction> transactions,
     @Default([]) List<Transaction> unsignedTxs,
     // List<String>? labelTags,
@@ -137,37 +138,38 @@ class Wallet with _$Wallet {
     return amt;
   }
 
-  List<Address> addressesWithBalanceAndActive() {
-    return myAddressBook
-        .where(
-          (addr) => addr.calculateBalanceLocal() > 0 && addr.state == AddressStatus.active,
-        )
-        .toList();
-  }
-
-  List<Address> addressesWithoutBalance({bool isUsed = false}) {
-    if (!isUsed)
-      return myAddressBook.where((addr) => addr.calculateBalance() == 0).toList();
-    else
-      return myAddressBook.where((addr) => addr.hasSpentAndNoBalance()).toList();
-  }
-
   String getAddressFromTxid(String txid) {
+    // TODO: UTXO
+    // Updated / Simplified (Seach specific to utxos. Is this fine?)
+    for (final utxo in utxos) if (utxo.txid == txid) return utxo.address.address;
+    for (final tx in transactions) {
+      for (final addrs in tx.outAddrs) if (addrs.spentTxId == txid) return addrs.address;
+    }
+    return '';
+
+    /*
     for (final address in myAddressBook)
       for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
         if (utxo.outpoint.txid == txid) return address.address; // this will return change
-    return '';
+    */
   }
 
   Address? findAddressInWallet(String address) {
-    final completeAddressBook = [...externalAddressBook ?? [], ...myAddressBook];
+    final completeAddressBook = [
+      ...externalAddressBook ?? [],
+      ...myAddressBook,
+    ];
     for (final existingAddress in completeAddressBook) {
       if (address == existingAddress.address) return existingAddress;
     }
     return null;
   }
 
-  Address? getAddressFromAddresses(String txid, {bool isSend = false, AddressKind? kind}) {
+  Address? getAddressFromAddresses(
+    String txid, {
+    bool isSend = false,
+    AddressKind? kind,
+  }) {
     for (final address in (isSend ? externalAddressBook : myAddressBook) ?? <Address>[])
       if (isSend) {
         if (address.spentTxId == txid) {
@@ -178,6 +180,17 @@ class Wallet with _$Wallet {
           }
         }
       } else {
+        // TODO: UTXO
+        for (final utxo in utxos) {
+          if (utxo.address.address == address.address && utxo.txid == txid) {
+            if (kind == null) {
+              return address;
+            } else if (kind == address.kind) {
+              return address;
+            }
+          }
+        }
+        /*
         for (final utxo in address.utxos ?? <bdk.LocalUtxo>[]) {
           if (utxo.outpoint.txid == txid) {
             if (kind == null) {
@@ -187,6 +200,8 @@ class Wallet with _$Wallet {
             }
           }
         }
+        */
+        return null;
       }
 
     return null;
@@ -321,9 +336,12 @@ class Wallet with _$Wallet {
   }
 
   int frozenUTXOTotal() {
-    final addresses = <Address>[...myAddressBook, ...externalAddressBook ?? <Address>[]];
+    final addresses = <Address>[
+      ...myAddressBook,
+      ...externalAddressBook ?? <Address>[],
+    ];
     final unspendable = addresses.where((_) => !_.spendable).toList();
-    final totalFrozen = unspendable.fold<int>(0, (value, _) => value + _.calculateBalance());
+    final totalFrozen = unspendable.fold<int>(0, (value, _) => value + _.balance);
     return totalFrozen;
   }
 
@@ -401,11 +419,6 @@ List<String> backupInstructions(bool hasPassphrase) {
   ];
 }
 
-
-
-
-
-
 // segwit -> BIP84 -> m/84'/0'/0'/0-1/* -> wpkh
 // compatible -> BIP49 -> m/49'/0'/0'/0-1/* -> sh-wpkh
-// legacy -> BIP44 -> m/44'/0'/0'/0-1/* -> pkh 
+// legacy -> BIP44 -> m/44'/0'/0'/0-1/* -> pkh

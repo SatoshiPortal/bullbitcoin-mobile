@@ -253,7 +253,7 @@ class AddressItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balance = address.calculateBalance();
+    final balance = address.balance;
     final amt = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(balance),
     );

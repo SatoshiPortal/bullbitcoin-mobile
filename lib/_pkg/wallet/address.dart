@@ -204,78 +204,38 @@ class WalletAddress {
     }
   }
 
-  Future<(Wallet?, Err?)> updateUtxos({
+  Future<(Wallet?, Err?)> updateUtxoAddresses({
     required Wallet wallet,
-    required bdk.Wallet bdkWallet,
   }) async {
     try {
-      final unspentList = await bdkWallet.listUnspent();
-      final utxoUpdatedAddresses =
-          wallet.myAddressBook.map((item) => item.copyWith(utxos: null)).toList();
-      final network = wallet.getBdkNetwork();
-      if (network == null) return (null, Err('Network is null'));
+      final List<UTXO> utxos = wallet.utxos.toList();
+      final List<Address> myAddresses = wallet.myAddressBook.toList();
+      final List<Address> updatedAddresses = [];
 
-      for (final unspent in unspentList) {
-        final scr = await bdk.Script.create(unspent.txout.scriptPubkey.inner);
-        final addresss = await bdk.Address.fromScript(
-          scr,
-          network,
-        );
-        final addressStr = addresss.toString();
-
-        late bool isRelated = false;
-        // late String txLabel = '';
-        final address = utxoUpdatedAddresses.firstWhere(
-          (a) => a.address == addressStr,
-          // if the address does not exist, its because its new change
-          orElse: () => Address(
-            address: addressStr,
-            kind: AddressKind.change,
-            state: AddressStatus.active,
-            highestPreviousBalance: unspent.txout.value,
-          ),
-        );
-
-        final List<bdk.LocalUtxo> utxos = address.utxos?.toList() ?? [];
-        for (final tx in wallet.transactions) {
-          for (final addrs in tx.outAddrs) {
-            if (addrs.address == addressStr) {
-              isRelated = true;
-              // txLabel = tx.label ?? '';
-            }
+      for (final addr in myAddresses) {
+        AddressStatus addressStatus = addr.state;
+        int balance = 0;
+        final matches = utxos.where((utxo) => utxo.address.address == addr.address).toList();
+        if (matches.isEmpty) {
+          if (addr.state == AddressStatus.active) {
+            addressStatus = AddressStatus.used;
           }
+        } else {
+          addressStatus = AddressStatus.active;
+          balance = matches.fold(0, (sum, utxo) => sum + utxo.value);
         }
-        // tjhe above might not be the best way to update change label from a send tx
-
-        if (utxos.indexWhere((u) => u.outpoint.txid == unspent.outpoint.txid) == -1)
-          utxos.add(unspent);
-
-        var updated = address.copyWith(
-          utxos: utxos,
-          localUtxos: UTXO.fromUTXOList(utxos),
-          // label: isRelated ? address.label : txLabel,
-          state: AddressStatus.active,
-          highestPreviousBalance: unspent.txout.value,
-        );
-
-        if (updated.calculateBalance() > 0 &&
-            updated.calculateBalance() > updated.highestPreviousBalance)
-          updated = updated.copyWith(
-            highestPreviousBalance: updated.calculateBalance(),
-          );
-
-        utxoUpdatedAddresses.removeWhere((a) => a.address == address.address);
-        utxoUpdatedAddresses.add(updated);
+        updatedAddresses.add(addr.copyWith(state: addressStatus, balance: balance));
       }
-      final w = wallet.copyWith(myAddressBook: utxoUpdatedAddresses);
-
+      final w = wallet.copyWith(
+        myAddressBook: updatedAddresses,
+      );
       return (w, null);
     } on Exception catch (e) {
       return (
         null,
         Err(
           e.message,
-          title: 'Error occurred while updating utxos',
+          title: 'Error occurred while updated utxo address',
           solution: 'Please try again.',
         )
       );
@@ -314,9 +274,7 @@ class WalletAddress {
           kind: kind,
           state: state,
           spendable: spendable,
-          highestPreviousBalance: existing.highestPreviousBalance,
-          utxos: existing.utxos,
-          localUtxos: UTXO.fromUTXOList(existing.utxos ?? []),
+          highestPreviousBalance: existing.balance,
         );
         addresses.insert(existingIdx, updated);
       } else {

@@ -34,6 +34,10 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
       externalAddressBook: (json['externalAddressBook'] as List<dynamic>?)
           ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
           .toList(),
+      utxos: (json['utxos'] as List<dynamic>?)
+              ?.map((e) => UTXO.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       transactions: (json['transactions'] as List<dynamic>?)
               ?.map((e) => Transaction.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -67,6 +71,7 @@ Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
       'lastGeneratedAddress': instance.lastGeneratedAddress,
       'myAddressBook': instance.myAddressBook,
       'externalAddressBook': instance.externalAddressBook,
+      'utxos': instance.utxos,
       'transactions': instance.transactions,
       'unsignedTxs': instance.unsignedTxs,
       'backupTested': instance.backupTested,

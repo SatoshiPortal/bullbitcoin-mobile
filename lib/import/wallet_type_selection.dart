@@ -9,6 +9,7 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_pkg/wallet/utxo.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -47,6 +48,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
           fromStorage: false,
           walletBalance: locator<WalletBalance>(),
           walletAddress: locator<WalletAddress>(),
+          walletUtxo: locator<WalletUtxo>(),
           walletUpdate: locator<WalletUpdate>(),
           networkCubit: locator<NetworkCubit>(),
           wallet: w,
