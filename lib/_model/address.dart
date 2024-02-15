@@ -54,6 +54,10 @@ class Address with _$Address {
     return address.substring(0, 10) + '[...]' + address.substring(address.length - 10);
   }
 
+  String toShortString() {
+    return address.substring(0, 5) + '...' + address.substring(address.length - 5);
+  }
+
   String getKindString() {
     switch (kind) {
       case AddressKind.deposit:

@@ -259,13 +259,8 @@ class AdvancedOptionAdress extends StatelessWidget {
 
     final label = utxo.label ?? '';
 
-    final addessStr = utxo.txid.substring(0, 5) +
-        '...' +
-        utxo.txid.substring(utxo.txid.length - 5) +
-        ':' +
-        utxo.txIndex.toString();
-
-    print('AdvancedOptionAdress: $addessStr - $isSelected');
+    final addessStr =
+        utxo.address.toShortString() + (utxo.address.label != null ? utxo.address.label! : '');
 
     return AnimatedOpacity(
       opacity: isFrozen ? 0.5 : 1,
@@ -290,15 +285,9 @@ class AdvancedOptionAdress extends StatelessWidget {
               BBText.titleLarge(amt, isBold: true, textAlign: TextAlign.center),
               Row(
                 children: [
-                  const BBText.body('Utxo: '),
-                  BBText.body(addessStr, isBold: true),
-                ],
-              ),
-              Row(
-                children: [
-                  const BBText.body('Address (debug): '),
+                  const BBText.body('Address: '),
                   BBText.body(
-                    utxo.address.address.substring(utxo.address.address.length - 5),
+                    addessStr,
                     isBold: true,
                   ),
                 ],
