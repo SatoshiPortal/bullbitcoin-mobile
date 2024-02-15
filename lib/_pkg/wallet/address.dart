@@ -213,23 +213,18 @@ class WalletAddress {
       final List<Address> updatedAddresses = [];
 
       for (final addr in myAddresses) {
-        Address updatedAddress = addr;
+        AddressStatus addressStatus = addr.state;
+        int balance = 0;
         final matches = utxos.where((utxo) => utxo.address.address == addr.address).toList();
         if (matches.isEmpty) {
           if (addr.state == AddressStatus.active) {
-            updatedAddress = addr.copyWith(state: AddressStatus.used, balance: 0);
-          } else {
-            updatedAddress = addr.copyWith(balance: 0);
+            addressStatus = AddressStatus.used;
           }
         } else {
-          for (final match in matches) {
-            updatedAddress = addr.copyWith(
-              state: AddressStatus.active,
-              balance: match.value + updatedAddress.balance,
-            );
-          }
+          addressStatus = AddressStatus.active;
+          balance = matches.fold(0, (sum, utxo) => sum + utxo.value);
         }
-        updatedAddresses.add(updatedAddress);
+        updatedAddresses.add(addr.copyWith(state: addressStatus, balance: balance));
       }
       final w = wallet.copyWith(
         myAddressBook: updatedAddresses,

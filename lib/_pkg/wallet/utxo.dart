@@ -19,25 +19,22 @@ class WalletUtxo {
 
       for (final unspent in unspentList) {
         UTXO utxo;
-        final scr = await bdk.Script.create(unspent.txout.scriptPubkey.inner);
+        final scr = unspent.txout.scriptPubkey;
         final addresss = await bdk.Address.fromScript(
           scr,
           network,
         );
         final addressStr = addresss.toString();
-        AddressKind addressKind = AddressKind.deposit;
+        final AddressKind addressKind = unspent.keychain == bdk.KeychainKind.Internal
+            ? AddressKind.change
+            : AddressKind.deposit;
         String addressLabel = '';
         bool spendable = true;
         for (final addr in myAddresses) {
           if (addr.address == addressStr) {
             addressLabel = addr.label ?? '';
-            if (addr.kind == AddressKind.change) {
-              addressKind = AddressKind.change;
-            } else {
-              addressKind = AddressKind.deposit;
-            }
+            spendable = addr.spendable;
           }
-          spendable = addr.spendable;
         }
         utxo = UTXO(
           txid: unspent.outpoint.txid,
