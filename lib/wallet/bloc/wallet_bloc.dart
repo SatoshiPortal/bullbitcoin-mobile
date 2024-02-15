@@ -320,27 +320,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
       return;
     }
-    // TODO: UTXO
-    /*
-    final (walletWithUtxos, err5) = await walletAddress.updateUtxos(
-      bdkWallet: state.bdkWallet!,
-      wallet: walletWithTxAndAddresses!,
-    );
-    if (err5 != null) {
-      emit(
-        state.copyWith(
-          errSyncingAddresses: err5.toString(),
-          syncingAddresses: false,
-        ),
-      );
-      return;
-    }
-    */
 
     add(
       UpdateWallet(
-        walletUpdatedAddressesAndUtxos!, // TODO: UTXO
-        // walletWithUtxos!, // TODO: UTXO
+        walletUpdatedAddressesAndUtxos!,
         saveToStorage: fromStorage,
         updateTypes: [
           UpdateWalletTypes.addresses,

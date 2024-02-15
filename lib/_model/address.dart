@@ -29,45 +29,12 @@ class Address with _$Address {
     String? label,
     String? spentTxId,
     @Default(true) bool spendable,
-    // @Default(false) bool saving,
-    // @Default('') String errSaving,
     @Default(0) int highestPreviousBalance,
     @Default(0) int balance,
-    // @JsonKey(
-    //   includeFromJson: false,
-    //   includeToJson: false,
-    // )
-    // List<bdk.LocalUtxo>? utxos,
-    // List<UTXO>? localUtxos,
   }) = _Address;
   const Address._();
 
   factory Address.fromJson(Map<String, dynamic> json) => _$AddressFromJson(json);
-
-  int calculateBalance() {
-    return balance;
-    // TODO: UTXO
-    /*
-    return utxos?.fold(
-          0,
-          (amt, tx) => tx.isSpent ? amt : (amt ?? 0) + tx.txout.value,
-        ) ??
-        0;
-    */
-  }
-
-  int calculateBalanceLocal() {
-    print('calculateBalanceLocal: $balance');
-    return balance;
-    /*
-    // TODO: UTXO
-    return localUtxos?.fold(
-          0,
-          (amt, tx) => tx.isSpent ? amt : (amt ?? 0) + tx.value,
-        ) ??
-        0;
-    */
-  }
 
   // TODO: UTXO
   // Updated with UTXO change
@@ -78,30 +45,6 @@ class Address with _$Address {
         .toList();
     // return utxos?.where((tx) => !tx.isSpent).map((tx) => tx.outpoint).toList() ?? [];
   }
-
-  // TODO: UTXO
-  // Commenting out, its not used
-  /*
-  bool hasSpentAndNoBalance() {
-    return (utxos?.where((tx) => tx.isSpent).isNotEmpty ?? false) && calculateBalance() == 0;
-  }
-  */
-
-  // TODO: UTXO
-  // Commenting out, its not used
-  /*
-  bool hasInternal() {
-    return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.Internal).isNotEmpty ?? false;
-  }
-  */
-
-  // TODO: UTXO
-  // Commenting out, its not used
-  /*
-  bool hasExternal() {
-    return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.External).isNotEmpty ?? false;
-  }
-  */
 
   String miniString() {
     return address.substring(0, 6) + '[...]' + address.substring(address.length - 6);
@@ -142,79 +85,10 @@ class UTXO with _$UTXO {
   String toString() {
     return '$txid:$txIndex';
   }
-
-/*
-  static List<UTXO> fromUTXOList(List<bdk.LocalUtxo> utxos) {
-    return utxos
-        .map(
-          (utxo) => UTXO(
-            txid: utxo.outpoint.txid,
-            txIndex: utxo.outpoint.vout,
-            isSpent: utxo.isSpent,
-            value: utxo.txout.value,
-            label: '',
-          ),
-        )
-        .toList();
-  }
-  */
 }
-
-// TODO: UTXO
-// Commented out, not used anymore
-/*
-extension X on List<Address> {
-  bool containsAddress(Address address) =>
-      where((addr) => addr.address == address.address).isNotEmpty;
-
-  List<Address> removeAddress(Address address) =>
-      where((addr) => addr.address != address.address).toList();
-}
-*/
 
 extension Y on List<UTXO> {
   bool containsUtxo(UTXO utxo) => where((utx) => utx.toString() == utxo.toString()).isNotEmpty;
 
   List<UTXO> removeUtxo(UTXO utxo) => where((utx) => utx.toString() != utxo.toString()).toList();
 }
-
-// @freezed
-// class TxOut with _$TxOut {
-//   factory TxOut({
-//     required int value,
-//     required bdk.Script scriptPubkey,
-//   }) = _TxOut;
-//   const TxOut._();
-
-//   factory TxOut.fromJson(Map<String, dynamic> json) => _$TxOutFromJson(json);
-// }
-
-// @freezed
-// class OutPoint with _$OutPoint {
-//   factory OutPoint({
-//     required String txid,
-//     required int vout,
-//   }) = _OutPoint;
-//   const OutPoint._();
-
-//   factory OutPoint.fromJson(Map<String, dynamic> json) => _$OutPointFromJson(json);
-// }
-
-// class LocalUtxo {
-//   /// Reference to a transaction output
-//   final OutPoint outpoint;
-
-//   ///Transaction output
-//   final TxOut txout;
-
-//   ///Whether this UTXO is spent or not
-//   final bool isSpent;
-//   final KeychainKind keychain;
-
-//   const LocalUtxo({
-//     required this.outpoint,
-//     required this.txout,
-//     required this.isSpent,
-//     required this.keychain,
-//   });
-// }

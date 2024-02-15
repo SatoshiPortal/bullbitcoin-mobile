@@ -138,29 +138,6 @@ class Wallet with _$Wallet {
     return amt;
   }
 
-  // TODO: UTXO
-  // Commented out, not used
-  /*
-  List<Address> addressesWithBalanceAndActive() {
-    return myAddressBook
-        .where(
-          (addr) => addr.calculateBalanceLocal() > 0 && addr.state == AddressStatus.active,
-        )
-        .toList();
-  }
-  */
-
-  // TODO: UTXO
-  // Commenting out, its not used
-  /*
-  List<Address> addressesWithoutBalance({bool isUsed = false}) {
-    if (!isUsed)
-      return myAddressBook.where((addr) => addr.calculateBalance() == 0).toList();
-    else
-      return myAddressBook.where((addr) => addr.hasSpentAndNoBalance()).toList();
-  }
-  */
-
   String getAddressFromTxid(String txid) {
     // TODO: UTXO
     // Updated / Simplified (Seach specific to utxos. Is this fine?)
@@ -364,7 +341,7 @@ class Wallet with _$Wallet {
       ...externalAddressBook ?? <Address>[],
     ];
     final unspendable = addresses.where((_) => !_.spendable).toList();
-    final totalFrozen = unspendable.fold<int>(0, (value, _) => value + _.calculateBalance());
+    final totalFrozen = unspendable.fold<int>(0, (value, _) => value + _.balance);
     return totalFrozen;
   }
 
