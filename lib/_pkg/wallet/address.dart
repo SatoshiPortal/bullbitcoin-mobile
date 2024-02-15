@@ -214,19 +214,19 @@ class WalletAddress {
 
       for (final addr in myAddresses) {
         Address updatedAddress = addr;
-        for (final utxo in utxos) {
-          final addressStr = utxo.address.address;
-          if (addr.address == addressStr) {
+        final matches = utxos.where((utxo) => utxo.address.address == addr.address).toList();
+        if (matches.isEmpty) {
+          if (addr.state == AddressStatus.active) {
+            updatedAddress = addr.copyWith(state: AddressStatus.used, balance: 0);
+          } else {
+            updatedAddress = addr.copyWith(balance: 0);
+          }
+        } else {
+          for (final match in matches) {
             updatedAddress = addr.copyWith(
               state: AddressStatus.active,
-              balance: utxo.value + updatedAddress.balance,
+              balance: match.value + updatedAddress.balance,
             );
-          } else {
-            if (addr.state == AddressStatus.active) {
-              updatedAddress = addr.copyWith(state: AddressStatus.used, balance: 0);
-            } else {
-              updatedAddress = addr.copyWith(balance: 0);
-            }
           }
         }
         updatedAddresses.add(updatedAddress);
@@ -246,6 +246,7 @@ class WalletAddress {
       );
     }
   }
+
 /*
   Future<(Wallet?, Err?)> updateUtxos({
     required Wallet wallet,

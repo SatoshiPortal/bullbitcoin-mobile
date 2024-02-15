@@ -139,10 +139,8 @@ class Wallet with _$Wallet {
   }
 
   // TODO: UTXO
-  // 1. Can rename this function to `getUTXOs`?
-  // 2. Rather than fetching this from address book, why can't we just return `utxos`?
-  // 3. Since each UTXO pay to a single address, have the address reference in UTXO itself.
-  // 4. Done as a new function
+  // Commented out, not used
+  /*
   List<Address> addressesWithBalanceAndActive() {
     return myAddressBook
         .where(
@@ -150,21 +148,30 @@ class Wallet with _$Wallet {
         )
         .toList();
   }
+  */
 
+  // TODO: UTXO
+  // Commenting out, its not used
+  /*
   List<Address> addressesWithoutBalance({bool isUsed = false}) {
-    // TODO: UTXO
     if (!isUsed)
       return myAddressBook.where((addr) => addr.calculateBalance() == 0).toList();
     else
       return myAddressBook.where((addr) => addr.hasSpentAndNoBalance()).toList();
   }
+  */
 
   String getAddressFromTxid(String txid) {
     // TODO: UTXO
-    // for (final address in myAddressBook)
-    //   for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
-    //     if (utxo.outpoint.txid == txid) return address.address; // this will return change
+    // Updated / Simplified (Seach specific to utxos. Is this fine?)
+    for (final utxo in utxos) if (utxo.txid == txid) return utxo.address.address;
     return '';
+
+    /*
+    for (final address in myAddressBook)
+      for (final utxo in address.utxos ?? <bdk.LocalUtxo>[])
+        if (utxo.outpoint.txid == txid) return address.address; // this will return change
+    */
   }
 
   Address? findAddressInWallet(String address) {

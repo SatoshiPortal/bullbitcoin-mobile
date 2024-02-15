@@ -69,29 +69,39 @@ class Address with _$Address {
     */
   }
 
-  List<bdk.OutPoint> getUnspentUtxosOutpoints() {
-    return [];
-    // TODO: UTXO
+  // TODO: UTXO
+  // Updated with UTXO change
+  List<bdk.OutPoint> getUnspentUtxosOutpoints(List<UTXO> utxos) {
+    return utxos
+        .where((ut) => ut.address.address == address)
+        .map((e) => bdk.OutPoint(txid: e.txid, vout: e.txIndex))
+        .toList();
     // return utxos?.where((tx) => !tx.isSpent).map((tx) => tx.outpoint).toList() ?? [];
   }
 
+  // TODO: UTXO
+  // Commenting out, its not used
+  /*
   bool hasSpentAndNoBalance() {
-    return false;
-    // TODO: UTXO
-    // return (utxos?.where((tx) => tx.isSpent).isNotEmpty ?? false) && calculateBalance() == 0;
+    return (utxos?.where((tx) => tx.isSpent).isNotEmpty ?? false) && calculateBalance() == 0;
   }
+  */
 
+  // TODO: UTXO
+  // Commenting out, its not used
+  /*
   bool hasInternal() {
-    return false;
-    // TODO: UTXO
-    // return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.Internal).isNotEmpty ?? false;
+    return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.Internal).isNotEmpty ?? false;
   }
+  */
 
+  // TODO: UTXO
+  // Commenting out, its not used
+  /*
   bool hasExternal() {
-    return false;
-    // TODO: UTXO
-    // return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.External).isNotEmpty ?? false;
+    return utxos?.where((tx) => tx.keychain == bdk.KeychainKind.External).isNotEmpty ?? false;
   }
+  */
 
   String miniString() {
     return address.substring(0, 6) + '[...]' + address.substring(address.length - 6);
@@ -145,7 +155,9 @@ class UTXO with _$UTXO {
   */
 }
 
-// TODO: UTXO (Remove)
+// TODO: UTXO
+// Commented out, not used anymore
+/*
 extension X on List<Address> {
   bool containsAddress(Address address) =>
       where((addr) => addr.address == address.address).isNotEmpty;
@@ -153,6 +165,7 @@ extension X on List<Address> {
   List<Address> removeAddress(Address address) =>
       where((addr) => addr.address != address.address).toList();
 }
+*/
 
 extension Y on List<UTXO> {
   bool containsUtxo(UTXO utxo) => where((utx) => utx.address == utxo.address).isNotEmpty;

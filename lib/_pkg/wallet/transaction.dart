@@ -482,13 +482,14 @@ class WalletTx {
       }
 
       for (final address in wallet.allFreezedAddresses())
-        for (final unspendable in address.getUnspentUtxosOutpoints())
+        for (final unspendable in address.getUnspentUtxosOutpoints(wallet.utxos))
           txBuilder = txBuilder.addUnSpendable(unspendable);
 
       if (isManualSend) {
         txBuilder = txBuilder.manuallySelectedOnly();
         final utxos = <bdk.OutPoint>[];
-        for (final address in selectedAddresses) utxos.addAll(address.getUnspentUtxosOutpoints());
+        for (final address in selectedAddresses)
+          utxos.addAll(address.getUnspentUtxosOutpoints(wallet.utxos));
         txBuilder = txBuilder.addUtxos(utxos);
       }
 
