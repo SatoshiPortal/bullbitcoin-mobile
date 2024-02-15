@@ -165,6 +165,9 @@ class Wallet with _$Wallet {
     // TODO: UTXO
     // Updated / Simplified (Seach specific to utxos. Is this fine?)
     for (final utxo in utxos) if (utxo.txid == txid) return utxo.address.address;
+    for (final tx in transactions) {
+      for (final addrs in tx.outAddrs) if (addrs.spentTxId == txid) return addrs.address;
+    }
     return '';
 
     /*
@@ -201,6 +204,15 @@ class Wallet with _$Wallet {
         }
       } else {
         // TODO: UTXO
+        for (final utxo in utxos) {
+          if (utxo.address.address == address.address && utxo.txid == txid) {
+            if (kind == null) {
+              return address;
+            } else if (kind == address.kind) {
+              return address;
+            }
+          }
+        }
         /*
         for (final utxo in address.utxos ?? <bdk.LocalUtxo>[]) {
           if (utxo.outpoint.txid == txid) {
