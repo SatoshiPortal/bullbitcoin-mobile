@@ -105,8 +105,8 @@ class _Screen extends StatelessWidget {
           children: [
             Gap(24),
             _WalletName(),
-            ReceiveQRDisplay(),
-            ReceiveDisplayAddress(),
+            ReceiveQR(),
+            ReceiveAddress(),
             Gap(24),
             AddressDetails(),
             Actions(),
@@ -273,13 +273,24 @@ class _WalletName extends StatelessWidget {
   }
 }
 
-class ReceiveQRDisplay extends StatelessWidget {
-  const ReceiveQRDisplay({super.key});
+class ReceiveQR extends StatelessWidget {
+  const ReceiveQR({super.key});
 
   @override
   Widget build(BuildContext context) {
     final address = context.select((ReceiveCubit x) => x.state.getQRStr());
 
+    return ReceiveQRDisplay(address: address);
+  }
+}
+
+class ReceiveQRDisplay extends StatelessWidget {
+  const ReceiveQRDisplay({super.key, required this.address});
+
+  final String address;
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: GestureDetector(
         onTap: () async {
@@ -299,8 +310,22 @@ class ReceiveQRDisplay extends StatelessWidget {
   }
 }
 
+class ReceiveAddress extends StatelessWidget {
+  const ReceiveAddress({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final addressQr = context.select((ReceiveCubit x) => x.state.getQRStr());
+
+    return ReceiveDisplayAddress(addressQr: addressQr);
+  }
+}
+
 class ReceiveDisplayAddress extends StatefulWidget {
-  const ReceiveDisplayAddress({super.key});
+  const ReceiveDisplayAddress({super.key, required this.addressQr, this.fontSize});
+
+  final String addressQr;
+  final double? fontSize;
 
   @override
   State<ReceiveDisplayAddress> createState() => _ReceiveDisplayAddressState();
@@ -323,8 +348,6 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
 
   @override
   Widget build(BuildContext context) {
-    final addressQr = context.select((ReceiveCubit x) => x.state.getQRStr());
-
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
       child: !showToast
@@ -334,9 +357,10 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                 SizedBox(
                   width: 250,
                   child: BBText.body(
-                    addressQr,
+                    widget.addressQr,
                     textAlign: TextAlign.center,
                     uiKey: UIKeys.receiveAddressDisplay,
+                    fontSize: widget.fontSize,
                   ),
                 ),
                 SizedBox(
@@ -344,7 +368,7 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                   child: IconButton(
                     onPressed: () async {
                       if (locator.isRegistered<Clippboard>())
-                        await locator<Clippboard>().copy(addressQr);
+                        await locator<Clippboard>().copy(widget.addressQr);
 
                       _copyClicked();
                     },

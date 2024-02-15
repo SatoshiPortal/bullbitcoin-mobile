@@ -124,7 +124,8 @@ class Transaction with _$Transaction {
   ];
 
   String getDateTimeStr() {
-    final dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    // final dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    final dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
     if (dt.isAfter(DateTime.now().subtract(const Duration(days: 2)))) return timeago.format(dt);
     final day = dt.day.toString().length == 1 ? '0${dt.day}' : dt.day.toString();
     return months[dt.month - 1] + ' ' + day + ', ' + dt.year.toString();
@@ -241,6 +242,9 @@ class SwapTx with _$SwapTx {
       statusStr: swapStatusToString(boltz.SwapStatus.swapCreated),
     );
   }
+
+  String splitInvoice() =>
+      invoice.substring(0, 5) + ' .... ' + invoice.substring(invoice.length - 10);
 }
 
 String swapStatusToString(boltz.SwapStatus swap) {
@@ -250,7 +254,7 @@ String swapStatusToString(boltz.SwapStatus swap) {
 }
 
 boltz.SwapStatus? _addSwapStatus(Map<String, dynamic> json) {
-  if (!json.containsKey('statusStr')) return null;
+  if (!json.containsKey('statusStr') || !json.containsValue('statusStr')) return null;
 
   final value = boltz.getSwapStatusFromString(json['statusStr'] as String);
   return value;

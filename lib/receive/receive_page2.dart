@@ -143,9 +143,9 @@ class _Screen extends StatelessWidget {
             const SelectWalletType(),
             const Gap(48),
             if (showQR) ...[
-              const ReceiveQRImage(),
+              const ReceiveQR(),
               const Gap(8),
-              const ReceiveAddressText(),
+              const ReceiveAddress(),
             ] else ...[
               const Gap(24),
               const CreateLightningInvoice(),
@@ -227,24 +227,6 @@ class ReceiveWalletsDropDown extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class ReceiveQRImage extends StatelessWidget {
-  const ReceiveQRImage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const ReceiveQRDisplay();
-  }
-}
-
-class ReceiveAddressText extends StatelessWidget {
-  const ReceiveAddressText({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const ReceiveDisplayAddress();
   }
 }
 
@@ -436,33 +418,98 @@ class SwapTxItem extends StatelessWidget {
     if (swapTx == null) return const SizedBox.shrink();
 
     final time = tx.getDateTimeStr();
-    final invoice = swapTx.invoice;
+    final invoice = swapTx.splitInvoice();
     final amount = swapTx.outAmount.toString() + ' sats';
     final idx = tx.swapIndex?.toString() ?? '00';
     final status = swapTx.status?.toString() ?? '';
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: InkWell(
+        onTap: () {
+          _InvoiceQRPopup.openPopUp(context, tx);
+        },
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BBText.body(amount, isBlue: true),
+                  if (status.isNotEmpty) BBText.bodySmall(status),
+                  BBText.bodySmall(invoice),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BBText.body(invoice, fontSize: 8),
-                BBText.bodySmall(amount),
-                BBText.bodySmall(status),
+                BBText.bodySmall(time),
+                BBText.bodySmall('invoice no. ' + idx),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InvoiceQRPopup extends StatelessWidget {
+  const _InvoiceQRPopup({required this.tx});
+
+  static Future openPopUp(BuildContext context, Transaction tx) {
+    return showBBBottomSheet(
+      context: context,
+      child: _InvoiceQRPopup(tx: tx),
+    );
+  }
+
+  final Transaction tx;
+
+  @override
+  Widget build(BuildContext context) {
+    final swapTx = tx.swapTx;
+    if (swapTx == null) return const SizedBox.shrink();
+
+    final time = tx.getDateTimeStr();
+    final amount = swapTx.outAmount.toString() + ' sats';
+    final idx = tx.swapIndex?.toString() ?? '00';
+    final status = swapTx.status?.toString() ?? '';
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const BBHeader.popUpCenteredText(text: 'Invoice', isLeft: true),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BBText.bodySmall(time),
-              BBText.bodySmall('index ' + idx),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BBText.body(amount, isBlue: true),
+                    if (status.isNotEmpty) BBText.bodySmall(status),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  BBText.bodySmall(time),
+                  BBText.bodySmall('invoice no. ' + idx),
+                ],
+              ),
             ],
           ),
+          const Gap(24),
+          Center(child: SizedBox(width: 250, child: ReceiveQRDisplay(address: swapTx.invoice))),
+          const Gap(16),
+          ReceiveDisplayAddress(addressQr: swapTx.invoice, fontSize: 9),
+          const Gap(40),
         ],
       ),
     );
