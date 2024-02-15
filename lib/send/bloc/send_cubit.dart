@@ -165,7 +165,7 @@ class SendCubit extends Cubit<SendState> {
     _updateShowSend();
   }
 
-  void utxoAddressSelected(UTXO utxo) {
+  void utxoSelected(UTXO utxo) {
     var selectedUtxos = state.selectedUtxos.toList();
 
     if (selectedUtxos.containsUtxo(utxo))

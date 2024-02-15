@@ -265,12 +265,14 @@ class AdvancedOptionAdress extends StatelessWidget {
         ':' +
         utxo.txIndex.toString();
 
+    print('AdvancedOptionAdress: $addessStr - $isSelected');
+
     return AnimatedOpacity(
       opacity: isFrozen ? 0.5 : 1,
       duration: const Duration(milliseconds: 300),
       child: InkWell(
         onTap: () {
-          if (!isFrozen) context.read<SendCubit>().utxoAddressSelected(utxo);
+          if (!isFrozen) context.read<SendCubit>().utxoSelected(utxo);
         },
         child: Container(
           padding: const EdgeInsets.all(16),

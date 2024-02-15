@@ -138,6 +138,11 @@ class UTXO with _$UTXO {
 
   factory UTXO.fromJson(Map<String, dynamic> json) => _$UTXOFromJson(json);
 
+  @override
+  String toString() {
+    return '$txid:$txIndex';
+  }
+
 /*
   static List<UTXO> fromUTXOList(List<bdk.LocalUtxo> utxos) {
     return utxos
@@ -168,9 +173,9 @@ extension X on List<Address> {
 */
 
 extension Y on List<UTXO> {
-  bool containsUtxo(UTXO utxo) => where((utx) => utx.address == utxo.address).isNotEmpty;
+  bool containsUtxo(UTXO utxo) => where((utx) => utx.toString() == utxo.toString()).isNotEmpty;
 
-  List<UTXO> removeUtxo(UTXO utxo) => where((utx) => utx.address != utxo.address).toList();
+  List<UTXO> removeUtxo(UTXO utxo) => where((utx) => utx.toString() != utxo.toString()).toList();
 }
 
 // @freezed
