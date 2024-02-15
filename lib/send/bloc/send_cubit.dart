@@ -260,7 +260,7 @@ class SendCubit extends Cubit<SendState> {
           ? networkFeesCubit.state.fees!.toDouble()
           : networkFeesCubit.state.feesList![networkFeesCubit.state.selectedFeesOption].toDouble(),
       enableRbf: !state.disableRBF,
-      selectedAddresses: state.selectedUtxos.map((e) => e.address).toList(),
+      selectedUtxos: state.selectedUtxos,
       note: state.note,
     );
     if (err != null) {

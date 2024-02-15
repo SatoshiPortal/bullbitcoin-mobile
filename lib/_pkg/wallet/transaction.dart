@@ -461,7 +461,7 @@ class WalletTx {
     required bool sendAllCoin,
     required double feeRate,
     required bool enableRbf,
-    required List<Address> selectedAddresses,
+    required List<UTXO> selectedUtxos,
     String? note,
   }) async {
     try {
@@ -487,9 +487,13 @@ class WalletTx {
 
       if (isManualSend) {
         txBuilder = txBuilder.manuallySelectedOnly();
-        final utxos = <bdk.OutPoint>[];
-        for (final address in selectedAddresses)
+        final List<bdk.OutPoint> utxos = selectedUtxos.map((e) {
+          return bdk.OutPoint(txid: e.txid, vout: e.txIndex);
+        }).toList();
+        /*
+        for (final address in selectedUtxos)
           utxos.addAll(address.getUnspentUtxosOutpoints(wallet.utxos));
+          */
         txBuilder = txBuilder.addUtxos(utxos);
       }
 
