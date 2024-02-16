@@ -37,7 +37,8 @@ mixin _$Wallet {
   List<Address>? get externalAddressBook => throw _privateConstructorUsedError;
   List<UTXO> get utxos => throw _privateConstructorUsedError;
   List<Transaction> get transactions => throw _privateConstructorUsedError;
-  List<Transaction> get unsignedTxs =>
+  List<Transaction> get unsignedTxs => throw _privateConstructorUsedError;
+  List<Transaction> get swaps =>
       throw _privateConstructorUsedError; // List<String>? labelTags,
 // List<Bip329Label>? bip329Labels,
   bool get backupTested => throw _privateConstructorUsedError;
@@ -74,6 +75,7 @@ abstract class $WalletCopyWith<$Res> {
       List<UTXO> utxos,
       List<Transaction> transactions,
       List<Transaction> unsignedTxs,
+      List<Transaction> swaps,
       bool backupTested,
       DateTime? lastBackupTested,
       bool hide,
@@ -114,6 +116,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? utxos = null,
     Object? transactions = null,
     Object? unsignedTxs = null,
+    Object? swaps = null,
     Object? backupTested = null,
     Object? lastBackupTested = freezed,
     Object? hide = null,
@@ -192,6 +195,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.unsignedTxs
           : unsignedTxs // ignore: cast_nullable_to_non_nullable
               as List<Transaction>,
+      swaps: null == swaps
+          ? _value.swaps
+          : swaps // ignore: cast_nullable_to_non_nullable
+              as List<Transaction>,
       backupTested: null == backupTested
           ? _value.backupTested
           : backupTested // ignore: cast_nullable_to_non_nullable
@@ -262,6 +269,7 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
       List<UTXO> utxos,
       List<Transaction> transactions,
       List<Transaction> unsignedTxs,
+      List<Transaction> swaps,
       bool backupTested,
       DateTime? lastBackupTested,
       bool hide,
@@ -302,6 +310,7 @@ class __$$WalletImplCopyWithImpl<$Res>
     Object? utxos = null,
     Object? transactions = null,
     Object? unsignedTxs = null,
+    Object? swaps = null,
     Object? backupTested = null,
     Object? lastBackupTested = freezed,
     Object? hide = null,
@@ -380,6 +389,10 @@ class __$$WalletImplCopyWithImpl<$Res>
           ? _value._unsignedTxs
           : unsignedTxs // ignore: cast_nullable_to_non_nullable
               as List<Transaction>,
+      swaps: null == swaps
+          ? _value._swaps
+          : swaps // ignore: cast_nullable_to_non_nullable
+              as List<Transaction>,
       backupTested: null == backupTested
           ? _value.backupTested
           : backupTested // ignore: cast_nullable_to_non_nullable
@@ -422,6 +435,7 @@ class _$WalletImpl extends _Wallet {
       final List<UTXO> utxos = const [],
       final List<Transaction> transactions = const [],
       final List<Transaction> unsignedTxs = const [],
+      final List<Transaction> swaps = const [],
       this.backupTested = false,
       this.lastBackupTested,
       this.hide = false,
@@ -431,6 +445,7 @@ class _$WalletImpl extends _Wallet {
         _utxos = utxos,
         _transactions = transactions,
         _unsignedTxs = unsignedTxs,
+        _swaps = swaps,
         super._();
 
   factory _$WalletImpl.fromJson(Map<String, dynamic> json) =>
@@ -514,6 +529,15 @@ class _$WalletImpl extends _Wallet {
     return EqualUnmodifiableListView(_unsignedTxs);
   }
 
+  final List<Transaction> _swaps;
+  @override
+  @JsonKey()
+  List<Transaction> get swaps {
+    if (_swaps is EqualUnmodifiableListView) return _swaps;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_swaps);
+  }
+
 // List<String>? labelTags,
 // List<Bip329Label>? bip329Labels,
   @override
@@ -530,7 +554,7 @@ class _$WalletImpl extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, utxos: $utxos, transactions: $transactions, unsignedTxs: $unsignedTxs, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide, swapTxCount: $swapTxCount)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, utxos: $utxos, transactions: $transactions, unsignedTxs: $unsignedTxs, swaps: $swaps, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide, swapTxCount: $swapTxCount)';
   }
 
   @override
@@ -569,6 +593,7 @@ class _$WalletImpl extends _Wallet {
                 .equals(other._transactions, _transactions) &&
             const DeepCollectionEquality()
                 .equals(other._unsignedTxs, _unsignedTxs) &&
+            const DeepCollectionEquality().equals(other._swaps, _swaps) &&
             (identical(other.backupTested, backupTested) ||
                 other.backupTested == backupTested) &&
             (identical(other.lastBackupTested, lastBackupTested) ||
@@ -600,6 +625,7 @@ class _$WalletImpl extends _Wallet {
         const DeepCollectionEquality().hash(_utxos),
         const DeepCollectionEquality().hash(_transactions),
         const DeepCollectionEquality().hash(_unsignedTxs),
+        const DeepCollectionEquality().hash(_swaps),
         backupTested,
         lastBackupTested,
         hide,
@@ -640,6 +666,7 @@ abstract class _Wallet extends Wallet {
       final List<UTXO> utxos,
       final List<Transaction> transactions,
       final List<Transaction> unsignedTxs,
+      final List<Transaction> swaps,
       final bool backupTested,
       final DateTime? lastBackupTested,
       final bool hide,
@@ -684,6 +711,8 @@ abstract class _Wallet extends Wallet {
   List<Transaction> get transactions;
   @override
   List<Transaction> get unsignedTxs;
+  @override
+  List<Transaction> get swaps;
   @override // List<String>? labelTags,
 // List<Bip329Label>? bip329Labels,
   bool get backupTested;

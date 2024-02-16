@@ -40,7 +40,7 @@ class WalletState with _$WalletState {
     if (wallet == null) return [];
 
     final swapTxs = wallet!.transactions.where((tx) => tx.swapTx != null).toList();
-    final swapTxsUnsigned = wallet!.unsignedTxs.where((tx) => tx.swapTx != null).toList();
+    final swapTxsUnsigned = wallet!.swaps.where((tx) => tx.swapTx != null).toList();
 
     final allTxs = swapTxs + swapTxsUnsigned;
     return allTxs;

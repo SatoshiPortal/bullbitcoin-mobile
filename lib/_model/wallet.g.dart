@@ -46,6 +46,10 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
               ?.map((e) => Transaction.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      swaps: (json['swaps'] as List<dynamic>?)
+              ?.map((e) => Transaction.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       backupTested: json['backupTested'] as bool? ?? false,
       lastBackupTested: json['lastBackupTested'] == null
           ? null
@@ -74,6 +78,7 @@ Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
       'utxos': instance.utxos,
       'transactions': instance.transactions,
       'unsignedTxs': instance.unsignedTxs,
+      'swaps': instance.swaps,
       'backupTested': instance.backupTested,
       'lastBackupTested': instance.lastBackupTested?.toIso8601String(),
       'hide': instance.hide,

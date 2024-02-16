@@ -37,6 +37,7 @@ class Wallet with _$Wallet {
     @Default([]) List<UTXO> utxos,
     @Default([]) List<Transaction> transactions,
     @Default([]) List<Transaction> unsignedTxs,
+    @Default([]) List<Transaction> swaps,
     // List<String>? labelTags,
     // List<Bip329Label>? bip329Labels,
     @Default(false) bool backupTested,
@@ -347,14 +348,14 @@ class Wallet with _$Wallet {
 
   int balanceWithoutFrozenUTXOs() => (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
 
-  Wallet updateUnsignedTxsWithSwapTx(SwapTx swaptx) {
-    final idx = unsignedTxs.indexWhere((_) => _.swapTx != null && _.swapTx!.id == swaptx.id);
-    final tx = unsignedTxs[idx].copyWith(swapTx: swaptx);
+  Wallet updateSwapTxs(SwapTx swaptx) {
+    final idx = swaps.indexWhere((_) => _.swapTx != null && _.swapTx!.id == swaptx.id);
+    final tx = swaps[idx].copyWith(swapTx: swaptx);
 
-    final newUnsignedTxs = List<Transaction>.from(unsignedTxs);
-    newUnsignedTxs[idx] = tx;
+    final swapTxs = List<Transaction>.from(swaps);
+    swapTxs[idx] = tx;
 
-    return copyWith(unsignedTxs: newUnsignedTxs);
+    return copyWith(swaps: swapTxs);
   }
 }
 

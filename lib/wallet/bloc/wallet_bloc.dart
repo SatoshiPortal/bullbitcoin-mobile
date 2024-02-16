@@ -408,6 +408,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
             storageWallet = storageWallet!.copyWith(
               unsignedTxs: eventWallet.unsignedTxs,
             );
+          if (eventWallet.swaps.isNotEmpty)
+            storageWallet = storageWallet!.copyWith(
+              swaps: eventWallet.swaps,
+            );
         case UpdateWalletTypes.addresses:
           if (eventWallet.myAddressBook.isNotEmpty)
             storageWallet = storageWallet!.copyWith(
@@ -463,9 +467,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       if (tx.swapTx == null) continue;
       final status = tx.swapTx!.status?.status;
       if (status != null &&
-          (status == SwapStatus.txnConfirmed ||
+          (status == SwapStatus.txnClaimed ||
               status == SwapStatus.swapExpired ||
-              status == SwapStatus.invoiceExpired)) continue;
+              status == SwapStatus.invoiceExpired ||
+              status == SwapStatus.txnFailed ||
+              status == SwapStatus.invoiceFailedToPay ||
+              status == SwapStatus.txnLockupFailed)) continue;
 
       swapBloc.add(WatchInvoiceStatus(walletBloc: this, tx: tx));
       await Future.delayed(const Duration(milliseconds: 50));

@@ -232,9 +232,6 @@ class SwapTx with _$SwapTx {
       scriptAddress: swap.scriptAddress,
       electrumUrl: swap.electrumUrl,
       boltzUrl: swap.boltzUrl,
-      status: const SwapStatusResponse(status: SwapStatus.swapCreated),
-      // status: SwapStatus.swapCreated,
-      // statusStr: swapStatusToString(SwapStatus.swapCreated),
     );
   }
 

@@ -64,6 +64,41 @@ class WalletTx {
     }
   }
 
+  Future<(Wallet, Err?)> addSwapTxToWallet({
+    required Transaction transaction,
+    required Wallet wallet,
+  }) async {
+    try {
+      final swaps = List<Transaction>.from(wallet.swaps);
+      final index = swaps.indexWhere(
+        (tx) => tx.txid == transaction.txid,
+      );
+
+      List<Transaction> updatedSwaps;
+
+      if (index != -1) {
+        updatedSwaps = wallet.swaps.map((tx) {
+          return tx.txid == transaction.txid ? transaction : tx;
+        }).toList();
+      } else {
+        updatedSwaps = List.from(wallet.swaps)..add(transaction);
+      }
+
+      final updatedWallet = wallet.copyWith(swaps: updatedSwaps);
+
+      return (updatedWallet, null);
+    } on Exception catch (e) {
+      return (
+        wallet,
+        Err(
+          e.message,
+          title: 'Error occurred while adding unsigned transaction',
+          solution: 'Please try again.',
+        )
+      ); // returning original wallet in case of error
+    }
+  }
+
   //
   // THIS NEEDS WORK
   //

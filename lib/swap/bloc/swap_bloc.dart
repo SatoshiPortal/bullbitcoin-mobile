@@ -104,7 +104,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       label: event.label,
     );
 
-    final (updatedWallet, err) = await walletTx.addUnsignedTxToWallet(
+    final (updatedWallet, err) = await walletTx.addSwapTxToWallet(
       wallet: wallet.copyWith(swapTxCount: swapTxCount),
       transaction: tx,
     );
@@ -173,7 +173,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     }
 
     final tx = swap.copyWith(txid: txid);
-    final updatedWallet = event.walletBloc.state.wallet!.updateUnsignedTxsWithSwapTx(tx);
+    final updatedWallet = event.walletBloc.state.wallet!.updateSwapTxs(tx);
 
     event.walletBloc.add(
       UpdateWallet(
@@ -205,7 +205,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
         final close = status.status == SwapStatus.txnClaimed ||
             status.status == SwapStatus.swapExpired ||
             status.status == SwapStatus.invoiceExpired;
-        final updatedWallet = wallet.updateUnsignedTxsWithSwapTx(tx);
+        final updatedWallet = wallet.updateSwapTxs(tx);
         event.walletBloc.add(
           UpdateWallet(
             updatedWallet,

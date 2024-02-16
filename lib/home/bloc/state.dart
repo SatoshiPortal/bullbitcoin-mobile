@@ -94,10 +94,10 @@ class HomeState with _$HomeState {
     final txs = <Transaction>[];
     for (final walletBloc in walletBlocsFromNetwork(network)) {
       final walletTxs = walletBloc.state.wallet?.transactions ?? <Transaction>[];
-      final unsignedTxs = walletBloc.state.wallet?.unsignedTxs ?? <Transaction>[];
+      final swapsTxs = walletBloc.state.wallet?.swaps ?? <Transaction>[];
       final wallet = walletBloc.state.wallet;
       for (final tx in walletTxs) txs.add(tx.copyWith(wallet: wallet));
-      for (final tx in unsignedTxs) if (tx.swapTx != null) txs.add(tx.copyWith(wallet: wallet));
+      for (final tx in swapsTxs) if (tx.swapTx != null) txs.add(tx.copyWith(wallet: wallet));
     }
     txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return txs;
