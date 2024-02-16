@@ -26,9 +26,7 @@ mixin _$Address {
   AddressStatus get state => throw _privateConstructorUsedError;
   String? get label => throw _privateConstructorUsedError;
   String? get spentTxId => throw _privateConstructorUsedError;
-  bool get spendable =>
-      throw _privateConstructorUsedError; // @Default(false) bool saving,
-// @Default('') String errSaving,
+  bool get spendable => throw _privateConstructorUsedError;
   int get highestPreviousBalance => throw _privateConstructorUsedError;
   int get balance => throw _privateConstructorUsedError;
 
@@ -232,8 +230,6 @@ class _$AddressImpl extends _Address {
   @override
   @JsonKey()
   final bool spendable;
-// @Default(false) bool saving,
-// @Default('') String errSaving,
   @override
   @JsonKey()
   final int highestPreviousBalance;
@@ -313,8 +309,7 @@ abstract class _Address extends Address {
   String? get spentTxId;
   @override
   bool get spendable;
-  @override // @Default(false) bool saving,
-// @Default('') String errSaving,
+  @override
   int get highestPreviousBalance;
   @override
   int get balance;
@@ -523,11 +518,6 @@ class _$UTXOImpl extends _UTXO {
   final Address address;
   @override
   final bool spendable;
-
-  @override
-  String toString() {
-    return 'UTXO(txid: $txid, txIndex: $txIndex, isSpent: $isSpent, value: $value, label: $label, address: $address, spendable: $spendable)';
-  }
 
   @override
   bool operator ==(Object other) {

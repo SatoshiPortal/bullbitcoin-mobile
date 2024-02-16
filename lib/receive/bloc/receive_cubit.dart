@@ -174,12 +174,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     }
   }
 
-  void handleSwapStatusChange(String id, SwapStatus status) async {
+  void handleSwapStatusChange(String id, SwapStatusResponse resp) async {
     if (state.swapTx == null) return;
     if (state.swapTx!.id != id) return;
-    final swap = state.swapTx!.copyWith(status: status, statusStr: swapStatusToString(status));
+    final swap = state.swapTx!.copyWith(status: resp);
     emit(state.copyWith(swapTx: swap));
-    if (status == SwapStatus.invoiceSettled) {
+    if (resp.status == SwapStatus.invoiceSettled) {
       emit(state.copyWith(swapTx: swap.copyWith(isListening: false)));
       final err = swapBoltz.closeStream(swap.id);
       if (err != null) {

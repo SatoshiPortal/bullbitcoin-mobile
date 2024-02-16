@@ -3,7 +3,7 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:boltz_dart/boltz_dart.dart' as boltz;
+import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -207,26 +207,20 @@ class SwapTx with _$SwapTx {
     required String electrumUrl,
     required String boltzUrl,
     @Default(false) bool isListening,
-    @JsonKey(
-      includeFromJson: false,
-      includeToJson: false,
-    )
-    boltz.SwapStatus? status,
+    SwapStatusResponse? status,
     String? blindingKey,
-    String? statusStr,
+    // String? statusStr,
   }) = _SwapTx;
   const SwapTx._();
 
-  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json).copyWith(
-        status: _addSwapStatus(json),
-      );
+  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
 
-  factory SwapTx.fromBtcLnSwap(boltz.BtcLnSwap result) {
+  factory SwapTx.fromBtcLnSwap(BtcLnSwap result) {
     final swap = result.btcLnSwap;
     return SwapTx(
       id: swap.id,
-      isSubmarine: swap.kind == boltz.SwapType.Submarine,
-      network: swap.network == boltz.Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
+      isSubmarine: swap.kind == SwapType.Submarine,
+      network: swap.network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
       secretKey: swap.keys.secretKey,
       publicKey: swap.keys.publicKey,
       value: swap.preimage.value,
@@ -238,8 +232,9 @@ class SwapTx with _$SwapTx {
       scriptAddress: swap.scriptAddress,
       electrumUrl: swap.electrumUrl,
       boltzUrl: swap.boltzUrl,
-      status: boltz.SwapStatus.swapCreated,
-      statusStr: swapStatusToString(boltz.SwapStatus.swapCreated),
+      status: const SwapStatusResponse(status: SwapStatus.swapCreated),
+      // status: SwapStatus.swapCreated,
+      // statusStr: swapStatusToString(SwapStatus.swapCreated),
     );
   }
 
@@ -247,15 +242,15 @@ class SwapTx with _$SwapTx {
       invoice.substring(0, 5) + ' .... ' + invoice.substring(invoice.length - 10);
 }
 
-String swapStatusToString(boltz.SwapStatus swap) {
-  debugPrint('swapToJson');
-  final value = swap.toJson();
-  return value;
-}
+// String swapStatusToString(SwapStatus swap) {
+//   debugPrint('swapToJson');
+//   final value = swap.toJson();
+//   return value;
+// }
 
-boltz.SwapStatus? _addSwapStatus(Map<String, dynamic> json) {
-  if (!json.containsKey('statusStr') || !json.containsValue('statusStr')) return null;
+// SwapStatus? _addSwapStatus(Map<String, dynamic> json) {
+//   if (!json.containsKey('statusStr') || !json.containsValue('statusStr')) return null;
 
-  final value = boltz.getSwapStatusFromString(json['statusStr'] as String);
-  return value;
-}
+//   final value = getSwapStatusFromString(json['statusStr'] as String);
+//   return value;
+// }

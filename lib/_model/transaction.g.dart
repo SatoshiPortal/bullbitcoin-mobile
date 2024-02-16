@@ -71,8 +71,10 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       electrumUrl: json['electrumUrl'] as String,
       boltzUrl: json['boltzUrl'] as String,
       isListening: json['isListening'] as bool? ?? false,
+      status: json['status'] == null
+          ? null
+          : SwapStatusResponse.fromJson(json['status'] as Map<String, dynamic>),
       blindingKey: json['blindingKey'] as String?,
-      statusStr: json['statusStr'] as String?,
     );
 
 Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
@@ -92,8 +94,8 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
       'electrumUrl': instance.electrumUrl,
       'boltzUrl': instance.boltzUrl,
       'isListening': instance.isListening,
+      'status': instance.status,
       'blindingKey': instance.blindingKey,
-      'statusStr': instance.statusStr,
     };
 
 const _$BBNetworkEnumMap = {

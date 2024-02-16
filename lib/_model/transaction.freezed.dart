@@ -619,10 +619,8 @@ mixin _$SwapTx {
   String get electrumUrl => throw _privateConstructorUsedError;
   String get boltzUrl => throw _privateConstructorUsedError;
   bool get isListening => throw _privateConstructorUsedError;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  boltz.SwapStatus? get status => throw _privateConstructorUsedError;
+  SwapStatusResponse? get status => throw _privateConstructorUsedError;
   String? get blindingKey => throw _privateConstructorUsedError;
-  String? get statusStr => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -650,10 +648,10 @@ abstract class $SwapTxCopyWith<$Res> {
       String electrumUrl,
       String boltzUrl,
       bool isListening,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      boltz.SwapStatus? status,
-      String? blindingKey,
-      String? statusStr});
+      SwapStatusResponse? status,
+      String? blindingKey});
+
+  $SwapStatusResponseCopyWith<$Res>? get status;
 }
 
 /// @nodoc
@@ -686,7 +684,6 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? isListening = null,
     Object? status = freezed,
     Object? blindingKey = freezed,
-    Object? statusStr = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -752,16 +749,24 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as boltz.SwapStatus?,
+              as SwapStatusResponse?,
       blindingKey: freezed == blindingKey
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
               as String?,
-      statusStr: freezed == statusStr
-          ? _value.statusStr
-          : statusStr // ignore: cast_nullable_to_non_nullable
-              as String?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $SwapStatusResponseCopyWith<$Res>? get status {
+    if (_value.status == null) {
+      return null;
+    }
+
+    return $SwapStatusResponseCopyWith<$Res>(_value.status!, (value) {
+      return _then(_value.copyWith(status: value) as $Val);
+    });
   }
 }
 
@@ -788,10 +793,11 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String electrumUrl,
       String boltzUrl,
       bool isListening,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      boltz.SwapStatus? status,
-      String? blindingKey,
-      String? statusStr});
+      SwapStatusResponse? status,
+      String? blindingKey});
+
+  @override
+  $SwapStatusResponseCopyWith<$Res>? get status;
 }
 
 /// @nodoc
@@ -822,7 +828,6 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? isListening = null,
     Object? status = freezed,
     Object? blindingKey = freezed,
-    Object? statusStr = freezed,
   }) {
     return _then(_$SwapTxImpl(
       id: null == id
@@ -888,14 +893,10 @@ class __$$SwapTxImplCopyWithImpl<$Res>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as boltz.SwapStatus?,
+              as SwapStatusResponse?,
       blindingKey: freezed == blindingKey
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
-              as String?,
-      statusStr: freezed == statusStr
-          ? _value.statusStr
-          : statusStr // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -920,9 +921,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       required this.electrumUrl,
       required this.boltzUrl,
       this.isListening = false,
-      @JsonKey(includeFromJson: false, includeToJson: false) this.status,
-      this.blindingKey,
-      this.statusStr})
+      this.status,
+      this.blindingKey})
       : super._();
 
   factory _$SwapTxImpl.fromJson(Map<String, dynamic> json) =>
@@ -960,16 +960,13 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   @JsonKey()
   final bool isListening;
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final boltz.SwapStatus? status;
+  final SwapStatusResponse? status;
   @override
   final String? blindingKey;
-  @override
-  final String? statusStr;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, isListening: $isListening, status: $status, blindingKey: $blindingKey, statusStr: $statusStr)';
+    return 'SwapTx(id: $id, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, isListening: $isListening, status: $status, blindingKey: $blindingKey)';
   }
 
   @override
@@ -993,8 +990,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('boltzUrl', boltzUrl))
       ..add(DiagnosticsProperty('isListening', isListening))
       ..add(DiagnosticsProperty('status', status))
-      ..add(DiagnosticsProperty('blindingKey', blindingKey))
-      ..add(DiagnosticsProperty('statusStr', statusStr));
+      ..add(DiagnosticsProperty('blindingKey', blindingKey));
   }
 
   @override
@@ -1028,9 +1024,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
                 other.isListening == isListening) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.blindingKey, blindingKey) ||
-                other.blindingKey == blindingKey) &&
-            (identical(other.statusStr, statusStr) ||
-                other.statusStr == statusStr));
+                other.blindingKey == blindingKey));
   }
 
   @JsonKey(ignore: true)
@@ -1053,8 +1047,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       boltzUrl,
       isListening,
       status,
-      blindingKey,
-      statusStr);
+      blindingKey);
 
   @JsonKey(ignore: true)
   @override
@@ -1087,10 +1080,8 @@ abstract class _SwapTx extends SwapTx {
       required final String electrumUrl,
       required final String boltzUrl,
       final bool isListening,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      final boltz.SwapStatus? status,
-      final String? blindingKey,
-      final String? statusStr}) = _$SwapTxImpl;
+      final SwapStatusResponse? status,
+      final String? blindingKey}) = _$SwapTxImpl;
   const _SwapTx._() : super._();
 
   factory _SwapTx.fromJson(Map<String, dynamic> json) = _$SwapTxImpl.fromJson;
@@ -1126,12 +1117,9 @@ abstract class _SwapTx extends SwapTx {
   @override
   bool get isListening;
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  boltz.SwapStatus? get status;
+  SwapStatusResponse? get status;
   @override
   String? get blindingKey;
-  @override
-  String? get statusStr;
   @override
   @JsonKey(ignore: true)
   _$$SwapTxImplCopyWith<_$SwapTxImpl> get copyWith =>

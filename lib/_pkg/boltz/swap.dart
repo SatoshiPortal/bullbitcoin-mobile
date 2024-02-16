@@ -77,7 +77,7 @@ class SwapBoltz {
     required String swapId,
     required void Function(
       String id,
-      SwapStatus status,
+      SwapStatusResponse status,
     ) onUpdate,
   }) async {
     try {
@@ -89,7 +89,7 @@ class SwapBoltz {
         (
           swapId,
           api.getSwapStatusStream(swapId).listen((event) {
-            onUpdate(swapId, event.status);
+            onUpdate(swapId, event);
           })
         ),
       );
