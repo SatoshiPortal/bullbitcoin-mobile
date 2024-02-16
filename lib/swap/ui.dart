@@ -5,7 +5,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
-import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -15,8 +15,8 @@ class SwapHistoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((SwapBloc _) => _.state.swapTxs);
-    if (txs == null || txs.isEmpty) return const SizedBox.shrink();
+    final txs = context.select((WalletBloc _) => _.state.allSwapTxs());
+    if (txs.isEmpty) return const SizedBox.shrink();
 
     return BBButton.bigNoIcon(
       label: 'View History',
@@ -31,15 +31,17 @@ class SwapTxList extends StatelessWidget {
   const SwapTxList({super.key});
 
   static Future openPopUp(BuildContext context) {
-    final receive = context.read<ReceiveCubit>();
-    final swap = receive.state.swapBloc;
+    final receiveCubit = context.read<ReceiveCubit>();
+    final swapBloc = receiveCubit.state.swapBloc;
+    final walletBloc = receiveCubit.state.walletBloc;
 
     return showBBBottomSheet(
       context: context,
       child: MultiBlocProvider(
         providers: [
-          BlocProvider.value(value: receive),
-          BlocProvider.value(value: swap),
+          BlocProvider.value(value: receiveCubit),
+          BlocProvider.value(value: swapBloc),
+          if (walletBloc != null) BlocProvider.value(value: walletBloc),
         ],
         child: const SwapTxList(),
       ),
@@ -48,8 +50,8 @@ class SwapTxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((SwapBloc _) => _.state.swapTxs);
-    if (txs == null || txs.isEmpty) return const SizedBox.shrink();
+    final txs = context.select((WalletBloc _) => _.state.allSwapTxs());
+    if (txs.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.all(16.0),

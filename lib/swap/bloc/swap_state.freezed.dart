@@ -23,7 +23,6 @@ mixin _$SwapState {
   String get errClaimingSwap => throw _privateConstructorUsedError;
   bool get claimingSwapSwap => throw _privateConstructorUsedError;
   SwapTx? get swapTx => throw _privateConstructorUsedError;
-  List<Transaction>? get swapTxs => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SwapStateCopyWith<SwapState> get copyWith =>
@@ -42,8 +41,7 @@ abstract class $SwapStateCopyWith<$Res> {
       bool generatingSwapInv,
       String errClaimingSwap,
       bool claimingSwapSwap,
-      SwapTx? swapTx,
-      List<Transaction>? swapTxs});
+      SwapTx? swapTx});
 
   $SwapTxCopyWith<$Res>? get swapTx;
 }
@@ -68,7 +66,6 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
     Object? errClaimingSwap = null,
     Object? claimingSwapSwap = null,
     Object? swapTx = freezed,
-    Object? swapTxs = freezed,
   }) {
     return _then(_value.copyWith(
       creatingInvoice: null == creatingInvoice
@@ -99,10 +96,6 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
           ? _value.swapTx
           : swapTx // ignore: cast_nullable_to_non_nullable
               as SwapTx?,
-      swapTxs: freezed == swapTxs
-          ? _value.swapTxs
-          : swapTxs // ignore: cast_nullable_to_non_nullable
-              as List<Transaction>?,
     ) as $Val);
   }
 
@@ -134,8 +127,7 @@ abstract class _$$SwapStateImplCopyWith<$Res>
       bool generatingSwapInv,
       String errClaimingSwap,
       bool claimingSwapSwap,
-      SwapTx? swapTx,
-      List<Transaction>? swapTxs});
+      SwapTx? swapTx});
 
   @override
   $SwapTxCopyWith<$Res>? get swapTx;
@@ -159,7 +151,6 @@ class __$$SwapStateImplCopyWithImpl<$Res>
     Object? errClaimingSwap = null,
     Object? claimingSwapSwap = null,
     Object? swapTx = freezed,
-    Object? swapTxs = freezed,
   }) {
     return _then(_$SwapStateImpl(
       creatingInvoice: null == creatingInvoice
@@ -190,10 +181,6 @@ class __$$SwapStateImplCopyWithImpl<$Res>
           ? _value.swapTx
           : swapTx // ignore: cast_nullable_to_non_nullable
               as SwapTx?,
-      swapTxs: freezed == swapTxs
-          ? _value._swapTxs
-          : swapTxs // ignore: cast_nullable_to_non_nullable
-              as List<Transaction>?,
     ));
   }
 }
@@ -208,10 +195,8 @@ class _$SwapStateImpl extends _SwapState {
       this.generatingSwapInv = false,
       this.errClaimingSwap = '',
       this.claimingSwapSwap = false,
-      this.swapTx,
-      final List<Transaction>? swapTxs})
-      : _swapTxs = swapTxs,
-        super._();
+      this.swapTx})
+      : super._();
 
   @override
   @JsonKey()
@@ -233,19 +218,10 @@ class _$SwapStateImpl extends _SwapState {
   final bool claimingSwapSwap;
   @override
   final SwapTx? swapTx;
-  final List<Transaction>? _swapTxs;
-  @override
-  List<Transaction>? get swapTxs {
-    final value = _swapTxs;
-    if (value == null) return null;
-    if (_swapTxs is EqualUnmodifiableListView) return _swapTxs;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
 
   @override
   String toString() {
-    return 'SwapState(creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, errClaimingSwap: $errClaimingSwap, claimingSwapSwap: $claimingSwapSwap, swapTx: $swapTx, swapTxs: $swapTxs)';
+    return 'SwapState(creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, errClaimingSwap: $errClaimingSwap, claimingSwapSwap: $claimingSwapSwap, swapTx: $swapTx)';
   }
 
   @override
@@ -265,8 +241,7 @@ class _$SwapStateImpl extends _SwapState {
                 other.errClaimingSwap == errClaimingSwap) &&
             (identical(other.claimingSwapSwap, claimingSwapSwap) ||
                 other.claimingSwapSwap == claimingSwapSwap) &&
-            (identical(other.swapTx, swapTx) || other.swapTx == swapTx) &&
-            const DeepCollectionEquality().equals(other._swapTxs, _swapTxs));
+            (identical(other.swapTx, swapTx) || other.swapTx == swapTx));
   }
 
   @override
@@ -278,8 +253,7 @@ class _$SwapStateImpl extends _SwapState {
       generatingSwapInv,
       errClaimingSwap,
       claimingSwapSwap,
-      swapTx,
-      const DeepCollectionEquality().hash(_swapTxs));
+      swapTx);
 
   @JsonKey(ignore: true)
   @override
@@ -296,8 +270,7 @@ abstract class _SwapState extends SwapState {
       final bool generatingSwapInv,
       final String errClaimingSwap,
       final bool claimingSwapSwap,
-      final SwapTx? swapTx,
-      final List<Transaction>? swapTxs}) = _$SwapStateImpl;
+      final SwapTx? swapTx}) = _$SwapStateImpl;
   const _SwapState._() : super._();
 
   @override
@@ -314,8 +287,6 @@ abstract class _SwapState extends SwapState {
   bool get claimingSwapSwap;
   @override
   SwapTx? get swapTx;
-  @override
-  List<Transaction>? get swapTxs;
   @override
   @JsonKey(ignore: true)
   _$$SwapStateImplCopyWith<_$SwapStateImpl> get copyWith =>

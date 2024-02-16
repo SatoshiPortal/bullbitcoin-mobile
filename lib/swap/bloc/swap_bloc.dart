@@ -35,7 +35,6 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     on<ClaimSwap>(_onClaimSwap);
     // on<RefundSwap>(_onRefundSwap);
     on<ResetToNewLnInvoice>(_onResetToNewLnInvoice);
-    on<LoadAllSwapTxs>(_onLoadAllSwapTxs);
   }
 
   final SettingsCubit settingsCubit;
@@ -104,7 +103,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     );
 
     // add(WatchInvoiceStatus());
-    add(SaveSwapInvoiceToWallet(event.walletBloc));
+    add(SaveSwapInvoiceToWallet(event.walletBloc, label: event.label));
   }
 
   void _onSaveSwapInvoiceToWallet(SaveSwapInvoiceToWallet event, Emitter<SwapState> emit) async {
@@ -115,6 +114,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     final tx = Transaction.fromSwapTx(state.swapTx!).copyWith(
       isSwap: true,
       swapIndex: wallet.swapTxCount,
+      label: event.label,
     );
 
     final (updatedWallet, err) = await walletTx.addUnsignedTxToWallet(
@@ -151,16 +151,6 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
 
   void _onResetToNewLnInvoice(ResetToNewLnInvoice event, Emitter<SwapState> emit) {
     emit(state.copyWith(errCreatingSwapInv: '', swapTx: null));
-  }
-
-  void _onLoadAllSwapTxs(LoadAllSwapTxs event, Emitter<SwapState> emit) async {
-    final swapTxs =
-        event.walletBloc.state.wallet!.transactions.where((tx) => tx.swapTx != null).toList();
-    final swapTxsUnsigned =
-        event.walletBloc.state.wallet!.unsignedTxs.where((tx) => tx.swapTx != null).toList();
-
-    final allTxs = swapTxs + swapTxsUnsigned;
-    emit(state.copyWith(swapTxs: allTxs));
   }
 
   void _onClaimSwap(ClaimSwap event, Emitter<SwapState> emit) async {

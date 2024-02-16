@@ -13,7 +13,6 @@ class SwapState with _$SwapState {
     @Default('') String errClaimingSwap,
     @Default(false) bool claimingSwapSwap,
     SwapTx? swapTx,
-    List<Transaction>? swapTxs,
   }) = _SwapState;
   const SwapState._();
 }

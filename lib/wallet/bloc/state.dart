@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -34,4 +35,14 @@ class WalletState with _$WalletState {
   String balanceStr() => ((wallet?.balance ?? 0) / 100000000).toStringAsFixed(8);
 
   int balanceSats() => wallet?.balance ?? 0;
+
+  List<Transaction> allSwapTxs() {
+    if (wallet == null) return [];
+
+    final swapTxs = wallet!.transactions.where((tx) => tx.swapTx != null).toList();
+    final swapTxsUnsigned = wallet!.unsignedTxs.where((tx) => tx.swapTx != null).toList();
+
+    final allTxs = swapTxs + swapTxsUnsigned;
+    return allTxs;
+  }
 }
