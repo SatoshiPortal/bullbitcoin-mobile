@@ -90,7 +90,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       return;
     }
 
-    emit(state.copyWith(generatingSwapInv: false, errCreatingSwapInv: ''));
+    emit(state.copyWith(generatingSwapInv: false, errCreatingSwapInv: '', swapTx: swap));
 
     add(SaveSwapInvoiceToWallet(walletBloc: event.walletBloc, swapTx: swap!, label: event.label));
   }
