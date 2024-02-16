@@ -115,6 +115,20 @@ Future setupLocator({bool fromTest = false}) async {
     bbAPI: bbAPI,
   );
 
+  final swap = SwapBloc(
+    hiveStorage: hiveStorage,
+    secureStorage: secureStorage,
+    walletAddress: walletAddress,
+    walletRepository: walletRepository,
+    walletSensitiveRepository: walletSensRepo,
+    settingsCubit: settings,
+    networkCubit: networkCubit,
+    swapBoltz: boltz,
+    walletTx: walletTx,
+  );
+
+  locator.registerSingleton<SwapBloc>(swap);
+
   final homeCubit = HomeCubit(
     // walletSync: walletSync,
     hiveStorage: locator<HiveStorage>(),
@@ -133,20 +147,6 @@ Future setupLocator({bool fromTest = false}) async {
   settings.homeCubit = homeCubit;
   networkCubit.homeCubit = homeCubit;
   settings.loadTimer();
-
-  locator.registerSingleton<SwapBloc>(
-    SwapBloc(
-      hiveStorage: hiveStorage,
-      secureStorage: secureStorage,
-      walletAddress: walletAddress,
-      walletRepository: walletRepository,
-      walletSensitiveRepository: walletSensRepo,
-      settingsCubit: settings,
-      networkCubit: networkCubit,
-      swapBoltz: boltz,
-      walletTx: walletTx,
-    ),
-  );
 
   locator.registerSingleton<SettingsCubit>(settings);
   locator.registerSingleton<WalletSensitiveCreate>(walletSensCreate);

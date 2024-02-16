@@ -16,9 +16,12 @@ import 'package:bb_mobile/_pkg/wallet/utxo.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
+import 'package:bb_mobile/swap/bloc/swap_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,6 +40,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.walletUtxo,
     required this.walletUpdate,
     required this.networkCubit,
+    required this.swapBloc,
     this.fromStorage = true,
     Wallet? wallet,
   }) : super(WalletState(wallet: wallet)) {
@@ -63,6 +67,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletUtxo walletUtxo;
   final WalletUpdate walletUpdate;
   final NetworkCubit networkCubit;
+  final SwapBloc swapBloc;
 
   final SecureStorage secureStorage;
   final HiveStorage hiveStorage;
@@ -332,6 +337,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ],
       ),
     );
+
+    await Future.delayed(100.ms);
+    _listenToSwapTxs();
   }
 
   void _updateUtxos(UpdateUtxos event, Emitter<WalletState> emit) async {}
@@ -447,5 +455,20 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
     if (err != null) locator<Logger>().log(err.toString(), printToConsole: true);
     emit(state.copyWith(wallet: storageWallet));
+  }
+
+  void _listenToSwapTxs() async {
+    final swapTxs = state.allSwapTxs();
+    for (final tx in swapTxs) {
+      if (tx.swapTx == null) continue;
+      final status = tx.swapTx!.status?.status;
+      if (status != null &&
+          (status == SwapStatus.txnClaimed ||
+              status == SwapStatus.swapExpired ||
+              status == SwapStatus.invoiceExpired)) continue;
+
+      swapBloc.add(WatchInvoiceStatus(walletBloc: this, tx: tx));
+      await Future.delayed(const Duration(milliseconds: 50));
+    }
   }
 }

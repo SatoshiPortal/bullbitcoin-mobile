@@ -207,7 +207,6 @@ class SwapTx with _$SwapTx {
     required String scriptAddress,
     required String electrumUrl,
     required String boltzUrl,
-    @Default(false) bool isListening,
     SwapStatusResponse? status,
     String? blindingKey,
     // String? statusStr,

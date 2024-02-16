@@ -619,7 +619,6 @@ mixin _$SwapTx {
   String get scriptAddress => throw _privateConstructorUsedError;
   String get electrumUrl => throw _privateConstructorUsedError;
   String get boltzUrl => throw _privateConstructorUsedError;
-  bool get isListening => throw _privateConstructorUsedError;
   SwapStatusResponse? get status => throw _privateConstructorUsedError;
   String? get blindingKey => throw _privateConstructorUsedError;
 
@@ -649,7 +648,6 @@ abstract class $SwapTxCopyWith<$Res> {
       String scriptAddress,
       String electrumUrl,
       String boltzUrl,
-      bool isListening,
       SwapStatusResponse? status,
       String? blindingKey});
 
@@ -684,7 +682,6 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? scriptAddress = null,
     Object? electrumUrl = null,
     Object? boltzUrl = null,
-    Object? isListening = null,
     Object? status = freezed,
     Object? blindingKey = freezed,
   }) {
@@ -749,10 +746,6 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.boltzUrl
           : boltzUrl // ignore: cast_nullable_to_non_nullable
               as String,
-      isListening: null == isListening
-          ? _value.isListening
-          : isListening // ignore: cast_nullable_to_non_nullable
-              as bool,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -800,7 +793,6 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String scriptAddress,
       String electrumUrl,
       String boltzUrl,
-      bool isListening,
       SwapStatusResponse? status,
       String? blindingKey});
 
@@ -834,7 +826,6 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? scriptAddress = null,
     Object? electrumUrl = null,
     Object? boltzUrl = null,
-    Object? isListening = null,
     Object? status = freezed,
     Object? blindingKey = freezed,
   }) {
@@ -899,10 +890,6 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.boltzUrl
           : boltzUrl // ignore: cast_nullable_to_non_nullable
               as String,
-      isListening: null == isListening
-          ? _value.isListening
-          : isListening // ignore: cast_nullable_to_non_nullable
-              as bool,
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
@@ -934,7 +921,6 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       required this.scriptAddress,
       required this.electrumUrl,
       required this.boltzUrl,
-      this.isListening = false,
       this.status,
       this.blindingKey})
       : super._();
@@ -973,16 +959,13 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   @override
   final String boltzUrl;
   @override
-  @JsonKey()
-  final bool isListening;
-  @override
   final SwapStatusResponse? status;
   @override
   final String? blindingKey;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, txid: $txid, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, isListening: $isListening, status: $status, blindingKey: $blindingKey)';
+    return 'SwapTx(id: $id, txid: $txid, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey)';
   }
 
   @override
@@ -1005,7 +988,6 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('scriptAddress', scriptAddress))
       ..add(DiagnosticsProperty('electrumUrl', electrumUrl))
       ..add(DiagnosticsProperty('boltzUrl', boltzUrl))
-      ..add(DiagnosticsProperty('isListening', isListening))
       ..add(DiagnosticsProperty('status', status))
       ..add(DiagnosticsProperty('blindingKey', blindingKey));
   }
@@ -1038,8 +1020,6 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
                 other.electrumUrl == electrumUrl) &&
             (identical(other.boltzUrl, boltzUrl) ||
                 other.boltzUrl == boltzUrl) &&
-            (identical(other.isListening, isListening) ||
-                other.isListening == isListening) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.blindingKey, blindingKey) ||
                 other.blindingKey == blindingKey));
@@ -1064,7 +1044,6 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       scriptAddress,
       electrumUrl,
       boltzUrl,
-      isListening,
       status,
       blindingKey);
 
@@ -1099,7 +1078,6 @@ abstract class _SwapTx extends SwapTx {
       required final String scriptAddress,
       required final String electrumUrl,
       required final String boltzUrl,
-      final bool isListening,
       final SwapStatusResponse? status,
       final String? blindingKey}) = _$SwapTxImpl;
   const _SwapTx._() : super._();
@@ -1136,8 +1114,6 @@ abstract class _SwapTx extends SwapTx {
   String get electrumUrl;
   @override
   String get boltzUrl;
-  @override
-  bool get isListening;
   @override
   SwapStatusResponse? get status;
   @override

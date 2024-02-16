@@ -103,7 +103,6 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       ),
     );
 
-    // add(WatchInvoiceStatus());
     add(SaveSwapInvoiceToWallet(event.walletBloc, label: event.label));
   }
 
@@ -142,6 +141,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
         updateTypes: [UpdateWalletTypes.transactions],
       ),
     );
+
+    add(WatchInvoiceStatus(walletBloc: event.walletBloc, tx: tx));
   }
 
   void _onSwapTxSelected(SwapTxSelected event, Emitter<SwapState> emit) {
@@ -220,23 +221,24 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (swap == null) return;
     if (state.listeningTxs.any((_) => swap.id == _.id)) return;
 
-    emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap.copyWith(isListening: true)]));
+    emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
     final err = await swapBoltz.watchSwap(
       swapId: swap.id,
       onUpdate: (id, status) {
         final tx = state.listeningTxs.firstWhere((_) => _.id == id).copyWith(status: status);
         final wallet = event.walletBloc.state.wallet;
         if (wallet == null) return;
-        final settled = status.status == SwapStatus.invoiceSettled;
-        final updatedWallet =
-            wallet.updateUnsignedTxsWithSwapTx(tx.copyWith(isListening: !settled));
+        final close = status.status == SwapStatus.txnClaimed ||
+            status.status == SwapStatus.swapExpired ||
+            status.status == SwapStatus.invoiceExpired;
+        final updatedWallet = wallet.updateUnsignedTxsWithSwapTx(tx);
         event.walletBloc.add(
           UpdateWallet(
             updatedWallet,
             updateTypes: [UpdateWalletTypes.transactions],
           ),
         );
-        if (settled) {
+        if (close) {
           final errClose = swapBoltz.closeStream(id);
           if (errClose != null) {
             emit(state.copyWith(errWatchingInvoice: errClose.toString()));

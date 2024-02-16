@@ -17,4 +17,10 @@ class SwapState with _$SwapState {
     @Default([]) List<SwapTx> listeningTxs,
   }) = _SwapState;
   const SwapState._();
+
+  bool isListening(Transaction tx) {
+    final swap = tx.swapTx;
+    if (swap == null) return false;
+    return listeningTxs.any((_) => _.id == swap.id);
+  }
 }
