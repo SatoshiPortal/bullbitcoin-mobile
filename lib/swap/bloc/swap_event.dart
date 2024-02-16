@@ -16,20 +16,17 @@ class CreateBtcLightningSwap extends SwapEvent {
 }
 
 class SaveSwapInvoiceToWallet extends SwapEvent {
-  SaveSwapInvoiceToWallet(this.walletBloc, {this.label});
+  SaveSwapInvoiceToWallet({required this.walletBloc, required this.swapTx, this.label});
 
+  final SwapTx swapTx;
   final WalletBloc walletBloc;
   final String? label;
 }
 
-class SwapTxSelected extends SwapEvent {
-  SwapTxSelected(this.tx);
-  final Transaction tx;
-}
-
 class ClaimSwap extends SwapEvent {
-  ClaimSwap(this.walletBloc);
+  ClaimSwap(this.walletBloc, this.swapTx);
 
+  final SwapTx swapTx;
   final WalletBloc walletBloc;
 }
 

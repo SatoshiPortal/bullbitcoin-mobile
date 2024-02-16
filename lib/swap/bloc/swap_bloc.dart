@@ -25,17 +25,13 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     required this.walletSensitiveRepository,
     required this.settingsCubit,
     required this.networkCubit,
-    // required this.currencyCubit,
     required this.swapBoltz,
     required this.walletTx,
   }) : super(const SwapState()) {
     on<CreateBtcLightningSwap>(_onCreateBtcLightningSwap);
     on<SaveSwapInvoiceToWallet>(_onSaveSwapInvoiceToWallet);
-    on<SwapTxSelected>(_onSwapTxSelected);
     on<ClaimSwap>(_onClaimSwap);
-    // on<RefundSwap>(_onRefundSwap);
-    on<ResetToNewLnInvoice>(_onResetToNewLnInvoice);
-    on<WatchInvoiceStatus>(_onWatchInvoiceState, transformer: concurrent());
+    on<WatchInvoiceStatus>(_onWatchInvoiceStatus, transformer: concurrent());
   }
 
   final SettingsCubit settingsCubit;
@@ -45,7 +41,6 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   final WalletRepository walletRepository;
   final WalletSensitiveRepository walletSensitiveRepository;
   final NetworkCubit networkCubit;
-  // final CurrencyCubit currencyCubit;
   final SwapBoltz swapBoltz;
   final WalletTx walletTx;
 
@@ -95,23 +90,15 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       return;
     }
 
-    emit(
-      state.copyWith(
-        generatingSwapInv: false,
-        errCreatingSwapInv: '',
-        swapTx: swap,
-      ),
-    );
+    emit(state.copyWith(generatingSwapInv: false, errCreatingSwapInv: ''));
 
-    add(SaveSwapInvoiceToWallet(event.walletBloc, label: event.label));
+    add(SaveSwapInvoiceToWallet(walletBloc: event.walletBloc, swapTx: swap!, label: event.label));
   }
 
   void _onSaveSwapInvoiceToWallet(SaveSwapInvoiceToWallet event, Emitter<SwapState> emit) async {
-    if (state.swapTx == null) return;
-
     final wallet = event.walletBloc.state.wallet!;
     final swapTxCount = wallet.swapTxCount + 1;
-    final tx = Transaction.fromSwapTx(state.swapTx!).copyWith(
+    final tx = Transaction.fromSwapTx(event.swapTx).copyWith(
       isSwap: true,
       swapIndex: wallet.swapTxCount,
       label: event.label,
@@ -126,15 +113,6 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       return;
     }
 
-    final errr = await walletRepository.updateWallet(
-      wallet: updatedWallet,
-      hiveStore: hiveStorage,
-    );
-    if (errr != null) {
-      emit(state.copyWith(errCreatingSwapInv: errr.toString(), generatingSwapInv: false));
-      return;
-    }
-
     event.walletBloc.add(
       UpdateWallet(
         updatedWallet,
@@ -145,21 +123,10 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     add(WatchInvoiceStatus(walletBloc: event.walletBloc, tx: tx));
   }
 
-  void _onSwapTxSelected(SwapTxSelected event, Emitter<SwapState> emit) {
-    final swap = event.tx.swapTx;
-    if (swap == null) return;
-    emit(state.copyWith(swapTx: swap));
-  }
-
-  void _onResetToNewLnInvoice(ResetToNewLnInvoice event, Emitter<SwapState> emit) {
-    emit(state.copyWith(errCreatingSwapInv: '', swapTx: null));
-  }
-
   void _onClaimSwap(ClaimSwap event, Emitter<SwapState> emit) async {
-    final swap = state.swapTx;
-    final status = state.swapTx?.status;
+    final swap = event.swapTx;
+    final status = swap.status;
 
-    if (swap == null) return;
     if (status == null) return;
     if (status.status != SwapStatus.txnClaimPending) return;
 
@@ -205,18 +172,25 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       return;
     }
 
+    final tx = swap.copyWith(txid: txid);
+    final updatedWallet = event.walletBloc.state.wallet!.updateUnsignedTxsWithSwapTx(tx);
+
+    event.walletBloc.add(
+      UpdateWallet(
+        updatedWallet,
+        updateTypes: [UpdateWalletTypes.transactions],
+      ),
+    );
+
     emit(
       state.copyWith(
-        swapTx: swap.copyWith(txid: txid),
         claimingSwapSwap: false,
         errClaimingSwap: '',
       ),
     );
-
-    // _watchInvoiceStatus();
   }
 
-  void _onWatchInvoiceState(WatchInvoiceStatus event, Emitter<SwapState> emit) async {
+  void _onWatchInvoiceStatus(WatchInvoiceStatus event, Emitter<SwapState> emit) async {
     final swap = event.tx.swapTx;
     if (swap == null) return;
     if (state.listeningTxs.any((_) => swap.id == _.id)) return;
@@ -238,6 +212,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
             updateTypes: [UpdateWalletTypes.transactions],
           ),
         );
+
         if (close) {
           final errClose = swapBoltz.closeStream(id);
           if (errClose != null) {

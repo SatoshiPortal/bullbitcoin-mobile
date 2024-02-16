@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:boltz_dart/boltz_dart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap_state.freezed.dart';
@@ -22,5 +23,11 @@ class SwapState with _$SwapState {
     final swap = tx.swapTx;
     if (swap == null) return false;
     return listeningTxs.any((_) => _.id == swap.id);
+  }
+
+  bool showClaim(SwapTx swap) {
+    final status = swap.status?.status;
+    if (status == null) return false;
+    return status == SwapStatus.invoicePaid;
   }
 }
