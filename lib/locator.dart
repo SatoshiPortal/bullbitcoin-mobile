@@ -143,7 +143,6 @@ Future setupLocator({bool fromTest = false}) async {
       walletSensitiveRepository: walletSensRepo,
       settingsCubit: settings,
       networkCubit: networkCubit,
-      // currencyCubit: currencyCubit,
       swapBoltz: boltz,
       walletTx: walletTx,
     ),

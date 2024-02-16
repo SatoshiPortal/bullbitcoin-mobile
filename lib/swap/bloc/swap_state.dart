@@ -12,7 +12,9 @@ class SwapState with _$SwapState {
     @Default(false) bool generatingSwapInv,
     @Default('') String errClaimingSwap,
     @Default(false) bool claimingSwapSwap,
+    @Default('') String errWatchingInvoice,
     SwapTx? swapTx,
+    @Default([]) List<SwapTx> listeningTxs,
   }) = _SwapState;
   const SwapState._();
 }

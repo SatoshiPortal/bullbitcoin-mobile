@@ -12,6 +12,7 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_event.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,11 +31,11 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   }) : super(const SwapState()) {
     on<CreateBtcLightningSwap>(_onCreateBtcLightningSwap);
     on<SaveSwapInvoiceToWallet>(_onSaveSwapInvoiceToWallet);
-    // on<WatchInvoiceStatus>(_onWatchInvoiceState);
     on<SwapTxSelected>(_onSwapTxSelected);
     on<ClaimSwap>(_onClaimSwap);
     // on<RefundSwap>(_onRefundSwap);
     on<ResetToNewLnInvoice>(_onResetToNewLnInvoice);
+    on<WatchInvoiceStatus>(_onWatchInvoiceState, transformer: concurrent());
   }
 
   final SettingsCubit settingsCubit;
@@ -212,5 +213,44 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     );
 
     // _watchInvoiceStatus();
+  }
+
+  void _onWatchInvoiceState(WatchInvoiceStatus event, Emitter<SwapState> emit) async {
+    final swap = event.tx.swapTx;
+    if (swap == null) return;
+    if (state.listeningTxs.any((_) => swap.id == _.id)) return;
+
+    emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap.copyWith(isListening: true)]));
+    final err = await swapBoltz.watchSwap(
+      swapId: swap.id,
+      onUpdate: (id, status) {
+        final tx = state.listeningTxs.firstWhere((_) => _.id == id).copyWith(status: status);
+        final wallet = event.walletBloc.state.wallet;
+        if (wallet == null) return;
+        final settled = status.status == SwapStatus.invoiceSettled;
+        final updatedWallet =
+            wallet.updateUnsignedTxsWithSwapTx(tx.copyWith(isListening: !settled));
+        event.walletBloc.add(
+          UpdateWallet(
+            updatedWallet,
+            updateTypes: [UpdateWalletTypes.transactions],
+          ),
+        );
+        if (settled) {
+          final errClose = swapBoltz.closeStream(id);
+          if (errClose != null) {
+            emit(state.copyWith(errWatchingInvoice: errClose.toString()));
+            return;
+          }
+          final updatedTxs = state.listeningTxs.where((_) => _.id != id).toList();
+          emit(state.copyWith(listeningTxs: updatedTxs));
+          return;
+        }
+      },
+    );
+    if (err != null) {
+      emit(state.copyWith(errWatchingInvoice: err.toString()));
+      return;
+    }
   }
 }

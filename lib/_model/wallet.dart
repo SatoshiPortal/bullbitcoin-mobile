@@ -346,6 +346,16 @@ class Wallet with _$Wallet {
   }
 
   int balanceWithoutFrozenUTXOs() => (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
+
+  Wallet updateUnsignedTxsWithSwapTx(SwapTx swaptx) {
+    final idx = unsignedTxs.indexWhere((_) => _.swapTx != null && _.swapTx!.id == swaptx.id);
+    final tx = unsignedTxs[idx].copyWith(swapTx: swaptx);
+
+    final newUnsignedTxs = List<Transaction>.from(unsignedTxs);
+    newUnsignedTxs[idx] = tx;
+
+    return copyWith(unsignedTxs: newUnsignedTxs);
+  }
 }
 
 @freezed
