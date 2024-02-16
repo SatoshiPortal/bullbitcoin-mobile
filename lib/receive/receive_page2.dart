@@ -131,7 +131,9 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showQR = context.select((ReceiveCubit x) => x.state.showQR());
+    final swapTx = context.select((SwapBloc x) => x.state.swapTx);
+    final showQR = context.select((ReceiveCubit x) => x.state.showQR(swapTx));
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -336,7 +338,13 @@ class CreateLightningInvoice extends StatelessWidget {
               onPressed: () {
                 final wallet = context.read<ReceiveCubit>().state.walletBloc;
                 if (wallet == null) return;
-                context.read<SwapBloc>().add(CreateBtcLightningSwap(wallet));
+                final amt = context.read<CurrencyCubit>().state.amount;
+                context.read<SwapBloc>().add(
+                      CreateBtcLightningSwap(
+                        walletBloc: wallet,
+                        amount: amt,
+                      ),
+                    );
               },
             ),
           ),

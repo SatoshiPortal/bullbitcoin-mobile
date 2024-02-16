@@ -4,9 +4,10 @@ import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 class SwapEvent {}
 
 class CreateBtcLightningSwap extends SwapEvent {
-  CreateBtcLightningSwap(this.walletBloc);
+  CreateBtcLightningSwap({required this.walletBloc, required this.amount});
 
   final WalletBloc walletBloc;
+  final int amount;
 }
 
 class SaveSwapInvoiceToWallet extends SwapEvent {

@@ -32,11 +32,15 @@ class SwapTxList extends StatelessWidget {
 
   static Future openPopUp(BuildContext context) {
     final receive = context.read<ReceiveCubit>();
+    final swap = receive.state.swapBloc;
 
     return showBBBottomSheet(
       context: context,
-      child: BlocProvider.value(
-        value: receive,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: receive),
+          BlocProvider.value(value: swap),
+        ],
         child: const SwapTxList(),
       ),
     );

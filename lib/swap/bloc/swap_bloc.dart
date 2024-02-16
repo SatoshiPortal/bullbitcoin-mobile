@@ -7,7 +7,6 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_event.dart';
@@ -25,7 +24,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     required this.walletSensitiveRepository,
     required this.settingsCubit,
     required this.networkCubit,
-    required this.currencyCubit,
+    // required this.currencyCubit,
     required this.swapBoltz,
     required this.walletTx,
   }) : super(const SwapState()) {
@@ -46,14 +45,14 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   final WalletRepository walletRepository;
   final WalletSensitiveRepository walletSensitiveRepository;
   final NetworkCubit networkCubit;
-  final CurrencyCubit currencyCubit;
+  // final CurrencyCubit currencyCubit;
   final SwapBoltz swapBoltz;
   final WalletTx walletTx;
 
   void _onCreateBtcLightningSwap(CreateBtcLightningSwap event, Emitter<SwapState> emit) async {
     if (!networkCubit.state.testnet) return;
 
-    final outAmount = currencyCubit.state.amount;
+    final outAmount = event.amount;
     if (outAmount < 50000 || outAmount > 25000000) {
       emit(
         state.copyWith(
@@ -103,7 +102,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
         swapTx: swap,
       ),
     );
-    add(WatchInvoiceStatus());
+
+    // add(WatchInvoiceStatus());
     add(SaveSwapInvoiceToWallet(event.walletBloc));
   }
 
@@ -154,9 +154,13 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   }
 
   void _onLoadAllSwapTxs(LoadAllSwapTxs event, Emitter<SwapState> emit) async {
-    final wallet = event.walletBloc.state.wallet!;
-    final swapTxs = wallet.transactions.where((tx) => tx.isSwap).toList();
-    emit(state.copyWith(swapTxs: swapTxs));
+    final swapTxs =
+        event.walletBloc.state.wallet!.transactions.where((tx) => tx.swapTx != null).toList();
+    final swapTxsUnsigned =
+        event.walletBloc.state.wallet!.unsignedTxs.where((tx) => tx.swapTx != null).toList();
+
+    final allTxs = swapTxs + swapTxsUnsigned;
+    emit(state.copyWith(swapTxs: allTxs));
   }
 
   void _onClaimSwap(ClaimSwap event, Emitter<SwapState> emit) async {

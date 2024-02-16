@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -54,9 +55,10 @@ class ReceiveState with _$ReceiveState {
 
   bool showNewRequestButton() => savedDescription.isEmpty && savedInvoiceAmount == 0;
 
-  bool showQR() =>
-      (swapBloc.state.swapTx != null && walletType == ReceiveWalletType.lightning) ||
-      (swapBloc.state.swapTx == null && walletType == ReceiveWalletType.secure);
+  bool showQR(SwapTx? swapTx) {
+    return (swapTx != null && walletType == ReceiveWalletType.lightning) ||
+        (swapTx == null && walletType == ReceiveWalletType.secure);
+  }
 
   bool showActionButtons() =>
       walletType == ReceiveWalletType.secure ||
