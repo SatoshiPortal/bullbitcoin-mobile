@@ -32,6 +32,7 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -73,10 +74,13 @@ Future setupLocator({bool fromTest = false}) async {
 
   locator.registerSingleton<WalletUpdate>(WalletUpdate());
   locator.registerSingleton<WalletBalance>(WalletBalance());
-  locator.registerSingleton<WalletTx>(WalletTx());
-  locator.registerSingleton<WalletAddress>(WalletAddress());
+  final walletTx = WalletTx();
+  final walletAddress = WalletAddress();
+  locator.registerSingleton<WalletTx>(walletTx);
+  locator.registerSingleton<WalletAddress>(walletAddress);
   locator.registerSingleton<WalletUtxo>(WalletUtxo());
-  locator.registerSingleton<SwapBoltz>(SwapBoltz());
+  final boltz = SwapBoltz();
+  locator.registerSingleton<SwapBoltz>(boltz);
 
   final walletSync = WalletSync();
 
@@ -129,6 +133,21 @@ Future setupLocator({bool fromTest = false}) async {
   settings.homeCubit = homeCubit;
   networkCubit.homeCubit = homeCubit;
   settings.loadTimer();
+
+  locator.registerSingleton<SwapBloc>(
+    SwapBloc(
+      hiveStorage: hiveStorage,
+      secureStorage: secureStorage,
+      walletAddress: walletAddress,
+      walletRepository: walletRepository,
+      walletSensitiveRepository: walletSensRepo,
+      settingsCubit: settings,
+      networkCubit: networkCubit,
+      currencyCubit: currencyCubit,
+      swapBoltz: boltz,
+      walletTx: walletTx,
+    ),
+  );
 
   locator.registerSingleton<SettingsCubit>(settings);
   locator.registerSingleton<WalletSensitiveCreate>(walletSensCreate);
