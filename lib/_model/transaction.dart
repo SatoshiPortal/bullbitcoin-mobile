@@ -193,6 +193,7 @@ class Output {
 class SwapTx with _$SwapTx {
   const factory SwapTx({
     required String id,
+    String? txid,
     required bool isSubmarine,
     required BBNetwork network,
     required String secretKey,

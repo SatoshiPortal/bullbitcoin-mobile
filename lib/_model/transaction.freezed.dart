@@ -605,6 +605,7 @@ SwapTx _$SwapTxFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$SwapTx {
   String get id => throw _privateConstructorUsedError;
+  String? get txid => throw _privateConstructorUsedError;
   bool get isSubmarine => throw _privateConstructorUsedError;
   BBNetwork get network => throw _privateConstructorUsedError;
   String get secretKey => throw _privateConstructorUsedError;
@@ -634,6 +635,7 @@ abstract class $SwapTxCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
+      String? txid,
       bool isSubmarine,
       BBNetwork network,
       String secretKey,
@@ -668,6 +670,7 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
   @override
   $Res call({
     Object? id = null,
+    Object? txid = freezed,
     Object? isSubmarine = null,
     Object? network = null,
     Object? secretKey = null,
@@ -690,6 +693,10 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
+      txid: freezed == txid
+          ? _value.txid
+          : txid // ignore: cast_nullable_to_non_nullable
+              as String?,
       isSubmarine: null == isSubmarine
           ? _value.isSubmarine
           : isSubmarine // ignore: cast_nullable_to_non_nullable
@@ -779,6 +786,7 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
   @useResult
   $Res call(
       {String id,
+      String? txid,
       bool isSubmarine,
       BBNetwork network,
       String secretKey,
@@ -812,6 +820,7 @@ class __$$SwapTxImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? txid = freezed,
     Object? isSubmarine = null,
     Object? network = null,
     Object? secretKey = null,
@@ -834,6 +843,10 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
+      txid: freezed == txid
+          ? _value.txid
+          : txid // ignore: cast_nullable_to_non_nullable
+              as String?,
       isSubmarine: null == isSubmarine
           ? _value.isSubmarine
           : isSubmarine // ignore: cast_nullable_to_non_nullable
@@ -907,6 +920,7 @@ class __$$SwapTxImplCopyWithImpl<$Res>
 class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   const _$SwapTxImpl(
       {required this.id,
+      this.txid,
       required this.isSubmarine,
       required this.network,
       required this.secretKey,
@@ -930,6 +944,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
 
   @override
   final String id;
+  @override
+  final String? txid;
   @override
   final bool isSubmarine;
   @override
@@ -966,7 +982,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, isListening: $isListening, status: $status, blindingKey: $blindingKey)';
+    return 'SwapTx(id: $id, txid: $txid, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, isListening: $isListening, status: $status, blindingKey: $blindingKey)';
   }
 
   @override
@@ -975,6 +991,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
     properties
       ..add(DiagnosticsProperty('type', 'SwapTx'))
       ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('txid', txid))
       ..add(DiagnosticsProperty('isSubmarine', isSubmarine))
       ..add(DiagnosticsProperty('network', network))
       ..add(DiagnosticsProperty('secretKey', secretKey))
@@ -999,6 +1016,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
         (other.runtimeType == runtimeType &&
             other is _$SwapTxImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.txid, txid) || other.txid == txid) &&
             (identical(other.isSubmarine, isSubmarine) ||
                 other.isSubmarine == isSubmarine) &&
             (identical(other.network, network) || other.network == network) &&
@@ -1032,6 +1050,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   int get hashCode => Object.hash(
       runtimeType,
       id,
+      txid,
       isSubmarine,
       network,
       secretKey,
@@ -1066,6 +1085,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
 abstract class _SwapTx extends SwapTx {
   const factory _SwapTx(
       {required final String id,
+      final String? txid,
       required final bool isSubmarine,
       required final BBNetwork network,
       required final String secretKey,
@@ -1088,6 +1108,8 @@ abstract class _SwapTx extends SwapTx {
 
   @override
   String get id;
+  @override
+  String? get txid;
   @override
   bool get isSubmarine;
   @override

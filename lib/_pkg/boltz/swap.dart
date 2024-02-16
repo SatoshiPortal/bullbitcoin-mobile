@@ -7,7 +7,7 @@ import 'package:boltz_dart/boltz_dart.dart';
 class SwapBoltz {
   final List<(String, StreamSubscription)> _subscriptions = [];
 
-  static Future<(AllFees?, Err?)> getFeesAndLimits({
+  Future<(AllFees?, Err?)> getFeesAndLimits({
     required String boltzUrl,
     required int outAmount,
   }) async {

@@ -88,7 +88,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       emit(state.copyWith(errCreatingSwapInv: errReadingSeed.toString(), generatingSwapInv: false));
       return;
     }
-    final (fees, errFees) = await SwapBoltz.getFeesAndLimits(
+    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
       outAmount: outAmount,
     );
@@ -195,7 +195,66 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(swapTx: swap));
   }
 
-  void claimSwap() async {}
+  void claimSwap() async {
+    final swap = state.swapTx;
+    final status = state.swapTx?.status;
+
+    if (swap == null) return;
+    if (status == null) return;
+    if (status.status != SwapStatus.txnClaimPending) return;
+
+    emit(state.copyWith(claimingSwapSwap: true, errClaimingSwap: ''));
+
+    final address = state.walletBloc?.state.wallet?.lastGeneratedAddress?.address;
+    if (address == null || address.isEmpty) {
+      emit(
+        state.copyWith(
+          claimingSwapSwap: false,
+          errClaimingSwap: 'Address not found',
+        ),
+      );
+      return;
+    }
+
+    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
+      boltzUrl: boltzTestnet,
+      outAmount: swap.outAmount,
+    );
+    if (errFees != null) {
+      emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: errFees.toString()));
+      return;
+    }
+    final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
+    if (claimFeesEstimate == null) {
+      emit(
+        state.copyWith(
+          claimingSwapSwap: false,
+          errClaimingSwap: 'Fees not found',
+        ),
+      );
+      return;
+    }
+
+    final (txid, err) = await swapBoltz.claimSwap(
+      tx: swap,
+      outAddress: address,
+      absFee: claimFeesEstimate,
+    );
+    if (err != null) {
+      emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: err.toString()));
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        swapTx: swap.copyWith(txid: txid),
+        claimingSwapSwap: false,
+        errClaimingSwap: '',
+      ),
+    );
+
+    _watchInvoiceStatus();
+  }
 
   void refundSwap() async {}
 

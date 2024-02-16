@@ -57,6 +57,7 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
 
 _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       id: json['id'] as String,
+      txid: json['txid'] as String?,
       isSubmarine: json['isSubmarine'] as bool,
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
       secretKey: json['secretKey'] as String,
@@ -80,6 +81,7 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
 Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'txid': instance.txid,
       'isSubmarine': instance.isSubmarine,
       'network': _$BBNetworkEnumMap[instance.network]!,
       'secretKey': instance.secretKey,
