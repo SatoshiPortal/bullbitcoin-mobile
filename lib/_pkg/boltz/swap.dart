@@ -22,7 +22,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(BtcLnSwap?, Err?)> send({
+  Future<(BtcLnBoltzSwap?, Err?)> send({
     required String mnemonic,
     required int index,
     required String invoice,
@@ -32,7 +32,7 @@ class SwapBoltz {
     required String pairHash,
   }) async {
     try {
-      final res = await BtcLnSwap.newSubmarine(
+      final res = await BtcLnBoltzSwap.newSubmarine(
         mnemonic: mnemonic,
         index: index,
         invoice: invoice,
@@ -57,7 +57,7 @@ class SwapBoltz {
     required String pairHash,
   }) async {
     try {
-      final res = await BtcLnSwap.newReverse(
+      final res = await BtcLnBoltzSwap.newReverse(
         mnemonic: mnemonic,
         index: index,
         outAmount: outAmount,
@@ -119,5 +119,41 @@ class SwapBoltz {
       sub.$2.cancel();
     }
     _subscriptions.clear();
+  }
+
+  Future<(String?, Err?)> claimSwap({
+    required SwapTx tx,
+    required String outAddress,
+    required int absFee,
+  }) async {
+    try {
+      final swap = tx.toBtcLnSwap();
+
+      final resp = await swap.claim(
+        outAddress: outAddress,
+        absFee: absFee,
+      );
+      return (resp, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(String?, Err?)> refundSwap({
+    required SwapTx tx,
+    required String outAddress,
+    required int absFee,
+  }) async {
+    try {
+      final swap = tx.toBtcLnSwap();
+
+      final resp = await swap.refund(
+        outAddress: outAddress,
+        absFee: absFee,
+      );
+      return (resp, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
   }
 }

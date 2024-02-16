@@ -26,6 +26,8 @@ class ReceiveState with _$ReceiveState {
     @Default(ReceiveWalletType.secure) ReceiveWalletType walletType,
     @Default('') String errCreatingSwapInv,
     @Default(false) bool generatingSwapInv,
+    @Default('') String errClaimingSwap,
+    @Default(false) bool claimingSwapSwap,
     SwapTx? swapTx,
     List<Transaction>? swapTxs,
   }) = _ReceiveState;

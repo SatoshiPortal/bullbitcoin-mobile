@@ -215,7 +215,7 @@ class SwapTx with _$SwapTx {
 
   factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
 
-  factory SwapTx.fromBtcLnSwap(BtcLnSwap result) {
+  factory SwapTx.fromBtcLnSwap(BtcLnBoltzSwap result) {
     final swap = result.btcLnSwap;
     return SwapTx(
       id: swap.id,
@@ -235,6 +235,32 @@ class SwapTx with _$SwapTx {
       status: const SwapStatusResponse(status: SwapStatus.swapCreated),
       // status: SwapStatus.swapCreated,
       // statusStr: swapStatusToString(SwapStatus.swapCreated),
+    );
+  }
+
+  BtcLnBoltzSwap toBtcLnSwap() {
+    final tx = this;
+    return BtcLnBoltzSwap(
+      BtcLnSwap(
+        id: tx.id,
+        redeemScript: tx.redeemScript,
+        invoice: tx.invoice,
+        outAmount: tx.outAmount,
+        scriptAddress: tx.scriptAddress,
+        electrumUrl: tx.electrumUrl,
+        boltzUrl: tx.boltzUrl,
+        kind: SwapType.Submarine,
+        network: Chain.Testnet,
+        keys: KeyPair(
+          secretKey: tx.secretKey,
+          publicKey: tx.publicKey,
+        ),
+        preimage: PreImage(
+          value: tx.value,
+          sha256: tx.sha256,
+          hash160: tx.hash160,
+        ),
+      ),
     );
   }
 

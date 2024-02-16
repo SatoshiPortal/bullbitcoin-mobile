@@ -189,6 +189,16 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     }
   }
 
+  void swapTxSelected(Transaction tx) {
+    final swap = tx.swapTx;
+    if (swap == null) return;
+    emit(state.copyWith(swapTx: swap));
+  }
+
+  void claimSwap() async {}
+
+  void refundSwap() async {}
+
   void resetToNewLnInvoice() async {
     if (state.walletBloc == null) return;
 
