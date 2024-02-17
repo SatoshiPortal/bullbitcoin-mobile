@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
@@ -32,6 +34,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     on<SaveSwapInvoiceToWallet>(_onSaveSwapInvoiceToWallet);
     on<ClaimSwap>(_onClaimSwap);
     on<WatchInvoiceStatus>(_onWatchInvoiceStatus, transformer: concurrent());
+    on<ResetToNewLnInvoice>(_onResetToNewLnInvoice);
   }
 
   final SettingsCubit settingsCubit;
@@ -229,5 +232,9 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       emit(state.copyWith(errWatchingInvoice: err.toString()));
       return;
     }
+  }
+
+  FutureOr<void> _onResetToNewLnInvoice(ResetToNewLnInvoice event, Emitter<SwapState> emit) {
+    emit(state.copyWith(swapTx: null));
   }
 }
