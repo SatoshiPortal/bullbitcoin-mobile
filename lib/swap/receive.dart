@@ -62,7 +62,7 @@ class SwapTxList extends StatelessWidget {
         children: [
           const BBHeader.popUpCenteredText(text: 'Lightning Invoices', isLeft: true),
           const Gap(16),
-          for (final tx in txs) SwapTxItem(tx: tx),
+          for (final tx in txs.reversed.toList()) SwapTxItem(tx: tx),
           // ListView.builder(
           //   physics: const NeverScrollableScrollPhysics(),
           //   shrinkWrap: true,

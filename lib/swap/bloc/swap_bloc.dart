@@ -9,6 +9,7 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_event.dart';
@@ -46,6 +47,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   final NetworkCubit networkCubit;
   final SwapBoltz swapBoltz;
   final WalletTx walletTx;
+  HomeCubit? homeCubit;
 
   void _onCreateBtcLightningSwap(CreateBtcLightningSwap event, Emitter<SwapState> emit) async {
     if (!networkCubit.state.testnet) return;
@@ -122,6 +124,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
         updateTypes: [UpdateWalletTypes.transactions],
       ),
     );
+
+    homeCubit?.updateSelectedWallet(event.walletBloc);
 
     add(WatchInvoiceStatus(walletBloc: event.walletBloc, tx: tx));
   }

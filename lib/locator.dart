@@ -127,8 +127,6 @@ Future setupLocator({bool fromTest = false}) async {
     walletTx: walletTx,
   );
 
-  locator.registerSingleton<SwapBloc>(swap);
-
   final homeCubit = HomeCubit(
     // walletSync: walletSync,
     hiveStorage: locator<HiveStorage>(),
@@ -143,6 +141,9 @@ Future setupLocator({bool fromTest = false}) async {
     ),
     walletRepository: locator<WalletRepository>(),
   );
+
+  swap.homeCubit = homeCubit;
+  locator.registerSingleton<SwapBloc>(swap);
 
   settings.homeCubit = homeCubit;
   networkCubit.homeCubit = homeCubit;
