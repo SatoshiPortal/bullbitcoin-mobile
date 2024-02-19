@@ -325,10 +325,16 @@ class ReceiveAddress extends StatelessWidget {
 }
 
 class ReceiveDisplayAddress extends StatefulWidget {
-  const ReceiveDisplayAddress({super.key, required this.addressQr, this.fontSize});
+  const ReceiveDisplayAddress({
+    super.key,
+    required this.addressQr,
+    this.minify = true,
+    this.fontSize,
+  });
 
   final String addressQr;
   final double? fontSize;
+  final bool minify;
 
   @override
   State<ReceiveDisplayAddress> createState() => _ReceiveDisplayAddressState();
@@ -351,6 +357,11 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
 
   @override
   Widget build(BuildContext context) {
+    final address = widget.minify
+        ? widget.addressQr.substring(0, 10) +
+            ' ... ' +
+            widget.addressQr.substring(widget.addressQr.length - 5)
+        : widget.addressQr;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
       child: !showToast
@@ -360,7 +371,7 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                 SizedBox(
                   width: 250,
                   child: BBText.body(
-                    widget.addressQr,
+                    address,
                     textAlign: TextAlign.center,
                     uiKey: UIKeys.receiveAddressDisplay,
                     fontSize: widget.fontSize,

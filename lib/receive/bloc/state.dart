@@ -30,7 +30,7 @@ class ReceiveState with _$ReceiveState {
   const ReceiveState._();
 
   String getQRStr() {
-    if (defaultAddress == null) {
+    if (walletType == ReceiveWalletType.lightning) {
       if (swapBloc.state.swapTx == null) return '';
       return swapBloc.state.swapTx!.invoice;
     }
@@ -51,7 +51,7 @@ class ReceiveState with _$ReceiveState {
 
   bool showQR(SwapTx? swapTx) {
     return (swapTx != null && walletType == ReceiveWalletType.lightning) ||
-        (swapTx == null && walletType == ReceiveWalletType.secure);
+        (walletType == ReceiveWalletType.secure);
   }
 
   // bool _swapTxIsNotNull() => swapBloc.state.swapTx != null;
