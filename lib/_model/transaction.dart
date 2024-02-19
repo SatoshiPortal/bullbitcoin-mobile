@@ -244,7 +244,7 @@ class SwapTx with _$SwapTx {
         invoice: tx.invoice,
         outAmount: tx.outAmount,
         scriptAddress: tx.scriptAddress,
-        electrumUrl: tx.electrumUrl,
+        electrumUrl: tx.electrumUrl.replaceAll('ssl://', ''),
         boltzUrl: tx.boltzUrl,
         kind: SwapType.Reverse,
         network: Chain.Testnet,

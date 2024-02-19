@@ -238,7 +238,8 @@ class WalletActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final show = context.select((ReceiveCubit _) => _.state.showActionButtons());
+    final swap = context.select((SwapBloc _) => _.state.swapTx);
+    final show = context.select((ReceiveCubit _) => _.state.showQR(swap));
     if (!show) return const SizedBox.shrink();
 
     final showRequestButton = context.select((ReceiveCubit x) => x.state.showNewRequestButton());
@@ -291,7 +292,7 @@ class SelectWalletType extends StatelessWidget {
     return CupertinoSlidingSegmentedControl(
       groupValue: walletType,
       children: const {
-        ReceiveWalletType.secure: Text('Secure'),
+        ReceiveWalletType.secure: Text('Bitcoin'),
         ReceiveWalletType.lightning: Text('Lightning'),
       },
       onValueChanged: (value) {

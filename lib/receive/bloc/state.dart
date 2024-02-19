@@ -54,7 +54,9 @@ class ReceiveState with _$ReceiveState {
         (swapTx == null && walletType == ReceiveWalletType.secure);
   }
 
-  bool showActionButtons() =>
-      walletType == ReceiveWalletType.secure ||
-      (walletType == ReceiveWalletType.lightning && swapBloc.state.swapTx != null);
+  // bool _swapTxIsNotNull() => swapBloc.state.swapTx != null;
+
+  // bool showActionButtons() =>
+  //     walletType == ReceiveWalletType.secure ||
+  //     (walletType == ReceiveWalletType.lightning && _swapTxIsNotNull());
 }

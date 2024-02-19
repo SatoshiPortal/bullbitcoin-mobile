@@ -467,7 +467,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       if (tx.swapTx == null) continue;
       final status = tx.swapTx!.status?.status;
       if (status != null &&
-          (status == SwapStatus.txnClaimed ||
+          (status == SwapStatus.invoiceSettled ||
               status == SwapStatus.swapExpired ||
               status == SwapStatus.invoiceExpired ||
               status == SwapStatus.txnFailed ||
