@@ -39,10 +39,10 @@ class WalletState with _$WalletState {
   List<Transaction> allSwapTxs() {
     if (wallet == null) return [];
 
-    final swapTxs = wallet!.transactions.where((tx) => tx.swapTx != null).toList();
-    final swapTxsUnsigned = wallet!.swaps.where((tx) => tx.swapTx != null).toList();
+    final txs = wallet!.transactions.where((tx) => tx.swapTx != null).toList();
+    final swaps = wallet!.swaps.where((tx) => tx.swapTx != null).toList();
 
-    final allTxs = swapTxs + swapTxsUnsigned;
+    final allTxs = txs + swaps;
     return allTxs;
   }
 }

@@ -339,6 +339,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
 
     await Future.delayed(100.ms);
+    _mergeSwapIntoTx();
+    await Future.delayed(100.ms);
     _listenToSwapTxs();
   }
 
@@ -478,6 +480,32 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       swapBloc.add(WatchInvoiceStatus(walletBloc: this, tx: tx));
       await Future.delayed(const Duration(milliseconds: 50));
+    }
+  }
+
+  void _mergeSwapIntoTx() {
+    final txs = state.wallet?.transactions ?? [];
+    final swaps = state.wallet?.swaps ?? [];
+
+    for (final swap in swaps) {
+      if (swap.swapTx?.txid == null || swap.swapTx!.txid!.isEmpty) continue;
+      final newTxExists = txs.any((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
+      if (!newTxExists) continue;
+      final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
+      final newTx = txs[idx].copyWith(swapTx: swap.swapTx);
+      txs[idx] = newTx;
+      swaps.removeWhere((_) => _.swapTx!.id == swap.swapTx!.id);
+      final updatedWallet = state.wallet!.copyWith(
+        transactions: txs,
+        swaps: swaps,
+      );
+      add(
+        UpdateWallet(
+          updatedWallet,
+          saveToStorage: fromStorage,
+          updateTypes: [UpdateWalletTypes.transactions],
+        ),
+      );
     }
   }
 }

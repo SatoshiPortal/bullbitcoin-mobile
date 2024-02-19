@@ -268,7 +268,10 @@ class SwapTx with _$SwapTx {
 extension SwapTxExt on SwapStatus {
   bool get canClaim => this == SwapStatus.txnMempool || this == SwapStatus.txnConfirmed;
   bool get showPending => this == SwapStatus.invoicePaid;
-  bool get showExpired => this == SwapStatus.swapExpired || this == SwapStatus.invoiceExpired;
+  bool get hasExpired =>
+      this == SwapStatus.swapExpired ||
+      this == SwapStatus.invoiceExpired ||
+      this == SwapStatus.invoiceFailedToPay;
 }
 
 // String swapStatusToString(SwapStatus swap) {

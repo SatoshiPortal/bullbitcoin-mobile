@@ -349,12 +349,21 @@ class Wallet with _$Wallet {
   int balanceWithoutFrozenUTXOs() => (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
 
   Wallet updateSwapTxs(SwapTx swaptx) {
+    final status = swaptx.status?.status;
+    if (status == null) return this;
+
+    final hasExpired = swaptx.status!.status.hasExpired;
+
     final idx = swaps.indexWhere((_) => _.swapTx != null && _.swapTx!.id == swaptx.id);
-    final tx = swaps[idx].copyWith(swapTx: swaptx);
-
     final swapTxs = List<Transaction>.from(swaps);
-    swapTxs[idx] = tx;
 
+    if (hasExpired) {
+      swapTxs.removeAt(idx);
+      return copyWith(swaps: swapTxs);
+    }
+
+    final tx = swaps[idx].copyWith(swapTx: swaptx);
+    swapTxs[idx] = tx;
     return copyWith(swaps: swapTxs);
   }
 }
