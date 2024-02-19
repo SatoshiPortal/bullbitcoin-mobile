@@ -24,14 +24,14 @@ class SwapTxPage extends StatelessWidget {
     final isReceive = !swap.isSubmarine;
 
     final date = tx.getDateTimeStr();
+    final id = swap.id;
     const fees = '';
     final invoice = swap.invoice;
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),
     );
 
-    var status = context.select((SwapBloc _) => _.state.showStatus(swap))?.toString();
-    status ??= swap.status?.status.toString() ?? '';
+    final status = context.select((SwapBloc _) => _.state.showStatus(swap))?.toString() ?? '';
 
     return SingleChildScrollView(
       child: Padding(
@@ -71,7 +71,15 @@ class SwapTxPage extends StatelessWidget {
                 ],
               ),
               const Gap(24),
-              const BBText.title('Transaction ID'),
+              if (id.isNotEmpty) ...[
+                const BBText.title('Transaction ID'),
+                const Gap(4),
+                BBText.titleLarge(
+                  id,
+                  isBold: true,
+                ),
+                const Gap(24),
+              ],
               const Gap(4),
               const BBText.title('Status'),
               const Gap(4),
@@ -79,7 +87,6 @@ class SwapTxPage extends StatelessWidget {
                 status,
                 isBold: true,
               ),
-              const Gap(24),
               const Gap(4),
               const Gap(24),
               BBText.title(

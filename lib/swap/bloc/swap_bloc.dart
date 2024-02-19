@@ -32,7 +32,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   }) : super(const SwapState()) {
     on<CreateBtcLightningSwap>(_onCreateBtcLightningSwap);
     on<SaveSwapInvoiceToWallet>(_onSaveSwapInvoiceToWallet);
-    on<ClaimSwap>(_onClaimSwap);
+    on<ClaimSwap>(_onClaimSwap, transformer: concurrent());
     on<WatchInvoiceStatus>(_onWatchInvoiceStatus, transformer: concurrent());
     on<ResetToNewLnInvoice>(_onResetToNewLnInvoice);
   }
@@ -131,7 +131,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     final status = swap.status;
 
     if (status == null) return;
-    if (status.status != SwapStatus.txnClaimPending) return;
+    if (!status.status.canClaim) return;
 
     emit(state.copyWith(claimingSwapSwap: true, errClaimingSwap: ''));
 
@@ -205,16 +205,22 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
         final tx = state.listeningTxs.firstWhere((_) => _.id == id).copyWith(status: status);
         final wallet = event.walletBloc.state.wallet;
         if (wallet == null) return;
+
         final close = status.status == SwapStatus.txnClaimed ||
             status.status == SwapStatus.swapExpired ||
             status.status == SwapStatus.invoiceExpired;
+
         final updatedWallet = wallet.updateSwapTxs(tx);
+
         event.walletBloc.add(
           UpdateWallet(
             updatedWallet,
             updateTypes: [UpdateWalletTypes.transactions],
           ),
         );
+
+        final canClaim = status.status.canClaim;
+        if (canClaim) add(ClaimSwap(event.walletBloc, tx));
 
         if (close) {
           final errClose = swapBoltz.closeStream(id);

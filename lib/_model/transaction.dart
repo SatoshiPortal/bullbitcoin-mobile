@@ -246,7 +246,7 @@ class SwapTx with _$SwapTx {
         scriptAddress: tx.scriptAddress,
         electrumUrl: tx.electrumUrl,
         boltzUrl: tx.boltzUrl,
-        kind: SwapType.Submarine,
+        kind: SwapType.Reverse,
         network: Chain.Testnet,
         keys: KeyPair(
           secretKey: tx.secretKey,
@@ -263,6 +263,12 @@ class SwapTx with _$SwapTx {
 
   String splitInvoice() =>
       invoice.substring(0, 5) + ' .... ' + invoice.substring(invoice.length - 10);
+}
+
+extension SwapTxExt on SwapStatus {
+  bool get canClaim => this == SwapStatus.txnMempool || this == SwapStatus.txnConfirmed;
+  bool get showPending => this == SwapStatus.invoicePaid;
+  bool get showExpired => this == SwapStatus.swapExpired || this == SwapStatus.invoiceExpired;
 }
 
 // String swapStatusToString(SwapStatus swap) {
