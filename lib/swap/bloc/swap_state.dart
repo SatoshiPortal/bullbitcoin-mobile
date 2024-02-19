@@ -25,6 +25,13 @@ class SwapState with _$SwapState {
     return listeningTxs.any((_) => _.id == swap.id);
   }
 
+  SwapStatus? showStatus(SwapTx swap) {
+    final isListening = listeningTxs.any((_) => _.id == swap.id);
+    if (!isListening) return null;
+    final tx = listeningTxs.firstWhere((_) => _.id == swap.id);
+    return tx.status?.status;
+  }
+
   bool showClaim(SwapTx swap) {
     final status = swap.status?.status;
     if (status == null) return false;

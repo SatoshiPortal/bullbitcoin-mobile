@@ -207,9 +207,7 @@ class _Screen extends StatelessWidget {
                 ],
               ),
               const Gap(24),
-              const BBText.title(
-                'Transaction ID',
-              ),
+              const BBText.title('Transaction ID'),
               const Gap(4),
               InkWell(
                 onTap: () {
