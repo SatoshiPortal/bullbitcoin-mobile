@@ -206,7 +206,18 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     final err = await swapBoltz.watchSwap(
       swapId: swap.id,
       onUpdate: (id, status) {
+        if (!state.listeningTxs.any((_) => id == _.id)) return;
+
         final tx = state.listeningTxs.firstWhere((_) => _.id == id).copyWith(status: status);
+        emit(
+          state.copyWith(
+            listeningTxs: state.listeningTxs
+                .map(
+                  (_) => _.id == id ? tx : _,
+                )
+                .toList(),
+          ),
+        );
         final wallet = event.walletBloc.state.wallet;
         if (wallet == null) return;
 

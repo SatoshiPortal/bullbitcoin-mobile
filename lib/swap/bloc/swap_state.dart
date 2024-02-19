@@ -32,9 +32,9 @@ class SwapState with _$SwapState {
     return tx.status?.status;
   }
 
-  bool showClaim(SwapTx swap) {
-    final status = swap.status?.status;
-    if (status == null) return false;
-    return status == SwapStatus.invoicePaid;
-  }
+  // bool showClaim(SwapTx swap) {
+  //   final status = swap.status?.status;
+  //   if (status == null) return false;
+  //   return status == SwapStatus.invoicePaid;
+  // }
 }
