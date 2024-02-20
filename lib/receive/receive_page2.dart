@@ -1,5 +1,3 @@
-import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -9,11 +7,9 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
-import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -24,6 +20,9 @@ import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
+import 'package:bb_mobile/swap/bloc/swap_event.dart';
+import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +50,8 @@ class _ReceivePage2State extends State<ReceivePage2> {
       walletRepository: locator<WalletRepository>(),
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
-      swapBoltz: locator<SwapBoltz>(),
+      // swapBoltz: locator<SwapBoltz>(),
+      swapBloc: locator<SwapBloc>(),
       secureStorage: locator<SecureStorage>(),
       walletSensitiveRepository: locator<WalletSensitiveRepository>(),
       walletTx: locator<WalletTx>(),
@@ -83,6 +83,7 @@ class _ReceivePage2State extends State<ReceivePage2> {
         BlocProvider.value(value: _cubit),
         BlocProvider.value(value: _cubit.networkCubit),
         BlocProvider.value(value: _cubit.currencyCubit),
+        BlocProvider.value(value: _cubit.state.swapBloc),
         BlocProvider.value(value: home),
         if (walletBloc != null) BlocProvider.value(value: walletBloc),
       ],
@@ -130,7 +131,9 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showQR = context.select((ReceiveCubit x) => x.state.showQR());
+    final swapTx = context.select((SwapBloc x) => x.state.swapTx);
+    final showQR = context.select((ReceiveCubit x) => x.state.showQR(swapTx));
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -235,7 +238,8 @@ class WalletActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final show = context.select((ReceiveCubit _) => _.state.showActionButtons());
+    final swap = context.select((SwapBloc _) => _.state.swapTx);
+    final show = context.select((ReceiveCubit _) => _.state.showQR(swap));
     if (!show) return const SizedBox.shrink();
 
     final showRequestButton = context.select((ReceiveCubit x) => x.state.showNewRequestButton());
@@ -288,7 +292,7 @@ class SelectWalletType extends StatelessWidget {
     return CupertinoSlidingSegmentedControl(
       groupValue: walletType,
       children: const {
-        ReceiveWalletType.secure: Text('Secure'),
+        ReceiveWalletType.secure: Text('Bitcoin'),
         ReceiveWalletType.lightning: Text('Lightning'),
       },
       onValueChanged: (value) {
@@ -305,8 +309,8 @@ class CreateLightningInvoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description = context.select((ReceiveCubit _) => _.state.description);
-    final err = context.select((ReceiveCubit _) => _.state.errCreatingSwapInv);
-    final creatingInv = context.select((ReceiveCubit _) => _.state.generatingSwapInv);
+    final err = context.select((SwapBloc _) => _.state.errCreatingSwapInv);
+    final creatingInv = context.select((SwapBloc _) => _.state.generatingSwapInv);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -333,7 +337,17 @@ class CreateLightningInvoice extends StatelessWidget {
               label: 'Create Invoice',
               loadingText: 'Creating Invoice',
               onPressed: () {
-                context.read<ReceiveCubit>().createBtcLightningInvoice();
+                final wallet = context.read<ReceiveCubit>().state.walletBloc;
+                if (wallet == null) return;
+                final amt = context.read<CurrencyCubit>().state.amount;
+                final label = context.read<ReceiveCubit>().state.description;
+                context.read<SwapBloc>().add(
+                      CreateBtcLightningSwap(
+                        walletBloc: wallet,
+                        amount: amt,
+                        label: label.isEmpty ? null : label,
+                      ),
+                    );
               },
             ),
           ),
@@ -342,176 +356,6 @@ class CreateLightningInvoice extends StatelessWidget {
         BBText.errorSmall(err, textAlign: TextAlign.center),
         const Gap(40),
       ],
-    );
-  }
-}
-
-class SwapHistoryButton extends StatelessWidget {
-  const SwapHistoryButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final txs = context.select((ReceiveCubit _) => _.state.swapTxs);
-    if (txs == null || txs.isEmpty) return const SizedBox.shrink();
-
-    return BBButton.bigNoIcon(
-      label: 'View History',
-      onPressed: () {
-        SwapTxList.openPopUp(context);
-      },
-    );
-  }
-}
-
-class SwapTxList extends StatelessWidget {
-  const SwapTxList({super.key});
-
-  static Future openPopUp(BuildContext context) {
-    final receive = context.read<ReceiveCubit>();
-
-    return showBBBottomSheet(
-      context: context,
-      child: BlocProvider.value(
-        value: receive,
-        child: const SwapTxList(),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final txs = context.select((ReceiveCubit _) => _.state.swapTxs);
-    if (txs == null || txs.isEmpty) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const BBHeader.popUpCenteredText(text: 'Lightning Invoices', isLeft: true),
-          const Gap(16),
-          for (final tx in txs) SwapTxItem(tx: tx),
-          // ListView.builder(
-          //   physics: const NeverScrollableScrollPhysics(),
-          //   shrinkWrap: true,
-          //   primary: false,
-          //   itemCount: txs.length,
-          //   itemBuilder: (context, i) {
-          //     final tx = txs[i];
-          //     return SwapTxItem(tx: tx);
-          //   },
-          // ),
-        ],
-      ),
-    );
-  }
-}
-
-class SwapTxItem extends StatelessWidget {
-  const SwapTxItem({super.key, required this.tx});
-
-  final Transaction tx;
-
-  @override
-  Widget build(BuildContext context) {
-    final swapTx = tx.swapTx;
-    if (swapTx == null) return const SizedBox.shrink();
-
-    final time = tx.getDateTimeStr();
-    final invoice = swapTx.splitInvoice();
-    final amount = swapTx.outAmount.toString() + ' sats';
-    final idx = tx.swapIndex?.toString() ?? '00';
-    final status = swapTx.status?.toString() ?? '';
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: InkWell(
-        onTap: () {
-          _InvoiceQRPopup.openPopUp(context, tx);
-        },
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BBText.body(amount, isBlue: true),
-                  if (status.isNotEmpty) BBText.bodySmall(status),
-                  BBText.bodySmall(invoice),
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                BBText.bodySmall(time),
-                BBText.bodySmall('invoice no. ' + idx),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InvoiceQRPopup extends StatelessWidget {
-  const _InvoiceQRPopup({required this.tx});
-
-  static Future openPopUp(BuildContext context, Transaction tx) {
-    return showBBBottomSheet(
-      context: context,
-      child: _InvoiceQRPopup(tx: tx),
-    );
-  }
-
-  final Transaction tx;
-
-  @override
-  Widget build(BuildContext context) {
-    final swapTx = tx.swapTx;
-    if (swapTx == null) return const SizedBox.shrink();
-
-    final time = tx.getDateTimeStr();
-    final amount = swapTx.outAmount.toString() + ' sats';
-    final idx = tx.swapIndex?.toString() ?? '00';
-    final status = swapTx.status?.toString() ?? '';
-
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const BBHeader.popUpCenteredText(text: 'Invoice', isLeft: true),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    BBText.body(amount, isBlue: true),
-                    if (status.isNotEmpty) BBText.bodySmall(status),
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  BBText.bodySmall(time),
-                  BBText.bodySmall('invoice no. ' + idx),
-                ],
-              ),
-            ],
-          ),
-          const Gap(24),
-          Center(child: SizedBox(width: 250, child: ReceiveQRDisplay(address: swapTx.invoice))),
-          const Gap(16),
-          ReceiveDisplayAddress(addressQr: swapTx.invoice, fontSize: 9),
-          const Gap(40),
-        ],
-      ),
     );
   }
 }

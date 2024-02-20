@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
@@ -23,6 +22,7 @@ import 'package:bb_mobile/receive/receive_page2.dart';
 import 'package:bb_mobile/receive/wallet_select.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -66,8 +66,10 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletSensitiveRepository: locator<WalletSensitiveRepository>(),
+
       walletRepository: locator<WalletRepository>(),
-      swapBoltz: locator<SwapBoltz>(),
+      swapBloc: locator<SwapBloc>(),
+      // swapBoltz: locator<SwapBoltz>(),
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       currencyCubit: CurrencyCubit(
@@ -85,6 +87,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _cubit),
+        BlocProvider.value(value: _cubit.state.swapBloc),
         BlocProvider.value(value: _cubit.currencyCubit),
       ],
       child: const _Screen(),
@@ -322,10 +325,16 @@ class ReceiveAddress extends StatelessWidget {
 }
 
 class ReceiveDisplayAddress extends StatefulWidget {
-  const ReceiveDisplayAddress({super.key, required this.addressQr, this.fontSize});
+  const ReceiveDisplayAddress({
+    super.key,
+    required this.addressQr,
+    this.minify = true,
+    this.fontSize,
+  });
 
   final String addressQr;
   final double? fontSize;
+  final bool minify;
 
   @override
   State<ReceiveDisplayAddress> createState() => _ReceiveDisplayAddressState();
@@ -348,6 +357,11 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
 
   @override
   Widget build(BuildContext context) {
+    final address = widget.minify
+        ? widget.addressQr.substring(0, 10) +
+            ' ... ' +
+            widget.addressQr.substring(widget.addressQr.length - 5)
+        : widget.addressQr;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
       child: !showToast
@@ -357,7 +371,7 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                 SizedBox(
                   width: 250,
                   child: BBText.body(
-                    widget.addressQr,
+                    address,
                     textAlign: TextAlign.center,
                     uiKey: UIKeys.receiveAddressDisplay,
                     fontSize: widget.fontSize,

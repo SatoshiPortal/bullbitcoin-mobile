@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -24,19 +25,14 @@ class ReceiveState with _$ReceiveState {
     @Default('') String errCreatingInvoice,
     WalletBloc? walletBloc,
     @Default(ReceiveWalletType.secure) ReceiveWalletType walletType,
-    @Default('') String errCreatingSwapInv,
-    @Default(false) bool generatingSwapInv,
-    @Default('') String errClaimingSwap,
-    @Default(false) bool claimingSwapSwap,
-    SwapTx? swapTx,
-    List<Transaction>? swapTxs,
+    required SwapBloc swapBloc,
   }) = _ReceiveState;
   const ReceiveState._();
 
   String getQRStr() {
-    if (defaultAddress == null) {
-      if (swapTx == null) return '';
-      return swapTx!.invoice;
+    if (walletType == ReceiveWalletType.lightning) {
+      if (swapBloc.state.swapTx == null) return '';
+      return swapBloc.state.swapTx!.invoice;
     }
 
     if (savedInvoiceAmount > 0 || savedDescription.isNotEmpty) {
@@ -53,11 +49,14 @@ class ReceiveState with _$ReceiveState {
 
   bool showNewRequestButton() => savedDescription.isEmpty && savedInvoiceAmount == 0;
 
-  bool showQR() =>
-      (swapTx != null && walletType == ReceiveWalletType.lightning) ||
-      (swapTx == null && walletType == ReceiveWalletType.secure);
+  bool showQR(SwapTx? swapTx) {
+    return (swapTx != null && walletType == ReceiveWalletType.lightning) ||
+        (walletType == ReceiveWalletType.secure);
+  }
 
-  bool showActionButtons() =>
-      walletType == ReceiveWalletType.secure ||
-      (walletType == ReceiveWalletType.lightning && swapTx != null);
+  // bool _swapTxIsNotNull() => swapBloc.state.swapTx != null;
+
+  // bool showActionButtons() =>
+  //     walletType == ReceiveWalletType.secure ||
+  //     (walletType == ReceiveWalletType.lightning && _swapTxIsNotNull());
 }

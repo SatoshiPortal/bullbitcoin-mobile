@@ -257,7 +257,7 @@ class AdvancedOptionAdress extends StatelessWidget {
       (CurrencyCubit x) => x.state.getAmountInUnits(balance),
     );
 
-    final label = utxo.label ?? '';
+    final label = utxo.label;
 
     final addessStr =
         utxo.address.toShortString() + (utxo.address.label != null ? utxo.address.label! : '');

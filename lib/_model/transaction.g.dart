@@ -71,7 +71,6 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       scriptAddress: json['scriptAddress'] as String,
       electrumUrl: json['electrumUrl'] as String,
       boltzUrl: json['boltzUrl'] as String,
-      isListening: json['isListening'] as bool? ?? false,
       status: json['status'] == null
           ? null
           : SwapStatusResponse.fromJson(json['status'] as Map<String, dynamic>),
@@ -95,7 +94,6 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
       'scriptAddress': instance.scriptAddress,
       'electrumUrl': instance.electrumUrl,
       'boltzUrl': instance.boltzUrl,
-      'isListening': instance.isListening,
       'status': instance.status,
       'blindingKey': instance.blindingKey,
     };

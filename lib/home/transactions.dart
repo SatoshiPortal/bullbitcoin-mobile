@@ -46,7 +46,7 @@ class _TxList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final txs = context.select((HomeCubit cubit) => cubit.state.allTxs(network));
+    final txs = context.select((HomeCubit cubit) => cubit.state.allTxsWithSwaps(network));
 
     if (txs.isEmpty)
       return TopLeft(

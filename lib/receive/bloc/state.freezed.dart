@@ -30,12 +30,7 @@ mixin _$ReceiveState {
   String get errCreatingInvoice => throw _privateConstructorUsedError;
   WalletBloc? get walletBloc => throw _privateConstructorUsedError;
   ReceiveWalletType get walletType => throw _privateConstructorUsedError;
-  String get errCreatingSwapInv => throw _privateConstructorUsedError;
-  bool get generatingSwapInv => throw _privateConstructorUsedError;
-  String get errClaimingSwap => throw _privateConstructorUsedError;
-  bool get claimingSwapSwap => throw _privateConstructorUsedError;
-  SwapTx? get swapTx => throw _privateConstructorUsedError;
-  List<Transaction>? get swapTxs => throw _privateConstructorUsedError;
+  SwapBloc get swapBloc => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ReceiveStateCopyWith<ReceiveState> get copyWith =>
@@ -63,15 +58,9 @@ abstract class $ReceiveStateCopyWith<$Res> {
       String errCreatingInvoice,
       WalletBloc? walletBloc,
       ReceiveWalletType walletType,
-      String errCreatingSwapInv,
-      bool generatingSwapInv,
-      String errClaimingSwap,
-      bool claimingSwapSwap,
-      SwapTx? swapTx,
-      List<Transaction>? swapTxs});
+      SwapBloc swapBloc});
 
   $AddressCopyWith<$Res>? get defaultAddress;
-  $SwapTxCopyWith<$Res>? get swapTx;
 }
 
 /// @nodoc
@@ -101,12 +90,7 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
     Object? walletType = null,
-    Object? errCreatingSwapInv = null,
-    Object? generatingSwapInv = null,
-    Object? errClaimingSwap = null,
-    Object? claimingSwapSwap = null,
-    Object? swapTx = freezed,
-    Object? swapTxs = freezed,
+    Object? swapBloc = null,
   }) {
     return _then(_value.copyWith(
       loadingAddress: null == loadingAddress
@@ -165,30 +149,10 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.walletType
           : walletType // ignore: cast_nullable_to_non_nullable
               as ReceiveWalletType,
-      errCreatingSwapInv: null == errCreatingSwapInv
-          ? _value.errCreatingSwapInv
-          : errCreatingSwapInv // ignore: cast_nullable_to_non_nullable
-              as String,
-      generatingSwapInv: null == generatingSwapInv
-          ? _value.generatingSwapInv
-          : generatingSwapInv // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errClaimingSwap: null == errClaimingSwap
-          ? _value.errClaimingSwap
-          : errClaimingSwap // ignore: cast_nullable_to_non_nullable
-              as String,
-      claimingSwapSwap: null == claimingSwapSwap
-          ? _value.claimingSwapSwap
-          : claimingSwapSwap // ignore: cast_nullable_to_non_nullable
-              as bool,
-      swapTx: freezed == swapTx
-          ? _value.swapTx
-          : swapTx // ignore: cast_nullable_to_non_nullable
-              as SwapTx?,
-      swapTxs: freezed == swapTxs
-          ? _value.swapTxs
-          : swapTxs // ignore: cast_nullable_to_non_nullable
-              as List<Transaction>?,
+      swapBloc: null == swapBloc
+          ? _value.swapBloc
+          : swapBloc // ignore: cast_nullable_to_non_nullable
+              as SwapBloc,
     ) as $Val);
   }
 
@@ -201,18 +165,6 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
 
     return $AddressCopyWith<$Res>(_value.defaultAddress!, (value) {
       return _then(_value.copyWith(defaultAddress: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $SwapTxCopyWith<$Res>? get swapTx {
-    if (_value.swapTx == null) {
-      return null;
-    }
-
-    return $SwapTxCopyWith<$Res>(_value.swapTx!, (value) {
-      return _then(_value.copyWith(swapTx: value) as $Val);
     });
   }
 }
@@ -240,17 +192,10 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       String errCreatingInvoice,
       WalletBloc? walletBloc,
       ReceiveWalletType walletType,
-      String errCreatingSwapInv,
-      bool generatingSwapInv,
-      String errClaimingSwap,
-      bool claimingSwapSwap,
-      SwapTx? swapTx,
-      List<Transaction>? swapTxs});
+      SwapBloc swapBloc});
 
   @override
   $AddressCopyWith<$Res>? get defaultAddress;
-  @override
-  $SwapTxCopyWith<$Res>? get swapTx;
 }
 
 /// @nodoc
@@ -278,12 +223,7 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
     Object? walletType = null,
-    Object? errCreatingSwapInv = null,
-    Object? generatingSwapInv = null,
-    Object? errClaimingSwap = null,
-    Object? claimingSwapSwap = null,
-    Object? swapTx = freezed,
-    Object? swapTxs = freezed,
+    Object? swapBloc = null,
   }) {
     return _then(_$ReceiveStateImpl(
       loadingAddress: null == loadingAddress
@@ -342,30 +282,10 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
           ? _value.walletType
           : walletType // ignore: cast_nullable_to_non_nullable
               as ReceiveWalletType,
-      errCreatingSwapInv: null == errCreatingSwapInv
-          ? _value.errCreatingSwapInv
-          : errCreatingSwapInv // ignore: cast_nullable_to_non_nullable
-              as String,
-      generatingSwapInv: null == generatingSwapInv
-          ? _value.generatingSwapInv
-          : generatingSwapInv // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errClaimingSwap: null == errClaimingSwap
-          ? _value.errClaimingSwap
-          : errClaimingSwap // ignore: cast_nullable_to_non_nullable
-              as String,
-      claimingSwapSwap: null == claimingSwapSwap
-          ? _value.claimingSwapSwap
-          : claimingSwapSwap // ignore: cast_nullable_to_non_nullable
-              as bool,
-      swapTx: freezed == swapTx
-          ? _value.swapTx
-          : swapTx // ignore: cast_nullable_to_non_nullable
-              as SwapTx?,
-      swapTxs: freezed == swapTxs
-          ? _value._swapTxs
-          : swapTxs // ignore: cast_nullable_to_non_nullable
-              as List<Transaction>?,
+      swapBloc: null == swapBloc
+          ? _value.swapBloc
+          : swapBloc // ignore: cast_nullable_to_non_nullable
+              as SwapBloc,
     ));
   }
 }
@@ -388,14 +308,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.errCreatingInvoice = '',
       this.walletBloc,
       this.walletType = ReceiveWalletType.secure,
-      this.errCreatingSwapInv = '',
-      this.generatingSwapInv = false,
-      this.errClaimingSwap = '',
-      this.claimingSwapSwap = false,
-      this.swapTx,
-      final List<Transaction>? swapTxs})
-      : _swapTxs = swapTxs,
-        super._();
+      required this.swapBloc})
+      : super._();
 
   @override
   @JsonKey()
@@ -438,32 +352,11 @@ class _$ReceiveStateImpl extends _ReceiveState {
   @JsonKey()
   final ReceiveWalletType walletType;
   @override
-  @JsonKey()
-  final String errCreatingSwapInv;
-  @override
-  @JsonKey()
-  final bool generatingSwapInv;
-  @override
-  @JsonKey()
-  final String errClaimingSwap;
-  @override
-  @JsonKey()
-  final bool claimingSwapSwap;
-  @override
-  final SwapTx? swapTx;
-  final List<Transaction>? _swapTxs;
-  @override
-  List<Transaction>? get swapTxs {
-    final value = _swapTxs;
-    if (value == null) return null;
-    if (_swapTxs is EqualUnmodifiableListView) return _swapTxs;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
+  final SwapBloc swapBloc;
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, walletType: $walletType, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, errClaimingSwap: $errClaimingSwap, claimingSwapSwap: $claimingSwapSwap, swapTx: $swapTx, swapTxs: $swapTxs)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, walletType: $walletType, swapBloc: $swapBloc)';
   }
 
   @override
@@ -499,42 +392,28 @@ class _$ReceiveStateImpl extends _ReceiveState {
                 other.walletBloc == walletBloc) &&
             (identical(other.walletType, walletType) ||
                 other.walletType == walletType) &&
-            (identical(other.errCreatingSwapInv, errCreatingSwapInv) ||
-                other.errCreatingSwapInv == errCreatingSwapInv) &&
-            (identical(other.generatingSwapInv, generatingSwapInv) ||
-                other.generatingSwapInv == generatingSwapInv) &&
-            (identical(other.errClaimingSwap, errClaimingSwap) ||
-                other.errClaimingSwap == errClaimingSwap) &&
-            (identical(other.claimingSwapSwap, claimingSwapSwap) ||
-                other.claimingSwapSwap == claimingSwapSwap) &&
-            (identical(other.swapTx, swapTx) || other.swapTx == swapTx) &&
-            const DeepCollectionEquality().equals(other._swapTxs, _swapTxs));
+            (identical(other.swapBloc, swapBloc) ||
+                other.swapBloc == swapBloc));
   }
 
   @override
-  int get hashCode => Object.hashAll([
-        runtimeType,
-        loadingAddress,
-        errLoadingAddress,
-        defaultAddress,
-        privateLabel,
-        savingLabel,
-        errSavingLabel,
-        labelSaved,
-        savedInvoiceAmount,
-        description,
-        savedDescription,
-        creatingInvoice,
-        errCreatingInvoice,
-        walletBloc,
-        walletType,
-        errCreatingSwapInv,
-        generatingSwapInv,
-        errClaimingSwap,
-        claimingSwapSwap,
-        swapTx,
-        const DeepCollectionEquality().hash(_swapTxs)
-      ]);
+  int get hashCode => Object.hash(
+      runtimeType,
+      loadingAddress,
+      errLoadingAddress,
+      defaultAddress,
+      privateLabel,
+      savingLabel,
+      errSavingLabel,
+      labelSaved,
+      savedInvoiceAmount,
+      description,
+      savedDescription,
+      creatingInvoice,
+      errCreatingInvoice,
+      walletBloc,
+      walletType,
+      swapBloc);
 
   @JsonKey(ignore: true)
   @override
@@ -559,12 +438,7 @@ abstract class _ReceiveState extends ReceiveState {
       final String errCreatingInvoice,
       final WalletBloc? walletBloc,
       final ReceiveWalletType walletType,
-      final String errCreatingSwapInv,
-      final bool generatingSwapInv,
-      final String errClaimingSwap,
-      final bool claimingSwapSwap,
-      final SwapTx? swapTx,
-      final List<Transaction>? swapTxs}) = _$ReceiveStateImpl;
+      required final SwapBloc swapBloc}) = _$ReceiveStateImpl;
   const _ReceiveState._() : super._();
 
   @override
@@ -596,17 +470,7 @@ abstract class _ReceiveState extends ReceiveState {
   @override
   ReceiveWalletType get walletType;
   @override
-  String get errCreatingSwapInv;
-  @override
-  bool get generatingSwapInv;
-  @override
-  String get errClaimingSwap;
-  @override
-  bool get claimingSwapSwap;
-  @override
-  SwapTx? get swapTx;
-  @override
-  List<Transaction>? get swapTxs;
+  SwapBloc get swapBloc;
   @override
   @JsonKey(ignore: true)
   _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>

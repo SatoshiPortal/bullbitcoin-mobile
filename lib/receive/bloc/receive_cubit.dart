@@ -1,7 +1,4 @@
 import 'package:bb_mobile/_model/address.dart';
-import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_pkg/boltz/swap.dart';
-import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
@@ -12,9 +9,10 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
+import 'package:bb_mobile/swap/bloc/swap_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReceiveCubit extends Cubit<ReceiveState> {
@@ -28,9 +26,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required this.settingsCubit,
     required this.networkCubit,
     required this.currencyCubit,
-    required this.swapBoltz,
     required this.walletTx,
-  }) : super(ReceiveState(walletBloc: walletBloc)) {
+    required SwapBloc swapBloc,
+  }) : super(ReceiveState(walletBloc: walletBloc, swapBloc: swapBloc)) {
     loadAddress();
   }
   final SettingsCubit settingsCubit;
@@ -41,7 +39,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final WalletSensitiveRepository walletSensitiveRepository;
   final NetworkCubit networkCubit;
   final CurrencyCubit currencyCubit;
-  final SwapBoltz swapBoltz;
   final WalletTx walletTx;
 
   void updateWalletBloc(WalletBloc walletBloc) {
@@ -55,234 +52,18 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       ),
     );
     loadAddress();
-    loadAllSwapTxs();
   }
 
   void updateWalletType(ReceiveWalletType walletType) {
     emit(state.copyWith(walletType: walletType));
     if (!networkCubit.state.testnet) return;
 
-    if (walletType == ReceiveWalletType.lightning) loadAllSwapTxs();
-  }
-
-  void createBtcLightningInvoice() async {
-    if (!networkCubit.state.testnet) return;
-
-    final outAmount = currencyCubit.state.amount;
-    if (outAmount < 50000 || outAmount > 25000000) {
-      emit(
-        state.copyWith(
-          errCreatingSwapInv: 'Amount should be greater than 50000 and less than 25000000 sats',
-          generatingSwapInv: false,
-        ),
-      );
-      return;
+    if (walletType == ReceiveWalletType.lightning) {
+      state.swapBloc.add(ResetToNewLnInvoice());
+      emit(state.copyWith(defaultAddress: null));
+    } else {
+      loadAddress();
     }
-
-    emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
-    final (seed, errReadingSeed) = await walletSensitiveRepository.readSeed(
-      fingerprintIndex: state.walletBloc!.state.wallet!.getRelatedSeedStorageString(),
-      secureStore: secureStorage,
-    );
-    if (errReadingSeed != null) {
-      emit(state.copyWith(errCreatingSwapInv: errReadingSeed.toString(), generatingSwapInv: false));
-      return;
-    }
-    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
-      boltzUrl: boltzTestnet,
-      outAmount: outAmount,
-    );
-    if (errFees != null) {
-      emit(state.copyWith(errCreatingSwapInv: errFees.toString(), generatingSwapInv: false));
-      return;
-    }
-
-    final (swap, errCreatingInv) = await swapBoltz.receive(
-      mnemonic: seed!.mnemonic,
-      index: state.walletBloc!.state.wallet!.swapTxCount,
-      outAmount: outAmount,
-      network: Chain.Testnet,
-      electrumUrl: networkCubit.state.getNetworkUrl(),
-      boltzUrl: boltzTestnet,
-      pairHash: fees!.btcPairHash,
-    );
-    if (errCreatingInv != null) {
-      emit(state.copyWith(errCreatingSwapInv: errCreatingInv.toString(), generatingSwapInv: false));
-      return;
-    }
-
-    emit(
-      state.copyWith(
-        generatingSwapInv: false,
-        errCreatingSwapInv: '',
-        defaultAddress: null,
-        swapTx: swap,
-      ),
-    );
-    _watchInvoiceStatus();
-    _saveSwapInvoiceToWallet();
-  }
-
-  void _saveSwapInvoiceToWallet() async {
-    if (state.swapTx == null) return;
-    if (state.walletBloc == null) return;
-
-    final wallet = state.walletBloc!.state.wallet!;
-    final swapTxCount = wallet.swapTxCount + 1;
-    final tx = Transaction.fromSwapTx(state.swapTx!).copyWith(
-      isSwap: true,
-      swapIndex: wallet.swapTxCount,
-    );
-
-    final (updatedWallet, err) = await walletTx.addUnsignedTxToWallet(
-      wallet: wallet.copyWith(swapTxCount: swapTxCount),
-      transaction: tx,
-    );
-    if (err != null) {
-      emit(state.copyWith(errCreatingSwapInv: err.toString(), generatingSwapInv: false));
-      return;
-    }
-
-    final errr = await walletRepository.updateWallet(
-      wallet: updatedWallet,
-      hiveStore: hiveStorage,
-    );
-    if (errr != null) {
-      emit(state.copyWith(errCreatingSwapInv: errr.toString(), generatingSwapInv: false));
-      return;
-    }
-
-    state.walletBloc!.add(
-      UpdateWallet(
-        updatedWallet,
-        updateTypes: [UpdateWalletTypes.transactions],
-      ),
-    );
-  }
-
-  void _watchInvoiceStatus() async {
-    if (state.swapTx == null) return;
-    final swap = state.swapTx!;
-    emit(state.copyWith(swapTx: swap.copyWith(isListening: true)));
-    final err = await swapBoltz.watchSwap(
-      swapId: state.swapTx!.id,
-      onUpdate: handleSwapStatusChange,
-    );
-    if (err != null) {
-      emit(state.copyWith(errCreatingSwapInv: err.toString(), generatingSwapInv: false));
-      return;
-    }
-  }
-
-  void handleSwapStatusChange(String id, SwapStatusResponse resp) async {
-    if (state.swapTx == null) return;
-    if (state.swapTx!.id != id) return;
-    final swap = state.swapTx!.copyWith(status: resp);
-    emit(state.copyWith(swapTx: swap));
-    if (resp.status == SwapStatus.invoiceSettled) {
-      emit(state.copyWith(swapTx: swap.copyWith(isListening: false)));
-      final err = swapBoltz.closeStream(swap.id);
-      if (err != null) {
-        emit(state.copyWith(errCreatingSwapInv: err.toString()));
-        return;
-      }
-    }
-  }
-
-  void swapTxSelected(Transaction tx) {
-    final swap = tx.swapTx;
-    if (swap == null) return;
-    emit(state.copyWith(swapTx: swap));
-  }
-
-  void claimSwap() async {
-    final swap = state.swapTx;
-    final status = state.swapTx?.status;
-
-    if (swap == null) return;
-    if (status == null) return;
-    if (status.status != SwapStatus.txnClaimPending) return;
-
-    emit(state.copyWith(claimingSwapSwap: true, errClaimingSwap: ''));
-
-    final address = state.walletBloc?.state.wallet?.lastGeneratedAddress?.address;
-    if (address == null || address.isEmpty) {
-      emit(
-        state.copyWith(
-          claimingSwapSwap: false,
-          errClaimingSwap: 'Address not found',
-        ),
-      );
-      return;
-    }
-
-    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
-      boltzUrl: boltzTestnet,
-      outAmount: swap.outAmount,
-    );
-    if (errFees != null) {
-      emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: errFees.toString()));
-      return;
-    }
-    final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
-    if (claimFeesEstimate == null) {
-      emit(
-        state.copyWith(
-          claimingSwapSwap: false,
-          errClaimingSwap: 'Fees not found',
-        ),
-      );
-      return;
-    }
-
-    final (txid, err) = await swapBoltz.claimSwap(
-      tx: swap,
-      outAddress: address,
-      absFee: claimFeesEstimate,
-    );
-    if (err != null) {
-      emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: err.toString()));
-      return;
-    }
-
-    emit(
-      state.copyWith(
-        swapTx: swap.copyWith(txid: txid),
-        claimingSwapSwap: false,
-        errClaimingSwap: '',
-      ),
-    );
-
-    _watchInvoiceStatus();
-  }
-
-  void refundSwap() async {}
-
-  void resetToNewLnInvoice() async {
-    if (state.walletBloc == null) return;
-
-    emit(
-      state.copyWith(
-        errLoadingAddress: '',
-        savedInvoiceAmount: 0,
-        errCreatingSwapInv: '',
-        defaultAddress: null,
-        swapTx: null,
-      ),
-    );
-    currencyCubit.reset();
-  }
-
-  void loadAllSwapTxs() {
-    if (state.walletBloc == null) return;
-    if (state.walletType == ReceiveWalletType.secure) return;
-    final swapTxs =
-        state.walletBloc!.state.wallet!.transactions.where((tx) => tx.swapTx != null).toList();
-    final swapTxsUnsigned =
-        state.walletBloc!.state.wallet!.unsignedTxs.where((tx) => tx.swapTx != null).toList();
-
-    final allTxs = swapTxs + swapTxsUnsigned;
-    emit(state.copyWith(swapTxs: allTxs));
   }
 
   void loadAddress() async {
@@ -314,7 +95,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void generateNewAddress() async {
     if (state.walletType == ReceiveWalletType.lightning) {
-      resetToNewLnInvoice();
+      state.swapBloc.add(ResetToNewLnInvoice());
       return;
     }
 
@@ -427,7 +208,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   void clearInvoiceFields() {
     emit(state.copyWith(description: ''));
     currencyCubit.reset();
-    // currencyCubit.updateAmountDirect(0);
   }
 
   void saveFinalInvoiceClicked() async {
@@ -454,11 +234,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         creatingInvoice: false,
         errCreatingInvoice: '',
         savedDescription: state.description,
-        // description: '',
         savedInvoiceAmount: currencyCubit.state.amount,
       ),
     );
-    // currencyCubit.updateAmountDirect(0);
   }
 
   void shareClicked() {}

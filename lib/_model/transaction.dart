@@ -207,7 +207,6 @@ class SwapTx with _$SwapTx {
     required String scriptAddress,
     required String electrumUrl,
     required String boltzUrl,
-    @Default(false) bool isListening,
     SwapStatusResponse? status,
     String? blindingKey,
     // String? statusStr,
@@ -233,9 +232,6 @@ class SwapTx with _$SwapTx {
       scriptAddress: swap.scriptAddress,
       electrumUrl: swap.electrumUrl,
       boltzUrl: swap.boltzUrl,
-      status: const SwapStatusResponse(status: SwapStatus.swapCreated),
-      // status: SwapStatus.swapCreated,
-      // statusStr: swapStatusToString(SwapStatus.swapCreated),
     );
   }
 
@@ -248,9 +244,9 @@ class SwapTx with _$SwapTx {
         invoice: tx.invoice,
         outAmount: tx.outAmount,
         scriptAddress: tx.scriptAddress,
-        electrumUrl: tx.electrumUrl,
+        electrumUrl: tx.electrumUrl.replaceAll('ssl://', ''),
         boltzUrl: tx.boltzUrl,
-        kind: SwapType.Submarine,
+        kind: SwapType.Reverse,
         network: Chain.Testnet,
         keys: KeyPair(
           secretKey: tx.secretKey,
@@ -267,6 +263,15 @@ class SwapTx with _$SwapTx {
 
   String splitInvoice() =>
       invoice.substring(0, 5) + ' .... ' + invoice.substring(invoice.length - 10);
+}
+
+extension SwapTxExt on SwapStatus {
+  bool get canClaim => this == SwapStatus.txnMempool || this == SwapStatus.txnConfirmed;
+  bool get showPending => this == SwapStatus.invoicePaid;
+  bool get hasExpired =>
+      this == SwapStatus.swapExpired ||
+      this == SwapStatus.invoiceExpired ||
+      this == SwapStatus.invoiceFailedToPay;
 }
 
 // String swapStatusToString(SwapStatus swap) {

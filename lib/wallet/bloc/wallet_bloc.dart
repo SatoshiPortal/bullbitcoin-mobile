@@ -16,9 +16,12 @@ import 'package:bb_mobile/_pkg/wallet/utxo.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
+import 'package:bb_mobile/swap/bloc/swap_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,6 +40,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.walletUtxo,
     required this.walletUpdate,
     required this.networkCubit,
+    required this.swapBloc,
     this.fromStorage = true,
     Wallet? wallet,
   }) : super(WalletState(wallet: wallet)) {
@@ -63,6 +67,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletUtxo walletUtxo;
   final WalletUpdate walletUpdate;
   final NetworkCubit networkCubit;
+  final SwapBloc swapBloc;
 
   final SecureStorage secureStorage;
   final HiveStorage hiveStorage;
@@ -332,6 +337,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ],
       ),
     );
+
+    await Future.delayed(100.ms);
+    _mergeSwapIntoTx();
+    await Future.delayed(100.ms);
+    _listenToSwapTxs();
   }
 
   void _updateUtxos(UpdateUtxos event, Emitter<WalletState> emit) async {}
@@ -400,6 +410,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
             storageWallet = storageWallet!.copyWith(
               unsignedTxs: eventWallet.unsignedTxs,
             );
+          if (eventWallet.swaps.isNotEmpty)
+            storageWallet = storageWallet!.copyWith(
+              swaps: eventWallet.swaps,
+              swapTxCount: eventWallet.swapTxCount,
+            );
+
         case UpdateWalletTypes.addresses:
           if (eventWallet.myAddressBook.isNotEmpty)
             storageWallet = storageWallet!.copyWith(
@@ -447,5 +463,49 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
     if (err != null) locator<Logger>().log(err.toString(), printToConsole: true);
     emit(state.copyWith(wallet: storageWallet));
+  }
+
+  void _listenToSwapTxs() async {
+    final swapTxs = state.allSwapTxs();
+    for (final tx in swapTxs) {
+      if (tx.swapTx == null) continue;
+      final status = tx.swapTx!.status?.status;
+      if (status != null &&
+          (status == SwapStatus.invoiceSettled ||
+              status == SwapStatus.swapExpired ||
+              status == SwapStatus.invoiceExpired ||
+              status == SwapStatus.txnFailed ||
+              status == SwapStatus.invoiceFailedToPay ||
+              status == SwapStatus.txnLockupFailed)) continue;
+
+      swapBloc.add(WatchInvoiceStatus(walletBloc: this, tx: tx));
+      await Future.delayed(const Duration(milliseconds: 50));
+    }
+  }
+
+  void _mergeSwapIntoTx() {
+    final txs = state.wallet?.transactions ?? [];
+    final swaps = state.wallet?.swaps ?? [];
+
+    for (final swap in swaps) {
+      if (swap.swapTx?.txid == null || swap.swapTx!.txid!.isEmpty) continue;
+      final newTxExists = txs.any((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
+      if (!newTxExists) continue;
+      final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
+      final newTx = txs[idx].copyWith(swapTx: swap.swapTx);
+      txs[idx] = newTx;
+      swaps.removeWhere((_) => _.swapTx!.id == swap.swapTx!.id);
+      final updatedWallet = state.wallet!.copyWith(
+        transactions: txs,
+        swaps: swaps,
+      );
+      add(
+        UpdateWallet(
+          updatedWallet,
+          saveToStorage: fromStorage,
+          updateTypes: [UpdateWalletTypes.transactions],
+        ),
+      );
+    }
   }
 }

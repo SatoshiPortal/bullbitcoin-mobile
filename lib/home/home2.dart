@@ -9,6 +9,7 @@ import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/swap/list_item.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
 import 'package:extra_alignments/extra_alignments.dart';
@@ -324,7 +325,7 @@ class Transactions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final txs = context.select((HomeCubit cubit) => cubit.state.allTxs(network));
+    final txs = context.select((HomeCubit cubit) => cubit.state.allTxsWithSwaps(network));
 
     if (txs.isEmpty)
       return TopLeft(
@@ -422,6 +423,9 @@ class HomeTxItem2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSwap = tx.swapTx != null;
+    if (isSwap) return SwapTxHomeListItem(transaction: tx);
+
     final label = tx.label ?? '';
 
     final amount = context
