@@ -608,11 +608,11 @@ mixin _$SwapTx {
   String? get txid => throw _privateConstructorUsedError;
   bool get isSubmarine => throw _privateConstructorUsedError;
   BBNetwork get network => throw _privateConstructorUsedError;
-  String get secretKey => throw _privateConstructorUsedError;
-  String get publicKey => throw _privateConstructorUsedError;
-  String get value => throw _privateConstructorUsedError;
-  String get sha256 => throw _privateConstructorUsedError;
-  String get hash160 => throw _privateConstructorUsedError;
+  String? get secretKey => throw _privateConstructorUsedError;
+  String? get publicKey => throw _privateConstructorUsedError;
+  String? get value => throw _privateConstructorUsedError;
+  String? get sha256 => throw _privateConstructorUsedError;
+  String? get hash160 => throw _privateConstructorUsedError;
   String get redeemScript => throw _privateConstructorUsedError;
   String get invoice => throw _privateConstructorUsedError;
   int get outAmount => throw _privateConstructorUsedError;
@@ -637,11 +637,11 @@ abstract class $SwapTxCopyWith<$Res> {
       String? txid,
       bool isSubmarine,
       BBNetwork network,
-      String secretKey,
-      String publicKey,
-      String value,
-      String sha256,
-      String hash160,
+      String? secretKey,
+      String? publicKey,
+      String? value,
+      String? sha256,
+      String? hash160,
       String redeemScript,
       String invoice,
       int outAmount,
@@ -671,11 +671,11 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? txid = freezed,
     Object? isSubmarine = null,
     Object? network = null,
-    Object? secretKey = null,
-    Object? publicKey = null,
-    Object? value = null,
-    Object? sha256 = null,
-    Object? hash160 = null,
+    Object? secretKey = freezed,
+    Object? publicKey = freezed,
+    Object? value = freezed,
+    Object? sha256 = freezed,
+    Object? hash160 = freezed,
     Object? redeemScript = null,
     Object? invoice = null,
     Object? outAmount = null,
@@ -702,26 +702,26 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.network
           : network // ignore: cast_nullable_to_non_nullable
               as BBNetwork,
-      secretKey: null == secretKey
+      secretKey: freezed == secretKey
           ? _value.secretKey
           : secretKey // ignore: cast_nullable_to_non_nullable
-              as String,
-      publicKey: null == publicKey
+              as String?,
+      publicKey: freezed == publicKey
           ? _value.publicKey
           : publicKey // ignore: cast_nullable_to_non_nullable
-              as String,
-      value: null == value
+              as String?,
+      value: freezed == value
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
-              as String,
-      sha256: null == sha256
+              as String?,
+      sha256: freezed == sha256
           ? _value.sha256
           : sha256 // ignore: cast_nullable_to_non_nullable
-              as String,
-      hash160: null == hash160
+              as String?,
+      hash160: freezed == hash160
           ? _value.hash160
           : hash160 // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       redeemScript: null == redeemScript
           ? _value.redeemScript
           : redeemScript // ignore: cast_nullable_to_non_nullable
@@ -782,11 +782,11 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String? txid,
       bool isSubmarine,
       BBNetwork network,
-      String secretKey,
-      String publicKey,
-      String value,
-      String sha256,
-      String hash160,
+      String? secretKey,
+      String? publicKey,
+      String? value,
+      String? sha256,
+      String? hash160,
       String redeemScript,
       String invoice,
       int outAmount,
@@ -815,11 +815,11 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? txid = freezed,
     Object? isSubmarine = null,
     Object? network = null,
-    Object? secretKey = null,
-    Object? publicKey = null,
-    Object? value = null,
-    Object? sha256 = null,
-    Object? hash160 = null,
+    Object? secretKey = freezed,
+    Object? publicKey = freezed,
+    Object? value = freezed,
+    Object? sha256 = freezed,
+    Object? hash160 = freezed,
     Object? redeemScript = null,
     Object? invoice = null,
     Object? outAmount = null,
@@ -846,26 +846,26 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.network
           : network // ignore: cast_nullable_to_non_nullable
               as BBNetwork,
-      secretKey: null == secretKey
+      secretKey: freezed == secretKey
           ? _value.secretKey
           : secretKey // ignore: cast_nullable_to_non_nullable
-              as String,
-      publicKey: null == publicKey
+              as String?,
+      publicKey: freezed == publicKey
           ? _value.publicKey
           : publicKey // ignore: cast_nullable_to_non_nullable
-              as String,
-      value: null == value
+              as String?,
+      value: freezed == value
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
-              as String,
-      sha256: null == sha256
+              as String?,
+      sha256: freezed == sha256
           ? _value.sha256
           : sha256 // ignore: cast_nullable_to_non_nullable
-              as String,
-      hash160: null == hash160
+              as String?,
+      hash160: freezed == hash160
           ? _value.hash160
           : hash160 // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       redeemScript: null == redeemScript
           ? _value.redeemScript
           : redeemScript // ignore: cast_nullable_to_non_nullable
@@ -910,11 +910,11 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       this.txid,
       required this.isSubmarine,
       required this.network,
-      required this.secretKey,
-      required this.publicKey,
-      required this.value,
-      required this.sha256,
-      required this.hash160,
+      this.secretKey,
+      this.publicKey,
+      this.value,
+      this.sha256,
+      this.hash160,
       required this.redeemScript,
       required this.invoice,
       required this.outAmount,
@@ -937,15 +937,15 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   @override
   final BBNetwork network;
   @override
-  final String secretKey;
+  final String? secretKey;
   @override
-  final String publicKey;
+  final String? publicKey;
   @override
-  final String value;
+  final String? value;
   @override
-  final String sha256;
+  final String? sha256;
   @override
-  final String hash160;
+  final String? hash160;
   @override
   final String redeemScript;
   @override
@@ -1067,11 +1067,11 @@ abstract class _SwapTx extends SwapTx {
       final String? txid,
       required final bool isSubmarine,
       required final BBNetwork network,
-      required final String secretKey,
-      required final String publicKey,
-      required final String value,
-      required final String sha256,
-      required final String hash160,
+      final String? secretKey,
+      final String? publicKey,
+      final String? value,
+      final String? sha256,
+      final String? hash160,
       required final String redeemScript,
       required final String invoice,
       required final int outAmount,
@@ -1093,15 +1093,15 @@ abstract class _SwapTx extends SwapTx {
   @override
   BBNetwork get network;
   @override
-  String get secretKey;
+  String? get secretKey;
   @override
-  String get publicKey;
+  String? get publicKey;
   @override
-  String get value;
+  String? get value;
   @override
-  String get sha256;
+  String? get sha256;
   @override
-  String get hash160;
+  String? get hash160;
   @override
   String get redeemScript;
   @override
@@ -1121,5 +1121,263 @@ abstract class _SwapTx extends SwapTx {
   @override
   @JsonKey(ignore: true)
   _$$SwapTxImplCopyWith<_$SwapTxImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+SwapTxSentive _$SwapTxSentiveFromJson(Map<String, dynamic> json) {
+  return _SwapTxSentive.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SwapTxSentive {
+  String get id => throw _privateConstructorUsedError;
+  String get secretKey => throw _privateConstructorUsedError;
+  String get publicKey => throw _privateConstructorUsedError;
+  String get value => throw _privateConstructorUsedError;
+  String get sha256 => throw _privateConstructorUsedError;
+  String get hash160 => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $SwapTxSentiveCopyWith<SwapTxSentive> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SwapTxSentiveCopyWith<$Res> {
+  factory $SwapTxSentiveCopyWith(
+          SwapTxSentive value, $Res Function(SwapTxSentive) then) =
+      _$SwapTxSentiveCopyWithImpl<$Res, SwapTxSentive>;
+  @useResult
+  $Res call(
+      {String id,
+      String secretKey,
+      String publicKey,
+      String value,
+      String sha256,
+      String hash160});
+}
+
+/// @nodoc
+class _$SwapTxSentiveCopyWithImpl<$Res, $Val extends SwapTxSentive>
+    implements $SwapTxSentiveCopyWith<$Res> {
+  _$SwapTxSentiveCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? secretKey = null,
+    Object? publicKey = null,
+    Object? value = null,
+    Object? sha256 = null,
+    Object? hash160 = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      secretKey: null == secretKey
+          ? _value.secretKey
+          : secretKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicKey: null == publicKey
+          ? _value.publicKey
+          : publicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as String,
+      sha256: null == sha256
+          ? _value.sha256
+          : sha256 // ignore: cast_nullable_to_non_nullable
+              as String,
+      hash160: null == hash160
+          ? _value.hash160
+          : hash160 // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$SwapTxSentiveImplCopyWith<$Res>
+    implements $SwapTxSentiveCopyWith<$Res> {
+  factory _$$SwapTxSentiveImplCopyWith(
+          _$SwapTxSentiveImpl value, $Res Function(_$SwapTxSentiveImpl) then) =
+      __$$SwapTxSentiveImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String secretKey,
+      String publicKey,
+      String value,
+      String sha256,
+      String hash160});
+}
+
+/// @nodoc
+class __$$SwapTxSentiveImplCopyWithImpl<$Res>
+    extends _$SwapTxSentiveCopyWithImpl<$Res, _$SwapTxSentiveImpl>
+    implements _$$SwapTxSentiveImplCopyWith<$Res> {
+  __$$SwapTxSentiveImplCopyWithImpl(
+      _$SwapTxSentiveImpl _value, $Res Function(_$SwapTxSentiveImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? secretKey = null,
+    Object? publicKey = null,
+    Object? value = null,
+    Object? sha256 = null,
+    Object? hash160 = null,
+  }) {
+    return _then(_$SwapTxSentiveImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      secretKey: null == secretKey
+          ? _value.secretKey
+          : secretKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      publicKey: null == publicKey
+          ? _value.publicKey
+          : publicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      value: null == value
+          ? _value.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as String,
+      sha256: null == sha256
+          ? _value.sha256
+          : sha256 // ignore: cast_nullable_to_non_nullable
+              as String,
+      hash160: null == hash160
+          ? _value.hash160
+          : hash160 // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SwapTxSentiveImpl extends _SwapTxSentive with DiagnosticableTreeMixin {
+  const _$SwapTxSentiveImpl(
+      {required this.id,
+      required this.secretKey,
+      required this.publicKey,
+      required this.value,
+      required this.sha256,
+      required this.hash160})
+      : super._();
+
+  factory _$SwapTxSentiveImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SwapTxSentiveImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String secretKey;
+  @override
+  final String publicKey;
+  @override
+  final String value;
+  @override
+  final String sha256;
+  @override
+  final String hash160;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'SwapTxSentive(id: $id, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'SwapTxSentive'))
+      ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('secretKey', secretKey))
+      ..add(DiagnosticsProperty('publicKey', publicKey))
+      ..add(DiagnosticsProperty('value', value))
+      ..add(DiagnosticsProperty('sha256', sha256))
+      ..add(DiagnosticsProperty('hash160', hash160));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SwapTxSentiveImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.secretKey, secretKey) ||
+                other.secretKey == secretKey) &&
+            (identical(other.publicKey, publicKey) ||
+                other.publicKey == publicKey) &&
+            (identical(other.value, value) || other.value == value) &&
+            (identical(other.sha256, sha256) || other.sha256 == sha256) &&
+            (identical(other.hash160, hash160) || other.hash160 == hash160));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, id, secretKey, publicKey, value, sha256, hash160);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SwapTxSentiveImplCopyWith<_$SwapTxSentiveImpl> get copyWith =>
+      __$$SwapTxSentiveImplCopyWithImpl<_$SwapTxSentiveImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SwapTxSentiveImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _SwapTxSentive extends SwapTxSentive {
+  const factory _SwapTxSentive(
+      {required final String id,
+      required final String secretKey,
+      required final String publicKey,
+      required final String value,
+      required final String sha256,
+      required final String hash160}) = _$SwapTxSentiveImpl;
+  const _SwapTxSentive._() : super._();
+
+  factory _SwapTxSentive.fromJson(Map<String, dynamic> json) =
+      _$SwapTxSentiveImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get secretKey;
+  @override
+  String get publicKey;
+  @override
+  String get value;
+  @override
+  String get sha256;
+  @override
+  String get hash160;
+  @override
+  @JsonKey(ignore: true)
+  _$$SwapTxSentiveImplCopyWith<_$SwapTxSentiveImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

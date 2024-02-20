@@ -15,6 +15,7 @@ class StorageKeys {
   static const networkFees = 'networkFees';
   static const currency = 'currency';
   static const lighting = 'lighting';
+  static const swapTxSensitive = 'swapTxSensitive';
   static const hiveEncryption = 'hiveEncryptionKey';
   static const version = 'version';
 }

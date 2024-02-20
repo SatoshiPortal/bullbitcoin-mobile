@@ -60,11 +60,11 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       txid: json['txid'] as String?,
       isSubmarine: json['isSubmarine'] as bool,
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
-      secretKey: json['secretKey'] as String,
-      publicKey: json['publicKey'] as String,
-      value: json['value'] as String,
-      sha256: json['sha256'] as String,
-      hash160: json['hash160'] as String,
+      secretKey: json['secretKey'] as String?,
+      publicKey: json['publicKey'] as String?,
+      value: json['value'] as String?,
+      sha256: json['sha256'] as String?,
+      hash160: json['hash160'] as String?,
       redeemScript: json['redeemScript'] as String,
       invoice: json['invoice'] as String,
       outAmount: json['outAmount'] as int,
@@ -104,3 +104,23 @@ const _$BBNetworkEnumMap = {
   BBNetwork.LTestnet: 'LTestnet',
   BBNetwork.LMainnet: 'LMainnet',
 };
+
+_$SwapTxSentiveImpl _$$SwapTxSentiveImplFromJson(Map<String, dynamic> json) =>
+    _$SwapTxSentiveImpl(
+      id: json['id'] as String,
+      secretKey: json['secretKey'] as String,
+      publicKey: json['publicKey'] as String,
+      value: json['value'] as String,
+      sha256: json['sha256'] as String,
+      hash160: json['hash160'] as String,
+    );
+
+Map<String, dynamic> _$$SwapTxSentiveImplToJson(_$SwapTxSentiveImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'secretKey': instance.secretKey,
+      'publicKey': instance.publicKey,
+      'value': instance.value,
+      'sha256': instance.sha256,
+      'hash160': instance.hash160,
+    };

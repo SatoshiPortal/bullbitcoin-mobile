@@ -494,7 +494,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
       final newTx = txs[idx].copyWith(swapTx: swap.swapTx);
       txs[idx] = newTx;
+
+      final swapToDelete = swaps.firstWhere((_) => _.swapTx!.id == swap.swapTx!.id);
+      swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.swapTx!.id));
       swaps.removeWhere((_) => _.swapTx!.id == swap.swapTx!.id);
+
       final updatedWallet = state.wallet!.copyWith(
         transactions: txs,
         swaps: swaps,

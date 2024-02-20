@@ -40,3 +40,9 @@ class WatchInvoiceStatus extends SwapEvent {
   final WalletBloc walletBloc;
   final Transaction tx;
 }
+
+class DeleteSensitiveSwapTx extends SwapEvent {
+  DeleteSensitiveSwapTx(this.swapId);
+
+  final String swapId;
+}
