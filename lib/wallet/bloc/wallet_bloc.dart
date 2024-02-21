@@ -485,7 +485,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   void _mergeSwapIntoTx() {
     final txs = state.wallet?.transactions.toList() ?? [];
-    final swaps = state.wallet?.swaps.toList() ?? [];
+    final swaps = state.wallet?.swaps ?? [];
+    final updatedSwaps = swaps.toList();
 
     for (final swap in swaps) {
       if (swap.swapTx?.txid == null || swap.swapTx!.txid!.isEmpty) continue;
@@ -497,11 +498,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       final swapToDelete = swaps.firstWhere((_) => _.swapTx!.id == swap.swapTx!.id);
       swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.swapTx!.id));
-      swaps.removeWhere((_) => _.swapTx!.id == swap.swapTx!.id);
+      updatedSwaps.removeWhere((_) => _.swapTx!.id == swap.swapTx!.id);
 
       final updatedWallet = state.wallet!.copyWith(
         transactions: txs,
-        swaps: swaps,
+        swaps: updatedSwaps,
       );
       add(
         UpdateWallet(
