@@ -16,6 +16,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:go_router/go_router.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 
 Future main({bool fromTest = false}) async {
@@ -122,10 +123,32 @@ class _AppLifecycleOverlayState extends State<AppLifecycleOverlay> with WidgetsB
   bool shouldBlur = false;
   final _noScreenshot = NoScreenshot.instance;
 
+  final sensitivePaths = [
+    '/home/import',
+    '/home/wallet/wallet-settings/open-backup',
+    '/home/wallet/wallet-settings/wallet-settings/backup',
+    '/home/wallet/wallet-settings/wallet-settings/test-backup',
+    '/home/wallet-settings/open-backup',
+    '/home/wallet-settings/wallet-settings/backup',
+    '/home/wallet-settings/wallet-settings/test-backup',
+  ];
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    router.routerDelegate.addListener(() {
+      final routePath = router.routerDelegate.currentConfiguration.routes
+          .map((RouteBase e) => (e as GoRoute).path)
+          .join();
+      // print(routePath);
+      if (sensitivePaths.any((path) => routePath.startsWith(path))) {
+        _noScreenshot.screenshotOff();
+      } else {
+        _noScreenshot.screenshotOn();
+      }
+    });
   }
 
   @override
@@ -136,7 +159,7 @@ class _AppLifecycleOverlayState extends State<AppLifecycleOverlay> with WidgetsB
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    _noScreenshot.screenshotOff();
+    // _noScreenshot.screenshotOff();
     setState(() {
       shouldBlur = state == AppLifecycleState.inactive ||
           state == AppLifecycleState.paused ||
