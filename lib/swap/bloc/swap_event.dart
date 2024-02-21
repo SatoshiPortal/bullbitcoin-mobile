@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:boltz_dart/boltz_dart.dart';
 
 class SwapEvent {}
 
@@ -39,6 +40,13 @@ class WatchInvoiceStatus extends SwapEvent {
 
   final WalletBloc walletBloc;
   final Transaction tx;
+}
+
+class UpdateInvoiceStatus extends SwapEvent {
+  UpdateInvoiceStatus(this.id, this.status, this.walletBloc);
+  final String id;
+  final SwapStatusResponse status;
+  final WalletBloc walletBloc;
 }
 
 class DeleteSensitiveSwapTx extends SwapEvent {
