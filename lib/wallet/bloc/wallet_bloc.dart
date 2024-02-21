@@ -484,8 +484,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }
 
   void _mergeSwapIntoTx() {
-    final txs = state.wallet?.transactions ?? [];
-    final swaps = state.wallet?.swaps ?? [];
+    final txs = state.wallet?.transactions.toList() ?? [];
+    final swaps = state.wallet?.swaps.toList() ?? [];
 
     for (final swap in swaps) {
       if (swap.swapTx?.txid == null || swap.swapTx!.txid!.isEmpty) continue;
