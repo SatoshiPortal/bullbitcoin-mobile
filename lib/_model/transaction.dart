@@ -196,11 +196,11 @@ class SwapTx with _$SwapTx {
     String? txid,
     required bool isSubmarine,
     required BBNetwork network,
-    required String secretKey,
-    required String publicKey,
-    required String value,
-    required String sha256,
-    required String hash160,
+    String? secretKey,
+    String? publicKey,
+    String? value,
+    String? sha256,
+    String? hash160,
     required String redeemScript,
     required String invoice,
     required int outAmount,
@@ -221,11 +221,6 @@ class SwapTx with _$SwapTx {
       id: swap.id,
       isSubmarine: swap.kind == SwapType.Submarine,
       network: swap.network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
-      secretKey: swap.keys.secretKey,
-      publicKey: swap.keys.publicKey,
-      value: swap.preimage.value,
-      sha256: swap.preimage.sha256,
-      hash160: swap.preimage.hash160,
       redeemScript: swap.redeemScript,
       invoice: swap.invoice,
       outAmount: swap.outAmount,
@@ -235,7 +230,7 @@ class SwapTx with _$SwapTx {
     );
   }
 
-  BtcLnBoltzSwap toBtcLnSwap() {
+  BtcLnBoltzSwap toBtcLnSwap(SwapTxSentive sentive) {
     final tx = this;
     return BtcLnBoltzSwap(
       BtcLnSwap(
@@ -249,13 +244,13 @@ class SwapTx with _$SwapTx {
         kind: SwapType.Reverse,
         network: Chain.Testnet,
         keys: KeyPair(
-          secretKey: tx.secretKey,
-          publicKey: tx.publicKey,
+          secretKey: sentive.secretKey,
+          publicKey: sentive.publicKey,
         ),
         preimage: PreImage(
-          value: tx.value,
-          sha256: tx.sha256,
-          hash160: tx.hash160,
+          value: sentive.value,
+          sha256: sentive.sha256,
+          hash160: sentive.hash160,
         ),
       ),
     );
@@ -272,6 +267,33 @@ extension SwapTxExt on SwapStatus {
       this == SwapStatus.swapExpired ||
       this == SwapStatus.invoiceExpired ||
       this == SwapStatus.invoiceFailedToPay;
+}
+
+@freezed
+class SwapTxSentive with _$SwapTxSentive {
+  const factory SwapTxSentive({
+    required String id,
+    required String secretKey,
+    required String publicKey,
+    required String value,
+    required String sha256,
+    required String hash160,
+  }) = _SwapTxSentive;
+  const SwapTxSentive._();
+
+  factory SwapTxSentive.fromBtcLnSwap(BtcLnBoltzSwap result) {
+    final swap = result.btcLnSwap;
+    return SwapTxSentive(
+      id: swap.id,
+      value: swap.preimage.value,
+      sha256: swap.preimage.sha256,
+      hash160: swap.preimage.hash160,
+      publicKey: swap.keys.publicKey,
+      secretKey: swap.keys.secretKey,
+    );
+  }
+
+  factory SwapTxSentive.fromJson(Map<String, dynamic> json) => _$SwapTxSentiveFromJson(json);
 }
 
 // String swapStatusToString(SwapStatus swap) {

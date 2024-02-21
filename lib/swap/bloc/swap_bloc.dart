@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
@@ -36,6 +34,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     on<ClaimSwap>(_onClaimSwap, transformer: concurrent());
     on<WatchInvoiceStatus>(_onWatchInvoiceStatus, transformer: concurrent());
     on<ResetToNewLnInvoice>(_onResetToNewLnInvoice);
+    on<DeleteSensitiveSwapTx>(_onDeleteSensitiveSwapTx);
   }
 
   final SettingsCubit settingsCubit;
@@ -206,7 +205,18 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     final err = await swapBoltz.watchSwap(
       swapId: swap.id,
       onUpdate: (id, status) {
+        if (!state.listeningTxs.any((_) => id == _.id)) return;
+
         final tx = state.listeningTxs.firstWhere((_) => _.id == id).copyWith(status: status);
+        emit(
+          state.copyWith(
+            listeningTxs: state.listeningTxs
+                .map(
+                  (_) => _.id == id ? tx : _,
+                )
+                .toList(),
+          ),
+        );
         final wallet = event.walletBloc.state.wallet;
         if (wallet == null) return;
 
@@ -244,7 +254,14 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     }
   }
 
-  FutureOr<void> _onResetToNewLnInvoice(ResetToNewLnInvoice event, Emitter<SwapState> emit) {
+  void _onResetToNewLnInvoice(ResetToNewLnInvoice event, Emitter<SwapState> emit) {
     emit(state.copyWith(swapTx: null));
+  }
+
+  void _onDeleteSensitiveSwapTx(
+    DeleteSensitiveSwapTx event,
+    Emitter<SwapState> emit,
+  ) async {
+    final _ = await swapBoltz.deleteSwapSensitive(id: event.swapId);
   }
 }

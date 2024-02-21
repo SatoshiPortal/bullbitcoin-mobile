@@ -79,7 +79,7 @@ Future setupLocator({bool fromTest = false}) async {
   locator.registerSingleton<WalletTx>(walletTx);
   locator.registerSingleton<WalletAddress>(walletAddress);
   locator.registerSingleton<WalletUtxo>(WalletUtxo());
-  final boltz = SwapBoltz();
+  final boltz = SwapBoltz(secureStorage: secureStorage);
   locator.registerSingleton<SwapBoltz>(boltz);
 
   final walletSync = WalletSync();

@@ -1,11 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 
 class SwapBoltz {
+  SwapBoltz({
+    required SecureStorage secureStorage,
+  }) : _secureStorage = secureStorage;
+
   final List<(String, StreamSubscription)> _subscriptions = [];
+  final SecureStorage _secureStorage;
 
   Future<(AllFees?, Err?)> getFeesAndLimits({
     required String boltzUrl,
@@ -41,6 +49,14 @@ class SwapBoltz {
         boltzUrl: boltzUrl,
         pairHash: pairHash,
       );
+      final obj = res.btcLnSwap;
+
+      final swapSensitive = SwapTxSentive.fromBtcLnSwap(res);
+      final err = await _secureStorage.saveValue(
+        key: StorageKeys.swapTxSensitive + '_' + obj.id,
+        value: jsonEncode(swapSensitive.toJson()),
+      );
+      if (err != null) throw err;
       return (res, null);
     } catch (e) {
       return (null, Err(e.toString()));
@@ -66,6 +82,15 @@ class SwapBoltz {
         boltzUrl: boltzUrl,
         pairHash: pairHash,
       );
+      final obj = res.btcLnSwap;
+
+      final swapSensitive = SwapTxSentive.fromBtcLnSwap(res);
+      final err = await _secureStorage.saveValue(
+        key: StorageKeys.swapTxSensitive + '_' + obj.id,
+        value: jsonEncode(swapSensitive.toJson()),
+      );
+      if (err != null) throw err;
+
       final swap = SwapTx.fromBtcLnSwap(res);
       return (swap, null);
     } catch (e) {
@@ -127,7 +152,15 @@ class SwapBoltz {
     required int absFee,
   }) async {
     try {
-      final swap = tx.toBtcLnSwap();
+      final (swapSentive, err) = await _secureStorage.getValue(
+        StorageKeys.swapTxSensitive + '_' + tx.id,
+      );
+      if (err != null) throw err;
+
+      final swapSensitive =
+          SwapTxSentive.fromJson(jsonDecode(swapSentive!) as Map<String, dynamic>);
+
+      final swap = tx.toBtcLnSwap(swapSensitive);
 
       final resp = await swap.claim(
         outAddress: outAddress,
@@ -145,7 +178,15 @@ class SwapBoltz {
     required int absFee,
   }) async {
     try {
-      final swap = tx.toBtcLnSwap();
+      final (swapSentive, err) = await _secureStorage.getValue(
+        StorageKeys.swapTxSensitive + '_' + tx.id,
+      );
+      if (err != null) throw err;
+
+      final swapSensitive =
+          SwapTxSentive.fromJson(jsonDecode(swapSentive!) as Map<String, dynamic>);
+
+      final swap = tx.toBtcLnSwap(swapSensitive);
 
       final resp = await swap.refund(
         outAddress: outAddress,
@@ -154,6 +195,16 @@ class SwapBoltz {
       return (resp, null);
     } catch (e) {
       return (null, Err(e.toString()));
+    }
+  }
+
+  Future<Err?> deleteSwapSensitive({required String id}) async {
+    try {
+      final err = await _secureStorage.deleteValue(StorageKeys.swapTxSensitive + '_' + id);
+      if (err != null) throw err;
+      return null;
+    } catch (e) {
+      return Err(e.toString());
     }
   }
 }
