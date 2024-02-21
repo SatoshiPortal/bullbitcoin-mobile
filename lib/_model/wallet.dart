@@ -357,6 +357,12 @@ class Wallet with _$Wallet {
     final idx = swaps.indexWhere((_) => _.swapTx != null && _.swapTx!.id == swaptx.id);
     final swapTxs = List<Transaction>.from(swaps);
 
+    if (idx == -1) {
+      if (hasExpired) return this;
+      swapTxs.add(Transaction.fromSwapTx(swaptx));
+      return copyWith(swaps: swapTxs);
+    }
+
     if (hasExpired) {
       swapTxs.removeAt(idx);
       return copyWith(swaps: swapTxs);
