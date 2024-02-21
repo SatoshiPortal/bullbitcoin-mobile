@@ -99,7 +99,15 @@ class HomeState with _$HomeState {
       for (final tx in walletTxs) txs.add(tx.copyWith(wallet: wallet));
       for (final tx in swapsTxs) if (tx.swapTx != null) txs.add(tx.copyWith(wallet: wallet));
     }
-    txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+    return _cleanandSortTxs(txs);
+  }
+
+  List<Transaction> _cleanandSortTxs(List<Transaction> txs) {
+    txs.sort((a, b) => b.timestamp.normaliseTime().compareTo(a.timestamp.normaliseTime()));
+    final zeroTxs = txs.where((tx) => tx.timestamp == 0).toList();
+    txs.removeWhere((tx) => tx.timestamp == 0);
+    txs.insertAll(0, zeroTxs);
     return txs;
   }
 
@@ -137,4 +145,14 @@ class HomeState with _$HomeState {
 
   //   return null;
   // }
+}
+
+extension Num on num {
+  int length() => toString().length;
+
+  int normaliseTime() {
+    final time = length() > 10 ? toInt() : toInt() * 1000;
+    // if (time < 10000000000) return time * 1000;
+    return time;
+  }
 }

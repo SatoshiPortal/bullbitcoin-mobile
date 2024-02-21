@@ -125,7 +125,8 @@ class Transaction with _$Transaction {
 
   String getDateTimeStr() {
     // final dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    final dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    var dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    if (dt.year == 1970) dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     if (dt.isAfter(DateTime.now().subtract(const Duration(days: 2)))) return timeago.format(dt);
     final day = dt.day.toString().length == 1 ? '0${dt.day}' : dt.day.toString();
     return months[dt.month - 1] + ' ' + day + ', ' + dt.year.toString();
