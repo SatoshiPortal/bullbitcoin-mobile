@@ -15,9 +15,10 @@ class SwapTxPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
-
     final swap = tx.swapTx;
     if (swap == null) return const SizedBox.shrink();
+
+    final hasTxid = tx.swapTx?.txid?.isNotEmpty ?? false;
 
     final amt = swap.outAmount;
     final amount = context.select((CurrencyCubit x) => x.state.getAmountInUnits(amt));

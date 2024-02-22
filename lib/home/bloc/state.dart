@@ -37,6 +37,13 @@ class HomeState with _$HomeState {
     return blocs;
   }
 
+  WalletBloc? getWalletBloc(Wallet wallet) {
+    final walletBlocs = walletBlocsFromNetwork(wallet.network);
+    final idx = walletBlocs.indexWhere((w) => w.state.wallet!.id == wallet.id);
+    if (idx == -1) return null;
+    return walletBlocs[idx];
+  }
+
   Wallet? getFirstWithSpendableAndBalance(BBNetwork network, {int amt = 0}) {
     final wallets = walletsFromNetwork(network);
     if (wallets.isEmpty) return null;

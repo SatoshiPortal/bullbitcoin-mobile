@@ -53,6 +53,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ListTransactions>(_listTransactions);
     on<GetFirstAddress>(_getFirstAddress);
     on<UpdateUtxos>(_updateUtxos);
+    on<UpdateSwapTxWithTxId>(_onUpdateSwapWithTxId);
 
     add(LoadWallet(saveDir));
   }
@@ -463,6 +464,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
     if (err != null) locator<Logger>().log(err.toString(), printToConsole: true);
     emit(state.copyWith(wallet: storageWallet));
+    await Future.delayed(500.ms);
   }
 
   void _listenToSwapTxs() async {
@@ -478,7 +480,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
               status == SwapStatus.invoiceFailedToPay ||
               status == SwapStatus.txnLockupFailed)) continue;
 
-      swapBloc.add(WatchInvoiceStatus(walletBloc: this, tx: tx));
+      swapBloc.add(WatchInvoiceStatus(tx: tx, walletBloc: this));
       await Future.delayed(const Duration(milliseconds: 50));
     }
   }
@@ -492,8 +494,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       if (swap.swapTx?.txid == null || swap.swapTx!.txid!.isEmpty) continue;
       final newTxExists = txs.any((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
       if (!newTxExists) continue;
+
       final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
-      final newTx = txs[idx].copyWith(swapTx: swap.swapTx);
+      if (idx == -1) continue;
+      final newTx = txs[idx].copyWith(
+        swapTx: swap.swapTx,
+        isSwap: true,
+        swapIndex: swap.swapIndex,
+      );
       txs[idx] = newTx;
 
       final swapToDelete = swaps.firstWhere((_) => _.swapTx!.id == swap.swapTx!.id);
@@ -512,5 +520,22 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
     }
+  }
+
+  void _onUpdateSwapWithTxId(UpdateSwapTxWithTxId event, Emitter<WalletState> emit) async {
+    final tx = event.swap.copyWith(txid: event.txid);
+    final updatedWallet = state.wallet!.updateSwapTxs(tx);
+
+    add(
+      UpdateWallet(
+        updatedWallet,
+        saveToStorage: fromStorage,
+        updateTypes: [UpdateWalletTypes.transactions],
+      ),
+    );
+
+    await Future.delayed(500.ms);
+
+    add(ListTransactions());
   }
 }
