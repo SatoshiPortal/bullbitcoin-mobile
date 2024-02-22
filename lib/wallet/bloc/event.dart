@@ -34,7 +34,7 @@ class GetFirstAddress extends WalletEvent {}
 
 class GetNewAddress extends WalletEvent {}
 
-enum UpdateWalletTypes { load, balance, transactions, addresses, settings, utxos }
+enum UpdateWalletTypes { load, balance, transactions, swaps, addresses, settings, utxos }
 
 class UpdateSwapTxWithTxId extends WalletEvent {
   UpdateSwapTxWithTxId(this.txid, this.swap);
@@ -42,3 +42,7 @@ class UpdateSwapTxWithTxId extends WalletEvent {
   final String txid;
   final SwapTx swap;
 }
+
+class MergeSwapIntoTx extends WalletEvent {}
+
+class ListenToSwapTxs extends WalletEvent {}

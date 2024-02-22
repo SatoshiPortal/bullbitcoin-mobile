@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
@@ -132,13 +130,13 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     walletBloc.add(
       UpdateWallet(
         updatedWallet,
-        updateTypes: [UpdateWalletTypes.transactions],
+        updateTypes: [UpdateWalletTypes.swaps],
       ),
     );
 
-    await Future.delayed(100.ms);
+    // await Future.delayed(100.ms);
 
-    homeCubit?.updateSelectedWallet(walletBloc);
+    // homeCubit?.updateSelectedWallet(walletBloc);
 
     add(WatchInvoiceStatus(tx: tx, walletBloc: walletBloc));
   }
@@ -207,16 +205,16 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     //   ),
     // );
 
-    // await Future.delayed(500.ms);
-
-    // homeCubit?.updateSelectedWallet(walletBloc);
-
     emit(
       state.copyWith(
         claimingSwapSwap: false,
         errClaimingSwap: '',
       ),
     );
+
+    // await Future.delayed(1000.ms);
+
+    // homeCubit?.updateSelectedWallet(walletBloc);
 
     // await Future.delayed(500.ms);
 
@@ -273,27 +271,31 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
             .toList(),
       ),
     );
-    final wallet = walletBloc.state.wallet;
-    if (wallet == null) return;
+    // final wallet = walletBloc.state.wallet;
+    // if (wallet == null) return;
 
     final close = status.status == SwapStatus.txnClaimed ||
         status.status == SwapStatus.swapExpired ||
         status.status == SwapStatus.invoiceExpired;
 
-    final updatedWallet = wallet.updateSwapTxs(tx);
-
-    walletBloc.add(
-      UpdateWallet(
-        updatedWallet,
-        updateTypes: [UpdateWalletTypes.transactions],
-      ),
-    );
-    await Future.delayed(100.ms);
-    homeCubit?.updateSelectedWallet(walletBloc);
+    // await Future.delayed(100.ms);
+    // homeCubit?.updateSelectedWallet(walletBloc);
 
     final canClaim = status.status.canClaim;
-    if (canClaim) add(ClaimSwap(walletBloc, tx));
-
+    if (canClaim)
+      add(ClaimSwap(walletBloc, tx));
+    else {
+      await Future.delayed(1000.ms);
+      final wallet = homeCubit?.state.getWalletBloc(walletBloc.state.wallet!);
+      if (wallet == null) return;
+      final updatedWallet = wallet.state.wallet!.updateSwapTxs(tx);
+      walletBloc.add(
+        UpdateWallet(
+          updatedWallet,
+          updateTypes: [UpdateWalletTypes.swaps],
+        ),
+      );
+    }
     if (close) {
       final errClose = swapBoltz.closeStream(id);
       if (errClose != null) {

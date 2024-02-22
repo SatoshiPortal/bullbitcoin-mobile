@@ -54,6 +54,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<GetFirstAddress>(_getFirstAddress);
     on<UpdateUtxos>(_updateUtxos);
     on<UpdateSwapTxWithTxId>(_onUpdateSwapWithTxId);
+    on<MergeSwapIntoTx>(_mergeSwapIntoTx);
+    on<ListenToSwapTxs>(_listenToSwapTxs);
 
     add(LoadWallet(saveDir));
   }
@@ -339,10 +341,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    await Future.delayed(100.ms);
-    _mergeSwapIntoTx();
-    await Future.delayed(100.ms);
-    _listenToSwapTxs();
+    await Future.delayed(1000.ms);
+    add(MergeSwapIntoTx());
+    // await Future.delayed(100.ms);
+    add(ListenToSwapTxs());
   }
 
   void _updateUtxos(UpdateUtxos event, Emitter<WalletState> emit) async {}
@@ -407,15 +409,21 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
             storageWallet = storageWallet!.copyWith(
               transactions: eventWallet.transactions,
             );
+
           if (eventWallet.unsignedTxs.isNotEmpty)
             storageWallet = storageWallet!.copyWith(
               unsignedTxs: eventWallet.unsignedTxs,
             );
-          if (eventWallet.swaps.isNotEmpty)
+
+        case UpdateWalletTypes.swaps:
+          if (eventWallet.swaps.isNotEmpty) {
+            final trace = StackTrace.current;
+            print(trace);
             storageWallet = storageWallet!.copyWith(
               swaps: eventWallet.swaps,
               swapTxCount: eventWallet.swapTxCount,
             );
+          }
 
         case UpdateWalletTypes.addresses:
           if (eventWallet.myAddressBook.isNotEmpty)
@@ -467,7 +475,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     await Future.delayed(500.ms);
   }
 
-  void _listenToSwapTxs() async {
+  void _listenToSwapTxs(ListenToSwapTxs event, Emitter<WalletState> emit) async {
     final swapTxs = state.allSwapTxs();
     for (final tx in swapTxs) {
       if (tx.swapTx == null) continue;
@@ -485,41 +493,20 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
   }
 
-  void _mergeSwapIntoTx() {
-    final txs = state.wallet?.transactions.toList() ?? [];
-    final swaps = state.wallet?.swaps ?? [];
-    final updatedSwaps = swaps.toList();
-
-    for (final swap in swaps) {
-      if (swap.swapTx?.txid == null || swap.swapTx!.txid!.isEmpty) continue;
-      final newTxExists = txs.any((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
-      if (!newTxExists) continue;
-
-      final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
-      if (idx == -1) continue;
-      final newTx = txs[idx].copyWith(
-        swapTx: swap.swapTx,
-        isSwap: true,
-        swapIndex: swap.swapIndex,
-      );
-      txs[idx] = newTx;
-
-      final swapToDelete = swaps.firstWhere((_) => _.swapTx!.id == swap.swapTx!.id);
-      swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.swapTx!.id));
-      updatedSwaps.removeWhere((_) => _.swapTx!.id == swap.swapTx!.id);
-
-      final updatedWallet = state.wallet!.copyWith(
-        transactions: txs,
-        swaps: updatedSwaps,
-      );
-      add(
-        UpdateWallet(
-          updatedWallet,
-          saveToStorage: fromStorage,
-          updateTypes: [UpdateWalletTypes.transactions],
-        ),
-      );
+  void _mergeSwapIntoTx(MergeSwapIntoTx event, Emitter<WalletState> emit) async {
+    final (updatedWallet, err) = await walletTransaction.mergeSwapTxIntoTx(wallet: state.wallet!);
+    if (err != null) {
+      emit(state.copyWith(errLoadingWallet: err.toString()));
+      return;
     }
+
+    add(
+      UpdateWallet(
+        updatedWallet!,
+        saveToStorage: fromStorage,
+        updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.swaps],
+      ),
+    );
   }
 
   void _onUpdateSwapWithTxId(UpdateSwapTxWithTxId event, Emitter<WalletState> emit) async {
@@ -530,12 +517,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       UpdateWallet(
         updatedWallet,
         saveToStorage: fromStorage,
-        updateTypes: [UpdateWalletTypes.transactions],
+        updateTypes: [UpdateWalletTypes.swaps],
       ),
     );
 
     await Future.delayed(500.ms);
 
-    add(ListTransactions());
+    // add(ListTransactions());
   }
 }

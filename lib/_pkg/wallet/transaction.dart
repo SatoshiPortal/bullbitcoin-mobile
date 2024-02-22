@@ -92,10 +92,50 @@ class WalletTx {
         wallet,
         Err(
           e.message,
-          title: 'Error occurred while adding unsigned transaction',
+          title: 'Error occurred while adding swap transaction',
           solution: 'Please try again.',
         )
       ); // returning original wallet in case of error
+    }
+  }
+
+  Future<(Wallet?, Err?)> mergeSwapTxIntoTx({
+    required Wallet wallet,
+  }) async {
+    try {
+      final txs = wallet.transactions.toList();
+      final swaps = wallet.swaps;
+      final updatedSwaps = swaps.toList();
+
+      for (final swap in swaps) {
+        if (swap.swapTx?.txid == null || swap.swapTx!.txid!.isEmpty) continue;
+        final newTxExists = txs.any((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
+        if (!newTxExists) continue;
+
+        final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
+        if (idx == -1) continue;
+        final newTx = txs[idx].copyWith(
+          swapTx: swap.swapTx,
+          isSwap: true,
+          swapIndex: swap.swapIndex,
+        );
+        txs[idx] = newTx;
+
+        // final swapToDelete = swaps.firstWhere((_) => _.swapTx!.id == swap.swapTx!.id);
+        // swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.swapTx!.id));
+        updatedSwaps.removeWhere((_) => _.swapTx!.id == swap.swapTx!.id);
+      }
+
+      if (swaps.length == updatedSwaps.length) return (null, Err('No changes', expected: true));
+
+      final updatedWallet = wallet.copyWith(
+        transactions: txs,
+        swaps: updatedSwaps,
+      );
+
+      return (updatedWallet, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
     }
   }
 
@@ -140,6 +180,9 @@ class WalletTx {
           bdkTx: tx,
           rbfEnabled: storedTx?.rbfEnabled ?? false,
           outAddrs: storedTx?.outAddrs ?? [],
+          swapTx: storedTx?.swapTx,
+          swapIndex: storedTx?.swapIndex,
+          isSwap: storedTx?.isSwap ?? false,
         );
         // var outAddrs;
         // var inAddres;
