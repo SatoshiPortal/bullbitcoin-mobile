@@ -235,50 +235,88 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     }
   }
 
-  void _onUpdateOrClaimSwap(UpdateOrClaimSwap event, Emitter<SwapState> emit) async {
+  FutureOr<void> _onUpdateOrClaimSwap(UpdateOrClaimSwap event, Emitter<SwapState> emit) async {
     final walletBloc = homeCubit.state.getWalletBloc(event.walletBloc.state.wallet!);
     if (walletBloc == null) return;
+    print('::: 1');
 
     final status = event.status;
     final swapTx = event.swapTx;
 
     if (status == null || swapTx == null) {
+      print('::: 2');
+
       final wallet = walletBloc.state.wallet;
       if (wallet == null) return;
       final (updatedWallet, err) = await walletTransaction.mergeSwapTxIntoTx(wallet: wallet);
       if (err != null) {
+        print('::: 2-1');
+
         emit(state.copyWith(errWatchingInvoice: err.toString()));
         return;
       }
+      print('=::: 3');
       walletBloc.add(
         UpdateWallet(
           updatedWallet!,
           updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.swaps],
         ),
       );
+      print('::: 4');
+
       await Future.delayed(500.ms);
+      print('::: 5');
+
       homeCubit.updateSelectedWallet(walletBloc);
+      print('::: 6');
+
       await Future.delayed(500.ms);
+      print('>::: 7');
+
       return;
     }
 
+    print('::: 8');
+
     final canClaim = status.status.canClaim;
     if (!canClaim) {
+      print('::: 9');
+
       await Future.delayed(1000.ms);
+      print('::: 10');
       final wallet = homeCubit.state.getWalletBloc(walletBloc.state.wallet!);
+
       if (wallet == null) return;
-      final updatedWallet = wallet.state.wallet!.updateSwapTxs(swapTx);
+      print('::: 11');
+
+      final (updatedWallet, err) = wallet.state.wallet!.updateSwapTxs(swapTx);
+      if (err != null) {
+        print('::: 11-1 - $err');
+
+        emit(state.copyWith(errWatchingInvoice: err.toString()));
+        return;
+      }
+      print('=::: 12');
+
       walletBloc.add(
         UpdateWallet(
-          updatedWallet,
+          updatedWallet!,
           updateTypes: [UpdateWalletTypes.swaps],
         ),
       );
+      print('::: 13');
+
       await Future.delayed(500.ms);
       homeCubit.updateSelectedWallet(walletBloc);
+      print('::: 14');
+
       await Future.delayed(500.ms);
+      print('>::: 15');
+
       return;
     }
+
+    print('::: 16');
 
     emit(state.copyWith(claimingSwapSwap: true, errClaimingSwap: ''));
 
@@ -293,14 +331,22 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       return;
     }
 
+    print('::: 17');
+
     final (fees, errFees) = await swapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
       outAmount: swapTx.outAmount,
     );
+    print('::: 18');
+
     if (errFees != null) {
+      print('::: 19');
+
       emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: errFees.toString()));
       return;
     }
+    print('::: 20');
+
     final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
     if (claimFeesEstimate == null) {
       emit(
@@ -311,36 +357,53 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       );
       return;
     }
+    print('::: 21');
 
     final (txid, err) = await swapBoltz.claimSwap(
       tx: swapTx,
       outAddress: address,
       absFee: claimFeesEstimate,
     );
+    print('::: 22');
     if (err != null) {
+      print('::: 23 - $err');
       emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: err.toString()));
       return;
     }
 
+    print('::: 24');
     final tx = swapTx.copyWith(txid: txid);
-    final updatedWallet = walletBloc.state.wallet!.updateSwapTxs(tx);
+    final (updatedWallet, err1) = walletBloc.state.wallet!.updateSwapTxs(tx);
+    if (err1 != null) {
+      print('::: 24-1 - $err1');
 
+      emit(state.copyWith(errClaimingSwap: err1.toString()));
+      return;
+    }
+
+    print('=::: 25');
     walletBloc.add(
       UpdateWallet(
-        updatedWallet,
+        updatedWallet!,
         updateTypes: [UpdateWalletTypes.swaps],
       ),
     );
+    print('::: 26');
     emit(
       state.copyWith(
         claimingSwapSwap: false,
         errClaimingSwap: '',
       ),
     );
+    print('::: 27');
     await Future.delayed(500.ms);
+    print('::: 28');
 
     homeCubit.updateSelectedWallet(walletBloc);
+    print('::: 29');
+
     await Future.delayed(500.ms);
+    print('>::: 30');
   }
 
   void _onDeleteSensitiveSwapTx(

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:crypto/crypto.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -348,29 +349,38 @@ class Wallet with _$Wallet {
 
   int balanceWithoutFrozenUTXOs() => (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
 
-  Wallet updateSwapTxs(SwapTx swaptx) {
+  (Wallet?, Err?) updateSwapTxs(SwapTx swaptx) {
     final status = swaptx.status?.status;
-    if (status == null) return this;
-
-    final hasExpired = swaptx.status!.status.hasExpired;
+    if (status == null) return (null, Err('No status changed'));
 
     final idx = swaps.indexWhere((_) => _.swapTx != null && _.swapTx!.id == swaptx.id);
+    if (idx == -1) return (null, Err('No swapTx found'));
+
+    final storedTx = swaps[idx];
+    final storedSwap = storedTx.swapTx;
+    if (storedSwap == null) return (null, Err('No swapTx found'));
+    final storedStatus = storedSwap.status?.status;
+    if (storedStatus != null && status == storedStatus) return (null, Err('No status changed'));
+
     final swapTxs = List<Transaction>.from(swaps);
 
-    if (idx == -1) {
-      if (hasExpired) return this;
-      swapTxs.add(Transaction.fromSwapTx(swaptx));
-      return copyWith(swaps: swapTxs);
-    }
-
+    final hasExpired = swaptx.status!.status.hasExpired;
     if (hasExpired) {
       swapTxs.removeAt(idx);
-      return copyWith(swaps: swapTxs);
+      return (copyWith(swaps: swapTxs), null);
     }
 
-    final tx = swaps[idx].copyWith(swapTx: swaptx);
+    final updatedSwapTx = swaptx.copyWith(
+      status: swaptx.status,
+      txid: storedSwap.txid ?? swaptx.txid,
+    );
+    final tx = swaps[idx].copyWith(
+      swapTx: updatedSwapTx,
+      txid: storedSwap.txid ?? swaptx.txid ?? storedTx.txid,
+      swapIndex: storedTx.swapIndex,
+    );
     swapTxs[idx] = tx;
-    return copyWith(swaps: swapTxs);
+    return (copyWith(swaps: swapTxs), null);
   }
 }
 
