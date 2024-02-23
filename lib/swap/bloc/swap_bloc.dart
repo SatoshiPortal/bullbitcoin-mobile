@@ -156,6 +156,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     final swapTxsToWatch = <Transaction>[];
     for (final tx in swapTxs) {
       if (tx.swapTx == null) continue;
+      final exists = state.listeningTxs.any((_) => tx.swapTx!.id == _.id);
+      if (exists) continue;
       final status = tx.swapTx!.status?.status;
       if (status != null &&
           (status == SwapStatus.invoiceSettled ||

@@ -138,11 +138,7 @@ class SwapBoltz {
     try {
       final api = await BoltzApi.newBoltzApi();
       final exists = _walletSubscriptions.any((element) => element.$1 == walletId);
-      if (exists) {
-        final sub = _walletSubscriptions.firstWhere((element) => element.$1 == walletId).$2;
-        await sub.cancel();
-        _walletSubscriptions.removeWhere((element) => element.$1 == walletId);
-      }
+      if (exists) _walletSubscriptions.removeWhere((element) => element.$1 == walletId);
 
       _walletSubscriptions.add(
         (
