@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 
 class WalletEvent {}
@@ -35,14 +34,3 @@ class GetFirstAddress extends WalletEvent {}
 class GetNewAddress extends WalletEvent {}
 
 enum UpdateWalletTypes { load, balance, transactions, swaps, addresses, settings, utxos }
-
-class UpdateSwapTxWithTxId extends WalletEvent {
-  UpdateSwapTxWithTxId(this.txid, this.swap);
-
-  final String txid;
-  final SwapTx swap;
-}
-
-class MergeSwapIntoTx extends WalletEvent {}
-
-class ListenToSwapTxs extends WalletEvent {}

@@ -24,10 +24,11 @@ class SaveSwapInvoiceToWallet extends SwapEvent {
   final String? label;
 }
 
-class ClaimSwap extends SwapEvent {
-  ClaimSwap(this.walletBloc, this.swapTx);
+class UpdateOrClaimSwap extends SwapEvent {
+  UpdateOrClaimSwap({required this.walletBloc, this.swapTx, this.status});
 
-  final SwapTx swapTx;
+  final SwapTx? swapTx;
+  final SwapStatusResponse? status;
   final WalletBloc walletBloc;
 }
 
@@ -36,10 +37,19 @@ class RefundSwap extends SwapEvent {}
 class ResetToNewLnInvoice extends SwapEvent {}
 
 class WatchInvoiceStatus extends SwapEvent {
-  WatchInvoiceStatus({required this.walletBloc, required this.tx});
+  WatchInvoiceStatus({
+    required this.walletBloc,
+    required this.tx,
+  });
 
   final WalletBloc walletBloc;
   final Transaction tx;
+}
+
+class WatchWalletTxs extends SwapEvent {
+  WatchWalletTxs({required this.walletBloc});
+
+  final WalletBloc walletBloc;
 }
 
 class UpdateInvoiceStatus extends SwapEvent {

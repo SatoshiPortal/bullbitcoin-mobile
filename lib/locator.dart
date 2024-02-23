@@ -125,6 +125,7 @@ Future setupLocator({bool fromTest = false}) async {
     networkCubit: networkCubit,
     swapBoltz: boltz,
     walletTx: walletTx,
+    walletTransaction: walletTx,
   );
 
   final homeCubit = HomeCubit(
