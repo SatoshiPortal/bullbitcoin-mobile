@@ -13,6 +13,8 @@ class SwapBoltz {
   }) : _secureStorage = secureStorage;
 
   final List<(String, StreamSubscription)> _subscriptions = [];
+  final List<(String, StreamSubscription)> _walletSubscriptions = [];
+
   final SecureStorage _secureStorage;
 
   Future<(AllFees?, Err?)> getFeesAndLimits({
@@ -125,6 +127,52 @@ class SwapBoltz {
     }
   }
 
+  Future<Err?> watchSwapMultiple({
+    required List<String> swapIds,
+    required String walletId,
+    required void Function(
+      String id,
+      SwapStatusResponse status,
+    ) onUpdate,
+  }) async {
+    try {
+      final api = await BoltzApi.newBoltzApi();
+      final exists = _walletSubscriptions.any((element) => element.$1 == walletId);
+      if (exists) {
+        final sub = _walletSubscriptions.firstWhere((element) => element.$1 == walletId).$2;
+        await sub.cancel();
+        _walletSubscriptions.removeWhere((element) => element.$1 == walletId);
+      }
+
+      _walletSubscriptions.add(
+        (
+          walletId,
+          api.getSwapStatusStreamMultiple(swapIds).listen((event) {
+            onUpdate(event.id, event);
+          })
+        ),
+      );
+
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
+
+  Err? closeWalletStream(String id) {
+    try {
+      final exists = _walletSubscriptions.any((element) => element.$1 == id);
+      if (!exists) throw 'No subscription for wallet $id';
+
+      final sub = _walletSubscriptions.firstWhere((element) => element.$1 == id).$2;
+      sub.cancel();
+      _walletSubscriptions.removeWhere((element) => element.$1 == id);
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
+
   Err? closeStream(String id) {
     try {
       final exists = _subscriptions.any((element) => element.$1 == id);
@@ -143,7 +191,11 @@ class SwapBoltz {
     for (final sub in _subscriptions) {
       sub.$2.cancel();
     }
+    for (final sub in _walletSubscriptions) {
+      sub.$2.cancel();
+    }
     _subscriptions.clear();
+    _walletSubscriptions.clear();
   }
 
   Future<(String?, Err?)> claimSwap({

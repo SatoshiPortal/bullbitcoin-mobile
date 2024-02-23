@@ -139,11 +139,10 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       ),
     );
 
-    // await Future.delayed(100.ms);
-
-    // homeCubit?.updateSelectedWallet(walletBloc);
-
-    add(WatchInvoiceStatus(tx: tx, walletBloc: walletBloc));
+    await Future.delayed(500.ms);
+    homeCubit.updateSelectedWallet(walletBloc);
+    await Future.delayed(500.ms);
+    add(WatchWalletTxs(walletBloc: walletBloc));
   }
 
   void _onResetToNewLnInvoice(ResetToNewLnInvoice event, Emitter<SwapState> emit) =>
@@ -154,6 +153,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (walletBloc == null) return;
 
     final swapTxs = walletBloc.state.allSwapTxs();
+    final swapTxsToWatch = <Transaction>[];
     for (final tx in swapTxs) {
       if (tx.swapTx == null) continue;
       final status = tx.swapTx!.status?.status;
@@ -165,23 +165,30 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
               status == SwapStatus.invoiceFailedToPay ||
               status == SwapStatus.txnLockupFailed)) continue;
 
-      add(WatchInvoiceStatus(tx: tx, walletBloc: walletBloc));
+      swapTxsToWatch.add(tx);
     }
+    if (swapTxsToWatch.isEmpty) return;
+    add(WatchInvoiceStatus(txs: swapTxsToWatch, walletBloc: walletBloc));
   }
 
   void _onWatchInvoiceStatus(WatchInvoiceStatus event, Emitter<SwapState> emit) async {
-    final swap = event.tx.swapTx;
-    if (swap == null) return;
+    final txs = event.txs;
+    for (final tx in txs) {
+      final swap = tx.swapTx;
+      if (swap == null) return;
+      final exists = state.listeningTxs.any((_) => swap.id == _.id);
+      if (exists) continue;
+      emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
+    }
 
-    if (state.listeningTxs.any((_) => swap.id == _.id)) return;
-
-    emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
-    final err = await swapBoltz.watchSwap(
-      swapId: swap.id,
+    final err = await swapBoltz.watchSwapMultiple(
+      walletId: event.walletBloc.state.wallet!.id,
+      swapIds: txs.map((_) => _.swapTx!.id).toList(),
       onUpdate: (id, status) {
         add(UpdateInvoiceStatus(id, status, event.walletBloc));
       },
     );
+
     if (err != null) {
       emit(state.copyWith(errWatchingInvoice: err.toString()));
       return;

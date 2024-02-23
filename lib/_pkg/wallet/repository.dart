@@ -98,7 +98,7 @@ class WalletRepository {
           if (err != null) continue;
           wallets.add(wallet!);
         } catch (e) {
-          // print(e);
+          print(e);
         }
       }
 

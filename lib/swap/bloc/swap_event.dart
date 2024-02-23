@@ -39,11 +39,11 @@ class ResetToNewLnInvoice extends SwapEvent {}
 class WatchInvoiceStatus extends SwapEvent {
   WatchInvoiceStatus({
     required this.walletBloc,
-    required this.tx,
+    required this.txs,
   });
 
   final WalletBloc walletBloc;
-  final Transaction tx;
+  final List<Transaction> txs;
 }
 
 class WatchWalletTxs extends SwapEvent {

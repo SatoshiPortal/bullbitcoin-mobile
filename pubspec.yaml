@@ -73,10 +73,10 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart.git
       ref: trunk
-  lwk_dart: 
-    git:
-      url: https://github.com/SatoshiPortal/lwk-dart
-      ref: trunk
+  # lwk_dart: 
+  #   git:
+  #     url: https://github.com/SatoshiPortal/lwk-dart
+  #     ref: trunk
       
   
   
