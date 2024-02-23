@@ -290,7 +290,10 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       if (wallet == null) return;
       print('::: 11');
 
-      final (updatedWallet, err) = wallet.state.wallet!.updateSwapTxs(swapTx);
+      final (updatedWallet, err) = walletTransaction.updateSwapTxs(
+        wallet: wallet.state.wallet!,
+        swapTx: swapTx,
+      );
       if (err != null) {
         print('::: 11-1 - $err');
 
@@ -374,7 +377,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
 
     print('::: 24');
     final tx = swapTx.copyWith(txid: txid);
-    final (updatedWallet, err1) = walletBloc.state.wallet!.updateSwapTxs(tx);
+    final (updatedWallet, err1) =
+        walletTransaction.updateSwapTxs(swapTx: tx, wallet: walletBloc.state.wallet!);
     if (err1 != null) {
       print('::: 24-1 - $err1');
 
