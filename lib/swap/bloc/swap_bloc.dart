@@ -248,7 +248,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
 
       final wallet = walletBloc.state.wallet;
       if (wallet == null) return;
-      final (updatedWallet, err) = await walletTransaction.mergeSwapTxIntoTx(wallet: wallet);
+      final (updatedWallet, err) =
+          await walletTransaction.mergeSwapTxIntoTx(wallet: wallet, swapBloc: this);
       if (err != null) {
         print('::: 2-1');
 

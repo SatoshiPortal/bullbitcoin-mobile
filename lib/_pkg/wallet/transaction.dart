@@ -7,6 +7,8 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
+import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
+import 'package:bb_mobile/swap/bloc/swap_event.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:hex/hex.dart';
 
@@ -101,6 +103,7 @@ class WalletTx {
 
   Future<(Wallet?, Err?)> mergeSwapTxIntoTx({
     required Wallet wallet,
+    required SwapBloc swapBloc,
   }) async {
     try {
       final txs = wallet.transactions.toList();
@@ -121,8 +124,8 @@ class WalletTx {
         );
         txs[idx] = newTx;
 
-        // final swapToDelete = swaps.firstWhere((_) => _.swapTx!.id == swap.swapTx!.id);
-        // swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.swapTx!.id));
+        final swapToDelete = swaps.firstWhere((_) => _.swapTx!.id == swap.swapTx!.id);
+        swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.swapTx!.id));
         updatedSwaps.removeWhere((_) => _.swapTx!.id == swap.swapTx!.id);
       }
 

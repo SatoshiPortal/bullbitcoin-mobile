@@ -374,12 +374,12 @@ class Wallet with _$Wallet {
       status: swaptx.status,
       txid: storedSwap.txid ?? swaptx.txid,
     );
-    final tx = swaps[idx].copyWith(
+    final updatedTx = storedTx.copyWith(
       swapTx: updatedSwapTx,
       txid: storedSwap.txid ?? swaptx.txid ?? storedTx.txid,
       swapIndex: storedTx.swapIndex,
     );
-    swapTxs[idx] = tx;
+    swapTxs[idx] = updatedTx;
     return (copyWith(swaps: swapTxs), null);
   }
 }
