@@ -324,6 +324,7 @@ class Transactions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final __ = context.select((HomeCubit _) => _.state.walletBlocs);
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final txs = context.select((HomeCubit cubit) => cubit.state.allTxsWithSwaps(network));
 

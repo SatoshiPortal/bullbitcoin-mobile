@@ -35,7 +35,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   }) : super(const SwapState()) {
     on<CreateBtcLightningSwap>(_onCreateBtcLightningSwap);
     on<SaveSwapInvoiceToWallet>(_onSaveSwapInvoiceToWallet);
-    on<WatchInvoiceStatus>(_onWatchInvoiceStatus, transformer: concurrent());
+    on<WatchInvoiceStatus>(_onWatchInvoiceStatus);
     on<UpdateOrClaimSwap>(_onUpdateOrClaimSwap, transformer: sequential());
     on<UpdateInvoiceStatus>(_onUpdateInvoiceStatus);
     on<ResetToNewLnInvoice>(_onResetToNewLnInvoice);
@@ -203,6 +203,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
 
     final id = event.id;
     final status = event.status;
+    print('UpdateInvoiceStatus: $id - ${status.status}');
     if (!state.listeningTxs.any((_) => id == _.id)) return;
 
     final tx = state.listeningTxs.firstWhere((_) => _.id == id).copyWith(status: status);
@@ -330,13 +331,13 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
         updateTypes: [UpdateWalletTypes.swaps],
       ),
     );
-
     emit(
       state.copyWith(
         claimingSwapSwap: false,
         errClaimingSwap: '',
       ),
     );
+    await Future.delayed(500.ms);
 
     homeCubit.updateSelectedWallet(walletBloc);
     await Future.delayed(500.ms);

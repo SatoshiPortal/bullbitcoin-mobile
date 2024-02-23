@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bb_mobile/_model/wallet.dart';
@@ -67,7 +68,8 @@ class WalletRepository {
     try {
       final (jsn, err) = await hiveStore.getValue(walletHashId);
       if (err != null) throw err;
-      final obj = jsonDecode(jsn!) as Map<String, dynamic>;
+      log(jsn!);
+      final obj = jsonDecode(jsn) as Map<String, dynamic>;
       final wallet = Wallet.fromJson(obj);
       return (wallet, null);
     } catch (e) {
