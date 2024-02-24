@@ -53,7 +53,7 @@ class SwapBoltz {
       );
       final obj = res.btcLnSwap;
 
-      final swapSensitive = SwapTxSentive.fromBtcLnSwap(res);
+      final swapSensitive = SwapTxSensitive.fromBtcLnSwap(res);
       final err = await _secureStorage.saveValue(
         key: StorageKeys.swapTxSensitive + '_' + obj.id,
         value: jsonEncode(swapSensitive.toJson()),
@@ -86,7 +86,7 @@ class SwapBoltz {
       );
       final obj = res.btcLnSwap;
 
-      final swapSensitive = SwapTxSentive.fromBtcLnSwap(res);
+      final swapSensitive = SwapTxSensitive.fromBtcLnSwap(res);
       final err = await _secureStorage.saveValue(
         key: StorageKeys.swapTxSensitive + '_' + obj.id,
         value: jsonEncode(swapSensitive.toJson()),
@@ -206,7 +206,7 @@ class SwapBoltz {
       if (err != null) throw err;
 
       final swapSensitive =
-          SwapTxSentive.fromJson(jsonDecode(swapSentive!) as Map<String, dynamic>);
+          SwapTxSensitive.fromJson(jsonDecode(swapSentive!) as Map<String, dynamic>);
 
       final swap = tx.toBtcLnSwap(swapSensitive);
 
@@ -232,7 +232,7 @@ class SwapBoltz {
       if (err != null) throw err;
 
       final swapSensitive =
-          SwapTxSentive.fromJson(jsonDecode(swapSentive!) as Map<String, dynamic>);
+          SwapTxSensitive.fromJson(jsonDecode(swapSentive!) as Map<String, dynamic>);
 
       final swap = tx.toBtcLnSwap(swapSensitive);
 

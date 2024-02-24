@@ -36,13 +36,13 @@ class WalletState with _$WalletState {
 
   int balanceSats() => wallet?.balance ?? 0;
 
-  List<Transaction> allSwapTxs() {
+  List<SwapTx> allSwapTxs() {
     if (wallet == null) return [];
 
-    final txs = wallet!.transactions.where((tx) => tx.swapTx != null).toList();
-    final swaps = wallet!.swaps.where((tx) => tx.swapTx != null).toList();
+    // final txs = wallet!.transactions.where((tx) => tx.swapTx != null).toList();
+    // final swaps = wallet!.swaps.where((tx) => tx.swapTx != null).toList();
 
-    final allTxs = txs + swaps;
+    final allTxs = wallet!.swaps;
     return allTxs;
   }
 }

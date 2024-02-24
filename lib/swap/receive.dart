@@ -82,17 +82,15 @@ class SwapTxList extends StatelessWidget {
 class SwapTxItem extends StatelessWidget {
   const SwapTxItem({super.key, required this.tx});
 
-  final Transaction tx;
+  final SwapTx tx;
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = tx.swapTx;
-    if (swapTx == null) return const SizedBox.shrink();
+    final swapTx = tx;
 
-    final time = tx.getDateTimeStr();
     final invoice = swapTx.splitInvoice();
     final amount = swapTx.outAmount.toString() + ' sats';
-    final idx = tx.swapIndex?.toString() ?? '00';
+    final idx = tx.keyIndex?.toString() ?? '0';
     final status = swapTx.status?.toString() ?? '';
 
     return Container(
@@ -117,7 +115,7 @@ class SwapTxItem extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BBText.bodySmall(time),
+                // BBText.bodySmall(time),
                 BBText.bodySmall('invoice no. ' + idx),
               ],
             ),
@@ -131,23 +129,21 @@ class SwapTxItem extends StatelessWidget {
 class _InvoiceQRPopup extends StatelessWidget {
   const _InvoiceQRPopup({required this.tx});
 
-  static Future openPopUp(BuildContext context, Transaction tx) {
+  static Future openPopUp(BuildContext context, SwapTx tx) {
     return showBBBottomSheet(
       context: context,
       child: _InvoiceQRPopup(tx: tx),
     );
   }
 
-  final Transaction tx;
+  final SwapTx tx;
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = tx.swapTx;
-    if (swapTx == null) return const SizedBox.shrink();
+    final swapTx = tx;
 
-    final time = tx.getDateTimeStr();
     final amount = swapTx.outAmount.toString() + ' sats';
-    final idx = tx.swapIndex?.toString() ?? '00';
+    final idx = tx.keyIndex?.toString() ?? '0';
     final status = swapTx.status?.toString() ?? '';
 
     return Padding(
@@ -171,7 +167,7 @@ class _InvoiceQRPopup extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  BBText.bodySmall(time),
+                  // BBText.bodySmall(time),
                   BBText.bodySmall('invoice no. ' + idx),
                 ],
               ),

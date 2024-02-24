@@ -28,7 +28,6 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
           ? null
           : Wallet.fromJson(json['wallet'] as Map<String, dynamic>),
       isSwap: json['isSwap'] as bool? ?? false,
-      swapIndex: json['swapIndex'] as int?,
       swapTx: json['swapTx'] == null
           ? null
           : SwapTx.fromJson(json['swapTx'] as Map<String, dynamic>),
@@ -51,18 +50,17 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'outAddrs': instance.outAddrs,
       'wallet': instance.wallet,
       'isSwap': instance.isSwap,
-      'swapIndex': instance.swapIndex,
       'swapTx': instance.swapTx,
     };
 
 _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       id: json['id'] as String,
       txid: json['txid'] as String?,
+      keyIndex: json['keyIndex'] as int?,
       isSubmarine: json['isSubmarine'] as bool,
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
       secretKey: json['secretKey'] as String?,
       publicKey: json['publicKey'] as String?,
-      value: json['value'] as String?,
       sha256: json['sha256'] as String?,
       hash160: json['hash160'] as String?,
       redeemScript: json['redeemScript'] as String,
@@ -81,11 +79,11 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'txid': instance.txid,
+      'keyIndex': instance.keyIndex,
       'isSubmarine': instance.isSubmarine,
       'network': _$BBNetworkEnumMap[instance.network]!,
       'secretKey': instance.secretKey,
       'publicKey': instance.publicKey,
-      'value': instance.value,
       'sha256': instance.sha256,
       'hash160': instance.hash160,
       'redeemScript': instance.redeemScript,
@@ -105,8 +103,9 @@ const _$BBNetworkEnumMap = {
   BBNetwork.LMainnet: 'LMainnet',
 };
 
-_$SwapTxSentiveImpl _$$SwapTxSentiveImplFromJson(Map<String, dynamic> json) =>
-    _$SwapTxSentiveImpl(
+_$SwapTxSensitiveImpl _$$SwapTxSensitiveImplFromJson(
+        Map<String, dynamic> json) =>
+    _$SwapTxSensitiveImpl(
       id: json['id'] as String,
       secretKey: json['secretKey'] as String,
       publicKey: json['publicKey'] as String,
@@ -115,7 +114,8 @@ _$SwapTxSentiveImpl _$$SwapTxSentiveImplFromJson(Map<String, dynamic> json) =>
       hash160: json['hash160'] as String,
     );
 
-Map<String, dynamic> _$$SwapTxSentiveImplToJson(_$SwapTxSentiveImpl instance) =>
+Map<String, dynamic> _$$SwapTxSensitiveImplToJson(
+        _$SwapTxSensitiveImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'secretKey': instance.secretKey,

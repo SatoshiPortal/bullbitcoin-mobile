@@ -67,23 +67,23 @@ class WalletTx {
   }
 
   Future<(Wallet, Err?)> addSwapTxToWallet({
-    required Transaction transaction,
+    required SwapTx swapTx,
     required Wallet wallet,
   }) async {
     try {
-      final swaps = List<Transaction>.from(wallet.swaps);
+      final swaps = List<SwapTx>.from(wallet.swaps);
       final index = swaps.indexWhere(
-        (tx) => tx.txid == transaction.txid,
+        (swap) => swap.id == swapTx.id,
       );
 
-      List<Transaction> updatedSwaps;
+      List<SwapTx> updatedSwaps;
 
       if (index != -1) {
-        updatedSwaps = wallet.swaps.map((tx) {
-          return tx.txid == transaction.txid ? transaction : tx;
+        updatedSwaps = wallet.swaps.map((swap) {
+          return swap.id == swapTx.id ? swapTx : swap;
         }).toList();
       } else {
-        updatedSwaps = List.from(wallet.swaps)..add(transaction);
+        updatedSwaps = List.from(wallet.swaps)..add(swapTx);
       }
 
       final updatedWallet = wallet.copyWith(swaps: updatedSwaps);
@@ -106,33 +106,27 @@ class WalletTx {
     final status = swapTx.status?.status;
     if (status == null) return (null, Err('No status changed'));
 
-    final idx = swaps.indexWhere((_) => _.swapTx != null && _.swapTx!.id == swapTx.id);
+    final idx = swaps.indexWhere((_) => _.id == swapTx.id);
     if (idx == -1) return (null, Err('No swapTx found'));
 
-    final storedTx = swaps[idx];
-    final storedSwap = storedTx.swapTx;
-    if (storedSwap == null) return (null, Err('No swapTx found'));
+    final storedSwap = swaps[idx];
     final storedStatus = storedSwap.status?.status;
     if (storedStatus != null && status == storedStatus) return (null, Err('No status changed'));
 
-    final swapTxs = List<Transaction>.from(swaps);
+    final swapTxs = List<SwapTx>.from(swaps);
 
     final hasExpired = swapTx.status!.status.hasExpired;
-    if (hasExpired) {
+    final hasSettled = swapTx.status!.status.hasSettled;
+    if (hasExpired || hasSettled) {
       swapTxs.removeAt(idx);
       return (wallet.copyWith(swaps: swapTxs), null);
     }
 
-    final updatedSwapTx = swapTx.copyWith(
-      status: swapTx.status,
-      txid: storedSwap.txid ?? swapTx.txid,
+    final updatedSwapTx = storedSwap.copyWith(
+      txid: storedSwap.txid ?? swapTx.txid ?? storedSwap.txid,
+      keyIndex: storedSwap.keyIndex,
     );
-    final updatedTx = storedTx.copyWith(
-      swapTx: updatedSwapTx,
-      txid: storedSwap.txid ?? swapTx.txid ?? storedTx.txid,
-      swapIndex: storedTx.swapIndex,
-    );
-    swapTxs[idx] = updatedTx;
+    swapTxs[idx] = updatedSwapTx;
     return (wallet.copyWith(swaps: swapTxs), null);
   }
 
@@ -146,22 +140,21 @@ class WalletTx {
       final updatedSwaps = swaps.toList();
 
       for (final swap in swaps) {
-        if (swap.swapTx?.txid == null || swap.swapTx!.txid!.isEmpty) continue;
-        final newTxExists = txs.any((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
+        if (swap.txid == null || swap.txid!.isEmpty) continue;
+        final newTxExists = txs.any((_) => _.swapTx == null && _.txid == swap.txid);
         if (!newTxExists) continue;
 
-        final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swap.swapTx!.txid);
+        final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swap.txid);
         if (idx == -1) continue;
         final newTx = txs[idx].copyWith(
-          swapTx: swap.swapTx,
+          swapTx: swap,
           isSwap: true,
-          swapIndex: swap.swapIndex,
         );
         txs[idx] = newTx;
 
-        final swapToDelete = swaps.firstWhere((_) => _.swapTx!.id == swap.swapTx!.id);
-        swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.swapTx!.id));
-        updatedSwaps.removeWhere((_) => _.swapTx!.id == swap.swapTx!.id);
+        final swapToDelete = swaps.firstWhere((_) => _.id == swap.id);
+        swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.id));
+        updatedSwaps.removeWhere((_) => _.id == swap.id);
       }
 
       if (swaps.length == updatedSwaps.length) return (null, Err('No changes', expected: true));
@@ -219,7 +212,6 @@ class WalletTx {
           rbfEnabled: storedTx?.rbfEnabled ?? false,
           outAddrs: storedTx?.outAddrs ?? [],
           swapTx: storedTx?.swapTx,
-          swapIndex: storedTx?.swapIndex,
           isSwap: storedTx?.isSwap ?? false,
         );
         // var outAddrs;

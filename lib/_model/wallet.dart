@@ -37,13 +37,14 @@ class Wallet with _$Wallet {
     @Default([]) List<UTXO> utxos,
     @Default([]) List<Transaction> transactions,
     @Default([]) List<Transaction> unsignedTxs,
-    @Default([]) List<Transaction> swaps,
+    @Default([]) List<SwapTx> swaps,
+    @Default(0) int swapKeyIndex,
+
     // List<String>? labelTags,
     // List<Bip329Label>? bip329Labels,
     @Default(false) bool backupTested,
     DateTime? lastBackupTested,
     @Default(false) bool hide,
-    @Default(0) int swapTxCount,
   }) = _Wallet;
   const Wallet._();
 
@@ -303,6 +304,7 @@ class Wallet with _$Wallet {
       case BBNetwork.LMainnet:
         return null;
     }
+    return null;
   }
 
   bool isSameNetwork(bool isTestnet) {
