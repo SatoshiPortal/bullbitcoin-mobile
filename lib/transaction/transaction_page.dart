@@ -117,11 +117,11 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final page = context.select((TransactionCubit _) => _.state.pageLayout());
+    final page = context.select((TransactionCubit _) => _.state.tx.pageLayout);
     return switch (page) {
-      TxPageLayout.onlyTx => const _OnlyTxPage(),
-      TxPageLayout.onlySwapTx => const _OnlySwapTxPage(),
-      TxPageLayout.both => const CombinedTxAndSwapPage(),
+      TxLayout.onlyTx => const _OnlyTxPage(),
+      TxLayout.onlySwapTx => const _OnlySwapTxPage(),
+      TxLayout.both => const CombinedTxAndSwapPage(),
     };
   }
 }

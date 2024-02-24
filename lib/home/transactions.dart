@@ -7,6 +7,7 @@ import 'package:bb_mobile/home/home2.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -150,8 +151,8 @@ class HomeTxItem2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSwap = tx.swapTx != null;
-    if (isSwap) return _SwapTxHomeListItem(transaction: tx);
+    final showOnlySwap = tx.pageLayout == TxLayout.onlySwapTx;
+    if (showOnlySwap) return _SwapTxHomeListItem(transaction: tx);
 
     final label = tx.label ?? '';
 

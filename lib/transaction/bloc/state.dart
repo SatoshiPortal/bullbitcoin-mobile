@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
 
-enum TxPageLayout { onlyTx, onlySwapTx, both }
+enum TxLayout { onlyTx, onlySwapTx, both }
 
 @freezed
 class TransactionState with _$TransactionState {
@@ -29,12 +29,14 @@ class TransactionState with _$TransactionState {
     if (label.isEmpty && label != tx.label) return false;
     return true;
   }
+}
 
-  TxPageLayout pageLayout() {
-    final swapTx = tx.swapTx;
-    if (swapTx == null) return TxPageLayout.onlyTx;
-    final idMatches = swapTx.txid == tx.txid;
-    if (idMatches) return TxPageLayout.both;
-    return TxPageLayout.onlySwapTx;
+extension X on Transaction {
+  TxLayout get pageLayout {
+    final swapTx = this.swapTx;
+    if (swapTx == null) return TxLayout.onlyTx;
+    final idMatches = swapTx.txid == txid;
+    if (idMatches) return TxLayout.both;
+    return TxLayout.onlySwapTx;
   }
 }
