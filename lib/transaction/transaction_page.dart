@@ -14,27 +14,21 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/bottom_sheet.dart';
-import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/_ui/components/text_input.dart';
-import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
-import 'package:bb_mobile/network_fees/popup.dart';
+import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
-import 'package:bb_mobile/swap/tx_page.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/transaction/bump_fees.dart';
+import 'package:bb_mobile/transaction/rename_label.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -93,7 +87,7 @@ class TxPage extends StatelessWidget {
             backgroundColor: Colors.transparent,
             elevation: 0,
             automaticallyImplyLeading: false,
-            flexibleSpace: const TxAppBar(),
+            flexibleSpace: const _TxAppBar(),
           ),
           body: const _Screen(),
         ),
@@ -102,8 +96,8 @@ class TxPage extends StatelessWidget {
   }
 }
 
-class TxAppBar extends StatelessWidget {
-  const TxAppBar({super.key});
+class _TxAppBar extends StatelessWidget {
+  const _TxAppBar();
 
   @override
   Widget build(BuildContext context) {
@@ -123,10 +117,24 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
+    final page = context.select((TransactionCubit _) => _.state.pageLayout());
+    return switch (page) {
+      TxPageLayout.onlyTx => const _OnlyTxPage(),
+      TxPageLayout.onlySwapTx => const _OnlySwapTxPage(),
+      TxPageLayout.both => const CombinedTxAndSwapPage(),
+    };
+  }
+}
+
+class _OnlyTxPage extends StatelessWidget {
+  const _OnlyTxPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final tx = context.select((TransactionCubit _) => _.state.tx);
 
     final isSwap = tx.swapTx != null;
-    if (isSwap) return const SwapTxPage();
+    if (isSwap) return const _OnlySwapTxPage();
 
     // final toAddresses = tx.outAddresses ?? [];
 
@@ -302,177 +310,132 @@ class _Screen extends StatelessWidget {
   }
 }
 
-class TxLabelTextField extends HookWidget {
-  const TxLabelTextField({super.key});
+class _OnlySwapTxPage extends StatelessWidget {
+  const _OnlySwapTxPage();
 
   @override
   Widget build(BuildContext context) {
-    final storedLabel = context.select((TransactionCubit x) => x.state.tx.label ?? '');
-    final showButton = context.select(
-      (TransactionCubit x) => x.state.showSaveButton(),
-      // && storedLabel.isEmpty,
+    final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
+    final swap = tx.swapTx;
+    if (swap == null) return const SizedBox.shrink();
+
+    final hasTxid = tx.swapTx?.txid?.isNotEmpty ?? false;
+
+    final amt = swap.outAmount;
+    final amount = context.select((CurrencyCubit x) => x.state.getAmountInUnits(amt));
+    final isReceive = !swap.isSubmarine;
+
+    final date = tx.getDateTimeStr();
+    final id = swap.id;
+    const fees = '';
+    final invoice = swap.invoice;
+    final units = context.select(
+      (CurrencyCubit cubit) => cubit.state.getUnitString(),
     );
-    final label = context.select((TransactionCubit x) => x.state.label);
+    final status = context.select((SwapBloc _) => _.state.showStatus(swap));
+    final showQr = status?.showQR ?? true;
+    final statusStr = context.select((SwapBloc _) => _.state.showStatus(swap))?.toString() ?? '';
 
-    return Row(
-      children: [
-        Expanded(
-          child: SizedBox(
-            height: 45,
-            child: BBTextInput.small(
-              // disabled: storedLabel.isNotEmpty,
-              hint: storedLabel.isNotEmpty ? storedLabel : 'Enter Label',
-              value: label,
-              onChanged: (value) {
-                context.read<TransactionCubit>().labelChanged(value);
-              },
-            ),
-          ),
-        ),
-        const Gap(8),
-        BBButton.smallRed(
-          disabled: !showButton,
-          onPressed: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-            context.read<TransactionCubit>().saveLabelClicked();
-          },
-          label: 'SAVE',
-        ),
-      ],
-    );
-  }
-}
-
-class BumpFeesButton extends StatelessWidget {
-  const BumpFeesButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final canRbf = context.select((TransactionCubit x) => x.state.tx.canRBF());
-    final isReceive = context.select((TransactionCubit x) => x.state.tx.isReceived());
-    if (!canRbf) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (!isReceive)
-          BBButton.bigRed(
-            label: 'Bump Fees',
-            onPressed: () async {
-              await BumpFeesPopup.showPopUp(context);
-            },
-          ),
-        const Gap(24),
-      ],
-    );
-  }
-}
-
-class BumpFeesPopup extends StatelessWidget {
-  const BumpFeesPopup({super.key});
-
-  static Future showPopUp(BuildContext context) async {
-    final tx = context.read<TransactionCubit>();
-    final wallet = context.read<WalletBloc>();
-    final networkFees = context.read<NetworkFeesCubit>();
-
-    return showBBBottomSheet(
-      context: context,
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: wallet),
-          BlocProvider.value(value: tx),
-          BlocProvider.value(value: networkFees),
-        ],
-        child: BlocListener<TransactionCubit, TransactionState>(
-          listenWhen: (previous, current) => previous.sentTx != current.sentTx,
-          listener: (context, state) async {
-            if (state.sentTx) {
-              await Future.delayed(2.seconds);
-              context
-                ..pop()
-                ..pop();
-            }
-          },
-          child: const BumpFeesPopup(),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // final amt = context.select((TransactionCubit x) => x.state.feeRate?.toString() ?? '');
-    // final built = context.select((TransactionCubit x) => x.state.updatedTx != null);
-    final sent = context.select((TransactionCubit x) => x.state.sentTx);
-    final sending = context.select((TransactionCubit x) => x.state.sendingTx);
-    final building = context.select((TransactionCubit x) => x.state.buildingTx);
-    final loading = building || sending;
-
-    final er = context.select((TransactionCubit x) => x.state.errSendingTx);
-    final err = context.select((TransactionCubit x) => x.state.errBuildingTx);
-
-    final errr = err.isNotEmpty ? err : er;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (sent) ...[
-            const BBHeader.popUpCenteredText(isLeft: true, text: 'Bump Fees'),
-            const Gap(32),
-            const Center(
-              child: FaIcon(
-                FontAwesomeIcons.circleCheck,
-                size: 64,
-                color: Colors.green,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 800),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Gap(24),
+              BBText.title(
+                isReceive ? 'Amount received' : 'Amount sent',
               ),
-            ).animate(delay: 100.ms).scale().fadeIn(),
-            const Center(child: BBText.title('Fees Bumped Successfully')).animate().fadeIn(),
-            const Gap(32),
-            const Center(child: BBText.bodySmall('You will be redirected in 2 seconds')),
-          ] else ...[
-            BBHeader.popUpCenteredText(
-              isLeft: true,
-              text: 'Bump Fees',
-              onBack: () {
-                context.pop();
-              },
-            ),
-            // const Gap(32),
-            // const BBText.title('Enter Fees'),
-            // const Gap(4),
-            const FeesSelectionOptions(),
-            // BBAmountInput(
-            //   hint: 'update sats/vb',
-            //   disabled: false,
-            //   btcFormatting: false,
-            //   isSats: true,
-            //   onChanged: (e) {
-            //     context.read<TransactionCubit>().updateFeeRate(e);
-            //   },
-            //   value: amt,
-            // ),
-            // const Gap(32),
-            if (errr.isNotEmpty) BBText.errorSmall(errr),
-            const Gap(8),
-            BBButton.bigRed(
-              label: 'Bump Fees',
-              // label: built ? 'Send Transaction' : 'Build Transaction',
-              loading: loading,
-              disabled: loading || sent,
-              onPressed: () {
-                // if (!built)
-                context.read<TransactionCubit>().buildTx();
-                // else
-                //   context.read<TransactionCubit>().sendTx();
-              },
-            ),
-          ],
-          const Gap(80),
-        ],
+              const Gap(4),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Container(
+                    transformAlignment: Alignment.center,
+                    transform: Matrix4.identity()..rotateZ(isReceive ? 1 : -1),
+                    child: const FaIcon(
+                      FontAwesomeIcons.arrowRight,
+                      size: 12,
+                    ),
+                  ),
+                  const Gap(8),
+                  BBText.titleLarge(
+                    amount,
+                    isBold: true,
+                  ),
+                  const Gap(4),
+                  BBText.title(
+                    units,
+                    isBold: true,
+                  ),
+                ],
+              ),
+              const Gap(24),
+              if (id.isNotEmpty) ...[
+                const BBText.title('Transaction ID'),
+                const Gap(4),
+                BBText.titleLarge(
+                  id,
+                  isBold: true,
+                ),
+                const Gap(24),
+              ],
+              const Gap(4),
+              const BBText.title('Status'),
+              const Gap(4),
+              BBText.titleLarge(
+                statusStr,
+                isBold: true,
+              ),
+              const Gap(4),
+              const Gap(24),
+              BBText.title(
+                isReceive ? 'Tranaction received' : 'Transaction sent',
+              ),
+              const Gap(4),
+              BBText.titleLarge(date, isBold: true),
+              const Gap(32),
+              if (showQr)
+                Center(
+                  child: SizedBox(
+                    width: 300,
+                    child: Column(
+                      children: [
+                        ReceiveQRDisplay(address: invoice),
+                        ReceiveDisplayAddress(
+                          addressQr: invoice,
+                          fontSize: 10,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              const Gap(100),
+            ],
+          ),
+        ),
       ),
     );
+  }
+}
+
+class CombinedTxAndSwapPage extends StatelessWidget {
+  const CombinedTxAndSwapPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
+class SwapTxSection extends StatelessWidget {
+  const SwapTxSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

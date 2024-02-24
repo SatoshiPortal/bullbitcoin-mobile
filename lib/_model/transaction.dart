@@ -126,7 +126,9 @@ class Transaction with _$Transaction {
   String getDateTimeStr() {
     // final dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     var dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
-    if (dt.year == 1970) dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    if (dt.year == 1970) {
+      dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    }
     if (dt.isAfter(DateTime.now().subtract(const Duration(days: 2)))) return timeago.format(dt);
     final day = dt.day.toString().length == 1 ? '0${dt.day}' : dt.day.toString();
     return months[dt.month - 1] + ' ' + day + ', ' + dt.year.toString();
@@ -264,6 +266,7 @@ class SwapTx with _$SwapTx {
 extension SwapTxExt on SwapStatus {
   bool get canClaim => this == SwapStatus.txnMempool || this == SwapStatus.txnConfirmed;
   bool get showPending => this == SwapStatus.invoicePaid;
+  bool get showQR => this != SwapStatus.invoiceSettled || hasExpired;
   bool get hasExpired =>
       this == SwapStatus.swapExpired ||
       this == SwapStatus.invoiceExpired ||

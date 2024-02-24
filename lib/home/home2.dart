@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -6,20 +5,18 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/home_page.dart';
+import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/swap/list_item.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class HomePage2 extends StatelessWidget {
   const HomePage2({super.key});
@@ -65,7 +62,7 @@ class _Screen extends StatelessWidget {
         ),
         const Expanded(
           flex: 5,
-          child: Transactions(),
+          child: HomeTransactions(),
         ),
         Container(
           height: 128,
@@ -319,75 +316,6 @@ class CardItem extends StatelessWidget {
   }
 }
 
-class Transactions extends StatelessWidget {
-  const Transactions({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final __ = context.select((HomeCubit _) => _.state.walletBlocs);
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final txs = context.select((HomeCubit cubit) => cubit.state.allTxsWithSwaps(network));
-
-    if (txs.isEmpty)
-      return TopLeft(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 48.0,
-            vertical: 24,
-          ),
-          child: const BBText.titleLarge('No Transactions yet').animate(delay: 300.ms).fadeIn(),
-        ),
-      );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 24.0, bottom: 8, right: 24),
-          child: Row(
-            children: [
-              const BBText.titleLarge(
-                'Latest Transactions',
-                isBold: true,
-                fontSize: 16,
-              ),
-              const Spacer(),
-              InkWell(
-                onTap: () {
-                  context.push('/transactions');
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const BBText.bodySmall(
-                      'view all',
-                      isBlue: true,
-                    ),
-                    const Gap(4),
-                    Icon(
-                      FontAwesomeIcons.arrowRight,
-                      size: 10,
-                      color: context.colour.secondary,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: txs.length,
-            itemBuilder: (context, index) {
-              return HomeTxItem2(tx: txs[index]);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class WalletTag extends StatelessWidget {
   const WalletTag({super.key, required this.wallet});
 
@@ -412,91 +340,6 @@ class WalletTag extends StatelessWidget {
         name,
         onSurface: true,
         isBold: true,
-      ),
-    );
-  }
-}
-
-class HomeTxItem2 extends StatelessWidget {
-  const HomeTxItem2({super.key, required this.tx});
-
-  final Transaction tx;
-
-  @override
-  Widget build(BuildContext context) {
-    final isSwap = tx.swapTx != null;
-    if (isSwap) return SwapTxHomeListItem(transaction: tx);
-
-    final label = tx.label ?? '';
-
-    final amount = context
-        .select((CurrencyCubit x) => x.state.getAmountInUnits(tx.getAmount(sentAsTotal: true)));
-
-    final isReceive = tx.isReceived();
-
-    final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
-
-    final wallet = tx.wallet;
-
-    return InkWell(
-      onTap: () {
-        context.push('/tx', extra: tx);
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 8,
-          bottom: 16,
-          left: 24,
-          right: 24,
-        ),
-        child: Row(
-          children: [
-            Container(
-              transformAlignment: Alignment.center,
-              transform: Matrix4.identity()..rotateZ(isReceive ? 1.6 : -1.6),
-              child: const FaIcon(FontAwesomeIcons.arrowRight),
-            ),
-            const Gap(8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BBText.titleLarge(amt),
-                if (label.isNotEmpty) ...[
-                  const Gap(4),
-                  BBText.bodySmall(label),
-                ],
-              ],
-            ),
-            const Spacer(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (wallet != null) ...[
-                  WalletTag(wallet: wallet),
-                  const Gap(4),
-                ],
-                if (tx.getBroadcastDateTime() != null)
-                  BBText.bodySmall(
-                    timeago.format(tx.getBroadcastDateTime()!),
-                    removeColourOpacity: true,
-                  )
-                else
-                  BBText.bodySmall(
-                    (tx.timestamp == 0) ? 'Pending' : tx.getDateTimeStr(),
-                    // : timeago.format(tx.getDateTime()),
-                    removeColourOpacity: true,
-                  ),
-              ],
-            ),
-
-            // Align(
-            //   alignment: Alignment.bottomRight,
-            //   child: BBText.bodySmall(
-            //     label,
-            //   ),
-            // ),
-          ],
-        ),
       ),
     );
   }
