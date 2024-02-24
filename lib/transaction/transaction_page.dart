@@ -22,6 +22,7 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
@@ -121,7 +122,7 @@ class _Screen extends StatelessWidget {
     return switch (page) {
       TxLayout.onlyTx => const _OnlyTxPage(),
       TxLayout.onlySwapTx => const _OnlySwapTxPage(),
-      TxLayout.both => const CombinedTxAndSwapPage(),
+      TxLayout.both => const _CombinedTxAndSwapPage(),
     };
   }
 }
@@ -131,10 +132,52 @@ class _OnlyTxPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tx = context.select((TransactionCubit _) => _.state.tx);
+    return const SingleChildScrollView(child: _TxDetails());
+  }
+}
 
-    final isSwap = tx.swapTx != null;
-    if (isSwap) return const _OnlySwapTxPage();
+class _OnlySwapTxPage extends StatelessWidget {
+  const _OnlySwapTxPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SingleChildScrollView(child: _SwapDetails());
+  }
+}
+
+class _CombinedTxAndSwapPage extends StatelessWidget {
+  const _CombinedTxAndSwapPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const _TxDetails(),
+          Container(
+            padding: const EdgeInsets.only(left: 16.0),
+            color: context.colour.surface.withOpacity(0.1),
+            child: const Column(
+              children: [
+                Gap(8),
+                BBText.title('Swap Details'),
+                _SwapDetails(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TxDetails extends StatelessWidget {
+  const _TxDetails();
+
+  @override
+  Widget build(BuildContext context) {
+    final tx = context.select((TransactionCubit _) => _.state.tx);
 
     // final toAddresses = tx.outAddresses ?? [];
 
@@ -176,142 +219,140 @@ class _OnlyTxPage extends StatelessWidget {
             ),
           );
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 800),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Gap(24),
-              const BumpFeesButton(),
-              BBText.title(
-                isReceived ? 'Amount received' : 'Amount sent',
-              ),
-              const Gap(4),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Container(
-                    transformAlignment: Alignment.center,
-                    transform: Matrix4.identity()..rotateZ(isReceived ? 1 : -1),
-                    child: const FaIcon(
-                      FontAwesomeIcons.arrowRight,
-                      size: 12,
-                    ),
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 800),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Gap(24),
+            const BumpFeesButton(),
+            BBText.title(
+              isReceived ? 'Amount received' : 'Amount sent',
+            ),
+            const Gap(4),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Container(
+                  transformAlignment: Alignment.center,
+                  transform: Matrix4.identity()..rotateZ(isReceived ? 1 : -1),
+                  child: const FaIcon(
+                    FontAwesomeIcons.arrowRight,
+                    size: 12,
                   ),
-                  const Gap(8),
-                  BBText.titleLarge(
-                    amtStr,
-                    isBold: true,
-                  ),
-                  const Gap(4),
-                  BBText.title(
-                    units,
-                    isBold: true,
-                  ),
-                ],
-              ),
-              const Gap(24),
-              const BBText.title('Transaction ID'),
-              const Gap(4),
-              InkWell(
-                onTap: () {
-                  final url = context.read<NetworkCubit>().state.explorerTxUrl(txid);
-                  locator<Launcher>().launchApp(url);
-                },
-                child: BBText.body(txid, isBlue: true),
-              ),
-              const Gap(24),
-              if (recipients.isNotEmpty && recipientAddress.address.isNotEmpty) ...[
-                const BBText.title('Recipient Bitcoin Address'),
-                // const Gap(4),
-                InkWell(
-                  onTap: () {
-                    final url = context
-                        .read<NetworkCubit>()
-                        .state
-                        .explorerAddressUrl(recipientAddress.address);
-                    locator<Launcher>().launchApp(url);
-                  },
-                  child: BBText.body(recipientAddress.address, isBlue: true),
                 ),
-
-                const Gap(24),
-              ],
-              const BBText.title(
-                'Status',
-              ),
-              const Gap(4),
-              BBText.titleLarge(
-                status,
-                isBold: true,
-              ),
-              const Gap(24),
-              const BBText.title(
-                'Network Fee',
-              ),
-              const Gap(4),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  BBText.titleLarge(
-                    feeStr,
-                    isBold: true,
-                  ),
-                  const Gap(4),
-                  BBText.title(
-                    units,
-                    isBold: true,
-                  ),
-                ],
-              ),
-              const Gap(24),
-              BBText.title(
-                isReceived ? 'Tranaction received' : 'Transaction sent',
-              ),
-              const Gap(4),
-              BBText.titleLarge(
-                time,
-                isBold: true,
-              ),
-              if (broadcastTime != null) ...[
-                const Gap(24),
-                const BBText.title(
-                  'Sent Time',
-                ),
+                const Gap(8),
                 BBText.titleLarge(
-                  timeago.format(broadcastTime),
+                  amtStr,
+                  isBold: true,
+                ),
+                const Gap(4),
+                BBText.title(
+                  units,
                   isBold: true,
                 ),
               ],
-              const Gap(24),
-              const BBText.title(
-                'Change Label',
+            ),
+            const Gap(24),
+            const BBText.title('Transaction ID'),
+            const Gap(4),
+            InkWell(
+              onTap: () {
+                final url = context.read<NetworkCubit>().state.explorerTxUrl(txid);
+                locator<Launcher>().launchApp(url);
+              },
+              child: BBText.body(txid, isBlue: true),
+            ),
+            const Gap(24),
+            if (recipients.isNotEmpty && recipientAddress.address.isNotEmpty) ...[
+              const BBText.title('Recipient Bitcoin Address'),
+              // const Gap(4),
+              InkWell(
+                onTap: () {
+                  final url = context
+                      .read<NetworkCubit>()
+                      .state
+                      .explorerAddressUrl(recipientAddress.address);
+                  locator<Launcher>().launchApp(url);
+                },
+                child: BBText.body(recipientAddress.address, isBlue: true),
               ),
-              const Gap(4),
-              const TxLabelTextField(),
+
               const Gap(24),
-              if (err.isNotEmpty) ...[
-                const Gap(32),
-                BBText.errorSmall(
-                  err,
+            ],
+            const BBText.title(
+              'Status',
+            ),
+            const Gap(4),
+            BBText.titleLarge(
+              status,
+              isBold: true,
+            ),
+            const Gap(24),
+            const BBText.title(
+              'Network Fee',
+            ),
+            const Gap(4),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                BBText.titleLarge(
+                  feeStr,
+                  isBold: true,
+                ),
+                const Gap(4),
+                BBText.title(
+                  units,
+                  isBold: true,
                 ),
               ],
-              const Gap(100),
+            ),
+            const Gap(24),
+            BBText.title(
+              isReceived ? 'Tranaction received' : 'Transaction sent',
+            ),
+            const Gap(4),
+            BBText.titleLarge(
+              time,
+              isBold: true,
+            ),
+            if (broadcastTime != null) ...[
+              const Gap(24),
+              const BBText.title(
+                'Sent Time',
+              ),
+              BBText.titleLarge(
+                timeago.format(broadcastTime),
+                isBold: true,
+              ),
             ],
-          ),
+            const Gap(24),
+            const BBText.title(
+              'Change Label',
+            ),
+            const Gap(4),
+            const TxLabelTextField(),
+            const Gap(24),
+            if (err.isNotEmpty) ...[
+              const Gap(32),
+              BBText.errorSmall(
+                err,
+              ),
+            ],
+            // const Gap(100),
+          ],
         ),
       ),
     );
   }
 }
 
-class _OnlySwapTxPage extends StatelessWidget {
-  const _OnlySwapTxPage();
+class _SwapDetails extends StatelessWidget {
+  const _SwapDetails();
 
   @override
   Widget build(BuildContext context) {
@@ -336,106 +377,86 @@ class _OnlySwapTxPage extends StatelessWidget {
     final showQr = status?.showQR ?? true;
     final statusStr = context.select((SwapBloc _) => _.state.showStatus(swap))?.toString() ?? '';
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 800),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Gap(24),
-              BBText.title(
-                isReceive ? 'Amount received' : 'Amount sent',
-              ),
-              const Gap(4),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Container(
-                    transformAlignment: Alignment.center,
-                    transform: Matrix4.identity()..rotateZ(isReceive ? 1 : -1),
-                    child: const FaIcon(
-                      FontAwesomeIcons.arrowRight,
-                      size: 12,
-                    ),
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 800),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // const Gap(24),
+            BBText.title(
+              isReceive ? 'Amount received' : 'Amount sent',
+            ),
+            const Gap(4),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Container(
+                  transformAlignment: Alignment.center,
+                  transform: Matrix4.identity()..rotateZ(isReceive ? 1 : -1),
+                  child: const FaIcon(
+                    FontAwesomeIcons.arrowRight,
+                    size: 12,
                   ),
-                  const Gap(8),
-                  BBText.titleLarge(
-                    amount,
-                    isBold: true,
-                  ),
-                  const Gap(4),
-                  BBText.title(
-                    units,
-                    isBold: true,
-                  ),
-                ],
-              ),
-              const Gap(24),
-              if (id.isNotEmpty) ...[
-                const BBText.title('Transaction ID'),
-                const Gap(4),
+                ),
+                const Gap(8),
                 BBText.titleLarge(
-                  id,
+                  amount,
                   isBold: true,
                 ),
-                const Gap(24),
+                const Gap(4),
+                BBText.title(
+                  units,
+                  isBold: true,
+                ),
               ],
-              const Gap(4),
-              const BBText.title('Status'),
+            ),
+            const Gap(24),
+            if (id.isNotEmpty) ...[
+              const BBText.title('Transaction ID'),
               const Gap(4),
               BBText.titleLarge(
-                statusStr,
+                id,
                 isBold: true,
               ),
-              const Gap(4),
               const Gap(24),
-              BBText.title(
-                isReceive ? 'Tranaction received' : 'Transaction sent',
-              ),
-              const Gap(4),
-              BBText.titleLarge(date, isBold: true),
-              const Gap(32),
-              if (showQr)
-                Center(
-                  child: SizedBox(
-                    width: 300,
-                    child: Column(
-                      children: [
-                        ReceiveQRDisplay(address: invoice),
-                        ReceiveDisplayAddress(
-                          addressQr: invoice,
-                          fontSize: 10,
-                        ),
-                      ],
-                    ),
+            ],
+            const Gap(4),
+            const BBText.title('Status'),
+            const Gap(4),
+            BBText.titleLarge(
+              statusStr,
+              isBold: true,
+            ),
+            const Gap(4),
+            const Gap(24),
+            BBText.title(
+              isReceive ? 'Tranaction received' : 'Transaction sent',
+            ),
+            const Gap(4),
+            BBText.titleLarge(date, isBold: true),
+            const Gap(32),
+            if (showQr)
+              Center(
+                child: SizedBox(
+                  width: 300,
+                  child: Column(
+                    children: [
+                      ReceiveQRDisplay(address: invoice),
+                      ReceiveDisplayAddress(
+                        addressQr: invoice,
+                        fontSize: 10,
+                      ),
+                    ],
                   ),
                 ),
-              const Gap(100),
-            ],
-          ),
+              ),
+            const Gap(24),
+          ],
         ),
       ),
     );
-  }
-}
-
-class CombinedTxAndSwapPage extends StatelessWidget {
-  const CombinedTxAndSwapPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-class SwapTxSection extends StatelessWidget {
-  const SwapTxSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
