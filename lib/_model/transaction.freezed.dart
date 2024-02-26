@@ -598,7 +598,10 @@ mixin _$SwapTx {
   String get boltzUrl => throw _privateConstructorUsedError;
   SwapStatusResponse? get status =>
       throw _privateConstructorUsedError; // should this be SwapStaus?
-  String? get blindingKey => throw _privateConstructorUsedError;
+  String? get blindingKey => throw _privateConstructorUsedError; // sensitive
+  int? get btcReverseBoltzFees => throw _privateConstructorUsedError;
+  int? get btcReverseLockupFees => throw _privateConstructorUsedError;
+  int? get btcReverseClaimFeesEstimate => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -627,7 +630,10 @@ abstract class $SwapTxCopyWith<$Res> {
       String electrumUrl,
       String boltzUrl,
       SwapStatusResponse? status,
-      String? blindingKey});
+      String? blindingKey,
+      int? btcReverseBoltzFees,
+      int? btcReverseLockupFees,
+      int? btcReverseClaimFeesEstimate});
 
   $SwapStatusResponseCopyWith<$Res>? get status;
 }
@@ -662,6 +668,9 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? boltzUrl = null,
     Object? status = freezed,
     Object? blindingKey = freezed,
+    Object? btcReverseBoltzFees = freezed,
+    Object? btcReverseLockupFees = freezed,
+    Object? btcReverseClaimFeesEstimate = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -732,6 +741,18 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
               as String?,
+      btcReverseBoltzFees: freezed == btcReverseBoltzFees
+          ? _value.btcReverseBoltzFees
+          : btcReverseBoltzFees // ignore: cast_nullable_to_non_nullable
+              as int?,
+      btcReverseLockupFees: freezed == btcReverseLockupFees
+          ? _value.btcReverseLockupFees
+          : btcReverseLockupFees // ignore: cast_nullable_to_non_nullable
+              as int?,
+      btcReverseClaimFeesEstimate: freezed == btcReverseClaimFeesEstimate
+          ? _value.btcReverseClaimFeesEstimate
+          : btcReverseClaimFeesEstimate // ignore: cast_nullable_to_non_nullable
+              as int?,
     ) as $Val);
   }
 
@@ -772,7 +793,10 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String electrumUrl,
       String boltzUrl,
       SwapStatusResponse? status,
-      String? blindingKey});
+      String? blindingKey,
+      int? btcReverseBoltzFees,
+      int? btcReverseLockupFees,
+      int? btcReverseClaimFeesEstimate});
 
   @override
   $SwapStatusResponseCopyWith<$Res>? get status;
@@ -806,6 +830,9 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? boltzUrl = null,
     Object? status = freezed,
     Object? blindingKey = freezed,
+    Object? btcReverseBoltzFees = freezed,
+    Object? btcReverseLockupFees = freezed,
+    Object? btcReverseClaimFeesEstimate = freezed,
   }) {
     return _then(_$SwapTxImpl(
       id: null == id
@@ -876,6 +903,18 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
               as String?,
+      btcReverseBoltzFees: freezed == btcReverseBoltzFees
+          ? _value.btcReverseBoltzFees
+          : btcReverseBoltzFees // ignore: cast_nullable_to_non_nullable
+              as int?,
+      btcReverseLockupFees: freezed == btcReverseLockupFees
+          ? _value.btcReverseLockupFees
+          : btcReverseLockupFees // ignore: cast_nullable_to_non_nullable
+              as int?,
+      btcReverseClaimFeesEstimate: freezed == btcReverseClaimFeesEstimate
+          ? _value.btcReverseClaimFeesEstimate
+          : btcReverseClaimFeesEstimate // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -900,7 +939,10 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       required this.electrumUrl,
       required this.boltzUrl,
       this.status,
-      this.blindingKey})
+      this.blindingKey,
+      this.btcReverseBoltzFees,
+      this.btcReverseLockupFees,
+      this.btcReverseClaimFeesEstimate})
       : super._();
 
   factory _$SwapTxImpl.fromJson(Map<String, dynamic> json) =>
@@ -941,10 +983,17 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
 // should this be SwapStaus?
   @override
   final String? blindingKey;
+// sensitive
+  @override
+  final int? btcReverseBoltzFees;
+  @override
+  final int? btcReverseLockupFees;
+  @override
+  final int? btcReverseClaimFeesEstimate;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey)';
+    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, btcReverseBoltzFees: $btcReverseBoltzFees, btcReverseLockupFees: $btcReverseLockupFees, btcReverseClaimFeesEstimate: $btcReverseClaimFeesEstimate)';
   }
 
   @override
@@ -968,7 +1017,11 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('electrumUrl', electrumUrl))
       ..add(DiagnosticsProperty('boltzUrl', boltzUrl))
       ..add(DiagnosticsProperty('status', status))
-      ..add(DiagnosticsProperty('blindingKey', blindingKey));
+      ..add(DiagnosticsProperty('blindingKey', blindingKey))
+      ..add(DiagnosticsProperty('btcReverseBoltzFees', btcReverseBoltzFees))
+      ..add(DiagnosticsProperty('btcReverseLockupFees', btcReverseLockupFees))
+      ..add(DiagnosticsProperty(
+          'btcReverseClaimFeesEstimate', btcReverseClaimFeesEstimate));
   }
 
   @override
@@ -1002,30 +1055,42 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
                 other.boltzUrl == boltzUrl) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.blindingKey, blindingKey) ||
-                other.blindingKey == blindingKey));
+                other.blindingKey == blindingKey) &&
+            (identical(other.btcReverseBoltzFees, btcReverseBoltzFees) ||
+                other.btcReverseBoltzFees == btcReverseBoltzFees) &&
+            (identical(other.btcReverseLockupFees, btcReverseLockupFees) ||
+                other.btcReverseLockupFees == btcReverseLockupFees) &&
+            (identical(other.btcReverseClaimFeesEstimate,
+                    btcReverseClaimFeesEstimate) ||
+                other.btcReverseClaimFeesEstimate ==
+                    btcReverseClaimFeesEstimate));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      txid,
-      keyIndex,
-      isSubmarine,
-      network,
-      secretKey,
-      publicKey,
-      sha256,
-      hash160,
-      redeemScript,
-      invoice,
-      outAmount,
-      scriptAddress,
-      electrumUrl,
-      boltzUrl,
-      status,
-      blindingKey);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        id,
+        txid,
+        keyIndex,
+        isSubmarine,
+        network,
+        secretKey,
+        publicKey,
+        sha256,
+        hash160,
+        redeemScript,
+        invoice,
+        outAmount,
+        scriptAddress,
+        electrumUrl,
+        boltzUrl,
+        status,
+        blindingKey,
+        btcReverseBoltzFees,
+        btcReverseLockupFees,
+        btcReverseClaimFeesEstimate
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -1059,7 +1124,10 @@ abstract class _SwapTx extends SwapTx {
       required final String electrumUrl,
       required final String boltzUrl,
       final SwapStatusResponse? status,
-      final String? blindingKey}) = _$SwapTxImpl;
+      final String? blindingKey,
+      final int? btcReverseBoltzFees,
+      final int? btcReverseLockupFees,
+      final int? btcReverseClaimFeesEstimate}) = _$SwapTxImpl;
   const _SwapTx._() : super._();
 
   factory _SwapTx.fromJson(Map<String, dynamic> json) = _$SwapTxImpl.fromJson;
@@ -1098,6 +1166,12 @@ abstract class _SwapTx extends SwapTx {
   SwapStatusResponse? get status;
   @override // should this be SwapStaus?
   String? get blindingKey;
+  @override // sensitive
+  int? get btcReverseBoltzFees;
+  @override
+  int? get btcReverseLockupFees;
+  @override
+  int? get btcReverseClaimFeesEstimate;
   @override
   @JsonKey(ignore: true)
   _$$SwapTxImplCopyWith<_$SwapTxImpl> get copyWith =>

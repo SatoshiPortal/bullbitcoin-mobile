@@ -211,11 +211,10 @@ class SwapTx with _$SwapTx {
     required String boltzUrl,
     SwapStatusResponse? status, // should this be SwapStaus?
     String? blindingKey, // sensitive
-    // String? statusStr,
+    int? btcReverseBoltzFees,
+    int? btcReverseLockupFees,
+    int? btcReverseClaimFeesEstimate,
   }) = _SwapTx;
-  const SwapTx._();
-
-  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
 
   factory SwapTx.fromBtcLnSwap(BtcLnBoltzSwap result) {
     final swap = result.btcLnSwap;
@@ -230,6 +229,22 @@ class SwapTx with _$SwapTx {
       electrumUrl: swap.electrumUrl,
       boltzUrl: swap.boltzUrl,
     );
+  }
+  const SwapTx._();
+
+  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
+
+  int? totalFees() {
+    if (btcReverseBoltzFees == null ||
+        btcReverseLockupFees == null ||
+        btcReverseClaimFeesEstimate == null) return null;
+
+    return btcReverseBoltzFees! + btcReverseLockupFees! + btcReverseClaimFeesEstimate!;
+  }
+
+  int? recievableAmount() {
+    if (totalFees() == null) return null;
+    return outAmount - totalFees()!;
   }
 
   BtcLnBoltzSwap toBtcLnSwap(SwapTxSensitive sensitive) {
