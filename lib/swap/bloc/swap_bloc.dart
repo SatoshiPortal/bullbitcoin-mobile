@@ -108,9 +108,9 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     add(
       SaveSwapInvoiceToWallet(
         swapTx: swap!.copyWith(
-          btcReverseBoltzFees: fees.btcReverse.boltzFees,
-          btcReverseLockupFees: fees.btcReverse.lockupFees,
-          btcReverseClaimFeesEstimate: fees.btcReverse.claimFeesEstimate,
+          boltzFees: fees.btcReverse.boltzFees,
+          lockupFees: fees.btcReverse.lockupFees,
+          claimFees: fees.btcReverse.claimFeesEstimate,
         ),
         label: event.label,
         walletBloc: walletBloc,

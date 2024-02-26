@@ -211,9 +211,9 @@ class SwapTx with _$SwapTx {
     required String boltzUrl,
     SwapStatusResponse? status, // should this be SwapStaus?
     String? blindingKey, // sensitive
-    int? btcReverseBoltzFees,
-    int? btcReverseLockupFees,
-    int? btcReverseClaimFeesEstimate,
+    int? boltzFees,
+    int? lockupFees,
+    int? claimFees,
   }) = _SwapTx;
 
   factory SwapTx.fromBtcLnSwap(BtcLnBoltzSwap result) {
@@ -235,11 +235,9 @@ class SwapTx with _$SwapTx {
   factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
 
   int? totalFees() {
-    if (btcReverseBoltzFees == null ||
-        btcReverseLockupFees == null ||
-        btcReverseClaimFeesEstimate == null) return null;
+    if (boltzFees == null || lockupFees == null || claimFees == null) return null;
 
-    return btcReverseBoltzFees! + btcReverseLockupFees! + btcReverseClaimFeesEstimate!;
+    return boltzFees! + lockupFees! + claimFees!;
   }
 
   int? recievableAmount() {

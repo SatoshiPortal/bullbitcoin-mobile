@@ -149,6 +149,8 @@ class _Screen extends StatelessWidget {
               const ReceiveQR(),
               const Gap(8),
               const ReceiveAddress(),
+              const Gap(8),
+              const SwapFeesDetails(),
             ] else ...[
               const Gap(24),
               const CreateLightningInvoice(),
@@ -356,6 +358,29 @@ class CreateLightningInvoice extends StatelessWidget {
         const Gap(16),
         BBText.errorSmall(err, textAlign: TextAlign.center),
         const Gap(40),
+      ],
+    );
+  }
+}
+
+class SwapFeesDetails extends StatelessWidget {
+  const SwapFeesDetails({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final swapTx = context.select((SwapBloc _) => _.state.swapTx);
+    if (swapTx == null) return const SizedBox.shrink();
+
+    final totalFees = swapTx.totalFees() ?? 0;
+    final fees = context.select((CurrencyCubit x) => x.state.getAmountInUnits(totalFees));
+    final units = context.select(
+      (CurrencyCubit cubit) => cubit.state.getUnitString(),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BBText.bodySmall('Total fees:\n$fees $units'),
+        const Gap(16),
       ],
     );
   }

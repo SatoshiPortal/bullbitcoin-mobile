@@ -73,9 +73,9 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
           ? null
           : SwapStatusResponse.fromJson(json['status'] as Map<String, dynamic>),
       blindingKey: json['blindingKey'] as String?,
-      btcReverseBoltzFees: json['btcReverseBoltzFees'] as int?,
-      btcReverseLockupFees: json['btcReverseLockupFees'] as int?,
-      btcReverseClaimFeesEstimate: json['btcReverseClaimFeesEstimate'] as int?,
+      boltzFees: json['boltzFees'] as int?,
+      lockupFees: json['lockupFees'] as int?,
+      claimFees: json['claimFees'] as int?,
     );
 
 Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
@@ -97,9 +97,9 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
       'boltzUrl': instance.boltzUrl,
       'status': instance.status,
       'blindingKey': instance.blindingKey,
-      'btcReverseBoltzFees': instance.btcReverseBoltzFees,
-      'btcReverseLockupFees': instance.btcReverseLockupFees,
-      'btcReverseClaimFeesEstimate': instance.btcReverseClaimFeesEstimate,
+      'boltzFees': instance.boltzFees,
+      'lockupFees': instance.lockupFees,
+      'claimFees': instance.claimFees,
     };
 
 const _$BBNetworkEnumMap = {
