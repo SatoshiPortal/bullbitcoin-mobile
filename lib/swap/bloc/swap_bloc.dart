@@ -214,21 +214,20 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       ),
     );
 
+    add(UpdateOrClaimSwap(walletBloc: walletBloc, swapTx: tx));
+
     final close = status.status == SwapStatus.txnClaimed ||
         status.status == SwapStatus.swapExpired ||
         status.status == SwapStatus.invoiceExpired ||
         status.status == SwapStatus.invoiceSettled;
-
-    add(UpdateOrClaimSwap(walletBloc: walletBloc, swapTx: tx, status: status));
-
     if (close) {
+      final updatedTxs = state.listeningTxs.where((_) => _.id != id).toList();
+      emit(state.copyWith(listeningTxs: updatedTxs));
+
       final errClose = swapBoltz.closeStream(id);
       if (errClose != null) {
         emit(state.copyWith(errWatchingInvoice: errClose.toString()));
-        return;
       }
-      final updatedTxs = state.listeningTxs.where((_) => _.id != id).toList();
-      emit(state.copyWith(listeningTxs: updatedTxs));
       return;
     }
   }
@@ -238,10 +237,10 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (walletBloc == null) return;
     print('::: 1');
 
-    final status = event.status!;
+    // final status = event.status!; // not required since swapTx is updated with latest status
     final swapTx = event.swapTx;
 
-    if (status.status.hasSettled) {
+    if (swapTx.status!.status.hasSettled) {
       print('::: 2');
 
       final wallet = walletBloc.state.wallet;
@@ -250,6 +249,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
           await walletTransaction.mergeSwapTxIntoTx(wallet: wallet, swapBloc: this);
       if (err != null) {
         print('::: 2-1');
+        print('$err');
         emit(state.copyWith(errWatchingInvoice: err.toString()));
         return;
       }
@@ -276,7 +276,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
 
     print('::: 8');
 
-    final canClaim = status.status.canClaim;
+    final canClaim = swapTx.status!.status.canClaim;
     if (!canClaim) {
       print('::: 9');
 
@@ -289,7 +289,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
 
       final (updatedWallet, err) = walletTransaction.updateSwapTxs(
         wallet: wallet.state.wallet!,
-        swapTx: swapTx!,
+        swapTx: swapTx,
       );
       if (err != null) {
         print('::: 11-1 - $err');
@@ -335,7 +335,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
 
       final (fees, errFees) = await swapBoltz.getFeesAndLimits(
         boltzUrl: boltzTestnet,
-        outAmount: swapTx!.outAmount,
+        outAmount: swapTx.outAmount,
       );
       print('::: 18');
 

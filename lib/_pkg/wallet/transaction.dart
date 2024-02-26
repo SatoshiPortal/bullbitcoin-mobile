@@ -114,7 +114,6 @@ class WalletTx {
     if (storedStatus != null && status == storedStatus) return (null, Err('No status changed'));
 
     final swapTxs = List<SwapTx>.from(swaps);
-
     final hasExpired = swapTx.status!.status.hasExpired;
     final hasSettled = swapTx.status!.status.hasSettled;
     if (hasExpired || hasSettled) {

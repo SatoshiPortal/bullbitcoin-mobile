@@ -25,10 +25,9 @@ class SaveSwapInvoiceToWallet extends SwapEvent {
 }
 
 class UpdateOrClaimSwap extends SwapEvent {
-  UpdateOrClaimSwap({required this.walletBloc, this.swapTx, this.status});
+  UpdateOrClaimSwap({required this.walletBloc, required this.swapTx});
 
-  final SwapTx? swapTx;
-  final SwapStatusResponse? status;
+  final SwapTx swapTx;
   final WalletBloc walletBloc;
 }
 
