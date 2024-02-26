@@ -103,15 +103,17 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       return;
     }
 
-    emit(state.copyWith(generatingSwapInv: false, errCreatingSwapInv: '', swapTx: swap));
+    final updatedSwap = swap!.copyWith(
+      boltzFees: fees.btcReverse.boltzFees,
+      lockupFees: fees.btcReverse.lockupFees,
+      claimFees: fees.btcReverse.claimFeesEstimate,
+    );
+
+    emit(state.copyWith(generatingSwapInv: false, errCreatingSwapInv: '', swapTx: updatedSwap));
 
     add(
       SaveSwapInvoiceToWallet(
-        swapTx: swap!.copyWith(
-          boltzFees: fees.btcReverse.boltzFees,
-          lockupFees: fees.btcReverse.lockupFees,
-          claimFees: fees.btcReverse.claimFeesEstimate,
-        ),
+        swapTx: updatedSwap,
         label: event.label,
         walletBloc: walletBloc,
       ),
