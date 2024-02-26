@@ -16,6 +16,7 @@ class SwapState with _$SwapState {
     @Default('') String errWatchingInvoice,
     SwapTx? swapTx,
     @Default([]) List<SwapTx> listeningTxs,
+    @Default([]) List<SwapTx> claimedSwapTxs,
   }) = _SwapState;
   const SwapState._();
 
@@ -31,6 +32,8 @@ class SwapState with _$SwapState {
     final tx = listeningTxs.firstWhere((_) => _.id == swap.id);
     return tx.status?.status;
   }
+
+  bool swapClaimed(SwapTx swap) => claimedSwapTxs.any((_) => _.id == swap.id);
 
   // bool showClaim(SwapTx swap) {
   //   final status = swap.status?.status;

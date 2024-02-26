@@ -315,97 +315,105 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       print('>::: 15');
 
       return;
-    } else {
-      print('::: 16');
+    }
 
-      emit(state.copyWith(claimingSwapSwap: true, errClaimingSwap: ''));
+    if (state.swapClaimed(swapTx)) {
+      print('::: 16-0 - swapid:${swapTx.id}');
+      emit(state.copyWith(errClaimingSwap: 'Swap claimed'));
+      return;
+    }
 
-      final address = walletBloc.state.wallet?.lastGeneratedAddress?.address;
-      if (address == null || address.isEmpty) {
-        emit(
-          state.copyWith(
-            claimingSwapSwap: false,
-            errClaimingSwap: 'Address not found',
-          ),
-        );
-        return;
-      }
+    print('::: 16');
 
-      print('::: 17');
+    emit(state.copyWith(claimingSwapSwap: true, errClaimingSwap: ''));
 
-      final (fees, errFees) = await swapBoltz.getFeesAndLimits(
-        boltzUrl: boltzTestnet,
-        outAmount: swapTx.outAmount,
-      );
-      print('::: 18');
-
-      if (errFees != null) {
-        print('::: 19');
-
-        emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: errFees.toString()));
-        return;
-      }
-      print('::: 20');
-
-      final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
-      if (claimFeesEstimate == null) {
-        emit(
-          state.copyWith(
-            claimingSwapSwap: false,
-            errClaimingSwap: 'Fees not found',
-          ),
-        );
-        return;
-      }
-      print('::: 21');
-
-      final (txid, err) = await swapBoltz.claimSwap(
-        tx: swapTx,
-        outAddress: address,
-        absFee: claimFeesEstimate,
-      );
-      print('::: 22');
-      if (err != null) {
-        print('::: 23 - $err');
-        emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: err.toString()));
-        return;
-      }
-
-      print('::: 24');
-      final tx = swapTx.copyWith(txid: txid);
-      final (updatedWallet, err1) =
-          walletTransaction.updateSwapTxs(swapTx: tx, wallet: walletBloc.state.wallet!);
-      if (err1 != null) {
-        print('::: 24-1 - $err1');
-
-        emit(state.copyWith(errClaimingSwap: err1.toString()));
-        return;
-      }
-
-      print('=::: 25');
-      walletBloc.add(
-        UpdateWallet(
-          updatedWallet!,
-          updateTypes: [UpdateWalletTypes.swaps],
-        ),
-      );
-      print('::: 26');
+    final address = walletBloc.state.wallet?.lastGeneratedAddress?.address;
+    if (address == null || address.isEmpty) {
       emit(
         state.copyWith(
           claimingSwapSwap: false,
-          errClaimingSwap: '',
+          errClaimingSwap: 'Address not found',
         ),
       );
-      print('::: 27');
-      // await Future.delayed(500.ms);
-      print('::: 28');
-
-      homeCubit.updateSelectedWallet(walletBloc);
-      print('::: 29');
-
-      // await Future.delayed(500.ms);
-      print('>::: 30');
+      return;
     }
+
+    print('::: 17');
+
+    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
+      boltzUrl: boltzTestnet,
+      outAmount: swapTx.outAmount,
+    );
+    print('::: 18');
+
+    if (errFees != null) {
+      print('::: 19');
+
+      emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: errFees.toString()));
+      return;
+    }
+    print('::: 20');
+
+    final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
+    if (claimFeesEstimate == null) {
+      emit(
+        state.copyWith(
+          claimingSwapSwap: false,
+          errClaimingSwap: 'Fees not found',
+        ),
+      );
+      return;
+    }
+    print('::: 21');
+
+    final (txid, err) = await swapBoltz.claimSwap(
+      tx: swapTx,
+      outAddress: address,
+      absFee: claimFeesEstimate,
+    );
+    print('::: 22');
+    if (err != null) {
+      print('::: 23 - $err');
+      emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: err.toString()));
+      return;
+    }
+
+    emit(state.copyWith(claimedSwapTxs: [...state.claimedSwapTxs, swapTx]));
+
+    print('::: 24');
+    final tx = swapTx.copyWith(txid: txid);
+    final (updatedWallet, err1) =
+        walletTransaction.updateSwapTxs(swapTx: tx, wallet: walletBloc.state.wallet!);
+    if (err1 != null) {
+      print('::: 24-1 - $err1');
+
+      emit(state.copyWith(errClaimingSwap: err1.toString()));
+      return;
+    }
+
+    print('=::: 25');
+    walletBloc.add(
+      UpdateWallet(
+        updatedWallet!,
+        updateTypes: [UpdateWalletTypes.swaps],
+      ),
+    );
+    print('::: 26');
+    emit(
+      state.copyWith(
+        claimingSwapSwap: false,
+        errClaimingSwap: '',
+      ),
+    );
+    print('::: 27');
+    // await Future.delayed(500.ms);
+    print('::: 28');
+
+    homeCubit.updateSelectedWallet(walletBloc);
+    print('::: 29');
+
+    // await Future.delayed(500.ms);
+    print('>::: 30');
   }
 
   void _onDeleteSensitiveSwapTx(
