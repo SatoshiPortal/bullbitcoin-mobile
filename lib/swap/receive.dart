@@ -3,6 +3,7 @@ import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
@@ -145,6 +146,11 @@ class _InvoiceQRPopup extends StatelessWidget {
     final amount = swapTx.outAmount.toString() + ' sats';
     final idx = tx.keyIndex?.toString() ?? '0';
     final status = swapTx.status?.toString() ?? '';
+    final totalFees = swapTx.totalFees() ?? 0;
+    final fees = context.select((CurrencyCubit x) => x.state.getAmountInUnits(totalFees));
+    final units = context.select(
+      (CurrencyCubit cubit) => cubit.state.getUnitString(),
+    );
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -177,6 +183,11 @@ class _InvoiceQRPopup extends StatelessWidget {
           Center(child: SizedBox(width: 250, child: ReceiveQRDisplay(address: swapTx.invoice))),
           const Gap(16),
           ReceiveDisplayAddress(addressQr: swapTx.invoice, fontSize: 9),
+          const Gap(24),
+          if (totalFees != 0) ...[
+            BBText.bodySmall('Total fees:\n$fees $units'),
+            const Gap(16),
+          ],
           const Gap(40),
         ],
       ),

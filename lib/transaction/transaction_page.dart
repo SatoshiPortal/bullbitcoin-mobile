@@ -368,7 +368,8 @@ class _SwapDetails extends StatelessWidget {
 
     final date = tx.getDateTimeStr();
     final id = swap.id;
-    const fees = '';
+    final fees = swap.totalFees() ?? 0;
+    final feesAmount = context.select((CurrencyCubit x) => x.state.getAmountInUnits(amt));
     final invoice = swap.invoice;
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),
@@ -413,6 +414,12 @@ class _SwapDetails extends StatelessWidget {
                 ),
               ],
             ),
+            if (fees != 0) ...[
+              const Gap(24),
+              const BBText.title('Total fees'),
+              const Gap(4),
+              BBText.titleLarge(feesAmount + ' ' + units, isBold: true),
+            ],
             const Gap(24),
             if (id.isNotEmpty) ...[
               const BBText.title('Transaction ID'),
