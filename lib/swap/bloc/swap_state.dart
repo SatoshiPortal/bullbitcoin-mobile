@@ -20,11 +20,9 @@ class SwapState with _$SwapState {
   }) = _SwapState;
   const SwapState._();
 
-  bool isListening(Transaction tx) {
-    final swap = tx.swapTx;
-    if (swap == null) return false;
-    return listeningTxs.any((_) => _.id == swap.id);
-  }
+  bool isListening(SwapTx swap) => listeningTxs.any((_) => _.id == swap.id);
+
+  bool isListeningId(String id) => listeningTxs.any((_) => _.id == id);
 
   SwapStatus? showStatus(SwapTx swap) {
     final isListening = listeningTxs.any((_) => _.id == swap.id);

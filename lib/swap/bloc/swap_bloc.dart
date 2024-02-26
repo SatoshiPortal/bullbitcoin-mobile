@@ -185,7 +185,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   void _onWatchInvoiceStatus(WatchInvoiceStatus event, Emitter<SwapState> emit) async {
     final txs = event.swapTx;
     for (final tx in txs) {
-      final exists = state.listeningTxs.any((_) => tx.id == _.id);
+      final exists = state.isListening(tx);
       if (exists) continue;
       emit(state.copyWith(listeningTxs: [...state.listeningTxs, tx]));
     }
@@ -211,7 +211,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     final id = event.id;
     final status = event.status;
     print('UpdateInvoiceStatus: $id - ${status.status}');
-    if (!state.listeningTxs.any((_) => id == _.id)) return;
+    if (!state.isListeningId(id)) return;
 
     final tx = state.listeningTxs.firstWhere((_) => _.id == id).copyWith(status: status);
     emit(
