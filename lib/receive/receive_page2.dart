@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -21,6 +22,7 @@ import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -43,6 +45,20 @@ class _ReceivePage2State extends State<ReceivePage2> {
 
   @override
   void initState() {
+    final swapBloc = SwapCubit(
+      hiveStorage: locator<HiveStorage>(),
+      secureStorage: locator<SecureStorage>(),
+      walletAddress: locator<WalletAddress>(),
+      walletRepository: locator<WalletRepository>(),
+      walletSensitiveRepository: locator<WalletSensitiveRepository>(),
+      settingsCubit: locator<SettingsCubit>(),
+      networkCubit: locator<NetworkCubit>(),
+      swapBoltz: locator<SwapBoltz>(),
+      walletTx: locator<WalletTx>(),
+      walletTransaction: locator<WalletTx>(),
+      watchTxsBloc: locator<WatchTxsBloc>(),
+    );
+
     _cubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
       hiveStorage: locator<HiveStorage>(),
@@ -50,7 +66,7 @@ class _ReceivePage2State extends State<ReceivePage2> {
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       // swapBoltz: locator<SwapBoltz>(),
-      swapBloc: locator<SwapCubit>(),
+      swapBloc: swapBloc,
       secureStorage: locator<SecureStorage>(),
       walletSensitiveRepository: locator<WalletSensitiveRepository>(),
       walletTx: locator<WalletTx>(),

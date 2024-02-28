@@ -23,7 +23,6 @@ import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
@@ -77,7 +76,7 @@ class TxPage extends StatelessWidget {
         BlocProvider.value(value: txCubit),
         BlocProvider.value(value: wallet),
         BlocProvider.value(value: networkFees),
-        BlocProvider.value(value: locator<SwapCubit>()),
+        BlocProvider.value(value: locator<WatchTxsBloc>()),
       ],
       child: BlocListener<TransactionCubit, TransactionState>(
         listenWhen: (previous, current) => previous.tx != current.tx,
