@@ -364,13 +364,15 @@ class _SwapDetails extends StatelessWidget {
     final hasTxid = tx.swapTx?.txid?.isNotEmpty ?? false;
 
     final amt = swap.outAmount;
-    final amount = context.select((CurrencyCubit x) => x.state.getAmountInUnits(amt));
+    final amount =
+        context.select((CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true));
     final isReceive = !swap.isSubmarine;
 
     final date = tx.getDateTimeStr();
     final id = swap.id;
     final fees = swap.totalFees() ?? 0;
-    final feesAmount = context.select((CurrencyCubit x) => x.state.getAmountInUnits(amt));
+    final feesAmount =
+        context.select((CurrencyCubit x) => x.state.getAmountInUnits(fees, removeText: true));
     final invoice = swap.invoice;
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),

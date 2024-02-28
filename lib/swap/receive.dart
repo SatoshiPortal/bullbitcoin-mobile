@@ -147,7 +147,8 @@ class _InvoiceQRPopup extends StatelessWidget {
     final idx = tx.keyIndex?.toString() ?? '0';
     final status = swapTx.status?.toString() ?? '';
     final totalFees = swapTx.totalFees() ?? 0;
-    final fees = context.select((CurrencyCubit x) => x.state.getAmountInUnits(totalFees));
+    final fees =
+        context.select((CurrencyCubit x) => x.state.getAmountInUnits(totalFees, removeText: true));
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),
     );
