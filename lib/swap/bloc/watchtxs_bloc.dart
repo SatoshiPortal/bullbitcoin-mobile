@@ -180,10 +180,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
       final wallet = walletBloc.state.wallet;
       if (wallet == null) return;
-      final (updatedWallet, err) = await walletTransaction.mergeSwapTxIntoTx(
+      final (walletAndTxs, err) = await walletTransaction.mergeSwapTxIntoTx(
         wallet: wallet,
         swapTx: swapTx,
-        swapBloc: this,
       );
       if (err != null) {
         print('::: 2-1');
@@ -191,22 +190,25 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         emit(state.copyWith(errWatchingInvoice: err.toString()));
         return;
       }
+      final updatedWallet = walletAndTxs!.wallet;
+      final swapsToDelete = walletAndTxs.swapsToDelete;
       print('=::: 3');
       walletBloc.add(
         UpdateWallet(
-          updatedWallet!,
+          updatedWallet,
           updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.swaps],
         ),
       );
+
       print('::: 4');
 
-      // await Future.delayed(500.ms);
-      print('::: 5');
-
       homeCubit.updateSelectedWallet(walletBloc);
+
+      print('::: 5');
+      for (final swap in swapsToDelete) add(DeleteSensitiveSwapTx(swap.id));
+
       print('::: 6');
 
-      // await Future.delayed(500.ms);
       print('>::: 7');
 
       return;

@@ -7,8 +7,6 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:hex/hex.dart';
 
@@ -129,15 +127,15 @@ class WalletTx {
     return (wallet.copyWith(swaps: swapTxs), null);
   }
 
-  Future<(Wallet?, Err?)> mergeSwapTxIntoTx({
+  Future<(({Wallet wallet, List<SwapTx> swapsToDelete})?, Err?)> mergeSwapTxIntoTx({
     required Wallet wallet,
     required SwapTx swapTx,
-    required WatchTxsBloc swapBloc,
   }) async {
     try {
       final txs = wallet.transactions.toList();
       final swaps = wallet.swaps;
       final updatedSwaps = swaps.toList();
+      final swapsToDelete = <SwapTx>[];
       // final isMerged = txs.any((_) => _.swapTx != null && _.swapTx!.id == swapTx.id);
       // if (isMerged) {
       //   final swapToDelete = swaps.firstWhere((_) => _.id == swapTx.id);
@@ -165,7 +163,8 @@ class WalletTx {
       txs[idx] = newTx;
 
       final swapToDelete = swaps.firstWhere((_) => _.id == swapTx.id);
-      swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.id));
+      // swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.id));
+      swapsToDelete.add(swapToDelete);
       updatedSwaps.removeWhere((_) => _.id == swapTx.id);
 
       // if (swaps.length == updatedSwaps.length) return (null, Err('No changes', expected: true));
@@ -175,7 +174,7 @@ class WalletTx {
         swaps: updatedSwaps,
       );
 
-      return (updatedWallet, null);
+      return ((wallet: updatedWallet, swapsToDelete: swapsToDelete), null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
