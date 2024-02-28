@@ -15,6 +15,7 @@ class SwapState with _$SwapState {
     @Default(false) bool claimingSwapSwap,
     @Default('') String errWatchingInvoice,
     SwapTx? swapTx,
+    BoltzApi? boltzWatcher,
     @Default([]) List<SwapTx> listeningTxs,
     @Default([]) List<SwapTx> claimedSwapTxs,
   }) = _SwapState;

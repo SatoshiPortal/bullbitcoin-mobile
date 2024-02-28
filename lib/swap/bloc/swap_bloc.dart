@@ -32,6 +32,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     required this.walletTx,
     required this.walletTransaction,
   }) : super(const SwapState()) {
+    on<InitializeSwapWatcher>(_initializeSwapWatcher);
     on<CreateBtcLightningSwap>(_onCreateBtcLightningSwap);
     on<SaveSwapInvoiceToWallet>(_onSaveSwapInvoiceToWallet);
     on<WatchInvoiceStatus>(_onWatchInvoiceStatus);
@@ -40,6 +41,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     on<ResetToNewLnInvoice>(_onResetToNewLnInvoice);
     on<DeleteSensitiveSwapTx>(_onDeleteSensitiveSwapTx);
     on<WatchWalletTxs>(_onWatchWalletTxs);
+    add(InitializeSwapWatcher());
   }
 
   final SettingsCubit settingsCubit;
@@ -53,6 +55,24 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   final SwapBoltz swapBoltz;
   final WalletTx walletTx;
   late HomeCubit homeCubit;
+
+  void _initializeSwapWatcher(InitializeSwapWatcher event, Emitter<SwapState> emit) async {
+    if (state.boltzWatcher != null) return;
+
+    final (boltzWatcher, err) = await swapBoltz.createSwapWatcher();
+    if (err != null) {
+      emit(
+        state.copyWith(
+          errWatchingInvoice: err.message,
+        ),
+      );
+    }
+    emit(
+      state.copyWith(
+        boltzWatcher: boltzWatcher,
+      ),
+    );
+  }
 
   void _onCreateBtcLightningSwap(CreateBtcLightningSwap event, Emitter<SwapState> emit) async {
     if (!networkCubit.state.testnet) return;
@@ -181,10 +201,22 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       swapTxsToWatch.add(tx);
     }
     if (swapTxsToWatch.isEmpty) return;
-    add(WatchInvoiceStatus(swapTx: swapTxsToWatch, walletBloc: walletBloc));
+    add(
+      WatchInvoiceStatus(
+        swapTx: swapTxsToWatch,
+        walletBloc: walletBloc,
+      ),
+    ); // we dont need to pass the walletBloc anymore
   }
 
   void _onWatchInvoiceStatus(WatchInvoiceStatus event, Emitter<SwapState> emit) async {
+    if (state.boltzWatcher == null) {
+      emit(
+        state.copyWith(errWatchingInvoice: 'Watcher not initialized. Re-initializing. Try Again.'),
+      );
+      add(InitializeSwapWatcher());
+      return;
+    }
     final txs = event.swapTx;
     for (final tx in txs) {
       final exists = state.isListening(tx);
@@ -192,55 +224,60 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       emit(state.copyWith(listeningTxs: [...state.listeningTxs, tx]));
     }
 
-    final err = await swapBoltz.watchSwapMultiple(
-      walletId: event.walletBloc.state.wallet!.id,
+    final err = await swapBoltz.updateSwapWatcher(
+      api: state.boltzWatcher!,
       swapIds: txs.map((_) => _.id).toList(),
       onUpdate: (id, status) {
+        // for (final wallet in homeCubit.state.wallets!) {
+        // if (wallet.hasOngoingSwap(id)) {
+        // final walletBloc = homeCubit.state.getWalletBloc(wallet);
         add(UpdateInvoiceStatus(id, status, event.walletBloc));
+        // } else {
+        // emit(state.copyWith(errWatchingInvoice: 'Could not match swap update with a wallet'));
+        // }
+        // }
       },
     );
 
-    if (err != null) {
-      emit(state.copyWith(errWatchingInvoice: err.toString()));
-      return;
-    }
+    emit(state.copyWith(errWatchingInvoice: err.toString()));
+    return;
   }
 
   void _onUpdateInvoiceStatus(UpdateInvoiceStatus event, Emitter<SwapState> emit) async {
-    final walletBloc = homeCubit.state.getWalletBloc(event.walletBloc.state.wallet!);
-    if (walletBloc == null) return;
+    for (final wallet in homeCubit.state.wallets!) {
+      if (wallet.hasOngoingSwap(event.id)) {
+        final walletBloc = homeCubit.state.getWalletBloc(wallet);
+        if (walletBloc == null) return;
 
-    final id = event.id;
-    final status = event.status;
-    print('UpdateInvoiceStatus: $id - ${status.status}');
-    if (!state.isListeningId(id)) return;
+        final id = event.id;
+        final status = event.status;
+        print('UpdateInvoiceStatus: $id - ${status.status}');
+        if (!state.isListeningId(id)) return;
 
-    final tx = state.listeningTxs.firstWhere((_) => _.id == id).copyWith(status: status);
-    emit(
-      state.copyWith(
-        listeningTxs: state.listeningTxs
-            .map(
-              (_) => _.id == id ? tx : _,
-            )
-            .toList(),
-      ),
-    );
+        final tx = state.listeningTxs.firstWhere((_) => _.id == id).copyWith(status: status);
+        emit(
+          state.copyWith(
+            listeningTxs: state.listeningTxs
+                .map(
+                  (_) => _.id == id ? tx : _,
+                )
+                .toList(),
+          ),
+        );
 
-    add(UpdateOrClaimSwap(walletBloc: walletBloc, swapTx: tx));
-
-    final close = status.status == SwapStatus.txnClaimed ||
-        status.status == SwapStatus.swapExpired ||
-        status.status == SwapStatus.invoiceExpired ||
-        status.status == SwapStatus.invoiceSettled;
-    if (close) {
-      final updatedTxs = state.listeningTxs.where((_) => _.id != id).toList();
-      emit(state.copyWith(listeningTxs: updatedTxs));
-
-      final errClose = swapBoltz.closeStream(id);
-      if (errClose != null) {
-        emit(state.copyWith(errWatchingInvoice: errClose.toString()));
+        final close = status.status == SwapStatus.txnClaimed ||
+            status.status == SwapStatus.swapExpired ||
+            status.status == SwapStatus.invoiceExpired ||
+            status.status == SwapStatus.invoiceSettled;
+        if (close) {
+          final updatedTxs = state.listeningTxs.where((_) => _.id != id).toList();
+          emit(state.copyWith(listeningTxs: updatedTxs));
+          // final boltzWatcher = state.boltzWatcher!;
+          // final errClose = swapBoltz.closeSwapWatcher([id]);
+          // emit(state.copyWith(errWatchingInvoice: errClose.toString()));
+        }
+        add(UpdateOrClaimSwap(walletBloc: walletBloc, swapTx: tx));
       }
-      return;
     }
   }
 

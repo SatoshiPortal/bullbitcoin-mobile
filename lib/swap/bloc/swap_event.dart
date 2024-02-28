@@ -4,6 +4,8 @@ import 'package:boltz_dart/boltz_dart.dart';
 
 class SwapEvent {}
 
+class InitializeSwapWatcher extends SwapEvent {}
+
 class CreateBtcLightningSwap extends SwapEvent {
   CreateBtcLightningSwap({
     required this.walletBloc,

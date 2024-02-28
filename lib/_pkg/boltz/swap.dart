@@ -12,9 +12,6 @@ class SwapBoltz {
     required SecureStorage secureStorage,
   }) : _secureStorage = secureStorage;
 
-  final List<(String, StreamSubscription)> _subscriptions = [];
-  final List<(String, StreamSubscription)> _walletSubscriptions = [];
-
   final SecureStorage _secureStorage;
 
   Future<(AllFees?, Err?)> getFeesAndLimits({
@@ -100,98 +97,48 @@ class SwapBoltz {
     }
   }
 
-  Future<Err?> watchSwap({
-    required String swapId,
-    required void Function(
-      String id,
-      SwapStatusResponse status,
-    ) onUpdate,
-  }) async {
+  Future<(BoltzApi?, Err?)> createSwapWatcher() async {
     try {
       final api = await BoltzApi.newBoltzApi();
-      final exists = _subscriptions.any((element) => element.$1 == swapId);
-      if (exists) throw 'Already watching swap $swapId';
 
-      _subscriptions.add(
-        (
-          swapId,
-          api.getSwapStatusStream(swapId).listen((event) {
-            onUpdate(swapId, event);
-          })
-        ),
-      );
+      api.createSwapStatusChannel();
 
-      return null;
+      return (api, null);
     } catch (e) {
-      return Err(e.toString());
+      return (null, Err(e.toString()));
     }
   }
 
-  Future<Err?> watchSwapMultiple({
+  Future<(BoltzApi?, Err?)> updateSwapWatcher({
+    required BoltzApi api,
     required List<String> swapIds,
-    required String walletId,
     required void Function(
       String id,
       SwapStatusResponse status,
     ) onUpdate,
   }) async {
     try {
-      final api = await BoltzApi.newBoltzApi();
-      final exists = _walletSubscriptions.any((element) => element.$1 == walletId);
-      if (exists) _walletSubscriptions.removeWhere((element) => element.$1 == walletId);
+      api.closeSwapStatusChannel();
+      api.createSwapStatusChannel();
+      api.updateSwapStatusChannel(swapIds).listen((event) {
+        onUpdate(event.id, event);
+      });
 
-      _walletSubscriptions.add(
-        (
-          walletId,
-          api.getSwapStatusStreamMultiple(swapIds).listen((event) {
-            onUpdate(event.id, event);
-          })
-        ),
-      );
-
-      return null;
+      return (api, null);
     } catch (e) {
-      return Err(e.toString());
+      return (null, Err(e.toString()));
     }
   }
 
-  Err? closeWalletStream(String id) {
+  Future<(BoltzApi?, Err?)> closeSwapWatcher({
+    required BoltzApi api,
+  }) async {
     try {
-      final exists = _walletSubscriptions.any((element) => element.$1 == id);
-      if (!exists) throw 'No subscription for wallet $id';
-
-      final sub = _walletSubscriptions.firstWhere((element) => element.$1 == id).$2;
-      sub.cancel();
-      _walletSubscriptions.removeWhere((element) => element.$1 == id);
-      return null;
+      api.closeSwapStatusChannel();
+      return (api, null);
     } catch (e) {
-      return Err(e.toString());
+      return (null, Err(e.toString()));
     }
-  }
-
-  Err? closeStream(String id) {
-    try {
-      final exists = _subscriptions.any((element) => element.$1 == id);
-      if (!exists) throw 'No subscription for swap $id';
-
-      final sub = _subscriptions.firstWhere((element) => element.$1 == id).$2;
-      sub.cancel();
-      _subscriptions.removeWhere((element) => element.$1 == id);
-      return null;
-    } catch (e) {
-      return Err(e.toString());
-    }
-  }
-
-  void dispose() {
-    for (final sub in _subscriptions) {
-      sub.$2.cancel();
-    }
-    for (final sub in _walletSubscriptions) {
-      sub.$2.cancel();
-    }
-    _subscriptions.clear();
-    _walletSubscriptions.clear();
   }
 
   Future<(String?, Err?)> claimSwap({

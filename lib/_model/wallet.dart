@@ -50,6 +50,10 @@ class Wallet with _$Wallet {
 
   factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
 
+  bool hasOngoingSwap(String id) {
+    return swaps.any((swap) => swap.id == id);
+  }
+
   bool hasPassphrase() {
     return mnemonicFingerprint != sourceFingerprint;
   }
@@ -304,6 +308,7 @@ class Wallet with _$Wallet {
       case BBNetwork.LMainnet:
         return null;
     }
+    return null;
   }
 
   bool isSameNetwork(bool isTestnet) {
