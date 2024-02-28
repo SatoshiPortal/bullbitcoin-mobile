@@ -31,6 +31,7 @@ class SwapCubit extends Cubit<SwapState> {
     required this.walletTx,
     required this.walletTransaction,
     required this.watchTxsBloc,
+    required this.homeCubit,
   }) : super(const SwapState());
 
   final SettingsCubit settingsCubit;
@@ -44,7 +45,7 @@ class SwapCubit extends Cubit<SwapState> {
   final SwapBoltz swapBoltz;
   final WalletTx walletTx;
   final WatchTxsBloc watchTxsBloc;
-  late HomeCubit homeCubit;
+  final HomeCubit homeCubit;
 
   void createBtcLightningSwap({
     required WalletBloc walletBloc,

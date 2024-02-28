@@ -57,6 +57,7 @@ class _ReceivePage2State extends State<ReceivePage2> {
       walletTx: locator<WalletTx>(),
       walletTransaction: locator<WalletTx>(),
       watchTxsBloc: locator<WatchTxsBloc>(),
+      homeCubit: locator<HomeCubit>(),
     );
 
     _cubit = ReceiveCubit(
