@@ -9,8 +9,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
-import 'package:bb_mobile/swap/bloc/swap_event.dart';
+import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +26,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required this.networkCubit,
     required this.currencyCubit,
     required this.walletTx,
-    required SwapBloc swapBloc,
+    required SwapCubit swapBloc,
   }) : super(ReceiveState(walletBloc: walletBloc, swapBloc: swapBloc)) {
     loadAddress();
   }
@@ -59,7 +58,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     if (!networkCubit.state.testnet) return;
 
     if (walletType == ReceiveWalletType.lightning) {
-      state.swapBloc.add(ResetToNewLnInvoice());
+      state.swapBloc.resetToNewLnInvoice();
       emit(state.copyWith(defaultAddress: null));
     } else {
       loadAddress();
@@ -95,7 +94,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void generateNewAddress() async {
     if (state.walletType == ReceiveWalletType.lightning) {
-      state.swapBloc.add(ResetToNewLnInvoice());
+      state.swapBloc.resetToNewLnInvoice();
       return;
     }
 

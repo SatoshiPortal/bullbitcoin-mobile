@@ -16,8 +16,8 @@ import 'package:bb_mobile/_pkg/wallet/utxo.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
-import 'package:bb_mobile/swap/bloc/swap_event.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -66,7 +66,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletUtxo walletUtxo;
   final WalletUpdate walletUpdate;
   final NetworkCubit networkCubit;
-  final SwapBloc swapBloc;
+  final WatchTxsBloc swapBloc;
 
   final SecureStorage secureStorage;
   final HiveStorage hiveStorage;

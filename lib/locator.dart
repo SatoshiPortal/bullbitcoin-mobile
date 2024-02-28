@@ -32,7 +32,7 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -115,7 +115,7 @@ Future setupLocator({bool fromTest = false}) async {
     bbAPI: bbAPI,
   );
 
-  final swap = SwapBloc(
+  final swap = WatchTxsBloc(
     hiveStorage: hiveStorage,
     secureStorage: secureStorage,
     walletAddress: walletAddress,
@@ -144,7 +144,7 @@ Future setupLocator({bool fromTest = false}) async {
   );
 
   swap.homeCubit = homeCubit;
-  locator.registerSingleton<SwapBloc>(swap);
+  locator.registerSingleton<WatchTxsBloc>(swap);
 
   settings.homeCubit = homeCubit;
   networkCubit.homeCubit = homeCubit;

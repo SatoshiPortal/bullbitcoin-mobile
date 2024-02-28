@@ -30,7 +30,7 @@ mixin _$ReceiveState {
   String get errCreatingInvoice => throw _privateConstructorUsedError;
   WalletBloc? get walletBloc => throw _privateConstructorUsedError;
   ReceiveWalletType get walletType => throw _privateConstructorUsedError;
-  SwapBloc get swapBloc => throw _privateConstructorUsedError;
+  SwapCubit get swapBloc => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ReceiveStateCopyWith<ReceiveState> get copyWith =>
@@ -58,7 +58,7 @@ abstract class $ReceiveStateCopyWith<$Res> {
       String errCreatingInvoice,
       WalletBloc? walletBloc,
       ReceiveWalletType walletType,
-      SwapBloc swapBloc});
+      SwapCubit swapBloc});
 
   $AddressCopyWith<$Res>? get defaultAddress;
 }
@@ -152,7 +152,7 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
       swapBloc: null == swapBloc
           ? _value.swapBloc
           : swapBloc // ignore: cast_nullable_to_non_nullable
-              as SwapBloc,
+              as SwapCubit,
     ) as $Val);
   }
 
@@ -192,7 +192,7 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       String errCreatingInvoice,
       WalletBloc? walletBloc,
       ReceiveWalletType walletType,
-      SwapBloc swapBloc});
+      SwapCubit swapBloc});
 
   @override
   $AddressCopyWith<$Res>? get defaultAddress;
@@ -285,7 +285,7 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
       swapBloc: null == swapBloc
           ? _value.swapBloc
           : swapBloc // ignore: cast_nullable_to_non_nullable
-              as SwapBloc,
+              as SwapCubit,
     ));
   }
 }
@@ -352,7 +352,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
   @JsonKey()
   final ReceiveWalletType walletType;
   @override
-  final SwapBloc swapBloc;
+  final SwapCubit swapBloc;
 
   @override
   String toString() {
@@ -438,7 +438,7 @@ abstract class _ReceiveState extends ReceiveState {
       final String errCreatingInvoice,
       final WalletBloc? walletBloc,
       final ReceiveWalletType walletType,
-      required final SwapBloc swapBloc}) = _$ReceiveStateImpl;
+      required final SwapCubit swapBloc}) = _$ReceiveStateImpl;
   const _ReceiveState._() : super._();
 
   @override
@@ -470,7 +470,7 @@ abstract class _ReceiveState extends ReceiveState {
   @override
   ReceiveWalletType get walletType;
   @override
-  SwapBloc get swapBloc;
+  SwapCubit get swapBloc;
   @override
   @JsonKey(ignore: true)
   _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>

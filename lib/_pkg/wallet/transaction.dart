@@ -7,8 +7,8 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
-import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
-import 'package:bb_mobile/swap/bloc/swap_event.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:hex/hex.dart';
 
@@ -132,7 +132,7 @@ class WalletTx {
   Future<(Wallet?, Err?)> mergeSwapTxIntoTx({
     required Wallet wallet,
     required SwapTx swapTx,
-    required SwapBloc swapBloc,
+    required WatchTxsBloc swapBloc,
   }) async {
     try {
       final txs = wallet.transactions.toList();

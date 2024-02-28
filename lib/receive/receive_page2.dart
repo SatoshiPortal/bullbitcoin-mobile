@@ -20,8 +20,7 @@ import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
-import 'package:bb_mobile/swap/bloc/swap_event.dart';
+import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,7 +50,7 @@ class _ReceivePage2State extends State<ReceivePage2> {
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       // swapBoltz: locator<SwapBoltz>(),
-      swapBloc: locator<SwapBloc>(),
+      swapBloc: locator<SwapCubit>(),
       secureStorage: locator<SecureStorage>(),
       walletSensitiveRepository: locator<WalletSensitiveRepository>(),
       walletTx: locator<WalletTx>(),
@@ -131,7 +130,7 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((SwapBloc x) => x.state.swapTx);
+    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
     final showQR = context.select((ReceiveCubit x) => x.state.showQR(swapTx));
 
     return SingleChildScrollView(
@@ -240,7 +239,7 @@ class WalletActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swap = context.select((SwapBloc _) => _.state.swapTx);
+    final swap = context.select((SwapCubit _) => _.state.swapTx);
     final show = context.select((ReceiveCubit _) => _.state.showQR(swap));
     if (!show) return const SizedBox.shrink();
 
@@ -311,8 +310,8 @@ class CreateLightningInvoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description = context.select((ReceiveCubit _) => _.state.description);
-    final err = context.select((SwapBloc _) => _.state.errCreatingSwapInv);
-    final creatingInv = context.select((SwapBloc _) => _.state.generatingSwapInv);
+    final err = context.select((SwapCubit _) => _.state.errCreatingSwapInv);
+    final creatingInv = context.select((SwapCubit _) => _.state.generatingSwapInv);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -344,12 +343,10 @@ class CreateLightningInvoice extends StatelessWidget {
                 final amt = context.read<CurrencyCubit>().state.amount;
                 final label = context.read<ReceiveCubit>().state.description;
 
-                context.read<SwapBloc>().add(
-                      CreateBtcLightningSwap(
-                        amount: amt,
-                        label: label.isEmpty ? null : label,
-                        walletBloc: wallet,
-                      ),
+                context.read<SwapCubit>().createBtcLightningSwap(
+                      amount: amt,
+                      label: label.isEmpty ? null : label,
+                      walletBloc: wallet,
                     );
               },
             ),
@@ -368,7 +365,7 @@ class SwapFeesDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((SwapBloc _) => _.state.swapTx);
+    final swapTx = context.select((SwapCubit _) => _.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 
     final totalFees = swapTx.totalFees() ?? 0;

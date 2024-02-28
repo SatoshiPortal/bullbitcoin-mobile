@@ -23,7 +23,8 @@ import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
+import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
 import 'package:bb_mobile/transaction/bump_fees.dart';
@@ -76,7 +77,7 @@ class TxPage extends StatelessWidget {
         BlocProvider.value(value: txCubit),
         BlocProvider.value(value: wallet),
         BlocProvider.value(value: networkFees),
-        BlocProvider.value(value: locator<SwapBloc>()),
+        BlocProvider.value(value: locator<SwapCubit>()),
       ],
       child: BlocListener<TransactionCubit, TransactionState>(
         listenWhen: (previous, current) => previous.tx != current.tx,
@@ -374,9 +375,10 @@ class _SwapDetails extends StatelessWidget {
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),
     );
-    final status = context.select((SwapBloc _) => _.state.showStatus(swap));
+    final status = context.select((WatchTxsBloc _) => _.state.showStatus(swap));
     final showQr = status?.showQR ?? true;
-    final statusStr = context.select((SwapBloc _) => _.state.showStatus(swap))?.toString() ?? '';
+    final statusStr =
+        context.select((WatchTxsBloc _) => _.state.showStatus(swap))?.toString() ?? '';
 
     return Padding(
       padding: const EdgeInsets.all(24.0),

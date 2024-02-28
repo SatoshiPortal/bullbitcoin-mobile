@@ -20,7 +20,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/swap/bloc/swap_bloc.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -52,7 +52,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
           walletUtxo: locator<WalletUtxo>(),
           walletUpdate: locator<WalletUpdate>(),
           networkCubit: locator<NetworkCubit>(),
-          swapBloc: locator<SwapBloc>(),
+          swapBloc: locator<WatchTxsBloc>(),
           wallet: w,
         ),
     ];
