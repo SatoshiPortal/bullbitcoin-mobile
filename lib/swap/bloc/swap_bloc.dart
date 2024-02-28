@@ -266,15 +266,12 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
         );
 
         final close = status.status == SwapStatus.txnClaimed ||
-            status.status == SwapStatus.swapExpired ||
+            // status.status == SwapStatus.swapExpired || // this is not what we want for submarine. this is when we need to trigger refund
             status.status == SwapStatus.invoiceExpired ||
             status.status == SwapStatus.invoiceSettled;
         if (close) {
           final updatedTxs = state.listeningTxs.where((_) => _.id != id).toList();
           emit(state.copyWith(listeningTxs: updatedTxs));
-          // final boltzWatcher = state.boltzWatcher!;
-          // final errClose = swapBoltz.closeSwapWatcher([id]);
-          // emit(state.copyWith(errWatchingInvoice: errClose.toString()));
         }
         add(UpdateOrClaimSwap(walletBloc: walletBloc, swapTx: tx));
       }
@@ -282,8 +279,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   }
 
   FutureOr<void> _onUpdateOrClaimSwap(UpdateOrClaimSwap event, Emitter<SwapState> emit) async {
-    final walletBloc = homeCubit.state.getWalletBloc(event.walletBloc.state.wallet!);
-    if (walletBloc == null) return;
+    final walletBloc = event.walletBloc;
+    // if (walletBloc == null) return;
     print('::: 1');
 
     // final status = event.status!; // not required since swapTx is updated with latest status
@@ -295,7 +292,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       final wallet = walletBloc.state.wallet;
       if (wallet == null) return;
       final (updatedWallet, err) =
-          await walletTransaction.mergeSwapTxIntoTx(wallet: wallet, swapBloc: this);
+          await walletTransaction.mergeSwapTxIntoTx(wallet: wallet, swapTx: swapTx, swapBloc: this);
       if (err != null) {
         print('::: 2-1');
         print('$err');
@@ -430,7 +427,9 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     emit(state.copyWith(claimedSwapTxs: [...state.claimedSwapTxs, swapTx]));
 
     print('::: 24');
-    final tx = swapTx.copyWith(txid: txid);
+    final tx = swapTx.copyWith(
+      txid: txid,
+    );
     final (updatedWallet, err1) =
         walletTransaction.updateSwapTxs(swapTx: tx, wallet: walletBloc.state.wallet!);
     if (err1 != null) {

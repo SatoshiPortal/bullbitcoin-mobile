@@ -103,26 +103,26 @@ class WalletTx {
 
   (Wallet?, Err?) updateSwapTxs({required SwapTx swapTx, required Wallet wallet}) {
     final swaps = wallet.swaps;
-    final status = swapTx.status?.status;
-    if (status == null) return (null, Err('No status changed'));
+    // final status = swapTx.status?.status;
+    // if (status == null) return (null, Err('No status changed'));
 
     final idx = swaps.indexWhere((_) => _.id == swapTx.id);
     if (idx == -1) return (null, Err('No swapTx found'));
 
     final storedSwap = swaps[idx];
-    final storedStatus = storedSwap.status?.status;
-    if (storedStatus != null && status == storedStatus) return (null, Err('No status changed'));
+    // final storedStatus = storedSwap.status?.status;
+    // if (storedStatus != null && status == storedStatus) return (null, Err('No status changed'));
 
     final swapTxs = List<SwapTx>.from(swaps);
     final hasExpired = swapTx.status!.status.hasExpired;
-    final hasSettled = swapTx.status!.status.hasSettled;
-    if (hasExpired || hasSettled) {
+    // final hasSettled = swapTx.status!.status.hasSettled;
+    if (hasExpired) {
       swapTxs.removeAt(idx);
       return (wallet.copyWith(swaps: swapTxs), null);
     }
 
     final updatedSwapTx = storedSwap.copyWith(
-      txid: storedSwap.txid ?? swapTx.txid ?? storedSwap.txid,
+      txid: storedSwap.txid ?? swapTx.txid,
       keyIndex: storedSwap.keyIndex,
     );
     swapTxs[idx] = updatedSwapTx;
@@ -131,32 +131,44 @@ class WalletTx {
 
   Future<(Wallet?, Err?)> mergeSwapTxIntoTx({
     required Wallet wallet,
+    required SwapTx swapTx,
     required SwapBloc swapBloc,
   }) async {
     try {
       final txs = wallet.transactions.toList();
       final swaps = wallet.swaps;
       final updatedSwaps = swaps.toList();
+      // final isMerged = txs.any((_) => _.swapTx != null && _.swapTx!.id == swapTx.id);
+      // if (isMerged) {
+      //   final swapToDelete = swaps.firstWhere((_) => _.id == swapTx.id);
+      //   swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.id));
+      //   updatedSwaps.removeWhere((_) => _.id == swapTx.id);
+      //   if (swaps.length == updatedSwaps.length) return (null, Err('No changes', expected: true));
 
-      for (final swap in swaps) {
-        if (swap.txid == null || swap.txid!.isEmpty) continue;
-        final newTxExists = txs.any((_) => _.swapTx == null && _.txid == swap.txid);
-        if (!newTxExists) continue;
+      //   final updatedWallet = wallet.copyWith(
+      //     transactions: txs,
+      //     swaps: updatedSwaps,
+      //   );
 
-        final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swap.txid);
-        if (idx == -1) continue;
-        final newTx = txs[idx].copyWith(
-          swapTx: swap,
-          isSwap: true,
-        );
-        txs[idx] = newTx;
+      //   return (updatedWallet, null);
+      // }
 
-        final swapToDelete = swaps.firstWhere((_) => _.id == swap.id);
-        swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.id));
-        updatedSwaps.removeWhere((_) => _.id == swap.id);
-      }
+      final newTxExists = txs.any((_) => _.swapTx == null && _.txid == swapTx.txid);
+      if (!newTxExists) return (null, Err('No new tx exists'));
 
-      if (swaps.length == updatedSwaps.length) return (null, Err('No changes', expected: true));
+      final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swapTx.txid);
+      if (idx == -1) return (null, Err('No new matching tx'));
+      final newTx = txs[idx].copyWith(
+        swapTx: swapTx,
+        isSwap: true,
+      );
+      txs[idx] = newTx;
+
+      final swapToDelete = swaps.firstWhere((_) => _.id == swapTx.id);
+      swapBloc.add(DeleteSensitiveSwapTx(swapToDelete.id));
+      updatedSwaps.removeWhere((_) => _.id == swapTx.id);
+
+      // if (swaps.length == updatedSwaps.length) return (null, Err('No changes', expected: true));
 
       final updatedWallet = wallet.copyWith(
         transactions: txs,
