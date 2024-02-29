@@ -44,6 +44,16 @@ class HomeState with _$HomeState {
     return walletBlocs[idx];
   }
 
+  WalletBloc? getWalletBlocById(String id) {
+    // final walletIdx = wallets!.indexWhere((w) => w.id == id);
+    // if (walletIdx == -1) return null;
+    // final wallet = wallets![walletIdx];
+    // final walletBlocs = walletBlocsFromNetwork(wallet.network);
+    final idx = walletBlocs?.indexWhere((w) => id == w.state.wallet!.id);
+    if (idx == -1 || idx == null) return null;
+    return walletBlocs![idx];
+  }
+
   Wallet? getFirstWithSpendableAndBalance(BBNetwork network, {int amt = 0}) {
     final wallets = walletsFromNetwork(network);
     if (wallets.isEmpty) return null;

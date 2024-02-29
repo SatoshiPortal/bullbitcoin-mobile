@@ -340,7 +340,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     await Future.delayed(1000.ms);
     // swapBloc.add(UpdateOrClaimSwap(walletBloc: this));
-    swapBloc.add(WatchWalletTxs(walletBloc: this));
+    swapBloc.add(WatchWalletTxs(walletId: state.wallet!.id));
   }
 
   void _updateUtxos(UpdateUtxos event, Emitter<WalletState> emit) async {}

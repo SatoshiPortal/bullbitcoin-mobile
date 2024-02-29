@@ -151,10 +151,10 @@ class WalletTx {
       //   return (updatedWallet, null);
       // }
 
-      final newTxExists = txs.any((_) => _.swapTx == null && _.txid == swapTx.txid);
+      final newTxExists = txs.any((_) => _.txid == swapTx.txid);
       if (!newTxExists) return (null, Err('No new tx exists'));
 
-      final idx = txs.indexWhere((_) => _.swapTx == null && _.txid == swapTx.txid);
+      final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
       if (idx == -1) return (null, Err('No new matching tx'));
       final newTx = txs[idx].copyWith(
         swapTx: swapTx,

@@ -355,7 +355,7 @@ class CreateLightningInvoice extends StatelessWidget {
               label: 'Create Invoice',
               loadingText: 'Creating Invoice',
               onPressed: () async {
-                final wallet = context.read<ReceiveCubit>().state.walletBloc;
+                final wallet = context.read<ReceiveCubit>().state.walletBloc!.state.wallet;
                 if (wallet == null) return;
                 final amt = context.read<CurrencyCubit>().state.amount;
                 final label = context.read<ReceiveCubit>().state.description;
@@ -363,7 +363,7 @@ class CreateLightningInvoice extends StatelessWidget {
                 context.read<SwapCubit>().createBtcLightningSwap(
                       amount: amt,
                       label: label.isEmpty ? null : label,
-                      walletBloc: wallet,
+                      walletId: wallet.id,
                     );
               },
             ),

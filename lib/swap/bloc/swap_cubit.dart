@@ -14,7 +14,6 @@ import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -48,13 +47,15 @@ class SwapCubit extends Cubit<SwapState> {
   final HomeCubit homeCubit;
 
   void createBtcLightningSwap({
-    required WalletBloc walletBloc,
+    required String walletId,
     required int amount,
     String? label,
   }) async {
     if (!networkCubit.state.testnet) return;
-
-    final bloc = homeCubit.state.getWalletBloc(walletBloc.state.wallet!);
+    // why are we regetting bloc?
+    // if we want the latest status then we should just pass wallet.id
+    // and get the relavent WalletBloc
+    final bloc = homeCubit.state.getWalletBlocById(walletId);
     if (bloc == null) return;
 
     final outAmount = amount;
@@ -106,21 +107,27 @@ class SwapCubit extends Cubit<SwapState> {
       claimFees: fees.btcReverse.claimFeesEstimate,
     );
 
-    emit(state.copyWith(generatingSwapInv: false, errCreatingSwapInv: '', swapTx: updatedSwap));
+    emit(
+      state.copyWith(
+        generatingSwapInv: false,
+        errCreatingSwapInv: '',
+        swapTx: updatedSwap,
+      ),
+    );
 
     _saveSwapInvoiceToWallet(
       swapTx: updatedSwap,
       label: label,
-      walletBloc: bloc,
+      walletId: walletId,
     );
   }
 
   void _saveSwapInvoiceToWallet({
-    required WalletBloc walletBloc,
+    required String walletId,
     required SwapTx swapTx,
     String? label,
   }) async {
-    final bloc = homeCubit.state.getWalletBloc(walletBloc.state.wallet!);
+    final bloc = homeCubit.state.getWalletBlocById(walletId);
     if (bloc == null) return;
 
     final wallet = bloc.state.wallet;
@@ -155,7 +162,7 @@ class SwapCubit extends Cubit<SwapState> {
     // await Future.delayed(500.ms);
     homeCubit.updateSelectedWallet(bloc);
     // await Future.delayed(500.ms);
-    watchTxsBloc.add(WatchWalletTxs(walletBloc: bloc));
+    watchTxsBloc.add(WatchWalletTxs(walletId: walletId));
   }
 
   void resetToNewLnInvoice() => emit(state.copyWith(swapTx: null));
