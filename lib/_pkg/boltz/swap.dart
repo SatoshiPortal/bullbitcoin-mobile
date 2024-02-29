@@ -97,11 +97,11 @@ class SwapBoltz {
     }
   }
 
-  Future<(BoltzApi?, Err?)> createSwapWatcher() async {
+  Future<(BoltzApi?, Err?)> initializeBoltzApi() async {
     try {
       final api = await BoltzApi.newBoltzApi();
 
-      api.createSwapStatusChannel();
+      api.initialize();
 
       return (api, null);
     } catch (e) {
@@ -109,7 +109,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(BoltzApi?, Err?)> updateSwapWatcher({
+  Future<(BoltzApi?, Err?)> addSwapSubs({
     required BoltzApi api,
     required List<String> swapIds,
     required void Function(
@@ -118,28 +118,25 @@ class SwapBoltz {
     ) onUpdate,
   }) async {
     try {
-      api.closeSwapStatusChannel();
-      api.createSwapStatusChannel();
-      api.updateSwapStatusChannel(swapIds).listen((event) {
+      api.subscribeSwapStatus(swapIds).listen((event) {
         onUpdate(event.id, event);
       });
-
       return (api, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
   }
 
-  Future<(BoltzApi?, Err?)> closeSwapWatcher({
-    required BoltzApi api,
-  }) async {
-    try {
-      api.closeSwapStatusChannel();
-      return (api, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
+  // Future<(BoltzApi?, Err?)> closeSwapWatcher({
+  //   required BoltzApi api,
+  // }) async {
+  //   try {
+  //     api.closeSwapStatusChannel();
+  //     return (api, null);
+  //   } catch (e) {
+  //     return (null, Err(e.toString()));
+  //   }
+  // }
 
   Future<(String?, Err?)> claimSwap({
     required SwapTx tx,

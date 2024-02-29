@@ -56,7 +56,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   void _initializeSwapWatcher(InitializeSwapWatcher event, Emitter<WatchTxsState> emit) async {
     if (state.boltzWatcher != null) return;
 
-    final (boltzWatcher, err) = await swapBoltz.createSwapWatcher();
+    final (boltzWatcher, err) = await swapBoltz.initializeBoltzApi();
     if (err != null) {
       emit(
         state.copyWith(
@@ -118,7 +118,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // this maybe called repeatedly
     // we should know what we are already listening for over wss and not update unless we have a new swap
     // seems like now we keep updating even if there isnt a new swap to listen to
-    final err = await swapBoltz.updateSwapWatcher(
+    final err = await swapBoltz.addSwapSubs(
       api: state.boltzWatcher!,
       swapIds: event.swapTxs.map((_) => _.id).toList(),
       onUpdate: (id, status) {
