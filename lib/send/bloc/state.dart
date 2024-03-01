@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -29,6 +30,7 @@ class SendState with _$SendState {
     String? psbtSigned,
     int? psbtSignedFeeAmount,
     WalletBloc? selectedWalletBloc,
+    required SwapCubit swapCubit,
   }) = _SendState;
   const SendState._();
 

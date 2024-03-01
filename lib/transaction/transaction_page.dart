@@ -360,7 +360,7 @@ class _SwapDetails extends StatelessWidget {
     final swap = tx.swapTx;
     if (swap == null) return const SizedBox.shrink();
 
-    final hasTxid = tx.swapTx?.txid?.isNotEmpty ?? false;
+    final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
     final amt = swap.outAmount;
     final amount =

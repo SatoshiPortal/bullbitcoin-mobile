@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
+import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
@@ -29,6 +30,8 @@ import 'package:bb_mobile/send/psbt.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,6 +52,21 @@ class _SendPage2State extends State<SendPage2> {
 
   @override
   void initState() {
+    final swapBloc = SwapCubit(
+      hiveStorage: locator<HiveStorage>(),
+      secureStorage: locator<SecureStorage>(),
+      walletAddress: locator<WalletAddress>(),
+      walletRepository: locator<WalletRepository>(),
+      walletSensitiveRepository: locator<WalletSensitiveRepository>(),
+      settingsCubit: locator<SettingsCubit>(),
+      networkCubit: locator<NetworkCubit>(),
+      swapBoltz: locator<SwapBoltz>(),
+      walletTx: locator<WalletTx>(),
+      walletTransaction: locator<WalletTx>(),
+      watchTxsBloc: locator<WatchTxsBloc>(),
+      homeCubit: locator<HomeCubit>(),
+    );
+
     send = SendCubit(
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
@@ -76,6 +94,7 @@ class _SendPage2State extends State<SendPage2> {
         bbAPI: locator<BullBitcoinAPI>(),
         defaultCurrencyCubit: context.read<CurrencyCubit>(),
       ),
+      swapCubit: swapBloc,
     );
 
     home = locator<HomeCubit>();
@@ -99,6 +118,7 @@ class _SendPage2State extends State<SendPage2> {
         BlocProvider.value(value: send),
         BlocProvider.value(value: send.currencyCubit),
         BlocProvider.value(value: send.networkFeesCubit),
+        BlocProvider.value(value: send.state.swapCubit),
         BlocProvider.value(value: home),
         if (walletBloc != null) BlocProvider.value(value: walletBloc),
       ],

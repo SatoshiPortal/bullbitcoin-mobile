@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
+import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
@@ -18,6 +19,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
@@ -31,6 +33,8 @@ import 'package:bb_mobile/send/wallet_select.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,6 +77,21 @@ class _SendScreenState extends State<SendScreen> {
     // context.select((SelectSendWalletStep _) => _.state.walletBloc);
     if (walletBloc == null) return;
 
+    final swapBloc = SwapCubit(
+      hiveStorage: locator<HiveStorage>(),
+      secureStorage: locator<SecureStorage>(),
+      walletAddress: locator<WalletAddress>(),
+      walletRepository: locator<WalletRepository>(),
+      walletSensitiveRepository: locator<WalletSensitiveRepository>(),
+      settingsCubit: locator<SettingsCubit>(),
+      networkCubit: locator<NetworkCubit>(),
+      swapBoltz: locator<SwapBoltz>(),
+      walletTx: locator<WalletTx>(),
+      walletTransaction: locator<WalletTx>(),
+      watchTxsBloc: locator<WatchTxsBloc>(),
+      homeCubit: locator<HomeCubit>(),
+    );
+
     sendCubit = SendCubit(
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
@@ -101,6 +120,7 @@ class _SendScreenState extends State<SendScreen> {
         bbAPI: locator<BullBitcoinAPI>(),
         defaultCurrencyCubit: context.read<CurrencyCubit>(),
       ),
+      swapCubit: swapBloc,
     );
 
     super.initState();

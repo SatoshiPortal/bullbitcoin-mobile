@@ -6,8 +6,6 @@ import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -196,20 +194,20 @@ class _InvoiceQRPopup extends StatelessWidget {
   }
 }
 
-class StatusActions extends StatelessWidget {
-  const StatusActions({super.key});
+// class StatusActions extends StatelessWidget {
+//   const StatusActions({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
-    final swap = tx.swapTx;
-    if (swap == null) return const SizedBox.shrink();
+//   @override
+//   Widget build(BuildContext context) {
+//     final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
+//     final swap = tx.swapTx;
+//     if (swap == null) return const SizedBox.shrink();
 
-    final status = context.select((WatchTxsBloc _) => _.state.showStatus(swap))?.toString() ?? '';
+//     final status = context.select((WatchTxsBloc _) => _.state.showStatus(swap))?.toString() ?? '';
 
-    return const Placeholder();
-  }
-}
+//     return const Placeholder();
+//   }
+// }
 
 class ClaimScreen extends StatelessWidget {
   const ClaimScreen({super.key});

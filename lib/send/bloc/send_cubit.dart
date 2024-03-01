@@ -21,6 +21,7 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,7 +46,8 @@ class SendCubit extends Cubit<SendState> {
     required this.networkCubit,
     required this.networkFeesCubit,
     required this.currencyCubit,
-  }) : super(const SendState()) {
+    required SwapCubit swapCubit,
+  }) : super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
         disableRBF: !settingsCubit.state.defaultRBF,

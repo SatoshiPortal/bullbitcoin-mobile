@@ -308,7 +308,6 @@ class Wallet with _$Wallet {
       case BBNetwork.LMainnet:
         return null;
     }
-    return null;
   }
 
   bool isSameNetwork(bool isTestnet) {
