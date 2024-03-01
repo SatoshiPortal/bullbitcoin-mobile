@@ -88,13 +88,19 @@ class _SendPage2State extends State<SendPage2> {
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = home.state.walletBlocsFromNetwork(network);
 
+    WalletBloc? walletBloc;
+    if (walletBlocs.isNotEmpty) {
+      walletBloc = walletBlocs.first;
+      send.updateWalletBloc(walletBloc);
+    }
+
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: send),
         BlocProvider.value(value: send.currencyCubit),
         BlocProvider.value(value: send.networkFeesCubit),
         BlocProvider.value(value: home),
-        if (walletBlocs.isNotEmpty) BlocProvider.value(value: walletBlocs.first),
+        if (walletBloc != null) BlocProvider.value(value: walletBloc),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -217,7 +223,7 @@ class WalletSelectionDropDown extends StatelessWidget {
             value: walletBloc,
             onChanged: (value) {
               if (value == null) return;
-              context.read<SendCubit>().updateSelectedWalletBloc(value);
+              context.read<SendCubit>().updateWalletBloc(value);
             },
             items: walletBlocs.map((wallet) {
               final name = wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint;

@@ -83,7 +83,7 @@ class SendCubit extends Cubit<SendState> {
     super.close();
   }
 
-  void updateSelectedWalletBloc(WalletBloc walletBloc) {
+  void updateWalletBloc(WalletBloc walletBloc) {
     emit(state.copyWith(selectedWalletBloc: walletBloc));
   }
 
