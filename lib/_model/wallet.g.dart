@@ -50,7 +50,8 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
               ?.map((e) => SwapTx.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      swapKeyIndex: json['swapKeyIndex'] as int? ?? 0,
+      revKeyIndex: json['revKeyIndex'] as int? ?? 0,
+      subKeyIndex: json['subKeyIndex'] as int? ?? 0,
       backupTested: json['backupTested'] as bool? ?? false,
       lastBackupTested: json['lastBackupTested'] == null
           ? null
@@ -79,7 +80,8 @@ Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
       'transactions': instance.transactions,
       'unsignedTxs': instance.unsignedTxs,
       'swaps': instance.swaps,
-      'swapKeyIndex': instance.swapKeyIndex,
+      'revKeyIndex': instance.revKeyIndex,
+      'subKeyIndex': instance.subKeyIndex,
       'backupTested': instance.backupTested,
       'lastBackupTested': instance.lastBackupTested?.toIso8601String(),
       'hide': instance.hide,

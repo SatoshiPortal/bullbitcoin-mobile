@@ -39,7 +39,8 @@ mixin _$Wallet {
   List<Transaction> get transactions => throw _privateConstructorUsedError;
   List<Transaction> get unsignedTxs => throw _privateConstructorUsedError;
   List<SwapTx> get swaps => throw _privateConstructorUsedError;
-  int get swapKeyIndex =>
+  int get revKeyIndex => throw _privateConstructorUsedError;
+  int get subKeyIndex =>
       throw _privateConstructorUsedError; // List<String>? labelTags,
 // List<Bip329Label>? bip329Labels,
   bool get backupTested => throw _privateConstructorUsedError;
@@ -76,7 +77,8 @@ abstract class $WalletCopyWith<$Res> {
       List<Transaction> transactions,
       List<Transaction> unsignedTxs,
       List<SwapTx> swaps,
-      int swapKeyIndex,
+      int revKeyIndex,
+      int subKeyIndex,
       bool backupTested,
       DateTime? lastBackupTested,
       bool hide});
@@ -117,7 +119,8 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? transactions = null,
     Object? unsignedTxs = null,
     Object? swaps = null,
-    Object? swapKeyIndex = null,
+    Object? revKeyIndex = null,
+    Object? subKeyIndex = null,
     Object? backupTested = null,
     Object? lastBackupTested = freezed,
     Object? hide = null,
@@ -199,9 +202,13 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.swaps
           : swaps // ignore: cast_nullable_to_non_nullable
               as List<SwapTx>,
-      swapKeyIndex: null == swapKeyIndex
-          ? _value.swapKeyIndex
-          : swapKeyIndex // ignore: cast_nullable_to_non_nullable
+      revKeyIndex: null == revKeyIndex
+          ? _value.revKeyIndex
+          : revKeyIndex // ignore: cast_nullable_to_non_nullable
+              as int,
+      subKeyIndex: null == subKeyIndex
+          ? _value.subKeyIndex
+          : subKeyIndex // ignore: cast_nullable_to_non_nullable
               as int,
       backupTested: null == backupTested
           ? _value.backupTested
@@ -270,7 +277,8 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
       List<Transaction> transactions,
       List<Transaction> unsignedTxs,
       List<SwapTx> swaps,
-      int swapKeyIndex,
+      int revKeyIndex,
+      int subKeyIndex,
       bool backupTested,
       DateTime? lastBackupTested,
       bool hide});
@@ -311,7 +319,8 @@ class __$$WalletImplCopyWithImpl<$Res>
     Object? transactions = null,
     Object? unsignedTxs = null,
     Object? swaps = null,
-    Object? swapKeyIndex = null,
+    Object? revKeyIndex = null,
+    Object? subKeyIndex = null,
     Object? backupTested = null,
     Object? lastBackupTested = freezed,
     Object? hide = null,
@@ -393,9 +402,13 @@ class __$$WalletImplCopyWithImpl<$Res>
           ? _value._swaps
           : swaps // ignore: cast_nullable_to_non_nullable
               as List<SwapTx>,
-      swapKeyIndex: null == swapKeyIndex
-          ? _value.swapKeyIndex
-          : swapKeyIndex // ignore: cast_nullable_to_non_nullable
+      revKeyIndex: null == revKeyIndex
+          ? _value.revKeyIndex
+          : revKeyIndex // ignore: cast_nullable_to_non_nullable
+              as int,
+      subKeyIndex: null == subKeyIndex
+          ? _value.subKeyIndex
+          : subKeyIndex // ignore: cast_nullable_to_non_nullable
               as int,
       backupTested: null == backupTested
           ? _value.backupTested
@@ -436,7 +449,8 @@ class _$WalletImpl extends _Wallet {
       final List<Transaction> transactions = const [],
       final List<Transaction> unsignedTxs = const [],
       final List<SwapTx> swaps = const [],
-      this.swapKeyIndex = 0,
+      this.revKeyIndex = 0,
+      this.subKeyIndex = 0,
       this.backupTested = false,
       this.lastBackupTested,
       this.hide = false})
@@ -540,7 +554,10 @@ class _$WalletImpl extends _Wallet {
 
   @override
   @JsonKey()
-  final int swapKeyIndex;
+  final int revKeyIndex;
+  @override
+  @JsonKey()
+  final int subKeyIndex;
 // List<String>? labelTags,
 // List<Bip329Label>? bip329Labels,
   @override
@@ -554,7 +571,7 @@ class _$WalletImpl extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, utxos: $utxos, transactions: $transactions, unsignedTxs: $unsignedTxs, swaps: $swaps, swapKeyIndex: $swapKeyIndex, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, utxos: $utxos, transactions: $transactions, unsignedTxs: $unsignedTxs, swaps: $swaps, revKeyIndex: $revKeyIndex, subKeyIndex: $subKeyIndex, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide)';
   }
 
   @override
@@ -594,8 +611,10 @@ class _$WalletImpl extends _Wallet {
             const DeepCollectionEquality()
                 .equals(other._unsignedTxs, _unsignedTxs) &&
             const DeepCollectionEquality().equals(other._swaps, _swaps) &&
-            (identical(other.swapKeyIndex, swapKeyIndex) ||
-                other.swapKeyIndex == swapKeyIndex) &&
+            (identical(other.revKeyIndex, revKeyIndex) ||
+                other.revKeyIndex == revKeyIndex) &&
+            (identical(other.subKeyIndex, subKeyIndex) ||
+                other.subKeyIndex == subKeyIndex) &&
             (identical(other.backupTested, backupTested) ||
                 other.backupTested == backupTested) &&
             (identical(other.lastBackupTested, lastBackupTested) ||
@@ -626,7 +645,8 @@ class _$WalletImpl extends _Wallet {
         const DeepCollectionEquality().hash(_transactions),
         const DeepCollectionEquality().hash(_unsignedTxs),
         const DeepCollectionEquality().hash(_swaps),
-        swapKeyIndex,
+        revKeyIndex,
+        subKeyIndex,
         backupTested,
         lastBackupTested,
         hide
@@ -667,7 +687,8 @@ abstract class _Wallet extends Wallet {
       final List<Transaction> transactions,
       final List<Transaction> unsignedTxs,
       final List<SwapTx> swaps,
-      final int swapKeyIndex,
+      final int revKeyIndex,
+      final int subKeyIndex,
       final bool backupTested,
       final DateTime? lastBackupTested,
       final bool hide}) = _$WalletImpl;
@@ -714,7 +735,9 @@ abstract class _Wallet extends Wallet {
   @override
   List<SwapTx> get swaps;
   @override
-  int get swapKeyIndex;
+  int get revKeyIndex;
+  @override
+  int get subKeyIndex;
   @override // List<String>? labelTags,
 // List<Bip329Label>? bip329Labels,
   bool get backupTested;

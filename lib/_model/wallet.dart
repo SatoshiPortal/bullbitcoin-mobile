@@ -38,7 +38,8 @@ class Wallet with _$Wallet {
     @Default([]) List<Transaction> transactions,
     @Default([]) List<Transaction> unsignedTxs,
     @Default([]) List<SwapTx> swaps,
-    @Default(0) int swapKeyIndex,
+    @Default(0) int revKeyIndex,
+    @Default(0) int subKeyIndex,
 
     // List<String>? labelTags,
     // List<Bip329Label>? bip329Labels,

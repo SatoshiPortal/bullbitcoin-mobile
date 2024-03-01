@@ -89,7 +89,7 @@ class SwapCubit extends Cubit<SwapState> {
 
     final (swap, errCreatingInv) = await swapBoltz.receive(
       mnemonic: seed!.mnemonic,
-      index: bloc.state.wallet!.swapKeyIndex,
+      index: bloc.state.wallet!.revKeyIndex,
       outAmount: outAmount,
       network: Chain.Testnet,
       electrumUrl: networkCubit.state.getNetworkUrl(),
@@ -133,7 +133,7 @@ class SwapCubit extends Cubit<SwapState> {
     final wallet = bloc.state.wallet;
     if (wallet == null) return;
 
-    final swapKeyIndex = wallet.swapKeyIndex + 1;
+    final swapKeyIndex = wallet.revKeyIndex + 1;
 
     // final tx = Transaction.fromSwapTx(event.swapTx).copyWith(
     //   isSwap: true,
@@ -143,7 +143,7 @@ class SwapCubit extends Cubit<SwapState> {
 
     final (updatedWallet, err) = await walletTx.addSwapTxToWallet(
       wallet: wallet.copyWith(
-        swapKeyIndex: swapKeyIndex,
+        revKeyIndex: swapKeyIndex,
       ),
       swapTx: swapTx,
     );
