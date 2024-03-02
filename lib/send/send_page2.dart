@@ -392,9 +392,9 @@ class _SendButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final watchOnly = context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
 
-    final sending = context.select((SendCubit cubit) => cubit.state.sending);
+    final sending = context.select((SendCubit cubit) => cubit.state.loadingWithSwap());
     final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);
-    final err = context.select((SendCubit cubit) => cubit.state.errSending);
+    final err = context.select((SendCubit cubit) => cubit.state.errWithSwap());
 
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
 

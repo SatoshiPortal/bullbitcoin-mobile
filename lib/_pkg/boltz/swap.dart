@@ -29,7 +29,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(BtcLnBoltzSwap?, Err?)> send({
+  Future<(SwapTx?, Err?)> send({
     required String mnemonic,
     required int index,
     required String invoice,
@@ -56,7 +56,9 @@ class SwapBoltz {
         value: jsonEncode(swapSensitive.toJson()),
       );
       if (err != null) throw err;
-      return (res, null);
+      final swap = SwapTx.fromBtcLnSwap(res);
+
+      return (swap, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }

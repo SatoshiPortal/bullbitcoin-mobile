@@ -122,6 +122,72 @@ class SwapCubit extends Cubit<SwapState> {
     );
   }
 
+  void payLnInvoice({
+    required String walletId,
+    required String invoice,
+    required int amount,
+    String? label,
+  }) async {
+    emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
+    final bloc = homeCubit.state.getWalletBlocById(walletId);
+    if (bloc == null) return;
+
+    final wallet = bloc.state.wallet;
+    if (wallet == null) return;
+
+    final (seed, errReadingSeed) = await walletSensitiveRepository.readSeed(
+      fingerprintIndex: wallet.getRelatedSeedStorageString(),
+      secureStore: secureStorage,
+    );
+    if (errReadingSeed != null) {
+      emit(state.copyWith(errCreatingSwapInv: errReadingSeed.toString(), generatingSwapInv: false));
+      return;
+    }
+
+    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
+      boltzUrl: boltzTestnet,
+      outAmount: amount,
+    );
+    if (errFees != null) {
+      emit(state.copyWith(errCreatingSwapInv: errFees.toString(), generatingSwapInv: false));
+      return;
+    }
+
+    final (tx, err) = await swapBoltz.send(
+      boltzUrl: boltzTestnet,
+      pairHash: fees!.btcPairHash,
+      mnemonic: seed!.mnemonic,
+      index: wallet.revKeyIndex,
+      invoice: invoice,
+      network: Chain.Testnet,
+      electrumUrl: networkCubit.state.getNetworkUrl(),
+    );
+    if (err != null) {
+      emit(state.copyWith(errCreatingSwapInv: err.toString(), generatingSwapInv: false));
+      return;
+    }
+
+    final updatedSwap = tx!.copyWith(
+      boltzFees: fees.btcReverse.boltzFees,
+      lockupFees: fees.btcReverse.lockupFees,
+      claimFees: fees.btcReverse.claimFeesEstimate,
+    );
+
+    emit(
+      state.copyWith(
+        generatingSwapInv: false,
+        errCreatingSwapInv: '',
+        swapTx: tx,
+      ),
+    );
+
+    _saveSwapInvoiceToWallet(
+      swapTx: updatedSwap,
+      walletId: walletId,
+      label: label,
+    );
+  }
+
   void _saveSwapInvoiceToWallet({
     required String walletId,
     required SwapTx swapTx,
@@ -133,17 +199,10 @@ class SwapCubit extends Cubit<SwapState> {
     final wallet = bloc.state.wallet;
     if (wallet == null) return;
 
-    final swapKeyIndex = wallet.revKeyIndex + 1;
-
-    // final tx = Transaction.fromSwapTx(event.swapTx).copyWith(
-    //   isSwap: true,
-    //   swapIndex: wallet.swapTxCount,
-    //   label: event.label,
-    // );
-
     final (updatedWallet, err) = await walletTx.addSwapTxToWallet(
       wallet: wallet.copyWith(
-        revKeyIndex: swapKeyIndex,
+        revKeyIndex: !swapTx.isSubmarine ? wallet.revKeyIndex + 1 : wallet.revKeyIndex,
+        subKeyIndex: swapTx.isSubmarine ? wallet.subKeyIndex + 1 : wallet.subKeyIndex,
       ),
       swapTx: swapTx,
     );
@@ -159,9 +218,7 @@ class SwapCubit extends Cubit<SwapState> {
       ),
     );
 
-    // await Future.delayed(500.ms);
     homeCubit.updateSelectedWallet(bloc);
-    // await Future.delayed(500.ms);
     watchTxsBloc.add(WatchWalletTxs(walletId: walletId));
   }
 

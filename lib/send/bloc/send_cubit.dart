@@ -110,6 +110,8 @@ class SendCubit extends Cubit<SendState> {
         if (label != null) {
           emit(state.copyWith(note: label));
         }
+      } else if (address.startsWith('ln')) {
+        emit(state.copyWith(address: address));
       } else
         emit(state.copyWith(address: address));
     } catch (e) {
@@ -246,6 +248,15 @@ class SendCubit extends Cubit<SendState> {
 
     final bdkWallet = state.selectedWalletBloc!.state.bdkWallet;
     if (bdkWallet == null) return;
+
+    if (state.address.startsWith('ln')) {
+      state.swapCubit.payLnInvoice(
+        walletId: state.selectedWalletBloc!.state.wallet!.id,
+        invoice: state.address,
+        amount: currencyCubit.state.amount,
+      );
+      return;
+    }
 
     emit(state.copyWith(sending: true, errSending: ''));
 

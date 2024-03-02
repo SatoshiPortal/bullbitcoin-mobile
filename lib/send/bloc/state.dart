@@ -52,4 +52,22 @@ class SendState with _$SendState {
 
     return 'Selected ${selectedUtxos.length} addresses';
   }
+
+  bool loadingWithSwap() {
+    final loading = swapCubit.state.creatingInvoice;
+    return loading || sending || downloadingFile;
+  }
+
+  String errWithSwap() {
+    if (swapCubit.state.errCreatingInvoice.isNotEmpty) {
+      return swapCubit.state.errCreatingInvoice;
+    }
+    if (errSending.isNotEmpty) {
+      return errSending;
+    }
+    if (errDownloadingFile.isNotEmpty) {
+      return errDownloadingFile;
+    }
+    return '';
+  }
 }

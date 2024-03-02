@@ -321,6 +321,15 @@ class SelectWalletType extends StatelessWidget {
   }
 }
 
+class BBSwitcher extends StatelessWidget {
+  const BBSwitcher({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
 class CreateLightningInvoice extends StatelessWidget {
   const CreateLightningInvoice({super.key});
 
