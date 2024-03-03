@@ -163,7 +163,7 @@ class __$$SwapStateImplCopyWithImpl<$Res>
 
 class _$SwapStateImpl extends _SwapState {
   const _$SwapStateImpl(
-      {this.creatingInvoice = true,
+      {this.creatingInvoice = false,
       this.errCreatingInvoice = '',
       this.errCreatingSwapInv = '',
       this.generatingSwapInv = false,

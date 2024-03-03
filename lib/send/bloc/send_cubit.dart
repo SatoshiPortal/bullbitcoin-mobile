@@ -93,7 +93,7 @@ class SendCubit extends Cubit<SendState> {
   //   walletBloc.add(GetBalance());
   // }
 
-  void updateAddress(String address) {
+  void updateAddress(String address) async {
     try {
       if (address.startsWith('bitcoin')) {
         final bip21Obj = bip21.decode(address);

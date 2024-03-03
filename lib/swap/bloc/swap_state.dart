@@ -6,7 +6,7 @@ part 'swap_state.freezed.dart';
 @freezed
 class SwapState with _$SwapState {
   const factory SwapState({
-    @Default(true) bool creatingInvoice,
+    @Default(false) bool creatingInvoice,
     @Default('') String errCreatingInvoice,
     @Default('') String errCreatingSwapInv,
     @Default(false) bool generatingSwapInv,
