@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -308,11 +309,11 @@ class _AddressFieldState extends State<AddressField> {
             children: [
               IconButton(
                 onPressed: () async {
-                  // if (!locator.isRegistered<Clippboard>()) return;
-                  // final data = await locator<Clippboard>().paste();
-                  // if (data == null) return;
-                  const d = 'tb1qytdqntr4xuee2y5qtu8r2q8ya0fqluy7dtp4lg';
-                  context.read<SendCubit>().updateAddress(d);
+                  if (!locator.isRegistered<Clippboard>()) return;
+                  final data = await locator<Clippboard>().paste();
+                  if (data == null) return;
+                  // const d = 'tb1qytdqntr4xuee2y5qtu8r2q8ya0fqluy7dtp4lg';
+                  context.read<SendCubit>().updateAddress(data);
                 },
                 iconSize: 16,
                 visualDensity: VisualDensity.compact,
