@@ -187,7 +187,7 @@ class SwapCubit extends Cubit<SwapState> {
       state.copyWith(
         generatingSwapInv: false,
         errCreatingSwapInv: '',
-        swapTx: tx,
+        swapTx: updatedSwap,
       ),
     );
 
