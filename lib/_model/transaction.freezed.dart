@@ -1534,3 +1534,301 @@ abstract class _SwapTxSensitive extends SwapTxSensitive {
   _$$SwapTxSensitiveImplCopyWith<_$SwapTxSensitiveImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+Invoice _$InvoiceFromJson(Map<String, dynamic> json) {
+  return _Invoice.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Invoice {
+  int get msats => throw _privateConstructorUsedError;
+  int get expiry => throw _privateConstructorUsedError;
+  int get expiresIn => throw _privateConstructorUsedError;
+  int get expiresAt => throw _privateConstructorUsedError;
+  bool get isExpired => throw _privateConstructorUsedError;
+  String get network => throw _privateConstructorUsedError;
+  int get cltvExpDelta => throw _privateConstructorUsedError;
+  String get invoice => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $InvoiceCopyWith<Invoice> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $InvoiceCopyWith<$Res> {
+  factory $InvoiceCopyWith(Invoice value, $Res Function(Invoice) then) =
+      _$InvoiceCopyWithImpl<$Res, Invoice>;
+  @useResult
+  $Res call(
+      {int msats,
+      int expiry,
+      int expiresIn,
+      int expiresAt,
+      bool isExpired,
+      String network,
+      int cltvExpDelta,
+      String invoice});
+}
+
+/// @nodoc
+class _$InvoiceCopyWithImpl<$Res, $Val extends Invoice>
+    implements $InvoiceCopyWith<$Res> {
+  _$InvoiceCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? msats = null,
+    Object? expiry = null,
+    Object? expiresIn = null,
+    Object? expiresAt = null,
+    Object? isExpired = null,
+    Object? network = null,
+    Object? cltvExpDelta = null,
+    Object? invoice = null,
+  }) {
+    return _then(_value.copyWith(
+      msats: null == msats
+          ? _value.msats
+          : msats // ignore: cast_nullable_to_non_nullable
+              as int,
+      expiry: null == expiry
+          ? _value.expiry
+          : expiry // ignore: cast_nullable_to_non_nullable
+              as int,
+      expiresIn: null == expiresIn
+          ? _value.expiresIn
+          : expiresIn // ignore: cast_nullable_to_non_nullable
+              as int,
+      expiresAt: null == expiresAt
+          ? _value.expiresAt
+          : expiresAt // ignore: cast_nullable_to_non_nullable
+              as int,
+      isExpired: null == isExpired
+          ? _value.isExpired
+          : isExpired // ignore: cast_nullable_to_non_nullable
+              as bool,
+      network: null == network
+          ? _value.network
+          : network // ignore: cast_nullable_to_non_nullable
+              as String,
+      cltvExpDelta: null == cltvExpDelta
+          ? _value.cltvExpDelta
+          : cltvExpDelta // ignore: cast_nullable_to_non_nullable
+              as int,
+      invoice: null == invoice
+          ? _value.invoice
+          : invoice // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$InvoiceImplCopyWith<$Res> implements $InvoiceCopyWith<$Res> {
+  factory _$$InvoiceImplCopyWith(
+          _$InvoiceImpl value, $Res Function(_$InvoiceImpl) then) =
+      __$$InvoiceImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {int msats,
+      int expiry,
+      int expiresIn,
+      int expiresAt,
+      bool isExpired,
+      String network,
+      int cltvExpDelta,
+      String invoice});
+}
+
+/// @nodoc
+class __$$InvoiceImplCopyWithImpl<$Res>
+    extends _$InvoiceCopyWithImpl<$Res, _$InvoiceImpl>
+    implements _$$InvoiceImplCopyWith<$Res> {
+  __$$InvoiceImplCopyWithImpl(
+      _$InvoiceImpl _value, $Res Function(_$InvoiceImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? msats = null,
+    Object? expiry = null,
+    Object? expiresIn = null,
+    Object? expiresAt = null,
+    Object? isExpired = null,
+    Object? network = null,
+    Object? cltvExpDelta = null,
+    Object? invoice = null,
+  }) {
+    return _then(_$InvoiceImpl(
+      msats: null == msats
+          ? _value.msats
+          : msats // ignore: cast_nullable_to_non_nullable
+              as int,
+      expiry: null == expiry
+          ? _value.expiry
+          : expiry // ignore: cast_nullable_to_non_nullable
+              as int,
+      expiresIn: null == expiresIn
+          ? _value.expiresIn
+          : expiresIn // ignore: cast_nullable_to_non_nullable
+              as int,
+      expiresAt: null == expiresAt
+          ? _value.expiresAt
+          : expiresAt // ignore: cast_nullable_to_non_nullable
+              as int,
+      isExpired: null == isExpired
+          ? _value.isExpired
+          : isExpired // ignore: cast_nullable_to_non_nullable
+              as bool,
+      network: null == network
+          ? _value.network
+          : network // ignore: cast_nullable_to_non_nullable
+              as String,
+      cltvExpDelta: null == cltvExpDelta
+          ? _value.cltvExpDelta
+          : cltvExpDelta // ignore: cast_nullable_to_non_nullable
+              as int,
+      invoice: null == invoice
+          ? _value.invoice
+          : invoice // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$InvoiceImpl extends _Invoice with DiagnosticableTreeMixin {
+  const _$InvoiceImpl(
+      {required this.msats,
+      required this.expiry,
+      required this.expiresIn,
+      required this.expiresAt,
+      required this.isExpired,
+      required this.network,
+      required this.cltvExpDelta,
+      required this.invoice})
+      : super._();
+
+  factory _$InvoiceImpl.fromJson(Map<String, dynamic> json) =>
+      _$$InvoiceImplFromJson(json);
+
+  @override
+  final int msats;
+  @override
+  final int expiry;
+  @override
+  final int expiresIn;
+  @override
+  final int expiresAt;
+  @override
+  final bool isExpired;
+  @override
+  final String network;
+  @override
+  final int cltvExpDelta;
+  @override
+  final String invoice;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'Invoice(msats: $msats, expiry: $expiry, expiresIn: $expiresIn, expiresAt: $expiresAt, isExpired: $isExpired, network: $network, cltvExpDelta: $cltvExpDelta, invoice: $invoice)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'Invoice'))
+      ..add(DiagnosticsProperty('msats', msats))
+      ..add(DiagnosticsProperty('expiry', expiry))
+      ..add(DiagnosticsProperty('expiresIn', expiresIn))
+      ..add(DiagnosticsProperty('expiresAt', expiresAt))
+      ..add(DiagnosticsProperty('isExpired', isExpired))
+      ..add(DiagnosticsProperty('network', network))
+      ..add(DiagnosticsProperty('cltvExpDelta', cltvExpDelta))
+      ..add(DiagnosticsProperty('invoice', invoice));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$InvoiceImpl &&
+            (identical(other.msats, msats) || other.msats == msats) &&
+            (identical(other.expiry, expiry) || other.expiry == expiry) &&
+            (identical(other.expiresIn, expiresIn) ||
+                other.expiresIn == expiresIn) &&
+            (identical(other.expiresAt, expiresAt) ||
+                other.expiresAt == expiresAt) &&
+            (identical(other.isExpired, isExpired) ||
+                other.isExpired == isExpired) &&
+            (identical(other.network, network) || other.network == network) &&
+            (identical(other.cltvExpDelta, cltvExpDelta) ||
+                other.cltvExpDelta == cltvExpDelta) &&
+            (identical(other.invoice, invoice) || other.invoice == invoice));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, msats, expiry, expiresIn,
+      expiresAt, isExpired, network, cltvExpDelta, invoice);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$InvoiceImplCopyWith<_$InvoiceImpl> get copyWith =>
+      __$$InvoiceImplCopyWithImpl<_$InvoiceImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$InvoiceImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _Invoice extends Invoice {
+  const factory _Invoice(
+      {required final int msats,
+      required final int expiry,
+      required final int expiresIn,
+      required final int expiresAt,
+      required final bool isExpired,
+      required final String network,
+      required final int cltvExpDelta,
+      required final String invoice}) = _$InvoiceImpl;
+  const _Invoice._() : super._();
+
+  factory _Invoice.fromJson(Map<String, dynamic> json) = _$InvoiceImpl.fromJson;
+
+  @override
+  int get msats;
+  @override
+  int get expiry;
+  @override
+  int get expiresIn;
+  @override
+  int get expiresAt;
+  @override
+  bool get isExpired;
+  @override
+  String get network;
+  @override
+  int get cltvExpDelta;
+  @override
+  String get invoice;
+  @override
+  @JsonKey(ignore: true)
+  _$$InvoiceImplCopyWith<_$InvoiceImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

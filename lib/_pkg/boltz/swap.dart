@@ -7,21 +7,22 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 
-Future<(DecodedInvoice?, Err?)> decodeInvoice({required String invoice}) async {
-  try {
-    final res = await Bolt11Invoice.decode(invoice: invoice);
-    return (res, null);
-  } catch (e) {
-    return (null, Err(e.toString()));
-  }
-}
-
 class SwapBoltz {
   SwapBoltz({
     required SecureStorage secureStorage,
   }) : _secureStorage = secureStorage;
 
   final SecureStorage _secureStorage;
+
+  Future<(Invoice?, Err?)> decodeInvoice({required String invoice}) async {
+    try {
+      final res = await Bolt11Invoice.decode(invoice: invoice);
+      final inv = Invoice.fromDecodedInvoice(res, invoice);
+      return (inv, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
 
   Future<(AllFees?, Err?)> getFeesAndLimits({
     required String boltzUrl,

@@ -38,6 +38,8 @@ class SendState with _$SendState {
     return calculateTotalSelected() >= amount;
   }
 
+  bool isLnInvoice() => address.startsWith('ln');
+
   int calculateTotalSelected() {
     return selectedUtxos.fold<int>(
       0,

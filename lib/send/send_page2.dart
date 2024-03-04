@@ -95,6 +95,7 @@ class _SendPage2State extends State<SendPage2> {
         defaultCurrencyCubit: context.read<CurrencyCubit>(),
       ),
       swapCubit: swapBloc,
+      swapBoltz: locator<SwapBoltz>(),
     );
 
     home = locator<HomeCubit>();
@@ -154,6 +155,7 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
+    final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
 
     return ColoredBox(
       color: sent ? Colors.green : context.colour.background,
@@ -175,10 +177,12 @@ class _Screen extends StatelessWidget {
                 const AddressField(),
                 const Gap(24),
                 const AmountField(),
-                const Gap(24),
-                const NetworkFees(),
-                const Gap(8),
-                const AdvancedOptions(),
+                if (!isLn) ...[
+                  const Gap(24),
+                  const NetworkFees(),
+                  const Gap(8),
+                  const AdvancedOptions(),
+                ],
                 const Gap(48),
               ],
               if (!sent) ...[
@@ -349,12 +353,36 @@ class AmountField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sendAll = context.select((SendCubit cubit) => cubit.state.sendAllCoin);
+    final isLnInvoice = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
+
+    if (isLnInvoice) return const InvAmtDisplay();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const BBText.title('Amount to send'),
         const Gap(4),
         EnterAmount2(sendAll: sendAll),
+      ],
+    );
+  }
+}
+
+class InvAmtDisplay extends StatelessWidget {
+  const InvAmtDisplay({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final inv = context.select((SwapCubit _) => _.state.invoice);
+    if (inv == null) return const SizedBox.shrink();
+    final amtStr = context.select((CurrencyCubit _) => _.state.getAmountInUnits(inv.msats));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const BBText.title('Amount to send'),
+        const Gap(4),
+        BBText.body(amtStr, isBold: true),
       ],
     );
   }

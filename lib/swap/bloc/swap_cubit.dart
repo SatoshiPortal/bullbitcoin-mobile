@@ -46,6 +46,16 @@ class SwapCubit extends Cubit<SwapState> {
   final WatchTxsBloc watchTxsBloc;
   final HomeCubit homeCubit;
 
+  void lnInvoiceUpdated(String invoice) async {
+    final (inv, err) = await swapBoltz.decodeInvoice(invoice: invoice);
+    if (err != null) {
+      emit(state.copyWith(errCreatingSwapInv: err.toString(), generatingSwapInv: false));
+      return;
+    }
+
+    emit(state.copyWith(invoice: inv));
+  }
+
   void createBtcLightningSwap({
     required String walletId,
     required int amount,

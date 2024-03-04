@@ -313,6 +313,37 @@ class SwapTxSensitive with _$SwapTxSensitive {
   factory SwapTxSensitive.fromJson(Map<String, dynamic> json) => _$SwapTxSensitiveFromJson(json);
 }
 
+@freezed
+class Invoice with _$Invoice {
+  const factory Invoice({
+    required int msats,
+    required int expiry,
+    required int expiresIn,
+    required int expiresAt,
+    required bool isExpired,
+    required String network,
+    required int cltvExpDelta,
+    required String invoice,
+  }) = _Invoice;
+  const Invoice._();
+
+  factory Invoice.fromJson(Map<String, dynamic> json) => _$InvoiceFromJson(json);
+
+  factory Invoice.fromDecodedInvoice(DecodedInvoice decodedInvoice, String invoice) {
+    return Invoice(
+      invoice: invoice,
+      msats: decodedInvoice.msats,
+      expiry: decodedInvoice.expiry,
+      expiresIn: decodedInvoice.expiresIn,
+      expiresAt: decodedInvoice.expiresAt,
+      isExpired: decodedInvoice.isExpired,
+      network: decodedInvoice.network,
+      cltvExpDelta: decodedInvoice.cltvExpDelta,
+    );
+  }
+}
+
+
 // String swapStatusToString(SwapStatus swap) {
 //   debugPrint('swapToJson');
 //   final value = swap.toJson();

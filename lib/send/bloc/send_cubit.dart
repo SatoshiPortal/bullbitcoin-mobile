@@ -4,6 +4,7 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bip21.dart';
+import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
@@ -22,6 +23,7 @@ import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -47,6 +49,7 @@ class SendCubit extends Cubit<SendState> {
     required this.networkFeesCubit,
     required this.currencyCubit,
     required SwapCubit swapCubit,
+    required this.swapBoltz,
   }) : super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
@@ -58,6 +61,8 @@ class SendCubit extends Cubit<SendState> {
     currencyCubitSub = currencyCubit.stream.listen((_) {
       _updateShowSend();
     });
+
+    swapCubitSub = state.swapCubit.stream.listen(swapCubitStateChanged);
   }
 
   final Barcode barcode;
@@ -75,13 +80,16 @@ class SendCubit extends Cubit<SendState> {
   final NetworkFeesCubit networkFeesCubit;
   final CurrencyCubit currencyCubit;
   late StreamSubscription currencyCubitSub;
+  late StreamSubscription swapCubitSub;
 
   final WalletSensitiveCreate walletSensCreate;
   final MempoolAPI mempoolAPI;
   final FileStorage fileStorage;
+  final SwapBoltz swapBoltz;
 
   void dispose() {
     currencyCubitSub.cancel();
+    swapCubitSub.cancel();
     super.close();
   }
 
@@ -89,9 +97,13 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(selectedWalletBloc: walletBloc));
   }
 
-  // void loadAddressesAndBalances() {
-  //   walletBloc.add(GetBalance());
-  // }
+  void swapCubitStateChanged(SwapState swapState) {
+    if (swapState.invoice != null && swapState.invoice!.invoice == state.address) {
+      final amt = swapState.invoice!.msats;
+      currencyCubit.updateAmountDirect(amt);
+      _updateShowSend();
+    }
+  }
 
   void updateAddress(String address) async {
     try {
@@ -112,6 +124,7 @@ class SendCubit extends Cubit<SendState> {
         }
       } else if (address.startsWith('ln')) {
         emit(state.copyWith(address: address));
+        state.swapCubit.lnInvoiceUpdated(address);
       } else
         emit(state.copyWith(address: address));
     } catch (e) {

@@ -21,6 +21,7 @@ mixin _$SwapState {
   String get errCreatingSwapInv => throw _privateConstructorUsedError;
   bool get generatingSwapInv => throw _privateConstructorUsedError;
   SwapTx? get swapTx => throw _privateConstructorUsedError;
+  Invoice? get invoice => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SwapStateCopyWith<SwapState> get copyWith =>
@@ -37,9 +38,11 @@ abstract class $SwapStateCopyWith<$Res> {
       String errCreatingInvoice,
       String errCreatingSwapInv,
       bool generatingSwapInv,
-      SwapTx? swapTx});
+      SwapTx? swapTx,
+      Invoice? invoice});
 
   $SwapTxCopyWith<$Res>? get swapTx;
+  $InvoiceCopyWith<$Res>? get invoice;
 }
 
 /// @nodoc
@@ -60,6 +63,7 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
     Object? errCreatingSwapInv = null,
     Object? generatingSwapInv = null,
     Object? swapTx = freezed,
+    Object? invoice = freezed,
   }) {
     return _then(_value.copyWith(
       creatingInvoice: null == creatingInvoice
@@ -82,6 +86,10 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
           ? _value.swapTx
           : swapTx // ignore: cast_nullable_to_non_nullable
               as SwapTx?,
+      invoice: freezed == invoice
+          ? _value.invoice
+          : invoice // ignore: cast_nullable_to_non_nullable
+              as Invoice?,
     ) as $Val);
   }
 
@@ -94,6 +102,18 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
 
     return $SwapTxCopyWith<$Res>(_value.swapTx!, (value) {
       return _then(_value.copyWith(swapTx: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $InvoiceCopyWith<$Res>? get invoice {
+    if (_value.invoice == null) {
+      return null;
+    }
+
+    return $InvoiceCopyWith<$Res>(_value.invoice!, (value) {
+      return _then(_value.copyWith(invoice: value) as $Val);
     });
   }
 }
@@ -111,10 +131,13 @@ abstract class _$$SwapStateImplCopyWith<$Res>
       String errCreatingInvoice,
       String errCreatingSwapInv,
       bool generatingSwapInv,
-      SwapTx? swapTx});
+      SwapTx? swapTx,
+      Invoice? invoice});
 
   @override
   $SwapTxCopyWith<$Res>? get swapTx;
+  @override
+  $InvoiceCopyWith<$Res>? get invoice;
 }
 
 /// @nodoc
@@ -133,6 +156,7 @@ class __$$SwapStateImplCopyWithImpl<$Res>
     Object? errCreatingSwapInv = null,
     Object? generatingSwapInv = null,
     Object? swapTx = freezed,
+    Object? invoice = freezed,
   }) {
     return _then(_$SwapStateImpl(
       creatingInvoice: null == creatingInvoice
@@ -155,6 +179,10 @@ class __$$SwapStateImplCopyWithImpl<$Res>
           ? _value.swapTx
           : swapTx // ignore: cast_nullable_to_non_nullable
               as SwapTx?,
+      invoice: freezed == invoice
+          ? _value.invoice
+          : invoice // ignore: cast_nullable_to_non_nullable
+              as Invoice?,
     ));
   }
 }
@@ -167,7 +195,8 @@ class _$SwapStateImpl extends _SwapState {
       this.errCreatingInvoice = '',
       this.errCreatingSwapInv = '',
       this.generatingSwapInv = false,
-      this.swapTx})
+      this.swapTx,
+      this.invoice})
       : super._();
 
   @override
@@ -184,10 +213,12 @@ class _$SwapStateImpl extends _SwapState {
   final bool generatingSwapInv;
   @override
   final SwapTx? swapTx;
+  @override
+  final Invoice? invoice;
 
   @override
   String toString() {
-    return 'SwapState(creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, swapTx: $swapTx)';
+    return 'SwapState(creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, swapTx: $swapTx, invoice: $invoice)';
   }
 
   @override
@@ -203,12 +234,19 @@ class _$SwapStateImpl extends _SwapState {
                 other.errCreatingSwapInv == errCreatingSwapInv) &&
             (identical(other.generatingSwapInv, generatingSwapInv) ||
                 other.generatingSwapInv == generatingSwapInv) &&
-            (identical(other.swapTx, swapTx) || other.swapTx == swapTx));
+            (identical(other.swapTx, swapTx) || other.swapTx == swapTx) &&
+            (identical(other.invoice, invoice) || other.invoice == invoice));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, creatingInvoice,
-      errCreatingInvoice, errCreatingSwapInv, generatingSwapInv, swapTx);
+  int get hashCode => Object.hash(
+      runtimeType,
+      creatingInvoice,
+      errCreatingInvoice,
+      errCreatingSwapInv,
+      generatingSwapInv,
+      swapTx,
+      invoice);
 
   @JsonKey(ignore: true)
   @override
@@ -223,7 +261,8 @@ abstract class _SwapState extends SwapState {
       final String errCreatingInvoice,
       final String errCreatingSwapInv,
       final bool generatingSwapInv,
-      final SwapTx? swapTx}) = _$SwapStateImpl;
+      final SwapTx? swapTx,
+      final Invoice? invoice}) = _$SwapStateImpl;
   const _SwapState._() : super._();
 
   @override
@@ -236,6 +275,8 @@ abstract class _SwapState extends SwapState {
   bool get generatingSwapInv;
   @override
   SwapTx? get swapTx;
+  @override
+  Invoice? get invoice;
   @override
   @JsonKey(ignore: true)
   _$$SwapStateImplCopyWith<_$SwapStateImpl> get copyWith =>

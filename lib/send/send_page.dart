@@ -121,6 +121,7 @@ class _SendScreenState extends State<SendScreen> {
         defaultCurrencyCubit: context.read<CurrencyCubit>(),
       ),
       swapCubit: swapBloc,
+      swapBoltz: locator<SwapBoltz>(),
     );
 
     super.initState();

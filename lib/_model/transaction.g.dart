@@ -130,3 +130,27 @@ Map<String, dynamic> _$$SwapTxSensitiveImplToJson(
       'sha256': instance.sha256,
       'hash160': instance.hash160,
     };
+
+_$InvoiceImpl _$$InvoiceImplFromJson(Map<String, dynamic> json) =>
+    _$InvoiceImpl(
+      msats: json['msats'] as int,
+      expiry: json['expiry'] as int,
+      expiresIn: json['expiresIn'] as int,
+      expiresAt: json['expiresAt'] as int,
+      isExpired: json['isExpired'] as bool,
+      network: json['network'] as String,
+      cltvExpDelta: json['cltvExpDelta'] as int,
+      invoice: json['invoice'] as String,
+    );
+
+Map<String, dynamic> _$$InvoiceImplToJson(_$InvoiceImpl instance) =>
+    <String, dynamic>{
+      'msats': instance.msats,
+      'expiry': instance.expiry,
+      'expiresIn': instance.expiresIn,
+      'expiresAt': instance.expiresAt,
+      'isExpired': instance.isExpired,
+      'network': instance.network,
+      'cltvExpDelta': instance.cltvExpDelta,
+      'invoice': instance.invoice,
+    };
