@@ -341,6 +341,8 @@ class Invoice with _$Invoice {
       cltvExpDelta: decodedInvoice.cltvExpDelta,
     );
   }
+
+  int getAmount() => msats ~/ 1000;
 }
 
 

@@ -376,7 +376,7 @@ class InvAmtDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     final inv = context.select((SwapCubit _) => _.state.invoice);
     if (inv == null) return const SizedBox.shrink();
-    final amtStr = context.select((CurrencyCubit _) => _.state.getAmountInUnits(inv.msats));
+    final amtStr = context.select((CurrencyCubit _) => _.state.getAmountInUnits(inv.getAmount()));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

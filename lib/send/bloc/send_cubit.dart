@@ -99,7 +99,7 @@ class SendCubit extends Cubit<SendState> {
 
   void swapCubitStateChanged(SwapState swapState) {
     if (swapState.invoice != null && swapState.invoice!.invoice == state.address) {
-      final amt = swapState.invoice!.msats;
+      final amt = swapState.invoice!.getAmount();
       currencyCubit.updateAmountDirect(amt);
       _updateShowSend();
     }
