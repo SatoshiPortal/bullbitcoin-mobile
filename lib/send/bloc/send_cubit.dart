@@ -279,12 +279,7 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final address = state.swapCubit.state.swapTx?.scriptAddress ?? state.address;
-    final fee = state.swapCubit.state.swapTx != null
-        ? state.swapCubit.state.swapTx!.lockupFees!.toDouble()
-        : networkFeesCubit.state.selectedFeesOption == 4
-            ? networkFeesCubit.state.fees!.toDouble()
-            : networkFeesCubit.state.feesList![networkFeesCubit.state.selectedFeesOption]
-                .toDouble();
+    final fee = networkFeesCubit.state.feesList![0]; // fee must be available
 
     final enableRbf = isLn ? false : !state.disableRBF;
     // final enableRbf = !isLn && !state.disableRBF;
@@ -299,7 +294,7 @@ class SendCubit extends Cubit<SendState> {
       address: address,
       amount: currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
-      feeRate: fee,
+      feeRate: fee.toDouble(),
       enableRbf: enableRbf,
       selectedUtxos: state.selectedUtxos,
       note: state.note,
