@@ -181,9 +181,9 @@ class _Screen extends StatelessWidget {
                 if (!isLn) ...[
                   const Gap(24),
                   const NetworkFees(),
-                  const Gap(8),
-                  const AdvancedOptions(),
                 ],
+                const Gap(8),
+                const AdvancedOptions(),
                 const Gap(48),
               ],
               if (!sent) ...[

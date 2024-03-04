@@ -132,7 +132,7 @@ class SwapCubit extends Cubit<SwapState> {
     );
   }
 
-  void payLnInvoice({
+  Future payLnInvoice({
     required String walletId,
     required String invoice,
     required int amount,
@@ -178,9 +178,9 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     final updatedSwap = tx!.copyWith(
-      boltzFees: fees.btcReverse.boltzFees,
-      lockupFees: fees.btcReverse.lockupFees,
-      claimFees: fees.btcReverse.claimFeesEstimate,
+      boltzFees: fees.btcSubmarine.boltzFees,
+      lockupFees: fees.btcSubmarine.lockupFeesEstimate,
+      claimFees: fees.btcSubmarine.claimFees,
     );
 
     emit(

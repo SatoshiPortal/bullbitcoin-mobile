@@ -533,6 +533,7 @@ class TxDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
     final address = context.select((SendCubit cubit) => cubit.state.address);
     final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
     final amtStr = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
@@ -576,17 +577,100 @@ class TxDetailsScreen extends StatelessWidget {
           address,
         ),
         const Gap(24),
+        if (!isLn) ...[
+          const BBText.title(
+            'Network Fee',
+          ),
+          const Gap(4),
+          BBText.body(
+            feeStr,
+          ),
+          BBText.body(
+            '~ $feeFiat $fiatCurrency',
+          ),
+        ] else
+          const _LnFees(),
+        const Gap(32),
+      ],
+    );
+  }
+}
+
+class _LnFees extends StatelessWidget {
+  const _LnFees();
+
+  @override
+  Widget build(BuildContext context) {
+    final swapTx = context.select((SwapCubit cubit) => cubit.state.swapTx);
+    if (swapTx == null) return const SizedBox.shrink();
+
+    final networkFees = swapTx.lockupFees!;
+    final boltzFees = swapTx.boltzFees!;
+    final claimFees = swapTx.claimFees!;
+
+    final currency = context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+
+    final networkFeesStr =
+        context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(networkFees));
+    final networkFeesFiat =
+        context.select((NetworkCubit cubit) => cubit.state.calculatePrice(networkFees, currency));
+
+    final boltzFeesStr =
+        context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(boltzFees));
+    final boltzFeesFiat =
+        context.select((NetworkCubit cubit) => cubit.state.calculatePrice(boltzFees, currency));
+
+    final claimFeesStr =
+        context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(claimFees));
+    final claimFeesFiat =
+        context.select((NetworkCubit cubit) => cubit.state.calculatePrice(claimFees, currency));
+
+    final fiatCurrency =
+        context.select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency?.shortName ?? '');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
         const BBText.title(
           'Network Fee',
         ),
         const Gap(4),
         BBText.body(
-          feeStr,
+          networkFeesStr,
         ),
         BBText.body(
-          '~ $feeFiat $fiatCurrency',
+          '~ $networkFeesFiat $fiatCurrency',
         ),
         const Gap(32),
+        const BBText.title(
+          'Boltz Fee',
+        ),
+        const Gap(4),
+        BBText.body(
+          boltzFeesStr,
+        ),
+        BBText.body(
+          '~ $boltzFeesFiat $fiatCurrency',
+        ),
+        const Gap(16),
+        const BBText.title(
+          'Claim Fee',
+        ),
+        const Gap(4),
+        BBText.body(
+          claimFeesStr,
+        ),
+        BBText.body(
+          '~ $claimFeesFiat $fiatCurrency',
+        ),
+        const Gap(16),
+        const BBText.title(
+          'Fees Details',
+        ),
+        const Gap(4),
+        const BBText.body(
+          'Exchange Fees = Boltz Fees + Claim Fees',
+        ),
       ],
     );
   }

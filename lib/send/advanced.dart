@@ -34,6 +34,7 @@ class AdvancedOptionsPopUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sendAll = context.select((SendCubit x) => x.state.sendAllCoin);
+    final isLn = context.select((SendCubit x) => x.state.isLnInvoice());
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -66,10 +67,12 @@ class AdvancedOptionsPopUp extends StatelessWidget {
           // ),
           const Gap(16),
 
-          const SendAllOption(),
-          const Gap(8),
-          const EnableRBFOption(),
-          const Gap(8),
+          if (!isLn) ...[
+            const SendAllOption(),
+            const Gap(8),
+            const EnableRBFOption(),
+            const Gap(8),
+          ],
           if (!sendAll)
             CenterLeft(
               child: BBButton.text(

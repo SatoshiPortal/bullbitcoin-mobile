@@ -98,7 +98,9 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void swapCubitStateChanged(SwapState swapState) {
-    if (swapState.invoice != null && swapState.invoice!.invoice == state.address) {
+    final amount = currencyCubit.state.amount;
+    final inv = swapState.invoice;
+    if (inv != null && inv.invoice == state.address && inv.getAmount() != amount) {
       final amt = swapState.invoice!.getAmount();
       currencyCubit.updateAmountDirect(amt);
       _updateShowSend();
@@ -262,15 +264,30 @@ class SendCubit extends Cubit<SendState> {
     final bdkWallet = state.selectedWalletBloc!.state.bdkWallet;
     if (bdkWallet == null) return;
 
-    if (state.address.startsWith('ln')) {
-      state.swapCubit.payLnInvoice(
+    final isLn = state.isLnInvoice();
+    if (isLn) {
+      await state.swapCubit.payLnInvoice(
         walletId: state.selectedWalletBloc!.state.wallet!.id,
         invoice: state.address,
         amount: currencyCubit.state.amount,
       );
-      return;
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (state.swapCubit.state.invoice == null || state.swapCubit.state.swapTx == null) {
+        emit(state.copyWith(sending: false, errSending: 'Error paying invoice'));
+        return;
+      }
     }
 
+    final address = state.swapCubit.state.swapTx?.scriptAddress ?? state.address;
+    final fee = state.swapCubit.state.swapTx != null
+        ? state.swapCubit.state.swapTx!.lockupFees!.toDouble()
+        : networkFeesCubit.state.selectedFeesOption == 4
+            ? networkFeesCubit.state.fees!.toDouble()
+            : networkFeesCubit.state.feesList![networkFeesCubit.state.selectedFeesOption]
+                .toDouble();
+
+    final enableRbf = isLn ? false : !state.disableRBF;
+    // final enableRbf = !isLn && !state.disableRBF;
     emit(state.copyWith(sending: true, errSending: ''));
 
     final localWallet = state.selectedWalletBloc!.state.wallet;
@@ -279,13 +296,11 @@ class SendCubit extends Cubit<SendState> {
       wallet: localWallet!,
       pubWallet: state.selectedWalletBloc!.state.bdkWallet!,
       isManualSend: state.selectedUtxos.isNotEmpty,
-      address: state.address,
+      address: address,
       amount: currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
-      feeRate: networkFeesCubit.state.selectedFeesOption == 4
-          ? networkFeesCubit.state.fees!.toDouble()
-          : networkFeesCubit.state.feesList![networkFeesCubit.state.selectedFeesOption].toDouble(),
-      enableRbf: !state.disableRBF,
+      feeRate: fee,
+      enableRbf: enableRbf,
       selectedUtxos: state.selectedUtxos,
       note: state.note,
     );
