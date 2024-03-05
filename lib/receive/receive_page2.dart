@@ -355,7 +355,7 @@ class CreateLightningInvoice extends StatelessWidget {
         const Gap(24),
         Center(
           child: SizedBox(
-            width: 300,
+            // width: 300,
             height: 44,
             child: BBButton.big2(
               leftIcon: FontAwesomeIcons.receipt,

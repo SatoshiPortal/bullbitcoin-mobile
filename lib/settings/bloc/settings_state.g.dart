@@ -18,7 +18,7 @@ _$SettingsStateImpl _$$SettingsStateImplFromJson(Map<String, dynamic> json) =>
       loadingLanguage: json['loadingLanguage'] as bool? ?? false,
       errLoadingLanguage: json['errLoadingLanguage'] as String? ?? '',
       defaultRBF: json['defaultRBF'] as bool? ?? true,
-      homeLayout: json['homeLayout'] as int? ?? 0,
+      homeLayout: json['homeLayout'] as int? ?? 1,
     );
 
 Map<String, dynamic> _$$SettingsStateImplToJson(_$SettingsStateImpl instance) =>

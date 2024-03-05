@@ -435,7 +435,7 @@ class _SendButton extends StatelessWidget {
       children: [
         Center(
           child: SizedBox(
-            width: 250,
+            // width: 250,
             height: 44,
             child: BlocListener<SendCubit, SendState>(
               listenWhen: (previous, current) =>

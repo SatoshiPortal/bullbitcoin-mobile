@@ -212,7 +212,7 @@ class _$SettingsStateImpl extends _SettingsState {
       this.loadingLanguage = false,
       this.errLoadingLanguage = '',
       this.defaultRBF = true,
-      this.homeLayout = 0})
+      this.homeLayout = 1})
       : _languageList = languageList,
         super._();
 

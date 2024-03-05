@@ -67,7 +67,7 @@ class HomeTransactions extends StatelessWidget {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: txs.length,
+            itemCount: 3, //txs.length,
             itemBuilder: (context, index) {
               return HomeTxItem2(tx: txs[index]);
             },
