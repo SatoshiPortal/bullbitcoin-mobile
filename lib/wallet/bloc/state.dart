@@ -46,5 +46,5 @@ class WalletState with _$WalletState {
     return allTxs;
   }
 
-  bool loading() => loadingWallet || loadingTxs || loadingBalance;
+  bool loading() => syncing || loadingTxs || loadingBalance;
 }

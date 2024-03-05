@@ -26,21 +26,7 @@ class HomeTransactions extends StatelessWidget {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final txs = context.select((HomeCubit cubit) => cubit.state.allTxsWithSwaps(network));
 
-    if (txs.isEmpty)
-      return TopLeft(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 48.0,
-            vertical: 24,
-          ),
-          child: Column(
-            children: [
-              const HomeLoadingTxsIndicator(),
-              const BBText.titleLarge('No Transactions yet').animate(delay: 300.ms).fadeIn(),
-            ],
-          ),
-        ),
-      );
+    if (txs.isEmpty) return const NoTxs();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -88,6 +74,32 @@ class HomeTransactions extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class NoTxs extends StatelessWidget {
+  const NoTxs({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TopLeft(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 48.0,
+          vertical: 24,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const BBText.titleLarge('No Transactions yet').animate(delay: 300.ms).fadeIn(),
+            const Gap(16),
+            const HomeLoadingTxsIndicator(),
+          ],
+        ),
+      ),
     );
   }
 }

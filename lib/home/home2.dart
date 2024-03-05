@@ -592,7 +592,7 @@ class _HomeLoadingTxsIndicatorState extends State<HomeLoadingTxsIndicator> {
             bloc: walletBloc,
             listenWhen: (previous, current) => previous.loading() != current.loading(),
             listener: (context, state) {
-              if (state.loadingTxs)
+              if (state.loading())
                 loadingMap[state.wallet!.id] = true;
               else
                 loadingMap[state.wallet!.id] = false;
@@ -608,18 +608,29 @@ class _HomeLoadingTxsIndicatorState extends State<HomeLoadingTxsIndicator> {
             },
           ),
       ],
-      child: loading
-          ? const SizedBox.shrink()
-          : Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: SizedBox(
-                height: 32,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: const BBLoadingRow().animate().fadeIn(),
-                ),
+      child: _Loading(loading: loading),
+    );
+  }
+}
+
+class _Loading extends StatelessWidget {
+  const _Loading({required this.loading});
+
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
+    return !loading
+        ? const SizedBox.shrink()
+        : Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: SizedBox(
+              height: 32,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: const BBLoadingRow().animate().fadeIn(),
               ),
             ),
-    );
+          );
   }
 }

@@ -18,15 +18,16 @@ class WalletTxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final syncing = context.select((WalletBloc x) => x.state.syncing);
-    final loading = context.select((WalletBloc x) => x.state.loadingTxs);
-    final loadingBal = context.select((WalletBloc x) => x.state.loadingBalance);
+    // final syncing = context.select((WalletBloc x) => x.state.syncing);
+    // final loading = context.select((WalletBloc x) => x.state.loadingTxs);
+    // final loadingBal = context.select((WalletBloc x) => x.state.loadingBalance);
+    final loading = context.select((WalletBloc x) => x.state.loading());
 
     final confirmedTXs = context.select((WalletBloc x) => x.state.wallet?.getConfirmedTxs() ?? []);
     final pendingTXs = context.select((WalletBloc x) => x.state.wallet?.getPendingTxs() ?? []);
     final zeroPending = pendingTXs.isEmpty;
 
-    if ((loading || syncing || loadingBal) && confirmedTXs.isEmpty && pendingTXs.isEmpty) {
+    if (loading && confirmedTXs.isEmpty && pendingTXs.isEmpty) {
       return TopCenter(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -61,7 +62,7 @@ class WalletTxList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (syncing || loading || loadingBal)
+          if (loading)
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: SizedBox(

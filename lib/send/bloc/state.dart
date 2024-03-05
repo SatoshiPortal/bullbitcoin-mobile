@@ -55,9 +55,10 @@ class SendState with _$SendState {
     return 'Selected ${selectedUtxos.length} addresses';
   }
 
+  bool generatingSwap() => swapCubit.state.generatingSwapInv;
+
   bool loadingWithSwap() {
-    final loading = swapCubit.state.creatingInvoice;
-    return loading || sending || downloadingFile;
+    return generatingSwap() || sending || downloadingFile;
   }
 
   String errWithSwap() {
