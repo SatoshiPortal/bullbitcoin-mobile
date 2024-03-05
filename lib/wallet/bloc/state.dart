@@ -45,4 +45,6 @@ class WalletState with _$WalletState {
     final allTxs = wallet!.swaps;
     return allTxs;
   }
+
+  bool loading() => loadingWallet || loadingTxs || loadingBalance;
 }

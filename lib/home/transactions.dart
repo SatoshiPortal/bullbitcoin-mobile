@@ -33,13 +33,19 @@ class HomeTransactions extends StatelessWidget {
             horizontal: 48.0,
             vertical: 24,
           ),
-          child: const BBText.titleLarge('No Transactions yet').animate(delay: 300.ms).fadeIn(),
+          child: Column(
+            children: [
+              const HomeLoadingTxsIndicator(),
+              const BBText.titleLarge('No Transactions yet').animate(delay: 300.ms).fadeIn(),
+            ],
+          ),
         ),
       );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const HomeLoadingTxsIndicator(),
         Padding(
           padding: const EdgeInsets.only(left: 24.0, bottom: 8, right: 24),
           child: Row(

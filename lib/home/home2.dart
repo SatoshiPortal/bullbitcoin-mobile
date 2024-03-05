@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -9,10 +10,12 @@ import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
@@ -562,6 +565,61 @@ class ScanButton extends StatelessWidget {
           size: 24,
         ),
       ),
+    );
+  }
+}
+
+class HomeLoadingTxsIndicator extends StatefulWidget {
+  const HomeLoadingTxsIndicator({super.key});
+
+  @override
+  State<HomeLoadingTxsIndicator> createState() => _HomeLoadingTxsIndicatorState();
+}
+
+class _HomeLoadingTxsIndicatorState extends State<HomeLoadingTxsIndicator> {
+  bool loading = false;
+  Map<String, bool> loadingMap = {};
+
+  @override
+  Widget build(BuildContext context) {
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final walletBlocs = context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+
+    return MultiBlocListener(
+      listeners: [
+        for (final walletBloc in walletBlocs)
+          BlocListener<WalletBloc, WalletState>(
+            bloc: walletBloc,
+            listenWhen: (previous, current) => previous.loading() != current.loading(),
+            listener: (context, state) {
+              if (state.loadingTxs)
+                loadingMap[state.wallet!.id] = true;
+              else
+                loadingMap[state.wallet!.id] = false;
+
+              if (loadingMap.values.contains(true))
+                setState(() {
+                  loading = true;
+                });
+              else
+                setState(() {
+                  loading = false;
+                });
+            },
+          ),
+      ],
+      child: loading
+          ? const SizedBox.shrink()
+          : Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: SizedBox(
+                height: 32,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: const BBLoadingRow().animate().fadeIn(),
+                ),
+              ),
+            ),
     );
   }
 }
