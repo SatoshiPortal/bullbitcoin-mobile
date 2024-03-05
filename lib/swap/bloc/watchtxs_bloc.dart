@@ -167,9 +167,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     if (walletBloc == null) return;
     final wallet = walletBloc.state.wallet;
     if (wallet == null) return;
-    // if (walletBloc == null) return;
-
-    // final status = event.status!; // not required since swapTx is updated with latest status
     SwapTx swapTx = event.swapTx;
 
     if (swapTx.status!.status.hasSettled) {
@@ -192,19 +189,15 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.swaps],
         ),
       );
-
       homeCubit.updateSelectedWallet(walletBloc);
-
       for (final swap in swapsToDelete) add(DeleteSensitiveSwapData(swap.id));
-
       return;
     }
 
     final canClaim = swapTx.status!.status.canClaim;
+    var shouldRefund = false;
     if (!canClaim) {
-      // await Future.delayed(1000.ms);
-
-      final (updatedWallet, err) = walletTransaction.updateSwapTxs(
+      final (resp, err) = walletTransaction.updateSwapTxs(
         wallet: wallet,
         swapTx: swapTx,
       );
@@ -212,20 +205,18 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         emit(state.copyWith(errWatchingInvoice: err.toString()));
         return;
       }
-
-      walletBloc.add(
-        UpdateWallet(
-          updatedWallet!,
-          updateTypes: [UpdateWalletTypes.swaps],
-        ),
-      );
-
-      // await Future.delayed(500.ms);
-      homeCubit.updateSelectedWallet(walletBloc);
-
-      // await Future.delayed(500.ms);
-
-      return;
+      final updatedWallet = resp!.wallet;
+      if (resp.swapsToRefund.isEmpty) {
+        walletBloc.add(
+          UpdateWallet(
+            updatedWallet,
+            updateTypes: [UpdateWalletTypes.swaps],
+          ),
+        );
+        homeCubit.updateSelectedWallet(walletBloc);
+        return;
+      }
+      shouldRefund = true;
     }
 
     if (state.swapClaimed(swapTx)) {
@@ -256,7 +247,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return;
     }
 
-    final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
+    final claimFeesEstimate =
+        shouldRefund ? fees?.btcSubmarine.claimFees : fees?.btcReverse.claimFeesEstimate;
     if (claimFeesEstimate == null) {
       emit(
         state.copyWith(
@@ -267,29 +259,47 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return;
     }
 
-    final (txid, err) = await swapBoltz.claimSwap(
-      tx: swapTx,
-      outAddress: address,
-      absFee: claimFeesEstimate,
-    );
-    if (err != null) {
-      emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: err.toString()));
-      return;
+    var txid = '';
+    if (!shouldRefund) {
+      final (id, err) = await swapBoltz.claimSwap(
+        tx: swapTx,
+        outAddress: address,
+        absFee: claimFeesEstimate,
+      );
+      if (err != null) {
+        emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: err.toString()));
+        return;
+      }
+      txid = id!;
+    } else {
+      final (id, err) = await swapBoltz.refundSwap(
+        tx: swapTx,
+        outAddress: address,
+        absFee: claimFeesEstimate,
+      );
+      if (err != null) {
+        emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: err.toString()));
+        return;
+      }
+      txid = id!;
     }
+
     final tx = swapTx.copyWith(
       txid: txid,
     );
     emit(state.copyWith(claimedSwapTxs: [...state.claimedSwapTxs, tx]));
 
-    final (updatedWallet, err1) = walletTransaction.updateSwapTxs(swapTx: tx, wallet: wallet);
+    final (resp, err1) = walletTransaction.updateSwapTxs(swapTx: tx, wallet: wallet);
     if (err1 != null) {
       emit(state.copyWith(errClaimingSwap: err1.toString()));
       return;
     }
 
+    final updatedWallet = resp!.wallet;
+
     walletBloc.add(
       UpdateWallet(
-        updatedWallet!,
+        updatedWallet,
         updateTypes: [UpdateWalletTypes.swaps],
       ),
     );

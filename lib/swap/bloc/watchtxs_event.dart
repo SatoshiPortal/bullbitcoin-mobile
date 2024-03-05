@@ -12,8 +12,6 @@ class UpdateOrClaimSwap extends WatchTxsEvent {
   final String walletId;
 }
 
-class RefundSwap extends WatchTxsEvent {}
-
 class WatchSwapStatus extends WatchTxsEvent {
   WatchSwapStatus({
     required this.walletId,
