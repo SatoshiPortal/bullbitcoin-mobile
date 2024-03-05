@@ -173,7 +173,7 @@ class SwapCubit extends Cubit<SwapState> {
       electrumUrl: networkCubit.state.getNetworkUrl(),
     );
     if (err != null) {
-      emit(state.copyWith(errCreatingSwapInv: err.toString(), generatingSwapInv: false));
+      emit(state.copyWith(errCreatingSwapInv: err.message, generatingSwapInv: false));
       return;
     }
 

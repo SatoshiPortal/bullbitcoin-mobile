@@ -33,8 +33,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required this.networkCubit,
   }) : super(
           const ImportState(
-              // words: [
-              //   ...r2,
+              // words12: [
+              //   // ...importW(r2),
               // ],
               ),
         ) {

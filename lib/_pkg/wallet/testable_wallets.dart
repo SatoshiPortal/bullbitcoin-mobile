@@ -49,6 +49,9 @@ const r2 = [
   'ugly',
 ];
 
+List<({String word, bool tapped})> importW(List<String> words) =>
+    words.map((e) => (word: e, tapped: false)).toList();
+
 const xpub1 =
     'tpubDC5phKKvZNyMBySbRhQW6t1AkutpvxpAbPacFw38eM2DpiMRZAUBXooGNaBUzVKsST56w1osYwEuRtmqsEpKw4fw8mYWm3jbsjMGnYrgbUz';
 

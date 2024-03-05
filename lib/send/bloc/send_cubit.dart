@@ -273,7 +273,7 @@ class SendCubit extends Cubit<SendState> {
       );
       await Future.delayed(const Duration(milliseconds: 500));
       if (state.swapCubit.state.invoice == null || state.swapCubit.state.swapTx == null) {
-        emit(state.copyWith(sending: false, errSending: 'Error paying invoice'));
+        emit(state.copyWith(sending: false, errSending: state.swapCubit.state.errCreatingSwapInv));
         return;
       }
     }

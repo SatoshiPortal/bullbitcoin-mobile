@@ -312,7 +312,8 @@ class _AddressFieldState extends State<AddressField> {
                   if (!locator.isRegistered<Clippboard>()) return;
                   final data = await locator<Clippboard>().paste();
                   if (data == null) return;
-                  // const d = 'tb1qytdqntr4xuee2y5qtu8r2q8ya0fqluy7dtp4lg';
+                  // const data =
+                  //     'lntb500u1pj7tqpcpp566tgzlzduq3sjefgwxawt88mgxhc0e7tpva2pxc0zw889ryc8tnqdqsv9ekkmryv9jx5umyxqyjw5qcqp2sp5ptll8dll4sawwu5kufgxzfmsmlfj2rgvuqstngc6t30h2xzggxmqrzjq2gyp9za7vc7vd8m59fvu63pu00u4pak35n4upuv4mhyw5l586dvkf6vkyqq20gqqqqqqqqpqqqqqzsqqc9qyyssqfvcpfj3587plnxs908z0txz9as9zf2kqa9llhfynarku4t80muv87se5t3d05mf0mjxm3tp0f4yzfu9ulz08z2vdjhz28rvj2ch0vmspwkguap';
                   context.read<SendCubit>().updateAddress(data);
                 },
                 iconSize: 16,
@@ -421,7 +422,9 @@ class _SendButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final watchOnly = context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
 
-    final sending = context.select((SendCubit cubit) => cubit.state.loadingWithSwap());
+    final generatingInv = context.select((SwapCubit cubit) => cubit.state.generatingSwapInv);
+    final sendingg = context.select((SendCubit cubit) => cubit.state.sending);
+    final sending = generatingInv || sendingg;
     final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);
     final err = context.select((SendCubit cubit) => cubit.state.errWithSwap());
 
