@@ -129,47 +129,50 @@ class _ScreenState extends State<_Screen> {
         automaticallyImplyLeading: false,
         flexibleSpace: const ApppBar(),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 24,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Gap(16),
-              const WalletName(),
-              const Gap(16),
-              const WalletType(),
-              const Gap(16),
-              const Balances(),
-              const Gap(24),
-              if (!watchOnly) ...[
-                const BackupButton(),
-                const Gap(8),
-                const TestBackupButton(),
-                const Gap(8),
-              ],
-              // const PublicDescriptorButton(),
-              // const Gap(8),
-              // const ExtendedPublicKeyButton(),
-              // const Gap(8),
-              const WalletDetailsButton(),
-              const Gap(8),
-              const AddressesButtons(),
-              const Gap(8),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Gap(16),
+            const WalletName(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Gap(16),
+                  const WalletType(),
+                  const Gap(16),
+                  const Balances(),
+                  const Gap(24),
+                  if (!watchOnly) ...[
+                    const BackupButton(),
+                    const Gap(8),
+                    const TestBackupButton(),
+                    const Gap(8),
+                  ],
+                  // const PublicDescriptorButton(),
+                  // const Gap(8),
+                  // const ExtendedPublicKeyButton(),
+                  // const Gap(8),
+                  const WalletDetailsButton(),
+                  const Gap(8),
+                  const AddressesButtons(),
+                  const Gap(8),
 
-              const AccountingButton(),
-              const Gap(8),
-              const LabelActions(),
-              // const LabelsExportButton(),
-              // const Gap(8),
-              // const LabelsImportButton(),
-              const Gap(8),
-              const DeleteButton(),
-              const Gap(24),
-            ],
-          ),
+                  const AccountingButton(),
+                  const Gap(8),
+                  const LabelActions(),
+                  // const LabelsExportButton(),
+                  // const Gap(8),
+                  // const LabelsImportButton(),
+                  const Gap(8),
+                  const DeleteButton(),
+                  const Gap(24),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -225,31 +228,38 @@ class _WalletNameState extends State<WalletName> {
 
     final showSave = text.isNotEmpty && name != text;
 
-    return Row(
-      children: [
-        Expanded(
-          child: BBTextInput.small(
-            onChanged: (txt) {
-              context.read<WalletSettingsCubit>().changeName(txt);
-            },
-            value: text,
-            hint: name ?? 'Enter name',
+    return Padding(
+      padding: const EdgeInsets.only(left: 24, right: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: BBTextInput.small(
+              onChanged: (txt) {
+                context.read<WalletSettingsCubit>().changeName(txt);
+              },
+              value: text,
+              hint: name ?? 'Enter name',
+            ),
           ),
-        ),
-        const Gap(16),
-        if (!saving)
-          BBButton.big(
-            disabled: !showSave,
-            label: 'SAVE',
-            onPressed: () {
-              context.read<WalletSettingsCubit>().saveNameClicked();
-            },
-          )
-        else
-          const Center(
-            child: CircularProgressIndicator(),
-          ),
-      ],
+          const Gap(8),
+          if (!saving)
+            SizedBox(
+              width: 88,
+              height: 40,
+              child: BBButton.big(
+                disabled: !showSave,
+                label: 'SAVE',
+                onPressed: () {
+                  context.read<WalletSettingsCubit>().saveNameClicked();
+                },
+              ),
+            )
+          else
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
+      ),
     );
   }
 }

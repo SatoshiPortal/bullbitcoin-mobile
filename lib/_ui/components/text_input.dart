@@ -144,16 +144,16 @@ class _BBTextInputState extends State<BBTextInput> {
             suffixIcon: widget.rightIcon,
             hintText: widget.hint,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(24.0),
+              borderRadius: BorderRadius.circular(4.0),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(24.0),
+              borderRadius: BorderRadius.circular(4.0),
               borderSide: BorderSide(
                 color: context.colour.onBackground.withOpacity(0.2),
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(24.0),
+              borderRadius: BorderRadius.circular(4.0),
               borderSide: BorderSide(
                 color: context.colour.onBackground,
               ),
@@ -162,114 +162,123 @@ class _BBTextInputState extends State<BBTextInput> {
         );
 
       case _TextInputType.big:
-        widgett = TextField(
-          key: widget.uiKey,
-          enabled: !widget.disabled,
-          focusNode: widget.focusNode,
-          onChanged: widget.onChanged,
-          maxLength: widget.maxLength,
-          enableIMEPersonalizedLearning: false,
-          controller: _editingController,
-          keyboardType: widget.onlyNumbers ? TextInputType.number : null,
-          decoration: InputDecoration(
-            hintText: widget.hint,
-            counterText: '',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: context.colour.onBackground.withOpacity(0.2),
+        widgett = SizedBox(
+          height: 45,
+          child: TextField(
+            key: widget.uiKey,
+            enabled: !widget.disabled,
+            focusNode: widget.focusNode,
+            onChanged: widget.onChanged,
+            maxLength: widget.maxLength,
+            enableIMEPersonalizedLearning: false,
+            controller: _editingController,
+            keyboardType: widget.onlyNumbers ? TextInputType.number : null,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              counterText: '',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
               ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: context.colour.onBackground,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
+                borderSide: BorderSide(
+                  color: context.colour.onBackground.withOpacity(0.2),
+                ),
               ),
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: context.colour.onBackground.withOpacity(0.2),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
+                borderSide: BorderSide(
+                  color: context.colour.onBackground,
+                ),
               ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
+                borderSide: BorderSide(
+                  color: context.colour.onBackground.withOpacity(0.2),
+                ),
+              ),
+              labelStyle: context.font.labelSmall,
+              contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
             ),
-            labelStyle: context.font.labelSmall,
-            contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
           ),
         );
       case _TextInputType.bigWithIcon:
-        widgett = TextField(
-          focusNode: widget.focusNode,
-          enabled: !widget.disabled,
-          onChanged: widget.onChanged,
-          controller: _editingController,
-          enableIMEPersonalizedLearning: false,
-          keyboardType: widget.onlyNumbers ? TextInputType.number : null,
-          decoration: InputDecoration(
-            hintText: widget.hint,
-            suffixIcon: IconButton(
-              icon: Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: widget.rightIcon,
+        widgett = SizedBox(
+          height: 45,
+          child: TextField(
+            focusNode: widget.focusNode,
+            enabled: !widget.disabled,
+            onChanged: widget.onChanged,
+            controller: _editingController,
+            enableIMEPersonalizedLearning: false,
+            keyboardType: widget.onlyNumbers ? TextInputType.number : null,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              suffixIcon: IconButton(
+                icon: Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: widget.rightIcon,
+                ),
+                onPressed: () => widget.onRightTap!(),
               ),
-              onPressed: () => widget.onRightTap!(),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: context.colour.onBackground.withOpacity(0.2),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
               ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: context.colour.onBackground,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
+                borderSide: BorderSide(
+                  color: context.colour.onBackground.withOpacity(0.2),
+                ),
               ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
+                borderSide: BorderSide(
+                  color: context.colour.onBackground,
+                ),
+              ),
+              labelStyle: context.font.labelSmall,
+              contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
             ),
-            labelStyle: context.font.labelSmall,
-            contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
           ),
         );
       case _TextInputType.bigWithIcon2:
-        widgett = TextField(
-          focusNode: widget.focusNode,
-          enabled: !widget.disabled,
-          onChanged: widget.onChanged,
-          controller: _editingController,
-          enableIMEPersonalizedLearning: false,
-          keyboardType: widget.onlyNumbers ? TextInputType.number : null,
-          decoration: InputDecoration(
-            hintText: widget.hint,
-            suffixIcon: widget.rightIcon,
-            // IconButton(
-            //   icon: Padding(
-            //     padding: const EdgeInsets.only(right: 16),
-            //     child: widget.rightIcon,
-            //   ),
-            //   onPressed: () => widget.onRightTap!(),
-            // ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                color: context.colour.onBackground.withOpacity(0.2),
+        widgett = SizedBox(
+          height: 45,
+          child: TextField(
+            focusNode: widget.focusNode,
+            enabled: !widget.disabled,
+            onChanged: widget.onChanged,
+            controller: _editingController,
+            enableIMEPersonalizedLearning: false,
+            keyboardType: widget.onlyNumbers ? TextInputType.number : null,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              suffixIcon: widget.rightIcon,
+              // IconButton(
+              //   icon: Padding(
+              //     padding: const EdgeInsets.only(right: 16),
+              //     child: widget.rightIcon,
+              //   ),
+              //   onPressed: () => widget.onRightTap!(),
+              // ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
               ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                color: context.colour.onBackground,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
+                borderSide: BorderSide(
+                  color: context.colour.onBackground.withOpacity(0.2),
+                ),
               ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0),
+                borderSide: BorderSide(
+                  color: context.colour.onBackground,
+                ),
+              ),
+              labelStyle: context.font.labelSmall,
+              contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
             ),
-            labelStyle: context.font.labelSmall,
-            contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
           ),
         );
       case _TextInputType.small:
@@ -290,16 +299,16 @@ class _BBTextInputState extends State<BBTextInput> {
             decoration: InputDecoration(
               hintText: widget.hint,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(4.0),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(4.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground.withOpacity(0.2),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(4.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground,
                 ),
@@ -395,15 +404,15 @@ class _BBTextInputState extends State<BBTextInput> {
 //       decoration: InputDecoration(
 //         hintText: widget.hint,
 //         border: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(8.0),
+//           borderRadius: BorderRadius.circular(4.0),
 //           borderSide: BorderSide(color: borderColor),
 //         ),
 //         enabledBorder: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(8.0),
+//           borderRadius: BorderRadius.circular(4.0),
 //           borderSide: BorderSide(color: borderColor),
 //         ),
 //         focusedBorder: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(8.0),
+//           borderRadius: BorderRadius.circular(4.0),
 //           borderSide: BorderSide(color: borderColor),
 //         ),
 //         contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
@@ -460,52 +469,55 @@ class _BBAmountInputState2 extends State<BBAmountInput> {
     final borderColor =
         widget.selected ? context.colour.primary : context.colour.onBackground.withOpacity(0.2);
 
-    return TextField(
-      key: widget.uiKey,
-      enabled: !widget.disabled,
-      onChanged: widget.onChanged,
-      controller: _editingController,
-      enableIMEPersonalizedLearning: false,
-      keyboardType: TextInputType.number,
-      focusNode: widget.focusNode,
-      scrollPadding: const EdgeInsets.only(bottom: 100),
-      inputFormatters: [
-        // if (widget.btcFormatting)
-        //   CurrencyTextInputFormatter(
-        //     decimalDigits: 8,
-        //     enableNegative: false,
-        //     symbol: '',
-        //   )
-        // else
-        if (widget.isSats)
-          CurrencyTextInputFormatter(
-            decimalDigits: 0,
-            enableNegative: false,
-            symbol: '',
+    return SizedBox(
+      height: 45,
+      child: TextField(
+        key: widget.uiKey,
+        enabled: !widget.disabled,
+        onChanged: widget.onChanged,
+        controller: _editingController,
+        enableIMEPersonalizedLearning: false,
+        keyboardType: TextInputType.number,
+        focusNode: widget.focusNode,
+        scrollPadding: const EdgeInsets.only(bottom: 100),
+        inputFormatters: [
+          // if (widget.btcFormatting)
+          //   CurrencyTextInputFormatter(
+          //     decimalDigits: 8,
+          //     enableNegative: false,
+          //     symbol: '',
+          //   )
+          // else
+          if (widget.isSats)
+            CurrencyTextInputFormatter(
+              decimalDigits: 0,
+              enableNegative: false,
+              symbol: '',
+            ),
+          // else
+          //   CurrencyTextInputFormatter(
+          //     decimalDigits: 2,
+          //     enableNegative: false,
+          //     symbol: '',
+          //   ),
+        ],
+        decoration: InputDecoration(
+          hintText: widget.hint,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4.0),
+            borderSide: BorderSide(color: borderColor),
           ),
-        // else
-        //   CurrencyTextInputFormatter(
-        //     decimalDigits: 2,
-        //     enableNegative: false,
-        //     symbol: '',
-        //   ),
-      ],
-      decoration: InputDecoration(
-        hintText: widget.hint,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: borderColor),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4.0),
+            borderSide: BorderSide(color: borderColor),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4.0),
+            borderSide: BorderSide(color: borderColor),
+          ),
+          contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
+          // scrollPadding: EdgeInsets.only(bottom:40),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
-        // scrollPadding: EdgeInsets.only(bottom:40),
       ),
     );
   }
