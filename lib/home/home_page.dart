@@ -10,23 +10,21 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_pkg/wallet/utxo.dart';
-import 'package:bb_mobile/_ui/bottom_wallet_actions.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/home/bloc/state.dart';
-import 'package:bb_mobile/home/home2.dart';
+import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-// import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
-import 'package:bb_mobile/wallet/wallet_txs.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -101,152 +99,286 @@ class HomePage extends StatelessWidget {
         BlocProvider.value(value: homeCubit),
         BlocProvider.value(value: homeCubit.createWalletCubit),
       ],
-      child: _Screen(),
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          shadowColor: context.colour.primary.withOpacity(0.2),
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          flexibleSpace: const HomeTopBar2(),
+        ),
+        body: const _Screen(),
+      ),
     );
   }
 }
 
 class _Screen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final homeLayout = context.select((SettingsCubit _) => _.state.homeLayout);
-
-    if (homeLayout == 1) return const HomePage2();
-
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        shadowColor: context.colour.primary.withOpacity(0.2),
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: const HomeTopBar(pageIdx: 0),
-      ),
-      body: const HomeWallets(),
-    );
-  }
-}
-
-class HomeWallets extends StatelessWidget {
-  const HomeWallets({super.key});
+  const _Screen();
 
   @override
   Widget build(BuildContext context) {
-    // final wallets = context.select((HomeCubit x) => x.state.wallets ?? []);
-
-    // final loading = context.select((HomeCubit x) => x.state.loadingWallets);
-
-    // if (loading) return Container();
-
-    // final currentWalletBlocs = context.select((HomeCubit x) => x.state.walletBlocs ?? []);
-
-    // if (wallets.length != currentWalletBlocs.length) {
-    //   final walletBlocs = createWalletBlocs(wallets);
-    //   context.read<HomeCubit>().updateWalletBlocs(walletBlocs);
-    // }
-
-    // final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    // final walletsFromNetwork =
-    //     context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
-    // if (walletsFromNetwork.isEmpty) return const HomeNoWallets().animate().fadeIn();
-
     final walletScreen = HomePage.setupHomeWallets(context);
     if (walletScreen != null) return walletScreen;
-
-    return const WalletScreen()
-        .animate(
-          delay: const Duration(
-            milliseconds: 300,
-          ),
-        )
-        .fadeIn();
-  }
-}
-
-class WalletScreen extends StatelessWidget {
-  const WalletScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    // // final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
-    // // final walletCubits = context.select((HomeCubit _) => _.state.walletBlocs ?? []);
-    // final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
-    // // final walletCubits = wallets.map((e) => )
-
-    // final selectedWallet = context.select((HomeCubit x) => x.state.selectedWalletCubit);
-
-    // if (selectedWallet == null && walletCubits.isNotEmpty)
-    //   context.read<HomeCubit>().walletSelected(walletCubits[walletCubits.length - 1]);
-
     final homeWallets = HomePage.selectHomeBlocs(context);
 
-    return _HomeLayout1(
-      selectedWallet: homeWallets.selectedWallet,
-      walletCubits: homeWallets.walletCubits,
+    final walletCubits = homeWallets.walletCubits;
+
+    return Column(
+      children: [
+        Expanded(
+          flex: 5,
+          child: CardsList(walletBlocs: walletCubits),
+        ),
+        const Expanded(
+          flex: 5,
+          child: HomeTransactions(),
+        ),
+        Container(
+          height: 128,
+          child: HomeBottomBar2(
+            walletBloc: walletCubits.length == 1 ? walletCubits[0] : null,
+          ),
+        ),
+      ],
     );
   }
 }
 
-class _HomeLayout1 extends StatelessWidget {
-  const _HomeLayout1({
-    required this.selectedWallet,
-    required this.walletCubits,
-  });
+class CardsList extends StatelessWidget {
+  const CardsList({super.key, required this.walletBlocs});
 
-  final WalletBloc? selectedWallet;
-  final List<WalletBloc> walletCubits;
+  final List<WalletBloc> walletBlocs;
+
+  static List<CardColumn> buildCardColumns(List<WalletBloc> wallets) {
+    final List<CardColumn> columns = [];
+    for (var i = 0; i < wallets.length; i += 2) {
+      final walletTop = wallets[i];
+      final walletBottom = i + 1 < wallets.length ? wallets[i + 1] : null;
+      columns.add(CardColumn(walletTop: walletTop, walletBottom: walletBottom));
+    }
+    return columns;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: GlowingOverscrollIndicator(
-        axisDirection: AxisDirection.down,
-        color: context.colour.primary,
-        child: RefreshIndicator(
-          onRefresh: () async {
-            selectedWallet?.add(SyncWallet());
-            return;
-          },
-          color: context.colour.primary,
-          backgroundColor: context.colour.primary,
-          edgeOffset: -500,
-          child: Stack(
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height - 100,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Gap(16),
-                      if (selectedWallet != null) ...[
-                        BlocProvider.value(
-                          value: selectedWallet!,
-                          child: const BackupAlertBanner(),
+    final columns = buildCardColumns(walletBlocs);
+
+    return PageView(
+      scrollDirection: Axis.vertical,
+      children: columns,
+    );
+  }
+}
+
+class CardColumn extends StatelessWidget {
+  const CardColumn({super.key, required this.walletTop, this.walletBottom});
+
+  final WalletBloc walletTop;
+  final WalletBloc? walletBottom;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          BlocProvider.value(
+            value: walletTop,
+            child: const CardItem(),
+          ),
+          // const Gap(8),
+          if (walletBottom != null)
+            BlocProvider.value(
+              value: walletBottom!,
+              child: const CardItem(),
+            )
+          else
+            const EmptyCard(),
+        ],
+      ),
+    );
+  }
+}
+
+class EmptyCard extends StatelessWidget {
+  const EmptyCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Expanded(
+      child: SizedBox(
+        width: double.infinity,
+        child: Card(
+          color: Colors.transparent,
+          elevation: 0,
+        ),
+      ),
+    );
+  }
+}
+
+class CardItem extends StatelessWidget {
+  const CardItem({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final wallet = context.select((WalletBloc x) => x.state.wallet);
+    if (wallet == null) return const SizedBox.shrink();
+
+    final (color, _) = WalletCardDetails.cardDetails(context, wallet);
+
+    final name = context.select((WalletBloc x) => x.state.wallet?.name);
+    final fingerprint = context.select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
+    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeShortString());
+
+    final sats = context.select((WalletBloc x) => x.state.balanceSats());
+
+    final balance =
+        context.select((CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true));
+    final unit = context.select((CurrencyCubit x) => x.state.getUnitString());
+
+    final fiatCurrency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
+
+    final fiatAmt = context.select((NetworkCubit x) => x.state.calculatePrice(sats, fiatCurrency));
+
+    // return const SizedBox(
+    //   height: 125,
+    //   width: double.infinity,
+    //   child: Card(
+    //     color: Colors.amber,
+    //     elevation: 2,
+    //   ),
+    // );
+
+    return Expanded(
+      child: SizedBox(
+        width: double.infinity,
+        child: Card(
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          color: context.colour.background,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  color.withOpacity(0.73),
+                  color,
+                ],
+              ),
+            ),
+            child: InkWell(
+              onTap: () {
+                final walletBloc = context.read<WalletBloc>();
+                context.push('/wallet', extra: walletBloc);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 8,
+                  right: 16.0,
+                  left: 24,
+                  bottom: 8,
+                ),
+                child: Stack(
+                  children: [
+                    TopRight(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: IconButton(
+                          onPressed: () {
+                            final walletBloc = context.read<WalletBloc>();
+                            context.push('/wallet-settings', extra: walletBloc);
+                          },
+                          color: context.colour.onPrimary,
+                          icon: const FaIcon(
+                            FontAwesomeIcons.ellipsis,
+                          ),
                         ),
-                      ],
-                      const HomeHeaderCards(),
-                      if (selectedWallet != null) ...[
-                        BlocProvider.value(
-                          value: selectedWallet!,
-                          child: const WalletTxList(),
+                      ),
+                    ),
+                    // TopLeft(
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.only(
+                    //       top: 8,
+                    //     ),
+                    //     child: BBText.titleLarge(
+                    //       name ?? fingerprint,
+                    //       onSurface: true,
+                    //     ),
+                    //   ),
+                    // ),
+                    Column(
+                      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        BBText.titleLarge(
+                          name ?? fingerprint,
+                          onSurface: true,
                         ),
+                        Opacity(
+                          opacity: 0.7,
+                          child: BBText.bodySmall(
+                            walletStr ?? '',
+                            onSurface: true,
+                            isBold: true,
+                          ),
+                        ),
+                        const Spacer(),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                BBText.titleLarge(
+                                  balance,
+                                  onSurface: true,
+                                  isBold: true,
+                                ),
+                                const Gap(4),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 1),
+                                  child: BBText.title(
+                                    unit,
+                                    onSurface: true,
+                                    isBold: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (fiatCurrency != null) ...[
+                              const Gap(16),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  BBText.body(
+                                    '~' + fiatAmt,
+                                    onSurface: true,
+                                    isBold: true,
+                                  ),
+                                  const Gap(4),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 1),
+                                    child: BBText.bodySmall(
+                                      fiatCurrency.shortName.toUpperCase(),
+                                      onSurface: true,
+                                      isBold: true,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ],
+                        ),
+                        const Spacer(flex: 2),
                       ],
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              PositionedDirectional(
-                bottom: 0,
-                start: 0,
-                end: 0,
-                child: HomeActionButtons(
-                  walletBloc: walletCubits.length == 1 ? walletCubits[0] : null,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -254,69 +386,319 @@ class _HomeLayout1 extends StatelessWidget {
   }
 }
 
-class HomeHeaderCards extends StatefulWidget {
-  const HomeHeaderCards({super.key});
+class WalletTag extends StatelessWidget {
+  const WalletTag({super.key, required this.wallet});
+
+  final Wallet wallet;
 
   @override
-  State<HomeHeaderCards> createState() => _HomeHeaderCardsState();
+  Widget build(BuildContext context) {
+    final (color, _) = WalletCardDetails.cardDetails(context, wallet);
+
+    final name = wallet.name ?? wallet.sourceFingerprint;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 4,
+        vertical: 2,
+      ),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: BBText.bodySmall(
+        name,
+        onSurface: true,
+        isBold: true,
+      ),
+    );
+  }
 }
 
-class _HomeHeaderCardsState extends State<HomeHeaderCards> {
-  final CarouselController _carouselController = CarouselController();
+class HomeTopBar2 extends StatelessWidget {
+  const HomeTopBar2({super.key});
 
   @override
   Widget build(BuildContext context) {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
-    final selectedWalletIdx = context.select((HomeCubit _) => _.state.getSelectedWalletIdx());
+    final totalSats = context.select((HomeCubit x) => x.state.totalBalanceSats(network));
 
-    return BlocListener<HomeCubit, HomeState>(
-      listenWhen: (previous, current) => previous.moveToIdx != current.moveToIdx,
-      listener: (context, state) {
-        final moveToIdx = state.moveToIdx;
-        if (moveToIdx == null) return;
-        _carouselController.animateToPage(
-          moveToIdx,
-          curve: Curves.easeInOut,
-          duration: 600.milliseconds,
-        );
-        final selected = walletCubits[moveToIdx];
-        context.read<HomeCubit>().walletSelected(selected);
-      },
-      child: CarouselSlider(
-        carouselController: _carouselController,
-        options: CarouselOptions(
-          initialPage: selectedWalletIdx ?? (walletCubits.length - 1),
-          enlargeStrategy: CenterPageEnlargeStrategy.zoom,
-          reverse: true,
-          enableInfiniteScroll: false,
-          aspectRatio: 2.1,
-          onPageChanged: (i, s) {
-            context.read<HomeCubit>().walletSelected(walletCubits[i]);
+    final fiatCurrency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
+
+    final fiatAmt =
+        context.select((NetworkCubit x) => x.state.calculatePrice(totalSats, fiatCurrency));
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Container(
+          alignment: Alignment.bottomCenter,
+          margin: const EdgeInsets.only(left: 16),
+          child: Image.asset(
+            'assets/bb-logo2.png',
+            height: 50,
+            width: 50,
+          ),
+        ),
+        const Gap(4),
+        GestureDetector(
+          onLongPress: () {
+            context.push('/logs');
+          },
+          child: Container(
+            alignment: Alignment.bottomCenter,
+            padding: const EdgeInsets.only(left: 4),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Image.asset(
+                    'assets/textlogo.png',
+                    height: 20,
+                    width: 108,
+                  ),
+                ),
+                if (fiatCurrency != null)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      BBText.headline(
+                        fiatAmt,
+                        fontSize: 18,
+                      ),
+                      const Gap(4),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 2),
+                        child: BBText.bodySmall(
+                          fiatCurrency.shortName.toUpperCase(),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        ),
+        const Spacer(),
+        IconButton(
+          key: UIKeys.homeImportButton,
+          color: context.colour.onBackground,
+          icon: const Icon(
+            FontAwesomeIcons.circlePlus,
+            shadows: [],
+          ),
+          onPressed: () {
+            context.push('/import');
           },
         ),
-        items: [
-          for (final w in walletCubits) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: BlocProvider.value(
-                value: w,
-                child: Builder(
-                  builder: (context) {
-                    return HomeCard(
-                      onTap: () {
-                        final walletBloc = context.read<WalletBloc>();
-                        context.push('/wallet', extra: walletBloc);
-                      },
-                    );
-                  },
+        IconButton(
+          key: UIKeys.homeSettingsButton,
+          color: context.colour.onBackground,
+          icon: const Icon(
+            FontAwesomeIcons.gear,
+            shadows: [],
+          ),
+          onPressed: () {
+            context.push('/settings');
+          },
+        ),
+        IconButton(
+          // key: UIKeys.homeSettingsButton,
+          color: context.colour.onBackground,
+          icon: const Icon(
+            FontAwesomeIcons.userLarge,
+            shadows: [],
+          ),
+          onPressed: () {
+            context.push('/market');
+          },
+        ),
+        const Gap(16),
+      ],
+    );
+  }
+}
+
+class HomeBottomBar2 extends StatelessWidget {
+  const HomeBottomBar2({super.key, required this.walletBloc});
+
+  final WalletBloc? walletBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 32,
+        right: 32,
+        bottom: 24,
+        top: 8,
+      ),
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: BBButton.big(
+                        label: 'Receive',
+                        onPressed: () {
+                          context.push('/receive', extra: walletBloc);
+                        },
+                      ),
+                    ),
+                    const Gap(8),
+                    Expanded(
+                      child: BBButton.big(
+                        label: 'Send',
+                        onPressed: () {
+                          context.push('/send', extra: walletBloc);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: BBButton.big(
+                        label: 'Buy',
+                        onPressed: () {
+                          context.push('/market');
+                        },
+                        disabled: true,
+                      ),
+                    ),
+                    const Gap(8),
+                    Expanded(
+                      child: BBButton.big(
+                        label: 'Sell',
+                        onPressed: () {
+                          context.push('/market');
+                        },
+                        disabled: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const Center(
+            child: ScanButton(),
+          ),
         ],
       ),
     );
+  }
+}
+
+class ScanButton extends StatelessWidget {
+  const ScanButton({super.key, this.walletBloc});
+
+  final WalletBloc? walletBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 40,
+      width: 55,
+      child: ElevatedButton(
+        onPressed: () {
+          context.push('/send', extra: walletBloc);
+        },
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          side: const BorderSide(color: NewColours.lightGray),
+          backgroundColor: NewColours.offWhite,
+          surfaceTintColor: NewColours.offWhite.withOpacity(0.5),
+          elevation: 2,
+          splashFactory: NoSplash.splashFactory,
+          // foregroundColor: Colors.red,
+
+          enableFeedback: false,
+          padding: EdgeInsets.zero,
+        ),
+        child: Icon(
+          FontAwesomeIcons.barcode,
+          color: context.colour.onBackground,
+          size: 24,
+        ),
+      ),
+    );
+  }
+}
+
+class HomeLoadingTxsIndicator extends StatefulWidget {
+  const HomeLoadingTxsIndicator({super.key});
+
+  @override
+  State<HomeLoadingTxsIndicator> createState() => _HomeLoadingTxsIndicatorState();
+}
+
+class _HomeLoadingTxsIndicatorState extends State<HomeLoadingTxsIndicator> {
+  bool loading = false;
+  Map<String, bool> loadingMap = {};
+
+  @override
+  Widget build(BuildContext context) {
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final walletBlocs = context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+
+    return MultiBlocListener(
+      listeners: [
+        for (final walletBloc in walletBlocs)
+          BlocListener<WalletBloc, WalletState>(
+            bloc: walletBloc,
+            listenWhen: (previous, current) => previous.loading() != current.loading(),
+            listener: (context, state) {
+              if (state.loading())
+                loadingMap[state.wallet!.id] = true;
+              else
+                loadingMap[state.wallet!.id] = false;
+
+              if (loadingMap.values.contains(true))
+                setState(() {
+                  loading = true;
+                });
+              else
+                setState(() {
+                  loading = false;
+                });
+            },
+          ),
+      ],
+      child: _Loading(loading: loading),
+    );
+  }
+}
+
+class _Loading extends StatelessWidget {
+  const _Loading({required this.loading});
+
+  final bool loading;
+
+  @override
+  Widget build(BuildContext context) {
+    return !loading
+        ? const SizedBox.shrink()
+        : Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: SizedBox(
+              height: 32,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: const BBLoadingRow().animate().fadeIn(),
+              ),
+            ),
+          );
   }
 }
 
@@ -339,76 +721,6 @@ class HomeNoWallets extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class HomeTopBar extends StatelessWidget {
-  const HomeTopBar({super.key, required this.pageIdx});
-
-  final int pageIdx;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        GestureDetector(
-          onLongPress: () {
-            context.push('/logs');
-          },
-          child: Container(
-            alignment: Alignment.bottomCenter,
-            padding: const EdgeInsets.only(left: 24, bottom: 10),
-            child: pageIdx == 0
-                ? Image.asset(
-                    'assets/textlogo.png',
-                    height: 27,
-                    width: 147,
-                  )
-                : const BBText.headline(
-                    'BULL BITCOIN',
-                    isRed: true,
-                    isBold: true,
-                  ),
-          ),
-        ),
-        const Spacer(),
-        IconButton(
-          key: UIKeys.homeImportButton,
-          color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
-          icon: const Icon(
-            FontAwesomeIcons.circlePlus,
-            shadows: [],
-          ),
-          onPressed: () {
-            context.push('/import');
-          },
-        ),
-        IconButton(
-          key: UIKeys.homeSettingsButton,
-          color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
-          icon: const Icon(
-            FontAwesomeIcons.gear,
-            shadows: [],
-          ),
-          onPressed: () {
-            context.push('/settings');
-          },
-        ),
-        IconButton(
-          // key: UIKeys.homeSettingsButton,
-          color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
-          icon: const Icon(
-            FontAwesomeIcons.userLarge,
-            shadows: [],
-          ),
-          onPressed: () {
-            context.push('/market');
-          },
-        ),
-        const Gap(16),
-      ],
     );
   }
 }
