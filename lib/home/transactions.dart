@@ -25,6 +25,7 @@ class HomeTransactions extends StatelessWidget {
     final __ = context.select((HomeCubit _) => _.state.walletBlocs);
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final txs = context.select((HomeCubit cubit) => cubit.state.allTxsWithSwaps(network));
+    final last3Txs = txs.take(3).toList();
 
     if (txs.isEmpty) return const NoTxs();
 
@@ -67,9 +68,9 @@ class HomeTransactions extends StatelessWidget {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: 3, //txs.length,
+            itemCount: last3Txs.length,
             itemBuilder: (context, index) {
-              return HomeTxItem2(tx: txs[index]);
+              return HomeTxItem2(tx: last3Txs[index]);
             },
           ),
         ),
