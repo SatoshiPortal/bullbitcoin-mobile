@@ -610,7 +610,7 @@ class ScanButton extends StatelessWidget {
       width: 55,
       child: ElevatedButton(
         onPressed: () {
-          context.push('/send', extra: walletBloc);
+          context.push('/send', extra: 'scan');
         },
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(

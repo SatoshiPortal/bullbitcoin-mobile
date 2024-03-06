@@ -43,14 +43,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SendPage2 extends StatefulWidget {
-  const SendPage2({super.key});
+class SendPage extends StatefulWidget {
+  const SendPage({super.key, this.openScanner = false});
 
+  final bool openScanner;
   @override
-  State<SendPage2> createState() => _SendPage2State();
+  State<SendPage> createState() => _SendPageState();
 }
 
-class _SendPage2State extends State<SendPage2> {
+class _SendPageState extends State<SendPage> {
   late SendCubit send;
   late HomeCubit home;
 
@@ -100,6 +101,7 @@ class _SendPage2State extends State<SendPage2> {
       ),
       swapCubit: swapBloc,
       swapBoltz: locator<SwapBoltz>(),
+      openScanner: widget.openScanner,
     );
 
     home = locator<HomeCubit>();

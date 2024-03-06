@@ -127,10 +127,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/send',
       builder: (context, state) {
-        // final String? deepLinkUri = state.extra as String?;
-        // final walletBloc = state.extra as WalletBloc?;
+        final String? deepLinkUri = state.extra as String?;
+        final openscanner = deepLinkUri != null && deepLinkUri == 'scan';
 
-        return const SendPage2();
+        return SendPage(openScanner: openscanner);
       },
     ),
     GoRoute(

@@ -50,6 +50,7 @@ class SendCubit extends Cubit<SendState> {
     required this.currencyCubit,
     required SwapCubit swapCubit,
     required this.swapBoltz,
+    bool openScanner = false,
   }) : super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
@@ -63,6 +64,8 @@ class SendCubit extends Cubit<SendState> {
     });
 
     swapCubitSub = state.swapCubit.stream.listen(swapCubitStateChanged);
+
+    if (openScanner) scanAddress();
   }
 
   final Barcode barcode;
