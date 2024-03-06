@@ -166,20 +166,27 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(state.copyWith(loadingFile: false));
   }
 
-  void wordChanged12(int idx, String text, bool tapped) {
-    final words12 = state.words12.toList();
-    words12[idx] = (word: text, tapped: tapped);
-    emit(
-      state.copyWith(
-        words12: words12,
-      ),
-    );
-  }
+  void wordChanged(int idx, String text, bool tapped) {
+    final importType = state.importType;
+    if (importType == ImportTypes.words12) {
+      final words12 = state.words12.toList();
+      words12[idx] = (word: text, tapped: tapped);
+      emit(
+        state.copyWith(
+          words12: words12,
+        ),
+      );
+    }
 
-  void wordChanged24(int idx, String text, bool tapped) {
-    final words24 = state.words24.toList();
-    words24[idx] = (word: text, tapped: tapped);
-    emit(state.copyWith(words24: words24));
+    if (importType == ImportTypes.words24) {
+      final words24 = state.words24.toList();
+      words24[idx] = (word: text, tapped: tapped);
+      emit(
+        state.copyWith(
+          words24: words24,
+        ),
+      );
+    }
   }
 
   void clearUntappedWords() {
@@ -384,38 +391,14 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(state.copyWith(importStep: ImportSteps.scanningWallets));
   }
 
-  void recoverWallet12Clicked() async {
+  void recoverWalletClicked() async {
     await checkWalletLabel();
     if (state.errSavingWallet.isNotEmpty) return;
 
-    emit(
-      state.copyWith(
-        importType: ImportTypes.words12,
-        errImporting: '',
-      ),
-    );
-    for (final word in state.words12)
-      if (word.word.isEmpty) {
-        emit(state.copyWith(errImporting: 'Please fill all words'));
-        return;
-      }
-    await _updateWalletDetailsForSelection();
-    if (state.errImporting.isNotEmpty) return;
+    final words = state.importType == ImportTypes.words12 ? state.words12 : state.words24;
 
-    emit(state.copyWith(importStep: ImportSteps.scanningWallets));
-  }
-
-  void recoverWallet24Clicked() async {
-    await checkWalletLabel();
-    if (state.errSavingWallet.isNotEmpty) return;
-
-    emit(
-      state.copyWith(
-        importType: ImportTypes.words24,
-        errImporting: '',
-      ),
-    );
-    for (final word in state.words24)
+    emit(state.copyWith(errImporting: ''));
+    for (final word in words)
       if (word.word.isEmpty) {
         emit(state.copyWith(errImporting: 'Please fill all words'));
         return;

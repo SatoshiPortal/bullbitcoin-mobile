@@ -14,19 +14,51 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class ImportEnterWordsScreen extends StatelessWidget {
-  ImportEnterWordsScreen({super.key});
+class ImportEnterWordsScreen extends StatefulWidget {
+  const ImportEnterWordsScreen({super.key});
 
-  final focusNodes = List<FocusNode>.generate(12, (index) => FocusNode());
+  @override
+  State<ImportEnterWordsScreen> createState() => _ImportEnterWordsScreenState();
+}
 
-  void returnClicked(int idx) {
-    if (idx == 11) return;
+class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
+  List<FocusNode> focusNodes = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void createFocusNodes(bool is12) {
+    if (is12 && focusNodes.length == 12) return;
+    if (!is12 && focusNodes.length == 24) return;
+
+    focusNodes = List<FocusNode>.generate(
+      is12 ? 12 : 24,
+      (index) => FocusNode(),
+    );
+    setState(() {});
+  }
+
+  void returnClicked(int idx, ImportTypes importType) {
+    if (importType == ImportTypes.words12 && idx == 11) return;
+    if (importType == ImportTypes.words24 && idx == 23) return;
     focusNodes[idx + 1].requestFocus();
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    const ImportTypes importwords = ImportTypes.words12;
+    final importType = context.select((ImportWalletCubit cubit) => cubit.state.importType);
+
+    createFocusNodes(importType == ImportTypes.words12);
+
+    print('focusNodes length: ${focusNodes.length}');
+
     return StackedPage(
       bottomChild: const _ImportWordsRecoverButton(),
       child: SingleChildScrollView(
@@ -68,51 +100,88 @@ class ImportEnterWordsScreen extends StatelessWidget {
                       ),
                     ),
                   ],
-                  selected: const <ImportTypes>{
-                    importwords,
+                  selected: {
+                    importType,
                   },
-                  onSelectionChanged: (p0) {
-                    context.read<ImportWalletCubit>().recoverClicked24();
+                  onSelectionChanged: (value) {
+                    if (value.first == ImportTypes.words12)
+                      context.read<ImportWalletCubit>().recoverClicked();
+
+                    if (value.first == ImportTypes.words24)
+                      context.read<ImportWalletCubit>().recoverClicked24();
                   },
                 ),
               ),
               const Gap(25),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        for (var i = 0; i < 6; i++)
-                          ImportWordTextField(
-                            uiKey: UIKeys.importRecoverField(i),
-                            index: i,
-                            focusNode: focusNodes[i],
-                            returnClicked: returnClicked,
-                          ),
-                      ],
+              if (importType == ImportTypes.words12) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          for (var i = 0; i < 6; i++)
+                            ImportWordTextField(
+                              uiKey: UIKeys.importRecoverField(i),
+                              index: i,
+                              focusNode: focusNodes[i],
+                              returnClicked: (i) => returnClicked(i, importType),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        for (var i = 6; i < 12; i++)
-                          ImportWordTextField(
-                            uiKey: UIKeys.importRecoverField(i),
-                            index: i,
-                            focusNode: focusNodes[i],
-                            returnClicked: returnClicked,
-                          ),
-                      ],
+                    Expanded(
+                      child: Column(
+                        children: [
+                          for (var i = 6; i < 12; i++)
+                            ImportWordTextField(
+                              uiKey: UIKeys.importRecoverField(i),
+                              index: i,
+                              focusNode: focusNodes[i],
+                              returnClicked: (i) => returnClicked(i, importType),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
+              if (importType == ImportTypes.words24) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          for (var i = 0; i < 12; i++)
+                            ImportWordTextField(
+                              uiKey: UIKeys.importRecoverField(i),
+                              index: i,
+                              focusNode: focusNodes[i],
+                              returnClicked: (i) => returnClicked(i, importType),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          for (var i = 12; i < 24; i++)
+                            ImportWordTextField(
+                              uiKey: UIKeys.importRecoverField(i),
+                              index: i,
+                              focusNode: focusNodes[i],
+                              returnClicked: (i) => returnClicked(i, importType),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               const Gap(32),
               const _ImportWordsPassphrase(),
               const Gap(32),
               const WalletLabel(),
               const Gap(80),
-              // const _ImportWordsRecoverButton(),
             ],
           ),
         ),
@@ -158,10 +227,6 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
     });
 
     controller.addListener(() {
-      // if (suggestions.isNotEmpty
-      //     // && suggestions.contains(controller.text)
-      //     ) return;
-
       hideOverlay();
       setState(() {
         suggestions = context.read<WordsCubit>().state.findWords(controller.text);
@@ -227,7 +292,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
               key: i == 0 ? UIKeys.firstSuggestionWord : null,
               title: BBText.body(suggestions[i]),
               onTap: () {
-                context.read<ImportWalletCubit>().wordChanged12(widget.index, suggestions[i], true);
+                context.read<ImportWalletCubit>().wordChanged(widget.index, suggestions[i], true);
                 hideOverlay();
                 setState(() {
                   tapped = true;
@@ -243,8 +308,12 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final is12 = context.select((ImportWalletCubit cubit) => cubit.state.is12());
+
     final word = context.select(
-      (ImportWalletCubit cubit) => cubit.state.words12.elementAtOrNull(widget.index),
+      (ImportWalletCubit cubit) => is12
+          ? cubit.state.words12.elementAtOrNull(widget.index)
+          : cubit.state.words24.elementAtOrNull(widget.index),
     );
 
     if (word == null) return const SizedBox.shrink();
@@ -284,7 +353,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                       final firstSuggestion = suggestions.first;
                       context
                           .read<ImportWalletCubit>()
-                          .wordChanged12(widget.index, firstSuggestion, true);
+                          .wordChanged(widget.index, firstSuggestion, true);
 
                       setState(() {
                         tapped = true;
@@ -296,7 +365,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                       context.read<ImportWalletCubit>().clearUntappedWords();
                     },
                     onChanged: (value) {
-                      context.read<ImportWalletCubit>().wordChanged12(widget.index, value, false);
+                      context.read<ImportWalletCubit>().wordChanged(widget.index, value, false);
                       hideOverlay();
 
                       setState(() {
@@ -307,7 +376,6 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                   ),
                 ),
               ),
-              // ),
             ),
           ],
         ),
@@ -341,30 +409,25 @@ class _ImportWordsRecoverButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final recovering = context.select((ImportWalletCubit cubit) => cubit.state.importing);
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          if (err.isNotEmpty) ...[
-            const Gap(8),
-            BBText.error(
-              err,
-            ),
-          ],
-          SizedBox(
-            width: 250,
-            child: BBButton.big(
-              buttonKey: UIKeys.importRecoverConfirmButton,
-              label: 'Recover',
-              onPressed: () {
-                context.read<ImportWalletCubit>().recoverWallet12Clicked();
-              },
-              disabled: recovering,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (err.isNotEmpty) ...[
+          const Gap(8),
+          BBText.error(
+            err,
           ),
         ],
-      ),
+        BBButton.big(
+          buttonKey: UIKeys.importRecoverConfirmButton,
+          label: 'Recover',
+          onPressed: () {
+            context.read<ImportWalletCubit>().recoverWalletClicked();
+          },
+          disabled: recovering,
+        ),
+      ],
     );
   }
 }

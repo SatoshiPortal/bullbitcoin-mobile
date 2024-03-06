@@ -80,10 +80,7 @@ class _Screen extends StatelessWidget {
         ),
       ),
       body: StackedPage(
-        bottomChild: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: CreateWalletCreateButton(),
-        ),
+        bottomChild: const CreateWalletCreateButton(),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -103,7 +100,9 @@ class _Screen extends StatelessWidget {
               const CreateWalletPassField(),
               const Gap(12),
               const CreateWalletLabel(),
-              const Gap(40),
+              // const Gap(40),
+              const Gap(100),
+
               // const CreateWalletCreateButton(),
               // const Gap(80),
             ],
@@ -298,17 +297,14 @@ class CreateWalletCreateButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      // width: MediaQuery.of(context).size.width * 0.7,
-      child: BBButton.big(
-        onPressed: () async {
-          await context.read<CreateWalletCubit>().checkWalletLabel();
-          final err = context.read<CreateWalletCubit>().state.errSaving;
-          if (err.isNotEmpty) return;
-          CreateWalletConfirmPopUp.showPopup(context);
-        },
-        label: 'create.button'.translate,
-      ),
+    return BBButton.big(
+      onPressed: () async {
+        await context.read<CreateWalletCubit>().checkWalletLabel();
+        final err = context.read<CreateWalletCubit>().state.errSaving;
+        if (err.isNotEmpty) return;
+        CreateWalletConfirmPopUp.showPopup(context);
+      },
+      label: 'create.button'.translate,
     );
   }
 }

@@ -16,7 +16,6 @@ import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:bb_mobile/import/recover.dart';
-import 'package:bb_mobile/import/recover24.dart';
 import 'package:bb_mobile/import/wallet_type_selection.dart';
 import 'package:bb_mobile/import/xpub.dart';
 import 'package:bb_mobile/locator.dart';
@@ -142,9 +141,8 @@ class _Screen extends StatelessWidget {
           case ImportSteps.advancedOptions:
             return const AdvancedOptions();
           case ImportSteps.import12Words:
-            return ImportEnterWordsScreen();
           case ImportSteps.import24Words:
-            return ImportEnterWordsScreen24();
+            return const ImportEnterWordsScreen();
 
           case ImportSteps.scanningWallets:
           case ImportSteps.selectWalletFormat:

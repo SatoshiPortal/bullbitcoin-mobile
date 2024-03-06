@@ -61,6 +61,8 @@ class ImportState with _$ImportState {
   }) = _ImportState;
   const ImportState._();
 
+  bool is12() => importType == ImportTypes.words12;
+
   bool enableImportButton() {
     return xpub.isNotEmpty && !importing;
   }

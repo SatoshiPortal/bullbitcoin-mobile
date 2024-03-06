@@ -1,3 +1,4 @@
+import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/widgets.dart';
 
@@ -17,8 +18,9 @@ class StackedPage extends StatelessWidget {
       children: [
         child,
         BottomCenter(
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+          child: Container(
+            color: context.colour.surface.withOpacity(0.1),
+            padding: const EdgeInsets.only(bottom: 16, top: 8, left: 16, right: 16),
             child: bottomChild,
           ),
         ),
