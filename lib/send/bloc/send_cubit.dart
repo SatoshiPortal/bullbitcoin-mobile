@@ -221,6 +221,16 @@ class SendCubit extends Cubit<SendState> {
       if (!hasEnoughCoinns)
         emit(state.copyWith(errSending: 'Selected UTXOs do not cover Transaction Amount & Fees'));
     }
+
+    final watchonly = state.selectedWalletBloc?.state.wallet?.watchOnly();
+    if (watchonly != null && watchonly && state.address.startsWith('ln')) {
+      emit(
+        state.copyWith(
+          showSendButton: false,
+          errSending: 'Watch Only Wallets cannot send Ln transactions',
+        ),
+      );
+    }
   }
 
   void downloadPSBTClicked() async {
