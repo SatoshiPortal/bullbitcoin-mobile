@@ -656,9 +656,10 @@ class ScanButton extends StatelessWidget {
           padding: EdgeInsets.zero,
         ),
         child: Icon(
-          FontAwesomeIcons.barcode,
+          Icons.qr_code_2,
+          // FontAwesomeIcons.barcode,
           color: context.colour.onBackground,
-          size: 24,
+          size: 32,
         ),
       ),
     );
