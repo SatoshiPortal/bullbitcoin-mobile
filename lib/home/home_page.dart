@@ -128,8 +128,10 @@ class _Screen extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          flex: 5,
-          child: CardsList(walletBlocs: walletCubits),
+          flex: walletCubits.length == 1 ? 2 : 5,
+          child: CardsList(
+            walletBlocs: walletCubits,
+          ),
         ),
         const Expanded(
           flex: 5,
@@ -137,6 +139,7 @@ class _Screen extends StatelessWidget {
         ),
         Container(
           height: 128,
+          margin: const EdgeInsets.only(top: 16),
           child: HomeBottomBar2(
             walletBloc: walletCubits.length == 1 ? walletCubits[0] : null,
           ),
@@ -153,10 +156,17 @@ class CardsList extends StatelessWidget {
 
   static List<CardColumn> buildCardColumns(List<WalletBloc> wallets) {
     final List<CardColumn> columns = [];
+    final isOne = wallets.length == 1;
     for (var i = 0; i < wallets.length; i += 2) {
       final walletTop = wallets[i];
       final walletBottom = i + 1 < wallets.length ? wallets[i + 1] : null;
-      columns.add(CardColumn(walletTop: walletTop, walletBottom: walletBottom));
+      columns.add(
+        CardColumn(
+          walletTop: walletTop,
+          walletBottom: walletBottom,
+          onlyOne: isOne,
+        ),
+      );
     }
     return columns;
   }
@@ -173,15 +183,16 @@ class CardsList extends StatelessWidget {
 }
 
 class CardColumn extends StatelessWidget {
-  const CardColumn({super.key, required this.walletTop, this.walletBottom});
+  const CardColumn({super.key, required this.walletTop, this.walletBottom, this.onlyOne = false});
 
   final WalletBloc walletTop;
   final WalletBloc? walletBottom;
+  final bool onlyOne;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 24),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -195,7 +206,7 @@ class CardColumn extends StatelessWidget {
               value: walletBottom!,
               child: const CardItem(),
             )
-          else
+          else if (!onlyOne)
             const EmptyCard(),
         ],
       ),
@@ -349,30 +360,30 @@ class CardItem extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            if (fiatCurrency != null) ...[
-                              const Gap(16),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  BBText.body(
-                                    '~' + fiatAmt,
-                                    onSurface: true,
-                                    isBold: true,
-                                  ),
-                                  const Gap(4),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 1),
-                                    child: BBText.bodySmall(
-                                      fiatCurrency.shortName.toUpperCase(),
-                                      onSurface: true,
-                                      isBold: true,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
                           ],
                         ),
+                        if (fiatCurrency != null) ...[
+                          // const Gap(16),
+                          Row(
+                            // crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              BBText.bodySmall(
+                                '~' + fiatAmt,
+                                onSurface: true,
+                                // isBold: true,
+                              ),
+                              const Gap(4),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 1),
+                                child: BBText.bodySmall(
+                                  fiatCurrency.shortName.toUpperCase(),
+                                  onSurface: true,
+                                  // isBold: true,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                         const Spacer(flex: 2),
                       ],
                     ),
@@ -434,7 +445,7 @@ class HomeTopBar2 extends StatelessWidget {
       children: [
         Container(
           alignment: Alignment.bottomCenter,
-          margin: const EdgeInsets.only(left: 16),
+          margin: const EdgeInsets.only(left: 32),
           child: Image.asset(
             'assets/bb-logo2.png',
             height: 50,
@@ -483,20 +494,22 @@ class HomeTopBar2 extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        IconButton(
-          key: UIKeys.homeImportButton,
-          color: context.colour.onBackground,
-          icon: const Icon(
-            FontAwesomeIcons.circlePlus,
-            shadows: [],
-          ),
-          onPressed: () {
-            context.push('/import');
-          },
-        ),
+        // IconButton(
+        //   key: UIKeys.homeImportButton,
+        //   color: context.colour.onBackground,
+        //   icon: const Icon(
+        //     FontAwesomeIcons.circlePlus,
+        //     shadows: [],
+        //   ),
+        //   onPressed: () {
+        //     context.push('/import');
+        //   },
+        // ),
         IconButton(
           key: UIKeys.homeSettingsButton,
           color: context.colour.onBackground,
+          padding: const EdgeInsets.only(bottom: 32),
+          visualDensity: VisualDensity.compact,
           icon: const Icon(
             FontAwesomeIcons.gear,
             shadows: [],
@@ -508,15 +521,18 @@ class HomeTopBar2 extends StatelessWidget {
         IconButton(
           // key: UIKeys.homeSettingsButton,
           color: context.colour.onBackground,
+          visualDensity: VisualDensity.compact,
+
+          padding: const EdgeInsets.only(bottom: 32),
           icon: const Icon(
-            FontAwesomeIcons.userLarge,
+            FontAwesomeIcons.user,
             shadows: [],
           ),
           onPressed: () {
             context.push('/market');
           },
         ),
-        const Gap(16),
+        const Gap(24),
       ],
     );
   }
@@ -697,16 +713,10 @@ class _Loading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return !loading
-        ? const SizedBox.shrink()
-        : Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: SizedBox(
-              height: 32,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: const BBLoadingRow().animate().fadeIn(),
-              ),
-            ),
+        ? const SizedBox(height: 16)
+        : SizedBox(
+            height: 16,
+            child: const BBLoadingRow().animate().fadeIn(),
           );
   }
 }

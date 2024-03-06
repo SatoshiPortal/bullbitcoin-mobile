@@ -25,7 +25,7 @@ class HomeTransactions extends StatelessWidget {
     final __ = context.select((HomeCubit _) => _.state.walletBlocs);
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final txs = context.select((HomeCubit cubit) => cubit.state.allTxsWithSwaps(network));
-    final last3Txs = txs.take(3).toList();
+    // final last3Txs = txs.take(3).toList();
 
     if (txs.isEmpty) return const NoTxs();
 
@@ -34,7 +34,7 @@ class HomeTransactions extends StatelessWidget {
       children: [
         const HomeLoadingTxsIndicator(),
         Padding(
-          padding: const EdgeInsets.only(left: 24.0, bottom: 8, right: 24),
+          padding: const EdgeInsets.only(left: 32.0, bottom: 8, right: 32),
           child: Row(
             children: [
               const BBText.titleLarge(
@@ -68,9 +68,9 @@ class HomeTransactions extends StatelessWidget {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: last3Txs.length,
+            itemCount: txs.length,
             itemBuilder: (context, index) {
-              return HomeTxItem2(tx: last3Txs[index]);
+              return HomeTxItem2(tx: txs[index]);
             },
           ),
         ),
@@ -175,8 +175,12 @@ class HomeTxItem2 extends StatelessWidget {
 
     final label = tx.label ?? '';
 
-    final amount = context
-        .select((CurrencyCubit x) => x.state.getAmountInUnits(tx.getAmount(sentAsTotal: true)));
+    final amount = context.select(
+      (CurrencyCubit x) =>
+          x.state.getAmountInUnits(tx.getAmount(sentAsTotal: true), removeText: true),
+    );
+
+    final units = context.select((CurrencyCubit x) => x.state.getUnitString());
 
     final isReceive = tx.isReceived();
 
@@ -191,9 +195,9 @@ class HomeTxItem2 extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(
           top: 8,
-          bottom: 16,
-          left: 24,
-          right: 24,
+          bottom: 8,
+          left: 32,
+          right: 32,
         ),
         child: Row(
           children: [
@@ -206,7 +210,17 @@ class HomeTxItem2 extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText.titleLarge(amt),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    BBText.titleLarge(amt),
+                    const Gap(4),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: BBText.bodySmall(units),
+                    ),
+                  ],
+                ),
                 if (label.isNotEmpty) ...[
                   const Gap(4),
                   BBText.bodySmall(label),
@@ -219,7 +233,7 @@ class HomeTxItem2 extends StatelessWidget {
               children: [
                 if (wallet != null) ...[
                   WalletTag(wallet: wallet),
-                  const Gap(4),
+                  const Gap(2),
                 ],
                 if (tx.getBroadcastDateTime() != null)
                   BBText.bodySmall(

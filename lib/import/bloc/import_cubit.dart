@@ -12,6 +12,7 @@ import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -32,15 +33,15 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required this.walletSensRepository,
     required this.networkCubit,
   }) : super(
-          const ImportState(
-              // words12: [
-              //   // ...importW(r2),
-              // ],
-              ),
+          ImportState(
+            words12: [
+              ...importW(r2),
+            ],
+          ),
         ) {
     clearErrors();
-    reset();
-    emit(state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]));
+    // reset();
+    // emit(statae.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]));
   }
 
   final Barcode barcode;
