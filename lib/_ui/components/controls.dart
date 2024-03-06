@@ -69,7 +69,7 @@ class BBDropDown<T> extends StatelessWidget {
 
     return Center(
       child: SizedBox(
-        width: 250,
+        // width: 250,
         height: 45,
         child: Material(
           elevation: 2,
