@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
@@ -8,9 +9,11 @@ import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -18,7 +21,6 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
-import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
@@ -31,15 +33,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
-class ReceivePage2 extends StatefulWidget {
-  const ReceivePage2({super.key});
+class ReceivePage extends StatefulWidget {
+  const ReceivePage({super.key});
 
   @override
-  State<ReceivePage2> createState() => _ReceivePage2State();
+  State<ReceivePage> createState() => _ReceivePageState();
 }
 
-class _ReceivePage2State extends State<ReceivePage2> {
+class _ReceivePageState extends State<ReceivePage> {
   late ReceiveCubit _cubit;
   late HomeCubit home;
 
@@ -150,6 +153,8 @@ class _Screen extends StatelessWidget {
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
     final showQR = context.select((ReceiveCubit x) => x.state.showQR(swapTx));
 
+    final watchOnly = context.select((WalletBloc x) => x.state.wallet!.watchOnly());
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -159,8 +164,10 @@ class _Screen extends StatelessWidget {
             const Gap(32),
             const ReceiveWalletsDropDown(),
             const Gap(24),
-            const SelectWalletType(),
-            const Gap(48),
+            if (!watchOnly) ...[
+              const SelectWalletType(),
+              const Gap(48),
+            ],
             if (showQR) ...[
               const ReceiveQR(),
               const Gap(8),
@@ -405,6 +412,208 @@ class SwapFeesDetails extends StatelessWidget {
       children: [
         BBText.bodySmall('Total fees:\n$fees $units'),
         const Gap(16),
+      ],
+    );
+  }
+}
+
+class ReceiveQR extends StatelessWidget {
+  const ReceiveQR({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final address = context.select((ReceiveCubit x) => x.state.getQRStr());
+
+    return ReceiveQRDisplay(address: address);
+  }
+}
+
+class ReceiveQRDisplay extends StatelessWidget {
+  const ReceiveQRDisplay({super.key, required this.address});
+
+  final String address;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: GestureDetector(
+        onTap: () async {
+          if (locator.isRegistered<Clippboard>()) await locator<Clippboard>().copy(address);
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+        },
+        child: ColoredBox(
+          color: Colors.white,
+          child: QrImageView(
+            key: UIKeys.receiveQRDisplay,
+            data: address,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ReceiveAddress extends StatelessWidget {
+  const ReceiveAddress({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final addressQr = context.select((ReceiveCubit x) => x.state.getQRStr());
+
+    return ReceiveDisplayAddress(addressQr: addressQr);
+  }
+}
+
+class ReceiveDisplayAddress extends StatefulWidget {
+  const ReceiveDisplayAddress({
+    super.key,
+    required this.addressQr,
+    this.minify = true,
+    this.fontSize,
+  });
+
+  final String addressQr;
+  final double? fontSize;
+  final bool minify;
+
+  @override
+  State<ReceiveDisplayAddress> createState() => _ReceiveDisplayAddressState();
+}
+
+class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
+  bool showToast = false;
+
+  void _copyClicked() async {
+    if (!mounted) return;
+    setState(() {
+      showToast = true;
+    });
+    await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
+    setState(() {
+      showToast = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final address = widget.minify
+        ? widget.addressQr.substring(0, 10) +
+            ' ... ' +
+            widget.addressQr.substring(widget.addressQr.length - 5)
+        : widget.addressQr;
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 350),
+      child: !showToast
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 250,
+                  child: BBText.body(
+                    address,
+                    textAlign: TextAlign.center,
+                    uiKey: UIKeys.receiveAddressDisplay,
+                    fontSize: widget.fontSize,
+                  ),
+                ),
+                SizedBox(
+                  width: 50,
+                  child: IconButton(
+                    onPressed: () async {
+                      if (locator.isRegistered<Clippboard>())
+                        await locator<Clippboard>().copy(widget.addressQr);
+
+                      _copyClicked();
+                    },
+                    iconSize: 30,
+                    color: context.colour.secondary,
+                    icon: const FaIcon(FontAwesomeIcons.copy),
+                  ),
+                ),
+              ],
+            )
+          : const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: BBText.body('Address copied to clipboard'),
+            ),
+    );
+  }
+}
+
+class CreateInvoice extends StatelessWidget {
+  const CreateInvoice({super.key});
+
+  static Future openPopUp(BuildContext context) async {
+    final receiveCubit = context.read<ReceiveCubit>();
+    final currencyCubit = context.read<CurrencyCubit>();
+    // currencyCubit.reset();
+    // currencyCubit.updateAmountDirect(receiveCubit.state.savedInvoiceAmount);
+    // currencyCubit.updateAmount(receiveCubit.state.savedInvoiceAmount.toString());
+    if (currencyCubit.state.amount > 0) currencyCubit.convertAmtOnCurrencyChange();
+
+    return showBBBottomSheet(
+      context: context,
+      child: BlocProvider.value(
+        value: receiveCubit,
+        child: BlocProvider.value(
+          value: currencyCubit,
+          child: BlocListener<ReceiveCubit, ReceiveState>(
+            listenWhen: (previous, current) =>
+                previous.savedInvoiceAmount != current.savedInvoiceAmount ||
+                previous.savedDescription != current.savedDescription,
+            listener: (context, state) {
+              context.pop();
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(30),
+              child: CreateInvoice(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final description = context.select((ReceiveCubit _) => _.state.description);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BBHeader.popUpCenteredText(
+          text: 'Request a Payment',
+          onBack: () {
+            context.read<ReceiveCubit>().clearInvoiceFields();
+            context.pop();
+          },
+        ),
+        const Gap(40),
+        // const BBText.title('Amount'),
+        const Gap(4),
+        const EnterAmount(uiKey: UIKeys.receiveAmountField),
+        const Gap(24),
+        const BBText.title('   Public description'),
+        const Gap(4),
+        BBTextInput.big(
+          uiKey: UIKeys.receiveDescriptionField,
+          value: description,
+          hint: 'Enter description',
+          onChanged: (txt) {
+            context.read<ReceiveCubit>().descriptionChanged(txt);
+          },
+        ),
+        const Gap(40),
+        BBButton.bigRed(
+          buttonKey: UIKeys.receiveSavePaymentButton,
+          label: 'Save',
+          onPressed: () {
+            context.read<ReceiveCubit>().saveFinalInvoiceClicked();
+          },
+        ),
+        const Gap(40),
       ],
     );
   }

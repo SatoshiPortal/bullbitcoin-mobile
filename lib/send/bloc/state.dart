@@ -38,7 +38,9 @@ class SendState with _$SendState {
     return calculateTotalSelected() >= amount;
   }
 
-  bool isLnInvoice() => address.startsWith('ln');
+  bool isWatchOnly() => selectedWalletBloc?.state.wallet?.watchOnly() ?? false;
+
+  bool isLnInvoice() => address.startsWith('ln') && !isWatchOnly();
 
   int calculateTotalSelected() {
     return selectedUtxos.fold<int>(

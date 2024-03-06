@@ -5,7 +5,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
-import 'package:bb_mobile/receive/receive_page.dart';
+import 'package:bb_mobile/receive/receive_page2.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

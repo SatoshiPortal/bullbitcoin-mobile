@@ -50,6 +50,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         description: '',
       ),
     );
+    final watchOnly = walletBloc.state.wallet!.watchOnly();
+    if (watchOnly) emit(state.copyWith(walletType: ReceiveWalletType.secure));
     loadAddress();
   }
 

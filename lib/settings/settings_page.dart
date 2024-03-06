@@ -71,8 +71,8 @@ class _Screen extends StatelessWidget {
                 NetworkButton(),
                 Gap(8),
                 LightingButton(),
-                Gap(8),
-                SelectHomeLayoutButton(),
+                // Gap(8),
+                // SelectHomeLayoutButton(),
                 Gap(80),
                 CenterLeft(
                   child: BBText.bodySmall(

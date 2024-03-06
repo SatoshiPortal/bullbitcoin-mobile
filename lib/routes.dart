@@ -8,7 +8,7 @@ import 'package:bb_mobile/home/market.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/receive/receive_page.dart';
+import 'package:bb_mobile/receive/receive_page2.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
@@ -128,17 +128,17 @@ final GoRouter router = GoRouter(
       path: '/send',
       builder: (context, state) {
         // final String? deepLinkUri = state.extra as String?;
-        final walletBloc = state.extra as WalletBloc?;
+        // final walletBloc = state.extra as WalletBloc?;
 
-        return SendPage(walletBloc: walletBloc);
+        return const SendPage2();
       },
     ),
     GoRoute(
       path: '/receive',
       builder: (context, state) {
-        final walletBloc = state.extra as WalletBloc?;
+        // final walletBloc = state.extra as WalletBloc?;
 
-        return ReceivePage(walletBloc: walletBloc);
+        return const ReceivePage();
       },
     ),
     GoRoute(
