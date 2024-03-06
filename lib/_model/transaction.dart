@@ -245,6 +245,13 @@ class SwapTx with _$SwapTx {
     return outAmount - totalFees()!;
   }
 
+  bool get canClaim =>
+      !isSubmarine &&
+      (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed);
+  bool get paidSubmarine =>
+      isSubmarine &&
+      (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed);
+
   BtcLnBoltzSwap toBtcLnSwap(SwapTxSensitive sensitive) {
     final tx = this;
     return BtcLnBoltzSwap(
@@ -276,7 +283,6 @@ class SwapTx with _$SwapTx {
 }
 
 extension SwapTxExt on SwapStatus {
-  bool get canClaim => this == SwapStatus.txnMempool || this == SwapStatus.txnConfirmed;
   bool get showPending => this == SwapStatus.invoicePaid;
   bool get showQR => this != SwapStatus.invoiceSettled || hasExpired;
   bool get hasExpired =>

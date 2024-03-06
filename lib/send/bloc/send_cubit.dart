@@ -50,7 +50,7 @@ class SendCubit extends Cubit<SendState> {
     required this.currencyCubit,
     required SwapCubit swapCubit,
     required this.swapBoltz,
-    bool openScanner = false,
+    required bool openScanner,
   }) : super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
@@ -64,8 +64,6 @@ class SendCubit extends Cubit<SendState> {
     });
 
     swapCubitSub = state.swapCubit.stream.listen(swapCubitStateChanged);
-
-    if (openScanner) scanAddress();
   }
 
   final Barcode barcode;
@@ -224,16 +222,6 @@ class SendCubit extends Cubit<SendState> {
       if (!hasEnoughCoinns)
         emit(state.copyWith(errSending: 'Selected UTXOs do not cover Transaction Amount & Fees'));
     }
-
-    final watchonly = state.selectedWalletBloc?.state.wallet?.watchOnly();
-    if (watchonly != null && watchonly && state.address.startsWith('ln')) {
-      emit(
-        state.copyWith(
-          showSendButton: false,
-          errSending: 'Watch Only Wallets cannot send Ln transactions',
-        ),
-      );
-    }
   }
 
   void downloadPSBTClicked() async {
@@ -305,7 +293,7 @@ class SendCubit extends Cubit<SendState> {
       pubWallet: state.selectedWalletBloc!.state.bdkWallet!,
       isManualSend: state.selectedUtxos.isNotEmpty,
       address: address,
-      amount: currencyCubit.state.amount,
+      amount: state.swapCubit.state.swapTx!.outAmount,
       sendAllCoin: state.sendAllCoin,
       feeRate: fee.toDouble(),
       enableRbf: enableRbf,

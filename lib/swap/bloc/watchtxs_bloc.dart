@@ -169,7 +169,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     if (wallet == null) return;
     SwapTx swapTx = event.swapTx;
 
-    if (swapTx.status!.status.hasSettled) {
+    if (swapTx.status!.status.hasSettled || swapTx.paidSubmarine) {
       if (swapTx.txid == null) {
         swapTx = state.claimedSwapTxs.firstWhere((element) => element.id == swapTx.id);
       }
@@ -194,7 +194,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return;
     }
 
-    final canClaim = swapTx.status!.status.canClaim;
+    final canClaim = swapTx.canClaim;
     var shouldRefund = false;
     if (!canClaim) {
       final (resp, err) = walletTransaction.updateSwapTxs(
