@@ -11,6 +11,7 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
@@ -27,7 +28,6 @@ import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -201,59 +201,15 @@ class ReceiveWalletsDropDown extends StatelessWidget {
 
     final walletBloc = selectedWalletBloc ?? walletBlocs.first;
 
-    return Center(
-      child: SizedBox(
-        width: 250,
-        height: 45,
-        child: Material(
-          elevation: 2,
-          clipBehavior: Clip.antiAlias,
-          borderRadius: BorderRadius.circular(8),
-          child: DropdownButtonFormField<WalletBloc>(
-            padding: EdgeInsets.zero,
-            elevation: 4,
-            borderRadius: BorderRadius.circular(8),
-            isExpanded: true,
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: NewColours.lightGray,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              border: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: NewColours.lightGray,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              filled: true,
-              fillColor: NewColours.offWhite,
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: NewColours.lightGray,
-                ),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            ),
-            value: walletBloc,
-            onChanged: (value) {
-              if (value == null) return;
-              context.read<ReceiveCubit>().updateWalletBloc(value);
-            },
-            items: walletBlocs.map((wallet) {
-              final name = wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint;
-              return DropdownMenuItem<WalletBloc>(
-                value: wallet,
-                child: Center(
-                  child: BBText.body(name),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ),
+    return BBDropDown<WalletBloc>(
+      items: {
+        for (final wallet in walletBlocs)
+          wallet: wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint,
+      },
+      value: walletBloc,
+      onChanged: (bloc) {
+        context.read<ReceiveCubit>().updateWalletBloc(bloc);
+      },
     );
   }
 }
@@ -310,26 +266,16 @@ class SelectWalletType extends StatelessWidget {
 
     if (!isTestnet) return const SizedBox.shrink();
 
-    return CupertinoSlidingSegmentedControl(
-      groupValue: walletType,
-      children: const {
-        ReceiveWalletType.secure: Text('Bitcoin'),
-        ReceiveWalletType.lightning: Text('Lightning'),
+    return BBSwitcher<ReceiveWalletType>(
+      value: walletType,
+      items: const {
+        ReceiveWalletType.secure: 'Bitcoin',
+        ReceiveWalletType.lightning: 'Lightning',
       },
-      onValueChanged: (value) {
-        if (value == null) return;
+      onChanged: (value) {
         context.read<ReceiveCubit>().updateWalletType(value);
       },
     );
-  }
-}
-
-class BBSwitcher extends StatelessWidget {
-  const BBSwitcher({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 

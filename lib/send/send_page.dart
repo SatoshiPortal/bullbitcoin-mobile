@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
@@ -15,6 +16,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
@@ -210,59 +212,15 @@ class WalletSelectionDropDown extends StatelessWidget {
 
     final walletBloc = selectedWalletBloc ?? walletBlocs.first;
 
-    return Center(
-      child: SizedBox(
-        width: 250,
-        height: 45,
-        child: Material(
-          elevation: 2,
-          clipBehavior: Clip.antiAlias,
-          borderRadius: BorderRadius.circular(8),
-          child: DropdownButtonFormField<WalletBloc>(
-            padding: EdgeInsets.zero,
-            elevation: 4,
-            borderRadius: BorderRadius.circular(8),
-            isExpanded: true,
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: NewColours.lightGray,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              border: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: NewColours.lightGray,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              filled: true,
-              fillColor: NewColours.offWhite,
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: NewColours.lightGray,
-                ),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            ),
-            value: walletBloc,
-            onChanged: (value) {
-              if (value == null) return;
-              context.read<SendCubit>().updateWalletBloc(value);
-            },
-            items: walletBlocs.map((wallet) {
-              final name = wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint;
-              return DropdownMenuItem<WalletBloc>(
-                value: wallet,
-                child: Center(
-                  child: BBText.body(name),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ),
+    return BBDropDown<WalletBloc>(
+      items: {
+        for (final wallet in walletBlocs)
+          wallet: wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint,
+      },
+      value: walletBloc,
+      onChanged: (bloc) {
+        context.read<SendCubit>().updateWalletBloc(bloc);
+      },
     );
   }
 }
@@ -310,11 +268,11 @@ class _AddressFieldState extends State<AddressField> {
             children: [
               IconButton(
                 onPressed: () async {
-                  // if (!locator.isRegistered<Clippboard>()) return;
-                  // final data = await locator<Clippboard>().paste();
-                  // if (data == null) return;
-                  const data =
-                      'lntb500u1pj7tqpcpp566tgzlzduq3sjefgwxawt88mgxhc0e7tpva2pxc0zw889ryc8tnqdqsv9ekkmryv9jx5umyxqyjw5qcqp2sp5ptll8dll4sawwu5kufgxzfmsmlfj2rgvuqstngc6t30h2xzggxmqrzjq2gyp9za7vc7vd8m59fvu63pu00u4pak35n4upuv4mhyw5l586dvkf6vkyqq20gqqqqqqqqpqqqqqzsqqc9qyyssqfvcpfj3587plnxs908z0txz9as9zf2kqa9llhfynarku4t80muv87se5t3d05mf0mjxm3tp0f4yzfu9ulz08z2vdjhz28rvj2ch0vmspwkguap';
+                  // const data =
+                  // 'lntb500u1pj7tqpcpp566tgzlzduq3sjefgwxawt88mgxhc0e7tpva2pxc0zw889ryc8tnqdqsv9ekkmryv9jx5umyxqyjw5qcqp2sp5ptll8dll4sawwu5kufgxzfmsmlfj2rgvuqstngc6t30h2xzggxmqrzjq2gyp9za7vc7vd8m59fvu63pu00u4pak35n4upuv4mhyw5l586dvkf6vkyqq20gqqqqqqqqpqqqqqzsqqc9qyyssqfvcpfj3587plnxs908z0txz9as9zf2kqa9llhfynarku4t80muv87se5t3d05mf0mjxm3tp0f4yzfu9ulz08z2vdjhz28rvj2ch0vmspwkguap';
+                  if (!locator.isRegistered<Clippboard>()) return;
+                  final data = await locator<Clippboard>().paste();
+                  if (data == null) return;
                   context.read<SendCubit>().updateAddress(data);
                 },
                 iconSize: 16,
