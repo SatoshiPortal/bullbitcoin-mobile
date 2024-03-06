@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_model/electrum.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
@@ -239,7 +240,7 @@ class NetworkConfigFields extends StatelessWidget {
               const Spacer(),
               IgnorePointer(
                 ignoring: type != ElectrumTypes.custom,
-                child: Switch(
+                child: BBSwitch(
                   value: tempNetworkDetails.validateDomain,
                   onChanged: (e) {
                     context.read<NetworkCubit>().updateTempValidateDomain(e);

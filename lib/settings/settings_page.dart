@@ -4,6 +4,7 @@ import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -143,7 +144,7 @@ class Units extends StatelessWidget {
           'Display unit in sats',
         ),
         const Spacer(),
-        Switch(
+        BBSwitch(
           value: isSats,
           onChanged: (e) {
             context.read<CurrencyCubit>().toggleUnitsInSats();
@@ -242,7 +243,7 @@ class DefaultRBFToggle extends StatelessWidget {
           'Default RBF',
         ),
         const Spacer(),
-        Switch(
+        BBSwitch(
           value: rbf,
           onChanged: (e) {
             context.read<SettingsCubit>().toggleDefaultRBF();
@@ -286,7 +287,7 @@ class TestNetButton extends StatelessWidget {
             'Testnet mode',
           ),
           const Spacer(),
-          Switch(
+          BBSwitch(
             key: UIKeys.settingsTestnetSwitch,
             value: testnet,
             onChanged: (e) {

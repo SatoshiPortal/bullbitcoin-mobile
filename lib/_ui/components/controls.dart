@@ -116,3 +116,22 @@ class BBDropDown<T> extends StatelessWidget {
     );
   }
 }
+
+class BBSwitch extends StatelessWidget {
+  const BBSwitch({super.key, required this.value, required this.onChanged});
+
+  final bool value;
+  final Function(bool) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Switch(
+      activeColor: context.colour.background,
+      activeTrackColor: context.colour.onBackground,
+      inactiveTrackColor: context.colour.surface,
+      inactiveThumbColor: context.colour.onBackground.withOpacity(0.4),
+      value: value,
+      onChanged: onChanged,
+    );
+  }
+}

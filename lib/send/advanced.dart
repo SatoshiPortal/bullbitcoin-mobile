@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -117,7 +118,7 @@ class SendAllOption extends StatelessWidget {
       children: [
         const BBText.body('Send entire wallet balance'),
         const Spacer(),
-        Switch(
+        BBSwitch(
           value: sendAll,
           onChanged: (e) {
             context.read<SendCubit>().sendAllCoin(e);
@@ -138,7 +139,7 @@ class EnableRBFOption extends StatelessWidget {
       children: [
         const BBText.body('Turn off RBF'),
         const Spacer(),
-        Switch(
+        BBSwitch(
           value: disableRBF,
           onChanged: (e) {
             context.read<SendCubit>().disableRBF(e);
