@@ -288,7 +288,7 @@ class TestBackupConfirmButton extends StatelessWidget {
           Center(
             child: SizedBox(
               width: 250,
-              child: BBButton.bigRed(
+              child: BBButton.big(
                 disabled: testing,
                 loading: testing,
                 filled: true,

@@ -265,28 +265,25 @@ class NetworkConfigFields extends StatelessWidget {
             const Gap(8),
           ],
           Center(
-            child: SizedBox(
-              width: 250,
-              child: BBButton.bigRed(
-                loading: loading,
-                loadingText: 'Connecting...',
-                disabled: !showButton.show,
-                onPressed: () async {
-                  FocusScope.of(context).requestFocus(FocusNode());
+            child: BBButton.big(
+              loading: loading,
+              loadingText: 'Connecting...',
+              disabled: !showButton.show,
+              onPressed: () async {
+                FocusScope.of(context).requestFocus(FocusNode());
 
-                  if (type == ElectrumTypes.custom) {
-                    await PrivacyNoticePopUp.openPopUp(context);
-                    return;
-                  }
+                if (type == ElectrumTypes.custom) {
+                  await PrivacyNoticePopUp.openPopUp(context);
+                  return;
+                }
 
-                  context.read<NetworkCubit>().networkConfigsSaveClicked();
-                  await Future.delayed(const Duration(milliseconds: 500));
-                  final err = context.read<NetworkCubit>().state.errLoadingNetworks;
-                  if (err.isEmpty) context.pop();
-                },
-                label: 'SAVE',
-                filled: true,
-              ),
+                context.read<NetworkCubit>().networkConfigsSaveClicked();
+                await Future.delayed(const Duration(milliseconds: 500));
+                final err = context.read<NetworkCubit>().state.errLoadingNetworks;
+                if (err.isEmpty) context.pop();
+              },
+              label: 'SAVE',
+              filled: true,
             ),
           ),
           const Gap(24),
@@ -337,7 +334,7 @@ class PrivacyNoticePopUp extends StatelessWidget {
               ),
               SizedBox(
                 width: 150,
-                child: BBButton.bigRed(
+                child: BBButton.big(
                   label: 'SAVE',
                   filled: true,
                   onPressed: () async {
@@ -456,17 +453,14 @@ class ElectrumAdvancedOptions extends StatelessWidget {
             const Gap(8),
           ],
           Center(
-            child: SizedBox(
-              width: 250,
-              child: BBButton.bigRed(
-                label: 'Confirm',
-                filled: true,
-                disabled: !showButton.show,
-                onPressed: () async {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  context.pop();
-                },
-              ),
+            child: BBButton.big(
+              label: 'Confirm',
+              filled: true,
+              disabled: !showButton.show,
+              onPressed: () async {
+                FocusScope.of(context).requestFocus(FocusNode());
+                context.pop();
+              },
             ),
           ),
           const Gap(48),

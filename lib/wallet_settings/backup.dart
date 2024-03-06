@@ -102,7 +102,7 @@ class BackUpInfoScreen extends StatelessWidget {
             Center(
               child: SizedBox(
                 width: 250,
-                child: BBButton.bigRed(
+                child: BBButton.big(
                   filled: true,
                   onPressed: () {
                     context.read<InfoRead>().read();
@@ -176,7 +176,7 @@ class BackupScreen extends StatelessWidget {
             // Center(
             //   child: SizedBox(
             //     width: 200,
-            //     child: BBButton.bigRed(
+            //     child: BBButton.big2(
             //       onPressed: () {
             //         context.pop();
             //       },
@@ -188,7 +188,7 @@ class BackupScreen extends StatelessWidget {
             Center(
               child: SizedBox(
                 width: 250,
-                child: BBButton.bigRed(
+                child: BBButton.big(
                   filled: true,
                   onPressed: () {
                     context

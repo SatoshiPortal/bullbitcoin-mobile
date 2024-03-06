@@ -203,7 +203,7 @@ class DownloadButton extends StatelessWidget {
     return Center(
       child: SizedBox(
         width: 250,
-        child: BBButton.bigBlack(
+        child: BBButton.big(
           filled: true,
           loading: downloading,
           loadingText: 'Downloading',

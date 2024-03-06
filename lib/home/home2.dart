@@ -476,7 +476,7 @@ class HomeBottomBar2 extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: BBButton.bigNoIcon(
+                      child: BBButton.big(
                         label: 'Receive',
                         onPressed: () {
                           context.push('/receive', extra: walletBloc);
@@ -485,7 +485,7 @@ class HomeBottomBar2 extends StatelessWidget {
                     ),
                     const Gap(8),
                     Expanded(
-                      child: BBButton.bigNoIcon(
+                      child: BBButton.big(
                         label: 'Send',
                         onPressed: () {
                           context.push('/send', extra: walletBloc);
@@ -499,7 +499,7 @@ class HomeBottomBar2 extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: BBButton.bigNoIcon(
+                      child: BBButton.big(
                         label: 'Buy',
                         onPressed: () {
                           context.push('/market');
@@ -509,7 +509,7 @@ class HomeBottomBar2 extends StatelessWidget {
                     ),
                     const Gap(8),
                     Expanded(
-                      child: BBButton.bigNoIcon(
+                      child: BBButton.big(
                         label: 'Sell',
                         onPressed: () {
                           context.push('/market');

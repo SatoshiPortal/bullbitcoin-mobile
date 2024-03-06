@@ -1,19 +1,12 @@
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 
 enum _ButtonType {
-  smallRed,
-  smallBlack,
-  bigRed,
-  bigBlack,
-  big2,
-  bigNoIcon,
+  big,
   text,
   textWithRightArrow,
   textWithLeftArrow,
@@ -21,95 +14,20 @@ enum _ButtonType {
 }
 
 class BBButton extends StatelessWidget {
-  const BBButton.smallRed({
+  const BBButton.big({
     required this.label,
     required this.onPressed,
-    this.disabled = false,
-    this.filled = false,
-    this.loading = false,
-    this.buttonKey,
-    this.loadingText,
-  })  : type = _ButtonType.smallRed,
-        isBlue = null,
-        isRed = null,
-        statusText = null,
-        centered = null,
-        leftIcon = null;
-
-  const BBButton.smallBlack({
-    required this.label,
-    required this.onPressed,
+    this.leftIcon,
     this.buttonKey,
     this.disabled = false,
     this.filled = false,
     this.loading = false,
     this.loadingText,
-  })  : type = _ButtonType.smallBlack,
-        isBlue = null,
-        isRed = null,
-        statusText = null,
-        centered = null,
-        leftIcon = null;
-
-  const BBButton.bigRed({
-    required this.label,
-    required this.onPressed,
-    this.buttonKey,
-    this.disabled = false,
-    this.filled = false,
-    this.loading = false,
-    this.loadingText,
-  })  : type = _ButtonType.bigRed,
-        isBlue = null,
-        isRed = null,
-        statusText = null,
-        centered = null,
-        leftIcon = null;
-
-  const BBButton.big2({
-    required this.label,
-    required this.onPressed,
-    required this.leftIcon,
-    this.buttonKey,
-    this.disabled = false,
-    this.filled = false,
-    this.loading = false,
-    this.loadingText,
-  })  : type = _ButtonType.big2,
+  })  : type = _ButtonType.big,
         isBlue = null,
         isRed = null,
         statusText = null,
         centered = null;
-
-  const BBButton.bigNoIcon({
-    required this.label,
-    required this.onPressed,
-    this.buttonKey,
-    this.disabled = false,
-    this.filled = false,
-    this.loading = false,
-    this.loadingText,
-  })  : type = _ButtonType.bigNoIcon,
-        isBlue = null,
-        isRed = null,
-        statusText = null,
-        centered = null,
-        leftIcon = null;
-
-  const BBButton.bigBlack({
-    required this.label,
-    required this.onPressed,
-    this.disabled = false,
-    this.filled = false,
-    this.loading = false,
-    this.loadingText,
-    this.buttonKey,
-  })  : type = _ButtonType.bigBlack,
-        isBlue = null,
-        isRed = null,
-        statusText = null,
-        centered = null,
-        leftIcon = null;
 
   const BBButton.text({
     required this.label,
@@ -231,54 +149,7 @@ class BBButton extends StatelessWidget {
           ),
         );
 
-      case _ButtonType.bigRed:
-        final style = OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          side: BorderSide(color: context.colour.primary),
-          backgroundColor: filled ? context.colour.primary : context.colour.background,
-          elevation: 6,
-          shadowColor: context.colour.background,
-        );
-
-        if (!loading)
-          widget = OutlinedButton(
-            key: buttonKey,
-            style: style,
-            onPressed: disabled ? null : () => onPressed(),
-            child: BBText.titleLarge(
-              label,
-              isRed: !filled,
-              onSurface: filled,
-            ),
-          );
-        else {
-          widget = OutlinedButton(
-            style: style,
-            onPressed: () {},
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Gap(8),
-                SizedBox(
-                  height: 16,
-                  width: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(context.colour.primary),
-                  ),
-                ),
-                const Gap(8),
-                BBText.titleLarge(
-                  loadingText ?? label,
-                  isRed: !filled,
-                  onSurface: filled,
-                ),
-              ],
-            ),
-          );
-        }
-
-      case _ButtonType.big2:
+      case _ButtonType.big:
         final style = ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4),
@@ -299,11 +170,13 @@ class BBButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  leftIcon,
-                  color: context.colour.onBackground,
-                ),
-                const Gap(24),
+                if (leftIcon != null) ...[
+                  Icon(
+                    leftIcon,
+                    color: context.colour.onBackground,
+                  ),
+                  const Gap(24),
+                ],
                 BBText.titleLarge(label),
               ],
             ),
@@ -335,110 +208,7 @@ class BBButton extends StatelessWidget {
           );
         }
 
-      case _ButtonType.bigNoIcon:
-        final style = ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
-          side: const BorderSide(color: NewColours.lightGray),
-          backgroundColor: NewColours.offWhite,
-          surfaceTintColor: NewColours.offWhite.withOpacity(0.5),
-          elevation: 2,
-          // disabledForegroundColor: context.colour.onBackground,
-        );
-
-        if (!loading)
-          widget = ElevatedButton(
-            key: buttonKey,
-            style: style,
-            onPressed: disabled ? null : () => onPressed(),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                BBText.titleLarge(label),
-              ],
-            ),
-          );
-        else {
-          widget = ElevatedButton(
-            style: style,
-            onPressed: () {},
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Gap(8),
-                SizedBox(
-                  height: 16,
-                  width: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(context.colour.primary),
-                  ),
-                ),
-                const Gap(8),
-                BBText.title(
-                  loadingText ?? label,
-                  isRed: !filled,
-                  onSurface: filled,
-                ),
-              ],
-            ),
-          );
-        }
-
-      case _ButtonType.bigBlack:
-        final isDark =
-            context.select((Lighting _) => _.state.currentTheme(context) == ThemeMode.dark);
-
-        final style = OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: const StadiumBorder(),
-          backgroundColor: !isDark ? context.colour.onBackground : context.colour.surface,
-          foregroundColor: context.colour.onPrimary,
-        );
-
-        widget = TextButton(
-          style: style,
-          onPressed: disabled ? null : () => onPressed(),
-          child: BBText.titleLarge(label, onSurface: filled),
-        );
-
-      case _ButtonType.smallRed:
-        final style = OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          side: BorderSide(color: context.colour.primary),
-          backgroundColor: filled ? context.colour.primary : context.colour.background,
-          elevation: 6,
-          shadowColor: context.colour.background,
-        );
-
-        widget = OutlinedButton(
-          key: buttonKey,
-          style: style,
-          onPressed: disabled ? null : () => onPressed(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: BBText.title(
-              label,
-              isRed: !filled,
-              onSurface: filled,
-            ),
-          ),
-        );
-
-      case _ButtonType.smallBlack:
-        final style = OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-          shape: const StadiumBorder(),
-          backgroundColor: context.colour.onBackground,
-          foregroundColor: context.colour.onPrimary,
-        );
-
-        widget = TextButton(
-          style: style,
-          onPressed: disabled ? null : () => onPressed(),
-          child: BBText.titleLarge(label, onSurface: filled, isBold: true),
-        );
+        widget = SizedBox(height: 45, child: widget);
 
       case _ButtonType.text:
         widget = TextButton(

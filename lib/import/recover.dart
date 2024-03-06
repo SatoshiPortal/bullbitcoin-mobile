@@ -354,7 +354,7 @@ class _ImportWordsRecoverButton extends StatelessWidget {
           ],
           SizedBox(
             width: 250,
-            child: BBButton.bigRed(
+            child: BBButton.big(
               buttonKey: UIKeys.importRecoverConfirmButton,
               label: 'Recover',
               onPressed: () {

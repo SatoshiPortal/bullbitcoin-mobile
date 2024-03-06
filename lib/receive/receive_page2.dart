@@ -273,23 +273,19 @@ class WalletActions extends StatelessWidget {
     return Column(
       children: [
         if (showRequestButton)
-          SizedBox(
-            width: 300,
-            height: 44,
-            child: BBButton.big2(
-              buttonKey: UIKeys.receiveRequestPaymentButton,
-              label: 'Request payment',
-              leftIcon: Icons.send,
-              onPressed: () {
-                CreateInvoice.openPopUp(context);
-              },
-            ),
+          BBButton.big(
+            buttonKey: UIKeys.receiveRequestPaymentButton,
+            label: 'Request payment',
+            leftIcon: Icons.send,
+            onPressed: () {
+              CreateInvoice.openPopUp(context);
+            },
           ),
         const Gap(8),
         SizedBox(
           width: 300,
           height: 44,
-          child: BBButton.big2(
+          child: BBButton.big(
             buttonKey: UIKeys.receiveGenerateAddressButton,
             label: 'Get new address',
             leftIcon: Icons.send,
@@ -361,28 +357,24 @@ class CreateLightningInvoice extends StatelessWidget {
         ),
         const Gap(24),
         Center(
-          child: SizedBox(
-            // width: 300,
-            height: 44,
-            child: BBButton.big2(
-              leftIcon: FontAwesomeIcons.receipt,
-              buttonKey: UIKeys.receiveSavePaymentButton,
-              loading: creatingInv,
-              label: 'Create Invoice',
-              loadingText: 'Creating Invoice',
-              onPressed: () async {
-                final wallet = context.read<ReceiveCubit>().state.walletBloc!.state.wallet;
-                if (wallet == null) return;
-                final amt = context.read<CurrencyCubit>().state.amount;
-                final label = context.read<ReceiveCubit>().state.description;
+          child: BBButton.big(
+            leftIcon: FontAwesomeIcons.receipt,
+            buttonKey: UIKeys.receiveSavePaymentButton,
+            loading: creatingInv,
+            label: 'Create Invoice',
+            loadingText: 'Creating Invoice',
+            onPressed: () async {
+              final wallet = context.read<ReceiveCubit>().state.walletBloc!.state.wallet;
+              if (wallet == null) return;
+              final amt = context.read<CurrencyCubit>().state.amount;
+              final label = context.read<ReceiveCubit>().state.description;
 
-                context.read<SwapCubit>().createBtcLightningSwap(
-                      amount: amt,
-                      label: label.isEmpty ? null : label,
-                      walletId: wallet.id,
-                    );
-              },
-            ),
+              context.read<SwapCubit>().createBtcLightningSwap(
+                    amount: amt,
+                    label: label.isEmpty ? null : label,
+                    walletId: wallet.id,
+                  );
+            },
           ),
         ),
         const Gap(16),
@@ -606,7 +598,7 @@ class CreateInvoice extends StatelessWidget {
           },
         ),
         const Gap(40),
-        BBButton.bigRed(
+        BBButton.big(
           buttonKey: UIKeys.receiveSavePaymentButton,
           label: 'Save',
           onPressed: () {

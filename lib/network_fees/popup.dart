@@ -209,7 +209,7 @@ class DoneButton extends StatelessWidget {
       child: Center(
         child: SizedBox(
           width: 200,
-          child: BBButton.bigRed(
+          child: BBButton.big(
             onPressed: () {
               context.read<NetworkFeesCubit>().confirmFeeClicked();
             },

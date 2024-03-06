@@ -80,7 +80,10 @@ class _Screen extends StatelessWidget {
         ),
       ),
       body: StackedPage(
-        bottomChild: const CreateWalletCreateButton(),
+        bottomChild: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: CreateWalletCreateButton(),
+        ),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -218,11 +221,11 @@ class CreateWalletConfirmButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.7,
+      // width: MediaQuery.of(context).size.width * 0.7,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBButton.bigRed(
+          BBButton.big(
             filled: true,
             onPressed: () {
               context.read<CreateWalletCubit>().confirmClicked();
@@ -296,8 +299,8 @@ class CreateWalletCreateButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.7,
-      child: BBButton.bigRed(
+      // width: MediaQuery.of(context).size.width * 0.7,
+      child: BBButton.big(
         onPressed: () async {
           await context.read<CreateWalletCubit>().checkWalletLabel();
           final err = context.read<CreateWalletCubit>().state.errSaving;

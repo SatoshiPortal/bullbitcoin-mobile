@@ -331,7 +331,7 @@ class HomeNoWallets extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBButton.bigRed(
+          BBButton.big(
             onPressed: () {
               context.push('/import');
             },

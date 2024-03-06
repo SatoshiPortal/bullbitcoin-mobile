@@ -27,7 +27,7 @@ class BumpFeesButton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (!isReceive)
-          BBButton.bigRed(
+          BBButton.big(
             label: 'Bump Fees',
             onPressed: () async {
               await BumpFeesPopup.showPopUp(context);
@@ -128,7 +128,7 @@ class BumpFeesPopup extends StatelessWidget {
             // const Gap(32),
             if (errr.isNotEmpty) BBText.errorSmall(errr),
             const Gap(8),
-            BBButton.bigRed(
+            BBButton.big(
               label: 'Bump Fees',
               // label: built ? 'Send Transaction' : 'Build Transaction',
               loading: loading,

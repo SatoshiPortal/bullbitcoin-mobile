@@ -90,7 +90,7 @@ class AdvancedOptionsPopUp extends StatelessWidget {
           Center(
             child: SizedBox(
               width: 250,
-              child: BBButton.bigRed(
+              child: BBButton.big(
                 // style: Buttons.outlinedButtonBorderRed,
                 onPressed: () {
                   context.pop();
@@ -222,7 +222,7 @@ class AddressSelectionPopUp extends StatelessWidget {
           Center(
             child: SizedBox(
               width: 200,
-              child: BBButton.bigRed(
+              child: BBButton.big(
                 // style: Buttons.outlinedButtonBorderRed,
                 onPressed: () {
                   context.pop();

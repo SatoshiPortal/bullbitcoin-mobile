@@ -34,7 +34,7 @@ class TxLabelTextField extends HookWidget {
           ),
         ),
         const Gap(8),
-        BBButton.smallRed(
+        BBButton.big(
           disabled: !showButton,
           onPressed: () {
             FocusScope.of(context).requestFocus(FocusNode());

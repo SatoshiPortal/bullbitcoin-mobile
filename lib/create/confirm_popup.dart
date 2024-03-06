@@ -43,11 +43,11 @@ class _Screen extends StatelessWidget {
               for (final text in approveText) ApproveText(text: text),
               const Gap(16),
               const InfoText(),
+              const Gap(48),
+              const Center(child: CreateWalletConfirmButton()),
             ],
           ),
         ),
-        const Gap(48),
-        const Center(child: CreateWalletConfirmButton()),
         const Gap(24),
       ],
     );

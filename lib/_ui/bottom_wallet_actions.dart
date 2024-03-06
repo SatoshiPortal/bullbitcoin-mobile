@@ -53,7 +53,7 @@ class HomeActionButtons extends StatelessWidget {
           children: [
             SizedBox(
               width: buttonWidth,
-              child: BBButton.smallRed(
+              child: BBButton.big(
                 filled: true,
                 onPressed: () async {
                   context.push('/send', extra: walletBloc);
@@ -67,7 +67,7 @@ class HomeActionButtons extends StatelessWidget {
             const SizedBox(width: 16),
             SizedBox(
               width: buttonWidth,
-              child: BBButton.smallRed(
+              child: BBButton.big(
                 buttonKey: UIKeys.homeReceiveButton,
                 filled: true,
                 onPressed: () async {

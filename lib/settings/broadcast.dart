@@ -190,7 +190,7 @@ class _Screen extends StatelessWidget {
                   Center(
                     child: SizedBox(
                       width: 300,
-                      child: BBButton.bigBlack(
+                      child: BBButton.big(
                         filled: true,
                         onPressed: () {
                           context.read<BroadcastTxCubit>().uploadFileClicked();
@@ -261,7 +261,7 @@ class DownloadButton extends StatelessWidget {
     return Center(
       child: SizedBox(
         width: 300,
-        child: BBButton.bigBlack(
+        child: BBButton.big(
           filled: true,
           loading: downloading,
           onPressed: () {
@@ -308,7 +308,7 @@ class BroadcastSendButton extends StatelessWidget {
         Center(
           child: SizedBox(
             width: 300,
-            child: BBButton.bigRed(
+            child: BBButton.big(
               loading: loading,
               onPressed: () {
                 // if (loading) return;

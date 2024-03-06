@@ -435,38 +435,32 @@ class _SendButton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Center(
-          child: SizedBox(
-            // width: 250,
-            height: 44,
-            child: BlocListener<SendCubit, SendState>(
-              listenWhen: (previous, current) =>
-                  previous.tx != current.tx &&
-                  current.psbt.isNotEmpty &&
-                  current.errSending.isEmpty,
-              listener: (context, state) {
-                PSBTPopUp.openPopUp(context);
+          child: BlocListener<SendCubit, SendState>(
+            listenWhen: (previous, current) =>
+                previous.tx != current.tx && current.psbt.isNotEmpty && current.errSending.isEmpty,
+            listener: (context, state) {
+              PSBTPopUp.openPopUp(context);
+            },
+            child: BBButton.big(
+              disabled: !showSend,
+              loading: sending,
+              leftIcon: Icons.send,
+              onPressed: () async {
+                if (sending) return;
+                if (!signed)
+                  context.read<SendCubit>().confirmClickedd();
+                else
+                  context.read<SendCubit>().sendClicked();
               },
-              child: BBButton.big2(
-                disabled: !showSend,
-                loading: sending,
-                leftIcon: Icons.send,
-                onPressed: () async {
-                  if (sending) return;
-                  if (!signed)
-                    context.read<SendCubit>().confirmClickedd();
-                  else
-                    context.read<SendCubit>().sendClicked();
-                },
-                label: watchOnly
-                    ? 'Generate PSBT'
-                    : signed
-                        ? sending
-                            ? 'Broadcasting'
-                            : 'Confirm'
-                        : sending
-                            ? 'Building Tx'
-                            : 'Send',
-              ),
+              label: watchOnly
+                  ? 'Generate PSBT'
+                  : signed
+                      ? sending
+                          ? 'Broadcasting'
+                          : 'Confirm'
+                      : sending
+                          ? 'Building Tx'
+                          : 'Send',
             ),
           ),
         ),

@@ -19,7 +19,7 @@ class SwapHistoryButton extends StatelessWidget {
     final txs = context.select((WalletBloc _) => _.state.allSwapTxs());
     if (txs.isEmpty) return const SizedBox.shrink();
 
-    return BBButton.bigNoIcon(
+    return BBButton.big(
       label: 'View History',
       onPressed: () {
         SwapTxList.openPopUp(context);

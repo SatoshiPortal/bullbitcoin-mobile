@@ -276,7 +276,7 @@ class _CopyButtonState extends State<CopyButton> {
             ? const Center(child: BBText.body('Address copied'))
             : SizedBox(
                 width: 250,
-                child: BBButton.bigRed(
+                child: BBButton.big(
                   onPressed: () {
                     setState(() {
                       _copied = true;
@@ -410,7 +410,7 @@ class _AddressLabelTextFieldState extends State<AddressLabelTextField> {
         Center(
           child: SizedBox(
             width: 250,
-            child: BBButton.bigRed(
+            child: BBButton.big(
               loading: saving,
               onPressed: () {
                 if (_controller.text.isEmpty) return;

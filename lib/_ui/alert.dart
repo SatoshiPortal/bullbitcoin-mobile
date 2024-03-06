@@ -79,7 +79,7 @@ class BBAlert extends StatelessWidget {
                     const Gap(16),
                     SizedBox(
                       width: 100,
-                      child: BBButton.smallBlack(
+                      child: BBButton.big(
                         label: 'Retry',
                         filled: true,
                         onPressed: () {
@@ -94,7 +94,7 @@ class BBAlert extends StatelessWidget {
                 Center(
                   child: SizedBox(
                     width: 200,
-                    child: BBButton.bigBlack(
+                    child: BBButton.big(
                       label: 'Okay',
                       filled: true,
                       onPressed: () {
@@ -108,7 +108,7 @@ class BBAlert extends StatelessWidget {
                 Center(
                   child: SizedBox(
                     width: 200,
-                    child: BBButton.bigBlack(
+                    child: BBButton.big(
                       label: 'Retry',
                       filled: true,
                       onPressed: () {
@@ -134,18 +134,15 @@ class BBAlert extends StatelessWidget {
           text: err,
           actionButtonsBuilder: (context) {
             return [
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: BBButton.bigBlack(
-                  label: 'Okay',
-                  filled: true,
-                  onPressed: () {
-                    context.pop();
-                    if (onClose != null) {
-                      onClose();
-                    }
-                  },
-                ),
+              BBButton.big(
+                label: 'Okay',
+                filled: true,
+                onPressed: () {
+                  context.pop();
+                  if (onClose != null) {
+                    onClose();
+                  }
+                },
               ),
             ];
           },

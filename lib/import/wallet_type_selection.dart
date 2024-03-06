@@ -144,7 +144,7 @@ class _ScreenState extends State<_Screen> {
             const SavingError(),
             SizedBox(
               width: 250,
-              child: BBButton.bigRed(
+              child: BBButton.big(
                 buttonKey: UIKeys.importWalletSelectionConfirmButton,
                 disabled: saving,
                 filled: true,
@@ -481,7 +481,7 @@ class ImportWalletDetailsPopUp extends StatelessWidget {
               Center(
                 child: SizedBox(
                   width: 250,
-                  child: BBButton.bigRed(
+                  child: BBButton.big(
                     onPressed: () {
                       context.pop();
                     },

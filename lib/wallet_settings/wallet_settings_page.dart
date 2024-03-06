@@ -238,7 +238,7 @@ class _WalletNameState extends State<WalletName> {
         ),
         const Gap(16),
         if (!saving)
-          BBButton.smallRed(
+          BBButton.big(
             disabled: !showSave,
             label: 'SAVE',
             onPressed: () {
@@ -560,7 +560,7 @@ class DeletePopUp extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: BBButton.smallRed(
+                child: BBButton.big(
                   filled: true,
                   onPressed: () {
                     context.read<WalletSettingsCubit>().deleteWalletClicked();
@@ -661,7 +661,7 @@ class DeletePopUp extends StatelessWidget {
 //                 ),
 //               ),
 //               Expanded(
-//                 child: BBButton.smallRed(
+//                 child: BBButton.big2(
 //                   filled: true,
 //                   onPressed: () {
 //                     context.read<WalletSettingsCubit>().importLabelsClicked();

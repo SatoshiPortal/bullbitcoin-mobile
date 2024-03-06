@@ -353,7 +353,7 @@ class _ImportWordsRecoverButton extends StatelessWidget {
           ],
           SizedBox(
             width: 250,
-            child: BBButton.bigRed(
+            child: BBButton.big(
               label: 'Recover',
               onPressed: () {
                 context.read<ImportWalletCubit>().recoverWallet24Clicked();

@@ -168,21 +168,21 @@ class _CreateSelectionScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBButton.bigRed(
+          BBButton.big(
             onPressed: () {
               context.push('/create-wallet');
             },
             label: 'Create new wallet',
           ),
           const Gap(16),
-          BBButton.bigRed(
+          BBButton.big(
             onPressed: () {
               context.read<ImportWalletCubit>().importClicked();
             },
             label: 'Import wallet',
           ),
           const Gap(16),
-          BBButton.bigRed(
+          BBButton.big(
             buttonKey: UIKeys.importRecoverButton,
             onPressed: () {
               context.read<ImportWalletCubit>().recoverClicked();

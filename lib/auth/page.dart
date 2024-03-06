@@ -270,7 +270,7 @@ class AuthConfirmButton extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       child: SizedBox(
         width: 250,
-        child: BBButton.bigRed(
+        child: BBButton.big(
           filled: true,
           disabled: !showButton,
           onPressed: () {
