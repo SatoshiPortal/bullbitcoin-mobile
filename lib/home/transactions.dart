@@ -201,10 +201,19 @@ class HomeTxItem2 extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              transformAlignment: Alignment.center,
-              transform: Matrix4.identity()..rotateZ(isReceive ? 1.6 : -1.6),
-              child: const FaIcon(FontAwesomeIcons.arrowRight),
+            Padding(
+              padding: EdgeInsets.only(top: label.isEmpty ? 6 : 10.0),
+              child: SizedBox(
+                height: 24,
+                width: 14,
+                // padding: const EdgeInsets.only(top: 8),
+                child: Container(
+                  // color: Colors.red,
+                  transformAlignment: Alignment.center,
+                  transform: Matrix4.identity()..rotateZ(isReceive ? 0 : 3.16),
+                  child: Image.asset('assets/arrow_down.png'),
+                ),
+              ),
             ),
             const Gap(8),
             Column(

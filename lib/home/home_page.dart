@@ -585,6 +585,7 @@ class HomeBottomBar2 extends StatelessWidget {
                   ],
                 ),
               ),
+              const Gap(8),
               Expanded(
                 child: Row(
                   children: [
