@@ -194,8 +194,8 @@ class HomeTxItem2 extends StatelessWidget {
       },
       child: Padding(
         padding: const EdgeInsets.only(
-          top: 8,
-          bottom: 8,
+          top: 4,
+          bottom: 4,
           left: 32,
           right: 32,
         ),

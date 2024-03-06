@@ -65,9 +65,12 @@ class _Screen extends StatelessWidget {
                 Gap(8),
                 SelectFeesButton(fromSettings: true),
                 Gap(8),
-                ChangePin(),
+                NewWalletButton(),
                 Gap(8),
                 BroadCastButton(),
+                Gap(8),
+                ChangePin(),
+
                 Gap(8),
                 NetworkButton(),
                 Gap(8),
@@ -151,6 +154,20 @@ class Units extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class NewWalletButton extends StatelessWidget {
+  const NewWalletButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Create / Import Wallet',
+      onPressed: () {
+        context.push('/import');
+      },
     );
   }
 }

@@ -508,8 +508,9 @@ class HomeTopBar2 extends StatelessWidget {
         IconButton(
           key: UIKeys.homeSettingsButton,
           color: context.colour.onBackground,
-          padding: const EdgeInsets.only(bottom: 32),
+          padding: const EdgeInsets.only(bottom: 26),
           visualDensity: VisualDensity.compact,
+          iconSize: 25,
           icon: const Icon(
             FontAwesomeIcons.gear,
             shadows: [],
@@ -519,11 +520,13 @@ class HomeTopBar2 extends StatelessWidget {
           },
         ),
         IconButton(
+          iconSize: 25,
+
           // key: UIKeys.homeSettingsButton,
           color: context.colour.onBackground,
           visualDensity: VisualDensity.compact,
 
-          padding: const EdgeInsets.only(bottom: 32),
+          padding: const EdgeInsets.only(bottom: 26),
           icon: const Icon(
             FontAwesomeIcons.user,
             shadows: [],
