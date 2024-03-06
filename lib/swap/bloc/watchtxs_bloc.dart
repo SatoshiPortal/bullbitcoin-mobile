@@ -79,10 +79,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final swapTxsToWatch = <SwapTx>[];
     for (final tx in swapTxs) {
       final status = tx.status?.status;
-
-      if (status != null && (status == SwapStatus.invoiceSettled))
-        add(UpdateOrClaimSwap(walletId: event.walletId, swapTx: tx));
-
       if (status != null &&
           (status == SwapStatus.swapExpired ||
               status == SwapStatus.invoiceExpired ||
@@ -92,6 +88,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
               status == SwapStatus.invoiceSettled)) continue;
 
       swapTxsToWatch.add(tx);
+
+      if (status != null && (status == SwapStatus.invoiceSettled))
+        add(UpdateOrClaimSwap(walletId: event.walletId, swapTx: tx));
     }
     if (swapTxsToWatch.isEmpty) return;
     add(
@@ -169,7 +168,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     if (wallet == null) return;
     SwapTx swapTx = event.swapTx;
 
-    if (swapTx.status!.status.hasSettled || swapTx.paidSubmarine) {
+    if (swapTx.status!.status.reverseSettled || swapTx.paidSubmarine) {
       if (swapTx.txid == null) {
         swapTx = state.claimedSwapTxs.firstWhere((element) => element.id == swapTx.id);
       }
@@ -261,7 +260,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     var txid = '';
     if (!shouldRefund) {
-      final (id, err) = await swapBoltz.claimSwap(
+      final (claimTxid, err) = await swapBoltz.claimSwap(
         tx: swapTx,
         outAddress: address,
         absFee: claimFeesEstimate,
@@ -270,9 +269,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: err.toString()));
         return;
       }
-      txid = id!;
+      txid = claimTxid!;
     } else {
-      final (id, err) = await swapBoltz.refundSwap(
+      final (refundTxid, err) = await swapBoltz.refundSwap(
         tx: swapTx,
         outAddress: address,
         absFee: claimFeesEstimate,
@@ -281,7 +280,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         emit(state.copyWith(claimingSwapSwap: false, errClaimingSwap: err.toString()));
         return;
       }
-      txid = id!;
+      txid = refundTxid!;
     }
 
     final tx = swapTx.copyWith(

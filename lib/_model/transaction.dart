@@ -289,7 +289,7 @@ extension SwapTxExt on SwapStatus {
       this == SwapStatus.swapExpired ||
       this == SwapStatus.invoiceExpired ||
       this == SwapStatus.invoiceFailedToPay;
-  bool get hasSettled => this == SwapStatus.invoiceSettled;
+  bool get reverseSettled => this == SwapStatus.invoiceSettled;
 }
 
 @freezed
