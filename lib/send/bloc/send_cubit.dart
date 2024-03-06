@@ -392,13 +392,24 @@ class SendCubit extends Cubit<SendState> {
       kind: AddressKind.external,
       state: AddressStatus.used,
     );
+    final (updatedWalletWithTxid, err2) = await walletTx.addSwapTxToWallet(
+      wallet: updatedWallet,
+      swapTx: state.swapCubit.state.swapTx!.copyWith(txid: txid),
+    );
+    // fix error handling below - tx is sent so its not an error sending
+    // its an error updating sendTx
+    if (err2 != null) {
+      emit(state.copyWith(errSending: err.toString()));
+      return;
+    }
 
     state.selectedWalletBloc!.add(
       UpdateWallet(
-        updatedWallet,
+        updatedWalletWithTxid,
         updateTypes: [
           UpdateWalletTypes.addresses,
           UpdateWalletTypes.transactions,
+          UpdateWalletTypes.swaps,
         ],
       ),
     );
