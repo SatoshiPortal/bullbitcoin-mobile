@@ -1,7 +1,9 @@
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 
@@ -107,56 +109,22 @@ class BBButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode =
+        context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
+
+    final bgColour = darkMode ? context.colour.background : NewColours.offWhite;
+
     Widget widget;
 
     switch (type) {
-      case _ButtonType.textWithStatusAndRightArrow:
-        widget = TextButton(
-          style: TextButton.styleFrom(padding: EdgeInsets.zero),
-          onPressed: disabled ? null : () => onPressed(),
-          child: Row(
-            // crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              BBText.body(label),
-              const Spacer(),
-              if (statusText != null)
-                AnimatedSwitcher(
-                  duration: 600.ms,
-                  child: !loading
-                      ? BBText.title(
-                          statusText!,
-                          isBold: true,
-                          isBlue: isBlue ?? false,
-                          isRed: isRed ?? false,
-                        )
-                      : SizedBox(
-                          height: 8,
-                          width: 66,
-                          child: LinearProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(context.colour.primary),
-                            backgroundColor: context.colour.background,
-                          ),
-                        ),
-                ),
-              const Gap(8),
-              FaIcon(
-                FontAwesomeIcons.angleRight,
-                color: context.colour.onBackground,
-                // size: 16,
-              ),
-              const Gap(8),
-            ],
-          ),
-        );
-
       case _ButtonType.big:
         final style = ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4),
           ),
           side: const BorderSide(color: NewColours.lightGray),
-          backgroundColor: NewColours.offWhite,
-          surfaceTintColor: NewColours.offWhite.withOpacity(0.5),
+          backgroundColor: bgColour,
+          surfaceTintColor: bgColour.withOpacity(0.5),
           elevation: 2,
           padding: const EdgeInsets.symmetric(vertical: 8),
           // disabledForegroundColor: context.colour.onBackground,
@@ -209,6 +177,45 @@ class BBButton extends StatelessWidget {
         }
 
         widget = SizedBox(height: 45, child: widget);
+
+      case _ButtonType.textWithStatusAndRightArrow:
+        widget = TextButton(
+          style: TextButton.styleFrom(padding: EdgeInsets.zero),
+          onPressed: disabled ? null : () => onPressed(),
+          child: Row(
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              BBText.body(label),
+              const Spacer(),
+              if (statusText != null)
+                AnimatedSwitcher(
+                  duration: 600.ms,
+                  child: !loading
+                      ? BBText.title(
+                          statusText!,
+                          isBold: true,
+                          isBlue: isBlue ?? false,
+                          isRed: isRed ?? false,
+                        )
+                      : SizedBox(
+                          height: 8,
+                          width: 66,
+                          child: LinearProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(context.colour.primary),
+                            backgroundColor: context.colour.background,
+                          ),
+                        ),
+                ),
+              const Gap(8),
+              FaIcon(
+                FontAwesomeIcons.angleRight,
+                color: context.colour.onBackground,
+                // size: 16,
+              ),
+              const Gap(8),
+            ],
+          ),
+        );
 
       case _ButtonType.text:
         widget = TextButton(

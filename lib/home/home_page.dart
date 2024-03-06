@@ -18,6 +18,7 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
@@ -555,7 +556,10 @@ class HomeBottomBar2 extends StatelessWidget {
                       child: BBButton.big(
                         label: 'Send',
                         onPressed: () {
-                          context.push('/send', extra: walletBloc);
+                          context.push(
+                            '/send',
+                            // extra: walletBloc,
+                          );
                         },
                       ),
                     ),
@@ -605,6 +609,11 @@ class ScanButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode =
+        context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
+
+    final bgColour = darkMode ? context.colour.background : NewColours.offWhite;
+
     return SizedBox(
       height: 40,
       width: 55,
@@ -617,8 +626,8 @@ class ScanButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           side: const BorderSide(color: NewColours.lightGray),
-          backgroundColor: NewColours.offWhite,
-          surfaceTintColor: NewColours.offWhite.withOpacity(0.5),
+          backgroundColor: bgColour,
+          surfaceTintColor: bgColour.withOpacity(0.5),
           elevation: 2,
           splashFactory: NoSplash.splashFactory,
           // foregroundColor: Colors.red,

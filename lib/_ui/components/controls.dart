@@ -1,7 +1,9 @@
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BBSwitcher<T> extends StatelessWidget {
   const BBSwitcher({
@@ -60,6 +62,11 @@ class BBDropDown<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode =
+        context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
+
+    final bgColour = darkMode ? context.colour.background : NewColours.offWhite;
+
     return Center(
       child: SizedBox(
         width: 250,
@@ -67,27 +74,27 @@ class BBDropDown<T> extends StatelessWidget {
         child: Material(
           elevation: 2,
           clipBehavior: Clip.antiAlias,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
           child: DropdownButtonFormField<T>(
             padding: EdgeInsets.zero,
             elevation: 4,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
             isExpanded: true,
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(
                   color: NewColours.lightGray,
                 ),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
               ),
               border: OutlineInputBorder(
                 borderSide: const BorderSide(
                   color: NewColours.lightGray,
                 ),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
               ),
               filled: true,
-              fillColor: NewColours.offWhite,
+              fillColor: bgColour,
               focusedBorder: OutlineInputBorder(
                 borderSide: const BorderSide(
                   color: NewColours.lightGray,
