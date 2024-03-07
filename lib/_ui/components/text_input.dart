@@ -38,10 +38,10 @@ class BBTextInput extends StatefulWidget {
     this.controller,
     this.maxLength,
     this.uiKey,
+    this.onEnter,
   })  : type = _TextInputType.big,
         rightIcon = null,
         onRightTap = null,
-        onEnter = null,
         onDone = null;
 
   const BBTextInput.bigWithIcon({
@@ -99,6 +99,7 @@ class BBTextInput extends StatefulWidget {
 
   final TextEditingController? controller;
   final Function(String) onChanged;
+
   final String value;
   final String? hint;
   final Widget? rightIcon;
@@ -140,6 +141,7 @@ class _BBTextInputState extends State<BBTextInput> {
           keyboardType: TextInputType.multiline,
           maxLines: 5,
           style: context.font.bodySmall!.copyWith(color: context.colour.onBackground),
+          onTap: () => widget.onEnter?.call(),
           decoration: InputDecoration(
             suffixIcon: widget.rightIcon,
             hintText: widget.hint,
@@ -173,6 +175,7 @@ class _BBTextInputState extends State<BBTextInput> {
             enableIMEPersonalizedLearning: false,
             controller: _editingController,
             keyboardType: widget.onlyNumbers ? TextInputType.number : null,
+            onTap: () => widget.onEnter?.call(),
             decoration: InputDecoration(
               hintText: widget.hint,
               counterText: '',
@@ -212,6 +215,7 @@ class _BBTextInputState extends State<BBTextInput> {
             controller: _editingController,
             enableIMEPersonalizedLearning: false,
             keyboardType: widget.onlyNumbers ? TextInputType.number : null,
+            onTap: () => widget.onEnter?.call(),
             decoration: InputDecoration(
               hintText: widget.hint,
               suffixIcon: IconButton(
@@ -250,6 +254,7 @@ class _BBTextInputState extends State<BBTextInput> {
             onChanged: widget.onChanged,
             controller: _editingController,
             enableIMEPersonalizedLearning: false,
+            onTap: () => widget.onEnter?.call(),
             keyboardType: widget.onlyNumbers ? TextInputType.number : null,
             decoration: InputDecoration(
               hintText: widget.hint,

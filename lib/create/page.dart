@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
@@ -44,21 +45,24 @@ class CreateWalletPage extends StatelessWidget {
     );
 
     return BlocProvider.value(
-      value: createWallet,
-      child: BlocListener<CreateWalletCubit, CreateWalletState>(
-        listenWhen: (previous, current) => previous.saved != current.saved,
-        listener: (context, state) async {
-          if (state.saved) {
-            if (state.savedWallets == null) return;
-            final wallets = state.savedWallets!;
-            locator<HomeCubit>().addWallets(wallets);
-            await Future.delayed(500.milliseconds);
-            locator<HomeCubit>().changeMoveToIdx(wallets.first);
-            // await Future.delayed(300.milliseconds);
-            context.go('/home');
-          }
-        },
-        child: const _Screen(),
+      value: ScrollCubit(),
+      child: BlocProvider.value(
+        value: createWallet,
+        child: BlocListener<CreateWalletCubit, CreateWalletState>(
+          listenWhen: (previous, current) => previous.saved != current.saved,
+          listener: (context, state) async {
+            if (state.saved) {
+              if (state.savedWallets == null) return;
+              final wallets = state.savedWallets!;
+              locator<HomeCubit>().addWallets(wallets);
+              await Future.delayed(500.milliseconds);
+              locator<HomeCubit>().changeMoveToIdx(wallets.first);
+              // await Future.delayed(300.milliseconds);
+              context.go('/home');
+            }
+          },
+          child: const _Screen(),
+        ),
       ),
     );
   }
@@ -82,6 +86,7 @@ class _Screen extends StatelessWidget {
       body: StackedPage(
         bottomChild: const CreateWalletCreateButton(),
         child: SingleChildScrollView(
+          controller: context.read<ScrollCubit>().state,
           child: Column(
             children: [
               const Gap(24),
@@ -202,6 +207,14 @@ class CreateWalletLabel extends StatelessWidget {
           BBTextInput.big(
             value: text,
             onChanged: (value) => context.read<CreateWalletCubit>().walletLabelChanged(value),
+            onEnter: () async {
+              await Future.delayed(500.ms);
+              context.read<ScrollCubit>().state.animateTo(
+                    context.read<ScrollCubit>().state.position.maxScrollExtent,
+                    duration: 500.milliseconds,
+                    curve: Curves.linear,
+                  );
+            },
             hint: 'Label your wallet',
           ),
           if (err.isNotEmpty) ...[

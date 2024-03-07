@@ -10,6 +10,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
@@ -22,6 +23,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -202,13 +204,21 @@ class WalletLabel extends StatelessWidget {
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errSavingWallet);
 
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           BBTextInput.big(
             value: text,
             onChanged: (value) => context.read<ImportWalletCubit>().walletLabelChanged(value),
+            onEnter: () async {
+              await Future.delayed(500.ms);
+              context.read<ScrollCubit>().state.animateTo(
+                    context.read<ScrollCubit>().state.position.maxScrollExtent,
+                    duration: 300.milliseconds,
+                    curve: Curves.linear,
+                  );
+            },
             hint: 'Label your wallet',
           ),
           if (err.isNotEmpty) ...[

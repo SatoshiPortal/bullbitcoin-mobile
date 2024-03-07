@@ -142,3 +142,13 @@ class BBSwitch extends StatelessWidget {
     );
   }
 }
+
+class ScrollCubit extends Cubit<ScrollController> {
+  ScrollCubit() : super(ScrollController());
+
+  @override
+  Future<void> close() {
+    state.dispose();
+    return super.close();
+  }
+}
