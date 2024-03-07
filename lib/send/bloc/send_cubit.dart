@@ -64,6 +64,8 @@ class SendCubit extends Cubit<SendState> {
     });
 
     swapCubitSub = state.swapCubit.stream.listen(swapCubitStateChanged);
+
+    if (openScanner) scanAddress();
   }
 
   final Barcode barcode;

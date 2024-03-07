@@ -6,6 +6,7 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
@@ -203,6 +204,11 @@ class HomeTxItem2 extends StatelessWidget {
 
     final units = context.select((CurrencyCubit x) => x.state.getUnitString());
 
+    final darkMode =
+        context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
+
+    final img = darkMode ? 'assets/arrow_down_white.png' : 'assets/arrow_down.png';
+
     final isReceive = tx.isReceived();
 
     final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
@@ -232,7 +238,7 @@ class HomeTxItem2 extends StatelessWidget {
                   // color: Colors.red,
                   transformAlignment: Alignment.center,
                   transform: Matrix4.identity()..rotateZ(isReceive ? 0 : 3.16),
-                  child: Image.asset('assets/arrow_down.png'),
+                  child: Image.asset(img),
                 ),
               ),
             ),

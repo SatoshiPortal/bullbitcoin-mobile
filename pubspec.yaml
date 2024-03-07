@@ -103,6 +103,8 @@ flutter:
     - assets/cc-logo.png
     - assets/bb-logo2.png
     - assets/arrow_down.png
+    - assets/arrow_down_white.png
+    
     - assets/bip39_english.txt
 
 flutter_native_splash:
