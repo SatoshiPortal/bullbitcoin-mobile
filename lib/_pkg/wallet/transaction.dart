@@ -99,6 +99,12 @@ class WalletTx {
     }
   }
 
+  /// If given swap is expired,
+  ///   - check if the swapTx has been refunded
+  ///   - If yes, remove it from wallet.swaps
+  ///   - if not, add it to the list of swaps to refund and return
+  /// If not,
+  ///   - update txid of wallet.swaps with swapTx.txid
   (({Wallet wallet, List<SwapTx> swapsToRefund})?, Err?) updateSwapTxs({
     required SwapTx swapTx,
     required Wallet wallet,

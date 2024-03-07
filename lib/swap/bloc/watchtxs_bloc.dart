@@ -19,6 +19,36 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// 1. WalletBloc.listTxs calls `WatchWalletTxs` for a specific wallet
+/// 2. WatchWalletTxs
+///   - gets swap txs from wallet given the wallet Id (ISSUE: Sometimes swap txs doesn't return all swaps)
+///   - filters swap txs to narrow down only active swaps
+///   - For settled swaps, calls
+///     - `UpdateOrClaimSwap` (TODO: Why?)
+///   - Calls WatchSwapStatus with the narrowed down swap list
+/// 3. WatchSwapStatus
+///   - combines incoming swap list with 'listeningTxs'
+///   - Boltz.addSwapSubs() is called for the combined list
+///     (POTENTIAL ISSUE: addSwapSubs should combine the swap list with it's own global swap list, which is a a union of all swap lists from all wallets)
+///     - For each WSS update for the given swap list, `SwapStatusUpdate` is called
+/// 4. SwapStatusUpdate
+///   - This is called for swap status updates from WSS for each listening swaps
+///   - For each swap status update, `UpdateOrClaimSwap` is called
+/// 5. UpdateOrClaimSwap
+///   - If Swap is (reverse and settled) or is (submbarine and status is txnMempool or txnConfirmed | ISSUE: Could also check for txnClaimed. right?),
+///     - [Idea] Merge the swap with tx and remove it from wallet.swaps list
+///     - Pick swapTx from claimedSwapTxs, if given swap.txid is null (ISSUE: Here swap.txid is null and not found in claimedSwapTxs)
+///     - Merge the swap with wallet.tx by calling `walletTransaction.mergeSwapTxIntoTx`
+///       - Remove the swap from wallet.swaps since the swap is like DONE now.
+///       - Remove swap from secureStorage
+///   - If Swap is not claimable
+///     - update wallet.swaps[swapTx].txId with right txid and get refund swap list by calling `walletTransaction.updateSwapTxs`
+///     - If refund swap list is empty, update wallet with swaps list and return
+///   - If swap is claimed
+///     - return
+///   - In refund scenario, initiate refund and take txid
+///   - In claim scenario, initiate claim and take txid
+///   - Assign txid to swapTx and and add swap to claimedSwapTxs and update wallet
 class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   WatchTxsBloc({
     required this.hiveStorage,
@@ -75,8 +105,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
     if (walletBloc == null) return;
 
+    // TODO: Sai: 'Sometimes' this is not returning all swaps
+    // Sometimes -->
+    //  When swap is created. Without app restart, this function is never invoked.
     final swapTxs = walletBloc.state.allSwapTxs();
     final swapTxsToWatch = <SwapTx>[];
+    print('WatchWalletTxs: ${swapTxs.length}');
     for (final tx in swapTxs) {
       final status = tx.status?.status;
       if (status != null &&
@@ -109,6 +143,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       add(InitializeSwapWatcher());
       return;
     }
+    // print('WatchSwapStatus: ${event.swapTxs}');
     for (final tx in event.swapTxs) {
       final exists = state.isListening(tx);
       if (exists) continue;
@@ -130,6 +165,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   }
 
   void _onSwapStatusUpdate(SwapStatusUpdate event, Emitter<WatchTxsState> emit) async {
+    // TODO: Sai: This for loop can be avoided since we have event.walletId by doing
+    // final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
     for (final walletBloc in homeCubit.state.walletBlocs!) {
       if (walletBloc.state.wallet!.hasOngoingSwap(event.swapId)) {
         final id = event.swapId;
@@ -167,9 +204,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final wallet = walletBloc.state.wallet;
     if (wallet == null) return;
     SwapTx swapTx = event.swapTx;
+    // print('_onUpdateOrClaimSwap: ${swapTx.id}');
 
     if (swapTx.status!.status.reverseSettled || swapTx.paidSubmarine) {
       if (swapTx.txid == null) {
+        // TODO: Sai: This is throwing error 'Bad state: No element' for completed swaps;
         swapTx = state.claimedSwapTxs.firstWhere((element) => element.id == swapTx.id);
       }
       final (walletAndTxs, err) = await walletTransaction.mergeSwapTxIntoTx(
@@ -191,6 +230,31 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       homeCubit.updateSelectedWallet(walletBloc);
       for (final swap in swapsToDelete) add(DeleteSensitiveSwapData(swap.id));
       return;
+      // } else if (swapTx.status!.status == SwapStatus.txnClaimed ||
+      //     swapTx.status!.status == SwapStatus.txnMempool) {
+      //   if (swapTx.txid == null) {
+      //     swapTx = state.listeningTxs.firstWhere((element) => element.id == swapTx.id);
+      //   }
+      //   final (walletAndTxs, err) = await walletTransaction.mergeSwapTxIntoTx(
+      //     wallet: wallet,
+      //     swapTx: swapTx,
+      //   );
+      //   if (err != null) {
+      //     emit(state.copyWith(errWatchingInvoice: err.toString()));
+      //     return;
+      //   }
+      //   final updatedWallet = walletAndTxs!.wallet;
+      //   final swapsToDelete = walletAndTxs.swapsToDelete;
+      //   walletBloc.add(
+      //     UpdateWallet(
+      //       updatedWallet,
+      //       updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.swaps],
+      //     ),
+      //   );
+      //   homeCubit.updateSelectedWallet(walletBloc);
+      //   if (swapTx.status?.status == SwapStatus.txnConfirmed)
+      //     for (final swap in swapsToDelete) add(DeleteSensitiveSwapData(swap.id));
+      //   return;
     }
 
     final canClaim = swapTx.canClaim;
