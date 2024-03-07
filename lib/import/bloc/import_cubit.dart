@@ -39,8 +39,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
               ),
         ) {
     clearErrors();
-    // reset();
-    // emit(statae.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]));
+    reset();
+    emit(state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]));
   }
 
   final Barcode barcode;

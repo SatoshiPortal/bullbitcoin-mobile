@@ -34,7 +34,7 @@ dependencies:
   flutter_hooks: ^0.20.3
   flutter_barcode_scanner: ^2.0.0
   # file_picker: ^5.2.3
-  nfc_manager: ^3.2.0
+  # nfc_manager: ^3.2.0
   modal_bottom_sheet: ^3.0.0-pre
   font_awesome_flutter: ^10.3.0
   path_provider: ^2.0.15

@@ -8,6 +8,8 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
+import 'package:bb_mobile/wallet/bloc/state.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -17,64 +19,83 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class HomeTransactions extends StatelessWidget {
+class HomeTransactions extends StatefulWidget {
   const HomeTransactions({super.key});
 
   @override
+  State<HomeTransactions> createState() => _HomeTransactionsState();
+}
+
+class _HomeTransactionsState extends State<HomeTransactions> {
+  @override
   Widget build(BuildContext context) {
-    final __ = context.select((HomeCubit _) => _.state.walletBlocs);
+    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocs);
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final txs = context.select((HomeCubit cubit) => cubit.state.allTxsWithSwaps(network));
-    // final last3Txs = txs.take(3).toList();
 
-    if (txs.isEmpty) return const NoTxs();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const HomeLoadingTxsIndicator(),
-        Padding(
-          padding: const EdgeInsets.only(left: 32.0, bottom: 8, right: 32),
-          child: Row(
-            children: [
-              const BBText.titleLarge(
-                'Latest Transactions',
-                isBold: true,
-                fontSize: 16,
-              ),
-              const Spacer(),
-              InkWell(
-                onTap: () {
-                  context.push('/transactions');
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const BBText.bodySmall(
-                      'view all',
-                      isBlue: true,
-                    ),
-                    const Gap(4),
-                    Icon(
-                      FontAwesomeIcons.arrowRight,
-                      size: 10,
-                      color: context.colour.secondary,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: txs.length,
-            itemBuilder: (context, index) {
-              return HomeTxItem2(tx: txs[index]);
+    return MultiBlocListener(
+      listeners: [
+        for (final walletBloc in walletBlocs ?? <WalletBloc>[])
+          BlocListener<WalletBloc, WalletState>(
+            bloc: walletBloc,
+            listenWhen: (previous, current) =>
+                previous.wallet?.transactions != current.wallet?.transactions,
+            listener: (context, state) {
+              setState(() {});
             },
           ),
-        ),
       ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (txs.isEmpty)
+            const NoTxs()
+          else ...[
+            const HomeLoadingTxsIndicator(),
+            Padding(
+              padding: const EdgeInsets.only(left: 32.0, bottom: 8, right: 32),
+              child: Row(
+                children: [
+                  const BBText.titleLarge(
+                    'Latest Transactions',
+                    isBold: true,
+                    fontSize: 16,
+                  ),
+                  const Spacer(),
+                  InkWell(
+                    onTap: () {
+                      context.push('/transactions');
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const BBText.bodySmall(
+                          'view all',
+                          isBlue: true,
+                        ),
+                        const Gap(4),
+                        Icon(
+                          FontAwesomeIcons.arrowRight,
+                          size: 10,
+                          color: context.colour.secondary,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: txs.length,
+                itemBuilder: (context, index) {
+                  return HomeTxItem2(tx: txs[index]);
+                },
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
