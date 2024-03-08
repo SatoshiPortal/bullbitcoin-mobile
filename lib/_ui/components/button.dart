@@ -25,6 +25,7 @@ class BBButton extends StatelessWidget {
     this.filled = false,
     this.loading = false,
     this.loadingText,
+    this.fullWidth = false,
   })  : type = _ButtonType.big,
         isBlue = null,
         isRed = null,
@@ -44,7 +45,8 @@ class BBButton extends StatelessWidget {
   })  : type = _ButtonType.text,
         filled = false,
         statusText = null,
-        leftIcon = null;
+        leftIcon = null,
+        fullWidth = true;
 
   const BBButton.textWithRightArrow({
     required this.label,
@@ -59,7 +61,8 @@ class BBButton extends StatelessWidget {
         isRed = null,
         statusText = null,
         centered = null,
-        leftIcon = null;
+        leftIcon = null,
+        fullWidth = true;
 
   const BBButton.textWithLeftArrow({
     required this.label,
@@ -74,7 +77,8 @@ class BBButton extends StatelessWidget {
         isRed = null,
         statusText = null,
         centered = null,
-        leftIcon = null;
+        leftIcon = null,
+        fullWidth = true;
 
   const BBButton.textWithStatusAndRightArrow({
     required this.label,
@@ -89,7 +93,8 @@ class BBButton extends StatelessWidget {
   })  : type = _ButtonType.textWithStatusAndRightArrow,
         filled = false,
         centered = null,
-        leftIcon = null;
+        leftIcon = null,
+        fullWidth = true;
 
   final String label;
   final String? statusText;
@@ -101,6 +106,7 @@ class BBButton extends StatelessWidget {
   final bool? centered;
   final _ButtonType type;
   final IconData? leftIcon;
+  final bool fullWidth;
 
   final bool loading;
   final String? loadingText;
@@ -120,13 +126,16 @@ class BBButton extends StatelessWidget {
       case _ButtonType.big:
         final style = ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(8),
           ),
-          side: const BorderSide(color: NewColours.lightGray),
+          side: const BorderSide(color: Colors.white),
+          shadowColor: Colors.black12,
           backgroundColor: bgColour,
-          surfaceTintColor: bgColour.withOpacity(0.5),
-          elevation: 2,
+          surfaceTintColor: bgColour,
+          elevation: 4,
+          // shadowColor: Colors.transparent,
           padding: const EdgeInsets.symmetric(vertical: 8),
+
           // disabledForegroundColor: context.colour.onBackground,
         );
 
@@ -143,7 +152,7 @@ class BBButton extends StatelessWidget {
                     leftIcon,
                     color: context.colour.onBackground,
                   ),
-                  const Gap(24),
+                  const Gap(16),
                 ],
                 BBText.titleLarge(label),
               ],
@@ -176,7 +185,25 @@ class BBButton extends StatelessWidget {
           );
         }
 
-        widget = SizedBox(height: 45, child: widget);
+        widget = Container(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: !disabled ? Colors.black.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: SizedBox(
+            height: 45,
+            width: fullWidth ? null : 225,
+            child: widget,
+          ),
+        );
 
       case _ButtonType.textWithStatusAndRightArrow:
         widget = TextButton(

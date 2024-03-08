@@ -124,6 +124,8 @@ class _BBTextInputState extends State<BBTextInput> {
     super.dispose();
   }
 
+  static double height = 60;
+
   @override
   Widget build(BuildContext context) {
     if (widget.value != _editingController.text) _editingController.text = widget.value;
@@ -146,16 +148,16 @@ class _BBTextInputState extends State<BBTextInput> {
             suffixIcon: widget.rightIcon,
             hintText: widget.hint,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(4.0),
+              borderRadius: BorderRadius.circular(8.0),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(4.0),
+              borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide(
                 color: context.colour.onBackground.withOpacity(0.2),
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(4.0),
+              borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide(
                 color: context.colour.onBackground,
               ),
@@ -165,8 +167,10 @@ class _BBTextInputState extends State<BBTextInput> {
 
       case _TextInputType.big:
         widgett = SizedBox(
-          height: 45,
+          height: height,
           child: TextField(
+            expands: true,
+            maxLines: null,
             key: widget.uiKey,
             enabled: !widget.disabled,
             focusNode: widget.focusNode,
@@ -180,22 +184,22 @@ class _BBTextInputState extends State<BBTextInput> {
               hintText: widget.hint,
               counterText: '',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground.withOpacity(0.2),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground,
                 ),
               ),
               disabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground.withOpacity(0.2),
                 ),
@@ -207,8 +211,10 @@ class _BBTextInputState extends State<BBTextInput> {
         );
       case _TextInputType.bigWithIcon:
         widgett = SizedBox(
-          height: 45,
+          height: height,
           child: TextField(
+            expands: true,
+            maxLines: null,
             focusNode: widget.focusNode,
             enabled: !widget.disabled,
             onChanged: widget.onChanged,
@@ -226,16 +232,16 @@ class _BBTextInputState extends State<BBTextInput> {
                 onPressed: () => widget.onRightTap!(),
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground.withOpacity(0.2),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground,
                 ),
@@ -247,8 +253,10 @@ class _BBTextInputState extends State<BBTextInput> {
         );
       case _TextInputType.bigWithIcon2:
         widgett = SizedBox(
-          height: 45,
+          height: height,
           child: TextField(
+            expands: true,
+            maxLines: null,
             focusNode: widget.focusNode,
             enabled: !widget.disabled,
             onChanged: widget.onChanged,
@@ -267,16 +275,16 @@ class _BBTextInputState extends State<BBTextInput> {
               //   onPressed: () => widget.onRightTap!(),
               // ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground.withOpacity(0.2),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground,
                 ),
@@ -304,16 +312,16 @@ class _BBTextInputState extends State<BBTextInput> {
             decoration: InputDecoration(
               hintText: widget.hint,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground.withOpacity(0.2),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4.0),
+                borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
                   color: context.colour.onBackground,
                 ),
@@ -409,15 +417,15 @@ class _BBTextInputState extends State<BBTextInput> {
 //       decoration: InputDecoration(
 //         hintText: widget.hint,
 //         border: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(4.0),
+//           borderRadius: BorderRadius.circular(8.0),
 //           borderSide: BorderSide(color: borderColor),
 //         ),
 //         enabledBorder: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(4.0),
+//           borderRadius: BorderRadius.circular(8.0),
 //           borderSide: BorderSide(color: borderColor),
 //         ),
 //         focusedBorder: OutlineInputBorder(
-//           borderRadius: BorderRadius.circular(4.0),
+//           borderRadius: BorderRadius.circular(8.0),
 //           borderSide: BorderSide(color: borderColor),
 //         ),
 //         contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
@@ -475,8 +483,10 @@ class _BBAmountInputState2 extends State<BBAmountInput> {
         widget.selected ? context.colour.primary : context.colour.onBackground.withOpacity(0.2);
 
     return SizedBox(
-      height: 45,
+      height: 60,
       child: TextField(
+        expands: true,
+        maxLines: null,
         key: widget.uiKey,
         enabled: !widget.disabled,
         onChanged: widget.onChanged,
@@ -509,15 +519,15 @@ class _BBAmountInputState2 extends State<BBAmountInput> {
         decoration: InputDecoration(
           hintText: widget.hint,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: borderColor),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: borderColor),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(4.0),
+            borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: borderColor),
           ),
           contentPadding: const EdgeInsets.only(bottom: 8, left: 24),

@@ -148,7 +148,7 @@ class _EnterAmountState2 extends State<EnterAmount2> {
                   ),
                   const CenterRight(
                     child: Padding(
-                      padding: EdgeInsets.only(right: 16),
+                      padding: EdgeInsets.only(right: 16, top: 5),
                       child: AmountCurrencyDropDown(),
                     ),
                   ),
