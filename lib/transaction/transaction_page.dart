@@ -85,8 +85,6 @@ class TxPage extends StatelessWidget {
         },
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
             automaticallyImplyLeading: false,
             flexibleSpace: const _TxAppBar(),
           ),

@@ -25,7 +25,7 @@ class BBButton extends StatelessWidget {
     this.filled = false,
     this.loading = false,
     this.loadingText,
-    this.fullWidth = false,
+    this.fillWidth = false,
   })  : type = _ButtonType.big,
         isBlue = null,
         isRed = null,
@@ -46,7 +46,7 @@ class BBButton extends StatelessWidget {
         filled = false,
         statusText = null,
         leftIcon = null,
-        fullWidth = true;
+        fillWidth = true;
 
   const BBButton.textWithRightArrow({
     required this.label,
@@ -62,7 +62,7 @@ class BBButton extends StatelessWidget {
         statusText = null,
         centered = null,
         leftIcon = null,
-        fullWidth = true;
+        fillWidth = true;
 
   const BBButton.textWithLeftArrow({
     required this.label,
@@ -78,7 +78,7 @@ class BBButton extends StatelessWidget {
         statusText = null,
         centered = null,
         leftIcon = null,
-        fullWidth = true;
+        fillWidth = true;
 
   const BBButton.textWithStatusAndRightArrow({
     required this.label,
@@ -94,7 +94,7 @@ class BBButton extends StatelessWidget {
         filled = false,
         centered = null,
         leftIcon = null,
-        fullWidth = true;
+        fillWidth = true;
 
   final String label;
   final String? statusText;
@@ -106,7 +106,7 @@ class BBButton extends StatelessWidget {
   final bool? centered;
   final _ButtonType type;
   final IconData? leftIcon;
-  final bool fullWidth;
+  final bool fillWidth;
 
   final bool loading;
   final String? loadingText;
@@ -200,7 +200,7 @@ class BBButton extends StatelessWidget {
           ),
           child: SizedBox(
             height: 45,
-            width: fullWidth ? null : 225,
+            width: fillWidth ? null : 225,
             child: widget,
           ),
         );

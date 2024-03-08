@@ -40,6 +40,8 @@ class Themes {
     appBarTheme: const AppBarTheme(
       systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: _Colours.white,
+      elevation: 2,
+      shadowColor: _Colours.gray,
     ),
   );
 
@@ -63,11 +65,13 @@ class Themes {
       onError: _Colours.white,
     ),
     scaffoldBackgroundColor: _Colours.black,
-    visualDensity: VisualDensity.comfortable,
+    visualDensity: VisualDensity.compact,
     brightness: Brightness.dark,
     appBarTheme: const AppBarTheme(
       systemOverlayStyle: SystemUiOverlayStyle.light,
       backgroundColor: _Colours.black,
+      elevation: 2,
+      shadowColor: NewColours.offWhite,
     ),
   );
 
@@ -96,6 +100,8 @@ class Themes {
     appBarTheme: const AppBarTheme(
       systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: _Colours.darkGray,
+      elevation: 2,
+      shadowColor: NewColours.offWhite,
     ),
   );
 }

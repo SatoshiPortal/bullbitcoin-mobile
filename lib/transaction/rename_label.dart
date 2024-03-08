@@ -36,6 +36,7 @@ class TxLabelTextField extends HookWidget {
         const Gap(8),
         BBButton.big(
           disabled: !showButton,
+          fillWidth: true,
           onPressed: () {
             FocusScope.of(context).requestFocus(FocusNode());
             context.read<TransactionCubit>().saveLabelClicked();
