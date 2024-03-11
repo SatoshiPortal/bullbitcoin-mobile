@@ -31,7 +31,9 @@ class SwapCubit extends Cubit<SwapState> {
     required this.walletTransaction,
     required this.watchTxsBloc,
     required this.homeCubit,
-  }) : super(const SwapState());
+  }) : super(const SwapState()) {
+    // clearSwapTx();
+  }
 
   final SettingsCubit settingsCubit;
   final WalletAddress walletAddress;
@@ -230,7 +232,7 @@ class SwapCubit extends Cubit<SwapState> {
     );
 
     homeCubit.updateSelectedWallet(walletBloc);
-    // await Future.delayed(3000.ms);
+    await Future.delayed(const Duration(seconds: 5));
 
     watchTxsBloc.add(WatchWalletTxs(walletId: walletId));
   }

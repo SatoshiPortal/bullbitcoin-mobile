@@ -104,22 +104,19 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
     if (walletBloc == null) return;
 
-    // TODO: Sai: 'Sometimes' this is not returning all swaps
-    // Sometimes -->
-    //  When swap is created. Without app restart, this function is never invoked.
     final swapTxs = walletBloc.state.allSwapTxs();
     final swapTxsToWatch = <SwapTx>[];
     print('WatchWalletTxs: ${swapTxs.length}');
     for (final swapTx in swapTxs) {
-      if (swapTx.paidSubmarine || swapTx.settledReverse || swapTx.settledSubmarine) {
+      if (swapTx.paidSubmarine ||
+          swapTx.settledReverse ||
+          swapTx.settledSubmarine ||
+          swapTx.expiredReverse) {
         add(UpdateOrClaimSwap(walletId: event.walletId, swapTx: swapTx));
         continue;
       }
       swapTxsToWatch.add(swapTx);
       print('Listening to Swap: ${swapTx.id}');
-      // final exists = state.isListening(swapTx);
-      // if (exists) continue;
-      // emit(state.copyWith(listeningTxs: [...state.listeningTxs, swapTx]));
     }
     if (swapTxsToWatch.isEmpty) return;
     add(
@@ -187,8 +184,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   }
 
   FutureOr<void> _onUpdateOrClaimSwap(UpdateOrClaimSwap event, Emitter<WatchTxsState> emit) async {
-    if (state.isClaiming(event.swapTx.id)) return;
-
     final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
     if (walletBloc == null) return;
     final wallet = walletBloc.state.wallet;
@@ -273,6 +268,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return;
     }
 
+    if (state.isClaiming(event.swapTx.id)) return;
     emit(state.copyWith(claimingSwap: true, errClaimingSwap: ''));
     emit(state.copyWith(claimingSwapTxIds: state.addClaimingTx(swapTx.id)));
 
