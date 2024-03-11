@@ -334,6 +334,9 @@ class SwapFeesDetails extends StatelessWidget {
     final swapTx = context.select((SwapCubit _) => _.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 
+    final isLn = context.select((ReceiveCubit x) => x.state.isLn());
+    if (!isLn) return const SizedBox.shrink();
+
     final totalFees = swapTx.totalFees() ?? 0;
     final fees =
         context.select((CurrencyCubit x) => x.state.getAmountInUnits(totalFees, removeText: true));
