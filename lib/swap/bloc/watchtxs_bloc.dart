@@ -287,6 +287,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     }
 
     emit(state.copyWith(claimingSwap: true, errClaimingSwap: ''));
+    emit(state.copyWith(claimingSwapTxIds: state.addClaimingTx(swapTx.id)));
 
     final address = walletBloc.state.wallet?.lastGeneratedAddress?.address;
     if (address == null || address.isEmpty) {
@@ -298,8 +299,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       );
       return;
     }
-
-    emit(state.copyWith(claimingSwapTxIds: state.addClaimingTx(swapTx.id)));
 
     final (fees, errFees) = await swapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
@@ -380,7 +379,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         errClaimingSwap: '',
       ),
     );
-    // await Future.delayed(500.ms);
 
     homeCubit.updateSelectedWallet(walletBloc);
 

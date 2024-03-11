@@ -281,8 +281,11 @@ class SendCubit extends Cubit<SendState> {
       }
     }
 
-    final address = state.swapCubit.state.swapTx?.scriptAddress ?? state.address;
-    final fee = networkFeesCubit.state.feesList![0]; // fee must be available
+    final address = isLn ? state.swapCubit.state.swapTx?.scriptAddress : state.address;
+    final fee = isLn
+        ? networkFeesCubit.state.feesList![0]
+        : networkFeesCubit
+            .state.feesList![networkFeesCubit.state.selectedFeesOption]; // fee must be available
 
     final enableRbf = isLn ? false : !state.disableRBF;
     // final enableRbf = !isLn && !state.disableRBF;
@@ -294,8 +297,8 @@ class SendCubit extends Cubit<SendState> {
       wallet: localWallet!,
       pubWallet: state.selectedWalletBloc!.state.bdkWallet!,
       isManualSend: state.selectedUtxos.isNotEmpty,
-      address: address,
-      amount: state.swapCubit.state.swapTx!.outAmount,
+      address: address!,
+      amount: isLn ? state.swapCubit.state.swapTx!.outAmount : currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
       feeRate: fee.toDouble(),
       enableRbf: enableRbf,
@@ -394,27 +397,42 @@ class SendCubit extends Cubit<SendState> {
       kind: AddressKind.external,
       state: AddressStatus.used,
     );
-    final (updatedWalletWithTxid, err2) = await walletTx.addSwapTxToWallet(
-      wallet: updatedWallet,
-      swapTx: state.swapCubit.state.swapTx!.copyWith(txid: txid),
-    );
-    // fix error handling below - tx is sent so its not an error sending
-    // its an error updating sendTx
-    if (err2 != null) {
-      emit(state.copyWith(errSending: err.toString()));
-      return;
-    }
 
-    state.selectedWalletBloc!.add(
-      UpdateWallet(
-        updatedWalletWithTxid,
-        updateTypes: [
-          UpdateWalletTypes.addresses,
-          UpdateWalletTypes.transactions,
-          UpdateWalletTypes.swaps,
-        ],
-      ),
-    );
+    final isLn = state.isLnInvoice();
+
+    if (isLn) {
+      final (updatedWalletWithTxid, err2) = await walletTx.addSwapTxToWallet(
+        wallet: updatedWallet,
+        swapTx: state.swapCubit.state.swapTx!.copyWith(txid: txid),
+      );
+      // fix error handling below - tx is sent so its not an error sending
+      // its an error updating sendTx
+      if (err2 != null) {
+        emit(state.copyWith(errSending: err.toString()));
+        return;
+      }
+
+      state.selectedWalletBloc!.add(
+        UpdateWallet(
+          updatedWalletWithTxid,
+          updateTypes: [
+            UpdateWalletTypes.addresses,
+            UpdateWalletTypes.transactions,
+            UpdateWalletTypes.swaps,
+          ],
+        ),
+      );
+    } else {
+      state.selectedWalletBloc!.add(
+        UpdateWallet(
+          updatedWallet,
+          updateTypes: [
+            UpdateWalletTypes.addresses,
+            UpdateWalletTypes.transactions,
+          ],
+        ),
+      );
+    }
     state.selectedWalletBloc!.add(SyncWallet());
 
     emit(state.copyWith(sending: false, sent: true));
