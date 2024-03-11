@@ -55,6 +55,11 @@ class Wallet with _$Wallet {
     return swaps.any((swap) => swap.id == id);
   }
 
+  SwapTx? getOngoingSwap(String id) {
+    if (hasOngoingSwap(id)) return swaps.firstWhere((element) => element.id == id);
+    return null;
+  }
+
   bool hasPassphrase() {
     return mnemonicFingerprint != sourceFingerprint;
   }

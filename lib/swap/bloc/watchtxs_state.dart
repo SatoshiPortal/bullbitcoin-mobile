@@ -11,24 +11,25 @@ class WatchTxsState with _$WatchTxsState {
     @Default(false) bool claimingSwap,
     @Default('') String errWatchingInvoice,
     BoltzApi? boltzWatcher,
-    @Default([]) List<SwapTx> listeningTxs,
-    @Default([]) List<SwapTx> claimedSwapTxs,
+    @Default([]) List<String> listeningTxs,
+    @Default([]) List<String> claimedSwapTxs,
     @Default([]) List<String> claimingSwapTxIds,
   }) = _WatchTxsState;
   const WatchTxsState._();
 
-  bool isListening(SwapTx swap) => listeningTxs.any((_) => _.id == swap.id);
+  bool isListening(SwapTx swap) => listeningTxs.any((_) => _ == swap.id);
 
-  bool isListeningId(String id) => listeningTxs.any((_) => _.id == id);
+  bool isListeningId(String id) => listeningTxs.any((_) => _ == id);
 
-  SwapStatus? showStatus(SwapTx swap) {
-    final isListening = listeningTxs.any((_) => _.id == swap.id);
-    if (!isListening) return swap.status?.status;
-    final tx = listeningTxs.firstWhere((_) => _.id == swap.id);
-    return tx.status?.status;
-  }
+  // transaction_page should read status from wallet
+  // SwapStatus? showStatus(SwapTx swap) {
+  //   // final isListening = listeningTxs.any((_) => _ == swap.id);
+  //   return swap.status?.status;
+  //   // final tx = listeningTxs.firstWhere((_) => _.id == swap.id);
+  //   // return tx.status?.status;
+  // }
 
-  bool swapClaimed(SwapTx swap) => claimedSwapTxs.any((_) => _.id == swap.id);
+  bool swapClaimed(SwapTx swap) => claimedSwapTxs.any((_) => _ == swap.id);
 
   bool isClaiming(String swap) => claimingSwapTxIds.contains(swap);
 

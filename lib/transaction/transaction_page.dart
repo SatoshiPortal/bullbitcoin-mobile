@@ -355,6 +355,11 @@ class _SwapDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
+    final status =
+        context.select((TransactionCubit cubit) => cubit.state.tx.swapTx?.status?.status);
+    final statusStr = status?.toString() ?? '';
+    final showQr = status?.showQR ?? true; // may not be required
+
     final swap = tx.swapTx;
     if (swap == null) return const SizedBox.shrink();
 
@@ -374,10 +379,8 @@ class _SwapDetails extends StatelessWidget {
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),
     );
-    final status = context.select((WatchTxsBloc _) => _.state.showStatus(swap));
-    final showQr = status?.showQR ?? true;
-    final statusStr =
-        context.select((WatchTxsBloc _) => _.state.showStatus(swap))?.toString() ?? '';
+    // status of swap should be read from WalletBloc.state.wallet.transactions
+    // final status = context.select((WatchTxsBloc _) => _.state.showStatus(swap));
 
     return Padding(
       padding: const EdgeInsets.all(24.0),

@@ -20,8 +20,8 @@ mixin _$WatchTxsState {
   bool get claimingSwap => throw _privateConstructorUsedError;
   String get errWatchingInvoice => throw _privateConstructorUsedError;
   BoltzApi? get boltzWatcher => throw _privateConstructorUsedError;
-  List<SwapTx> get listeningTxs => throw _privateConstructorUsedError;
-  List<SwapTx> get claimedSwapTxs => throw _privateConstructorUsedError;
+  List<String> get listeningTxs => throw _privateConstructorUsedError;
+  List<String> get claimedSwapTxs => throw _privateConstructorUsedError;
   List<String> get claimingSwapTxIds => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -40,8 +40,8 @@ abstract class $WatchTxsStateCopyWith<$Res> {
       bool claimingSwap,
       String errWatchingInvoice,
       BoltzApi? boltzWatcher,
-      List<SwapTx> listeningTxs,
-      List<SwapTx> claimedSwapTxs,
+      List<String> listeningTxs,
+      List<String> claimedSwapTxs,
       List<String> claimingSwapTxIds});
 }
 
@@ -86,11 +86,11 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
       listeningTxs: null == listeningTxs
           ? _value.listeningTxs
           : listeningTxs // ignore: cast_nullable_to_non_nullable
-              as List<SwapTx>,
+              as List<String>,
       claimedSwapTxs: null == claimedSwapTxs
           ? _value.claimedSwapTxs
           : claimedSwapTxs // ignore: cast_nullable_to_non_nullable
-              as List<SwapTx>,
+              as List<String>,
       claimingSwapTxIds: null == claimingSwapTxIds
           ? _value.claimingSwapTxIds
           : claimingSwapTxIds // ignore: cast_nullable_to_non_nullable
@@ -112,8 +112,8 @@ abstract class _$$WatchTxsStateImplCopyWith<$Res>
       bool claimingSwap,
       String errWatchingInvoice,
       BoltzApi? boltzWatcher,
-      List<SwapTx> listeningTxs,
-      List<SwapTx> claimedSwapTxs,
+      List<String> listeningTxs,
+      List<String> claimedSwapTxs,
       List<String> claimingSwapTxIds});
 }
 
@@ -156,11 +156,11 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
       listeningTxs: null == listeningTxs
           ? _value._listeningTxs
           : listeningTxs // ignore: cast_nullable_to_non_nullable
-              as List<SwapTx>,
+              as List<String>,
       claimedSwapTxs: null == claimedSwapTxs
           ? _value._claimedSwapTxs
           : claimedSwapTxs // ignore: cast_nullable_to_non_nullable
-              as List<SwapTx>,
+              as List<String>,
       claimingSwapTxIds: null == claimingSwapTxIds
           ? _value._claimingSwapTxIds
           : claimingSwapTxIds // ignore: cast_nullable_to_non_nullable
@@ -177,8 +177,8 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
       this.claimingSwap = false,
       this.errWatchingInvoice = '',
       this.boltzWatcher,
-      final List<SwapTx> listeningTxs = const [],
-      final List<SwapTx> claimedSwapTxs = const [],
+      final List<String> listeningTxs = const [],
+      final List<String> claimedSwapTxs = const [],
       final List<String> claimingSwapTxIds = const []})
       : _listeningTxs = listeningTxs,
         _claimedSwapTxs = claimedSwapTxs,
@@ -196,19 +196,19 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
   final String errWatchingInvoice;
   @override
   final BoltzApi? boltzWatcher;
-  final List<SwapTx> _listeningTxs;
+  final List<String> _listeningTxs;
   @override
   @JsonKey()
-  List<SwapTx> get listeningTxs {
+  List<String> get listeningTxs {
     if (_listeningTxs is EqualUnmodifiableListView) return _listeningTxs;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_listeningTxs);
   }
 
-  final List<SwapTx> _claimedSwapTxs;
+  final List<String> _claimedSwapTxs;
   @override
   @JsonKey()
-  List<SwapTx> get claimedSwapTxs {
+  List<String> get claimedSwapTxs {
     if (_claimedSwapTxs is EqualUnmodifiableListView) return _claimedSwapTxs;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_claimedSwapTxs);
@@ -274,8 +274,8 @@ abstract class _WatchTxsState extends WatchTxsState {
       final bool claimingSwap,
       final String errWatchingInvoice,
       final BoltzApi? boltzWatcher,
-      final List<SwapTx> listeningTxs,
-      final List<SwapTx> claimedSwapTxs,
+      final List<String> listeningTxs,
+      final List<String> claimedSwapTxs,
       final List<String> claimingSwapTxIds}) = _$WatchTxsStateImpl;
   const _WatchTxsState._() : super._();
 
@@ -288,9 +288,9 @@ abstract class _WatchTxsState extends WatchTxsState {
   @override
   BoltzApi? get boltzWatcher;
   @override
-  List<SwapTx> get listeningTxs;
+  List<String> get listeningTxs;
   @override
-  List<SwapTx> get claimedSwapTxs;
+  List<String> get claimedSwapTxs;
   @override
   List<String> get claimingSwapTxIds;
   @override

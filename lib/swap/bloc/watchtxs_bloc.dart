@@ -111,11 +111,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final swapTxsToWatch = <SwapTx>[];
     print('WatchWalletTxs: ${swapTxs.length}');
     for (final swapTx in swapTxs) {
-      if (swapTx.settledSubmarine || swapTx.settledOrExpiredReverse) {
+      if (swapTx.paidSubmarine || swapTx.settledReverse) {
         add(UpdateOrClaimSwap(walletId: event.walletId, swapTx: swapTx));
         continue;
       }
       swapTxsToWatch.add(swapTx);
+      print('Listening to Swap: ${swapTx.id}');
       // final exists = state.isListening(swapTx);
       // if (exists) continue;
       // emit(state.copyWith(listeningTxs: [...state.listeningTxs, swapTx]));
@@ -139,10 +140,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     }
 
     // print('WatchSwapStatus: ${event.swapTxs}');
-    for (final tx in event.swapTxs) {
-      final exists = state.isListening(tx);
+    for (final swap in event.swapTxs) {
+      final exists = state.isListening(swap);
       if (exists) continue;
-      emit(state.copyWith(listeningTxs: [...state.listeningTxs, tx]));
+      emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap.id]));
     }
     final err = await swapBoltz.addSwapSubs(
       api: state.boltzWatcher!,
@@ -165,24 +166,14 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         final status = event.status;
         print('SwapStatusUpdate: $id - ${status.status}');
         if (!state.isListeningId(id)) return;
+        final swapTx = walletBloc.state.wallet!.getOngoingSwap(id)!.copyWith(status: status);
 
-        final swapTx = state.listeningTxs.firstWhere((_) => _.id == id).copyWith(status: status);
-        emit(
-          state.copyWith(
-            listeningTxs: state.listeningTxs
-                .map(
-                  (_) => _.id == id ? swapTx : _,
-                )
-                .toList(),
-          ),
-        );
-
-        final close = swapTx.settledOrExpiredReverse || swapTx.settledSubmarine;
+        final close = swapTx.settledReverse || swapTx.settledSubmarine || swapTx.expiredReverse;
         if (close) {
-          final idx = state.listeningTxs.indexWhere((element) => element.id == swapTx.id);
+          final idx = state.listeningTxs.indexWhere((element) => element == swapTx.id);
           if (idx != -1) {
             final newListeningTxs =
-                state.listeningTxs.where((element) => element.id != swapTx.id).toList();
+                state.listeningTxs.where((element) => element != swapTx.id).toList();
             emit(
               state.copyWith(
                 listeningTxs: newListeningTxs,
@@ -205,11 +196,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final SwapTx swapTx = event.swapTx;
     // print('_onUpdateOrClaimSwap: ${swapTx.id}');
 
-    if (swapTx.status!.status.reverseSettled || swapTx.settledSubmarine) {
-      // if (swapTx.txid == null) {
-      //   // TODO: Sai: This is throwing error 'Bad state: No element' for completed swaps;
-      //   swapTx = state.claimedSwapTxs.firstWhere((element) => element.id == swapTx.id);
-      // }
+    if (swapTx.txid != null) {
       final (walletAndTxs, err) = await walletTransaction.mergeSwapTxIntoTx(
         wallet: wallet,
         swapTx: swapTx,
@@ -256,7 +243,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       //   return;
     }
 
-    final canClaim = swapTx.canClaim;
+    final canClaim = swapTx.claimableReverse;
     var shouldRefund = false;
     if (!canClaim) {
       final (resp, err) = walletTransaction.updateSwapTxs(
@@ -351,15 +338,15 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       txid = refundTxid!;
     }
 
-    final tx = swapTx.copyWith(txid: txid);
+    final updatedSwap = swapTx.copyWith(txid: txid);
     emit(
       state.copyWith(
-        claimedSwapTxs: [...state.claimedSwapTxs, tx],
-        claimingSwapTxIds: state.removeClaimingTx(swapTx.id),
+        claimedSwapTxs: [...state.claimedSwapTxs, updatedSwap.id],
+        claimingSwapTxIds: state.removeClaimingTx(updatedSwap.id),
       ),
     );
 
-    final (resp, err1) = walletTransaction.updateSwapTxs(swapTx: tx, wallet: wallet);
+    final (resp, err1) = walletTransaction.updateSwapTxs(swapTx: updatedSwap, wallet: wallet);
     if (err1 != null) {
       emit(state.copyWith(errClaimingSwap: err1.toString()));
       return;
@@ -370,7 +357,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     walletBloc.add(
       UpdateWallet(
         updatedWallet,
-        updateTypes: [UpdateWalletTypes.swaps],
+        updateTypes: [UpdateWalletTypes.swaps, UpdateWalletTypes.transactions],
       ),
     );
     emit(

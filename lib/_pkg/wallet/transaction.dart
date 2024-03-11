@@ -121,19 +121,20 @@ class WalletTx {
     // if (storedStatus != null && status == storedStatus) return (null, Err('No status changed'));
 
     final swapTxs = List<SwapTx>.from(swaps);
-    final hasExpired = swapTx.status!.status.hasExpired;
+    // final hasExpired = swapTx.expiredReverse;
+    // final needsRefund = swapTx.refundableSubmarine;
     // final hasSettled = swapTx.status!.status.hasSettled;
-    if (hasExpired) {
-      final address = swapTx.scriptAddress;
-      final txSentToAddressExists = wallet.transactions.any((tx) => tx.toAddress == address);
-      if (!txSentToAddressExists) {
-        swapTxs.removeAt(idx);
-        return ((wallet: wallet.copyWith(swaps: swapTxs), swapsToRefund: []), null);
-      }
-      return ((wallet: wallet, swapsToRefund: [swapTx]), null);
-    }
-
+    // if (needsRefund) {
+    //   final address = swapTx.scriptAddress;
+    //   final txSentToAddressExists = wallet.transactions.any((tx) => tx.toAddress == address);
+    //   if (!txSentToAddressExists) {
+    //     swapTxs.removeAt(idx);
+    //     return ((wallet: wallet.copyWith(swaps: swapTxs), swapsToRefund: []), null);
+    //   }
+    //   return ((wallet: wallet, swapsToRefund: [swapTx]), null);
+    // }
     final updatedSwapTx = storedSwap.copyWith(
+      status: swapTx.status,
       txid: storedSwap.txid ?? swapTx.txid,
       keyIndex: storedSwap.keyIndex,
     );
@@ -151,8 +152,8 @@ class WalletTx {
       final updatedSwaps = swaps.toList();
       final swapsToDelete = <SwapTx>[];
 
-      final newTxExists = txs.any((_) => _.txid == swapTx.txid);
-      if (!newTxExists) return (null, Err('No new tx exists'));
+      // final newTxExists = txs.any((_) => _.txid == swapTx.txid);
+      // if (!newTxExists) return (null, Err('No new tx exists'));
 
       final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
       if (idx == -1) return (null, Err('No new matching tx'));
