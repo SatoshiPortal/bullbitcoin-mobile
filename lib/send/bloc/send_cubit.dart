@@ -18,6 +18,7 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
@@ -51,6 +52,7 @@ class SendCubit extends Cubit<SendState> {
     required SwapCubit swapCubit,
     required this.swapBoltz,
     required bool openScanner,
+    required this.homeCubit,
   }) : super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
@@ -82,6 +84,7 @@ class SendCubit extends Cubit<SendState> {
   final NetworkCubit networkCubit;
   final NetworkFeesCubit networkFeesCubit;
   final CurrencyCubit currencyCubit;
+  final HomeCubit homeCubit;
   late StreamSubscription currencyCubitSub;
   late StreamSubscription swapCubitSub;
 
@@ -269,12 +272,17 @@ class SendCubit extends Cubit<SendState> {
 
     final isLn = state.isLnInvoice();
     if (isLn) {
+      final walletId = state.selectedWalletBloc!.state.wallet!.id;
       await state.swapCubit.createBtcLnSubSwap(
-        walletId: state.selectedWalletBloc!.state.wallet!.id,
+        walletId: walletId,
         invoice: state.address,
         amount: currencyCubit.state.amount,
       );
       await Future.delayed(const Duration(milliseconds: 500));
+      final walletBloc = homeCubit.state.getWalletBlocById(walletId);
+      emit(state.copyWith(selectedWalletBloc: walletBloc));
+      await Future.delayed(const Duration(milliseconds: 50));
+
       if (state.swapCubit.state.invoice == null || state.swapCubit.state.swapTx == null) {
         emit(state.copyWith(sending: false, errSending: state.swapCubit.state.errCreatingSwapInv));
         return;

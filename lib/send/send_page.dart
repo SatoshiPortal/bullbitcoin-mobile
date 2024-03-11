@@ -88,6 +88,7 @@ class _SendPageState extends State<SendPage> {
       walletRepository: locator<WalletRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
       networkCubit: locator<NetworkCubit>(),
+      homeCubit: locator<HomeCubit>(),
       networkFeesCubit: NetworkFeesCubit(
         hiveStorage: locator<HiveStorage>(),
         mempoolAPI: locator<MempoolAPI>(),
