@@ -23,7 +23,6 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/receive.dart';
@@ -371,17 +370,23 @@ class ReceiveQRDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: GestureDetector(
-        onTap: () async {
+        onLongPress: () async {
           if (locator.isRegistered<Clippboard>()) await locator<Clippboard>().copy(address);
+
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
         },
-        child: ColoredBox(
-          color: Colors.white,
-          child: QrImageView(
-            key: UIKeys.receiveQRDisplay,
-            data: address,
-          ),
+        child: Column(
+          children: [
+            const BBText.bodySmall('long press to copy address'),
+            ColoredBox(
+              color: Colors.white,
+              child: QrImageView(
+                key: UIKeys.receiveQRDisplay,
+                data: address,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -452,20 +457,20 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                     fontSize: widget.fontSize,
                   ),
                 ),
-                SizedBox(
-                  width: 50,
-                  child: IconButton(
-                    onPressed: () async {
-                      if (locator.isRegistered<Clippboard>())
-                        await locator<Clippboard>().copy(widget.addressQr);
+                // SizedBox(
+                //   width: 50,
+                //   child: IconButton(
+                //     onPressed: () async {
+                //       if (locator.isRegistered<Clippboard>())
+                //         await locator<Clippboard>().copy(widget.addressQr);
 
-                      _copyClicked();
-                    },
-                    iconSize: 30,
-                    color: context.colour.secondary,
-                    icon: const FaIcon(FontAwesomeIcons.copy),
-                  ),
-                ),
+                //       _copyClicked();
+                //     },
+                //     iconSize: 30,
+                //     color: context.colour.secondary,
+                //     icon: const FaIcon(FontAwesomeIcons.copy),
+                //   ),
+                // ),
               ],
             )
           : const Padding(
