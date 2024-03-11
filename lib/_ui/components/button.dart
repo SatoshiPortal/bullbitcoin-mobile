@@ -154,7 +154,7 @@ class BBButton extends StatelessWidget {
                   ),
                   const Gap(16),
                 ],
-                BBText.titleLarge(label),
+                BBText.titleLarge(label, fontSize: 16),
               ],
             ),
           );

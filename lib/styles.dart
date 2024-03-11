@@ -40,7 +40,7 @@ class Themes {
     appBarTheme: const AppBarTheme(
       systemOverlayStyle: SystemUiOverlayStyle.dark,
       backgroundColor: _Colours.white,
-      elevation: 2,
+      elevation: 1,
       shadowColor: _Colours.gray,
     ),
   );

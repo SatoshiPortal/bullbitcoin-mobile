@@ -238,17 +238,13 @@ class WalletActions extends StatelessWidget {
             },
           ),
         const Gap(8),
-        SizedBox(
-          width: 300,
-          height: 44,
-          child: BBButton.big(
-            buttonKey: UIKeys.receiveGenerateAddressButton,
-            label: 'Get new address',
-            leftIcon: Icons.send,
-            onPressed: () {
-              context.read<ReceiveCubit>().generateNewAddress();
-            },
-          ),
+        BBButton.big(
+          buttonKey: UIKeys.receiveGenerateAddressButton,
+          label: 'Get new address',
+          leftIcon: Icons.send,
+          onPressed: () {
+            context.read<ReceiveCubit>().generateNewAddress();
+          },
         ),
         BBText.errorSmall(errLoadingAddress),
       ],

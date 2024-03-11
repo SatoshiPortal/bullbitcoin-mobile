@@ -48,13 +48,13 @@
         "**/analysis_options.yaml": true,
         "build.yaml": true,
         "**/build": true,
-        // "**/assets": true,
+        "**/assets": true,
         "l10n.yaml": true,
         // 
         // 
         ".github": true,
         "repro": true,
-        "doc": true,
+        // "doc": true,
         "op": true,
         // 
         // 
@@ -62,7 +62,7 @@
         "ios": true,
         // 
         // 
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
         // 
         // 
         "**/test": true,
