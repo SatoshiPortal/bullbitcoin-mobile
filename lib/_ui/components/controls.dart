@@ -69,37 +69,44 @@ class BBDropDown<T> extends StatelessWidget {
 
     return Center(
       child: SizedBox(
-        // width: 250,
+        width: 225,
         height: 45,
-        child: Material(
-          elevation: 2,
-          clipBehavior: Clip.antiAlias,
-          borderRadius: BorderRadius.circular(4),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
           child: DropdownButtonFormField<T>(
             padding: EdgeInsets.zero,
             elevation: 4,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(8),
             isExpanded: true,
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: NewColours.lightGray,
+                borderSide: BorderSide(
+                  color: bgColour,
                 ),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(8),
               ),
               border: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: NewColours.lightGray,
+                borderSide: BorderSide(
+                  color: bgColour,
                 ),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(8),
               ),
               filled: true,
               fillColor: bgColour,
               focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: NewColours.lightGray,
-                ),
-                borderRadius: BorderRadius.circular(4),
+                borderSide: BorderSide(color: bgColour),
+                borderRadius: BorderRadius.circular(8),
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
             ),

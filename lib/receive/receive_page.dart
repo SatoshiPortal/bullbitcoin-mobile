@@ -301,7 +301,7 @@ class CreateLightningInvoice extends StatelessWidget {
             context.read<ReceiveCubit>().descriptionChanged(txt);
           },
         ),
-        const Gap(24),
+        const Gap(48),
         Center(
           child: BBButton.big(
             leftIcon: FontAwesomeIcons.receipt,
