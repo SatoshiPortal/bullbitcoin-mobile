@@ -196,6 +196,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   }
 
   FutureOr<void> _onUpdateOrClaimSwap(UpdateOrClaimSwap event, Emitter<WatchTxsState> emit) async {
+    if (state.isClaiming(event.swapTx.id)) return;
+
     final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
     if (walletBloc == null) return;
     final wallet = walletBloc.state.wallet;
@@ -297,6 +299,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return;
     }
 
+    emit(state.copyWith(claimingSwapTxIds: state.addClaimingTx(swapTx.id)));
+
     final (fees, errFees) = await swapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
       outAmount: swapTx.outAmount,
@@ -320,6 +324,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     }
 
     var txid = '';
+
     if (!shouldRefund) {
       final (claimTxid, err) = await swapBoltz.claimSwap(
         tx: swapTx,
@@ -328,6 +333,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       );
       if (err != null) {
         emit(state.copyWith(claimingSwap: false, errClaimingSwap: err.toString()));
+        emit(state.copyWith(claimingSwapTxIds: state.removeClaimingTx(swapTx.id)));
         return;
       }
       txid = claimTxid!;
@@ -339,15 +345,20 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       );
       if (err != null) {
         emit(state.copyWith(claimingSwap: false, errClaimingSwap: err.toString()));
+        emit(state.copyWith(claimingSwapTxIds: state.removeClaimingTx(swapTx.id)));
+
         return;
       }
       txid = refundTxid!;
     }
 
-    final tx = swapTx.copyWith(
-      txid: txid,
+    final tx = swapTx.copyWith(txid: txid);
+    emit(
+      state.copyWith(
+        claimedSwapTxs: [...state.claimedSwapTxs, tx],
+        claimingSwapTxIds: state.removeClaimingTx(swapTx.id),
+      ),
     );
-    emit(state.copyWith(claimedSwapTxs: [...state.claimedSwapTxs, tx]));
 
     final (resp, err1) = walletTransaction.updateSwapTxs(swapTx: tx, wallet: wallet);
     if (err1 != null) {

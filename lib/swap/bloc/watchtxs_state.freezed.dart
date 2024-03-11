@@ -22,6 +22,7 @@ mixin _$WatchTxsState {
   BoltzApi? get boltzWatcher => throw _privateConstructorUsedError;
   List<SwapTx> get listeningTxs => throw _privateConstructorUsedError;
   List<SwapTx> get claimedSwapTxs => throw _privateConstructorUsedError;
+  List<String> get claimingSwapTxIds => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $WatchTxsStateCopyWith<WatchTxsState> get copyWith =>
@@ -40,7 +41,8 @@ abstract class $WatchTxsStateCopyWith<$Res> {
       String errWatchingInvoice,
       BoltzApi? boltzWatcher,
       List<SwapTx> listeningTxs,
-      List<SwapTx> claimedSwapTxs});
+      List<SwapTx> claimedSwapTxs,
+      List<String> claimingSwapTxIds});
 }
 
 /// @nodoc
@@ -62,6 +64,7 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
     Object? boltzWatcher = freezed,
     Object? listeningTxs = null,
     Object? claimedSwapTxs = null,
+    Object? claimingSwapTxIds = null,
   }) {
     return _then(_value.copyWith(
       errClaimingSwap: null == errClaimingSwap
@@ -88,6 +91,10 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
           ? _value.claimedSwapTxs
           : claimedSwapTxs // ignore: cast_nullable_to_non_nullable
               as List<SwapTx>,
+      claimingSwapTxIds: null == claimingSwapTxIds
+          ? _value.claimingSwapTxIds
+          : claimingSwapTxIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 }
@@ -106,7 +113,8 @@ abstract class _$$WatchTxsStateImplCopyWith<$Res>
       String errWatchingInvoice,
       BoltzApi? boltzWatcher,
       List<SwapTx> listeningTxs,
-      List<SwapTx> claimedSwapTxs});
+      List<SwapTx> claimedSwapTxs,
+      List<String> claimingSwapTxIds});
 }
 
 /// @nodoc
@@ -126,6 +134,7 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
     Object? boltzWatcher = freezed,
     Object? listeningTxs = null,
     Object? claimedSwapTxs = null,
+    Object? claimingSwapTxIds = null,
   }) {
     return _then(_$WatchTxsStateImpl(
       errClaimingSwap: null == errClaimingSwap
@@ -152,6 +161,10 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
           ? _value._claimedSwapTxs
           : claimedSwapTxs // ignore: cast_nullable_to_non_nullable
               as List<SwapTx>,
+      claimingSwapTxIds: null == claimingSwapTxIds
+          ? _value._claimingSwapTxIds
+          : claimingSwapTxIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -165,9 +178,11 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
       this.errWatchingInvoice = '',
       this.boltzWatcher,
       final List<SwapTx> listeningTxs = const [],
-      final List<SwapTx> claimedSwapTxs = const []})
+      final List<SwapTx> claimedSwapTxs = const [],
+      final List<String> claimingSwapTxIds = const []})
       : _listeningTxs = listeningTxs,
         _claimedSwapTxs = claimedSwapTxs,
+        _claimingSwapTxIds = claimingSwapTxIds,
         super._();
 
   @override
@@ -199,9 +214,19 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
     return EqualUnmodifiableListView(_claimedSwapTxs);
   }
 
+  final List<String> _claimingSwapTxIds;
+  @override
+  @JsonKey()
+  List<String> get claimingSwapTxIds {
+    if (_claimingSwapTxIds is EqualUnmodifiableListView)
+      return _claimingSwapTxIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_claimingSwapTxIds);
+  }
+
   @override
   String toString() {
-    return 'WatchTxsState(errClaimingSwap: $errClaimingSwap, claimingSwap: $claimingSwap, errWatchingInvoice: $errWatchingInvoice, boltzWatcher: $boltzWatcher, listeningTxs: $listeningTxs, claimedSwapTxs: $claimedSwapTxs)';
+    return 'WatchTxsState(errClaimingSwap: $errClaimingSwap, claimingSwap: $claimingSwap, errWatchingInvoice: $errWatchingInvoice, boltzWatcher: $boltzWatcher, listeningTxs: $listeningTxs, claimedSwapTxs: $claimedSwapTxs, claimingSwapTxIds: $claimingSwapTxIds)';
   }
 
   @override
@@ -220,7 +245,9 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
             const DeepCollectionEquality()
                 .equals(other._listeningTxs, _listeningTxs) &&
             const DeepCollectionEquality()
-                .equals(other._claimedSwapTxs, _claimedSwapTxs));
+                .equals(other._claimedSwapTxs, _claimedSwapTxs) &&
+            const DeepCollectionEquality()
+                .equals(other._claimingSwapTxIds, _claimingSwapTxIds));
   }
 
   @override
@@ -231,7 +258,8 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
       errWatchingInvoice,
       boltzWatcher,
       const DeepCollectionEquality().hash(_listeningTxs),
-      const DeepCollectionEquality().hash(_claimedSwapTxs));
+      const DeepCollectionEquality().hash(_claimedSwapTxs),
+      const DeepCollectionEquality().hash(_claimingSwapTxIds));
 
   @JsonKey(ignore: true)
   @override
@@ -247,7 +275,8 @@ abstract class _WatchTxsState extends WatchTxsState {
       final String errWatchingInvoice,
       final BoltzApi? boltzWatcher,
       final List<SwapTx> listeningTxs,
-      final List<SwapTx> claimedSwapTxs}) = _$WatchTxsStateImpl;
+      final List<SwapTx> claimedSwapTxs,
+      final List<String> claimingSwapTxIds}) = _$WatchTxsStateImpl;
   const _WatchTxsState._() : super._();
 
   @override
@@ -262,6 +291,8 @@ abstract class _WatchTxsState extends WatchTxsState {
   List<SwapTx> get listeningTxs;
   @override
   List<SwapTx> get claimedSwapTxs;
+  @override
+  List<String> get claimingSwapTxIds;
   @override
   @JsonKey(ignore: true)
   _$$WatchTxsStateImplCopyWith<_$WatchTxsStateImpl> get copyWith =>

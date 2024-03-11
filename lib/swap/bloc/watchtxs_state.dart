@@ -13,6 +13,7 @@ class WatchTxsState with _$WatchTxsState {
     BoltzApi? boltzWatcher,
     @Default([]) List<SwapTx> listeningTxs,
     @Default([]) List<SwapTx> claimedSwapTxs,
+    @Default([]) List<String> claimingSwapTxIds,
   }) = _WatchTxsState;
   const WatchTxsState._();
 
@@ -28,4 +29,17 @@ class WatchTxsState with _$WatchTxsState {
   }
 
   bool swapClaimed(SwapTx swap) => claimedSwapTxs.any((_) => _.id == swap.id);
+
+  bool isClaiming(String swap) => claimingSwapTxIds.contains(swap);
+
+  List<String> addClaimingTx(String id) {
+    if (isClaiming(id)) return claimingSwapTxIds;
+    claimingSwapTxIds.add(id);
+    return claimingSwapTxIds;
+  }
+
+  List<String> removeClaimingTx(String id) {
+    claimingSwapTxIds.remove(id);
+    return claimingSwapTxIds;
+  }
 }
