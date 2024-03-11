@@ -192,14 +192,14 @@ class SwapCubit extends Cubit<SwapState> {
       ),
     );
 
-    _saveBtcLnSwapToWallet(
+    await _saveBtcLnSwapToWallet(
       swapTx: updatedSwap,
       walletId: walletId,
       label: label,
     );
   }
 
-  void _saveBtcLnSwapToWallet({
+  Future _saveBtcLnSwapToWallet({
     required String walletId,
     required SwapTx swapTx,
     String? label,
