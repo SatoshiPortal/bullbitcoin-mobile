@@ -107,7 +107,7 @@ class HomeState with _$HomeState {
     return txs;
   }
 
-  List<Transaction> allTxsWithSwaps(BBNetwork network) {
+  List<Transaction> getAllTxs(BBNetwork network) {
     final txs = <Transaction>[];
     for (final walletBloc in walletBlocsFromNetwork(network)) {
       final walletTxs = walletBloc.state.wallet?.transactions ?? <Transaction>[];

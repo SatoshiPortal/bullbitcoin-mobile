@@ -60,7 +60,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     if (!networkCubit.state.testnet) return;
 
     if (walletType == ReceiveWalletType.lightning) {
-      state.swapBloc.resetToNewLnInvoice();
+      state.swapBloc.clearSwapTx();
       emit(state.copyWith(defaultAddress: null));
     } else {
       loadAddress();
@@ -96,7 +96,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void generateNewAddress() async {
     if (state.walletType == ReceiveWalletType.lightning) {
-      state.swapBloc.resetToNewLnInvoice();
+      state.swapBloc.clearSwapTx();
       return;
     }
 

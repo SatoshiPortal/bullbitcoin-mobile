@@ -248,9 +248,17 @@ class SwapTx with _$SwapTx {
   bool get canClaim =>
       !isSubmarine &&
       (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed);
-  bool get paidSubmarine =>
+
+  bool get settledSubmarine =>
       isSubmarine &&
-      (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed);
+      (status != null &&
+          (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed));
+
+  bool get settledOrExpiredReverse =>
+      !isSubmarine &&
+      (status != null &&
+          (status!.status == SwapStatus.invoiceSettled ||
+              status!.status == SwapStatus.invoiceExpired));
 
   BtcLnBoltzSwap toBtcLnSwap(SwapTxSensitive sensitive) {
     final tx = this;

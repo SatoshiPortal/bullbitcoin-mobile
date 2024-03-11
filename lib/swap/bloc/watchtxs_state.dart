@@ -8,7 +8,7 @@ part 'watchtxs_state.freezed.dart';
 class WatchTxsState with _$WatchTxsState {
   const factory WatchTxsState({
     @Default('') String errClaimingSwap,
-    @Default(false) bool claimingSwapSwap,
+    @Default(false) bool claimingSwap,
     @Default('') String errWatchingInvoice,
     BoltzApi? boltzWatcher,
     @Default([]) List<SwapTx> listeningTxs,

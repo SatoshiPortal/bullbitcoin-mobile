@@ -46,17 +46,16 @@ class SwapCubit extends Cubit<SwapState> {
   final WatchTxsBloc watchTxsBloc;
   final HomeCubit homeCubit;
 
-  void lnInvoiceUpdated(String invoice) async {
+  void decodeInvoice(String invoice) async {
     final (inv, err) = await swapBoltz.decodeInvoice(invoice: invoice);
     if (err != null) {
       emit(state.copyWith(errCreatingSwapInv: err.toString(), generatingSwapInv: false));
       return;
     }
-
     emit(state.copyWith(invoice: inv));
   }
 
-  void createBtcLightningSwap({
+  void createBtcLnRevSwap({
     required String walletId,
     required int amount,
     String? label,
@@ -69,7 +68,16 @@ class SwapCubit extends Cubit<SwapState> {
     if (bloc == null) return;
 
     final outAmount = amount;
-    if (outAmount < 50000 || outAmount > 25000000) {
+    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
+      boltzUrl: boltzTestnet,
+      outAmount: outAmount,
+    );
+    if (errFees != null) {
+      emit(state.copyWith(errCreatingSwapInv: errFees.toString(), generatingSwapInv: false));
+      return;
+    }
+
+    if (outAmount < fees!.btcLimits.minimal || outAmount > fees.btcLimits.maximal) {
       emit(
         state.copyWith(
           errCreatingSwapInv: 'Amount should be greater than 50000 and less than 25000000 sats',
@@ -88,14 +96,6 @@ class SwapCubit extends Cubit<SwapState> {
       emit(state.copyWith(errCreatingSwapInv: errReadingSeed.toString(), generatingSwapInv: false));
       return;
     }
-    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
-      boltzUrl: boltzTestnet,
-      outAmount: outAmount,
-    );
-    if (errFees != null) {
-      emit(state.copyWith(errCreatingSwapInv: errFees.toString(), generatingSwapInv: false));
-      return;
-    }
 
     final (swap, errCreatingInv) = await swapBoltz.receive(
       mnemonic: seed!.mnemonic,
@@ -104,7 +104,7 @@ class SwapCubit extends Cubit<SwapState> {
       network: Chain.Testnet,
       electrumUrl: networkCubit.state.getNetworkUrl(),
       boltzUrl: boltzTestnet,
-      pairHash: fees!.btcPairHash,
+      pairHash: fees.btcPairHash,
     );
     if (errCreatingInv != null) {
       emit(state.copyWith(errCreatingSwapInv: errCreatingInv.toString(), generatingSwapInv: false));
@@ -125,14 +125,14 @@ class SwapCubit extends Cubit<SwapState> {
       ),
     );
 
-    _saveSwapInvoiceToWallet(
+    _saveBtcLnSwapToWallet(
       swapTx: updatedSwap,
       label: label,
       walletId: walletId,
     );
   }
 
-  Future payLnInvoice({
+  Future createBtcLnSubSwap({
     required String walletId,
     required String invoice,
     required int amount,
@@ -145,6 +145,16 @@ class SwapCubit extends Cubit<SwapState> {
     final wallet = bloc.state.wallet;
     if (wallet == null) return;
 
+    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
+      boltzUrl: boltzTestnet,
+      outAmount: amount,
+    );
+    if (errFees != null) {
+      emit(state.copyWith(errCreatingSwapInv: errFees.toString(), generatingSwapInv: false));
+      return;
+    }
+    // check if decoded invoice amount is within limits
+
     final (seed, errReadingSeed) = await walletSensitiveRepository.readSeed(
       fingerprintIndex: wallet.getRelatedSeedStorageString(),
       secureStore: secureStorage,
@@ -154,16 +164,7 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
-      boltzUrl: boltzTestnet,
-      outAmount: amount,
-    );
-    if (errFees != null) {
-      emit(state.copyWith(errCreatingSwapInv: errFees.toString(), generatingSwapInv: false));
-      return;
-    }
-
-    final (tx, err) = await swapBoltz.send(
+    final (swap, err) = await swapBoltz.send(
       boltzUrl: boltzTestnet,
       pairHash: fees!.btcPairHash,
       mnemonic: seed!.mnemonic,
@@ -177,7 +178,7 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    final updatedSwap = tx!.copyWith(
+    final updatedSwap = swap!.copyWith(
       boltzFees: fees.btcSubmarine.boltzFees,
       lockupFees: fees.btcSubmarine.lockupFeesEstimate,
       claimFees: fees.btcSubmarine.claimFees,
@@ -191,22 +192,22 @@ class SwapCubit extends Cubit<SwapState> {
       ),
     );
 
-    _saveSwapInvoiceToWallet(
+    _saveBtcLnSwapToWallet(
       swapTx: updatedSwap,
       walletId: walletId,
       label: label,
     );
   }
 
-  void _saveSwapInvoiceToWallet({
+  void _saveBtcLnSwapToWallet({
     required String walletId,
     required SwapTx swapTx,
     String? label,
   }) async {
-    final bloc = homeCubit.state.getWalletBlocById(walletId);
-    if (bloc == null) return;
+    final walletBloc = homeCubit.state.getWalletBlocById(walletId);
+    if (walletBloc == null) return;
 
-    final wallet = bloc.state.wallet;
+    final wallet = walletBloc.state.wallet;
     if (wallet == null) return;
 
     final (updatedWallet, err) = await walletTx.addSwapTxToWallet(
@@ -221,16 +222,16 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    bloc.add(
+    walletBloc.add(
       UpdateWallet(
         updatedWallet,
         updateTypes: [UpdateWalletTypes.swaps],
       ),
     );
 
-    homeCubit.updateSelectedWallet(bloc);
+    homeCubit.updateSelectedWallet(walletBloc);
     watchTxsBloc.add(WatchWalletTxs(walletId: walletId));
   }
 
-  void resetToNewLnInvoice() => emit(state.copyWith(swapTx: null));
+  void clearSwapTx() => emit(state.copyWith(swapTx: null));
 }

@@ -32,7 +32,7 @@ class _HomeTransactionsState extends State<HomeTransactions> {
   Widget build(BuildContext context) {
     final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocs);
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final txs = context.select((HomeCubit cubit) => cubit.state.allTxsWithSwaps(network));
+    final txs = context.select((HomeCubit cubit) => cubit.state.getAllTxs(network));
 
     return MultiBlocListener(
       listeners: [
@@ -164,7 +164,7 @@ class _TxList extends StatelessWidget {
   Widget build(BuildContext context) {
     final __ = context.select((HomeCubit _) => _.state.walletBlocs);
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    final txs = context.select((HomeCubit _) => _.state.allTxsWithSwaps(network));
+    final txs = context.select((HomeCubit _) => _.state.getAllTxs(network));
 
     if (txs.isEmpty)
       return TopLeft(
