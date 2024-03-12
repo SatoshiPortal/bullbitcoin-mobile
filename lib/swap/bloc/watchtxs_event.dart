@@ -19,7 +19,7 @@ class WatchSwapStatus extends WatchTxsEvent {
   });
 
   final String walletId;
-  final List<SwapTx> swapTxs;
+  final List<String> swapTxs;
 }
 
 class WatchWalletTxs extends WatchTxsEvent {

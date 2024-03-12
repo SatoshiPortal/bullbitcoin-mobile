@@ -105,7 +105,7 @@ class WalletTx {
   ///   - if not, add it to the list of swaps to refund and return
   /// If not,
   ///   - update txid of wallet.swaps with swapTx.txid
-  (({Wallet wallet, List<SwapTx> swapsToRefund})?, Err?) updateSwapTxs({
+  (({Wallet wallet})?, Err?) updateSwapTxs({
     required SwapTx swapTx,
     required Wallet wallet,
   }) {
@@ -124,10 +124,21 @@ class WalletTx {
       keyIndex: storedSwap.keyIndex,
     );
     swapTxs[idx] = updatedSwapTx;
-    return ((wallet: wallet.copyWith(swaps: swapTxs), swapsToRefund: []), null);
+
+    final swapsToDelete = <SwapTx>[
+      for (final s in swapTxs)
+        if (s.paidSubmarine || s.settledReverse || s.settledSubmarine || s.expiredReverse) s,
+    ];
+
+    for (final s in swapTxs)
+      if (swapsToDelete.any((_) => _.id == s.id)) swapTxs.removeWhere((_) => _.id == s.id);
+
+    final updatedWallet = wallet.copyWith(swaps: swapTxs);
+
+    return ((wallet: updatedWallet), null);
   }
 
-  Future<(({Wallet wallet, List<SwapTx> swapsToDelete})?, Err?)> mergeSwapTxIntoTx({
+  Future<(({Wallet wallet, SwapTx swapsToDelete})?, Err?)> mergeSwapTxIntoTx({
     required Wallet wallet,
     required SwapTx swapTx,
   }) async {
@@ -135,7 +146,7 @@ class WalletTx {
       final txs = wallet.transactions.toList();
       final swaps = wallet.swaps;
       final updatedSwaps = swaps.toList();
-      final swapsToDelete = <SwapTx>[];
+      // final swapsToDelete = <SwapTx>[];
 
       final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
       if (idx == -1) return (null, Err('No new matching tx'));
@@ -147,7 +158,7 @@ class WalletTx {
       txs[idx] = newTx;
 
       final swapToDelete = swaps.firstWhere((_) => _.id == swapTx.id);
-      swapsToDelete.add(swapToDelete);
+      // swapsToDelete.add(swapToDelete);
       updatedSwaps.removeWhere((_) => _.id == swapTx.id);
 
       final updatedWallet = wallet.copyWith(
@@ -155,7 +166,7 @@ class WalletTx {
         swaps: updatedSwaps,
       );
 
-      return ((wallet: updatedWallet, swapsToDelete: swapsToDelete), null);
+      return ((wallet: updatedWallet, swapsToDelete: swapToDelete), null);
     } catch (e) {
       return (null, Err(e.toString()));
     }

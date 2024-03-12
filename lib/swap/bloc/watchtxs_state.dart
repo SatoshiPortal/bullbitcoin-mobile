@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/transaction.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,7 +16,7 @@ class WatchTxsState with _$WatchTxsState {
   }) = _WatchTxsState;
   const WatchTxsState._();
 
-  bool isListening(SwapTx swap) => listeningTxs.any((_) => _ == swap.id);
+  bool isListening(String swap) => listeningTxs.any((_) => _ == swap);
 
   bool isListeningId(String id) => listeningTxs.any((_) => _ == id);
 
@@ -29,7 +28,7 @@ class WatchTxsState with _$WatchTxsState {
   //   // return tx.status?.status;
   // }
 
-  bool swapClaimed(SwapTx swap) => claimedSwapTxs.any((_) => _ == swap.id);
+  bool swapClaimed(String swap) => claimedSwapTxs.any((_) => _ == swap);
 
   bool isClaiming(String swap) => claimingSwapTxIds.any((_) => _ == swap);
 

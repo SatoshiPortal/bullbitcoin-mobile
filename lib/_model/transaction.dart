@@ -265,7 +265,10 @@ class SwapTx with _$SwapTx {
       !isSubmarine && (status != null && (status!.status == SwapStatus.invoiceSettled));
 
   bool get expiredReverse =>
-      !isSubmarine && (status != null && (status!.status == SwapStatus.invoiceExpired));
+      !isSubmarine &&
+      (status != null &&
+          (status!.status == SwapStatus.invoiceExpired ||
+              status!.status == SwapStatus.swapExpired));
 
   BtcLnBoltzSwap toBtcLnSwap(SwapTxSensitive sensitive) {
     final tx = this;
