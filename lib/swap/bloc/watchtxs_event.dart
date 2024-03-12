@@ -5,8 +5,8 @@ class WatchTxsEvent {}
 
 class InitializeSwapWatcher extends WatchTxsEvent {}
 
-class UpdateOrClaimSwap extends WatchTxsEvent {
-  UpdateOrClaimSwap({required this.walletId, required this.swapTx});
+class ProcessSwapTx extends WatchTxsEvent {
+  ProcessSwapTx({required this.walletId, required this.swapTx});
 
   final SwapTx swapTx;
   final String walletId;

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -15,6 +16,7 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -63,7 +65,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   }) : super(const WatchTxsState()) {
     on<InitializeSwapWatcher>(_initializeSwapWatcher);
     on<WatchSwapStatus>(_onWatchSwapStatus);
-    on<UpdateOrClaimSwap>(_onUpdateOrClaimSwap, transformer: sequential());
+    on<ProcessSwapTx>(_onProcessSwapTx, transformer: sequential());
     on<SwapStatusUpdate>(_onSwapStatusUpdate);
     on<DeleteSensitiveSwapData>(_onDeleteSensitiveSwapData);
     on<WatchWalletTxs>(_onWatchWalletTxs);
@@ -87,24 +89,17 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     final (boltzWatcher, err) = await swapBoltz.initializeBoltzApi();
     if (err != null) {
-      emit(
-        state.copyWith(
-          errWatchingInvoice: err.message,
-        ),
-      );
+      emit(state.copyWith(errWatchingInvoice: err.message));
+      return;
     }
-    emit(
-      state.copyWith(
-        boltzWatcher: boltzWatcher,
-      ),
-    );
+    emit(state.copyWith(boltzWatcher: boltzWatcher));
   }
 
   void _onWatchWalletTxs(WatchWalletTxs event, Emitter<WatchTxsState> emit) {
     final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
     if (walletBloc == null) return;
 
-    final swapTxs = walletBloc.state.allSwapTxs();
+    final swapTxs = walletBloc.state.wallet?.swaps ?? [];
     final swapTxsToWatch = <SwapTx>[];
     print('WatchWalletTxs: ${swapTxs.length}');
     for (final swapTx in swapTxs) {
@@ -112,7 +107,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           swapTx.settledReverse ||
           swapTx.settledSubmarine ||
           swapTx.expiredReverse) {
-        add(UpdateOrClaimSwap(walletId: event.walletId, swapTx: swapTx));
+        add(ProcessSwapTx(walletId: event.walletId, swapTx: swapTx));
         continue;
       }
       swapTxsToWatch.add(swapTx);
@@ -136,7 +131,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return;
     }
 
-    // print('WatchSwapStatus: ${event.swapTxs}');
     for (final swap in event.swapTxs) {
       final exists = state.isListening(swap);
       if (exists) continue;
@@ -171,95 +165,31 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           if (idx != -1) {
             final newListeningTxs =
                 state.listeningTxs.where((element) => element != swapTx.id).toList();
-            emit(
-              state.copyWith(
-                listeningTxs: newListeningTxs,
-              ),
-            );
+            emit(state.copyWith(listeningTxs: newListeningTxs));
           }
         }
-        add(UpdateOrClaimSwap(walletId: event.walletId, swapTx: swapTx));
+        add(ProcessSwapTx(walletId: event.walletId, swapTx: swapTx));
       }
     }
   }
 
-  FutureOr<void> _onUpdateOrClaimSwap(UpdateOrClaimSwap event, Emitter<WatchTxsState> emit) async {
+  FutureOr<void> _onProcessSwapTx(ProcessSwapTx event, Emitter<WatchTxsState> emit) async {
+    final swapTx = event.swapTx;
+
     final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
-    if (walletBloc == null) return;
-    final wallet = walletBloc.state.wallet;
-    if (wallet == null) return;
-    final SwapTx swapTx = event.swapTx;
-    // print('_onUpdateOrClaimSwap: ${swapTx.id}');
+    final wallet = walletBloc?.state.wallet;
+    if (walletBloc == null || wallet == null) return;
 
     if (swapTx.txid != null) {
-      final (walletAndTxs, err) = await walletTransaction.mergeSwapTxIntoTx(
-        wallet: wallet,
-        swapTx: swapTx,
-      );
-      if (err != null) {
-        emit(state.copyWith(errWatchingInvoice: err.toString()));
-        return;
-      }
-      final updatedWallet = walletAndTxs!.wallet;
-      final swapsToDelete = walletAndTxs.swapsToDelete;
-      walletBloc.add(
-        UpdateWallet(
-          updatedWallet,
-          updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.swaps],
-        ),
-      );
-      homeCubit.updateSelectedWallet(walletBloc);
-      for (final swap in swapsToDelete) add(DeleteSensitiveSwapData(swap.id));
+      await __mergeSwap(wallet, swapTx, walletBloc, emit);
       return;
-      // } else if (swapTx.status!.status == SwapStatus.txnClaimed ||
-      //     swapTx.status!.status == SwapStatus.txnMempool) {
-      //   if (swapTx.txid == null) {
-      //     swapTx = state.listeningTxs.firstWhere((element) => element.id == swapTx.id);
-      //   }
-      //   final (walletAndTxs, err) = await walletTransaction.mergeSwapTxIntoTx(
-      //     wallet: wallet,
-      //     swapTx: swapTx,
-      //   );
-      //   if (err != null) {
-      //     emit(state.copyWith(errWatchingInvoice: err.toString()));
-      //     return;
-      //   }
-      //   final updatedWallet = walletAndTxs!.wallet;
-      //   final swapsToDelete = walletAndTxs.swapsToDelete;
-      //   walletBloc.add(
-      //     UpdateWallet(
-      //       updatedWallet,
-      //       updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.swaps],
-      //     ),
-      //   );
-      //   homeCubit.updateSelectedWallet(walletBloc);
-      //   if (swapTx.status?.status == SwapStatus.txnConfirmed)
-      //     for (final swap in swapsToDelete) add(DeleteSensitiveSwapData(swap.id));
-      //   return;
     }
 
     final canClaim = swapTx.claimableReverse;
     var shouldRefund = false;
     if (!canClaim) {
-      final (resp, err) = walletTransaction.updateSwapTxs(
-        wallet: wallet,
-        swapTx: swapTx,
-      );
-      if (err != null) {
-        emit(state.copyWith(errWatchingInvoice: err.toString()));
-        return;
-      }
-      final updatedWallet = resp!.wallet;
-      if (resp.swapsToRefund.isEmpty) {
-        walletBloc.add(
-          UpdateWallet(
-            updatedWallet,
-            updateTypes: [UpdateWalletTypes.swaps],
-          ),
-        );
-        homeCubit.updateSelectedWallet(walletBloc);
-        return;
-      }
+      final exit = await __updateNoActionSwapTxs(wallet, swapTx, walletBloc, emit);
+      if (exit) return;
       shouldRefund = true;
     }
 
@@ -269,9 +199,88 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     }
 
     if (state.isClaiming(event.swapTx.id)) return;
-    emit(state.copyWith(claimingSwap: true, errClaimingSwap: ''));
-    emit(state.copyWith(claimingSwapTxIds: state.addClaimingTx(swapTx.id)));
+    emit(
+      state.copyWith(
+        claimingSwap: true,
+        errClaimingSwap: '',
+        claimingSwapTxIds: state.addClaimingTx(swapTx.id),
+      ),
+    );
 
+    final txid = await __claimOrRefundSwap(shouldRefund, swapTx, walletBloc, emit);
+    if (txid == null) return;
+
+    await __updateSwapTxsAfterClaimOrRefund(txid, swapTx, walletBloc, wallet, emit);
+  }
+
+  void _onDeleteSensitiveSwapData(
+    DeleteSensitiveSwapData event,
+    Emitter<WatchTxsState> emit,
+  ) async {
+    final _ = await swapBoltz.deleteSwapSensitive(id: event.swapId);
+  }
+
+  Future __mergeSwap(
+    Wallet wallet,
+    SwapTx swapTx,
+    WalletBloc walletBloc,
+    Emitter<WatchTxsState> emit,
+  ) async {
+    final (walletAndTxs, err) = await walletTransaction.mergeSwapTxIntoTx(
+      wallet: wallet,
+      swapTx: swapTx,
+    );
+    if (err != null) {
+      emit(state.copyWith(errWatchingInvoice: err.toString()));
+      return;
+    }
+    final updatedWallet = walletAndTxs!.wallet;
+    final swapsToDelete = walletAndTxs.swapsToDelete;
+    walletBloc.add(
+      UpdateWallet(
+        updatedWallet,
+        updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.swaps],
+      ),
+    );
+    homeCubit.updateSelectedWallet(walletBloc);
+    for (final swap in swapsToDelete) add(DeleteSensitiveSwapData(swap.id));
+    return;
+  }
+
+  Future<bool> __updateNoActionSwapTxs(
+    Wallet wallet,
+    SwapTx swapTx,
+    WalletBloc walletBloc,
+    Emitter<WatchTxsState> emit,
+  ) async {
+    final (resp, err) = walletTransaction.updateSwapTxs(
+      wallet: wallet,
+      swapTx: swapTx,
+    );
+    if (err != null) {
+      emit(state.copyWith(errWatchingInvoice: err.toString()));
+      return true;
+    }
+    final updatedWallet = resp!.wallet;
+    if (resp.swapsToRefund.isEmpty) {
+      walletBloc.add(
+        UpdateWallet(
+          updatedWallet,
+          updateTypes: [UpdateWalletTypes.swaps],
+        ),
+      );
+      homeCubit.updateSelectedWallet(walletBloc);
+      return true;
+    }
+    return false;
+  }
+
+  Future<String?> __claimOrRefundSwap(
+    bool shouldRefund,
+    SwapTx swapTx,
+    WalletBloc walletBloc,
+    Emitter<WatchTxsState> emit,
+  ) async {
     final address = walletBloc.state.wallet?.lastGeneratedAddress?.address;
     if (address == null || address.isEmpty) {
       emit(
@@ -280,17 +289,16 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           errClaimingSwap: 'Address not found',
         ),
       );
-      return;
+      return null;
     }
 
     final (fees, errFees) = await swapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
       outAmount: swapTx.outAmount,
     );
-
     if (errFees != null) {
       emit(state.copyWith(claimingSwap: false, errClaimingSwap: errFees.toString()));
-      return;
+      return null;
     }
 
     final claimFeesEstimate =
@@ -302,7 +310,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           errClaimingSwap: 'Fees not found',
         ),
       );
-      return;
+      return null;
     }
 
     var txid = '';
@@ -316,7 +324,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       if (err != null) {
         emit(state.copyWith(claimingSwap: false, errClaimingSwap: err.toString()));
         emit(state.copyWith(claimingSwapTxIds: state.removeClaimingTx(swapTx.id)));
-        return;
+        return null;
       }
       txid = claimTxid!;
     } else {
@@ -329,11 +337,20 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         emit(state.copyWith(claimingSwap: false, errClaimingSwap: err.toString()));
         emit(state.copyWith(claimingSwapTxIds: state.removeClaimingTx(swapTx.id)));
 
-        return;
+        return null;
       }
       txid = refundTxid!;
     }
+    return txid;
+  }
 
+  Future __updateSwapTxsAfterClaimOrRefund(
+    String txid,
+    SwapTx swapTx,
+    WalletBloc walletBloc,
+    Wallet wallet,
+    Emitter<WatchTxsState> emit,
+  ) async {
     final updatedSwap = swapTx.copyWith(txid: txid);
     emit(
       state.copyWith(
@@ -364,14 +381,5 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
 
     homeCubit.updateSelectedWallet(walletBloc);
-
-    // await Future.delayed(500.ms);
-  }
-
-  void _onDeleteSensitiveSwapData(
-    DeleteSensitiveSwapData event,
-    Emitter<WatchTxsState> emit,
-  ) async {
-    final _ = await swapBoltz.deleteSwapSensitive(id: event.swapId);
   }
 }

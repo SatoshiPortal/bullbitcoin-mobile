@@ -16,7 +16,7 @@ class SwapHistoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.allSwapTxs());
+    final txs = context.select((WalletBloc _) => _.state.wallet?.swaps ?? []);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return BBButton.big(
@@ -51,7 +51,7 @@ class SwapTxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.allSwapTxs());
+    final txs = context.select((WalletBloc _) => _.state.wallet?.swaps ?? []);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return Padding(
