@@ -266,6 +266,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
     homeCubit.updateSelectedWallet(walletBloc);
+    Future.delayed(20.ms);
     return;
     // }
 

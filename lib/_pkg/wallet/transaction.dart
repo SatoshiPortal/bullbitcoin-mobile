@@ -130,7 +130,7 @@ class WalletTx {
         if (s.paidSubmarine || s.settledReverse || s.settledSubmarine || s.expiredReverse) s,
     ];
 
-    for (final s in swapTxs)
+    for (final s in swapsToDelete)
       if (swapsToDelete.any((_) => _.id == s.id)) swapTxs.removeWhere((_) => _.id == s.id);
 
     final updatedWallet = wallet.copyWith(swaps: swapTxs);
