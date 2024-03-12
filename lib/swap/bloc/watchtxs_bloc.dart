@@ -18,6 +18,7 @@ import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// 1. WalletBloc.listTxs calls `WatchWalletTxs` for a specific wallet
@@ -198,15 +199,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return;
     }
 
-    if (state.isClaiming(event.swapTx.id)) return;
-    emit(
-      state.copyWith(
-        claimingSwap: true,
-        errClaimingSwap: '',
-        claimingSwapTxIds: state.addClaimingTx(swapTx.id),
-      ),
-    );
-
     final txid = await __claimOrRefundSwap(shouldRefund, swapTx, walletBloc, emit);
     if (txid == null) return;
 
@@ -281,6 +273,20 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     WalletBloc walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
+    if (state.isClaiming(swapTx.id)) return null;
+    final updatedClaimingTxs = state.addClaimingTx(swapTx.id);
+    if (updatedClaimingTxs == null) return null;
+
+    emit(
+      state.copyWith(
+        claimingSwap: true,
+        errClaimingSwap: '',
+        claimingSwapTxIds: updatedClaimingTxs,
+      ),
+    );
+
+    Future.delayed(20.ms);
+
     final address = walletBloc.state.wallet?.lastGeneratedAddress?.address;
     if (address == null || address.isEmpty) {
       emit(

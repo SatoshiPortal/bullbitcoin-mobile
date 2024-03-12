@@ -31,13 +31,9 @@ class WatchTxsState with _$WatchTxsState {
 
   bool swapClaimed(SwapTx swap) => claimedSwapTxs.any((_) => _ == swap.id);
 
-  bool isClaiming(String swap) => claimingSwapTxIds.contains(swap);
+  bool isClaiming(String swap) => claimingSwapTxIds.any((_) => _ == swap);
 
-  List<String> addClaimingTx(String id) {
-    if (isClaiming(id)) return List<String>.from(claimingSwapTxIds);
-    final List<String> updatedList = List<String>.from(claimingSwapTxIds)..add(id);
-    return updatedList;
-  }
+  List<String>? addClaimingTx(String id) => isClaiming(id) ? null : [id, ...claimingSwapTxIds];
 
   List<String> removeClaimingTx(String id) {
     final List<String> updatedList = List<String>.from(claimingSwapTxIds)..remove(id);
