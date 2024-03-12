@@ -218,6 +218,9 @@ class WalletActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLn = context.select((ReceiveCubit x) => x.state.isLn());
+    if (!isLn) return const SizedBox.shrink();
+
     final swap = context.select((SwapCubit _) => _.state.swapTx);
     final show = context.select((ReceiveCubit _) => _.state.showQR(swap));
     if (!show) return const SizedBox.shrink();
