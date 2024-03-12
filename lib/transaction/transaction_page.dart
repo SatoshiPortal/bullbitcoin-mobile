@@ -20,7 +20,6 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
-import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
@@ -358,7 +357,7 @@ class _SwapDetails extends StatelessWidget {
     final status =
         context.select((TransactionCubit cubit) => cubit.state.tx.swapTx?.status?.status);
     final statusStr = status?.toString() ?? '';
-    final showQr = status?.showQR ?? true; // may not be required
+    // final showQr = status?.showQR ?? true; // may not be required
 
     final swap = tx.swapTx;
     if (swap == null) return const SizedBox.shrink();
@@ -375,7 +374,7 @@ class _SwapDetails extends StatelessWidget {
     final fees = swap.totalFees() ?? 0;
     final feesAmount =
         context.select((CurrencyCubit x) => x.state.getAmountInUnits(fees, removeText: true));
-    final invoice = swap.invoice;
+    // final invoice = swap.invoice;
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),
     );
@@ -449,21 +448,21 @@ class _SwapDetails extends StatelessWidget {
             const Gap(4),
             BBText.titleLarge(date, isBold: true),
             const Gap(32),
-            if (showQr)
-              Center(
-                child: SizedBox(
-                  width: 300,
-                  child: Column(
-                    children: [
-                      ReceiveQRDisplay(address: invoice),
-                      ReceiveDisplayAddress(
-                        addressQr: invoice,
-                        fontSize: 10,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            // if (showQr)
+            //   Center(
+            //     child: SizedBox(
+            //       width: 300,
+            //       child: Column(
+            //         children: [
+            //           ReceiveQRDisplay(address: invoice),
+            //           ReceiveDisplayAddress(
+            //             addressQr: invoice,
+            //             fontSize: 10,
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
             const Gap(24),
           ],
         ),
