@@ -63,9 +63,7 @@ class SwapCubit extends Cubit<SwapState> {
     String? label,
   }) async {
     if (!networkCubit.state.testnet) return;
-    // why are we regetting bloc?
-    // if we want the latest status then we should just pass wallet.id
-    // and get the relavent WalletBloc
+
     final bloc = homeCubit.state.getWalletBlocById(walletId);
     if (bloc == null) return;
 

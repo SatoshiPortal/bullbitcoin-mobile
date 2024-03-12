@@ -240,5 +240,16 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
   }
 
+  void createLnInvoiceClicked() async {
+    final walletId = state.walletBloc?.state.wallet?.id;
+    if (walletId == null) return;
+
+    state.swapBloc.createBtcLnRevSwap(
+      walletId: walletId,
+      amount: currencyCubit.state.amount,
+      label: state.description,
+    );
+  }
+
   void shareClicked() {}
 }
