@@ -117,19 +117,6 @@ class HomePage extends StatelessWidget {
 class _Screen extends StatelessWidget {
   const _Screen();
 
-  ({int cardSection, int txListSection}) _calculateCardListFlex(
-    BuildContext context,
-    bool onlyOne,
-  ) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final isSmallScreen = screenHeight < 720;
-
-    if (onlyOne && isSmallScreen) return (cardSection: 3, txListSection: 5);
-    if (onlyOne && !isSmallScreen) return (cardSection: 2, txListSection: 5);
-    if (!onlyOne && isSmallScreen) return (cardSection: 7, txListSection: 4);
-    return (cardSection: 1, txListSection: 1);
-  }
-
   @override
   Widget build(BuildContext context) {
     final walletScreen = HomePage.setupHomeWallets(context);
@@ -138,21 +125,18 @@ class _Screen extends StatelessWidget {
 
     final walletCubits = homeWallets.walletCubits;
 
-    final heights = _calculateCardListFlex(context, walletCubits.length == 1);
-
     return Column(
       children: [
-        Expanded(
-          flex: heights.cardSection,
-          // flex: walletCubits.length == 1 ? 3 : 7,
+        SizedBox(
+          height: walletCubits.length == 1 ? 180 : 310,
           child: CardsList(
             walletBlocs: walletCubits,
           ),
         ),
-        Expanded(
-          flex: heights.txListSection,
+        const Expanded(
+          // flex: heights.txListSection,
           // flex: 5,
-          child: const HomeTransactions(),
+          child: HomeTransactions(),
         ),
         Container(
           height: 128,
