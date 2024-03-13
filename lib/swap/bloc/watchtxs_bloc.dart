@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
@@ -195,8 +196,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     // shouldRefund = true;
 
-    if (state.swapClaimed(swapTx.id)) {
-      emit(state.copyWith(errClaimingSwap: 'Swap claimed'));
+    if (state.swapClaimed(swapTx.id) || (state.isClaiming(swapTx.id))) {
+      emit(state.copyWith(errClaimingSwap: 'Swap claimed/claiming'));
       return;
     }
 
@@ -279,7 +280,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     WalletBloc walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
-    if (state.isClaiming(swapTx.id)) return null;
     final updatedClaimingTxs = state.addClaimingTx(swapTx.id);
     if (updatedClaimingTxs == null) return null;
 
@@ -291,7 +291,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    Future.delayed(20.ms);
+    // Future.delayed(12000.ms);
 
     final address = walletBloc.state.wallet?.lastGeneratedAddress?.address;
     if (address == null || address.isEmpty) {
@@ -328,12 +328,21 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     var txid = '';
 
     if (!shouldRefund) {
+      final DateTime now = DateTime.now();
+      final String formattedDate =
+          '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}:${now.millisecond}';
+      final Random random = Random();
+      final int randomNumber =
+          random.nextInt(10000); // This will generate a random number between 0 and 9999
+
+      print('ATTEMPT CLAIMING: $randomNumber AT: $formattedDate');
       final (claimTxid, err) = await swapBoltz.claimSwap(
         tx: swapTx,
         outAddress: address,
         absFee: claimFeesEstimate,
       );
       if (err != null) {
+        print('FAILED CLAIMING: $randomNumber AT: $formattedDate');
         emit(state.copyWith(claimingSwap: false, errClaimingSwap: err.toString()));
         emit(state.copyWith(claimingSwapTxIds: state.removeClaimingTx(swapTx.id)));
         return null;

@@ -172,7 +172,7 @@ class SwapBoltz {
       );
       return (resp, null);
     } catch (e) {
-      return (null, Err(e.toString(), showAlert: true));
+      return (null, Err(e.toString()));
     }
   }
 
