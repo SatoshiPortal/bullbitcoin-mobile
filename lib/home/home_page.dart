@@ -114,8 +114,33 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _Screen extends StatelessWidget {
+class _Screen extends StatefulWidget {
   const _Screen();
+
+  @override
+  State<_Screen> createState() => _ScreenState();
+}
+
+class _ScreenState extends State<_Screen> {
+  int _currentPage = 0;
+
+  void _onChanged(int page) {
+    _currentPage = page;
+    setState(() {});
+  }
+
+  static const double _oneCardH = 180.0;
+  static const double _twoCardH = 310.0;
+
+  double _calculateHeight(int cardsLen) {
+    if (cardsLen == 1) return _oneCardH;
+    if (cardsLen == 2) return _twoCardH;
+
+    final isOdd = cardsLen % 2 != 0;
+    final isLastPage = _currentPage == (cardsLen / 2).floor();
+
+    return (isLastPage && isOdd) ? _oneCardH : _twoCardH;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,24 +150,41 @@ class _Screen extends StatelessWidget {
 
     final walletCubits = homeWallets.walletCubits;
 
-    return Column(
+    final h = _calculateHeight(walletCubits.length);
+
+    return Stack(
       children: [
-        SizedBox(
-          height: walletCubits.length == 1 ? 180 : 310,
-          child: CardsList(
-            walletBlocs: walletCubits,
+        TopCenter(
+          child: SizedBox(
+            height: walletCubits.length == 1 ? 180 : 310,
+            child: CardsList(
+              walletBlocs: walletCubits,
+              onChanged: _onChanged,
+            ),
           ),
         ),
-        const Expanded(
-          // flex: heights.txListSection,
-          // flex: 5,
-          child: HomeTransactions(),
+        Column(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              height: h,
+            ),
+            Expanded(
+              child: ColoredBox(
+                color: context.colour.background,
+                child: const HomeTransactions(),
+              ),
+            ),
+            const Gap(128),
+          ],
         ),
-        Container(
-          height: 128,
-          margin: const EdgeInsets.only(top: 16),
-          child: HomeBottomBar2(
-            walletBloc: walletCubits.length == 1 ? walletCubits[0] : null,
+        BottomCenter(
+          child: Container(
+            height: 128,
+            margin: const EdgeInsets.only(top: 16),
+            child: HomeBottomBar2(
+              walletBloc: walletCubits.length == 1 ? walletCubits[0] : null,
+            ),
           ),
         ),
       ],
@@ -151,9 +193,10 @@ class _Screen extends StatelessWidget {
 }
 
 class CardsList extends StatelessWidget {
-  const CardsList({super.key, required this.walletBlocs});
+  const CardsList({super.key, required this.walletBlocs, required this.onChanged});
 
   final List<WalletBloc> walletBlocs;
+  final Function(int) onChanged;
 
   static List<CardColumn> buildCardColumns(List<WalletBloc> wallets) {
     final List<CardColumn> columns = [];
@@ -178,6 +221,7 @@ class CardsList extends StatelessWidget {
 
     return PageView(
       scrollDirection: Axis.vertical,
+      onPageChanged: onChanged,
       children: columns,
     );
   }
