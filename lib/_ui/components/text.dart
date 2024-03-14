@@ -24,6 +24,7 @@ class BBText extends StatelessWidget {
     this.removeColourOpacity = false,
     this.fontSize,
     this.uiKey,
+    this.compact = false,
   })  : type = _FontTypes.headline,
         textAlign = TextAlign.left;
 
@@ -38,6 +39,7 @@ class BBText extends StatelessWidget {
     this.removeColourOpacity = false,
     this.fontSize,
     this.uiKey,
+    this.compact = false,
   }) : type = _FontTypes.titleLarge;
 
   const BBText.title(
@@ -51,6 +53,7 @@ class BBText extends StatelessWidget {
     this.removeColourOpacity = false,
     this.fontSize,
     this.uiKey,
+    this.compact = false,
   }) : type = _FontTypes.title;
 
   const BBText.body(
@@ -64,6 +67,7 @@ class BBText extends StatelessWidget {
     this.removeColourOpacity = false,
     this.fontSize,
     this.uiKey,
+    this.compact = false,
   }) : type = _FontTypes.body;
 
   const BBText.bodySmall(
@@ -77,6 +81,7 @@ class BBText extends StatelessWidget {
     this.removeColourOpacity = false,
     this.fontSize,
     this.uiKey,
+    this.compact = false,
   }) : type = _FontTypes.bodySmall;
 
   const BBText.bodyBold(
@@ -90,6 +95,7 @@ class BBText extends StatelessWidget {
     this.removeColourOpacity = false,
     this.fontSize,
     this.uiKey,
+    this.compact = false,
   }) : type = _FontTypes.body;
 
   const BBText.error(
@@ -103,6 +109,7 @@ class BBText extends StatelessWidget {
     this.removeColourOpacity = false,
     this.fontSize,
     this.uiKey,
+    this.compact = false,
   }) : type = _FontTypes.error;
 
   const BBText.errorSmall(
@@ -116,6 +123,7 @@ class BBText extends StatelessWidget {
     this.isGreen = false,
     this.fontSize,
     this.uiKey,
+    this.compact = false,
   }) : type = _FontTypes.errorSmall;
 
   final String text;
@@ -129,6 +137,7 @@ class BBText extends StatelessWidget {
   final bool removeColourOpacity;
   final Key? uiKey;
   final double? fontSize;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +171,7 @@ class BBText extends StatelessWidget {
     if (isBold) style = style.copyWith(fontWeight: FontWeight.bold);
     if (removeColourOpacity) style = style.copyWith(color: context.colour.onBackground);
     if (fontSize != null) style = style.copyWith(fontSize: fontSize);
+    if (compact) style = style.copyWith(height: 0.8);
 
     return Text(
       text,

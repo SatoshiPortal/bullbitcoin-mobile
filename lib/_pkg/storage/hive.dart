@@ -53,6 +53,10 @@ class HiveStorage implements IStorage {
   Future<(String?, Err?)> getValue(String key) async {
     try {
       final value = _box!.get(key);
+      // for (final key in _box!.keys) {
+      //   final v = _box!.get(key)!;
+      //   log('::::: $key ::::::\n' + v + '\n::::: $key :::::::');
+      // }
       if (value == null) throw 'No Key';
       return (value, null);
     } catch (e) {

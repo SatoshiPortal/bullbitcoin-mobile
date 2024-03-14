@@ -129,17 +129,26 @@ class _ScreenState extends State<_Screen> {
     setState(() {});
   }
 
-  static const double _oneCardH = 180.0;
-  static const double _twoCardH = 310.0;
+  static const double _oneCardH = 110.0;
+  static const double _twoCardH = 210.0;
+  static const double _threeCardH = 310.0;
 
   double _calculateHeight(int cardsLen) {
     if (cardsLen == 1) return _oneCardH;
     if (cardsLen == 2) return _twoCardH;
+    if (cardsLen == 3) return _threeCardH;
 
-    final isOdd = cardsLen % 2 != 0;
-    final isLastPage = _currentPage == (cardsLen / 2).floor();
+    // final isOdd = cardsLen % 2 != 0;
+    final isLastPage = _currentPage == (cardsLen / 3).floor();
+    final cardsOnPage = isLastPage ? cardsLen % 3 : 3;
 
-    return (isLastPage && isOdd) ? _oneCardH : _twoCardH;
+    if (cardsOnPage == 1) return _oneCardH;
+    if (cardsOnPage == 2) return _twoCardH;
+    if (cardsOnPage == 3) return _threeCardH;
+
+    return _threeCardH;
+
+    // return (isLastPage && isOdd) ? _oneCardH : _threeCardH;
   }
 
   @override
@@ -156,7 +165,7 @@ class _ScreenState extends State<_Screen> {
       children: [
         TopCenter(
           child: SizedBox(
-            height: walletCubits.length == 1 ? 180 : 310,
+            height: 310,
             child: CardsList(
               walletBlocs: walletCubits,
               onChanged: _onChanged,
@@ -168,6 +177,7 @@ class _ScreenState extends State<_Screen> {
             AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               height: h,
+              // height: 310,
             ),
             Expanded(
               child: ColoredBox(
@@ -201,13 +211,16 @@ class CardsList extends StatelessWidget {
   static List<CardColumn> buildCardColumns(List<WalletBloc> wallets) {
     final List<CardColumn> columns = [];
     final isOne = wallets.length == 1;
-    for (var i = 0; i < wallets.length; i += 2) {
+    for (var i = 0; i < wallets.length; i += 3) {
       final walletTop = wallets[i];
       final walletBottom = i + 1 < wallets.length ? wallets[i + 1] : null;
+      final walletLast = i + 2 < wallets.length ? wallets[i + 2] : null;
+
       columns.add(
         CardColumn(
           walletTop: walletTop,
           walletBottom: walletBottom,
+          walletLast: walletLast,
           onlyOne: isOne,
         ),
       );
@@ -228,16 +241,26 @@ class CardsList extends StatelessWidget {
 }
 
 class CardColumn extends StatelessWidget {
-  const CardColumn({super.key, required this.walletTop, this.walletBottom, this.onlyOne = false});
+  const CardColumn({
+    super.key,
+    required this.walletTop,
+    this.walletBottom,
+    this.walletLast,
+    this.onlyOne = false,
+  });
 
   final WalletBloc walletTop;
   final WalletBloc? walletBottom;
+  final WalletBloc? walletLast;
   final bool onlyOne;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 24),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 26,
+        // vertical: 24,
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -249,6 +272,11 @@ class CardColumn extends StatelessWidget {
           if (walletBottom != null)
             BlocProvider.value(
               value: walletBottom!,
+              child: const CardItem(),
+            ),
+          if (walletLast != null)
+            BlocProvider.value(
+              value: walletLast!,
               child: const CardItem(),
             )
           else if (!onlyOne)
@@ -309,131 +337,138 @@ class CardItem extends StatelessWidget {
     //   ),
     // );
 
-    return Expanded(
-      child: SizedBox(
-        width: double.infinity,
-        child: Card(
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          color: context.colour.background,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  color.withOpacity(0.73),
-                  color,
-                ],
-              ),
+    return SizedBox(
+      width: double.infinity,
+      height: 100,
+      child: Card(
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        color: context.colour.background,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                color.withOpacity(0.73),
+                color,
+              ],
             ),
-            child: InkWell(
-              onTap: () {
-                final walletBloc = context.read<WalletBloc>();
-                context.push('/wallet', extra: walletBloc);
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  top: 8,
-                  right: 16.0,
-                  left: 24,
-                  bottom: 8,
-                ),
-                child: Stack(
-                  children: [
-                    TopRight(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: IconButton(
-                          onPressed: () {
-                            final walletBloc = context.read<WalletBloc>();
-                            context.push('/wallet-settings', extra: walletBloc);
-                          },
-                          color: context.colour.onPrimary,
-                          icon: const FaIcon(
-                            FontAwesomeIcons.ellipsis,
-                          ),
+          ),
+          child: InkWell(
+            onTap: () {
+              final walletBloc = context.read<WalletBloc>();
+              context.push('/wallet', extra: walletBloc);
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(
+                // top: 4,
+                right: 16.0,
+                left: 24,
+                // bottom: 4,
+              ),
+              child: Stack(
+                children: [
+                  TopRight(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: IconButton(
+                        onPressed: () {
+                          final walletBloc = context.read<WalletBloc>();
+                          context.push('/wallet-settings', extra: walletBloc);
+                        },
+                        color: context.colour.onPrimary,
+                        icon: const FaIcon(
+                          FontAwesomeIcons.ellipsis,
                         ),
                       ),
                     ),
-                    // TopLeft(
-                    //   child: Padding(
-                    //     padding: const EdgeInsets.only(
-                    //       top: 8,
-                    //     ),
-                    //     child: BBText.titleLarge(
-                    //       name ?? fingerprint,
-                    //       onSurface: true,
-                    //     ),
-                    //   ),
-                    // ),
-                    Column(
-                      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        BBText.titleLarge(
-                          name ?? fingerprint,
+                  ),
+                  // TopLeft(
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.only(
+                  //       top: 8,
+                  //     ),
+                  //     child: BBText.titleLarge(
+                  //       name ?? fingerprint,
+                  //       onSurface: true,
+                  //     ),
+                  //   ),
+                  // ),
+                  Column(
+                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Gap(8),
+                      BBText.titleLarge(
+                        name ?? fingerprint,
+                        onSurface: true,
+                        fontSize: 20,
+                        compact: true,
+                      ),
+                      const Gap(4),
+
+                      Opacity(
+                        opacity: 0.7,
+                        child: BBText.bodySmall(
+                          walletStr ?? '',
                           onSurface: true,
+                          isBold: true,
+                          fontSize: 12,
                         ),
-                        Opacity(
-                          opacity: 0.7,
-                          child: BBText.bodySmall(
-                            walletStr ?? '',
+                      ),
+                      const Spacer(),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          BBText.titleLarge(
+                            balance,
                             onSurface: true,
                             isBold: true,
+                            fontSize: 24,
+                            compact: true,
                           ),
-                        ),
-                        const Spacer(),
+                          const Gap(4),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 1),
+                            child: BBText.title(
+                              unit,
+                              onSurface: true,
+                              isBold: true,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (fiatCurrency != null) ...[
+                        // const Gap(16),
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          // crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                BBText.titleLarge(
-                                  balance,
-                                  onSurface: true,
-                                  isBold: true,
-                                ),
-                                const Gap(4),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 1),
-                                  child: BBText.title(
-                                    unit,
-                                    onSurface: true,
-                                    isBold: true,
-                                  ),
-                                ),
-                              ],
+                            BBText.bodySmall(
+                              '~' + fiatAmt,
+                              onSurface: true,
+                              fontSize: 12,
+
+                              // isBold: true,
+                            ),
+                            const Gap(4),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 1),
+                              child: BBText.bodySmall(
+                                fiatCurrency.shortName.toUpperCase(),
+                                onSurface: true,
+                                fontSize: 12,
+                                // isBold: true,
+                              ),
                             ),
                           ],
                         ),
-                        if (fiatCurrency != null) ...[
-                          // const Gap(16),
-                          Row(
-                            // crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              BBText.bodySmall(
-                                '~' + fiatAmt,
-                                onSurface: true,
-                                // isBold: true,
-                              ),
-                              const Gap(4),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 1),
-                                child: BBText.bodySmall(
-                                  fiatCurrency.shortName.toUpperCase(),
-                                  onSurface: true,
-                                  // isBold: true,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        const Spacer(flex: 2),
                       ],
-                    ),
-                  ],
-                ),
+                      const Gap(4),
+                      // const Spacer(flex: 2),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
