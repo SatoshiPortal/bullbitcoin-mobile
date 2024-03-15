@@ -112,14 +112,19 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(errSending: 'Selected UTXOs do not cover Transaction Amount & Fees'));
       return;
     }
+    if (amount == 0) {
+      emit(state.copyWith(showSendButton: false));
+      return;
+    }
 
     if (state.selectedWalletBloc != null) {
       final enoughBalance = state.selectedWalletBloc!.state.balanceSats() >= amount;
-      emit(state.copyWith(showSendButton: enoughBalance));
-    }
-
-    if (amount == 0) {
-      emit(state.copyWith(showSendButton: false));
+      emit(
+        state.copyWith(
+          showSendButton: enoughBalance,
+          errSending: 'not enough balance in this wallet',
+        ),
+      );
       return;
     }
 
@@ -128,7 +133,7 @@ class SendCubit extends Cubit<SendState> {
       networkCubit.state.getBBNetwork(),
     );
     if (walletBloc == null) {
-      emit(state.copyWith(showSendButton: false));
+      emit(state.copyWith(showSendButton: false, errSending: 'No wallet with enough balance'));
       return;
     }
 
