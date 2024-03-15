@@ -262,7 +262,6 @@ class CardColumn extends StatelessWidget {
         // vertical: 24,
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           BlocProvider.value(
             value: walletTop,

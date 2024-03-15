@@ -209,7 +209,7 @@ class WalletSelectionDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);
+    final showSend = context.select((SendCubit cubit) => cubit.state.showButtons());
     if (!showSend) return const SizedBox(height: 55);
 
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
@@ -236,7 +236,7 @@ class _Balance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);
+    final showSend = context.select((SendCubit cubit) => cubit.state.showButtons());
     if (!showSend) return const SizedBox(height: 24);
 
     return const Center(child: SendWalletBalance()).animate().fadeIn();
@@ -363,7 +363,7 @@ class NetworkFees extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);
+    final showSend = context.select((SendCubit cubit) => cubit.state.showButtons());
     if (!showSend) return const SizedBox(height: 55);
 
     return const SelectFeesButton().animate().fadeIn();
@@ -375,7 +375,7 @@ class AdvancedOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);
+    final showSend = context.select((SendCubit cubit) => cubit.state.showButtons());
     if (!showSend) return const SizedBox(height: 55);
 
     final text = context.select((SendCubit cubit) => cubit.state.advancedOptionsButtonText());
@@ -394,8 +394,9 @@ class _SendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showSend = context.select((SendCubit cubit) => cubit.state.showSendButton);
+    final showSend = context.select((SendCubit cubit) => cubit.state.showButtons());
     if (!showSend) return const SizedBox(height: 55);
+    final enableButton = context.select((SendCubit cubit) => cubit.state.showSendButton);
 
     final watchOnly = context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
 
@@ -417,7 +418,8 @@ class _SendButton extends StatelessWidget {
               PSBTPopUp.openPopUp(context);
             },
             child: BBButton.big(
-              disabled: !showSend,
+              // disabled: !showSend,
+              disabled: !enableButton,
               loading: sending,
               leftIcon: Icons.send,
               onPressed: () async {

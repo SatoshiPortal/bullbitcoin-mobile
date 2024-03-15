@@ -138,6 +138,14 @@ class HomeState with _$HomeState {
     return total;
   }
 
+  WalletBloc? firstWalletWithEnoughBalance(int sats, BBNetwork network) {
+    for (final walletBloc in walletBlocsFromNetwork(network)) {
+      final enoughBalance = walletBloc.state.balanceSats() >= sats;
+      if (enoughBalance) return walletBloc;
+    }
+    return null;
+  }
+
   // int? selectedWalletIdx(BBNetwork network) {
   //   final wallet = selectedWalletCubit?.state.wallet;
   //   if (wallet == null) return null;

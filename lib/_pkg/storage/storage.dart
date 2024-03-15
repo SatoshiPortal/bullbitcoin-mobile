@@ -45,6 +45,8 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
 
   final (version, errr) = await secureStorage.getValue(StorageKeys.version);
   if (errr != null) {
+    print('::::no storage version saved');
+
     await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
   } else if (version != bbVersion) {
     // await secureStorage.deleteAll();
@@ -53,6 +55,7 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
 
   final (password, err) = await secureStorage.getValue(StorageKeys.hiveEncryption);
   if (err != null) {
+    print('::::new encryption key generated');
     final password = Hive.generateSecureKey();
     secureStorage.saveValue(
       key: StorageKeys.hiveEncryption,

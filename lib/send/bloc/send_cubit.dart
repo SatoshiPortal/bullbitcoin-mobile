@@ -94,14 +94,45 @@ class SendCubit extends Cubit<SendState> {
   final FileStorage fileStorage;
   final SwapBoltz swapBoltz;
 
-  void dispose() {
-    currencyCubitSub.cancel();
-    swapCubitSub.cancel();
-    super.close();
-  }
-
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(state.copyWith(selectedWalletBloc: walletBloc));
+  }
+
+  void _updateShowSend() {
+    final amount = currencyCubit.state.amount;
+    emit(state.copyWith(errSending: ''));
+    if (amount == 0) {
+      emit(state.copyWith(showSendButton: false));
+      return;
+    }
+    if (state.selectedUtxos.isNotEmpty) {
+      final hasEnoughCoinns = state.selectedAddressesHasEnoughCoins(amount);
+      emit(state.copyWith(showSendButton: hasEnoughCoinns));
+      if (!hasEnoughCoinns)
+        emit(state.copyWith(errSending: 'Selected UTXOs do not cover Transaction Amount & Fees'));
+      return;
+    }
+
+    if (state.selectedWalletBloc != null) {
+      final enoughBalance = state.selectedWalletBloc!.state.balanceSats() >= amount;
+      emit(state.copyWith(showSendButton: enoughBalance));
+    }
+
+    if (amount == 0) {
+      emit(state.copyWith(showSendButton: false));
+      return;
+    }
+
+    final walletBloc = homeCubit.state.firstWalletWithEnoughBalance(
+      amount,
+      networkCubit.state.getBBNetwork(),
+    );
+    if (walletBloc == null) {
+      emit(state.copyWith(showSendButton: false));
+      return;
+    }
+
+    emit(state.copyWith(showSendButton: true, selectedWalletBloc: walletBloc));
   }
 
   void swapCubitStateChanged(SwapState swapState) {
@@ -206,28 +237,6 @@ class SendCubit extends Cubit<SendState> {
 
   void clearSelectedUtxos() {
     emit(state.copyWith(selectedUtxos: []));
-  }
-
-  void _updateShowSend() {
-    final amount = currencyCubit.state.amount;
-    emit(state.copyWith(errSending: ''));
-    if (amount == 0) {
-      emit(state.copyWith(showSendButton: false));
-      return;
-    }
-    if (state.selectedUtxos.isEmpty) {
-      if (state.selectedWalletBloc == null) return;
-
-      if (amount > 0 && state.selectedWalletBloc!.state.balanceSats() >= amount)
-        emit(state.copyWith(showSendButton: true));
-      else
-        emit(state.copyWith(showSendButton: false));
-    } else {
-      final hasEnoughCoinns = state.selectedAddressesHasEnoughCoins(amount);
-      emit(state.copyWith(showSendButton: hasEnoughCoinns));
-      if (!hasEnoughCoinns)
-        emit(state.copyWith(errSending: 'Selected UTXOs do not cover Transaction Amount & Fees'));
-    }
   }
 
   void downloadPSBTClicked() async {
@@ -446,5 +455,11 @@ class SendCubit extends Cubit<SendState> {
     state.selectedWalletBloc!.add(SyncWallet());
 
     emit(state.copyWith(sending: false, sent: true));
+  }
+
+  void dispose() {
+    currencyCubitSub.cancel();
+    swapCubitSub.cancel();
+    super.close();
   }
 }
