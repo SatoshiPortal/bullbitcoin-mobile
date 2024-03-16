@@ -77,7 +77,7 @@ class SendState with _$SendState {
   }
 
   bool showButtons() {
-    if (!showSendButton && selectedWalletBloc != null) return true;
+    // if (!showSendButton && selectedWalletBloc != null) return true;
     return showSendButton;
   }
 }

@@ -103,7 +103,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     final swapTxs = walletBloc.state.wallet?.swaps ?? [];
     final swapTxsToWatch = <SwapTx>[];
-    print('WatchWalletTxs: ${swapTxs.length}');
+    // print('WatchWalletTxs: ${swapTxs.length}');
     for (final swapTx in swapTxs) {
       if (swapTx.paidSubmarine ||
           swapTx.settledReverse ||

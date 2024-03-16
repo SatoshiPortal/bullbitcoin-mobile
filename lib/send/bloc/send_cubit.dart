@@ -96,9 +96,10 @@ class SendCubit extends Cubit<SendState> {
 
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(state.copyWith(selectedWalletBloc: walletBloc));
+    _updateShowSend(force: true);
   }
 
-  void _updateShowSend() {
+  void _updateShowSend({bool force = false}) {
     final amount = currencyCubit.state.amount;
     emit(state.copyWith(errSending: ''));
     if (amount == 0) {
@@ -117,12 +118,12 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    if (state.selectedWalletBloc != null) {
+    if (force) {
       final enoughBalance = state.selectedWalletBloc!.state.balanceSats() >= amount;
       emit(
         state.copyWith(
           showSendButton: enoughBalance,
-          errSending: 'not enough balance in this wallet',
+          errSending: 'This wallet does not have enough balance',
         ),
       );
       return;
@@ -138,6 +139,15 @@ class SendCubit extends Cubit<SendState> {
     }
 
     emit(state.copyWith(showSendButton: true, selectedWalletBloc: walletBloc));
+  }
+
+  void disabledDropdownClicked() {
+    emit(
+      state.copyWith(
+        errSending:
+            'Please enter payment destination and amount before selecting a wallet. We will select select the best wallet for this transaction. You can override the wallet choice after.',
+      ),
+    );
   }
 
   void swapCubitStateChanged(SwapState swapState) {
