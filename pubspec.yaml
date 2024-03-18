@@ -73,6 +73,7 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart.git
       ref: trunk
+  flutter_svg: ^2.0.10+1
   # lwk_dart: 
   #   git:
   #     url: https://github.com/SatoshiPortal/lwk-dart
@@ -104,6 +105,8 @@ flutter:
     - assets/bb-logo2.png
     - assets/arrow_down.png
     - assets/arrow_down_white.png
+    - assets/request-payment.svg
+    - assets/new-address.svg
     
     - assets/bip39_english.txt
 

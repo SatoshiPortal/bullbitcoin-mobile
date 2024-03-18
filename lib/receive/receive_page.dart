@@ -234,7 +234,8 @@ class WalletActions extends StatelessWidget {
           BBButton.big(
             buttonKey: UIKeys.receiveRequestPaymentButton,
             label: 'Request payment',
-            leftIcon: Icons.send,
+            // leftIcon: Icons.send,
+            leftSvgAsset: 'assets/request-payment.svg',
             onPressed: () {
               CreateInvoice.openPopUp(context);
             },
@@ -243,7 +244,8 @@ class WalletActions extends StatelessWidget {
         BBButton.big(
           buttonKey: UIKeys.receiveGenerateAddressButton,
           label: 'Get new address',
-          leftIcon: Icons.send,
+          // leftIcon: Icons.send,
+          leftSvgAsset: 'assets/new-address.svg',
           onPressed: () {
             context.read<ReceiveCubit>().generateNewAddress();
           },

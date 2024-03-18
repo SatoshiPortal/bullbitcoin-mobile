@@ -4,6 +4,7 @@ import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 
@@ -26,6 +27,7 @@ class BBButton extends StatelessWidget {
     this.loading = false,
     this.loadingText,
     this.fillWidth = false,
+    this.leftSvgAsset,
   })  : type = _ButtonType.big,
         isBlue = null,
         isRed = null,
@@ -46,6 +48,7 @@ class BBButton extends StatelessWidget {
         filled = false,
         statusText = null,
         leftIcon = null,
+        leftSvgAsset = null,
         fillWidth = true;
 
   const BBButton.textWithRightArrow({
@@ -61,6 +64,7 @@ class BBButton extends StatelessWidget {
         isRed = null,
         statusText = null,
         centered = null,
+        leftSvgAsset = null,
         leftIcon = null,
         fillWidth = true;
 
@@ -78,6 +82,7 @@ class BBButton extends StatelessWidget {
         statusText = null,
         centered = null,
         leftIcon = null,
+        leftSvgAsset = null,
         fillWidth = true;
 
   const BBButton.textWithStatusAndRightArrow({
@@ -94,6 +99,7 @@ class BBButton extends StatelessWidget {
         filled = false,
         centered = null,
         leftIcon = null,
+        leftSvgAsset = null,
         fillWidth = true;
 
   final String label;
@@ -106,6 +112,7 @@ class BBButton extends StatelessWidget {
   final bool? centered;
   final _ButtonType type;
   final IconData? leftIcon;
+  final String? leftSvgAsset;
   final bool fillWidth;
 
   final bool loading;
@@ -147,7 +154,16 @@ class BBButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (leftIcon != null) ...[
+                if (leftSvgAsset != null) ...[
+                  SvgPicture.asset(
+                    leftSvgAsset!,
+                    colorFilter: ColorFilter.mode(
+                      context.colour.onBackground,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  const Gap(16),
+                ] else if (leftIcon != null) ...[
                   Icon(
                     leftIcon,
                     color: context.colour.onBackground,
