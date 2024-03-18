@@ -96,9 +96,9 @@ class Themes {
     ),
     scaffoldBackgroundColor: _Colours.darkGray,
     visualDensity: VisualDensity.comfortable,
-    brightness: Brightness.dark,
+    // brightness: Brightness.dark,
     appBarTheme: const AppBarTheme(
-      systemOverlayStyle: SystemUiOverlayStyle.dark,
+      systemOverlayStyle: SystemUiOverlayStyle.light,
       backgroundColor: _Colours.darkGray,
       elevation: 2,
       shadowColor: NewColours.offWhite,

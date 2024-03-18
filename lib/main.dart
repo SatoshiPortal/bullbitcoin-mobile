@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_pkg/i18n.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -62,14 +64,14 @@ class BullBitcoinWalletApp extends StatelessWidget {
           },
           child: DeepLinker(
             child: BlocBuilder<Lighting, ThemeLighting>(
-              builder: (context, state) {
+              builder: (context, lightingState) {
                 return AnimatedSwitcher(
                   duration: 600.ms,
                   switchInCurve: Curves.easeInOutCubic,
                   child: MaterialApp.router(
                     theme: Themes.lightTheme,
-                    darkTheme: state.dark(),
-                    themeMode: state.mode(),
+                    darkTheme: lightingState.dark(),
+                    themeMode: lightingState.mode(),
                     routerConfig: router,
                     debugShowCheckedModeBanner: false,
                     localizationsDelegates: [
@@ -78,11 +80,15 @@ class BullBitcoinWalletApp extends StatelessWidget {
                     supportedLocales: localizationDelegate.supportedLocales,
                     locale: localizationDelegate.currentLocale,
                     builder: (context, child) {
-                      SystemChrome.setSystemUIOverlayStyle(
-                        SystemUiOverlayStyle(
-                          statusBarColor: context.colour.background,
-                        ),
-                      );
+                      scheduleMicrotask(() async {
+                        await Future.delayed(200.ms);
+                        SystemChrome.setSystemUIOverlayStyle(
+                          SystemUiOverlayStyle(
+                            statusBarColor: context.colour.background,
+                          ),
+                        );
+                      });
+
                       SystemChrome.setPreferredOrientations([
                         DeviceOrientation.portraitUp,
                       ]);
