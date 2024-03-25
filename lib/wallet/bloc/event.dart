@@ -14,6 +14,8 @@ class SyncWallet extends WalletEvent {
   final bool cancelSync;
 }
 
+class KillSync extends WalletEvent {}
+
 class UpdateWallet extends WalletEvent {
   UpdateWallet(this.wallet, {this.saveToStorage = true, required this.updateTypes});
   final Wallet wallet;

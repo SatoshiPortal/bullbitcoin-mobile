@@ -45,6 +45,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }) : super(WalletState(wallet: wallet)) {
     on<LoadWallet>(_loadWallet);
     on<SyncWallet>(_syncWallet, transformer: droppable());
+    on<KillSync>(_killSync);
     on<UpdateWallet>(_updateWallet, transformer: sequential());
 
     on<GetBalance>(_getBalance);
@@ -126,6 +127,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     add(GetFirstAddress());
     await Future.delayed(500.ms);
     add(SyncWallet());
+  }
+
+  FutureOr<void> _killSync(KillSync event, Emitter<WalletState> emit) {
+    walletSync.cancelSync();
+    emit(state.copyWith(syncing: false));
   }
 
   Future _syncWallet(SyncWallet event, Emitter<WalletState> emit) async {

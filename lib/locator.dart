@@ -82,7 +82,7 @@ Future setupLocator({bool fromTest = false}) async {
   final boltz = SwapBoltz(secureStorage: secureStorage);
   locator.registerSingleton<SwapBoltz>(boltz);
 
-  final walletSync = WalletSync();
+  // final walletSync = WalletSync();
 
   final walletCreate = WalletCreate();
   final walletSensCreate = WalletSensitiveCreate();
@@ -91,7 +91,7 @@ Future setupLocator({bool fromTest = false}) async {
 
   final networkCubit = NetworkCubit(
     hiveStorage: hiveStorage,
-    walletSync: walletSync,
+    walletSync: WalletSync(),
   );
   locator.registerSingleton<NetworkCubit>(networkCubit);
 
@@ -109,7 +109,7 @@ Future setupLocator({bool fromTest = false}) async {
   locator.registerSingleton<CurrencyCubit>(currencyCubit);
 
   final settings = SettingsCubit(
-    walletSync: walletSync,
+    walletSync: WalletSync(),
     hiveStorage: hiveStorage,
     mempoolAPI: mempoolAPI,
     bbAPI: bbAPI,
@@ -157,7 +157,7 @@ Future setupLocator({bool fromTest = false}) async {
 
   locator.registerSingleton<MempoolAPI>(mempoolAPI);
   locator.registerSingleton<WalletCreate>(walletCreate);
-  locator.registerSingleton<WalletSync>(walletSync);
+  locator.registerFactory<WalletSync>(() => WalletSync());
   locator.registerSingleton<Barcode>(Barcode());
   locator.registerSingleton<Launcher>(Launcher());
   locator.registerSingleton<NFCPicker>(NFCPicker());

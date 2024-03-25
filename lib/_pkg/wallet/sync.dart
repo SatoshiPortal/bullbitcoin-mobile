@@ -1,26 +1,67 @@
+import 'dart:async';
+import 'dart:isolate';
+
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
+void _syncIsolate(List<dynamic> args) async {
+  final sendPort = args[0] as SendPort;
+  final bdkWallet = args[1] as bdk.Wallet;
+  final blockChain = args[2] as bdk.Blockchain;
+
+  try {
+    await bdkWallet.sync(blockChain);
+    sendPort.send(bdkWallet);
+  } catch (e) {
+    sendPort.send(
+      Err(
+        e.toString(),
+        title: 'Error occurred while syncing wallet',
+        solution: 'Please try again.',
+      ),
+    );
+  }
+}
+
 class WalletSync {
+  Isolate? _isolate;
+  ReceivePort? _receivePort;
+
   Future<(bdk.Wallet?, Err?)> syncWallet({
     required bdk.Wallet bdkWallet,
     required bdk.Blockchain blockChain,
   }) async {
     try {
-      await bdkWallet.sync(blockChain);
-      return (bdkWallet, null);
-    } on Exception catch (e) {
+      final completer = Completer<(bdk.Wallet?, Err?)>();
+      _receivePort = ReceivePort();
+      _isolate = await Isolate.spawn(_syncIsolate, [_receivePort!.sendPort, bdkWallet, blockChain]);
+
+      _receivePort!.listen((message) {
+        if (message is bdk.Wallet) {
+          completer.complete((message, null));
+        } else if (message is Err) {
+          completer.complete((null, message));
+        }
+      });
+
+      return completer.future;
+    } catch (e) {
       return (
         null,
         Err(
-          e.message,
+          e.toString(),
           title: 'Error occurred while syncing wallet',
           solution: 'Please try again.',
         )
       );
     }
+  }
+
+  void cancelSync() {
+    _isolate?.kill(priority: Isolate.immediate);
+    _receivePort?.close();
   }
 
   Future<(bdk.Blockchain?, Err?)> createBlockChain({
@@ -58,6 +99,9 @@ class WalletSync {
       );
     }
   }
+}
+
+
 
   // Future<(ReceivePort?, Err?)> sync2(bdk.Blockchain blockchain, bdk.Wallet wallet) async {
   //   try {
@@ -70,7 +114,7 @@ class WalletSync {
   // solution: 'Please try again.',));
   //   }
   // }
-}
+
 
 // Future<void> _sync(List<dynamic> args) async {
 //   final resultPort = args[0] as SendPort;
