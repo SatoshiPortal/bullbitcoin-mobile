@@ -40,18 +40,18 @@ class HomeCubit extends Cubit<HomeState> {
       return;
     }
 
-    if (wallets != null)
-      emit(
-        state.copyWith(
-          wallets: wallets,
-          loadingWallets: false,
-        ),
-      );
+    // if (wallets != null)
+    emit(
+      state.copyWith(
+        wallets: wallets ?? [],
+        loadingWallets: false,
+      ),
+    );
 
-    if (err.toString() == 'No Key')
-      createWalletCubit.createMne(
-        fromHome: true,
-      );
+    // if (err.toString() == 'No Key')
+    //   createWalletCubit.createMne(
+    //     fromHome: true,
+    //   );
   }
 
   Future<void> getWalletsFromStorageExistingWallet() async {
