@@ -185,6 +185,14 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                     const _ImportWordsPassphrase(),
                     const Gap(8),
                     const WalletLabel(),
+                    const Gap(8),
+                    const _ImportPikachuButton(),
+                    const Gap(8),
+                    const _ImportVegetaButton(),
+                    const Gap(8),
+                    const _ImportNarutoButton(),
+                    const Gap(8),
+                    const _ImportbdkWalletButton(),
                     const Gap(80),
                   ],
                 ),
@@ -431,6 +439,177 @@ class _ImportWordsRecoverButton extends StatelessWidget {
           label: 'Recover',
           onPressed: () {
             context.read<ImportWalletCubit>().recoverWalletClicked();
+          },
+          disabled: recovering,
+        ),
+      ],
+    );
+  }
+}
+
+class _ImportPikachuButton extends StatelessWidget {
+  const _ImportPikachuButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final recovering = context.select((ImportWalletCubit cubit) => cubit.state.importing);
+    final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (err.isNotEmpty) ...[
+          const Gap(8),
+          BBText.error(
+            err,
+          ),
+        ],
+        BBButton.big(
+          buttonKey: UIKeys.importRecoverConfirmButton,
+          label: 'Import Pikachu',
+          onPressed: () {
+            // move decline opera album crisp nice ozone casual gate ozone cycle judge
+            context.read<ImportWalletCubit>().wordChanged(0, 'move', true);
+            context.read<ImportWalletCubit>().wordChanged(1, 'decline', true);
+            context.read<ImportWalletCubit>().wordChanged(2, 'opera', true);
+            context.read<ImportWalletCubit>().wordChanged(3, 'album', true);
+            context.read<ImportWalletCubit>().wordChanged(4, 'crisp', true);
+            context.read<ImportWalletCubit>().wordChanged(5, 'nice', true);
+            context.read<ImportWalletCubit>().wordChanged(6, 'ozone', true);
+            context.read<ImportWalletCubit>().wordChanged(7, 'casual', true);
+            context.read<ImportWalletCubit>().wordChanged(8, 'gate', true);
+            context.read<ImportWalletCubit>().wordChanged(9, 'ozone', true);
+            context.read<ImportWalletCubit>().wordChanged(10, 'cycle', true);
+            context.read<ImportWalletCubit>().wordChanged(11, 'judge', true);
+            context.read<ImportWalletCubit>().passPhraseChanged('Pass1234');
+            context.read<ImportWalletCubit>().walletLabelChanged('Pikachu');
+          },
+          disabled: recovering,
+        ),
+      ],
+    );
+  }
+}
+
+class _ImportVegetaButton extends StatelessWidget {
+  const _ImportVegetaButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final recovering = context.select((ImportWalletCubit cubit) => cubit.state.importing);
+    final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (err.isNotEmpty) ...[
+          const Gap(8),
+          BBText.error(
+            err,
+          ),
+        ],
+        BBButton.big(
+          buttonKey: UIKeys.importRecoverConfirmButton,
+          label: 'Import Vegeta',
+          onPressed: () {
+            context.read<ImportWalletCubit>().wordChanged(0, 'fossil', true);
+            context.read<ImportWalletCubit>().wordChanged(1, 'install', true);
+            context.read<ImportWalletCubit>().wordChanged(2, 'fever', true);
+            context.read<ImportWalletCubit>().wordChanged(3, 'ticket', true);
+            context.read<ImportWalletCubit>().wordChanged(4, 'wisdom', true);
+            context.read<ImportWalletCubit>().wordChanged(5, 'outer', true);
+            context.read<ImportWalletCubit>().wordChanged(6, 'broken', true);
+            context.read<ImportWalletCubit>().wordChanged(7, 'aspect', true);
+            context.read<ImportWalletCubit>().wordChanged(8, 'lucky', true);
+            context.read<ImportWalletCubit>().wordChanged(9, 'still', true);
+            context.read<ImportWalletCubit>().wordChanged(10, 'flavor', true);
+            context.read<ImportWalletCubit>().wordChanged(11, 'dial', true);
+            context.read<ImportWalletCubit>().walletLabelChanged('Vegeta');
+          },
+          disabled: recovering,
+        ),
+      ],
+    );
+  }
+}
+
+class _ImportNarutoButton extends StatelessWidget {
+  const _ImportNarutoButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final recovering = context.select((ImportWalletCubit cubit) => cubit.state.importing);
+    final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (err.isNotEmpty) ...[
+          const Gap(8),
+          BBText.error(
+            err,
+          ),
+        ],
+        BBButton.big(
+          buttonKey: UIKeys.importRecoverConfirmButton,
+          label: 'Import Naruto',
+          onPressed: () {
+            context.read<ImportWalletCubit>().wordChanged(0, 'lumber', true);
+            context.read<ImportWalletCubit>().wordChanged(1, 'tackle', true);
+            context.read<ImportWalletCubit>().wordChanged(2, 'notice', true);
+            context.read<ImportWalletCubit>().wordChanged(3, 'city', true);
+            context.read<ImportWalletCubit>().wordChanged(4, 'expand', true);
+            context.read<ImportWalletCubit>().wordChanged(5, 'cherry', true);
+            context.read<ImportWalletCubit>().wordChanged(6, 'tonight', true);
+            context.read<ImportWalletCubit>().wordChanged(7, 'people', true);
+            context.read<ImportWalletCubit>().wordChanged(8, 'blue', true);
+            context.read<ImportWalletCubit>().wordChanged(9, 'cactus', true);
+            context.read<ImportWalletCubit>().wordChanged(10, 'forward', true);
+            context.read<ImportWalletCubit>().wordChanged(11, 'scissors', true);
+            context.read<ImportWalletCubit>().walletLabelChanged('Naruto');
+          },
+          disabled: recovering,
+        ),
+      ],
+    );
+  }
+}
+
+class _ImportbdkWalletButton extends StatelessWidget {
+  const _ImportbdkWalletButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final recovering = context.select((ImportWalletCubit cubit) => cubit.state.importing);
+    final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (err.isNotEmpty) ...[
+          const Gap(8),
+          BBText.error(
+            err,
+          ),
+        ],
+        BBButton.big(
+          buttonKey: UIKeys.importRecoverConfirmButton,
+          label: 'Import BDK Wallet',
+          onPressed: () {
+            // rookie urban exchange kit unfold memory assist blast access captain evolve happy
+            context.read<ImportWalletCubit>().wordChanged(0, 'rookie', true);
+            context.read<ImportWalletCubit>().wordChanged(1, 'urban', true);
+            context.read<ImportWalletCubit>().wordChanged(2, 'exchange', true);
+            context.read<ImportWalletCubit>().wordChanged(3, 'kit', true);
+            context.read<ImportWalletCubit>().wordChanged(4, 'unfold', true);
+            context.read<ImportWalletCubit>().wordChanged(5, 'memory', true);
+            context.read<ImportWalletCubit>().wordChanged(6, 'assist', true);
+            context.read<ImportWalletCubit>().wordChanged(7, 'blast', true);
+            context.read<ImportWalletCubit>().wordChanged(8, 'access', true);
+            context.read<ImportWalletCubit>().wordChanged(9, 'captain', true);
+            context.read<ImportWalletCubit>().wordChanged(10, 'evolve', true);
+            context.read<ImportWalletCubit>().wordChanged(11, 'happy', true);
+            context.read<ImportWalletCubit>().walletLabelChanged('bdk wallet');
           },
           disabled: recovering,
         ),
