@@ -19,6 +19,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -489,15 +490,6 @@ class _SendButton extends StatelessWidget {
   }
 }
 
-class HighFeeWarning extends StatelessWidget {
-  const HighFeeWarning({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
 class PaymentSent extends StatelessWidget {
   const PaymentSent({super.key});
 
@@ -762,6 +754,58 @@ class TxSuccess extends StatelessWidget {
             // const Gap(240),
           ],
         ).animate().fadeIn(),
+      ),
+    );
+  }
+}
+
+class HighFeeWarning extends StatelessWidget {
+  const HighFeeWarning({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    const fees = 10;
+    const amt = 10;
+    const recAmt = 10;
+    const feesStr = '';
+    const feeFiatStr = '';
+    const amtStr = '';
+    const amtFiatStr = '';
+    const recAmtStr = '';
+    const recAmtFiatStr = '';
+    return WarningContainer(
+      title: 'High Fee Warning',
+      info: 'Ask the sender of the payment if he can pay you using the Lightning Network instead.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const BBText.body('Bitcoin Network fees are currently high.'),
+          const BBText.body(
+            'When receive a regular Bitcoin Network transaction in the Instant Payment Wallet, you must pay Bitcoin Netowkr fees and Swap fees',
+          ),
+          const Gap(8),
+          const BBText.body('The current Network Fee is:'),
+          const BBText.body(feesStr, isBold: true),
+          const BBText.body('~ $feeFiatStr'),
+          const Gap(8),
+          const BBText.body('Amount you send:'),
+          const BBText.body(amtStr, isBold: true),
+          const BBText.body('~ $amtFiatStr'),
+          const Gap(8),
+          const BBText.body('Minimum recommended amount:'),
+          const BBText.body(recAmtStr, isBold: true),
+          const BBText.body('~ $recAmtFiatStr'),
+          const Gap(32),
+          BBButton.big(
+            label: 'Continue anyways',
+            leftIcon: Icons.send,
+            onPressed: () {},
+          ),
+          BBButton.big(
+            label: 'Use Secure Wallet',
+            onPressed: () {},
+          ),
+        ],
       ),
     );
   }
