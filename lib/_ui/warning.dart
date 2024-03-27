@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 
@@ -36,6 +35,45 @@ class WarningContainer extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class WarningBanner extends StatelessWidget {
+  const WarningBanner({super.key, required this.onTap, required this.info});
+
+  final Function() onTap;
+  final String info;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Spacer(),
+        InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: context.colour.error.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                FaIcon(
+                  FontAwesomeIcons.triangleExclamation,
+                  color: context.colour.error,
+                  size: 16,
+                ),
+                const Gap(8),
+                BBText.errorSmall(info),
+              ],
+            ),
+          ),
+        ),
+        const Spacer(),
+      ],
     );
   }
 }

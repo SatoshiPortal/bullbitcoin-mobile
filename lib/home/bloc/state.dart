@@ -146,6 +146,25 @@ class HomeState with _$HomeState {
     return null;
   }
 
+  Set<({String info, WalletBloc walletBloc})> homeWarnings(BBNetwork network) {
+    bool instantBalWarning(WalletBloc wb) {
+      if (wb.state.wallet?.type != BBWalletType.instant) return false;
+      return wb.state.balanceSats() > 100000000;
+    }
+
+    bool backupWarning(WalletBloc wb) => !wb.state.wallet!.backupTested;
+
+    final warnings = <({String info, WalletBloc walletBloc})>{};
+    for (final walletBloc in walletBlocsFromNetwork(network)) {
+      if (instantBalWarning(walletBloc))
+        warnings.add((info: 'Instant wallet balance is high', walletBloc: walletBloc));
+      if (backupWarning(walletBloc))
+        warnings.add((info: 'Back up your wallet! Tap to test backup.', walletBloc: walletBloc));
+    }
+
+    return warnings;
+  }
+
   // int? selectedWalletIdx(BBNetwork network) {
   //   final wallet = selectedWalletCubit?.state.wallet;
   //   if (wallet == null) return null;

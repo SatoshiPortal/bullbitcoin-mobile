@@ -13,6 +13,7 @@ import 'package:bb_mobile/_pkg/wallet/utxo.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
@@ -898,5 +899,26 @@ class HomeNoWallets extends StatelessWidget {
     //     ],
     //   ),
     // );
+  }
+}
+
+class HomeWarnings extends StatelessWidget {
+  const HomeWarnings({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final warnings = context.select((HomeCubit x) => x.state.homeWarnings(network));
+    return Column(
+      children: [
+        for (final w in warnings)
+          WarningBanner(
+            onTap: () {
+              final bloc = w.walletBloc;
+            },
+            info: w.info,
+          ),
+      ],
+    );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -177,37 +177,14 @@ class BackupAlertBanner extends StatelessWidget {
 
     if (backupTested) return const SizedBox.shrink();
 
-    return Row(
-      children: [
-        const Spacer(),
-        InkWell(
-          borderRadius: BorderRadius.circular(10),
-          onTap: () {
-            final walletBloc = context.read<WalletBloc>();
-
-            context.push('/wallet-settings/open-backup', extra: walletBloc);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: context.colour.error.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                FaIcon(
-                  FontAwesomeIcons.triangleExclamation,
-                  color: context.colour.error,
-                  size: 16,
-                ),
-                const Gap(8),
-                const BBText.errorSmall('Back up your wallet! Tap to test backup.'),
-              ],
-            ),
-          ),
-        ),
-        const Spacer(),
-      ],
+    return WarningBanner(
+      onTap: () {
+        context.push(
+          '/wallet-settings/open-backup',
+          extra: context.read<WalletBloc>(),
+        );
+      },
+      info: 'Back up your wallet! Tap to test backup.',
     );
   }
 }
