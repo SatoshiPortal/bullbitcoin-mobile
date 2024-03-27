@@ -115,6 +115,7 @@ extension ThemeExtension on BuildContext {
 (TextTheme, String) buildFonts(bool isTest) {
   final family = GoogleFonts.inter().fontFamily!;
   final theme = GoogleFonts.interTextTheme();
+  final f2 = GoogleFonts.bebasNeue().fontFamily!;
 
   if (isTest) {
     return (theme, family);

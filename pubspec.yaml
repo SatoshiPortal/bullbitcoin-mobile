@@ -103,6 +103,7 @@ flutter:
     - assets/nfc_scan.png
     - assets/cc-logo.png
     - assets/bb-logo2.png
+    - assets/bb-white.png
     - assets/arrow_down.png
     - assets/arrow_down_white.png
     - assets/request-payment.svg

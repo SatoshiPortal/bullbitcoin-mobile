@@ -15,6 +15,7 @@ import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -32,6 +33,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -100,15 +102,27 @@ class HomePage extends StatelessWidget {
         BlocProvider.value(value: homeCubit),
         BlocProvider.value(value: homeCubit.createWalletCubit),
       ],
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          shadowColor: context.colour.primary.withOpacity(0.2),
-          surfaceTintColor: Colors.transparent,
-          elevation: 0,
-          flexibleSpace: const HomeTopBar2(),
-        ),
-        body: const _Screen(),
+      child: BlocBuilder<HomeCubit, HomeState>(
+        buildWhen: (previous, current) => previous.wallets != current.wallets,
+        builder: (context, state) {
+          final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+
+          final walletsFromNetwork =
+              context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+
+          return Scaffold(
+            appBar: walletsFromNetwork.isEmpty
+                ? null
+                : AppBar(
+                    automaticallyImplyLeading: false,
+                    shadowColor: context.colour.primary.withOpacity(0.2),
+                    surfaceTintColor: Colors.transparent,
+                    elevation: 0,
+                    flexibleSpace: const HomeTopBar2(),
+                  ),
+            body: const _Screen(),
+          );
+        },
       ),
     );
   }
@@ -810,20 +824,79 @@ class HomeNoWallets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(48.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BBButton.big(
-            onPressed: () {
-              context.push('/import');
-            },
-            label: 'New wallet',
-          ),
-        ],
+    final font = GoogleFonts.bebasNeue();
+    final w = MediaQuery.of(context).size.width;
+
+    return ColoredBox(
+      color: context.colour.primary,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 148,
+              width: 184,
+              child: Image.asset('assets/bb-white.png'),
+            ),
+            const Gap(24),
+            Text(
+              'BULL BITCOIN',
+              style: font.copyWith(
+                fontSize: 90,
+                color: context.colour.background,
+                height: 0.8,
+              ),
+            ),
+            Text(
+              'OWN YOUR MONEY',
+              style: font.copyWith(
+                fontSize: 66,
+                height: 0.8,
+              ),
+            ),
+            const Gap(8),
+            SizedBox(
+              width: w * 0.8,
+              child: const BBText.body(
+                'Sovereign non-custodial Bitcoin wallet and Bitcoin-only exchange service. ',
+                onSurface: true,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const Gap(128),
+            Center(
+              child: BBButton.big(
+                label: 'Create new wallet',
+                onPressed: () {
+                  context.push('/import');
+                },
+              ),
+            ),
+            BBButton.text(
+              label: 'Recovey wallet backup',
+              centered: true,
+              onPressed: () {
+                context.push('/import');
+              },
+            ),
+          ],
+        ),
       ),
     );
+    // return Padding(
+    //   padding: const EdgeInsets.all(48.0),
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     crossAxisAlignment: CrossAxisAlignment.stretch,
+    //     children: [
+    //       BBButton.big(
+    //         onPressed: () {
+    //           context.push('/import');
+    //         },
+    //         label: 'New wallet',
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }
