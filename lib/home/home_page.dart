@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -29,6 +31,7 @@ import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -76,7 +79,18 @@ class HomePage extends StatelessWidget {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final walletsFromNetwork =
         context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
-    if (walletsFromNetwork.isEmpty) return const HomeNoWallets().animate().fadeIn();
+    if (walletsFromNetwork.isEmpty) {
+      scheduleMicrotask(() async {
+        await Future.delayed(100.ms);
+        SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle(
+            statusBarColor: context.colour.primary,
+          ),
+        );
+      });
+
+      return const HomeNoWallets().animate().fadeIn();
+    }
 
     return null;
   }
@@ -876,6 +890,9 @@ class HomeNoWallets extends StatelessWidget {
             BBButton.text(
               label: 'Recovey wallet backup',
               centered: true,
+              onSurface: true,
+              isBlue: false,
+              fontSize: 11,
               onPressed: () {
                 context.push('/import');
               },

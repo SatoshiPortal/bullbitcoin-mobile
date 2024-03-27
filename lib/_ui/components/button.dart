@@ -32,7 +32,9 @@ class BBButton extends StatelessWidget {
         isBlue = null,
         isRed = null,
         statusText = null,
-        centered = null;
+        centered = null,
+        onSurface = null,
+        fontSize = null;
 
   const BBButton.text({
     required this.label,
@@ -44,6 +46,8 @@ class BBButton extends StatelessWidget {
     this.isBlue = true,
     this.centered = false,
     this.buttonKey,
+    this.onSurface = false,
+    this.fontSize,
   })  : type = _ButtonType.text,
         filled = false,
         statusText = null,
@@ -66,7 +70,9 @@ class BBButton extends StatelessWidget {
         centered = null,
         leftSvgAsset = null,
         leftIcon = null,
-        fillWidth = true;
+        fillWidth = true,
+        onSurface = null,
+        fontSize = null;
 
   const BBButton.textWithLeftArrow({
     required this.label,
@@ -83,7 +89,9 @@ class BBButton extends StatelessWidget {
         centered = null,
         leftIcon = null,
         leftSvgAsset = null,
-        fillWidth = true;
+        fillWidth = true,
+        onSurface = null,
+        fontSize = null;
 
   const BBButton.textWithStatusAndRightArrow({
     required this.label,
@@ -100,7 +108,9 @@ class BBButton extends StatelessWidget {
         centered = null,
         leftIcon = null,
         leftSvgAsset = null,
-        fillWidth = true;
+        fillWidth = true,
+        onSurface = null,
+        fontSize = null;
 
   final String label;
   final String? statusText;
@@ -114,6 +124,8 @@ class BBButton extends StatelessWidget {
   final IconData? leftIcon;
   final String? leftSvgAsset;
   final bool fillWidth;
+  final double? fontSize;
+  final bool? onSurface;
 
   final bool loading;
   final String? loadingText;
@@ -271,6 +283,8 @@ class BBButton extends StatelessWidget {
                 label,
                 isBlue: isBlue ?? false,
                 isRed: isRed ?? false,
+                fontSize: fontSize,
+                onSurface: onSurface ?? false,
               ),
               if (centered ?? false) const Spacer(),
             ],
