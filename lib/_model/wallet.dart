@@ -381,12 +381,12 @@ class Wallet with _$Wallet {
 @freezed
 class Balance with _$Balance {
   const factory Balance({
-    required final int immature,
-    required final int trustedPending,
-    required final int untrustedPending,
-    required final int confirmed,
-    required final int spendable,
-    required final int total,
+    required int immature,
+    required int trustedPending,
+    required int untrustedPending,
+    required int confirmed,
+    required int spendable,
+    required int total,
   }) = _Balance;
   const Balance._();
 
