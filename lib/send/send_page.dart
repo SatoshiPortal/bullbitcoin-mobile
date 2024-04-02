@@ -764,9 +764,9 @@ class HighFeeWarning extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const fees = 10;
-    const amt = 10;
-    const recAmt = 10;
+    // const fees = 10;
+    // const amt = 10;
+    // const recAmt = 10;
     const feesStr = '';
     const feeFiatStr = '';
     const amtStr = '';

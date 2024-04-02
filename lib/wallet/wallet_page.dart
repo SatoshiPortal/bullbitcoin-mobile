@@ -142,7 +142,7 @@ class HighBalanceWarning extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const bal = 10;
-    const balStr = '';
+    // const balStr = '';
     return WarningContainer(
       title: 'Instant Payment Wallet balance is high',
       info:

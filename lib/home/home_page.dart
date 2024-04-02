@@ -931,7 +931,7 @@ class HomeWarnings extends StatelessWidget {
         for (final w in warnings)
           WarningBanner(
             onTap: () {
-              final bloc = w.walletBloc;
+              // final bloc = w.walletBloc;
             },
             info: w.info,
           ),

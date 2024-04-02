@@ -31,16 +31,20 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required this.walletRepository,
     required this.walletSensRepository,
     required this.networkCubit,
+    bool mainWallet = false,
   }) : super(
-          const ImportState(
-              // words12: [
-              //   ...importW(r2),
-              // ],
-              ),
+          ImportState(
+            mainWallet: mainWallet,
+            // words12: [
+            //   ...importW(r2),
+            // ],
+          ),
         ) {
     clearErrors();
     reset();
     emit(state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]));
+
+    if (mainWallet) recoverClicked();
   }
 
   final Barcode barcode;

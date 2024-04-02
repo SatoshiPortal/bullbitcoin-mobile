@@ -36,6 +36,7 @@ mixin _$CreateWalletState {
   bool get saved => throw _privateConstructorUsedError;
   String? get walletLabel => throw _privateConstructorUsedError;
   List<Wallet>? get savedWallets => throw _privateConstructorUsedError;
+  bool get mainWallet => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $CreateWalletStateCopyWith<CreateWalletState> get copyWith =>
@@ -58,7 +59,8 @@ abstract class $CreateWalletStateCopyWith<$Res> {
       String errSaving,
       bool saved,
       String? walletLabel,
-      List<Wallet>? savedWallets});
+      List<Wallet>? savedWallets,
+      bool mainWallet});
 }
 
 /// @nodoc
@@ -84,6 +86,7 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
     Object? saved = null,
     Object? walletLabel = freezed,
     Object? savedWallets = freezed,
+    Object? mainWallet = null,
   }) {
     return _then(_value.copyWith(
       mnemonic: freezed == mnemonic
@@ -126,6 +129,10 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
           ? _value.savedWallets
           : savedWallets // ignore: cast_nullable_to_non_nullable
               as List<Wallet>?,
+      mainWallet: null == mainWallet
+          ? _value.mainWallet
+          : mainWallet // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -148,7 +155,8 @@ abstract class _$$CreateWalletStateImplCopyWith<$Res>
       String errSaving,
       bool saved,
       String? walletLabel,
-      List<Wallet>? savedWallets});
+      List<Wallet>? savedWallets,
+      bool mainWallet});
 }
 
 /// @nodoc
@@ -172,6 +180,7 @@ class __$$CreateWalletStateImplCopyWithImpl<$Res>
     Object? saved = null,
     Object? walletLabel = freezed,
     Object? savedWallets = freezed,
+    Object? mainWallet = null,
   }) {
     return _then(_$CreateWalletStateImpl(
       mnemonic: freezed == mnemonic
@@ -214,6 +223,10 @@ class __$$CreateWalletStateImplCopyWithImpl<$Res>
           ? _value._savedWallets
           : savedWallets // ignore: cast_nullable_to_non_nullable
               as List<Wallet>?,
+      mainWallet: null == mainWallet
+          ? _value.mainWallet
+          : mainWallet // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -231,7 +244,8 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
       this.errSaving = '',
       this.saved = false,
       this.walletLabel,
-      final List<Wallet>? savedWallets})
+      final List<Wallet>? savedWallets,
+      this.mainWallet = false})
       : _mnemonic = mnemonic,
         _savedWallets = savedWallets,
         super._();
@@ -295,8 +309,12 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
   }
 
   @override
+  @JsonKey()
+  final bool mainWallet;
+
+  @override
   String toString() {
-    return 'CreateWalletState(mnemonic: $mnemonic, passPhrase: $passPhrase, isInstant: $isInstant, creatingNmemonic: $creatingNmemonic, errCreatingNmemonic: $errCreatingNmemonic, saving: $saving, errSaving: $errSaving, saved: $saved, walletLabel: $walletLabel, savedWallets: $savedWallets)';
+    return 'CreateWalletState(mnemonic: $mnemonic, passPhrase: $passPhrase, isInstant: $isInstant, creatingNmemonic: $creatingNmemonic, errCreatingNmemonic: $errCreatingNmemonic, saving: $saving, errSaving: $errSaving, saved: $saved, walletLabel: $walletLabel, savedWallets: $savedWallets, mainWallet: $mainWallet)';
   }
 
   @override
@@ -320,7 +338,9 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
             (identical(other.walletLabel, walletLabel) ||
                 other.walletLabel == walletLabel) &&
             const DeepCollectionEquality()
-                .equals(other._savedWallets, _savedWallets));
+                .equals(other._savedWallets, _savedWallets) &&
+            (identical(other.mainWallet, mainWallet) ||
+                other.mainWallet == mainWallet));
   }
 
   @override
@@ -335,7 +355,8 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
       errSaving,
       saved,
       walletLabel,
-      const DeepCollectionEquality().hash(_savedWallets));
+      const DeepCollectionEquality().hash(_savedWallets),
+      mainWallet);
 
   @JsonKey(ignore: true)
   @override
@@ -356,7 +377,8 @@ abstract class _CreateWalletState extends CreateWalletState {
       final String errSaving,
       final bool saved,
       final String? walletLabel,
-      final List<Wallet>? savedWallets}) = _$CreateWalletStateImpl;
+      final List<Wallet>? savedWallets,
+      final bool mainWallet}) = _$CreateWalletStateImpl;
   const _CreateWalletState._() : super._();
 
   @override
@@ -389,6 +411,8 @@ abstract class _CreateWalletState extends CreateWalletState {
   String? get walletLabel;
   @override
   List<Wallet>? get savedWallets;
+  @override
+  bool get mainWallet;
   @override
   @JsonKey(ignore: true)
   _$$CreateWalletStateImplCopyWith<_$CreateWalletStateImpl> get copyWith =>

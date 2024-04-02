@@ -1,5 +1,3 @@
-import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
@@ -114,25 +112,25 @@ class _SwapBoltz extends Mock implements SwapBoltz {}
 
 class _CreateWalletCubit extends Mock implements CreateWalletCubit {}
 
-const _wallet = Wallet(
-  network: BBNetwork.Testnet,
-  type: BBWalletType.words,
-  scriptType: ScriptType.bip84,
-);
+// const _wallet = Wallet(
+//   network: BBNetwork.Testnet,
+//   type: BBWalletType.words,
+//   scriptType: ScriptType.bip84,
+// );
 
-const _swapTest = SwapTx(
-  id: '01',
-  isSubmarine: false,
-  network: BBNetwork.Testnet,
-  redeemScript: '',
-  invoice: '',
-  outAmount: 50500,
-  scriptAddress: '',
-  electrumUrl: '',
-  boltzUrl: '',
-);
+// const _swapTest = SwapTx(
+//   id: '01',
+//   isSubmarine: false,
+//   network: BBNetwork.Testnet,
+//   redeemScript: '',
+//   invoice: '',
+//   outAmount: 50500,
+//   scriptAddress: '',
+//   electrumUrl: '',
+//   boltzUrl: '',
+// );
 
-const _tx = Transaction(
-  timestamp: 00,
-  txid: '012',
-);
+// const _tx = Transaction(
+//   timestamp: 00,
+//   txid: '012',
+// );

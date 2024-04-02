@@ -28,8 +28,8 @@ linter:
 
 
 analyzer:
-  enable-experiment:
-    - records
+  # enable-experiment:
+  #   - records
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart

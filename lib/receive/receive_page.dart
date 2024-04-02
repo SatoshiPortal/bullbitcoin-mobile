@@ -422,17 +422,17 @@ class ReceiveDisplayAddress extends StatefulWidget {
 class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
   bool showToast = false;
 
-  void _copyClicked() async {
-    if (!mounted) return;
-    setState(() {
-      showToast = true;
-    });
-    await Future.delayed(const Duration(seconds: 2));
-    if (!mounted) return;
-    setState(() {
-      showToast = false;
-    });
-  }
+  // void _copyClicked() async {
+  //   if (!mounted) return;
+  //   setState(() {
+  //     showToast = true;
+  //   });
+  //   await Future.delayed(const Duration(seconds: 2));
+  //   if (!mounted) return;
+  //   setState(() {
+  //     showToast = false;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

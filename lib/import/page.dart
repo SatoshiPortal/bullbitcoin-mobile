@@ -98,6 +98,7 @@ class ImportAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final step = context.select((ImportWalletCubit cubit) => cubit.state.importStep);
     final stepName = context.select((ImportWalletCubit cubit) => cubit.state.stepName());
+    final creatingMainWallet = context.select((ImportWalletCubit cubit) => cubit.state.mainWallet);
     Function()? onBack;
 
     if (step == ImportSteps.importXpub ||
@@ -111,6 +112,10 @@ class ImportAppBar extends StatelessWidget {
       onBack = () => context.read<ImportWalletCubit>().backClicked();
 
     if (step == ImportSteps.selectCreateType) onBack = () => context.pop();
+
+    if (creatingMainWallet &&
+        (step == ImportSteps.import12Words || step == ImportSteps.import24Words))
+      onBack = () => context.pop();
 
     return BBAppBar(text: stepName, onBack: onBack);
   }

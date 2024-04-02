@@ -20,7 +20,12 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     required this.walletSensRepository,
     required this.networkCubit,
     bool fromHome = false,
-  }) : super(const CreateWalletState()) {
+    bool mainWallet = false,
+  }) : super(
+          CreateWalletState(
+            mainWallet: mainWallet,
+          ),
+        ) {
     createMne(fromHome: fromHome);
   }
 
