@@ -153,6 +153,7 @@ class _Screen extends StatelessWidget {
     final showQR = context.select((ReceiveCubit x) => x.state.showQR(swapTx));
 
     final watchOnly = context.select((WalletBloc x) => x.state.wallet!.watchOnly());
+    final mainWallet = context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
 
     return SingleChildScrollView(
       child: Padding(
@@ -163,7 +164,7 @@ class _Screen extends StatelessWidget {
             const Gap(32),
             const ReceiveWalletsDropDown(),
             const Gap(24),
-            if (!watchOnly) ...[
+            if (!watchOnly && mainWallet) ...[
               const SelectWalletType(),
               const Gap(48),
             ],
@@ -206,9 +207,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
           wallet: wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint,
       },
       value: walletBloc,
-      onChanged: (bloc) {
-        context.read<ReceiveCubit>().updateWalletBloc(bloc);
-      },
+      onChanged: context.read<ReceiveCubit>().updateWalletBloc,
     );
   }
 }

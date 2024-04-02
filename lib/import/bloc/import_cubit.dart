@@ -526,6 +526,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
   void saveClicked() async {
     emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
 
+    final createSecureAndMain = state.mainWallet;
+
     Wallet? selectedWallet = state.getSelectWalletDetails();
     if (selectedWallet == null) return;
     selectedWallet = (state.walletLabel != null && state.walletLabel != '')

@@ -19,14 +19,14 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     required this.walletRepository,
     required this.walletSensRepository,
     required this.networkCubit,
-    bool fromHome = false,
+    // bool fromHome = false,
     bool mainWallet = false,
   }) : super(
           CreateWalletState(
             mainWallet: mainWallet,
           ),
         ) {
-    createMne(fromHome: fromHome);
+    createMne();
   }
 
   final SettingsCubit settingsCubit;
@@ -57,7 +57,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       ),
     );
 
-    if (fromHome) firstTime();
+    // if (fromHome) firstTime();
   }
 
   void passPhraseChanged(String text) {
@@ -93,6 +93,8 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   void confirmClicked() async {
     if (state.mnemonic == null) return;
     emit(state.copyWith(saving: true, errSaving: ''));
+
+    final createSecureAndMain = state.mainWallet;
 
     final label = state.walletLabel;
     if (label == null || label == '') {
@@ -169,72 +171,72 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     );
   }
 
-  void firstTime() async {
-    if (state.mnemonic == null) return;
-    emit(state.copyWith(saving: true, errSaving: ''));
+  // void firstTime() async {
+  //   if (state.mnemonic == null) return;
+  //   emit(state.copyWith(saving: true, errSaving: ''));
 
-    final mnemonic = state.mnemonic!.join(' ');
-    final (seed, errMne) = await walletSensCreate.mnemonicSeed(
-      mnemonic,
-      BBNetwork.Mainnet,
-    );
-    if (errMne != null) {
-      emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
-    }
-    var (walletSecure, errCreating1) = await walletSensCreate.oneFromBIP39(
-      seed: seed!,
-      passphrase: '',
-      scriptType: ScriptType.bip84,
-      network: BBNetwork.Mainnet,
-      walletType: BBWalletType.secure,
-    );
-    if (errCreating1 != null) {
-      emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
-      return;
-    }
+  //   final mnemonic = state.mnemonic!.join(' ');
+  //   final (seed, errMne) = await walletSensCreate.mnemonicSeed(
+  //     mnemonic,
+  //     BBNetwork.Mainnet,
+  //   );
+  //   if (errMne != null) {
+  //     emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
+  //   }
+  //   var (walletSecure, errCreating1) = await walletSensCreate.oneFromBIP39(
+  //     seed: seed!,
+  //     passphrase: '',
+  //     scriptType: ScriptType.bip84,
+  //     network: BBNetwork.Mainnet,
+  //     walletType: BBWalletType.secure,
+  //   );
+  //   if (errCreating1 != null) {
+  //     emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
+  //     return;
+  //   }
 
-    // var (walletInstant, errCreating2) = await walletSensCreate.oneFromBIP39(
-    //   seed: seed,
-    //   passphrase: '',
-    //   scriptType: ScriptType.bip84,
-    //   network: BBNetwork.Mainnet,
-    //   walletType: BBWalletType.instant,
-    // );
-    // if (errCreating2 != null) {
-    //   emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
-    //   return;
-    // }
+  //   // var (walletInstant, errCreating2) = await walletSensCreate.oneFromBIP39(
+  //   //   seed: seed,
+  //   //   passphrase: '',
+  //   //   scriptType: ScriptType.bip84,
+  //   //   network: BBNetwork.Mainnet,
+  //   //   walletType: BBWalletType.instant,
+  //   // );
+  //   // if (errCreating2 != null) {
+  //   //   emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
+  //   //   return;
+  //   // }
 
-    walletSecure = walletSecure!.copyWith(name: 'Bull Wallet');
-    // walletInstant = walletInstant!.copyWith(name: 'Instant Wallet');
+  //   walletSecure = walletSecure!.copyWith(name: 'Bull Wallet');
+  //   // walletInstant = walletInstant!.copyWith(name: 'Instant Wallet');
 
-    final errSavingSeed =
-        await walletSensRepository.newSeed(seed: seed, secureStore: secureStorage);
-    if (errSavingSeed != null) {
-      emit(state.copyWith(saving: false, errSaving: 'Error Saving Seed'));
-    }
+  //   final errSavingSeed =
+  //       await walletSensRepository.newSeed(seed: seed, secureStore: secureStorage);
+  //   if (errSavingSeed != null) {
+  //     emit(state.copyWith(saving: false, errSaving: 'Error Saving Seed'));
+  //   }
 
-    final errSaving1 =
-        await walletRepository.newWallet(wallet: walletSecure, hiveStore: hiveStorage);
-    if (errSaving1 != null) {
-      emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
-    }
-    // final errSaving2 =
-    //     await walletRepository.newWallet(wallet: walletInstant, hiveStore: hiveStorage);
-    // if (errSaving2 != null) {
-    //   emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
-    // }
+  //   final errSaving1 =
+  //       await walletRepository.newWallet(wallet: walletSecure, hiveStore: hiveStorage);
+  //   if (errSaving1 != null) {
+  //     emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
+  //   }
+  //   // final errSaving2 =
+  //   //     await walletRepository.newWallet(wallet: walletInstant, hiveStore: hiveStorage);
+  //   // if (errSaving2 != null) {
+  //   //   emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
+  //   // }
 
-    clearSensitive();
+  //   clearSensitive();
 
-    emit(
-      state.copyWith(
-        savedWallets: [walletSecure],
-        saving: false,
-        saved: true,
-      ),
-    );
-  }
+  //   emit(
+  //     state.copyWith(
+  //       savedWallets: [walletSecure],
+  //       saving: false,
+  //       saved: true,
+  //     ),
+  //   );
+  // }
 
   void clearSensitive() {
     emit(state.copyWith(mnemonic: [], passPhrase: ''));

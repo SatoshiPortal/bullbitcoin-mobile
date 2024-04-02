@@ -80,4 +80,6 @@ class SendState with _$SendState {
     // if (!showSendButton && selectedWalletBloc != null) return true;
     return showSendButton;
   }
+
+  bool checkIfMainWalletSelected() => selectedWalletBloc?.state.wallet?.mainWallet ?? false;
 }

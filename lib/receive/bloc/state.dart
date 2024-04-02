@@ -56,6 +56,8 @@ class ReceiveState with _$ReceiveState {
 
   bool isLn() => walletType == ReceiveWalletType.lightning;
 
+  bool checkIfMainWalletSelected() => walletBloc?.state.wallet?.mainWallet ?? false;
+
   // bool _swapTxIsNotNull() => swapBloc.state.swapTx != null;
 
   // bool showActionButtons() =>

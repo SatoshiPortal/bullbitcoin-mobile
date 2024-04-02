@@ -178,8 +178,16 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(note: label));
         }
       } else if (address.startsWith('ln')) {
-        emit(state.copyWith(address: address));
-        state.swapCubit.decodeInvoice(address);
+        if (state.checkIfMainWalletSelected()) {
+          emit(state.copyWith(address: address));
+          state.swapCubit.decodeInvoice(address);
+        } else {
+          emit(
+            state.copyWith(
+              errScanningAddress: 'Lightning invoices can only be sent from main wallets',
+            ),
+          );
+        }
       } else
         emit(state.copyWith(address: address));
     } catch (e) {
@@ -320,7 +328,12 @@ class SendCubit extends Cubit<SendState> {
         : networkFeesCubit
             .state.feesList![networkFeesCubit.state.selectedFeesOption]; // fee must be available
 
-    final enableRbf = isLn ? false : !state.disableRBF;
+    final bool enableRbf;
+    if (isLn)
+      enableRbf = false;
+    else
+      enableRbf = !state.disableRBF;
+
     // final enableRbf = !isLn && !state.disableRBF;
     emit(state.copyWith(sending: true, errSending: ''));
 
