@@ -35,12 +35,14 @@ String combinedDescriptorString(String descriptor) {
   }
 }
 
-String createDescriptorHashId(String descriptor) {
+String createDescriptorHashId(String descriptor, {BBNetwork network = BBNetwork.Mainnet}) {
   final descHashId = sha1
       .convert(
         utf8.encode(
           // allows passing either internal or external descriptor
-          descriptor.replaceFirst('/0/*', '/<0;1>/*').replaceFirst('/1/*', '/<0;1>/*'),
+          // TODO: Liquid: Added network here to distinguish between Liquid mainnet and testnet. Is this fine?
+          descriptor.replaceFirst('/0/*', '/<0;1>/*').replaceFirst('/1/*', '/<0;1>/*') +
+              network.toString(),
         ),
       )
       .toString()
@@ -203,4 +205,15 @@ bool isMainnetAddress(String address) {
   }
 
   return address.startsWith('bc1') || address.startsWith('3') || address.startsWith('1');
+}
+
+// https://community.liquid.net/c/developers/elements-address-types
+bool isLiquidMainnetAddress(String address) {
+  if (address.isEmpty) {
+    return false;
+  }
+
+  final List<String> prefixes = ['lq1', 'VJL', 'ex1', 'G', ''];
+  return prefixes.any((prefix) => address.startsWith(prefix));
+  // return address.startsWith('lq1') || address.startsWith('VJL') || address.startsWith('ex1');
 }

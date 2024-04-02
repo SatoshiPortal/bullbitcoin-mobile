@@ -167,9 +167,11 @@ class WalletRepository {
       await storage.deleteValue(walletHashId);
       final appDocDir = await getApplicationDocumentsDirectory();
       final File dbDir = File(appDocDir.path + '/$walletHashId');
+      // print('deleting file2: $dbDir');
       // final File dbDirSigner = File(appDocDir.path + '/${walletHashId}_signer');
 
-      await dbDir.delete();
+      // TODO: Liquid: Getting stuck here. So commented for now
+      // await dbDir.delete();
       // await dbDirSigner.delete();
       return null;
     } on Exception catch (e) {

@@ -23,6 +23,7 @@ enum AddressStatus {
 class Address with _$Address {
   factory Address({
     required String address,
+    String? confidential, // For liquid
     int? index,
     required AddressKind kind,
     required AddressStatus state,

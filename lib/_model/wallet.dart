@@ -273,19 +273,36 @@ class Wallet with _$Wallet {
   }
 
   String getWalletTypeShortString() {
-    switch (type) {
-      case BBWalletType.secure:
-      case BBWalletType.words:
-        return 'Spendable on-chain';
-      case BBWalletType.xpub:
-      // return 'Watch Only';
-      case BBWalletType.coldcard:
-      // return 'Watch Only';
+    if (network == BBNetwork.Mainnet || network == BBNetwork.Testnet) {
+      switch (type) {
+        case BBWalletType.secure:
+        case BBWalletType.words:
+          return 'Spendable on-chain';
+        case BBWalletType.xpub:
+        // return 'Watch Only';
+        case BBWalletType.coldcard:
+        // return 'Watch Only';
 
-      case BBWalletType.descriptors:
-        return 'Watch Only';
-      case BBWalletType.instant:
-        return 'Instant';
+        case BBWalletType.descriptors:
+          return 'Watch Only';
+        case BBWalletType.instant:
+          return 'Instant';
+      }
+    } else {
+      switch (type) {
+        case BBWalletType.secure:
+        case BBWalletType.words:
+          return 'Spendable Liquid';
+        case BBWalletType.xpub:
+        // return 'Watch Only';
+        case BBWalletType.coldcard:
+        // return 'Watch Only';
+
+        case BBWalletType.descriptors:
+          return 'Watch Only (Liquid)';
+        case BBWalletType.instant:
+          return 'Instant (Liquid)';
+      }
     }
   }
 
@@ -364,12 +381,12 @@ class Wallet with _$Wallet {
 @freezed
 class Balance with _$Balance {
   const factory Balance({
-    required int immature,
-    required int trustedPending,
-    required int untrustedPending,
-    required int confirmed,
-    required int spendable,
-    required int total,
+    required final int immature,
+    required final int trustedPending,
+    required final int untrustedPending,
+    required final int confirmed,
+    required final int spendable,
+    required final int total,
   }) = _Balance;
   const Balance._();
 

@@ -21,6 +21,7 @@ Address _$AddressFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Address {
   String get address => throw _privateConstructorUsedError;
+  String? get confidential => throw _privateConstructorUsedError; // For liquid
   int? get index => throw _privateConstructorUsedError;
   AddressKind get kind => throw _privateConstructorUsedError;
   AddressStatus get state => throw _privateConstructorUsedError;
@@ -42,6 +43,7 @@ abstract class $AddressCopyWith<$Res> {
   @useResult
   $Res call(
       {String address,
+      String? confidential,
       int? index,
       AddressKind kind,
       AddressStatus state,
@@ -66,6 +68,7 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
   @override
   $Res call({
     Object? address = null,
+    Object? confidential = freezed,
     Object? index = freezed,
     Object? kind = null,
     Object? state = null,
@@ -80,6 +83,10 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
               as String,
+      confidential: freezed == confidential
+          ? _value.confidential
+          : confidential // ignore: cast_nullable_to_non_nullable
+              as String?,
       index: freezed == index
           ? _value.index
           : index // ignore: cast_nullable_to_non_nullable
@@ -125,6 +132,7 @@ abstract class _$$AddressImplCopyWith<$Res> implements $AddressCopyWith<$Res> {
   @useResult
   $Res call(
       {String address,
+      String? confidential,
       int? index,
       AddressKind kind,
       AddressStatus state,
@@ -147,6 +155,7 @@ class __$$AddressImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? address = null,
+    Object? confidential = freezed,
     Object? index = freezed,
     Object? kind = null,
     Object? state = null,
@@ -161,6 +170,10 @@ class __$$AddressImplCopyWithImpl<$Res>
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
               as String,
+      confidential: freezed == confidential
+          ? _value.confidential
+          : confidential // ignore: cast_nullable_to_non_nullable
+              as String?,
       index: freezed == index
           ? _value.index
           : index // ignore: cast_nullable_to_non_nullable
@@ -202,6 +215,7 @@ class __$$AddressImplCopyWithImpl<$Res>
 class _$AddressImpl extends _Address {
   _$AddressImpl(
       {required this.address,
+      this.confidential,
       this.index,
       required this.kind,
       required this.state,
@@ -217,6 +231,9 @@ class _$AddressImpl extends _Address {
 
   @override
   final String address;
+  @override
+  final String? confidential;
+// For liquid
   @override
   final int? index;
   @override
@@ -239,7 +256,7 @@ class _$AddressImpl extends _Address {
 
   @override
   String toString() {
-    return 'Address(address: $address, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, highestPreviousBalance: $highestPreviousBalance, balance: $balance)';
+    return 'Address(address: $address, confidential: $confidential, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, highestPreviousBalance: $highestPreviousBalance, balance: $balance)';
   }
 
   @override
@@ -248,6 +265,8 @@ class _$AddressImpl extends _Address {
         (other.runtimeType == runtimeType &&
             other is _$AddressImpl &&
             (identical(other.address, address) || other.address == address) &&
+            (identical(other.confidential, confidential) ||
+                other.confidential == confidential) &&
             (identical(other.index, index) || other.index == index) &&
             (identical(other.kind, kind) || other.kind == kind) &&
             (identical(other.state, state) || other.state == state) &&
@@ -263,8 +282,18 @@ class _$AddressImpl extends _Address {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, address, index, kind, state,
-      label, spentTxId, spendable, highestPreviousBalance, balance);
+  int get hashCode => Object.hash(
+      runtimeType,
+      address,
+      confidential,
+      index,
+      kind,
+      state,
+      label,
+      spentTxId,
+      spendable,
+      highestPreviousBalance,
+      balance);
 
   @JsonKey(ignore: true)
   @override
@@ -283,6 +312,7 @@ class _$AddressImpl extends _Address {
 abstract class _Address extends Address {
   factory _Address(
       {required final String address,
+      final String? confidential,
       final int? index,
       required final AddressKind kind,
       required final AddressStatus state,
@@ -298,6 +328,8 @@ abstract class _Address extends Address {
   @override
   String get address;
   @override
+  String? get confidential;
+  @override // For liquid
   int? get index;
   @override
   AddressKind get kind;

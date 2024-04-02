@@ -73,11 +73,18 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart.git
       ref: trunk
+<<<<<<< HEAD
   flutter_svg: ^2.0.10+1
   # lwk_dart: 
   #   git:
   #     url: https://github.com/SatoshiPortal/lwk-dart
   #     ref: trunk
+=======
+  lwk_dart: 
+    git:
+      url: https://github.com/SatoshiPortal/lwk-dart
+      ref: trunk
+>>>>>>> 6e0e1cb (Squashed liq branch)
       
   
   

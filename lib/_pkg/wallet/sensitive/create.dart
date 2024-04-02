@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 class WalletSensitiveCreate {
   Future<(List<String>?, Err?)> createMnemonic() async {
@@ -254,7 +255,6 @@ class WalletSensitiveCreate {
     required ScriptType scriptType,
     required BBWalletType walletType,
     required BBNetwork network,
-    // bool isImported,
   }) async {
     final bdkMnemonic = await bdk.Mnemonic.fromString(seed.mnemonic);
     final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
@@ -358,6 +358,92 @@ class WalletSensitiveCreate {
       name: wallet.defaultNameString(),
       lastGeneratedAddress: Address(
         address: firstAddress.address,
+        index: 0,
+        kind: AddressKind.deposit,
+        state: AddressStatus.unused,
+      ),
+    );
+    return (wallet, null);
+  }
+
+  Future<(Wallet?, Err?)> oneLiquidFromBIP39({
+    required Seed seed,
+    required String passphrase,
+    required ScriptType scriptType,
+    required BBWalletType walletType,
+    required BBNetwork network,
+    // bool isImported,
+  }) async {
+    final lwkNetwork = network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
+    final lwk.Descriptor descriptor = await lwk.Descriptor.create(
+      network: lwkNetwork,
+      mnemonic: seed.mnemonic,
+    );
+
+    final (sourceFingerprint, sfErr) = await getFingerprint(
+      mnemonic: seed.mnemonic,
+      passphrase: passphrase,
+    );
+    if (sfErr != null) {
+      return (null, Err('Error Getting Fingerprint'));
+    }
+
+    /*
+    bdk.Descriptor? internal;
+    bdk.Descriptor? external;
+
+    final rootXprv = await bdk.DescriptorSecretKey.create(
+      network: bdkNetwork,
+      mnemonic: bdkMnemonic,
+      password: passphrase,
+    );
+    final mOnlybdkXpriv84 = await rootXprv.derive(
+      await bdk.DerivationPath.create(path: 'm/84h/$networkPath/$accountPath'),
+    );
+
+    final bdkXpub84 = await mOnlybdkXpriv84.asPublic();
+
+    internal = await bdk.Descriptor.newBip84Public(
+      publicKey: bdkXpub84,
+      fingerPrint: sourceFingerprint!,
+      network: bdkNetwork,
+      keychain: bdk.KeychainKind.Internal,
+    );
+    external = await bdk.Descriptor.newBip84Public(
+      publicKey: bdkXpub84,
+      fingerPrint: sourceFingerprint,
+      network: bdkNetwork,
+      keychain: bdk.KeychainKind.External,
+    );
+    */
+
+    final descHashId =
+        createDescriptorHashId(descriptor.descriptor.substring(0, 12), network: network);
+    // final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
+    // final type = isImported ? BBWalletType.words : BBWalletType.newSeed;
+
+    var wallet = Wallet(
+      id: descHashId,
+      externalPublicDescriptor: descriptor.descriptor, // TODO: // await external.asString(),
+      internalPublicDescriptor: descriptor.descriptor, // TODO: // await internal.asString(),
+      mnemonicFingerprint: seed.mnemonicFingerprint,
+      sourceFingerprint: sourceFingerprint!,
+      network: network,
+      type: walletType,
+      scriptType: scriptType,
+    );
+    // final (bdkWallet, errBdk) = await WalletCreate().loadPublicBdkWallet(wallet);
+    // final firstAddress = await bdkWallet!.getAddress(
+    //   addressIndex: const bdk.AddressIndex.peek(index: 0),
+    // );
+
+    final (lwkWallet, errLwk) = await WalletCreate().loadPublicLwkWallet(wallet, seed);
+    final firstAddress = await lwkWallet?.addressAtIndex(0);
+    wallet = wallet.copyWith(
+      name: wallet.defaultNameString(),
+      lastGeneratedAddress: Address(
+        address: firstAddress?.standard ?? '',
+        confidential: firstAddress?.confidential ?? '',
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,

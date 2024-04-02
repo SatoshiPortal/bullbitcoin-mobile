@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 class WalletSensitiveTx {
   Future<(String?, Err?)> signTx({
@@ -11,6 +15,31 @@ class WalletSensitiveTx {
       final psbt = bdk.PartiallySignedTransaction(psbtBase64: unsignedPSBT);
       final signedPSBT = await signingWallet.sign(psbt: psbt);
       return (signedPSBT.psbtBase64, null);
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while signing transaction',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
+
+  Future<(Uint8List?, Err?)> signLiquidTx({
+    required String unsignedPSET,
+    required lwk.Wallet signingWallet,
+    required String mnemonic,
+    required BBNetwork network,
+  }) async {
+    try {
+      final txBytes = await signingWallet.sign(
+        network: network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet,
+        pset: unsignedPSET,
+        mnemonic: mnemonic,
+      );
+      return (txBytes, null);
     } on Exception catch (e) {
       return (
         null,
