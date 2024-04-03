@@ -16,6 +16,8 @@ enum BBWalletType { secure, xpub, descriptors, words, coldcard, instant }
 
 enum ScriptType { bip84, bip49, bip44 }
 
+enum BaseWalletType { Bitcoin, Liquid, Lightning }
+
 @freezed
 class Wallet with _$Wallet {
   const factory Wallet({
@@ -47,6 +49,7 @@ class Wallet with _$Wallet {
     DateTime? lastBackupTested,
     @Default(false) bool hide,
     @Default(false) bool mainWallet,
+    required BaseWalletType baseWalletType,
   }) = _Wallet;
   const Wallet._();
 
@@ -452,3 +455,5 @@ List<String> backupInstructions(bool hasPassphrase) {
 // segwit -> BIP84 -> m/84'/0'/0'/0-1/* -> wpkh
 // compatible -> BIP49 -> m/49'/0'/0'/0-1/* -> sh-wpkh
 // legacy -> BIP44 -> m/44'/0'/0'/0-1/* -> pkh
+
+extension type LiqWallet(Wallet wallet) {}

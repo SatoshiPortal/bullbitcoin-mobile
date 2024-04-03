@@ -132,6 +132,7 @@ Future setupLocator({bool fromTest = false}) async {
     // walletSync: walletSync,
     hiveStorage: locator<HiveStorage>(),
     createWalletCubit: CreateWalletCubit(
+      walletCreate: walletCreate,
       walletSensCreate: walletSensCreate,
       settingsCubit: settings,
       walletRepository: locator<WalletRepository>(),

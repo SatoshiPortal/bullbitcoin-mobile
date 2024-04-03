@@ -300,8 +300,11 @@ class SendCubit extends Cubit<SendState> {
     if (state.sending) return;
     if (state.selectedWalletBloc == null) return;
 
-    final bdkWallet = state.selectedWalletBloc!.state.bdkWallet;
-    if (bdkWallet == null) return;
+    final (bdkWallet, errLoading) = state.selectedWalletBloc!.state.getBdkWallet();
+    if (errLoading != null) {
+      emit(state.copyWith(errSending: 'Wallet Not Loaded'));
+      return;
+    }
 
     final isLn = state.isLnInvoice();
     if (isLn) {
@@ -341,7 +344,7 @@ class SendCubit extends Cubit<SendState> {
 
     final (buildResp, err) = await walletTx.buildTx(
       wallet: localWallet!,
-      pubWallet: state.selectedWalletBloc!.state.bdkWallet!,
+      pubWallet: bdkWallet!,
       isManualSend: state.selectedUtxos.isNotEmpty,
       address: address!,
       amount: isLn ? state.swapCubit.state.swapTx!.outAmount : currencyCubit.state.amount,

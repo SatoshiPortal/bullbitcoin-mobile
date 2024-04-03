@@ -8,6 +8,7 @@ import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
+import 'package:path_provider/path_provider.dart';
 
 class WalletSensitiveCreate {
   Future<(List<String>?, Err?)> createMnemonic() async {
@@ -91,12 +92,13 @@ class WalletSensitiveCreate {
     }
   }
 
-  Future<(List<Wallet>?, Err?)> allFromBIP39(
-    String mnemonic,
-    String passphrase,
-    BBNetwork network,
-    bool isImported,
-  ) async {
+  Future<(List<Wallet>?, Err?)> allFromBIP39({
+    required String mnemonic,
+    required String passphrase,
+    required BBNetwork network,
+    required bool isImported,
+    required WalletCreate walletCreate,
+  }) async {
     final bdkMnemonic = await bdk.Mnemonic.fromString(mnemonic);
     final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
 
@@ -180,8 +182,12 @@ class WalletSensitiveCreate {
       type: BBWalletType.words,
       scriptType: ScriptType.bip44,
       backupTested: isImported,
+      baseWalletType: BaseWalletType.Bitcoin,
     );
-    final (bdkWallet44, errBdk44) = await WalletCreate().loadPublicBdkWallet(wallet44);
+    final errBdk44 = await walletCreate.loadPublicBdkWallet(wallet44);
+    if (errBdk44 != null) return (null, errBdk44);
+    final (bdkWallet44, errLoading44) = walletCreate.getBdkWallet(wallet44);
+    if (errLoading44 != null) return (null, errLoading44);
     final firstAddress44 = await bdkWallet44!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
@@ -206,8 +212,11 @@ class WalletSensitiveCreate {
       type: BBWalletType.words,
       scriptType: ScriptType.bip49,
       backupTested: isImported,
+      baseWalletType: BaseWalletType.Bitcoin,
     );
-    final (bdkWallet49, errBdk49) = await WalletCreate().loadPublicBdkWallet(wallet49);
+    final errBdk49 = await walletCreate.loadPublicBdkWallet(wallet49);
+    if (errBdk49 != null) return (null, errBdk49);
+    final (bdkWallet49, errLoading49) = walletCreate.getBdkWallet(wallet49);
     final firstAddress49 = await bdkWallet49!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
@@ -232,8 +241,11 @@ class WalletSensitiveCreate {
       type: BBWalletType.words,
       scriptType: ScriptType.bip84,
       backupTested: isImported,
+      baseWalletType: BaseWalletType.Bitcoin,
     );
-    final (bdkWallet84, errBdk84) = await WalletCreate().loadPublicBdkWallet(wallet84);
+    final errBdk84 = await walletCreate.loadPublicBdkWallet(wallet84);
+    if (errBdk84 != null) return (null, errBdk84);
+    final (bdkWallet84, errLoading84) = walletCreate.getBdkWallet(wallet84);
     final firstAddress84 = await bdkWallet84!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
@@ -246,6 +258,10 @@ class WalletSensitiveCreate {
         state: AddressStatus.unused,
       ),
     );
+    walletCreate.removeBdkWallet(wallet44);
+    walletCreate.removeBdkWallet(wallet49);
+    walletCreate.removeBdkWallet(wallet84);
+
     return ([wallet44, wallet49, wallet84], null);
   }
 
@@ -255,6 +271,7 @@ class WalletSensitiveCreate {
     required ScriptType scriptType,
     required BBWalletType walletType,
     required BBNetwork network,
+    required WalletCreate walletCreate,
   }) async {
     final bdkMnemonic = await bdk.Mnemonic.fromString(seed.mnemonic);
     final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
@@ -349,8 +366,11 @@ class WalletSensitiveCreate {
       scriptType: scriptType,
       // backupTested: false,
       // backupTested: isImported,
+      baseWalletType: BaseWalletType.Bitcoin,
     );
-    final (bdkWallet, errBdk) = await WalletCreate().loadPublicBdkWallet(wallet);
+    final errBdk = await walletCreate.loadPublicBdkWallet(wallet);
+    if (errBdk != null) return (null, errBdk);
+    final (bdkWallet, errLoading) = walletCreate.getBdkWallet(wallet);
     final firstAddress = await bdkWallet!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
@@ -363,6 +383,8 @@ class WalletSensitiveCreate {
         state: AddressStatus.unused,
       ),
     );
+    walletCreate.removeBdkWallet(wallet);
+
     return (wallet, null);
   }
 
@@ -372,6 +394,7 @@ class WalletSensitiveCreate {
     required ScriptType scriptType,
     required BBWalletType walletType,
     required BBNetwork network,
+    required WalletCreate walletCreate,
     // bool isImported,
   }) async {
     final lwkNetwork = network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
@@ -431,13 +454,17 @@ class WalletSensitiveCreate {
       network: network,
       type: walletType,
       scriptType: scriptType,
+      baseWalletType: BaseWalletType.Liquid,
     );
     // final (bdkWallet, errBdk) = await WalletCreate().loadPublicBdkWallet(wallet);
     // final firstAddress = await bdkWallet!.getAddress(
     //   addressIndex: const bdk.AddressIndex.peek(index: 0),
     // );
 
-    final (lwkWallet, errLwk) = await WalletCreate().loadPublicLwkWallet(wallet, seed);
+    final errLwk = await walletCreate.loadPublicLwkWallet(wallet, seed);
+    if (errLwk != null) return (null, errLwk);
+    final (lwkWallet, errLoading) = walletCreate.getLwkWallet(wallet);
+    if (errLoading != null) return (null, errLoading);
     final firstAddress = await lwkWallet?.addressAtIndex(0);
     wallet = wallet.copyWith(
       name: wallet.defaultNameString(),
@@ -531,6 +558,41 @@ class WalletSensitiveCreate {
         Err(
           e.message,
           title: 'Error occurred while loading wallet',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
+
+  Future<(lwk.Wallet?, Err?)> loadPrivateLwkWallet(
+    Wallet wallet,
+    Seed seed,
+  ) async {
+    try {
+      final network =
+          wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
+
+      final appDocDir = await getApplicationDocumentsDirectory();
+      final String dbDir = '${appDocDir.path}/db';
+
+      final lwk.Descriptor descriptor = await lwk.Descriptor.create(
+        network: network,
+        mnemonic: seed.mnemonic,
+      );
+
+      final w = await lwk.Wallet.create(
+        network: network,
+        dbPath: dbDir,
+        descriptor: descriptor.descriptor,
+      );
+
+      return (w, null);
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while creating wallet',
           solution: 'Please try again.',
         )
       );

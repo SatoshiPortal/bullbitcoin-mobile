@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_pkg/extensions.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
@@ -42,6 +43,7 @@ class CreateWalletPage extends StatelessWidget {
       walletRepository: locator<WalletRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
       networkCubit: locator<NetworkCubit>(),
+      walletCreate: locator<WalletCreate>(),
     );
 
     return BlocProvider.value(

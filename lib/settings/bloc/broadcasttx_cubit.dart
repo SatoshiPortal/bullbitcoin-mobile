@@ -136,9 +136,18 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             );
             return;
           }
+          final (bdkWallet, errLoading) = relatedWallet.state.getBdkWallet();
+          if (errLoading != null) {
+            emit(
+              state.copyWith(
+                errExtractingTx: errLoading.toString(),
+              ),
+            );
+            return;
+          }
           final (bdkTxFin, txErr) = await walletTx.finalizeTx(
             psbt: tx,
-            bdkWallet: relatedWallet.state.bdkWallet!,
+            bdkWallet: bdkWallet!,
           );
           if (txErr != null) {
             emit(

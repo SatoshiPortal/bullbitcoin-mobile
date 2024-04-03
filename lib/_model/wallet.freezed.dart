@@ -47,6 +47,7 @@ mixin _$Wallet {
   DateTime? get lastBackupTested => throw _privateConstructorUsedError;
   bool get hide => throw _privateConstructorUsedError;
   bool get mainWallet => throw _privateConstructorUsedError;
+  BaseWalletType get baseWalletType => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -83,7 +84,8 @@ abstract class $WalletCopyWith<$Res> {
       bool backupTested,
       DateTime? lastBackupTested,
       bool hide,
-      bool mainWallet});
+      bool mainWallet,
+      BaseWalletType baseWalletType});
 
   $BalanceCopyWith<$Res>? get fullBalance;
   $AddressCopyWith<$Res>? get lastGeneratedAddress;
@@ -127,6 +129,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? lastBackupTested = freezed,
     Object? hide = null,
     Object? mainWallet = null,
+    Object? baseWalletType = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -229,6 +232,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
           ? _value.mainWallet
           : mainWallet // ignore: cast_nullable_to_non_nullable
               as bool,
+      baseWalletType: null == baseWalletType
+          ? _value.baseWalletType
+          : baseWalletType // ignore: cast_nullable_to_non_nullable
+              as BaseWalletType,
     ) as $Val);
   }
 
@@ -289,7 +296,8 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
       bool backupTested,
       DateTime? lastBackupTested,
       bool hide,
-      bool mainWallet});
+      bool mainWallet,
+      BaseWalletType baseWalletType});
 
   @override
   $BalanceCopyWith<$Res>? get fullBalance;
@@ -333,6 +341,7 @@ class __$$WalletImplCopyWithImpl<$Res>
     Object? lastBackupTested = freezed,
     Object? hide = null,
     Object? mainWallet = null,
+    Object? baseWalletType = null,
   }) {
     return _then(_$WalletImpl(
       id: null == id
@@ -435,6 +444,10 @@ class __$$WalletImplCopyWithImpl<$Res>
           ? _value.mainWallet
           : mainWallet // ignore: cast_nullable_to_non_nullable
               as bool,
+      baseWalletType: null == baseWalletType
+          ? _value.baseWalletType
+          : baseWalletType // ignore: cast_nullable_to_non_nullable
+              as BaseWalletType,
     ));
   }
 }
@@ -467,7 +480,8 @@ class _$WalletImpl extends _Wallet {
       this.backupTested = false,
       this.lastBackupTested,
       this.hide = false,
-      this.mainWallet = false})
+      this.mainWallet = false,
+      required this.baseWalletType})
       : _myAddressBook = myAddressBook,
         _externalAddressBook = externalAddressBook,
         _utxos = utxos,
@@ -585,10 +599,12 @@ class _$WalletImpl extends _Wallet {
   @override
   @JsonKey()
   final bool mainWallet;
+  @override
+  final BaseWalletType baseWalletType;
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, utxos: $utxos, transactions: $transactions, unsignedTxs: $unsignedTxs, swaps: $swaps, revKeyIndex: $revKeyIndex, subKeyIndex: $subKeyIndex, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide, mainWallet: $mainWallet)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, utxos: $utxos, transactions: $transactions, unsignedTxs: $unsignedTxs, swaps: $swaps, revKeyIndex: $revKeyIndex, subKeyIndex: $subKeyIndex, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide, mainWallet: $mainWallet, baseWalletType: $baseWalletType)';
   }
 
   @override
@@ -638,7 +654,9 @@ class _$WalletImpl extends _Wallet {
                 other.lastBackupTested == lastBackupTested) &&
             (identical(other.hide, hide) || other.hide == hide) &&
             (identical(other.mainWallet, mainWallet) ||
-                other.mainWallet == mainWallet));
+                other.mainWallet == mainWallet) &&
+            (identical(other.baseWalletType, baseWalletType) ||
+                other.baseWalletType == baseWalletType));
   }
 
   @JsonKey(ignore: true)
@@ -669,7 +687,8 @@ class _$WalletImpl extends _Wallet {
         backupTested,
         lastBackupTested,
         hide,
-        mainWallet
+        mainWallet,
+        baseWalletType
       ]);
 
   @JsonKey(ignore: true)
@@ -712,7 +731,8 @@ abstract class _Wallet extends Wallet {
       final bool backupTested,
       final DateTime? lastBackupTested,
       final bool hide,
-      final bool mainWallet}) = _$WalletImpl;
+      final bool mainWallet,
+      required final BaseWalletType baseWalletType}) = _$WalletImpl;
   const _Wallet._() : super._();
 
   factory _Wallet.fromJson(Map<String, dynamic> json) = _$WalletImpl.fromJson;
@@ -768,6 +788,8 @@ abstract class _Wallet extends Wallet {
   bool get hide;
   @override
   bool get mainWallet;
+  @override
+  BaseWalletType get baseWalletType;
   @override
   @JsonKey(ignore: true)
   _$$WalletImplCopyWith<_$WalletImpl> get copyWith =>

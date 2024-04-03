@@ -11,6 +11,65 @@ import 'package:lwk_dart/lwk_dart.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 class WalletCreate {
+  Set<({String id, bdk.Wallet wallet})> bdkWallets = {};
+  Set<({String id, lwk.Wallet wallet})> lwkWallets = {};
+
+  (bdk.Wallet?, Err?) getBdkWallet(Wallet wallet) {
+    for (final bdkWallet in bdkWallets)
+      if (bdkWallet.id == wallet.id) return (bdkWallet.wallet, null);
+
+    return (null, Err('Wallet not found'));
+  }
+
+  (lwk.Wallet?, Err?) getLwkWallet(Wallet wallet) {
+    for (final lwkWallet in lwkWallets)
+      if (lwkWallet.id == wallet.id) return (lwkWallet.wallet, null);
+
+    return (null, Err('Wallet not found'));
+  }
+
+  Err? setLwkWallet(Wallet wallet, lwk.Wallet lwkWallet) {
+    final added = lwkWallets.add((id: wallet.id, wallet: lwkWallet));
+    if (!added) return Err('Wallet already exists');
+    return null;
+  }
+
+  Err? setBdkWallet(Wallet wallet, bdk.Wallet bdkWallet) {
+    final added = bdkWallets.add((id: wallet.id, wallet: bdkWallet));
+    if (!added) return Err('Wallet already exists');
+    return null;
+  }
+
+  Err? removeLwkWallet(Wallet wallet) {
+    final exits = lwkWallets.any((element) => element.id == wallet.id);
+    if (!exits) return Err('Wallet does not exist');
+    lwkWallets.removeWhere((element) => element.id == wallet.id);
+    return null;
+  }
+
+  Err? removeBdkWallet(Wallet wallet) {
+    final exits = bdkWallets.any((element) => element.id == wallet.id);
+    if (!exits) return Err('Wallet does not exist');
+    bdkWallets.removeWhere((element) => element.id == wallet.id);
+    return null;
+  }
+
+  Err? replaceBdkWallet(Wallet wallet, bdk.Wallet bdkWallet) {
+    final exits = bdkWallets.any((element) => element.id == wallet.id);
+    if (!exits) return Err('Wallet does not exist');
+    bdkWallets.removeWhere((element) => element.id == wallet.id);
+    bdkWallets.add((id: wallet.id, wallet: bdkWallet));
+    return null;
+  }
+
+  Err? replaceLwkWallet(Wallet wallet, lwk.Wallet lwkWallet) {
+    final exits = lwkWallets.any((element) => element.id == wallet.id);
+    if (!exits) return Err('Wallet does not exist');
+    lwkWallets.removeWhere((element) => element.id == wallet.id);
+    lwkWallets.add((id: wallet.id, wallet: lwkWallet));
+    return null;
+  }
+
   Future<(List<Wallet>?, Err?)> allFromColdCard(
     ColdCard coldCard,
     BBNetwork network,
@@ -85,8 +144,12 @@ class WalletCreate {
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip44,
       backupTested: true,
+      baseWalletType: BaseWalletType.Bitcoin,
     );
-    final (bdkWallet44, errBdk44) = await loadPublicBdkWallet(wallet44);
+    final errBdk44 = await loadPublicBdkWallet(wallet44);
+    if (errBdk44 != null) return (null, errBdk44);
+    final (bdkWallet44, errLoading) = getBdkWallet(wallet44);
+    if (errLoading != null) return (null, errLoading);
     final firstAddress44 = await bdkWallet44!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
@@ -112,8 +175,12 @@ class WalletCreate {
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip49,
       backupTested: true,
+      baseWalletType: BaseWalletType.Bitcoin,
     );
-    final (bdkWallet49, errBdk49) = await loadPublicBdkWallet(wallet49);
+    final errBdk49 = await loadPublicBdkWallet(wallet49);
+    if (errBdk49 != null) return (null, errBdk49);
+    final (bdkWallet49, errLoading49) = getBdkWallet(wallet49);
+    if (errLoading49 != null) return (null, errLoading49);
     final firstAddress49 = await bdkWallet49!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
@@ -139,8 +206,12 @@ class WalletCreate {
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip84,
       backupTested: true,
+      baseWalletType: BaseWalletType.Bitcoin,
     );
-    final (bdkWallet84, errBdk84) = await loadPublicBdkWallet(wallet84);
+    final errBdk84 = await loadPublicBdkWallet(wallet84);
+    if (errBdk84 != null) return (null, errBdk84);
+    final (bdkWallet84, errLoading84) = getBdkWallet(wallet84);
+    if (errLoading84 != null) return (null, errLoading84);
     final firstAddress84 = await bdkWallet84!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
@@ -153,6 +224,10 @@ class WalletCreate {
         state: AddressStatus.unused,
       ),
     );
+
+    removeBdkWallet(wallet44);
+    removeBdkWallet(wallet49);
+    removeBdkWallet(wallet84);
 
     if (firstAddress44.address == coldWallet44.first &&
         firstAddress49.address == coldWallet49.first &&
@@ -224,8 +299,11 @@ class WalletCreate {
         type: BBWalletType.xpub,
         scriptType: scriptType,
         backupTested: true,
+        baseWalletType: BaseWalletType.Bitcoin,
       );
-      final (bdkWallet, errBdk) = await loadPublicBdkWallet(wallet);
+      final errBdk = await loadPublicBdkWallet(wallet);
+      if (errBdk != null) return (null, errBdk);
+      final (bdkWallet, errLoading) = getBdkWallet(wallet);
       final firstAddress = await bdkWallet!.getAddress(
         addressIndex: const bdk.AddressIndex.peek(index: 0),
       );
@@ -240,6 +318,8 @@ class WalletCreate {
       );
 
       wallet = wallet.copyWith(name: wallet.defaultNameString());
+
+      removeBdkWallet(wallet);
 
       return (wallet, null);
     } on Exception catch (e) {
@@ -308,8 +388,11 @@ class WalletCreate {
         type: BBWalletType.xpub,
         scriptType: scriptType,
         backupTested: true,
+        baseWalletType: BaseWalletType.Bitcoin,
       );
-      final (bdkWallet, errBdk) = await loadPublicBdkWallet(wallet);
+      final errBdk = await loadPublicBdkWallet(wallet);
+      if (errBdk != null) return (null, errBdk);
+      final (bdkWallet, errLoading) = getBdkWallet(wallet);
       final firstAddress = await bdkWallet!.getAddress(
         addressIndex: const bdk.AddressIndex.peek(index: 0),
       );
@@ -336,7 +419,7 @@ class WalletCreate {
     }
   }
 
-  Future<(bdk.Wallet?, Err?)> loadPublicBdkWallet(
+  Future<Err?> loadPublicBdkWallet(
     Wallet wallet,
   ) async {
     try {
@@ -366,20 +449,20 @@ class WalletCreate {
         databaseConfig: dbConfig,
       );
 
-      return (bdkWallet, null);
+      final err = setBdkWallet(wallet, bdkWallet);
+      if (err != null) return err;
+
+      return null;
     } on Exception catch (e) {
-      return (
-        null,
-        Err(
-          e.message,
-          title: 'Error occurred while creating wallet',
-          solution: 'Please try again.',
-        )
+      return Err(
+        e.message,
+        title: 'Error occurred while creating wallet',
+        solution: 'Please try again.',
       );
     }
   }
 
-  Future<(lwk.Wallet?, Err?)> loadPublicLwkWallet(
+  Future<Err?> loadPublicLwkWallet(
     Wallet wallet,
     Seed seed,
   ) async {
@@ -401,15 +484,15 @@ class WalletCreate {
         descriptor: descriptor.descriptor,
       );
 
-      return (w, null);
+      final err = setLwkWallet(wallet, w);
+      if (err != null) return err;
+
+      return null;
     } on Exception catch (e) {
-      return (
-        null,
-        Err(
-          e.message,
-          title: 'Error occurred while creating wallet',
-          solution: 'Please try again.',
-        )
+      return Err(
+        e.message,
+        title: 'Error occurred while creating wallet',
+        solution: 'Please try again.',
       );
     }
   }

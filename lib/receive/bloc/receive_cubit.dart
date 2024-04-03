@@ -110,13 +110,15 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     if (state.walletBloc == null) return;
 
-    if (state.walletBloc!.state.bdkWallet == null) {
+    final (bdkWallet, errLoading) = state.walletBloc!.state.getBdkWallet();
+    if (errLoading != null) {
       emit(state.copyWith(errLoadingAddress: 'Wallet Sync Required'));
       return;
     }
+
     final (updatedWallet, err) = await walletAddress.newAddress(
       wallet: state.walletBloc!.state.wallet!,
-      bdkWallet: state.walletBloc!.state.bdkWallet!,
+      bdkWallet: bdkWallet!,
     );
     if (err != null) {
       emit(

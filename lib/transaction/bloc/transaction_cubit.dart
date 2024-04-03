@@ -249,11 +249,17 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
+    final (pubBdkWallet, errLoading) = walletBloc.state.walletCreate.getBdkWallet(wallet);
+    if (errLoading != null) {
+      emit(state.copyWith(errBuildingTx: errLoading.toString(), buildingTx: false));
+      return;
+    }
+
     final (newTx, errrr) = await walletSensTx.buildBumpFeeTx(
       tx: state.tx,
       feeRate: fees.toDouble(),
       signingWallet: bdkSignerWallet!,
-      pubWallet: walletBloc.state.bdkWallet!,
+      pubWallet: pubBdkWallet!,
     );
     if (errrr != null) {
       emit(

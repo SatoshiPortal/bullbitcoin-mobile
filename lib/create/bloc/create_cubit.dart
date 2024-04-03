@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
@@ -19,6 +20,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     required this.walletRepository,
     required this.walletSensRepository,
     required this.networkCubit,
+    required this.walletCreate,
     // bool fromHome = false,
     bool mainWallet = false,
   }) : super(
@@ -36,6 +38,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final WalletRepository walletRepository;
   final WalletSensitiveRepository walletSensRepository;
   final NetworkCubit networkCubit;
+  final WalletCreate walletCreate;
 
   void createMne({bool fromHome = false}) async {
     emit(state.copyWith(creatingNmemonic: true));
@@ -115,6 +118,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       scriptType: ScriptType.bip84,
       network: network,
       walletType: state.isInstant ? BBWalletType.instant : BBWalletType.secure,
+      walletCreate: walletCreate,
       // walletType: network,
       // false,
     );

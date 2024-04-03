@@ -58,6 +58,8 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
           : DateTime.parse(json['lastBackupTested'] as String),
       hide: json['hide'] as bool? ?? false,
       mainWallet: json['mainWallet'] as bool? ?? false,
+      baseWalletType:
+          $enumDecode(_$BaseWalletTypeEnumMap, json['baseWalletType']),
     );
 
 Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
@@ -87,6 +89,7 @@ Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
       'lastBackupTested': instance.lastBackupTested?.toIso8601String(),
       'hide': instance.hide,
       'mainWallet': instance.mainWallet,
+      'baseWalletType': _$BaseWalletTypeEnumMap[instance.baseWalletType]!,
     };
 
 const _$BBNetworkEnumMap = {
@@ -109,6 +112,12 @@ const _$ScriptTypeEnumMap = {
   ScriptType.bip84: 'bip84',
   ScriptType.bip49: 'bip49',
   ScriptType.bip44: 'bip44',
+};
+
+const _$BaseWalletTypeEnumMap = {
+  BaseWalletType.Bitcoin: 'Bitcoin',
+  BaseWalletType.Liquid: 'Liquid',
+  BaseWalletType.Lightning: 'Lightning',
 };
 
 _$BalanceImpl _$$BalanceImplFromJson(Map<String, dynamic> json) =>

@@ -12,6 +12,7 @@ import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -35,16 +36,16 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }) : super(
           ImportState(
             mainWallet: mainWallet,
-            // words12: [
-            //   ...importW(r2),
-            // ],
+            words12: [
+              ...importW(r2),
+            ],
           ),
         ) {
-    clearErrors();
-    reset();
-    emit(state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]));
+    // clearErrors();
+    // reset();
+    // emit(state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]));
 
-    if (mainWallet) recoverClicked();
+    // if (mainWallet) recoverClicked();
   }
 
   final Barcode barcode;
@@ -425,10 +426,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
           final mnemonic = state.words12.map((_) => _.word).join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
           final (ws, wErrs) = await walletSensCreate.allFromBIP39(
-            mnemonic,
-            passphrase,
-            network,
-            true,
+            mnemonic: mnemonic,
+            passphrase: passphrase,
+            network: network,
+            isImported: true,
+            walletCreate: walletCreate,
           );
           if (wErrs != null) {
             emit(state.copyWith(errImporting: 'Error creating Wallets from Bip 39'));
@@ -440,10 +442,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
 
           final (ws, wErrs) = await walletSensCreate.allFromBIP39(
-            mnemonic,
-            passphrase,
-            network,
-            true,
+            mnemonic: mnemonic,
+            passphrase: passphrase,
+            network: network,
+            isImported: true,
+            walletCreate: walletCreate,
           );
           if (wErrs != null) {
             emit(state.copyWith(errImporting: 'Error creating Wallets from Bip 39'));

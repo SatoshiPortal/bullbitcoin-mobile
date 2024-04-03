@@ -16,9 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$WalletState {
-  Wallet? get wallet => throw _privateConstructorUsedError;
-  bdk.Wallet? get bdkWallet =>
-      throw _privateConstructorUsedError; // List<Transaction>? txs,
+  Wallet? get wallet =>
+      throw _privateConstructorUsedError; // bdk.Wallet? bdkWallet,
+// List<Transaction>? txs,
 // Balance? balance,
   String get name => throw _privateConstructorUsedError;
   bool get loadingWallet => throw _privateConstructorUsedError;
@@ -36,6 +36,7 @@ mixin _$WalletState {
   int get syncErrCount =>
       throw _privateConstructorUsedError; // Address? newAddress,
   Address? get firstAddress => throw _privateConstructorUsedError;
+  WalletCreate get walletCreate => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $WalletStateCopyWith<WalletState> get copyWith =>
@@ -50,7 +51,6 @@ abstract class $WalletStateCopyWith<$Res> {
   @useResult
   $Res call(
       {Wallet? wallet,
-      bdk.Wallet? bdkWallet,
       String name,
       bool loadingWallet,
       String errLoadingWallet,
@@ -65,7 +65,8 @@ abstract class $WalletStateCopyWith<$Res> {
       bool savingName,
       String errSavingName,
       int syncErrCount,
-      Address? firstAddress});
+      Address? firstAddress,
+      WalletCreate walletCreate});
 
   $WalletCopyWith<$Res>? get wallet;
   $AddressCopyWith<$Res>? get firstAddress;
@@ -85,7 +86,6 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
   @override
   $Res call({
     Object? wallet = freezed,
-    Object? bdkWallet = freezed,
     Object? name = null,
     Object? loadingWallet = null,
     Object? errLoadingWallet = null,
@@ -101,16 +101,13 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
     Object? errSavingName = null,
     Object? syncErrCount = null,
     Object? firstAddress = freezed,
+    Object? walletCreate = null,
   }) {
     return _then(_value.copyWith(
       wallet: freezed == wallet
           ? _value.wallet
           : wallet // ignore: cast_nullable_to_non_nullable
               as Wallet?,
-      bdkWallet: freezed == bdkWallet
-          ? _value.bdkWallet
-          : bdkWallet // ignore: cast_nullable_to_non_nullable
-              as bdk.Wallet?,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -171,6 +168,10 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
           ? _value.firstAddress
           : firstAddress // ignore: cast_nullable_to_non_nullable
               as Address?,
+      walletCreate: null == walletCreate
+          ? _value.walletCreate
+          : walletCreate // ignore: cast_nullable_to_non_nullable
+              as WalletCreate,
     ) as $Val);
   }
 
@@ -209,7 +210,6 @@ abstract class _$$WalletStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {Wallet? wallet,
-      bdk.Wallet? bdkWallet,
       String name,
       bool loadingWallet,
       String errLoadingWallet,
@@ -224,7 +224,8 @@ abstract class _$$WalletStateImplCopyWith<$Res>
       bool savingName,
       String errSavingName,
       int syncErrCount,
-      Address? firstAddress});
+      Address? firstAddress,
+      WalletCreate walletCreate});
 
   @override
   $WalletCopyWith<$Res>? get wallet;
@@ -244,7 +245,6 @@ class __$$WalletStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? wallet = freezed,
-    Object? bdkWallet = freezed,
     Object? name = null,
     Object? loadingWallet = null,
     Object? errLoadingWallet = null,
@@ -260,16 +260,13 @@ class __$$WalletStateImplCopyWithImpl<$Res>
     Object? errSavingName = null,
     Object? syncErrCount = null,
     Object? firstAddress = freezed,
+    Object? walletCreate = null,
   }) {
     return _then(_$WalletStateImpl(
       wallet: freezed == wallet
           ? _value.wallet
           : wallet // ignore: cast_nullable_to_non_nullable
               as Wallet?,
-      bdkWallet: freezed == bdkWallet
-          ? _value.bdkWallet
-          : bdkWallet // ignore: cast_nullable_to_non_nullable
-              as bdk.Wallet?,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -330,6 +327,10 @@ class __$$WalletStateImplCopyWithImpl<$Res>
           ? _value.firstAddress
           : firstAddress // ignore: cast_nullable_to_non_nullable
               as Address?,
+      walletCreate: null == walletCreate
+          ? _value.walletCreate
+          : walletCreate // ignore: cast_nullable_to_non_nullable
+              as WalletCreate,
     ));
   }
 }
@@ -339,7 +340,6 @@ class __$$WalletStateImplCopyWithImpl<$Res>
 class _$WalletStateImpl extends _WalletState {
   const _$WalletStateImpl(
       {this.wallet,
-      this.bdkWallet,
       this.name = '',
       this.loadingWallet = true,
       this.errLoadingWallet = '',
@@ -354,13 +354,13 @@ class _$WalletStateImpl extends _WalletState {
       this.savingName = false,
       this.errSavingName = '',
       this.syncErrCount = 0,
-      this.firstAddress})
+      this.firstAddress,
+      required this.walletCreate})
       : super._();
 
   @override
   final Wallet? wallet;
-  @override
-  final bdk.Wallet? bdkWallet;
+// bdk.Wallet? bdkWallet,
 // List<Transaction>? txs,
 // Balance? balance,
   @override
@@ -408,10 +408,12 @@ class _$WalletStateImpl extends _WalletState {
 // Address? newAddress,
   @override
   final Address? firstAddress;
+  @override
+  final WalletCreate walletCreate;
 
   @override
   String toString() {
-    return 'WalletState(wallet: $wallet, bdkWallet: $bdkWallet, name: $name, loadingWallet: $loadingWallet, errLoadingWallet: $errLoadingWallet, loadingTxs: $loadingTxs, errLoadingTxs: $errLoadingTxs, loadingBalance: $loadingBalance, errLoadingBalance: $errLoadingBalance, syncing: $syncing, errSyncing: $errSyncing, syncingAddresses: $syncingAddresses, errSyncingAddresses: $errSyncingAddresses, savingName: $savingName, errSavingName: $errSavingName, syncErrCount: $syncErrCount, firstAddress: $firstAddress)';
+    return 'WalletState(wallet: $wallet, name: $name, loadingWallet: $loadingWallet, errLoadingWallet: $errLoadingWallet, loadingTxs: $loadingTxs, errLoadingTxs: $errLoadingTxs, loadingBalance: $loadingBalance, errLoadingBalance: $errLoadingBalance, syncing: $syncing, errSyncing: $errSyncing, syncingAddresses: $syncingAddresses, errSyncingAddresses: $errSyncingAddresses, savingName: $savingName, errSavingName: $errSavingName, syncErrCount: $syncErrCount, firstAddress: $firstAddress, walletCreate: $walletCreate)';
   }
 
   @override
@@ -420,8 +422,6 @@ class _$WalletStateImpl extends _WalletState {
         (other.runtimeType == runtimeType &&
             other is _$WalletStateImpl &&
             (identical(other.wallet, wallet) || other.wallet == wallet) &&
-            (identical(other.bdkWallet, bdkWallet) ||
-                other.bdkWallet == bdkWallet) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.loadingWallet, loadingWallet) ||
                 other.loadingWallet == loadingWallet) &&
@@ -449,14 +449,15 @@ class _$WalletStateImpl extends _WalletState {
             (identical(other.syncErrCount, syncErrCount) ||
                 other.syncErrCount == syncErrCount) &&
             (identical(other.firstAddress, firstAddress) ||
-                other.firstAddress == firstAddress));
+                other.firstAddress == firstAddress) &&
+            (identical(other.walletCreate, walletCreate) ||
+                other.walletCreate == walletCreate));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       wallet,
-      bdkWallet,
       name,
       loadingWallet,
       errLoadingWallet,
@@ -471,7 +472,8 @@ class _$WalletStateImpl extends _WalletState {
       savingName,
       errSavingName,
       syncErrCount,
-      firstAddress);
+      firstAddress,
+      walletCreate);
 
   @JsonKey(ignore: true)
   @override
@@ -483,7 +485,6 @@ class _$WalletStateImpl extends _WalletState {
 abstract class _WalletState extends WalletState {
   const factory _WalletState(
       {final Wallet? wallet,
-      final bdk.Wallet? bdkWallet,
       final String name,
       final bool loadingWallet,
       final String errLoadingWallet,
@@ -498,14 +499,14 @@ abstract class _WalletState extends WalletState {
       final bool savingName,
       final String errSavingName,
       final int syncErrCount,
-      final Address? firstAddress}) = _$WalletStateImpl;
+      final Address? firstAddress,
+      required final WalletCreate walletCreate}) = _$WalletStateImpl;
   const _WalletState._() : super._();
 
   @override
   Wallet? get wallet;
-  @override
-  bdk.Wallet? get bdkWallet;
-  @override // List<Transaction>? txs,
+  @override // bdk.Wallet? bdkWallet,
+// List<Transaction>? txs,
 // Balance? balance,
   String get name;
   @override
@@ -536,6 +537,8 @@ abstract class _WalletState extends WalletState {
   int get syncErrCount;
   @override // Address? newAddress,
   Address? get firstAddress;
+  @override
+  WalletCreate get walletCreate;
   @override
   @JsonKey(ignore: true)
   _$$WalletStateImplCopyWith<_$WalletStateImpl> get copyWith =>

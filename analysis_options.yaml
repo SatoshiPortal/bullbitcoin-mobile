@@ -28,7 +28,8 @@ linter:
 
 
 analyzer:
-  # enable-experiment:
+  enable-experiment:
+      - inline-class
   #   - records
   exclude:
     - lib/**/*.g.dart
