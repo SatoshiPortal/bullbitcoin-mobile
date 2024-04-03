@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:isolate';
 
+import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 void _syncIsolate(List<dynamic> args) async {
   final sendPort = args[0] as SendPort;
@@ -52,6 +54,24 @@ class WalletSync {
         null,
         Err(
           e.toString(),
+          title: 'Error occurred while syncing wallet',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
+
+  Future<(lwk.Wallet?, Err?)> syncLiquidWallet({
+    required lwk.Wallet lwkWallet,
+  }) async {
+    try {
+      await lwkWallet.sync(liquidElectrumUrl);
+      return (lwkWallet, null);
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
           title: 'Error occurred while syncing wallet',
           solution: 'Please try again.',
         )
