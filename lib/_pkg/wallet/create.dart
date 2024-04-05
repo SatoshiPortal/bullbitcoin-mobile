@@ -2,7 +2,6 @@
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/cold_card.dart';
-import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
@@ -462,10 +461,7 @@ class WalletCreate {
     }
   }
 
-  Future<Err?> loadPublicLwkWallet(
-    Wallet wallet,
-    Seed seed,
-  ) async {
+  Future<Err?> loadPublicLwkWallet(Wallet wallet) async {
     try {
       final network =
           wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
@@ -473,15 +469,10 @@ class WalletCreate {
       final appDocDir = await getApplicationDocumentsDirectory();
       final String dbDir = '${appDocDir.path}/db';
 
-      final lwk.Descriptor descriptor = await lwk.Descriptor.create(
-        network: network,
-        mnemonic: seed.mnemonic,
-      );
-
       final w = await lwk.Wallet.create(
         network: network,
         dbPath: dbDir,
-        descriptor: descriptor.descriptor,
+        descriptor: wallet.externalPublicDescriptor,
       );
 
       final err = setLwkWallet(wallet, w);

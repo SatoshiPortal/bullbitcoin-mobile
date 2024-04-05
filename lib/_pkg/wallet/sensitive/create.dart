@@ -461,7 +461,7 @@ class WalletSensitiveCreate {
     //   addressIndex: const bdk.AddressIndex.peek(index: 0),
     // );
 
-    final errLwk = await walletCreate.loadPublicLwkWallet(wallet, seed);
+    final errLwk = await walletCreate.loadPublicLwkWallet(wallet);
     if (errLwk != null) return (null, errLwk);
     final (lwkWallet, errLoading) = walletCreate.getLwkWallet(wallet);
     if (errLoading != null) return (null, errLoading);
