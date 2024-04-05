@@ -8,6 +8,7 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
@@ -39,6 +40,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.walletUtxo,
     required this.walletUpdate,
     required this.networkCubit,
+    required this.walletNetwork,
     required this.swapBloc,
     this.fromStorage = true,
     Wallet? wallet,
@@ -67,6 +69,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletUtxo walletUtxo;
   final WalletUpdate walletUpdate;
   final NetworkCubit networkCubit;
+  final WalletNetwork walletNetwork;
+
   final WatchTxsBloc swapBloc;
 
   final SecureStorage secureStorage;
@@ -153,16 +157,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    if (networkCubit.state.blockchain == null) {
+    var (blockchain, errB) = walletNetwork.blockchain;
+    if (errB != null) {
       await networkCubit.loadNetworks();
       await Future.delayed(const Duration(milliseconds: 300));
-      if (networkCubit.state.blockchain == null) {
+      final (b2, err2) = walletNetwork.blockchain;
+      if (err2 != null) {
         emit(state.copyWith(syncing: false));
         return;
       }
+      blockchain = b2;
     }
-
-    final blockchain = networkCubit.state.blockchain;
 
     final sameNetwork = state.wallet?.isSameNetwork(networkCubit.state.testnet) ?? false;
     if (!sameNetwork) {

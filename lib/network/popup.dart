@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_model/electrum.dart';
+import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';

@@ -1,10 +1,12 @@
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'electrum.freezed.dart';
-part 'electrum.g.dart';
+part 'network.freezed.dart';
+part 'network.g.dart';
 
 enum ElectrumTypes { blockstream, bullbitcoin, custom }
+
+enum LiquidElectrumTypes { blockstream, custom }
 
 @freezed
 class ElectrumNetwork with _$ElectrumNetwork {
@@ -56,4 +58,40 @@ class ElectrumNetwork with _$ElectrumNetwork {
 
     return url;
   }
+}
+
+@freezed
+class LiquidElectrumNetwork with _$LiquidElectrumNetwork {
+  const factory LiquidElectrumNetwork.blockstream({
+    @Default('ssl://blockstreamLiquid:50002') String mainnet,
+    @Default('ssl://blockstreamLiquid:60002') String testnet,
+    @Default(true) bool validateDomain,
+    @Default('blockstream') String name,
+    @Default(LiquidElectrumTypes.blockstream) LiquidElectrumTypes type,
+  }) = _BlockstreamLiquidElectrumNetwork;
+
+  const factory LiquidElectrumNetwork.custom({
+    required String mainnet,
+    required String testnet,
+    @Default(true) bool validateDomain,
+    @Default('custom') String name,
+    @Default(LiquidElectrumTypes.custom) LiquidElectrumTypes type,
+  }) = _CustomLiquidElectrumNetwork;
+
+  const LiquidElectrumNetwork._();
+
+  factory LiquidElectrumNetwork.fromJson(Map<String, dynamic> json) =>
+      _$LiquidElectrumNetworkFromJson(json);
+
+  // String getNetworkUrl(bool isTestnet, {bool split = true}) {
+  //   String url;
+  //   if (isTestnet)
+  //     url = testnet;
+  //   else
+  //     url = mainnet;
+
+  //   if (split) url = url.split('://')[1];
+
+  //   return url;
+  // }
 }

@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'electrum.dart';
+part of 'network.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -1139,5 +1139,623 @@ abstract class _CustomElectrumNetwork extends ElectrumNetwork {
   @override
   @JsonKey(ignore: true)
   _$$CustomElectrumNetworkImplCopyWith<_$CustomElectrumNetworkImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+LiquidElectrumNetwork _$LiquidElectrumNetworkFromJson(
+    Map<String, dynamic> json) {
+  switch (json['runtimeType']) {
+    case 'blockstream':
+      return _BlockstreamLiquidElectrumNetwork.fromJson(json);
+    case 'custom':
+      return _CustomLiquidElectrumNetwork.fromJson(json);
+
+    default:
+      throw CheckedFromJsonException(
+          json,
+          'runtimeType',
+          'LiquidElectrumNetwork',
+          'Invalid union type "${json['runtimeType']}"!');
+  }
+}
+
+/// @nodoc
+mixin _$LiquidElectrumNetwork {
+  String get mainnet => throw _privateConstructorUsedError;
+  String get testnet => throw _privateConstructorUsedError;
+  bool get validateDomain => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  LiquidElectrumTypes get type => throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String mainnet, String testnet,
+            bool validateDomain, String name, LiquidElectrumTypes type)
+        blockstream,
+    required TResult Function(String mainnet, String testnet,
+            bool validateDomain, String name, LiquidElectrumTypes type)
+        custom,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        blockstream,
+    TResult? Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        custom,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        blockstream,
+    TResult Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        custom,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_BlockstreamLiquidElectrumNetwork value)
+        blockstream,
+    required TResult Function(_CustomLiquidElectrumNetwork value) custom,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_BlockstreamLiquidElectrumNetwork value)? blockstream,
+    TResult? Function(_CustomLiquidElectrumNetwork value)? custom,
+  }) =>
+      throw _privateConstructorUsedError;
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_BlockstreamLiquidElectrumNetwork value)? blockstream,
+    TResult Function(_CustomLiquidElectrumNetwork value)? custom,
+    required TResult orElse(),
+  }) =>
+      throw _privateConstructorUsedError;
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $LiquidElectrumNetworkCopyWith<LiquidElectrumNetwork> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $LiquidElectrumNetworkCopyWith<$Res> {
+  factory $LiquidElectrumNetworkCopyWith(LiquidElectrumNetwork value,
+          $Res Function(LiquidElectrumNetwork) then) =
+      _$LiquidElectrumNetworkCopyWithImpl<$Res, LiquidElectrumNetwork>;
+  @useResult
+  $Res call(
+      {String mainnet,
+      String testnet,
+      bool validateDomain,
+      String name,
+      LiquidElectrumTypes type});
+}
+
+/// @nodoc
+class _$LiquidElectrumNetworkCopyWithImpl<$Res,
+        $Val extends LiquidElectrumNetwork>
+    implements $LiquidElectrumNetworkCopyWith<$Res> {
+  _$LiquidElectrumNetworkCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? mainnet = null,
+    Object? testnet = null,
+    Object? validateDomain = null,
+    Object? name = null,
+    Object? type = null,
+  }) {
+    return _then(_value.copyWith(
+      mainnet: null == mainnet
+          ? _value.mainnet
+          : mainnet // ignore: cast_nullable_to_non_nullable
+              as String,
+      testnet: null == testnet
+          ? _value.testnet
+          : testnet // ignore: cast_nullable_to_non_nullable
+              as String,
+      validateDomain: null == validateDomain
+          ? _value.validateDomain
+          : validateDomain // ignore: cast_nullable_to_non_nullable
+              as bool,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as LiquidElectrumTypes,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$BlockstreamLiquidElectrumNetworkImplCopyWith<$Res>
+    implements $LiquidElectrumNetworkCopyWith<$Res> {
+  factory _$$BlockstreamLiquidElectrumNetworkImplCopyWith(
+          _$BlockstreamLiquidElectrumNetworkImpl value,
+          $Res Function(_$BlockstreamLiquidElectrumNetworkImpl) then) =
+      __$$BlockstreamLiquidElectrumNetworkImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String mainnet,
+      String testnet,
+      bool validateDomain,
+      String name,
+      LiquidElectrumTypes type});
+}
+
+/// @nodoc
+class __$$BlockstreamLiquidElectrumNetworkImplCopyWithImpl<$Res>
+    extends _$LiquidElectrumNetworkCopyWithImpl<$Res,
+        _$BlockstreamLiquidElectrumNetworkImpl>
+    implements _$$BlockstreamLiquidElectrumNetworkImplCopyWith<$Res> {
+  __$$BlockstreamLiquidElectrumNetworkImplCopyWithImpl(
+      _$BlockstreamLiquidElectrumNetworkImpl _value,
+      $Res Function(_$BlockstreamLiquidElectrumNetworkImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? mainnet = null,
+    Object? testnet = null,
+    Object? validateDomain = null,
+    Object? name = null,
+    Object? type = null,
+  }) {
+    return _then(_$BlockstreamLiquidElectrumNetworkImpl(
+      mainnet: null == mainnet
+          ? _value.mainnet
+          : mainnet // ignore: cast_nullable_to_non_nullable
+              as String,
+      testnet: null == testnet
+          ? _value.testnet
+          : testnet // ignore: cast_nullable_to_non_nullable
+              as String,
+      validateDomain: null == validateDomain
+          ? _value.validateDomain
+          : validateDomain // ignore: cast_nullable_to_non_nullable
+              as bool,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as LiquidElectrumTypes,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$BlockstreamLiquidElectrumNetworkImpl
+    extends _BlockstreamLiquidElectrumNetwork {
+  const _$BlockstreamLiquidElectrumNetworkImpl(
+      {this.mainnet = 'ssl://blockstreamLiquid:50002',
+      this.testnet = 'ssl://blockstreamLiquid:60002',
+      this.validateDomain = true,
+      this.name = 'blockstream',
+      this.type = LiquidElectrumTypes.blockstream,
+      final String? $type})
+      : $type = $type ?? 'blockstream',
+        super._();
+
+  factory _$BlockstreamLiquidElectrumNetworkImpl.fromJson(
+          Map<String, dynamic> json) =>
+      _$$BlockstreamLiquidElectrumNetworkImplFromJson(json);
+
+  @override
+  @JsonKey()
+  final String mainnet;
+  @override
+  @JsonKey()
+  final String testnet;
+  @override
+  @JsonKey()
+  final bool validateDomain;
+  @override
+  @JsonKey()
+  final String name;
+  @override
+  @JsonKey()
+  final LiquidElectrumTypes type;
+
+  @JsonKey(name: 'runtimeType')
+  final String $type;
+
+  @override
+  String toString() {
+    return 'LiquidElectrumNetwork.blockstream(mainnet: $mainnet, testnet: $testnet, validateDomain: $validateDomain, name: $name, type: $type)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BlockstreamLiquidElectrumNetworkImpl &&
+            (identical(other.mainnet, mainnet) || other.mainnet == mainnet) &&
+            (identical(other.testnet, testnet) || other.testnet == testnet) &&
+            (identical(other.validateDomain, validateDomain) ||
+                other.validateDomain == validateDomain) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.type, type) || other.type == type));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, mainnet, testnet, validateDomain, name, type);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BlockstreamLiquidElectrumNetworkImplCopyWith<
+          _$BlockstreamLiquidElectrumNetworkImpl>
+      get copyWith => __$$BlockstreamLiquidElectrumNetworkImplCopyWithImpl<
+          _$BlockstreamLiquidElectrumNetworkImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String mainnet, String testnet,
+            bool validateDomain, String name, LiquidElectrumTypes type)
+        blockstream,
+    required TResult Function(String mainnet, String testnet,
+            bool validateDomain, String name, LiquidElectrumTypes type)
+        custom,
+  }) {
+    return blockstream(mainnet, testnet, validateDomain, name, type);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        blockstream,
+    TResult? Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        custom,
+  }) {
+    return blockstream?.call(mainnet, testnet, validateDomain, name, type);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        blockstream,
+    TResult Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        custom,
+    required TResult orElse(),
+  }) {
+    if (blockstream != null) {
+      return blockstream(mainnet, testnet, validateDomain, name, type);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_BlockstreamLiquidElectrumNetwork value)
+        blockstream,
+    required TResult Function(_CustomLiquidElectrumNetwork value) custom,
+  }) {
+    return blockstream(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_BlockstreamLiquidElectrumNetwork value)? blockstream,
+    TResult? Function(_CustomLiquidElectrumNetwork value)? custom,
+  }) {
+    return blockstream?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_BlockstreamLiquidElectrumNetwork value)? blockstream,
+    TResult Function(_CustomLiquidElectrumNetwork value)? custom,
+    required TResult orElse(),
+  }) {
+    if (blockstream != null) {
+      return blockstream(this);
+    }
+    return orElse();
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$BlockstreamLiquidElectrumNetworkImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _BlockstreamLiquidElectrumNetwork extends LiquidElectrumNetwork {
+  const factory _BlockstreamLiquidElectrumNetwork(
+      {final String mainnet,
+      final String testnet,
+      final bool validateDomain,
+      final String name,
+      final LiquidElectrumTypes type}) = _$BlockstreamLiquidElectrumNetworkImpl;
+  const _BlockstreamLiquidElectrumNetwork._() : super._();
+
+  factory _BlockstreamLiquidElectrumNetwork.fromJson(
+          Map<String, dynamic> json) =
+      _$BlockstreamLiquidElectrumNetworkImpl.fromJson;
+
+  @override
+  String get mainnet;
+  @override
+  String get testnet;
+  @override
+  bool get validateDomain;
+  @override
+  String get name;
+  @override
+  LiquidElectrumTypes get type;
+  @override
+  @JsonKey(ignore: true)
+  _$$BlockstreamLiquidElectrumNetworkImplCopyWith<
+          _$BlockstreamLiquidElectrumNetworkImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$CustomLiquidElectrumNetworkImplCopyWith<$Res>
+    implements $LiquidElectrumNetworkCopyWith<$Res> {
+  factory _$$CustomLiquidElectrumNetworkImplCopyWith(
+          _$CustomLiquidElectrumNetworkImpl value,
+          $Res Function(_$CustomLiquidElectrumNetworkImpl) then) =
+      __$$CustomLiquidElectrumNetworkImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String mainnet,
+      String testnet,
+      bool validateDomain,
+      String name,
+      LiquidElectrumTypes type});
+}
+
+/// @nodoc
+class __$$CustomLiquidElectrumNetworkImplCopyWithImpl<$Res>
+    extends _$LiquidElectrumNetworkCopyWithImpl<$Res,
+        _$CustomLiquidElectrumNetworkImpl>
+    implements _$$CustomLiquidElectrumNetworkImplCopyWith<$Res> {
+  __$$CustomLiquidElectrumNetworkImplCopyWithImpl(
+      _$CustomLiquidElectrumNetworkImpl _value,
+      $Res Function(_$CustomLiquidElectrumNetworkImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? mainnet = null,
+    Object? testnet = null,
+    Object? validateDomain = null,
+    Object? name = null,
+    Object? type = null,
+  }) {
+    return _then(_$CustomLiquidElectrumNetworkImpl(
+      mainnet: null == mainnet
+          ? _value.mainnet
+          : mainnet // ignore: cast_nullable_to_non_nullable
+              as String,
+      testnet: null == testnet
+          ? _value.testnet
+          : testnet // ignore: cast_nullable_to_non_nullable
+              as String,
+      validateDomain: null == validateDomain
+          ? _value.validateDomain
+          : validateDomain // ignore: cast_nullable_to_non_nullable
+              as bool,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as LiquidElectrumTypes,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$CustomLiquidElectrumNetworkImpl extends _CustomLiquidElectrumNetwork {
+  const _$CustomLiquidElectrumNetworkImpl(
+      {required this.mainnet,
+      required this.testnet,
+      this.validateDomain = true,
+      this.name = 'custom',
+      this.type = LiquidElectrumTypes.custom,
+      final String? $type})
+      : $type = $type ?? 'custom',
+        super._();
+
+  factory _$CustomLiquidElectrumNetworkImpl.fromJson(
+          Map<String, dynamic> json) =>
+      _$$CustomLiquidElectrumNetworkImplFromJson(json);
+
+  @override
+  final String mainnet;
+  @override
+  final String testnet;
+  @override
+  @JsonKey()
+  final bool validateDomain;
+  @override
+  @JsonKey()
+  final String name;
+  @override
+  @JsonKey()
+  final LiquidElectrumTypes type;
+
+  @JsonKey(name: 'runtimeType')
+  final String $type;
+
+  @override
+  String toString() {
+    return 'LiquidElectrumNetwork.custom(mainnet: $mainnet, testnet: $testnet, validateDomain: $validateDomain, name: $name, type: $type)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CustomLiquidElectrumNetworkImpl &&
+            (identical(other.mainnet, mainnet) || other.mainnet == mainnet) &&
+            (identical(other.testnet, testnet) || other.testnet == testnet) &&
+            (identical(other.validateDomain, validateDomain) ||
+                other.validateDomain == validateDomain) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.type, type) || other.type == type));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, mainnet, testnet, validateDomain, name, type);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CustomLiquidElectrumNetworkImplCopyWith<_$CustomLiquidElectrumNetworkImpl>
+      get copyWith => __$$CustomLiquidElectrumNetworkImplCopyWithImpl<
+          _$CustomLiquidElectrumNetworkImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String mainnet, String testnet,
+            bool validateDomain, String name, LiquidElectrumTypes type)
+        blockstream,
+    required TResult Function(String mainnet, String testnet,
+            bool validateDomain, String name, LiquidElectrumTypes type)
+        custom,
+  }) {
+    return custom(mainnet, testnet, validateDomain, name, type);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        blockstream,
+    TResult? Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        custom,
+  }) {
+    return custom?.call(mainnet, testnet, validateDomain, name, type);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        blockstream,
+    TResult Function(String mainnet, String testnet, bool validateDomain,
+            String name, LiquidElectrumTypes type)?
+        custom,
+    required TResult orElse(),
+  }) {
+    if (custom != null) {
+      return custom(mainnet, testnet, validateDomain, name, type);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_BlockstreamLiquidElectrumNetwork value)
+        blockstream,
+    required TResult Function(_CustomLiquidElectrumNetwork value) custom,
+  }) {
+    return custom(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_BlockstreamLiquidElectrumNetwork value)? blockstream,
+    TResult? Function(_CustomLiquidElectrumNetwork value)? custom,
+  }) {
+    return custom?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_BlockstreamLiquidElectrumNetwork value)? blockstream,
+    TResult Function(_CustomLiquidElectrumNetwork value)? custom,
+    required TResult orElse(),
+  }) {
+    if (custom != null) {
+      return custom(this);
+    }
+    return orElse();
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$CustomLiquidElectrumNetworkImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _CustomLiquidElectrumNetwork extends LiquidElectrumNetwork {
+  const factory _CustomLiquidElectrumNetwork(
+      {required final String mainnet,
+      required final String testnet,
+      final bool validateDomain,
+      final String name,
+      final LiquidElectrumTypes type}) = _$CustomLiquidElectrumNetworkImpl;
+  const _CustomLiquidElectrumNetwork._() : super._();
+
+  factory _CustomLiquidElectrumNetwork.fromJson(Map<String, dynamic> json) =
+      _$CustomLiquidElectrumNetworkImpl.fromJson;
+
+  @override
+  String get mainnet;
+  @override
+  String get testnet;
+  @override
+  bool get validateDomain;
+  @override
+  String get name;
+  @override
+  LiquidElectrumTypes get type;
+  @override
+  @JsonKey(ignore: true)
+  _$$CustomLiquidElectrumNetworkImplCopyWith<_$CustomLiquidElectrumNetworkImpl>
       get copyWith => throw _privateConstructorUsedError;
 }

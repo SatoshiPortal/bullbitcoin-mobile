@@ -16,6 +16,7 @@ import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
@@ -88,10 +89,14 @@ Future setupLocator({bool fromTest = false}) async {
   final walletSensCreate = WalletSensitiveCreate();
   final walletSensTx = WalletSensitiveTx();
   final walletSensRepo = WalletSensitiveRepository();
+  final network = WalletNetwork();
+
+  locator.registerSingleton<WalletNetwork>(network);
 
   final networkCubit = NetworkCubit(
     hiveStorage: hiveStorage,
-    walletSync: WalletSync(),
+    // walletNetwork: WalletSync(),
+    walletNetwork: network,
   );
   locator.registerSingleton<NetworkCubit>(networkCubit);
 

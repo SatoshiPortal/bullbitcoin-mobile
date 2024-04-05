@@ -20,12 +20,18 @@ NetworkState _$NetworkStateFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$NetworkState {
-  bool get testnet => throw _privateConstructorUsedError;
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  bdk.Blockchain? get blockchain => throw _privateConstructorUsedError;
+  bool get testnet => throw _privateConstructorUsedError; // @JsonKey(
+//   includeFromJson: false,
+//   includeToJson: false,
+// )
+// bdk.Blockchain? blockchain,
   int get reloadWalletTimer => throw _privateConstructorUsedError;
   List<ElectrumNetwork> get networks => throw _privateConstructorUsedError;
   ElectrumTypes get selectedNetwork => throw _privateConstructorUsedError;
+  List<LiquidElectrumNetwork> get liquidNetworks =>
+      throw _privateConstructorUsedError;
+  LiquidElectrumTypes get selectedLiquidNetwork =>
+      throw _privateConstructorUsedError;
   bool get loadingNetworks => throw _privateConstructorUsedError;
   String get errLoadingNetworks => throw _privateConstructorUsedError;
   bool get networkConnected => throw _privateConstructorUsedError;
@@ -48,11 +54,11 @@ abstract class $NetworkStateCopyWith<$Res> {
   @useResult
   $Res call(
       {bool testnet,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      bdk.Blockchain? blockchain,
       int reloadWalletTimer,
       List<ElectrumNetwork> networks,
       ElectrumTypes selectedNetwork,
+      List<LiquidElectrumNetwork> liquidNetworks,
+      LiquidElectrumTypes selectedLiquidNetwork,
       bool loadingNetworks,
       String errLoadingNetworks,
       bool networkConnected,
@@ -77,10 +83,11 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
   @override
   $Res call({
     Object? testnet = null,
-    Object? blockchain = freezed,
     Object? reloadWalletTimer = null,
     Object? networks = null,
     Object? selectedNetwork = null,
+    Object? liquidNetworks = null,
+    Object? selectedLiquidNetwork = null,
     Object? loadingNetworks = null,
     Object? errLoadingNetworks = null,
     Object? networkConnected = null,
@@ -93,10 +100,6 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
           ? _value.testnet
           : testnet // ignore: cast_nullable_to_non_nullable
               as bool,
-      blockchain: freezed == blockchain
-          ? _value.blockchain
-          : blockchain // ignore: cast_nullable_to_non_nullable
-              as bdk.Blockchain?,
       reloadWalletTimer: null == reloadWalletTimer
           ? _value.reloadWalletTimer
           : reloadWalletTimer // ignore: cast_nullable_to_non_nullable
@@ -109,6 +112,14 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
           ? _value.selectedNetwork
           : selectedNetwork // ignore: cast_nullable_to_non_nullable
               as ElectrumTypes,
+      liquidNetworks: null == liquidNetworks
+          ? _value.liquidNetworks
+          : liquidNetworks // ignore: cast_nullable_to_non_nullable
+              as List<LiquidElectrumNetwork>,
+      selectedLiquidNetwork: null == selectedLiquidNetwork
+          ? _value.selectedLiquidNetwork
+          : selectedLiquidNetwork // ignore: cast_nullable_to_non_nullable
+              as LiquidElectrumTypes,
       loadingNetworks: null == loadingNetworks
           ? _value.loadingNetworks
           : loadingNetworks // ignore: cast_nullable_to_non_nullable
@@ -159,11 +170,11 @@ abstract class _$$NetworkStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {bool testnet,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      bdk.Blockchain? blockchain,
       int reloadWalletTimer,
       List<ElectrumNetwork> networks,
       ElectrumTypes selectedNetwork,
+      List<LiquidElectrumNetwork> liquidNetworks,
+      LiquidElectrumTypes selectedLiquidNetwork,
       bool loadingNetworks,
       String errLoadingNetworks,
       bool networkConnected,
@@ -187,10 +198,11 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? testnet = null,
-    Object? blockchain = freezed,
     Object? reloadWalletTimer = null,
     Object? networks = null,
     Object? selectedNetwork = null,
+    Object? liquidNetworks = null,
+    Object? selectedLiquidNetwork = null,
     Object? loadingNetworks = null,
     Object? errLoadingNetworks = null,
     Object? networkConnected = null,
@@ -203,10 +215,6 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
           ? _value.testnet
           : testnet // ignore: cast_nullable_to_non_nullable
               as bool,
-      blockchain: freezed == blockchain
-          ? _value.blockchain
-          : blockchain // ignore: cast_nullable_to_non_nullable
-              as bdk.Blockchain?,
       reloadWalletTimer: null == reloadWalletTimer
           ? _value.reloadWalletTimer
           : reloadWalletTimer // ignore: cast_nullable_to_non_nullable
@@ -219,6 +227,14 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
           ? _value.selectedNetwork
           : selectedNetwork // ignore: cast_nullable_to_non_nullable
               as ElectrumTypes,
+      liquidNetworks: null == liquidNetworks
+          ? _value._liquidNetworks
+          : liquidNetworks // ignore: cast_nullable_to_non_nullable
+              as List<LiquidElectrumNetwork>,
+      selectedLiquidNetwork: null == selectedLiquidNetwork
+          ? _value.selectedLiquidNetwork
+          : selectedLiquidNetwork // ignore: cast_nullable_to_non_nullable
+              as LiquidElectrumTypes,
       loadingNetworks: null == loadingNetworks
           ? _value.loadingNetworks
           : loadingNetworks // ignore: cast_nullable_to_non_nullable
@@ -252,10 +268,11 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
 class _$NetworkStateImpl extends _NetworkState {
   const _$NetworkStateImpl(
       {this.testnet = false,
-      @JsonKey(includeFromJson: false, includeToJson: false) this.blockchain,
       this.reloadWalletTimer = 20,
       final List<ElectrumNetwork> networks = const [],
       this.selectedNetwork = ElectrumTypes.bullbitcoin,
+      final List<LiquidElectrumNetwork> liquidNetworks = const [],
+      this.selectedLiquidNetwork = LiquidElectrumTypes.blockstream,
       this.loadingNetworks = false,
       this.errLoadingNetworks = '',
       this.networkConnected = false,
@@ -263,6 +280,7 @@ class _$NetworkStateImpl extends _NetworkState {
       this.tempNetwork,
       this.tempNetworkDetails})
       : _networks = networks,
+        _liquidNetworks = liquidNetworks,
         super._();
 
   factory _$NetworkStateImpl.fromJson(Map<String, dynamic> json) =>
@@ -271,9 +289,11 @@ class _$NetworkStateImpl extends _NetworkState {
   @override
   @JsonKey()
   final bool testnet;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final bdk.Blockchain? blockchain;
+// @JsonKey(
+//   includeFromJson: false,
+//   includeToJson: false,
+// )
+// bdk.Blockchain? blockchain,
   @override
   @JsonKey()
   final int reloadWalletTimer;
@@ -289,6 +309,18 @@ class _$NetworkStateImpl extends _NetworkState {
   @override
   @JsonKey()
   final ElectrumTypes selectedNetwork;
+  final List<LiquidElectrumNetwork> _liquidNetworks;
+  @override
+  @JsonKey()
+  List<LiquidElectrumNetwork> get liquidNetworks {
+    if (_liquidNetworks is EqualUnmodifiableListView) return _liquidNetworks;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_liquidNetworks);
+  }
+
+  @override
+  @JsonKey()
+  final LiquidElectrumTypes selectedLiquidNetwork;
   @override
   @JsonKey()
   final bool loadingNetworks;
@@ -309,7 +341,7 @@ class _$NetworkStateImpl extends _NetworkState {
 
   @override
   String toString() {
-    return 'NetworkState(testnet: $testnet, blockchain: $blockchain, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, networkErrorOpened: $networkErrorOpened, tempNetwork: $tempNetwork, tempNetworkDetails: $tempNetworkDetails)';
+    return 'NetworkState(testnet: $testnet, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, liquidNetworks: $liquidNetworks, selectedLiquidNetwork: $selectedLiquidNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, networkErrorOpened: $networkErrorOpened, tempNetwork: $tempNetwork, tempNetworkDetails: $tempNetworkDetails)';
   }
 
   @override
@@ -318,13 +350,15 @@ class _$NetworkStateImpl extends _NetworkState {
         (other.runtimeType == runtimeType &&
             other is _$NetworkStateImpl &&
             (identical(other.testnet, testnet) || other.testnet == testnet) &&
-            (identical(other.blockchain, blockchain) ||
-                other.blockchain == blockchain) &&
             (identical(other.reloadWalletTimer, reloadWalletTimer) ||
                 other.reloadWalletTimer == reloadWalletTimer) &&
             const DeepCollectionEquality().equals(other._networks, _networks) &&
             (identical(other.selectedNetwork, selectedNetwork) ||
                 other.selectedNetwork == selectedNetwork) &&
+            const DeepCollectionEquality()
+                .equals(other._liquidNetworks, _liquidNetworks) &&
+            (identical(other.selectedLiquidNetwork, selectedLiquidNetwork) ||
+                other.selectedLiquidNetwork == selectedLiquidNetwork) &&
             (identical(other.loadingNetworks, loadingNetworks) ||
                 other.loadingNetworks == loadingNetworks) &&
             (identical(other.errLoadingNetworks, errLoadingNetworks) ||
@@ -344,10 +378,11 @@ class _$NetworkStateImpl extends _NetworkState {
   int get hashCode => Object.hash(
       runtimeType,
       testnet,
-      blockchain,
       reloadWalletTimer,
       const DeepCollectionEquality().hash(_networks),
       selectedNetwork,
+      const DeepCollectionEquality().hash(_liquidNetworks),
+      selectedLiquidNetwork,
       loadingNetworks,
       errLoadingNetworks,
       networkConnected,
@@ -372,11 +407,11 @@ class _$NetworkStateImpl extends _NetworkState {
 abstract class _NetworkState extends NetworkState {
   const factory _NetworkState(
       {final bool testnet,
-      @JsonKey(includeFromJson: false, includeToJson: false)
-      final bdk.Blockchain? blockchain,
       final int reloadWalletTimer,
       final List<ElectrumNetwork> networks,
       final ElectrumTypes selectedNetwork,
+      final List<LiquidElectrumNetwork> liquidNetworks,
+      final LiquidElectrumTypes selectedLiquidNetwork,
       final bool loadingNetworks,
       final String errLoadingNetworks,
       final bool networkConnected,
@@ -390,15 +425,20 @@ abstract class _NetworkState extends NetworkState {
 
   @override
   bool get testnet;
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  bdk.Blockchain? get blockchain;
-  @override
+  @override // @JsonKey(
+//   includeFromJson: false,
+//   includeToJson: false,
+// )
+// bdk.Blockchain? blockchain,
   int get reloadWalletTimer;
   @override
   List<ElectrumNetwork> get networks;
   @override
   ElectrumTypes get selectedNetwork;
+  @override
+  List<LiquidElectrumNetwork> get liquidNetworks;
+  @override
+  LiquidElectrumTypes get selectedLiquidNetwork;
   @override
   bool get loadingNetworks;
   @override

@@ -9,6 +9,7 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
@@ -88,7 +89,10 @@ class _SendPageState extends State<SendPage> {
       fileStorage: locator<FileStorage>(),
       walletRepository: locator<WalletRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
+      // walletNetwork: locator<NetworkCubit>(),
+      walletNetwork: locator<WalletNetwork>(),
       networkCubit: locator<NetworkCubit>(),
+
       homeCubit: locator<HomeCubit>(),
       networkFeesCubit: NetworkFeesCubit(
         hiveStorage: locator<HiveStorage>(),

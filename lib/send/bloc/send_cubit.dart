@@ -12,6 +12,7 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
@@ -54,6 +55,7 @@ class SendCubit extends Cubit<SendState> {
     required this.swapBoltz,
     required bool openScanner,
     required this.homeCubit,
+    required this.walletNetwork,
   }) : super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
@@ -83,6 +85,7 @@ class SendCubit extends Cubit<SendState> {
   final WalletSensitiveRepository walletSensRepository;
   final WalletCreate walletCreate;
   final NetworkCubit networkCubit;
+  final WalletNetwork walletNetwork;
   final NetworkFeesCubit networkFeesCubit;
   final CurrencyCubit currencyCubit;
   final HomeCubit homeCubit;
@@ -420,12 +423,17 @@ class SendCubit extends Cubit<SendState> {
 
   void sendClicked() async {
     if (state.selectedWalletBloc == null) return;
+    final (blockchain, errB) = walletNetwork.blockchain;
+    if (errB != null) {
+      emit(state.copyWith(errSending: errB.toString()));
+      return;
+    }
 
     emit(state.copyWith(sending: true, errSending: ''));
 
     final (wtxid, err) = await walletTx.broadcastTxWithWallet(
       psbt: state.psbtSigned!,
-      blockchain: networkCubit.state.blockchain!,
+      blockchain: blockchain!,
       wallet: state.selectedWalletBloc!.state.wallet!,
       address: state.address,
       note: state.note,

@@ -4,6 +4,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -23,6 +24,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     required this.walletTx,
     required this.homeCubit,
     required this.networkCubit,
+    required this.walletNetwork,
   }) : super(const BroadcastTxState()) {
     clearErrors();
   }
@@ -33,6 +35,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   final WalletTx walletTx;
   final HomeCubit homeCubit;
   final NetworkCubit networkCubit;
+  final WalletNetwork walletNetwork;
 
   @override
   void onChange(Change<BroadcastTxState> change) {
@@ -390,12 +393,13 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     );
     final tx = state.tx;
     final bdkTx = await bdk.Transaction.create(transactionBytes: hex.decode(tx));
-    final blockchain = networkCubit.state.blockchain;
-    if (blockchain == null) {
+
+    final (blockchain, errB) = walletNetwork.blockchain;
+    if (errB == null) {
       emit(
         state.copyWith(
           broadcastingTx: false,
-          errBroadcastingTx: 'No Blockchain. Check Electrum Server Settings.',
+          errBroadcastingTx: errB.toString(),
         ),
       );
       return;
@@ -403,7 +407,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
 
     final err = await walletTx.broadcastTx(
       tx: bdkTx,
-      blockchain: blockchain,
+      blockchain: blockchain!,
     );
     if (err != null) {
       // final error =

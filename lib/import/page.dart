@@ -53,6 +53,7 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
       walletRepository: locator<WalletRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
       networkCubit: locator<NetworkCubit>(),
+      // walletNetwork: locator<WalletNetwork>(),
     );
 
     wordsCubit = locator<WordsCubit>();

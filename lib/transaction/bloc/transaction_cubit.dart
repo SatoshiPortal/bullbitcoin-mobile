@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
@@ -14,7 +15,6 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
@@ -40,7 +40,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.walletUpdate,
     required this.mempoolAPI,
     required this.settingsCubit,
-    required this.networkCubit,
+    required this.walletNetwork,
     required this.networkFeesCubit,
   }) : super(TransactionState(tx: tx)) {
     if (tx.isReceived())
@@ -69,7 +69,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   final WalletSensitiveCreate walletSensCreate;
   final SettingsCubit settingsCubit;
-  final NetworkCubit networkCubit;
+  final WalletNetwork walletNetwork;
   final NetworkFeesCubit networkFeesCubit;
 
   void loadTx() async {
@@ -295,12 +295,22 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(sendingTx: true, errSendingTx: '', buildingTx: false));
     final tx = state.updatedTx!;
     final wallet = walletBloc.state.wallet!;
-    final blockchain = networkCubit.state.blockchain!;
+    final (blockchain, errB) = walletNetwork.blockchain;
+    if (errB != null) {
+      emit(
+        state.copyWith(
+          sendingTx: false,
+          errSendingTx: errB.toString(),
+        ),
+      );
+      return;
+    }
+    // final blockchain = networkCubit.state.blockchain;
     final (wtxid, err) = await walletTx.broadcastTxWithWallet(
       psbt: tx.psbt!,
       address: tx.toAddress!,
       wallet: wallet,
-      blockchain: blockchain,
+      blockchain: blockchain!,
       transaction: tx,
     );
     if (err != null) {

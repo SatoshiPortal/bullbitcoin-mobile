@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
 import 'package:bb_mobile/_model/currency.dart';
-import 'package:bb_mobile/_model/electrum.dart';
+import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -15,14 +15,16 @@ part 'state.g.dart';
 class NetworkState with _$NetworkState {
   const factory NetworkState({
     @Default(false) bool testnet,
-    @JsonKey(
-      includeFromJson: false,
-      includeToJson: false,
-    )
-    bdk.Blockchain? blockchain,
+    // @JsonKey(
+    //   includeFromJson: false,
+    //   includeToJson: false,
+    // )
+    // bdk.Blockchain? blockchain,
     @Default(20) int reloadWalletTimer,
     @Default([]) List<ElectrumNetwork> networks,
     @Default(ElectrumTypes.bullbitcoin) ElectrumTypes selectedNetwork,
+    @Default([]) List<LiquidElectrumNetwork> liquidNetworks,
+    @Default(LiquidElectrumTypes.blockstream) LiquidElectrumTypes selectedLiquidNetwork,
     @Default(false) bool loadingNetworks,
     @Default('') String errLoadingNetworks,
     @Default(false) bool networkConnected,

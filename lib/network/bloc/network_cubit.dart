@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/_model/electrum.dart';
+import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/state.dart';
@@ -14,13 +14,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class NetworkCubit extends Cubit<NetworkState> {
   NetworkCubit({
     required this.hiveStorage,
-    required this.walletSync,
+    required this.walletNetwork,
   }) : super(const NetworkState()) {
     init();
   }
 
   final HiveStorage hiveStorage;
-  final WalletSync walletSync;
+  final WalletNetwork walletNetwork;
   HomeCubit? homeCubit;
 
   @override
@@ -126,7 +126,7 @@ class NetworkCubit extends Cubit<NetworkState> {
     final selectedNetwork = state.getNetwork();
     if (selectedNetwork == null) return;
 
-    final (blockchain, err) = await walletSync.createBlockChain(
+    final err = await walletNetwork.createBlockChain(
       stopGap: selectedNetwork.stopGap,
       timeout: selectedNetwork.timeout,
       retry: selectedNetwork.retry,
@@ -145,7 +145,6 @@ class NetworkCubit extends Cubit<NetworkState> {
 
       emit(
         state.copyWith(
-          blockchain: null,
           errLoadingNetworks: err.toString(),
           networkErrorOpened: true,
         ),
@@ -153,7 +152,7 @@ class NetworkCubit extends Cubit<NetworkState> {
       return;
     }
 
-    emit(state.copyWith(blockchain: blockchain, networkConnected: true));
+    emit(state.copyWith(networkConnected: true));
   }
 
   void networkTypeTempChanged(ElectrumTypes type) {

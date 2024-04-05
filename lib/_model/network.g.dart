@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'electrum.dart';
+part of 'network.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
@@ -96,5 +96,60 @@ Map<String, dynamic> _$$CustomElectrumNetworkImplToJson(
       'validateDomain': instance.validateDomain,
       'name': instance.name,
       'type': _$ElectrumTypesEnumMap[instance.type]!,
+      'runtimeType': instance.$type,
+    };
+
+_$BlockstreamLiquidElectrumNetworkImpl
+    _$$BlockstreamLiquidElectrumNetworkImplFromJson(
+            Map<String, dynamic> json) =>
+        _$BlockstreamLiquidElectrumNetworkImpl(
+          mainnet:
+              json['mainnet'] as String? ?? 'ssl://blockstreamLiquid:50002',
+          testnet:
+              json['testnet'] as String? ?? 'ssl://blockstreamLiquid:60002',
+          validateDomain: json['validateDomain'] as bool? ?? true,
+          name: json['name'] as String? ?? 'blockstream',
+          type:
+              $enumDecodeNullable(_$LiquidElectrumTypesEnumMap, json['type']) ??
+                  LiquidElectrumTypes.blockstream,
+          $type: json['runtimeType'] as String?,
+        );
+
+Map<String, dynamic> _$$BlockstreamLiquidElectrumNetworkImplToJson(
+        _$BlockstreamLiquidElectrumNetworkImpl instance) =>
+    <String, dynamic>{
+      'mainnet': instance.mainnet,
+      'testnet': instance.testnet,
+      'validateDomain': instance.validateDomain,
+      'name': instance.name,
+      'type': _$LiquidElectrumTypesEnumMap[instance.type]!,
+      'runtimeType': instance.$type,
+    };
+
+const _$LiquidElectrumTypesEnumMap = {
+  LiquidElectrumTypes.blockstream: 'blockstream',
+  LiquidElectrumTypes.custom: 'custom',
+};
+
+_$CustomLiquidElectrumNetworkImpl _$$CustomLiquidElectrumNetworkImplFromJson(
+        Map<String, dynamic> json) =>
+    _$CustomLiquidElectrumNetworkImpl(
+      mainnet: json['mainnet'] as String,
+      testnet: json['testnet'] as String,
+      validateDomain: json['validateDomain'] as bool? ?? true,
+      name: json['name'] as String? ?? 'custom',
+      type: $enumDecodeNullable(_$LiquidElectrumTypesEnumMap, json['type']) ??
+          LiquidElectrumTypes.custom,
+      $type: json['runtimeType'] as String?,
+    );
+
+Map<String, dynamic> _$$CustomLiquidElectrumNetworkImplToJson(
+        _$CustomLiquidElectrumNetworkImpl instance) =>
+    <String, dynamic>{
+      'mainnet': instance.mainnet,
+      'testnet': instance.testnet,
+      'validateDomain': instance.validateDomain,
+      'name': instance.name,
+      'type': _$LiquidElectrumTypesEnumMap[instance.type]!,
       'runtimeType': instance.$type,
     };

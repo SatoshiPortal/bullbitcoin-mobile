@@ -17,6 +17,14 @@ _$NetworkStateImpl _$$NetworkStateImplFromJson(Map<String, dynamic> json) =>
       selectedNetwork: $enumDecodeNullable(
               _$ElectrumTypesEnumMap, json['selectedNetwork']) ??
           ElectrumTypes.bullbitcoin,
+      liquidNetworks: (json['liquidNetworks'] as List<dynamic>?)
+              ?.map((e) =>
+                  LiquidElectrumNetwork.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      selectedLiquidNetwork: $enumDecodeNullable(
+              _$LiquidElectrumTypesEnumMap, json['selectedLiquidNetwork']) ??
+          LiquidElectrumTypes.blockstream,
       loadingNetworks: json['loadingNetworks'] as bool? ?? false,
       errLoadingNetworks: json['errLoadingNetworks'] as String? ?? '',
       networkConnected: json['networkConnected'] as bool? ?? false,
@@ -35,6 +43,9 @@ Map<String, dynamic> _$$NetworkStateImplToJson(_$NetworkStateImpl instance) =>
       'reloadWalletTimer': instance.reloadWalletTimer,
       'networks': instance.networks,
       'selectedNetwork': _$ElectrumTypesEnumMap[instance.selectedNetwork]!,
+      'liquidNetworks': instance.liquidNetworks,
+      'selectedLiquidNetwork':
+          _$LiquidElectrumTypesEnumMap[instance.selectedLiquidNetwork]!,
       'loadingNetworks': instance.loadingNetworks,
       'errLoadingNetworks': instance.errLoadingNetworks,
       'networkConnected': instance.networkConnected,
@@ -47,4 +58,9 @@ const _$ElectrumTypesEnumMap = {
   ElectrumTypes.blockstream: 'blockstream',
   ElectrumTypes.bullbitcoin: 'bullbitcoin',
   ElectrumTypes.custom: 'custom',
+};
+
+const _$LiquidElectrumTypesEnumMap = {
+  LiquidElectrumTypes.blockstream: 'blockstream',
+  LiquidElectrumTypes.custom: 'custom',
 };
