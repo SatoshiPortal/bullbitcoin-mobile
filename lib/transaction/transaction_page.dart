@@ -66,7 +66,7 @@ class TxPage extends StatelessWidget {
       walletTx: locator<WalletTx>(),
       walletSensTx: locator<WalletSensitiveTx>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
-      walletSensRepository: locator<WalletSensitiveRepository>(),
+      walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       walletAddress: locator<WalletAddress>(),
       settingsCubit: locator<SettingsCubit>(),
       // networkCubit: locator<NetworkCubit>(),

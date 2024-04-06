@@ -2,16 +2,15 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/_pkg/wallet/utxo.dart';
@@ -936,29 +935,29 @@ class WalletTx {
     required String pset,
     required lwk.Wallet lwkWallet,
     required Wallet wallet,
-    required SecureStorage secureStorage,
+    // required SecureStorage secureStorage,
+    required Seed seed,
   }) async {
     try {
-      final (seed, sErr) = await WalletSensitiveRepository().readSeed(
-        fingerprintIndex: wallet.getRelatedSeedStorageString(),
-        secureStore: secureStorage,
-      );
+      // final (seed, sErr) = await locator<WalletSensitiveStorageRepository>().readSeed(
+      //   fingerprintIndex: wallet.getRelatedSeedStorageString(),
+      // );
 
-      if (sErr != null) {
-        return (
-          null,
-          Err(
-            sErr.toString(),
-            title: 'Error occurred while finalizing transaction',
-            solution: 'Please try again.',
-          ),
-        );
-      }
+      // if (sErr != null) {
+      //   return (
+      //     null,
+      //     Err(
+      //       sErr.toString(),
+      //       title: 'Error occurred while finalizing transaction',
+      //       solution: 'Please try again.',
+      //     ),
+      //   );
+      // }
 
       final signedTx = await lwkWallet.sign(
         network: wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet,
         pset: pset,
-        mnemonic: seed!.mnemonic,
+        mnemonic: seed.mnemonic,
       );
       return (signedTx, null);
     } catch (e) {

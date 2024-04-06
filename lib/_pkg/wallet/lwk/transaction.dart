@@ -1,11 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 class LWKTransactions {
@@ -421,29 +420,13 @@ class LWKTransactions {
     required String pset,
     required lwk.Wallet lwkWallet,
     required Wallet wallet,
-    required SecureStorage secureStorage,
+    required Seed seed,
   }) async {
     try {
-      final (seed, sErr) = await WalletSensitiveRepository().readSeed(
-        fingerprintIndex: wallet.getRelatedSeedStorageString(),
-        secureStore: secureStorage,
-      );
-
-      if (sErr != null) {
-        return (
-          null,
-          Err(
-            sErr.toString(),
-            title: 'Error occurred while finalizing transaction',
-            solution: 'Please try again.',
-          ),
-        );
-      }
-
       final signedTx = await lwkWallet.sign(
         network: wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet,
         pset: pset,
-        mnemonic: seed!.mnemonic,
+        mnemonic: seed.mnemonic,
       );
       return (signedTx, null);
     } catch (e) {

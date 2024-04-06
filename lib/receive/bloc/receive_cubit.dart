@@ -37,7 +37,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
   final WalletsStorageRepository walletsStorageRepository;
-  final WalletSensitiveRepository walletSensitiveRepository;
+  final WalletSensitiveStorageRepository walletSensitiveRepository;
   final NetworkCubit networkCubit;
   final CurrencyCubit currencyCubit;
   final WalletTx walletTx;

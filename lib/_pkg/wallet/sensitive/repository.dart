@@ -5,20 +5,24 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 
-class WalletSensitiveRepository {
+class WalletSensitiveStorageRepository {
+  WalletSensitiveStorageRepository({required SecureStorage secureStorage})
+      : _secureStorage = secureStorage;
+
+  final SecureStorage _secureStorage;
+
   Future<Err?> newSeed({
     required Seed seed,
-    required SecureStorage secureStore,
   }) async {
     try {
       final fingerprintIndex = seed.getSeedStorageString();
-      final (fingerprintIndexes, err) = await secureStore.getValue(StorageKeys.seeds);
+      final (fingerprintIndexes, err) = await _secureStorage.getValue(StorageKeys.seeds);
       if (err != null) {
         // no seeds exist make this the first
         final jsn = jsonEncode({
           'seeds': [fingerprintIndex],
         });
-        final _ = await secureStore.saveValue(
+        final _ = await _secureStorage.saveValue(
           key: StorageKeys.seeds,
           value: jsn,
         );
@@ -38,13 +42,13 @@ class WalletSensitiveRepository {
         final jsn = jsonEncode({
           'seeds': [...fingerprints],
         });
-        final _ = await secureStore.saveValue(
+        final _ = await _secureStorage.saveValue(
           key: StorageKeys.seeds,
           value: jsn,
         );
       }
 
-      await secureStore.saveValue(
+      await _secureStorage.saveValue(
         key: fingerprintIndex,
         value: jsonEncode(seed),
       );
@@ -61,10 +65,9 @@ class WalletSensitiveRepository {
   Future<Err?> newPassphrase({
     required Passphrase passphrase,
     required String seedFingerprintIndex,
-    required SecureStorage secureStore,
   }) async {
     try {
-      final (seedString, err) = await secureStore.getValue(seedFingerprintIndex);
+      final (seedString, err) = await _secureStorage.getValue(seedFingerprintIndex);
       if (err != null) {
         // no seeds exist
         return Err('No Seed Exists!');
@@ -79,7 +82,7 @@ class WalletSensitiveRepository {
       }
       final updatedPassphrases = List<Passphrase>.from(seed.passphrases)..add(passphrase);
       final updatedSeed = seed.copyWith(passphrases: updatedPassphrases);
-      await secureStore.saveValue(
+      await _secureStorage.saveValue(
         key: seedFingerprintIndex,
         value: jsonEncode(updatedSeed),
       );
@@ -95,10 +98,9 @@ class WalletSensitiveRepository {
 
   Future<(Seed?, Err?)> readSeed({
     required String fingerprintIndex,
-    required SecureStorage secureStore,
   }) async {
     try {
-      final (jsn, err) = await secureStore.getValue(fingerprintIndex);
+      final (jsn, err) = await _secureStorage.getValue(fingerprintIndex);
       if (err != null) throw err;
       final obj = jsonDecode(jsn!) as Map<String, dynamic>;
       final seed = Seed.fromJson(obj);
@@ -142,10 +144,9 @@ class WalletSensitiveRepository {
 
   Future<Err?> deleteSeed({
     required String fingerprint,
-    required SecureStorage storage,
   }) async {
     try {
-      final (fingerprintIdxs, err) = await storage.getValue(StorageKeys.seeds);
+      final (fingerprintIdxs, err) = await _secureStorage.getValue(StorageKeys.seeds);
       if (err != null) throw err;
 
       final fingerprintsJson = jsonDecode(fingerprintIdxs!)['seeds'] as List<dynamic>;
@@ -161,12 +162,12 @@ class WalletSensitiveRepository {
         'seeds': [...fingerprints],
       });
 
-      final _ = await storage.saveValue(
+      final _ = await _secureStorage.saveValue(
         key: StorageKeys.seeds,
         value: jsn,
       );
 
-      await storage.deleteValue(fingerprint);
+      await _secureStorage.deleteValue(fingerprint);
 
       return null;
     } on Exception catch (e) {
@@ -181,10 +182,9 @@ class WalletSensitiveRepository {
   Future<Err?> deletePassphrase({
     required String passphraseFingerprintIndex,
     required String seedFingerprintIndex,
-    required SecureStorage secureStore,
   }) async {
     try {
-      final (seedString, err) = await secureStore.getValue(seedFingerprintIndex);
+      final (seedString, err) = await _secureStorage.getValue(seedFingerprintIndex);
       if (err != null) {
         // no seeds exist
         return Err('No Seed Exists!');
@@ -200,7 +200,7 @@ class WalletSensitiveRepository {
 
       seed = seed.copyWith(passphrases: passphrases);
 
-      await secureStore.saveValue(
+      await _secureStorage.saveValue(
         key: seedFingerprintIndex,
         value: jsonEncode(seed),
       );

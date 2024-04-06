@@ -42,7 +42,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   final WalletSync walletRead;
   final WalletsStorageRepository walletsStorageRepository;
   final HomeCubit homeCubit;
-  final WalletSensitiveRepository walletSensRepository;
+  final WalletSensitiveStorageRepository walletSensRepository;
 
   final FileStorage fileStorage;
 
@@ -96,7 +96,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   void loadBackupClicked() async {
     final (seed, err) = await walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
-      secureStore: secureStorage,
     );
     if (err != null) {
       emit(state.copyWith(errTestingBackup: err.toString()));
@@ -243,7 +242,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final password = state.testBackupPassword;
     final (seed, err) = await walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
-      secureStore: secureStorage,
     );
 
     if (err != null) {
@@ -329,7 +327,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(savingFile: true, errSavingFile: ''));
     final (seed, err) = await walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
-      secureStore: secureStorage,
     );
 
     if (err != null) {
@@ -414,7 +411,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       final errr = await walletSensRepository.deletePassphrase(
         passphraseFingerprintIndex: sourceFingerprint,
         seedFingerprintIndex: mnemonicFingerprint,
-        secureStore: secureStorage,
       );
       if (errr != null) {
         emit(
@@ -447,7 +443,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     if (!walletInUse) {
       final errr = await walletSensRepository.deleteSeed(
         fingerprint: state.wallet.getRelatedSeedStorageString(),
-        storage: secureStorage,
       );
       if (errr != null) {
         emit(

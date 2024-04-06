@@ -79,7 +79,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
   final WalletsStorageRepository walletsStorageRepository;
-  final WalletSensitiveRepository walletSensitiveRepository;
+  final WalletSensitiveStorageRepository walletSensitiveRepository;
   final WalletTx walletTransaction;
   final NetworkCubit networkCubit;
   final SwapBoltz swapBoltz;

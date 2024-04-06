@@ -47,6 +47,21 @@ class WalletsRepository {
     return null;
   }
 
+  Err? removeWallet(Wallet wallet) {
+    try {
+      switch (wallet.baseWalletType) {
+        case BaseWalletType.Bitcoin:
+          return removeBdkWallet(wallet);
+        case BaseWalletType.Liquid:
+          return removeLwkWallet(wallet);
+        case BaseWalletType.Lightning:
+          return Err('Wallet type not supported');
+      }
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
+
   Err? replaceBdkWallet(Wallet wallet, bdk.Wallet bdkWallet) {
     final exits = _bdkWallets.any((element) => element.id == wallet.id);
     if (!exits) return Err('Wallet does not exist');

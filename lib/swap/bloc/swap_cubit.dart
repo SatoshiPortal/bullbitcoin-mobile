@@ -40,7 +40,7 @@ class SwapCubit extends Cubit<SwapState> {
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
   final WalletsStorageRepository walletsStorageRepository;
-  final WalletSensitiveRepository walletSensitiveRepository;
+  final WalletSensitiveStorageRepository walletSensitiveRepository;
   final WalletTx walletTransaction;
   final NetworkCubit networkCubit;
   final SwapBoltz swapBoltz;
@@ -90,7 +90,6 @@ class SwapCubit extends Cubit<SwapState> {
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
     final (seed, errReadingSeed) = await walletSensitiveRepository.readSeed(
       fingerprintIndex: bloc.state.wallet!.getRelatedSeedStorageString(),
-      secureStore: secureStorage,
     );
     if (errReadingSeed != null) {
       emit(state.copyWith(errCreatingSwapInv: errReadingSeed.toString(), generatingSwapInv: false));
@@ -157,7 +156,6 @@ class SwapCubit extends Cubit<SwapState> {
 
     final (seed, errReadingSeed) = await walletSensitiveRepository.readSeed(
       fingerprintIndex: wallet.getRelatedSeedStorageString(),
-      secureStore: secureStorage,
     );
     if (errReadingSeed != null) {
       emit(state.copyWith(errCreatingSwapInv: errReadingSeed.toString(), generatingSwapInv: false));

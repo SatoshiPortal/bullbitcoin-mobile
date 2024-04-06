@@ -57,7 +57,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
   final WalletsStorageRepository walletsStorageRepository;
-  final WalletSensitiveRepository walletSensRepository;
+  final WalletSensitiveStorageRepository walletSensRepository;
   final NetworkCubit networkCubit;
 
   void backClicked() {
@@ -550,7 +550,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
       // if seed exists - this will error with Seed Exists, but we ignore it
       // else we create the seed
-      await walletSensRepository.newSeed(seed: seed!, secureStore: secureStorage);
+      await walletSensRepository.newSeed(seed: seed!);
 
       if (state.passPhrase.isNotEmpty) {
         final passPhrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
@@ -560,7 +560,6 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
         final err = await walletSensRepository.newPassphrase(
           passphrase: passphrase,
-          secureStore: secureStorage,
           seedFingerprintIndex: seed.getSeedStorageString(),
         );
 

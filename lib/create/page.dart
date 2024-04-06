@@ -41,7 +41,7 @@ class CreateWalletPage extends StatelessWidget {
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
-      walletSensRepository: locator<WalletSensitiveRepository>(),
+      walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       networkCubit: locator<NetworkCubit>(),
       walletCreate: locator<WalletCreate>(),
     );

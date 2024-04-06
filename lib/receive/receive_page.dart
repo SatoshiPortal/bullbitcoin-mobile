@@ -53,7 +53,7 @@ class _ReceivePageState extends State<ReceivePage> {
       secureStorage: locator<SecureStorage>(),
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
-      walletSensitiveRepository: locator<WalletSensitiveRepository>(),
+      walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
@@ -72,7 +72,7 @@ class _ReceivePageState extends State<ReceivePage> {
       // swapBoltz: locator<SwapBoltz>(),
       swapBloc: swapBloc,
       secureStorage: locator<SecureStorage>(),
-      walletSensitiveRepository: locator<WalletSensitiveRepository>(),
+      walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       walletTx: locator<WalletTx>(),
       currencyCubit: CurrencyCubit(
         hiveStorage: locator<HiveStorage>(),

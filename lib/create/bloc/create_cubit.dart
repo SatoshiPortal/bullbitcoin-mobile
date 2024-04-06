@@ -36,7 +36,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
   final WalletsStorageRepository walletsStorageRepository;
-  final WalletSensitiveRepository walletSensRepository;
+  final WalletSensitiveStorageRepository walletSensRepository;
   final NetworkCubit networkCubit;
   final WalletCreate walletCreate;
 
@@ -130,7 +130,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
         ? wallet!.copyWith(name: state.walletLabel)
         : wallet;
 
-    final ssErr = await walletSensRepository.newSeed(seed: seed, secureStore: secureStorage);
+    final ssErr = await walletSensRepository.newSeed(seed: seed);
     if (ssErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Seed'));
       return;
@@ -145,7 +145,6 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
 
       final ppErr = await walletSensRepository.newPassphrase(
         passphrase: passphrase,
-        secureStore: secureStorage,
         seedFingerprintIndex: seed.getSeedStorageString(),
       );
 

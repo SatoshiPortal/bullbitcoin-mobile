@@ -8,8 +8,6 @@ import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
@@ -66,7 +64,7 @@ class _SendPageState extends State<SendPage> {
       secureStorage: locator<SecureStorage>(),
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
-      walletSensitiveRepository: locator<WalletSensitiveRepository>(),
+      walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
@@ -77,24 +75,17 @@ class _SendPageState extends State<SendPage> {
     );
 
     send = SendCubit(
-      hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletAddress: locator<WalletAddress>(),
       walletTx: locator<WalletTx>(),
+      walletTxx: locator<WalletTxx>(),
       walletSensTx: locator<WalletSensitiveTx>(),
-      walletCreate: locator<WalletCreate>(),
       walletSensCreate: locator<WalletSensitiveCreate>(),
       barcode: locator<Barcode>(),
       settingsCubit: locator<SettingsCubit>(),
-      bullBitcoinAPI: locator<BullBitcoinAPI>(),
-      mempoolAPI: locator<MempoolAPI>(),
       fileStorage: locator<FileStorage>(),
-      walletsStorageRepository: locator<WalletsStorageRepository>(),
-      walletSensRepository: locator<WalletSensitiveRepository>(),
-      // walletNetwork: locator<NetworkCubit>(),
-      walletNetwork: locator<WalletNetwork>(),
+      walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       networkCubit: locator<NetworkCubit>(),
-
       homeCubit: locator<HomeCubit>(),
       networkFeesCubit: NetworkFeesCubit(
         hiveStorage: locator<HiveStorage>(),
@@ -108,7 +99,6 @@ class _SendPageState extends State<SendPage> {
         defaultCurrencyCubit: context.read<CurrencyCubit>(),
       ),
       swapCubit: swapBloc,
-      swapBoltz: locator<SwapBoltz>(),
       openScanner: widget.openScanner,
       networkRepository: locator<NetworkRepository>(),
       walletsRepository: locator<WalletsRepository>(),
@@ -183,7 +173,6 @@ class _Screen extends StatelessWidget {
             children: [
               if (signed) ...[
                 if (!sent) const TxDetailsScreen() else const TxSuccess(),
-                // const Gap(48),
               ] else ...[
                 const Gap(32),
                 const WalletSelectionDropDown(),
@@ -222,7 +211,6 @@ class WalletSelectionDropDown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSend = context.select((SendCubit cubit) => cubit.state.showButtons());
-    // if (!showSend) return const SizedBox(height: 55);
 
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
@@ -238,11 +226,6 @@ class WalletSelectionDropDown extends StatelessWidget {
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: showSend ? 1 : 0.3,
-        // child: Container(
-        //   height: 100,
-        //   width: 100,
-        //   color: Colors.amber,
-        // ),
         child: AbsorbPointer(
           absorbing: !showSend,
           child: BBDropDown<WalletBloc>(
@@ -289,7 +272,6 @@ class _AddressFieldState extends State<AddressField> {
     final address = context.select((SendCubit cubit) => cubit.state.address);
     if (_controller.text != address) {
       _controller.text = address;
-      // _focusNode.unfocus();
     }
 
     return Column(
@@ -307,8 +289,6 @@ class _AddressFieldState extends State<AddressField> {
             children: [
               IconButton(
                 onPressed: () async {
-                  // const data =
-                  // 'lntb500u1pj7tqpcpp566tgzlzduq3sjefgwxawt88mgxhc0e7tpva2pxc0zw889ryc8tnqdqsv9ekkmryv9jx5umyxqyjw5qcqp2sp5ptll8dll4sawwu5kufgxzfmsmlfj2rgvuqstngc6t30h2xzggxmqrzjq2gyp9za7vc7vd8m59fvu63pu00u4pak35n4upuv4mhyw5l586dvkf6vkyqq20gqqqqqqqqpqqqqqzsqqc9qyyssqfvcpfj3587plnxs908z0txz9as9zf2kqa9llhfynarku4t80muv87se5t3d05mf0mjxm3tp0f4yzfu9ulz08z2vdjhz28rvj2ch0vmspwkguap';
                   if (!locator.isRegistered<Clippboard>()) return;
                   final data = await locator<Clippboard>().paste();
                   if (data == null) return;
@@ -406,7 +386,6 @@ class AdvancedOptions extends StatelessWidget {
 
     final text = context.select((SendCubit cubit) => cubit.state.advancedOptionsButtonText());
     return BBButton.text(
-      // centered: true,
       onPressed: () {
         AdvancedOptionsPopUp.openPopup(context);
       },
@@ -444,7 +423,6 @@ class _SendButton extends StatelessWidget {
     final generatingInv = context.select((SwapCubit cubit) => cubit.state.generatingSwapInv);
     final sendingg = context.select((SendCubit cubit) => cubit.state.sending);
     final sending = generatingInv || sendingg;
-    // final err = context.select((SendCubit cubit) => cubit.state.errWithSwap());
 
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
 
@@ -459,7 +437,6 @@ class _SendButton extends StatelessWidget {
               PSBTPopUp.openPopUp(context);
             },
             child: BBButton.big(
-              // disabled: !showSend,
               disabled: !enableButton,
               loading: sending,
               leftIcon: Icons.send,
@@ -482,13 +459,6 @@ class _SendButton extends StatelessWidget {
             ),
           ),
         ),
-        // const Gap(16),
-        // if (err.isNotEmpty)
-        //   Center(
-        //     child: BBText.error(
-        //       err,
-        //     ),
-        //   ),
       ],
     ).animate().fadeIn();
   }
@@ -540,7 +510,6 @@ class SendWalletBalance extends StatelessWidget {
           context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(totalFrozen));
 
       return Column(
-        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText.bodySmall(balStr),
           const Gap(4),
@@ -744,8 +713,6 @@ class TxSuccess extends StatelessWidget {
               height: 52,
               child: TextButton(
                 onPressed: () {
-                  // Navigator.pop(context);
-                  // context.read<SelectSendWalletStep>().sent();
                   context.go('/home');
                 },
                 child: const BBText.titleLarge(
@@ -755,7 +722,6 @@ class TxSuccess extends StatelessWidget {
                 ),
               ),
             ),
-            // const Gap(240),
           ],
         ).animate().fadeIn(),
       ),
@@ -768,9 +734,6 @@ class HighFeeWarning extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // const fees = 10;
-    // const amt = 10;
-    // const recAmt = 10;
     const feesStr = '';
     const feeFiatStr = '';
     const amtStr = '';

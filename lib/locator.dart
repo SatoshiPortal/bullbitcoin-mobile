@@ -117,7 +117,11 @@ Future _setupWalletServices() async {
     WalletSensitiveCreate(walletsRepository: locator<WalletsRepository>()),
   );
   locator.registerSingleton<WalletSensitiveTx>(WalletSensitiveTx());
-  locator.registerSingleton<WalletSensitiveRepository>(WalletSensitiveRepository());
+  locator.registerSingleton<WalletSensitiveStorageRepository>(
+    WalletSensitiveStorageRepository(
+      secureStorage: locator<SecureStorage>(),
+    ),
+  );
 
   locator.registerSingleton<WalletCreate>(
     WalletCreate(
@@ -186,7 +190,9 @@ Future _setupBlocs() async {
     secureStorage: locator<SecureStorage>(),
     walletAddress: locator<WalletAddress>(),
     walletsStorageRepository: locator<WalletsStorageRepository>(),
-    walletSensitiveRepository: WalletSensitiveRepository(),
+    walletSensitiveRepository: WalletSensitiveStorageRepository(
+      secureStorage: locator<SecureStorage>(),
+    ),
     settingsCubit: settings,
     networkCubit: locator<NetworkCubit>(),
     swapBoltz: locator<SwapBoltz>(),
@@ -203,7 +209,7 @@ Future _setupBlocs() async {
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
-      walletSensRepository: locator<WalletSensitiveRepository>(),
+      walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       networkCubit: locator<NetworkCubit>(),
     ),
     walletsStorageRepository: locator<WalletsStorageRepository>(),

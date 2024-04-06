@@ -66,7 +66,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   final WalletsStorageRepository walletsStorageRepository;
   final WalletsRepository walletsRepository;
 
-  final WalletSensitiveRepository walletSensRepository;
+  final WalletSensitiveStorageRepository walletSensRepository;
   final WalletAddress walletAddress;
 
   final WalletSync walletSync;
@@ -241,7 +241,6 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final (seed, sErr) = await walletSensRepository.readSeed(
       fingerprintIndex: walletBloc.state.wallet!.getRelatedSeedStorageString(),
-      secureStore: SecureStorage(),
     );
 
     if (sErr != null) {

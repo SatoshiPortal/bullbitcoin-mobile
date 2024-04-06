@@ -17,7 +17,7 @@ import 'package:mocktail/mocktail.dart';
 void main() {
   group('WatchTxs Bloc Test', () {
     late WalletsStorageRepository walletRepository;
-    late WalletSensitiveRepository walletSensitiveRepository;
+    late WalletSensitiveStorageRepository walletSensitiveRepository;
     late NetworkCubit networkCubit;
     late SwapBoltz swapBoltz;
     late HiveStorage hiveStorage;
@@ -103,7 +103,7 @@ class _SecureStorage extends Mock implements SecureStorage {}
 
 class _WalletRepository extends Mock implements WalletsStorageRepository {}
 
-class _WalletSensitiveRepository extends Mock implements WalletSensitiveRepository {}
+class _WalletSensitiveRepository extends Mock implements WalletSensitiveStorageRepository {}
 
 class _WalletTx extends Mock implements WalletTx {}
 
