@@ -3,8 +3,92 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/wallet/_interface.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/address.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/address.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
+
+class WalletAddresss implements IWalletAddress {
+  WalletAddresss({
+    required WalletsRepository walletsRepository,
+    required BDKAddress bdkAddress,
+    required LWKAddress lwkAddress,
+  })  : _walletsRepository = walletsRepository,
+        _bdkAddress = bdkAddress,
+        _lwkAddress = lwkAddress;
+
+  final WalletsRepository _walletsRepository;
+  final BDKAddress _bdkAddress;
+  final LWKAddress _lwkAddress;
+
+  @override
+  Future<(String?, Err?)> peekIndex({required Wallet wallet, required int idx}) async {
+    try {
+      switch (wallet.baseWalletType) {
+        case BaseWalletType.Bitcoin:
+          final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet);
+          if (errWallet != null) throw errWallet;
+          return await _bdkAddress.peekIndex(bdkWallet!, idx);
+
+        case BaseWalletType.Liquid:
+          final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
+          if (errWallet != null) throw errWallet;
+          return await _lwkAddress.peekIndex(liqWallet!, idx);
+        case BaseWalletType.Lightning:
+          throw 'Not implemented';
+      }
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while getting address',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
+
+  @override
+  Future<(Address, Wallet)> addAddressToWallet({
+    required (int?, String) address,
+    required Wallet wallet,
+    String? label,
+    String? spentTxId,
+    required AddressKind kind,
+    AddressStatus state = AddressStatus.unused,
+    bool spendable = true,
+  }) {
+    // TODO: implement addAddressToWallet
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<(Wallet?, Err?)> loadAddresses(Wallet wallet) {
+    // TODO: implement loadAddresses
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<(Wallet?, Err?)> loadChangeAddresses(Wallet wallet) {
+    // TODO: implement loadChangeAddresses
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<(Wallet?, Err?)> newAddress(Wallet wallet) {
+    // TODO: implement newAddress
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<(Wallet?, Err?)> updateUtxoAddresses(Wallet wallet) {
+    // TODO: implement updateUtxoAddresses
+    throw UnimplementedError();
+  }
+}
 
 class WalletAddress {
   Future<String?> getLabel({required Wallet wallet, required String address}) async {

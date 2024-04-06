@@ -2,19 +2,14 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/update.dart';
-import 'package:bb_mobile/_pkg/wallet/utxo.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -26,7 +21,6 @@ import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
@@ -50,20 +44,12 @@ class HomePage extends StatelessWidget {
       for (final w in wallets)
         WalletBloc(
           saveDir: w.getWalletStorageString(),
-          settingsCubit: locator<SettingsCubit>(),
           walletSync: locator<WalletSync>(),
-          secureStorage: locator<SecureStorage>(),
-          hiveStorage: locator<HiveStorage>(),
-          walletCreate: locator<WalletCreate>(),
           walletsStorageRepository: locator<WalletsStorageRepository>(),
-          walletTransaction: locator<WalletTx>(),
           walletBalance: locator<WalletBalance>(),
-          walletAddress: locator<WalletAddress>(),
-          walletUtxo: locator<WalletUtxo>(),
-          walletUpdate: locator<WalletUpdate>(),
+          walletAddress: locator<WalletAddresss>(),
           networkCubit: locator<NetworkCubit>(),
           swapBloc: locator<WatchTxsBloc>(),
-          walletNetwork: locator<WalletNetwork>(),
           networkRepository: locator<NetworkRepository>(),
           walletsRepository: locator<WalletsRepository>(),
           walletTransactionn: locator<WalletTxx>(),

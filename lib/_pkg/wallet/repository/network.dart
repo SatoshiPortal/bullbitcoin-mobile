@@ -17,7 +17,7 @@ class NetworkRepository {
     return null;
   }
 
-  Err? setBlockchain(bdk.Blockchain blockchain) {
+  Err? setBdkBlockchain(bdk.Blockchain blockchain) {
     _bdkBlockchain = blockchain;
     return null;
   }
@@ -28,4 +28,7 @@ class NetworkRepository {
   }
 
   bool get isTestnet => _isTestnet;
+
+  Err? checkNetworks() =>
+      (_bdkBlockchain == null || _liquidUrl == null) ? Err('Network not setup') : null;
 }

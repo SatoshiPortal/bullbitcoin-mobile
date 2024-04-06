@@ -63,8 +63,8 @@ class ElectrumNetwork with _$ElectrumNetwork {
 @freezed
 class LiquidElectrumNetwork with _$LiquidElectrumNetwork {
   const factory LiquidElectrumNetwork.blockstream({
-    @Default('ssl://blockstreamLiquid:50002') String mainnet,
-    @Default('ssl://blockstreamLiquid:60002') String testnet,
+    @Default('ssl://$liquidElectrumUrl') String mainnet,
+    @Default('ssl://$liquidElectrumTestUrl') String testnet,
     @Default(true) bool validateDomain,
     @Default('blockstream') String name,
     @Default(LiquidElectrumTypes.blockstream) LiquidElectrumTypes type,

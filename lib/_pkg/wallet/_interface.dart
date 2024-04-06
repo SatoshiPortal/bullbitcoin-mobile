@@ -43,11 +43,12 @@ abstract class IWalletSync {
 
 abstract class IWalletNetwork {
   Future<Err?> createBlockChain({
-    required int stopGap,
-    required int timeout,
-    required int retry,
     required String url,
-    required bool validateDomain,
+    required bool isTestnet,
+    int? stopGap,
+    int? timeout,
+    int? retry,
+    bool? validateDomain,
   });
 }
 

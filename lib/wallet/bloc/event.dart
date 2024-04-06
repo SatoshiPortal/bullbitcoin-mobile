@@ -27,8 +27,6 @@ class GetBalance extends WalletEvent {}
 
 // class GetAddresses extends WalletEvent {}
 
-class UpdateUtxos extends WalletEvent {}
-
 class ListTransactions extends WalletEvent {}
 
 class GetFirstAddress extends WalletEvent {}

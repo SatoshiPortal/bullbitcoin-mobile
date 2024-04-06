@@ -162,6 +162,7 @@ Future _setupBlocs() async {
     NetworkCubit(
       hiveStorage: locator<HiveStorage>(),
       walletNetwork: locator<WalletNetwork>(),
+      networkRepository: locator<NetworkRepository>(),
     ),
   );
 

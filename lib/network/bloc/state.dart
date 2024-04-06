@@ -43,6 +43,11 @@ class NetworkState with _$NetworkState {
     return networks.firstWhere((_) => _.type == selectedNetwork);
   }
 
+  LiquidElectrumNetwork? getLiquidNetwork() {
+    if (liquidNetworks.isEmpty) return null;
+    return liquidNetworks.firstWhere((_) => _.type == selectedLiquidNetwork);
+  }
+
   ElectrumNetwork? getTempOrSelectedNetwork() {
     if (networks.isEmpty) return null;
     // return tempNetwork ?? selectedNetwork;

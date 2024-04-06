@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/state.dart';
@@ -15,12 +16,14 @@ class NetworkCubit extends Cubit<NetworkState> {
   NetworkCubit({
     required this.hiveStorage,
     required this.walletNetwork,
+    required this.networkRepository,
   }) : super(const NetworkState()) {
     init();
   }
 
   final HiveStorage hiveStorage;
   final WalletNetwork walletNetwork;
+  final NetworkRepository networkRepository;
   HomeCubit? homeCubit;
 
   @override
@@ -126,26 +129,45 @@ class NetworkCubit extends Cubit<NetworkState> {
     final selectedNetwork = state.getNetwork();
     if (selectedNetwork == null) return;
 
-    final err = await walletNetwork.createBlockChain(
+    final errBitcoin = await walletNetwork.createBlockChain(
+      isTestnet: isTestnet,
       stopGap: selectedNetwork.stopGap,
       timeout: selectedNetwork.timeout,
       retry: selectedNetwork.retry,
       url: isTestnet ? selectedNetwork.testnet : selectedNetwork.mainnet,
       validateDomain: selectedNetwork.validateDomain,
     );
-    if (err != null) {
+    if (errBitcoin != null) {
       if (!state.networkErrorOpened) {
         BBAlert.showErrorAlertPopUp(
-          title: err.title ?? '',
-          err: err.message,
+          title: errBitcoin.title ?? '',
+          err: errBitcoin.message,
           onClose: closeNetworkError,
           onRetry: retryNetwork,
         );
       }
 
+      final selectedLiqNetwork = state.getLiquidNetwork();
+      if (selectedLiqNetwork == null) return;
+
+      final errLiquid = await walletNetwork.createBlockChain(
+        url: isTestnet ? selectedLiqNetwork.testnet : selectedLiqNetwork.mainnet,
+        isTestnet: isTestnet,
+      );
+      if (errLiquid != null) {
+        if (!state.networkErrorOpened) {
+          BBAlert.showErrorAlertPopUp(
+            title: errLiquid.title ?? '',
+            err: errLiquid.message,
+            onClose: closeNetworkError,
+            onRetry: retryNetwork,
+          );
+        }
+      }
+
       emit(
         state.copyWith(
-          errLoadingNetworks: err.toString(),
+          errLoadingNetworks: errBitcoin.toString(),
           networkErrorOpened: true,
         ),
       );
