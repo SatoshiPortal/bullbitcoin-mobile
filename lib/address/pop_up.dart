@@ -3,7 +3,7 @@ import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -44,7 +44,7 @@ class AddressPopUp extends StatelessWidget {
       walletRead: locator<WalletSync>(),
       walletSettingsCubit: walletSettings,
       walletBloc: wallet,
-      walletRepository: locator<WalletRepository>(),
+      walletRepository: locator<WalletsStorageRepository>(),
     );
 
     return showBBBottomSheet(

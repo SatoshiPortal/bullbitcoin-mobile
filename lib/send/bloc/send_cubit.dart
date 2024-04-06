@@ -13,7 +13,8 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
@@ -56,6 +57,7 @@ class SendCubit extends Cubit<SendState> {
     required bool openScanner,
     required this.homeCubit,
     required this.walletNetwork,
+    required this.networkRepository,
   }) : super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
@@ -81,7 +83,7 @@ class SendCubit extends Cubit<SendState> {
   final WalletAddress walletAddress;
   final WalletTx walletTx;
   final WalletSensitiveTx walletSensTx;
-  final WalletRepository walletRepository;
+  final WalletsStorageRepository walletRepository;
   final WalletSensitiveRepository walletSensRepository;
   final WalletCreate walletCreate;
   final NetworkCubit networkCubit;
@@ -91,6 +93,7 @@ class SendCubit extends Cubit<SendState> {
   final HomeCubit homeCubit;
   late StreamSubscription currencyCubitSub;
   late StreamSubscription swapCubitSub;
+  final NetworkRepository networkRepository;
 
   final WalletSensitiveCreate walletSensCreate;
   final MempoolAPI mempoolAPI;
@@ -423,7 +426,7 @@ class SendCubit extends Cubit<SendState> {
 
   void sendClicked() async {
     if (state.selectedWalletBloc == null) return;
-    final (blockchain, errB) = walletNetwork.blockchain;
+    final (blockchain, errB) = networkRepository.bdkBlockchain;
     if (errB != null) {
       emit(state.copyWith(errSending: errB.toString()));
       return;

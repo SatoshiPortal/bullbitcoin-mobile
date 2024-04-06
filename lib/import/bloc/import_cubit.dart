@@ -9,7 +9,7 @@ import 'package:bb_mobile/_pkg/nfc.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
@@ -56,7 +56,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
   final WalletSensitiveCreate walletSensCreate;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletRepository walletRepository;
+  final WalletsStorageRepository walletRepository;
   final WalletSensitiveRepository walletSensRepository;
   final NetworkCubit networkCubit;
 
@@ -577,8 +577,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     }
 
     final err = await walletRepository.newWallet(
-      wallet: selectedWallet,
-      hiveStore: hiveStorage,
+      selectedWallet,
     );
 
     if (err != null) {

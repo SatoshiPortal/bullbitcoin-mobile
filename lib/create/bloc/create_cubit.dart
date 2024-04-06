@@ -3,7 +3,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
@@ -35,7 +35,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final WalletSensitiveCreate walletSensCreate;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletRepository walletRepository;
+  final WalletsStorageRepository walletRepository;
   final WalletSensitiveRepository walletSensRepository;
   final NetworkCubit networkCubit;
   final WalletCreate walletCreate;
@@ -160,7 +160,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       }
     }
 
-    final wsErr = await walletRepository.newWallet(wallet: updatedWallet!, hiveStore: hiveStorage);
+    final wsErr = await walletRepository.newWallet(updatedWallet!);
     if (wsErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }

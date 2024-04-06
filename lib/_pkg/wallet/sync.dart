@@ -1,87 +1,149 @@
 import 'dart:async';
-import 'dart:isolate';
 
-import 'package:bb_mobile/_pkg/consts/configs.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:lwk_dart/lwk_dart.dart' as lwk;
+import 'package:bb_mobile/_pkg/wallet/_interface.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 
-void _syncIsolate(List<dynamic> args) async {
-  final sendPort = args[0] as SendPort;
-  final bdkWallet = args[1] as bdk.Wallet;
-  final blockChain = args[2] as bdk.Blockchain;
+class WalletSync implements IWalletSync {
+  WalletSync({
+    required WalletsRepository walletsRepository,
+    required NetworkRepository networkRepository,
+    required BDKSync bdkSync,
+    required LWKSync lwkSync,
+  })  : _walletsRepository = walletsRepository,
+        _networkRepository = networkRepository,
+        _bdkSync = bdkSync,
+        _lwkSync = lwkSync;
 
-  try {
-    await bdkWallet.sync(blockChain);
-    sendPort.send(bdkWallet);
-  } catch (e) {
-    sendPort.send(
-      Err(
+  final WalletsRepository _walletsRepository;
+  final NetworkRepository _networkRepository;
+  final BDKSync _bdkSync;
+  final LWKSync _lwkSync;
+
+  @override
+  Future<Err?> syncWallet(Wallet wallet) async {
+    try {
+      switch (wallet.baseWalletType) {
+        case BaseWalletType.Bitcoin:
+          final (blockchain, errNetwork) = _networkRepository.bdkBlockchain;
+          if (errNetwork != null) throw errNetwork;
+          final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet);
+          if (errWallet != null) throw errWallet;
+          final (updatedBdkWallet, errSyncing) =
+              await _bdkSync.syncWallet(bdkWallet: bdkWallet!, blockChain: blockchain!);
+          if (errSyncing != null) throw errSyncing;
+          final err = _walletsRepository.replaceBdkWallet(wallet, updatedBdkWallet!);
+          if (err != null) throw err;
+        case BaseWalletType.Liquid:
+          final (blockchain, errNetwork) = _networkRepository.liquidUrl;
+          if (errNetwork != null) throw errNetwork;
+          final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
+          if (errWallet != null) throw errWallet;
+          final (updatedLiqWallet, errSyncing) =
+              await _lwkSync.syncWallet(lwkWallet: liqWallet!, blockChain: blockchain!);
+          if (errSyncing != null) throw errSyncing;
+          final err = _walletsRepository.replaceLwkWallet(wallet, updatedLiqWallet!);
+          if (err != null) throw err;
+        case BaseWalletType.Lightning:
+          throw 'Not implemented';
+      }
+    } catch (e) {
+      return Err(
         e.toString(),
         title: 'Error occurred while syncing wallet',
         solution: 'Please try again.',
-      ),
-    );
-  }
-}
-
-class WalletSync {
-  Isolate? _isolate;
-  ReceivePort? _receivePort;
-
-  Future<(bdk.Wallet?, Err?)> syncWallet({
-    required bdk.Wallet bdkWallet,
-    required bdk.Blockchain blockChain,
-  }) async {
-    try {
-      final completer = Completer<(bdk.Wallet?, Err?)>();
-      _receivePort = ReceivePort();
-      _isolate = await Isolate.spawn(_syncIsolate, [_receivePort!.sendPort, bdkWallet, blockChain]);
-
-      _receivePort!.listen((message) {
-        if (message is bdk.Wallet) {
-          completer.complete((message, null));
-        } else if (message is Err) {
-          completer.complete((null, message));
-        }
-      });
-
-      return completer.future;
-    } catch (e) {
-      return (
-        null,
-        Err(
-          e.toString(),
-          title: 'Error occurred while syncing wallet',
-          solution: 'Please try again.',
-        )
       );
     }
+    return null;
   }
 
-  Future<(lwk.Wallet?, Err?)> syncLiquidWallet({
-    required lwk.Wallet lwkWallet,
-  }) async {
-    try {
-      await lwkWallet.sync(liquidElectrumUrl);
-      return (lwkWallet, null);
-    } on Exception catch (e) {
-      return (
-        null,
-        Err(
-          e.message,
-          title: 'Error occurred while syncing wallet',
-          solution: 'Please try again.',
-        )
-      );
-    }
-  }
-
+  @override
   void cancelSync() {
-    _isolate?.kill(priority: Isolate.immediate);
-    _receivePort?.close();
+    _bdkSync.cancelSync();
+    _lwkSync.cancelSync();
   }
 }
+
+// void _syncIsolate(List<dynamic> args) async {
+//   final sendPort = args[0] as SendPort;
+//   final bdkWallet = args[1] as bdk.Wallet;
+//   final blockChain = args[2] as bdk.Blockchain;
+
+//   try {
+//     await bdkWallet.sync(blockChain);
+//     sendPort.send(bdkWallet);
+//   } catch (e) {
+//     sendPort.send(
+//       Err(
+//         e.toString(),
+//         title: 'Error occurred while syncing wallet',
+//         solution: 'Please try again.',
+//       ),
+//     );
+//   }
+// }
+
+// class WalletSync {
+//   Isolate? _isolate;
+//   ReceivePort? _receivePort;
+
+//   Future<(bdk.Wallet?, Err?)> syncWallet({
+//     required bdk.Wallet bdkWallet,
+//     required bdk.Blockchain blockChain,
+//   }) async {
+//     try {
+//       final completer = Completer<(bdk.Wallet?, Err?)>();
+//       _receivePort = ReceivePort();
+//       _isolate = await Isolate.spawn(_syncIsolate, [_receivePort!.sendPort, bdkWallet, blockChain]);
+
+//       _receivePort!.listen((message) {
+//         if (message is bdk.Wallet) {
+//           completer.complete((message, null));
+//         } else if (message is Err) {
+//           completer.complete((null, message));
+//         }
+//       });
+
+//       return completer.future;
+//     } catch (e) {
+//       return (
+//         null,
+//         Err(
+//           e.toString(),
+//           title: 'Error occurred while syncing wallet',
+//           solution: 'Please try again.',
+//         )
+//       );
+//     }
+//   }
+
+//   Future<(lwk.Wallet?, Err?)> syncLiquidWallet({
+//     required lwk.Wallet lwkWallet,
+//   }) async {
+//     try {
+//       await lwkWallet.sync(liquidElectrumUrl);
+//       return (lwkWallet, null);
+//     } on Exception catch (e) {
+//       return (
+//         null,
+//         Err(
+//           e.message,
+//           title: 'Error occurred while syncing wallet',
+//           solution: 'Please try again.',
+//         )
+//       );
+//     }
+//   }
+
+//   void cancelSync() {
+//     _isolate?.kill(priority: Isolate.immediate);
+//     _receivePort?.close();
+//   }
+// }
 
 
 

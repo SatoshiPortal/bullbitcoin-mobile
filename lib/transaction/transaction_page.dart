@@ -7,7 +7,8 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
@@ -63,12 +64,13 @@ class TxPage extends StatelessWidget {
       walletSync: locator<WalletSync>(),
       walletTx: locator<WalletTx>(),
       walletSensTx: locator<WalletSensitiveTx>(),
-      walletRepository: locator<WalletRepository>(),
+      walletRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
       walletAddress: locator<WalletAddress>(),
       settingsCubit: locator<SettingsCubit>(),
       // networkCubit: locator<NetworkCubit>(),
       walletNetwork: locator<WalletNetwork>(),
+      networkRepository: locator<NetworkRepository>(),
 
       networkFeesCubit: networkFees,
     );

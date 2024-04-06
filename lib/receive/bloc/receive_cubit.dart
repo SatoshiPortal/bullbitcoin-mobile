@@ -2,7 +2,7 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -34,7 +34,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final WalletAddress walletAddress;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletRepository walletRepository;
+  final WalletsStorageRepository walletRepository;
   final WalletSensitiveRepository walletSensitiveRepository;
   final NetworkCubit networkCubit;
   final CurrencyCubit currencyCubit;

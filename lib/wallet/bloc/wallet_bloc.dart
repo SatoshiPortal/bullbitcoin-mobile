@@ -9,7 +9,8 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -42,6 +43,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.networkCubit,
     required this.walletNetwork,
     required this.swapBloc,
+    required this.networkRepository,
     this.fromStorage = true,
     Wallet? wallet,
   }) : super(WalletState(wallet: wallet, walletCreate: walletCreate)) {
@@ -62,7 +64,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final SettingsCubit settingsCubit;
   final WalletSync walletSync;
 
-  final WalletRepository walletRepository;
+  final WalletsStorageRepository walletRepository;
   final WalletTx walletTransaction;
   final WalletBalance walletBalance;
   final WalletAddress walletAddress;
@@ -70,6 +72,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletUpdate walletUpdate;
   final NetworkCubit networkCubit;
   final WalletNetwork walletNetwork;
+  final NetworkRepository networkRepository;
 
   final WatchTxsBloc swapBloc;
 
@@ -91,7 +94,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (fromStorage) {
       final (walletFromStorage, err) = await walletRepository.readWallet(
         walletHashId: event.saveDir,
-        hiveStore: hiveStorage,
       );
       if (err != null) {
         emit(
@@ -145,8 +147,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   Future _syncWallet(SyncWallet event, Emitter<WalletState> emit) async {
     if (state.wallet == null) return;
-    final (bdkWallet, errBdk) = state.getBdkWallet();
-    if (errBdk != null) return;
+    // final (bdkWallet, errBdk) = state.getBdkWallet();
+    // if (errBdk != null) return;
 
     if (state.syncing) return;
 
@@ -157,16 +159,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    var (blockchain, errB) = walletNetwork.blockchain;
+    final (_, errB) = networkRepository.bdkBlockchain;
     if (errB != null) {
       await networkCubit.loadNetworks();
       await Future.delayed(const Duration(milliseconds: 300));
-      final (b2, err2) = walletNetwork.blockchain;
+      final (_, err2) = networkRepository.bdkBlockchain;
       if (err2 != null) {
         emit(state.copyWith(syncing: false));
         return;
       }
-      blockchain = b2;
+      // blockchain = b2;
     }
 
     final sameNetwork = state.wallet?.isSameNetwork(networkCubit.state.testnet) ?? false;
@@ -177,10 +179,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     locator<Logger>().log('Start Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''));
 
-    final (bdkW, err) = await walletSync.syncWallet(
-      blockChain: blockchain!,
-      bdkWallet: bdkWallet!,
-    );
+    // final (bdkW, err) = await walletSync.syncWallet(
+    //   blockChain: blockchain!,
+    //   bdkWallet: bdkWallet!,
+    // );
+
+    final err = await walletSync.syncWallet(state.wallet!);
 
     locator<Logger>().log('End Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''));
 
@@ -203,16 +207,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       return;
     }
 
-    final errUpdate = state.walletCreate.replaceBdkWallet(state.wallet!, bdkW!);
-    if (errUpdate != null) {
-      emit(
-        state.copyWith(
-          errSyncing: errUpdate.toString(),
-          syncing: false,
-        ),
-      );
-      return;
-    }
+    // final errUpdate = state.walletCreate.replaceBdkWallet(state.wallet!, bdkW!);
+    // if (errUpdate != null) {
+    //   emit(
+    //     state.copyWith(
+    //       errSyncing: errUpdate.toString(),
+    //       syncing: false,
+    //     ),
+    //   );
+    //   return;
+    // }
 
     emit(state.copyWith(syncing: false, syncErrCount: 0));
     await Future.delayed(100.ms);
@@ -410,8 +414,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     if (event.updateTypes.contains(UpdateWalletTypes.load)) {
       final err = await walletRepository.updateWallet(
-        wallet: event.wallet,
-        hiveStore: hiveStorage,
+        event.wallet,
       );
       if (err != null) locator<Logger>().log(err.toString());
 
@@ -422,7 +425,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     final eventWallet = event.wallet;
     var (storageWallet, errr) = await walletRepository.readWallet(
       walletHashId: state.wallet!.getWalletStorageString(),
-      hiveStore: hiveStorage,
     );
     if (errr != null) locator<Logger>().log(errr.toString());
     if (storageWallet == null) return;
@@ -498,8 +500,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       }
 
     final err = await walletRepository.updateWallet(
-      wallet: storageWallet!,
-      hiveStore: hiveStorage,
+      storageWallet!,
     );
     if (err != null) locator<Logger>().log(err.toString(), printToConsole: true);
     emit(state.copyWith(wallet: storageWallet));

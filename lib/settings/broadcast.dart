@@ -2,6 +2,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
@@ -37,6 +38,7 @@ class BroadcastPage extends StatelessWidget {
       walletTx: locator<WalletTx>(),
       homeCubit: locator<HomeCubit>(),
       walletNetwork: locator<WalletNetwork>(),
+      networkRepository: locator<NetworkRepository>(),
     );
 
     return BlocProvider.value(
@@ -83,6 +85,7 @@ class BroadcastPopUp extends StatelessWidget {
       walletTx: locator<WalletTx>(),
       homeCubit: locator<HomeCubit>(),
       walletNetwork: locator<WalletNetwork>(),
+      networkRepository: locator<NetworkRepository>(),
     );
 
     return showBBBottomSheet(

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/address/bloc/address_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -24,7 +24,7 @@ class AddressCubit extends Cubit<AddressState> {
   final WalletSettingsCubit walletSettingsCubit;
   final WalletBloc walletBloc;
   final WalletAddress walletAddress;
-  final WalletRepository walletRepository;
+  final WalletsStorageRepository walletRepository;
 
   final HiveStorage hiveStorage;
   final WalletSync walletRead;

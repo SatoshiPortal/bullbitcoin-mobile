@@ -8,7 +8,8 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
@@ -42,6 +43,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.settingsCubit,
     required this.walletNetwork,
     required this.networkFeesCubit,
+    required this.networkRepository,
   }) : super(TransactionState(tx: tx)) {
     if (tx.isReceived())
       loadReceiveLabel();
@@ -59,7 +61,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   final WalletSensitiveTx walletSensTx;
   final WalletUpdate walletUpdate;
 
-  final WalletRepository walletRepository;
+  final WalletsStorageRepository walletRepository;
 
   final WalletSensitiveRepository walletSensRepository;
   final WalletAddress walletAddress;
@@ -71,6 +73,8 @@ class TransactionCubit extends Cubit<TransactionState> {
   final SettingsCubit settingsCubit;
   final WalletNetwork walletNetwork;
   final NetworkFeesCubit networkFeesCubit;
+
+  final NetworkRepository networkRepository;
 
   void loadTx() async {
     emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));
@@ -226,7 +230,6 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final (wallet, err) = await walletRepository.readWallet(
       walletHashId: walletBloc.state.wallet!.getWalletStorageString(),
-      hiveStore: hiveStorage,
     );
     if (err != null) {
       emit(state.copyWith(errBuildingTx: err.toString(), buildingTx: false));
@@ -295,7 +298,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(sendingTx: true, errSendingTx: '', buildingTx: false));
     final tx = state.updatedTx!;
     final wallet = walletBloc.state.wallet!;
-    final (blockchain, errB) = walletNetwork.blockchain;
+    final (blockchain, errB) = networkRepository.bdkBlockchain;
     if (errB != null) {
       emit(
         state.copyWith(

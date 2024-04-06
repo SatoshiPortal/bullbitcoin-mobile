@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -20,7 +20,7 @@ class HomeCubit extends Cubit<HomeState> {
     });
   }
 
-  final WalletRepository walletRepository;
+  final WalletsStorageRepository walletRepository;
   final HiveStorage hiveStorage;
   final CreateWalletCubit createWalletCubit;
   late final StreamSubscription createWalletCubitSubscription;
@@ -34,7 +34,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> getWalletsFromStorageFirstTime() async {
     emit(state.copyWith(loadingWallets: true));
 
-    final (wallets, err) = await walletRepository.readAllWallets(hiveStore: hiveStorage);
+    final (wallets, err) = await walletRepository.readAllWallets();
     if (err != null && err.toString() != 'No Key') {
       emit(state.copyWith(loadingWallets: false));
       return;
@@ -57,7 +57,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> getWalletsFromStorageExistingWallet() async {
     emit(state.copyWith(loadingWallets: true));
 
-    final (wallets, err) = await walletRepository.readAllWallets(hiveStore: hiveStorage);
+    final (wallets, err) = await walletRepository.readAllWallets();
     if (err != null) {
       emit(state.copyWith(loadingWallets: false));
       return;

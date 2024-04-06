@@ -8,7 +8,8 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -53,7 +54,7 @@ class HomePage extends StatelessWidget {
           secureStorage: locator<SecureStorage>(),
           hiveStorage: locator<HiveStorage>(),
           walletCreate: locator<WalletCreate>(),
-          walletRepository: locator<WalletRepository>(),
+          walletRepository: locator<WalletsStorageRepository>(),
           walletTransaction: locator<WalletTx>(),
           walletBalance: locator<WalletBalance>(),
           walletAddress: locator<WalletAddress>(),
@@ -62,6 +63,7 @@ class HomePage extends StatelessWidget {
           networkCubit: locator<NetworkCubit>(),
           swapBloc: locator<WatchTxsBloc>(),
           walletNetwork: locator<WalletNetwork>(),
+          networkRepository: locator<NetworkRepository>(),
         ),
     ];
     return walletCubits;

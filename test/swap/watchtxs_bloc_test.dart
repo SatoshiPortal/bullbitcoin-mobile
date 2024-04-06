@@ -2,7 +2,7 @@ import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
@@ -16,7 +16,7 @@ import 'package:mocktail/mocktail.dart';
 
 void main() {
   group('WatchTxs Bloc Test', () {
-    late WalletRepository walletRepository;
+    late WalletsStorageRepository walletRepository;
     late WalletSensitiveRepository walletSensitiveRepository;
     late NetworkCubit networkCubit;
     late SwapBoltz swapBoltz;
@@ -100,7 +100,7 @@ class _HiveStorage extends Mock implements HiveStorage {}
 
 class _SecureStorage extends Mock implements SecureStorage {}
 
-class _WalletRepository extends Mock implements WalletRepository {}
+class _WalletRepository extends Mock implements WalletsStorageRepository {}
 
 class _WalletSensitiveRepository extends Mock implements WalletSensitiveRepository {}
 

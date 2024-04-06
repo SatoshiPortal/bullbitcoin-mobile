@@ -6,7 +6,7 @@ import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/labels.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -40,7 +40,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
   final WalletSync walletRead;
-  final WalletRepository walletRepository;
+  final WalletsStorageRepository walletRepository;
   final HomeCubit homeCubit;
   final WalletSensitiveRepository walletSensRepository;
 
@@ -383,7 +383,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final hasPassphrase = state.wallet.hasPassphrase();
     final err = await walletRepository.deleteWallet(
       walletHashId: state.wallet.getWalletStorageString(),
-      storage: hiveStorage,
     );
 
     if (err != null) {
@@ -427,9 +426,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       }
     }
 
-    final (wallets, wErrs) = await walletRepository.readAllWallets(
-      hiveStore: hiveStorage,
-    );
+    final (wallets, wErrs) = await walletRepository.readAllWallets();
     if (wErrs != null) {
       emit(
         state.copyWith(

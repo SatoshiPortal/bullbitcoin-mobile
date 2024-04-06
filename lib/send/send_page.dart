@@ -10,7 +10,8 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
@@ -63,7 +64,7 @@ class _SendPageState extends State<SendPage> {
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletAddress: locator<WalletAddress>(),
-      walletRepository: locator<WalletRepository>(),
+      walletRepository: locator<WalletsStorageRepository>(),
       walletSensitiveRepository: locator<WalletSensitiveRepository>(),
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
@@ -87,7 +88,7 @@ class _SendPageState extends State<SendPage> {
       bullBitcoinAPI: locator<BullBitcoinAPI>(),
       mempoolAPI: locator<MempoolAPI>(),
       fileStorage: locator<FileStorage>(),
-      walletRepository: locator<WalletRepository>(),
+      walletRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
       // walletNetwork: locator<NetworkCubit>(),
       walletNetwork: locator<WalletNetwork>(),
@@ -108,6 +109,7 @@ class _SendPageState extends State<SendPage> {
       swapCubit: swapBloc,
       swapBoltz: locator<SwapBoltz>(),
       openScanner: widget.openScanner,
+      networkRepository: locator<NetworkRepository>(),
     );
 
     home = locator<HomeCubit>();

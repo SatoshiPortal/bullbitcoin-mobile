@@ -15,9 +15,13 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
@@ -42,138 +46,172 @@ const bbVersion = '0.1.98-1.1';
 GetIt locator = GetIt.instance;
 
 Future setupLocator({bool fromTest = false}) async {
-  final (secureStorage, hiveStorage) = await setupStorage();
+  await _setupStorage(fromTest: fromTest);
 
-  if (fromTest) {
-    await secureStorage.deleteAll();
-    // final appDocDir = await getApplicationDocumentsDirectory();
-    // await appDocDir.delete(recursive: true);
-    // await locator.reset();
-  } else {
+  await _setupAPIs(fromTest: fromTest);
+  await _setupRepositories(fromTest: fromTest);
+
+  await _setupAppServices(fromTest: fromTest);
+  await _setupWalletServices(fromTest: fromTest);
+  await _setupBlocs(fromTest: fromTest);
+}
+
+Future _setupStorage({bool fromTest = false}) async {
+  if (!fromTest) {
+    final (secureStorage, hiveStorage) = await setupStorage();
+    locator.registerSingleton<SecureStorage>(secureStorage);
+    locator.registerSingleton<HiveStorage>(hiveStorage);
+    locator.registerSingleton<IStorage>(locator<HiveStorage>());
+  }
+}
+
+Future _setupRepositories({bool fromTest = false}) async {
+  if (!fromTest) {
+    locator.registerSingleton<WalletsRepository>(WalletsRepository());
+    locator.registerSingleton<NetworkRepository>(NetworkRepository());
+    locator.registerSingleton<WalletsStorageRepository>(
+      WalletsStorageRepository(hiveStorage: locator<HiveStorage>()),
+    );
+  }
+}
+
+Future _setupAPIs({bool fromTest = false}) async {
+  if (!fromTest) {
+    locator.registerSingleton<Dio>(Dio());
+    locator.registerSingleton<BullBitcoinAPI>(BullBitcoinAPI(locator<Dio>()));
+    locator.registerSingleton<MempoolAPI>(MempoolAPI(locator<Dio>()));
+  }
+}
+
+Future _setupWalletServices({bool fromTest = false}) async {
+  if (!fromTest) {
+    locator.registerFactory<BDKSync>(() => BDKSync());
+    locator.registerFactory<LWKSync>(() => LWKSync());
+
+    locator.registerFactory<WalletSync>(
+      () => WalletSync(
+        bdkSync: locator<BDKSync>(),
+        lwkSync: locator<LWKSync>(),
+        walletsRepository: locator<WalletsRepository>(),
+        networkRepository: locator<NetworkRepository>(),
+      ),
+    );
+
+    locator.registerSingleton<WalletUpdate>(WalletUpdate());
+    locator.registerSingleton<WalletBalance>(WalletBalance());
+
+    locator.registerSingleton<WalletTx>(WalletTx());
+    locator.registerSingleton<WalletAddress>(WalletAddress());
+    locator.registerSingleton<WalletUtxo>(WalletUtxo());
+    locator.registerSingleton<SwapBoltz>(SwapBoltz(secureStorage: locator<SecureStorage>()));
+    locator.registerSingleton<WalletNetwork>(
+      WalletNetwork(
+        networkRepository: locator<NetworkRepository>(),
+      ),
+    );
+
+    locator.registerSingleton<WalletSensitiveCreate>(WalletSensitiveCreate());
+    locator.registerSingleton<WalletSensitiveTx>(WalletSensitiveTx());
+    locator.registerSingleton<WalletSensitiveRepository>(WalletSensitiveRepository());
+
+    locator.registerSingleton<WalletCreate>(WalletCreate());
+  }
+}
+
+Future _setupAppServices({bool fromTest = false}) async {
+  if (!fromTest) {
     final deepLink = DeepLink();
     locator.registerSingleton<DeepLink>(deepLink);
+    locator.registerSingleton<Logger>(Logger());
+    locator.registerSingleton<Lighting>(
+      Lighting(
+        hiveStorage: locator<HiveStorage>(),
+      ),
+    );
+
+    locator.registerSingleton<Barcode>(Barcode());
+    locator.registerSingleton<Launcher>(Launcher());
+    locator.registerSingleton<NFCPicker>(NFCPicker());
+    locator.registerSingleton<FilePick>(FilePick());
+    locator.registerSingleton<Clippboard>(Clippboard());
+    locator.registerSingleton<WordsCubit>(
+      WordsCubit(
+        mnemonicWords: MnemonicWords(),
+      ),
+    );
+
+    locator.registerSingleton<FileStorage>(FileStorage());
   }
+}
 
-  locator.registerSingleton<Logger>(Logger());
-  locator.registerSingleton<Lighting>(Lighting(hiveStorage: hiveStorage));
+Future _setupBlocs({bool fromTest = false}) async {
+  if (!fromTest) {
+    final settings = SettingsCubit(
+      walletSync: locator<WalletSync>(),
+      hiveStorage: locator<HiveStorage>(),
+      mempoolAPI: locator<MempoolAPI>(),
+      bbAPI: locator<BullBitcoinAPI>(),
+    );
 
-  locator.registerSingleton<SecureStorage>(secureStorage);
-  locator.registerSingleton<HiveStorage>(hiveStorage);
-  locator.registerSingleton<IStorage>(hiveStorage);
+    locator.registerSingleton<NetworkCubit>(
+      NetworkCubit(
+        hiveStorage: locator<HiveStorage>(),
+        walletNetwork: locator<WalletNetwork>(),
+      ),
+    );
 
-  final http = Dio();
+    locator.registerSingleton<NetworkFeesCubit>(
+      NetworkFeesCubit(
+        hiveStorage: locator<HiveStorage>(),
+        mempoolAPI: locator<MempoolAPI>(),
+        networkCubit: locator<NetworkCubit>(),
+      ),
+    );
 
-  final mempoolAPI = MempoolAPI(http);
-  final bbAPI = BullBitcoinAPI(http);
-  locator.registerSingleton<BullBitcoinAPI>(bbAPI);
+    locator.registerSingleton<CurrencyCubit>(
+      CurrencyCubit(
+        hiveStorage: locator<HiveStorage>(),
+        bbAPI: locator<BullBitcoinAPI>(),
+      ),
+    );
 
-  final fileStorage = FileStorage();
-  final walletRepository = WalletRepository();
-
-  locator.registerSingleton<FileStorage>(fileStorage);
-  locator.registerSingleton<WalletRepository>(walletRepository);
-
-  locator.registerSingleton<WalletUpdate>(WalletUpdate());
-  locator.registerSingleton<WalletBalance>(WalletBalance());
-  final walletTx = WalletTx();
-  final walletAddress = WalletAddress();
-  locator.registerSingleton<WalletTx>(walletTx);
-  locator.registerSingleton<WalletAddress>(walletAddress);
-  locator.registerSingleton<WalletUtxo>(WalletUtxo());
-  final boltz = SwapBoltz(secureStorage: secureStorage);
-  locator.registerSingleton<SwapBoltz>(boltz);
-
-  // final walletSync = WalletSync();
-
-  final walletCreate = WalletCreate();
-  final walletSensCreate = WalletSensitiveCreate();
-  final walletSensTx = WalletSensitiveTx();
-  final walletSensRepo = WalletSensitiveRepository();
-  final network = WalletNetwork();
-
-  locator.registerSingleton<WalletNetwork>(network);
-
-  final networkCubit = NetworkCubit(
-    hiveStorage: hiveStorage,
-    // walletNetwork: WalletSync(),
-    walletNetwork: network,
-  );
-  locator.registerSingleton<NetworkCubit>(networkCubit);
-
-  final networkFeesCubit = NetworkFeesCubit(
-    hiveStorage: hiveStorage,
-    mempoolAPI: mempoolAPI,
-    networkCubit: networkCubit,
-  );
-  locator.registerSingleton<NetworkFeesCubit>(networkFeesCubit);
-
-  final currencyCubit = CurrencyCubit(
-    hiveStorage: hiveStorage,
-    bbAPI: bbAPI,
-  );
-  locator.registerSingleton<CurrencyCubit>(currencyCubit);
-
-  final settings = SettingsCubit(
-    walletSync: WalletSync(),
-    hiveStorage: hiveStorage,
-    mempoolAPI: mempoolAPI,
-    bbAPI: bbAPI,
-  );
-
-  final swap = WatchTxsBloc(
-    hiveStorage: hiveStorage,
-    secureStorage: secureStorage,
-    walletAddress: walletAddress,
-    walletRepository: walletRepository,
-    walletSensitiveRepository: walletSensRepo,
-    settingsCubit: settings,
-    networkCubit: networkCubit,
-    swapBoltz: boltz,
-    walletTx: walletTx,
-    walletTransaction: walletTx,
-  );
-
-  final homeCubit = HomeCubit(
-    // walletSync: walletSync,
-    hiveStorage: locator<HiveStorage>(),
-    createWalletCubit: CreateWalletCubit(
-      walletCreate: walletCreate,
-      walletSensCreate: walletSensCreate,
+    final swap = WatchTxsBloc(
+      hiveStorage: locator<HiveStorage>(),
+      secureStorage: locator<SecureStorage>(),
+      walletAddress: locator<WalletAddress>(),
+      walletRepository: locator<WalletsStorageRepository>(),
+      walletSensitiveRepository: WalletSensitiveRepository(),
       settingsCubit: settings,
-      walletRepository: locator<WalletRepository>(),
-      hiveStorage: hiveStorage,
-      secureStorage: secureStorage,
-      walletSensRepository: walletSensRepo,
       networkCubit: locator<NetworkCubit>(),
-    ),
-    walletRepository: locator<WalletRepository>(),
-  );
+      swapBoltz: locator<SwapBoltz>(),
+      walletTx: locator<WalletTx>(),
+      walletTransaction: locator<WalletTx>(),
+    );
 
-  swap.homeCubit = homeCubit;
-  locator.registerSingleton<WatchTxsBloc>(swap);
+    final homeCubit = HomeCubit(
+      hiveStorage: locator<HiveStorage>(),
+      createWalletCubit: CreateWalletCubit(
+        walletCreate: locator<WalletCreate>(),
+        walletSensCreate: locator<WalletSensitiveCreate>(),
+        settingsCubit: settings,
+        walletRepository: locator<WalletsStorageRepository>(),
+        hiveStorage: locator<HiveStorage>(),
+        secureStorage: locator<SecureStorage>(),
+        walletSensRepository: locator<WalletSensitiveRepository>(),
+        networkCubit: locator<NetworkCubit>(),
+      ),
+      walletRepository: locator<WalletsStorageRepository>(),
+    );
 
-  settings.homeCubit = homeCubit;
-  networkCubit.homeCubit = homeCubit;
-  settings.loadTimer();
+    swap.homeCubit = homeCubit;
+    locator.registerSingleton<WatchTxsBloc>(swap);
 
-  locator.registerSingleton<SettingsCubit>(settings);
-  locator.registerSingleton<WalletSensitiveCreate>(walletSensCreate);
-  locator.registerSingleton<WalletSensitiveTx>(walletSensTx);
-  locator.registerSingleton<WalletSensitiveRepository>(walletSensRepo);
+    settings.homeCubit = homeCubit;
+    locator<NetworkCubit>().homeCubit = homeCubit;
+    settings.loadTimer();
 
-  locator.registerSingleton<MempoolAPI>(mempoolAPI);
-  locator.registerSingleton<WalletCreate>(walletCreate);
-  locator.registerFactory<WalletSync>(() => WalletSync());
-  locator.registerSingleton<Barcode>(Barcode());
-  locator.registerSingleton<Launcher>(Launcher());
-  locator.registerSingleton<NFCPicker>(NFCPicker());
-  locator.registerSingleton<FilePick>(FilePick());
-  locator.registerSingleton<Clippboard>(Clippboard());
-  locator.registerSingleton<WordsCubit>(
-    WordsCubit(
-      mnemonicWords: MnemonicWords(),
-    ),
-  );
+    locator.registerSingleton<SettingsCubit>(settings);
 
-  locator.registerSingleton<HomeCubit>(homeCubit);
+    locator.registerSingleton<HomeCubit>(homeCubit);
+  }
 }

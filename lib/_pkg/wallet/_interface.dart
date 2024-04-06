@@ -3,7 +3,7 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 
-abstract class WalletTransactions {
+abstract class IWalletTransactions {
   Future<(Wallet?, Err?)> getTransactions(Wallet wallet);
 
   Future<Err?> broadcastTx(Transaction tx);
@@ -36,11 +36,12 @@ abstract class WalletTransactions {
   Future<(Wallet?, Err?)> loadUtxos(Wallet wallet);
 }
 
-abstract class WalletSync {
+abstract class IWalletSync {
   Future<Err?> syncWallet(Wallet wallet);
+  void cancelSync();
 }
 
-abstract class WalletNetwork {
+abstract class IWalletNetwork {
   Future<Err?> createBlockChain({
     required int stopGap,
     required int timeout,
@@ -50,7 +51,7 @@ abstract class WalletNetwork {
   });
 }
 
-abstract class WalletAddress {
+abstract class IWalletAddress {
   Future<(Wallet?, Err?)> loadAddresses(Wallet wallet);
 
   Future<(Wallet?, Err?)> loadChangeAddresses(Wallet wallet);
@@ -75,15 +76,15 @@ abstract class WalletAddress {
   });
 }
 
-abstract class WalletBalance {
+abstract class IWalletBalance {
   Future<((Wallet, Balance)?, Err?)> getBalance(Wallet wallet);
 }
 
-abstract class WalletCreate {
+abstract class IWalletCreate {
   Future<Err?> loadPublicBdkWallet(Wallet wallet);
 }
 
-abstract class WalletSensitiveTx {
+abstract class IWalletSensitiveTx {
   Future<(String?, Err?)> signTx({
     required String unsignedTx,
     required Wallet wallet,
@@ -96,7 +97,7 @@ abstract class WalletSensitiveTx {
   });
 }
 
-abstract class WalletSensitiveCreate {
+abstract class IWalletSensitiveCreate {
   Future<(List<String>?, Err?)> createMnemonic();
 
   Future<(String?, Err?)> getFingerprint({

@@ -4,7 +4,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -51,7 +51,7 @@ class WalletSettingsPage extends StatelessWidget {
       secureStorage: locator<SecureStorage>(),
       walletBloc: walletBloc,
       fileStorage: locator<FileStorage>(),
-      walletRepository: locator<WalletRepository>(),
+      walletRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
       homeCubit: locator<HomeCubit>(),
     );

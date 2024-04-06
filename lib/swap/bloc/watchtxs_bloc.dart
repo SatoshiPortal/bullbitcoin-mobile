@@ -8,7 +8,7 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -78,7 +78,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   final WalletAddress walletAddress;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletRepository walletRepository;
+  final WalletsStorageRepository walletRepository;
   final WalletSensitiveRepository walletSensitiveRepository;
   final WalletTx walletTransaction;
   final NetworkCubit networkCubit;
