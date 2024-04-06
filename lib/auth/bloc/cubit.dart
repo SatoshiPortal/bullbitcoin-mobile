@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_pkg/extensions.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/auth/bloc/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +14,7 @@ class AuthCubit extends Cubit<AuthState> {
     // scheduleMicrotask(init());
   }
 
-  final IStorage secureStorage;
+  final SecureStorage secureStorage;
 
   static const maxLength = 8;
 
