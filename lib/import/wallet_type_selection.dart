@@ -8,6 +8,7 @@ import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -47,7 +48,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
           hiveStorage: locator<HiveStorage>(),
           walletCreate: locator<WalletCreate>(),
           walletTransaction: locator<WalletTx>(),
-          walletRepository: locator<WalletsStorageRepository>(),
+          walletsStorageRepository: locator<WalletsStorageRepository>(),
           fromStorage: false,
           walletBalance: locator<WalletBalance>(),
           walletAddress: locator<WalletAddress>(),
@@ -58,6 +59,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
           wallet: w,
           walletNetwork: locator<WalletNetwork>(),
           networkRepository: locator<NetworkRepository>(),
+          walletsRepository: locator<WalletsRepository>(),
         ),
     ];
 

@@ -4,70 +4,30 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/wallet/_interface.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
+class WalletCreatee implements IWalletCreate {
+  WalletCreatee({required WalletsRepository walletsRepository})
+      : _walletsRepository = walletsRepository;
+
+  final WalletsRepository _walletsRepository;
+  @override
+  Future<Err?> loadPublicBdkWallet(Wallet wallet) {
+    // TODO: implement loadPublicBdkWallet
+    throw UnimplementedError();
+  }
+}
+
 class WalletCreate {
-  final Set<({String id, bdk.Wallet wallet})> _bdkWallets = {};
-  final Set<({String id, lwk.Wallet wallet})> _lwkWallets = {};
+  WalletCreate({required WalletsRepository walletsRepository})
+      : _walletsRepository = walletsRepository;
 
-  (bdk.Wallet?, Err?) getBdkWallet(Wallet wallet) {
-    for (final bdkWallet in _bdkWallets)
-      if (bdkWallet.id == wallet.id) return (bdkWallet.wallet, null);
-
-    return (null, Err('Wallet not found'));
-  }
-
-  (lwk.Wallet?, Err?) getLwkWallet(Wallet wallet) {
-    for (final lwkWallet in _lwkWallets)
-      if (lwkWallet.id == wallet.id) return (lwkWallet.wallet, null);
-
-    return (null, Err('Wallet not found'));
-  }
-
-  Err? setLwkWallet(Wallet wallet, lwk.Wallet lwkWallet) {
-    final added = _lwkWallets.add((id: wallet.id, wallet: lwkWallet));
-    if (!added) return Err('Wallet already exists');
-    return null;
-  }
-
-  Err? setBdkWallet(Wallet wallet, bdk.Wallet bdkWallet) {
-    final added = _bdkWallets.add((id: wallet.id, wallet: bdkWallet));
-    if (!added) return Err('Wallet already exists');
-    return null;
-  }
-
-  Err? removeLwkWallet(Wallet wallet) {
-    final exits = _lwkWallets.any((element) => element.id == wallet.id);
-    if (!exits) return Err('Wallet does not exist');
-    _lwkWallets.removeWhere((element) => element.id == wallet.id);
-    return null;
-  }
-
-  Err? removeBdkWallet(Wallet wallet) {
-    final exits = _bdkWallets.any((element) => element.id == wallet.id);
-    if (!exits) return Err('Wallet does not exist');
-    _bdkWallets.removeWhere((element) => element.id == wallet.id);
-    return null;
-  }
-
-  Err? replaceBdkWallet(Wallet wallet, bdk.Wallet bdkWallet) {
-    final exits = _bdkWallets.any((element) => element.id == wallet.id);
-    if (!exits) return Err('Wallet does not exist');
-    _bdkWallets.removeWhere((element) => element.id == wallet.id);
-    _bdkWallets.add((id: wallet.id, wallet: bdkWallet));
-    return null;
-  }
-
-  Err? replaceLwkWallet(Wallet wallet, lwk.Wallet lwkWallet) {
-    final exits = _lwkWallets.any((element) => element.id == wallet.id);
-    if (!exits) return Err('Wallet does not exist');
-    _lwkWallets.removeWhere((element) => element.id == wallet.id);
-    _lwkWallets.add((id: wallet.id, wallet: lwkWallet));
-    return null;
-  }
+  final WalletsRepository _walletsRepository;
 
   Future<(List<Wallet>?, Err?)> allFromColdCard(
     ColdCard coldCard,
@@ -147,7 +107,7 @@ class WalletCreate {
     );
     final errBdk44 = await loadPublicBdkWallet(wallet44);
     if (errBdk44 != null) return (null, errBdk44);
-    final (bdkWallet44, errLoading) = getBdkWallet(wallet44);
+    final (bdkWallet44, errLoading) = _walletsRepository.getBdkWallet(wallet44);
     if (errLoading != null) return (null, errLoading);
     final firstAddress44 = await bdkWallet44!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
@@ -178,7 +138,7 @@ class WalletCreate {
     );
     final errBdk49 = await loadPublicBdkWallet(wallet49);
     if (errBdk49 != null) return (null, errBdk49);
-    final (bdkWallet49, errLoading49) = getBdkWallet(wallet49);
+    final (bdkWallet49, errLoading49) = _walletsRepository.getBdkWallet(wallet49);
     if (errLoading49 != null) return (null, errLoading49);
     final firstAddress49 = await bdkWallet49!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
@@ -209,7 +169,7 @@ class WalletCreate {
     );
     final errBdk84 = await loadPublicBdkWallet(wallet84);
     if (errBdk84 != null) return (null, errBdk84);
-    final (bdkWallet84, errLoading84) = getBdkWallet(wallet84);
+    final (bdkWallet84, errLoading84) = _walletsRepository.getBdkWallet(wallet84);
     if (errLoading84 != null) return (null, errLoading84);
     final firstAddress84 = await bdkWallet84!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
@@ -224,9 +184,9 @@ class WalletCreate {
       ),
     );
 
-    removeBdkWallet(wallet44);
-    removeBdkWallet(wallet49);
-    removeBdkWallet(wallet84);
+    _walletsRepository.removeBdkWallet(wallet44);
+    _walletsRepository.removeBdkWallet(wallet49);
+    _walletsRepository.removeBdkWallet(wallet84);
 
     if (firstAddress44.address == coldWallet44.first &&
         firstAddress49.address == coldWallet49.first &&
@@ -302,7 +262,7 @@ class WalletCreate {
       );
       final errBdk = await loadPublicBdkWallet(wallet);
       if (errBdk != null) return (null, errBdk);
-      final (bdkWallet, errLoading) = getBdkWallet(wallet);
+      final (bdkWallet, errLoading) = _walletsRepository.getBdkWallet(wallet);
       final firstAddress = await bdkWallet!.getAddress(
         addressIndex: const bdk.AddressIndex.peek(index: 0),
       );
@@ -318,7 +278,7 @@ class WalletCreate {
 
       wallet = wallet.copyWith(name: wallet.defaultNameString());
 
-      removeBdkWallet(wallet);
+      _walletsRepository.removeBdkWallet(wallet);
 
       return (wallet, null);
     } on Exception catch (e) {
@@ -391,7 +351,7 @@ class WalletCreate {
       );
       final errBdk = await loadPublicBdkWallet(wallet);
       if (errBdk != null) return (null, errBdk);
-      final (bdkWallet, errLoading) = getBdkWallet(wallet);
+      final (bdkWallet, errLoading) = _walletsRepository.getBdkWallet(wallet);
       final firstAddress = await bdkWallet!.getAddress(
         addressIndex: const bdk.AddressIndex.peek(index: 0),
       );
@@ -448,7 +408,7 @@ class WalletCreate {
         databaseConfig: dbConfig,
       );
 
-      final err = setBdkWallet(wallet, bdkWallet);
+      final err = _walletsRepository.setBdkWallet(wallet, bdkWallet);
       if (err != null) return err;
 
       return null;
@@ -475,7 +435,7 @@ class WalletCreate {
         descriptor: wallet.externalPublicDescriptor,
       );
 
-      final err = setLwkWallet(wallet, w);
+      final err = _walletsRepository.setLwkWallet(wallet, w);
       if (err != null) return err;
 
       return null;

@@ -5,12 +5,18 @@ import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 class WalletSensitiveCreate {
+  WalletSensitiveCreate({required WalletsRepository walletsRepository})
+      : _walletsRepository = walletsRepository;
+
+  final WalletsRepository _walletsRepository;
+
   Future<(List<String>?, Err?)> createMnemonic() async {
     try {
       final mne = await bdk.Mnemonic.create(bdk.WordCount.Words12);
@@ -186,7 +192,7 @@ class WalletSensitiveCreate {
     );
     final errBdk44 = await walletCreate.loadPublicBdkWallet(wallet44);
     if (errBdk44 != null) return (null, errBdk44);
-    final (bdkWallet44, errLoading44) = walletCreate.getBdkWallet(wallet44);
+    final (bdkWallet44, errLoading44) = _walletsRepository.getBdkWallet(wallet44);
     if (errLoading44 != null) return (null, errLoading44);
     final firstAddress44 = await bdkWallet44!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
@@ -216,7 +222,7 @@ class WalletSensitiveCreate {
     );
     final errBdk49 = await walletCreate.loadPublicBdkWallet(wallet49);
     if (errBdk49 != null) return (null, errBdk49);
-    final (bdkWallet49, errLoading49) = walletCreate.getBdkWallet(wallet49);
+    final (bdkWallet49, errLoading49) = _walletsRepository.getBdkWallet(wallet49);
     final firstAddress49 = await bdkWallet49!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
@@ -245,7 +251,7 @@ class WalletSensitiveCreate {
     );
     final errBdk84 = await walletCreate.loadPublicBdkWallet(wallet84);
     if (errBdk84 != null) return (null, errBdk84);
-    final (bdkWallet84, errLoading84) = walletCreate.getBdkWallet(wallet84);
+    final (bdkWallet84, errLoading84) = _walletsRepository.getBdkWallet(wallet84);
     final firstAddress84 = await bdkWallet84!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
@@ -258,9 +264,9 @@ class WalletSensitiveCreate {
         state: AddressStatus.unused,
       ),
     );
-    walletCreate.removeBdkWallet(wallet44);
-    walletCreate.removeBdkWallet(wallet49);
-    walletCreate.removeBdkWallet(wallet84);
+    _walletsRepository.removeBdkWallet(wallet44);
+    _walletsRepository.removeBdkWallet(wallet49);
+    _walletsRepository.removeBdkWallet(wallet84);
 
     return ([wallet44, wallet49, wallet84], null);
   }
@@ -370,7 +376,7 @@ class WalletSensitiveCreate {
     );
     final errBdk = await walletCreate.loadPublicBdkWallet(wallet);
     if (errBdk != null) return (null, errBdk);
-    final (bdkWallet, errLoading) = walletCreate.getBdkWallet(wallet);
+    final (bdkWallet, errLoading) = _walletsRepository.getBdkWallet(wallet);
     final firstAddress = await bdkWallet!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
@@ -383,7 +389,7 @@ class WalletSensitiveCreate {
         state: AddressStatus.unused,
       ),
     );
-    walletCreate.removeBdkWallet(wallet);
+    _walletsRepository.removeBdkWallet(wallet);
 
     return (wallet, null);
   }
@@ -463,7 +469,7 @@ class WalletSensitiveCreate {
 
     final errLwk = await walletCreate.loadPublicLwkWallet(wallet);
     if (errLwk != null) return (null, errLwk);
-    final (lwkWallet, errLoading) = walletCreate.getLwkWallet(wallet);
+    final (lwkWallet, errLoading) = _walletsRepository.getLwkWallet(wallet);
     if (errLoading != null) return (null, errLoading);
     final firstAddress = await lwkWallet?.addressAtIndex(0);
     wallet = wallet.copyWith(

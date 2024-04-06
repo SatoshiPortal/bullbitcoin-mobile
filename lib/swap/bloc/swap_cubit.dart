@@ -22,7 +22,7 @@ class SwapCubit extends Cubit<SwapState> {
     required this.hiveStorage,
     required this.secureStorage,
     required this.walletAddress,
-    required this.walletRepository,
+    required this.walletsStorageRepository,
     required this.walletSensitiveRepository,
     required this.settingsCubit,
     required this.networkCubit,
@@ -39,7 +39,7 @@ class SwapCubit extends Cubit<SwapState> {
   final WalletAddress walletAddress;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletsStorageRepository walletRepository;
+  final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveRepository walletSensitiveRepository;
   final WalletTx walletTransaction;
   final NetworkCubit networkCubit;

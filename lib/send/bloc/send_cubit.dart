@@ -15,6 +15,7 @@ import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
@@ -43,7 +44,7 @@ class SendCubit extends Cubit<SendState> {
     required this.walletAddress,
     required this.walletTx,
     required this.walletSensTx,
-    required this.walletRepository,
+    required this.walletsStorageRepository,
     required this.walletSensRepository,
     required this.walletCreate,
     required this.walletSensCreate,
@@ -58,6 +59,7 @@ class SendCubit extends Cubit<SendState> {
     required this.homeCubit,
     required this.walletNetwork,
     required this.networkRepository,
+    required this.walletsRepository,
   }) : super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
@@ -83,7 +85,7 @@ class SendCubit extends Cubit<SendState> {
   final WalletAddress walletAddress;
   final WalletTx walletTx;
   final WalletSensitiveTx walletSensTx;
-  final WalletsStorageRepository walletRepository;
+  final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveRepository walletSensRepository;
   final WalletCreate walletCreate;
   final NetworkCubit networkCubit;
@@ -94,6 +96,7 @@ class SendCubit extends Cubit<SendState> {
   late StreamSubscription currencyCubitSub;
   late StreamSubscription swapCubitSub;
   final NetworkRepository networkRepository;
+  final WalletsRepository walletsRepository;
 
   final WalletSensitiveCreate walletSensCreate;
   final MempoolAPI mempoolAPI;
@@ -306,7 +309,8 @@ class SendCubit extends Cubit<SendState> {
     if (state.sending) return;
     if (state.selectedWalletBloc == null) return;
 
-    final (bdkWallet, errLoading) = state.selectedWalletBloc!.state.getBdkWallet();
+    final (bdkWallet, errLoading) =
+        walletsRepository.getBdkWallet(state.selectedWalletBloc!.state.wallet!);
     if (errLoading != null) {
       emit(state.copyWith(errSending: 'Wallet Not Loaded'));
       return;

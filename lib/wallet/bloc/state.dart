@@ -1,10 +1,7 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 part 'state.freezed.dart';
 
@@ -31,7 +28,7 @@ class WalletState with _$WalletState {
     @Default(0) int syncErrCount,
     // Address? newAddress,
     Address? firstAddress,
-    required WalletCreate walletCreate,
+    // required WalletCreate walletCreate,
   }) = _WalletState;
   const WalletState._();
 
@@ -41,13 +38,13 @@ class WalletState with _$WalletState {
 
   bool loading() => syncing || loadingTxs || loadingBalance;
 
-  (bdk.Wallet?, Err?) getBdkWallet() {
-    if (wallet!.baseWalletType != BaseWalletType.Bitcoin) return (null, Err('Invalid Wallet Type'));
-    return walletCreate.getBdkWallet(wallet!);
-  }
+  // (bdk.Wallet?, Err?) getBdkWallet() {
+  //   if (wallet!.baseWalletType != BaseWalletType.Bitcoin) return (null, Err('Invalid Wallet Type'));
+  //   return walletCreate.getBdkWallet(wallet!);
+  // }
 
-  (lwk.Wallet?, Err?) getLwkWallet() {
-    if (wallet!.baseWalletType != BaseWalletType.Liquid) return (null, Err('Invalid Wallet Type'));
-    return walletCreate.getLwkWallet(wallet!);
-  }
+  // (lwk.Wallet?, Err?) getLwkWallet() {
+  //   if (wallet!.baseWalletType != BaseWalletType.Liquid) return (null, Err('Invalid Wallet Type'));
+  //   return walletCreate.getLwkWallet(wallet!);
+  // }
 }

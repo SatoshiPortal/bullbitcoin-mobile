@@ -28,7 +28,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required this.walletSensCreate,
     required this.hiveStorage,
     required this.secureStorage,
-    required this.walletRepository,
+    required this.walletsStorageRepository,
     required this.walletSensRepository,
     required this.networkCubit,
     bool mainWallet = false,
@@ -56,7 +56,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
   final WalletSensitiveCreate walletSensCreate;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletsStorageRepository walletRepository;
+  final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveRepository walletSensRepository;
   final NetworkCubit networkCubit;
 
@@ -576,7 +576,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       }
     }
 
-    final err = await walletRepository.newWallet(
+    final err = await walletsStorageRepository.newWallet(
       selectedWallet,
     );
 

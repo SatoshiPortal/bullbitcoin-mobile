@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -20,13 +21,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required this.hiveStorage,
     required this.secureStorage,
     required this.walletAddress,
-    required this.walletRepository,
+    required this.walletsStorageRepository,
     required this.walletSensitiveRepository,
     required this.settingsCubit,
     required this.networkCubit,
     required this.currencyCubit,
     required this.walletTx,
     required SwapCubit swapBloc,
+    required this.walletsRepository,
   }) : super(ReceiveState(walletBloc: walletBloc, swapBloc: swapBloc)) {
     loadAddress();
   }
@@ -34,11 +36,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final WalletAddress walletAddress;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletsStorageRepository walletRepository;
+  final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveRepository walletSensitiveRepository;
   final NetworkCubit networkCubit;
   final CurrencyCubit currencyCubit;
   final WalletTx walletTx;
+  final WalletsRepository walletsRepository;
 
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(
@@ -110,7 +113,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     if (state.walletBloc == null) return;
 
-    final (bdkWallet, errLoading) = state.walletBloc!.state.getBdkWallet();
+    final (bdkWallet, errLoading) = walletsRepository.getBdkWallet(state.walletBloc!.state.wallet!);
     if (errLoading != null) {
       emit(state.copyWith(errLoadingAddress: 'Wallet Sync Required'));
       return;

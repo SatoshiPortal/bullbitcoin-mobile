@@ -102,11 +102,17 @@ Future _setupWalletServices() async {
     ),
   );
 
-  locator.registerSingleton<WalletSensitiveCreate>(WalletSensitiveCreate());
+  locator.registerSingleton<WalletSensitiveCreate>(
+    WalletSensitiveCreate(walletsRepository: locator<WalletsRepository>()),
+  );
   locator.registerSingleton<WalletSensitiveTx>(WalletSensitiveTx());
   locator.registerSingleton<WalletSensitiveRepository>(WalletSensitiveRepository());
 
-  locator.registerSingleton<WalletCreate>(WalletCreate());
+  locator.registerSingleton<WalletCreate>(
+    WalletCreate(
+      walletsRepository: locator<WalletsRepository>(),
+    ),
+  );
 }
 
 Future _setupAppServices() async {
@@ -167,7 +173,7 @@ Future _setupBlocs() async {
     hiveStorage: locator<HiveStorage>(),
     secureStorage: locator<SecureStorage>(),
     walletAddress: locator<WalletAddress>(),
-    walletRepository: locator<WalletsStorageRepository>(),
+    walletsStorageRepository: locator<WalletsStorageRepository>(),
     walletSensitiveRepository: WalletSensitiveRepository(),
     settingsCubit: settings,
     networkCubit: locator<NetworkCubit>(),
@@ -182,13 +188,13 @@ Future _setupBlocs() async {
       walletCreate: locator<WalletCreate>(),
       walletSensCreate: locator<WalletSensitiveCreate>(),
       settingsCubit: settings,
-      walletRepository: locator<WalletsStorageRepository>(),
+      walletsStorageRepository: locator<WalletsStorageRepository>(),
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
       networkCubit: locator<NetworkCubit>(),
     ),
-    walletRepository: locator<WalletsStorageRepository>(),
+    walletsStorageRepository: locator<WalletsStorageRepository>(),
   );
 
   swap.homeCubit = homeCubit;

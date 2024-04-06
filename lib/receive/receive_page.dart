@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -51,7 +52,7 @@ class _ReceivePageState extends State<ReceivePage> {
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletAddress: locator<WalletAddress>(),
-      walletRepository: locator<WalletsStorageRepository>(),
+      walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensitiveRepository: locator<WalletSensitiveRepository>(),
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
@@ -65,7 +66,7 @@ class _ReceivePageState extends State<ReceivePage> {
     _cubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
       hiveStorage: locator<HiveStorage>(),
-      walletRepository: locator<WalletsStorageRepository>(),
+      walletsStorageRepository: locator<WalletsStorageRepository>(),
       settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       // swapBoltz: locator<SwapBoltz>(),
@@ -78,6 +79,8 @@ class _ReceivePageState extends State<ReceivePage> {
         bbAPI: locator<BullBitcoinAPI>(),
         defaultCurrencyCubit: context.read<CurrencyCubit>(),
       ),
+
+      walletsRepository: locator<WalletsRepository>(),
     );
 
     home = locator<HomeCubit>();

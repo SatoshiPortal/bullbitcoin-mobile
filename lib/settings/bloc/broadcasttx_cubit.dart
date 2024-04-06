@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -27,6 +28,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     required this.networkCubit,
     required this.walletNetwork,
     required this.networkRepository,
+    required this.walletsRepository,
   }) : super(const BroadcastTxState()) {
     clearErrors();
   }
@@ -39,6 +41,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   final NetworkCubit networkCubit;
   final WalletNetwork walletNetwork;
   final NetworkRepository networkRepository;
+  final WalletsRepository walletsRepository;
 
   @override
   void onChange(Change<BroadcastTxState> change) {
@@ -142,7 +145,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             );
             return;
           }
-          final (bdkWallet, errLoading) = relatedWallet.state.getBdkWallet();
+          final (bdkWallet, errLoading) =
+              walletsRepository.getBdkWallet(relatedWallet.state.wallet!);
           if (errLoading != null) {
             emit(
               state.copyWith(

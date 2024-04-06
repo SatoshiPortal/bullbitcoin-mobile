@@ -12,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
     required this.createWalletCubit,
-    required this.walletRepository,
+    required this.walletsStorageRepository,
     required this.hiveStorage,
   }) : super(const HomeState()) {
     createWalletCubitSubscription = createWalletCubit.stream.listen((state) {
@@ -20,7 +20,7 @@ class HomeCubit extends Cubit<HomeState> {
     });
   }
 
-  final WalletsStorageRepository walletRepository;
+  final WalletsStorageRepository walletsStorageRepository;
   final HiveStorage hiveStorage;
   final CreateWalletCubit createWalletCubit;
   late final StreamSubscription createWalletCubitSubscription;
@@ -34,7 +34,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> getWalletsFromStorageFirstTime() async {
     emit(state.copyWith(loadingWallets: true));
 
-    final (wallets, err) = await walletRepository.readAllWallets();
+    final (wallets, err) = await walletsStorageRepository.readAllWallets();
     if (err != null && err.toString() != 'No Key') {
       emit(state.copyWith(loadingWallets: false));
       return;
@@ -57,7 +57,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> getWalletsFromStorageExistingWallet() async {
     emit(state.copyWith(loadingWallets: true));
 
-    final (wallets, err) = await walletRepository.readAllWallets();
+    final (wallets, err) = await walletsStorageRepository.readAllWallets();
     if (err != null) {
       emit(state.copyWith(loadingWallets: false));
       return;

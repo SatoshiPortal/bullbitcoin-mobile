@@ -10,6 +10,7 @@ import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
@@ -32,7 +33,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.secureStorage,
     required this.walletTx,
     required this.walletSensTx,
-    required this.walletRepository,
+    required this.walletsStorageRepository,
     required this.walletSensRepository,
     required this.walletAddress,
     required this.walletSync,
@@ -44,6 +45,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.walletNetwork,
     required this.networkFeesCubit,
     required this.networkRepository,
+    required this.walletsRepository,
   }) : super(TransactionState(tx: tx)) {
     if (tx.isReceived())
       loadReceiveLabel();
@@ -61,7 +63,8 @@ class TransactionCubit extends Cubit<TransactionState> {
   final WalletSensitiveTx walletSensTx;
   final WalletUpdate walletUpdate;
 
-  final WalletsStorageRepository walletRepository;
+  final WalletsStorageRepository walletsStorageRepository;
+  final WalletsRepository walletsRepository;
 
   final WalletSensitiveRepository walletSensRepository;
   final WalletAddress walletAddress;
@@ -228,7 +231,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
-    final (wallet, err) = await walletRepository.readWallet(
+    final (wallet, err) = await walletsStorageRepository.readWallet(
       walletHashId: walletBloc.state.wallet!.getWalletStorageString(),
     );
     if (err != null) {
@@ -252,7 +255,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
-    final (pubBdkWallet, errLoading) = walletBloc.state.walletCreate.getBdkWallet(wallet);
+    final (pubBdkWallet, errLoading) = walletsRepository.getBdkWallet(wallet);
     if (errLoading != null) {
       emit(state.copyWith(errBuildingTx: errLoading.toString(), buildingTx: false));
       return;

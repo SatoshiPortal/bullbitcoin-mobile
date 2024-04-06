@@ -26,7 +26,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     required this.homeCubit,
     required this.hiveStorage,
     required this.walletRead,
-    required this.walletRepository,
+    required this.walletsStorageRepository,
     required this.walletSensRepository,
     required this.fileStorage,
     required this.secureStorage,
@@ -40,7 +40,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
   final WalletSync walletRead;
-  final WalletsStorageRepository walletRepository;
+  final WalletsStorageRepository walletsStorageRepository;
   final HomeCubit homeCubit;
   final WalletSensitiveRepository walletSensRepository;
 
@@ -54,7 +54,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(savingName: true, errSavingName: ''));
 
     final wallet = state.wallet.copyWith(name: state.name);
-    // final err = await walletRepository.updateWallet(
+    // final err = await walletsStorageRepository.updateWallet(
     //   wallet: wallet,
     //   hiveStore: hiveStorage,
     // );
@@ -202,7 +202,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
   //   final wallet = state.wallet.copyWith(backupTested: true);
 
-  //   // final updateErr = await walletRepository.updateWallet(
+  //   // final updateErr = await walletsStorageRepository.updateWallet(
   //   //   wallet: wallet,
   //   //   hiveStore: hiveStorage,
   //   // );
@@ -282,7 +282,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
     final wallet = state.wallet.copyWith(backupTested: true, lastBackupTested: DateTime.now());
 
-    // final updateErr = await walletRepository.updateWallet(
+    // final updateErr = await walletsStorageRepository.updateWallet(
     //   wallet: wallet,
     //   hiveStore: hiveStorage,
     // );
@@ -381,7 +381,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final mnemonicFingerprint = state.wallet.getRelatedSeedStorageString();
     final sourceFingerprint = state.wallet.sourceFingerprint;
     final hasPassphrase = state.wallet.hasPassphrase();
-    final err = await walletRepository.deleteWallet(
+    final err = await walletsStorageRepository.deleteWallet(
       walletHashId: state.wallet.getWalletStorageString(),
     );
 
@@ -426,7 +426,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       }
     }
 
-    final (wallets, wErrs) = await walletRepository.readAllWallets();
+    final (wallets, wErrs) = await walletsStorageRepository.readAllWallets();
     if (wErrs != null) {
       emit(
         state.copyWith(

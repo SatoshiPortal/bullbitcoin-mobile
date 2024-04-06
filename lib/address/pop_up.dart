@@ -44,7 +44,7 @@ class AddressPopUp extends StatelessWidget {
       walletRead: locator<WalletSync>(),
       walletSettingsCubit: walletSettings,
       walletBloc: wallet,
-      walletRepository: locator<WalletsStorageRepository>(),
+      walletsStorageRepository: locator<WalletsStorageRepository>(),
     );
 
     return showBBBottomSheet(

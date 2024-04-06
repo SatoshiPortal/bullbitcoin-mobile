@@ -51,7 +51,7 @@ class WalletSettingsPage extends StatelessWidget {
       secureStorage: locator<SecureStorage>(),
       walletBloc: walletBloc,
       fileStorage: locator<FileStorage>(),
-      walletRepository: locator<WalletsStorageRepository>(),
+      walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
       homeCubit: locator<HomeCubit>(),
     );

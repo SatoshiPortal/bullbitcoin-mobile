@@ -45,8 +45,9 @@ void main() {
         hiveStorage: hiveStorage,
         secureStorage: secureStorage,
         walletAddress: walletAddress,
-        walletRepository: walletRepository,
+        // walletsRepository: walletRepository,
         walletSensitiveRepository: walletSensitiveRepository,
+        walletsStorageRepository: walletRepository,
         settingsCubit: settingsCubit,
         networkCubit: networkCubit,
         swapBoltz: swapBoltz,
@@ -57,7 +58,7 @@ void main() {
       homeCubit = HomeCubit(
         hiveStorage: hiveStorage,
         createWalletCubit: createWalletCubit,
-        walletRepository: walletRepository,
+        walletsStorageRepository: walletRepository,
       );
 
       watchTxsBloc.homeCubit = homeCubit;

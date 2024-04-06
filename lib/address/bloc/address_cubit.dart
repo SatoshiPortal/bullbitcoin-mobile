@@ -15,7 +15,7 @@ class AddressCubit extends Cubit<AddressState> {
     required this.walletSettingsCubit,
     required this.walletBloc,
     required this.walletAddress,
-    required this.walletRepository,
+    required this.walletsStorageRepository,
     required this.hiveStorage,
     required this.walletRead,
   }) : super(AddressState(address: address));
@@ -24,7 +24,7 @@ class AddressCubit extends Cubit<AddressState> {
   final WalletSettingsCubit walletSettingsCubit;
   final WalletBloc walletBloc;
   final WalletAddress walletAddress;
-  final WalletsStorageRepository walletRepository;
+  final WalletsStorageRepository walletsStorageRepository;
 
   final HiveStorage hiveStorage;
   final WalletSync walletRead;
@@ -41,7 +41,7 @@ class AddressCubit extends Cubit<AddressState> {
       spendable: false,
     );
 
-    // final errUpdate = await walletRepository.updateWallet(
+    // final errUpdate = await walletsStorageRepository.updateWallet(
     //   wallet: w,
     //   hiveStore: hiveStorage,
     // );
@@ -70,7 +70,7 @@ class AddressCubit extends Cubit<AddressState> {
       state: state.address!.state,
     );
 
-    // final errUpdate = await walletRepository.updateWallet(
+    // final errUpdate = await walletsStorageRepository.updateWallet(
     //   wallet: w,
     //   hiveStore: hiveStorage,
     // );
@@ -106,7 +106,7 @@ class AddressCubit extends Cubit<AddressState> {
       state: address.state,
     );
 
-    // final errUpdate = await walletRepository.updateWallet(
+    // final errUpdate = await walletsStorageRepository.updateWallet(
     //   wallet: w,
     //   hiveStore: hiveStorage,
     // );

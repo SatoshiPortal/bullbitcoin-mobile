@@ -50,7 +50,7 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
       walletSensCreate: locator<WalletSensitiveCreate>(),
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
-      walletRepository: locator<WalletsStorageRepository>(),
+      walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveRepository>(),
       networkCubit: locator<NetworkCubit>(),
       // walletNetwork: locator<WalletNetwork>(),

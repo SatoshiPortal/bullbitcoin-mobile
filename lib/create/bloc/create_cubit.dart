@@ -17,7 +17,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     required this.walletSensCreate,
     required this.hiveStorage,
     required this.secureStorage,
-    required this.walletRepository,
+    required this.walletsStorageRepository,
     required this.walletSensRepository,
     required this.networkCubit,
     required this.walletCreate,
@@ -35,7 +35,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final WalletSensitiveCreate walletSensCreate;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletsStorageRepository walletRepository;
+  final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveRepository walletSensRepository;
   final NetworkCubit networkCubit;
   final WalletCreate walletCreate;
@@ -160,7 +160,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       }
     }
 
-    final wsErr = await walletRepository.newWallet(updatedWallet!);
+    final wsErr = await walletsStorageRepository.newWallet(updatedWallet!);
     if (wsErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }
@@ -221,12 +221,12 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   //   }
 
   //   final errSaving1 =
-  //       await walletRepository.newWallet(wallet: walletSecure, hiveStore: hiveStorage);
+  //       await walletsStorageRepository.newWallet(wallet: walletSecure, hiveStore: hiveStorage);
   //   if (errSaving1 != null) {
   //     emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
   //   }
   //   // final errSaving2 =
-  //   //     await walletRepository.newWallet(wallet: walletInstant, hiveStore: hiveStorage);
+  //   //     await walletsStorageRepository.newWallet(wallet: walletInstant, hiveStore: hiveStorage);
   //   // if (errSaving2 != null) {
   //   //   emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
   //   // }
