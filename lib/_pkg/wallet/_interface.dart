@@ -81,7 +81,10 @@ abstract class IWalletBalance {
 }
 
 abstract class IWalletCreate {
-  Future<Err?> loadPublicBdkWallet(Wallet wallet);
+  Future<(Wallet?, Err?)> loadPublicWallet({
+    required String saveDir,
+    Wallet? wallet,
+  });
 }
 
 abstract class IWalletSensitiveTx {

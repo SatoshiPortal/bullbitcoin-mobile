@@ -66,6 +66,8 @@ class HomePage extends StatelessWidget {
           walletNetwork: locator<WalletNetwork>(),
           networkRepository: locator<NetworkRepository>(),
           walletsRepository: locator<WalletsRepository>(),
+          walletTransactionn: locator<WalletTxx>(),
+          walletCreatee: locator<WalletCreatee>(),
         ),
     ];
     return walletCubits;

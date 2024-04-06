@@ -15,8 +15,10 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
@@ -79,6 +81,8 @@ Future _setupRepositories() async {
 Future _setupWalletServices() async {
   locator.registerFactory<BDKSync>(() => BDKSync());
   locator.registerFactory<LWKSync>(() => LWKSync());
+  locator.registerSingleton<BDKBalance>(BDKBalance());
+  locator.registerSingleton<LWKBalance>(LWKBalance());
 
   locator.registerFactory<WalletSync>(
     () => WalletSync(
@@ -89,8 +93,15 @@ Future _setupWalletServices() async {
     ),
   );
 
+  locator.registerSingleton<WalletBalance>(
+    WalletBalance(
+      walletsRepository: locator<WalletsRepository>(),
+      bdkBalance: locator<BDKBalance>(),
+      lwkBalance: locator<LWKBalance>(),
+    ),
+  );
+
   locator.registerSingleton<WalletUpdate>(WalletUpdate());
-  locator.registerSingleton<WalletBalance>(WalletBalance());
 
   locator.registerSingleton<WalletTx>(WalletTx());
   locator.registerSingleton<WalletAddress>(WalletAddress());

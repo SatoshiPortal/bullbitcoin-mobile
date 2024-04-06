@@ -35,7 +35,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.secureStorage,
     required this.hiveStorage,
     required this.walletsStorageRepository,
-    required this.walletTransaction,
     required this.walletBalance,
     required this.walletAddress,
     required this.walletUtxo,
@@ -46,6 +45,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.networkRepository,
     required this.walletsRepository,
     required this.walletCreate,
+    required this.walletTransaction,
+    required this.walletTransactionn,
+    required this.walletCreatee,
     this.fromStorage = true,
     Wallet? wallet,
   }) : super(WalletState(wallet: wallet)) {
@@ -67,7 +69,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletSync walletSync;
 
   final WalletsStorageRepository walletsStorageRepository;
-  final WalletTx walletTransaction;
   final WalletBalance walletBalance;
   final WalletAddress walletAddress;
   final WalletUtxo walletUtxo;
@@ -76,7 +77,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletNetwork walletNetwork;
   final NetworkRepository networkRepository;
   final WalletsRepository walletsRepository;
+
   final WalletCreate walletCreate;
+  final WalletCreatee walletCreatee;
+
+  final WalletTx walletTransaction;
+  final WalletTxx walletTransactionn;
 
   final WatchTxsBloc swapBloc;
 
@@ -93,47 +99,25 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   void _loadWallet(LoadWallet event, Emitter<WalletState> emit) async {
     emit(state.copyWith(loadingWallet: true, errLoadingWallet: ''));
 
-    Wallet wallet;
-
-    if (fromStorage) {
-      final (walletFromStorage, err) = await walletsStorageRepository.readWallet(
-        walletHashId: event.saveDir,
+    final (wallet, err) = await walletCreatee.loadPublicWallet(
+      saveDir: event.saveDir,
+      wallet: state.wallet,
+    );
+    if (err != null) {
+      emit(
+        state.copyWith(
+          loadingWallet: false,
+          errLoadingWallet: err.toString(),
+        ),
       );
-      if (err != null) {
-        emit(
-          state.copyWith(
-            loadingWallet: false,
-            errLoadingWallet: err.toString(),
-          ),
-        );
-        return;
-      }
-
-      wallet = walletFromStorage!;
-    } else
-      wallet = state.wallet!;
-
-    emit(state.copyWith(wallet: wallet));
-
-    final (_, errBdk) = walletsRepository.getBdkWallet(wallet);
-    if (errBdk != null) {
-      final err = await walletCreate.loadPublicBdkWallet(wallet);
-      if (err != null) {
-        emit(
-          state.copyWith(
-            loadingWallet: false,
-            errLoadingWallet: err.toString(),
-          ),
-        );
-      }
-      // emit(state.copyWith(bdkWallet: bdkWallet));
+      return;
     }
 
     emit(
       state.copyWith(
         loadingWallet: false,
         errLoadingWallet: '',
-        name: wallet.name ?? '',
+        name: wallet!.name ?? '',
       ),
     );
 
@@ -233,15 +217,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   void _getBalance(GetBalance event, Emitter<WalletState> emit) async {
     if (state.wallet == null) return;
-    final (bdkWallet, errBdk) = walletsRepository.getBdkWallet(state.wallet!);
-    if (errBdk != null) return;
+    // final (bdkWallet, errBdk) = walletsRepository.getBdkWallet(state.wallet!);
+    // if (errBdk != null) return;
 
     emit(state.copyWith(loadingBalance: true, errLoadingBalance: ''));
 
-    final (w, err) = await walletBalance.getBalance(
-      bdkWallet: bdkWallet!,
-      wallet: state.wallet!,
-    );
+    final (w, err) = await walletBalance.getBalance(state.wallet!);
     if (err != null) {
       emit(
         state.copyWith(
@@ -268,100 +249,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   void _listTransactions(ListTransactions event, Emitter<WalletState> emit) async {
     if (state.wallet == null) return;
-    final (bdkWallet, errBdk) = walletsRepository.getBdkWallet(state.wallet!);
-    if (errBdk != null) return;
 
-    emit(
-      state.copyWith(
-        syncingAddresses: true,
-        errSyncingAddresses: '',
-      ),
-    );
-
-    final (walletWithDepositAddresses, err1) = await walletAddress.loadAddresses(
-      wallet: state.wallet!,
-      bdkWallet: bdkWallet!,
-    );
-    if (err1 != null) {
-      emit(
-        state.copyWith(
-          errSyncingAddresses: err1.toString(),
-          syncingAddresses: false,
-        ),
-      );
-      return;
-    }
-    final (walletWithChangeAddresses, err2) = await walletAddress.loadChangeAddresses(
-      wallet: walletWithDepositAddresses!,
-      bdkWallet: bdkWallet,
-    );
-    if (err2 != null) {
-      emit(
-        state.copyWith(
-          errSyncingAddresses: err2.toString(),
-          syncingAddresses: false,
-        ),
-      );
-      return;
-    }
     emit(state.copyWith(loadingTxs: true, errLoadingWallet: ''));
 
-    final (walletWithTxs, err3) = await walletTransaction.getTransactions(
-      bdkWallet: bdkWallet,
-      wallet: walletWithChangeAddresses!,
-    );
+    final (wallet, errTxs) = await walletTransactionn.getTransactions(state.wallet!);
 
-    if (err3 != null) {
+    if (errTxs != null) {
       emit(
         state.copyWith(
-          errLoadingWallet: err3.toString(),
+          errLoadingWallet: errTxs.toString(),
           loadingTxs: false,
-        ),
-      );
-      return;
-    }
-
-    final (walletWithTxAndAddresses, err4) =
-        await walletUpdate.updateAddressesFromTxs(walletWithTxs!);
-
-    if (err4 != null) {
-      emit(
-        state.copyWith(
-          errLoadingWallet: err4.toString(),
-          loadingTxs: false,
-        ),
-      );
-      return;
-    }
-
-    emit(state.copyWith(loadingTxs: false));
-
-    emit(
-      state.copyWith(
-        syncingAddresses: true,
-        errSyncingAddresses: '',
-      ),
-    );
-
-    final (walletwithUtxos, err5) =
-        await walletUtxo.loadUtxos(wallet: walletWithTxAndAddresses!, bdkWallet: bdkWallet);
-    if (err5 != null) {
-      emit(
-        state.copyWith(
-          errSyncingAddresses: err5.toString(),
-          syncingAddresses: false,
-        ),
-      );
-      return;
-    }
-
-    final (walletUpdatedAddressesAndUtxos, err6) =
-        await walletAddress.updateUtxoAddresses(wallet: walletwithUtxos!);
-    if (err6 != null) {
-      emit(
-        state.copyWith(
-          errSyncingAddresses: err6.toString(),
-          syncingAddresses: false,
         ),
       );
       return;
@@ -369,7 +266,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     add(
       UpdateWallet(
-        walletUpdatedAddressesAndUtxos!,
+        wallet!,
         saveToStorage: fromStorage,
         updateTypes: [
           UpdateWalletTypes.addresses,

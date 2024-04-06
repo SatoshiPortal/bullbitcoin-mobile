@@ -5,6 +5,9 @@ import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/create.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -12,14 +15,72 @@ import 'package:lwk_dart/lwk_dart.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 class WalletCreatee implements IWalletCreate {
-  WalletCreatee({required WalletsRepository walletsRepository})
-      : _walletsRepository = walletsRepository;
+  WalletCreatee({
+    required WalletsRepository walletsRepository,
+    required LWKCreate lwkCreate,
+    required BDKCreate bdkCreate,
+    required WalletsStorageRepository walletsStorageRepository,
+  })  : _walletsRepository = walletsRepository,
+        _lwkCreate = lwkCreate,
+        _bdkCreate = bdkCreate,
+        _walletsStorageRepository = walletsStorageRepository;
 
   final WalletsRepository _walletsRepository;
+  final WalletsStorageRepository _walletsStorageRepository;
+
+  final LWKCreate _lwkCreate;
+  final BDKCreate _bdkCreate;
+
   @override
-  Future<Err?> loadPublicBdkWallet(Wallet wallet) {
-    // TODO: implement loadPublicBdkWallet
-    throw UnimplementedError();
+  Future<(Wallet?, Err?)> loadPublicWallet({
+    required String saveDir,
+    Wallet? wallet,
+  }) async {
+    try {
+      Wallet w;
+      if (wallet == null) {
+        final (walletFromStorage, err) = await _walletsStorageRepository.readWallet(
+          walletHashId: saveDir,
+        );
+        if (err != null) return (null, err);
+        w = walletFromStorage!;
+      } else
+        w = wallet;
+
+      switch (w.baseWalletType) {
+        case BaseWalletType.Bitcoin:
+          final (bdkW, errWallet) = _walletsRepository.getBdkWallet(w);
+          if (errWallet == null) return (w, null);
+          final (bdkWallet, errLoading) = await _bdkCreate.loadPublicBdkWallet(w);
+          if (errLoading != null) throw errLoading;
+          final errSave = _walletsRepository.setBdkWallet(w, bdkWallet!);
+          if (errSave != null) throw errSave;
+
+          return (w, null);
+
+        case BaseWalletType.Liquid:
+          final (liqW, errWallet) = _walletsRepository.getLwkWallet(w);
+          if (errWallet == null) return (w, null);
+          final (liqWallet, errLoading) = await _lwkCreate.loadPublicLwkWallet(w);
+          if (errLoading != null) throw errLoading;
+          final errSave = _walletsRepository.setLwkWallet(w, liqWallet!);
+          if (errSave != null) throw errSave;
+
+          return (w, null);
+
+        case BaseWalletType.Lightning:
+          throw 'Not implemented';
+      }
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while creating wallet',
+          solution: 'Please try again.',
+        )
+      );
+    }
   }
 }
 
