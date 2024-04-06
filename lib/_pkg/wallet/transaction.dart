@@ -433,137 +433,137 @@ class WalletTx {
     }
   }
 
-  Future<(Wallet?, Err?)> getTransactionsNew({
-    required Wallet wallet,
-    required bdk.Wallet bdkWallet,
-  }) async {
-    try {
-      final storedTxs = wallet.transactions;
-      final unsignedTxs = wallet.unsignedTxs;
-      final bdkNetwork = wallet.getBdkNetwork();
-      if (bdkNetwork == null) throw 'No bdkNetwork';
+  // Future<(Wallet?, Err?)> getTransactionsNew({
+  //   required Wallet wallet,
+  //   required bdk.Wallet bdkWallet,
+  // }) async {
+  //   try {
+  //     final storedTxs = wallet.transactions;
+  //     final unsignedTxs = wallet.unsignedTxs;
+  //     final bdkNetwork = wallet.getBdkNetwork();
+  //     if (bdkNetwork == null) throw 'No bdkNetwork';
 
-      final txs = await bdkWallet.listTransactions(true);
-      // final x = bdk.TxBuilderResult();
+  //     final txs = await bdkWallet.listTransactions(true);
+  //     // final x = bdk.TxBuilderResult();
 
-      if (txs.isEmpty) return (wallet, null);
+  //     if (txs.isEmpty) return (wallet, null);
 
-      final List<Transaction> transactions = [];
+  //     final List<Transaction> transactions = [];
 
-      for (final tx in txs) {
-        String? label;
+  //     for (final tx in txs) {
+  //       String? label;
 
-        final storedTxIdx = storedTxs.indexWhere((t) => t.txid == tx.txid);
-        final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
+  //       final storedTxIdx = storedTxs.indexWhere((t) => t.txid == tx.txid);
+  //       final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
 
-        Transaction? storedTx;
-        if (storedTxIdx != -1) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
-        if (idxUnsignedTx != -1) {
-          if (tx.txid == unsignedTxs[idxUnsignedTx].txid) unsignedTxs.removeAt(idxUnsignedTx);
-        }
-        var txObj = Transaction(
-          txid: tx.txid,
-          received: tx.received,
-          sent: tx.sent,
-          fee: tx.fee ?? 0,
-          height: tx.confirmationTime?.height ?? 0,
-          timestamp: tx.confirmationTime?.timestamp ?? 0,
-          bdkTx: tx,
-          rbfEnabled: storedTx?.rbfEnabled ?? false,
-          outAddrs: storedTx?.outAddrs ?? [],
-        );
+  //       Transaction? storedTx;
+  //       if (storedTxIdx != -1) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
+  //       if (idxUnsignedTx != -1) {
+  //         if (tx.txid == unsignedTxs[idxUnsignedTx].txid) unsignedTxs.removeAt(idxUnsignedTx);
+  //       }
+  //       var txObj = Transaction(
+  //         txid: tx.txid,
+  //         received: tx.received,
+  //         sent: tx.sent,
+  //         fee: tx.fee ?? 0,
+  //         height: tx.confirmationTime?.height ?? 0,
+  //         timestamp: tx.confirmationTime?.timestamp ?? 0,
+  //         bdkTx: tx,
+  //         rbfEnabled: storedTx?.rbfEnabled ?? false,
+  //         outAddrs: storedTx?.outAddrs ?? [],
+  //       );
 
-        if (storedTxIdx != -1 &&
-            storedTxs[storedTxIdx].label != null &&
-            storedTxs[storedTxIdx].label!.isNotEmpty) label = storedTxs[storedTxIdx].label;
+  //       if (storedTxIdx != -1 &&
+  //           storedTxs[storedTxIdx].label != null &&
+  //           storedTxs[storedTxIdx].label!.isNotEmpty) label = storedTxs[storedTxIdx].label;
 
-        final SerializedTx sTx = SerializedTx.fromJson(
-          jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
-        );
+  //       final SerializedTx sTx = SerializedTx.fromJson(
+  //         jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
+  //       );
 
-        const hexDecoder = HexDecoder();
-        final outputs = sTx.output;
+  //       const hexDecoder = HexDecoder();
+  //       final outputs = sTx.output;
 
-        for (final output in outputs!) {
-          final scriptPubKey = await bdk.Script.create(
-            hexDecoder.convert(output.scriptPubkey!) as Uint8List,
-          );
+  //       for (final output in outputs!) {
+  //         final scriptPubKey = await bdk.Script.create(
+  //           hexDecoder.convert(output.scriptPubkey!) as Uint8List,
+  //         );
 
-          final addressStruct = await bdk.Address.fromScript(
-            scriptPubKey,
-            bdkNetwork,
-          );
+  //         final addressStruct = await bdk.Address.fromScript(
+  //           scriptPubKey,
+  //           bdkNetwork,
+  //         );
 
-          final existing = wallet.findAddressInWallet(addressStruct.toString());
-          if (existing != null) {
-            // txObj.outAddrs.add(existing);
-            if (existing.label == null && existing.label!.isEmpty)
-              txObj = addOutputAddresses(existing.copyWith(label: label), txObj);
-            else {
-              label ??= existing.label;
-              txObj = addOutputAddresses(existing, txObj);
-            }
-          } else {
-            if (txObj.isReceived()) {
-              // AddressKind.deposit should exist in the addressBook
-              // may not be applicable for payjoin
-            } else {
-              // AddressKind.external wont exist for imported wallets and must be added here
-              // AddressKind.change should exist in the addressBook
-              final (externalAddress, _) = await WalletAddress().addAddressToWallet(
-                address: (null, addressStruct.toString()),
-                wallet: wallet,
-                spentTxId: tx.txid,
-                kind: AddressKind.external,
-                state: AddressStatus.used,
-                spendable: false,
-                label: label,
-              );
-              txObj = addOutputAddresses(externalAddress, txObj);
-            }
-          }
-        }
+  //         final existing = wallet.findAddressInWallet(addressStruct.toString());
+  //         if (existing != null) {
+  //           // txObj.outAddrs.add(existing);
+  //           if (existing.label == null && existing.label!.isEmpty)
+  //             txObj = addOutputAddresses(existing.copyWith(label: label), txObj);
+  //           else {
+  //             label ??= existing.label;
+  //             txObj = addOutputAddresses(existing, txObj);
+  //           }
+  //         } else {
+  //           if (txObj.isReceived()) {
+  //             // AddressKind.deposit should exist in the addressBook
+  //             // may not be applicable for payjoin
+  //           } else {
+  //             // AddressKind.external wont exist for imported wallets and must be added here
+  //             // AddressKind.change should exist in the addressBook
+  //             final (externalAddress, _) = await WalletAddress().addAddressToWallet(
+  //               address: (null, addressStruct.toString()),
+  //               wallet: wallet,
+  //               spentTxId: tx.txid,
+  //               kind: AddressKind.external,
+  //               state: AddressStatus.used,
+  //               spendable: false,
+  //               label: label,
+  //             );
+  //             txObj = addOutputAddresses(externalAddress, txObj);
+  //           }
+  //         }
+  //       }
 
-        if (txObj.isReceived()) {
-          final recipients = txObj.outAddrs
-              .where((element) => element.kind == AddressKind.deposit)
-              .toList()
-              .map((e) => e.address);
-          // may break for payjoin
+  //       if (txObj.isReceived()) {
+  //         final recipients = txObj.outAddrs
+  //             .where((element) => element.kind == AddressKind.deposit)
+  //             .toList()
+  //             .map((e) => e.address);
+  //         // may break for payjoin
 
-          txObj = txObj.copyWith(
-            toAddress: recipients.toString(),
-          );
-        } else {
-          final recipients = txObj.outAddrs
-              .where((element) => element.kind == AddressKind.external)
-              .toList()
-              .map((e) => e.address);
-          txObj = txObj.copyWith(
-            toAddress: recipients.toString(),
-          );
-        }
+  //         txObj = txObj.copyWith(
+  //           toAddress: recipients.toString(),
+  //         );
+  //       } else {
+  //         final recipients = txObj.outAddrs
+  //             .where((element) => element.kind == AddressKind.external)
+  //             .toList()
+  //             .map((e) => e.address);
+  //         txObj = txObj.copyWith(
+  //           toAddress: recipients.toString(),
+  //         );
+  //       }
 
-        transactions.add(txObj.copyWith(label: label));
-      }
+  //       transactions.add(txObj.copyWith(label: label));
+  //     }
 
-      final w = wallet.copyWith(
-        transactions: transactions,
-        unsignedTxs: unsignedTxs,
-      );
+  //     final w = wallet.copyWith(
+  //       transactions: transactions,
+  //       unsignedTxs: unsignedTxs,
+  //     );
 
-      return (w, null);
-    } on Exception catch (e) {
-      return (
-        null,
-        Err(
-          e.message,
-          title: 'Error occurred while getting transactions',
-          solution: 'Please try again.',
-        )
-      );
-    }
-  }
+  //     return (w, null);
+  //   } on Exception catch (e) {
+  //     return (
+  //       null,
+  //       Err(
+  //         e.message,
+  //         title: 'Error occurred while getting transactions',
+  //         solution: 'Please try again.',
+  //       )
+  //     );
+  //   }
+  // }
 
   Future<(Wallet?, Err?)> getLiquidTransactions({
     required Wallet wallet,
