@@ -295,13 +295,6 @@ class SendCubit extends Cubit<SendState> {
     if (state.sending) return;
     if (state.selectedWalletBloc == null) return;
 
-    // final (bdkWallet, errLoading) =
-    //     walletsRepository.getBdkWallet(state.selectedWalletBloc!.state.wallet!);
-    // if (errLoading != null) {
-    //   emit(state.copyWith(errSending: 'Wallet Not Loaded'));
-    //   return;
-    // }
-
     final isLn = state.isLnInvoice();
     if (isLn) {
       final walletId = state.selectedWalletBloc!.state.wallet!.id;
@@ -338,7 +331,6 @@ class SendCubit extends Cubit<SendState> {
 
     final (buildResp, err) = await walletTxx.buildTx(
       wallet: localWallet!,
-      // pubWallet: bdkWallet!,
       isManualSend: state.selectedUtxos.isNotEmpty,
       address: address!,
       amount: isLn ? state.swapCubit.state.swapTx!.outAmount : currencyCubit.state.amount,
@@ -358,72 +350,38 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    final (tx, feeAmt, psbt) = buildResp!;
-
-    if (localWallet.type == BBWalletType.secure || localWallet.type == BBWalletType.words) {
-      final (seed, sErr) = await walletSensRepository.readSeed(
-        fingerprintIndex: state.selectedWalletBloc!.state.wallet!.getRelatedSeedStorageString(),
-      );
-
-      if (sErr != null) {
-        emit(
-          state.copyWith(errSending: sErr.toString()),
-        );
-        return;
-      }
-      final (bdkSignerWallet, errr) =
-          await walletSensCreate.loadPrivateBdkWallet(localWallet, seed!);
-      if (errr != null) {
-        emit(state.copyWith(errSending: errr.toString(), signed: false));
-        return;
-      }
-      final (signed, sErrr) =
-          await walletSensTx.signTx(unsignedPSBT: psbt, signingWallet: bdkSignerWallet!);
-      if (sErrr != null) {
-        emit(state.copyWith(errSending: sErrr.toString(), signed: false));
-        return;
-      }
-
+    final (wallet, tx, feeAmt) = buildResp!;
+    if (wallet!.type == BBWalletType.secure || wallet.type == BBWalletType.words) {
       emit(
         state.copyWith(
           sending: false,
-          psbtSigned: signed,
+          psbtSigned: tx!.psbt,
           psbtSignedFeeAmount: feeAmt,
           tx: tx,
           signed: true,
         ),
       );
-    } else {
-      final txs = localWallet.transactions.toList();
-      txs.add(tx!);
-
-      final (w, _) = await walletTx.addUnsignedTxToWallet(transaction: tx, wallet: localWallet);
-      state.selectedWalletBloc!.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.transactions]));
-      await Future.delayed(const Duration(seconds: 1));
-
-      emit(
-        state.copyWith(
-          sending: false,
-          psbt: psbt,
-          tx: tx,
-        ),
-      );
+      return;
     }
+
+    state.selectedWalletBloc!
+        .add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.transactions]));
+    await Future.delayed(const Duration(seconds: 1));
+
+    emit(
+      state.copyWith(
+        sending: false,
+        psbt: tx!.psbt!,
+        tx: tx,
+      ),
+    );
   }
 
   void sendClicked() async {
     if (state.selectedWalletBloc == null) return;
-    // final (blockchain, errB) = networkRepository.bdkBlockchain;
-    // if (errB != null) {
-    //   emit(state.copyWith(errSending: errB.toString()));
-    //   return;
-    // }
-
     emit(state.copyWith(sending: true, errSending: ''));
 
     final (wtxid, err) = await walletTxx.broadcastTxWithWallet(
-      tx: state.psbtSigned!,
-      // blockchain: blockchain!,
       wallet: state.selectedWalletBloc!.state.wallet!,
       address: state.address,
       note: state.note,
@@ -436,20 +394,11 @@ class SendCubit extends Cubit<SendState> {
 
     final (wallet, txid) = wtxid!;
 
-    final (_, updatedWallet) = await walletAddress.addAddressToWallet(
-      address: (null, state.address),
-      wallet: wallet,
-      label: state.note,
-      spentTxId: txid,
-      kind: AddressKind.external,
-      state: AddressStatus.used,
-    );
-
     final isLn = state.isLnInvoice();
 
     if (isLn) {
       final (updatedWalletWithTxid, err2) = await walletTx.addSwapTxToWallet(
-        wallet: updatedWallet,
+        wallet: wallet,
         swapTx: state.swapCubit.state.swapTx!.copyWith(txid: txid),
       );
 
@@ -471,7 +420,7 @@ class SendCubit extends Cubit<SendState> {
     } else {
       state.selectedWalletBloc!.add(
         UpdateWallet(
-          updatedWallet,
+          wallet,
           updateTypes: [
             UpdateWalletTypes.addresses,
             UpdateWalletTypes.transactions,

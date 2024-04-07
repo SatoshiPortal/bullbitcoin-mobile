@@ -11,8 +11,11 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -26,6 +29,9 @@ class WalletTxx implements IWalletTransactions {
     required WalletAddress walletAddress,
     required WalletUpdate walletUpdate,
     required BDKUtxo walletUtxo,
+    required WalletSensitiveCreate walletSensitiveCreate,
+    required WalletSensitiveTx walletSensitiveTx,
+    required NetworkRepository networkRepository,
     required BDKTransactions bdkTransactions,
     required LWKTransactions lwkTransactions,
   })  : _walletsRepository = walletsRepository,
@@ -33,14 +39,20 @@ class WalletTxx implements IWalletTransactions {
         _walletAddress = walletAddress,
         _walletUpdate = walletUpdate,
         _walletUtxo = walletUtxo,
+        _walletSensitiveCreate = walletSensitiveCreate,
+        _walletSensitiveTx = walletSensitiveTx,
         _bdkTransactions = bdkTransactions,
+        _networkRepository = networkRepository,
         _lwkTransactions = lwkTransactions;
 
   final WalletsRepository _walletsRepository;
   final WalletSensitiveStorageRepository _walletSensitiveStorageRepository;
   final WalletAddress _walletAddress;
   final WalletUpdate _walletUpdate;
+  final WalletSensitiveCreate _walletSensitiveCreate;
+  final WalletSensitiveTx _walletSensitiveTx;
   final BDKUtxo _walletUtxo;
+  final NetworkRepository _networkRepository;
   final BDKTransactions _bdkTransactions;
   final LWKTransactions _lwkTransactions;
 
@@ -107,7 +119,7 @@ class WalletTxx implements IWalletTransactions {
   }
 
   @override
-  Future<((Transaction?, int?, String)?, Err?)> buildTx({
+  Future<((Wallet?, Transaction?, int?)?, Err?)> buildTx({
     required Wallet wallet,
     required String address,
     required int? amount,
@@ -117,9 +129,122 @@ class WalletTxx implements IWalletTransactions {
     required bool isManualSend,
     required bool enableRbf,
     List<UTXO>? selectedUtxos,
-  }) {
-    // TODO: implement buildTx
-    throw UnimplementedError();
+  }) async {
+    try {
+      switch (wallet.baseWalletType) {
+        case BaseWalletType.Bitcoin:
+          final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet);
+          if (errWallet != null) throw errWallet;
+          final (buildResp, err) = await _bdkTransactions.buildTx(
+            wallet: wallet,
+            pubWallet: bdkWallet!,
+            isManualSend: isManualSend,
+            address: address,
+            amount: amount,
+            sendAllCoin: sendAllCoin,
+            feeRate: feeRate,
+            enableRbf: enableRbf,
+            selectedUtxos: selectedUtxos ?? [],
+            note: note,
+          );
+          if (err != null) throw err;
+          final (tx, feeAmt, psbt) = buildResp!;
+          if (wallet.type == BBWalletType.secure || wallet.type == BBWalletType.words) {
+            final (seed, errSeed) = await _walletSensitiveStorageRepository.readSeed(
+              fingerprintIndex: wallet.getRelatedSeedStorageString(),
+            );
+            if (errSeed != null) throw errSeed;
+            final (bdkSignerWallet, errSigner) =
+                await _walletSensitiveCreate.loadPrivateBdkWallet(wallet, seed!);
+            if (errSigner != null) throw errSigner;
+            final (signed, errSign) = await _walletSensitiveTx.signTx(
+              unsignedPSBT: psbt,
+              signingWallet: bdkSignerWallet!,
+            );
+            if (errSign != null) throw errSign;
+            return ((wallet, tx!.copyWith(psbt: signed), feeAmt), null);
+          }
+
+          final txs = wallet.transactions.toList();
+          txs.add(tx!);
+          final (w, errAdd) = await addUnsignedTxToWallet(transaction: tx, wallet: wallet);
+          if (errAdd != null) throw errAdd;
+          return ((w, tx, feeAmt), null);
+
+        case BaseWalletType.Liquid:
+          final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
+          if (errWallet != null) throw errWallet;
+          final (buildResp, errBuild) = await _lwkTransactions.buildLiquidTx(
+            wallet: wallet,
+            lwkWallet: liqWallet!,
+            address: address,
+            amount: amount,
+            sendAllCoin: sendAllCoin,
+            feeRate: feeRate,
+          );
+          if (errBuild != null) throw errBuild;
+          final (tx, feeAmt, pset) = buildResp!;
+          final (seed, errSeed) = await _walletSensitiveStorageRepository.readSeed(
+            fingerprintIndex: wallet.getRelatedSeedStorageString(),
+          );
+          if (errSeed != null) throw errSeed;
+          final (txBytes, errfinalize) = await _lwkTransactions.finalizeLiquidTx(
+            pset: pset,
+            lwkWallet: liqWallet,
+            wallet: wallet,
+            seed: seed!,
+          );
+          if (errfinalize != null) throw errfinalize;
+          return ((wallet, tx!.copyWith(pset: txBytes), feeAmt), null);
+
+        case BaseWalletType.Lightning:
+          throw 'Not implemented';
+      }
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while building transaction',
+          solution: 'Please try again.',
+        ),
+      );
+    }
+  }
+
+  Future<(Wallet, Err?)> addUnsignedTxToWallet({
+    required Transaction transaction,
+    required Wallet wallet,
+  }) async {
+    try {
+      final unsignedTxs = List<Transaction>.from(wallet.unsignedTxs);
+      final index = unsignedTxs.indexWhere(
+        (tx) => tx.txid == transaction.txid,
+      );
+
+      List<Transaction> updatedUnsignedTxs;
+
+      if (index != -1) {
+        updatedUnsignedTxs = wallet.unsignedTxs.map((tx) {
+          return tx.txid == transaction.txid ? transaction : tx;
+        }).toList();
+      } else {
+        updatedUnsignedTxs = List.from(wallet.unsignedTxs)..add(transaction);
+      }
+
+      final updatedWallet = wallet.copyWith(unsignedTxs: updatedUnsignedTxs);
+
+      return (updatedWallet, null);
+    } on Exception catch (e) {
+      return (
+        wallet,
+        Err(
+          e.message,
+          title: 'Error occurred while adding unsigned transaction',
+          solution: 'Please try again.',
+        )
+      ); // returning original wallet in case of error
+    }
   }
 
   @override
@@ -130,14 +255,66 @@ class WalletTxx implements IWalletTransactions {
 
   @override
   Future<((Wallet, String)?, Err?)> broadcastTxWithWallet({
-    required String tx,
     required Wallet wallet,
     required String address,
     required Transaction transaction,
     String? note,
-  }) {
-    // TODO: implement broadcastTxWithWallet
-    throw UnimplementedError();
+  }) async {
+    try {
+      Wallet w;
+      String txid;
+      switch (wallet.baseWalletType) {
+        case BaseWalletType.Bitcoin:
+          final (blockchain, errNetwork) = _networkRepository.bdkBlockchain;
+          if (errNetwork != null) throw errNetwork;
+          final (walletAndTxid, errBroadcast) = await _bdkTransactions.broadcastTxWithWallet(
+            psbt: transaction.psbt!,
+            blockchain: blockchain!,
+            wallet: wallet,
+            address: address,
+            transaction: transaction,
+          );
+          if (errBroadcast != null) throw errBroadcast;
+          w = walletAndTxid!.$1;
+          txid = walletAndTxid.$2;
+
+        case BaseWalletType.Liquid:
+          final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
+          if (errWallet != null) throw errWallet;
+          final (walletAndTxid, errBroadcast) = await _lwkTransactions.broadcastLiquidTxWithWallet(
+            lwkWallet: liqWallet!,
+            txBytes: transaction.pset!,
+            transaction: transaction,
+            wallet: wallet,
+          );
+          if (errBroadcast != null) throw errBroadcast;
+          w = walletAndTxid!.$1;
+          txid = walletAndTxid.$2;
+
+        case BaseWalletType.Lightning:
+          throw 'Not implemented';
+      }
+
+      final (_, updatedWallet) = await _walletAddress.addAddressToWallet(
+        address: (null, address),
+        wallet: w,
+        label: note,
+        spentTxId: txid,
+        kind: AddressKind.external,
+        state: AddressStatus.used,
+      );
+
+      return ((updatedWallet, txid), null);
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while broadcasting transaction',
+          solution: 'Please try again.',
+        ),
+      );
+    }
   }
 
   @override

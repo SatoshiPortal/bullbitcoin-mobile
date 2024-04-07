@@ -29,6 +29,8 @@ mixin _$Transaction {
   String? get label => throw _privateConstructorUsedError;
   String? get toAddress => throw _privateConstructorUsedError;
   String? get psbt => throw _privateConstructorUsedError;
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  Uint8List? get pset => throw _privateConstructorUsedError;
   bool get rbfEnabled => throw _privateConstructorUsedError;
   bool get oldTx => throw _privateConstructorUsedError;
   int? get broadcastTime =>
@@ -62,6 +64,7 @@ abstract class $TransactionCopyWith<$Res> {
       String? label,
       String? toAddress,
       String? psbt,
+      @JsonKey(includeFromJson: false, includeToJson: false) Uint8List? pset,
       bool rbfEnabled,
       bool oldTx,
       int? broadcastTime,
@@ -98,6 +101,7 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? label = freezed,
     Object? toAddress = freezed,
     Object? psbt = freezed,
+    Object? pset = freezed,
     Object? rbfEnabled = null,
     Object? oldTx = null,
     Object? broadcastTime = freezed,
@@ -144,6 +148,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.psbt
           : psbt // ignore: cast_nullable_to_non_nullable
               as String?,
+      pset: freezed == pset
+          ? _value.pset
+          : pset // ignore: cast_nullable_to_non_nullable
+              as Uint8List?,
       rbfEnabled: null == rbfEnabled
           ? _value.rbfEnabled
           : rbfEnabled // ignore: cast_nullable_to_non_nullable
@@ -222,6 +230,7 @@ abstract class _$$TransactionImplCopyWith<$Res>
       String? label,
       String? toAddress,
       String? psbt,
+      @JsonKey(includeFromJson: false, includeToJson: false) Uint8List? pset,
       bool rbfEnabled,
       bool oldTx,
       int? broadcastTime,
@@ -258,6 +267,7 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? label = freezed,
     Object? toAddress = freezed,
     Object? psbt = freezed,
+    Object? pset = freezed,
     Object? rbfEnabled = null,
     Object? oldTx = null,
     Object? broadcastTime = freezed,
@@ -304,6 +314,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.psbt
           : psbt // ignore: cast_nullable_to_non_nullable
               as String?,
+      pset: freezed == pset
+          ? _value.pset
+          : pset // ignore: cast_nullable_to_non_nullable
+              as Uint8List?,
       rbfEnabled: null == rbfEnabled
           ? _value.rbfEnabled
           : rbfEnabled // ignore: cast_nullable_to_non_nullable
@@ -353,6 +367,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       this.label,
       this.toAddress,
       this.psbt,
+      @JsonKey(includeFromJson: false, includeToJson: false) this.pset,
       this.rbfEnabled = true,
       this.oldTx = false,
       this.broadcastTime,
@@ -386,6 +401,9 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
   @override
   final String? psbt;
   @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final Uint8List? pset;
+  @override
   @JsonKey()
   final bool rbfEnabled;
   @override
@@ -417,7 +435,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapTx: $swapTx)';
+    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapTx: $swapTx)';
   }
 
   @override
@@ -434,6 +452,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('label', label))
       ..add(DiagnosticsProperty('toAddress', toAddress))
       ..add(DiagnosticsProperty('psbt', psbt))
+      ..add(DiagnosticsProperty('pset', pset))
       ..add(DiagnosticsProperty('rbfEnabled', rbfEnabled))
       ..add(DiagnosticsProperty('oldTx', oldTx))
       ..add(DiagnosticsProperty('broadcastTime', broadcastTime))
@@ -461,6 +480,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
             (identical(other.toAddress, toAddress) ||
                 other.toAddress == toAddress) &&
             (identical(other.psbt, psbt) || other.psbt == psbt) &&
+            const DeepCollectionEquality().equals(other.pset, pset) &&
             (identical(other.rbfEnabled, rbfEnabled) ||
                 other.rbfEnabled == rbfEnabled) &&
             (identical(other.oldTx, oldTx) || other.oldTx == oldTx) &&
@@ -486,6 +506,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       label,
       toAddress,
       psbt,
+      const DeepCollectionEquality().hash(pset),
       rbfEnabled,
       oldTx,
       broadcastTime,
@@ -520,6 +541,8 @@ abstract class _Transaction extends Transaction {
       final String? label,
       final String? toAddress,
       final String? psbt,
+      @JsonKey(includeFromJson: false, includeToJson: false)
+      final Uint8List? pset,
       final bool rbfEnabled,
       final bool oldTx,
       final int? broadcastTime,
@@ -552,6 +575,9 @@ abstract class _Transaction extends Transaction {
   String? get toAddress;
   @override
   String? get psbt;
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  Uint8List? get pset;
   @override
   bool get rbfEnabled;
   @override

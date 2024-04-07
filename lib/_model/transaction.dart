@@ -23,6 +23,11 @@ class Transaction with _$Transaction {
     String? label,
     String? toAddress,
     String? psbt,
+    @JsonKey(
+      includeFromJson: false,
+      includeToJson: false,
+    )
+    Uint8List? pset,
     @Default(true) bool rbfEnabled,
     @Default(false) bool oldTx,
     int? broadcastTime,
@@ -49,6 +54,8 @@ class Transaction with _$Transaction {
       isSwap: true,
     );
   }
+
+  Uint8List? get psbtAsBytes => psbt == null ? null : Uint8List.fromList(psbt!.codeUnits);
 
   Address? mapOutValueToAddress(int value) {
     if (outAddrs.isEmpty) return null;

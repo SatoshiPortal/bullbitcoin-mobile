@@ -9,7 +9,6 @@ abstract class IWalletTransactions {
   Future<Err?> broadcastTx(Transaction tx);
 
   Future<((Wallet, String)?, Err?)> broadcastTxWithWallet({
-    required String tx,
     required Wallet wallet,
     required String address,
     required Transaction transaction,
@@ -21,7 +20,7 @@ abstract class IWalletTransactions {
     required Wallet wallet,
   });
 
-  Future<((Transaction?, int?, String)?, Err?)> buildTx({
+  Future<((Wallet?, Transaction?, int?)?, Err?)> buildTx({
     required Wallet wallet,
     required String address,
     required int? amount,
