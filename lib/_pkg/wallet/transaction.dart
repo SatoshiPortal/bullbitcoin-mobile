@@ -5,37 +5,36 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/address.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
-import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/address.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
-class WalletTxx implements IWalletTransactions {
-  WalletTxx({
+class WalletTx implements IWalletTransactions {
+  WalletTx({
     required WalletsRepository walletsRepository,
     required WalletSensitiveStorageRepository walletSensitiveStorageRepository,
     required WalletAddress walletAddress,
     required WalletUpdate walletUpdate,
-    required WalletSensitiveCreate walletSensitiveCreate,
     required NetworkRepository networkRepository,
     required BDKTransactions bdkTransactions,
     required LWKTransactions lwkTransactions,
     required BDKAddress bdkAddress,
     required LWKAddress lwkAddress,
     required BDKUtxo bdkUtxo,
+    required BDKSensitiveCreate bdkSensitiveCreate,
   })  : _walletsRepository = walletsRepository,
         _walletSensitiveStorageRepository = walletSensitiveStorageRepository,
         _walletAddress = walletAddress,
         _walletUpdate = walletUpdate,
         _bdkUtxo = bdkUtxo,
-        _walletSensitiveCreate = walletSensitiveCreate,
         _bdkTransactions = bdkTransactions,
+        _bdkSensitiveCreate = bdkSensitiveCreate,
         _networkRepository = networkRepository,
         _lwkTransactions = lwkTransactions,
         _bdkAddress = bdkAddress,
@@ -47,7 +46,7 @@ class WalletTxx implements IWalletTransactions {
 
   final WalletAddress _walletAddress;
   final WalletUpdate _walletUpdate;
-  final WalletSensitiveCreate _walletSensitiveCreate;
+  final BDKSensitiveCreate _bdkSensitiveCreate;
 
   final BDKTransactions _bdkTransactions;
   final LWKTransactions _lwkTransactions;
@@ -155,7 +154,7 @@ class WalletTxx implements IWalletTransactions {
             );
             if (errSeed != null) throw errSeed;
             final (bdkSignerWallet, errSigner) =
-                await _walletSensitiveCreate.loadPrivateBdkWallet(wallet, seed!);
+                await _bdkSensitiveCreate.loadPrivateBdkWallet(wallet, seed!);
             if (errSigner != null) throw errSigner;
             final (signed, errSign) = await _bdkTransactions.signTx(
               psbt: psbt,
@@ -419,18 +418,6 @@ class WalletTxx implements IWalletTransactions {
     }
   }
 
-  @override
-  Future<Err?> broadcastTx(String tx) {
-    // TODO: implement broadcastTx
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<(Transaction?, Err?)> finalizeTx({required String psbt, required Wallet wallet}) {
-    // TODO: implement finalizeTx
-    throw UnimplementedError();
-  }
-
   // Future<Err?> extractTx({
   //   required String tx,
   //   required HomeCubit homeCubit,
@@ -447,59 +434,86 @@ class WalletTxx implements IWalletTransactions {
   //   }
   //   return null;
   // }
-
-  Future<(bdk.Transaction?, Err?)> finalizeTxOld({
-    required String psbt,
-    // required bdk.Blockchain blockchain,
-    required bdk.Wallet bdkWallet,
-    // required String address,
-  }) async {
-    try {
-      final psbtStruct = bdk.PartiallySignedTransaction(psbtBase64: psbt);
-      // final tx = await psbtStruct.extractTx();
-      final finalized = await bdkWallet.sign(
-        psbt: psbtStruct,
-        signOptions: const bdk.SignOptions(
-          isMultiSig: false,
-          trustWitnessUtxo: false,
-          allowAllSighashes: false,
-          removePartialSigs: true,
-          tryFinalize: true,
-          signWithTapInternalKey: false,
-          allowGrinding: true,
-        ),
-      );
-      final extracted = await finalized.extractTx();
-
-      return (extracted, null);
-    } on Exception catch (e) {
-      return (
-        null,
-        Err(
-          e.message,
-          title: 'Error occurred while signing transaction',
-          solution: 'Please try again.',
-        )
-      );
-    }
-  }
-
-  Future<Err?> broadcastTxOld({
-    required bdk.Transaction tx,
-    required bdk.Blockchain blockchain,
-  }) async {
-    try {
-      await blockchain.broadcast(tx);
-      return null;
-    } on Exception catch (e) {
-      return Err(
-        e.message,
-        title: 'Error occurred while broadcasting transaction',
-        solution: 'Please try again.',
-      );
-    }
-  }
 }
+
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
 
 // class WalletTx {
 //   Transaction addOutputAddresses(Address newAddress, Transaction tx) {

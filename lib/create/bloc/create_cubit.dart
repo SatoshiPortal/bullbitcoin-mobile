@@ -1,44 +1,36 @@
 import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateWalletCubit extends Cubit<CreateWalletState> {
   CreateWalletCubit({
-    required this.settingsCubit,
     required this.walletSensCreate,
-    required this.hiveStorage,
-    required this.secureStorage,
     required this.walletsStorageRepository,
     required this.walletSensRepository,
     required this.networkCubit,
     required this.walletCreate,
+    required this.bdkSensitiveCreate,
     // bool fromHome = false,
     bool mainWallet = false,
   }) : super(
-          CreateWalletState(
-            mainWallet: mainWallet,
-          ),
+          CreateWalletState(mainWallet: mainWallet),
         ) {
     createMne();
   }
 
-  final SettingsCubit settingsCubit;
   final WalletSensitiveCreate walletSensCreate;
-  final HiveStorage hiveStorage;
-  final SecureStorage secureStorage;
   final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveStorageRepository walletSensRepository;
   final NetworkCubit networkCubit;
   final WalletCreate walletCreate;
+  final BDKSensitiveCreate bdkSensitiveCreate;
 
   void createMne({bool fromHome = false}) async {
     emit(state.copyWith(creatingNmemonic: true));
@@ -112,7 +104,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
       return;
     }
-    final (wallet, wErr) = await walletSensCreate.oneFromBIP39(
+    final (wallet, wErr) = await bdkSensitiveCreate.oneFromBIP39(
       seed: seed!,
       passphrase: state.passPhrase,
       scriptType: ScriptType.bip84,

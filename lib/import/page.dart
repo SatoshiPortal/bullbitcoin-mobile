@@ -2,8 +2,8 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
@@ -21,7 +21,6 @@ import 'package:bb_mobile/import/wallet_type_selection.dart';
 import 'package:bb_mobile/import/xpub.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +28,9 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ImportWalletPage extends StatefulWidget {
-  const ImportWalletPage({super.key});
+  const ImportWalletPage({super.key, this.mainWallet = false});
+
+  final bool mainWallet;
 
   @override
   State<ImportWalletPage> createState() => _ImportWalletPageState();
@@ -45,14 +46,14 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
       barcode: locator<Barcode>(),
       filePicker: locator<FilePick>(),
       nfc: locator<NFCPicker>(),
-      settingsCubit: locator<SettingsCubit>(),
       walletCreate: locator<WalletCreate>(),
       walletSensCreate: locator<WalletSensitiveCreate>(),
-      hiveStorage: locator<HiveStorage>(),
-      secureStorage: locator<SecureStorage>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       networkCubit: locator<NetworkCubit>(),
+      bdkCreate: locator<BDKCreate>(),
+      bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
+      mainWallet: widget.mainWallet,
       // walletNetwork: locator<WalletNetwork>(),
     );
 

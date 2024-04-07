@@ -35,7 +35,6 @@ class HomePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: homeCubit),
-        // BlocProvider.value(value: homeCubit.createWalletCubit),
       ],
       child: const _Screen(),
     );
@@ -833,7 +832,7 @@ class HomeNoWallets extends StatelessWidget {
               child: BBButton.big(
                 label: 'Create new wallet',
                 onPressed: () {
-                  context.push('/import');
+                  context.push('/create-wallet-main');
                 },
               ),
             ),
@@ -844,7 +843,7 @@ class HomeNoWallets extends StatelessWidget {
               isBlue: false,
               fontSize: 11,
               onPressed: () {
-                context.push('/import');
+                context.push('/import-main');
               },
             ),
           ],

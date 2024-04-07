@@ -214,8 +214,8 @@ class HomeState with _$HomeState {
           swapBloc: locator<WatchTxsBloc>(),
           networkRepository: locator<NetworkRepository>(),
           walletsRepository: locator<WalletsRepository>(),
-          walletTransactionn: locator<WalletTxx>(),
-          walletCreatee: locator<WalletCreatee>(),
+          walletTransactionn: locator<WalletTx>(),
+          walletCreatee: locator<WalletCreate>(),
         ),
     ];
     return walletCubits;

@@ -54,8 +54,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final WalletSync walletSync;
   final WalletBalance walletBalance;
   final WalletAddress walletAddress;
-  final WalletCreatee walletCreatee;
-  final WalletTxx walletTransactionn;
+  final WalletCreate walletCreatee;
+  final WalletTx walletTransactionn;
 
   final NetworkCubit networkCubit;
   final WatchTxsBloc swapBloc;

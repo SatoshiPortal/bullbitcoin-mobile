@@ -5,6 +5,8 @@ import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
@@ -14,7 +16,6 @@ import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -45,7 +46,13 @@ class TxPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final home = locator<HomeCubit>();
-    final wallet = home.state.selectedWalletCubit!;
+    // final wallet = home.state.selectedWalletCubit!;
+    final wallet = tx.wallet!;
+    final walletBloc = home.state.getWalletBloc(wallet);
+    if (walletBloc == null) {
+      context.pop();
+      return const SizedBox.shrink();
+    }
     final networkFees = NetworkFeesCubit(
       hiveStorage: locator<HiveStorage>(),
       mempoolAPI: locator<MempoolAPI>(),
@@ -55,7 +62,7 @@ class TxPage extends StatelessWidget {
 
     final txCubit = TransactionCubit(
       tx: tx,
-      walletBloc: wallet,
+      walletBloc: walletBloc,
       mempoolAPI: locator<MempoolAPI>(),
       walletUpdate: locator<WalletUpdate>(),
       walletCreate: locator<WalletCreate>(),
@@ -63,8 +70,9 @@ class TxPage extends StatelessWidget {
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletSync: locator<WalletSync>(),
-      walletTx: locator<WalletTxx>(),
-      walletSensTx: locator<WalletSensitiveTx>(),
+      walletTx: locator<WalletTx>(),
+      bdkTx: locator<BDKTransactions>(),
+      // walletSensTx: locator<WalletSensitiveTx>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       walletAddress: locator<WalletAddress>(),
@@ -73,6 +81,7 @@ class TxPage extends StatelessWidget {
       walletNetwork: locator<WalletNetwork>(),
       networkRepository: locator<NetworkRepository>(),
       walletsRepository: locator<WalletsRepository>(),
+      bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
 
       networkFeesCubit: networkFees,
     );
@@ -80,14 +89,14 @@ class TxPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: txCubit),
-        BlocProvider.value(value: wallet),
+        BlocProvider.value(value: walletBloc),
         BlocProvider.value(value: networkFees),
         BlocProvider.value(value: locator<WatchTxsBloc>()),
       ],
       child: BlocListener<TransactionCubit, TransactionState>(
         listenWhen: (previous, current) => previous.tx != current.tx,
         listener: (context, state) async {
-          home.updateSelectedWallet(wallet);
+          home.updateSelectedWallet(walletBloc);
         },
         child: Scaffold(
           appBar: AppBar(

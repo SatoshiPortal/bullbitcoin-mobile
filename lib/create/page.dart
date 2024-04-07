@@ -1,6 +1,5 @@
 import 'package:bb_mobile/_pkg/extensions.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
@@ -19,7 +18,6 @@ import 'package:bb_mobile/create/confirm_popup.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -31,19 +29,20 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class CreateWalletPage extends StatelessWidget {
-  const CreateWalletPage({super.key});
+  const CreateWalletPage({super.key, this.mainWallet = false});
+
+  final bool mainWallet;
 
   @override
   Widget build(BuildContext context) {
     final createWallet = CreateWalletCubit(
-      settingsCubit: locator<SettingsCubit>(),
       walletSensCreate: locator<WalletSensitiveCreate>(),
-      hiveStorage: locator<HiveStorage>(),
-      secureStorage: locator<SecureStorage>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       networkCubit: locator<NetworkCubit>(),
       walletCreate: locator<WalletCreate>(),
+      bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
+      mainWallet: mainWallet,
     );
 
     return BlocProvider.value(

@@ -81,7 +81,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   final WalletSensitiveStorageRepository walletSensitiveRepository;
   final NetworkCubit networkCubit;
   final SwapBoltz swapBoltz;
-  final WalletTxx walletTx;
+  final WalletTx walletTx;
   late HomeCubit homeCubit;
 
   void _initializeSwapWatcher(InitializeSwapWatcher event, Emitter<WatchTxsState> emit) async {

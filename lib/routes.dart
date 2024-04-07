@@ -63,6 +63,18 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
+      path: '/create-wallet-main',
+      builder: (context, state) {
+        return const CreateWalletPage(mainWallet: true);
+      },
+    ),
+    GoRoute(
+      path: '/import-main',
+      builder: (context, state) {
+        return const ImportWalletPage(mainWallet: true);
+      },
+    ),
+    GoRoute(
       path: '/settings',
       builder: (context, state) {
         return const SettingsPage();

@@ -49,7 +49,7 @@ class _ReceivePageState extends State<ReceivePage> {
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
-      walletTx: locator<WalletTxx>(),
+      walletTx: locator<WalletTx>(),
       watchTxsBloc: locator<WatchTxsBloc>(),
       homeCubit: locator<HomeCubit>(),
     );

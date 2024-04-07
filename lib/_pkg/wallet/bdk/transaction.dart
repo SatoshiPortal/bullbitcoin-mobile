@@ -828,4 +828,45 @@ class BDKTransactions {
       );
     }
   }
+
+  Future<(Transaction?, Err?)> buildBumpFeeTx({
+    required Transaction tx,
+    required double feeRate,
+    required bdk.Wallet signingWallet,
+    required bdk.Wallet pubWallet,
+  }) async {
+    try {
+      var txBuilder = bdk.BumpFeeTxBuilder(
+        txid: tx.txid,
+        feeRate: feeRate,
+      );
+      txBuilder = txBuilder.enableRbf();
+      final txResult = await txBuilder.finish(pubWallet);
+      final signedPSBT = await signingWallet.sign(psbt: txResult.psbt);
+
+      final txDetails = txResult.txDetails;
+
+      final newTx = Transaction(
+        txid: txDetails.txid,
+        received: txDetails.received,
+        sent: txDetails.sent,
+        fee: txDetails.fee ?? 0,
+        height: txDetails.confirmationTime?.height,
+        timestamp: txDetails.confirmationTime?.timestamp ?? 0,
+        label: tx.label,
+        toAddress: tx.toAddress,
+        psbt: signedPSBT.psbtBase64,
+      );
+      return (newTx, null);
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while building transaction',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
 }

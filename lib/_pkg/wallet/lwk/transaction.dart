@@ -316,7 +316,7 @@ class LWKTransactions {
       final List<Transaction> transactions = [];
 
       for (final tx in txs) {
-        String? label;
+        // String? label;
 
         final storedTxIdx = storedTxs.indexWhere((t) => t.txid == tx.txid);
         final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
@@ -334,7 +334,7 @@ class LWKTransactions {
           txid: tx.txid,
           received: tx.kind == 'outgoing' ? 0 : finalBalance,
           sent: tx.kind == 'outgoing' ? finalBalance : 0,
-          fee: tx.fee ?? 0,
+          fee: tx.fee,
           height: 100,
           timestamp: tx.timestamp,
           rbfEnabled: false,
@@ -381,7 +381,7 @@ class LWKTransactions {
     required double feeRate,
   }) async {
     try {
-      final isMainnet = wallet.network == BBNetwork.LMainnet;
+      // final isMainnet = wallet.network == BBNetwork.LMainnet;
       // if (isMainnet != isLiquidMainnetAddress(address)) {
       //   return (
       //     null,
@@ -395,7 +395,7 @@ class LWKTransactions {
         txid: '',
         received: 0,
         sent: amount ?? 0,
-        fee: feeRate.toInt() ?? 0,
+        fee: feeRate.toInt(),
         height: 0,
         timestamp: 0,
         label: '',

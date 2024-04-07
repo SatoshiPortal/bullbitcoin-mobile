@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
@@ -6,7 +7,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 abstract class IWalletTransactions {
   Future<(Wallet?, Err?)> getTransactions(Wallet wallet);
 
-  Future<Err?> broadcastTx(String tx);
+  // Future<Err?> broadcastTx(String tx);
 
   Future<((Wallet, String)?, Err?)> broadcastTxWithWallet({
     required Wallet wallet,
@@ -15,10 +16,10 @@ abstract class IWalletTransactions {
     String? note,
   });
 
-  Future<(Transaction?, Err?)> finalizeTx({
-    required String psbt,
-    required Wallet wallet,
-  });
+  // Future<(Transaction?, Err?)> finalizeTx({
+  //   required String psbt,
+  //   required Wallet wallet,
+  // });
 
   Future<((Wallet?, Transaction?, int?)?, Err?)> buildTx({
     required Wallet wallet,
@@ -101,4 +102,9 @@ abstract class IWalletSensitiveCreate {
     required String mnemonic,
     String? passphrase,
   });
+
+  Future<(Seed?, Err?)> mnemonicSeed(
+    String mnemonic,
+    BBNetwork network,
+  );
 }

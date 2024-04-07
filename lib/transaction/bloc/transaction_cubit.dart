@@ -6,6 +6,8 @@ import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
@@ -15,7 +17,6 @@ import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -32,7 +33,8 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.hiveStorage,
     required this.secureStorage,
     required this.walletTx,
-    required this.walletSensTx,
+    // required this.walletSensTx,
+    required this.bdkTx,
     required this.walletsStorageRepository,
     required this.walletSensRepository,
     required this.walletAddress,
@@ -46,6 +48,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required this.networkFeesCubit,
     required this.networkRepository,
     required this.walletsRepository,
+    required this.bdkSensitiveCreate,
   }) : super(TransactionState(tx: tx)) {
     if (tx.isReceived())
       loadReceiveLabel();
@@ -59,8 +62,8 @@ class TransactionCubit extends Cubit<TransactionState> {
   final MempoolAPI mempoolAPI;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletTxx walletTx;
-  final WalletSensitiveTx walletSensTx;
+  final WalletTx walletTx;
+  // final WalletSensitiveTx walletSensTx;
   final WalletUpdate walletUpdate;
 
   final WalletsStorageRepository walletsStorageRepository;
@@ -76,6 +79,8 @@ class TransactionCubit extends Cubit<TransactionState> {
   final SettingsCubit settingsCubit;
   final WalletNetwork walletNetwork;
   final NetworkFeesCubit networkFeesCubit;
+  final BDKSensitiveCreate bdkSensitiveCreate;
+  final BDKTransactions bdkTx;
 
   final NetworkRepository networkRepository;
 
@@ -248,7 +253,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
-    final (bdkSignerWallet, errr) = await walletSensCreate.loadPrivateBdkWallet(wallet!, seed!);
+    final (bdkSignerWallet, errr) = await bdkSensitiveCreate.loadPrivateBdkWallet(wallet!, seed!);
     if (errr != null) {
       emit(state.copyWith(errBuildingTx: errr.toString(), buildingTx: false));
       return;
@@ -260,7 +265,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
-    final (newTx, errrr) = await walletSensTx.buildBumpFeeTx(
+    final (newTx, errrr) = await bdkTx.buildBumpFeeTx(
       tx: state.tx,
       feeRate: fees.toDouble(),
       signingWallet: bdkSignerWallet!,

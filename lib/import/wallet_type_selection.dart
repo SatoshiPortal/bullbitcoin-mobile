@@ -46,8 +46,8 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
           wallet: w,
           networkRepository: locator<NetworkRepository>(),
           walletsRepository: locator<WalletsRepository>(),
-          walletTransactionn: locator<WalletTxx>(),
-          walletCreatee: locator<WalletCreatee>(),
+          walletTransactionn: locator<WalletTx>(),
+          walletCreatee: locator<WalletCreate>(),
         ),
     ];
 

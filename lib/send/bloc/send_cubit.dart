@@ -51,7 +51,7 @@ class SendCubit extends Cubit<SendState> {
 
   final Barcode barcode;
   final FileStorage fileStorage;
-  final WalletTxx walletTx;
+  final WalletTx walletTx;
 
   final NetworkCubit networkCubit;
   final NetworkFeesCubit networkFeesCubit;

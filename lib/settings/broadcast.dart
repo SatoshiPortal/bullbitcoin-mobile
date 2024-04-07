@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
@@ -36,11 +37,12 @@ class BroadcastPage extends StatelessWidget {
       // settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       fileStorage: locator<FileStorage>(),
-      walletTx: locator<WalletTxx>(),
+      walletTx: locator<WalletTx>(),
       homeCubit: locator<HomeCubit>(),
       walletNetwork: locator<WalletNetwork>(),
       networkRepository: locator<NetworkRepository>(),
       walletsRepository: locator<WalletsRepository>(),
+      bdkTransactions: locator<BDKTransactions>(),
     );
 
     return BlocProvider.value(
@@ -84,11 +86,12 @@ class BroadcastPopUp extends StatelessWidget {
       // settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       fileStorage: locator<FileStorage>(),
-      walletTx: locator<WalletTxx>(),
+      walletTx: locator<WalletTx>(),
       homeCubit: locator<HomeCubit>(),
       walletNetwork: locator<WalletNetwork>(),
       networkRepository: locator<NetworkRepository>(),
       walletsRepository: locator<WalletsRepository>(),
+      bdkTransactions: locator<BDKTransactions>(),
     );
 
     return showBBBottomSheet(

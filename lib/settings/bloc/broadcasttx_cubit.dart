@@ -4,6 +4,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
@@ -29,6 +30,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     required this.walletNetwork,
     required this.networkRepository,
     required this.walletsRepository,
+    required this.bdkTransactions,
   }) : super(const BroadcastTxState()) {
     clearErrors();
   }
@@ -36,12 +38,13 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   final FilePick filePicker;
   final Barcode barcode;
   final FileStorage fileStorage;
-  final WalletTxx walletTx;
+  final WalletTx walletTx;
   final HomeCubit homeCubit;
   final NetworkCubit networkCubit;
   final WalletNetwork walletNetwork;
   final NetworkRepository networkRepository;
   final WalletsRepository walletsRepository;
+  final BDKTransactions bdkTransactions;
 
   @override
   void onChange(Change<BroadcastTxState> change) {
@@ -155,7 +158,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             );
             return;
           }
-          final (bdkTxFin, txErr) = await walletTx.finalizeTxOld(
+          final (bdkTxFinResp, txErr) = await bdkTransactions.signTx(
             psbt: tx,
             bdkWallet: bdkWallet!,
           );
@@ -167,7 +170,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             );
             return;
           } else
-            bdkTx = bdkTxFin!;
+            bdkTx = bdkTxFinResp!.$1;
         } else {
           emit(
             state.copyWith(
@@ -412,7 +415,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       return;
     }
 
-    final err = await walletTx.broadcastTxOld(tx: bdkTx, blockchain: blockchain!);
+    final err = await bdkTransactions.broadcastTx(tx: bdkTx, blockchain: blockchain!);
     if (err != null) {
       // final error =
       emit(

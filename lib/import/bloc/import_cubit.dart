@@ -6,8 +6,8 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
@@ -16,7 +16,6 @@ import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportWalletCubit extends Cubit<ImportState> {
@@ -24,14 +23,13 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required this.barcode,
     required this.filePicker,
     required this.nfc,
-    required this.settingsCubit,
     required this.walletCreate,
     required this.walletSensCreate,
-    required this.hiveStorage,
-    required this.secureStorage,
     required this.walletsStorageRepository,
     required this.walletSensRepository,
     required this.networkCubit,
+    required this.bdkCreate,
+    required this.bdkSensitiveCreate,
     bool mainWallet = false,
   }) : super(
           ImportState(
@@ -45,18 +43,18 @@ class ImportWalletCubit extends Cubit<ImportState> {
     // reset();
     // emit(state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]));
 
-    // if (mainWallet) recoverClicked();
+    if (mainWallet) recoverClicked();
   }
 
   final Barcode barcode;
   final FilePick filePicker;
   final NFCPicker nfc;
 
-  final SettingsCubit settingsCubit;
   final WalletCreate walletCreate;
+  final BDKCreate bdkCreate;
+  final BDKSensitiveCreate bdkSensitiveCreate;
   final WalletSensitiveCreate walletSensCreate;
-  final HiveStorage hiveStorage;
-  final SecureStorage secureStorage;
+
   final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveStorageRepository walletSensRepository;
   final NetworkCubit networkCubit;
@@ -425,7 +423,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         case ImportTypes.words12:
           final mnemonic = state.words12.map((_) => _.word).join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
-          final (ws, wErrs) = await walletSensCreate.allFromBIP39(
+          final (ws, wErrs) = await bdkSensitiveCreate.allFromBIP39(
             mnemonic: mnemonic,
             passphrase: passphrase,
             network: network,
@@ -441,7 +439,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           final mnemonic = state.words24.map((_) => _.word).join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
 
-          final (ws, wErrs) = await walletSensCreate.allFromBIP39(
+          final (ws, wErrs) = await bdkSensitiveCreate.allFromBIP39(
             mnemonic: mnemonic,
             passphrase: passphrase,
             network: network,
@@ -457,7 +455,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         case ImportTypes.xpub:
           if (state.xpub.contains('[')) {
             // has origin info
-            final (wxpub, wErrs) = await walletCreate.oneFromXpubWithOrigin(
+            final (wxpub, wErrs) = await bdkCreate.oneFromXpubWithOrigin(
               state.xpub,
             );
             if (wErrs != null) {
@@ -467,7 +465,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
             scriptTypeChanged(wxpub!.scriptType);
             wallets.addAll([wxpub]);
           } else {
-            final (wxpub, wErrs) = await walletCreate.oneFromSlip132Pub(
+            final (wxpub, wErrs) = await bdkCreate.oneFromSlip132Pub(
               state.xpub,
             );
             if (wErrs != null) {
@@ -480,7 +478,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         case ImportTypes.coldcard:
           final coldcard = state.coldCard!;
 
-          final (cws, wErrs) = await walletCreate.allFromColdCard(
+          final (cws, wErrs) = await bdkCreate.allFromColdCard(
             coldcard,
             network,
           );

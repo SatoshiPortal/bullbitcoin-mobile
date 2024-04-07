@@ -19,6 +19,7 @@ import 'package:bb_mobile/_pkg/wallet/bdk/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/network.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
@@ -36,7 +37,6 @@ import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -90,92 +90,6 @@ Future _setupRepositories() async {
   );
 }
 
-Future _setupWalletServices() async {
-  locator.registerFactory<BDKSync>(() => BDKSync());
-  locator.registerFactory<LWKSync>(() => LWKSync());
-  locator.registerSingleton<BDKBalance>(BDKBalance());
-  locator.registerSingleton<LWKBalance>(LWKBalance());
-  locator.registerSingleton<BDKNetwork>(BDKNetwork());
-  locator.registerSingleton<BDKAddress>(BDKAddress());
-  locator.registerSingleton<LWKAddress>(LWKAddress());
-  locator.registerSingleton<BDKTransactions>(BDKTransactions());
-  locator.registerSingleton<LWKTransactions>(LWKTransactions());
-  locator.registerSingleton<BDKUtxo>(BDKUtxo());
-  locator.registerSingleton<LWKCreate>(LWKCreate());
-  locator.registerSingleton<BDKCreate>(BDKCreate());
-
-  locator.registerSingleton<WalletCreatee>(
-    WalletCreatee(
-      walletsRepository: locator<WalletsRepository>(),
-      lwkCreate: locator<LWKCreate>(),
-      bdkCreate: locator<BDKCreate>(),
-      walletsStorageRepository: locator<WalletsStorageRepository>(),
-    ),
-  );
-
-  locator.registerSingleton<WalletUpdate>(WalletUpdate());
-
-  locator.registerSingleton<WalletAddress>(
-    WalletAddress(
-      bdkAddress: locator<BDKAddress>(),
-      lwkAddress: locator<LWKAddress>(),
-      walletsRepository: locator<WalletsRepository>(),
-    ),
-  );
-
-  locator.registerSingleton<WalletSensitiveCreate>(
-    WalletSensitiveCreate(walletsRepository: locator<WalletsRepository>()),
-  );
-  locator.registerSingleton<WalletSensitiveTx>(WalletSensitiveTx());
-  locator.registerSingleton<WalletCreate>(
-    WalletCreate(
-      walletsRepository: locator<WalletsRepository>(),
-    ),
-  );
-
-  locator.registerFactory<WalletSync>(
-    () => WalletSync(
-      bdkSync: locator<BDKSync>(),
-      lwkSync: locator<LWKSync>(),
-      walletsRepository: locator<WalletsRepository>(),
-      networkRepository: locator<NetworkRepository>(),
-    ),
-  );
-
-  locator.registerSingleton<WalletBalance>(
-    WalletBalance(
-      walletsRepository: locator<WalletsRepository>(),
-      bdkBalance: locator<BDKBalance>(),
-      lwkBalance: locator<LWKBalance>(),
-    ),
-  );
-
-  locator.registerSingleton<WalletTxx>(
-    WalletTxx(
-      walletsRepository: locator<WalletsRepository>(),
-      networkRepository: locator<NetworkRepository>(),
-      walletAddress: locator<WalletAddress>(),
-      walletSensitiveCreate: locator<WalletSensitiveCreate>(),
-      walletSensitiveStorageRepository: locator<WalletSensitiveStorageRepository>(),
-      walletUpdate: locator<WalletUpdate>(),
-      bdkTransactions: locator<BDKTransactions>(),
-      lwkTransactions: locator<LWKTransactions>(),
-      bdkAddress: locator<BDKAddress>(),
-      lwkAddress: locator<LWKAddress>(),
-      bdkUtxo: locator<BDKUtxo>(),
-    ),
-  );
-
-  locator.registerSingleton<SwapBoltz>(SwapBoltz(secureStorage: locator<SecureStorage>()));
-  locator.registerSingleton<WalletNetwork>(
-    WalletNetwork(
-      networkRepository: locator<NetworkRepository>(),
-      logger: locator<Logger>(),
-      bdkNetwork: locator<BDKNetwork>(),
-    ),
-  );
-}
-
 Future _setupAppServices() async {
   final deepLink = DeepLink();
   locator.registerSingleton<DeepLink>(deepLink);
@@ -198,6 +112,99 @@ Future _setupAppServices() async {
   );
 
   locator.registerSingleton<FileStorage>(FileStorage());
+}
+
+Future _setupWalletServices() async {
+  locator.registerFactory<BDKSync>(() => BDKSync());
+  locator.registerFactory<LWKSync>(() => LWKSync());
+  locator.registerSingleton<BDKBalance>(BDKBalance());
+  locator.registerSingleton<LWKBalance>(LWKBalance());
+  locator.registerSingleton<BDKNetwork>(BDKNetwork());
+  locator.registerSingleton<BDKAddress>(BDKAddress());
+  locator.registerSingleton<LWKAddress>(LWKAddress());
+  locator.registerSingleton<BDKTransactions>(BDKTransactions());
+  locator.registerSingleton<LWKTransactions>(LWKTransactions());
+  locator.registerSingleton<BDKUtxo>(BDKUtxo());
+  locator.registerSingleton<LWKCreate>(LWKCreate());
+  locator.registerSingleton<BDKCreate>(
+    BDKCreate(
+      walletsRepository: locator<WalletsRepository>(),
+    ),
+  );
+  locator.registerSingleton<BDKSensitiveCreate>(
+    BDKSensitiveCreate(
+      walletsRepository: locator<WalletsRepository>(),
+      bdkCreate: locator<BDKCreate>(),
+    ),
+  );
+
+  locator.registerSingleton<WalletCreate>(
+    WalletCreate(
+      walletsRepository: locator<WalletsRepository>(),
+      lwkCreate: locator<LWKCreate>(),
+      bdkCreate: locator<BDKCreate>(),
+      walletsStorageRepository: locator<WalletsStorageRepository>(),
+    ),
+  );
+
+  locator.registerSingleton<WalletUpdate>(WalletUpdate());
+
+  locator.registerSingleton<WalletAddress>(
+    WalletAddress(
+      bdkAddress: locator<BDKAddress>(),
+      lwkAddress: locator<LWKAddress>(),
+      walletsRepository: locator<WalletsRepository>(),
+    ),
+  );
+
+  locator.registerSingleton<WalletSensitiveCreate>(
+    WalletSensitiveCreate(
+      bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
+    ),
+  );
+  // locator.registerSingleton<WalletSensitiveTx>(WalletSensitiveTx());
+
+  locator.registerFactory<WalletSync>(
+    () => WalletSync(
+      bdkSync: locator<BDKSync>(),
+      lwkSync: locator<LWKSync>(),
+      walletsRepository: locator<WalletsRepository>(),
+      networkRepository: locator<NetworkRepository>(),
+    ),
+  );
+
+  locator.registerSingleton<WalletBalance>(
+    WalletBalance(
+      walletsRepository: locator<WalletsRepository>(),
+      bdkBalance: locator<BDKBalance>(),
+      lwkBalance: locator<LWKBalance>(),
+    ),
+  );
+
+  locator.registerSingleton<WalletTx>(
+    WalletTx(
+      walletsRepository: locator<WalletsRepository>(),
+      networkRepository: locator<NetworkRepository>(),
+      walletAddress: locator<WalletAddress>(),
+      walletSensitiveStorageRepository: locator<WalletSensitiveStorageRepository>(),
+      walletUpdate: locator<WalletUpdate>(),
+      bdkTransactions: locator<BDKTransactions>(),
+      lwkTransactions: locator<LWKTransactions>(),
+      bdkAddress: locator<BDKAddress>(),
+      lwkAddress: locator<LWKAddress>(),
+      bdkUtxo: locator<BDKUtxo>(),
+      bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
+    ),
+  );
+
+  locator.registerSingleton<SwapBoltz>(SwapBoltz(secureStorage: locator<SecureStorage>()));
+  locator.registerSingleton<WalletNetwork>(
+    WalletNetwork(
+      networkRepository: locator<NetworkRepository>(),
+      logger: locator<Logger>(),
+      bdkNetwork: locator<BDKNetwork>(),
+    ),
+  );
 }
 
 Future _setupBlocs() async {
@@ -242,7 +249,7 @@ Future _setupBlocs() async {
     settingsCubit: settings,
     networkCubit: locator<NetworkCubit>(),
     swapBoltz: locator<SwapBoltz>(),
-    walletTx: locator<WalletTxx>(),
+    walletTx: locator<WalletTx>(),
   );
 
   final homeCubit = HomeCubit(

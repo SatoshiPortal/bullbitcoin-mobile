@@ -56,13 +56,13 @@ class _SendPageState extends State<SendPage> {
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
-      walletTx: locator<WalletTxx>(),
+      walletTx: locator<WalletTx>(),
       watchTxsBloc: locator<WatchTxsBloc>(),
       homeCubit: locator<HomeCubit>(),
     );
 
     send = SendCubit(
-      walletTx: locator<WalletTxx>(),
+      walletTx: locator<WalletTx>(),
       barcode: locator<Barcode>(),
       settingsCubit: locator<SettingsCubit>(),
       fileStorage: locator<FileStorage>(),
