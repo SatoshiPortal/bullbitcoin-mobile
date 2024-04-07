@@ -27,6 +27,10 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
           ? null
           : Address.fromJson(
               json['lastGeneratedAddress'] as Map<String, dynamic>),
+      lastGeneratedLiqAddress: json['lastGeneratedLiqAddress'] == null
+          ? null
+          : Address.fromJson(
+              json['lastGeneratedLiqAddress'] as Map<String, dynamic>),
       myAddressBook: (json['myAddressBook'] as List<dynamic>?)
               ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -77,6 +81,7 @@ Map<String, dynamic> _$$WalletImplToJson(_$WalletImpl instance) =>
       'balance': instance.balance,
       'fullBalance': instance.fullBalance,
       'lastGeneratedAddress': instance.lastGeneratedAddress,
+      'lastGeneratedLiqAddress': instance.lastGeneratedLiqAddress,
       'myAddressBook': instance.myAddressBook,
       'externalAddressBook': instance.externalAddressBook,
       'utxos': instance.utxos,

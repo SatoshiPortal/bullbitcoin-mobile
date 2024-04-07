@@ -34,6 +34,7 @@ class Wallet with _$Wallet {
     int? balance,
     Balance? fullBalance,
     Address? lastGeneratedAddress,
+    Address? lastGeneratedLiqAddress,
     @Default([]) List<Address> myAddressBook,
     List<Address>? externalAddressBook,
     @Default([]) List<UTXO> utxos,
@@ -54,6 +55,9 @@ class Wallet with _$Wallet {
   const Wallet._();
 
   factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
+
+  Address? getLastAddress() =>
+      baseWalletType == BaseWalletType.Bitcoin ? lastGeneratedAddress : lastGeneratedLiqAddress;
 
   bool hasOngoingSwap(String id) {
     return swaps.any((swap) => swap.id == id);

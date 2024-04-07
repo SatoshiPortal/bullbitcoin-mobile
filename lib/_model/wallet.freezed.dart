@@ -33,6 +33,7 @@ mixin _$Wallet {
   int? get balance => throw _privateConstructorUsedError;
   Balance? get fullBalance => throw _privateConstructorUsedError;
   Address? get lastGeneratedAddress => throw _privateConstructorUsedError;
+  Address? get lastGeneratedLiqAddress => throw _privateConstructorUsedError;
   List<Address> get myAddressBook => throw _privateConstructorUsedError;
   List<Address>? get externalAddressBook => throw _privateConstructorUsedError;
   List<UTXO> get utxos => throw _privateConstructorUsedError;
@@ -73,6 +74,7 @@ abstract class $WalletCopyWith<$Res> {
       int? balance,
       Balance? fullBalance,
       Address? lastGeneratedAddress,
+      Address? lastGeneratedLiqAddress,
       List<Address> myAddressBook,
       List<Address>? externalAddressBook,
       List<UTXO> utxos,
@@ -89,6 +91,7 @@ abstract class $WalletCopyWith<$Res> {
 
   $BalanceCopyWith<$Res>? get fullBalance;
   $AddressCopyWith<$Res>? get lastGeneratedAddress;
+  $AddressCopyWith<$Res>? get lastGeneratedLiqAddress;
 }
 
 /// @nodoc
@@ -117,6 +120,7 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     Object? balance = freezed,
     Object? fullBalance = freezed,
     Object? lastGeneratedAddress = freezed,
+    Object? lastGeneratedLiqAddress = freezed,
     Object? myAddressBook = null,
     Object? externalAddressBook = freezed,
     Object? utxos = null,
@@ -183,6 +187,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
       lastGeneratedAddress: freezed == lastGeneratedAddress
           ? _value.lastGeneratedAddress
           : lastGeneratedAddress // ignore: cast_nullable_to_non_nullable
+              as Address?,
+      lastGeneratedLiqAddress: freezed == lastGeneratedLiqAddress
+          ? _value.lastGeneratedLiqAddress
+          : lastGeneratedLiqAddress // ignore: cast_nullable_to_non_nullable
               as Address?,
       myAddressBook: null == myAddressBook
           ? _value.myAddressBook
@@ -262,6 +270,18 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
       return _then(_value.copyWith(lastGeneratedAddress: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $AddressCopyWith<$Res>? get lastGeneratedLiqAddress {
+    if (_value.lastGeneratedLiqAddress == null) {
+      return null;
+    }
+
+    return $AddressCopyWith<$Res>(_value.lastGeneratedLiqAddress!, (value) {
+      return _then(_value.copyWith(lastGeneratedLiqAddress: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -285,6 +305,7 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
       int? balance,
       Balance? fullBalance,
       Address? lastGeneratedAddress,
+      Address? lastGeneratedLiqAddress,
       List<Address> myAddressBook,
       List<Address>? externalAddressBook,
       List<UTXO> utxos,
@@ -303,6 +324,8 @@ abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
   $BalanceCopyWith<$Res>? get fullBalance;
   @override
   $AddressCopyWith<$Res>? get lastGeneratedAddress;
+  @override
+  $AddressCopyWith<$Res>? get lastGeneratedLiqAddress;
 }
 
 /// @nodoc
@@ -329,6 +352,7 @@ class __$$WalletImplCopyWithImpl<$Res>
     Object? balance = freezed,
     Object? fullBalance = freezed,
     Object? lastGeneratedAddress = freezed,
+    Object? lastGeneratedLiqAddress = freezed,
     Object? myAddressBook = null,
     Object? externalAddressBook = freezed,
     Object? utxos = null,
@@ -395,6 +419,10 @@ class __$$WalletImplCopyWithImpl<$Res>
       lastGeneratedAddress: freezed == lastGeneratedAddress
           ? _value.lastGeneratedAddress
           : lastGeneratedAddress // ignore: cast_nullable_to_non_nullable
+              as Address?,
+      lastGeneratedLiqAddress: freezed == lastGeneratedLiqAddress
+          ? _value.lastGeneratedLiqAddress
+          : lastGeneratedLiqAddress // ignore: cast_nullable_to_non_nullable
               as Address?,
       myAddressBook: null == myAddressBook
           ? _value._myAddressBook
@@ -469,6 +497,7 @@ class _$WalletImpl extends _Wallet {
       this.balance,
       this.fullBalance,
       this.lastGeneratedAddress,
+      this.lastGeneratedLiqAddress,
       final List<Address> myAddressBook = const [],
       final List<Address>? externalAddressBook,
       final List<UTXO> utxos = const [],
@@ -524,6 +553,8 @@ class _$WalletImpl extends _Wallet {
   final Balance? fullBalance;
   @override
   final Address? lastGeneratedAddress;
+  @override
+  final Address? lastGeneratedLiqAddress;
   final List<Address> _myAddressBook;
   @override
   @JsonKey()
@@ -604,7 +635,7 @@ class _$WalletImpl extends _Wallet {
 
   @override
   String toString() {
-    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, utxos: $utxos, transactions: $transactions, unsignedTxs: $unsignedTxs, swaps: $swaps, revKeyIndex: $revKeyIndex, subKeyIndex: $subKeyIndex, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide, mainWallet: $mainWallet, baseWalletType: $baseWalletType)';
+    return 'Wallet(id: $id, externalPublicDescriptor: $externalPublicDescriptor, internalPublicDescriptor: $internalPublicDescriptor, mnemonicFingerprint: $mnemonicFingerprint, sourceFingerprint: $sourceFingerprint, network: $network, type: $type, scriptType: $scriptType, name: $name, path: $path, balance: $balance, fullBalance: $fullBalance, lastGeneratedAddress: $lastGeneratedAddress, lastGeneratedLiqAddress: $lastGeneratedLiqAddress, myAddressBook: $myAddressBook, externalAddressBook: $externalAddressBook, utxos: $utxos, transactions: $transactions, unsignedTxs: $unsignedTxs, swaps: $swaps, revKeyIndex: $revKeyIndex, subKeyIndex: $subKeyIndex, backupTested: $backupTested, lastBackupTested: $lastBackupTested, hide: $hide, mainWallet: $mainWallet, baseWalletType: $baseWalletType)';
   }
 
   @override
@@ -634,6 +665,9 @@ class _$WalletImpl extends _Wallet {
                 other.fullBalance == fullBalance) &&
             (identical(other.lastGeneratedAddress, lastGeneratedAddress) ||
                 other.lastGeneratedAddress == lastGeneratedAddress) &&
+            (identical(
+                    other.lastGeneratedLiqAddress, lastGeneratedLiqAddress) ||
+                other.lastGeneratedLiqAddress == lastGeneratedLiqAddress) &&
             const DeepCollectionEquality()
                 .equals(other._myAddressBook, _myAddressBook) &&
             const DeepCollectionEquality()
@@ -676,6 +710,7 @@ class _$WalletImpl extends _Wallet {
         balance,
         fullBalance,
         lastGeneratedAddress,
+        lastGeneratedLiqAddress,
         const DeepCollectionEquality().hash(_myAddressBook),
         const DeepCollectionEquality().hash(_externalAddressBook),
         const DeepCollectionEquality().hash(_utxos),
@@ -720,6 +755,7 @@ abstract class _Wallet extends Wallet {
       final int? balance,
       final Balance? fullBalance,
       final Address? lastGeneratedAddress,
+      final Address? lastGeneratedLiqAddress,
       final List<Address> myAddressBook,
       final List<Address>? externalAddressBook,
       final List<UTXO> utxos,
@@ -763,6 +799,8 @@ abstract class _Wallet extends Wallet {
   Balance? get fullBalance;
   @override
   Address? get lastGeneratedAddress;
+  @override
+  Address? get lastGeneratedLiqAddress;
   @override
   List<Address> get myAddressBook;
   @override

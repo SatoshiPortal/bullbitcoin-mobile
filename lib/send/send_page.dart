@@ -8,12 +8,8 @@ import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -75,16 +71,10 @@ class _SendPageState extends State<SendPage> {
     );
 
     send = SendCubit(
-      secureStorage: locator<SecureStorage>(),
-      walletAddress: locator<WalletAddresss>(),
-      walletTx: locator<WalletTx>(),
-      walletTxx: locator<WalletTxx>(),
-      walletSensTx: locator<WalletSensitiveTx>(),
-      walletSensCreate: locator<WalletSensitiveCreate>(),
+      walletTx: locator<WalletTxx>(),
       barcode: locator<Barcode>(),
       settingsCubit: locator<SettingsCubit>(),
       fileStorage: locator<FileStorage>(),
-      walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       networkCubit: locator<NetworkCubit>(),
       homeCubit: locator<HomeCubit>(),
       networkFeesCubit: NetworkFeesCubit(
@@ -100,8 +90,6 @@ class _SendPageState extends State<SendPage> {
       ),
       swapCubit: swapBloc,
       openScanner: widget.openScanner,
-      networkRepository: locator<NetworkRepository>(),
-      walletsRepository: locator<WalletsRepository>(),
     );
 
     home = locator<HomeCubit>();

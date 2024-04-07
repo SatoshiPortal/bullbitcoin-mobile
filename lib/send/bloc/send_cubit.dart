@@ -5,13 +5,6 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bip21.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -31,13 +24,7 @@ class SendCubit extends Cubit<SendState> {
     required this.barcode,
     WalletBloc? walletBloc,
     required this.settingsCubit,
-    required this.secureStorage,
-    required this.walletAddress,
     required this.walletTx,
-    required this.walletTxx,
-    required this.walletSensTx,
-    required this.walletSensRepository,
-    required this.walletSensCreate,
     required this.fileStorage,
     required this.networkCubit,
     required this.networkFeesCubit,
@@ -45,8 +32,6 @@ class SendCubit extends Cubit<SendState> {
     required SwapCubit swapCubit,
     required bool openScanner,
     required this.homeCubit,
-    required this.networkRepository,
-    required this.walletsRepository,
   }) : super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
@@ -66,18 +51,7 @@ class SendCubit extends Cubit<SendState> {
 
   final Barcode barcode;
   final FileStorage fileStorage;
-  final SecureStorage secureStorage;
-
-  final WalletTxx walletTxx;
-
-  final WalletAddresss walletAddress;
-  final WalletTx walletTx;
-  final WalletSensitiveTx walletSensTx;
-  final WalletSensitiveCreate walletSensCreate;
-
-  final WalletSensitiveStorageRepository walletSensRepository;
-  final NetworkRepository networkRepository;
-  final WalletsRepository walletsRepository;
+  final WalletTxx walletTx;
 
   final NetworkCubit networkCubit;
   final NetworkFeesCubit networkFeesCubit;
@@ -329,7 +303,7 @@ class SendCubit extends Cubit<SendState> {
 
     final localWallet = state.selectedWalletBloc!.state.wallet;
 
-    final (buildResp, err) = await walletTxx.buildTx(
+    final (buildResp, err) = await walletTx.buildTx(
       wallet: localWallet!,
       isManualSend: state.selectedUtxos.isNotEmpty,
       address: address!,
@@ -381,7 +355,7 @@ class SendCubit extends Cubit<SendState> {
     if (state.selectedWalletBloc == null) return;
     emit(state.copyWith(sending: true, errSending: ''));
 
-    final (wtxid, err) = await walletTxx.broadcastTxWithWallet(
+    final (wtxid, err) = await walletTx.broadcastTxWithWallet(
       wallet: state.selectedWalletBloc!.state.wallet!,
       address: state.address,
       note: state.note,

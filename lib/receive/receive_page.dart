@@ -6,7 +6,6 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -64,23 +63,17 @@ class _ReceivePageState extends State<ReceivePage> {
     );
 
     _cubit = ReceiveCubit(
-      walletAddress: locator<WalletAddress>(),
-      hiveStorage: locator<HiveStorage>(),
+      walletAddress: locator<WalletAddresss>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
-      settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       // swapBoltz: locator<SwapBoltz>(),
       swapBloc: swapBloc,
-      secureStorage: locator<SecureStorage>(),
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
-      walletTx: locator<WalletTx>(),
       currencyCubit: CurrencyCubit(
         hiveStorage: locator<HiveStorage>(),
         bbAPI: locator<BullBitcoinAPI>(),
         defaultCurrencyCubit: context.read<CurrencyCubit>(),
       ),
-
-      walletsRepository: locator<WalletsRepository>(),
     );
 
     home = locator<HomeCubit>();

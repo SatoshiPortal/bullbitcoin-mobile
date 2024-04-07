@@ -1,15 +1,10 @@
 import 'package:bb_mobile/_model/address.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -18,30 +13,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ReceiveCubit extends Cubit<ReceiveState> {
   ReceiveCubit({
     WalletBloc? walletBloc,
-    required this.hiveStorage,
-    required this.secureStorage,
     required this.walletAddress,
     required this.walletsStorageRepository,
     required this.walletSensitiveRepository,
-    required this.settingsCubit,
     required this.networkCubit,
     required this.currencyCubit,
-    required this.walletTx,
     required SwapCubit swapBloc,
-    required this.walletsRepository,
   }) : super(ReceiveState(walletBloc: walletBloc, swapBloc: swapBloc)) {
     loadAddress();
   }
-  final SettingsCubit settingsCubit;
-  final WalletAddress walletAddress;
-  final HiveStorage hiveStorage;
-  final SecureStorage secureStorage;
+
+  final WalletAddresss walletAddress;
   final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveStorageRepository walletSensitiveRepository;
+
   final NetworkCubit networkCubit;
   final CurrencyCubit currencyCubit;
-  final WalletTx walletTx;
-  final WalletsRepository walletsRepository;
 
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(
@@ -74,7 +61,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     if (state.walletBloc == null) return;
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
 
-    final address = state.walletBloc!.state.wallet!.lastGeneratedAddress;
+    final address = state.walletBloc!.state.wallet!.getLastAddress();
 
     emit(
       state.copyWith(
@@ -113,15 +100,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     if (state.walletBloc == null) return;
 
-    final (bdkWallet, errLoading) = walletsRepository.getBdkWallet(state.walletBloc!.state.wallet!);
-    if (errLoading != null) {
-      emit(state.copyWith(errLoadingAddress: 'Wallet Sync Required'));
-      return;
-    }
-
     final (updatedWallet, err) = await walletAddress.newAddress(
-      wallet: state.walletBloc!.state.wallet!,
-      bdkWallet: bdkWallet!,
+      state.walletBloc!.state.wallet!,
     );
     if (err != null) {
       emit(
@@ -157,7 +137,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     emit(
       state.copyWith(
-        defaultAddress: updatedWallet.lastGeneratedAddress,
+        defaultAddress: updatedWallet.getLastAddress(),
         privateLabel: '',
         savedDescription: '',
         description: '',

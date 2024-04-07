@@ -247,6 +247,41 @@ class WalletTxx implements IWalletTransactions {
     }
   }
 
+  Future<(Wallet, Err?)> addSwapTxToWallet({
+    required SwapTx swapTx,
+    required Wallet wallet,
+  }) async {
+    try {
+      final swaps = List<SwapTx>.from(wallet.swaps);
+      final index = swaps.indexWhere(
+        (swap) => swap.id == swapTx.id,
+      );
+
+      List<SwapTx> updatedSwaps;
+
+      if (index != -1) {
+        updatedSwaps = wallet.swaps.map((swap) {
+          return swap.id == swapTx.id ? swapTx : swap;
+        }).toList();
+      } else {
+        updatedSwaps = List.from(wallet.swaps)..add(swapTx);
+      }
+
+      final updatedWallet = wallet.copyWith(swaps: updatedSwaps);
+
+      return (updatedWallet, null);
+    } on Exception catch (e) {
+      return (
+        wallet,
+        Err(
+          e.message,
+          title: 'Error occurred while adding swap transaction',
+          solution: 'Please try again.',
+        )
+      ); // returning original wallet in case of error
+    }
+  }
+
   @override
   Future<Err?> broadcastTx(Transaction tx) {
     // TODO: implement broadcastTx

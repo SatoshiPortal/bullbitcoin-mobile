@@ -5,7 +5,7 @@ class BDKAddress {
   Future<(String?, Err?)> peekIndex(bdk.Wallet bdkWallet, int idx) async {
     try {
       final address = await bdkWallet.getAddress(
-        addressIndex: const bdk.AddressIndex.peek(index: 0),
+        addressIndex: bdk.AddressIndex.peek(index: idx),
       );
 
       return (address.address, null);
