@@ -6,10 +6,7 @@ import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -56,16 +53,10 @@ class _SendPageState extends State<SendPage> {
   @override
   void initState() {
     final swapBloc = SwapCubit(
-      hiveStorage: locator<HiveStorage>(),
-      secureStorage: locator<SecureStorage>(),
-      walletAddress: locator<WalletAddress>(),
-      walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
-      settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
-      walletTx: locator<WalletTx>(),
-      walletTransaction: locator<WalletTx>(),
+      walletTx: locator<WalletTxx>(),
       watchTxsBloc: locator<WatchTxsBloc>(),
       homeCubit: locator<HomeCubit>(),
     );

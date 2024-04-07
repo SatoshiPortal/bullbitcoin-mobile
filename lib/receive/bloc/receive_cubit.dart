@@ -1,7 +1,7 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
@@ -23,7 +23,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     loadAddress();
   }
 
-  final WalletAddresss walletAddress;
+  final WalletAddress walletAddress;
   final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveStorageRepository walletSensitiveRepository;
 

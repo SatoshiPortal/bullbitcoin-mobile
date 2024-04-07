@@ -1,15 +1,10 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
@@ -19,32 +14,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SwapCubit extends Cubit<SwapState> {
   SwapCubit({
-    required this.hiveStorage,
-    required this.secureStorage,
-    required this.walletAddress,
-    required this.walletsStorageRepository,
     required this.walletSensitiveRepository,
-    required this.settingsCubit,
+    // required this.settingsCubit,
     required this.networkCubit,
     required this.swapBoltz,
     required this.walletTx,
-    required this.walletTransaction,
     required this.watchTxsBloc,
     required this.homeCubit,
   }) : super(const SwapState()) {
     // clearSwapTx();
   }
 
-  final SettingsCubit settingsCubit;
-  final WalletAddress walletAddress;
-  final HiveStorage hiveStorage;
-  final SecureStorage secureStorage;
-  final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveStorageRepository walletSensitiveRepository;
-  final WalletTx walletTransaction;
   final NetworkCubit networkCubit;
   final SwapBoltz swapBoltz;
-  final WalletTx walletTx;
+  final WalletTxx walletTx;
   final WatchTxsBloc watchTxsBloc;
   final HomeCubit homeCubit;
 

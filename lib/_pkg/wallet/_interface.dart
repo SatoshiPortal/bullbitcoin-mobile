@@ -6,7 +6,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 abstract class IWalletTransactions {
   Future<(Wallet?, Err?)> getTransactions(Wallet wallet);
 
-  Future<Err?> broadcastTx(Transaction tx);
+  Future<Err?> broadcastTx(String tx);
 
   Future<((Wallet, String)?, Err?)> broadcastTxWithWallet({
     required Wallet wallet,
@@ -32,7 +32,7 @@ abstract class IWalletTransactions {
     List<UTXO>? selectedUtxos,
   });
 
-  Future<(Wallet?, Err?)> loadUtxos(Wallet wallet);
+  // Future<(Wallet?, Err?)> loadUtxos(Wallet wallet);
 }
 
 abstract class IWalletSync {
@@ -52,18 +52,12 @@ abstract class IWalletNetwork {
 }
 
 abstract class IWalletAddress {
-  Future<(Wallet?, Err?)> loadAddresses(Wallet wallet);
-
-  Future<(Wallet?, Err?)> loadChangeAddresses(Wallet wallet);
-
   Future<(Wallet?, Err?)> newAddress(Wallet wallet);
 
   Future<(String?, Err?)> peekIndex({
     required Wallet wallet,
     required int idx,
   });
-
-  Future<(Wallet?, Err?)> updateUtxoAddresses(Wallet wallet);
 
   Future<(Address, Wallet)> addAddressToWallet({
     required (int?, String) address,

@@ -59,6 +59,17 @@ class Wallet with _$Wallet {
   Address? getLastAddress() =>
       baseWalletType == BaseWalletType.Bitcoin ? lastGeneratedAddress : lastGeneratedLiqAddress;
 
+  Wallet setLastAddress(Address address) {
+    switch (baseWalletType) {
+      case BaseWalletType.Bitcoin:
+        return copyWith(lastGeneratedAddress: address);
+      case BaseWalletType.Liquid:
+        return copyWith(lastGeneratedLiqAddress: address);
+      case BaseWalletType.Lightning:
+        return this;
+    }
+  }
+
   bool hasOngoingSwap(String id) {
     return swaps.any((swap) => swap.id == id);
   }

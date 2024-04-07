@@ -178,6 +178,7 @@ class BDKTransactions {
   Future<(Wallet?, Err?)> getTransactions({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,
+    required WalletAddress walletAddress,
   }) async {
     try {
       final storedTxs = wallet.transactions.toList();
@@ -271,7 +272,7 @@ class BDKTransactions {
                 bdkNetwork,
               );
 
-              (externalAddress, _) = await WalletAddress().addAddressToWallet(
+              (externalAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStruct.toString()),
                 wallet: wallet.copyWith(),
                 spentTxId: tx.txid,
@@ -331,7 +332,7 @@ class BDKTransactions {
                 bdkNetwork,
               );
 
-              (changeAddress, _) = await WalletAddress().addAddressToWallet(
+              (changeAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStruct.toString()),
                 wallet: wallet,
                 spentTxId: tx.txid,
@@ -377,7 +378,7 @@ class BDKTransactions {
                 scriptPubKey,
                 bdkNetwork,
               );
-              (depositAddress, _) = await WalletAddress().addAddressToWallet(
+              (depositAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStruct.toString()),
                 wallet: wallet,
                 spentTxId: tx.txid,

@@ -8,8 +8,8 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -63,7 +63,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     required this.networkCubit,
     required this.swapBoltz,
     required this.walletTx,
-    required this.walletTransaction,
   }) : super(const WatchTxsState()) {
     on<InitializeSwapWatcher>(_initializeSwapWatcher);
     on<WatchSwapStatus>(_onWatchSwapStatus);
@@ -80,10 +79,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   final SecureStorage secureStorage;
   final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveStorageRepository walletSensitiveRepository;
-  final WalletTx walletTransaction;
   final NetworkCubit networkCubit;
   final SwapBoltz swapBoltz;
-  final WalletTx walletTx;
+  final WalletTxx walletTx;
   late HomeCubit homeCubit;
 
   void _initializeSwapWatcher(InitializeSwapWatcher event, Emitter<WatchTxsState> emit) async {
@@ -220,7 +218,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     WalletBloc walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
-    final (walletAndTxs, err) = await walletTransaction.mergeSwapTxIntoTx(
+    final (walletAndTxs, err) = await walletTx.mergeSwapTxIntoTx(
       wallet: wallet,
       swapTx: swapTx,
     );
@@ -250,7 +248,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     WalletBloc walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
-    final (resp, err) = walletTransaction.updateSwapTxs(
+    final (resp, err) = walletTx.updateSwapTxs(
       wallet: wallet,
       swapTx: swapTx,
     );
@@ -380,7 +378,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    final (resp, err1) = walletTransaction.updateSwapTxs(swapTx: updatedSwap, wallet: wallet);
+    final (resp, err1) = walletTx.updateSwapTxs(swapTx: updatedSwap, wallet: wallet);
     if (err1 != null) {
       emit(state.copyWith(errClaimingSwap: err1.toString()));
       return;

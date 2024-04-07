@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';

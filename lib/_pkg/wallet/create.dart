@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/wallet.dart';
@@ -49,7 +47,7 @@ class WalletCreatee implements IWalletCreate {
 
       switch (w.baseWalletType) {
         case BaseWalletType.Bitcoin:
-          final (bdkW, errWallet) = _walletsRepository.getBdkWallet(w);
+          final (_, errWallet) = _walletsRepository.getBdkWallet(w);
           if (errWallet == null) return (w, null);
           final (bdkWallet, errLoading) = await _bdkCreate.loadPublicBdkWallet(w);
           if (errLoading != null) throw errLoading;
@@ -59,7 +57,7 @@ class WalletCreatee implements IWalletCreate {
           return (w, null);
 
         case BaseWalletType.Liquid:
-          final (liqW, errWallet) = _walletsRepository.getLwkWallet(w);
+          final (_, errWallet) = _walletsRepository.getLwkWallet(w);
           if (errWallet == null) return (w, null);
           final (liqWallet, errLoading) = await _lwkCreate.loadPublicLwkWallet(w);
           if (errLoading != null) throw errLoading;

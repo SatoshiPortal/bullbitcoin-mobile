@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
-import 'package:path_provider/path_provider.dart';
 
 class WalletsStorageRepository {
   WalletsStorageRepository({required HiveStorage hiveStorage}) : _hiveStorage = hiveStorage;
@@ -157,8 +155,8 @@ class WalletsStorageRepository {
       );
 
       await _hiveStorage.deleteValue(walletHashId);
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final File dbDir = File(appDocDir.path + '/$walletHashId');
+      // final appDocDir = await getApplicationDocumentsDirectory();
+      // final File dbDir = File(appDocDir.path + '/$walletHashId');
       // print('deleting file2: $dbDir');
       // final File dbDirSigner = File(appDocDir.path + '/${walletHashId}_signer');
 

@@ -36,7 +36,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   final FilePick filePicker;
   final Barcode barcode;
   final FileStorage fileStorage;
-  final WalletTx walletTx;
+  final WalletTxx walletTx;
   final HomeCubit homeCubit;
   final NetworkCubit networkCubit;
   final WalletNetwork walletNetwork;
@@ -155,7 +155,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             );
             return;
           }
-          final (bdkTxFin, txErr) = await walletTx.finalizeTx(
+          final (bdkTxFin, txErr) = await walletTx.finalizeTxOld(
             psbt: tx,
             bdkWallet: bdkWallet!,
           );
@@ -412,10 +412,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       return;
     }
 
-    final err = await walletTx.broadcastTx(
-      tx: bdkTx,
-      blockchain: blockchain!,
-    );
+    final err = await walletTx.broadcastTxOld(tx: bdkTx, blockchain: blockchain!);
     if (err != null) {
       // final error =
       emit(

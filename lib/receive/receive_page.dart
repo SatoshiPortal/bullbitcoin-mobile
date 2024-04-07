@@ -3,10 +3,9 @@ import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
@@ -22,7 +21,6 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/receive.dart';
@@ -48,22 +46,16 @@ class _ReceivePageState extends State<ReceivePage> {
   @override
   void initState() {
     final swapBloc = SwapCubit(
-      hiveStorage: locator<HiveStorage>(),
-      secureStorage: locator<SecureStorage>(),
-      walletAddress: locator<WalletAddress>(),
-      walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
-      settingsCubit: locator<SettingsCubit>(),
       networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
-      walletTx: locator<WalletTx>(),
-      walletTransaction: locator<WalletTx>(),
+      walletTx: locator<WalletTxx>(),
       watchTxsBloc: locator<WatchTxsBloc>(),
       homeCubit: locator<HomeCubit>(),
     );
 
     _cubit = ReceiveCubit(
-      walletAddress: locator<WalletAddresss>(),
+      walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       networkCubit: locator<NetworkCubit>(),
       // swapBoltz: locator<SwapBoltz>(),

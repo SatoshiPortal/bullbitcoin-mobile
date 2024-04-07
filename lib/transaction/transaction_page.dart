@@ -6,15 +6,15 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/create.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -63,7 +63,7 @@ class TxPage extends StatelessWidget {
       hiveStorage: locator<HiveStorage>(),
       secureStorage: locator<SecureStorage>(),
       walletSync: locator<WalletSync>(),
-      walletTx: locator<WalletTx>(),
+      walletTx: locator<WalletTxx>(),
       walletSensTx: locator<WalletSensitiveTx>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
