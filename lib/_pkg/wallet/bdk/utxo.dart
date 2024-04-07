@@ -3,7 +3,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
-class WalletUtxo {
+class BDKUtxo {
   Future<(Wallet?, Err?)> loadUtxos({
     required Wallet wallet,
     required bdk.Wallet bdkWallet,

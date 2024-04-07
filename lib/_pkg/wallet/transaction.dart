@@ -9,11 +9,12 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
-import 'package:bb_mobile/_pkg/wallet/utxo.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:hex/hex.dart';
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
@@ -21,12 +22,14 @@ import 'package:lwk_dart/lwk_dart.dart' as lwk;
 class WalletTxx implements IWalletTransactions {
   WalletTxx({
     required WalletsRepository walletsRepository,
+    required WalletSensitiveStorageRepository walletSensitiveStorageRepository,
     required WalletAddress walletAddress,
     required WalletUpdate walletUpdate,
-    required WalletUtxo walletUtxo,
+    required BDKUtxo walletUtxo,
     required BDKTransactions bdkTransactions,
     required LWKTransactions lwkTransactions,
   })  : _walletsRepository = walletsRepository,
+        _walletSensitiveStorageRepository = walletSensitiveStorageRepository,
         _walletAddress = walletAddress,
         _walletUpdate = walletUpdate,
         _walletUtxo = walletUtxo,
@@ -34,9 +37,10 @@ class WalletTxx implements IWalletTransactions {
         _lwkTransactions = lwkTransactions;
 
   final WalletsRepository _walletsRepository;
+  final WalletSensitiveStorageRepository _walletSensitiveStorageRepository;
   final WalletAddress _walletAddress;
   final WalletUpdate _walletUpdate;
-  final WalletUtxo _walletUtxo;
+  final BDKUtxo _walletUtxo;
   final BDKTransactions _bdkTransactions;
   final LWKTransactions _lwkTransactions;
 
@@ -103,6 +107,22 @@ class WalletTxx implements IWalletTransactions {
   }
 
   @override
+  Future<((Transaction?, int?, String)?, Err?)> buildTx({
+    required Wallet wallet,
+    required String address,
+    required int? amount,
+    required bool sendAllCoin,
+    required double feeRate,
+    String? note,
+    required bool isManualSend,
+    required bool enableRbf,
+    List<UTXO>? selectedUtxos,
+  }) {
+    // TODO: implement buildTx
+    throw UnimplementedError();
+  }
+
+  @override
   Future<Err?> broadcastTx(Transaction tx) {
     // TODO: implement broadcastTx
     throw UnimplementedError();
@@ -117,22 +137,6 @@ class WalletTxx implements IWalletTransactions {
     String? note,
   }) {
     // TODO: implement broadcastTxWithWallet
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<((Transaction?, int?, String)?, Err?)> buildTx({
-    required Wallet wallet,
-    required String address,
-    required int? amount,
-    required bool sendAllCoin,
-    required double feeRate,
-    String? note,
-    required bool isManualSend,
-    required bool enableRbf,
-    List<UTXO>? selectedUtxos,
-  }) {
-    // TODO: implement buildTx
     throw UnimplementedError();
   }
 

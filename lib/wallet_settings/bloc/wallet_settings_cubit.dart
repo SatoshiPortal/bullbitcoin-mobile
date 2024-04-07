@@ -8,7 +8,6 @@ import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/labels.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/sensitive/repository.dart';
-import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -25,7 +24,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     required this.walletBloc,
     required this.homeCubit,
     required this.hiveStorage,
-    required this.walletRead,
+    // required this.walletRead,
     required this.walletsStorageRepository,
     required this.walletSensRepository,
     required this.fileStorage,
@@ -39,7 +38,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   final WalletBloc walletBloc;
   final HiveStorage hiveStorage;
   final SecureStorage secureStorage;
-  final WalletSync walletRead;
+  // final WalletSync walletRead;
   final WalletsStorageRepository walletsStorageRepository;
   final HomeCubit homeCubit;
   final WalletSensitiveStorageRepository walletSensRepository;

@@ -76,7 +76,7 @@ class _SendPageState extends State<SendPage> {
 
     send = SendCubit(
       secureStorage: locator<SecureStorage>(),
-      walletAddress: locator<WalletAddress>(),
+      walletAddress: locator<WalletAddresss>(),
       walletTx: locator<WalletTx>(),
       walletTxx: locator<WalletTxx>(),
       walletSensTx: locator<WalletSensitiveTx>(),

@@ -70,7 +70,7 @@ class SendCubit extends Cubit<SendState> {
 
   final WalletTxx walletTxx;
 
-  final WalletAddress walletAddress;
+  final WalletAddresss walletAddress;
   final WalletTx walletTx;
   final WalletSensitiveTx walletSensTx;
   final WalletSensitiveCreate walletSensCreate;
@@ -295,12 +295,12 @@ class SendCubit extends Cubit<SendState> {
     if (state.sending) return;
     if (state.selectedWalletBloc == null) return;
 
-    final (bdkWallet, errLoading) =
-        walletsRepository.getBdkWallet(state.selectedWalletBloc!.state.wallet!);
-    if (errLoading != null) {
-      emit(state.copyWith(errSending: 'Wallet Not Loaded'));
-      return;
-    }
+    // final (bdkWallet, errLoading) =
+    //     walletsRepository.getBdkWallet(state.selectedWalletBloc!.state.wallet!);
+    // if (errLoading != null) {
+    //   emit(state.copyWith(errSending: 'Wallet Not Loaded'));
+    //   return;
+    // }
 
     final isLn = state.isLnInvoice();
     if (isLn) {
@@ -336,9 +336,9 @@ class SendCubit extends Cubit<SendState> {
 
     final localWallet = state.selectedWalletBloc!.state.wallet;
 
-    final (buildResp, err) = await walletTx.buildTx(
+    final (buildResp, err) = await walletTxx.buildTx(
       wallet: localWallet!,
-      pubWallet: bdkWallet!,
+      // pubWallet: bdkWallet!,
       isManualSend: state.selectedUtxos.isNotEmpty,
       address: address!,
       amount: isLn ? state.swapCubit.state.swapTx!.outAmount : currencyCubit.state.amount,
@@ -413,17 +413,17 @@ class SendCubit extends Cubit<SendState> {
 
   void sendClicked() async {
     if (state.selectedWalletBloc == null) return;
-    final (blockchain, errB) = networkRepository.bdkBlockchain;
-    if (errB != null) {
-      emit(state.copyWith(errSending: errB.toString()));
-      return;
-    }
+    // final (blockchain, errB) = networkRepository.bdkBlockchain;
+    // if (errB != null) {
+    //   emit(state.copyWith(errSending: errB.toString()));
+    //   return;
+    // }
 
     emit(state.copyWith(sending: true, errSending: ''));
 
-    final (wtxid, err) = await walletTx.broadcastTxWithWallet(
-      psbt: state.psbtSigned!,
-      blockchain: blockchain!,
+    final (wtxid, err) = await walletTxx.broadcastTxWithWallet(
+      tx: state.psbtSigned!,
+      // blockchain: blockchain!,
       wallet: state.selectedWalletBloc!.state.wallet!,
       address: state.address,
       note: state.note,

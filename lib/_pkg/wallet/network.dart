@@ -3,15 +3,21 @@ import 'dart:async';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/locator.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletNetwork implements IWalletNetwork {
-  WalletNetwork({required NetworkRepository networkRepository})
-      : _networkRepository = networkRepository;
+  WalletNetwork({
+    required NetworkRepository networkRepository,
+    required BDKNetwork bdkNetwork,
+    required Logger logger,
+  })  : _networkRepository = networkRepository,
+        _bdkNetwork = bdkNetwork,
+        _logger = logger;
 
   final NetworkRepository _networkRepository;
+  final BDKNetwork _bdkNetwork;
+  final Logger _logger;
 
   @override
   Future<Err?> createBlockChain({
@@ -24,22 +30,18 @@ class WalletNetwork implements IWalletNetwork {
   }) async {
     try {
       Uri.parse(url);
-      if (locator.isRegistered<Logger>()) locator.get<Logger>().log('Connecting to $url');
+      _logger.log('Connecting to $url');
 
       if (stopGap != null) {
-        final blockchain = await bdk.Blockchain.create(
-          config: bdk.BlockchainConfig.electrum(
-            config: bdk.ElectrumConfig(
-              url: url,
-              retry: retry!,
-              timeout: timeout,
-              stopGap: stopGap,
-              validateDomain: validateDomain!,
-            ),
-          ),
+        final (blockchain, errCreate) = await _bdkNetwork.createBlockChain(
+          url: url,
+          stopGap: stopGap,
+          timeout: timeout!,
+          retry: retry!,
+          validateDomain: validateDomain!,
         );
-
-        final errSet = _networkRepository.setBdkBlockchain(blockchain);
+        if (errCreate != null) return errCreate;
+        final errSet = _networkRepository.setBdkBlockchain(blockchain!);
         if (errSet != null) return errSet;
       } else {
         final errSet = _networkRepository.setLiquidUrl(url);

@@ -16,7 +16,9 @@ import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/balance.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/network.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sync.dart';
@@ -30,7 +32,6 @@ import 'package:bb_mobile/_pkg/wallet/sensitive/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
-import 'package:bb_mobile/_pkg/wallet/utxo.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -83,6 +84,7 @@ Future _setupWalletServices() async {
   locator.registerFactory<LWKSync>(() => LWKSync());
   locator.registerSingleton<BDKBalance>(BDKBalance());
   locator.registerSingleton<LWKBalance>(LWKBalance());
+  locator.registerSingleton<BDKNetwork>(BDKNetwork());
 
   locator.registerFactory<WalletSync>(
     () => WalletSync(
@@ -105,11 +107,13 @@ Future _setupWalletServices() async {
 
   locator.registerSingleton<WalletTx>(WalletTx());
   locator.registerSingleton<WalletAddress>(WalletAddress());
-  locator.registerSingleton<WalletUtxo>(WalletUtxo());
+  locator.registerSingleton<BDKUtxo>(BDKUtxo());
   locator.registerSingleton<SwapBoltz>(SwapBoltz(secureStorage: locator<SecureStorage>()));
   locator.registerSingleton<WalletNetwork>(
     WalletNetwork(
       networkRepository: locator<NetworkRepository>(),
+      logger: locator<Logger>(),
+      bdkNetwork: locator<BDKNetwork>(),
     ),
   );
 
