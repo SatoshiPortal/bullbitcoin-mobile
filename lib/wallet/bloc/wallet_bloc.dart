@@ -154,7 +154,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (!fromStorage) add(GetFirstAddress());
     add(GetBalance());
 
-    emit(state.copyWith(syncing: false));
+    // emit(state.copyWith(syncing: false));
   }
 
   void _getBalance(GetBalance event, Emitter<WalletState> emit) async {
@@ -212,6 +212,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           UpdateWalletTypes.transactions,
           UpdateWalletTypes.utxos,
         ],
+      ),
+    );
+    emit(
+      state.copyWith(
+        loadingTxs: false,
       ),
     );
 

@@ -13,7 +13,6 @@ import 'package:bb_mobile/_pkg/wallet/lwk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
@@ -24,7 +23,6 @@ class WalletTxx implements IWalletTransactions {
     required WalletAddress walletAddress,
     required WalletUpdate walletUpdate,
     required WalletSensitiveCreate walletSensitiveCreate,
-    required WalletSensitiveTx walletSensitiveTx,
     required NetworkRepository networkRepository,
     required BDKTransactions bdkTransactions,
     required LWKTransactions lwkTransactions,
@@ -37,7 +35,6 @@ class WalletTxx implements IWalletTransactions {
         _walletUpdate = walletUpdate,
         _bdkUtxo = bdkUtxo,
         _walletSensitiveCreate = walletSensitiveCreate,
-        _walletSensitiveTx = walletSensitiveTx,
         _bdkTransactions = bdkTransactions,
         _networkRepository = networkRepository,
         _lwkTransactions = lwkTransactions,
@@ -51,7 +48,7 @@ class WalletTxx implements IWalletTransactions {
   final WalletAddress _walletAddress;
   final WalletUpdate _walletUpdate;
   final WalletSensitiveCreate _walletSensitiveCreate;
-  final WalletSensitiveTx _walletSensitiveTx;
+
   final BDKTransactions _bdkTransactions;
   final LWKTransactions _lwkTransactions;
   final BDKAddress _bdkAddress;
@@ -160,12 +157,12 @@ class WalletTxx implements IWalletTransactions {
             final (bdkSignerWallet, errSigner) =
                 await _walletSensitiveCreate.loadPrivateBdkWallet(wallet, seed!);
             if (errSigner != null) throw errSigner;
-            final (signed, errSign) = await _walletSensitiveTx.signTx(
-              unsignedPSBT: psbt,
-              signingWallet: bdkSignerWallet!,
+            final (signed, errSign) = await _bdkTransactions.signTx(
+              psbt: psbt,
+              bdkWallet: bdkSignerWallet!,
             );
             if (errSign != null) throw errSign;
-            return ((wallet, tx!.copyWith(psbt: signed), feeAmt), null);
+            return ((wallet, tx!.copyWith(psbt: signed!.$2), feeAmt), null);
           }
 
           final txs = wallet.transactions.toList();
@@ -191,7 +188,7 @@ class WalletTxx implements IWalletTransactions {
             fingerprintIndex: wallet.getRelatedSeedStorageString(),
           );
           if (errSeed != null) throw errSeed;
-          final (txBytes, errfinalize) = await _lwkTransactions.finalizeLiquidTx(
+          final (txBytes, errfinalize) = await _lwkTransactions.signTx(
             pset: pset,
             lwkWallet: liqWallet,
             wallet: wallet,
@@ -433,6 +430,23 @@ class WalletTxx implements IWalletTransactions {
     // TODO: implement finalizeTx
     throw UnimplementedError();
   }
+
+  // Future<Err?> extractTx({
+  //   required String tx,
+  //   required HomeCubit homeCubit,
+  // }) async {
+  //   try {
+  //     final (transaction, errExtract) = await _bdkTransactions.extractTx(tx: tx);
+  //     if (errExtract != null) throw errExtract;
+  //   } catch (e) {
+  //     return Err(
+  //       e.toString(),
+  //       title: 'Error occurred while extracting transaction',
+  //       solution: 'Please try again.',
+  //     );
+  //   }
+  //   return null;
+  // }
 
   Future<(bdk.Transaction?, Err?)> finalizeTxOld({
     required String psbt,

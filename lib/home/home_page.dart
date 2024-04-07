@@ -2,27 +2,17 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
-import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/balance.dart';
-import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
-import 'package:bb_mobile/_pkg/wallet/sync.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
@@ -39,100 +29,15 @@ import 'package:google_fonts/google_fonts.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  static List<WalletBloc> createWalletBlocs(List<Wallet> wallets) {
-    final walletCubits = [
-      for (final w in wallets)
-        WalletBloc(
-          saveDir: w.getWalletStorageString(),
-          walletSync: locator<WalletSync>(),
-          walletsStorageRepository: locator<WalletsStorageRepository>(),
-          walletBalance: locator<WalletBalance>(),
-          walletAddress: locator<WalletAddress>(),
-          networkCubit: locator<NetworkCubit>(),
-          swapBloc: locator<WatchTxsBloc>(),
-          networkRepository: locator<NetworkRepository>(),
-          walletsRepository: locator<WalletsRepository>(),
-          walletTransactionn: locator<WalletTxx>(),
-          walletCreatee: locator<WalletCreatee>(),
-        ),
-    ];
-    return walletCubits;
-  }
-
-  static Widget? setupHomeWallets(BuildContext context) {
-    final wallets = context.select((HomeCubit x) => x.state.wallets ?? []);
-    final loading = context.select((HomeCubit x) => x.state.loadingWallets);
-    if (loading) return Container();
-
-    final currentWalletBlocs = context.select((HomeCubit x) => x.state.walletBlocs ?? []);
-    if (wallets.length != currentWalletBlocs.length) {
-      final walletBlocs = createWalletBlocs(wallets);
-      context.read<HomeCubit>().updateWalletBlocs(walletBlocs);
-    }
-
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final walletsFromNetwork =
-        context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
-    if (walletsFromNetwork.isEmpty) {
-      scheduleMicrotask(() async {
-        await Future.delayed(100.ms);
-        SystemChrome.setSystemUIOverlayStyle(
-          SystemUiOverlayStyle(
-            statusBarColor: context.colour.primary,
-          ),
-        );
-      });
-
-      return const HomeNoWallets().animate().fadeIn();
-    }
-
-    return null;
-  }
-
-  static ({WalletBloc? selectedWallet, List<WalletBloc> walletCubits}) selectHomeBlocs(
-    BuildContext context,
-  ) {
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    // final wallets = context.select((HomeCubit x) => x.state.walletsFromNetwork(network));
-    final walletCubits = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
-
-    final selectedWallet = context.select((HomeCubit x) => x.state.selectedWalletCubit);
-    if (selectedWallet == null && walletCubits.isNotEmpty)
-      context.read<HomeCubit>().walletSelected(walletCubits[walletCubits.length - 1]);
-
-    return (selectedWallet: selectedWallet, walletCubits: walletCubits);
-  }
-
   @override
   Widget build(BuildContext context) {
     final homeCubit = locator<HomeCubit>();
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: homeCubit),
-        BlocProvider.value(value: homeCubit.createWalletCubit),
+        // BlocProvider.value(value: homeCubit.createWalletCubit),
       ],
-      child: BlocBuilder<HomeCubit, HomeState>(
-        buildWhen: (previous, current) => previous.wallets != current.wallets,
-        builder: (context, state) {
-          final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-
-          final walletsFromNetwork =
-              context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
-
-          return Scaffold(
-            appBar: walletsFromNetwork.isEmpty
-                ? null
-                : AppBar(
-                    automaticallyImplyLeading: false,
-                    shadowColor: context.colour.primary.withOpacity(0.2),
-                    surfaceTintColor: Colors.transparent,
-                    elevation: 0,
-                    flexibleSpace: const HomeTopBar2(),
-                  ),
-            body: const _Screen(),
-          );
-        },
-      ),
+      child: const _Screen(),
     );
   }
 }
@@ -174,53 +79,85 @@ class _ScreenState extends State<_Screen> {
     // return (isLastPage && isOdd) ? _oneCardH : _threeCardH;
   }
 
+  static AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      shadowColor: context.colour.primary.withOpacity(0.2),
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      flexibleSpace: const HomeTopBar2(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final walletScreen = HomePage.setupHomeWallets(context);
-    if (walletScreen != null) return walletScreen;
-    final homeWallets = HomePage.selectHomeBlocs(context);
+    final _ = context.select((HomeCubit x) => x.state.walletBlocs);
+    final loading = context.select((HomeCubit x) => x.state.loadingWallets);
+    if (loading) return const Scaffold(body: SizedBox.shrink());
 
-    final walletCubits = homeWallets.walletCubits;
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final walletBlocs = context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
 
-    final h = _calculateHeight(walletCubits.length);
-
-    return Stack(
-      children: [
-        TopCenter(
-          child: SizedBox(
-            height: 310,
-            child: CardsList(
-              walletBlocs: walletCubits,
-              onChanged: _onChanged,
+    if (walletBlocs.isEmpty) {
+      final isTestnet = network == BBNetwork.Testnet;
+      if (!isTestnet) {
+        scheduleMicrotask(() async {
+          await Future.delayed(100.ms);
+          SystemChrome.setSystemUIOverlayStyle(
+            SystemUiOverlayStyle(
+              statusBarColor: context.colour.primary,
             ),
-          ),
-        ),
-        Column(
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              height: h,
-              // height: 310,
-            ),
-            Expanded(
-              child: ColoredBox(
-                color: context.colour.background,
-                child: const HomeTransactions(),
+          );
+        });
+      }
+      return Scaffold(
+        appBar: !isTestnet ? null : _buildAppBar(context),
+        body: HomeNoWallets(fullRed: !isTestnet),
+      );
+    }
+
+    final h = _calculateHeight(walletBlocs.length);
+
+    return Scaffold(
+      appBar: _buildAppBar(context),
+      body: Stack(
+        children: [
+          TopCenter(
+            child: SizedBox(
+              height: 310,
+              child: CardsList(
+                walletBlocs: walletBlocs,
+                onChanged: _onChanged,
               ),
             ),
-            const Gap(128),
-          ],
-        ),
-        BottomCenter(
-          child: Container(
-            height: 128,
-            margin: const EdgeInsets.only(top: 16),
-            child: HomeBottomBar2(
-              walletBloc: walletCubits.length == 1 ? walletCubits[0] : null,
+          ).animate().fadeIn(),
+          Column(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: h,
+                // height: 310,
+              ),
+              Expanded(
+                child: ColoredBox(
+                  color: context.colour.background,
+                  child: const HomeTransactions(),
+                ),
+              ),
+              const Gap(128),
+            ],
+          ),
+          BottomCenter(
+            child: Container(
+              height: 128,
+              margin: const EdgeInsets.only(top: 16),
+              child: HomeBottomBar2(
+                walletBloc: walletBlocs.length == 1 ? walletBlocs[0] : null,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -829,10 +766,29 @@ class _Loading extends StatelessWidget {
 }
 
 class HomeNoWallets extends StatelessWidget {
-  const HomeNoWallets({super.key});
+  const HomeNoWallets({super.key, this.fullRed = true});
+
+  final bool fullRed;
 
   @override
   Widget build(BuildContext context) {
+    if (!fullRed)
+      return Padding(
+        padding: const EdgeInsets.all(48.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BBButton.big(
+              onPressed: () {
+                context.push('/import');
+              },
+              label: 'New wallet',
+            ),
+          ],
+        ),
+      );
+
     final font = GoogleFonts.bebasNeue();
     final w = MediaQuery.of(context).size.width;
 
@@ -895,21 +851,6 @@ class HomeNoWallets extends StatelessWidget {
         ),
       ),
     );
-    // return Padding(
-    //   padding: const EdgeInsets.all(48.0),
-    //   child: Column(
-    //     mainAxisAlignment: MainAxisAlignment.center,
-    //     crossAxisAlignment: CrossAxisAlignment.stretch,
-    //     children: [
-    //       BBButton.big(
-    //         onPressed: () {
-    //           context.push('/import');
-    //         },
-    //         label: 'New wallet',
-    //       ),
-    //     ],
-    //   ),
-    // );
   }
 }
 

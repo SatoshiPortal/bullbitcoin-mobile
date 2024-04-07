@@ -8,6 +8,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:convert/convert.dart' as conv;
 import 'package:hex/hex.dart';
 
 class BDKTransactions {
@@ -678,7 +679,27 @@ class BDKTransactions {
     }
   }
 
-  Future<(bdk.Transaction?, Err?)> finalizeTx({
+  // Future<(String?, Err?)> signTx({
+  //   required String unsignedPSBT,
+  //   required bdk.Wallet signingWallet,
+  // }) async {
+  //   try {
+  //     final psbt = bdk.PartiallySignedTransaction(psbtBase64: unsignedPSBT);
+  //     final signedPSBT = await signingWallet.sign(psbt: psbt);
+  //     return (signedPSBT.psbtBase64, null);
+  //   } on Exception catch (e) {
+  //     return (
+  //       null,
+  //       Err(
+  //         e.message,
+  //         title: 'Error occurred while signing transaction',
+  //         solution: 'Please try again.',
+  //       )
+  //     );
+  //   }
+  // }
+
+  Future<((bdk.Transaction, String)?, Err?)> signTx({
     required String psbt,
     // required bdk.Blockchain blockchain,
     required bdk.Wallet bdkWallet,
@@ -701,7 +722,7 @@ class BDKTransactions {
       );
       final extracted = await finalized.extractTx();
 
-      return (extracted, null);
+      return ((extracted, finalized.psbtBase64), null);
     } on Exception catch (e) {
       return (
         null,
@@ -772,6 +793,38 @@ class BDKTransactions {
         e.message,
         title: 'Error occurred while broadcasting transaction',
         solution: 'Please try again.',
+      );
+    }
+  }
+
+  Future<(bdk.Transaction?, Err?)> extractTx({required String tx}) async {
+    try {
+      var isPsbt = false;
+      try {
+        conv.hex.decode(tx);
+      } catch (e) {
+        isPsbt = true;
+      }
+
+      if (isPsbt) {
+        final psbt = bdk.PartiallySignedTransaction(psbtBase64: tx);
+        final bdk.Transaction bdkTx = await psbt.extractTx();
+        return (bdkTx, null);
+      }
+
+      final bdkTx = await bdk.Transaction.create(
+        transactionBytes: conv.hex.decode(tx),
+      );
+
+      return (bdkTx, null);
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while broadcasting transaction',
+          solution: 'Please try again.',
+        )
       );
     }
   }

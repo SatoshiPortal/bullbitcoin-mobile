@@ -52,9 +52,9 @@ class WalletNetwork implements IWalletNetwork {
       if (errTestnet != null) return errTestnet;
 
       return null;
-    } on Exception catch (r) {
+    } catch (r) {
       return Err(
-        r.message,
+        r.toString(),
         // showAlert: true,
         title: 'Failed to connect to electrum',
       );

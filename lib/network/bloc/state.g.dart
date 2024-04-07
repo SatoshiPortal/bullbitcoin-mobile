@@ -35,6 +35,12 @@ _$NetworkStateImpl _$$NetworkStateImplFromJson(Map<String, dynamic> json) =>
           ? null
           : ElectrumNetwork.fromJson(
               json['tempNetworkDetails'] as Map<String, dynamic>),
+      tempLiquidNetwork: $enumDecodeNullable(
+          _$LiquidElectrumTypesEnumMap, json['tempLiquidNetwork']),
+      tempLiquidNetworkDetails: json['tempLiquidNetworkDetails'] == null
+          ? null
+          : LiquidElectrumNetwork.fromJson(
+              json['tempLiquidNetworkDetails'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$NetworkStateImplToJson(_$NetworkStateImpl instance) =>
@@ -52,6 +58,9 @@ Map<String, dynamic> _$$NetworkStateImplToJson(_$NetworkStateImpl instance) =>
       'networkErrorOpened': instance.networkErrorOpened,
       'tempNetwork': _$ElectrumTypesEnumMap[instance.tempNetwork],
       'tempNetworkDetails': instance.tempNetworkDetails,
+      'tempLiquidNetwork':
+          _$LiquidElectrumTypesEnumMap[instance.tempLiquidNetwork],
+      'tempLiquidNetworkDetails': instance.tempLiquidNetworkDetails,
     };
 
 const _$ElectrumTypesEnumMap = {

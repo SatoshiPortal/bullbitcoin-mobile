@@ -17,6 +17,7 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/balance.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/network.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
@@ -25,6 +26,7 @@ import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/address.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/balance.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/create.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
@@ -36,7 +38,6 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
-import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
@@ -76,6 +77,7 @@ Future _setupAPIs() async {
 }
 
 Future _setupRepositories() async {
+  // locator.registerSingleton<HomeRepository>(HomeRepository());
   locator.registerSingleton<WalletsRepository>(WalletsRepository());
   locator.registerSingleton<NetworkRepository>(NetworkRepository());
   locator.registerSingleton<WalletsStorageRepository>(
@@ -99,8 +101,28 @@ Future _setupWalletServices() async {
   locator.registerSingleton<BDKTransactions>(BDKTransactions());
   locator.registerSingleton<LWKTransactions>(LWKTransactions());
   locator.registerSingleton<BDKUtxo>(BDKUtxo());
+  locator.registerSingleton<LWKCreate>(LWKCreate());
+  locator.registerSingleton<BDKCreate>(BDKCreate());
+
+  locator.registerSingleton<WalletCreatee>(
+    WalletCreatee(
+      walletsRepository: locator<WalletsRepository>(),
+      lwkCreate: locator<LWKCreate>(),
+      bdkCreate: locator<BDKCreate>(),
+      walletsStorageRepository: locator<WalletsStorageRepository>(),
+    ),
+  );
 
   locator.registerSingleton<WalletUpdate>(WalletUpdate());
+
+  locator.registerSingleton<WalletAddress>(
+    WalletAddress(
+      bdkAddress: locator<BDKAddress>(),
+      lwkAddress: locator<LWKAddress>(),
+      walletsRepository: locator<WalletsRepository>(),
+    ),
+  );
+
   locator.registerSingleton<WalletSensitiveCreate>(
     WalletSensitiveCreate(walletsRepository: locator<WalletsRepository>()),
   );
@@ -134,7 +156,6 @@ Future _setupWalletServices() async {
       networkRepository: locator<NetworkRepository>(),
       walletAddress: locator<WalletAddress>(),
       walletSensitiveCreate: locator<WalletSensitiveCreate>(),
-      walletSensitiveTx: locator<WalletSensitiveTx>(),
       walletSensitiveStorageRepository: locator<WalletSensitiveStorageRepository>(),
       walletUpdate: locator<WalletUpdate>(),
       bdkTransactions: locator<BDKTransactions>(),
@@ -144,13 +165,7 @@ Future _setupWalletServices() async {
       bdkUtxo: locator<BDKUtxo>(),
     ),
   );
-  locator.registerSingleton<WalletAddress>(
-    WalletAddress(
-      bdkAddress: locator<BDKAddress>(),
-      lwkAddress: locator<LWKAddress>(),
-      walletsRepository: locator<WalletsRepository>(),
-    ),
-  );
+
   locator.registerSingleton<SwapBoltz>(SwapBoltz(secureStorage: locator<SecureStorage>()));
   locator.registerSingleton<WalletNetwork>(
     WalletNetwork(
@@ -231,17 +246,6 @@ Future _setupBlocs() async {
   );
 
   final homeCubit = HomeCubit(
-    hiveStorage: locator<HiveStorage>(),
-    createWalletCubit: CreateWalletCubit(
-      walletCreate: locator<WalletCreate>(),
-      walletSensCreate: locator<WalletSensitiveCreate>(),
-      settingsCubit: settings,
-      walletsStorageRepository: locator<WalletsStorageRepository>(),
-      hiveStorage: locator<HiveStorage>(),
-      secureStorage: locator<SecureStorage>(),
-      walletSensRepository: locator<WalletSensitiveStorageRepository>(),
-      networkCubit: locator<NetworkCubit>(),
-    ),
     walletsStorageRepository: locator<WalletsStorageRepository>(),
   );
 

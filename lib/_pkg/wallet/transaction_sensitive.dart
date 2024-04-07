@@ -3,25 +3,25 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletSensitiveTx {
-  Future<(String?, Err?)> signTx({
-    required String unsignedPSBT,
-    required bdk.Wallet signingWallet,
-  }) async {
-    try {
-      final psbt = bdk.PartiallySignedTransaction(psbtBase64: unsignedPSBT);
-      final signedPSBT = await signingWallet.sign(psbt: psbt);
-      return (signedPSBT.psbtBase64, null);
-    } on Exception catch (e) {
-      return (
-        null,
-        Err(
-          e.message,
-          title: 'Error occurred while signing transaction',
-          solution: 'Please try again.',
-        )
-      );
-    }
-  }
+  // Future<(String?, Err?)> signTx({
+  //   required String unsignedPSBT,
+  //   required bdk.Wallet signingWallet,
+  // }) async {
+  //   try {
+  //     final psbt = bdk.PartiallySignedTransaction(psbtBase64: unsignedPSBT);
+  //     final signedPSBT = await signingWallet.sign(psbt: psbt);
+  //     return (signedPSBT.psbtBase64, null);
+  //   } on Exception catch (e) {
+  //     return (
+  //       null,
+  //       Err(
+  //         e.message,
+  //         title: 'Error occurred while signing transaction',
+  //         solution: 'Please try again.',
+  //       )
+  //     );
+  //   }
+  // }
 
   // Future<(Uint8List?, Err?)> signLiquidTx({
   //   required String unsignedPSET,

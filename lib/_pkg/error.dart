@@ -32,7 +32,7 @@ class Err {
   }
 
   void _handleElectrumException() {
-    if (locator.isRegistered<NetworkCubit>()) locator<NetworkCubit>().setupBlockchain();
+    if (locator.isRegistered<NetworkCubit>()) locator<NetworkCubit>().setupBlockchain(false);
   }
 
   @override

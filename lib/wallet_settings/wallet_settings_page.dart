@@ -68,7 +68,7 @@ class WalletSettingsPage extends StatelessWidget {
               if (!state.deleted)
                 home.updateSelectedWallet(walletBloc);
               else {
-                await home.getWalletsFromStorageExistingWallet();
+                await home.getWalletsFromStorage();
                 context.pop();
               }
             },

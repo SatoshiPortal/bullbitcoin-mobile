@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -11,27 +9,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
-    required this.createWalletCubit,
     required this.walletsStorageRepository,
-    required this.hiveStorage,
-  }) : super(const HomeState()) {
-    createWalletCubitSubscription = createWalletCubit.stream.listen((state) {
-      if (state.saved) getWalletsFromStorageExistingWallet();
-    });
-  }
+  }) : super(const HomeState());
 
   final WalletsStorageRepository walletsStorageRepository;
-  final HiveStorage hiveStorage;
-  final CreateWalletCubit createWalletCubit;
-  late final StreamSubscription createWalletCubitSubscription;
 
-  @override
-  Future<void> close() {
-    createWalletCubitSubscription.cancel();
-    return super.close();
-  }
-
-  Future<void> getWalletsFromStorageFirstTime() async {
+  Future<void> getWalletsFromStorage() async {
     emit(state.copyWith(loadingWallets: true));
 
     final (wallets, err) = await walletsStorageRepository.readAllWallets();
@@ -40,10 +23,18 @@ class HomeCubit extends Cubit<HomeState> {
       return;
     }
 
-    // if (wallets != null)
+    if (wallets == null) {
+      emit(state.copyWith(loadingWallets: false));
+      return;
+    }
+
+    final blocs = state.createWalletBlocs(wallets);
+    await Future.delayed(const Duration(milliseconds: 300));
+
     emit(
       state.copyWith(
-        wallets: wallets ?? [],
+        wallets: wallets,
+        walletBlocs: blocs,
         loadingWallets: false,
       ),
     );
@@ -52,24 +43,6 @@ class HomeCubit extends Cubit<HomeState> {
     //   createWalletCubit.createMne(
     //     fromHome: true,
     //   );
-  }
-
-  Future<void> getWalletsFromStorageExistingWallet() async {
-    emit(state.copyWith(loadingWallets: true));
-
-    final (wallets, err) = await walletsStorageRepository.readAllWallets();
-    if (err != null) {
-      emit(state.copyWith(loadingWallets: false));
-      return;
-    }
-
-    if (wallets != null)
-      emit(
-        state.copyWith(
-          wallets: wallets,
-          loadingWallets: false,
-        ),
-      );
   }
 
   void updateErrDeepLink(String err) async {
@@ -172,6 +145,15 @@ class HomeCubit extends Cubit<HomeState> {
   void removeWallet(WalletBloc walletBloc) {
     final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
     wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
-    emit(state.copyWith(wallets: wallets, selectedWalletCubit: null));
+    final walletBlocs = state.walletBlocs != null ? state.walletBlocs!.toList() : <WalletBloc>[];
+    walletBlocs.removeWhere((wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id);
+
+    emit(
+      state.copyWith(
+        wallets: wallets,
+        selectedWalletCubit: null,
+        walletBlocs: walletBlocs,
+      ),
+    );
   }
 }

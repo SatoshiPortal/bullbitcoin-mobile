@@ -33,6 +33,8 @@ class NetworkState with _$NetworkState {
     // @Default(20) int stopGap,
     ElectrumTypes? tempNetwork,
     ElectrumNetwork? tempNetworkDetails,
+    LiquidElectrumTypes? tempLiquidNetwork,
+    LiquidElectrumNetwork? tempLiquidNetworkDetails,
   }) = _NetworkState;
   const NetworkState._();
 

@@ -56,6 +56,7 @@ class NetworkCubit extends Cubit<NetworkState> {
     emit(state.copyWith(loadingNetworks: true));
 
     final networks = state.networks;
+    final liqNetworks = state.liquidNetworks;
 
     if (networks.isNotEmpty) {
       final selectedNetwork = networks.firstWhere((_) => _.type == state.selectedNetwork);
@@ -68,40 +69,71 @@ class NetworkCubit extends Cubit<NetworkState> {
         ),
       );
       await Future.delayed(const Duration(milliseconds: 100));
-      setupBlockchain();
-      return;
+      setupBlockchain(false);
+    } else {
+      final newNetworks = [
+        const ElectrumNetwork.defaultElectrum(),
+        const ElectrumNetwork.bullbitcoin(),
+        const ElectrumNetwork.custom(
+          mainnet: 'ssl://$bbelectrum:50002',
+          testnet: 'ssl://$bbelectrum:60002',
+        ),
+      ];
+
+      final selectedNetwork = newNetworks.firstWhere((_) => _.type == state.selectedNetwork);
+      emit(
+        state.copyWith(
+          networks: newNetworks,
+          tempNetworkDetails: selectedNetwork,
+          tempNetwork: selectedNetwork.type,
+        ),
+      );
+      await Future.delayed(const Duration(milliseconds: 50));
+      await setupBlockchain(false);
     }
 
-    final newNetworks = [
-      const ElectrumNetwork.defaultElectrum(),
-      const ElectrumNetwork.bullbitcoin(),
-      const ElectrumNetwork.custom(
-        mainnet: 'ssl://$bbelectrum:50002',
-        testnet: 'ssl://$bbelectrum:60002',
-      ),
-    ];
+    if (liqNetworks.isNotEmpty) {
+      final selectedNetwork = liqNetworks.firstWhere((_) => _.type == state.selectedLiquidNetwork);
 
-    final selectedNetwork = newNetworks.firstWhere((_) => _.type == state.selectedNetwork);
+      emit(
+        state.copyWith(
+          loadingNetworks: false,
+          tempLiquidNetworkDetails: selectedNetwork,
+          tempLiquidNetwork: selectedNetwork.type,
+        ),
+      );
+      await Future.delayed(const Duration(milliseconds: 100));
+      setupBlockchain(true);
+    } else {
+      final newLiqNetworks = [
+        const LiquidElectrumNetwork.blockstream(),
+        const LiquidElectrumNetwork.custom(
+          mainnet: liquidElectrumUrl,
+          testnet: liquidElectrumTestUrl,
+        ),
+      ];
+      final selectedLiqNetwork =
+          newLiqNetworks.firstWhere((_) => _.type == state.selectedLiquidNetwork);
 
-    emit(
-      state.copyWith(
-        loadingNetworks: false,
-        networks: newNetworks,
-        tempNetworkDetails: selectedNetwork,
-        tempNetwork: selectedNetwork.type,
-      ),
-    );
+      emit(
+        state.copyWith(
+          liquidNetworks: newLiqNetworks,
+          tempLiquidNetworkDetails: selectedLiqNetwork,
+          tempLiquidNetwork: selectedLiqNetwork.type,
+        ),
+      );
+      await Future.delayed(const Duration(milliseconds: 100));
+      setupBlockchain(true);
+    }
 
-    await Future.delayed(const Duration(milliseconds: 50));
-
-    await setupBlockchain();
+    emit(state.copyWith(loadingNetworks: false));
   }
 
   void toggleTestnet() async {
     final isTestnet = state.testnet;
     emit(state.copyWith(testnet: !isTestnet));
     await Future.delayed(const Duration(milliseconds: 50));
-    await setupBlockchain();
+    await setupBlockchain(null);
     await Future.delayed(const Duration(milliseconds: 50));
     homeCubit?.networkChanged(state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet);
   }
@@ -120,33 +152,39 @@ class NetworkCubit extends Cubit<NetworkState> {
   void retryNetwork() async {
     emit(state.copyWith(networkErrorOpened: false));
     await Future.delayed(const Duration(milliseconds: 100));
-    setupBlockchain();
+    setupBlockchain(null);
   }
 
-  Future setupBlockchain() async {
+  Future setupBlockchain(bool? isLiquid) async {
     emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
     final isTestnet = state.testnet;
-    final selectedNetwork = state.getNetwork();
-    if (selectedNetwork == null) return;
 
-    final errBitcoin = await walletNetwork.createBlockChain(
-      isTestnet: isTestnet,
-      stopGap: selectedNetwork.stopGap,
-      timeout: selectedNetwork.timeout,
-      retry: selectedNetwork.retry,
-      url: isTestnet ? selectedNetwork.testnet : selectedNetwork.mainnet,
-      validateDomain: selectedNetwork.validateDomain,
-    );
-    if (errBitcoin != null) {
-      if (!state.networkErrorOpened) {
-        BBAlert.showErrorAlertPopUp(
-          title: errBitcoin.title ?? '',
-          err: errBitcoin.message,
-          onClose: closeNetworkError,
-          onRetry: retryNetwork,
-        );
+    if (isLiquid == null || !isLiquid) {
+      final selectedNetwork = state.getNetwork();
+      if (selectedNetwork == null) return;
+
+      final errBitcoin = await walletNetwork.createBlockChain(
+        isTestnet: isTestnet,
+        stopGap: selectedNetwork.stopGap,
+        timeout: selectedNetwork.timeout,
+        retry: selectedNetwork.retry,
+        url: isTestnet ? selectedNetwork.testnet : selectedNetwork.mainnet,
+        validateDomain: selectedNetwork.validateDomain,
+      );
+      if (errBitcoin != null) {
+        if (!state.networkErrorOpened) {
+          BBAlert.showErrorAlertPopUp(
+            title: errBitcoin.title ?? '',
+            err: errBitcoin.message,
+            onClose: closeNetworkError,
+            onRetry: retryNetwork,
+          );
+        }
+        return;
       }
+    }
 
+    if (isLiquid == null || isLiquid) {
       final selectedLiqNetwork = state.getLiquidNetwork();
       if (selectedLiqNetwork == null) return;
 
@@ -163,15 +201,14 @@ class NetworkCubit extends Cubit<NetworkState> {
             onRetry: retryNetwork,
           );
         }
-      }
 
-      emit(
-        state.copyWith(
-          errLoadingNetworks: errBitcoin.toString(),
-          networkErrorOpened: true,
-        ),
-      );
-      return;
+        emit(
+          state.copyWith(
+            errLoadingNetworks: errLiquid.toString(),
+            networkErrorOpened: true,
+          ),
+        );
+      }
     }
 
     emit(state.copyWith(networkConnected: true));
@@ -239,7 +276,7 @@ class NetworkCubit extends Cubit<NetworkState> {
     networks.insert(index, state.tempNetworkDetails!);
     emit(state.copyWith(networks: networks, selectedNetwork: tempNetwork.type));
     await Future.delayed(const Duration(milliseconds: 100));
-    setupBlockchain();
+    setupBlockchain(false);
   }
 
   void resetTempNetwork() {

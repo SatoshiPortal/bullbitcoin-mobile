@@ -1,5 +1,16 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/balance.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -189,6 +200,26 @@ class HomeState with _$HomeState {
 
   //   return null;
   // }
+
+  List<WalletBloc> createWalletBlocs(List<Wallet> wallets) {
+    final walletCubits = [
+      for (final w in wallets)
+        WalletBloc(
+          saveDir: w.getWalletStorageString(),
+          walletSync: locator<WalletSync>(),
+          walletsStorageRepository: locator<WalletsStorageRepository>(),
+          walletBalance: locator<WalletBalance>(),
+          walletAddress: locator<WalletAddress>(),
+          networkCubit: locator<NetworkCubit>(),
+          swapBloc: locator<WatchTxsBloc>(),
+          networkRepository: locator<NetworkRepository>(),
+          walletsRepository: locator<WalletsRepository>(),
+          walletTransactionn: locator<WalletTxx>(),
+          walletCreatee: locator<WalletCreatee>(),
+        ),
+    ];
+    return walletCubits;
+  }
 }
 
 extension Num on num {

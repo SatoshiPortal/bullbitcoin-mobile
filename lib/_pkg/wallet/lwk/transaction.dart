@@ -416,7 +416,7 @@ class LWKTransactions {
     }
   }
 
-  Future<(Uint8List?, Err?)> finalizeLiquidTx({
+  Future<(Uint8List?, Err?)> signTx({
     required String pset,
     required lwk.Wallet lwkWallet,
     required Wallet wallet,
