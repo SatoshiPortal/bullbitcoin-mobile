@@ -206,6 +206,7 @@ class SwapTx with _$SwapTx {
     int? keyIndex,
     required bool isSubmarine,
     required BBNetwork network,
+    required BaseWalletType walletType,
     String? secretKey,
     String? publicKey,
     String? sha256,
@@ -228,7 +229,9 @@ class SwapTx with _$SwapTx {
     return SwapTx(
       id: swap.id,
       isSubmarine: swap.kind == SwapType.Submarine,
-      network: swap.network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
+      // network: swap.network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
+      network: BBNetwork.Testnet,
+      walletType: swap.network == Chain.Testnet ? BaseWalletType.Bitcoin : BaseWalletType.Liquid,
       redeemScript: swap.redeemScript,
       invoice: swap.invoice,
       outAmount: swap.outAmount,

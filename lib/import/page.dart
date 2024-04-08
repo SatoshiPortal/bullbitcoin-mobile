@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -53,8 +54,8 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
       networkCubit: locator<NetworkCubit>(),
       bdkCreate: locator<BDKCreate>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
+      lwkSensitiveCreate: locator<LWKSensitiveCreate>(),
       mainWallet: widget.mainWallet,
-      // walletNetwork: locator<WalletNetwork>(),
     );
 
     wordsCubit = locator<WordsCubit>();

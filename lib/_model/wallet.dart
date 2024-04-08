@@ -10,7 +10,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'wallet.freezed.dart';
 part 'wallet.g.dart';
 
-enum BBNetwork { Testnet, Mainnet, LTestnet, LMainnet }
+enum BBNetwork { Testnet, Mainnet }
 
 enum BBWalletType { secure, xpub, descriptors, words, coldcard, instant }
 
@@ -346,9 +346,9 @@ class Wallet with _$Wallet {
       case BBNetwork.Mainnet:
         return bdk.Network.Bitcoin;
 
-      case BBNetwork.LTestnet:
-      case BBNetwork.LMainnet:
-        return null;
+      // case BBNetwork.LTestnet:
+      // case BBNetwork.LMainnet:
+      //   return null;
     }
   }
 

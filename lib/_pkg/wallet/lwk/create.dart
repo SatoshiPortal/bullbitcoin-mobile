@@ -7,7 +7,7 @@ class LWKCreate {
   Future<(lwk.Wallet?, Err?)> loadPublicLwkWallet(Wallet wallet) async {
     try {
       final network =
-          wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
+          wallet.network == BBNetwork.Mainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
 
       final appDocDir = await getApplicationDocumentsDirectory();
       final String dbDir = '${appDocDir.path}/db';

@@ -52,7 +52,7 @@ mixin _$ImportState {
   String get errLoadingFile => throw _privateConstructorUsedError;
   bool get savingWallet => throw _privateConstructorUsedError;
   String get errSavingWallet => throw _privateConstructorUsedError;
-  Wallet? get savedWallet => throw _privateConstructorUsedError;
+  bool get savedWallet => throw _privateConstructorUsedError;
   ColdCard? get coldCard => throw _privateConstructorUsedError;
   bool get mainWallet => throw _privateConstructorUsedError;
 
@@ -90,11 +90,10 @@ abstract class $ImportStateCopyWith<$Res> {
       String errLoadingFile,
       bool savingWallet,
       String errSavingWallet,
-      Wallet? savedWallet,
+      bool savedWallet,
       ColdCard? coldCard,
       bool mainWallet});
 
-  $WalletCopyWith<$Res>? get savedWallet;
   $ColdCardCopyWith<$Res>? get coldCard;
 }
 
@@ -133,7 +132,7 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
     Object? errLoadingFile = null,
     Object? savingWallet = null,
     Object? errSavingWallet = null,
-    Object? savedWallet = freezed,
+    Object? savedWallet = null,
     Object? coldCard = freezed,
     Object? mainWallet = null,
   }) {
@@ -226,10 +225,10 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
           ? _value.errSavingWallet
           : errSavingWallet // ignore: cast_nullable_to_non_nullable
               as String,
-      savedWallet: freezed == savedWallet
+      savedWallet: null == savedWallet
           ? _value.savedWallet
           : savedWallet // ignore: cast_nullable_to_non_nullable
-              as Wallet?,
+              as bool,
       coldCard: freezed == coldCard
           ? _value.coldCard
           : coldCard // ignore: cast_nullable_to_non_nullable
@@ -239,18 +238,6 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
           : mainWallet // ignore: cast_nullable_to_non_nullable
               as bool,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $WalletCopyWith<$Res>? get savedWallet {
-    if (_value.savedWallet == null) {
-      return null;
-    }
-
-    return $WalletCopyWith<$Res>(_value.savedWallet!, (value) {
-      return _then(_value.copyWith(savedWallet: value) as $Val);
-    });
   }
 
   @override
@@ -297,12 +284,10 @@ abstract class _$$ImportStateImplCopyWith<$Res>
       String errLoadingFile,
       bool savingWallet,
       String errSavingWallet,
-      Wallet? savedWallet,
+      bool savedWallet,
       ColdCard? coldCard,
       bool mainWallet});
 
-  @override
-  $WalletCopyWith<$Res>? get savedWallet;
   @override
   $ColdCardCopyWith<$Res>? get coldCard;
 }
@@ -340,7 +325,7 @@ class __$$ImportStateImplCopyWithImpl<$Res>
     Object? errLoadingFile = null,
     Object? savingWallet = null,
     Object? errSavingWallet = null,
-    Object? savedWallet = freezed,
+    Object? savedWallet = null,
     Object? coldCard = freezed,
     Object? mainWallet = null,
   }) {
@@ -433,10 +418,10 @@ class __$$ImportStateImplCopyWithImpl<$Res>
           ? _value.errSavingWallet
           : errSavingWallet // ignore: cast_nullable_to_non_nullable
               as String,
-      savedWallet: freezed == savedWallet
+      savedWallet: null == savedWallet
           ? _value.savedWallet
           : savedWallet // ignore: cast_nullable_to_non_nullable
-              as Wallet?,
+              as bool,
       coldCard: freezed == coldCard
           ? _value.coldCard
           : coldCard // ignore: cast_nullable_to_non_nullable
@@ -475,7 +460,7 @@ class _$ImportStateImpl extends _ImportState {
       this.errLoadingFile = '',
       this.savingWallet = false,
       this.errSavingWallet = '',
-      this.savedWallet,
+      this.savedWallet = false,
       this.coldCard,
       this.mainWallet = false})
       : _words12 = words12,
@@ -580,7 +565,8 @@ class _$ImportStateImpl extends _ImportState {
   @JsonKey()
   final String errSavingWallet;
   @override
-  final Wallet? savedWallet;
+  @JsonKey()
+  final bool savedWallet;
   @override
   final ColdCard? coldCard;
   @override
@@ -711,7 +697,7 @@ abstract class _ImportState extends ImportState {
       final String errLoadingFile,
       final bool savingWallet,
       final String errSavingWallet,
-      final Wallet? savedWallet,
+      final bool savedWallet,
       final ColdCard? coldCard,
       final bool mainWallet}) = _$ImportStateImpl;
   const _ImportState._() : super._();
@@ -771,7 +757,7 @@ abstract class _ImportState extends ImportState {
   @override
   String get errSavingWallet;
   @override
-  Wallet? get savedWallet;
+  bool get savedWallet;
   @override
   ColdCard? get coldCard;
   @override

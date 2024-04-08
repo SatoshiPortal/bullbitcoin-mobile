@@ -2,6 +2,7 @@ import 'package:bb_mobile/_pkg/extensions.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -42,6 +43,7 @@ class CreateWalletPage extends StatelessWidget {
       networkCubit: locator<NetworkCubit>(),
       walletCreate: locator<WalletCreate>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
+      lwkSensitiveCreate: locator<LWKSensitiveCreate>(),
       mainWallet: mainWallet,
     );
 

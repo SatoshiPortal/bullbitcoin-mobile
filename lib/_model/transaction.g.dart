@@ -59,6 +59,7 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       keyIndex: json['keyIndex'] as int?,
       isSubmarine: json['isSubmarine'] as bool,
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
+      walletType: $enumDecode(_$BaseWalletTypeEnumMap, json['walletType']),
       secretKey: json['secretKey'] as String?,
       publicKey: json['publicKey'] as String?,
       sha256: json['sha256'] as String?,
@@ -85,6 +86,7 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
       'keyIndex': instance.keyIndex,
       'isSubmarine': instance.isSubmarine,
       'network': _$BBNetworkEnumMap[instance.network]!,
+      'walletType': _$BaseWalletTypeEnumMap[instance.walletType]!,
       'secretKey': instance.secretKey,
       'publicKey': instance.publicKey,
       'sha256': instance.sha256,
@@ -105,8 +107,12 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
 const _$BBNetworkEnumMap = {
   BBNetwork.Testnet: 'Testnet',
   BBNetwork.Mainnet: 'Mainnet',
-  BBNetwork.LTestnet: 'LTestnet',
-  BBNetwork.LMainnet: 'LMainnet',
+};
+
+const _$BaseWalletTypeEnumMap = {
+  BaseWalletType.Bitcoin: 'Bitcoin',
+  BaseWalletType.Liquid: 'Liquid',
+  BaseWalletType.Lightning: 'Lightning',
 };
 
 _$SwapTxSensitiveImpl _$$SwapTxSensitiveImplFromJson(

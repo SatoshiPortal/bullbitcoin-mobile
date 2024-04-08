@@ -327,7 +327,7 @@ class LWKTransactions {
           if (tx.txid == unsignedTxs[idxUnsignedTx].txid) unsignedTxs.removeAt(idxUnsignedTx);
         }
         final assetToPick =
-            wallet.network == BBNetwork.LMainnet ? lwk.lBtcAssetId : lwk.lTestAssetId;
+            wallet.network == BBNetwork.Mainnet ? lwk.lBtcAssetId : lwk.lTestAssetId;
         final balances = tx.balances;
         final finalBalance = balances.where((e) => e.$1 == assetToPick).map((e) => e.$2).first;
         final txObj = Transaction(
@@ -424,7 +424,7 @@ class LWKTransactions {
   }) async {
     try {
       final signedTx = await lwkWallet.sign(
-        network: wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet,
+        network: wallet.network == BBNetwork.Mainnet ? lwk.Network.Mainnet : lwk.Network.Testnet,
         pset: pset,
         mnemonic: seed.mnemonic,
       );

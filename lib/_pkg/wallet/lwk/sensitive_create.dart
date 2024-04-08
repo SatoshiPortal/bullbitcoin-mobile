@@ -28,7 +28,7 @@ class LWKSensitiveCreate {
     required WalletCreate walletCreate,
     // bool isImported,
   }) async {
-    final lwkNetwork = network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
+    final lwkNetwork = network == BBNetwork.Mainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
     final lwk.Descriptor descriptor = await lwk.Descriptor.create(
       network: lwkNetwork,
       mnemonic: seed.mnemonic,
@@ -116,7 +116,7 @@ class LWKSensitiveCreate {
   ) async {
     try {
       final network =
-          wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
+          wallet.network == BBNetwork.Mainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
 
       final appDocDir = await getApplicationDocumentsDirectory();
       final String dbDir = '${appDocDir.path}/db';

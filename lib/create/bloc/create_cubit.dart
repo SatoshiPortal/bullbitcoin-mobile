@@ -3,6 +3,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
@@ -17,6 +18,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     required this.networkCubit,
     required this.walletCreate,
     required this.bdkSensitiveCreate,
+    required this.lwkSensitiveCreate,
     // bool fromHome = false,
     bool mainWallet = false,
   }) : super(
@@ -31,6 +33,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final NetworkCubit networkCubit;
   final WalletCreate walletCreate;
   final BDKSensitiveCreate bdkSensitiveCreate;
+  final LWKSensitiveCreate lwkSensitiveCreate;
 
   void createMne({bool fromHome = false}) async {
     emit(state.copyWith(creatingNmemonic: true));
@@ -89,8 +92,6 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (state.mnemonic == null) return;
     emit(state.copyWith(saving: true, errSaving: ''));
 
-    final createSecureAndMain = state.mainWallet;
-
     final label = state.walletLabel;
     if (label == null || label == '') {
       emit(state.copyWith(saving: false, errSaving: 'Wallet Label is required'));
@@ -118,6 +119,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
       return;
     }
+
     final updatedWallet = (state.walletLabel != null && state.walletLabel != '')
         ? wallet!.copyWith(name: state.walletLabel)
         : wallet;
@@ -155,15 +157,59 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (wsErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }
+
+    Wallet? liqWallet;
+    if (state.mainWallet)
+      liqWallet = await _createLiquid(
+        seed: seed,
+        passPhrase: state.passPhrase,
+        network: network,
+      );
+
     clearSensitive();
 
     emit(
       state.copyWith(
         saving: false,
         saved: true,
-        savedWallets: [updatedWallet],
+        savedWallets: [
+          updatedWallet,
+          if (liqWallet != null) liqWallet,
+        ],
       ),
     );
+  }
+
+  Future<Wallet?> _createLiquid({
+    required Seed seed,
+    required String passPhrase,
+    required BBNetwork network,
+  }) async {
+    final (wallet, wErr) = await lwkSensitiveCreate.oneLiquidFromBIP39(
+      seed: seed,
+      passphrase: state.passPhrase,
+      scriptType: ScriptType.bip84,
+      network: network,
+      walletType: BBWalletType.instant,
+      walletCreate: walletCreate,
+      // walletType: network,
+      // false,
+    );
+    if (wErr != null) {
+      emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
+      return null;
+    }
+
+    final updatedWallet = (state.walletLabel != null && state.walletLabel != '')
+        ? wallet!.copyWith(name: state.walletLabel)
+        : wallet;
+
+    final wsErr = await walletsStorageRepository.newWallet(updatedWallet!);
+    if (wsErr != null) {
+      emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
+    }
+
+    return updatedWallet;
   }
 
   // void firstTime() async {
