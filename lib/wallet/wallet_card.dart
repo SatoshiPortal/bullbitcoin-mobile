@@ -52,6 +52,7 @@ class WalletCardDetails extends StatelessWidget {
 
   static (Color, String) cardDetails(BuildContext context, Wallet wallet) {
     final isTestnet = wallet.network == BBNetwork.Testnet;
+    final isInstant = wallet.baseWalletType == BaseWalletType.Liquid;
     final isWatchOnly = wallet.watchOnly();
 
     final darkMode =
@@ -62,8 +63,13 @@ class WalletCardDetails extends StatelessWidget {
     if (isWatchOnly && !isTestnet) return (watchonlyColor, 'mainnet_watchonly');
     if (isWatchOnly && isTestnet) return (watchonlyColor, 'testnet_watchonly');
 
-    if (isTestnet) return (context.colour.surface, 'testnet');
-    return (context.colour.primary, 'mainnet');
+    if (isInstant) return (CardColours.instantYellow, 'instant');
+
+    // if (isTestnet) return (context.colour.surface, 'testnet');
+    // return (context.colour.primary, 'mainnet');
+
+    if (isTestnet) return (CardColours.secureOrange, 'testnet');
+    return (CardColours.secureOrange, 'mainnet');
   }
 
   @override
@@ -75,7 +81,7 @@ class WalletCardDetails extends StatelessWidget {
 
     final name = context.select((WalletBloc x) => x.state.wallet?.name);
     final fingerprint = context.select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
-    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeShortString());
+    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeStr());
 
     final sats = context.select((WalletBloc x) => x.state.balanceSats());
 

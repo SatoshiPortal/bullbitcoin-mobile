@@ -274,7 +274,7 @@ class CardItem extends StatelessWidget {
 
     final name = context.select((WalletBloc x) => x.state.wallet?.name);
     final fingerprint = context.select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
-    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeShortString());
+    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeStr());
 
     final sats = context.select((WalletBloc x) => x.state.balanceSats());
 
@@ -445,7 +445,7 @@ class WalletTag extends StatelessWidget {
   Widget build(BuildContext context) {
     final (color, _) = WalletCardDetails.cardDetails(context, wallet);
 
-    final name = wallet.name ?? wallet.sourceFingerprint;
+    final name = wallet.getWalletTypeStr(shorten: true);
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -779,10 +779,18 @@ class HomeNoWallets extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             BBButton.big(
+              label: 'Create new wallet',
               onPressed: () {
-                context.push('/import');
+                context.push('/create-wallet-main');
               },
-              label: 'New wallet',
+            ),
+            const Gap(16),
+            BBButton.text(
+              label: 'Recover wallet backup',
+              centered: true,
+              onPressed: () {
+                context.push('/import-main');
+              },
             ),
           ],
         ),
@@ -837,7 +845,7 @@ class HomeNoWallets extends StatelessWidget {
               ),
             ),
             BBButton.text(
-              label: 'Recovey wallet backup',
+              label: 'Recover wallet backup',
               centered: true,
               onSurface: true,
               isBlue: false,

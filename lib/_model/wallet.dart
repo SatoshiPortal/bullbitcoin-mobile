@@ -290,46 +290,37 @@ class Wallet with _$Wallet {
     return str;
   }
 
-  String getWalletTypeShortString() {
-    if (network == BBNetwork.Mainnet || network == BBNetwork.Testnet) {
-      switch (type) {
-        case BBWalletType.secure:
-        case BBWalletType.words:
-          return 'Spendable on-chain';
-        case BBWalletType.xpub:
-        // return 'Watch Only';
-        case BBWalletType.coldcard:
-        // return 'Watch Only';
+  String getWalletTypeStr({bool shorten = false}) {
+    final isTestnet = network == BBNetwork.Testnet;
+    final networkStr = isTestnet ? 'Testnet' : 'Mainnet';
 
-        case BBWalletType.descriptors:
-          return 'Watch Only';
-        case BBWalletType.instant:
-          return 'Instant';
-      }
-    } else {
-      switch (type) {
-        case BBWalletType.secure:
-        case BBWalletType.words:
-          return 'Spendable Liquid';
-        case BBWalletType.xpub:
-        // return 'Watch Only';
-        case BBWalletType.coldcard:
-        // return 'Watch Only';
-
-        case BBWalletType.descriptors:
-          return 'Watch Only (Liquid)';
-        case BBWalletType.instant:
-          return 'Instant (Liquid)';
-      }
+    switch (type) {
+      case BBWalletType.secure:
+      case BBWalletType.words:
+        return shorten ? '$networkStr on-chain' : 'Regular on-chain $networkStr Network';
+      case BBWalletType.xpub:
+      case BBWalletType.coldcard:
+      case BBWalletType.descriptors:
+        return 'Watch Only';
+      case BBWalletType.instant:
+        return shorten ? 'Liquid $networkStr' : 'Liquid $networkStr Network';
     }
   }
 
   List<Transaction> getPendingTxs() {
-    return transactions.where((tx) => tx.timestamp == 0 && !tx.oldTx).toList().reversed.toList();
+    return transactions
+        .map((e) => e.copyWith(wallet: this))
+        .where((tx) => tx.timestamp == 0 && !tx.oldTx)
+        .toList()
+        .reversed
+        .toList();
   }
 
   List<Transaction> getConfirmedTxs() {
-    final txs = transactions.where((tx) => tx.timestamp != 0 && !tx.oldTx).toList();
+    final txs = transactions
+        .map((e) => e.copyWith(wallet: this))
+        .where((tx) => tx.timestamp != 0 && !tx.oldTx)
+        .toList();
     txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return txs;
   }

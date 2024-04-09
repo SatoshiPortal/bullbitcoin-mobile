@@ -16,6 +16,11 @@ class NewColours {
   static const lightGray = Color(0xFFC4C4C4);
 }
 
+class CardColours {
+  static const instantYellow = Color(0xFFFFC700);
+  static const secureOrange = Color(0xFFFF9900);
+}
+
 class Themes {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,

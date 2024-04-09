@@ -34,7 +34,7 @@ const cc3 = {
   },
 };
 
-const r2 = [
+const secureTN1 = [
   'upper',
   'suffer',
   'lab',
@@ -47,6 +47,21 @@ const r2 = [
   'road',
   'tilt',
   'ugly',
+];
+
+const instantTN1 = [
+  'fossil',
+  'install',
+  'fever',
+  'ticket',
+  'wisdom',
+  'outer',
+  'broken',
+  'aspect',
+  'lucky',
+  'still',
+  'flavor',
+  'dial',
 ];
 
 List<({String word, bool tapped})> importW(List<String> words) =>

@@ -275,7 +275,7 @@ class BDKTransactions {
 
               (externalAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStruct.toString()),
-                wallet: wallet.copyWith(),
+                wallet: wallet,
                 spentTxId: tx.txid,
                 kind: AddressKind.external,
                 state: AddressStatus.used,

@@ -62,14 +62,22 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
 
     final address = state.walletBloc!.state.wallet!.getLastAddress();
-
+    if (address == null) {
+      generateNewAddress();
+      emit(
+        state.copyWith(
+          loadingAddress: false,
+        ),
+      );
+      return;
+    }
     emit(
       state.copyWith(
         defaultAddress: address,
       ),
     );
     final label = await walletAddress.getLabel(
-      address: address!.address,
+      address: address.address,
       wallet: state.walletBloc!.state.wallet!,
     );
     final labelUpdated = address.copyWith(label: label);

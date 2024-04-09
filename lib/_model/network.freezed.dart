@@ -1348,8 +1348,8 @@ class __$$BlockstreamLiquidElectrumNetworkImplCopyWithImpl<$Res>
 class _$BlockstreamLiquidElectrumNetworkImpl
     extends _BlockstreamLiquidElectrumNetwork {
   const _$BlockstreamLiquidElectrumNetworkImpl(
-      {this.mainnet = 'ssl://$liquidElectrumUrl',
-      this.testnet = 'ssl://$liquidElectrumTestUrl',
+      {this.mainnet = liquidElectrumUrl,
+      this.testnet = liquidElectrumTestUrl,
       this.validateDomain = true,
       this.name = 'blockstream',
       this.type = LiquidElectrumTypes.blockstream,

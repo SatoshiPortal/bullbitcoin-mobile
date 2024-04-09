@@ -28,6 +28,7 @@ import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/address.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/create.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
@@ -123,9 +124,14 @@ Future _setupWalletServices() async {
   locator.registerSingleton<BDKAddress>(BDKAddress());
   locator.registerSingleton<LWKAddress>(LWKAddress());
   locator.registerSingleton<BDKTransactions>(BDKTransactions());
-  locator.registerSingleton<LWKTransactions>(LWKTransactions());
+  locator.registerSingleton<LWKTransactions>(
+    LWKTransactions(
+      networkRepository: locator<NetworkRepository>(),
+    ),
+  );
   locator.registerSingleton<BDKUtxo>(BDKUtxo());
   locator.registerSingleton<LWKCreate>(LWKCreate());
+
   locator.registerSingleton<BDKCreate>(
     BDKCreate(
       walletsRepository: locator<WalletsRepository>(),
@@ -135,6 +141,12 @@ Future _setupWalletServices() async {
     BDKSensitiveCreate(
       walletsRepository: locator<WalletsRepository>(),
       bdkCreate: locator<BDKCreate>(),
+    ),
+  );
+  locator.registerSingleton<LWKSensitiveCreate>(
+    LWKSensitiveCreate(
+      bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
+      lwkCreate: locator<LWKCreate>(),
     ),
   );
 

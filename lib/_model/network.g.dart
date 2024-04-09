@@ -103,8 +103,8 @@ _$BlockstreamLiquidElectrumNetworkImpl
     _$$BlockstreamLiquidElectrumNetworkImplFromJson(
             Map<String, dynamic> json) =>
         _$BlockstreamLiquidElectrumNetworkImpl(
-          mainnet: json['mainnet'] as String? ?? 'ssl://$liquidElectrumUrl',
-          testnet: json['testnet'] as String? ?? 'ssl://$liquidElectrumTestUrl',
+          mainnet: json['mainnet'] as String? ?? liquidElectrumUrl,
+          testnet: json['testnet'] as String? ?? liquidElectrumTestUrl,
           validateDomain: json['validateDomain'] as bool? ?? true,
           name: json['name'] as String? ?? 'blockstream',
           type:

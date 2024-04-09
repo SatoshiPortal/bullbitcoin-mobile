@@ -48,6 +48,8 @@ class HomeState with _$HomeState {
     return blocs;
   }
 
+  bool noNetworkWallets(BBNetwork network) => walletsFromNetwork(network).isEmpty;
+
   WalletBloc? getWalletBloc(Wallet wallet) {
     final walletBlocs = walletBlocsFromNetwork(wallet.network);
     final idx = walletBlocs.indexWhere((w) => w.state.wallet!.id == wallet.id);

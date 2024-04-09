@@ -30,7 +30,7 @@ Future recoverWalletSteps(WidgetTester tester) async {
   await homePage.tapPlusButton();
   await importPage.tapRecoverButton();
   await importPage.scrollToBottomOfRecoverWords();
-  await importPage.enterWordsIntoFields(r2);
+  await importPage.enterWordsIntoFields(secureTN1);
   await importPage.tapRecoverConfirmButton();
   await importPage.waitForWalletsToSync();
   await importPage.tapSegwitWallet();

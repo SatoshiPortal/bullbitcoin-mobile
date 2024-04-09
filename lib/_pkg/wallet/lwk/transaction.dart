@@ -5,9 +5,15 @@ import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 class LWKTransactions {
+  LWKTransactions({required NetworkRepository networkRepository})
+      : _networkRepository = networkRepository;
+
+  final NetworkRepository _networkRepository;
+
   Transaction addOutputAddresses(Address newAddress, Transaction tx) {
     final outAddrs = List<Address>.from(tx.outAddrs);
     final index = outAddrs.indexWhere(
@@ -448,7 +454,9 @@ class LWKTransactions {
     required Transaction transaction,
   }) async {
     try {
-      final txid = await lwkWallet.broadcast(electrumUrl: 'blockstream.info:465', txBytes: txBytes);
+      final (blockchain, err) = _networkRepository.liquidUrl;
+      if (err != null) throw err;
+      final txid = await lwkWallet.broadcast(electrumUrl: blockchain!, txBytes: txBytes);
       final newTx = transaction.copyWith(
         txid: txid,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,

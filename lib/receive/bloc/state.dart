@@ -44,7 +44,7 @@ class ReceiveState with _$ReceiveState {
       return invoice;
     }
 
-    return defaultAddress!.address;
+    return defaultAddress?.address ?? '';
   }
 
   bool showNewRequestButton() => savedDescription.isEmpty && savedInvoiceAmount == 0;

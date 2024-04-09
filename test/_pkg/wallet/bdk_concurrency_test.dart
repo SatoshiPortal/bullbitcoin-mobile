@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('getAddress waits while syncing wallet', () async {
-    final wallet1 = await _createWallet(mne: r2.join(' '));
+    final wallet1 = await _createWallet(mne: secureTN1.join(' '));
     final blockchain = await _createBlockchain();
     wallet1.sync(blockchain);
     final _ = await wallet1.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
@@ -12,7 +12,7 @@ void main() {
   });
 
   test('getAddress waits for multiple wallets to sync', () async {
-    final wallet1 = await _createWallet(mne: r2.join(' '));
+    final wallet1 = await _createWallet(mne: secureTN1.join(' '));
     final wallet2 = await _createWallet();
     final blockchain = await _createBlockchain();
     wallet1.sync(blockchain);

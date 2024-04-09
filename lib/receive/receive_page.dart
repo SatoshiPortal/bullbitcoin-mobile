@@ -424,9 +424,11 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
   @override
   Widget build(BuildContext context) {
     final address = widget.minify
-        ? widget.addressQr.substring(0, 10) +
-            ' ... ' +
-            widget.addressQr.substring(widget.addressQr.length - 5)
+        ? widget.addressQr.length < 14
+            ? widget.addressQr
+            : widget.addressQr.substring(0, 10) +
+                ' ... ' +
+                widget.addressQr.substring(widget.addressQr.length - 5)
         : widget.addressQr;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
