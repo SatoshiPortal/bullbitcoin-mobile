@@ -105,7 +105,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
       return;
     }
-    final (wallet, wErr) = await bdkSensitiveCreate.oneFromBIP39(
+    var (wallet, wErr) = await bdkSensitiveCreate.oneFromBIP39(
       seed: seed!,
       passphrase: state.passPhrase,
       scriptType: ScriptType.bip84,
@@ -119,6 +119,8 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Wallet'));
       return;
     }
+
+    if (state.mainWallet) wallet = wallet!.copyWith(mainWallet: true);
 
     final updatedWallet = (state.walletLabel != null && state.walletLabel != '')
         ? wallet!.copyWith(name: state.walletLabel)
@@ -185,7 +187,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     required String passPhrase,
     required BBNetwork network,
   }) async {
-    final (wallet, wErr) = await lwkSensitiveCreate.oneLiquidFromBIP39(
+    var (wallet, wErr) = await lwkSensitiveCreate.oneLiquidFromBIP39(
       seed: seed,
       passphrase: state.passPhrase,
       scriptType: ScriptType.bip84,
@@ -200,11 +202,13 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       return null;
     }
 
+    wallet = wallet!.copyWith(mainWallet: true);
+
     final updatedWallet = (state.walletLabel != null && state.walletLabel != '')
-        ? wallet!.copyWith(name: state.walletLabel)
+        ? wallet.copyWith(name: state.walletLabel)
         : wallet;
 
-    final wsErr = await walletsStorageRepository.newWallet(updatedWallet!);
+    final wsErr = await walletsStorageRepository.newWallet(updatedWallet);
     if (wsErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }

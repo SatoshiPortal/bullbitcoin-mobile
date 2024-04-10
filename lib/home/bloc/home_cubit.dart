@@ -33,7 +33,7 @@ class HomeCubit extends Cubit<HomeState> {
 
     emit(
       state.copyWith(
-        wallets: wallets,
+        // wallets: wallets,
         walletBlocs: blocs,
         loadingWallets: false,
       ),
@@ -53,19 +53,19 @@ class HomeCubit extends Cubit<HomeState> {
 
   void updateWalletBlocs(List<WalletBloc> blocs) => emit(state.copyWith(walletBlocs: blocs));
 
-  void addWallets(List<Wallet> wallets) {
-    emit(state.copyWith(loadingWallets: true));
+  // void addWallets(List<Wallet> wallets) {
+  //   emit(state.copyWith(loadingWallets: true));
 
-    final walletss = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-    walletss.addAll(wallets);
+  //   final walletss = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+  //   walletss.addAll(wallets);
 
-    emit(
-      state.copyWith(
-        wallets: walletss,
-        loadingWallets: false,
-      ),
-    );
-  }
+  //   emit(
+  //     state.copyWith(
+  //       wallets: walletss,
+  //       loadingWallets: false,
+  //     ),
+  //   );
+  // }
 
   // void removeWalletPostDelete(String id) {
   //   final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
@@ -84,14 +84,14 @@ class HomeCubit extends Cubit<HomeState> {
   // }
 
   void updateSelectedWallet(WalletBloc walletBloc) {
-    final wallet = walletBloc.state.wallet!;
-    final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-    final idx = wallets.indexWhere((w) => w.id == wallet.id);
-    wallets[idx] = wallet;
+    // final wallet = walletBloc.state.wallet!;
+    // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+    // final idx = wallets.indexWhere((w) => w.id == wallet.id);
+    // wallets[idx] = wallet;
 
     emit(
       state.copyWith(
-        wallets: wallets,
+        // wallets: wallets,
         selectedWalletCubit: walletBloc,
       ),
     );
@@ -143,14 +143,14 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void removeWallet(WalletBloc walletBloc) {
-    final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-    wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
+    // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+    // wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
     final walletBlocs = state.walletBlocs != null ? state.walletBlocs!.toList() : <WalletBloc>[];
     walletBlocs.removeWhere((wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id);
 
     emit(
       state.copyWith(
-        wallets: wallets,
+        // wallets: wallets,
         selectedWalletCubit: null,
         walletBlocs: walletBlocs,
       ),

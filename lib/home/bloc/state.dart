@@ -19,7 +19,7 @@ part 'state.freezed.dart';
 @freezed
 class HomeState with _$HomeState {
   const factory HomeState({
-    List<Wallet>? wallets,
+    // List<Wallet>? wallets,
     List<WalletBloc>? walletBlocs,
     @Default(true) bool loadingWallets,
     @Default('') String errLoadingWallets,
@@ -32,10 +32,10 @@ class HomeState with _$HomeState {
   }) = _HomeState;
   const HomeState._();
 
-  bool hasWallets() => !loadingWallets && wallets != null && wallets!.isNotEmpty;
+  bool hasWallets() => !loadingWallets && walletBlocs != null && walletBlocs!.isNotEmpty;
 
-  List<Wallet> walletsFromNetwork(BBNetwork network) =>
-      wallets?.where((wallet) => wallet.network == network).toList().reversed.toList() ?? [];
+  // List<WalletBloc> walletsFromNetwork(BBNetwork network) =>
+  //     walletBlocs?.where((wallet) => wallet.network == network).toList().reversed.toList() ?? [];
 
   List<WalletBloc> walletBlocsFromNetwork(BBNetwork network) {
     final blocs = walletBlocs
@@ -48,7 +48,7 @@ class HomeState with _$HomeState {
     return blocs;
   }
 
-  bool noNetworkWallets(BBNetwork network) => walletsFromNetwork(network).isEmpty;
+  bool noNetworkWallets(BBNetwork network) => walletBlocsFromNetwork(network).isEmpty;
 
   WalletBloc? getWalletBloc(Wallet wallet) {
     final walletBlocs = walletBlocsFromNetwork(wallet.network);
@@ -68,13 +68,14 @@ class HomeState with _$HomeState {
   }
 
   Wallet? getFirstWithSpendableAndBalance(BBNetwork network, {int amt = 0}) {
-    final wallets = walletsFromNetwork(network);
+    final wallets = walletBlocsFromNetwork(network);
     if (wallets.isEmpty) return null;
     Wallet? wallet;
     for (final w in wallets) {
-      if (!w.watchOnly()) {
-        if ((w.balance ?? 0) > amt) return w;
-        wallet = w;
+      final ww = w.state.wallet;
+      if (!ww!.watchOnly()) {
+        if ((ww.balance ?? 0) > amt) return ww;
+        wallet = ww;
       }
     }
     return wallet;
@@ -218,6 +219,7 @@ class HomeState with _$HomeState {
           walletsRepository: locator<WalletsRepository>(),
           walletTransactionn: locator<WalletTx>(),
           walletCreatee: locator<WalletCreate>(),
+          wallet: w,
         ),
     ];
     return walletCubits;
