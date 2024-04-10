@@ -329,7 +329,7 @@ class NetworkButton extends StatelessWidget {
     return Column(
       children: [
         BBButton.textWithStatusAndRightArrow(
-          label: 'Electrum Server',
+          label: 'Network settings',
           onPressed: () {
             NetworkPopup.openPopUp(context);
           },

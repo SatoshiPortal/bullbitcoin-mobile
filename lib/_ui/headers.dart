@@ -6,12 +6,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class BBHeader extends StatelessWidget {
   const BBHeader.popUpCenteredText({
     required this.text,
+    this.leftChild,
     this.showBack = true,
     this.isLeft = false,
     this.onBack,
   });
 
   final String text;
+  final Widget? leftChild;
   final bool showBack;
   final bool isLeft;
   final Function? onBack;
@@ -22,13 +24,17 @@ class BBHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isLeft) const Spacer(flex: 2),
-          BBText.titleLarge(
-            text,
-            textAlign: isLeft ? TextAlign.left : TextAlign.center,
-            isBold: true,
-          ),
+          if (leftChild != null)
+            leftChild!
+          else
+            BBText.titleLarge(
+              text,
+              textAlign: isLeft ? TextAlign.left : TextAlign.center,
+              isBold: true,
+            ),
           const Spacer(),
           if (showBack)
             IconButton(

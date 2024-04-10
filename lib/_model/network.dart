@@ -83,6 +83,18 @@ class LiquidElectrumNetwork with _$LiquidElectrumNetwork {
   factory LiquidElectrumNetwork.fromJson(Map<String, dynamic> json) =>
       _$LiquidElectrumNetworkFromJson(json);
 
+  String getNetworkUrl(bool isTestnet, {bool split = true}) {
+    String url;
+    if (isTestnet)
+      url = testnet;
+    else
+      url = mainnet;
+
+    // if (split) url = url.split('://')[1];
+
+    return url;
+  }
+
   // String getNetworkUrl(bool isTestnet, {bool split = true}) {
   //   String url;
   //   if (isTestnet)

@@ -12,6 +12,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+class _NetworkSelector extends Cubit<bool> {
+  _NetworkSelector({bool isLiq = false}) : super(isLiq);
+  void selectNetwork(bool isLiquid) => emit(isLiquid);
+}
+
 class NetworkPopup extends StatelessWidget {
   const NetworkPopup({super.key});
 
@@ -24,7 +29,10 @@ class NetworkPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const NetworkScreen();
+    return BlocProvider.value(
+      value: _NetworkSelector(),
+      child: const NetworkScreen(),
+    );
   }
 }
 
@@ -36,28 +44,56 @@ class NetworkScreen extends StatelessWidget {
     final networks = context.select((NetworkCubit _) => _.state.networks);
     if (networks.isEmpty) return const SizedBox.shrink();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Gap(8),
-          BBHeader.popUpCenteredText(
-            text: 'Electrum Server',
-            isLeft: true,
-            onBack: () {
-              context.read<NetworkCubit>().resetTempNetwork();
-              context.pop();
-            },
-          ),
-          const NetworkStatus(),
-          const Gap(24),
-          const SelectNetworkSegment(),
-          const Gap(16),
-          const NetworkConfigFields(),
-          const Gap(80),
+          Gap(8),
+          _NetowrkHeader(),
+          NetworkStatus(),
+          Gap(24),
+          SelectNetworkSegment(),
+          Gap(16),
+          NetworkConfigFields(),
+          Gap(80),
         ],
       ),
+    );
+  }
+}
+
+class _NetowrkHeader extends StatelessWidget {
+  const _NetowrkHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final isLiq = context.select((_NetworkSelector _) => _.state);
+    final networkStr = isLiq ? 'Liquid' : 'Bitcoin';
+
+    return BBHeader.popUpCenteredText(
+      text: '', //networkStr + ' Network',
+      leftChild: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BBText.titleLarge(
+            networkStr + ' Network',
+            isBold: true,
+          ),
+          BBButton.text(
+            fontSize: 11,
+            label: 'Change network',
+            onPressed: () {
+              context.read<_NetworkSelector>().selectNetwork(!isLiq);
+            },
+          ),
+        ],
+      ),
+      isLeft: true,
+      onBack: () {
+        context.read<NetworkCubit>().resetTempNetwork();
+        context.pop();
+      },
     );
   }
 }
@@ -67,11 +103,14 @@ class NetworkStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLiq = context.select((_NetworkSelector _) => _.state);
     final networkConnected = context.select((NetworkCubit x) => x.state.networkConnected);
     final errLoadingNetwork = context.select((NetworkCubit x) => x.state.errLoadingNetworks);
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
     final network =
         context.select((NetworkCubit x) => x.state.getNetwork()?.getNetworkUrl(isTestnet) ?? '');
+    final liqNetwork = context
+        .select((NetworkCubit x) => x.state.getLiquidNetwork()?.getNetworkUrl(isTestnet) ?? '');
 
     return Column(
       children: [
@@ -86,7 +125,7 @@ class NetworkStatus extends StatelessWidget {
               ),
             ),
             const Gap(8),
-            BBText.body(network),
+            BBText.body(isLiq ? liqNetwork : network),
           ],
         ),
         if (errLoadingNetwork.isNotEmpty) ...[
@@ -103,27 +142,36 @@ class SelectNetworkSegment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLiq = context.select((_NetworkSelector _) => _.state);
+
     final tempSelected = context.select((NetworkCubit x) => x.state.tempNetwork);
+    final tempLiqSelected = context.select((NetworkCubit x) => x.state.tempLiquidNetwork);
     final network = context.select((NetworkCubit x) => x.state.selectedNetwork);
+    final liqNetwork = context.select((NetworkCubit x) => x.state.selectedLiquidNetwork);
 
     final selected = tempSelected ?? network;
+    final liqSelected = tempLiqSelected ?? liqNetwork;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _SegmentButton(
           index: 0,
-          isSelected: selected == ElectrumTypes.blockstream,
+          isSelected: isLiq
+              ? liqSelected == LiquidElectrumTypes.blockstream
+              : selected == ElectrumTypes.blockstream,
           text: 'Blockstream',
         ),
-        _SegmentButton(
-          index: 1,
-          isSelected: selected == ElectrumTypes.bullbitcoin,
-          text: 'Bull Bitcoin',
-        ),
+        if (!isLiq)
+          _SegmentButton(
+            index: 1,
+            isSelected: selected == ElectrumTypes.bullbitcoin,
+            text: 'Bull Bitcoin',
+          ),
         _SegmentButton(
           index: 2,
-          isSelected: selected == ElectrumTypes.custom,
+          isSelected:
+              isLiq ? liqSelected == LiquidElectrumTypes.custom : selected == ElectrumTypes.custom,
           text: 'Custom',
         ),
       ],
@@ -144,15 +192,24 @@ class _SegmentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLiq = context.select((_NetworkSelector _) => _.state);
+
     final selectedBGColour = context.colour.surface.withOpacity(0.3);
     final unselectedBGColour = context.colour.surface.withOpacity(0.1);
 
     return Expanded(
       child: InkWell(
         onTap: () {
-          final network = context.read<NetworkCubit>().state.networkFromString(text);
+          if (!isLiq) {
+            final network = context.read<NetworkCubit>().state.networkFromString(text);
+            if (network == null) return;
+            context.read<NetworkCubit>().networkTypeTempChanged(network);
+            return;
+          }
+
+          final network = context.read<NetworkCubit>().state.liqNetworkFromString(text);
           if (network == null) return;
-          context.read<NetworkCubit>().networkTypeTempChanged(network);
+          context.read<NetworkCubit>().liqNetworkTypeTempChanged(network);
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
@@ -189,18 +246,33 @@ class NetworkConfigFields extends StatelessWidget {
   Widget build(BuildContext context) {
     final fieldWidth = MediaQuery.of(context).size.width * 0.7;
 
-    final network = context.select((NetworkCubit x) => x.state.getTempOrSelectedNetwork());
+    final isLiq = context.select((_NetworkSelector _) => _.state);
+
+    final network = context.select((NetworkCubit _) => _.state.getTempOrSelectedNetwork());
     if (network == null) return const SizedBox.shrink();
 
-    final tempNetworkDetails = context.select((NetworkCubit x) => x.state.tempNetworkDetails);
+    final liqNetwork = context.select((NetworkCubit _) => _.state.getTempOrSelectedLiquidNetwork());
+    if (liqNetwork == null) return const SizedBox.shrink();
+
+    final tempNetworkDetails = context.select((NetworkCubit _) => _.state.tempNetworkDetails);
     if (tempNetworkDetails == null) return const SizedBox.shrink();
 
+    final tempLiqNetworkDetails =
+        context.select((NetworkCubit _) => _.state.tempLiquidNetworkDetails);
+    if (tempLiqNetworkDetails == null) return const SizedBox.shrink();
+
     final type = network.type;
+    final liqType = liqNetwork.type;
 
     final err = context.select((NetworkCubit x) => x.state.errLoadingNetworks);
     final loading = context.select((NetworkCubit x) => x.state.loadingNetworks);
 
-    final showButton = context.select((NetworkCubit x) => x.state.showConfirmButton());
+    final showButton =
+        context.select((NetworkCubit x) => x.state.showConfirmButton(isLiquid: isLiq));
+
+    final mainnet = isLiq ? liqNetwork.mainnet : network.mainnet;
+    final testnet = isLiq ? liqNetwork.testnet : network.testnet;
+    final disabled = isLiq ? liqType != LiquidElectrumTypes.custom : type != ElectrumTypes.custom;
 
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),
@@ -214,10 +286,13 @@ class NetworkConfigFields extends StatelessWidget {
             width: fieldWidth,
             child: BBTextInput.big(
               onChanged: (t) {
-                context.read<NetworkCubit>().updateTempMainnet(t);
+                if (!isLiq)
+                  context.read<NetworkCubit>().updateTempMainnet(t);
+                else
+                  context.read<NetworkCubit>().updateTempLiquidMainnet(t);
               },
-              value: tempNetworkDetails.mainnet,
-              disabled: type != ElectrumTypes.custom,
+              value: mainnet,
+              disabled: disabled,
             ),
           ),
           const Gap(16),
@@ -227,35 +302,40 @@ class NetworkConfigFields extends StatelessWidget {
             width: fieldWidth,
             child: BBTextInput.big(
               onChanged: (t) {
-                context.read<NetworkCubit>().updateTempTestnet(t);
+                if (!isLiq)
+                  context.read<NetworkCubit>().updateTempTestnet(t);
+                else
+                  context.read<NetworkCubit>().updateTempLiquidTestnet(t);
               },
-              value: tempNetworkDetails.testnet,
-              disabled: type != ElectrumTypes.custom,
+              value: testnet,
+              disabled: disabled,
             ),
           ),
-          const Gap(16),
-          Row(
-            children: [
-              const BBText.body('Validate domain'),
-              const Spacer(),
-              IgnorePointer(
-                ignoring: type != ElectrumTypes.custom,
-                child: BBSwitch(
-                  value: tempNetworkDetails.validateDomain,
-                  onChanged: (e) {
-                    context.read<NetworkCubit>().updateTempValidateDomain(e);
-                  },
+          if (!isLiq) ...[
+            const Gap(16),
+            Row(
+              children: [
+                const BBText.body('Validate domain'),
+                const Spacer(),
+                IgnorePointer(
+                  ignoring: type != ElectrumTypes.custom,
+                  child: BBSwitch(
+                    value: tempNetworkDetails.validateDomain,
+                    onChanged: (e) {
+                      context.read<NetworkCubit>().updateTempValidateDomain(e);
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const Gap(8),
-          BBButton.textWithRightArrow(
-            label: 'Advanced Options',
-            onPressed: () {
-              ElectrumAdvancedOptions.openPopUp(context);
-            },
-          ),
+              ],
+            ),
+            const Gap(8),
+            BBButton.textWithRightArrow(
+              label: 'Advanced Options',
+              onPressed: () {
+                ElectrumAdvancedOptions.openPopUp(context);
+              },
+            ),
+          ],
           const Gap(40),
           if (err.isNotEmpty) ...[
             BBText.error(err),
@@ -278,7 +358,7 @@ class NetworkConfigFields extends StatelessWidget {
                   return;
                 }
 
-                context.read<NetworkCubit>().networkConfigsSaveClicked();
+                context.read<NetworkCubit>().networkConfigsSaveClicked(isLiq: isLiq);
                 await Future.delayed(const Duration(milliseconds: 500));
                 final err = context.read<NetworkCubit>().state.errLoadingNetworks;
                 if (err.isEmpty) context.pop();
@@ -300,7 +380,10 @@ class PrivacyNoticePopUp extends StatelessWidget {
   static Future openPopUp(BuildContext context) {
     return showBBBottomSheet(
       context: context,
-      child: const PrivacyNoticePopUp(),
+      child: BlocProvider.value(
+        value: context.read<_NetworkSelector>(),
+        child: const PrivacyNoticePopUp(),
+      ),
     );
   }
 
@@ -339,7 +422,9 @@ class PrivacyNoticePopUp extends StatelessWidget {
                   label: 'SAVE',
                   filled: true,
                   onPressed: () async {
-                    context.read<NetworkCubit>().networkConfigsSaveClicked();
+                    context
+                        .read<NetworkCubit>()
+                        .networkConfigsSaveClicked(isLiq: context.read<_NetworkSelector>().state);
                     await Future.delayed(const Duration(milliseconds: 500));
                     final err = context.read<NetworkCubit>().state.errLoadingNetworks;
                     if (err.isNotEmpty)
@@ -380,7 +465,8 @@ class ElectrumAdvancedOptions extends StatelessWidget {
     final r = context.select((NetworkCubit x) => x.state.tempNetworkDetails?.retry);
     final t = context.select((NetworkCubit x) => x.state.tempNetworkDetails?.timeout);
 
-    final showButton = context.select((NetworkCubit x) => x.state.showConfirmButton());
+    final showButton =
+        context.select((NetworkCubit x) => x.state.showConfirmButton(isLiquid: false));
 
     return Padding(
       padding: const EdgeInsets.only(left: 24.0, right: 24),

@@ -141,7 +141,7 @@ class NetworkCubit extends Cubit<NetworkState> {
   void updateStopGapAndSave(int gap) async {
     updateTempStopGap(gap);
     await Future.delayed(const Duration(milliseconds: 50));
-    networkConfigsSaveClicked();
+    networkConfigsSaveClicked(isLiq: false);
   }
 
   void closeNetworkError() async {
@@ -225,6 +225,17 @@ class NetworkCubit extends Cubit<NetworkState> {
     );
   }
 
+  void liqNetworkTypeTempChanged(LiquidElectrumTypes type) {
+    final network = state.liquidNetworks.firstWhere((_) => _.type == type);
+
+    emit(
+      state.copyWith(
+        tempLiquidNetwork: type,
+        tempLiquidNetworkDetails: network,
+      ),
+    );
+  }
+
   void updateTempMainnet(String mainnet) {
     final network = state.tempNetworkDetails;
     if (network == null) return;
@@ -237,6 +248,20 @@ class NetworkCubit extends Cubit<NetworkState> {
     if (network == null) return;
     final updatedConfig = network.copyWith(testnet: testnet);
     emit(state.copyWith(tempNetworkDetails: updatedConfig));
+  }
+
+  void updateTempLiquidMainnet(String mainnet) {
+    final network = state.tempLiquidNetworkDetails;
+    if (network == null) return;
+    final updatedConfig = network.copyWith(mainnet: mainnet);
+    emit(state.copyWith(tempLiquidNetworkDetails: updatedConfig));
+  }
+
+  void updateTempLiquidTestnet(String testnet) {
+    final network = state.tempLiquidNetworkDetails;
+    if (network == null) return;
+    final updatedConfig = network.copyWith(testnet: testnet);
+    emit(state.copyWith(tempLiquidNetworkDetails: updatedConfig));
   }
 
   void updateTempStopGap(int gap) {
@@ -267,24 +292,40 @@ class NetworkCubit extends Cubit<NetworkState> {
     emit(state.copyWith(tempNetworkDetails: updatedConfig));
   }
 
-  void networkConfigsSaveClicked() async {
-    if (state.tempNetwork == null) return;
-    final networks = state.networks.toList();
-    final tempNetwork = state.tempNetworkDetails!;
-    final index = networks.indexWhere((element) => element.type == state.tempNetwork);
+  void networkConfigsSaveClicked({required bool isLiq}) async {
+    if (!isLiq) {
+      if (state.tempNetwork == null) return;
+      final networks = state.networks.toList();
+      final tempNetwork = state.tempNetworkDetails!;
+      final index = networks.indexWhere((element) => element.type == state.tempNetwork);
+      networks.removeAt(index);
+      networks.insert(index, state.tempNetworkDetails!);
+      emit(state.copyWith(networks: networks, selectedNetwork: tempNetwork.type));
+      await Future.delayed(const Duration(milliseconds: 100));
+      setupBlockchain(false);
+      return;
+    }
+
+    if (state.tempLiquidNetwork == null) return;
+    final networks = state.liquidNetworks.toList();
+    final tempNetwork = state.tempLiquidNetworkDetails!;
+    final index = networks.indexWhere((element) => element.type == state.tempLiquidNetwork);
     networks.removeAt(index);
-    networks.insert(index, state.tempNetworkDetails!);
-    emit(state.copyWith(networks: networks, selectedNetwork: tempNetwork.type));
+    networks.insert(index, state.tempLiquidNetworkDetails!);
+    emit(state.copyWith(liquidNetworks: networks, selectedLiquidNetwork: tempNetwork.type));
     await Future.delayed(const Duration(milliseconds: 100));
-    setupBlockchain(false);
+    setupBlockchain(true);
   }
 
   void resetTempNetwork() {
     final selectedNetwork = state.getNetwork();
+    final selectedLiquidNetwork = state.getLiquidNetwork();
     emit(
       state.copyWith(
         tempNetworkDetails: selectedNetwork,
         tempNetwork: null,
+        tempLiquidNetwork: null,
+        tempLiquidNetworkDetails: selectedLiquidNetwork,
       ),
     );
   }

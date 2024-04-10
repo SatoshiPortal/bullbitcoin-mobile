@@ -60,6 +60,16 @@ class NetworkState with _$NetworkState {
     return n.firstWhere((_) => _.type == t);
   }
 
+  LiquidElectrumNetwork? getTempOrSelectedLiquidNetwork() {
+    if (liquidNetworks.isEmpty) return null;
+    // return tempNetwork ?? selectedNetwork;
+    if (tempLiquidNetwork == null) return getLiquidNetwork();
+    final n = liquidNetworks;
+    final t = tempLiquidNetwork;
+
+    return n.firstWhere((_) => _.type == t);
+  }
+
   String getNetworkUrl() {
     final network = getNetwork();
     if (network == null) return '';
@@ -102,6 +112,18 @@ class NetworkState with _$NetworkState {
     }
   }
 
+  LiquidElectrumTypes? liqNetworkFromString(String text) {
+    final network = text.toLowerCase().replaceAll(' ', '');
+    switch (network) {
+      case 'blockstream':
+        return LiquidElectrumTypes.blockstream;
+      case 'custom':
+        return LiquidElectrumTypes.custom;
+      default:
+        return null;
+    }
+  }
+
   String calculatePrice(int sats, Currency? currency) {
     if (currency == null) return '';
     if (testnet) return currency.getSymbol() + '0';
@@ -118,7 +140,12 @@ class NetworkState with _$NetworkState {
     );
   }
 
-  ({bool show, String? err}) showConfirmButton() {
+  ({bool show, String? err}) showConfirmButton({required bool isLiquid}) {
+    if (isLiquid) {
+      if (tempLiquidNetwork == null) return (show: false, err: 'Network cannot be empty');
+      return (show: true, err: null);
+    }
+
     final temp = tempNetworkDetails;
     if (temp == null) return (show: false, err: '');
 

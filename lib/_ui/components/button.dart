@@ -277,6 +277,7 @@ class BBButton extends StatelessWidget {
           onPressed: disabled ? null : () => onPressed(),
           style: TextButton.styleFrom(padding: EdgeInsets.zero),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (centered ?? false) const Spacer(),
               BBText.body(
