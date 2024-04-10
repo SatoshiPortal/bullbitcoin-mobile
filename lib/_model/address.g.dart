@@ -9,7 +9,6 @@ part of 'address.dart';
 _$AddressImpl _$$AddressImplFromJson(Map<String, dynamic> json) =>
     _$AddressImpl(
       address: json['address'] as String,
-      confidential: json['confidential'] as String?,
       standard: json['standard'] as String?,
       index: json['index'] as int?,
       kind: $enumDecode(_$AddressKindEnumMap, json['kind']),
@@ -24,7 +23,6 @@ _$AddressImpl _$$AddressImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$AddressImplToJson(_$AddressImpl instance) =>
     <String, dynamic>{
       'address': instance.address,
-      'confidential': instance.confidential,
       'standard': instance.standard,
       'index': instance.index,
       'kind': _$AddressKindEnumMap[instance.kind]!,

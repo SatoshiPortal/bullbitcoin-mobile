@@ -100,8 +100,8 @@ class LWKSensitiveCreate {
     wallet = wallet.copyWith(
       name: wallet.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: firstAddress?.standard ?? '',
-        confidential: firstAddress?.confidential ?? '',
+        address: firstAddress?.confidential ?? '',
+        standard: firstAddress?.standard ?? '',
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,

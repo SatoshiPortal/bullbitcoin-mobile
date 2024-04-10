@@ -22,8 +22,7 @@ Address _$AddressFromJson(Map<String, dynamic> json) {
 mixin _$Address {
   String get address =>
       throw _privateConstructorUsedError; // for btc, this holds regular address; for liquid, this hold confidential address
-  String? get confidential =>
-      throw _privateConstructorUsedError; // For liquid // note used now
+// String? confidential, // For liquid // not used now // remove this
   String? get standard => throw _privateConstructorUsedError; // For liquid
   int? get index => throw _privateConstructorUsedError;
   AddressKind get kind => throw _privateConstructorUsedError;
@@ -46,7 +45,6 @@ abstract class $AddressCopyWith<$Res> {
   @useResult
   $Res call(
       {String address,
-      String? confidential,
       String? standard,
       int? index,
       AddressKind kind,
@@ -72,7 +70,6 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
   @override
   $Res call({
     Object? address = null,
-    Object? confidential = freezed,
     Object? standard = freezed,
     Object? index = freezed,
     Object? kind = null,
@@ -88,10 +85,6 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
               as String,
-      confidential: freezed == confidential
-          ? _value.confidential
-          : confidential // ignore: cast_nullable_to_non_nullable
-              as String?,
       standard: freezed == standard
           ? _value.standard
           : standard // ignore: cast_nullable_to_non_nullable
@@ -141,7 +134,6 @@ abstract class _$$AddressImplCopyWith<$Res> implements $AddressCopyWith<$Res> {
   @useResult
   $Res call(
       {String address,
-      String? confidential,
       String? standard,
       int? index,
       AddressKind kind,
@@ -165,7 +157,6 @@ class __$$AddressImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? address = null,
-    Object? confidential = freezed,
     Object? standard = freezed,
     Object? index = freezed,
     Object? kind = null,
@@ -181,10 +172,6 @@ class __$$AddressImplCopyWithImpl<$Res>
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
               as String,
-      confidential: freezed == confidential
-          ? _value.confidential
-          : confidential // ignore: cast_nullable_to_non_nullable
-              as String?,
       standard: freezed == standard
           ? _value.standard
           : standard // ignore: cast_nullable_to_non_nullable
@@ -230,7 +217,6 @@ class __$$AddressImplCopyWithImpl<$Res>
 class _$AddressImpl extends _Address {
   _$AddressImpl(
       {required this.address,
-      this.confidential,
       this.standard,
       this.index,
       required this.kind,
@@ -248,9 +234,7 @@ class _$AddressImpl extends _Address {
   @override
   final String address;
 // for btc, this holds regular address; for liquid, this hold confidential address
-  @override
-  final String? confidential;
-// For liquid // note used now
+// String? confidential, // For liquid // not used now // remove this
   @override
   final String? standard;
 // For liquid
@@ -276,7 +260,7 @@ class _$AddressImpl extends _Address {
 
   @override
   String toString() {
-    return 'Address(address: $address, confidential: $confidential, standard: $standard, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, highestPreviousBalance: $highestPreviousBalance, balance: $balance)';
+    return 'Address(address: $address, standard: $standard, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, highestPreviousBalance: $highestPreviousBalance, balance: $balance)';
   }
 
   @override
@@ -285,8 +269,6 @@ class _$AddressImpl extends _Address {
         (other.runtimeType == runtimeType &&
             other is _$AddressImpl &&
             (identical(other.address, address) || other.address == address) &&
-            (identical(other.confidential, confidential) ||
-                other.confidential == confidential) &&
             (identical(other.standard, standard) ||
                 other.standard == standard) &&
             (identical(other.index, index) || other.index == index) &&
@@ -304,19 +286,8 @@ class _$AddressImpl extends _Address {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      address,
-      confidential,
-      standard,
-      index,
-      kind,
-      state,
-      label,
-      spentTxId,
-      spendable,
-      highestPreviousBalance,
-      balance);
+  int get hashCode => Object.hash(runtimeType, address, standard, index, kind,
+      state, label, spentTxId, spendable, highestPreviousBalance, balance);
 
   @JsonKey(ignore: true)
   @override
@@ -335,7 +306,6 @@ class _$AddressImpl extends _Address {
 abstract class _Address extends Address {
   factory _Address(
       {required final String address,
-      final String? confidential,
       final String? standard,
       final int? index,
       required final AddressKind kind,
@@ -352,8 +322,7 @@ abstract class _Address extends Address {
   @override
   String get address;
   @override // for btc, this holds regular address; for liquid, this hold confidential address
-  String? get confidential;
-  @override // For liquid // note used now
+// String? confidential, // For liquid // not used now // remove this
   String? get standard;
   @override // For liquid
   int? get index;

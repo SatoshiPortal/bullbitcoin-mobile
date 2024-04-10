@@ -37,8 +37,8 @@ class LWKAddress {
         if (contain.isEmpty)
           addresses.add(
             Address(
-              address: address.standard,
-              confidential: address.confidential,
+              address: address.confidential,
+              standard: address.standard,
               index: address.index,
               kind: AddressKind.deposit,
               state: AddressStatus.unused,
@@ -59,8 +59,8 @@ class LWKAddress {
         w = wallet.copyWith(
           myAddressBook: addresses,
           lastGeneratedAddress: Address(
-            address: addressLastUnused.standard,
-            confidential: addressLastUnused.confidential,
+            address: addressLastUnused.confidential,
+            standard: addressLastUnused.standard,
             index: addressLastUnused.index,
             kind: AddressKind.deposit,
             state: AddressStatus.unused,

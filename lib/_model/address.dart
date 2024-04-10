@@ -24,7 +24,7 @@ class Address with _$Address {
   factory Address({
     required String
         address, // for btc, this holds regular address; for liquid, this hold confidential address
-    String? confidential, // For liquid // not used now // remove this
+    // String? confidential, // For liquid // not used now // remove this
     String? standard, // For liquid
     int? index,
     required AddressKind kind,
