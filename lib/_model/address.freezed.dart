@@ -20,8 +20,11 @@ Address _$AddressFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Address {
-  String get address => throw _privateConstructorUsedError;
-  String? get confidential => throw _privateConstructorUsedError; // For liquid
+  String get address =>
+      throw _privateConstructorUsedError; // for btc, this holds regular address; for liquid, this hold confidential address
+  String? get confidential =>
+      throw _privateConstructorUsedError; // For liquid // note used now
+  String? get standard => throw _privateConstructorUsedError; // For liquid
   int? get index => throw _privateConstructorUsedError;
   AddressKind get kind => throw _privateConstructorUsedError;
   AddressStatus get state => throw _privateConstructorUsedError;
@@ -44,6 +47,7 @@ abstract class $AddressCopyWith<$Res> {
   $Res call(
       {String address,
       String? confidential,
+      String? standard,
       int? index,
       AddressKind kind,
       AddressStatus state,
@@ -69,6 +73,7 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
   $Res call({
     Object? address = null,
     Object? confidential = freezed,
+    Object? standard = freezed,
     Object? index = freezed,
     Object? kind = null,
     Object? state = null,
@@ -86,6 +91,10 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
       confidential: freezed == confidential
           ? _value.confidential
           : confidential // ignore: cast_nullable_to_non_nullable
+              as String?,
+      standard: freezed == standard
+          ? _value.standard
+          : standard // ignore: cast_nullable_to_non_nullable
               as String?,
       index: freezed == index
           ? _value.index
@@ -133,6 +142,7 @@ abstract class _$$AddressImplCopyWith<$Res> implements $AddressCopyWith<$Res> {
   $Res call(
       {String address,
       String? confidential,
+      String? standard,
       int? index,
       AddressKind kind,
       AddressStatus state,
@@ -156,6 +166,7 @@ class __$$AddressImplCopyWithImpl<$Res>
   $Res call({
     Object? address = null,
     Object? confidential = freezed,
+    Object? standard = freezed,
     Object? index = freezed,
     Object? kind = null,
     Object? state = null,
@@ -173,6 +184,10 @@ class __$$AddressImplCopyWithImpl<$Res>
       confidential: freezed == confidential
           ? _value.confidential
           : confidential // ignore: cast_nullable_to_non_nullable
+              as String?,
+      standard: freezed == standard
+          ? _value.standard
+          : standard // ignore: cast_nullable_to_non_nullable
               as String?,
       index: freezed == index
           ? _value.index
@@ -216,6 +231,7 @@ class _$AddressImpl extends _Address {
   _$AddressImpl(
       {required this.address,
       this.confidential,
+      this.standard,
       this.index,
       required this.kind,
       required this.state,
@@ -231,8 +247,12 @@ class _$AddressImpl extends _Address {
 
   @override
   final String address;
+// for btc, this holds regular address; for liquid, this hold confidential address
   @override
   final String? confidential;
+// For liquid // note used now
+  @override
+  final String? standard;
 // For liquid
   @override
   final int? index;
@@ -256,7 +276,7 @@ class _$AddressImpl extends _Address {
 
   @override
   String toString() {
-    return 'Address(address: $address, confidential: $confidential, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, highestPreviousBalance: $highestPreviousBalance, balance: $balance)';
+    return 'Address(address: $address, confidential: $confidential, standard: $standard, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, highestPreviousBalance: $highestPreviousBalance, balance: $balance)';
   }
 
   @override
@@ -267,6 +287,8 @@ class _$AddressImpl extends _Address {
             (identical(other.address, address) || other.address == address) &&
             (identical(other.confidential, confidential) ||
                 other.confidential == confidential) &&
+            (identical(other.standard, standard) ||
+                other.standard == standard) &&
             (identical(other.index, index) || other.index == index) &&
             (identical(other.kind, kind) || other.kind == kind) &&
             (identical(other.state, state) || other.state == state) &&
@@ -286,6 +308,7 @@ class _$AddressImpl extends _Address {
       runtimeType,
       address,
       confidential,
+      standard,
       index,
       kind,
       state,
@@ -313,6 +336,7 @@ abstract class _Address extends Address {
   factory _Address(
       {required final String address,
       final String? confidential,
+      final String? standard,
       final int? index,
       required final AddressKind kind,
       required final AddressStatus state,
@@ -327,8 +351,10 @@ abstract class _Address extends Address {
 
   @override
   String get address;
-  @override
+  @override // for btc, this holds regular address; for liquid, this hold confidential address
   String? get confidential;
+  @override // For liquid // note used now
+  String? get standard;
   @override // For liquid
   int? get index;
   @override

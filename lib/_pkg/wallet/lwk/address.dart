@@ -7,7 +7,7 @@ class LWKAddress {
   Future<(String?, Err?)> peekIndex(lwk.Wallet lwkWallet, int idx) async {
     try {
       final address = await lwkWallet.addressAtIndex(idx);
-      return (address.standard, null);
+      return (address.confidential, null);
     } on Exception catch (e) {
       return (
         null,
