@@ -212,6 +212,9 @@ class _WalletNameState extends State<WalletName> {
 
   @override
   Widget build(BuildContext context) {
+    final mainWallet = context.select((WalletBloc x) => x.state.wallet!.mainWallet);
+    if (mainWallet) return const SizedBox.shrink();
+
     final saving = context.select(
       (WalletSettingsCubit x) => x.state.savingName,
     );

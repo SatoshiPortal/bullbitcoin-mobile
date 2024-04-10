@@ -263,7 +263,7 @@ class Wallet with _$Wallet {
       case BBWalletType.descriptors:
         str = 'Imported Descriptors';
       case BBWalletType.instant:
-      // TODO: Handle this case.
+        str = 'Instant Payments Wallet';
     }
 
     return str;
@@ -285,6 +285,26 @@ class Wallet with _$Wallet {
         str = 'Imported Descriptor' + ':' + id.substring(0, 5);
       case BBWalletType.instant:
         str = 'Instant' + ':' + id.substring(0, 5);
+    }
+
+    return str;
+  }
+
+  String creationName() {
+    String str = '';
+
+    switch (type) {
+      case BBWalletType.words:
+      case BBWalletType.secure:
+        str = 'Secure Bitcoin Wallet';
+      case BBWalletType.xpub:
+        str = 'Xpub' + ':' + id.substring(0, 5);
+      case BBWalletType.coldcard:
+        str = 'Coldcard' + ':' + id.substring(0, 5);
+      case BBWalletType.descriptors:
+        str = 'Imported Descriptor' + ':' + id.substring(0, 5);
+      case BBWalletType.instant:
+        str = 'Instant payments wallet';
     }
 
     return str;

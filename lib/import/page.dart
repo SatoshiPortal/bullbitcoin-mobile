@@ -208,6 +208,9 @@ class WalletLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mainWallet = context.select((ImportWalletCubit cubit) => cubit.state.mainWallet);
+    if (mainWallet) return const SizedBox.shrink();
+
     final text = context.select((ImportWalletCubit cubit) => cubit.state.walletLabel ?? '');
     final err = context.select((ImportWalletCubit cubit) => cubit.state.errSavingWallet);
 

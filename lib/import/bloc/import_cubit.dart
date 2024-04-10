@@ -398,7 +398,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void recoverWalletClicked() async {
-    await checkWalletLabel();
+    if (!state.mainWallet) await checkWalletLabel();
     if (state.errSavingWallet.isNotEmpty) return;
 
     final words = state.importType == ImportTypes.words12 ? state.words12 : state.words24;
@@ -583,10 +583,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
     }
 
     if (state.mainWallet) selectedWallet = selectedWallet.copyWith(mainWallet: true);
-
-    final secureWallet = (state.walletLabel != null && state.walletLabel != '')
-        ? selectedWallet.copyWith(name: state.walletLabel)
-        : selectedWallet;
+    var walletLabel = state.walletLabel ?? '';
+    if (state.mainWallet) walletLabel = selectedWallet.creationName();
+    final secureWallet = selectedWallet.copyWith(name: walletLabel);
 
     final err = await walletsStorageRepository.newWallet(
       secureWallet,
@@ -636,11 +635,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
     if (state.mainWallet) wallet = wallet!.copyWith(mainWallet: true);
 
-    final updatedWallet = (state.walletLabel != null && state.walletLabel != '')
-        ? wallet!.copyWith(name: state.walletLabel)
-        : wallet;
+    var walletLabel = state.walletLabel ?? '';
+    if (state.mainWallet) walletLabel = wallet!.creationName();
+    final updatedWallet = wallet!.copyWith(name: walletLabel);
 
-    final wsErr = await walletsStorageRepository.newWallet(updatedWallet!);
+    final wsErr = await walletsStorageRepository.newWallet(updatedWallet);
     if (wsErr != null) {
       emit(state.copyWith(savingWallet: false, errSavingWallet: 'Error Saving Wallet'));
     }

@@ -200,6 +200,9 @@ class CreateWalletLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mainWallet = context.select((CreateWalletCubit cubit) => cubit.state.mainWallet);
+    if (mainWallet) return const SizedBox.shrink();
+
     final text = context.select((CreateWalletCubit cubit) => cubit.state.walletLabel ?? '');
     final err = context.select((CreateWalletCubit cubit) => cubit.state.errSaving);
 

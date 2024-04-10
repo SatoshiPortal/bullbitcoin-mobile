@@ -77,6 +77,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   void toggleIsInstant(bool isInstant) => emit(state.copyWith(isInstant: isInstant));
 
   Future checkWalletLabel() async {
+    if (state.mainWallet) return;
     final label = state.walletLabel;
     if (label == null || label == '')
       emit(state.copyWith(errSaving: 'Wallet Label is required'));
@@ -93,9 +94,11 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     emit(state.copyWith(saving: true, errSaving: ''));
 
     final label = state.walletLabel;
-    if (label == null || label == '') {
-      emit(state.copyWith(saving: false, errSaving: 'Wallet Label is required'));
-      return;
+    if (!state.mainWallet) {
+      if (label == null || label == '') {
+        emit(state.copyWith(saving: false, errSaving: 'Wallet Label is required'));
+        return;
+      }
     }
 
     final network = networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
@@ -122,9 +125,9 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
 
     if (state.mainWallet) wallet = wallet!.copyWith(mainWallet: true);
 
-    final updatedWallet = (state.walletLabel != null && state.walletLabel != '')
-        ? wallet!.copyWith(name: state.walletLabel)
-        : wallet;
+    var walletLabel = state.walletLabel ?? '';
+    if (state.mainWallet) walletLabel = wallet!.creationName();
+    final updatedWallet = wallet!.copyWith(name: walletLabel);
 
     final ssErr = await walletSensRepository.newSeed(seed: seed);
     if (ssErr != null) {
@@ -136,7 +139,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
 
       final passphrase = Passphrase(
         passphrase: passPhrase,
-        sourceFingerprint: wallet!.sourceFingerprint,
+        sourceFingerprint: wallet.sourceFingerprint,
       );
 
       final ppErr = await walletSensRepository.newPassphrase(
@@ -155,7 +158,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       }
     }
 
-    final wsErr = await walletsStorageRepository.newWallet(updatedWallet!);
+    final wsErr = await walletsStorageRepository.newWallet(updatedWallet);
     if (wsErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }
@@ -204,9 +207,9 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
 
     wallet = wallet!.copyWith(mainWallet: true);
 
-    final updatedWallet = (state.walletLabel != null && state.walletLabel != '')
-        ? wallet.copyWith(name: state.walletLabel)
-        : wallet;
+    var walletLabel = state.walletLabel ?? '';
+    if (state.mainWallet) walletLabel = wallet.creationName();
+    final updatedWallet = wallet.copyWith(name: walletLabel);
 
     final wsErr = await walletsStorageRepository.newWallet(updatedWallet);
     if (wsErr != null) {
