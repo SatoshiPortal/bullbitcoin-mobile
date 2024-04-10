@@ -339,7 +339,7 @@ class LWKTransactions {
         final txObj = Transaction(
           txid: tx.txid,
           received: tx.kind == 'outgoing' ? 0 : finalBalance,
-          sent: tx.kind == 'outgoing' ? finalBalance : 0,
+          sent: tx.kind == 'outgoing' ? -finalBalance : 0,
           fee: tx.fee,
           height: 100,
           timestamp: tx.timestamp,
