@@ -54,8 +54,6 @@ class WalletsRepository {
           return removeBdkWallet(wallet);
         case BaseWalletType.Liquid:
           return removeLwkWallet(wallet);
-        case BaseWalletType.Lightning:
-          return Err('Wallet type not supported');
       }
     } catch (e) {
       return Err(e.toString());

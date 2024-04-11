@@ -31,8 +31,6 @@ class WalletBalance implements IWalletBalance {
           final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
           if (errWallet != null) throw errWallet;
           return await _lwkBalance.getLiquidBalance(lwkWallet: liqWallet!, wallet: wallet);
-        case BaseWalletType.Lightning:
-          throw 'Not implemented';
       }
     } catch (e) {
       return (

@@ -16,7 +16,7 @@ enum BBWalletType { secure, xpub, descriptors, words, coldcard, instant }
 
 enum ScriptType { bip84, bip49, bip44 }
 
-enum BaseWalletType { Bitcoin, Liquid, Lightning }
+enum BaseWalletType { Bitcoin, Liquid }
 
 @freezed
 class Wallet with _$Wallet {
@@ -65,8 +65,6 @@ class Wallet with _$Wallet {
         return copyWith(lastGeneratedAddress: address);
       case BaseWalletType.Liquid:
         return copyWith(lastGeneratedLiqAddress: address);
-      case BaseWalletType.Lightning:
-        return this;
     }
   }
 

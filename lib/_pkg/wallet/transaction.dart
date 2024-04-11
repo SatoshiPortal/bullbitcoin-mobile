@@ -102,8 +102,6 @@ class WalletTx implements IWalletTransactions {
           );
           if (errTxs != null) throw errTxs;
           return (walletWithTxs, null);
-        case BaseWalletType.Lightning:
-          throw 'Not implemented';
       }
     } catch (e) {
       return (
@@ -195,9 +193,6 @@ class WalletTx implements IWalletTransactions {
           );
           if (errfinalize != null) throw errfinalize;
           return ((wallet, tx!.copyWith(pset: txBytes), feeAmt), null);
-
-        case BaseWalletType.Lightning:
-          throw 'Not implemented';
       }
     } catch (e) {
       return (
@@ -318,9 +313,6 @@ class WalletTx implements IWalletTransactions {
           if (errBroadcast != null) throw errBroadcast;
           w = walletAndTxid!.$1;
           txid = walletAndTxid.$2;
-
-        case BaseWalletType.Lightning:
-          throw 'Not implemented';
       }
 
       final (_, updatedWallet) = await _walletAddress.addAddressToWallet(

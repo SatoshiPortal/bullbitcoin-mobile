@@ -120,7 +120,6 @@ const _$ScriptTypeEnumMap = {
 const _$BaseWalletTypeEnumMap = {
   BaseWalletType.Bitcoin: 'Bitcoin',
   BaseWalletType.Liquid: 'Liquid',
-  BaseWalletType.Lightning: 'Lightning',
 };
 
 _$BalanceImpl _$$BalanceImplFromJson(Map<String, dynamic> json) =>

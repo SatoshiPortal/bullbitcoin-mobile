@@ -48,8 +48,6 @@ class WalletSync implements IWalletSync {
           if (errSyncing != null) throw errSyncing;
           final err = _walletsRepository.replaceLwkWallet(wallet, updatedLiqWallet!);
           if (err != null) throw err;
-        case BaseWalletType.Lightning:
-          throw 'Not implemented';
       }
     } catch (e) {
       return Err(

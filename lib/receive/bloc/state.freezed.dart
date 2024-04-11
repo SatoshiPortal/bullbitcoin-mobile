@@ -29,7 +29,8 @@ mixin _$ReceiveState {
   bool get creatingInvoice => throw _privateConstructorUsedError;
   String get errCreatingInvoice => throw _privateConstructorUsedError;
   WalletBloc? get walletBloc => throw _privateConstructorUsedError;
-  ReceiveWalletType get walletType => throw _privateConstructorUsedError;
+  ReceivePaymentNetwork get paymentNetwork =>
+      throw _privateConstructorUsedError;
   SwapCubit get swapBloc => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -57,7 +58,7 @@ abstract class $ReceiveStateCopyWith<$Res> {
       bool creatingInvoice,
       String errCreatingInvoice,
       WalletBloc? walletBloc,
-      ReceiveWalletType walletType,
+      ReceivePaymentNetwork paymentNetwork,
       SwapCubit swapBloc});
 
   $AddressCopyWith<$Res>? get defaultAddress;
@@ -89,7 +90,7 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
-    Object? walletType = null,
+    Object? paymentNetwork = null,
     Object? swapBloc = null,
   }) {
     return _then(_value.copyWith(
@@ -145,10 +146,10 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.walletBloc
           : walletBloc // ignore: cast_nullable_to_non_nullable
               as WalletBloc?,
-      walletType: null == walletType
-          ? _value.walletType
-          : walletType // ignore: cast_nullable_to_non_nullable
-              as ReceiveWalletType,
+      paymentNetwork: null == paymentNetwork
+          ? _value.paymentNetwork
+          : paymentNetwork // ignore: cast_nullable_to_non_nullable
+              as ReceivePaymentNetwork,
       swapBloc: null == swapBloc
           ? _value.swapBloc
           : swapBloc // ignore: cast_nullable_to_non_nullable
@@ -191,7 +192,7 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       bool creatingInvoice,
       String errCreatingInvoice,
       WalletBloc? walletBloc,
-      ReceiveWalletType walletType,
+      ReceivePaymentNetwork paymentNetwork,
       SwapCubit swapBloc});
 
   @override
@@ -222,7 +223,7 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
-    Object? walletType = null,
+    Object? paymentNetwork = null,
     Object? swapBloc = null,
   }) {
     return _then(_$ReceiveStateImpl(
@@ -278,10 +279,10 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
           ? _value.walletBloc
           : walletBloc // ignore: cast_nullable_to_non_nullable
               as WalletBloc?,
-      walletType: null == walletType
-          ? _value.walletType
-          : walletType // ignore: cast_nullable_to_non_nullable
-              as ReceiveWalletType,
+      paymentNetwork: null == paymentNetwork
+          ? _value.paymentNetwork
+          : paymentNetwork // ignore: cast_nullable_to_non_nullable
+              as ReceivePaymentNetwork,
       swapBloc: null == swapBloc
           ? _value.swapBloc
           : swapBloc // ignore: cast_nullable_to_non_nullable
@@ -307,7 +308,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.creatingInvoice = true,
       this.errCreatingInvoice = '',
       this.walletBloc,
-      this.walletType = ReceiveWalletType.secure,
+      this.paymentNetwork = ReceivePaymentNetwork.bitcoin,
       required this.swapBloc})
       : super._();
 
@@ -350,13 +351,13 @@ class _$ReceiveStateImpl extends _ReceiveState {
   final WalletBloc? walletBloc;
   @override
   @JsonKey()
-  final ReceiveWalletType walletType;
+  final ReceivePaymentNetwork paymentNetwork;
   @override
   final SwapCubit swapBloc;
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, walletType: $walletType, swapBloc: $swapBloc)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, swapBloc: $swapBloc)';
   }
 
   @override
@@ -390,8 +391,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
                 other.errCreatingInvoice == errCreatingInvoice) &&
             (identical(other.walletBloc, walletBloc) ||
                 other.walletBloc == walletBloc) &&
-            (identical(other.walletType, walletType) ||
-                other.walletType == walletType) &&
+            (identical(other.paymentNetwork, paymentNetwork) ||
+                other.paymentNetwork == paymentNetwork) &&
             (identical(other.swapBloc, swapBloc) ||
                 other.swapBloc == swapBloc));
   }
@@ -412,7 +413,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
       creatingInvoice,
       errCreatingInvoice,
       walletBloc,
-      walletType,
+      paymentNetwork,
       swapBloc);
 
   @JsonKey(ignore: true)
@@ -437,7 +438,7 @@ abstract class _ReceiveState extends ReceiveState {
       final bool creatingInvoice,
       final String errCreatingInvoice,
       final WalletBloc? walletBloc,
-      final ReceiveWalletType walletType,
+      final ReceivePaymentNetwork paymentNetwork,
       required final SwapCubit swapBloc}) = _$ReceiveStateImpl;
   const _ReceiveState._() : super._();
 
@@ -468,7 +469,7 @@ abstract class _ReceiveState extends ReceiveState {
   @override
   WalletBloc? get walletBloc;
   @override
-  ReceiveWalletType get walletType;
+  ReceivePaymentNetwork get paymentNetwork;
   @override
   SwapCubit get swapBloc;
   @override

@@ -249,15 +249,15 @@ class SelectWalletType extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isTestnet = context.select((NetworkCubit _) => _.state.testnet);
-    final walletType = context.select((ReceiveCubit x) => x.state.walletType);
+    final paymentNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
 
     if (!isTestnet) return const SizedBox.shrink();
 
-    return BBSwitcher<ReceiveWalletType>(
-      value: walletType,
+    return BBSwitcher<ReceivePaymentNetwork>(
+      value: paymentNetwork,
       items: const {
-        ReceiveWalletType.secure: 'Bitcoin',
-        ReceiveWalletType.lightning: 'Lightning',
+        ReceivePaymentNetwork.bitcoin: 'Bitcoin',
+        ReceivePaymentNetwork.lightning: 'Lightning',
       },
       onChanged: (value) {
         context.read<ReceiveCubit>().updateWalletType(value);

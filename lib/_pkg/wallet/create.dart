@@ -59,9 +59,6 @@ class WalletCreate implements IWalletCreate {
           if (errSave != null) throw errSave;
 
           return (w, null);
-
-        case BaseWalletType.Lightning:
-          throw 'Not implemented';
       }
     } catch (e) {
       return (

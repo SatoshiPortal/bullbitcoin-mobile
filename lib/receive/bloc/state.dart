@@ -6,7 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
 
-enum ReceiveWalletType { secure, lightning }
+enum ReceivePaymentNetwork { bitcoin, liquid, lightning }
 
 @freezed
 class ReceiveState with _$ReceiveState {
@@ -24,13 +24,13 @@ class ReceiveState with _$ReceiveState {
     @Default(true) bool creatingInvoice,
     @Default('') String errCreatingInvoice,
     WalletBloc? walletBloc,
-    @Default(ReceiveWalletType.secure) ReceiveWalletType walletType,
+    @Default(ReceivePaymentNetwork.bitcoin) ReceivePaymentNetwork paymentNetwork,
     required SwapCubit swapBloc,
   }) = _ReceiveState;
   const ReceiveState._();
 
   String getQRStr() {
-    if (walletType == ReceiveWalletType.lightning) {
+    if (paymentNetwork == ReceivePaymentNetwork.lightning) {
       if (swapBloc.state.swapTx == null) return '';
       return swapBloc.state.swapTx!.invoice;
     }
@@ -50,17 +50,17 @@ class ReceiveState with _$ReceiveState {
   bool showNewRequestButton() => savedDescription.isEmpty && savedInvoiceAmount == 0;
 
   bool showQR(SwapTx? swapTx) {
-    return (swapTx != null && walletType == ReceiveWalletType.lightning) ||
-        (walletType == ReceiveWalletType.secure);
+    return (swapTx != null && paymentNetwork == ReceivePaymentNetwork.lightning) ||
+        (paymentNetwork == ReceivePaymentNetwork.bitcoin);
   }
 
-  bool isLn() => walletType == ReceiveWalletType.lightning;
+  bool isLn() => paymentNetwork == ReceivePaymentNetwork.lightning;
 
   bool checkIfMainWalletSelected() => walletBloc?.state.wallet?.mainWallet ?? false;
 
   // bool _swapTxIsNotNull() => swapBloc.state.swapTx != null;
 
   // bool showActionButtons() =>
-  //     walletType == ReceiveWalletType.secure ||
+  //     paymentNetwork == ReceiveWalletType.secure ||
   //     (walletType == ReceiveWalletType.lightning && _swapTxIsNotNull());
 }

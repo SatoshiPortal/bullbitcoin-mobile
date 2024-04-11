@@ -112,7 +112,6 @@ const _$BBNetworkEnumMap = {
 const _$BaseWalletTypeEnumMap = {
   BaseWalletType.Bitcoin: 'Bitcoin',
   BaseWalletType.Liquid: 'Liquid',
-  BaseWalletType.Lightning: 'Lightning',
 };
 
 _$SwapTxSensitiveImpl _$$SwapTxSensitiveImplFromJson(

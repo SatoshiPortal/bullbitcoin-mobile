@@ -32,7 +32,7 @@ class LWKAddress {
       for (var i = 0; i <= addressLastUnused.index; i++) {
         final address = await lwkWallet.addressAtIndex(i);
         final contain = wallet.myAddressBook.where(
-          (element) => element.address == address.standard,
+          (element) => element.address == address.confidential,
         );
         if (contain.isEmpty)
           addresses.add(

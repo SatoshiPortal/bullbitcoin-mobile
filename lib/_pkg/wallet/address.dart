@@ -32,8 +32,6 @@ class WalletAddress implements IWalletAddress {
           final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
           if (errWallet != null) throw errWallet;
           return await _lwkAddress.peekIndex(liqWallet!, idx);
-        case BaseWalletType.Lightning:
-          throw 'Not implemented';
       }
     } catch (e) {
       return (
@@ -73,9 +71,6 @@ class WalletAddress implements IWalletAddress {
           );
           if (errAddr != null) throw errAddr;
           address = addr!;
-
-        case BaseWalletType.Lightning:
-          throw 'Not implemented';
       }
 
       final (addr, updatedWallet) = await addAddressToWallet(
