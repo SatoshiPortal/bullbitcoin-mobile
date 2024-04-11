@@ -199,9 +199,13 @@ class ReceiveWalletsDropDown extends StatelessWidget {
       onChanged: (value) {
         final wallet = value.state.wallet!;
         if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
-          context.read<ReceiveCubit>().updateWalletType(ReceivePaymentNetwork.bitcoin);
+          // If selectedNetwork is Liquid, warn that will be an expensive chain to chain swap
+
+          // context.read<ReceiveCubit>().updateWalletType(ReceivePaymentNetwork.bitcoin);
         } else if (wallet.baseWalletType == BaseWalletType.Liquid) {
-          context.read<ReceiveCubit>().updateWalletType(ReceivePaymentNetwork.liquid);
+          // If selectedNetwork is Bicoin, warn that will be an expensive chain to chain swap
+
+          // context.read<ReceiveCubit>().updateWalletType(ReceivePaymentNetwork.liquid);
         }
         context.read<ReceiveCubit>().updateWalletBloc(value);
       },
