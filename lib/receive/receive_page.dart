@@ -196,7 +196,15 @@ class ReceiveWalletsDropDown extends StatelessWidget {
           wallet: wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint,
       },
       value: walletBloc,
-      onChanged: context.read<ReceiveCubit>().updateWalletBloc,
+      onChanged: (value) {
+        final wallet = value.state.wallet!;
+        if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
+          context.read<ReceiveCubit>().updateWalletType(ReceivePaymentNetwork.bitcoin);
+        } else if (wallet.baseWalletType == BaseWalletType.Liquid) {
+          context.read<ReceiveCubit>().updateWalletType(ReceivePaymentNetwork.liquid);
+        }
+        context.read<ReceiveCubit>().updateWalletBloc(value);
+      },
     );
   }
 }
