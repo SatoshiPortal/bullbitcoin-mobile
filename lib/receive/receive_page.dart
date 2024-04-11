@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
@@ -251,6 +252,11 @@ class SelectWalletType extends StatelessWidget {
     final isTestnet = context.select((NetworkCubit _) => _.state.testnet);
     final paymentNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
 
+    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    final selectedWalletBloc = context.select((ReceiveCubit _) => _.state.walletBloc);
+    final walletBloc = selectedWalletBloc ?? walletBlocs.first;
+
     if (!isTestnet) return const SizedBox.shrink();
 
     return BBSwitcher<ReceivePaymentNetwork>(
@@ -261,6 +267,32 @@ class SelectWalletType extends StatelessWidget {
         ReceivePaymentNetwork.lightning: 'Lightning',
       },
       onChanged: (value) {
+        // when Liquid segment is selected, check if selectedWallet is Bitcoin. If yes, find and switch to Liquid wallet
+        if (value == ReceivePaymentNetwork.liquid) {
+          final wallet = walletBloc.state.wallet!;
+          if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
+            final liquidWalletBloc = walletBlocs.firstWhere(
+              (w) =>
+                  w.state.wallet!.baseWalletType == BaseWalletType.Liquid &&
+                  w.state.wallet!.network == wallet.network &&
+                  w.state.wallet!.sourceFingerprint == wallet.sourceFingerprint,
+            );
+            context.read<ReceiveCubit>().updateWalletBloc(liquidWalletBloc);
+          }
+        }
+        // when Bitcoin segment is selected, check if selectedWallet is Liquid. If yes, find and switch to bitcoin wallet
+        if (value == ReceivePaymentNetwork.bitcoin) {
+          final wallet = walletBloc.state.wallet!;
+          if (wallet.baseWalletType == BaseWalletType.Liquid) {
+            final btcWalletBloc = walletBlocs.firstWhere(
+              (w) =>
+                  w.state.wallet!.baseWalletType == BaseWalletType.Bitcoin &&
+                  w.state.wallet!.network == wallet.network &&
+                  w.state.wallet!.sourceFingerprint == wallet.sourceFingerprint,
+            );
+            context.read<ReceiveCubit>().updateWalletBloc(btcWalletBloc);
+          }
+        }
         context.read<ReceiveCubit>().updateWalletType(value);
       },
     );
