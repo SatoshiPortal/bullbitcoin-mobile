@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
@@ -64,6 +65,87 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     if (state.walletBloc == null) return;
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
 
+    final Wallet wallet = state.walletBloc!.state.wallet!;
+
+    // If currently selected wallet is bitcoin wallet, then find and load the liquid wallet and get it's lastGeneratedAddress.
+    if (wallet.type != BBWalletType.instant) {
+      emit(
+        state.copyWith(
+          defaultAddress: wallet.lastGeneratedAddress,
+        ),
+      );
+
+      final (allWallets, _) = await walletsStorageRepository.readAllWallets();
+
+      final Wallet? liquidWallet;
+      if (wallet.network == BBNetwork.Mainnet) {
+        liquidWallet = allWallets?.firstWhere(
+          (w) =>
+              w.type == BBWalletType.instant &&
+              w.network == BBNetwork.Mainnet &&
+              w.sourceFingerprint == wallet.sourceFingerprint,
+        );
+      } else {
+        liquidWallet = allWallets?.firstWhere(
+          (w) =>
+              w.type == BBWalletType.instant &&
+              w.network == BBNetwork.Testnet &&
+              w.sourceFingerprint == wallet.sourceFingerprint,
+        );
+      }
+
+      emit(
+        state.copyWith(
+          defaultLiquidAddress: liquidWallet?.lastGeneratedAddress,
+        ),
+      );
+      // If currently selected wallet is liquid wallet, then find and load the bitcoin wallet and get it's lastGeneratedAddress.
+    } else if (wallet.type == BBWalletType.instant) {
+      emit(
+        state.copyWith(
+          defaultLiquidAddress: wallet.lastGeneratedAddress,
+        ),
+      );
+
+      final (allWallets, errAllWallets) = await walletsStorageRepository.readAllWallets();
+
+      Wallet? btcWallet;
+      if (wallet.network == BBNetwork.Mainnet) {
+        btcWallet = allWallets?.firstWhere(
+          (w) =>
+              w.type != BBWalletType.instant &&
+              w.network == BBNetwork.Mainnet &&
+              w.sourceFingerprint == wallet.sourceFingerprint,
+        );
+      } else {
+        btcWallet = allWallets?.firstWhere(
+          (w) =>
+              w.type != BBWalletType.instant &&
+              w.network == BBNetwork.Testnet &&
+              w.sourceFingerprint == wallet.sourceFingerprint,
+        );
+      }
+
+      emit(
+        state.copyWith(
+          defaultAddress: btcWallet?.lastGeneratedAddress,
+        ),
+      );
+    }
+
+    emit(
+      state.copyWith(
+        loadingAddress: false,
+        errLoadingAddress: '',
+      ),
+    );
+  }
+
+  /*
+  void loadAddress() async {
+    if (state.walletBloc == null) return;
+    emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
+
     final address = state.walletBloc!.state.wallet!.getLastAddress();
     if (address == null) {
       generateNewAddress();
@@ -94,6 +176,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       ),
     );
   }
+  */
 
   void generateNewAddress() async {
     if (state.paymentNetwork == ReceivePaymentNetwork.lightning) {

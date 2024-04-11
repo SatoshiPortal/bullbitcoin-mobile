@@ -14,6 +14,7 @@ class ReceiveState with _$ReceiveState {
     @Default(true) bool loadingAddress,
     @Default('') String errLoadingAddress,
     Address? defaultAddress,
+    Address? defaultLiquidAddress,
     @Default('') String privateLabel,
     @Default(false) bool savingLabel,
     @Default('') String errSavingLabel,
@@ -44,14 +45,20 @@ class ReceiveState with _$ReceiveState {
       return invoice;
     }
 
-    return defaultAddress?.address ?? '';
+    if (paymentNetwork == ReceivePaymentNetwork.bitcoin)
+      return defaultAddress?.address ?? '';
+    else if (paymentNetwork == ReceivePaymentNetwork.liquid)
+      return defaultLiquidAddress?.address ?? '';
+    else
+      return defaultAddress?.address ?? '';
   }
 
   bool showNewRequestButton() => savedDescription.isEmpty && savedInvoiceAmount == 0;
 
   bool showQR(SwapTx? swapTx) {
     return (swapTx != null && paymentNetwork == ReceivePaymentNetwork.lightning) ||
-        (paymentNetwork == ReceivePaymentNetwork.bitcoin);
+        (paymentNetwork == ReceivePaymentNetwork.bitcoin ||
+            paymentNetwork == ReceivePaymentNetwork.liquid);
   }
 
   bool isLn() => paymentNetwork == ReceivePaymentNetwork.lightning;
