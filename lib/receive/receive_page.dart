@@ -275,7 +275,7 @@ class SelectWalletType extends StatelessWidget {
         ReceivePaymentNetwork.lightning: 'Lightning',
       },
       onChanged: (value) {
-        // when Liquid segment is selected, check if selectedWallet is Bitcoin. If yes, find and switch to Liquid wallet
+        // when Liquid network is selected, check if selectedWallet is Bitcoin. If yes, find and switch to Liquid wallet
         if (value == ReceivePaymentNetwork.liquid) {
           final wallet = walletBloc.state.wallet!;
           if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
@@ -288,7 +288,7 @@ class SelectWalletType extends StatelessWidget {
             context.read<ReceiveCubit>().updateWalletBloc(liquidWalletBloc);
           }
         }
-        // when Bitcoin segment is selected, check if selectedWallet is Liquid. If yes, find and switch to bitcoin wallet
+        // when Bitcoin network is selected, check if selectedWallet is Liquid. If yes, find and switch to bitcoin wallet
         if (value == ReceivePaymentNetwork.bitcoin) {
           final wallet = walletBloc.state.wallet!;
           if (wallet.baseWalletType == BaseWalletType.Liquid) {
@@ -299,6 +299,20 @@ class SelectWalletType extends StatelessWidget {
                   w.state.wallet!.sourceFingerprint == wallet.sourceFingerprint,
             );
             context.read<ReceiveCubit>().updateWalletBloc(btcWalletBloc);
+          }
+        }
+        // when Lightning network is selected, check if selectedWallet is Liquid. If yes, find and switch to liquid wallet
+
+        if (value == ReceivePaymentNetwork.lightning) {
+          final wallet = walletBloc.state.wallet!;
+          if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
+            final liquidWalletBloc = walletBlocs.firstWhere(
+              (w) =>
+                  w.state.wallet!.baseWalletType == BaseWalletType.Liquid &&
+                  w.state.wallet!.network == wallet.network &&
+                  w.state.wallet!.sourceFingerprint == wallet.sourceFingerprint,
+            );
+            context.read<ReceiveCubit>().updateWalletBloc(liquidWalletBloc);
           }
         }
         context.read<ReceiveCubit>().updateWalletType(value);

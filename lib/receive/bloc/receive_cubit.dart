@@ -81,14 +81,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       if (wallet.network == BBNetwork.Mainnet) {
         liquidWallet = allWallets?.firstWhere(
           (w) =>
-              w.type == BBWalletType.instant &&
+              w.baseWalletType == BaseWalletType.Liquid &&
               w.network == BBNetwork.Mainnet &&
               w.sourceFingerprint == wallet.sourceFingerprint,
         );
       } else {
         liquidWallet = allWallets?.firstWhere(
           (w) =>
-              w.type == BBWalletType.instant &&
+              w.baseWalletType == BaseWalletType.Liquid &&
               w.network == BBNetwork.Testnet &&
               w.sourceFingerprint == wallet.sourceFingerprint,
         );
@@ -113,14 +113,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       if (wallet.network == BBNetwork.Mainnet) {
         btcWallet = allWallets?.firstWhere(
           (w) =>
-              w.type != BBWalletType.instant &&
+              w.baseWalletType == BaseWalletType.Bitcoin &&
               w.network == BBNetwork.Mainnet &&
               w.sourceFingerprint == wallet.sourceFingerprint,
         );
       } else {
         btcWallet = allWallets?.firstWhere(
           (w) =>
-              w.type != BBWalletType.instant &&
+              w.baseWalletType == BaseWalletType.Bitcoin &&
               w.network == BBNetwork.Testnet &&
               w.sourceFingerprint == wallet.sourceFingerprint,
         );
