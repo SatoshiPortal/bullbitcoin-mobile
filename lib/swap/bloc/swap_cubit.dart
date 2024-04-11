@@ -84,7 +84,7 @@ class SwapCubit extends Cubit<SwapState> {
       mnemonic: seed!.mnemonic,
       index: bloc.state.wallet!.revKeyIndex,
       outAmount: outAmount,
-      network: Chain.Testnet,
+      network: networkCubit.state.testnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
       electrumUrl: networkCubit.state.getNetworkUrl(),
       boltzUrl: boltzTestnet,
       pairHash: fees.btcPairHash,
@@ -152,7 +152,7 @@ class SwapCubit extends Cubit<SwapState> {
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
       invoice: invoice,
-      network: Chain.Testnet,
+      network: networkCubit.state.testnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
       electrumUrl: networkCubit.state.getNetworkUrl(),
     );
     if (err != null) {
