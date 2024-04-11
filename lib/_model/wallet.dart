@@ -34,7 +34,6 @@ class Wallet with _$Wallet {
     int? balance,
     Balance? fullBalance,
     Address? lastGeneratedAddress,
-    Address? lastGeneratedLiqAddress,
     @Default([]) List<Address> myAddressBook,
     List<Address>? externalAddressBook,
     @Default([]) List<UTXO> utxos,
@@ -43,7 +42,6 @@ class Wallet with _$Wallet {
     @Default([]) List<SwapTx> swaps,
     @Default(0) int revKeyIndex,
     @Default(0) int subKeyIndex,
-
     // List<String>? labelTags,
     // List<Bip329Label>? bip329Labels,
     @Default(false) bool backupTested,
@@ -56,16 +54,11 @@ class Wallet with _$Wallet {
 
   factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
 
-  Address? getLastAddress() =>
-      baseWalletType == BaseWalletType.Bitcoin ? lastGeneratedAddress : lastGeneratedLiqAddress;
+  // Address? getLastAddress() =>
+  //     baseWalletType == BaseWalletType.Bitcoin ? lastGeneratedAddress : lastGeneratedLiqAddress;
 
   Wallet setLastAddress(Address address) {
-    switch (baseWalletType) {
-      case BaseWalletType.Bitcoin:
-        return copyWith(lastGeneratedAddress: address);
-      case BaseWalletType.Liquid:
-        return copyWith(lastGeneratedLiqAddress: address);
-    }
+    return copyWith(lastGeneratedAddress: address);
   }
 
   bool hasOngoingSwap(String id) {
@@ -359,6 +352,7 @@ class Wallet with _$Wallet {
       // case BBNetwork.LMainnet:
       //   return null;
     }
+    return null;
   }
 
   bool isSameNetwork(bool isTestnet) {

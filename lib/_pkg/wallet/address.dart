@@ -56,7 +56,7 @@ class WalletAddress implements IWalletAddress {
           final lastIdx = wallet.lastGeneratedAddress?.index ?? 0;
           final (addr, errAddr) = await _bdkAddress.peekIndex(
             bdkWallet!,
-            lastIdx > 0 ? lastIdx + 1 : 0,
+            lastIdx + 1,
           );
           if (errAddr != null) throw errAddr;
           address = addr!;
@@ -64,10 +64,10 @@ class WalletAddress implements IWalletAddress {
         case BaseWalletType.Liquid:
           final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
           if (errWallet != null) throw errWallet;
-          final lastIdx = wallet.lastGeneratedLiqAddress?.index ?? 0;
+          final lastIdx = wallet.lastGeneratedAddress?.index ?? 0;
           final (addr, errAddr) = await _lwkAddress.peekIndex(
             liqWallet!,
-            lastIdx > 0 ? lastIdx + 1 : 0,
+            lastIdx + 1,
           );
           if (errAddr != null) throw errAddr;
           address = addr!;

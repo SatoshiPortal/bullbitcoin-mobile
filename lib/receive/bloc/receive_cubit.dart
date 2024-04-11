@@ -190,6 +190,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         savedInvoiceAmount: 0,
       ),
     );
+
+    // what is the use of this?
     currencyCubit.updateAmountDirect(0);
 
     if (state.walletBloc == null) return;
@@ -231,7 +233,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     emit(
       state.copyWith(
-        defaultAddress: updatedWallet.getLastAddress(),
+        defaultAddress: updatedWallet.lastGeneratedAddress,
         privateLabel: '',
         savedDescription: '',
         description: '',
