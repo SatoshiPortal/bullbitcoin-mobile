@@ -231,7 +231,9 @@ class SwapTx with _$SwapTx {
       isSubmarine: swap.kind == SwapType.Submarine,
       // network: swap.network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
       network: BBNetwork.Testnet,
-      walletType: swap.network == Chain.Testnet ? BaseWalletType.Bitcoin : BaseWalletType.Liquid,
+      walletType: (swap.network == Chain.Bitcoin || swap.network == Chain.BitcoinTestnet)
+          ? BaseWalletType.Bitcoin
+          : BaseWalletType.Liquid,
       redeemScript: swap.redeemScript,
       invoice: swap.invoice,
       outAmount: swap.outAmount,
@@ -292,7 +294,7 @@ class SwapTx with _$SwapTx {
         electrumUrl: tx.electrumUrl.replaceAll('ssl://', ''),
         boltzUrl: tx.boltzUrl,
         kind: SwapType.Reverse,
-        network: Chain.Testnet,
+        network: network == BBNetwork.Testnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
         keys: KeyPair(
           secretKey: sensitive.secretKey,
           publicKey: sensitive.publicKey,
