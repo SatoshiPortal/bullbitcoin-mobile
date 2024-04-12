@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:bb_mobile/_model/bip329_label.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/labels.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
@@ -21,27 +19,26 @@ import 'package:path_provider/path_provider.dart';
 class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   WalletSettingsCubit({
     required Wallet wallet,
-    required this.walletBloc,
-    required this.homeCubit,
-    required this.hiveStorage,
-    // required this.walletRead,
-    required this.walletsStorageRepository,
-    required this.walletSensRepository,
+    required WalletBloc walletBloc,
+    required HomeCubit homeCubit,
+    required WalletsStorageRepository walletsStorageRepository,
+    required WalletSensitiveStorageRepository walletSensRepository,
     required this.fileStorage,
-    required this.secureStorage,
-  }) : super(
+  })  : _walletSensRepository = walletSensRepository,
+        _homeCubit = homeCubit,
+        _walletsStorageRepository = walletsStorageRepository,
+        _walletBloc = walletBloc,
+        super(
           WalletSettingsState(
             wallet: wallet,
           ),
         );
 
-  final WalletBloc walletBloc;
-  final HiveStorage hiveStorage;
-  final SecureStorage secureStorage;
+  final WalletBloc _walletBloc;
   // final WalletSync walletRead;
-  final WalletsStorageRepository walletsStorageRepository;
-  final HomeCubit homeCubit;
-  final WalletSensitiveStorageRepository walletSensRepository;
+  final WalletsStorageRepository _walletsStorageRepository;
+  final HomeCubit _homeCubit;
+  final WalletSensitiveStorageRepository _walletSensRepository;
 
   final FileStorage fileStorage;
 
@@ -66,7 +63,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     //   );
     //   return;
     // }
-    walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
+    _walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
 
     emit(
       state.copyWith(
@@ -93,7 +90,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   // }
 
   void loadBackupClicked() async {
-    final (seed, err) = await walletSensRepository.readSeed(
+    final (seed, err) = await _walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
     );
     if (err != null) {
@@ -239,7 +236,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
     final words = state.testMneString();
     final password = state.testBackupPassword;
-    final (seed, err) = await walletSensRepository.readSeed(
+    final (seed, err) = await _walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
     );
 
@@ -294,7 +291,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     //   return;
     // }
 
-    walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
+    _walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
 
     emit(
       state.copyWith(
@@ -324,7 +321,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
   void backupToSD() async {
     emit(state.copyWith(savingFile: true, errSavingFile: ''));
-    final (seed, err) = await walletSensRepository.readSeed(
+    final (seed, err) = await _walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
     );
 
@@ -372,12 +369,12 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
   void deleteWalletClicked() async {
     emit(state.copyWith(deleting: true, errDeleting: ''));
-    walletBloc.add(KillSync());
+    _walletBloc.add(KillSync());
     await Future.delayed(200.ms);
     final mnemonicFingerprint = state.wallet.getRelatedSeedStorageString();
     final sourceFingerprint = state.wallet.sourceFingerprint;
     final hasPassphrase = state.wallet.hasPassphrase();
-    final err = await walletsStorageRepository.deleteWallet(
+    final err = await _walletsStorageRepository.deleteWallet(
       walletHashId: state.wallet.getWalletStorageString(),
     );
 
@@ -407,7 +404,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
 
     if (hasPassphrase) {
-      final errr = await walletSensRepository.deletePassphrase(
+      final errr = await _walletSensRepository.deletePassphrase(
         passphraseFingerprintIndex: sourceFingerprint,
         seedFingerprintIndex: mnemonicFingerprint,
       );
@@ -421,7 +418,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       }
     }
 
-    final (wallets, wErrs) = await walletsStorageRepository.readAllWallets();
+    final (wallets, wErrs) = await _walletsStorageRepository.readAllWallets();
     if (wErrs != null) {
       emit(
         state.copyWith(
@@ -440,7 +437,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       networkSpecificWallets,
     );
     if (!walletInUse) {
-      final errr = await walletSensRepository.deleteSeed(
+      final errr = await _walletSensRepository.deleteSeed(
         fingerprint: state.wallet.getRelatedSeedStorageString(),
       );
       if (errr != null) {
@@ -452,7 +449,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         );
       }
     }
-    homeCubit.removeWallet(walletBloc);
+    _homeCubit.removeWallet(_walletBloc);
     // homeCubit.removeWalletPostDelete(state.wallet.id);
 
     emit(
@@ -526,7 +523,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         return;
       }
 
-      walletBloc.add(
+      _walletBloc.add(
         UpdateWallet(
           updatedWallet!,
           updateTypes: [

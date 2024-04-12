@@ -12,32 +12,39 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateWalletCubit extends Cubit<CreateWalletState> {
   CreateWalletCubit({
-    required this.walletSensCreate,
-    required this.walletsStorageRepository,
-    required this.walletSensRepository,
-    required this.networkCubit,
-    required this.walletCreate,
-    required this.bdkSensitiveCreate,
-    required this.lwkSensitiveCreate,
+    required WalletSensitiveCreate walletSensCreate,
+    required WalletsStorageRepository walletsStorageRepository,
+    required WalletSensitiveStorageRepository walletSensRepository,
+    required NetworkCubit networkCubit,
+    required WalletCreate walletCreate,
+    required BDKSensitiveCreate bdkSensitiveCreate,
+    required LWKSensitiveCreate lwkSensitiveCreate,
     // bool fromHome = false,
     bool mainWallet = false,
-  }) : super(
+  })  : _lwkSensitiveCreate = lwkSensitiveCreate,
+        _bdkSensitiveCreate = bdkSensitiveCreate,
+        _walletCreate = walletCreate,
+        _networkCubit = networkCubit,
+        _walletSensRepository = walletSensRepository,
+        _walletsStorageRepository = walletsStorageRepository,
+        _walletSensCreate = walletSensCreate,
+        super(
           CreateWalletState(mainWallet: mainWallet),
         ) {
     createMne();
   }
 
-  final WalletSensitiveCreate walletSensCreate;
-  final WalletsStorageRepository walletsStorageRepository;
-  final WalletSensitiveStorageRepository walletSensRepository;
-  final NetworkCubit networkCubit;
-  final WalletCreate walletCreate;
-  final BDKSensitiveCreate bdkSensitiveCreate;
-  final LWKSensitiveCreate lwkSensitiveCreate;
+  final WalletSensitiveCreate _walletSensCreate;
+  final WalletsStorageRepository _walletsStorageRepository;
+  final WalletSensitiveStorageRepository _walletSensRepository;
+  final NetworkCubit _networkCubit;
+  final WalletCreate _walletCreate;
+  final BDKSensitiveCreate _bdkSensitiveCreate;
+  final LWKSensitiveCreate _lwkSensitiveCreate;
 
   void createMne({bool fromHome = false}) async {
     emit(state.copyWith(creatingNmemonic: true));
-    final (mnemonic, err) = await walletSensCreate.createMnemonic();
+    final (mnemonic, err) = await _walletSensCreate.createMnemonic();
     if (err != null) {
       emit(
         state.copyWith(
@@ -101,20 +108,20 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       }
     }
 
-    final network = networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final network = _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
     final mnemonic = state.mnemonic!.join(' ');
-    final (seed, sErr) = await walletSensCreate.mnemonicSeed(mnemonic, network);
+    final (seed, sErr) = await _walletSensCreate.mnemonicSeed(mnemonic, network);
     if (sErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
       return;
     }
-    var (wallet, wErr) = await bdkSensitiveCreate.oneFromBIP39(
+    var (wallet, wErr) = await _bdkSensitiveCreate.oneFromBIP39(
       seed: seed!,
       passphrase: state.passPhrase,
       scriptType: ScriptType.bip84,
       network: network,
       walletType: state.isInstant ? BBWalletType.instant : BBWalletType.secure,
-      walletCreate: walletCreate,
+      walletCreate: _walletCreate,
       // walletType: network,
       // false,
     );
@@ -129,7 +136,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (state.mainWallet) walletLabel = wallet!.creationName();
     final updatedWallet = wallet!.copyWith(name: walletLabel);
 
-    final ssErr = await walletSensRepository.newSeed(seed: seed);
+    final ssErr = await _walletSensRepository.newSeed(seed: seed);
     if (ssErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Seed'));
       return;
@@ -142,7 +149,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
         sourceFingerprint: wallet.sourceFingerprint,
       );
 
-      final ppErr = await walletSensRepository.newPassphrase(
+      final ppErr = await _walletSensRepository.newPassphrase(
         passphrase: passphrase,
         seedFingerprintIndex: seed.getSeedStorageString(),
       );
@@ -158,7 +165,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       }
     }
 
-    final wsErr = await walletsStorageRepository.newWallet(updatedWallet);
+    final wsErr = await _walletsStorageRepository.newWallet(updatedWallet);
     if (wsErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }
@@ -190,13 +197,13 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     required String passPhrase,
     required BBNetwork network,
   }) async {
-    var (wallet, wErr) = await lwkSensitiveCreate.oneLiquidFromBIP39(
+    var (wallet, wErr) = await _lwkSensitiveCreate.oneLiquidFromBIP39(
       seed: seed,
       passphrase: state.passPhrase,
       scriptType: ScriptType.bip84,
       network: network,
       walletType: BBWalletType.instant,
-      walletCreate: walletCreate,
+      walletCreate: _walletCreate,
       // walletType: network,
       // false,
     );
@@ -211,7 +218,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (state.mainWallet) walletLabel = wallet.creationName();
     final updatedWallet = wallet.copyWith(name: walletLabel);
 
-    final wsErr = await walletsStorageRepository.newWallet(updatedWallet);
+    final wsErr = await _walletsStorageRepository.newWallet(updatedWallet);
     if (wsErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Saving Wallet'));
     }

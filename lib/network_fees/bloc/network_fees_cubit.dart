@@ -10,38 +10,42 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   NetworkFeesCubit({
-    required this.hiveStorage,
-    required this.mempoolAPI,
-    required this.networkCubit,
-    this.defaultNetworkFeesCubit,
-  }) : super(const NetworkFeesState()) {
+    required HiveStorage hiveStorage,
+    required MempoolAPI mempoolAPI,
+    required NetworkCubit networkCubit,
+    NetworkFeesCubit? defaultNetworkFeesCubit,
+  })  : _defaultNetworkFeesCubit = defaultNetworkFeesCubit,
+        _networkCubit = networkCubit,
+        _mempoolAPI = mempoolAPI,
+        _hiveStorage = hiveStorage,
+        super(const NetworkFeesState()) {
     init();
   }
 
-  final HiveStorage hiveStorage;
-  final MempoolAPI mempoolAPI;
-  final NetworkCubit networkCubit;
-  final NetworkFeesCubit? defaultNetworkFeesCubit;
+  final HiveStorage _hiveStorage;
+  final MempoolAPI _mempoolAPI;
+  final NetworkCubit _networkCubit;
+  final NetworkFeesCubit? _defaultNetworkFeesCubit;
 
   @override
   void onChange(Change<NetworkFeesState> change) {
     super.onChange(change);
-    if (defaultNetworkFeesCubit != null) return;
+    if (_defaultNetworkFeesCubit != null) return;
 
-    hiveStorage.saveValue(
+    _hiveStorage.saveValue(
       key: StorageKeys.networkFees,
       value: jsonEncode(change.nextState.toJson()),
     );
   }
 
   Future<void> init() async {
-    if (defaultNetworkFeesCubit != null) {
-      emit(defaultNetworkFeesCubit!.state);
+    if (_defaultNetworkFeesCubit != null) {
+      emit(_defaultNetworkFeesCubit.state);
       return;
     }
 
     Future.delayed(const Duration(milliseconds: 50));
-    final (result, err) = await hiveStorage.getValue(StorageKeys.networkFees);
+    final (result, err) = await _hiveStorage.getValue(StorageKeys.networkFees);
     if (err != null) {
       loadFees();
       return;
@@ -55,8 +59,8 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
 
   Future loadFees() async {
     emit(state.copyWith(loadingFees: true, errLoadingFees: ''));
-    final testnet = networkCubit.state.testnet;
-    final (fees, err) = await mempoolAPI.getFees(testnet);
+    final testnet = _networkCubit.state.testnet;
+    final (fees, err) = await _mempoolAPI.getFees(testnet);
     if (err != null) {
       emit(
         state.copyWith(
@@ -110,7 +114,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   void checkMinimumFees() async {
     await Future.delayed(50.ms);
     final minFees = state.feesList!.last;
-    final isTestnet = networkCubit.state.testnet;
+    final isTestnet = _networkCubit.state.testnet;
     int max;
 
     if (!isTestnet)
@@ -143,7 +147,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     if (state.feesList == null) return;
     // final minFees = state.feesList!.last;
     // final max = state.feesList!.first * 2;
-    final isTestnet = networkCubit.state.testnet;
+    final isTestnet = _networkCubit.state.testnet;
     int max;
     if (!isTestnet)
       max = state.feesList!.first * 2;

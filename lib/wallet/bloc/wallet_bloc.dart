@@ -24,19 +24,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
     required String saveDir,
-    required this.walletSync,
-    required this.walletsStorageRepository,
-    required this.walletBalance,
-    required this.walletAddress,
-    required this.networkCubit,
-    required this.swapBloc,
-    required this.networkRepository,
-    required this.walletsRepository,
-    required this.walletTransactionn,
-    required this.walletCreatee,
-    this.fromStorage = true,
+    required WalletSync walletSync,
+    required WalletsStorageRepository walletsStorageRepository,
+    required WalletBalance walletBalance,
+    required WalletAddress walletAddress,
+    required NetworkCubit networkCubit,
+    required WatchTxsBloc swapBloc,
+    required NetworkRepository networkRepository,
+    required WalletsRepository walletsRepository,
+    required WalletTx walletTransactionn,
+    required WalletCreate walletCreatee,
+    bool fromStorage = true,
     Wallet? wallet,
-  }) : super(WalletState(wallet: wallet)) {
+  })  : _fromStorage = fromStorage,
+        _swapBloc = swapBloc,
+        _networkCubit = networkCubit,
+        _walletTransactionn = walletTransactionn,
+        _walletCreate = walletCreatee,
+        _walletAddress = walletAddress,
+        _walletBalance = walletBalance,
+        _walletSync = walletSync,
+        _walletsRepository = walletsRepository,
+        _networkRepository = networkRepository,
+        _walletsStorageRepository = walletsStorageRepository,
+        super(WalletState(wallet: wallet)) {
     on<LoadWallet>(_loadWallet);
     on<SyncWallet>(_syncWallet, transformer: droppable());
     on<KillSync>(_killSync);
@@ -47,31 +58,31 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     add(LoadWallet(saveDir));
   }
 
-  final WalletsStorageRepository walletsStorageRepository;
-  final NetworkRepository networkRepository;
-  final WalletsRepository walletsRepository;
+  final WalletsStorageRepository _walletsStorageRepository;
+  final NetworkRepository _networkRepository;
+  final WalletsRepository _walletsRepository;
 
-  final WalletSync walletSync;
-  final WalletBalance walletBalance;
-  final WalletAddress walletAddress;
-  final WalletCreate walletCreatee;
-  final WalletTx walletTransactionn;
+  final WalletSync _walletSync;
+  final WalletBalance _walletBalance;
+  final WalletAddress _walletAddress;
+  final WalletCreate _walletCreate;
+  final WalletTx _walletTransactionn;
 
-  final NetworkCubit networkCubit;
-  final WatchTxsBloc swapBloc;
+  final NetworkCubit _networkCubit;
+  final WatchTxsBloc _swapBloc;
 
-  final bool fromStorage;
+  final bool _fromStorage;
 
   @override
   Future<void> close() {
-    walletsRepository.removeWallet(state.wallet!);
+    _walletsRepository.removeWallet(state.wallet!);
     return super.close();
   }
 
   void _loadWallet(LoadWallet event, Emitter<WalletState> emit) async {
     emit(state.copyWith(loadingWallet: true, errLoadingWallet: ''));
 
-    final (wallet, err) = await walletCreatee.loadPublicWallet(
+    final (wallet, err) = await _walletCreate.loadPublicWallet(
       saveDir: event.saveDir,
       wallet: state.wallet,
     );
@@ -93,7 +104,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    add(UpdateWallet(wallet, saveToStorage: fromStorage, updateTypes: [UpdateWalletTypes.load]));
+    add(UpdateWallet(wallet, saveToStorage: _fromStorage, updateTypes: [UpdateWalletTypes.load]));
     await Future.delayed(50.ms);
     add(GetFirstAddress());
     await Future.delayed(500.ms);
@@ -101,7 +112,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }
 
   FutureOr<void> _killSync(KillSync event, Emitter<WalletState> emit) {
-    walletSync.cancelSync();
+    _walletSync.cancelSync();
     emit(state.copyWith(syncing: false));
   }
 
@@ -115,11 +126,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    final errNetwork = networkRepository.checkNetworks();
+    final errNetwork = _networkRepository.checkNetworks();
     if (errNetwork != null) {
-      await networkCubit.loadNetworks();
+      await _networkCubit.loadNetworks();
       await Future.delayed(const Duration(milliseconds: 300));
-      final errNetwork2 = networkRepository.checkNetworks();
+      final errNetwork2 = _networkRepository.checkNetworks();
       if (errNetwork2 != null) {
         emit(state.copyWith(syncing: false));
         return;
@@ -127,11 +138,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
 
     locator<Logger>().log('Start Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''));
-    final err = await walletSync.syncWallet(state.wallet!);
+    final err = await _walletSync.syncWallet(state.wallet!);
     locator<Logger>().log('End Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''));
     if (err != null) {
       if (err.message.toLowerCase().contains('panic') && state.syncErrCount < 5) {
-        await networkCubit.loadNetworks();
+        await _networkCubit.loadNetworks();
         await Future.delayed(const Duration(milliseconds: 300));
         emit(state.copyWith(syncErrCount: state.syncErrCount + 1));
         add(SyncWallet());
@@ -151,7 +162,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(state.copyWith(syncing: false, syncErrCount: 0));
     await Future.delayed(100.ms);
 
-    if (!fromStorage) add(GetFirstAddress());
+    if (!_fromStorage) add(GetFirstAddress());
     add(GetBalance());
 
     // emit(state.copyWith(syncing: false));
@@ -162,7 +173,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     emit(state.copyWith(loadingBalance: true, errLoadingBalance: ''));
 
-    final (w, err) = await walletBalance.getBalance(state.wallet!);
+    final (w, err) = await _walletBalance.getBalance(state.wallet!);
     if (err != null) {
       emit(
         state.copyWith(
@@ -175,7 +186,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     final (wallet, _) = w!;
 
-    add(UpdateWallet(wallet, saveToStorage: fromStorage, updateTypes: [UpdateWalletTypes.balance]));
+    add(
+      UpdateWallet(
+        wallet,
+        saveToStorage: _fromStorage,
+        updateTypes: [UpdateWalletTypes.balance],
+      ),
+    );
 
     emit(
       state.copyWith(
@@ -191,7 +208,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     emit(state.copyWith(loadingTxs: true, errLoadingWallet: ''));
 
-    final (wallet, errTxs) = await walletTransactionn.getTransactions(state.wallet!);
+    final (wallet, errTxs) = await _walletTransactionn.getTransactions(state.wallet!);
 
     if (errTxs != null) {
       emit(
@@ -206,7 +223,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     add(
       UpdateWallet(
         wallet!,
-        saveToStorage: fromStorage,
+        saveToStorage: _fromStorage,
         updateTypes: [
           UpdateWalletTypes.addresses,
           UpdateWalletTypes.transactions,
@@ -222,13 +239,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     await Future.delayed(1000.ms);
 
-    swapBloc.add(WatchWalletTxs(walletId: state.wallet!.id));
+    _swapBloc.add(WatchWalletTxs(walletId: state.wallet!.id));
   }
 
   void _getFirstAddress(GetFirstAddress event, Emitter<WalletState> emit) async {
     if (state.wallet == null) return;
 
-    final (address, err) = await walletAddress.peekIndex(wallet: state.wallet!, idx: 0);
+    final (address, err) = await _walletAddress.peekIndex(wallet: state.wallet!, idx: 0);
     if (err != null) {
       emit(state.copyWith(errSyncingAddresses: err.toString()));
       return;
@@ -253,7 +270,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
 
     if (event.updateTypes.contains(UpdateWalletTypes.load)) {
-      final err = await walletsStorageRepository.updateWallet(
+      final err = await _walletsStorageRepository.updateWallet(
         event.wallet,
       );
       if (err != null) locator<Logger>().log(err.toString());
@@ -263,7 +280,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
 
     final eventWallet = event.wallet;
-    var (storageWallet, errr) = await walletsStorageRepository.readWallet(
+    var (storageWallet, errr) = await _walletsStorageRepository.readWallet(
       walletHashId: state.wallet!.getWalletStorageString(),
     );
     if (errr != null) locator<Logger>().log(errr.toString());
@@ -338,7 +355,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
             );
       }
 
-    final err = await walletsStorageRepository.updateWallet(
+    final err = await _walletsStorageRepository.updateWallet(
       storageWallet!,
     );
     if (err != null) locator<Logger>().log(err.toString(), printToConsole: true);

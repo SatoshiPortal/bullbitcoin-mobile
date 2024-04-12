@@ -21,45 +21,51 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState> {
   SendCubit({
-    required this.barcode,
+    required Barcode barcode,
     WalletBloc? walletBloc,
-    required this.settingsCubit,
-    required this.walletTx,
-    required this.fileStorage,
-    required this.networkCubit,
+    required SettingsCubit settingsCubit,
+    required WalletTx walletTx,
+    required FileStorage fileStorage,
+    required NetworkCubit networkCubit,
     required this.networkFeesCubit,
     required this.currencyCubit,
     required SwapCubit swapCubit,
     required bool openScanner,
-    required this.homeCubit,
-  }) : super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
+    required HomeCubit homeCubit,
+  })  : _settingsCubit = settingsCubit,
+        _homeCubit = homeCubit,
+        _networkCubit = networkCubit,
+        _walletTx = walletTx,
+        _fileStorage = fileStorage,
+        _barcode = barcode,
+        super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
-        disableRBF: !settingsCubit.state.defaultRBF,
+        disableRBF: !_settingsCubit.state.defaultRBF,
         selectedWalletBloc: walletBloc,
       ),
     );
 
-    currencyCubitSub = currencyCubit.stream.listen((_) {
+    _currencyCubitSub = currencyCubit.stream.listen((_) {
       _updateShowSend();
     });
 
-    swapCubitSub = state.swapCubit.stream.listen(swapCubitStateChanged);
+    _swapCubitSub = state.swapCubit.stream.listen(swapCubitStateChanged);
 
     if (openScanner) scanAddress();
   }
 
-  final Barcode barcode;
-  final FileStorage fileStorage;
-  final WalletTx walletTx;
+  final Barcode _barcode;
+  final FileStorage _fileStorage;
+  final WalletTx _walletTx;
 
-  final NetworkCubit networkCubit;
+  final NetworkCubit _networkCubit;
   final NetworkFeesCubit networkFeesCubit;
   final CurrencyCubit currencyCubit;
-  final HomeCubit homeCubit;
-  final SettingsCubit settingsCubit;
-  late StreamSubscription currencyCubitSub;
-  late StreamSubscription swapCubitSub;
+  final HomeCubit _homeCubit;
+  final SettingsCubit _settingsCubit;
+  late StreamSubscription _currencyCubitSub;
+  late StreamSubscription _swapCubitSub;
 
   void watchCurrency() async {}
 
@@ -98,9 +104,9 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    final walletBloc = homeCubit.state.firstWalletWithEnoughBalance(
+    final walletBloc = _homeCubit.state.firstWalletWithEnoughBalance(
       amount,
-      networkCubit.state.getBBNetwork(),
+      _networkCubit.state.getBBNetwork(),
     );
     if (walletBloc == null) {
       emit(state.copyWith(showSendButton: false, errSending: 'No wallet with enough balance'));
@@ -173,7 +179,7 @@ class SendCubit extends Cubit<SendState> {
 
   void scanAddress() async {
     emit(state.copyWith(scanningAddress: true));
-    final (address, err) = await barcode.scan();
+    final (address, err) = await _barcode.scan();
     if (err != null) {
       emit(
         state.copyWith(
@@ -250,7 +256,7 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    final errSave = await fileStorage.savePSBT(
+    final errSave = await _fileStorage.savePSBT(
       psbt: psbt,
       txid: txid,
     );
@@ -278,7 +284,7 @@ class SendCubit extends Cubit<SendState> {
         amount: currencyCubit.state.amount,
       );
       await Future.delayed(const Duration(milliseconds: 500));
-      final walletBloc = homeCubit.state.getWalletBlocById(walletId);
+      final walletBloc = _homeCubit.state.getWalletBlocById(walletId);
       emit(state.copyWith(selectedWalletBloc: walletBloc));
       await Future.delayed(const Duration(milliseconds: 50));
 
@@ -303,7 +309,7 @@ class SendCubit extends Cubit<SendState> {
 
     final localWallet = state.selectedWalletBloc!.state.wallet;
 
-    final (buildResp, err) = await walletTx.buildTx(
+    final (buildResp, err) = await _walletTx.buildTx(
       wallet: localWallet!,
       isManualSend: state.selectedUtxos.isNotEmpty,
       address: address!,
@@ -355,7 +361,7 @@ class SendCubit extends Cubit<SendState> {
     if (state.selectedWalletBloc == null) return;
     emit(state.copyWith(sending: true, errSending: ''));
 
-    final (wtxid, err) = await walletTx.broadcastTxWithWallet(
+    final (wtxid, err) = await _walletTx.broadcastTxWithWallet(
       wallet: state.selectedWalletBloc!.state.wallet!,
       address: state.address,
       note: state.note,
@@ -371,7 +377,7 @@ class SendCubit extends Cubit<SendState> {
     final isLn = state.isLnInvoice();
 
     if (isLn) {
-      final (updatedWalletWithTxid, err2) = await walletTx.addSwapTxToWallet(
+      final (updatedWalletWithTxid, err2) = await _walletTx.addSwapTxToWallet(
         wallet: wallet,
         swapTx: state.swapCubit.state.swapTx!.copyWith(txid: txid),
       );
@@ -409,8 +415,8 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void dispose() {
-    currencyCubitSub.cancel();
-    swapCubitSub.cancel();
+    _currencyCubitSub.cancel();
+    _swapCubitSub.cancel();
     super.close();
   }
 }

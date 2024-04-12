@@ -3,18 +3,12 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
-import 'package:bb_mobile/_pkg/wallet/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
-import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -24,7 +18,6 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
@@ -63,23 +56,15 @@ class TxPage extends StatelessWidget {
     final txCubit = TransactionCubit(
       tx: tx,
       walletBloc: walletBloc,
-      mempoolAPI: locator<MempoolAPI>(),
       walletUpdate: locator<WalletUpdate>(),
-      walletCreate: locator<WalletCreate>(),
-      walletSensCreate: locator<WalletSensitiveCreate>(),
-      hiveStorage: locator<HiveStorage>(),
-      secureStorage: locator<SecureStorage>(),
-      walletSync: locator<WalletSync>(),
+
       walletTx: locator<WalletTx>(),
       bdkTx: locator<BDKTransactions>(),
       // walletSensTx: locator<WalletSensitiveTx>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       walletAddress: locator<WalletAddress>(),
-      settingsCubit: locator<SettingsCubit>(),
-      // networkCubit: locator<NetworkCubit>(),
-      walletNetwork: locator<WalletNetwork>(),
-      networkRepository: locator<NetworkRepository>(),
+
       walletsRepository: locator<WalletsRepository>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
 

@@ -5,15 +5,8 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -54,16 +47,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 ///   - Assign txid to swapTx and and add swap to claimedSwapTxs and update wallet
 class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   WatchTxsBloc({
-    required this.hiveStorage,
-    required this.secureStorage,
-    required this.walletAddress,
-    required this.walletsStorageRepository,
-    required this.walletSensitiveRepository,
-    required this.settingsCubit,
-    required this.networkCubit,
-    required this.swapBoltz,
-    required this.walletTx,
-  }) : super(const WatchTxsState()) {
+    required SwapBoltz swapBoltz,
+    required WalletTx walletTx,
+  })  : _walletTx = walletTx,
+        _swapBoltz = swapBoltz,
+        super(const WatchTxsState()) {
     on<InitializeSwapWatcher>(_initializeSwapWatcher);
     on<WatchSwapStatus>(_onWatchSwapStatus);
     on<ProcessSwapTx>(_onProcessSwapTx, transformer: sequential());
@@ -73,21 +61,14 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     add(InitializeSwapWatcher());
   }
 
-  final SettingsCubit settingsCubit;
-  final WalletAddress walletAddress;
-  final HiveStorage hiveStorage;
-  final SecureStorage secureStorage;
-  final WalletsStorageRepository walletsStorageRepository;
-  final WalletSensitiveStorageRepository walletSensitiveRepository;
-  final NetworkCubit networkCubit;
-  final SwapBoltz swapBoltz;
-  final WalletTx walletTx;
+  final SwapBoltz _swapBoltz;
+  final WalletTx _walletTx;
   late HomeCubit homeCubit;
 
   void _initializeSwapWatcher(InitializeSwapWatcher event, Emitter<WatchTxsState> emit) async {
     if (state.boltzWatcher != null) return;
 
-    final (boltzWatcher, err) = await swapBoltz.initializeBoltzApi();
+    final (boltzWatcher, err) = await _swapBoltz.initializeBoltzApi();
     if (err != null) {
       emit(state.copyWith(errWatchingInvoice: err.message));
       return;
@@ -136,7 +117,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       if (exists) continue;
       emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
     }
-    final err = await swapBoltz.addSwapSubs(
+    final err = await _swapBoltz.addSwapSubs(
       api: state.boltzWatcher!,
       swapIds: event.swapTxs,
       onUpdate: (id, status) {
@@ -209,7 +190,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     DeleteSensitiveSwapData event,
     Emitter<WatchTxsState> emit,
   ) async {
-    final _ = await swapBoltz.deleteSwapSensitive(id: event.swapId);
+    final _ = await _swapBoltz.deleteSwapSensitive(id: event.swapId);
   }
 
   Future __mergeSwap(
@@ -218,7 +199,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     WalletBloc walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
-    final (walletAndTxs, err) = await walletTx.mergeSwapTxIntoTx(
+    final (walletAndTxs, err) = await _walletTx.mergeSwapTxIntoTx(
       wallet: wallet,
       swapTx: swapTx,
     );
@@ -248,7 +229,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     WalletBloc walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
-    final (resp, err) = walletTx.updateSwapTxs(
+    final (resp, err) = _walletTx.updateSwapTxs(
       wallet: wallet,
       swapTx: swapTx,
     );
@@ -302,7 +283,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return null;
     }
 
-    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
+    final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
       outAmount: swapTx.outAmount,
     );
@@ -334,7 +315,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           random.nextInt(10000); // This will generate a random number between 0 and 9999
 
       print('ATTEMPT CLAIMING: $randomNumber AT: $formattedDate');
-      final (claimTxid, err) = await swapBoltz.claimSwap(
+      final (claimTxid, err) = await _swapBoltz.claimSwap(
         tx: swapTx,
         outAddress: address,
         absFee: claimFeesEstimate,
@@ -347,7 +328,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       }
       txid = claimTxid!;
     } else {
-      final (refundTxid, err) = await swapBoltz.refundSwap(
+      final (refundTxid, err) = await _swapBoltz.refundSwap(
         tx: swapTx,
         outAddress: address,
         absFee: claimFeesEstimate,
@@ -378,7 +359,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    final (resp, err1) = walletTx.updateSwapTxs(swapTx: updatedSwap, wallet: wallet);
+    final (resp, err1) = _walletTx.updateSwapTxs(swapTx: updatedSwap, wallet: wallet);
     if (err1 != null) {
       emit(state.copyWith(errClaimingSwap: err1.toString()));
       return;

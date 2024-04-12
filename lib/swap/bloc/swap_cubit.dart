@@ -14,26 +14,32 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SwapCubit extends Cubit<SwapState> {
   SwapCubit({
-    required this.walletSensitiveRepository,
+    required WalletSensitiveStorageRepository walletSensitiveRepository,
     // required this.settingsCubit,
-    required this.networkCubit,
-    required this.swapBoltz,
-    required this.walletTx,
-    required this.watchTxsBloc,
-    required this.homeCubit,
-  }) : super(const SwapState()) {
+    required NetworkCubit networkCubit,
+    required SwapBoltz swapBoltz,
+    required WalletTx walletTx,
+    required WatchTxsBloc watchTxsBloc,
+    required HomeCubit homeCubit,
+  })  : _homeCubit = homeCubit,
+        _watchTxsBloc = watchTxsBloc,
+        _walletTx = walletTx,
+        _swapBoltz = swapBoltz,
+        _networkCubit = networkCubit,
+        _walletSensitiveRepository = walletSensitiveRepository,
+        super(const SwapState()) {
     // clearSwapTx();
   }
 
-  final WalletSensitiveStorageRepository walletSensitiveRepository;
-  final NetworkCubit networkCubit;
-  final SwapBoltz swapBoltz;
-  final WalletTx walletTx;
-  final WatchTxsBloc watchTxsBloc;
-  final HomeCubit homeCubit;
+  final WalletSensitiveStorageRepository _walletSensitiveRepository;
+  final NetworkCubit _networkCubit;
+  final SwapBoltz _swapBoltz;
+  final WalletTx _walletTx;
+  final WatchTxsBloc _watchTxsBloc;
+  final HomeCubit _homeCubit;
 
   void decodeInvoice(String invoice) async {
-    final (inv, err) = await swapBoltz.decodeInvoice(invoice: invoice);
+    final (inv, err) = await _swapBoltz.decodeInvoice(invoice: invoice);
     if (err != null) {
       emit(state.copyWith(errCreatingSwapInv: err.toString(), generatingSwapInv: false));
       return;
@@ -46,13 +52,13 @@ class SwapCubit extends Cubit<SwapState> {
     required int amount,
     String? label,
   }) async {
-    if (!networkCubit.state.testnet) return;
+    if (!_networkCubit.state.testnet) return;
 
-    final bloc = homeCubit.state.getWalletBlocById(walletId);
+    final bloc = _homeCubit.state.getWalletBlocById(walletId);
     if (bloc == null) return;
 
     final outAmount = amount;
-    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
+    final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
       outAmount: outAmount,
     );
@@ -72,7 +78,7 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
-    final (seed, errReadingSeed) = await walletSensitiveRepository.readSeed(
+    final (seed, errReadingSeed) = await _walletSensitiveRepository.readSeed(
       fingerprintIndex: bloc.state.wallet!.getRelatedSeedStorageString(),
     );
     if (errReadingSeed != null) {
@@ -80,12 +86,12 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    final (swap, errCreatingInv) = await swapBoltz.receive(
+    final (swap, errCreatingInv) = await _swapBoltz.receive(
       mnemonic: seed!.mnemonic,
       index: bloc.state.wallet!.revKeyIndex,
       outAmount: outAmount,
-      network: networkCubit.state.testnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
-      electrumUrl: networkCubit.state.getNetworkUrl(),
+      network: _networkCubit.state.testnet ? Chain.Testnet : Chain.LiquidTestnet,
+      electrumUrl: _networkCubit.state.getNetworkUrl(),
       boltzUrl: boltzTestnet,
       pairHash: fees.btcPairHash,
     );
@@ -122,13 +128,13 @@ class SwapCubit extends Cubit<SwapState> {
     String? label,
   }) async {
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
-    final bloc = homeCubit.state.getWalletBlocById(walletId);
+    final bloc = _homeCubit.state.getWalletBlocById(walletId);
     if (bloc == null) return;
 
     final wallet = bloc.state.wallet;
     if (wallet == null) return;
 
-    final (fees, errFees) = await swapBoltz.getFeesAndLimits(
+    final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
       outAmount: amount,
     );
@@ -138,7 +144,7 @@ class SwapCubit extends Cubit<SwapState> {
     }
     // check if decoded invoice amount is within limits
 
-    final (seed, errReadingSeed) = await walletSensitiveRepository.readSeed(
+    final (seed, errReadingSeed) = await _walletSensitiveRepository.readSeed(
       fingerprintIndex: wallet.getRelatedSeedStorageString(),
     );
     if (errReadingSeed != null) {
@@ -146,14 +152,14 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    final (swap, err) = await swapBoltz.send(
+    final (swap, err) = await _swapBoltz.send(
       boltzUrl: boltzTestnet,
       pairHash: fees!.btcPairHash,
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
       invoice: invoice,
-      network: networkCubit.state.testnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
-      electrumUrl: networkCubit.state.getNetworkUrl(),
+      network: _networkCubit.state.testnet ? Chain.Testnet : Chain.LiquidTestnet,
+      electrumUrl: _networkCubit.state.getNetworkUrl(),
     );
     if (err != null) {
       emit(state.copyWith(errCreatingSwapInv: err.message, generatingSwapInv: false));
@@ -186,13 +192,13 @@ class SwapCubit extends Cubit<SwapState> {
     required SwapTx swapTx,
     String? label,
   }) async {
-    final walletBloc = homeCubit.state.getWalletBlocById(walletId);
+    final walletBloc = _homeCubit.state.getWalletBlocById(walletId);
     if (walletBloc == null) return;
 
     final wallet = walletBloc.state.wallet;
     if (wallet == null) return;
 
-    final (updatedWallet, err) = await walletTx.addSwapTxToWallet(
+    final (updatedWallet, err) = await _walletTx.addSwapTxToWallet(
       wallet: wallet.copyWith(
         revKeyIndex: !swapTx.isSubmarine ? wallet.revKeyIndex + 1 : wallet.revKeyIndex,
         subKeyIndex: swapTx.isSubmarine ? wallet.subKeyIndex + 1 : wallet.subKeyIndex,
@@ -211,10 +217,10 @@ class SwapCubit extends Cubit<SwapState> {
       ),
     );
 
-    homeCubit.updateSelectedWallet(walletBloc);
+    _homeCubit.updateSelectedWallet(walletBloc);
     await Future.delayed(const Duration(seconds: 5));
 
-    watchTxsBloc.add(WatchWalletTxs(walletId: walletId));
+    _watchTxsBloc.add(WatchWalletTxs(walletId: walletId));
   }
 
   void clearSwapTx() => emit(state.copyWith(swapTx: null));

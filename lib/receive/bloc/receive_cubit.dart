@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -14,21 +13,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ReceiveCubit extends Cubit<ReceiveState> {
   ReceiveCubit({
     WalletBloc? walletBloc,
-    required this.walletAddress,
-    required this.walletsStorageRepository,
-    required this.walletSensitiveRepository,
-    required this.networkCubit,
+    required WalletAddress walletAddress,
+    required WalletsStorageRepository walletsStorageRepository,
+    required NetworkCubit networkCubit,
     required this.currencyCubit,
     required SwapCubit swapBloc,
-  }) : super(ReceiveState(walletBloc: walletBloc, swapBloc: swapBloc)) {
+  })  : _networkCubit = networkCubit,
+        _walletsStorageRepository = walletsStorageRepository,
+        _walletAddress = walletAddress,
+        super(ReceiveState(walletBloc: walletBloc, swapBloc: swapBloc)) {
     loadAddress();
   }
 
-  final WalletAddress walletAddress;
-  final WalletsStorageRepository walletsStorageRepository;
-  final WalletSensitiveStorageRepository walletSensitiveRepository;
+  final WalletAddress _walletAddress;
+  final WalletsStorageRepository _walletsStorageRepository;
 
-  final NetworkCubit networkCubit;
+  final NetworkCubit _networkCubit;
   final CurrencyCubit currencyCubit;
 
   void updateWalletBloc(WalletBloc walletBloc) {
@@ -48,7 +48,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void updateWalletType(ReceivePaymentNetwork paymentNetwork) {
     emit(state.copyWith(paymentNetwork: paymentNetwork));
-    if (!networkCubit.state.testnet) return;
+    if (!_networkCubit.state.testnet) return;
 
     if (paymentNetwork == ReceivePaymentNetwork.lightning) {
       state.swapBloc.clearSwapTx();
@@ -75,7 +75,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         ),
       );
 
-      final (allWallets, _) = await walletsStorageRepository.readAllWallets();
+      final (allWallets, _) = await _walletsStorageRepository.readAllWallets();
 
       final Wallet? liquidWallet;
       if (wallet.network == BBNetwork.Mainnet) {
@@ -107,7 +107,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         ),
       );
 
-      final (allWallets, errAllWallets) = await walletsStorageRepository.readAllWallets();
+      final (allWallets, errAllWallets) = await _walletsStorageRepository.readAllWallets();
 
       Wallet? btcWallet;
       if (wallet.network == BBNetwork.Mainnet) {
@@ -196,7 +196,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     if (state.walletBloc == null) return;
 
-    final (updatedWallet, err) = await walletAddress.newAddress(
+    final (updatedWallet, err) = await _walletAddress.newAddress(
       state.walletBloc!.state.wallet!,
     );
     if (err != null) {
@@ -227,7 +227,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
               'WARNING! Electrum stop gap has been increased to $addressGap. This will affect your wallet sync time.\nGoto WalletSettings->Addresses to see all generated addresses.',
         ),
       );
-      networkCubit.updateStopGapAndSave(addressGap + 1);
+      _networkCubit.updateStopGapAndSave(addressGap + 1);
       Future.delayed(const Duration(milliseconds: 100));
     }
 
@@ -260,7 +260,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
 
-    final (a, w) = await walletAddress.addAddressToWallet(
+    final (a, w) = await _walletAddress.addAddressToWallet(
       address: (state.defaultAddress!.index, state.defaultAddress!.address),
       wallet: state.walletBloc!.state.wallet!,
       label: state.privateLabel,
@@ -302,7 +302,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
 
-    final (_, w) = await walletAddress.addAddressToWallet(
+    final (_, w) = await _walletAddress.addAddressToWallet(
       address: (state.defaultAddress!.index, state.defaultAddress!.address),
       wallet: state.walletBloc!.state.wallet!,
       label: state.description,

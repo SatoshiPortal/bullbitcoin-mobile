@@ -1,10 +1,7 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -40,11 +37,7 @@ class AddressPopUp extends StatelessWidget {
     final addressCubit = AddressCubit(
       address: address,
       walletAddress: locator<WalletAddress>(),
-      hiveStorage: locator<HiveStorage>(),
-      walletRead: locator<WalletSync>(),
-      walletSettingsCubit: walletSettings,
       walletBloc: wallet,
-      walletsStorageRepository: locator<WalletsStorageRepository>(),
     );
 
     return showBBBottomSheet(

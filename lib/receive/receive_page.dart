@@ -61,7 +61,6 @@ class _ReceivePageState extends State<ReceivePage> {
       networkCubit: locator<NetworkCubit>(),
       // swapBoltz: locator<SwapBoltz>(),
       swapBloc: swapBloc,
-      walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       currencyCubit: CurrencyCubit(
         hiveStorage: locator<HiveStorage>(),
         bbAPI: locator<BullBitcoinAPI>(),
@@ -88,7 +87,7 @@ class _ReceivePageState extends State<ReceivePage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _cubit),
-        BlocProvider.value(value: _cubit.networkCubit),
+        BlocProvider.value(value: locator<NetworkCubit>()),
         BlocProvider.value(value: _cubit.currencyCubit),
         BlocProvider.value(value: _cubit.state.swapBloc),
         BlocProvider.value(value: home),

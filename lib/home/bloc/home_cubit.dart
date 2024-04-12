@@ -9,15 +9,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
-    required this.walletsStorageRepository,
-  }) : super(const HomeState());
+    required WalletsStorageRepository walletsStorageRepository,
+  })  : _walletsStorageRepository = walletsStorageRepository,
+        super(const HomeState());
 
-  final WalletsStorageRepository walletsStorageRepository;
+  final WalletsStorageRepository _walletsStorageRepository;
 
   Future<void> getWalletsFromStorage() async {
     emit(state.copyWith(loadingWallets: true));
 
-    final (wallets, err) = await walletsStorageRepository.readAllWallets();
+    final (wallets, err) = await _walletsStorageRepository.readAllWallets();
     if (err != null && err.toString() != 'No Key') {
       emit(state.copyWith(loadingWallets: false));
       return;

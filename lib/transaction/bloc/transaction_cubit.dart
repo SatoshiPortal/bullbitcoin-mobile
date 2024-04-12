@@ -2,24 +2,15 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_pkg/mempool_api.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
-import 'package:bb_mobile/_pkg/wallet/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
-import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -29,27 +20,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class TransactionCubit extends Cubit<TransactionState> {
   TransactionCubit({
     required Transaction tx,
-    required this.walletBloc,
-    required this.hiveStorage,
-    required this.secureStorage,
-    required this.walletTx,
+    required WalletBloc walletBloc,
+    required WalletTx walletTx,
     // required this.walletSensTx,
-    required this.bdkTx,
-    required this.walletsStorageRepository,
-    required this.walletSensRepository,
-    required this.walletAddress,
-    required this.walletSync,
-    required this.walletCreate,
-    required this.walletSensCreate,
-    required this.walletUpdate,
-    required this.mempoolAPI,
-    required this.settingsCubit,
-    required this.walletNetwork,
-    required this.networkFeesCubit,
-    required this.networkRepository,
-    required this.walletsRepository,
-    required this.bdkSensitiveCreate,
-  }) : super(TransactionState(tx: tx)) {
+    required BDKTransactions bdkTx,
+    required WalletsStorageRepository walletsStorageRepository,
+    required WalletSensitiveStorageRepository walletSensRepository,
+    required WalletAddress walletAddress,
+    required WalletUpdate walletUpdate,
+    required NetworkFeesCubit networkFeesCubit,
+    required WalletsRepository walletsRepository,
+    required BDKSensitiveCreate bdkSensitiveCreate,
+  })  : _bdkTx = bdkTx,
+        _bdkSensitiveCreate = bdkSensitiveCreate,
+        _networkFeesCubit = networkFeesCubit,
+        _walletAddress = walletAddress,
+        _walletSensRepository = walletSensRepository,
+        _walletsRepository = walletsRepository,
+        _walletsStorageRepository = walletsStorageRepository,
+        _walletUpdate = walletUpdate,
+        _walletTx = walletTx,
+        _walletBloc = walletBloc,
+        super(TransactionState(tx: tx)) {
     if (tx.isReceived())
       loadReceiveLabel();
     else
@@ -58,31 +50,21 @@ class TransactionCubit extends Cubit<TransactionState> {
     loadTx();
   }
 
-  final WalletBloc walletBloc;
-  final MempoolAPI mempoolAPI;
-  final HiveStorage hiveStorage;
-  final SecureStorage secureStorage;
-  final WalletTx walletTx;
+  final WalletBloc _walletBloc;
+
+  final WalletTx _walletTx;
   // final WalletSensitiveTx walletSensTx;
-  final WalletUpdate walletUpdate;
+  final WalletUpdate _walletUpdate;
 
-  final WalletsStorageRepository walletsStorageRepository;
-  final WalletsRepository walletsRepository;
+  final WalletsStorageRepository _walletsStorageRepository;
+  final WalletsRepository _walletsRepository;
 
-  final WalletSensitiveStorageRepository walletSensRepository;
-  final WalletAddress walletAddress;
+  final WalletSensitiveStorageRepository _walletSensRepository;
+  final WalletAddress _walletAddress;
 
-  final WalletSync walletSync;
-  final WalletCreate walletCreate;
-
-  final WalletSensitiveCreate walletSensCreate;
-  final SettingsCubit settingsCubit;
-  final WalletNetwork walletNetwork;
-  final NetworkFeesCubit networkFeesCubit;
-  final BDKSensitiveCreate bdkSensitiveCreate;
-  final BDKTransactions bdkTx;
-
-  final NetworkRepository networkRepository;
+  final NetworkFeesCubit _networkFeesCubit;
+  final BDKSensitiveCreate _bdkSensitiveCreate;
+  final BDKTransactions _bdkTx;
 
   void loadTx() async {
     emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));
@@ -133,7 +115,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     final tx = state.tx;
     final txid = tx.txid;
 
-    final address = walletBloc.state.wallet!.getAddressFromAddresses(txid);
+    final address = _walletBloc.state.wallet!.getAddressFromAddresses(txid);
 
     if (address == null || address.label == null) return;
 
@@ -175,20 +157,20 @@ class TransactionCubit extends Cubit<TransactionState> {
           .toList(),
     );
 
-    final updateWallet = walletBloc.state.wallet!.copyWith(
+    final updateWallet = _walletBloc.state.wallet!.copyWith(
       transactions: [
-        for (final t in walletBloc.state.wallet?.transactions ?? <Transaction>[])
+        for (final t in _walletBloc.state.wallet?.transactions ?? <Transaction>[])
           if (t.txid == tx.txid) tx else t,
       ],
     );
 
-    final (w, err) = await walletUpdate.updateAddressesFromTxs(updateWallet);
+    final (w, err) = await _walletUpdate.updateAddressesFromTxs(updateWallet);
     if (err != null) {
       emit(state.copyWith(errSavingLabel: err.toString(), savingLabel: false));
       return;
     }
 
-    walletBloc.add(
+    _walletBloc.add(
       UpdateWallet(
         w!,
         updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.addresses],
@@ -196,7 +178,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     );
 
     await Future.delayed(const Duration(seconds: 1));
-    walletBloc.add(ListTransactions());
+    _walletBloc.add(ListTransactions());
 
     emit(
       state.copyWith(
@@ -219,12 +201,12 @@ class TransactionCubit extends Cubit<TransactionState> {
   void buildTx() async {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
 
-    final isManualFees = networkFeesCubit.state.feeOption() == 4;
+    final isManualFees = _networkFeesCubit.state.feeOption() == 4;
     int fees = 0;
     if (!isManualFees)
-      fees = networkFeesCubit.state.feesList?[networkFeesCubit.state.feeOption()] ?? 0;
+      fees = _networkFeesCubit.state.feesList?[_networkFeesCubit.state.feeOption()] ?? 0;
     else
-      fees = networkFeesCubit.state.fee();
+      fees = _networkFeesCubit.state.fee();
 
     if (fees == 0) {
       emit(
@@ -236,16 +218,16 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
-    final (wallet, err) = await walletsStorageRepository.readWallet(
-      walletHashId: walletBloc.state.wallet!.getWalletStorageString(),
+    final (wallet, err) = await _walletsStorageRepository.readWallet(
+      walletHashId: _walletBloc.state.wallet!.getWalletStorageString(),
     );
     if (err != null) {
       emit(state.copyWith(errBuildingTx: err.toString(), buildingTx: false));
       return;
     }
 
-    final (seed, sErr) = await walletSensRepository.readSeed(
-      fingerprintIndex: walletBloc.state.wallet!.getRelatedSeedStorageString(),
+    final (seed, sErr) = await _walletSensRepository.readSeed(
+      fingerprintIndex: _walletBloc.state.wallet!.getRelatedSeedStorageString(),
     );
 
     if (sErr != null) {
@@ -253,19 +235,19 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
-    final (bdkSignerWallet, errr) = await bdkSensitiveCreate.loadPrivateBdkWallet(wallet!, seed!);
+    final (bdkSignerWallet, errr) = await _bdkSensitiveCreate.loadPrivateBdkWallet(wallet!, seed!);
     if (errr != null) {
       emit(state.copyWith(errBuildingTx: errr.toString(), buildingTx: false));
       return;
     }
 
-    final (pubBdkWallet, errLoading) = walletsRepository.getBdkWallet(wallet);
+    final (pubBdkWallet, errLoading) = _walletsRepository.getBdkWallet(wallet);
     if (errLoading != null) {
       emit(state.copyWith(errBuildingTx: errLoading.toString(), buildingTx: false));
       return;
     }
 
-    final (newTx, errrr) = await bdkTx.buildBumpFeeTx(
+    final (newTx, errrr) = await _bdkTx.buildBumpFeeTx(
       tx: state.tx,
       feeRate: fees.toDouble(),
       signingWallet: bdkSignerWallet!,
@@ -304,9 +286,9 @@ class TransactionCubit extends Cubit<TransactionState> {
   void sendTx() async {
     emit(state.copyWith(sendingTx: true, errSendingTx: '', buildingTx: false));
     final tx = state.updatedTx!;
-    final wallet = walletBloc.state.wallet!;
+    final wallet = _walletBloc.state.wallet!;
 
-    final (wtxid, err) = await walletTx.broadcastTxWithWallet(
+    final (wtxid, err) = await _walletTx.broadcastTxWithWallet(
       address: tx.toAddress!,
       wallet: wallet,
       transaction: tx,
@@ -323,7 +305,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final (w, txid) = wtxid!;
 
-    final (_, updatedWallet) = await walletAddress.addAddressToWallet(
+    final (_, updatedWallet) = await _walletAddress.addAddressToWallet(
       address: (null, tx.toAddress!),
       wallet: w,
       label: tx.label,
@@ -342,7 +324,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     // updatedWallet = updatedWallet.copyWith(transactions: txs);
 
-    walletBloc.add(
+    _walletBloc.add(
       UpdateWallet(
         updatedWallet,
         updateTypes: [
@@ -352,7 +334,7 @@ class TransactionCubit extends Cubit<TransactionState> {
       ),
     );
 
-    walletBloc.add(SyncWallet());
+    _walletBloc.add(SyncWallet());
 
     emit(
       state.copyWith(

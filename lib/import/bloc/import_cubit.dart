@@ -20,19 +20,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportWalletCubit extends Cubit<ImportState> {
   ImportWalletCubit({
-    required this.barcode,
-    required this.filePicker,
-    required this.nfc,
-    required this.walletCreate,
-    required this.walletSensCreate,
-    required this.walletsStorageRepository,
-    required this.walletSensRepository,
-    required this.networkCubit,
-    required this.bdkCreate,
-    required this.bdkSensitiveCreate,
-    required this.lwkSensitiveCreate,
+    required Barcode barcode,
+    required FilePick filePicker,
+    required NFCPicker nfc,
+    required WalletCreate walletCreate,
+    required WalletSensitiveCreate walletSensCreate,
+    required WalletsStorageRepository walletsStorageRepository,
+    required WalletSensitiveStorageRepository walletSensRepository,
+    required NetworkCubit networkCubit,
+    required BDKCreate bdkCreate,
+    required BDKSensitiveCreate bdkSensitiveCreate,
+    required LWKSensitiveCreate lwkSensitiveCreate,
     bool mainWallet = false,
-  }) : super(
+  })  : _networkCubit = networkCubit,
+        _walletSensRepository = walletSensRepository,
+        _walletsStorageRepository = walletsStorageRepository,
+        _walletSensCreate = walletSensCreate,
+        _lwkSensitiveCreate = lwkSensitiveCreate,
+        _bdkSensitiveCreate = bdkSensitiveCreate,
+        _bdkCreate = bdkCreate,
+        _walletCreate = walletCreate,
+        _nfc = nfc,
+        _filePicker = filePicker,
+        _barcode = barcode,
+        super(
           ImportState(
             mainWallet: mainWallet,
             // words12: [
@@ -47,19 +58,19 @@ class ImportWalletCubit extends Cubit<ImportState> {
     if (mainWallet) recoverClicked();
   }
 
-  final Barcode barcode;
-  final FilePick filePicker;
-  final NFCPicker nfc;
+  final Barcode _barcode;
+  final FilePick _filePicker;
+  final NFCPicker _nfc;
 
-  final WalletCreate walletCreate;
-  final BDKCreate bdkCreate;
-  final BDKSensitiveCreate bdkSensitiveCreate;
-  final LWKSensitiveCreate lwkSensitiveCreate;
-  final WalletSensitiveCreate walletSensCreate;
+  final WalletCreate _walletCreate;
+  final BDKCreate _bdkCreate;
+  final BDKSensitiveCreate _bdkSensitiveCreate;
+  final LWKSensitiveCreate _lwkSensitiveCreate;
+  final WalletSensitiveCreate _walletSensCreate;
 
-  final WalletsStorageRepository walletsStorageRepository;
-  final WalletSensitiveStorageRepository walletSensRepository;
-  final NetworkCubit networkCubit;
+  final WalletsStorageRepository _walletsStorageRepository;
+  final WalletSensitiveStorageRepository _walletSensRepository;
+  final NetworkCubit _networkCubit;
 
   void backClicked() {
     switch (state.importStep) {
@@ -155,7 +166,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
   void scanQRClicked() async {
     emit(state.copyWith(loadingFile: true));
-    final (res, err) = await barcode.scan();
+    final (res, err) = await _barcode.scan();
     if (err != null) {
       emit(
         state.copyWith(
@@ -263,7 +274,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       ),
     );
 
-    final err = await nfc.startSession(coldCardNFCReceived);
+    final err = await _nfc.startSession(coldCardNFCReceived);
     if (err != null) {
       emit(
         state.copyWith(
@@ -273,7 +284,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         ),
       );
 
-      final errStopping = nfc.stopSession();
+      final errStopping = _nfc.stopSession();
       if (errStopping != null)
         emit(
           state.copyWith(
@@ -285,7 +296,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
   }
 
   void stopScanningNFC() async {
-    final err = nfc.stopSession();
+    final err = _nfc.stopSession();
     if (err != null) emit(state.copyWith(errLoadingFile: err.toString()));
     emit(state.copyWith(loadingFile: false));
   }
@@ -298,7 +309,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
     await _updateWalletDetailsForSelection();
     if (state.errImporting.isNotEmpty) {
-      final errStoppping = nfc.stopSession();
+      final errStoppping = _nfc.stopSession();
       if (errStoppping != null)
         emit(
           state.copyWith(
@@ -333,7 +344,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         errLoadingFile: '',
       ),
     );
-    final (file, err) = await filePicker.pickFile();
+    final (file, err) = await _filePicker.pickFile();
     if (err != null) {
       emit(
         state.copyWith(
@@ -419,18 +430,18 @@ class ImportWalletCubit extends Cubit<ImportState> {
       final type = state.importType;
 
       final wallets = <Wallet>[];
-      final network = networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+      final network = _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 
       switch (type) {
         case ImportTypes.words12:
           final mnemonic = state.words12.map((_) => _.word).join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
-          final (ws, wErrs) = await bdkSensitiveCreate.allFromBIP39(
+          final (ws, wErrs) = await _bdkSensitiveCreate.allFromBIP39(
             mnemonic: mnemonic,
             passphrase: passphrase,
             network: network,
             isImported: true,
-            walletCreate: walletCreate,
+            walletCreate: _walletCreate,
           );
           if (wErrs != null) {
             emit(state.copyWith(errImporting: 'Error creating Wallets from Bip 39'));
@@ -441,12 +452,12 @@ class ImportWalletCubit extends Cubit<ImportState> {
           final mnemonic = state.words24.map((_) => _.word).join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
 
-          final (ws, wErrs) = await bdkSensitiveCreate.allFromBIP39(
+          final (ws, wErrs) = await _bdkSensitiveCreate.allFromBIP39(
             mnemonic: mnemonic,
             passphrase: passphrase,
             network: network,
             isImported: true,
-            walletCreate: walletCreate,
+            walletCreate: _walletCreate,
           );
           if (wErrs != null) {
             emit(state.copyWith(errImporting: 'Error creating Wallets from Bip 39'));
@@ -457,7 +468,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         case ImportTypes.xpub:
           if (state.xpub.contains('[')) {
             // has origin info
-            final (wxpub, wErrs) = await bdkCreate.oneFromXpubWithOrigin(
+            final (wxpub, wErrs) = await _bdkCreate.oneFromXpubWithOrigin(
               state.xpub,
             );
             if (wErrs != null) {
@@ -467,7 +478,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
             scriptTypeChanged(wxpub!.scriptType);
             wallets.addAll([wxpub]);
           } else {
-            final (wxpub, wErrs) = await bdkCreate.oneFromSlip132Pub(
+            final (wxpub, wErrs) = await _bdkCreate.oneFromSlip132Pub(
               state.xpub,
             );
             if (wErrs != null) {
@@ -480,7 +491,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         case ImportTypes.coldcard:
           final coldcard = state.coldCard!;
 
-          final (cws, wErrs) = await bdkCreate.allFromColdCard(
+          final (cws, wErrs) = await _bdkCreate.allFromColdCard(
             coldcard,
             network,
           );
@@ -536,13 +547,13 @@ class ImportWalletCubit extends Cubit<ImportState> {
         ? selectedWallet.copyWith(name: state.walletLabel)
         : selectedWallet;
 
-    final network = networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final network = _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
 
     if (selectedWallet.type == BBWalletType.words) {
       final mnemonic = (state.importType == ImportTypes.words12)
           ? state.words12.map((_) => _.word).join(' ')
           : state.words24.map((_) => _.word).join(' ');
-      final (seed, sErr) = await walletSensCreate.mnemonicSeed(mnemonic, network);
+      final (seed, sErr) = await _walletSensCreate.mnemonicSeed(mnemonic, network);
       if (sErr != null) {
         emit(state.copyWith(errImporting: 'Error creating mnemonicSeed'));
         return;
@@ -550,7 +561,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
       // if seed exists - this will error with Seed Exists, but we ignore it
       // else we create the seed
-      await walletSensRepository.newSeed(seed: seed!);
+      await _walletSensRepository.newSeed(seed: seed!);
 
       if (state.passPhrase.isNotEmpty) {
         final passPhrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
@@ -558,7 +569,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         final passphrase =
             Passphrase(passphrase: passPhrase, sourceFingerprint: selectedWallet.sourceFingerprint);
 
-        final err = await walletSensRepository.newPassphrase(
+        final err = await _walletSensRepository.newPassphrase(
           passphrase: passphrase,
           seedFingerprintIndex: seed.getSeedStorageString(),
         );
@@ -587,7 +598,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     if (state.mainWallet) walletLabel = selectedWallet.creationName();
     final secureWallet = selectedWallet.copyWith(name: walletLabel);
 
-    final err = await walletsStorageRepository.newWallet(
+    final err = await _walletsStorageRepository.newWallet(
       secureWallet,
     );
     if (err != null) {
@@ -618,13 +629,13 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required String passPhrase,
     required BBNetwork network,
   }) async {
-    var (wallet, wErr) = await lwkSensitiveCreate.oneLiquidFromBIP39(
+    var (wallet, wErr) = await _lwkSensitiveCreate.oneLiquidFromBIP39(
       seed: seed,
       passphrase: state.passPhrase,
       scriptType: ScriptType.bip84,
       network: network,
       walletType: BBWalletType.instant,
-      walletCreate: walletCreate,
+      walletCreate: _walletCreate,
       // walletType: network,
       // false,
     );
@@ -639,7 +650,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     if (state.mainWallet) walletLabel = wallet!.creationName();
     final updatedWallet = wallet!.copyWith(name: walletLabel);
 
-    final wsErr = await walletsStorageRepository.newWallet(updatedWallet);
+    final wsErr = await _walletsStorageRepository.newWallet(updatedWallet);
     if (wsErr != null) {
       emit(state.copyWith(savingWallet: false, errSavingWallet: 'Error Saving Wallet'));
     }

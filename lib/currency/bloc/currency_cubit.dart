@@ -10,12 +10,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CurrencyCubit extends Cubit<CurrencyState> {
   CurrencyCubit({
-    required this.hiveStorage,
-    required this.bbAPI,
-    this.defaultCurrencyCubit,
-  }) : super(const CurrencyState()) {
+    required HiveStorage hiveStorage,
+    required BullBitcoinAPI bbAPI,
+    CurrencyCubit? defaultCurrencyCubit,
+  })  : _defaultCurrencyCubit = defaultCurrencyCubit,
+        _bbAPI = bbAPI,
+        _hiveStorage = hiveStorage,
+        super(const CurrencyState()) {
     init();
-    if (defaultCurrencyCubit == null)
+    if (_defaultCurrencyCubit == null)
       loadCurrencies();
     else {
       reset();
@@ -23,29 +26,29 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     }
   }
 
-  final HiveStorage hiveStorage;
-  final BullBitcoinAPI bbAPI;
-  final CurrencyCubit? defaultCurrencyCubit;
+  final HiveStorage _hiveStorage;
+  final BullBitcoinAPI _bbAPI;
+  final CurrencyCubit? _defaultCurrencyCubit;
 
   @override
   void onChange(Change<CurrencyState> change) {
     super.onChange(change);
-    if (defaultCurrencyCubit != null) return;
-    hiveStorage.saveValue(
+    if (_defaultCurrencyCubit != null) return;
+    _hiveStorage.saveValue(
       key: StorageKeys.currency,
       value: jsonEncode(change.nextState.toJson()),
     );
   }
 
   Future<void> init() async {
-    if (defaultCurrencyCubit != null) {
-      emit(defaultCurrencyCubit!.state);
+    if (_defaultCurrencyCubit != null) {
+      emit(_defaultCurrencyCubit.state);
       reset();
       loadCurrencyForAmount();
       return;
     }
     Future.delayed(const Duration(milliseconds: 200));
-    final (result, err) = await hiveStorage.getValue(StorageKeys.currency);
+    final (result, err) = await _hiveStorage.getValue(StorageKeys.currency);
     if (err != null) return;
 
     final currency = CurrencyState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
@@ -71,11 +74,11 @@ class CurrencyCubit extends Cubit<CurrencyState> {
 
   void loadCurrencies() async {
     emit(state.copyWith(loadingCurrency: true));
-    final (cad, _) = await bbAPI.getExchangeRate(toCurrency: 'CAD');
-    final (usd, _) = await bbAPI.getExchangeRate(toCurrency: 'USD');
-    final (crc, _) = await bbAPI.getExchangeRate(toCurrency: 'CRC');
-    final (inr, _) = await bbAPI.getExchangeRate(toCurrency: 'INR');
-    final (eur, _) = await bbAPI.getExchangeRate(toCurrency: 'EUR');
+    final (cad, _) = await _bbAPI.getExchangeRate(toCurrency: 'CAD');
+    final (usd, _) = await _bbAPI.getExchangeRate(toCurrency: 'USD');
+    final (crc, _) = await _bbAPI.getExchangeRate(toCurrency: 'CRC');
+    final (inr, _) = await _bbAPI.getExchangeRate(toCurrency: 'INR');
+    final (eur, _) = await _bbAPI.getExchangeRate(toCurrency: 'EUR');
 
     final results = [
       if (cad != null) cad,

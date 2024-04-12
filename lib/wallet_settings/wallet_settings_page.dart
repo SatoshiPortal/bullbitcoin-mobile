@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -46,8 +44,6 @@ class WalletSettingsPage extends StatelessWidget {
     final walletSettings = WalletSettingsCubit(
       wallet: walletBloc.state.wallet!,
       // walletRead: locator<WalletSync>(),
-      hiveStorage: locator<HiveStorage>(),
-      secureStorage: locator<SecureStorage>(),
       walletBloc: walletBloc,
       fileStorage: locator<FileStorage>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),

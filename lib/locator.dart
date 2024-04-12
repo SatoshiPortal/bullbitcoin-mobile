@@ -221,17 +221,13 @@ Future _setupWalletServices() async {
 
 Future _setupBlocs() async {
   final settings = SettingsCubit(
-    walletSync: locator<WalletSync>(),
     hiveStorage: locator<HiveStorage>(),
-    mempoolAPI: locator<MempoolAPI>(),
-    bbAPI: locator<BullBitcoinAPI>(),
   );
 
   locator.registerSingleton<NetworkCubit>(
     NetworkCubit(
       hiveStorage: locator<HiveStorage>(),
       walletNetwork: locator<WalletNetwork>(),
-      networkRepository: locator<NetworkRepository>(),
     ),
   );
 
@@ -251,15 +247,6 @@ Future _setupBlocs() async {
   );
 
   final swap = WatchTxsBloc(
-    hiveStorage: locator<HiveStorage>(),
-    secureStorage: locator<SecureStorage>(),
-    walletAddress: locator<WalletAddress>(),
-    walletsStorageRepository: locator<WalletsStorageRepository>(),
-    walletSensitiveRepository: WalletSensitiveStorageRepository(
-      secureStorage: locator<SecureStorage>(),
-    ),
-    settingsCubit: settings,
-    networkCubit: locator<NetworkCubit>(),
     swapBoltz: locator<SwapBoltz>(),
     walletTx: locator<WalletTx>(),
   );

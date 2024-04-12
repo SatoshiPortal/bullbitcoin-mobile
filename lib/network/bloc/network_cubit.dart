@@ -6,7 +6,6 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/state.dart';
@@ -14,16 +13,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class NetworkCubit extends Cubit<NetworkState> {
   NetworkCubit({
-    required this.hiveStorage,
-    required this.walletNetwork,
-    required this.networkRepository,
-  }) : super(const NetworkState()) {
+    required HiveStorage hiveStorage,
+    required WalletNetwork walletNetwork,
+  })  : _walletNetwork = walletNetwork,
+        _hiveStorage = hiveStorage,
+        super(const NetworkState()) {
     init();
   }
 
-  final HiveStorage hiveStorage;
-  final WalletNetwork walletNetwork;
-  final NetworkRepository networkRepository;
+  final HiveStorage _hiveStorage;
+  final WalletNetwork _walletNetwork;
   HomeCubit? homeCubit;
 
   @override
@@ -31,7 +30,7 @@ class NetworkCubit extends Cubit<NetworkState> {
     super.onChange(change);
     final state = change.nextState;
     if (state.networkErrorOpened) return;
-    hiveStorage.saveValue(
+    _hiveStorage.saveValue(
       key: StorageKeys.network,
       value: jsonEncode(change.nextState.toJson()),
     );
@@ -39,7 +38,7 @@ class NetworkCubit extends Cubit<NetworkState> {
 
   Future<void> init() async {
     Future.delayed(const Duration(milliseconds: 200));
-    final (result, err) = await hiveStorage.getValue(StorageKeys.network);
+    final (result, err) = await _hiveStorage.getValue(StorageKeys.network);
     if (err != null) {
       loadNetworks();
       return;
@@ -163,7 +162,7 @@ class NetworkCubit extends Cubit<NetworkState> {
       final selectedNetwork = state.getNetwork();
       if (selectedNetwork == null) return;
 
-      final errBitcoin = await walletNetwork.createBlockChain(
+      final errBitcoin = await _walletNetwork.createBlockChain(
         isTestnet: isTestnet,
         stopGap: selectedNetwork.stopGap,
         timeout: selectedNetwork.timeout,
@@ -188,7 +187,7 @@ class NetworkCubit extends Cubit<NetworkState> {
       final selectedLiqNetwork = state.getLiquidNetwork();
       if (selectedLiqNetwork == null) return;
 
-      final errLiquid = await walletNetwork.createBlockChain(
+      final errLiquid = await _walletNetwork.createBlockChain(
         url: isTestnet ? selectedLiqNetwork.testnet : selectedLiqNetwork.mainnet,
         isTestnet: isTestnet,
       );

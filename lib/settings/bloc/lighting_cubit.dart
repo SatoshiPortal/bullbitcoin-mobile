@@ -7,23 +7,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 enum ThemeLighting { light, dark, dim, system }
 
 class Lighting extends Cubit<ThemeLighting> {
-  Lighting({required this.hiveStorage}) : super(ThemeLighting.light) {
+  Lighting({required HiveStorage hiveStorage})
+      : _hiveStorage = hiveStorage,
+        super(ThemeLighting.light) {
     init();
   }
 
-  final HiveStorage hiveStorage;
+  final HiveStorage _hiveStorage;
 
   @override
   void onChange(Change<ThemeLighting> change) {
     super.onChange(change);
-    hiveStorage.saveValue(
+    _hiveStorage.saveValue(
       key: StorageKeys.lighting,
       value: change.nextState.toString(),
     );
   }
 
   Future<void> init() async {
-    final (result, err) = await hiveStorage.getValue(StorageKeys.lighting);
+    final (result, err) = await _hiveStorage.getValue(StorageKeys.lighting);
     if (err != null) return;
     emit(ThemeLighting.values.firstWhere((e) => e.toString() == result));
   }
