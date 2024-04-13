@@ -138,6 +138,7 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    final isSupported = context.select((ReceiveCubit x) => x.state.isSupported());
     final showQR = context.select((ReceiveCubit x) => x.state.showQR(swapTx));
 
     final watchOnly = context.select((WalletBloc x) => x.state.wallet!.watchOnly());
@@ -156,20 +157,27 @@ class _Screen extends StatelessWidget {
               const SelectWalletType(),
               const Gap(48),
             ],
-            if (showQR) ...[
+            if (!isSupported)
+              const Column(
+                children: [
+                  Center(child: BBText.error('Warning!')),
+                  Center(child: Text('Chain-Chain swaps coming soon!')),
+                ],
+              ),
+            if (isSupported && showQR) ...[
               const ReceiveQR(),
               const Gap(8),
               const ReceiveAddress(),
               const Gap(8),
               const SwapFeesDetails(),
-            ] else ...[
+            ] else if (isSupported) ...[
               const Gap(24),
               const CreateLightningInvoice(),
               const Gap(24),
               const SwapHistoryButton(),
             ],
             const Gap(48),
-            const WalletActions(),
+            if (isSupported) const WalletActions(),
             const Gap(32),
           ],
         ),

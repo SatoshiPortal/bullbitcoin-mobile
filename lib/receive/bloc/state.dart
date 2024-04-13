@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -54,6 +55,14 @@ class ReceiveState with _$ReceiveState {
   }
 
   bool showNewRequestButton() => savedDescription.isEmpty && savedInvoiceAmount == 0;
+
+  bool isSupported() {
+    if (paymentNetwork == ReceivePaymentNetwork.bitcoin &&
+        walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Liquid) return false;
+    if (paymentNetwork == ReceivePaymentNetwork.liquid &&
+        walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Bitcoin) return false;
+    return true;
+  }
 
   bool showQR(SwapTx? swapTx) {
     return (swapTx != null && paymentNetwork == ReceivePaymentNetwork.lightning) ||
