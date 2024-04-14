@@ -1,9 +1,7 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
-import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
@@ -61,11 +59,11 @@ class _ReceivePageState extends State<ReceivePage> {
       networkCubit: locator<NetworkCubit>(),
       // swapBoltz: locator<SwapBoltz>(),
       swapBloc: swapBloc,
-      currencyCubit: CurrencyCubit(
-        hiveStorage: locator<HiveStorage>(),
-        bbAPI: locator<BullBitcoinAPI>(),
-        defaultCurrencyCubit: context.read<CurrencyCubit>(),
-      ),
+      // currencyCubit: CurrencyCubit(
+      //   hiveStorage: locator<HiveStorage>(),
+      //   bbAPI: locator<BullBitcoinAPI>(),
+      //   defaultCurrencyCubit: context.read<CurrencyCubit>(),
+      // ),
     );
 
     home = locator<HomeCubit>();
@@ -88,7 +86,7 @@ class _ReceivePageState extends State<ReceivePage> {
       providers: [
         BlocProvider.value(value: _cubit),
         BlocProvider.value(value: locator<NetworkCubit>()),
-        BlocProvider.value(value: _cubit.currencyCubit),
+        // BlocProvider.value(value: _cubit.currencyCubit),
         BlocProvider.value(value: _cubit.state.swapBloc),
         BlocProvider.value(value: home),
         if (walletBloc != null) BlocProvider.value(value: walletBloc),
@@ -254,6 +252,7 @@ class WalletActions extends StatelessWidget {
           // leftIcon: Icons.send,
           leftSvgAsset: 'assets/new-address.svg',
           onPressed: () {
+            context.read<CurrencyCubit>().updateAmountDirect(0);
             context.read<ReceiveCubit>().generateNewAddress();
           },
         ),
@@ -363,7 +362,8 @@ class CreateLightningInvoice extends StatelessWidget {
             label: 'Create Invoice',
             loadingText: 'Creating Invoice',
             onPressed: () async {
-              context.read<ReceiveCubit>().createLnInvoiceClicked();
+              final amt = context.read<CurrencyCubit>().state.amount;
+              context.read<ReceiveCubit>().createLnInvoiceClicked(amt);
             },
           ),
         ),
@@ -580,6 +580,8 @@ class CreateInvoice extends StatelessWidget {
           text: 'Request a Payment',
           onBack: () {
             context.read<ReceiveCubit>().clearInvoiceFields();
+            context.read<CurrencyCubit>().reset();
+
             context.pop();
           },
         ),
@@ -603,7 +605,8 @@ class CreateInvoice extends StatelessWidget {
           buttonKey: UIKeys.receiveSavePaymentButton,
           label: 'Save',
           onPressed: () {
-            context.read<ReceiveCubit>().saveFinalInvoiceClicked();
+            final amt = context.read<CurrencyCubit>().state.amount;
+            context.read<ReceiveCubit>().saveFinalInvoiceClicked(amt);
           },
         ),
         const Gap(40),

@@ -2,7 +2,6 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
@@ -16,7 +15,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required WalletAddress walletAddress,
     required WalletsStorageRepository walletsStorageRepository,
     required NetworkCubit networkCubit,
-    required this.currencyCubit,
     required SwapCubit swapBloc,
   })  : _networkCubit = networkCubit,
         _walletsStorageRepository = walletsStorageRepository,
@@ -27,9 +25,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   final WalletAddress _walletAddress;
   final WalletsStorageRepository _walletsStorageRepository;
-
   final NetworkCubit _networkCubit;
-  final CurrencyCubit currencyCubit;
 
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(
@@ -191,9 +187,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       ),
     );
 
-    // what is the use of this?
-    currencyCubit.updateAmountDirect(0);
-
     if (state.walletBloc == null) return;
 
     final (updatedWallet, err) = await _walletAddress.newAddress(
@@ -293,21 +286,20 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
   }
 
-  void loadInvoice() {
-    if (state.savedDescription.isNotEmpty)
-      emit(state.copyWith(description: state.savedDescription));
-    if (state.savedInvoiceAmount > 0) currencyCubit.updateAmountDirect(state.savedInvoiceAmount);
-  }
+  // void loadInvoice() {
+  //   if (state.savedDescription.isNotEmpty)
+  //     emit(state.copyWith(description: state.savedDescription));
+  //   if (state.savedInvoiceAmount > 0) currencyCubfit.updateAmountDirect(state.savedInvoiceAmount);
+  // }
 
   void clearInvoiceFields() {
     emit(state.copyWith(description: ''));
-    currencyCubit.reset();
   }
 
-  void saveFinalInvoiceClicked() async {
+  void saveFinalInvoiceClicked(int amt) async {
     if (state.walletBloc == null) return;
 
-    if (currencyCubit.state.amount <= 0) {
+    if (amt <= 0) {
       emit(state.copyWith(errCreatingInvoice: 'Enter correct amount'));
       return;
     }
@@ -328,18 +320,18 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         creatingInvoice: false,
         errCreatingInvoice: '',
         savedDescription: state.description,
-        savedInvoiceAmount: currencyCubit.state.amount,
+        savedInvoiceAmount: amt,
       ),
     );
   }
 
-  void createLnInvoiceClicked() async {
+  void createLnInvoiceClicked(int amt) async {
     final walletId = state.walletBloc?.state.wallet?.id;
     if (walletId == null) return;
 
     state.swapBloc.createBtcLnRevSwap(
       walletId: walletId,
-      amount: currencyCubit.state.amount,
+      amount: amt,
       label: state.description,
     );
   }
