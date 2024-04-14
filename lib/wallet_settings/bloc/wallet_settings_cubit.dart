@@ -23,24 +23,19 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     required HomeCubit homeCubit,
     required WalletsStorageRepository walletsStorageRepository,
     required WalletSensitiveStorageRepository walletSensRepository,
-    required this.fileStorage,
-  })  : _walletSensRepository = walletSensRepository,
+    required FileStorage fileStorage,
+  })  : _fileStorage = fileStorage,
+        _walletSensRepository = walletSensRepository,
         _homeCubit = homeCubit,
         _walletsStorageRepository = walletsStorageRepository,
         _walletBloc = walletBloc,
-        super(
-          WalletSettingsState(
-            wallet: wallet,
-          ),
-        );
+        super(WalletSettingsState(wallet: wallet));
 
   final WalletBloc _walletBloc;
-  // final WalletSync walletRead;
   final WalletsStorageRepository _walletsStorageRepository;
   final HomeCubit _homeCubit;
   final WalletSensitiveStorageRepository _walletSensRepository;
-
-  final FileStorage fileStorage;
+  final FileStorage _fileStorage;
 
   void changeName(String name) {
     emit(state.copyWith(name: name));
@@ -335,7 +330,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final fingerprint = seed.mnemonicFingerprint;
     final folder = wallet.network == BBNetwork.Mainnet ? 'bitcoin' : 'testnet';
 
-    final (appDocDir, errDir) = await fileStorage.getDownloadDirectory();
+    final (appDocDir, errDir) = await _fileStorage.getDownloadDirectory();
 
     if (errDir == null) {
       emit(
@@ -348,7 +343,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
     final file = File(appDocDir! + '/bullbitcoin_backup/$folder/$fingerprint.json');
 
-    final (_, errSave) = await fileStorage.saveToFile(
+    final (_, errSave) = await _fileStorage.saveToFile(
       file,
       wallet.toJson().toString(),
     );
@@ -392,7 +387,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final appDocDir = await getApplicationDocumentsDirectory();
     final dbDir = appDocDir.path + '/' + state.wallet.getWalletStorageString();
 
-    final errDeleting = await fileStorage.deleteFile(dbDir);
+    final errDeleting = await _fileStorage.deleteFile(dbDir);
     if (errDeleting != null) {
       emit(
         state.copyWith(

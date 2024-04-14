@@ -51,17 +51,12 @@ class TransactionCubit extends Cubit<TransactionState> {
   }
 
   final WalletBloc _walletBloc;
-
   final WalletTx _walletTx;
-  // final WalletSensitiveTx walletSensTx;
   final WalletUpdate _walletUpdate;
-
   final WalletsStorageRepository _walletsStorageRepository;
   final WalletsRepository _walletsRepository;
-
   final WalletSensitiveStorageRepository _walletSensRepository;
   final WalletAddress _walletAddress;
-
   final NetworkFeesCubit _networkFeesCubit;
   final BDKSensitiveCreate _bdkSensitiveCreate;
   final BDKTransactions _bdkTx;

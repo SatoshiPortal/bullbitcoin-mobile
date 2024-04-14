@@ -4,7 +4,7 @@ import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 class NetworkRepository {
   bdk.Blockchain? _bdkBlockchain;
   String? _liquidUrl;
-  bool _isTestnet = false;
+  // bool _isTestnet = false;
 
   (bdk.Blockchain?, Err?) get bdkBlockchain =>
       _bdkBlockchain != null ? (_bdkBlockchain, null) : (null, Err('Network not setup'));
@@ -22,12 +22,12 @@ class NetworkRepository {
     return null;
   }
 
-  Err? setTestnet(bool isTestnet) {
-    _isTestnet = isTestnet;
-    return null;
-  }
+  // Err? setTestnet(bool isTestnet) {
+  //   _isTestnet = isTestnet;
+  //   return null;
+  // }
 
-  bool get isTestnet => _isTestnet;
+  // bool get isTestnet => _isTestnet;
 
   Err? checkNetworks() =>
       (_bdkBlockchain == null || _liquidUrl == null) ? Err('Network not setup') : null;

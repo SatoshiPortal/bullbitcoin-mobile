@@ -48,8 +48,8 @@ class WalletNetwork implements IWalletNetwork {
         if (errSet != null) return errSet;
       }
 
-      final errTestnet = _networkRepository.setTestnet(isTestnet);
-      if (errTestnet != null) return errTestnet;
+      // final errTestnet = _networkRepository.setTestnet(isTestnet);
+      // if (errTestnet != null) return errTestnet;
 
       return null;
     } catch (r) {
