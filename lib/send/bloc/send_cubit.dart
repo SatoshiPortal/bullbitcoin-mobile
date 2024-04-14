@@ -10,7 +10,6 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
-import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -22,7 +21,6 @@ class SendCubit extends Cubit<SendState> {
   SendCubit({
     required Barcode barcode,
     WalletBloc? walletBloc,
-    required SettingsCubit settingsCubit,
     required WalletTx walletTx,
     required FileStorage fileStorage,
     required NetworkCubit networkCubit,
@@ -30,8 +28,8 @@ class SendCubit extends Cubit<SendState> {
     required SwapCubit swapCubit,
     required bool openScanner,
     required HomeCubit homeCubit,
-  })  : _settingsCubit = settingsCubit,
-        _homeCubit = homeCubit,
+    required bool defaultRBF,
+  })  : _homeCubit = homeCubit,
         _networkCubit = networkCubit,
         _walletTx = walletTx,
         _fileStorage = fileStorage,
@@ -39,7 +37,7 @@ class SendCubit extends Cubit<SendState> {
         super(SendState(swapCubit: swapCubit, selectedWalletBloc: walletBloc)) {
     emit(
       state.copyWith(
-        disableRBF: !_settingsCubit.state.defaultRBF,
+        disableRBF: !defaultRBF,
         selectedWalletBloc: walletBloc,
       ),
     );
@@ -60,7 +58,7 @@ class SendCubit extends Cubit<SendState> {
   final NetworkCubit _networkCubit;
   final CurrencyCubit currencyCubit;
   final HomeCubit _homeCubit;
-  final SettingsCubit _settingsCubit;
+
   late StreamSubscription _currencyCubitSub;
   late StreamSubscription _swapCubitSub;
 

@@ -32,9 +32,10 @@ class SwapCubit extends Cubit<SwapState> {
   }
 
   final WalletSensitiveStorageRepository _walletSensitiveRepository;
-  final NetworkCubit _networkCubit;
   final SwapBoltz _swapBoltz;
   final WalletTx _walletTx;
+
+  final NetworkCubit _networkCubit;
   final WatchTxsBloc _watchTxsBloc;
   final HomeCubit _homeCubit;
 

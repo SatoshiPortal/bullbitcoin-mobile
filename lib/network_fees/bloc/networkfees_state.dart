@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/currency.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'state.freezed.dart';
-part 'state.g.dart';
+part 'networkfees_state.freezed.dart';
+part 'networkfees_state.g.dart';
 
 @freezed
 class NetworkFeesState with _$NetworkFeesState {

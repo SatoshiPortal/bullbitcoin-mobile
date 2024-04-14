@@ -18,7 +18,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
+import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/send/advanced.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
@@ -63,7 +63,8 @@ class _SendPageState extends State<SendPage> {
     send = SendCubit(
       walletTx: locator<WalletTx>(),
       barcode: locator<Barcode>(),
-      settingsCubit: locator<SettingsCubit>(),
+      defaultRBF: locator<SettingsCubit>().state.defaultRBF,
+      // settingsCubit: locator<SettingsCubit>(),
       fileStorage: locator<FileStorage>(),
       networkCubit: locator<NetworkCubit>(),
       homeCubit: locator<HomeCubit>(),

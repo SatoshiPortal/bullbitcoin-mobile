@@ -2,8 +2,8 @@ import 'package:bb_mobile/_model/currency.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 
-part 'state.freezed.dart';
-part 'state.g.dart';
+part 'currency_state.freezed.dart';
+part 'currency_state.g.dart';
 
 @freezed
 class CurrencyState with _$CurrencyState {
