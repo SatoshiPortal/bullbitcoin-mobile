@@ -9,7 +9,6 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/network_fees/bloc/network_fees_cubit.dart';
 import 'package:bb_mobile/send/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
@@ -27,7 +26,6 @@ class SendCubit extends Cubit<SendState> {
     required WalletTx walletTx,
     required FileStorage fileStorage,
     required NetworkCubit networkCubit,
-    required this.networkFeesCubit,
     required this.currencyCubit,
     required SwapCubit swapCubit,
     required bool openScanner,
@@ -60,7 +58,6 @@ class SendCubit extends Cubit<SendState> {
   final WalletTx _walletTx;
 
   final NetworkCubit _networkCubit;
-  final NetworkFeesCubit networkFeesCubit;
   final CurrencyCubit currencyCubit;
   final HomeCubit _homeCubit;
   final SettingsCubit _settingsCubit;
@@ -271,7 +268,7 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(downloadingFile: false, downloaded: true));
   }
 
-  void confirmClickedd() async {
+  void confirmClickedd({required int networkFees}) async {
     if (state.sending) return;
     if (state.selectedWalletBloc == null) return;
 
@@ -295,9 +292,10 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final address = isLn ? state.swapCubit.state.swapTx?.scriptAddress : state.address;
-    final fee = isLn
-        ? networkFeesCubit.state.feesList![0]
-        : networkFeesCubit.state.feesList![networkFeesCubit.state.selectedFeesOption];
+    final fee = networkFees;
+    //  isLn
+    // ? networkFeesCubit.state.feesList![0]
+    // : networkFeesCubit.state.feesList![networkFeesCubit.state.selectedFeesOption];
 
     final bool enableRbf;
     if (isLn)

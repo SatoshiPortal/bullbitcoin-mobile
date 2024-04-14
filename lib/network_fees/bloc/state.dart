@@ -53,6 +53,12 @@ class NetworkFeesState with _$NetworkFeesState {
     }
   }
 
+  int selectedOrFirst(bool selectFirst) => feesList == null
+      ? 0
+      : selectFirst
+          ? feesList![0]
+          : feesList![selectedFeesOption];
+
   String defaultFeeStatus() {
     try {
       var str = '';

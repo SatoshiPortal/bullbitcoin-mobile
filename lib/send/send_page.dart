@@ -4,7 +4,6 @@ import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
-import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
@@ -68,12 +67,12 @@ class _SendPageState extends State<SendPage> {
       fileStorage: locator<FileStorage>(),
       networkCubit: locator<NetworkCubit>(),
       homeCubit: locator<HomeCubit>(),
-      networkFeesCubit: NetworkFeesCubit(
-        hiveStorage: locator<HiveStorage>(),
-        mempoolAPI: locator<MempoolAPI>(),
-        networkCubit: locator<NetworkCubit>(),
-        defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
-      ),
+      // networkFeesCubit: NetworkFeesCubit(
+      //   hiveStorage: locator<HiveStorage>(),
+      //   mempoolAPI: locator<MempoolAPI>(),
+      //   networkCubit: locator<NetworkCubit>(),
+      //   defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
+      // ),
       currencyCubit: CurrencyCubit(
         hiveStorage: locator<HiveStorage>(),
         bbAPI: locator<BullBitcoinAPI>(),
@@ -103,7 +102,7 @@ class _SendPageState extends State<SendPage> {
       providers: [
         BlocProvider.value(value: send),
         BlocProvider.value(value: send.currencyCubit),
-        BlocProvider.value(value: send.networkFeesCubit),
+        // BlocProvider.value(value: send.networkFeesCubit),
         BlocProvider.value(value: send.state.swapCubit),
         BlocProvider.value(value: home),
         if (walletBloc != null) BlocProvider.value(value: walletBloc),
@@ -421,9 +420,11 @@ class _SendButton extends StatelessWidget {
               leftIcon: Icons.send,
               onPressed: () async {
                 if (sending) return;
-                if (!signed)
-                  context.read<SendCubit>().confirmClickedd();
-                else
+                if (!signed) {
+                  final isLn = context.read<SendCubit>().state.isLnInvoice();
+                  final fees = context.read<NetworkFeesCubit>().state.selectedOrFirst(isLn);
+                  context.read<SendCubit>().confirmClickedd(networkFees: fees);
+                } else
                   context.read<SendCubit>().sendClicked();
               },
               label: watchOnly
