@@ -216,7 +216,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.swaps],
       ),
     );
-    homeCubit.updateSelectedWallet(walletBloc);
+    // homeCubit.updateSelectedWallet(walletBloc);
 
     add(DeleteSensitiveSwapData(swapToDelete.id));
     add(WatchWalletTxs(walletId: wallet.id));
@@ -246,7 +246,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         updateTypes: [UpdateWalletTypes.swaps],
       ),
     );
-    homeCubit.updateSelectedWallet(walletBloc);
+    // homeCubit.updateSelectedWallet(walletBloc);
     Future.delayed(20.ms);
     return;
     // }
@@ -381,6 +381,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    homeCubit.updateSelectedWallet(walletBloc);
+    // homeCubit.updateSelectedWallet(walletBloc);
   }
 }

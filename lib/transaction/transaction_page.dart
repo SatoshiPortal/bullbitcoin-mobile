@@ -81,7 +81,7 @@ class TxPage extends StatelessWidget {
       child: BlocListener<TransactionCubit, TransactionState>(
         listenWhen: (previous, current) => previous.tx != current.tx,
         listener: (context, state) async {
-          home.updateSelectedWallet(walletBloc);
+          // home.updateSelectedWallet(walletBloc);
         },
         child: Scaffold(
           appBar: AppBar(

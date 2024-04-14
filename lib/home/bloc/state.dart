@@ -24,9 +24,9 @@ class HomeState with _$HomeState {
     @Default(true) bool loadingWallets,
     @Default('') String errLoadingWallets,
     // Wallet? selectedWallet,
-    WalletBloc? selectedWalletCubit,
-    int? lastTestnetWalletIdx,
-    int? lastMainnetWalletIdx,
+    // WalletBloc? selectedWalletCubit,
+    // int? lastTestnetWalletIdx,
+    // int? lastMainnetWalletIdx,
     @Default('') String errDeepLinking,
     int? moveToIdx,
   }) = _HomeState;
@@ -81,10 +81,10 @@ class HomeState with _$HomeState {
     return wallet;
   }
 
-  int? getLastWalletIdx(BBNetwork network) {
-    if (network == BBNetwork.Testnet) return lastTestnetWalletIdx;
-    return lastMainnetWalletIdx;
-  }
+  // int? getLastWalletIdx(BBNetwork network) {
+  //   if (network == BBNetwork.Testnet) return lastTestnetWalletIdx;
+  //   return lastMainnetWalletIdx;
+  // }
 
   int? getWalletIdx(Wallet wallet) {
     final walletsFromNetwork = walletBlocsFromNetwork(wallet.network);
@@ -101,14 +101,14 @@ class HomeState with _$HomeState {
     return idx;
   }
 
-  int? getSelectedWalletIdx() {
-    if (selectedWalletCubit == null) return null;
-    final walletsFromNetwork = walletBlocsFromNetwork(selectedWalletCubit!.state.wallet!.network);
-    final idx = walletsFromNetwork
-        .indexWhere((w) => w.state.wallet!.id == selectedWalletCubit!.state.wallet!.id);
-    if (idx == -1) return null;
-    return idx;
-  }
+  // int? getSelectedWalletIdx() {
+  //   if (selectedWalletCubit == null) return null;
+  //   final walletsFromNetwork = walletBlocsFromNetwork(selectedWalletCubit!.state.wallet!.network);
+  //   final idx = walletsFromNetwork
+  //       .indexWhere((w) => w.state.wallet!.id == selectedWalletCubit!.state.wallet!.id);
+  //   if (idx == -1) return null;
+  //   return idx;
+  // }
 
   List<Transaction> allTxs(BBNetwork network) {
     final txs = <Transaction>[];

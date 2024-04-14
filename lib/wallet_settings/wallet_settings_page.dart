@@ -61,8 +61,9 @@ class WalletSettingsPage extends StatelessWidget {
           BlocListener<WalletSettingsCubit, WalletSettingsState>(
             listenWhen: (previous, current) => previous.wallet != current.wallet,
             listener: (context, state) async {
-              if (!state.deleted)
-                home.updateSelectedWallet(walletBloc);
+              if (!state.deleted) {
+              }
+              // home.updateSelectedWallet(walletBloc);
               else {
                 await home.getWalletsFromStorage();
                 context.pop();

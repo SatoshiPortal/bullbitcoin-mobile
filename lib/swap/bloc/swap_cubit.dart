@@ -218,7 +218,7 @@ class SwapCubit extends Cubit<SwapState> {
       ),
     );
 
-    _homeCubit.updateSelectedWallet(walletBloc);
+    // _homeCubit.updateSelectedWallet(walletBloc);
     await Future.delayed(const Duration(seconds: 5));
 
     _watchTxsBloc.add(WatchWalletTxs(walletId: walletId));

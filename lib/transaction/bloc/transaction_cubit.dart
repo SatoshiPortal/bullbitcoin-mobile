@@ -50,16 +50,17 @@ class TransactionCubit extends Cubit<TransactionState> {
     loadTx();
   }
 
-  final WalletBloc _walletBloc;
   final WalletTx _walletTx;
   final WalletUpdate _walletUpdate;
   final WalletsStorageRepository _walletsStorageRepository;
   final WalletsRepository _walletsRepository;
   final WalletSensitiveStorageRepository _walletSensRepository;
   final WalletAddress _walletAddress;
-  final NetworkFeesCubit _networkFeesCubit;
   final BDKSensitiveCreate _bdkSensitiveCreate;
   final BDKTransactions _bdkTx;
+
+  final WalletBloc _walletBloc;
+  final NetworkFeesCubit _networkFeesCubit;
 
   void loadTx() async {
     emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));

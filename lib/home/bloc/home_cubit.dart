@@ -4,7 +4,6 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeCubit extends Cubit<HomeState> {
@@ -84,34 +83,34 @@ class HomeCubit extends Cubit<HomeState> {
   //   );
   // }
 
-  void updateSelectedWallet(WalletBloc walletBloc) {
-    // final wallet = walletBloc.state.wallet!;
-    // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-    // final idx = wallets.indexWhere((w) => w.id == wallet.id);
-    // wallets[idx] = wallet;
+  // void updateSelectedWallet(WalletBloc walletBloc) {
+  //   // final wallet = walletBloc.state.wallet!;
+  //   // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+  //   // final idx = wallets.indexWhere((w) => w.id == wallet.id);
+  //   // wallets[idx] = wallet;
 
-    emit(
-      state.copyWith(
-        // wallets: wallets,
-        selectedWalletCubit: walletBloc,
-      ),
-    );
-  }
+  //   emit(
+  //     state.copyWith(
+  //       // wallets: wallets,
+  //       selectedWalletCubit: walletBloc,
+  //     ),
+  //   );
+  // }
 
-  void walletSelected(WalletBloc walletBloc) async {
-    await Future.delayed(500.microseconds);
-    emit(state.copyWith(selectedWalletCubit: walletBloc));
+  // void walletSelected(WalletBloc walletBloc) async {
+  //   await Future.delayed(500.microseconds);
+  //   emit(state.copyWith(selectedWalletCubit: walletBloc));
 
-    final network = walletBloc.state.wallet!.network;
-    final idx = state.getWalletBlocIdx(walletBloc);
+  //   final network = walletBloc.state.wallet!.network;
+  //   final idx = state.getWalletBlocIdx(walletBloc);
 
-    emit(
-      state.copyWith(
-        lastMainnetWalletIdx: network == BBNetwork.Mainnet ? idx : state.lastMainnetWalletIdx,
-        lastTestnetWalletIdx: network == BBNetwork.Testnet ? idx : state.lastTestnetWalletIdx,
-      ),
-    );
-  }
+  //   emit(
+  //     state.copyWith(
+  //       lastMainnetWalletIdx: network == BBNetwork.Mainnet ? idx : state.lastMainnetWalletIdx,
+  //       lastTestnetWalletIdx: network == BBNetwork.Testnet ? idx : state.lastTestnetWalletIdx,
+  //     ),
+  //   );
+  // }
 
   void changeMoveToIdx(Wallet wallet) async {
     final idx = state.getWalletIdx(wallet);
@@ -128,20 +127,20 @@ class HomeCubit extends Cubit<HomeState> {
   //   emit(state.copyWith(moveToIdx: null));
   // }
 
-  void networkChanged(BBNetwork network) async {
-    final wallets = state.walletBlocsFromNetwork(network);
-    if (wallets.isEmpty) {
-      emit(state.copyWith(selectedWalletCubit: null));
-      return;
-    }
+  // void networkChanged(BBNetwork network) async {
+  //   final wallets = state.walletBlocsFromNetwork(network);
+  //   if (wallets.isEmpty) {
+  //     emit(state.copyWith(selectedWalletCubit: null));
+  //     return;
+  //   }
 
-    final lastWalletIdx = state.getLastWalletIdx(network);
-    if (lastWalletIdx != null && wallets.length > lastWalletIdx) {
-      final wallet = wallets[lastWalletIdx].state.wallet!;
-      changeMoveToIdx(wallet);
-    } else
-      emit(state.copyWith(selectedWalletCubit: wallets.first));
-  }
+  //   final lastWalletIdx = state.getLastWalletIdx(network);
+  //   if (lastWalletIdx != null && wallets.length > lastWalletIdx) {
+  //     final wallet = wallets[lastWalletIdx].state.wallet!;
+  //     changeMoveToIdx(wallet);
+  //   } else
+  //     emit(state.copyWith(selectedWalletCubit: wallets.first));
+  // }
 
   void removeWallet(WalletBloc walletBloc) {
     // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
@@ -152,7 +151,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(
       state.copyWith(
         // wallets: wallets,
-        selectedWalletCubit: null,
+        // selectedWalletCubit: null,
         walletBlocs: walletBlocs,
       ),
     );

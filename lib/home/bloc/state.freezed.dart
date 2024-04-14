@@ -21,9 +21,9 @@ mixin _$HomeState {
   bool get loadingWallets => throw _privateConstructorUsedError;
   String get errLoadingWallets =>
       throw _privateConstructorUsedError; // Wallet? selectedWallet,
-  WalletBloc? get selectedWalletCubit => throw _privateConstructorUsedError;
-  int? get lastTestnetWalletIdx => throw _privateConstructorUsedError;
-  int? get lastMainnetWalletIdx => throw _privateConstructorUsedError;
+// WalletBloc? selectedWalletCubit,
+// int? lastTestnetWalletIdx,
+// int? lastMainnetWalletIdx,
   String get errDeepLinking => throw _privateConstructorUsedError;
   int? get moveToIdx => throw _privateConstructorUsedError;
 
@@ -41,9 +41,6 @@ abstract class $HomeStateCopyWith<$Res> {
       {List<WalletBloc>? walletBlocs,
       bool loadingWallets,
       String errLoadingWallets,
-      WalletBloc? selectedWalletCubit,
-      int? lastTestnetWalletIdx,
-      int? lastMainnetWalletIdx,
       String errDeepLinking,
       int? moveToIdx});
 }
@@ -64,9 +61,6 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
     Object? walletBlocs = freezed,
     Object? loadingWallets = null,
     Object? errLoadingWallets = null,
-    Object? selectedWalletCubit = freezed,
-    Object? lastTestnetWalletIdx = freezed,
-    Object? lastMainnetWalletIdx = freezed,
     Object? errDeepLinking = null,
     Object? moveToIdx = freezed,
   }) {
@@ -83,18 +77,6 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
           ? _value.errLoadingWallets
           : errLoadingWallets // ignore: cast_nullable_to_non_nullable
               as String,
-      selectedWalletCubit: freezed == selectedWalletCubit
-          ? _value.selectedWalletCubit
-          : selectedWalletCubit // ignore: cast_nullable_to_non_nullable
-              as WalletBloc?,
-      lastTestnetWalletIdx: freezed == lastTestnetWalletIdx
-          ? _value.lastTestnetWalletIdx
-          : lastTestnetWalletIdx // ignore: cast_nullable_to_non_nullable
-              as int?,
-      lastMainnetWalletIdx: freezed == lastMainnetWalletIdx
-          ? _value.lastMainnetWalletIdx
-          : lastMainnetWalletIdx // ignore: cast_nullable_to_non_nullable
-              as int?,
       errDeepLinking: null == errDeepLinking
           ? _value.errDeepLinking
           : errDeepLinking // ignore: cast_nullable_to_non_nullable
@@ -119,9 +101,6 @@ abstract class _$$HomeStateImplCopyWith<$Res>
       {List<WalletBloc>? walletBlocs,
       bool loadingWallets,
       String errLoadingWallets,
-      WalletBloc? selectedWalletCubit,
-      int? lastTestnetWalletIdx,
-      int? lastMainnetWalletIdx,
       String errDeepLinking,
       int? moveToIdx});
 }
@@ -140,9 +119,6 @@ class __$$HomeStateImplCopyWithImpl<$Res>
     Object? walletBlocs = freezed,
     Object? loadingWallets = null,
     Object? errLoadingWallets = null,
-    Object? selectedWalletCubit = freezed,
-    Object? lastTestnetWalletIdx = freezed,
-    Object? lastMainnetWalletIdx = freezed,
     Object? errDeepLinking = null,
     Object? moveToIdx = freezed,
   }) {
@@ -159,18 +135,6 @@ class __$$HomeStateImplCopyWithImpl<$Res>
           ? _value.errLoadingWallets
           : errLoadingWallets // ignore: cast_nullable_to_non_nullable
               as String,
-      selectedWalletCubit: freezed == selectedWalletCubit
-          ? _value.selectedWalletCubit
-          : selectedWalletCubit // ignore: cast_nullable_to_non_nullable
-              as WalletBloc?,
-      lastTestnetWalletIdx: freezed == lastTestnetWalletIdx
-          ? _value.lastTestnetWalletIdx
-          : lastTestnetWalletIdx // ignore: cast_nullable_to_non_nullable
-              as int?,
-      lastMainnetWalletIdx: freezed == lastMainnetWalletIdx
-          ? _value.lastMainnetWalletIdx
-          : lastMainnetWalletIdx // ignore: cast_nullable_to_non_nullable
-              as int?,
       errDeepLinking: null == errDeepLinking
           ? _value.errDeepLinking
           : errDeepLinking // ignore: cast_nullable_to_non_nullable
@@ -190,9 +154,6 @@ class _$HomeStateImpl extends _HomeState {
       {final List<WalletBloc>? walletBlocs,
       this.loadingWallets = true,
       this.errLoadingWallets = '',
-      this.selectedWalletCubit,
-      this.lastTestnetWalletIdx,
-      this.lastMainnetWalletIdx,
       this.errDeepLinking = '',
       this.moveToIdx})
       : _walletBlocs = walletBlocs,
@@ -217,12 +178,9 @@ class _$HomeStateImpl extends _HomeState {
   @JsonKey()
   final String errLoadingWallets;
 // Wallet? selectedWallet,
-  @override
-  final WalletBloc? selectedWalletCubit;
-  @override
-  final int? lastTestnetWalletIdx;
-  @override
-  final int? lastMainnetWalletIdx;
+// WalletBloc? selectedWalletCubit,
+// int? lastTestnetWalletIdx,
+// int? lastMainnetWalletIdx,
   @override
   @JsonKey()
   final String errDeepLinking;
@@ -231,7 +189,7 @@ class _$HomeStateImpl extends _HomeState {
 
   @override
   String toString() {
-    return 'HomeState(walletBlocs: $walletBlocs, loadingWallets: $loadingWallets, errLoadingWallets: $errLoadingWallets, selectedWalletCubit: $selectedWalletCubit, lastTestnetWalletIdx: $lastTestnetWalletIdx, lastMainnetWalletIdx: $lastMainnetWalletIdx, errDeepLinking: $errDeepLinking, moveToIdx: $moveToIdx)';
+    return 'HomeState(walletBlocs: $walletBlocs, loadingWallets: $loadingWallets, errLoadingWallets: $errLoadingWallets, errDeepLinking: $errDeepLinking, moveToIdx: $moveToIdx)';
   }
 
   @override
@@ -245,12 +203,6 @@ class _$HomeStateImpl extends _HomeState {
                 other.loadingWallets == loadingWallets) &&
             (identical(other.errLoadingWallets, errLoadingWallets) ||
                 other.errLoadingWallets == errLoadingWallets) &&
-            (identical(other.selectedWalletCubit, selectedWalletCubit) ||
-                other.selectedWalletCubit == selectedWalletCubit) &&
-            (identical(other.lastTestnetWalletIdx, lastTestnetWalletIdx) ||
-                other.lastTestnetWalletIdx == lastTestnetWalletIdx) &&
-            (identical(other.lastMainnetWalletIdx, lastMainnetWalletIdx) ||
-                other.lastMainnetWalletIdx == lastMainnetWalletIdx) &&
             (identical(other.errDeepLinking, errDeepLinking) ||
                 other.errDeepLinking == errDeepLinking) &&
             (identical(other.moveToIdx, moveToIdx) ||
@@ -263,9 +215,6 @@ class _$HomeStateImpl extends _HomeState {
       const DeepCollectionEquality().hash(_walletBlocs),
       loadingWallets,
       errLoadingWallets,
-      selectedWalletCubit,
-      lastTestnetWalletIdx,
-      lastMainnetWalletIdx,
       errDeepLinking,
       moveToIdx);
 
@@ -281,9 +230,6 @@ abstract class _HomeState extends HomeState {
       {final List<WalletBloc>? walletBlocs,
       final bool loadingWallets,
       final String errLoadingWallets,
-      final WalletBloc? selectedWalletCubit,
-      final int? lastTestnetWalletIdx,
-      final int? lastMainnetWalletIdx,
       final String errDeepLinking,
       final int? moveToIdx}) = _$HomeStateImpl;
   const _HomeState._() : super._();
@@ -295,12 +241,9 @@ abstract class _HomeState extends HomeState {
   @override
   String get errLoadingWallets;
   @override // Wallet? selectedWallet,
-  WalletBloc? get selectedWalletCubit;
-  @override
-  int? get lastTestnetWalletIdx;
-  @override
-  int? get lastMainnetWalletIdx;
-  @override
+// WalletBloc? selectedWalletCubit,
+// int? lastTestnetWalletIdx,
+// int? lastMainnetWalletIdx,
   String get errDeepLinking;
   @override
   int? get moveToIdx;

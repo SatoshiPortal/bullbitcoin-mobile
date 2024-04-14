@@ -5,11 +5,11 @@
 // import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 
 // class HomeRepository {
-//   final List<Wallet> _wallets = [];
+//   // final List<Wallet> _wallets = [];
 //   final List<WalletBloc> _walletBloc = [];
 //   WalletBloc? _selectedWalletBloc;
 
-//   List<Wallet> get wallets => _wallets;
+//   // List<Wallet> get wallets => _wallets;
 //   List<WalletBloc> get walletBlocs => _walletBloc;
 //   WalletBloc? get selectedWalletBloc => _selectedWalletBloc;
 
@@ -26,19 +26,19 @@
 //     _walletBloc.addAll(blocs);
 //   }
 
-//   void updateWallets(List<Wallet> wallets) {
-//     _wallets.clear();
-//     _wallets.addAll(wallets);
-//   }
+//   // void updateWallets(List<Wallet> wallets) {
+//   //   _wallets.clear();
+//   //   _wallets.addAll(wallets);
+//   // }
 
-//   void addWallets(List<Wallet> wallets) {
-//     _wallets.addAll(wallets);
-//   }
+//   // void addWallets(List<Wallet> wallets) {
+//   //   _wallets.addAll(wallets);
+//   // }
 
-//   bool hasWallets() => wallets.isNotEmpty;
+//   // bool hasWallets() => wallets.isNotEmpty;
 
-//   List<Wallet> walletsFromNetwork(BBNetwork network) =>
-//       wallets.where((wallet) => wallet.network == network).toList().reversed.toList();
+//   // List<Wallet> walletsFromNetwork(BBNetwork network) =>
+//   //     wallets.where((wallet) => wallet.network == network).toList().reversed.toList();
 
 //   List<WalletBloc> walletBlocsFromNetwork(BBNetwork network) {
 //     final blocs = walletBlocs
@@ -67,18 +67,18 @@
 //     return walletBlocs[idx];
 //   }
 
-//   Wallet? getFirstWithSpendableAndBalance(BBNetwork network, {int amt = 0}) {
-//     final wallets = walletsFromNetwork(network);
-//     if (wallets.isEmpty) return null;
-//     Wallet? wallet;
-//     for (final w in wallets) {
-//       if (!w.watchOnly()) {
-//         if ((w.balance ?? 0) > amt) return w;
-//         wallet = w;
-//       }
-//     }
-//     return wallet;
-//   }
+//   // Wallet? getFirstWithSpendableAndBalance(BBNetwork network, {int amt = 0}) {
+//   //   final wallets = walletsFromNetwork(network);
+//   //   if (wallets.isEmpty) return null;
+//   //   Wallet? wallet;
+//   //   for (final w in wallets) {
+//   //     if (!w.watchOnly()) {
+//   //       if ((w.balance ?? 0) > amt) return w;
+//   //       wallet = w;
+//   //     }
+//   //   }
+//   //   return wallet;
+//   // }
 
 //   int? getWalletIdx(Wallet wallet) {
 //     final walletsFromNetwork = walletBlocsFromNetwork(wallet.network);
