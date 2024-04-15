@@ -44,12 +44,13 @@ class _ReceivePageState extends State<ReceivePage> {
   late ReceiveCubit _cubit;
   late HomeCubit home;
   late CurrencyCubit _currencyCubit;
+  late SwapCubit _swapCubit;
 
   @override
   void initState() {
-    final swapBloc = SwapCubit(
+    _swapCubit = SwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
-      networkCubit: locator<NetworkCubit>(),
+      // networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
       watchTxsBloc: locator<WatchTxsBloc>(),
@@ -65,9 +66,9 @@ class _ReceivePageState extends State<ReceivePage> {
     _cubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
-      networkCubit: locator<NetworkCubit>(),
+      // networkCubit: locator<NetworkCubit>(),
       // swapBoltz: locator<SwapBoltz>(),
-      swapBloc: swapBloc,
+      // swapBloc: _swapCubit,
       // currencyCubit: CurrencyCubit(
       //   hiveStorage: locator<HiveStorage>(),
       //   bbAPI: locator<BullBitcoinAPI>(),
@@ -96,16 +97,23 @@ class _ReceivePageState extends State<ReceivePage> {
         BlocProvider.value(value: _cubit),
         BlocProvider.value(value: locator<NetworkCubit>()),
         BlocProvider.value(value: _currencyCubit),
-        BlocProvider.value(value: _cubit.state.swapBloc),
+        BlocProvider.value(value: _swapCubit),
         BlocProvider.value(value: home),
         if (walletBloc != null) BlocProvider.value(value: walletBloc),
       ],
-      child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: const _ReceiveAppBar(),
-          automaticallyImplyLeading: false,
+      child: BlocListener<ReceiveCubit, ReceiveState>(
+        listenWhen: (previous, current) => previous.updateAddressGap != current.updateAddressGap,
+        listener: (context, state) {
+          if (state.updateAddressGap != null)
+            locator<NetworkCubit>().updateStopGapAndSave(state.updateAddressGap!);
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            flexibleSpace: const _ReceiveAppBar(),
+            automaticallyImplyLeading: false,
+          ),
+          body: const _WalletProvider(child: _Screen()),
         ),
-        body: const _WalletProvider(child: _Screen()),
       ),
     );
   }
@@ -262,6 +270,10 @@ class WalletActions extends StatelessWidget {
           leftSvgAsset: 'assets/new-address.svg',
           onPressed: () {
             context.read<CurrencyCubit>().updateAmountDirect(0);
+            final paymentNetwork = context.read<ReceiveCubit>().state.paymentNetwork;
+            if (paymentNetwork == ReceivePaymentNetwork.lightning)
+              context.read<SwapCubit>().clearSwapTx();
+
             context.read<ReceiveCubit>().generateNewAddress();
           },
         ),
@@ -334,7 +346,11 @@ class SelectWalletType extends StatelessWidget {
             context.read<ReceiveCubit>().updateWalletBloc(liquidWalletBloc);
           }
         }
-        context.read<ReceiveCubit>().updateWalletType(value);
+        if (paymentNetwork == ReceivePaymentNetwork.lightning)
+          context.read<SwapCubit>().clearSwapTx();
+
+        final isTestnet = context.read<NetworkCubit>().state.testnet;
+        context.read<ReceiveCubit>().updateWalletType(value, isTestnet);
       },
     );
   }
@@ -372,7 +388,19 @@ class CreateLightningInvoice extends StatelessWidget {
             loadingText: 'Creating Invoice',
             onPressed: () async {
               final amt = context.read<CurrencyCubit>().state.amount;
-              context.read<ReceiveCubit>().createLnInvoiceClicked(amt);
+
+              final walletId = context.read<ReceiveCubit>().state.walletBloc!.state.wallet!.id;
+              final label = context.read<ReceiveCubit>().state.description;
+              final isTestnet = context.read<NetworkCubit>().state.testnet;
+              final networkUrl = context.read<NetworkCubit>().state.getNetworkUrl();
+              context.read<SwapCubit>().createBtcLnRevSwap(
+                    amount: amt,
+                    walletId: walletId,
+                    label: label,
+                    isTestnet: isTestnet,
+                    networkUrl: networkUrl,
+                  );
+              // context.read<ReceiveCubit>().createLnInvoiceClicked(amt);
             },
           ),
         ),

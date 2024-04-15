@@ -4,7 +4,6 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
@@ -16,7 +15,7 @@ class SwapCubit extends Cubit<SwapState> {
   SwapCubit({
     required WalletSensitiveStorageRepository walletSensitiveRepository,
     // required this.settingsCubit,
-    required NetworkCubit networkCubit,
+    // required NetworkCubit networkCubit,
     required SwapBoltz swapBoltz,
     required WalletTx walletTx,
     required WatchTxsBloc watchTxsBloc,
@@ -25,7 +24,7 @@ class SwapCubit extends Cubit<SwapState> {
         _watchTxsBloc = watchTxsBloc,
         _walletTx = walletTx,
         _swapBoltz = swapBoltz,
-        _networkCubit = networkCubit,
+        // _networkCubit = networkCubit,
         _walletSensitiveRepository = walletSensitiveRepository,
         super(const SwapState()) {
     // clearSwapTx();
@@ -35,7 +34,7 @@ class SwapCubit extends Cubit<SwapState> {
   final SwapBoltz _swapBoltz;
   final WalletTx _walletTx;
 
-  final NetworkCubit _networkCubit;
+  // final NetworkCubit _networkCubit;
   final WatchTxsBloc _watchTxsBloc;
   final HomeCubit _homeCubit;
 
@@ -52,8 +51,11 @@ class SwapCubit extends Cubit<SwapState> {
     required String walletId,
     required int amount,
     String? label,
+    required bool isTestnet,
+    required String networkUrl,
   }) async {
-    if (!_networkCubit.state.testnet) return;
+    // if (!_networkCubit.state.testnet) return;
+    if (!isTestnet) return;
 
     final bloc = _homeCubit.state.getWalletBlocById(walletId);
     if (bloc == null) return;
@@ -91,8 +93,10 @@ class SwapCubit extends Cubit<SwapState> {
       mnemonic: seed!.mnemonic,
       index: bloc.state.wallet!.revKeyIndex,
       outAmount: outAmount,
-      network: _networkCubit.state.testnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
-      electrumUrl: _networkCubit.state.getNetworkUrl(),
+      // network: _networkCubit.state.testnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
+      network: isTestnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
+      // electrumUrl: _networkCubit.state.getNetworkUrl(),
+      electrumUrl: networkUrl,
       boltzUrl: boltzTestnet,
       pairHash: fees.btcPairHash,
     );
@@ -127,6 +131,8 @@ class SwapCubit extends Cubit<SwapState> {
     required String invoice,
     required int amount,
     String? label,
+    required bool isTestnet,
+    required String networkUrl,
   }) async {
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
     final bloc = _homeCubit.state.getWalletBlocById(walletId);
@@ -159,8 +165,10 @@ class SwapCubit extends Cubit<SwapState> {
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
       invoice: invoice,
-      network: _networkCubit.state.testnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
-      electrumUrl: _networkCubit.state.getNetworkUrl(),
+      // network: _networkCubit.state.testnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
+      // electrumUrl: _networkCubit.state.getNetworkUrl(),
+      network: isTestnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
+      electrumUrl: networkUrl,
     );
     if (err != null) {
       emit(state.copyWith(errCreatingSwapInv: err.message, generatingSwapInv: false));

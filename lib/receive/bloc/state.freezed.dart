@@ -32,7 +32,7 @@ mixin _$ReceiveState {
   WalletBloc? get walletBloc => throw _privateConstructorUsedError;
   ReceivePaymentNetwork get paymentNetwork =>
       throw _privateConstructorUsedError;
-  SwapCubit get swapBloc => throw _privateConstructorUsedError;
+  int? get updateAddressGap => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ReceiveStateCopyWith<ReceiveState> get copyWith =>
@@ -61,7 +61,7 @@ abstract class $ReceiveStateCopyWith<$Res> {
       String errCreatingInvoice,
       WalletBloc? walletBloc,
       ReceivePaymentNetwork paymentNetwork,
-      SwapCubit swapBloc});
+      int? updateAddressGap});
 
   $AddressCopyWith<$Res>? get defaultAddress;
   $AddressCopyWith<$Res>? get defaultLiquidAddress;
@@ -95,7 +95,7 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
     Object? paymentNetwork = null,
-    Object? swapBloc = null,
+    Object? updateAddressGap = freezed,
   }) {
     return _then(_value.copyWith(
       loadingAddress: null == loadingAddress
@@ -158,10 +158,10 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.paymentNetwork
           : paymentNetwork // ignore: cast_nullable_to_non_nullable
               as ReceivePaymentNetwork,
-      swapBloc: null == swapBloc
-          ? _value.swapBloc
-          : swapBloc // ignore: cast_nullable_to_non_nullable
-              as SwapCubit,
+      updateAddressGap: freezed == updateAddressGap
+          ? _value.updateAddressGap
+          : updateAddressGap // ignore: cast_nullable_to_non_nullable
+              as int?,
     ) as $Val);
   }
 
@@ -214,7 +214,7 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       String errCreatingInvoice,
       WalletBloc? walletBloc,
       ReceivePaymentNetwork paymentNetwork,
-      SwapCubit swapBloc});
+      int? updateAddressGap});
 
   @override
   $AddressCopyWith<$Res>? get defaultAddress;
@@ -248,7 +248,7 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
     Object? paymentNetwork = null,
-    Object? swapBloc = null,
+    Object? updateAddressGap = freezed,
   }) {
     return _then(_$ReceiveStateImpl(
       loadingAddress: null == loadingAddress
@@ -311,10 +311,10 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
           ? _value.paymentNetwork
           : paymentNetwork // ignore: cast_nullable_to_non_nullable
               as ReceivePaymentNetwork,
-      swapBloc: null == swapBloc
-          ? _value.swapBloc
-          : swapBloc // ignore: cast_nullable_to_non_nullable
-              as SwapCubit,
+      updateAddressGap: freezed == updateAddressGap
+          ? _value.updateAddressGap
+          : updateAddressGap // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -338,7 +338,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.errCreatingInvoice = '',
       this.walletBloc,
       this.paymentNetwork = ReceivePaymentNetwork.bitcoin,
-      required this.swapBloc})
+      this.updateAddressGap})
       : super._();
 
   @override
@@ -384,11 +384,11 @@ class _$ReceiveStateImpl extends _ReceiveState {
   @JsonKey()
   final ReceivePaymentNetwork paymentNetwork;
   @override
-  final SwapCubit swapBloc;
+  final int? updateAddressGap;
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, defaultLiquidAddress: $defaultLiquidAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, swapBloc: $swapBloc)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, defaultLiquidAddress: $defaultLiquidAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, updateAddressGap: $updateAddressGap)';
   }
 
   @override
@@ -426,8 +426,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
                 other.walletBloc == walletBloc) &&
             (identical(other.paymentNetwork, paymentNetwork) ||
                 other.paymentNetwork == paymentNetwork) &&
-            (identical(other.swapBloc, swapBloc) ||
-                other.swapBloc == swapBloc));
+            (identical(other.updateAddressGap, updateAddressGap) ||
+                other.updateAddressGap == updateAddressGap));
   }
 
   @override
@@ -448,7 +448,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
       errCreatingInvoice,
       walletBloc,
       paymentNetwork,
-      swapBloc);
+      updateAddressGap);
 
   @JsonKey(ignore: true)
   @override
@@ -474,7 +474,7 @@ abstract class _ReceiveState extends ReceiveState {
       final String errCreatingInvoice,
       final WalletBloc? walletBloc,
       final ReceivePaymentNetwork paymentNetwork,
-      required final SwapCubit swapBloc}) = _$ReceiveStateImpl;
+      final int? updateAddressGap}) = _$ReceiveStateImpl;
   const _ReceiveState._() : super._();
 
   @override
@@ -508,7 +508,7 @@ abstract class _ReceiveState extends ReceiveState {
   @override
   ReceivePaymentNetwork get paymentNetwork;
   @override
-  SwapCubit get swapBloc;
+  int? get updateAddressGap;
   @override
   @JsonKey(ignore: true)
   _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>

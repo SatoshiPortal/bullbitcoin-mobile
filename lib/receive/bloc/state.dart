@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -27,14 +26,15 @@ class ReceiveState with _$ReceiveState {
     @Default('') String errCreatingInvoice,
     WalletBloc? walletBloc,
     @Default(ReceivePaymentNetwork.bitcoin) ReceivePaymentNetwork paymentNetwork,
-    required SwapCubit swapBloc,
+    int? updateAddressGap,
+    // required SwapCubit swapBloc,
   }) = _ReceiveState;
   const ReceiveState._();
 
   String getQRStr() {
     if (paymentNetwork == ReceivePaymentNetwork.lightning) {
-      if (swapBloc.state.swapTx == null) return '';
-      return swapBloc.state.swapTx!.invoice;
+      // if (swapBloc.state.swapTx == null) return '';
+      // return swapBloc.state.swapTx!.invoice;
     }
 
     if (savedInvoiceAmount > 0 || savedDescription.isNotEmpty) {

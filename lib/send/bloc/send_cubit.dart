@@ -273,10 +273,15 @@ class SendCubit extends Cubit<SendState> {
     final isLn = state.isLnInvoice();
     if (isLn) {
       final walletId = state.selectedWalletBloc!.state.wallet!.id;
+      final isTesnet = _networkCubit.state.testnet;
+      final networkUrl = _networkCubit.state.getNetworkUrl();
+
       await state.swapCubit.createBtcLnSubSwap(
         walletId: walletId,
         invoice: state.address,
         amount: currencyCubit.state.amount,
+        isTestnet: isTesnet,
+        networkUrl: networkUrl,
       );
       await Future.delayed(const Duration(milliseconds: 500));
       final walletBloc = _homeCubit.state.getWalletBlocById(walletId);

@@ -53,7 +53,7 @@ class _SendPageState extends State<SendPage> {
   void initState() {
     final swapBloc = SwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
-      networkCubit: locator<NetworkCubit>(),
+      // networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
       watchTxsBloc: locator<WatchTxsBloc>(),

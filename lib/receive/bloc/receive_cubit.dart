@@ -2,9 +2,7 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,18 +12,18 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     WalletBloc? walletBloc,
     required WalletAddress walletAddress,
     required WalletsStorageRepository walletsStorageRepository,
-    required NetworkCubit networkCubit,
-    required SwapCubit swapBloc,
-  })  : _networkCubit = networkCubit,
-        _walletsStorageRepository = walletsStorageRepository,
+  })  : _walletsStorageRepository = walletsStorageRepository,
         _walletAddress = walletAddress,
-        super(ReceiveState(walletBloc: walletBloc, swapBloc: swapBloc)) {
+        super(
+          ReceiveState(
+            walletBloc: walletBloc,
+          ),
+        ) {
     loadAddress();
   }
 
   final WalletAddress _walletAddress;
   final WalletsStorageRepository _walletsStorageRepository;
-  final NetworkCubit _networkCubit;
 
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(
@@ -42,12 +40,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     loadAddress();
   }
 
-  void updateWalletType(ReceivePaymentNetwork paymentNetwork) {
+  void updateWalletType(ReceivePaymentNetwork paymentNetwork, bool isTestnet) {
     emit(state.copyWith(paymentNetwork: paymentNetwork));
-    if (!_networkCubit.state.testnet) return;
+    // if (!_networkCubit.state.testnet) return;
+    if (!isTestnet) return;
 
     if (paymentNetwork == ReceivePaymentNetwork.lightning) {
-      state.swapBloc.clearSwapTx();
       emit(state.copyWith(defaultAddress: null));
     }
     if (paymentNetwork == ReceivePaymentNetwork.bitcoin) {
@@ -175,10 +173,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   */
 
   void generateNewAddress() async {
-    if (state.paymentNetwork == ReceivePaymentNetwork.lightning) {
-      state.swapBloc.clearSwapTx();
-      return;
-    }
+    if (state.paymentNetwork == ReceivePaymentNetwork.lightning) return;
 
     emit(
       state.copyWith(
@@ -220,7 +215,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
               'WARNING! Electrum stop gap has been increased to $addressGap. This will affect your wallet sync time.\nGoto WalletSettings->Addresses to see all generated addresses.',
         ),
       );
-      _networkCubit.updateStopGapAndSave(addressGap + 1);
+      // _networkCubit.updateStopGapAndSave(addressGap + 1);
+      emit(state.copyWith(updateAddressGap: addressGap + 1));
       Future.delayed(const Duration(milliseconds: 100));
     }
 
@@ -325,16 +321,16 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
   }
 
-  void createLnInvoiceClicked(int amt) async {
-    final walletId = state.walletBloc?.state.wallet?.id;
-    if (walletId == null) return;
+  // void createLnInvoiceClicked(int amt) async {
+  //   final walletId = state.walletBloc?.state.wallet?.id;
+  //   if (walletId == null) return;
 
-    state.swapBloc.createBtcLnRevSwap(
-      walletId: walletId,
-      amount: amt,
-      label: state.description,
-    );
-  }
+  //   state.swapBloc.createBtcLnRevSwap(
+  //     walletId: walletId,
+  //     amount: amt,
+  //     label: state.description,
+  //   );
+  // }
 
   void shareClicked() {}
 }
