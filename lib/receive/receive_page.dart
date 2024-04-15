@@ -296,6 +296,14 @@ class _Warnings extends StatelessWidget {
 3. It is more economical to make fewer swaps of larger amounts than to make many swaps of smaller amounts'''),
         const Gap(8),
         const _RemoveWarningMessage(),
+        const Gap(24),
+        BBButton.big(
+          leftIcon: Icons.send_outlined,
+          label: 'Continue anyways',
+          onPressed: () {
+            context.read<SwapCubit>().removeWarnings();
+          },
+        ),
       ],
     );
   }
