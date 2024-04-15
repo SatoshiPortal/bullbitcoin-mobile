@@ -29,6 +29,7 @@ mixin _$SettingsState {
   String get errLoadingLanguage => throw _privateConstructorUsedError;
   bool get defaultRBF => throw _privateConstructorUsedError;
   int get homeLayout => throw _privateConstructorUsedError;
+  bool get removeSwapWarnings => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -51,7 +52,8 @@ abstract class $SettingsStateCopyWith<$Res> {
       bool loadingLanguage,
       String errLoadingLanguage,
       bool defaultRBF,
-      int homeLayout});
+      int homeLayout,
+      bool removeSwapWarnings});
 }
 
 /// @nodoc
@@ -76,6 +78,7 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? errLoadingLanguage = null,
     Object? defaultRBF = null,
     Object? homeLayout = null,
+    Object? removeSwapWarnings = null,
   }) {
     return _then(_value.copyWith(
       notifications: null == notifications
@@ -114,6 +117,10 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.homeLayout
           : homeLayout // ignore: cast_nullable_to_non_nullable
               as int,
+      removeSwapWarnings: null == removeSwapWarnings
+          ? _value.removeSwapWarnings
+          : removeSwapWarnings // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -135,7 +142,8 @@ abstract class _$$SettingsStateImplCopyWith<$Res>
       bool loadingLanguage,
       String errLoadingLanguage,
       bool defaultRBF,
-      int homeLayout});
+      int homeLayout,
+      bool removeSwapWarnings});
 }
 
 /// @nodoc
@@ -158,6 +166,7 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
     Object? errLoadingLanguage = null,
     Object? defaultRBF = null,
     Object? homeLayout = null,
+    Object? removeSwapWarnings = null,
   }) {
     return _then(_$SettingsStateImpl(
       notifications: null == notifications
@@ -196,6 +205,10 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
           ? _value.homeLayout
           : homeLayout // ignore: cast_nullable_to_non_nullable
               as int,
+      removeSwapWarnings: null == removeSwapWarnings
+          ? _value.removeSwapWarnings
+          : removeSwapWarnings // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -212,7 +225,8 @@ class _$SettingsStateImpl extends _SettingsState {
       this.loadingLanguage = false,
       this.errLoadingLanguage = '',
       this.defaultRBF = true,
-      this.homeLayout = 1})
+      this.homeLayout = 1,
+      this.removeSwapWarnings = false})
       : _languageList = languageList,
         super._();
 
@@ -252,10 +266,13 @@ class _$SettingsStateImpl extends _SettingsState {
   @override
   @JsonKey()
   final int homeLayout;
+  @override
+  @JsonKey()
+  final bool removeSwapWarnings;
 
   @override
   String toString() {
-    return 'SettingsState(notifications: $notifications, privacyView: $privacyView, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, defaultRBF: $defaultRBF, homeLayout: $homeLayout)';
+    return 'SettingsState(notifications: $notifications, privacyView: $privacyView, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, defaultRBF: $defaultRBF, homeLayout: $homeLayout, removeSwapWarnings: $removeSwapWarnings)';
   }
 
   @override
@@ -280,7 +297,9 @@ class _$SettingsStateImpl extends _SettingsState {
             (identical(other.defaultRBF, defaultRBF) ||
                 other.defaultRBF == defaultRBF) &&
             (identical(other.homeLayout, homeLayout) ||
-                other.homeLayout == homeLayout));
+                other.homeLayout == homeLayout) &&
+            (identical(other.removeSwapWarnings, removeSwapWarnings) ||
+                other.removeSwapWarnings == removeSwapWarnings));
   }
 
   @JsonKey(ignore: true)
@@ -295,7 +314,8 @@ class _$SettingsStateImpl extends _SettingsState {
       loadingLanguage,
       errLoadingLanguage,
       defaultRBF,
-      homeLayout);
+      homeLayout,
+      removeSwapWarnings);
 
   @JsonKey(ignore: true)
   @override
@@ -321,7 +341,8 @@ abstract class _SettingsState extends SettingsState {
       final bool loadingLanguage,
       final String errLoadingLanguage,
       final bool defaultRBF,
-      final int homeLayout}) = _$SettingsStateImpl;
+      final int homeLayout,
+      final bool removeSwapWarnings}) = _$SettingsStateImpl;
   const _SettingsState._() : super._();
 
   factory _SettingsState.fromJson(Map<String, dynamic> json) =
@@ -345,6 +366,8 @@ abstract class _SettingsState extends SettingsState {
   bool get defaultRBF;
   @override
   int get homeLayout;
+  @override
+  bool get removeSwapWarnings;
   @override
   @JsonKey(ignore: true)
   _$$SettingsStateImplCopyWith<_$SettingsStateImpl> get copyWith =>

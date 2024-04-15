@@ -14,11 +14,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required WalletsStorageRepository walletsStorageRepository,
   })  : _walletsStorageRepository = walletsStorageRepository,
         _walletAddress = walletAddress,
-        super(
-          ReceiveState(
-            walletBloc: walletBloc,
-          ),
-        ) {
+        super(ReceiveState(walletBloc: walletBloc)) {
     loadAddress();
   }
 
@@ -101,7 +97,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         ),
       );
 
-      final (allWallets, errAllWallets) = await _walletsStorageRepository.readAllWallets();
+      final (allWallets, _) = await _walletsStorageRepository.readAllWallets();
 
       Wallet? btcWallet;
       if (wallet.network == BBNetwork.Mainnet) {

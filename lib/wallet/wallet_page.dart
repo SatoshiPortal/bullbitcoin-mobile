@@ -1,8 +1,6 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_wallet_actions.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
-import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
@@ -136,54 +134,54 @@ class ActionsRow extends StatelessWidget {
   }
 }
 
-class HighBalanceWarning extends StatelessWidget {
-  const HighBalanceWarning({super.key});
+// class HighBalanceWarning extends StatelessWidget {
+//   const HighBalanceWarning({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    const bal = 10;
-    // const balStr = '';
-    return WarningContainer(
-      title: 'Instant Payment Wallet balance is high',
-      info:
-          'Learn more about the Instant Payment Wallet terms and conditions in the “Information” section of the wallet.',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const BBText.body(
-            'The balance in your Instant Payment Wallet is high. Please note that this wallet is not intended for long-term savings or large payments.',
-          ),
-          const BBText.body(
-            'Only keep funds in the Instant Payments Wallet if you intend to spend them on a day-to-day basis.',
-          ),
-          const Gap(8),
-          const BBText.body('Recommended maximum balance:'),
-          const BBText.body('$bal', isBold: true),
-          const Gap(8),
-          const BBText.body(
-            'We advise that you move the funds to the Secure Bitcoin Wallet unless you intend to spend them.',
-          ),
-          const Gap(16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Checkbox(value: false, onChanged: (v) {}),
-              const Gap(8),
-              const BBText.body("Don't show this warning again."),
-            ],
-          ),
-          const Gap(16),
-          BBButton.big(
-            label: 'Swap funds',
-            leftIcon: Icons.send,
-            onPressed: () {},
-          ),
-          BBButton.big(
-            label: 'Go Back',
-            onPressed: () {},
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     const bal = 10;
+//     // const balStr = '';
+//     return WarningContainer(
+//       title: 'Instant Payment Wallet balance is high',
+//       info:
+//           'Learn more about the Instant Payment Wallet terms and conditions in the “Information” section of the wallet.',
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.stretch,
+//         children: [
+//           const BBText.body(
+//             'The balance in your Instant Payment Wallet is high. Please note that this wallet is not intended for long-term savings or large payments.',
+//           ),
+//           const BBText.body(
+//             'Only keep funds in the Instant Payments Wallet if you intend to spend them on a day-to-day basis.',
+//           ),
+//           const Gap(8),
+//           const BBText.body('Recommended maximum balance:'),
+//           const BBText.body('$bal', isBold: true),
+//           const Gap(8),
+//           const BBText.body(
+//             'We advise that you move the funds to the Secure Bitcoin Wallet unless you intend to spend them.',
+//           ),
+//           const Gap(16),
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Checkbox(value: false, onChanged: (v) {}),
+//               const Gap(8),
+//               const BBText.body("Don't show this warning again."),
+//             ],
+//           ),
+//           const Gap(16),
+//           BBButton.big(
+//             label: 'Swap funds',
+//             leftIcon: Icons.send,
+//             onPressed: () {},
+//           ),
+//           BBButton.big(
+//             label: 'Go Back',
+//             onPressed: () {},
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

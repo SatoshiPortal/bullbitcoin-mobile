@@ -15,6 +15,7 @@ class SettingsState with _$SettingsState {
     @Default('') String errLoadingLanguage,
     @Default(true) bool defaultRBF,
     @Default(1) int homeLayout,
+    @Default(false) bool removeSwapWarnings,
   }) = _SettingsState;
   const SettingsState._();
 

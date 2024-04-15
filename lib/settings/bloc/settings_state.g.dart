@@ -19,6 +19,7 @@ _$SettingsStateImpl _$$SettingsStateImplFromJson(Map<String, dynamic> json) =>
       errLoadingLanguage: json['errLoadingLanguage'] as String? ?? '',
       defaultRBF: json['defaultRBF'] as bool? ?? true,
       homeLayout: json['homeLayout'] as int? ?? 1,
+      removeSwapWarnings: json['removeSwapWarnings'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$SettingsStateImplToJson(_$SettingsStateImpl instance) =>
@@ -32,4 +33,5 @@ Map<String, dynamic> _$$SettingsStateImplToJson(_$SettingsStateImpl instance) =>
       'errLoadingLanguage': instance.errLoadingLanguage,
       'defaultRBF': instance.defaultRBF,
       'homeLayout': instance.homeLayout,
+      'removeSwapWarnings': instance.removeSwapWarnings,
     };

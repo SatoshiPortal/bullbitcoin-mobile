@@ -5,11 +5,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 
 class WarningContainer extends StatelessWidget {
-  const WarningContainer({super.key, required this.title, required this.child, required this.info});
+  const WarningContainer({
+    super.key,
+    required this.children,
+  });
 
-  final String title;
-  final Widget child;
-  final String info;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +22,20 @@ class WarningContainer extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BBText.titleLarge(title, isRed: true),
-          const Gap(8),
-          child,
-          const Gap(16),
-          Row(
-            children: [
-              const Icon(FontAwesomeIcons.lightbulb, size: 32),
-              const Gap(8),
-              Expanded(child: BBText.bodySmall(info, isBold: true)),
-            ],
-          ),
-        ],
+        children: children,
+        // children: [
+        //   BBText.titleLarge(title, isRed: true),
+        //   const Gap(8),
+        //   child,
+        //   const Gap(16),
+        //   Row(
+        //     children: [
+        //       const Icon(FontAwesomeIcons.lightbulb, size: 32),
+        //       const Gap(8),
+        //       Expanded(child: BBText.bodySmall(info, isBold: true)),
+        //     ],
+        //   ),
+        // ],
       ),
     );
   }

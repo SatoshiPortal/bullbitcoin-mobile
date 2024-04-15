@@ -12,6 +12,10 @@ class SwapState with _$SwapState {
     @Default(false) bool generatingSwapInv,
     SwapTx? swapTx,
     Invoice? invoice,
+    @Default(false) bool errSmallAmt,
+    int? errHighFees,
   }) = _SwapState;
   const SwapState._();
+
+  bool showWarning() => errSmallAmt || errHighFees != null;
 }

@@ -310,6 +310,16 @@ class SwapTx with _$SwapTx {
 
   String splitInvoice() =>
       invoice.substring(0, 5) + ' .... ' + invoice.substring(invoice.length - 10);
+
+  bool smallAmt() => outAmount < 1000000;
+
+  int? highFees() {
+    final fee = totalFees();
+    if (fee == null) return null;
+    final feesPercent = ((fee / outAmount) * 100).toInt();
+    if (feesPercent > 3) return feesPercent;
+    return null;
+  }
 }
 
 extension SwapTxExt on SwapStatus {

@@ -76,4 +76,6 @@ class SettingsCubit extends Cubit<SettingsState> {
       // homeCubit?.state.selectedWalletCubit?.add(SyncWallet());
     });
   }
+
+  void changeSwapWarnings(bool remove) => emit(state.copyWith(removeSwapWarnings: remove));
 }

@@ -14,8 +14,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SwapCubit extends Cubit<SwapState> {
   SwapCubit({
     required WalletSensitiveStorageRepository walletSensitiveRepository,
-    // required this.settingsCubit,
-    // required NetworkCubit networkCubit,
     required SwapBoltz swapBoltz,
     required WalletTx walletTx,
     required WatchTxsBloc watchTxsBloc,
@@ -24,7 +22,6 @@ class SwapCubit extends Cubit<SwapState> {
         _watchTxsBloc = watchTxsBloc,
         _walletTx = walletTx,
         _swapBoltz = swapBoltz,
-        // _networkCubit = networkCubit,
         _walletSensitiveRepository = walletSensitiveRepository,
         super(const SwapState()) {
     // clearSwapTx();
@@ -54,7 +51,6 @@ class SwapCubit extends Cubit<SwapState> {
     required bool isTestnet,
     required String networkUrl,
   }) async {
-    // if (!_networkCubit.state.testnet) return;
     if (!isTestnet) return;
 
     final bloc = _homeCubit.state.getWalletBlocById(walletId);
@@ -119,12 +115,27 @@ class SwapCubit extends Cubit<SwapState> {
       ),
     );
 
+    _showWarnings();
+
     _saveBtcLnSwapToWallet(
       swapTx: updatedSwap,
       label: label,
       walletId: walletId,
     );
   }
+
+  void _showWarnings() {
+    final swapTx = state.swapTx;
+    if (swapTx == null) return;
+    emit(
+      state.copyWith(
+        errSmallAmt: swapTx.smallAmt(),
+        errHighFees: swapTx.highFees(),
+      ),
+    );
+  }
+
+  void removeWarnings() => emit(state.copyWith(errSmallAmt: false, errHighFees: null));
 
   Future createBtcLnSubSwap({
     required String walletId,

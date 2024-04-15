@@ -15,6 +15,7 @@ import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
+import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -22,6 +23,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
+import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/receive.dart';
@@ -159,44 +161,169 @@ class _Screen extends StatelessWidget {
     final watchOnly = context.select((WalletBloc x) => x.state.wallet!.watchOnly());
     final mainWallet = context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
 
+    final showWarning = context.select((SwapCubit x) => x.state.showWarning());
+    final removeWarning = context.select((SettingsCubit x) => x.state.removeSwapWarnings);
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Gap(32),
-            const ReceiveWalletsDropDown(),
-            const Gap(24),
-            if (!watchOnly && mainWallet) ...[
-              const SelectWalletType(),
+            if (showWarning && !removeWarning)
+              const _Warnings()
+            else ...[
+              const Gap(32),
+              const ReceiveWalletsDropDown(),
+              const Gap(24),
+              if (!watchOnly && mainWallet) ...[
+                const SelectWalletType(),
+                const Gap(48),
+              ],
+              if (!isSupported)
+                const Column(
+                  children: [
+                    Center(child: BBText.error('Warning!')),
+                    Center(child: Text('Chain-Chain swaps coming soon!')),
+                  ],
+                ),
+              if (isSupported && showQR) ...[
+                const ReceiveQR(),
+                const Gap(8),
+                const ReceiveAddress(),
+                const Gap(8),
+                const SwapFeesDetails(),
+              ] else if (isSupported) ...[
+                const Gap(24),
+                const CreateLightningInvoice(),
+                const Gap(24),
+                const SwapHistoryButton(),
+              ],
               const Gap(48),
+              if (isSupported) const WalletActions(),
+              const Gap(32),
             ],
-            if (!isSupported)
-              const Column(
-                children: [
-                  Center(child: BBText.error('Warning!')),
-                  Center(child: Text('Chain-Chain swaps coming soon!')),
-                ],
-              ),
-            if (isSupported && showQR) ...[
-              const ReceiveQR(),
-              const Gap(8),
-              const ReceiveAddress(),
-              const Gap(8),
-              const SwapFeesDetails(),
-            ] else if (isSupported) ...[
-              const Gap(24),
-              const CreateLightningInvoice(),
-              const Gap(24),
-              const SwapHistoryButton(),
-            ],
-            const Gap(48),
-            if (isSupported) const WalletActions(),
-            const Gap(32),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _Warnings extends StatelessWidget {
+  const _Warnings();
+
+  Widget _buildLowAmtWarn() {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BBText.titleLarge('Small amount warning', isRed: true),
+        Gap(8),
+        BBText.bodySmall(
+          'You are about to receive less than 0.01 BTC as a Lightning Network payment and swap it to on-chain Bitcoin in your Secure Bitcoin Wallet.',
+        ),
+        Gap(8),
+        BBText.bodySmall(
+          'Only do this if you specifically want to add funds to your Secure Bitcoin Wallet.',
+          isBold: true,
+        ),
+        Gap(24),
+      ],
+    );
+  }
+
+  Widget _buildHighFeesWarn({
+    required int feePercentage,
+    required int amt,
+    required int fees,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const BBText.titleLarge('High fee warning', isRed: true),
+        const Gap(8),
+        const BBText.bodySmall(
+          'You are about to pay over 3% in Bitcoin Network fees for this transaction.',
+        ),
+        const Gap(8),
+        Row(
+          children: [
+            const BBText.bodySmall('Amount you receive: '),
+            BBText.bodySmall('$amt sats', isBold: true),
+          ],
+        ),
+        Row(
+          children: [
+            const BBText.bodySmall('Network fees: '),
+            BBText.bodySmall('$fees sats', isBold: true),
+          ],
+        ),
+        const Gap(24),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    if (swapTx == null) return const SizedBox.shrink();
+
+    final errLowAmt = context.select((SwapCubit x) => x.state.swapTx!.smallAmt());
+    final errHighFees = context.select((SwapCubit x) => x.state.swapTx!.highFees());
+
+    return WarningContainer(
+      children: [
+        if (errLowAmt) _buildLowAmtWarn(),
+        if (errHighFees != null)
+          _buildHighFeesWarn(
+            feePercentage: errHighFees,
+            amt: swapTx.outAmount,
+            fees: swapTx.totalFees() ?? 0,
+          ),
+        const Row(
+          children: [
+            Icon(FontAwesomeIcons.lightbulb, size: 32),
+            Gap(8),
+            Expanded(child: BBText.titleLarge('Suggestions', isBold: true)),
+          ],
+        ),
+        const Gap(24),
+        const BBText.bodySmall('''
+1. Use the Instant Payment Wallet instead to receive payments below 0.01 BTC.
+
+2. If you want to add funds to your Secure Bitcoin Wallet from an external Lightning Wallet, send a larger amount. We recommend at minimum 0.01 BTC.
+
+3. It is more economical to make fewer swaps of larger amounts than to make many swaps of smaller amounts'''),
+        const Gap(8),
+        const _RemoveWarningMessage(),
+      ],
+    );
+  }
+}
+
+class _RemoveWarningMessage extends StatelessWidget {
+  const _RemoveWarningMessage();
+
+  @override
+  Widget build(BuildContext context) {
+    final removeWarning = context.select((SettingsCubit x) => x.state.removeSwapWarnings);
+
+    return Row(
+      children: [
+        Checkbox(
+          value: removeWarning,
+          onChanged: (checked) {
+            if (checked != null) context.read<SettingsCubit>().changeSwapWarnings(checked);
+          },
+        ),
+        const Gap(8),
+        BBButton.text(
+          label: "Don't show this warning again",
+          onPressed: () {
+            context.read<SettingsCubit>().changeSwapWarnings(true);
+          },
+        ),
+      ],
     );
   }
 }
@@ -388,11 +515,11 @@ class CreateLightningInvoice extends StatelessWidget {
             loadingText: 'Creating Invoice',
             onPressed: () async {
               final amt = context.read<CurrencyCubit>().state.amount;
-
               final walletId = context.read<ReceiveCubit>().state.walletBloc!.state.wallet!.id;
               final label = context.read<ReceiveCubit>().state.description;
               final isTestnet = context.read<NetworkCubit>().state.testnet;
               final networkUrl = context.read<NetworkCubit>().state.getNetworkUrl();
+
               context.read<SwapCubit>().createBtcLnRevSwap(
                     amount: amt,
                     walletId: walletId,
@@ -400,6 +527,7 @@ class CreateLightningInvoice extends StatelessWidget {
                     isTestnet: isTestnet,
                     networkUrl: networkUrl,
                   );
+
               // context.read<ReceiveCubit>().createLnInvoiceClicked(amt);
             },
           ),
