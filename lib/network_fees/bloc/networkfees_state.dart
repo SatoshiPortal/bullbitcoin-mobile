@@ -75,6 +75,17 @@ class NetworkFeesState with _$NetworkFeesState {
     }
   }
 
+  int feesForBump() {
+    final isManualFees = feeOption() == 4;
+    int fees = 0;
+    if (!isManualFees)
+      fees = feesList?[feeOption()] ?? 0;
+    else
+      fees = fee();
+
+    return fees;
+  }
+
   String calculateFiatPriceForFees({
     required int feeRate,
     required bool isTestnet,

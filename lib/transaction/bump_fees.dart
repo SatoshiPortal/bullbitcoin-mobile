@@ -135,7 +135,8 @@ class BumpFeesPopup extends StatelessWidget {
               disabled: loading || sent,
               onPressed: () {
                 // if (!built)
-                context.read<TransactionCubit>().buildTx();
+                final fees = context.read<NetworkFeesCubit>().state.feesForBump();
+                context.read<TransactionCubit>().buildTx(fees);
                 // else
                 //   context.read<TransactionCubit>().sendTx();
               },

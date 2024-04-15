@@ -68,7 +68,7 @@ class TxPage extends StatelessWidget {
       walletsRepository: locator<WalletsRepository>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
 
-      networkFeesCubit: networkFees,
+      // networkFeesCubit: networkFees,
     );
 
     return MultiBlocProvider(

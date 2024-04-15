@@ -1,7 +1,9 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
+import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
@@ -41,6 +43,7 @@ class ReceivePage extends StatefulWidget {
 class _ReceivePageState extends State<ReceivePage> {
   late ReceiveCubit _cubit;
   late HomeCubit home;
+  late CurrencyCubit _currencyCubit;
 
   @override
   void initState() {
@@ -51,6 +54,12 @@ class _ReceivePageState extends State<ReceivePage> {
       walletTx: locator<WalletTx>(),
       watchTxsBloc: locator<WatchTxsBloc>(),
       homeCubit: locator<HomeCubit>(),
+    );
+
+    _currencyCubit = CurrencyCubit(
+      hiveStorage: locator<HiveStorage>(),
+      bbAPI: locator<BullBitcoinAPI>(),
+      defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
 
     _cubit = ReceiveCubit(
@@ -86,7 +95,7 @@ class _ReceivePageState extends State<ReceivePage> {
       providers: [
         BlocProvider.value(value: _cubit),
         BlocProvider.value(value: locator<NetworkCubit>()),
-        // BlocProvider.value(value: _cubit.currencyCubit),
+        BlocProvider.value(value: _currencyCubit),
         BlocProvider.value(value: _cubit.state.swapBloc),
         BlocProvider.value(value: home),
         if (walletBloc != null) BlocProvider.value(value: walletBloc),

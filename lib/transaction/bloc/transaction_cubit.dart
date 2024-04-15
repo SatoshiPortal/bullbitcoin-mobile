@@ -10,7 +10,6 @@ import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
-import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -22,18 +21,15 @@ class TransactionCubit extends Cubit<TransactionState> {
     required Transaction tx,
     required WalletBloc walletBloc,
     required WalletTx walletTx,
-    // required this.walletSensTx,
     required BDKTransactions bdkTx,
     required WalletsStorageRepository walletsStorageRepository,
     required WalletSensitiveStorageRepository walletSensRepository,
     required WalletAddress walletAddress,
     required WalletUpdate walletUpdate,
-    required NetworkFeesCubit networkFeesCubit,
     required WalletsRepository walletsRepository,
     required BDKSensitiveCreate bdkSensitiveCreate,
   })  : _bdkTx = bdkTx,
         _bdkSensitiveCreate = bdkSensitiveCreate,
-        _networkFeesCubit = networkFeesCubit,
         _walletAddress = walletAddress,
         _walletSensRepository = walletSensRepository,
         _walletsRepository = walletsRepository,
@@ -60,7 +56,6 @@ class TransactionCubit extends Cubit<TransactionState> {
   final BDKTransactions _bdkTx;
 
   final WalletBloc _walletBloc;
-  final NetworkFeesCubit _networkFeesCubit;
 
   void loadTx() async {
     emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));
@@ -194,15 +189,16 @@ class TransactionCubit extends Cubit<TransactionState> {
   // }
 
   // SENSITIVE FX
-  void buildTx() async {
+  void buildTx(int fee) async {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
 
-    final isManualFees = _networkFeesCubit.state.feeOption() == 4;
-    int fees = 0;
-    if (!isManualFees)
-      fees = _networkFeesCubit.state.feesList?[_networkFeesCubit.state.feeOption()] ?? 0;
-    else
-      fees = _networkFeesCubit.state.fee();
+    // final isManualFees = _networkFeesCubit.state.feeOption() == 4;
+    // int fees = 0;
+    // if (!isManualFees)
+    //   fees = _networkFeesCubit.state.feesList?[_networkFeesCubit.state.feeOption()] ?? 0;
+    // else
+    //   fees = _networkFeesCubit.state.fee();
+    final fees = fee;
 
     if (fees == 0) {
       emit(
