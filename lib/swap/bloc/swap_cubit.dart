@@ -5,8 +5,6 @@ import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,10 +14,8 @@ class SwapCubit extends Cubit<SwapState> {
     required WalletSensitiveStorageRepository walletSensitiveRepository,
     required SwapBoltz swapBoltz,
     required WalletTx walletTx,
-    required WatchTxsBloc watchTxsBloc,
     required HomeCubit homeCubit,
   })  : _homeCubit = homeCubit,
-        _watchTxsBloc = watchTxsBloc,
         _walletTx = walletTx,
         _swapBoltz = swapBoltz,
         _walletSensitiveRepository = walletSensitiveRepository,
@@ -31,8 +27,6 @@ class SwapCubit extends Cubit<SwapState> {
   final SwapBoltz _swapBoltz;
   final WalletTx _walletTx;
 
-  // final NetworkCubit _networkCubit;
-  final WatchTxsBloc _watchTxsBloc;
   final HomeCubit _homeCubit;
 
   void decodeInvoice(String invoice) async {
@@ -240,7 +234,9 @@ class SwapCubit extends Cubit<SwapState> {
     // _homeCubit.updateSelectedWallet(walletBloc);
     await Future.delayed(const Duration(seconds: 5));
 
-    _watchTxsBloc.add(WatchWalletTxs(walletId: walletId));
+    emit(state.copyWith(watchWalletId: walletId));
+
+    // _watchTxsBloc.add(WatchWalletTxs(walletId: walletId));
   }
 
   void clearSwapTx() => emit(state.copyWith(swapTx: null));

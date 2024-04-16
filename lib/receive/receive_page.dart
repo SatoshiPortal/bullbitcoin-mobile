@@ -25,7 +25,9 @@ import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +57,7 @@ class _ReceivePageState extends State<ReceivePage> {
       // networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
-      watchTxsBloc: locator<WatchTxsBloc>(),
+      // watchTxsBloc: locator<WatchTxsBloc>(),
       homeCubit: locator<HomeCubit>(),
     );
 
@@ -103,12 +105,24 @@ class _ReceivePageState extends State<ReceivePage> {
         BlocProvider.value(value: home),
         if (walletBloc != null) BlocProvider.value(value: walletBloc),
       ],
-      child: BlocListener<ReceiveCubit, ReceiveState>(
-        listenWhen: (previous, current) => previous.updateAddressGap != current.updateAddressGap,
-        listener: (context, state) {
-          if (state.updateAddressGap != null)
-            locator<NetworkCubit>().updateStopGapAndSave(state.updateAddressGap!);
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<ReceiveCubit, ReceiveState>(
+            listenWhen: (previous, current) =>
+                previous.updateAddressGap != current.updateAddressGap,
+            listener: (context, state) {
+              if (state.updateAddressGap != null)
+                locator<NetworkCubit>().updateStopGapAndSave(state.updateAddressGap!);
+            },
+          ),
+          BlocListener<SwapCubit, SwapState>(
+            listenWhen: (previous, current) => previous.watchWalletId != current.watchWalletId,
+            listener: (context, state) {
+              if (state.watchWalletId != null)
+                locator<WatchTxsBloc>().add(WatchWalletTxs(walletId: state.watchWalletId!));
+            },
+          ),
+        ],
         child: Scaffold(
           appBar: AppBar(
             flexibleSpace: const _ReceiveAppBar(),

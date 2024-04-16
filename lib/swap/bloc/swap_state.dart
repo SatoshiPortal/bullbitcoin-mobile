@@ -14,6 +14,7 @@ class SwapState with _$SwapState {
     Invoice? invoice,
     @Default(false) bool errSmallAmt,
     int? errHighFees,
+    String? watchWalletId,
   }) = _SwapState;
   const SwapState._();
 
