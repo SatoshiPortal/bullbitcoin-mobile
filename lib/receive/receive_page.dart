@@ -97,20 +97,21 @@ class _ReceivePageState extends State<ReceivePage> {
             listenWhen: (previous, current) =>
                 previous.updateAddressGap != current.updateAddressGap,
             listener: (context, state) {
-              if (state.updateAddressGap != null)
-                context.read<NetworkCubit>().updateStopGapAndSave(state.updateAddressGap!);
+              if (state.updateAddressGap == null) return;
+
+              context.read<NetworkCubit>().updateStopGapAndSave(state.updateAddressGap!);
             },
           ),
           BlocListener<ReceiveCubit, ReceiveState>(
             listenWhen: (previous, current) => previous.switchToSecure != current.switchToSecure,
             listener: (context, state) {
-              if (state.switchToSecure) {
-                final network = context.read<NetworkCubit>().state.getBBNetwork();
-                final secureWallet = context.read<HomeCubit>().state.getMainSecureWallet(network);
-                if (secureWallet == null) return;
-                context.read<ReceiveCubit>().updateWalletBloc(secureWallet);
-                context.read<ReceiveCubit>().clearSwitch();
-              }
+              if (!state.switchToSecure) return;
+
+              final network = context.read<NetworkCubit>().state.getBBNetwork();
+              final secureWallet = context.read<HomeCubit>().state.getMainSecureWallet(network);
+              if (secureWallet == null) return;
+              context.read<ReceiveCubit>().updateWalletBloc(secureWallet);
+              context.read<ReceiveCubit>().clearSwitch();
             },
           ),
           BlocListener<SwapCubit, SwapState>(

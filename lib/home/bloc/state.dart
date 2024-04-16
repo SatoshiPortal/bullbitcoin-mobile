@@ -60,7 +60,7 @@ class HomeState with _$HomeState {
   WalletBloc? getMainSecureWallet(BBNetwork network) {
     final wallets = walletBlocsFromNetwork(network);
     final idx = wallets.indexWhere(
-      (w) => w.state.wallet!.type == BBWalletType.secure && w.state.wallet!.mainWallet,
+      (w) => w.state.wallet!.type != BBWalletType.instant && w.state.wallet!.mainWallet,
     );
     if (idx == -1) return null;
     return wallets[idx];
