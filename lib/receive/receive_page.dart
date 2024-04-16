@@ -108,19 +108,26 @@ class _ReceivePageState extends State<ReceivePage> {
           BlocListener<SwapCubit, SwapState>(
             listenWhen: (previous, current) => previous.updatedWallet != current.updatedWallet,
             listener: (context, state) {
-              if (state.updatedWallet != null) {
-                final walletBloc =
-                    context.read<HomeCubit>().state.getWalletBloc(state.updatedWallet!);
-                if (walletBloc == null) return;
-                walletBloc.add(
-                  UpdateWallet(
+              if (state.updatedWallet == null) return;
+
+              context
+                  .read<HomeCubit>()
+                  .state
+                  .getWalletBloc(
                     state.updatedWallet!,
-                    updateTypes: [UpdateWalletTypes.swaps],
-                  ),
-                );
-                locator<WatchTxsBloc>().add(WatchWalletTxs(walletId: state.updatedWallet!.id));
-                context.read<SwapCubit>().clearWallet();
-              }
+                  )
+                  ?.add(
+                    UpdateWallet(
+                      state.updatedWallet!,
+                      updateTypes: [UpdateWalletTypes.swaps],
+                    ),
+                  );
+
+              locator<WatchTxsBloc>().add(
+                WatchWalletTxs(walletId: state.updatedWallet!.id),
+              );
+
+              context.read<SwapCubit>().clearWallet();
             },
           ),
         ],
