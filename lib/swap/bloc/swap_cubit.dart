@@ -40,6 +40,8 @@ class SwapCubit extends Cubit<SwapState> {
   }) async {
     if (!isTestnet) return;
 
+    emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
+
     final outAmount = amount;
     final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
       boltzUrl: boltzTestnet,
@@ -50,17 +52,30 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    if (outAmount < fees!.btcLimits.minimal || outAmount > fees.btcLimits.maximal) {
-      emit(
-        state.copyWith(
-          errCreatingSwapInv: 'Amount should be greater than 50000 and less than 25000000 sats',
-          generatingSwapInv: false,
-        ),
-      );
-      return;
+    final walletIsLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+
+    if (!walletIsLiquid) {
+      if (outAmount < fees!.btcLimits.minimal || outAmount > fees.btcLimits.maximal) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv: 'Amount should be greater than 50000 and less than 25000000 sats',
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
+    } else {
+      if (outAmount < fees!.lbtcLimits.minimal || outAmount > fees.lbtcLimits.maximal) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv: 'Amount should be greater than 50000 and less than 25000000 sats',
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
     }
 
-    emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
     final (seed, errReadingSeed) = await _walletSensitiveRepository.readSeed(
       fingerprintIndex: wallet.getRelatedSeedStorageString(),
     );
@@ -69,16 +84,14 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    final walletIsLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
-
     final (swap, errCreatingInv) = await _swapBoltz.receive(
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
       outAmount: outAmount,
-      network: isTestnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
+      network: walletIsLiquid ? Chain.LiquidTestnet : Chain.BitcoinTestnet,
       electrumUrl: networkUrl,
       boltzUrl: boltzTestnet,
-      pairHash: fees.btcPairHash,
+      pairHash: walletIsLiquid ? fees.lbtcPairHash : fees.btcPairHash,
       isLiquid: walletIsLiquid,
     );
     if (errCreatingInv != null) {
@@ -87,9 +100,10 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     final updatedSwap = swap!.copyWith(
-      boltzFees: fees.btcReverse.boltzFees,
-      lockupFees: fees.btcReverse.lockupFees,
-      claimFees: fees.btcReverse.claimFeesEstimate,
+      boltzFees: !walletIsLiquid ? fees.btcReverse.boltzFees : fees.lbtcReverse.boltzFees,
+      lockupFees: !walletIsLiquid ? fees.btcReverse.lockupFees : fees.lbtcReverse.lockupFees,
+      claimFees:
+          !walletIsLiquid ? fees.btcReverse.claimFeesEstimate : fees.lbtcReverse.claimFeesEstimate,
     );
 
     emit(
