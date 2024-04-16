@@ -114,6 +114,15 @@ class _ReceivePageState extends State<ReceivePage> {
               context.read<ReceiveCubit>().clearSwitch();
             },
           ),
+          BlocListener<ReceiveCubit, ReceiveState>(
+            listenWhen: (previous, current) => previous.defaultAddress != current.defaultAddress,
+            listener: (context, state) {
+              if (state.defaultAddress != null) return;
+
+              context.read<SwapCubit>().clearSwapTx();
+              context.read<CurrencyCubit>().reset();
+            },
+          ),
           BlocListener<SwapCubit, SwapState>(
             listenWhen: (previous, current) => previous.updatedWallet != current.updatedWallet,
             listener: (context, state) {
@@ -553,7 +562,8 @@ class ReceiveQR extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final address = context.select((ReceiveCubit x) => x.state.getQRStr());
+    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    final address = context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
 
     return ReceiveQRDisplay(address: address);
   }
@@ -596,7 +606,8 @@ class ReceiveAddress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final addressQr = context.select((ReceiveCubit x) => x.state.getQRStr());
+    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    final addressQr = context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
 
     return ReceiveDisplayAddress(addressQr: addressQr);
   }

@@ -34,8 +34,10 @@ class ReceiveState with _$ReceiveState {
   }) = _ReceiveState;
   const ReceiveState._();
 
-  String getQRStr() {
+  String getQRStr({SwapTx? swapTx}) {
     if (paymentNetwork == ReceivePaymentNetwork.lightning) {
+      if (swapTx == null) return '';
+      return swapTx.invoice;
       // if (swapBloc.state.swapTx == null) return '';
       // return swapBloc.state.swapTx!.invoice;
     }
