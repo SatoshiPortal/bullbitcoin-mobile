@@ -124,7 +124,7 @@ class _ReceivePageState extends State<ReceivePage> {
                   );
 
               locator<WatchTxsBloc>().add(
-                WatchWalletTxs(walletId: state.updatedWallet!.id),
+                WatchWalletTxs(wallet: state.updatedWallet!.id),
               );
 
               context.read<SwapCubit>().clearWallet();

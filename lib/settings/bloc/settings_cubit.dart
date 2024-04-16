@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,11 +12,10 @@ class SettingsCubit extends Cubit<SettingsState> {
   })  : _hiveStorage = hiveStorage,
         super(const SettingsState()) {
     init();
+    loadTimer();
   }
 
   final HiveStorage _hiveStorage;
-
-  HomeCubit? homeCubit;
 
   Timer? _timer;
 

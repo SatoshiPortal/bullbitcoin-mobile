@@ -220,8 +220,16 @@ Future _setupWalletServices() async {
 }
 
 Future _setupBlocs() async {
-  final settings = SettingsCubit(
-    hiveStorage: locator<HiveStorage>(),
+  locator.registerSingleton<HomeCubit>(
+    HomeCubit(
+      walletsStorageRepository: locator<WalletsStorageRepository>(),
+    ),
+  );
+
+  locator.registerSingleton<SettingsCubit>(
+    SettingsCubit(
+      hiveStorage: locator<HiveStorage>(),
+    ),
   );
 
   locator.registerSingleton<NetworkCubit>(
@@ -246,23 +254,11 @@ Future _setupBlocs() async {
     ),
   );
 
-  final swap = WatchTxsBloc(
-    swapBoltz: locator<SwapBoltz>(),
-    walletTx: locator<WalletTx>(),
+  locator.registerSingleton<WatchTxsBloc>(
+    WatchTxsBloc(
+      swapBoltz: locator<SwapBoltz>(),
+      walletTx: locator<WalletTx>(),
+      homeCubit: locator<HomeCubit>(),
+    ),
   );
-
-  final homeCubit = HomeCubit(
-    walletsStorageRepository: locator<WalletsStorageRepository>(),
-  );
-
-  swap.homeCubit = homeCubit;
-  locator.registerSingleton<WatchTxsBloc>(swap);
-
-  settings.homeCubit = homeCubit;
-  locator<NetworkCubit>().homeCubit = homeCubit;
-  settings.loadTimer();
-
-  locator.registerSingleton<SettingsCubit>(settings);
-
-  locator.registerSingleton<HomeCubit>(homeCubit);
 }

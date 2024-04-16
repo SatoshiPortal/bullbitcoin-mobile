@@ -49,7 +49,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   WatchTxsBloc({
     required SwapBoltz swapBoltz,
     required WalletTx walletTx,
+    required HomeCubit homeCubit,
   })  : _walletTx = walletTx,
+        _homeCubit = homeCubit,
         _swapBoltz = swapBoltz,
         super(const WatchTxsState()) {
     on<InitializeSwapWatcher>(_initializeSwapWatcher);
@@ -64,7 +66,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   final SwapBoltz _swapBoltz;
   final WalletTx _walletTx;
 
-  late HomeCubit homeCubit;
+  final HomeCubit _homeCubit;
 
   void _initializeSwapWatcher(InitializeSwapWatcher event, Emitter<WatchTxsState> emit) async {
     if (state.boltzWatcher != null) return;
@@ -78,10 +80,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   }
 
   void _onWatchWalletTxs(WatchWalletTxs event, Emitter<WatchTxsState> emit) {
-    final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
-    if (walletBloc == null) return;
+    // final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
+    // if (walletBloc == null) return;
+    final wallet = event.wallet;
 
-    final swapTxs = walletBloc.state.wallet?.swaps ?? [];
+    final swapTxs = wallet.swaps;
     final swapTxsToWatch = <SwapTx>[];
     // print('WatchWalletTxs: ${swapTxs.length}');
     for (final swapTx in swapTxs) {
@@ -89,7 +92,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           swapTx.settledReverse ||
           swapTx.settledSubmarine ||
           swapTx.expiredReverse) {
-        add(ProcessSwapTx(walletId: event.walletId, swapTx: swapTx));
+        add(ProcessSwapTx(walletId: event.wallet.id, swapTx: swapTx));
         continue;
       }
       swapTxsToWatch.add(swapTx);
@@ -99,7 +102,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     add(
       WatchSwapStatus(
         swapTxs: swapTxsToWatch.map((_) => _.id).toList(),
-        walletId: event.walletId,
+        walletId: event.wallet.id,
       ),
     );
   }
@@ -133,7 +136,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   void _onSwapStatusUpdate(SwapStatusUpdate event, Emitter<WatchTxsState> emit) async {
     // TODO: Sai: This for loop can be avoided since we have event.walletId by doing
     // final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
-    for (final walletBloc in homeCubit.state.walletBlocs!) {
+    for (final walletBloc in _homeCubit.state.walletBlocs!) {
       if (walletBloc.state.wallet!.hasOngoingSwap(event.swapId)) {
         final id = event.swapId;
         final status = event.status;
@@ -158,7 +161,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   FutureOr<void> _onProcessSwapTx(ProcessSwapTx event, Emitter<WatchTxsState> emit) async {
     final swapTx = event.swapTx;
 
-    final walletBloc = homeCubit.state.getWalletBlocById(event.walletId);
+    final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;
     if (walletBloc == null || wallet == null) return;
 
@@ -219,7 +222,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // homeCubit.updateSelectedWallet(walletBloc);
 
     add(DeleteSensitiveSwapData(swapToDelete.id));
-    add(WatchWalletTxs(walletId: wallet.id));
+    add(WatchWalletTxs(wallet: wallet));
 
     return;
   }

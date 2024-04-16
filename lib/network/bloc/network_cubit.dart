@@ -6,7 +6,6 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_ui/alert.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,7 +21,6 @@ class NetworkCubit extends Cubit<NetworkState> {
 
   final HiveStorage _hiveStorage;
   final WalletNetwork _walletNetwork;
-  HomeCubit? homeCubit;
 
   @override
   void onChange(Change<NetworkState> change) {
