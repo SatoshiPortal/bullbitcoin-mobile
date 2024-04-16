@@ -24,7 +24,7 @@ mixin _$SwapState {
   Invoice? get invoice => throw _privateConstructorUsedError;
   bool get errSmallAmt => throw _privateConstructorUsedError;
   int? get errHighFees => throw _privateConstructorUsedError;
-  String? get watchWalletId => throw _privateConstructorUsedError;
+  Wallet? get updatedWallet => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SwapStateCopyWith<SwapState> get copyWith =>
@@ -45,10 +45,11 @@ abstract class $SwapStateCopyWith<$Res> {
       Invoice? invoice,
       bool errSmallAmt,
       int? errHighFees,
-      String? watchWalletId});
+      Wallet? updatedWallet});
 
   $SwapTxCopyWith<$Res>? get swapTx;
   $InvoiceCopyWith<$Res>? get invoice;
+  $WalletCopyWith<$Res>? get updatedWallet;
 }
 
 /// @nodoc
@@ -72,7 +73,7 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
     Object? invoice = freezed,
     Object? errSmallAmt = null,
     Object? errHighFees = freezed,
-    Object? watchWalletId = freezed,
+    Object? updatedWallet = freezed,
   }) {
     return _then(_value.copyWith(
       creatingInvoice: null == creatingInvoice
@@ -107,10 +108,10 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
           ? _value.errHighFees
           : errHighFees // ignore: cast_nullable_to_non_nullable
               as int?,
-      watchWalletId: freezed == watchWalletId
-          ? _value.watchWalletId
-          : watchWalletId // ignore: cast_nullable_to_non_nullable
-              as String?,
+      updatedWallet: freezed == updatedWallet
+          ? _value.updatedWallet
+          : updatedWallet // ignore: cast_nullable_to_non_nullable
+              as Wallet?,
     ) as $Val);
   }
 
@@ -137,6 +138,18 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
       return _then(_value.copyWith(invoice: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $WalletCopyWith<$Res>? get updatedWallet {
+    if (_value.updatedWallet == null) {
+      return null;
+    }
+
+    return $WalletCopyWith<$Res>(_value.updatedWallet!, (value) {
+      return _then(_value.copyWith(updatedWallet: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -156,12 +169,14 @@ abstract class _$$SwapStateImplCopyWith<$Res>
       Invoice? invoice,
       bool errSmallAmt,
       int? errHighFees,
-      String? watchWalletId});
+      Wallet? updatedWallet});
 
   @override
   $SwapTxCopyWith<$Res>? get swapTx;
   @override
   $InvoiceCopyWith<$Res>? get invoice;
+  @override
+  $WalletCopyWith<$Res>? get updatedWallet;
 }
 
 /// @nodoc
@@ -183,7 +198,7 @@ class __$$SwapStateImplCopyWithImpl<$Res>
     Object? invoice = freezed,
     Object? errSmallAmt = null,
     Object? errHighFees = freezed,
-    Object? watchWalletId = freezed,
+    Object? updatedWallet = freezed,
   }) {
     return _then(_$SwapStateImpl(
       creatingInvoice: null == creatingInvoice
@@ -218,10 +233,10 @@ class __$$SwapStateImplCopyWithImpl<$Res>
           ? _value.errHighFees
           : errHighFees // ignore: cast_nullable_to_non_nullable
               as int?,
-      watchWalletId: freezed == watchWalletId
-          ? _value.watchWalletId
-          : watchWalletId // ignore: cast_nullable_to_non_nullable
-              as String?,
+      updatedWallet: freezed == updatedWallet
+          ? _value.updatedWallet
+          : updatedWallet // ignore: cast_nullable_to_non_nullable
+              as Wallet?,
     ));
   }
 }
@@ -238,7 +253,7 @@ class _$SwapStateImpl extends _SwapState {
       this.invoice,
       this.errSmallAmt = false,
       this.errHighFees,
-      this.watchWalletId})
+      this.updatedWallet})
       : super._();
 
   @override
@@ -263,11 +278,11 @@ class _$SwapStateImpl extends _SwapState {
   @override
   final int? errHighFees;
   @override
-  final String? watchWalletId;
+  final Wallet? updatedWallet;
 
   @override
   String toString() {
-    return 'SwapState(creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, swapTx: $swapTx, invoice: $invoice, errSmallAmt: $errSmallAmt, errHighFees: $errHighFees, watchWalletId: $watchWalletId)';
+    return 'SwapState(creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, swapTx: $swapTx, invoice: $invoice, errSmallAmt: $errSmallAmt, errHighFees: $errHighFees, updatedWallet: $updatedWallet)';
   }
 
   @override
@@ -289,8 +304,8 @@ class _$SwapStateImpl extends _SwapState {
                 other.errSmallAmt == errSmallAmt) &&
             (identical(other.errHighFees, errHighFees) ||
                 other.errHighFees == errHighFees) &&
-            (identical(other.watchWalletId, watchWalletId) ||
-                other.watchWalletId == watchWalletId));
+            (identical(other.updatedWallet, updatedWallet) ||
+                other.updatedWallet == updatedWallet));
   }
 
   @override
@@ -304,7 +319,7 @@ class _$SwapStateImpl extends _SwapState {
       invoice,
       errSmallAmt,
       errHighFees,
-      watchWalletId);
+      updatedWallet);
 
   @JsonKey(ignore: true)
   @override
@@ -323,7 +338,7 @@ abstract class _SwapState extends SwapState {
       final Invoice? invoice,
       final bool errSmallAmt,
       final int? errHighFees,
-      final String? watchWalletId}) = _$SwapStateImpl;
+      final Wallet? updatedWallet}) = _$SwapStateImpl;
   const _SwapState._() : super._();
 
   @override
@@ -343,7 +358,7 @@ abstract class _SwapState extends SwapState {
   @override
   int? get errHighFees;
   @override
-  String? get watchWalletId;
+  Wallet? get updatedWallet;
   @override
   @JsonKey(ignore: true)
   _$$SwapStateImplCopyWith<_$SwapStateImpl> get copyWith =>

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap_state.freezed.dart';
@@ -14,7 +15,7 @@ class SwapState with _$SwapState {
     Invoice? invoice,
     @Default(false) bool errSmallAmt,
     int? errHighFees,
-    String? watchWalletId,
+    Wallet? updatedWallet,
   }) = _SwapState;
   const SwapState._();
 

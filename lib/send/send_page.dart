@@ -55,7 +55,7 @@ class _SendPageState extends State<SendPage> {
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
       // watchTxsBloc: locator<WatchTxsBloc>(),
-      homeCubit: locator<HomeCubit>(),
+      // homeCubit: locator<HomeCubit>(),
     );
 
     send = SendCubit(
