@@ -239,7 +239,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     await Future.delayed(1000.ms);
 
-    _swapBloc.add(WatchWalletTxs(wallet: state.wallet!.id));
+    _swapBloc.add(WatchWalletTxs(wallet: state.wallet!));
   }
 
   void _getFirstAddress(GetFirstAddress event, Emitter<WalletState> emit) async {
