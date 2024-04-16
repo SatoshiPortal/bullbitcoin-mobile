@@ -36,19 +36,59 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     loadAddress();
   }
 
-  void updateWalletType(ReceivePaymentNetwork paymentNetwork, bool isTestnet) {
-    emit(state.copyWith(paymentNetwork: paymentNetwork));
-    // if (!_networkCubit.state.testnet) return;
+  void updateWalletType(
+    ReceivePaymentNetwork paymentNetwork,
+    bool isTestnet, {
+    bool onStart = false,
+  }) {
     if (!isTestnet) return;
 
-    if (paymentNetwork == ReceivePaymentNetwork.lightning) {
+    if (onStart) {
+      emit(state.copyWith(paymentNetwork: paymentNetwork));
+      return;
+    }
+
+    final currentNetwork = state.paymentNetwork;
+    final walletType = state.walletBloc?.state.wallet?.type;
+    if (walletType == null) return;
+
+    emit(state.copyWith(paymentNetwork: paymentNetwork));
+
+    if (paymentNetwork == ReceivePaymentNetwork.lightning)
       emit(state.copyWith(defaultAddress: null));
+
+    if (paymentNetwork != ReceivePaymentNetwork.bitcoin) loadAddress();
+
+    if (walletType == BBWalletType.instant &&
+        currentNetwork != ReceivePaymentNetwork.bitcoin &&
+        paymentNetwork == ReceivePaymentNetwork.bitcoin) {
+      emit(state.copyWith(switchToSecure: true));
+      return;
     }
-    if (paymentNetwork == ReceivePaymentNetwork.bitcoin) {
-      emit(state.copyWith());
-    } else {
-      loadAddress();
+
+    if (walletType == BBWalletType.instant &&
+        currentNetwork != ReceivePaymentNetwork.liquid &&
+        paymentNetwork == ReceivePaymentNetwork.liquid) {
+      return;
     }
+
+    if (walletType == BBWalletType.secure &&
+        currentNetwork != ReceivePaymentNetwork.lightning &&
+        paymentNetwork == ReceivePaymentNetwork.lightning) {
+      // Allow LN -> BTC swap
+      return;
+    }
+
+    if (walletType == BBWalletType.secure &&
+        currentNetwork != ReceivePaymentNetwork.liquid &&
+        paymentNetwork == ReceivePaymentNetwork.liquid) {
+      // Allow LBTC -> BTC swap
+      return;
+    }
+  }
+
+  void clearSwitch() {
+    emit(state.copyWith(switchToSecure: false, switchToInstant: false));
   }
 
   void loadAddress() async {

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
@@ -46,8 +45,7 @@ class ReceivePage extends StatefulWidget {
 }
 
 class _ReceivePageState extends State<ReceivePage> {
-  late ReceiveCubit _cubit;
-  late HomeCubit home;
+  late ReceiveCubit _receiveCubit;
   late CurrencyCubit _currencyCubit;
   late SwapCubit _swapCubit;
 
@@ -65,35 +63,33 @@ class _ReceivePageState extends State<ReceivePage> {
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
 
-    _cubit = ReceiveCubit(
+    _receiveCubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
     );
 
-    home = locator<HomeCubit>();
+    _receiveCubit.updateWalletType(
+      ReceivePaymentNetwork.lightning,
+      context.read<NetworkCubit>().state.testnet,
+      onStart: true,
+    );
+
+    final network = context.read<NetworkCubit>().state.getBBNetwork();
+    final walletBloc = context.read<HomeCubit>().state.getMainInstantWallet(network);
+    if (walletBloc == null) return;
+
+    _receiveCubit.updateWalletBloc(walletBloc);
 
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    final walletBlocs = home.state.walletBlocsFromNetwork(network);
-
-    WalletBloc? walletBloc;
-    if (walletBlocs.isNotEmpty) {
-      walletBloc = walletBlocs.first;
-      _cubit.updateWalletBloc(walletBloc);
-    }
-
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: _cubit),
-        BlocProvider.value(value: locator<NetworkCubit>()),
+        BlocProvider.value(value: _receiveCubit),
         BlocProvider.value(value: _currencyCubit),
         BlocProvider.value(value: _swapCubit),
-        BlocProvider.value(value: home),
-        if (walletBloc != null) BlocProvider.value(value: walletBloc),
       ],
       child: MultiBlocListener(
         listeners: [
@@ -102,29 +98,42 @@ class _ReceivePageState extends State<ReceivePage> {
                 previous.updateAddressGap != current.updateAddressGap,
             listener: (context, state) {
               if (state.updateAddressGap != null)
-                locator<NetworkCubit>().updateStopGapAndSave(state.updateAddressGap!);
+                context.read<NetworkCubit>().updateStopGapAndSave(state.updateAddressGap!);
+            },
+          ),
+          BlocListener<ReceiveCubit, ReceiveState>(
+            listenWhen: (previous, current) => previous.switchToSecure != current.switchToSecure,
+            listener: (context, state) {
+              if (state.switchToSecure) {
+                final network = context.read<NetworkCubit>().state.getBBNetwork();
+                final secureWallet = context.read<HomeCubit>().state.getMainSecureWallet(network);
+                if (secureWallet == null) return;
+                context.read<ReceiveCubit>().updateWalletBloc(secureWallet);
+                context.read<ReceiveCubit>().clearSwitch();
+              }
             },
           ),
           BlocListener<SwapCubit, SwapState>(
             listenWhen: (previous, current) => previous.updatedWallet != current.updatedWallet,
             listener: (context, state) {
-              if (state.updatedWallet == null) return;
+              final updatedWallet = state.updatedWallet;
+              if (updatedWallet == null) return;
 
               context
                   .read<HomeCubit>()
                   .state
                   .getWalletBloc(
-                    state.updatedWallet!,
+                    updatedWallet,
                   )
                   ?.add(
                     UpdateWallet(
-                      state.updatedWallet!,
+                      updatedWallet,
                       updateTypes: [UpdateWalletTypes.swaps],
                     ),
                   );
 
               locator<WatchTxsBloc>().add(
-                WatchWalletTxs(wallet: state.updatedWallet!),
+                WatchWalletTxs(wallet: updatedWallet),
               );
 
               context.read<SwapCubit>().clearWallet();
@@ -140,34 +149,6 @@ class _ReceivePageState extends State<ReceivePage> {
         ),
       ),
     );
-  }
-}
-
-class _ReceiveAppBar extends StatelessWidget {
-  const _ReceiveAppBar();
-
-  @override
-  Widget build(BuildContext context) {
-    return BBAppBar(
-      text: 'Receive bitcoin',
-      onBack: () {
-        context.pop();
-      },
-    );
-  }
-}
-
-class _WalletProvider extends StatelessWidget {
-  const _WalletProvider({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final wallet = context.select((ReceiveCubit _) => _.state.walletBloc);
-
-    if (wallet == null) return child;
-    return BlocProvider.value(value: wallet, child: child);
   }
 }
 
@@ -228,6 +209,133 @@ class _Screen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class ReceiveWalletsDropDown extends StatelessWidget {
+  const ReceiveWalletsDropDown({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    final selectedWalletBloc = context.select((ReceiveCubit _) => _.state.walletBloc);
+
+    final walletBloc = selectedWalletBloc ?? walletBlocs.first;
+
+    return BBDropDown<WalletBloc>(
+      items: {
+        for (final wallet in walletBlocs)
+          wallet: wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint,
+      },
+      value: walletBloc,
+      onChanged: (value) {
+        // final wallet = value.state.wallet!;
+        // if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
+        // } else if (wallet.baseWalletType == BaseWalletType.Liquid) {}
+        context.read<ReceiveCubit>().updateWalletBloc(value);
+      },
+    );
+  }
+}
+
+class SelectWalletType extends StatelessWidget {
+  const SelectWalletType({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final isTestnet = context.select((NetworkCubit _) => _.state.testnet);
+    final paymentNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
+
+    // final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    // final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    // final selectedWalletBloc = context.select((ReceiveCubit _) => _.state.walletBloc);
+    // final walletBloc = selectedWalletBloc ?? walletBlocs.first;
+
+    if (!isTestnet) return const SizedBox.shrink();
+
+    return BBSwitcher<ReceivePaymentNetwork>(
+      value: paymentNetwork,
+      items: const {
+        ReceivePaymentNetwork.bitcoin: 'Bitcoin',
+        ReceivePaymentNetwork.liquid: 'Liquid',
+        ReceivePaymentNetwork.lightning: 'Lightning',
+      },
+      onChanged: (value) {
+        // if (value == ReceivePaymentNetwork.liquid) {
+        //   final wallet = walletBloc.state.wallet!;
+        //   if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
+        //     final liquidWalletBloc = walletBlocs.firstWhere(
+        //       (w) =>
+        //           w.state.wallet!.baseWalletType == BaseWalletType.Liquid &&
+        //           w.state.wallet!.network == wallet.network &&
+        //           w.state.wallet!.sourceFingerprint == wallet.sourceFingerprint,
+        //     );
+        //     context.read<ReceiveCubit>().updateWalletBloc(liquidWalletBloc);
+        //   }
+        // }
+
+        // if (value == ReceivePaymentNetwork.bitcoin) {
+        //   final wallet = walletBloc.state.wallet!;
+        //   if (wallet.baseWalletType == BaseWalletType.Liquid) {
+        //     final btcWalletBloc = walletBlocs.firstWhere(
+        //       (w) =>
+        //           w.state.wallet!.baseWalletType == BaseWalletType.Bitcoin &&
+        //           w.state.wallet!.network == wallet.network &&
+        //           w.state.wallet!.sourceFingerprint == wallet.sourceFingerprint,
+        //     );
+        //     context.read<ReceiveCubit>().updateWalletBloc(btcWalletBloc);
+        //   }
+        // }
+
+        // if (value == ReceivePaymentNetwork.lightning) {
+        //   final wallet = walletBloc.state.wallet!;
+        //   if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
+        //     final liquidWalletBloc = walletBlocs.firstWhere(
+        //       (w) =>
+        //           w.state.wallet!.baseWalletType == BaseWalletType.Liquid &&
+        //           w.state.wallet!.network == wallet.network &&
+        //           w.state.wallet!.sourceFingerprint == wallet.sourceFingerprint,
+        //     );
+        //     context.read<ReceiveCubit>().updateWalletBloc(liquidWalletBloc);
+        //   }
+        // }
+
+        if (paymentNetwork == ReceivePaymentNetwork.lightning)
+          context.read<SwapCubit>().clearSwapTx();
+
+        final isTestnet = context.read<NetworkCubit>().state.testnet;
+        context.read<ReceiveCubit>().updateWalletType(value, isTestnet);
+      },
+    );
+  }
+}
+
+class _WalletProvider extends StatelessWidget {
+  const _WalletProvider({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final wallet = context.select((ReceiveCubit _) => _.state.walletBloc);
+
+    if (wallet == null) return child;
+    return BlocProvider.value(value: wallet, child: child);
+  }
+}
+
+class _ReceiveAppBar extends StatelessWidget {
+  const _ReceiveAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return BBAppBar(
+      text: 'Receive bitcoin',
+      onBack: () {
+        context.pop();
+      },
     );
   }
 }
@@ -358,33 +466,6 @@ class _RemoveWarningMessage extends StatelessWidget {
   }
 }
 
-class ReceiveWalletsDropDown extends StatelessWidget {
-  const ReceiveWalletsDropDown({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
-    final selectedWalletBloc = context.select((ReceiveCubit _) => _.state.walletBloc);
-
-    final walletBloc = selectedWalletBloc ?? walletBlocs.first;
-
-    return BBDropDown<WalletBloc>(
-      items: {
-        for (final wallet in walletBlocs)
-          wallet: wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint,
-      },
-      value: walletBloc,
-      onChanged: (value) {
-        final wallet = value.state.wallet!;
-        if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
-        } else if (wallet.baseWalletType == BaseWalletType.Liquid) {}
-        context.read<ReceiveCubit>().updateWalletBloc(value);
-      },
-    );
-  }
-}
-
 class WalletActions extends StatelessWidget {
   const WalletActions({super.key});
 
@@ -427,77 +508,6 @@ class WalletActions extends StatelessWidget {
         ),
         BBText.errorSmall(errLoadingAddress),
       ],
-    );
-  }
-}
-
-class SelectWalletType extends StatelessWidget {
-  const SelectWalletType({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final isTestnet = context.select((NetworkCubit _) => _.state.testnet);
-    final paymentNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
-
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
-    final selectedWalletBloc = context.select((ReceiveCubit _) => _.state.walletBloc);
-    final walletBloc = selectedWalletBloc ?? walletBlocs.first;
-
-    if (!isTestnet) return const SizedBox.shrink();
-
-    return BBSwitcher<ReceivePaymentNetwork>(
-      value: paymentNetwork,
-      items: const {
-        ReceivePaymentNetwork.bitcoin: 'Bitcoin',
-        ReceivePaymentNetwork.liquid: 'Liquid',
-        ReceivePaymentNetwork.lightning: 'Lightning',
-      },
-      onChanged: (value) {
-        if (value == ReceivePaymentNetwork.liquid) {
-          final wallet = walletBloc.state.wallet!;
-          if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
-            final liquidWalletBloc = walletBlocs.firstWhere(
-              (w) =>
-                  w.state.wallet!.baseWalletType == BaseWalletType.Liquid &&
-                  w.state.wallet!.network == wallet.network &&
-                  w.state.wallet!.sourceFingerprint == wallet.sourceFingerprint,
-            );
-            context.read<ReceiveCubit>().updateWalletBloc(liquidWalletBloc);
-          }
-        }
-
-        if (value == ReceivePaymentNetwork.bitcoin) {
-          final wallet = walletBloc.state.wallet!;
-          if (wallet.baseWalletType == BaseWalletType.Liquid) {
-            final btcWalletBloc = walletBlocs.firstWhere(
-              (w) =>
-                  w.state.wallet!.baseWalletType == BaseWalletType.Bitcoin &&
-                  w.state.wallet!.network == wallet.network &&
-                  w.state.wallet!.sourceFingerprint == wallet.sourceFingerprint,
-            );
-            context.read<ReceiveCubit>().updateWalletBloc(btcWalletBloc);
-          }
-        }
-
-        if (value == ReceivePaymentNetwork.lightning) {
-          final wallet = walletBloc.state.wallet!;
-          if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
-            final liquidWalletBloc = walletBlocs.firstWhere(
-              (w) =>
-                  w.state.wallet!.baseWalletType == BaseWalletType.Liquid &&
-                  w.state.wallet!.network == wallet.network &&
-                  w.state.wallet!.sourceFingerprint == wallet.sourceFingerprint,
-            );
-            context.read<ReceiveCubit>().updateWalletBloc(liquidWalletBloc);
-          }
-        }
-        if (paymentNetwork == ReceivePaymentNetwork.lightning)
-          context.read<SwapCubit>().clearSwapTx();
-
-        final isTestnet = context.read<NetworkCubit>().state.testnet;
-        context.read<ReceiveCubit>().updateWalletType(value, isTestnet);
-      },
     );
   }
 }

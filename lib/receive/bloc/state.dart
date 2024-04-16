@@ -27,6 +27,9 @@ class ReceiveState with _$ReceiveState {
     WalletBloc? walletBloc,
     @Default(ReceivePaymentNetwork.bitcoin) ReceivePaymentNetwork paymentNetwork,
     int? updateAddressGap,
+    @Default(false) bool switchToSecure,
+    @Default(false) bool switchToInstant,
+
     // required SwapCubit swapBloc,
   }) = _ReceiveState;
   const ReceiveState._();

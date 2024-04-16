@@ -48,6 +48,24 @@ class HomeState with _$HomeState {
     return blocs;
   }
 
+  WalletBloc? getMainInstantWallet(BBNetwork network) {
+    final wallets = walletBlocsFromNetwork(network);
+    final idx = wallets.indexWhere(
+      (w) => w.state.wallet!.type == BBWalletType.instant && w.state.wallet!.mainWallet,
+    );
+    if (idx == -1) return null;
+    return wallets[idx];
+  }
+
+  WalletBloc? getMainSecureWallet(BBNetwork network) {
+    final wallets = walletBlocsFromNetwork(network);
+    final idx = wallets.indexWhere(
+      (w) => w.state.wallet!.type == BBWalletType.secure && w.state.wallet!.mainWallet,
+    );
+    if (idx == -1) return null;
+    return wallets[idx];
+  }
+
   bool noNetworkWallets(BBNetwork network) => walletBlocsFromNetwork(network).isEmpty;
 
   WalletBloc? getWalletBloc(Wallet wallet) {
