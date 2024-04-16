@@ -335,7 +335,8 @@ class LWKTransactions {
         final assetToPick =
             wallet.network == BBNetwork.Mainnet ? lwk.lBtcAssetId : lwk.lTestAssetId;
         final balances = tx.balances;
-        final finalBalance = balances.where((e) => e.$1 == assetToPick).map((e) => e.$2).first;
+        final finalBalance =
+            balances.where((e) => e.assetId == assetToPick).map((e) => e.value).first;
         final txObj = Transaction(
           txid: tx.txid,
           received: tx.kind == 'outgoing' ? 0 : finalBalance,
@@ -394,7 +395,9 @@ class LWKTransactions {
       //     Err('Invalid Address. Network Mismatch!'),
       //   );
       // }
-      final pset = await lwkWallet.build(sats: amount ?? 0, outAddress: address, absFee: feeRate);
+      // final pset = await lwkWallet.build(sats: amount ?? 0, outAddress: address, absFee: feeRate);
+      final pset =
+          await lwkWallet.build_lbtc_tx(sats: amount ?? 0, outAddress: address, absFee: feeRate);
       // pubWallet.sign(network: wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet , pset: pset, mnemonic: mnemonic)
 
       final Transaction tx = Transaction(

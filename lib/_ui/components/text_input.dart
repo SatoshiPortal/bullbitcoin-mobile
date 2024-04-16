@@ -504,7 +504,7 @@ class _BBAmountInputState2 extends State<BBAmountInput> {
           //   )
           // else
           if (widget.isSats)
-            CurrencyTextInputFormatter(
+            CurrencyTextInputFormatter.currency(
               decimalDigits: 0,
               enableNegative: false,
               symbol: '',
