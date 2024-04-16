@@ -31,7 +31,7 @@ class SwapCubit extends Cubit<SwapState> {
     emit(state.copyWith(invoice: inv));
   }
 
-  void createBtcLnRevSwap({
+  void createRevSwapForReceive({
     required Wallet wallet,
     required int amount,
     String? label,
@@ -69,6 +69,8 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
+    final walletIsLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+
     final (swap, errCreatingInv) = await _swapBoltz.receive(
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
@@ -77,6 +79,7 @@ class SwapCubit extends Cubit<SwapState> {
       electrumUrl: networkUrl,
       boltzUrl: boltzTestnet,
       pairHash: fees.btcPairHash,
+      isLiquid: walletIsLiquid,
     );
     if (errCreatingInv != null) {
       emit(state.copyWith(errCreatingSwapInv: errCreatingInv.toString(), generatingSwapInv: false));
@@ -99,7 +102,7 @@ class SwapCubit extends Cubit<SwapState> {
 
     _showWarnings();
 
-    _saveBtcLnSwapToWallet(
+    _saveSwapToWallet(
       swapTx: updatedSwap,
       label: label,
       wallet: wallet,
@@ -174,14 +177,14 @@ class SwapCubit extends Cubit<SwapState> {
       ),
     );
 
-    await _saveBtcLnSwapToWallet(
+    await _saveSwapToWallet(
       swapTx: updatedSwap,
       wallet: wallet,
       label: label,
     );
   }
 
-  Future _saveBtcLnSwapToWallet({
+  Future _saveSwapToWallet({
     required Wallet wallet,
     required SwapTx swapTx,
     String? label,
@@ -205,5 +208,5 @@ class SwapCubit extends Cubit<SwapState> {
 
   void clearSwapTx() => emit(state.copyWith(swapTx: null));
 
-  void clearWallet() => emit(state.copyWith(updatedWallet: null));
+  void clearUpdatedWallet() => emit(state.copyWith(updatedWallet: null));
 }

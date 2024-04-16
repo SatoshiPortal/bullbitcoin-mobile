@@ -242,6 +242,25 @@ class SwapTx with _$SwapTx {
       boltzUrl: swap.boltzUrl,
     );
   }
+
+  factory SwapTx.fromLbtcLnSwap(LbtcLnBoltzSwap result) {
+    final swap = result.lbtcLnSwap;
+    return SwapTx(
+      id: swap.id,
+      isSubmarine: swap.kind == SwapType.Submarine,
+      // network: swap.network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
+      network: BBNetwork.Testnet,
+      walletType: (swap.network == Chain.Bitcoin || swap.network == Chain.BitcoinTestnet)
+          ? BaseWalletType.Bitcoin
+          : BaseWalletType.Liquid,
+      redeemScript: swap.redeemScript,
+      invoice: swap.invoice,
+      outAmount: swap.outAmount,
+      scriptAddress: swap.scriptAddress,
+      electrumUrl: swap.electrumUrl,
+      boltzUrl: swap.boltzUrl,
+    );
+  }
   const SwapTx._();
 
   factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
@@ -343,6 +362,18 @@ class SwapTxSensitive with _$SwapTxSensitive {
 
   factory SwapTxSensitive.fromBtcLnSwap(BtcLnBoltzSwap result) {
     final swap = result.btcLnSwap;
+    return SwapTxSensitive.SwapTxSensitive(
+      id: swap.id,
+      value: swap.preimage.value,
+      sha256: swap.preimage.sha256,
+      hash160: swap.preimage.hash160,
+      publicKey: swap.keys.publicKey,
+      secretKey: swap.keys.secretKey,
+    );
+  }
+
+  factory SwapTxSensitive.fromLbtcLnSwap(LbtcLnBoltzSwap result) {
+    final swap = result.lbtcLnSwap;
     return SwapTxSensitive.SwapTxSensitive(
       id: swap.id,
       value: swap.preimage.value,

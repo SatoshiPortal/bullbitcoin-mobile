@@ -82,28 +82,51 @@ class SwapBoltz {
     required String electrumUrl,
     required String boltzUrl,
     required String pairHash,
+    required bool isLiquid,
   }) async {
     try {
-      final res = await BtcLnBoltzSwap.newReverse(
-        mnemonic: mnemonic,
-        index: index,
-        outAmount: outAmount,
-        network: network,
-        electrumUrl: electrumUrl,
-        boltzUrl: boltzUrl,
-        pairHash: pairHash,
-      );
-      final obj = res.btcLnSwap;
+      late SwapTx swapTx;
+      if (!isLiquid) {
+        final res = await BtcLnBoltzSwap.newReverse(
+          mnemonic: mnemonic,
+          index: index,
+          outAmount: outAmount,
+          network: network,
+          electrumUrl: electrumUrl,
+          boltzUrl: boltzUrl,
+          pairHash: pairHash,
+        );
+        final obj = res.btcLnSwap;
 
-      final swapSensitive = SwapTxSensitive.fromBtcLnSwap(res);
-      final err = await _secureStorage.saveValue(
-        key: StorageKeys.swapTxSensitive + '_' + obj.id,
-        value: jsonEncode(swapSensitive.toJson()),
-      );
-      if (err != null) throw err;
+        final swapSensitive = SwapTxSensitive.fromBtcLnSwap(res);
+        final err = await _secureStorage.saveValue(
+          key: StorageKeys.swapTxSensitive + '_' + obj.id,
+          value: jsonEncode(swapSensitive.toJson()),
+        );
+        if (err != null) throw err;
+        swapTx = SwapTx.fromBtcLnSwap(res);
+      } else {
+        final res = await LbtcLnBoltzSwap.newReverse(
+          mnemonic: mnemonic,
+          index: index,
+          outAmount: outAmount,
+          network: network,
+          electrumUrl: electrumUrl,
+          boltzUrl: boltzUrl,
+          pairHash: pairHash,
+        );
+        final obj = res.lbtcLnSwap;
 
-      final swap = SwapTx.fromBtcLnSwap(res);
-      return (swap, null);
+        final swapSensitive = SwapTxSensitive.fromLbtcLnSwap(res);
+        final err = await _secureStorage.saveValue(
+          key: StorageKeys.swapTxSensitive + '_' + obj.id,
+          value: jsonEncode(swapSensitive.toJson()),
+        );
+        if (err != null) throw err;
+        swapTx = SwapTx.fromLbtcLnSwap(res);
+      }
+
+      return (swapTx, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
