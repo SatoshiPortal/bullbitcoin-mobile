@@ -266,6 +266,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final updatedClaimingTxs = state.addClaimingTx(swapTx.id);
     if (updatedClaimingTxs == null) return null;
 
+    final walletIsLiquid = walletBloc.state.wallet?.type == BBWalletType.instant;
+
     emit(
       state.copyWith(
         claimingSwap: true,
@@ -296,8 +298,15 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return null;
     }
 
-    final claimFeesEstimate =
-        shouldRefund ? fees?.btcSubmarine.claimFees : fees?.btcReverse.claimFeesEstimate;
+    int? claimFeesEstimate;
+    if (walletIsLiquid) {
+      claimFeesEstimate =
+          shouldRefund ? fees?.lbtcSubmarine.claimFees : fees?.lbtcReverse.claimFeesEstimate;
+    } else {
+      claimFeesEstimate =
+          shouldRefund ? fees?.btcSubmarine.claimFees : fees?.btcReverse.claimFeesEstimate;
+    }
+
     if (claimFeesEstimate == null) {
       emit(
         state.copyWith(

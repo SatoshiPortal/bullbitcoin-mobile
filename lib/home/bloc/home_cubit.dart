@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -51,7 +50,7 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(errDeepLinking: ''));
   }
 
-  void updateWalletBlocs(List<WalletBloc> blocs) => emit(state.copyWith(walletBlocs: blocs));
+  // void updateWalletBlocs(List<WalletBloc> blocs) => emit(state.copyWith(walletBlocs: blocs));
 
   // void addWallets(List<Wallet> wallets) {
   //   emit(state.copyWith(loadingWallets: true));
@@ -112,12 +111,12 @@ class HomeCubit extends Cubit<HomeState> {
   //   );
   // }
 
-  void changeMoveToIdx(Wallet wallet) async {
-    final idx = state.getWalletIdx(wallet);
-    emit(state.copyWith(moveToIdx: idx));
-    await Future.delayed(const Duration(seconds: 5));
-    emit(state.copyWith(moveToIdx: null));
-  }
+  // void changeMoveToIdx(Wallet wallet) async {
+  //   final idx = state.getWalletIdx(wallet);
+  //   emit(state.copyWith(moveToIdx: idx));
+  //   await Future.delayed(const Duration(seconds: 5));
+  //   emit(state.copyWith(moveToIdx: null));
+  // }
 
   // void moveToLastWallet() async {
   //   await Future.delayed(const Duration(milliseconds: 500));

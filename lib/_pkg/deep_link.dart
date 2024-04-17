@@ -59,7 +59,7 @@ class DeepLink {
 
       if (wallet == null) return Err('No wallet found');
 
-      homeCubit.changeMoveToIdx(wallet);
+      // homeCubit.changeMoveToIdx(wallet);
 
       await Future.delayed(const Duration(milliseconds: 100));
 

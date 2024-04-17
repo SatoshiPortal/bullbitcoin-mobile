@@ -57,6 +57,8 @@ GetIt locator = GetIt.instance;
 Future setupLocator({bool fromTest = false}) async {
   if (fromTest) return;
 
+  locator.registerSingleton<Logger>(Logger());
+
   await _setupStorage();
   await _setupAPIs();
   await _setupRepositories();
@@ -78,7 +80,6 @@ Future _setupAPIs() async {
 }
 
 Future _setupRepositories() async {
-  // locator.registerSingleton<HomeRepository>(HomeRepository());
   locator.registerSingleton<WalletsRepository>(WalletsRepository());
   locator.registerSingleton<NetworkRepository>(NetworkRepository());
   locator.registerSingleton<WalletsStorageRepository>(
@@ -89,12 +90,17 @@ Future _setupRepositories() async {
       secureStorage: locator<SecureStorage>(),
     ),
   );
+  // locator.registerSingleton<HomeRepository>(
+  //   HomeRepository(
+  //     walletsStorageRepository: locator<WalletsStorageRepository>(),
+  //     logger: locator<Logger>(),
+  //   ),
+  // );
 }
 
 Future _setupAppServices() async {
   final deepLink = DeepLink();
   locator.registerSingleton<DeepLink>(deepLink);
-  locator.registerSingleton<Logger>(Logger());
   locator.registerSingleton<Lighting>(
     Lighting(
       hiveStorage: locator<HiveStorage>(),

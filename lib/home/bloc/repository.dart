@@ -1,105 +1,97 @@
-// // ignore_for_file: use_setters_to_change_properties
-
 // import 'package:bb_mobile/_model/transaction.dart';
 // import 'package:bb_mobile/_model/wallet.dart';
+// import 'package:bb_mobile/_pkg/error.dart';
+// import 'package:bb_mobile/_pkg/logger.dart';
+// import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 // import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+// import 'package:flutter/material.dart';
 
-// class HomeRepository {
-//   // final List<Wallet> _wallets = [];
-//   final List<WalletBloc> _walletBloc = [];
-//   WalletBloc? _selectedWalletBloc;
-
-//   // List<Wallet> get wallets => _wallets;
-//   List<WalletBloc> get walletBlocs => _walletBloc;
-//   WalletBloc? get selectedWalletBloc => _selectedWalletBloc;
-
-//   void updateSelectedWalletBloc(WalletBloc? walletBloc) {
-//     _selectedWalletBloc = walletBloc;
+// class HomeRepository with ChangeNotifier {
+//   HomeRepository({
+//     required WalletsStorageRepository walletsStorageRepository,
+//     required Logger logger,
+//   })  : _walletsStorageRepository = walletsStorageRepository,
+//         _logger = logger {
+//     _init();
 //   }
 
-//   void getSelectedWalletBloc(WalletBloc? walletBloc) {
-//     _selectedWalletBloc = walletBloc;
+//   final WalletsStorageRepository _walletsStorageRepository;
+//   final Logger _logger;
+
+//   final List<Wallet> _walletBlocs = [];
+//   List<Wallet> get walletBlocs => _walletBlocs;
+
+//   void _init() async {
+//     final err = await getWalletsFromStorage();
+//     if (err != null) _logger.log(err.toString());
 //   }
 
-//   void updateWalletBlocs(List<WalletBloc> blocs) {
-//     _walletBloc.clear();
-//     _walletBloc.addAll(blocs);
+//   Future<Err?> getWalletsFromStorage() async {
+//     try {
+//       final (wallets, err) = await _walletsStorageRepository.readAllWallets();
+//       if (err != null && err.toString() != 'No Key') return null;
+//       if (err != null) throw err;
+
+//       _walletBlocs.clear();
+//       _walletBlocs.addAll(wallets ?? []);
+
+//       notifyListeners();
+//       return null;
+//     } catch (e) {
+//       return Err(e.toString());
+//     }
 //   }
 
-//   // void updateWallets(List<Wallet> wallets) {
-//   //   _wallets.clear();
-//   //   _wallets.addAll(wallets);
-//   // }
-
-//   // void addWallets(List<Wallet> wallets) {
-//   //   _wallets.addAll(wallets);
-//   // }
-
-//   // bool hasWallets() => wallets.isNotEmpty;
-
-//   // List<Wallet> walletsFromNetwork(BBNetwork network) =>
-//   //     wallets.where((wallet) => wallet.network == network).toList().reversed.toList();
-
-//   List<WalletBloc> walletBlocsFromNetwork(BBNetwork network) {
-//     final blocs = walletBlocs
-//         .where((wallet) => wallet.state.wallet?.network == network)
-//         .toList()
-//         .reversed
-//         .toList();
+//   List<Wallet> walletBlocsFromNetwork(BBNetwork network) {
+//     final blocs =
+//         _walletBlocs.where((wallet) => wallet.network == network).toList().reversed.toList();
 
 //     return blocs;
 //   }
 
-//   WalletBloc? getWalletBloc(Wallet wallet) {
+//   Wallet? getMainInstantWallet(BBNetwork network) {
+//     final wallets = walletBlocsFromNetwork(network);
+//     final idx = wallets.indexWhere(
+//       (w) => w.type == BBWalletType.instant && w.mainWallet,
+//     );
+//     if (idx == -1) return null;
+//     return wallets[idx];
+//   }
+
+//   Wallet? getMainSecureWallet(BBNetwork network) {
+//     final wallets = walletBlocsFromNetwork(network);
+//     final idx = wallets.indexWhere(
+//       (w) => w.type != BBWalletType.instant && w.mainWallet,
+//     );
+//     if (idx == -1) return null;
+//     return wallets[idx];
+//   }
+
+//   bool noNetworkWallets(BBNetwork network) => walletBlocsFromNetwork(network).isEmpty;
+
+//   Wallet? getWalletBloc(Wallet wallet) {
 //     final walletBlocs = walletBlocsFromNetwork(wallet.network);
-//     final idx = walletBlocs.indexWhere((w) => w.state.wallet!.id == wallet.id);
+//     final idx = walletBlocs.indexWhere((w) => w.id == wallet.id);
 //     if (idx == -1) return null;
 //     return walletBlocs[idx];
 //   }
 
-//   WalletBloc? getWalletBlocById(String id) {
-//     // final walletIdx = wallets!.indexWhere((w) => w.id == id);
-//     // if (walletIdx == -1) return null;
-//     // final wallet = wallets![walletIdx];
-//     // final walletBlocs = walletBlocsFromNetwork(wallet.network);
-//     final idx = walletBlocs.indexWhere((w) => id == w.state.wallet!.id);
+//   Wallet? getWalletBlocById(String id) {
+//     final idx = walletBlocs.indexWhere((w) => id == w.id);
 //     if (idx == -1) return null;
 //     return walletBlocs[idx];
 //   }
-
-//   // Wallet? getFirstWithSpendableAndBalance(BBNetwork network, {int amt = 0}) {
-//   //   final wallets = walletsFromNetwork(network);
-//   //   if (wallets.isEmpty) return null;
-//   //   Wallet? wallet;
-//   //   for (final w in wallets) {
-//   //     if (!w.watchOnly()) {
-//   //       if ((w.balance ?? 0) > amt) return w;
-//   //       wallet = w;
-//   //     }
-//   //   }
-//   //   return wallet;
-//   // }
 
 //   int? getWalletIdx(Wallet wallet) {
 //     final walletsFromNetwork = walletBlocsFromNetwork(wallet.network);
-//     final idx = walletsFromNetwork.indexWhere((w) => w.state.wallet!.id == wallet.id);
+//     final idx = walletsFromNetwork.indexWhere((w) => w.id == wallet.id);
 //     if (idx == -1) return null;
 //     return idx;
 //   }
 
 //   int? getWalletBlocIdx(WalletBloc walletBloc) {
 //     final walletsFromNetwork = walletBlocsFromNetwork(walletBloc.state.wallet!.network);
-//     final idx =
-//         walletsFromNetwork.indexWhere((w) => w.state.wallet!.id == walletBloc.state.wallet!.id);
-//     if (idx == -1) return null;
-//     return idx;
-//   }
-
-//   int? getSelectedWalletIdx() {
-//     if (_selectedWalletBloc == null) return null;
-//     final walletsFromNetwork = walletBlocsFromNetwork(_selectedWalletBloc!.state.wallet!.network);
-//     final idx = walletsFromNetwork
-//         .indexWhere((w) => w.state.wallet!.id == _selectedWalletBloc!.state.wallet!.id);
+//     final idx = walletsFromNetwork.indexWhere((w) => w.id == walletBloc.state.wallet!.id);
 //     if (idx == -1) return null;
 //     return idx;
 //   }
@@ -107,8 +99,8 @@
 //   List<Transaction> allTxs(BBNetwork network) {
 //     final txs = <Transaction>[];
 //     for (final walletBloc in walletBlocsFromNetwork(network)) {
-//       final walletTxs = walletBloc.state.wallet?.transactions ?? <Transaction>[];
-//       final wallet = walletBloc.state.wallet;
+//       final walletTxs = walletBloc.transactions;
+//       final wallet = walletBloc;
 //       for (final tx in walletTxs) txs.add(tx.copyWith(wallet: wallet));
 //     }
 //     txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
@@ -118,11 +110,10 @@
 //   List<Transaction> getAllTxs(BBNetwork network) {
 //     final txs = <Transaction>[];
 //     for (final walletBloc in walletBlocsFromNetwork(network)) {
-//       final walletTxs = walletBloc.state.wallet?.transactions ?? <Transaction>[];
-//       // final swapsTxs = walletBloc.state.wallet?.swaps ?? <SwapTx>[];
-//       final wallet = walletBloc.state.wallet;
+//       final walletTxs = walletBloc.transactions;
+
+//       final wallet = walletBloc;
 //       for (final tx in walletTxs) txs.add(tx.copyWith(wallet: wallet));
-//       // for (final tx in swapsTxs) if (tx.swapTx != null) txs.add(tx.copyWith(wallet: wallet));
 //     }
 
 //     return _cleanandSortTxs(txs);
@@ -139,30 +130,21 @@
 //   int totalBalanceSats(BBNetwork network) {
 //     var total = 0;
 //     for (final walletBloc in walletBlocsFromNetwork(network)) {
-//       final wallet = walletBloc.state.wallet;
-//       if (wallet == null) continue;
+//       final wallet = walletBloc;
 //       total += wallet.balance ?? 0;
 //     }
 //     return total;
 //   }
 
-//   WalletBloc? firstWalletWithEnoughBalance(int sats, BBNetwork network) {
-//     for (final walletBloc in walletBlocsFromNetwork(network)) {
-//       final enoughBalance = walletBloc.state.balanceSats() >= sats;
-//       if (enoughBalance) return walletBloc;
-//     }
-//     return null;
-//   }
-
-//   Set<({String info, WalletBloc walletBloc})> homeWarnings(BBNetwork network) {
-//     bool instantBalWarning(WalletBloc wb) {
-//       if (wb.state.wallet?.type != BBWalletType.instant) return false;
-//       return wb.state.balanceSats() > 100000000;
+//   Set<({String info, Wallet walletBloc})> homeWarnings(BBNetwork network) {
+//     bool instantBalWarning(Wallet wb) {
+//       if (wb.type != BBWalletType.instant) return false;
+//       return (wb.balance ?? 0) > 100000000;
 //     }
 
-//     bool backupWarning(WalletBloc wb) => !wb.state.wallet!.backupTested;
+//     bool backupWarning(Wallet wb) => !wb.backupTested;
 
-//     final warnings = <({String info, WalletBloc walletBloc})>{};
+//     final warnings = <({String info, Wallet walletBloc})>{};
 //     for (final walletBloc in walletBlocsFromNetwork(network)) {
 //       if (instantBalWarning(walletBloc))
 //         warnings.add((info: 'Instant wallet balance is high', walletBloc: walletBloc));
@@ -172,6 +154,14 @@
 
 //     return warnings;
 //   }
+
+//   Wallet? firstWalletWithEnoughBalance(int sats, BBNetwork network) {
+//     for (final walletBloc in walletBlocsFromNetwork(network)) {
+//       final enoughBalance = (walletBloc.balance ?? 0) >= sats;
+//       if (enoughBalance) return walletBloc;
+//     }
+//     return null;
+//   }
 // }
 
 // extension Num on num {
@@ -179,7 +169,7 @@
 
 //   int normaliseTime() {
 //     final time = length() > 10 ? toInt() : toInt() * 1000;
-//     // if (time < 10000000000) return time * 1000;
+
 //     return time;
 //   }
 // }

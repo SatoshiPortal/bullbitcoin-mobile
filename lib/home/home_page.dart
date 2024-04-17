@@ -9,7 +9,6 @@ import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/transactions.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -31,13 +30,14 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeCubit = locator<HomeCubit>();
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: homeCubit),
-      ],
-      child: const _Screen(),
-    );
+    // final homeCubit = context.read<HomeCubit>();
+    // return MultiBlocProvider(
+    //   providers: [
+    //     BlocProvider.value(value: homeCubit),
+    //   ],
+    //   child: const _Screen(),
+    // );
+    return const _Screen();
   }
 }
 
