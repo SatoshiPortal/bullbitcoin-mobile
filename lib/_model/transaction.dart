@@ -259,6 +259,7 @@ class SwapTx with _$SwapTx {
       scriptAddress: swap.scriptAddress,
       electrumUrl: swap.electrumUrl,
       boltzUrl: swap.boltzUrl,
+      blindingKey: swap.blindingKey,
     );
   }
   const SwapTx._();
@@ -323,6 +324,33 @@ class SwapTx with _$SwapTx {
           sha256: sensitive.sha256,
           hash160: sensitive.hash160,
         ),
+      ),
+    );
+  }
+
+  LbtcLnBoltzSwap toLbtcLnSwap(SwapTxSensitive sensitive) {
+    final tx = this;
+    return LbtcLnBoltzSwap(
+      LbtcLnSwap(
+        id: tx.id,
+        redeemScript: tx.redeemScript,
+        invoice: tx.invoice,
+        outAmount: tx.outAmount,
+        scriptAddress: tx.scriptAddress,
+        electrumUrl: tx.electrumUrl.replaceAll('ssl://', ''),
+        boltzUrl: tx.boltzUrl,
+        kind: SwapType.Reverse,
+        network: Chain.BitcoinTestnet,
+        keys: KeyPair(
+          secretKey: sensitive.secretKey,
+          publicKey: sensitive.publicKey,
+        ),
+        preimage: PreImage(
+          value: sensitive.value,
+          sha256: sensitive.sha256,
+          hash160: sensitive.hash160,
+        ),
+        blindingKey: tx.blindingKey ?? '',
       ),
     );
   }

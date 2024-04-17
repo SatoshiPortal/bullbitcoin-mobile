@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
@@ -187,12 +188,25 @@ class SwapBoltz {
       final swapSensitive =
           SwapTxSensitive.fromJson(jsonDecode(swapSentive!) as Map<String, dynamic>);
 
-      final swap = tx.toBtcLnSwap(swapSensitive);
+      final isLiquid = tx.walletType == BaseWalletType.Liquid;
+
+      if (!isLiquid) {
+        final swap = tx.toBtcLnSwap(swapSensitive);
+
+        final resp = await swap.claim(
+          outAddress: outAddress,
+          absFee: absFee,
+        );
+        return (resp, null);
+      }
+
+      final swap = tx.toLbtcLnSwap(swapSensitive);
 
       final resp = await swap.claim(
         outAddress: outAddress,
         absFee: absFee,
       );
+
       return (resp, null);
     } catch (e) {
       return (null, Err(e.toString()));
@@ -213,12 +227,25 @@ class SwapBoltz {
       final swapSensitive =
           SwapTxSensitive.fromJson(jsonDecode(swapSentive!) as Map<String, dynamic>);
 
-      final swap = tx.toBtcLnSwap(swapSensitive);
+      final isLiquid = tx.walletType == BaseWalletType.Liquid;
+
+      if (!isLiquid) {
+        final swap = tx.toBtcLnSwap(swapSensitive);
+
+        final resp = await swap.refund(
+          outAddress: outAddress,
+          absFee: absFee,
+        );
+        return (resp, null);
+      }
+
+      final swap = tx.toLbtcLnSwap(swapSensitive);
 
       final resp = await swap.refund(
         outAddress: outAddress,
         absFee: absFee,
       );
+
       return (resp, null);
     } catch (e) {
       return (null, Err(e.toString()));
