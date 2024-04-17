@@ -340,7 +340,7 @@ class SwapTx with _$SwapTx {
         electrumUrl: tx.electrumUrl.replaceAll('ssl://', ''),
         boltzUrl: tx.boltzUrl,
         kind: SwapType.Reverse,
-        network: Chain.BitcoinTestnet,
+        network: network == BBNetwork.Testnet ? Chain.LiquidTestnet : Chain.Liquid,
         keys: KeyPair(
           secretKey: sensitive.secretKey,
           publicKey: sensitive.publicKey,
