@@ -224,44 +224,6 @@ class SwapTx with _$SwapTx {
     int? claimFees,
   }) = _SwapTx;
 
-  factory SwapTx.fromBtcLnSwap(BtcLnBoltzSwap result) {
-    final swap = result.btcLnSwap;
-    return SwapTx(
-      id: swap.id,
-      isSubmarine: swap.kind == SwapType.Submarine,
-      // network: swap.network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
-      network: BBNetwork.Testnet,
-      walletType: (swap.network == Chain.Bitcoin || swap.network == Chain.BitcoinTestnet)
-          ? BaseWalletType.Bitcoin
-          : BaseWalletType.Liquid,
-      redeemScript: swap.redeemScript,
-      invoice: swap.invoice,
-      outAmount: swap.outAmount,
-      scriptAddress: swap.scriptAddress,
-      electrumUrl: swap.electrumUrl,
-      boltzUrl: swap.boltzUrl,
-    );
-  }
-
-  factory SwapTx.fromLbtcLnSwap(LbtcLnBoltzSwap result) {
-    final swap = result.lbtcLnSwap;
-    return SwapTx(
-      id: swap.id,
-      isSubmarine: swap.kind == SwapType.Submarine,
-      // network: swap.network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
-      network: BBNetwork.Testnet,
-      walletType: (swap.network == Chain.Bitcoin || swap.network == Chain.BitcoinTestnet)
-          ? BaseWalletType.Bitcoin
-          : BaseWalletType.Liquid,
-      redeemScript: swap.redeemScript,
-      invoice: swap.invoice,
-      outAmount: swap.outAmount,
-      scriptAddress: swap.scriptAddress,
-      electrumUrl: swap.electrumUrl,
-      boltzUrl: swap.boltzUrl,
-      blindingKey: swap.blindingKey,
-    );
-  }
   const SwapTx._();
 
   factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
@@ -302,59 +264,6 @@ class SwapTx with _$SwapTx {
           (status!.status == SwapStatus.invoiceExpired ||
               status!.status == SwapStatus.swapExpired));
 
-  BtcLnBoltzSwap toBtcLnSwap(SwapTxSensitive sensitive) {
-    final tx = this;
-    return BtcLnBoltzSwap(
-      BtcLnSwap(
-        id: tx.id,
-        redeemScript: tx.redeemScript,
-        invoice: tx.invoice,
-        outAmount: tx.outAmount,
-        scriptAddress: tx.scriptAddress,
-        electrumUrl: tx.electrumUrl.replaceAll('ssl://', ''),
-        boltzUrl: tx.boltzUrl,
-        kind: SwapType.Reverse,
-        network: network == BBNetwork.Testnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
-        keys: KeyPair(
-          secretKey: sensitive.secretKey,
-          publicKey: sensitive.publicKey,
-        ),
-        preimage: PreImage(
-          value: sensitive.value,
-          sha256: sensitive.sha256,
-          hash160: sensitive.hash160,
-        ),
-      ),
-    );
-  }
-
-  LbtcLnBoltzSwap toLbtcLnSwap(SwapTxSensitive sensitive) {
-    final tx = this;
-    return LbtcLnBoltzSwap(
-      LbtcLnSwap(
-        id: tx.id,
-        redeemScript: tx.redeemScript,
-        invoice: tx.invoice,
-        outAmount: tx.outAmount,
-        scriptAddress: tx.scriptAddress,
-        electrumUrl: tx.electrumUrl.replaceAll('ssl://', ''),
-        boltzUrl: tx.boltzUrl,
-        kind: SwapType.Reverse,
-        network: network == BBNetwork.Testnet ? Chain.LiquidTestnet : Chain.Liquid,
-        keys: KeyPair(
-          secretKey: sensitive.secretKey,
-          publicKey: sensitive.publicKey,
-        ),
-        preimage: PreImage(
-          value: sensitive.value,
-          sha256: sensitive.sha256,
-          hash160: sensitive.hash160,
-        ),
-        blindingKey: tx.blindingKey ?? '',
-      ),
-    );
-  }
-
   String splitInvoice() =>
       invoice.substring(0, 5) + ' .... ' + invoice.substring(invoice.length - 10);
 
@@ -369,16 +278,9 @@ class SwapTx with _$SwapTx {
   }
 }
 
-extension SwapTxExt on SwapStatus {
-  bool get showPending => this == SwapStatus.invoicePaid;
-  bool get showQR => this != SwapStatus.invoiceSettled || hasExpired;
-  bool get hasExpired => this == SwapStatus.swapExpired || this == SwapStatus.invoiceExpired;
-  bool get reverseSettled => this == SwapStatus.invoiceSettled;
-}
-
 @freezed
 class SwapTxSensitive with _$SwapTxSensitive {
-  const factory SwapTxSensitive.SwapTxSensitive({
+  const factory SwapTxSensitive({
     required String id,
     required String secretKey,
     required String publicKey,
@@ -387,30 +289,6 @@ class SwapTxSensitive with _$SwapTxSensitive {
     required String hash160,
   }) = _SwapTxSensitive;
   const SwapTxSensitive._();
-
-  factory SwapTxSensitive.fromBtcLnSwap(BtcLnBoltzSwap result) {
-    final swap = result.btcLnSwap;
-    return SwapTxSensitive.SwapTxSensitive(
-      id: swap.id,
-      value: swap.preimage.value,
-      sha256: swap.preimage.sha256,
-      hash160: swap.preimage.hash160,
-      publicKey: swap.keys.publicKey,
-      secretKey: swap.keys.secretKey,
-    );
-  }
-
-  factory SwapTxSensitive.fromLbtcLnSwap(LbtcLnBoltzSwap result) {
-    final swap = result.lbtcLnSwap;
-    return SwapTxSensitive.SwapTxSensitive(
-      id: swap.id,
-      value: swap.preimage.value,
-      sha256: swap.preimage.sha256,
-      hash160: swap.preimage.hash160,
-      publicKey: swap.keys.publicKey,
-      secretKey: swap.keys.secretKey,
-    );
-  }
 
   factory SwapTxSensitive.fromJson(Map<String, dynamic> json) => _$SwapTxSensitiveFromJson(json);
 }
@@ -446,17 +324,3 @@ class Invoice with _$Invoice {
 
   int getAmount() => msats ~/ 1000;
 }
-
-
-// String swapStatusToString(SwapStatus swap) {
-//   debugPrint('swapToJson');
-//   final value = swap.toJson();
-//   return value;
-// }
-
-// SwapStatus? _addSwapStatus(Map<String, dynamic> json) {
-//   if (!json.containsKey('statusStr') || !json.containsValue('statusStr')) return null;
-
-//   final value = getSwapStatusFromString(json['statusStr'] as String);
-//   return value;
-// }

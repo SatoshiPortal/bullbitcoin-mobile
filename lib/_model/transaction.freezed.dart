@@ -1236,44 +1236,7 @@ mixin _$SwapTxSensitive {
   String get value => throw _privateConstructorUsedError;
   String get sha256 => throw _privateConstructorUsedError;
   String get hash160 => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String id, String secretKey, String publicKey,
-            String value, String sha256, String hash160)
-        SwapTxSensitive,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String id, String secretKey, String publicKey,
-            String value, String sha256, String hash160)?
-        SwapTxSensitive,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String id, String secretKey, String publicKey,
-            String value, String sha256, String hash160)?
-        SwapTxSensitive,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_SwapTxSensitive value) SwapTxSensitive,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_SwapTxSensitive value)? SwapTxSensitive,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_SwapTxSensitive value)? SwapTxSensitive,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $SwapTxSensitiveCopyWith<SwapTxSensitive> get copyWith =>
@@ -1439,14 +1402,14 @@ class _$SwapTxSensitiveImpl extends _SwapTxSensitive
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTxSensitive.SwapTxSensitive(id: $id, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160)';
+    return 'SwapTxSensitive(id: $id, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160)';
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties
-      ..add(DiagnosticsProperty('type', 'SwapTxSensitive.SwapTxSensitive'))
+      ..add(DiagnosticsProperty('type', 'SwapTxSensitive'))
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('secretKey', secretKey))
       ..add(DiagnosticsProperty('publicKey', publicKey))
@@ -1481,69 +1444,6 @@ class _$SwapTxSensitiveImpl extends _SwapTxSensitive
   _$$SwapTxSensitiveImplCopyWith<_$SwapTxSensitiveImpl> get copyWith =>
       __$$SwapTxSensitiveImplCopyWithImpl<_$SwapTxSensitiveImpl>(
           this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String id, String secretKey, String publicKey,
-            String value, String sha256, String hash160)
-        SwapTxSensitive,
-  }) {
-    return SwapTxSensitive(id, secretKey, publicKey, value, sha256, hash160);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String id, String secretKey, String publicKey,
-            String value, String sha256, String hash160)?
-        SwapTxSensitive,
-  }) {
-    return SwapTxSensitive?.call(
-        id, secretKey, publicKey, value, sha256, hash160);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String id, String secretKey, String publicKey,
-            String value, String sha256, String hash160)?
-        SwapTxSensitive,
-    required TResult orElse(),
-  }) {
-    if (SwapTxSensitive != null) {
-      return SwapTxSensitive(id, secretKey, publicKey, value, sha256, hash160);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_SwapTxSensitive value) SwapTxSensitive,
-  }) {
-    return SwapTxSensitive(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_SwapTxSensitive value)? SwapTxSensitive,
-  }) {
-    return SwapTxSensitive?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_SwapTxSensitive value)? SwapTxSensitive,
-    required TResult orElse(),
-  }) {
-    if (SwapTxSensitive != null) {
-      return SwapTxSensitive(this);
-    }
-    return orElse();
-  }
 
   @override
   Map<String, dynamic> toJson() {
