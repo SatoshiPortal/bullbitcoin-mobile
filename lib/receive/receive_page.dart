@@ -24,6 +24,7 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
@@ -187,6 +188,8 @@ class _Screen extends StatelessWidget {
     final watchOnly = context.select((WalletBloc x) => x.state.wallet!.watchOnly());
     final mainWallet = context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
 
+    final walletIsLiquid =
+        context.select((WalletBloc x) => x.state.wallet!.baseWalletType == BaseWalletType.Liquid);
     final showWarning = context.select((SwapCubit x) => x.state.showWarning());
     final removeWarning = context.select((SettingsCubit x) => x.state.removeSwapWarnings);
 
@@ -196,7 +199,7 @@ class _Screen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (showWarning && !removeWarning)
+            if (showWarning && !removeWarning && !walletIsLiquid)
               const _Warnings()
             else ...[
               const Gap(32),
@@ -379,6 +382,7 @@ class _Warnings extends StatelessWidget {
 
     return WarningContainer(
       children: [
+        const Gap(24),
         if (errLowAmt) _buildLowAmtWarn(),
         if (errHighFees != null)
           _buildHighFeesWarn(
@@ -403,12 +407,14 @@ class _Warnings extends StatelessWidget {
         const Gap(8),
         const _RemoveWarningMessage(),
         const Gap(24),
-        BBButton.big(
-          leftIcon: Icons.send_outlined,
-          label: 'Continue anyways',
-          onPressed: () {
-            context.read<SwapCubit>().removeWarnings();
-          },
+        Center(
+          child: BBButton.big(
+            leftIcon: Icons.send_outlined,
+            label: 'Continue anyways',
+            onPressed: () {
+              context.read<SwapCubit>().removeWarnings();
+            },
+          ),
         ),
       ],
     );
@@ -425,14 +431,19 @@ class _RemoveWarningMessage extends StatelessWidget {
     return Row(
       children: [
         Checkbox(
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
           value: removeWarning,
           onChanged: (checked) {
             if (checked != null) context.read<SettingsCubit>().changeSwapWarnings(checked);
           },
+          side: BorderSide(width: 2, color: context.colour.surface),
+          // fillColor: context.colour.surface,
         ),
-        const Gap(8),
+        const Gap(2),
         BBButton.text(
           label: "Don't show this warning again",
+          fontSize: 12,
           onPressed: () {
             context.read<SettingsCubit>().changeSwapWarnings(true);
           },

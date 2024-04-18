@@ -63,39 +63,50 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     if (selectedPaymentNetwork != ReceivePaymentNetwork.bitcoin) loadAddress();
 
-    if (walletType != BBWalletType.instant &&
-        currentPayNetwork != ReceivePaymentNetwork.lightning &&
-        selectedPaymentNetwork == ReceivePaymentNetwork.lightning) {
-      emit(state.copyWith(switchToInstant: true));
-      return;
-    }
-
-    if (walletType == BBWalletType.instant &&
-        currentPayNetwork != ReceivePaymentNetwork.bitcoin &&
+    if (currentPayNetwork != ReceivePaymentNetwork.bitcoin &&
         selectedPaymentNetwork == ReceivePaymentNetwork.bitcoin) {
       emit(state.copyWith(switchToSecure: true));
       return;
     }
 
-    if (walletType == BBWalletType.instant &&
-        currentPayNetwork != ReceivePaymentNetwork.liquid &&
-        selectedPaymentNetwork == ReceivePaymentNetwork.liquid) {
-      return;
-    }
-
-    if (walletType == BBWalletType.secure &&
-        currentPayNetwork != ReceivePaymentNetwork.lightning &&
+    if (currentPayNetwork != ReceivePaymentNetwork.lightning &&
         selectedPaymentNetwork == ReceivePaymentNetwork.lightning) {
-      // Allow LN -> BTC swap
+      emit(state.copyWith(switchToInstant: true));
       return;
     }
 
-    if (walletType == BBWalletType.secure &&
-        currentPayNetwork != ReceivePaymentNetwork.liquid &&
+    if (currentPayNetwork != ReceivePaymentNetwork.liquid &&
         selectedPaymentNetwork == ReceivePaymentNetwork.liquid) {
-      // Allow LBTC -> BTC swap
+      emit(state.copyWith(switchToInstant: true));
       return;
     }
+
+    // if (walletType == BBWalletType.instant &&
+    //     currentPayNetwork != ReceivePaymentNetwork.bitcoin &&
+    //     selectedPaymentNetwork == ReceivePaymentNetwork.bitcoin) {
+    //   emit(state.copyWith(switchToSecure: true));
+    //   return;
+    // }
+
+    // if (walletType == BBWalletType.instant &&
+    //     currentPayNetwork != ReceivePaymentNetwork.liquid &&
+    //     selectedPaymentNetwork == ReceivePaymentNetwork.liquid) {
+    //   return;
+    // }
+
+    // if (walletType == BBWalletType.secure &&
+    //     currentPayNetwork != ReceivePaymentNetwork.lightning &&
+    //     selectedPaymentNetwork == ReceivePaymentNetwork.lightning) {
+    //   // Allow LN -> BTC swap
+    //   return;
+    // }
+
+    // if (walletType == BBWalletType.secure &&
+    //     currentPayNetwork != ReceivePaymentNetwork.liquid &&
+    //     selectedPaymentNetwork == ReceivePaymentNetwork.liquid) {
+    //   // Allow LBTC -> BTC swap
+    //   return;
+    // }
   }
 
   void clearSwitch() {
