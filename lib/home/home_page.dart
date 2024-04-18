@@ -128,7 +128,7 @@ class _ScreenState extends State<_Screen> {
                 walletBlocs: walletBlocs,
                 onChanged: _onChanged,
               ),
-            ),
+            ).animate(delay: 300.ms).fadeIn(),
           ).animate().fadeIn(),
           Column(
             children: [

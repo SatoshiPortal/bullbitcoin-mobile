@@ -265,7 +265,7 @@ class AuthConfirmButton extends StatelessWidget {
 
     if (err.isNotEmpty)
       return Center(
-        child: BBText.error(
+        child: BBText.errorSmall(
           err,
         ),
       );

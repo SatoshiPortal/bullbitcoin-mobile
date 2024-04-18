@@ -238,11 +238,13 @@ class _ImportButtons extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBButton.big(
-            label: 'Import',
-            onPressed: () {
-              context.read<ImportWalletCubit>().xpubSaveClicked();
-            },
+          Center(
+            child: BBButton.big(
+              label: 'Import',
+              onPressed: () {
+                context.read<ImportWalletCubit>().xpubSaveClicked();
+              },
+            ),
           ),
         ],
       ),

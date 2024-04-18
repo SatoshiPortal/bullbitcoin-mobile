@@ -429,18 +429,18 @@ class _ImportWordsRecoverButton extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (err.isNotEmpty) ...[
-          const Gap(8),
-          BBText.error(
-            err,
-          ),
+          // const Gap(8),
+          BBText.errorSmall(err),
         ],
-        BBButton.big(
-          buttonKey: UIKeys.importRecoverConfirmButton,
-          label: 'Recover',
-          onPressed: () {
-            context.read<ImportWalletCubit>().recoverWalletClicked();
-          },
-          disabled: recovering,
+        Center(
+          child: BBButton.big(
+            buttonKey: UIKeys.importRecoverConfirmButton,
+            label: 'Recover',
+            onPressed: () {
+              context.read<ImportWalletCubit>().recoverWalletClicked();
+            },
+            disabled: recovering,
+          ),
         ),
       ],
     );

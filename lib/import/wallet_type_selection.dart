@@ -137,8 +137,7 @@ class _ScreenState extends State<_Screen> {
             ],
             const Gap(80),
             const SavingError(),
-            SizedBox(
-              width: 250,
+            Center(
               child: BBButton.big(
                 buttonKey: UIKeys.importWalletSelectionConfirmButton,
                 disabled: saving,
