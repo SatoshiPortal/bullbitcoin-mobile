@@ -45,7 +45,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     bool isTestnet, {
     bool onStart = false,
   }) {
-    if (!isTestnet) return;
+    // if (!isTestnet) return;
 
     if (onStart) {
       emit(state.copyWith(paymentNetwork: selectedPaymentNetwork));
