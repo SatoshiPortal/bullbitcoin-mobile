@@ -9,6 +9,7 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
@@ -47,56 +48,63 @@ class _HomeTransactionsState extends State<HomeTransactions> {
             },
           ),
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (txs.isEmpty)
-            const NoTxs()
-          else ...[
-            const HomeLoadingTxsIndicator(),
-            Padding(
-              padding: const EdgeInsets.only(left: 32.0, bottom: 8, right: 32),
-              child: Row(
-                children: [
-                  const BBText.titleLarge(
-                    'Latest Transactions',
-                    isBold: true,
-                    fontSize: 16,
-                  ),
-                  const Spacer(),
-                  InkWell(
-                    onTap: () {
-                      context.push('/transactions');
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const BBText.bodySmall(
-                          'view all',
-                          isBlue: true,
-                        ),
-                        const Gap(4),
-                        Icon(
-                          FontAwesomeIcons.arrowRight,
-                          size: 10,
-                          color: context.colour.secondary,
-                        ),
-                      ],
+      child: RefreshIndicator(
+        onRefresh: () async {
+          final network = context.read<NetworkCubit>().state.getBBNetwork();
+          final wallets = context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+          for (final wallet in wallets) wallet.add(SyncWallet());
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (txs.isEmpty)
+              const NoTxs()
+            else ...[
+              const HomeLoadingTxsIndicator(),
+              Padding(
+                padding: const EdgeInsets.only(left: 32.0, bottom: 8, right: 32),
+                child: Row(
+                  children: [
+                    const BBText.titleLarge(
+                      'Latest Transactions',
+                      isBold: true,
+                      fontSize: 16,
                     ),
-                  ),
-                ],
+                    const Spacer(),
+                    InkWell(
+                      onTap: () {
+                        context.push('/transactions');
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const BBText.bodySmall(
+                            'view all',
+                            isBlue: true,
+                          ),
+                          const Gap(4),
+                          Icon(
+                            FontAwesomeIcons.arrowRight,
+                            size: 10,
+                            color: context.colour.secondary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: txs.length,
-                itemBuilder: (context, index) {
-                  return HomeTxItem2(tx: txs[index]);
-                },
+              Expanded(
+                child: ListView.builder(
+                  itemCount: txs.length,
+                  itemBuilder: (context, index) {
+                    return HomeTxItem2(tx: txs[index]);
+                  },
+                ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
