@@ -446,6 +446,8 @@ class WalletActions extends StatelessWidget {
 
     return Column(
       children: [
+        const CheckForPaymentsButton(),
+        const Gap(8),
         const AddLabelButton(),
         const Gap(8),
         if (showRequestButton)
@@ -750,6 +752,20 @@ class CreateInvoice extends StatelessWidget {
   }
 }
 
+class CheckForPaymentsButton extends StatelessWidget {
+  const CheckForPaymentsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.big(
+      label: 'Check for payment',
+      // leftIcon: FontAwesomeIcons.arrowRotateLeft,
+      leftSvgAsset: 'assets/refresh.svg',
+      onPressed: () {},
+    );
+  }
+}
+
 class AddLabelButton extends StatelessWidget {
   const AddLabelButton({super.key});
 
@@ -757,7 +773,8 @@ class AddLabelButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BBButton.big(
       label: 'Add address label',
-      leftIcon: FontAwesomeIcons.penToSquare,
+      // leftIcon: FontAwesomeIcons.penToSquare,
+      leftSvgAsset: 'assets/edit.svg',
       onPressed: () {
         AddLabelPopUp.openPopUp(context);
       },
