@@ -76,6 +76,12 @@ class NetworkState with _$NetworkState {
     return network.getNetworkUrl(testnet, split: false);
   }
 
+  String getLiquidNetworkUrl() {
+    final network = getLiquidNetwork();
+    if (network == null) return '';
+    return network.getNetworkUrl(testnet, split: false);
+  }
+
   bdk.Network getBdkNetwork() {
     if (testnet) return bdk.Network.Testnet;
     return bdk.Network.Bitcoin;

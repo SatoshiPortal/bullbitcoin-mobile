@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
@@ -517,9 +518,12 @@ class CreateLightningInvoice extends StatelessWidget {
             onPressed: () async {
               final amt = context.read<CurrencyCubit>().state.amount;
               final wallet = context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
+              final walletIsLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
               final label = context.read<ReceiveCubit>().state.description;
               final isTestnet = context.read<NetworkCubit>().state.testnet;
-              final networkUrl = context.read<NetworkCubit>().state.getNetworkUrl();
+              final networkUrl = !walletIsLiquid
+                  ? context.read<NetworkCubit>().state.getNetworkUrl()
+                  : context.read<NetworkCubit>().state.getLiquidNetworkUrl();
 
               context.read<SwapCubit>().createRevSwapForReceive(
                     amount: amt,
