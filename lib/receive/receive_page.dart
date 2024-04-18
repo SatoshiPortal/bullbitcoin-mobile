@@ -116,6 +116,18 @@ class _ReceivePageState extends State<ReceivePage> {
             },
           ),
           BlocListener<ReceiveCubit, ReceiveState>(
+            listenWhen: (previous, current) => previous.switchToInstant != current.switchToInstant,
+            listener: (context, state) {
+              if (!state.switchToInstant) return;
+
+              final network = context.read<NetworkCubit>().state.getBBNetwork();
+              final instantWallet = context.read<HomeCubit>().state.getMainInstantWallet(network);
+              if (instantWallet == null) return;
+              context.read<ReceiveCubit>().updateWalletBloc(instantWallet);
+              context.read<ReceiveCubit>().clearSwitch();
+            },
+          ),
+          BlocListener<ReceiveCubit, ReceiveState>(
             listenWhen: (previous, current) => previous.defaultAddress != current.defaultAddress,
             listener: (context, state) {
               if (state.defaultAddress != null) return;

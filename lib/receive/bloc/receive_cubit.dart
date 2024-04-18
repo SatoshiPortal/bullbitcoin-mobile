@@ -41,14 +41,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   void updateWalletType(
-    ReceivePaymentNetwork paymentNetwork,
+    ReceivePaymentNetwork selectedPaymentNetwork,
     bool isTestnet, {
     bool onStart = false,
   }) {
     if (!isTestnet) return;
 
     if (onStart) {
-      emit(state.copyWith(paymentNetwork: paymentNetwork));
+      emit(state.copyWith(paymentNetwork: selectedPaymentNetwork));
       return;
     }
 
@@ -56,36 +56,43 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     final walletType = state.walletBloc?.state.wallet?.type;
     if (walletType == null) return;
 
-    emit(state.copyWith(paymentNetwork: paymentNetwork));
+    emit(state.copyWith(paymentNetwork: selectedPaymentNetwork));
 
-    if (paymentNetwork == ReceivePaymentNetwork.lightning)
+    if (selectedPaymentNetwork == ReceivePaymentNetwork.lightning)
       emit(state.copyWith(defaultAddress: null));
 
-    if (paymentNetwork != ReceivePaymentNetwork.bitcoin) loadAddress();
+    if (selectedPaymentNetwork != ReceivePaymentNetwork.bitcoin) loadAddress();
+
+    if (walletType != BBWalletType.instant &&
+        currentPayNetwork != ReceivePaymentNetwork.lightning &&
+        selectedPaymentNetwork == ReceivePaymentNetwork.lightning) {
+      emit(state.copyWith(switchToInstant: true));
+      return;
+    }
 
     if (walletType == BBWalletType.instant &&
         currentPayNetwork != ReceivePaymentNetwork.bitcoin &&
-        paymentNetwork == ReceivePaymentNetwork.bitcoin) {
+        selectedPaymentNetwork == ReceivePaymentNetwork.bitcoin) {
       emit(state.copyWith(switchToSecure: true));
       return;
     }
 
     if (walletType == BBWalletType.instant &&
         currentPayNetwork != ReceivePaymentNetwork.liquid &&
-        paymentNetwork == ReceivePaymentNetwork.liquid) {
+        selectedPaymentNetwork == ReceivePaymentNetwork.liquid) {
       return;
     }
 
     if (walletType == BBWalletType.secure &&
         currentPayNetwork != ReceivePaymentNetwork.lightning &&
-        paymentNetwork == ReceivePaymentNetwork.lightning) {
+        selectedPaymentNetwork == ReceivePaymentNetwork.lightning) {
       // Allow LN -> BTC swap
       return;
     }
 
     if (walletType == BBWalletType.secure &&
         currentPayNetwork != ReceivePaymentNetwork.liquid &&
-        paymentNetwork == ReceivePaymentNetwork.liquid) {
+        selectedPaymentNetwork == ReceivePaymentNetwork.liquid) {
       // Allow LBTC -> BTC swap
       return;
     }
