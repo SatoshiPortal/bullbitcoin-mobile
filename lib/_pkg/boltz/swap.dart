@@ -297,11 +297,12 @@ extension Btcln on BtcLnBoltzSwap {
     final swap = btcLnSwap;
     return SwapTxSensitive(
       id: swap.id,
-      value: swap.preimage.value,
+      preimage: swap.preimage.value,
       sha256: swap.preimage.sha256,
       hash160: swap.preimage.hash160,
       publicKey: swap.keys.publicKey,
       secretKey: swap.keys.secretKey,
+      redeemScript: swap.redeemScript,
     );
   }
 }
@@ -331,11 +332,13 @@ extension Lbtcln on LbtcLnBoltzSwap {
     final swap = lbtcLnSwap;
     return SwapTxSensitive(
       id: swap.id,
-      value: swap.preimage.value,
+      preimage: swap.preimage.value,
       sha256: swap.preimage.sha256,
       hash160: swap.preimage.hash160,
       publicKey: swap.keys.publicKey,
       secretKey: swap.keys.secretKey,
+      redeemScript: swap.redeemScript,
+      blindingKey: swap.blindingKey,
     );
   }
 }
@@ -359,7 +362,7 @@ extension SwapExt on SwapTx {
           publicKey: sensitive.publicKey,
         ),
         preimage: PreImage(
-          value: sensitive.value,
+          value: sensitive.preimage,
           sha256: sensitive.sha256,
           hash160: sensitive.hash160,
         ),
@@ -385,11 +388,11 @@ extension SwapExt on SwapTx {
           publicKey: sensitive.publicKey,
         ),
         preimage: PreImage(
-          value: sensitive.value,
+          value: sensitive.preimage,
           sha256: sensitive.sha256,
           hash160: sensitive.hash160,
         ),
-        blindingKey: tx.blindingKey ?? '',
+        blindingKey: sensitive.blindingKey ?? '',
       ),
     );
   }

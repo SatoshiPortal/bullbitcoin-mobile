@@ -284,9 +284,11 @@ class SwapTxSensitive with _$SwapTxSensitive {
     required String id,
     required String secretKey,
     required String publicKey,
-    required String value,
+    required String preimage,
     required String sha256,
     required String hash160,
+    required String redeemScript,
+    String? blindingKey,
   }) = _SwapTxSensitive;
   const SwapTxSensitive._();
 

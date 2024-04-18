@@ -1233,9 +1233,11 @@ mixin _$SwapTxSensitive {
   String get id => throw _privateConstructorUsedError;
   String get secretKey => throw _privateConstructorUsedError;
   String get publicKey => throw _privateConstructorUsedError;
-  String get value => throw _privateConstructorUsedError;
+  String get preimage => throw _privateConstructorUsedError;
   String get sha256 => throw _privateConstructorUsedError;
   String get hash160 => throw _privateConstructorUsedError;
+  String get redeemScript => throw _privateConstructorUsedError;
+  String? get blindingKey => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -1253,9 +1255,11 @@ abstract class $SwapTxSensitiveCopyWith<$Res> {
       {String id,
       String secretKey,
       String publicKey,
-      String value,
+      String preimage,
       String sha256,
-      String hash160});
+      String hash160,
+      String redeemScript,
+      String? blindingKey});
 }
 
 /// @nodoc
@@ -1274,9 +1278,11 @@ class _$SwapTxSensitiveCopyWithImpl<$Res, $Val extends SwapTxSensitive>
     Object? id = null,
     Object? secretKey = null,
     Object? publicKey = null,
-    Object? value = null,
+    Object? preimage = null,
     Object? sha256 = null,
     Object? hash160 = null,
+    Object? redeemScript = null,
+    Object? blindingKey = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -1291,9 +1297,9 @@ class _$SwapTxSensitiveCopyWithImpl<$Res, $Val extends SwapTxSensitive>
           ? _value.publicKey
           : publicKey // ignore: cast_nullable_to_non_nullable
               as String,
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
+      preimage: null == preimage
+          ? _value.preimage
+          : preimage // ignore: cast_nullable_to_non_nullable
               as String,
       sha256: null == sha256
           ? _value.sha256
@@ -1303,6 +1309,14 @@ class _$SwapTxSensitiveCopyWithImpl<$Res, $Val extends SwapTxSensitive>
           ? _value.hash160
           : hash160 // ignore: cast_nullable_to_non_nullable
               as String,
+      redeemScript: null == redeemScript
+          ? _value.redeemScript
+          : redeemScript // ignore: cast_nullable_to_non_nullable
+              as String,
+      blindingKey: freezed == blindingKey
+          ? _value.blindingKey
+          : blindingKey // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -1319,9 +1333,11 @@ abstract class _$$SwapTxSensitiveImplCopyWith<$Res>
       {String id,
       String secretKey,
       String publicKey,
-      String value,
+      String preimage,
       String sha256,
-      String hash160});
+      String hash160,
+      String redeemScript,
+      String? blindingKey});
 }
 
 /// @nodoc
@@ -1338,9 +1354,11 @@ class __$$SwapTxSensitiveImplCopyWithImpl<$Res>
     Object? id = null,
     Object? secretKey = null,
     Object? publicKey = null,
-    Object? value = null,
+    Object? preimage = null,
     Object? sha256 = null,
     Object? hash160 = null,
+    Object? redeemScript = null,
+    Object? blindingKey = freezed,
   }) {
     return _then(_$SwapTxSensitiveImpl(
       id: null == id
@@ -1355,9 +1373,9 @@ class __$$SwapTxSensitiveImplCopyWithImpl<$Res>
           ? _value.publicKey
           : publicKey // ignore: cast_nullable_to_non_nullable
               as String,
-      value: null == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
+      preimage: null == preimage
+          ? _value.preimage
+          : preimage // ignore: cast_nullable_to_non_nullable
               as String,
       sha256: null == sha256
           ? _value.sha256
@@ -1367,6 +1385,14 @@ class __$$SwapTxSensitiveImplCopyWithImpl<$Res>
           ? _value.hash160
           : hash160 // ignore: cast_nullable_to_non_nullable
               as String,
+      redeemScript: null == redeemScript
+          ? _value.redeemScript
+          : redeemScript // ignore: cast_nullable_to_non_nullable
+              as String,
+      blindingKey: freezed == blindingKey
+          ? _value.blindingKey
+          : blindingKey // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -1379,9 +1405,11 @@ class _$SwapTxSensitiveImpl extends _SwapTxSensitive
       {required this.id,
       required this.secretKey,
       required this.publicKey,
-      required this.value,
+      required this.preimage,
       required this.sha256,
-      required this.hash160})
+      required this.hash160,
+      required this.redeemScript,
+      this.blindingKey})
       : super._();
 
   factory _$SwapTxSensitiveImpl.fromJson(Map<String, dynamic> json) =>
@@ -1394,15 +1422,19 @@ class _$SwapTxSensitiveImpl extends _SwapTxSensitive
   @override
   final String publicKey;
   @override
-  final String value;
+  final String preimage;
   @override
   final String sha256;
   @override
   final String hash160;
+  @override
+  final String redeemScript;
+  @override
+  final String? blindingKey;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTxSensitive(id: $id, secretKey: $secretKey, publicKey: $publicKey, value: $value, sha256: $sha256, hash160: $hash160)';
+    return 'SwapTxSensitive(id: $id, secretKey: $secretKey, publicKey: $publicKey, preimage: $preimage, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, blindingKey: $blindingKey)';
   }
 
   @override
@@ -1413,9 +1445,11 @@ class _$SwapTxSensitiveImpl extends _SwapTxSensitive
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('secretKey', secretKey))
       ..add(DiagnosticsProperty('publicKey', publicKey))
-      ..add(DiagnosticsProperty('value', value))
+      ..add(DiagnosticsProperty('preimage', preimage))
       ..add(DiagnosticsProperty('sha256', sha256))
-      ..add(DiagnosticsProperty('hash160', hash160));
+      ..add(DiagnosticsProperty('hash160', hash160))
+      ..add(DiagnosticsProperty('redeemScript', redeemScript))
+      ..add(DiagnosticsProperty('blindingKey', blindingKey));
   }
 
   @override
@@ -1428,15 +1462,20 @@ class _$SwapTxSensitiveImpl extends _SwapTxSensitive
                 other.secretKey == secretKey) &&
             (identical(other.publicKey, publicKey) ||
                 other.publicKey == publicKey) &&
-            (identical(other.value, value) || other.value == value) &&
+            (identical(other.preimage, preimage) ||
+                other.preimage == preimage) &&
             (identical(other.sha256, sha256) || other.sha256 == sha256) &&
-            (identical(other.hash160, hash160) || other.hash160 == hash160));
+            (identical(other.hash160, hash160) || other.hash160 == hash160) &&
+            (identical(other.redeemScript, redeemScript) ||
+                other.redeemScript == redeemScript) &&
+            (identical(other.blindingKey, blindingKey) ||
+                other.blindingKey == blindingKey));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, secretKey, publicKey, value, sha256, hash160);
+  int get hashCode => Object.hash(runtimeType, id, secretKey, publicKey,
+      preimage, sha256, hash160, redeemScript, blindingKey);
 
   @JsonKey(ignore: true)
   @override
@@ -1458,9 +1497,11 @@ abstract class _SwapTxSensitive extends SwapTxSensitive {
       {required final String id,
       required final String secretKey,
       required final String publicKey,
-      required final String value,
+      required final String preimage,
       required final String sha256,
-      required final String hash160}) = _$SwapTxSensitiveImpl;
+      required final String hash160,
+      required final String redeemScript,
+      final String? blindingKey}) = _$SwapTxSensitiveImpl;
   const _SwapTxSensitive._() : super._();
 
   factory _SwapTxSensitive.fromJson(Map<String, dynamic> json) =
@@ -1473,11 +1514,15 @@ abstract class _SwapTxSensitive extends SwapTxSensitive {
   @override
   String get publicKey;
   @override
-  String get value;
+  String get preimage;
   @override
   String get sha256;
   @override
   String get hash160;
+  @override
+  String get redeemScript;
+  @override
+  String? get blindingKey;
   @override
   @JsonKey(ignore: true)
   _$$SwapTxSensitiveImplCopyWith<_$SwapTxSensitiveImpl> get copyWith =>

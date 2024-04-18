@@ -120,9 +120,11 @@ _$SwapTxSensitiveImpl _$$SwapTxSensitiveImplFromJson(
       id: json['id'] as String,
       secretKey: json['secretKey'] as String,
       publicKey: json['publicKey'] as String,
-      value: json['value'] as String,
+      preimage: json['preimage'] as String,
       sha256: json['sha256'] as String,
       hash160: json['hash160'] as String,
+      redeemScript: json['redeemScript'] as String,
+      blindingKey: json['blindingKey'] as String?,
     );
 
 Map<String, dynamic> _$$SwapTxSensitiveImplToJson(
@@ -131,9 +133,11 @@ Map<String, dynamic> _$$SwapTxSensitiveImplToJson(
       'id': instance.id,
       'secretKey': instance.secretKey,
       'publicKey': instance.publicKey,
-      'value': instance.value,
+      'preimage': instance.preimage,
       'sha256': instance.sha256,
       'hash160': instance.hash160,
+      'redeemScript': instance.redeemScript,
+      'blindingKey': instance.blindingKey,
     };
 
 _$InvoiceImpl _$$InvoiceImplFromJson(Map<String, dynamic> json) =>
