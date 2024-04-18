@@ -182,8 +182,10 @@ class SwapBoltz {
       final address = wallet.lastGeneratedAddress?.address;
       if (address == null || address.isEmpty) throw 'Address not found';
 
+      final boltzurl = wallet.network == BBNetwork.Testnet ? boltzTestnet : boltzMainnet;
+
       final (fees, errFees) = await getFeesAndLimits(
-        boltzUrl: boltzTestnet,
+        boltzUrl: boltzurl,
         outAmount: swapTx.outAmount,
       );
       if (errFees != null) throw errFees;
