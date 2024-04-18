@@ -207,7 +207,7 @@ class _Screen extends StatelessWidget {
                 const Gap(8),
                 const SwapFeesDetails(),
               ] else if (isSupported) ...[
-                const Gap(24),
+                // const Gap(24),
                 const CreateLightningInvoice(),
                 const Gap(24),
                 const SwapHistoryButton(),
@@ -260,9 +260,9 @@ class SelectWalletType extends StatelessWidget {
     return BBSwitcher<ReceivePaymentNetwork>(
       value: paymentNetwork,
       items: const {
-        ReceivePaymentNetwork.bitcoin: 'Bitcoin',
-        ReceivePaymentNetwork.liquid: 'Liquid',
         ReceivePaymentNetwork.lightning: 'Lightning',
+        ReceivePaymentNetwork.liquid: 'Liquid',
+        ReceivePaymentNetwork.bitcoin: 'Bitcoin',
       },
       onChanged: (value) {
         if (paymentNetwork == ReceivePaymentNetwork.lightning)
@@ -487,8 +487,12 @@ class CreateLightningInvoice extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const BBText.title(' Amount (required)'),
+        const Gap(4),
         const EnterAmount2(),
         const Gap(24),
+        const BBText.title(' Description'),
+        const Gap(4),
         BBTextInput.big(
           uiKey: UIKeys.receiveDescriptionField,
           value: description,
@@ -500,7 +504,8 @@ class CreateLightningInvoice extends StatelessWidget {
         const Gap(48),
         Center(
           child: BBButton.big(
-            leftIcon: FontAwesomeIcons.receipt,
+            // leftIcon: FontAwesomeIcons.receipt,
+            leftSvgAsset: 'assets/request-payment.svg',
             buttonKey: UIKeys.receiveSavePaymentButton,
             loading: creatingInv,
             label: 'Create Invoice',

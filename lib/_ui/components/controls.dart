@@ -20,8 +20,13 @@ class BBSwitcher<T> extends StatelessWidget {
   Widget _buildItem(String title) {
     return SizedBox(
       height: 40,
+      width: 120,
       child: Center(
-        child: BBText.body(title, isBold: true),
+        child: BBText.bodySmall(
+          title,
+          isBold: true,
+          fontSize: 14,
+        ),
       ),
     );
   }
@@ -40,6 +45,7 @@ class BBSwitcher<T> extends StatelessWidget {
       groupValue: value,
       padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 4),
       children: _buildItems(),
+      backgroundColor: context.colour.surface,
       onValueChanged: (v) {
         if (v == null) return;
         onChanged.call(v);

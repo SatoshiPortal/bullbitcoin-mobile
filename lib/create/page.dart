@@ -244,12 +244,14 @@ class CreateWalletConfirmButton extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBButton.big(
-            filled: true,
-            onPressed: () {
-              context.read<CreateWalletCubit>().confirmClicked();
-            },
-            label: 'Confirm',
+          Center(
+            child: BBButton.big(
+              filled: true,
+              onPressed: () {
+                context.read<CreateWalletCubit>().confirmClicked();
+              },
+              label: 'Confirm',
+            ),
           ),
           const Gap(16),
           BBButton.text(

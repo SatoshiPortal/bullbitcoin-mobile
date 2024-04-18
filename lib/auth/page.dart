@@ -74,7 +74,11 @@ class _Screen extends StatelessWidget {
               ),
             ),
       body: StackedPage(
-        bottomChild: const AuthConfirmButton(),
+        bottomChild: const AuthConfirmButton()
+            .animate(
+              delay: 300.ms,
+            )
+            .fadeIn(),
         child: SingleChildScrollView(
           child: starting
               ? Container()

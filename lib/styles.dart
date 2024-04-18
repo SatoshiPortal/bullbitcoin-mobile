@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 class _Colours {
   static const blue = Color(0xFF217FB4);
   static const red = Color(0xFFC50909);
-  static const gray = Color(0xFF666666);
+  static const gray = Color(0xFFD9D9D9);
   static const black = Colors.black;
   static const darkGray = Color(0xFF333333);
   static const white = Colors.white;

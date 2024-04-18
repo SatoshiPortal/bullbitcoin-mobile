@@ -470,13 +470,14 @@ class HomeTopBar2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final totalSats = context.select((HomeCubit x) => x.state.totalBalanceSats(network));
+    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    // final totalSats = context.select((HomeCubit _) => _.state.totalBalanceSats(network));
 
-    final fiatCurrency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
+    final currency = context.select((CurrencyCubit _) => _.state.currency);
+    // final fiatCurrency = context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
 
-    final fiatAmt =
-        context.select((NetworkCubit x) => x.state.calculatePrice(totalSats, fiatCurrency));
+    // final fiatAmt =
+    // context.select((NetworkCubit _) => _.state.calculatePrice(totalSats, currency));
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -510,21 +511,21 @@ class HomeTopBar2 extends StatelessWidget {
                     width: 108,
                   ),
                 ),
-                if (fiatCurrency != null)
+                if (currency != null)
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      BBText.headline(
-                        fiatAmt,
-                        fontSize: 18,
+                      BBText.bodySmall(
+                        currency.price.toString() + ' ' + currency.shortName.toUpperCase(),
+                        // fontSize: 18,
                       ),
-                      const Gap(4),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 2),
-                        child: BBText.bodySmall(
-                          fiatCurrency.shortName.toUpperCase(),
-                        ),
-                      ),
+                      // const Gap(4),
+                      // Padding(
+                      //   padding: const EdgeInsets.only(bottom: 2),
+                      //   child: BBText.bodySmall(
+                      //     currency.shortName.toUpperCase(),
+                      //   ),
+                      // ),
                     ],
                   ),
               ],
@@ -814,7 +815,7 @@ class HomeNoWallets extends StatelessWidget {
             Text(
               'BULL BITCOIN',
               style: font.copyWith(
-                fontSize: 90,
+                fontSize: 80,
                 color: context.colour.background,
                 height: 0.8,
               ),
@@ -822,7 +823,7 @@ class HomeNoWallets extends StatelessWidget {
             Text(
               'OWN YOUR MONEY',
               style: font.copyWith(
-                fontSize: 66,
+                fontSize: 59,
                 height: 0.8,
               ),
             ),

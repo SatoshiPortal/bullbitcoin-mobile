@@ -99,15 +99,16 @@ flutter:
 
   assets:
     - assets/i18n/
-    - assets/textlogo.png
-    - assets/nfc_scan.png
-    - assets/cc-logo.png
-    - assets/bb-logo2.png
-    - assets/bb-white.png
-    - assets/arrow_down.png
-    - assets/arrow_down_white.png
-    - assets/request-payment.svg
-    - assets/new-address.svg
+    - assets/
+    # - assets/textlogo.png
+    # - assets/nfc_scan.png
+    # - assets/cc-logo.png
+    # - assets/bb-logo2.png
+    # - assets/bb-white.png
+    # - assets/arrow_down.png
+    # - assets/arrow_down_white.png
+    # - assets/request-payment.svg
+    # - assets/new-address.svg
     
     - assets/bip39_english.txt
 
