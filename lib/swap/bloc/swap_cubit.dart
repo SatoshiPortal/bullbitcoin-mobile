@@ -83,12 +83,15 @@ class SwapCubit extends Cubit<SwapState> {
       emit(state.copyWith(errCreatingSwapInv: errReadingSeed.toString(), generatingSwapInv: false));
       return;
     }
+    final network = isTestnet
+        ? (walletIsLiquid ? Chain.LiquidTestnet : Chain.BitcoinTestnet)
+        : (walletIsLiquid ? Chain.Liquid : Chain.Bitcoin);
 
     final (swap, errCreatingInv) = await _swapBoltz.receive(
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
       outAmount: outAmount,
-      network: walletIsLiquid ? Chain.LiquidTestnet : Chain.BitcoinTestnet,
+      network: network,
       electrumUrl: networkUrl,
       boltzUrl: boltzTestnet,
       pairHash: walletIsLiquid ? fees.lbtcPairHash : fees.btcPairHash,

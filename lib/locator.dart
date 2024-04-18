@@ -50,7 +50,7 @@ import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
-const bbVersion = '0.1.98-1.1';
+const bbVersion = '0.2.0-alpha';
 
 GetIt locator = GetIt.instance;
 

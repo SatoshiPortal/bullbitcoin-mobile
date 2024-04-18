@@ -397,10 +397,3 @@ extension SwapExt on SwapTx {
     );
   }
 }
-
-// extension SwapTxExt on SwapStatus {
-//   bool get showPending => this == SwapStatus.invoicePaid;
-//   bool get showQR => this != SwapStatus.invoiceSettled || hasExpired;
-//   bool get hasExpired => this == SwapStatus.swapExpired || this == SwapStatus.invoiceExpired;
-//   bool get reverseSettled => this == SwapStatus.invoiceSettled;
-// }
