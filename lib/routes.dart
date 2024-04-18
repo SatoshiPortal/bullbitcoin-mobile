@@ -148,9 +148,9 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/receive',
       builder: (context, state) {
-        // final walletBloc = state.extra as WalletBloc?;
+        final walletBloc = state.extra as WalletBloc?;
 
-        return const ReceivePage();
+        return ReceivePage(walletBloc: walletBloc);
       },
     ),
     GoRoute(

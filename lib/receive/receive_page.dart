@@ -40,7 +40,9 @@ import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class ReceivePage extends StatefulWidget {
-  const ReceivePage({super.key});
+  const ReceivePage({super.key, this.walletBloc});
+
+  final WalletBloc? walletBloc;
 
   @override
   State<ReceivePage> createState() => _ReceivePageState();
@@ -77,7 +79,8 @@ class _ReceivePageState extends State<ReceivePage> {
     );
 
     final network = context.read<NetworkCubit>().state.getBBNetwork();
-    final walletBloc = context.read<HomeCubit>().state.getMainInstantWallet(network);
+    final walletBloc =
+        widget.walletBloc ?? context.read<HomeCubit>().state.getMainInstantWallet(network);
     if (walletBloc == null) return;
 
     _receiveCubit.updateWalletBloc(walletBloc);
