@@ -291,13 +291,11 @@ class Balances extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amtSent = context.select(
-      (WalletBloc cubit) => cubit.state.wallet!.totalSent(),
-    );
+    final wallet = context.select((WalletBloc cubit) => cubit.state.wallet!);
 
-    final amtReceived = context.select(
-      (WalletBloc cubit) => cubit.state.wallet!.totalReceived(),
-    );
+    final amtSent = wallet.totalSent();
+
+    final amtReceived = wallet.totalReceived();
 
     final inAmt = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amtReceived, removeText: true),
@@ -307,7 +305,9 @@ class Balances extends StatelessWidget {
       (CurrencyCubit x) => x.state.getAmountInUnits(amtSent, removeText: true),
     );
 
-    final units = context.select((CurrencyCubit x) => x.state.getUnitString());
+    final units = context.select(
+      (CurrencyCubit x) => x.state.getUnitString(isLiquid: wallet.isLiquid()),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

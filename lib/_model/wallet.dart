@@ -57,6 +57,8 @@ class Wallet with _$Wallet {
   // Address? getLastAddress() =>
   //     baseWalletType == BaseWalletType.Bitcoin ? lastGeneratedAddress : lastGeneratedLiqAddress;
 
+  bool isLiquid() => baseWalletType == BaseWalletType.Liquid;
+
   Wallet setLastAddress(Address address) {
     return copyWith(lastGeneratedAddress: address);
   }

@@ -280,7 +280,8 @@ class CardItem extends StatelessWidget {
 
     final balance =
         context.select((CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true));
-    final unit = context.select((CurrencyCubit x) => x.state.getUnitString());
+    final unit =
+        context.select((CurrencyCubit x) => x.state.getUnitString(isLiquid: wallet.isLiquid()));
 
     final fiatCurrency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
 

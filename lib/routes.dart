@@ -9,7 +9,7 @@ import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
-import 'package:bb_mobile/seeds/seeds_page.dart';
+// import 'package:bb_mobile/seeds/seeds_page.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
@@ -63,12 +63,12 @@ final GoRouter router = GoRouter(
         return const ImportWalletPage();
       },
     ),
-    GoRoute(
-      path: '/seed-view',
-      builder: (context, state) {
-        return const SeedViewPage();
-      },
-    ),
+    // GoRoute(
+    //   path: '/seed-view',
+    //   builder: (context, state) {
+    //     return const SeedViewPage();
+    //   },
+    // ),
     GoRoute(
       path: '/create-wallet-main',
       builder: (context, state) {

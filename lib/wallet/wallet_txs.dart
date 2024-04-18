@@ -104,12 +104,18 @@ class HomeTxItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = tx.label ?? '';
 
-    final amount = context
-        .select((CurrencyCubit x) => x.state.getAmountInUnits(tx.getAmount(sentAsTotal: true)));
+    final amount = context.select(
+      (CurrencyCubit x) => x.state.getAmountInUnits(
+        tx.getAmount(
+          sentAsTotal: true,
+        ),
+        isLiquid: tx.wallet?.isLiquid() ?? false,
+      ),
+    );
 
     final isReceive = tx.isReceived();
 
-    final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
+    // final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
 
     return InkWell(
       onTap: () {
@@ -133,7 +139,7 @@ class HomeTxItem extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText.titleLarge(amt),
+                BBText.titleLarge(amount),
                 if (label.isNotEmpty) ...[
                   const Gap(4),
                   BBText.bodySmall(label),

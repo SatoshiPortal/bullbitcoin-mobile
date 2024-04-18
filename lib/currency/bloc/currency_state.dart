@@ -55,25 +55,28 @@ class CurrencyState with _$CurrencyState {
   String getAmountInUnits(
     int amount, {
     bool? isSats,
+    bool isLiquid = false,
     bool removeText = false,
     bool hideZero = false,
     bool removeEndZeros = false,
   }) {
     String amt = '';
+    final btcStr = isLiquid ? 'L-BTC' : 'BTC';
+    final satsStr = isLiquid ? 'L-sats' : 'sats';
     if (isSats ?? unitsInSats)
-      amt = satsFormatting(amount.toString()) + ' sats';
+      amt = satsFormatting(amount.toString()) + ' $satsStr';
     else {
       String b = '';
       if (!removeEndZeros)
         b = (amount / 100000000).toStringAsFixed(8);
       else
         b = (amount / 100000000).toStringAsFixed(8);
-      amt = b + ' BTC';
+      amt = b + ' $btcStr';
     }
 
     if (removeText) {
-      amt = amt.replaceAll(' sats', '');
-      amt = amt.replaceAll(' BTC', '');
+      amt = amt.replaceAll(' $satsStr', '');
+      amt = amt.replaceAll(' $btcStr', '');
     }
 
     if (hideZero && amount == 0) amt = '';
@@ -83,9 +86,9 @@ class CurrencyState with _$CurrencyState {
     return amt;
   }
 
-  String getUnitString() {
-    if (unitsInSats) return 'sats';
-    return 'BTC';
+  String getUnitString({bool isLiquid = false}) {
+    if (unitsInSats) return isLiquid ? 'L-sats' : 'sats';
+    return isLiquid ? 'L-BTC' : 'BTC';
   }
 
   int getSatsAmount(String amount, bool? unitsInSatss) {

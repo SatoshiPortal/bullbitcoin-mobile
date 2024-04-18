@@ -192,7 +192,7 @@ class _TxDetails extends StatelessWidget {
       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(fees, removeText: true),
     );
     final units = context.select(
-      (CurrencyCubit cubit) => cubit.state.getUnitString(),
+      (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: tx.wallet?.isLiquid() ?? false),
     );
     final status = tx.timestamp == 0 ? 'Pending' : 'Confirmed';
     final time = tx.timestamp == 0 ? 'Waiting for confirmations' : timeago.format(tx.getDateTime());

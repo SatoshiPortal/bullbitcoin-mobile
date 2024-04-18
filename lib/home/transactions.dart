@@ -211,7 +211,9 @@ class HomeTxItem2 extends StatelessWidget {
           x.state.getAmountInUnits(tx.getAmount(sentAsTotal: true), removeText: true),
     );
 
-    final units = context.select((CurrencyCubit x) => x.state.getUnitString());
+    final units = context.select(
+      (CurrencyCubit x) => x.state.getUnitString(isLiquid: tx.wallet?.isLiquid() ?? false),
+    );
 
     final darkMode =
         context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
@@ -222,7 +224,7 @@ class HomeTxItem2 extends StatelessWidget {
 
     final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
 
-    final wallet = tx.wallet;
+    final wallet = tx.wallet!;
 
     return InkWell(
       onTap: () {
@@ -276,7 +278,7 @@ class HomeTxItem2 extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                if (wallet != null) ...[
+                ...[
                   WalletTag(wallet: wallet),
                   const Gap(2),
                 ],
@@ -318,7 +320,12 @@ class _SwapTxHomeListItem extends StatelessWidget {
     if (swap == null) return const SizedBox.shrink();
 
     final amt = swap.outAmount;
-    final amount = context.select((CurrencyCubit x) => x.state.getAmountInUnits(amt));
+    final amount = context.select(
+      (CurrencyCubit x) => x.state.getAmountInUnits(
+        amt,
+        isLiquid: transaction.wallet?.isLiquid() ?? false,
+      ),
+    );
     final isReceive = !swap.isSubmarine;
 
     // final invoice = swap.invoice;
