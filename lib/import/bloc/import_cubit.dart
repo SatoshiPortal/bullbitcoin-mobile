@@ -644,11 +644,12 @@ class ImportWalletCubit extends Cubit<ImportState> {
       return null;
     }
 
-    if (state.mainWallet) wallet = wallet!.copyWith(mainWallet: true);
+    wallet = wallet!.copyWith(backupTested: true);
+    if (state.mainWallet) wallet = wallet.copyWith(mainWallet: true);
 
     var walletLabel = state.walletLabel ?? '';
-    if (state.mainWallet) walletLabel = wallet!.creationName();
-    final updatedWallet = wallet!.copyWith(name: walletLabel);
+    if (state.mainWallet) walletLabel = wallet.creationName();
+    final updatedWallet = wallet.copyWith(name: walletLabel);
 
     final wsErr = await _walletsStorageRepository.newWallet(updatedWallet);
     if (wsErr != null) {
