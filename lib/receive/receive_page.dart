@@ -446,6 +446,8 @@ class WalletActions extends StatelessWidget {
 
     return Column(
       children: [
+        const AddLabelButton(),
+        const Gap(8),
         if (showRequestButton)
           BBButton.big(
             buttonKey: UIKeys.receiveRequestPaymentButton,
@@ -741,6 +743,74 @@ class CreateInvoice extends StatelessWidget {
             final amt = context.read<CurrencyCubit>().state.amount;
             context.read<ReceiveCubit>().saveFinalInvoiceClicked(amt);
           },
+        ),
+        const Gap(40),
+      ],
+    );
+  }
+}
+
+class AddLabelButton extends StatelessWidget {
+  const AddLabelButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.big(
+      label: 'Add address label',
+      leftIcon: FontAwesomeIcons.penToSquare,
+      onPressed: () {
+        AddLabelPopUp.openPopUp(context);
+      },
+    );
+  }
+}
+
+class AddLabelPopUp extends StatelessWidget {
+  const AddLabelPopUp({super.key});
+
+  static Future openPopUp(BuildContext context) async {
+    final receive = context.read<ReceiveCubit>();
+    return showBBBottomSheet(
+      context: context,
+      child: BlocProvider.value(
+        value: receive,
+        child: const Padding(
+          padding: EdgeInsets.all(30),
+          child: AddLabelPopUp(),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final value = context.select((ReceiveCubit x) => x.state.description);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BBHeader.popUpCenteredText(
+          text: 'Add Label',
+          isLeft: true,
+          onBack: () {
+            context.pop();
+          },
+        ),
+        const Gap(24),
+        BBTextInput.big(
+          hint: 'Enter label',
+          value: value,
+          onChanged: (txt) {
+            context.read<ReceiveCubit>().descriptionChanged(txt);
+          },
+        ),
+        const Gap(40),
+        Center(
+          child: BBButton.big(
+            label: 'Save',
+            onPressed: () {
+              context.read<ReceiveCubit>().saveDefaultAddressLabel();
+            },
+          ),
         ),
         const Gap(40),
       ],
