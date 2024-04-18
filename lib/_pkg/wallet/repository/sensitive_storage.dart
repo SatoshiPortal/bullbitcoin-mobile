@@ -47,7 +47,7 @@ class WalletSensitiveStorageRepository {
           value: jsn,
         );
       }
-
+      // why are we also storing the seed with the index directly? easier to read? backup?
       await _secureStorage.saveValue(
         key: fingerprintIndex,
         value: jsonEncode(seed),
@@ -110,6 +110,25 @@ class WalletSensitiveStorageRepository {
         null,
         Err(e.toString(), expected: e.toString() == 'No Seed with index $fingerprintIndex')
       );
+    }
+  }
+
+  Future<(List<Seed>?, Err?)> readAllSeeds() async {
+    try {
+      final (seeds, err) = await _secureStorage.getValue(StorageKeys.seeds);
+      print(seeds);
+      final fingerprintIdsJson = jsonDecode(seeds!)['seeds'] as List<dynamic>;
+
+      if (err != null) throw err;
+      final obj = jsonDecode(seeds) as Map<String, dynamic>;
+      final List<Seed> parsedSeeds = [];
+      for (final fingerprint in fingerprintIdsJson) {
+        final seed = Seed.fromJson(obj);
+        parsedSeeds.add(seed);
+      }
+      return (parsedSeeds, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
     }
   }
 
