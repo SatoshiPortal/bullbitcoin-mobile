@@ -473,7 +473,7 @@ class HomeTopBar2 extends StatelessWidget {
     // final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     // final totalSats = context.select((HomeCubit _) => _.state.totalBalanceSats(network));
 
-    final currency = context.select((CurrencyCubit _) => _.state.currency);
+    final currency = context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
     // final fiatCurrency = context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
 
     // final fiatAmt =
