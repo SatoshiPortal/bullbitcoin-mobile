@@ -38,13 +38,15 @@ class SwapCubit extends Cubit<SwapState> {
     required bool isTestnet,
     required String networkUrl,
   }) async {
-    if (!isTestnet) return;
+    // if (!isTestnet) return;
 
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
 
+    final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
+
     final outAmount = amount;
     final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
-      boltzUrl: boltzTestnet,
+      boltzUrl: boltzurl,
       outAmount: outAmount,
     );
     if (errFees != null) {
@@ -93,7 +95,7 @@ class SwapCubit extends Cubit<SwapState> {
       outAmount: outAmount,
       network: network,
       electrumUrl: networkUrl,
-      boltzUrl: boltzTestnet,
+      boltzUrl: boltzurl,
       pairHash: walletIsLiquid ? fees.lbtcPairHash : fees.btcPairHash,
       isLiquid: walletIsLiquid,
     );
@@ -150,7 +152,7 @@ class SwapCubit extends Cubit<SwapState> {
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
 
     final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
-      boltzUrl: boltzTestnet,
+      boltzUrl: isTestnet ? boltzTestnet : boltzMainnet,
       outAmount: amount,
     );
     if (errFees != null) {
@@ -167,7 +169,7 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     final (swap, err) = await _swapBoltz.send(
-      boltzUrl: boltzTestnet,
+      boltzUrl: isTestnet ? boltzTestnet : boltzMainnet,
       pairHash: fees!.btcPairHash,
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
