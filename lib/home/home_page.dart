@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -438,15 +439,40 @@ class CardItem extends StatelessWidget {
 }
 
 class WalletTag extends StatelessWidget {
-  const WalletTag({super.key, required this.wallet});
+  const WalletTag({super.key, required this.wallet, required this.tx});
 
   final Wallet wallet;
+  final Transaction tx;
+
+  static (String, Color) _buildTagDetails(
+    BuildContext context,
+    Wallet wallet,
+    Transaction tx,
+  ) {
+    final hasSwap = tx.swapTx != null;
+    final walletIsLiquid = wallet.isLiquid();
+
+    Color colour;
+    String text;
+
+    if (hasSwap)
+      text = 'Lightning';
+    else if (walletIsLiquid)
+      text = 'Liquid';
+    else
+      text = 'Bitcoin on-chain';
+
+    if (walletIsLiquid)
+      colour = CardColours.yellow;
+    else
+      colour = CardColours.orange;
+
+    return (text, colour);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final (color, _) = WalletCardDetails.cardDetails(context, wallet);
-
-    final name = wallet.getWalletTypeStr(shorten: true);
+    final (name, color) = _buildTagDetails(context, wallet, tx);
 
     return Container(
       padding: const EdgeInsets.symmetric(

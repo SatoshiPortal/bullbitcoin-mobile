@@ -63,13 +63,13 @@ class WalletCardDetails extends StatelessWidget {
     if (isWatchOnly && !isTestnet) return (watchonlyColor, 'mainnet_watchonly');
     if (isWatchOnly && isTestnet) return (watchonlyColor, 'testnet_watchonly');
 
-    if (isInstant) return (CardColours.instantYellow, 'instant');
+    if (isInstant) return (CardColours.yellow, 'instant');
 
     // if (isTestnet) return (context.colour.surface, 'testnet');
     // return (context.colour.primary, 'mainnet');
 
-    if (isTestnet) return (CardColours.secureOrange, 'testnet');
-    return (CardColours.secureOrange, 'mainnet');
+    if (isTestnet) return (CardColours.orange, 'testnet');
+    return (CardColours.orange, 'mainnet');
   }
 
   @override

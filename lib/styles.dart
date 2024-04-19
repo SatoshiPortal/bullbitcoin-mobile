@@ -17,8 +17,8 @@ class NewColours {
 }
 
 class CardColours {
-  static const instantYellow = Color(0xFFFFC700);
-  static const secureOrange = Color(0xFFFF9900);
+  static const yellow = Color(0xFFFFC700);
+  static const orange = Color(0xFFFF9900);
 }
 
 class Themes {

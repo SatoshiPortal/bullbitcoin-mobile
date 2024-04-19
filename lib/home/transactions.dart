@@ -279,7 +279,7 @@ class HomeTxItem2 extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 ...[
-                  WalletTag(wallet: wallet),
+                  WalletTag(wallet: wallet, tx: tx),
                   const Gap(2),
                 ],
                 if (tx.getBroadcastDateTime() != null)
