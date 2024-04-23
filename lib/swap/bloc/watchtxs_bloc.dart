@@ -58,6 +58,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     on<SwapStatusUpdate>(_onSwapStatusUpdate);
     on<DeleteSensitiveSwapData>(_onDeleteSensitiveSwapData);
     on<WatchWalletTxs>(_onWatchWalletTxs);
+    on<ClearAlerts>(_clearAlerts);
     add(InitializeSwapWatcher());
   }
 
@@ -84,10 +85,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final swapTxsToWatch = <SwapTx>[];
 
     for (final swapTx in swapTxs) {
-      if (swapTx.paidSubmarine ||
-          swapTx.settledReverse ||
-          swapTx.settledSubmarine ||
-          swapTx.expiredReverse) {
+      if (swapTx.proceesTx()) {
         add(ProcessSwapTx(walletId: event.wallet.id, swapTx: swapTx));
         continue;
       }
@@ -138,7 +136,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         if (!state.isListeningId(id)) return;
         final swapTx = walletBloc.state.wallet!.getOngoingSwap(id)!.copyWith(status: status);
 
-        final close = swapTx.settledReverse || swapTx.settledSubmarine || swapTx.expiredReverse;
+        final close =
+            swapTx.settledReverse() || swapTx.settledSubmarine() || swapTx.expiredReverse();
         if (close) {
           final idx = state.listeningTxs.indexWhere((element) => element == swapTx.id);
           if (idx != -1) {
@@ -159,12 +158,14 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final wallet = walletBloc?.state.wallet;
     if (walletBloc == null || wallet == null) return;
 
+    if (swapTx.receiveAction()) __swapAlert(swapTx, wallet, emit);
+
     if (swapTx.txid != null) {
       await __mergeSwap(wallet, swapTx, walletBloc, emit);
       return;
     }
 
-    final canClaim = swapTx.claimableReverse;
+    final canClaim = swapTx.claimableReverse();
     const shouldRefund = false;
     if (!canClaim) {
       await __updateNoActionSwapTxs(wallet, swapTx, walletBloc, emit);
@@ -318,5 +319,25 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         errClaimingSwap: '',
       ),
     );
+  }
+
+  Future __swapAlert(
+    SwapTx swapTx,
+    Wallet wallet,
+    Emitter<WatchTxsState> emit,
+  ) async {
+    if (swapTx.paidReverse()) {
+      emit(state.copyWith(txPaid: swapTx));
+      return;
+    }
+
+    if (swapTx.settledReverse()) {
+      emit(state.copyWith(syncWallet: wallet));
+      return;
+    }
+  }
+
+  Future<void> _clearAlerts(ClearAlerts event, Emitter<WatchTxsState> emit) async {
+    emit(state.copyWith(txPaid: null, syncWallet: null));
   }
 }

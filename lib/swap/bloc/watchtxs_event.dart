@@ -41,3 +41,5 @@ class DeleteSensitiveSwapData extends WatchTxsEvent {
 
   final String swapId;
 }
+
+class ClearAlerts extends WatchTxsEvent {}

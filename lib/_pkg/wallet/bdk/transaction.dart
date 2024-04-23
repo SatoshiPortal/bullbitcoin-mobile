@@ -128,7 +128,8 @@ class BDKTransactions {
 
     final swapsToDelete = <SwapTx>[
       for (final s in swapTxs)
-        if (s.paidSubmarine || s.settledReverse || s.settledSubmarine || s.expiredReverse) s,
+        if (s.paidSubmarine() || s.settledReverse() || s.settledSubmarine() || s.expiredReverse())
+          s,
     ];
 
     for (final s in swapsToDelete)

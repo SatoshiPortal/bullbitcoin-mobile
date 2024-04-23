@@ -239,30 +239,42 @@ class SwapTx with _$SwapTx {
     return outAmount - totalFees()!;
   }
 
-  bool get paidSubmarine =>
+  bool paidSubmarine() =>
       isSubmarine &&
       (status != null &&
           (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed));
 
-  bool get settledSubmarine =>
+  bool settledSubmarine() =>
       isSubmarine && (status != null && (status!.status == SwapStatus.txnClaimed));
 
-  bool get refundableSubmarine =>
+  bool refundableSubmarine() =>
       isSubmarine && (status != null && (status!.status == SwapStatus.invoiceFailedToPay));
 
-  bool get claimableReverse =>
+  bool claimableReverse() =>
       !isSubmarine &&
       status != null &&
       (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed);
 
-  bool get settledReverse =>
+  bool settledReverse() =>
       !isSubmarine && (status != null && (status!.status == SwapStatus.invoiceSettled));
 
-  bool get expiredReverse =>
+  bool expiredReverse() =>
       !isSubmarine &&
       (status != null &&
           (status!.status == SwapStatus.invoiceExpired ||
               status!.status == SwapStatus.swapExpired));
+
+  bool paidReverse() =>
+      !isSubmarine && (status != null && (status!.status == SwapStatus.txnMempool));
+
+  bool receiveAction() => settledReverse() || paidReverse();
+
+  bool proceesTx() =>
+      paidSubmarine() ||
+      settledReverse() ||
+      settledSubmarine() ||
+      expiredReverse() ||
+      paidReverse();
 
   String splitInvoice() =>
       invoice.substring(0, 5) + ' .... ' + invoice.substring(invoice.length - 10);

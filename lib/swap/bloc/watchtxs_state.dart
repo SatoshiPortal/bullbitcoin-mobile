@@ -1,3 +1,5 @@
+import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,6 +15,8 @@ class WatchTxsState with _$WatchTxsState {
     @Default([]) List<String> listeningTxs,
     @Default([]) List<String> claimedSwapTxs,
     @Default([]) List<String> claimingSwapTxIds,
+    SwapTx? txPaid,
+    Wallet? syncWallet,
   }) = _WatchTxsState;
   const WatchTxsState._();
 
