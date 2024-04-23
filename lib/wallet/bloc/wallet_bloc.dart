@@ -137,6 +137,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       }
     }
 
+    await Future.delayed(100.ms);
+
     locator<Logger>().log('Start Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''));
     final err = await _walletSync.syncWallet(state.wallet!);
     locator<Logger>().log('End Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''));

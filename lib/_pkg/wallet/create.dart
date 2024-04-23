@@ -41,17 +41,20 @@ class WalletCreate implements IWalletCreate {
 
       switch (w.baseWalletType) {
         case BaseWalletType.Bitcoin:
-          final (_, errWallet) = _walletsRepository.getBdkWallet(w);
-          if (errWallet == null) return (w, null);
+          final (_, errWallet) = _walletsRepository.getBdkWallet(w, errExpected: true);
+          if (errWallet == null) {
+            return (w, null);
+          }
           final (bdkWallet, errLoading) = await _bdkCreate.loadPublicBdkWallet(w);
           if (errLoading != null) throw errLoading;
           final errSave = _walletsRepository.setBdkWallet(w, bdkWallet!);
-          if (errSave != null) throw errSave;
-
+          if (errSave != null) {
+            throw errSave;
+          }
           return (w, null);
 
         case BaseWalletType.Liquid:
-          final (_, errWallet) = _walletsRepository.getLwkWallet(w);
+          final (_, errWallet) = _walletsRepository.getLwkWallet(w, errExpected: true);
           if (errWallet == null) return (w, null);
           final (liqWallet, errLoading) = await _lwkCreate.loadPublicLwkWallet(w);
           if (errLoading != null) throw errLoading;

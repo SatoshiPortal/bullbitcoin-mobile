@@ -46,6 +46,7 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
   final (version, errr) = await secureStorage.getValue(StorageKeys.version);
   if (errr != null) {
     print('::::no storage version saved');
+    print(errr);
 
     await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
   } else if (version != bbVersion) {

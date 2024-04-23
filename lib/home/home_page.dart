@@ -438,6 +438,10 @@ class CardItem extends StatelessWidget {
   }
 }
 
+extension O on Object? {
+  bool notNull() => this != null;
+}
+
 class WalletTag extends StatelessWidget {
   const WalletTag({super.key, required this.wallet, required this.tx});
 
@@ -449,7 +453,7 @@ class WalletTag extends StatelessWidget {
     Wallet wallet,
     Transaction tx,
   ) {
-    final hasSwap = tx.swapTx != null;
+    final hasSwap = tx.swapTx.notNull();
     final walletIsLiquid = wallet.isLiquid();
 
     Color colour;
