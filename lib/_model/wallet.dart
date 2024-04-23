@@ -346,9 +346,9 @@ class Wallet with _$Wallet {
   bdk.Network? getBdkNetwork() {
     switch (network) {
       case BBNetwork.Testnet:
-        return bdk.Network.Testnet;
+        return bdk.Network.testnet;
       case BBNetwork.Mainnet:
-        return bdk.Network.Bitcoin;
+        return bdk.Network.bitcoin;
 
       // case BBNetwork.LTestnet:
       // case BBNetwork.LMainnet:

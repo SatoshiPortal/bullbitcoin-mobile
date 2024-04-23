@@ -18,8 +18,9 @@ class BDKSensitiveCreate {
 
   Future<(List<String>?, Err?)> createMnemonic() async {
     try {
-      final mne = await bdk.Mnemonic.create(bdk.WordCount.Words12);
-      final mneList = mne.asString().split(' ');
+      final mne = await bdk.Mnemonic.create(bdk.WordCount.words12);
+      final mneString = await mne.asString();
+      final mneList = mneString.split(' ');
 
       return (mneList, null);
     } on Exception catch (e) {
@@ -41,15 +42,15 @@ class BDKSensitiveCreate {
     try {
       final mn = await bdk.Mnemonic.fromString(mnemonic);
       final descriptorSecretKey = await bdk.DescriptorSecretKey.create(
-        network: bdk.Network.Bitcoin,
+        network: bdk.Network.bitcoin,
         mnemonic: mn,
         password: passphrase,
       );
 
       final externalDescriptor = await bdk.Descriptor.newBip84(
         secretKey: descriptorSecretKey,
-        network: bdk.Network.Bitcoin,
-        keychain: bdk.KeychainKind.External,
+        network: bdk.Network.bitcoin,
+        keychain: bdk.KeychainKind.externalChain,
       );
       final edesc = await externalDescriptor.asString();
       final fgnr = fingerPrintFromXKeyDesc(edesc);
@@ -75,7 +76,7 @@ class BDKSensitiveCreate {
     required WalletCreate walletCreate,
   }) async {
     final bdkMnemonic = await bdk.Mnemonic.fromString(mnemonic);
-    final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+    final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
     final rootXprv = await bdk.DescriptorSecretKey.create(
       network: bdkNetwork,
@@ -112,37 +113,37 @@ class BDKSensitiveCreate {
       publicKey: bdkXpub44,
       fingerPrint: sourceFingerprint!,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.External,
+      keychain: bdk.KeychainKind.externalChain,
     );
     final bdkDescriptor44Internal = await bdk.Descriptor.newBip44Public(
       publicKey: bdkXpub44,
       fingerPrint: sourceFingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.Internal,
+      keychain: bdk.KeychainKind.internalChain,
     );
     final bdkDescriptor49External = await bdk.Descriptor.newBip49Public(
       publicKey: bdkXpub49,
       fingerPrint: sourceFingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.External,
+      keychain: bdk.KeychainKind.externalChain,
     );
     final bdkDescriptor49Internal = await bdk.Descriptor.newBip49Public(
       publicKey: bdkXpub49,
       fingerPrint: sourceFingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.Internal,
+      keychain: bdk.KeychainKind.internalChain,
     );
     final bdkDescriptor84External = await bdk.Descriptor.newBip84Public(
       publicKey: bdkXpub84,
       fingerPrint: sourceFingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.External,
+      keychain: bdk.KeychainKind.externalChain,
     );
     final bdkDescriptor84Internal = await bdk.Descriptor.newBip84Public(
       publicKey: bdkXpub84,
       fingerPrint: sourceFingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.Internal,
+      keychain: bdk.KeychainKind.internalChain,
     );
 
     final wallet44HashId =
@@ -249,7 +250,7 @@ class BDKSensitiveCreate {
     required WalletCreate walletCreate,
   }) async {
     final bdkMnemonic = await bdk.Mnemonic.fromString(seed.mnemonic);
-    final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+    final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
     final rootXprv = await bdk.DescriptorSecretKey.create(
       network: bdkNetwork,
       mnemonic: bdkMnemonic,
@@ -281,13 +282,13 @@ class BDKSensitiveCreate {
           publicKey: bdkXpub84,
           fingerPrint: sourceFingerprint!,
           network: bdkNetwork,
-          keychain: bdk.KeychainKind.Internal,
+          keychain: bdk.KeychainKind.internalChain,
         );
         external = await bdk.Descriptor.newBip84Public(
           publicKey: bdkXpub84,
           fingerPrint: sourceFingerprint,
           network: bdkNetwork,
-          keychain: bdk.KeychainKind.External,
+          keychain: bdk.KeychainKind.externalChain,
         );
       case ScriptType.bip49:
         final bdkXpriv49 = await rootXprv.derive(
@@ -299,13 +300,13 @@ class BDKSensitiveCreate {
           publicKey: bdkXpub49,
           fingerPrint: sourceFingerprint!,
           network: bdkNetwork,
-          keychain: bdk.KeychainKind.Internal,
+          keychain: bdk.KeychainKind.internalChain,
         );
         external = await bdk.Descriptor.newBip49Public(
           publicKey: bdkXpub49,
           fingerPrint: sourceFingerprint,
           network: bdkNetwork,
-          keychain: bdk.KeychainKind.External,
+          keychain: bdk.KeychainKind.externalChain,
         );
       case ScriptType.bip44:
         final bdkXpriv44 = await rootXprv.derive(
@@ -316,13 +317,13 @@ class BDKSensitiveCreate {
           publicKey: bdkXpub44,
           fingerPrint: sourceFingerprint!,
           network: bdkNetwork,
-          keychain: bdk.KeychainKind.Internal,
+          keychain: bdk.KeychainKind.internalChain,
         );
         external = await bdk.Descriptor.newBip44Public(
           publicKey: bdkXpub44,
           fingerPrint: sourceFingerprint,
           network: bdkNetwork,
-          keychain: bdk.KeychainKind.External,
+          keychain: bdk.KeychainKind.externalChain,
         );
     }
 
@@ -369,7 +370,7 @@ class BDKSensitiveCreate {
   ) async {
     try {
       final network =
-          wallet.network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+          wallet.network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
       final mn = await bdk.Mnemonic.fromString(seed.mnemonic);
       final pp = wallet.hasPassphrase()
@@ -393,36 +394,36 @@ class BDKSensitiveCreate {
           external = await bdk.Descriptor.newBip84(
             secretKey: descriptorSecretKey,
             network: network,
-            keychain: bdk.KeychainKind.External,
+            keychain: bdk.KeychainKind.externalChain,
           );
           internal = await bdk.Descriptor.newBip84(
             secretKey: descriptorSecretKey,
             network: network,
-            keychain: bdk.KeychainKind.Internal,
+            keychain: bdk.KeychainKind.internalChain,
           );
 
         case ScriptType.bip44:
           external = await bdk.Descriptor.newBip44(
             secretKey: descriptorSecretKey,
             network: network,
-            keychain: bdk.KeychainKind.External,
+            keychain: bdk.KeychainKind.externalChain,
           );
           internal = await bdk.Descriptor.newBip44(
             secretKey: descriptorSecretKey,
             network: network,
-            keychain: bdk.KeychainKind.Internal,
+            keychain: bdk.KeychainKind.internalChain,
           );
 
         case ScriptType.bip49:
           external = await bdk.Descriptor.newBip49(
             secretKey: descriptorSecretKey,
             network: network,
-            keychain: bdk.KeychainKind.External,
+            keychain: bdk.KeychainKind.externalChain,
           );
           internal = await bdk.Descriptor.newBip49(
             secretKey: descriptorSecretKey,
             network: network,
-            keychain: bdk.KeychainKind.Internal,
+            keychain: bdk.KeychainKind.internalChain,
           );
       }
 

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
@@ -188,7 +187,7 @@ class BDKTransactions {
       final bdkNetwork = wallet.getBdkNetwork();
       if (bdkNetwork == null) throw 'No bdkNetwork';
 
-      final txs = await bdkWallet.listTransactions(true);
+      final txs = await bdkWallet.listTransactions(includeRaw: true);
       // final x = bdk.TxBuilderResult();
 
       if (txs.isEmpty) return (wallet, null);
@@ -222,7 +221,7 @@ class BDKTransactions {
         // var outAddrs;
         // var inAddres;
         final SerializedTx sTx = SerializedTx.fromJson(
-          jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
+          jsonDecode(txObj.bdkTx!.transaction.toString()) as Map<String, dynamic>,
         );
         if (storedTxIdx != -1 &&
             storedTxs[storedTxIdx].label != null &&
@@ -265,13 +264,14 @@ class BDKTransactions {
               if (scriptPubkeyString == null) {
                 throw 'No script pubkey';
               }
-              final scriptPubKey = await bdk.Script.create(
-                hexDecoder.convert(scriptPubkeyString) as Uint8List,
+
+              final scriptPubKey = await bdk.ScriptBuf.fromHex(
+                scriptPubkeyString,
               );
 
               final addressStruct = await bdk.Address.fromScript(
-                scriptPubKey,
-                bdkNetwork,
+                script: scriptPubKey,
+                network: bdkNetwork,
               );
 
               (externalAddress, _) = await walletAddress.addAddressToWallet(
@@ -325,13 +325,13 @@ class BDKTransactions {
                 throw 'No script pubkey';
               }
 
-              final scriptPubKey = await bdk.Script.create(
-                hexDecoder.convert(scriptPubkeyString) as Uint8List,
+              final scriptPubKey = await bdk.ScriptBuf.fromHex(
+                scriptPubkeyString,
               );
 
               final addressStruct = await bdk.Address.fromScript(
-                scriptPubKey,
-                bdkNetwork,
+                script: scriptPubKey,
+                network: bdkNetwork,
               );
 
               (changeAddress, _) = await walletAddress.addAddressToWallet(
@@ -373,12 +373,12 @@ class BDKTransactions {
                 throw 'No script pubkey';
               }
 
-              final scriptPubKey = await bdk.Script.create(
-                hexDecoder.convert(scriptPubkeyString) as Uint8List,
+              final scriptPubKey = await bdk.ScriptBuf.fromHex(
+                scriptPubkeyString,
               );
               final addressStruct = await bdk.Address.fromScript(
-                scriptPubKey,
-                bdkNetwork,
+                script: scriptPubKey,
+                network: bdkNetwork,
               );
               (depositAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStruct.toString()),
@@ -586,8 +586,8 @@ class BDKTransactions {
         );
       }
       var txBuilder = bdk.TxBuilder();
-      final bdkAddress = await bdk.Address.create(address: address);
-      final script = await bdkAddress.scriptPubKey();
+      final bdkAddress = await bdk.Address.fromString(s: address, network: wallet.getBdkNetwork()!);
+      final script = await bdkAddress.scriptPubkey();
       if (sendAllCoin) {
         txBuilder = txBuilder.drainWallet().drainTo(script);
       } else {
@@ -616,9 +616,10 @@ class BDKTransactions {
 
       final txResult = await txBuilder.finish(pubWallet);
 
-      final txDetails = txResult.txDetails;
+      final psbt = txResult.$1;
+      final txDetails = txResult.$2;
 
-      final extractedTx = await txResult.psbt.extractTx();
+      final extractedTx = await psbt.extractTx();
       final outputs = await extractedTx.output();
 
       final bdkNetwork = wallet.getBdkNetwork();
@@ -626,8 +627,8 @@ class BDKTransactions {
 
       final outAddrsFutures = outputs.map((txOut) async {
         final scriptAddress = await bdk.Address.fromScript(
-          txOut.scriptPubkey,
-          bdkNetwork,
+          script: await bdk.ScriptBuf.fromHex(txOut.scriptPubkey.toString()),
+          network: bdkNetwork,
         );
         if (txOut.value == amount! && !sendAllCoin && scriptAddress.toString() == address) {
           return Address(
@@ -652,8 +653,7 @@ class BDKTransactions {
       });
 
       final List<Address> outAddrs = await Future.wait(outAddrsFutures);
-      final feeAmt = await txResult.psbt.feeAmount();
-
+      final feeAmt = await txResult.$1.feeAmount();
       final Transaction tx = Transaction(
         txid: txDetails.txid,
         rbfEnabled: enableRbf,
@@ -665,9 +665,9 @@ class BDKTransactions {
         label: note,
         toAddress: address,
         outAddrs: outAddrs,
-        psbt: txResult.psbt.psbtBase64,
+        psbt: psbt.toString(),
       );
-      return ((tx, feeAmt, txResult.psbt.psbtBase64), null);
+      return ((tx, feeAmt, psbt.toString()), null);
     } on Exception catch (e) {
       return (
         null,
@@ -707,12 +707,12 @@ class BDKTransactions {
     // required String address,
   }) async {
     try {
-      final psbtStruct = bdk.PartiallySignedTransaction(psbtBase64: psbt);
-      // final tx = await psbtStruct.extractTx();
+      final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
+      final tx = await psbtStruct.extractTx();
       final finalized = await bdkWallet.sign(
         psbt: psbtStruct,
         signOptions: const bdk.SignOptions(
-          isMultiSig: false,
+          multiSig: false,
           trustWitnessUtxo: false,
           allowAllSighashes: false,
           removePartialSigs: true,
@@ -721,9 +721,9 @@ class BDKTransactions {
           allowGrinding: true,
         ),
       );
-      final extracted = await finalized.extractTx();
+      // final extracted = await finalized;
 
-      return ((extracted, finalized.psbtBase64), null);
+      return ((tx, psbtStruct.toString()), null);
     } on Exception catch (e) {
       return (
         null,
@@ -745,11 +745,11 @@ class BDKTransactions {
     String? note,
   }) async {
     try {
-      final psbtStruct = bdk.PartiallySignedTransaction(psbtBase64: psbt);
+      final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
       final tx = await psbtStruct.extractTx();
 
-      await blockchain.broadcast(tx);
-      final txid = await psbtStruct.txId();
+      await blockchain.broadcast(transaction: tx);
+      final txid = await psbtStruct.txid();
       final newTx = transaction.copyWith(
         txid: txid,
         label: note,
@@ -787,7 +787,7 @@ class BDKTransactions {
     required bdk.Blockchain blockchain,
   }) async {
     try {
-      await blockchain.broadcast(tx);
+      await blockchain.broadcast(transaction: tx);
       return null;
     } on Exception catch (e) {
       return Err(
@@ -808,7 +808,7 @@ class BDKTransactions {
       }
 
       if (isPsbt) {
-        final psbt = bdk.PartiallySignedTransaction(psbtBase64: tx);
+        final psbt = await bdk.PartiallySignedTransaction.fromString(tx);
         final bdk.Transaction bdkTx = await psbt.extractTx();
         return (bdkTx, null);
       }
@@ -843,9 +843,9 @@ class BDKTransactions {
       );
       txBuilder = txBuilder.enableRbf();
       final txResult = await txBuilder.finish(pubWallet);
-      final signedPSBT = await signingWallet.sign(psbt: txResult.psbt);
+      final signedPSBT = await signingWallet.sign(psbt: txResult.$1);
 
-      final txDetails = txResult.txDetails;
+      final txDetails = txResult.$2;
 
       final newTx = Transaction(
         txid: txDetails.txid,
@@ -856,7 +856,7 @@ class BDKTransactions {
         timestamp: txDetails.confirmationTime?.timestamp ?? 0,
         label: tx.label,
         toAddress: tx.toAddress,
-        psbt: signedPSBT.psbtBase64,
+        psbt: signedPSBT.toString(),
       );
       return (newTx, null);
     } on Exception catch (e) {

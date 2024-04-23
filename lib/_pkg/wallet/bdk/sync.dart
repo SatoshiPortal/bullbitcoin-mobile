@@ -10,7 +10,7 @@ void _syncBdkIsolate(List<dynamic> args) async {
   final blockChain = args[2] as bdk.Blockchain;
 
   try {
-    await bdkWallet.sync(blockChain);
+    await bdkWallet.sync(blockchain: blockChain);
     sendPort.send(bdkWallet);
   } catch (e) {
     sendPort.send(

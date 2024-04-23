@@ -7,15 +7,15 @@ class LWKCreate {
   Future<(lwk.Wallet?, Err?)> loadPublicLwkWallet(Wallet wallet) async {
     try {
       final network =
-          wallet.network == BBNetwork.Mainnet ? lwk.Network.Mainnet : lwk.Network.Testnet;
+          wallet.network == BBNetwork.Mainnet ? lwk.Network.mainnet : lwk.Network.testnet;
 
       final appDocDir = await getApplicationDocumentsDirectory();
       final String dbDir = '${appDocDir.path}/db';
-
-      final w = await lwk.Wallet.create(
+      final descriptor = lwk.DescriptorBase.raw(ctDescriptor: wallet.externalPublicDescriptor);
+      final w = lwk.Wallet(
         network: network,
-        dbPath: dbDir,
-        descriptor: wallet.externalPublicDescriptor,
+        dbpath: dbDir,
+        descriptor: descriptor,
       );
 
       return (w, null);

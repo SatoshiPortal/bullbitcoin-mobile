@@ -398,7 +398,7 @@ class LWKTransactions {
       // }
       // final pset = await lwkWallet.build(sats: amount ?? 0, outAddress: address, absFee: feeRate);
       final pset =
-          await lwkWallet.build_lbtc_tx(sats: amount ?? 0, outAddress: address, absFee: feeRate);
+          await lwkWallet.buildLbtcTx(sats: amount ?? 0, outAddress: address, absFee: feeRate);
       // pubWallet.sign(network: wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet , pset: pset, mnemonic: mnemonic)
 
       final Transaction tx = Transaction(
@@ -433,8 +433,8 @@ class LWKTransactions {
     required Seed seed,
   }) async {
     try {
-      final signedTx = await lwkWallet.sign(
-        network: wallet.network == BBNetwork.Mainnet ? lwk.Network.Mainnet : lwk.Network.Testnet,
+      final signedTx = await lwkWallet.signTx(
+        network: wallet.network == BBNetwork.Mainnet ? lwk.Network.mainnet : lwk.Network.testnet,
         pset: pset,
         mnemonic: seed.mnemonic,
       );
@@ -460,7 +460,7 @@ class LWKTransactions {
     try {
       final (blockchain, err) = _networkRepository.liquidUrl;
       if (err != null) throw err;
-      final txid = await lwkWallet.broadcast(electrumUrl: blockchain!, txBytes: txBytes);
+      final txid = await lwk.Wallet.broadcastTx(electrumUrl: blockchain!, txBytes: txBytes);
       final newTx = transaction.copyWith(
         txid: txid,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,

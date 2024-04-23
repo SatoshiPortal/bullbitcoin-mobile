@@ -18,7 +18,7 @@ class BDKCreate {
   ) async {
     try {
       final network =
-          wallet.network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+          wallet.network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
       final external = await bdk.Descriptor.create(
         descriptor: wallet.externalPublicDescriptor,
@@ -62,7 +62,7 @@ class BDKCreate {
   ) async {
     // create all 3 coldcard wallets and return only the one requested
     final fingerprint = coldCard.xfp!;
-    final bdkNetwork = network == BBNetwork.Mainnet ? bdk.Network.Bitcoin : bdk.Network.Testnet;
+    final bdkNetwork = network == BBNetwork.Mainnet ? bdk.Network.bitcoin : bdk.Network.testnet;
     final ColdWallet coldWallet44 = coldCard.bip44!;
     final xpub44 = coldWallet44.xpub;
     final ColdWallet coldWallet49 = coldCard.bip49!;
@@ -85,37 +85,37 @@ class BDKCreate {
       publicKey: bdkXpub44,
       fingerPrint: fingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.External,
+      keychain: bdk.KeychainKind.externalChain,
     );
     final bdkDescriptor44Internal = await bdk.Descriptor.newBip44Public(
       publicKey: bdkXpub44,
       fingerPrint: fingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.Internal,
+      keychain: bdk.KeychainKind.internalChain,
     );
     final bdkDescriptor49External = await bdk.Descriptor.newBip49Public(
       publicKey: bdkXpub49,
       fingerPrint: fingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.External,
+      keychain: bdk.KeychainKind.externalChain,
     );
     final bdkDescriptor49Internal = await bdk.Descriptor.newBip49Public(
       publicKey: bdkXpub49,
       fingerPrint: fingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.Internal,
+      keychain: bdk.KeychainKind.internalChain,
     );
     final bdkDescriptor84External = await bdk.Descriptor.newBip84Public(
       publicKey: bdkXpub84,
       fingerPrint: fingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.External,
+      keychain: bdk.KeychainKind.externalChain,
     );
     final bdkDescriptor84Internal = await bdk.Descriptor.newBip84Public(
       publicKey: bdkXpub84,
       fingerPrint: fingerprint,
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.Internal,
+      keychain: bdk.KeychainKind.internalChain,
     );
 
     final wallet44HashId =
@@ -234,7 +234,7 @@ class BDKCreate {
           (slip132Pub.startsWith('t') || slip132Pub.startsWith('u') || slip132Pub.startsWith('v'))
               ? BBNetwork.Testnet
               : BBNetwork.Mainnet;
-      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
       final scriptType = slip132Pub.startsWith('x') || slip132Pub.startsWith('t')
           ? ScriptType.bip44
           : slip132Pub.startsWith('y') || slip132Pub.startsWith('u')
@@ -325,7 +325,7 @@ class BDKCreate {
   ) async {
     try {
       final network = (xpubWithOrigin.contains('tpub')) ? BBNetwork.Testnet : BBNetwork.Mainnet;
-      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.Testnet : bdk.Network.Bitcoin;
+      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
       final scriptType = xpubWithOrigin.contains('/44')
           ? ScriptType.bip44
           : xpubWithOrigin.contains('/49')

@@ -19,13 +19,13 @@ class BDKUtxo {
 
       for (final unspent in unspentList) {
         UTXO utxo;
-        final scr = unspent.txout.scriptPubkey;
+        final scr = await bdk.ScriptBuf.fromHex(unspent.txout.scriptPubkey.toString());
         final addresss = await bdk.Address.fromScript(
-          scr,
-          network,
+          script: scr,
+          network: network,
         );
         final addressStr = addresss.toString();
-        final AddressKind addressKind = unspent.keychain == bdk.KeychainKind.Internal
+        final AddressKind addressKind = unspent.keychain == bdk.KeychainKind.internalChain
             ? AddressKind.change
             : AddressKind.deposit;
         String addressLabel = '';

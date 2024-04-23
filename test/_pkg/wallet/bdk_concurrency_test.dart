@@ -6,7 +6,7 @@ void main() {
   test('getAddress waits while syncing wallet', () async {
     final wallet1 = await _createWallet(mne: secureTN1.join(' '));
     final blockchain = await _createBlockchain();
-    wallet1.sync(blockchain);
+    wallet1.sync(blockchain: blockchain);
     final _ = await wallet1.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
     print('this message should omes before "sync complete" message or test passed');
   });
@@ -15,8 +15,8 @@ void main() {
     final wallet1 = await _createWallet(mne: secureTN1.join(' '));
     final wallet2 = await _createWallet();
     final blockchain = await _createBlockchain();
-    wallet1.sync(blockchain);
-    wallet2.sync(blockchain);
+    wallet1.sync(blockchain: blockchain);
+    wallet2.sync(blockchain: blockchain);
     await wallet1.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
     // await wallet2.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
     print('this message should comes before "sync complete" message or test passed');
@@ -44,27 +44,27 @@ Future<bdk.Wallet> _createWallet({String? mne}) async {
   if (mne != null)
     mnemonic = await bdk.Mnemonic.fromString(mne);
   else
-    mnemonic = await bdk.Mnemonic.create(bdk.WordCount.Words12);
+    mnemonic = await bdk.Mnemonic.create(bdk.WordCount.words12);
 
   final descriptorSecretKey =
-      await bdk.DescriptorSecretKey.create(network: bdk.Network.Testnet, mnemonic: mnemonic);
+      await bdk.DescriptorSecretKey.create(network: bdk.Network.testnet, mnemonic: mnemonic);
 
   final externalDescriptor = await bdk.Descriptor.newBip44(
     secretKey: descriptorSecretKey,
-    network: bdk.Network.Testnet,
-    keychain: bdk.KeychainKind.External,
+    network: bdk.Network.testnet,
+    keychain: bdk.KeychainKind.externalChain,
   );
 
   final internalDescriptor = await bdk.Descriptor.newBip44(
     secretKey: descriptorSecretKey,
-    network: bdk.Network.Testnet,
-    keychain: bdk.KeychainKind.Internal,
+    network: bdk.Network.testnet,
+    keychain: bdk.KeychainKind.internalChain,
   );
 
   final wallet = await bdk.Wallet.create(
     descriptor: externalDescriptor,
     changeDescriptor: internalDescriptor,
-    network: bdk.Network.Testnet,
+    network: bdk.Network.testnet,
     databaseConfig: const bdk.DatabaseConfig.memory(),
   );
 

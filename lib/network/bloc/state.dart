@@ -83,8 +83,8 @@ class NetworkState with _$NetworkState {
   }
 
   bdk.Network getBdkNetwork() {
-    if (testnet) return bdk.Network.Testnet;
-    return bdk.Network.Bitcoin;
+    if (testnet) return bdk.Network.testnet;
+    return bdk.Network.bitcoin;
   }
 
   BBNetwork getBBNetwork() {

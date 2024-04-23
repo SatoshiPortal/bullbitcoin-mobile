@@ -6,7 +6,7 @@ void main() {
     try {
       const boltzUrl = 'https://api.testnet.boltz.exchange';
       const amount = 100000;
-      final fees = await AllSwapFees.estimateFee(boltzUrl: boltzUrl, outputAmount: amount);
+      final fees = await AllFees.fetch(boltzUrl: boltzUrl);
       print('FEES:${fees.lbtcSubmarine.lockupFeesEstimate}');
     } catch (e) {
       print(e);

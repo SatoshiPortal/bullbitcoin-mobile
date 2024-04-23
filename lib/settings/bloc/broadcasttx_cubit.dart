@@ -115,7 +115,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       }
 
       if (isPsbt) {
-        final psbt = bdk.PartiallySignedTransaction(psbtBase64: tx);
+        final psbt = await bdk.PartiallySignedTransaction.fromString(tx);
         bdk.Transaction bdkTx = await psbt.extractTx();
         final txid = await bdkTx.txid();
 
@@ -189,10 +189,11 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         final nOutputs = outputs.length;
         int verifiedOutputs = 0;
         for (final outpoint in outputs) {
+          final scriptBuf = await bdk.ScriptBuf.fromHex(outpoint.scriptPubkey.toString());
           totalAmount += outpoint.value;
           final addressStruct = await bdk.Address.fromScript(
-            outpoint.scriptPubkey,
-            _networkCubit.state.getBdkNetwork(),
+            script: scriptBuf,
+            network: _networkCubit.state.getBdkNetwork(),
           );
           if (transaction != null) {
             try {
@@ -298,9 +299,10 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         final List<Address> outAddrs = [];
         for (final outpoint in outputs) {
           totalAmount += outpoint.value;
+          final scriptBuf = await bdk.ScriptBuf.fromHex(outpoint.scriptPubkey.toString());
           final addressStruct = await bdk.Address.fromScript(
-            outpoint.scriptPubkey,
-            _networkCubit.state.getBdkNetwork(),
+            script: scriptBuf,
+            network: _networkCubit.state.getBdkNetwork(),
           );
           if (transaction != null) {
             try {
@@ -435,7 +437,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   void downloadPSBTClicked() async {
     await clearErrors();
     emit(state.copyWith(downloadingFile: true, errDownloadingFile: ''));
-    final psbt = state.psbtBDK?.psbtBase64;
+    final psbt = state.psbtBDK?.toString();
     if (psbt == null || psbt.isEmpty) {
       emit(
         state.copyWith(

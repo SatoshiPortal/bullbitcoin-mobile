@@ -86,8 +86,8 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
     final network = isTestnet
-        ? (walletIsLiquid ? Chain.LiquidTestnet : Chain.BitcoinTestnet)
-        : (walletIsLiquid ? Chain.Liquid : Chain.Bitcoin);
+        ? (walletIsLiquid ? Chain.liquidTestnet : Chain.bitcoinTestnet)
+        : (walletIsLiquid ? Chain.liquid : Chain.bitcoin);
 
     final (swap, errCreatingInv) = await _swapBoltz.receive(
       mnemonic: seed!.mnemonic,
@@ -105,7 +105,9 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     final updatedSwap = swap!.copyWith(
-      boltzFees: !walletIsLiquid ? fees.btcReverse.boltzFees : fees.lbtcReverse.boltzFees,
+      boltzFees: !walletIsLiquid
+          ? (fees.btcReverse.boltzFeesRate * outAmount) as int
+          : (fees.lbtcReverse.boltzFeesRate * outAmount) as int,
       lockupFees: !walletIsLiquid ? fees.btcReverse.lockupFees : fees.lbtcReverse.lockupFees,
       claimFees:
           !walletIsLiquid ? fees.btcReverse.claimFeesEstimate : fees.lbtcReverse.claimFeesEstimate,
@@ -174,7 +176,7 @@ class SwapCubit extends Cubit<SwapState> {
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
       invoice: invoice,
-      network: isTestnet ? Chain.BitcoinTestnet : Chain.Bitcoin,
+      network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
       electrumUrl: networkUrl,
     );
     if (err != null) {
@@ -183,7 +185,7 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     final updatedSwap = swap!.copyWith(
-      boltzFees: fees.btcSubmarine.boltzFees,
+      boltzFees: (fees.btcSubmarine.boltzFeesRate * amount) as int,
       lockupFees: fees.btcSubmarine.lockupFeesEstimate,
       claimFees: fees.btcSubmarine.claimFees,
     );

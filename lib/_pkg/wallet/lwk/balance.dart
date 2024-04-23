@@ -9,7 +9,7 @@ class LWKBalance {
   }) async {
     try {
       final assetToPick = wallet.network == BBNetwork.Mainnet ? lwk.lBtcAssetId : lwk.lTestAssetId;
-      final balances = await lwkWallet.balance();
+      final balances = await lwkWallet.balances();
       final finalBalance =
           balances.where((e) => e.assetId == assetToPick).map((e) => e.value).first;
 

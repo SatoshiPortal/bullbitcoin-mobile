@@ -20,7 +20,7 @@ class SwapBoltz {
 
   Future<(Invoice?, Err?)> decodeInvoice({required String invoice}) async {
     try {
-      final res = await Bolt11Invoice.decode(invoice: invoice);
+      final res = await DecodedInvoice.fromString(s: invoice);
       final inv = Invoice.fromDecodedInvoice(res, invoice);
       return (inv, null);
     } catch (e) {
@@ -33,9 +33,8 @@ class SwapBoltz {
     required int outAmount,
   }) async {
     try {
-      final res = await AllSwapFees.estimateFee(
+      final res = await AllFees.fetch(
         boltzUrl: boltzUrl,
-        outputAmount: outAmount,
       );
       return (res, null);
     } catch (e) {
@@ -53,7 +52,7 @@ class SwapBoltz {
     required String pairHash,
   }) async {
     try {
-      final res = await BtcLnBoltzSwap.newSubmarine(
+      final res = await BtcLnV1Swap.newSubmarine(
         mnemonic: mnemonic,
         index: index,
         invoice: invoice,
@@ -62,13 +61,12 @@ class SwapBoltz {
         boltzUrl: boltzUrl,
         pairHash: pairHash,
       );
-      final obj = res.btcLnSwap;
 
       final swapSensitive = res.createSwapSensitiveFromBtcLnSwap();
 
       //SwapTxSensitive.fromBtcLnSwap(res);
       final err = await _secureStorage.saveValue(
-        key: StorageKeys.swapTxSensitive + '_' + obj.id,
+        key: StorageKeys.swapTxSensitive + '_' + res.id,
         value: jsonEncode(swapSensitive.toJson()),
       );
       if (err != null) throw err;
@@ -94,7 +92,7 @@ class SwapBoltz {
     try {
       late SwapTx swapTx;
       if (!isLiquid) {
-        final res = await BtcLnBoltzSwap.newReverse(
+        final res = await BtcLnV1Swap.newReverse(
           mnemonic: mnemonic,
           index: index,
           outAmount: outAmount,
@@ -103,7 +101,7 @@ class SwapBoltz {
           boltzUrl: boltzUrl,
           pairHash: pairHash,
         );
-        final obj = res.btcLnSwap;
+        final obj = res;
 
         final swapSensitive = res.createSwapSensitiveFromBtcLnSwap();
         // SwapTxSensitive.fromBtcLnSwap(res);
@@ -115,7 +113,7 @@ class SwapBoltz {
         swapTx = res.createSwapFromBtcLnSwap();
         // SwapTx.fromBtcLnSwap(res);
       } else {
-        final res = await LbtcLnBoltzSwap.newReverse(
+        final res = await LbtcLnV1Swap.newReverse(
           mnemonic: mnemonic,
           index: index,
           outAmount: outAmount,
@@ -124,7 +122,7 @@ class SwapBoltz {
           boltzUrl: boltzUrl,
           pairHash: pairHash,
         );
-        final obj = res.lbtcLnSwap;
+        final obj = res;
 
         final swapSensitive = res.createSwapSensitiveFromLbtcLnSwap();
         // SwapTxSensitive.fromLbtcLnSwap(res);

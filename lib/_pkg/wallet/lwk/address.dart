@@ -6,7 +6,7 @@ import 'package:lwk_dart/lwk_dart.dart' as lwk;
 class LWKAddress {
   Future<(String?, Err?)> peekIndex(lwk.Wallet lwkWallet, int idx) async {
     try {
-      final address = await lwkWallet.addressAtIndex(idx);
+      final address = await lwkWallet.address(index: idx);
       return (address.confidential, null);
     } on Exception catch (e) {
       return (
@@ -25,12 +25,12 @@ class LWKAddress {
     required lwk.Wallet lwkWallet,
   }) async {
     try {
-      final addressLastUnused = await lwkWallet.lastUnusedAddress();
+      final addressLastUnused = await lwkWallet.addressLastUnused();
 
       final List<Address> addresses = [...wallet.myAddressBook];
 
       for (var i = 0; i <= addressLastUnused.index; i++) {
-        final address = await lwkWallet.addressAtIndex(i);
+        final address = await lwkWallet.address(index: i);
         final contain = wallet.myAddressBook.where(
           (element) => element.address == address.confidential,
         );
