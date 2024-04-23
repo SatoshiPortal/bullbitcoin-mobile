@@ -8,7 +8,6 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:convert/convert.dart' as conv;
-import 'package:hex/hex.dart';
 
 class BDKTransactions {
   Transaction addOutputAddresses(Address newAddress, Transaction tx) {
@@ -230,7 +229,7 @@ class BDKTransactions {
         Address? externalAddress;
         Address? changeAddress;
         Address? depositAddress;
-        const hexDecoder = HexDecoder();
+        // const hexDecoder = HexDecoder();
 
         if (!txObj.isReceived()) {
           //
@@ -813,7 +812,7 @@ class BDKTransactions {
         return (bdkTx, null);
       }
 
-      final bdkTx = await bdk.Transaction.create(
+      final bdkTx = await bdk.Transaction.fromBytes(
         transactionBytes: conv.hex.decode(tx),
       );
 

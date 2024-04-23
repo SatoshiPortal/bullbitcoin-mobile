@@ -255,7 +255,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         );
       } else {
         // its a hex
-        final bdkTx = await bdk.Transaction.create(transactionBytes: hex.decode(tx));
+        final bdkTx = await bdk.Transaction.fromBytes(transactionBytes: hex.decode(tx));
         final txid = await bdkTx.txid();
         final outputs = await bdkTx.output();
         Transaction? transaction;
@@ -406,7 +406,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       ),
     );
     final tx = state.tx;
-    final bdkTx = await bdk.Transaction.create(transactionBytes: hex.decode(tx));
+    final bdkTx = await bdk.Transaction.fromBytes(transactionBytes: hex.decode(tx));
 
     final (blockchain, errB) = _networkRepository.bdkBlockchain;
     if (errB == null) {

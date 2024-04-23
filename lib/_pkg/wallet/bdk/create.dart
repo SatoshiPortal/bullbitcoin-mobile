@@ -142,7 +142,7 @@ class BDKCreate {
     wallet44 = wallet44.copyWith(
       name: wallet44.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: firstAddress44.address,
+        address: firstAddress44.address.toString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,
@@ -173,7 +173,7 @@ class BDKCreate {
     wallet49 = wallet49.copyWith(
       name: wallet49.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: firstAddress49.address,
+        address: firstAddress49.address.toString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,
@@ -204,7 +204,7 @@ class BDKCreate {
     wallet84 = wallet84.copyWith(
       name: wallet84.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: firstAddress84.address,
+        address: firstAddress84.address.toString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,
@@ -215,9 +215,9 @@ class BDKCreate {
     _walletsRepository.removeBdkWallet(wallet49);
     _walletsRepository.removeBdkWallet(wallet84);
 
-    if (firstAddress44.address == coldWallet44.first &&
-        firstAddress49.address == coldWallet49.first &&
-        firstAddress84.address == coldWallet84.first)
+    if (firstAddress44.address.toString() == coldWallet44.first &&
+        firstAddress49.address.toString() == coldWallet49.first &&
+        firstAddress84.address.toString() == coldWallet84.first)
       return ([wallet44, wallet49, wallet84], null);
     else
       return (
@@ -296,7 +296,7 @@ class BDKCreate {
       wallet = wallet.copyWith(
         name: wallet.defaultNameString(),
         lastGeneratedAddress: Address(
-          address: firstAddress.address,
+          address: firstAddress.address.toString(),
           index: 0,
           kind: AddressKind.deposit,
           state: AddressStatus.unused,
@@ -385,7 +385,7 @@ class BDKCreate {
       wallet = wallet.copyWith(
         name: wallet.defaultNameString(),
         lastGeneratedAddress: Address(
-          address: firstAddress.address,
+          address: firstAddress.address.toString(),
           index: 0,
           kind: AddressKind.deposit,
           state: AddressStatus.unused,

@@ -10,7 +10,7 @@ class BDKAddress {
         addressIndex: bdk.AddressIndex.peek(index: idx),
       );
 
-      return (address.address, null);
+      return (address.address.toString(), null);
     } on Exception catch (e) {
       return (
         null,
@@ -39,12 +39,12 @@ class BDKAddress {
           addressIndex: bdk.AddressIndex.peek(index: i),
         );
         final contain = wallet.myAddressBook.where(
-          (element) => element.address == address.address,
+          (element) => element.address == address.address.toString(),
         );
         if (contain.isEmpty)
           addresses.add(
             Address(
-              address: address.address,
+              address: address.address.toString(),
               index: address.index,
               kind: AddressKind.deposit,
               state: AddressStatus.unused,
@@ -65,7 +65,7 @@ class BDKAddress {
         w = wallet.copyWith(
           myAddressBook: addresses,
           lastGeneratedAddress: Address(
-            address: addressLastUnused.address,
+            address: addressLastUnused.address.toString(),
             index: addressLastUnused.index,
             kind: AddressKind.deposit,
             state: AddressStatus.unused,
@@ -104,12 +104,12 @@ class BDKAddress {
           addressIndex: bdk.AddressIndex.peek(index: i),
         );
         final contain = wallet.myAddressBook.where(
-          (element) => element.address == address.address,
+          (element) => element.address == address.address.toString(),
         );
         if (contain.isEmpty)
           addresses.add(
             Address(
-              address: address.address,
+              address: address.address.toString(),
               index: address.index,
               kind: AddressKind.change,
               state: AddressStatus.unused,
@@ -118,8 +118,8 @@ class BDKAddress {
         else {
           // migration for existing users so their change index is updated
           // index used to be null
-          final index =
-              wallet.myAddressBook.indexWhere((element) => element.address == address.address);
+          final index = wallet.myAddressBook
+              .indexWhere((element) => element.address == address.address.toString());
           final change = addresses.removeAt(index);
           addresses.add(change.copyWith(index: i));
         }

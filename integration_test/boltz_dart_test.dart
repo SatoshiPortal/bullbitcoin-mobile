@@ -5,7 +5,7 @@ void main() {
   test('Swap Fees test', () async {
     try {
       const boltzUrl = 'https://api.testnet.boltz.exchange';
-      const amount = 100000;
+      // const amount = 100000;
       final fees = await AllFees.fetch(boltzUrl: boltzUrl);
       print('FEES:${fees.lbtcSubmarine.lockupFeesEstimate}');
     } catch (e) {
