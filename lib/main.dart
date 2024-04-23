@@ -15,6 +15,7 @@ import 'package:bb_mobile/settings/bloc/settings_state.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/received.dart';
+import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -22,6 +23,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lwk_dart/lwk_dart.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 
 Future main({bool fromTest = false}) async {
@@ -33,7 +35,8 @@ Future main({bool fromTest = false}) async {
 
   await setupLocator(fromTest: fromTest);
   final delegate = await Localise.getDelegate();
-
+  LwkCore.init();
+  BoltzCore.init();
   runApp(
     LocalizedApp(
       delegate,
