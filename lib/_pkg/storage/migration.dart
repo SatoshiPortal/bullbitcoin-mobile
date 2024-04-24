@@ -1,34 +1,50 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/_model/seed.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/create.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 
-Future<void> doMigration(String fromVersion, String toVersion, HiveStorage hiveStorage) async {
+Future<void> doMigration(
+  String fromVersion,
+  String toVersion,
+  SecureStorage secureStorage,
+  HiveStorage hiveStorage,
+) async {
   print('fromVersion $fromVersion; toVersion $toVersion');
   if (toVersion.startsWith('0.2') && fromVersion.startsWith('0.1')) {
-    await doMigration01to02(hiveStorage);
+    await doMigration01to02(secureStorage, hiveStorage);
   } else if (toVersion.startsWith('0.3')) {
     if (fromVersion.startsWith('0.1')) {
-      await doMigration01to02(hiveStorage);
-      await doMigration02to03(hiveStorage);
+      await doMigration01to02(secureStorage, hiveStorage);
+      await doMigration02to03(secureStorage, hiveStorage);
     } else if (fromVersion.startsWith('0.2')) {
-      await doMigration02to03(hiveStorage);
+      await doMigration02to03(secureStorage, hiveStorage);
     }
   } else if (toVersion.startsWith('0.4')) {
     if (fromVersion.startsWith('0.1')) {
-      await doMigration01to02(hiveStorage);
-      await doMigration02to03(hiveStorage);
-      await doMigration03to04(hiveStorage);
+      await doMigration01to02(secureStorage, hiveStorage);
+      await doMigration02to03(secureStorage, hiveStorage);
+      await doMigration03to04(secureStorage, hiveStorage);
     } else if (fromVersion.startsWith('0.2')) {
-      await doMigration02to03(hiveStorage);
-      await doMigration03to04(hiveStorage);
+      await doMigration02to03(secureStorage, hiveStorage);
+      await doMigration03to04(secureStorage, hiveStorage);
     } else if (fromVersion.startsWith('0.3')) {
-      await doMigration03to04(hiveStorage);
+      await doMigration03to04(secureStorage, hiveStorage);
     }
   }
 }
 
-Future<void> doMigration01to02(HiveStorage hiveStorage) async {
+Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStorage) async {
   print('Migration: 0.1 to 0.2');
   // Change 1: for each wallet with type as newSeed, change it to secure
   // Change 2: add BaseWalletType as Bitcoin
@@ -36,8 +52,14 @@ Future<void> doMigration01to02(HiveStorage hiveStorage) async {
   if (walletIdsErr != null) throw walletIdsErr;
 
   final walletIdsJson = jsonDecode(walletIds!)['wallets'] as List<dynamic>;
+
+  final WalletSensitiveStorageRepository walletSensitiveStorageRepository =
+      WalletSensitiveStorageRepository(secureStorage: secureStorage);
+
   int mainWalletIndex = 0;
   int testWalletIndex = 0;
+  Seed? liquidMainnetSeed;
+  Seed? liquidTestnetSeed;
   for (final walletId in walletIdsJson) {
     final (jsn, err) = await hiveStorage.getValue(walletId as String);
     if (err != null) throw err;
@@ -45,11 +67,22 @@ Future<void> doMigration01to02(HiveStorage hiveStorage) async {
     final walletObj = jsonDecode(jsn!) as Map<String, dynamic>;
 
     // Assuming first wallet is to be changed to secure and further wallets to words
-    if (walletObj['type'] == 'newSeed') {
+    // `newSeed` --> Auto created by wallet
+    // `worlds` --> Wallet recovered by user
+    if (walletObj['type'] == 'secure' ||
+        walletObj['type'] == 'newSeed' ||
+        walletObj['type'] == 'words') {
       if (walletObj['network'] == 'Mainnet') {
         if (mainWalletIndex == 0) {
           walletObj['type'] = 'secure';
           mainWalletIndex++;
+
+          final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
+          final (seed, _) = await walletSensitiveStorageRepository.readSeed(
+            fingerprintIndex: mnemonicFingerprint,
+          );
+
+          liquidMainnetSeed = seed;
         } else {
           walletObj['type'] = 'words';
           mainWalletIndex++;
@@ -58,6 +91,13 @@ Future<void> doMigration01to02(HiveStorage hiveStorage) async {
         if (testWalletIndex == 0) {
           walletObj['type'] = 'secure';
           testWalletIndex++;
+
+          final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
+          final (seed, _) = await walletSensitiveStorageRepository.readSeed(
+            fingerprintIndex: mnemonicFingerprint,
+          );
+
+          liquidTestnetSeed = seed;
         } else {
           walletObj['type'] = 'words';
           testWalletIndex++;
@@ -75,12 +115,53 @@ Future<void> doMigration01to02(HiveStorage hiveStorage) async {
   }
 
   // Step 3: create a new Liquid wallet, based on the Bitcoin wallet
+  final WalletsRepository walletRep = WalletsRepository();
+  final BDKCreate bdkCreate = BDKCreate(walletsRepository: walletRep);
+  final BDKSensitiveCreate bdkSensitiveCreate =
+      BDKSensitiveCreate(walletsRepository: walletRep, bdkCreate: bdkCreate);
+  final LWKCreate lwkCreate = LWKCreate();
+  final LWKSensitiveCreate lwkSensitiveCreate =
+      LWKSensitiveCreate(bdkSensitiveCreate: bdkSensitiveCreate, lwkCreate: lwkCreate);
+  final WalletsStorageRepository walletsStorageRepository =
+      WalletsStorageRepository(hiveStorage: hiveStorage);
+  final WalletCreate walletCreate = WalletCreate(
+    walletsRepository: walletRep,
+    lwkCreate: lwkCreate,
+    bdkCreate: bdkCreate,
+    walletsStorageRepository: walletsStorageRepository,
+  );
+
+  if (liquidMainnetSeed != null) {
+    final (lw, _) = await lwkSensitiveCreate.oneLiquidFromBIP39(
+      seed: liquidMainnetSeed,
+      passphrase: '', // liquidMainnetSeed.passphrases[0].passphrase, //TODO:
+      scriptType: ScriptType.bip84,
+      walletType: BBWalletType.instant,
+      network: BBNetwork.Mainnet,
+      walletCreate: walletCreate,
+    );
+    print(lw?.id);
+    await walletsStorageRepository.newWallet(lw!);
+  }
+
+  if (liquidTestnetSeed != null) {
+    final (lw, _) = await lwkSensitiveCreate.oneLiquidFromBIP39(
+      seed: liquidTestnetSeed,
+      passphrase: '', //liquidTestnetSeed.passphrases[0].passphrase, //TODO:
+      scriptType: ScriptType.bip84,
+      walletType: BBWalletType.instant,
+      network: BBNetwork.Testnet,
+      walletCreate: walletCreate,
+    );
+    print(lw?.id);
+    await walletsStorageRepository.newWallet(lw!);
+  }
 }
 
-Future<void> doMigration02to03(HiveStorage hiveStorage) async {
+Future<void> doMigration02to03(SecureStorage secureStorage, HiveStorage hiveStorage) async {
   print('Migration: 0.2 to 0.3');
 }
 
-Future<void> doMigration03to04(HiveStorage hiveStorage) async {
+Future<void> doMigration03to04(SecureStorage secureStorage, HiveStorage hiveStorage) async {
   print('Migration: 0.3 to 0.4');
 }

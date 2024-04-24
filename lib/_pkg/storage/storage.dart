@@ -72,7 +72,7 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
     await hiveStorage.init(password: base64Url.decode(password!));
 
   if (version != bbVersion) {
-    await doMigration(version!, bbVersion, hiveStorage);
+    await doMigration(version!, bbVersion, secureStorage, hiveStorage);
   }
   // if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
 

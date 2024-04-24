@@ -33,10 +33,11 @@ Future main({bool fromTest = false}) async {
   Bloc.observer = BBlocObserver();
   // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
 
-  await setupLocator(fromTest: fromTest);
-  final delegate = await Localise.getDelegate();
   LwkCore.init();
   BoltzCore.init();
+
+  await setupLocator(fromTest: fromTest);
+  final delegate = await Localise.getDelegate();
   runApp(
     LocalizedApp(
       delegate,
