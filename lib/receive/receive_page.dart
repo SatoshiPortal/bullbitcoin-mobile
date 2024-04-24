@@ -280,8 +280,8 @@ class SelectWalletType extends StatelessWidget {
       value: paymentNetwork,
       items: const {
         ReceivePaymentNetwork.lightning: 'Lightning',
-        ReceivePaymentNetwork.liquid: 'Liquid',
         ReceivePaymentNetwork.bitcoin: 'Bitcoin',
+        ReceivePaymentNetwork.liquid: 'Liquid',
       },
       onChanged: (value) {
         if (paymentNetwork == ReceivePaymentNetwork.lightning)

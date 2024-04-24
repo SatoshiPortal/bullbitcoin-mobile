@@ -147,6 +147,7 @@ class _BBTextInputState extends State<BBTextInput> {
           decoration: InputDecoration(
             suffixIcon: widget.rightIcon,
             hintText: widget.hint,
+            // suffix: widget.rightIcon,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
