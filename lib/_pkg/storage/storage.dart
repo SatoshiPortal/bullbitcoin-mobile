@@ -53,8 +53,8 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
     print(errr);
 
     await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
-  } else if (version != bbVersion) {
-    doMigration(version!, bbVersion);
+    // } else if (version != bbVersion) {
+    // await doMigration(version!, bbVersion, hiveStorage);
     // await secureStorage.deleteAll();
     // await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
   }
@@ -71,6 +71,9 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
   } else
     await hiveStorage.init(password: base64Url.decode(password!));
 
+  if (version != bbVersion) {
+    await doMigration(version!, bbVersion, hiveStorage);
+  }
   // if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
 
   return (secureStorage, hiveStorage);
