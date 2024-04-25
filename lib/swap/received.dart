@@ -104,7 +104,10 @@ class ReceiveSwapPaidSuccessPage extends StatelessWidget {
             child: SizedBox(
               height: 200,
               width: 200,
-              child: Icon(FontAwesomeIcons.circleCheck),
+              child: Icon(
+                FontAwesomeIcons.circleCheck,
+                color: Colors.green,
+              ),
             ),
           ).animate().scale(),
           const Gap(16),
