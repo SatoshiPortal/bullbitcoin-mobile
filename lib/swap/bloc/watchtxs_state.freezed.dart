@@ -20,6 +20,7 @@ mixin _$WatchTxsState {
   bool get claimingSwap => throw _privateConstructorUsedError;
   String get errWatchingInvoice => throw _privateConstructorUsedError;
   BoltzApi? get boltzWatcher => throw _privateConstructorUsedError;
+  bool get isTestnet => throw _privateConstructorUsedError;
   List<String> get listeningTxs => throw _privateConstructorUsedError;
   List<String> get claimedSwapTxs => throw _privateConstructorUsedError;
   List<String> get claimingSwapTxIds => throw _privateConstructorUsedError;
@@ -42,6 +43,7 @@ abstract class $WatchTxsStateCopyWith<$Res> {
       bool claimingSwap,
       String errWatchingInvoice,
       BoltzApi? boltzWatcher,
+      bool isTestnet,
       List<String> listeningTxs,
       List<String> claimedSwapTxs,
       List<String> claimingSwapTxIds,
@@ -69,6 +71,7 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
     Object? claimingSwap = null,
     Object? errWatchingInvoice = null,
     Object? boltzWatcher = freezed,
+    Object? isTestnet = null,
     Object? listeningTxs = null,
     Object? claimedSwapTxs = null,
     Object? claimingSwapTxIds = null,
@@ -92,6 +95,10 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
           ? _value.boltzWatcher
           : boltzWatcher // ignore: cast_nullable_to_non_nullable
               as BoltzApi?,
+      isTestnet: null == isTestnet
+          ? _value.isTestnet
+          : isTestnet // ignore: cast_nullable_to_non_nullable
+              as bool,
       listeningTxs: null == listeningTxs
           ? _value.listeningTxs
           : listeningTxs // ignore: cast_nullable_to_non_nullable
@@ -153,6 +160,7 @@ abstract class _$$WatchTxsStateImplCopyWith<$Res>
       bool claimingSwap,
       String errWatchingInvoice,
       BoltzApi? boltzWatcher,
+      bool isTestnet,
       List<String> listeningTxs,
       List<String> claimedSwapTxs,
       List<String> claimingSwapTxIds,
@@ -180,6 +188,7 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
     Object? claimingSwap = null,
     Object? errWatchingInvoice = null,
     Object? boltzWatcher = freezed,
+    Object? isTestnet = null,
     Object? listeningTxs = null,
     Object? claimedSwapTxs = null,
     Object? claimingSwapTxIds = null,
@@ -203,6 +212,10 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
           ? _value.boltzWatcher
           : boltzWatcher // ignore: cast_nullable_to_non_nullable
               as BoltzApi?,
+      isTestnet: null == isTestnet
+          ? _value.isTestnet
+          : isTestnet // ignore: cast_nullable_to_non_nullable
+              as bool,
       listeningTxs: null == listeningTxs
           ? _value._listeningTxs
           : listeningTxs // ignore: cast_nullable_to_non_nullable
@@ -235,6 +248,7 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
       this.claimingSwap = false,
       this.errWatchingInvoice = '',
       this.boltzWatcher,
+      required this.isTestnet,
       final List<String> listeningTxs = const [],
       final List<String> claimedSwapTxs = const [],
       final List<String> claimingSwapTxIds = const [],
@@ -256,6 +270,8 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
   final String errWatchingInvoice;
   @override
   final BoltzApi? boltzWatcher;
+  @override
+  final bool isTestnet;
   final List<String> _listeningTxs;
   @override
   @JsonKey()
@@ -291,7 +307,7 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
 
   @override
   String toString() {
-    return 'WatchTxsState(errClaimingSwap: $errClaimingSwap, claimingSwap: $claimingSwap, errWatchingInvoice: $errWatchingInvoice, boltzWatcher: $boltzWatcher, listeningTxs: $listeningTxs, claimedSwapTxs: $claimedSwapTxs, claimingSwapTxIds: $claimingSwapTxIds, txPaid: $txPaid, syncWallet: $syncWallet)';
+    return 'WatchTxsState(errClaimingSwap: $errClaimingSwap, claimingSwap: $claimingSwap, errWatchingInvoice: $errWatchingInvoice, boltzWatcher: $boltzWatcher, isTestnet: $isTestnet, listeningTxs: $listeningTxs, claimedSwapTxs: $claimedSwapTxs, claimingSwapTxIds: $claimingSwapTxIds, txPaid: $txPaid, syncWallet: $syncWallet)';
   }
 
   @override
@@ -307,6 +323,8 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
                 other.errWatchingInvoice == errWatchingInvoice) &&
             (identical(other.boltzWatcher, boltzWatcher) ||
                 other.boltzWatcher == boltzWatcher) &&
+            (identical(other.isTestnet, isTestnet) ||
+                other.isTestnet == isTestnet) &&
             const DeepCollectionEquality()
                 .equals(other._listeningTxs, _listeningTxs) &&
             const DeepCollectionEquality()
@@ -325,6 +343,7 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
       claimingSwap,
       errWatchingInvoice,
       boltzWatcher,
+      isTestnet,
       const DeepCollectionEquality().hash(_listeningTxs),
       const DeepCollectionEquality().hash(_claimedSwapTxs),
       const DeepCollectionEquality().hash(_claimingSwapTxIds),
@@ -344,6 +363,7 @@ abstract class _WatchTxsState extends WatchTxsState {
       final bool claimingSwap,
       final String errWatchingInvoice,
       final BoltzApi? boltzWatcher,
+      required final bool isTestnet,
       final List<String> listeningTxs,
       final List<String> claimedSwapTxs,
       final List<String> claimingSwapTxIds,
@@ -359,6 +379,8 @@ abstract class _WatchTxsState extends WatchTxsState {
   String get errWatchingInvoice;
   @override
   BoltzApi? get boltzWatcher;
+  @override
+  bool get isTestnet;
   @override
   List<String> get listeningTxs;
   @override

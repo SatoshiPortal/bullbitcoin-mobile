@@ -45,13 +45,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 ///   - Assign txid to swapTx and and add swap to claimedSwapTxs and update wallet
 class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   WatchTxsBloc({
+    required bool isTestnet,
     required SwapBoltz swapBoltz,
     required WalletTx walletTx,
     required HomeCubit homeCubit,
   })  : _walletTx = walletTx,
         _homeCubit = homeCubit,
         _swapBoltz = swapBoltz,
-        super(const WatchTxsState()) {
+        super(WatchTxsState(isTestnet: isTestnet)) {
     on<InitializeSwapWatcher>(_initializeSwapWatcher);
     on<WatchSwapStatus>(_onWatchSwapStatus);
     on<ProcessSwapTx>(_onProcessSwapTx, transformer: sequential());
@@ -59,7 +60,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     on<DeleteSensitiveSwapData>(_onDeleteSensitiveSwapData);
     on<WatchWalletTxs>(_onWatchWalletTxs);
     on<ClearAlerts>(_clearAlerts);
-    add(InitializeSwapWatcher());
+    add(InitializeSwapWatcher(isTestnet: isTestnet));
   }
 
   final SwapBoltz _swapBoltz;
@@ -70,7 +71,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   void _initializeSwapWatcher(InitializeSwapWatcher event, Emitter<WatchTxsState> emit) async {
     if (state.boltzWatcher != null) return;
 
-    final (boltzWatcher, err) = await _swapBoltz.initializeBoltzApi();
+    final (boltzWatcher, err) = await _swapBoltz.initializeBoltzApi(event.isTestnet);
     if (err != null) {
       emit(state.copyWith(errWatchingInvoice: err.message));
       return;
@@ -106,7 +107,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       emit(
         state.copyWith(errWatchingInvoice: 'Watcher not initialized. Re-initializing. Try Again.'),
       );
-      add(InitializeSwapWatcher());
+
+      add(InitializeSwapWatcher(isTestnet: state.isTestnet));
       return;
     }
 

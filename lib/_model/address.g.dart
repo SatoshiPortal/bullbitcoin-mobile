@@ -10,14 +10,15 @@ _$AddressImpl _$$AddressImplFromJson(Map<String, dynamic> json) =>
     _$AddressImpl(
       address: json['address'] as String,
       standard: json['standard'] as String?,
-      index: json['index'] as int?,
+      index: (json['index'] as num?)?.toInt(),
       kind: $enumDecode(_$AddressKindEnumMap, json['kind']),
       state: $enumDecode(_$AddressStatusEnumMap, json['state']),
       label: json['label'] as String?,
       spentTxId: json['spentTxId'] as String?,
       spendable: json['spendable'] as bool? ?? true,
-      highestPreviousBalance: json['highestPreviousBalance'] as int? ?? 0,
-      balance: json['balance'] as int? ?? 0,
+      highestPreviousBalance:
+          (json['highestPreviousBalance'] as num?)?.toInt() ?? 0,
+      balance: (json['balance'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$$AddressImplToJson(_$AddressImpl instance) =>
@@ -49,9 +50,9 @@ const _$AddressStatusEnumMap = {
 
 _$UTXOImpl _$$UTXOImplFromJson(Map<String, dynamic> json) => _$UTXOImpl(
       txid: json['txid'] as String,
-      txIndex: json['txIndex'] as int,
+      txIndex: (json['txIndex'] as num).toInt(),
       isSpent: json['isSpent'] as bool,
-      value: json['value'] as int,
+      value: (json['value'] as num).toInt(),
       label: json['label'] as String,
       address: Address.fromJson(json['address'] as Map<String, dynamic>),
       spendable: json['spendable'] as bool,

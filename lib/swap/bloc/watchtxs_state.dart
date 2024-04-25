@@ -12,6 +12,7 @@ class WatchTxsState with _$WatchTxsState {
     @Default(false) bool claimingSwap,
     @Default('') String errWatchingInvoice,
     BoltzApi? boltzWatcher,
+    required bool isTestnet,
     @Default([]) List<String> listeningTxs,
     @Default([]) List<String> claimedSwapTxs,
     @Default([]) List<String> claimingSwapTxIds,
