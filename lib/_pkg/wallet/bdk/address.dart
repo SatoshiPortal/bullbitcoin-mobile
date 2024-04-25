@@ -10,7 +10,9 @@ class BDKAddress {
         addressIndex: bdk.AddressIndex.peek(index: idx),
       );
 
-      return (address.address.toString(), null);
+      final addr = await address.address.asString();
+
+      return (addr, null);
     } on Exception catch (e) {
       return (
         null,
@@ -44,7 +46,7 @@ class BDKAddress {
         if (contain.isEmpty)
           addresses.add(
             Address(
-              address: address.address.toString(),
+              address: await address.address.asString(),
               index: address.index,
               kind: AddressKind.deposit,
               state: AddressStatus.unused,
@@ -65,7 +67,7 @@ class BDKAddress {
         w = wallet.copyWith(
           myAddressBook: addresses,
           lastGeneratedAddress: Address(
-            address: addressLastUnused.address.toString(),
+            address: await addressLastUnused.address.asString(),
             index: addressLastUnused.index,
             kind: AddressKind.deposit,
             state: AddressStatus.unused,

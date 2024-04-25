@@ -106,8 +106,8 @@ class SwapCubit extends Cubit<SwapState> {
 
     final updatedSwap = swap!.copyWith(
       boltzFees: !walletIsLiquid
-          ? (fees.btcReverse.boltzFeesRate * outAmount) as int
-          : (fees.lbtcReverse.boltzFeesRate * outAmount) as int,
+          ? (fees.btcReverse.boltzFeesRate * outAmount).toInt()
+          : (fees.lbtcReverse.boltzFeesRate * outAmount).toInt(),
       lockupFees: !walletIsLiquid ? fees.btcReverse.lockupFees : fees.lbtcReverse.lockupFees,
       claimFees:
           !walletIsLiquid ? fees.btcReverse.claimFeesEstimate : fees.lbtcReverse.claimFeesEstimate,
