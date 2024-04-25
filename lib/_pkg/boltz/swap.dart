@@ -145,7 +145,8 @@ class SwapBoltz {
     try {
       final api = await BoltzApi.newBoltzApi();
 
-      api.initialize();
+      // This is not needed here. It happens internally in the library
+      // api.initialize();
 
       return (api, null);
     } catch (e) {

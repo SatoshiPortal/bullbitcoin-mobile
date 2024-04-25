@@ -44,6 +44,9 @@ Future<void> doMigration(
   }
 }
 
+// Change 1: for each wallet with type as newSeed, change it to secure
+// Change 2: add BaseWalletType as Bitcoin
+// Change 3: create a new Liquid wallet, based on the Bitcoin wallet
 Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStorage) async {
   print('Migration: 0.1 to 0.2');
   // Change 1: for each wallet with type as newSeed, change it to secure
@@ -66,15 +69,15 @@ Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStor
 
     final walletObj = jsonDecode(jsn!) as Map<String, dynamic>;
 
+    // TODO: Test this assumption
     // Assuming first wallet is to be changed to secure and further wallets to words
     // `newSeed` --> Auto created by wallet
     // `worlds` --> Wallet recovered by user
-    if (walletObj['type'] == 'secure' ||
-        walletObj['type'] == 'newSeed' ||
-        walletObj['type'] == 'words') {
+    if (walletObj['type'] == 'newSeed' || walletObj['type'] == 'words') {
       if (walletObj['network'] == 'Mainnet') {
         if (mainWalletIndex == 0) {
           walletObj['type'] = 'secure';
+          walletObj['name'] = 'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
           mainWalletIndex++;
 
           final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
@@ -90,6 +93,7 @@ Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStor
       } else if (walletObj['network'] == 'Testnet') {
         if (testWalletIndex == 0) {
           walletObj['type'] = 'secure';
+          walletObj['name'] = 'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
           testWalletIndex++;
 
           final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
@@ -106,6 +110,9 @@ Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStor
     }
     walletObj.addAll({'baseWalletType': 'Bitcoin'});
 
+    print('Save wallet as:');
+    print(jsonEncode(walletObj));
+
     final _ = await hiveStorage.saveValue(
       key: walletId,
       value: jsonEncode(
@@ -114,7 +121,7 @@ Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStor
     );
   }
 
-  // Step 3: create a new Liquid wallet, based on the Bitcoin wallet
+  // Change 3: create a new Liquid wallet, based on the Bitcoin wallet
   final WalletsRepository walletRep = WalletsRepository();
   final BDKCreate bdkCreate = BDKCreate(walletsRepository: walletRep);
   final BDKSensitiveCreate bdkSensitiveCreate =
@@ -134,28 +141,37 @@ Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStor
   if (liquidMainnetSeed != null) {
     final (lw, _) = await lwkSensitiveCreate.oneLiquidFromBIP39(
       seed: liquidMainnetSeed,
-      passphrase: '', // liquidMainnetSeed.passphrases[0].passphrase, //TODO:
+      passphrase: liquidMainnetSeed.passphrases.isNotEmpty
+          ? liquidMainnetSeed.passphrases[0].passphrase
+          : '',
       scriptType: ScriptType.bip84,
       walletType: BBWalletType.instant,
       network: BBNetwork.Mainnet,
       walletCreate: walletCreate,
     );
-    print(lw?.id);
-    await walletsStorageRepository.newWallet(lw!);
+    final liquidWallet = lw?.copyWith(name: lw.creationName());
+    print(liquidWallet?.id);
+    await walletsStorageRepository.newWallet(liquidWallet!);
   }
 
   if (liquidTestnetSeed != null) {
     final (lw, _) = await lwkSensitiveCreate.oneLiquidFromBIP39(
       seed: liquidTestnetSeed,
-      passphrase: '', //liquidTestnetSeed.passphrases[0].passphrase, //TODO:
+      passphrase: liquidTestnetSeed.passphrases.isNotEmpty
+          ? liquidTestnetSeed.passphrases[0].passphrase
+          : '',
       scriptType: ScriptType.bip84,
       walletType: BBWalletType.instant,
       network: BBNetwork.Testnet,
       walletCreate: walletCreate,
     );
-    print(lw?.id);
-    await walletsStorageRepository.newWallet(lw!);
+    final liquidWallet = lw?.copyWith(name: lw.creationName());
+    print(liquidWallet?.id);
+    await walletsStorageRepository.newWallet(liquidWallet!);
   }
+
+  // Finally update version number to next version
+  await secureStorage.saveValue(key: StorageKeys.version, value: '0.2');
 }
 
 Future<void> doMigration02to03(SecureStorage secureStorage, HiveStorage hiveStorage) async {
