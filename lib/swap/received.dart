@@ -109,13 +109,6 @@ class ReceiveSwapPaidSuccessPage extends StatelessWidget {
           ).animate().scale(),
           const Gap(16),
           BBText.body(amtStr),
-          const Gap(80),
-          BBButton.big(
-            label: 'View Transaction',
-            onPressed: () {
-              context.go('/tx', extra: tx);
-            },
-          ),
         ],
       ),
     );
