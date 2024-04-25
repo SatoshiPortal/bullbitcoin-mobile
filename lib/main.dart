@@ -53,32 +53,32 @@ class BullBitcoinWalletApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizationDelegate = LocalizedApp.of(context).delegate;
 
-    return OKToast(
-      child: LocalizationProvider(
-        state: LocalizationProvider.of(context).state,
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider.value(value: locator<SettingsCubit>()),
-            BlocProvider.value(value: locator<Logger>()),
-            BlocProvider.value(value: locator<Lighting>()),
-            BlocProvider.value(value: locator<NetworkCubit>()),
-            BlocProvider.value(value: locator<NetworkFeesCubit>()),
-            BlocProvider.value(value: locator<CurrencyCubit>()),
-            BlocProvider.value(value: locator<HomeCubit>()),
-            BlocProvider.value(value: locator<WatchTxsBloc>()),
-          ],
-          child: SwapAppListener(
-            child: BlocListener<SettingsCubit, SettingsState>(
-              listener: (context, state) {
-                if (state.language != localizationDelegate.currentLocale.languageCode)
-                  localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
-              },
-              child: DeepLinker(
-                child: BlocBuilder<Lighting, ThemeLighting>(
-                  builder: (context, lightingState) {
-                    return AnimatedSwitcher(
-                      duration: 600.ms,
-                      switchInCurve: Curves.easeInOutCubic,
+    return LocalizationProvider(
+      state: LocalizationProvider.of(context).state,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: locator<SettingsCubit>()),
+          BlocProvider.value(value: locator<Logger>()),
+          BlocProvider.value(value: locator<Lighting>()),
+          BlocProvider.value(value: locator<NetworkCubit>()),
+          BlocProvider.value(value: locator<NetworkFeesCubit>()),
+          BlocProvider.value(value: locator<CurrencyCubit>()),
+          BlocProvider.value(value: locator<HomeCubit>()),
+          BlocProvider.value(value: locator<WatchTxsBloc>()),
+        ],
+        child: SwapAppListener(
+          child: BlocListener<SettingsCubit, SettingsState>(
+            listener: (context, state) {
+              if (state.language != localizationDelegate.currentLocale.languageCode)
+                localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
+            },
+            child: DeepLinker(
+              child: BlocBuilder<Lighting, ThemeLighting>(
+                builder: (context, lightingState) {
+                  return AnimatedSwitcher(
+                    duration: 600.ms,
+                    switchInCurve: Curves.easeInOutCubic,
+                    child: OKToast(
                       child: MaterialApp.router(
                         theme: Themes.lightTheme,
                         darkTheme: lightingState.dark(),
@@ -117,9 +117,9 @@ class BullBitcoinWalletApp extends StatelessWidget {
                           );
                         },
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           ),

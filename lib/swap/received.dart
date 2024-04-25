@@ -30,34 +30,34 @@ class SwapAppListener extends StatelessWidget {
           listener: (context, state) {
             if (state.txPaid == null) return;
 
-            final isReceive = GoRouterState.of(context).uri.toString() == '/receive';
+            // final isReceive = GoRouterState.of(context).uri.toString() == '/receive';
 
             final tx = state.txPaid!;
 
-            if (isReceive) {
-              context.go('/swap-receive', extra: tx);
-            } else {
-              showToastWidget(
-                position: ToastPosition.bottom,
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Row(
-                    children: [
-                      const Icon(FontAwesomeIcons.circleCheck),
-                      const Gap(8),
-                      const BBText.body('Swap received'),
-                      const Gap(24),
-                      BBButton.text(
-                        label: 'View',
-                        onPressed: () {
-                          context.go('/swap-receive', extra: tx);
-                        },
-                      ),
-                    ],
-                  ),
+            // if (isReceive) {
+            //   context.go('/swap-receive', extra: tx);
+            // } else {
+            showToastWidget(
+              position: ToastPosition.bottom,
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    const Icon(FontAwesomeIcons.circleCheck),
+                    const Gap(8),
+                    const BBText.body('Swap received'),
+                    const Gap(24),
+                    BBButton.text(
+                      label: 'View',
+                      onPressed: () {
+                        context.go('/swap-receive', extra: tx);
+                      },
+                    ),
+                  ],
                 ),
-              );
-            }
+              ),
+            );
+            // }
 
             context.read<WatchTxsBloc>().add(ClearAlerts());
           },
