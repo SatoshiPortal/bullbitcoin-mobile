@@ -388,6 +388,12 @@ class Wallet with _$Wallet {
     return transactions.where((tx) => tx.isReceived()).toList().length;
   }
 
+  Transaction? getTxWithSwap(SwapTx swap) {
+    final idx = transactions.indexWhere((tx) => tx.swapTx?.id == swap.id);
+    if (idx == -1) return null;
+    return transactions[idx];
+  }
+
   int frozenUTXOTotal() {
     final addresses = <Address>[
       ...myAddressBook,

@@ -15,7 +15,7 @@ class WatchTxsState with _$WatchTxsState {
     @Default([]) List<String> listeningTxs,
     @Default([]) List<String> claimedSwapTxs,
     @Default([]) List<String> claimingSwapTxIds,
-    SwapTx? txPaid,
+    Transaction? txPaid,
     Wallet? syncWallet,
   }) = _WatchTxsState;
   const WatchTxsState._();

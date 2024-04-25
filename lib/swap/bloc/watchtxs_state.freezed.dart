@@ -23,7 +23,7 @@ mixin _$WatchTxsState {
   List<String> get listeningTxs => throw _privateConstructorUsedError;
   List<String> get claimedSwapTxs => throw _privateConstructorUsedError;
   List<String> get claimingSwapTxIds => throw _privateConstructorUsedError;
-  SwapTx? get txPaid => throw _privateConstructorUsedError;
+  Transaction? get txPaid => throw _privateConstructorUsedError;
   Wallet? get syncWallet => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -45,10 +45,10 @@ abstract class $WatchTxsStateCopyWith<$Res> {
       List<String> listeningTxs,
       List<String> claimedSwapTxs,
       List<String> claimingSwapTxIds,
-      SwapTx? txPaid,
+      Transaction? txPaid,
       Wallet? syncWallet});
 
-  $SwapTxCopyWith<$Res>? get txPaid;
+  $TransactionCopyWith<$Res>? get txPaid;
   $WalletCopyWith<$Res>? get syncWallet;
 }
 
@@ -107,7 +107,7 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
       txPaid: freezed == txPaid
           ? _value.txPaid
           : txPaid // ignore: cast_nullable_to_non_nullable
-              as SwapTx?,
+              as Transaction?,
       syncWallet: freezed == syncWallet
           ? _value.syncWallet
           : syncWallet // ignore: cast_nullable_to_non_nullable
@@ -117,12 +117,12 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
 
   @override
   @pragma('vm:prefer-inline')
-  $SwapTxCopyWith<$Res>? get txPaid {
+  $TransactionCopyWith<$Res>? get txPaid {
     if (_value.txPaid == null) {
       return null;
     }
 
-    return $SwapTxCopyWith<$Res>(_value.txPaid!, (value) {
+    return $TransactionCopyWith<$Res>(_value.txPaid!, (value) {
       return _then(_value.copyWith(txPaid: value) as $Val);
     });
   }
@@ -156,11 +156,11 @@ abstract class _$$WatchTxsStateImplCopyWith<$Res>
       List<String> listeningTxs,
       List<String> claimedSwapTxs,
       List<String> claimingSwapTxIds,
-      SwapTx? txPaid,
+      Transaction? txPaid,
       Wallet? syncWallet});
 
   @override
-  $SwapTxCopyWith<$Res>? get txPaid;
+  $TransactionCopyWith<$Res>? get txPaid;
   @override
   $WalletCopyWith<$Res>? get syncWallet;
 }
@@ -218,7 +218,7 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
       txPaid: freezed == txPaid
           ? _value.txPaid
           : txPaid // ignore: cast_nullable_to_non_nullable
-              as SwapTx?,
+              as Transaction?,
       syncWallet: freezed == syncWallet
           ? _value.syncWallet
           : syncWallet // ignore: cast_nullable_to_non_nullable
@@ -285,7 +285,7 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
   }
 
   @override
-  final SwapTx? txPaid;
+  final Transaction? txPaid;
   @override
   final Wallet? syncWallet;
 
@@ -347,7 +347,7 @@ abstract class _WatchTxsState extends WatchTxsState {
       final List<String> listeningTxs,
       final List<String> claimedSwapTxs,
       final List<String> claimingSwapTxIds,
-      final SwapTx? txPaid,
+      final Transaction? txPaid,
       final Wallet? syncWallet}) = _$WatchTxsStateImpl;
   const _WatchTxsState._() : super._();
 
@@ -366,7 +366,7 @@ abstract class _WatchTxsState extends WatchTxsState {
   @override
   List<String> get claimingSwapTxIds;
   @override
-  SwapTx? get txPaid;
+  Transaction? get txPaid;
   @override
   Wallet? get syncWallet;
   @override
