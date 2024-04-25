@@ -328,6 +328,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   ) async {
     if (swapTx.paidReverse()) {
       final tx = wallet.getTxWithSwap(swapTx);
+      if (tx == null) return;
       emit(state.copyWith(txPaid: tx));
       return;
     }
