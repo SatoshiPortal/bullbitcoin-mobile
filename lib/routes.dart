@@ -165,7 +165,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/swap-receive',
       builder: (context, state) {
-        final tx = state.extra! as Transaction;
+        final tx = state.extra! as SwapTx;
         return ReceiveSwapPaidSuccessPage(tx: tx);
       },
     ),

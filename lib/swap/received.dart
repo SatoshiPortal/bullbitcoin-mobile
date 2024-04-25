@@ -9,6 +9,7 @@ import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
@@ -86,11 +87,11 @@ class SwapAppListener extends StatelessWidget {
 class ReceiveSwapPaidSuccessPage extends StatelessWidget {
   const ReceiveSwapPaidSuccessPage({super.key, required this.tx});
 
-  final Transaction tx;
+  final SwapTx tx;
 
   @override
   Widget build(BuildContext context) {
-    final amt = tx.getAmount();
+    final amt = tx.outAmount;
     final amtStr = context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
     return Scaffold(
       appBar: AppBar(flexibleSpace: const BBAppBar(text: 'Swap Received')),
@@ -99,7 +100,13 @@ class ReceiveSwapPaidSuccessPage extends StatelessWidget {
         children: [
           const BBText.body('Payment received'),
           const Gap(16),
-          const Icon(FontAwesomeIcons.circleCheck),
+          const Center(
+            child: SizedBox(
+              height: 200,
+              width: 200,
+              child: Icon(FontAwesomeIcons.circleCheck),
+            ),
+          ).animate().scale(),
           const Gap(16),
           BBText.body(amtStr),
           const Gap(80),
@@ -112,25 +119,5 @@ class ReceiveSwapPaidSuccessPage extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class ReceiveAlertPopUp extends StatelessWidget {
-  const ReceiveAlertPopUp({super.key, required this.tx});
-
-  static Future openPopUp(BuildContext context, Transaction tx) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return ReceiveAlertPopUp(tx: tx);
-      },
-    );
-  }
-
-  final Transaction tx;
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
