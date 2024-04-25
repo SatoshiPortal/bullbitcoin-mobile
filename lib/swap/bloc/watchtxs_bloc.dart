@@ -158,12 +158,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final wallet = walletBloc?.state.wallet;
     if (walletBloc == null || wallet == null) return;
 
-    if (swapTx.receiveAction()) __swapAlert(swapTx, wallet, emit);
-
     if (swapTx.txid != null) {
       await __mergeSwap(wallet, swapTx, walletBloc, emit);
       return;
     }
+
+    if (swapTx.receiveAction()) __swapAlert(swapTx, wallet, emit);
 
     final canClaim = swapTx.claimableReverse();
     const shouldRefund = false;

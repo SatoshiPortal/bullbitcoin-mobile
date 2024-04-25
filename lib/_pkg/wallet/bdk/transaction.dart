@@ -708,7 +708,7 @@ class BDKTransactions {
     try {
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
       final tx = await psbtStruct.extractTx();
-      final finalized = await bdkWallet.sign(
+      final _ = await bdkWallet.sign(
         psbt: psbtStruct,
         signOptions: const bdk.SignOptions(
           multiSig: false,

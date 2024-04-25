@@ -25,6 +25,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lwk_dart/lwk_dart.dart';
 import 'package:no_screenshot/no_screenshot.dart';
+import 'package:oktoast/oktoast.dart';
 
 Future main({bool fromTest = false}) async {
   if (!fromTest) WidgetsFlutterBinding.ensureInitialized();
@@ -52,71 +53,73 @@ class BullBitcoinWalletApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizationDelegate = LocalizedApp.of(context).delegate;
 
-    return LocalizationProvider(
-      state: LocalizationProvider.of(context).state,
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: locator<SettingsCubit>()),
-          BlocProvider.value(value: locator<Logger>()),
-          BlocProvider.value(value: locator<Lighting>()),
-          BlocProvider.value(value: locator<NetworkCubit>()),
-          BlocProvider.value(value: locator<NetworkFeesCubit>()),
-          BlocProvider.value(value: locator<CurrencyCubit>()),
-          BlocProvider.value(value: locator<HomeCubit>()),
-          BlocProvider.value(value: locator<WatchTxsBloc>()),
-        ],
-        child: SwapAppListener(
-          child: BlocListener<SettingsCubit, SettingsState>(
-            listener: (context, state) {
-              if (state.language != localizationDelegate.currentLocale.languageCode)
-                localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
-            },
-            child: DeepLinker(
-              child: BlocBuilder<Lighting, ThemeLighting>(
-                builder: (context, lightingState) {
-                  return AnimatedSwitcher(
-                    duration: 600.ms,
-                    switchInCurve: Curves.easeInOutCubic,
-                    child: MaterialApp.router(
-                      theme: Themes.lightTheme,
-                      darkTheme: lightingState.dark(),
-                      themeMode: lightingState.mode(),
-                      routerConfig: router,
-                      debugShowCheckedModeBanner: false,
-                      localizationsDelegates: [
-                        localizationDelegate,
-                      ],
-                      supportedLocales: localizationDelegate.supportedLocales,
-                      locale: localizationDelegate.currentLocale,
-                      builder: (context, child) {
-                        scheduleMicrotask(() async {
-                          await Future.delayed(200.ms);
-                          SystemChrome.setSystemUIOverlayStyle(
-                            SystemUiOverlayStyle(
-                              statusBarColor: context.colour.background,
+    return OKToast(
+      child: LocalizationProvider(
+        state: LocalizationProvider.of(context).state,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: locator<SettingsCubit>()),
+            BlocProvider.value(value: locator<Logger>()),
+            BlocProvider.value(value: locator<Lighting>()),
+            BlocProvider.value(value: locator<NetworkCubit>()),
+            BlocProvider.value(value: locator<NetworkFeesCubit>()),
+            BlocProvider.value(value: locator<CurrencyCubit>()),
+            BlocProvider.value(value: locator<HomeCubit>()),
+            BlocProvider.value(value: locator<WatchTxsBloc>()),
+          ],
+          child: SwapAppListener(
+            child: BlocListener<SettingsCubit, SettingsState>(
+              listener: (context, state) {
+                if (state.language != localizationDelegate.currentLocale.languageCode)
+                  localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
+              },
+              child: DeepLinker(
+                child: BlocBuilder<Lighting, ThemeLighting>(
+                  builder: (context, lightingState) {
+                    return AnimatedSwitcher(
+                      duration: 600.ms,
+                      switchInCurve: Curves.easeInOutCubic,
+                      child: MaterialApp.router(
+                        theme: Themes.lightTheme,
+                        darkTheme: lightingState.dark(),
+                        themeMode: lightingState.mode(),
+                        routerConfig: router,
+                        debugShowCheckedModeBanner: false,
+                        localizationsDelegates: [
+                          localizationDelegate,
+                        ],
+                        supportedLocales: localizationDelegate.supportedLocales,
+                        locale: localizationDelegate.currentLocale,
+                        builder: (context, child) {
+                          scheduleMicrotask(() async {
+                            await Future.delayed(200.ms);
+                            SystemChrome.setSystemUIOverlayStyle(
+                              SystemUiOverlayStyle(
+                                statusBarColor: context.colour.background,
+                              ),
+                            );
+                          });
+
+                          SystemChrome.setPreferredOrientations([
+                            DeviceOrientation.portraitUp,
+                          ]);
+                          if (child == null) return Container();
+                          return GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                            },
+                            child: MediaQuery(
+                              data: MediaQuery.of(context).copyWith(
+                                textScaler: TextScaler.noScaling,
+                              ),
+                              child: AppLifecycleOverlay(child: child),
                             ),
                           );
-                        });
-
-                        SystemChrome.setPreferredOrientations([
-                          DeviceOrientation.portraitUp,
-                        ]);
-                        if (child == null) return Container();
-                        return GestureDetector(
-                          onTap: () {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                          },
-                          child: MediaQuery(
-                            data: MediaQuery.of(context).copyWith(
-                              textScaler: TextScaler.noScaling,
-                            ),
-                            child: AppLifecycleOverlay(child: child),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),

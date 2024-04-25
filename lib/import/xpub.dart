@@ -5,7 +5,7 @@ import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/toast.dart';
+// import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/page.dart';
@@ -71,9 +71,9 @@ class ImportXpubScreen extends StatelessWidget {
               context.read<ImportWalletCubit>().scanQRClicked();
             },
           ),
-          const Gap(300),
-          const ColdCardSection(),
-          const _ImportExtra(),
+          // const Gap(300),
+          // const ColdCardSection(),
+          // const _ImportExtra(),
           const WalletLabel(),
           const _ImportButtons(),
           const Gap(36),
@@ -216,41 +216,41 @@ class _XpubTextFieldAreaState extends State<XpubTextFieldArea> {
   }
 }
 
-class _ImportExtra extends StatelessWidget {
-  const _ImportExtra();
+// class _ImportExtra extends StatelessWidget {
+//   const _ImportExtra();
 
-  @override
-  Widget build(BuildContext context) {
-    final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+//   @override
+//   Widget build(BuildContext context) {
+//     final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
 
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 24.0,
-        right: 24.0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BBButton.text(
-            label: 'Hardware wallet instruction',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
-            },
-          ),
-          BBButton.text(
-            label: 'Advanced Options',
-            onPressed: () {
-              // AdvancedOptions.openPopUp(context);
-              ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
-            },
-          ),
-          const Gap(8),
-          if (err.isNotEmpty) BBText.error(err, textAlign: TextAlign.center),
-        ],
-      ),
-    );
-  }
-}
+//     return Padding(
+//       padding: const EdgeInsets.only(
+//         left: 24.0,
+//         right: 24.0,
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.stretch,
+//         children: [
+//           BBButton.text(
+//             label: 'Hardware wallet instruction',
+//             onPressed: () {
+//               ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
+//             },
+//           ),
+//           BBButton.text(
+//             label: 'Advanced Options',
+//             onPressed: () {
+//               // AdvancedOptions.openPopUp(context);
+//               ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
+//             },
+//           ),
+//           const Gap(8),
+//           if (err.isNotEmpty) BBText.error(err, textAlign: TextAlign.center),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class _ImportButtons extends StatelessWidget {
   const _ImportButtons();

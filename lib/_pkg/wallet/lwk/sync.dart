@@ -88,6 +88,3 @@ class LWKSync {
     _receivePort?.close();
   }
 }
-
-
-// Illegal argument in isolate message: object is unsendable - Library:'package:flutter_rust_bridge/src/rust_arc/_common.dart' Class: RustArc (see restrictions listed at `SendPort.send()` documentation for more information)  <- _kStaticData in Instance of 'MutexLwkWolletWollet' (from package:lwk_dart/src/generated/api/wallet.dart)  <- ptr in Instance of 'Wallet' (from package:lwk_dart/src/generated/api/wallet.dart)  <- _List len:3 (from dart:core)  <- Instance(length:3) of '_GrowableList' (from dart:core)

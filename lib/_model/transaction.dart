@@ -255,14 +255,14 @@ class SwapTx with _$SwapTx {
       status != null &&
       (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed);
 
-  bool settledReverse() =>
-      !isSubmarine && (status != null && (status!.status == SwapStatus.invoiceSettled));
-
   bool expiredReverse() =>
       !isSubmarine &&
       (status != null &&
           (status!.status == SwapStatus.invoiceExpired ||
               status!.status == SwapStatus.swapExpired));
+
+  bool settledReverse() =>
+      !isSubmarine && (status != null && (status!.status == SwapStatus.invoiceSettled));
 
   bool paidReverse() =>
       !isSubmarine && (status != null && (status!.status == SwapStatus.txnMempool));
