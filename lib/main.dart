@@ -78,33 +78,33 @@ class BullBitcoinWalletApp extends StatelessWidget {
                   return AnimatedSwitcher(
                     duration: 600.ms,
                     switchInCurve: Curves.easeInOutCubic,
-                    child: OKToast(
-                      child: MaterialApp.router(
-                        theme: Themes.lightTheme,
-                        darkTheme: lightingState.dark(),
-                        themeMode: lightingState.mode(),
-                        routerConfig: router,
-                        debugShowCheckedModeBanner: false,
-                        localizationsDelegates: [
-                          localizationDelegate,
-                        ],
-                        supportedLocales: localizationDelegate.supportedLocales,
-                        locale: localizationDelegate.currentLocale,
-                        builder: (context, child) {
-                          scheduleMicrotask(() async {
-                            await Future.delayed(200.ms);
-                            SystemChrome.setSystemUIOverlayStyle(
-                              SystemUiOverlayStyle(
-                                statusBarColor: context.colour.background,
-                              ),
-                            );
-                          });
+                    child: MaterialApp.router(
+                      theme: Themes.lightTheme,
+                      darkTheme: lightingState.dark(),
+                      themeMode: lightingState.mode(),
+                      routerConfig: router,
+                      debugShowCheckedModeBanner: false,
+                      localizationsDelegates: [
+                        localizationDelegate,
+                      ],
+                      supportedLocales: localizationDelegate.supportedLocales,
+                      locale: localizationDelegate.currentLocale,
+                      builder: (context, child) {
+                        scheduleMicrotask(() async {
+                          await Future.delayed(200.ms);
+                          SystemChrome.setSystemUIOverlayStyle(
+                            SystemUiOverlayStyle(
+                              statusBarColor: context.colour.background,
+                            ),
+                          );
+                        });
 
-                          SystemChrome.setPreferredOrientations([
-                            DeviceOrientation.portraitUp,
-                          ]);
-                          if (child == null) return Container();
-                          return GestureDetector(
+                        SystemChrome.setPreferredOrientations([
+                          DeviceOrientation.portraitUp,
+                        ]);
+                        if (child == null) return Container();
+                        return OKToast(
+                          child: GestureDetector(
                             onTap: () {
                               FocusScope.of(context).requestFocus(FocusNode());
                             },
@@ -114,9 +114,9 @@ class BullBitcoinWalletApp extends StatelessWidget {
                               ),
                               child: AppLifecycleOverlay(child: child),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },

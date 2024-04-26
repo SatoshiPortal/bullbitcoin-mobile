@@ -334,7 +334,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     }
 
     if (swapTx.settledReverse()) {
-      emit(state.copyWith(syncWallet: wallet));
+      emit(state.copyWith(syncWallet: wallet, txPaid: swapTx));
       return;
     }
   }

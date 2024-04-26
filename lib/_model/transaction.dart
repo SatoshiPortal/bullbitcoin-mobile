@@ -250,6 +250,11 @@ class SwapTx with _$SwapTx {
   bool refundableSubmarine() =>
       isSubmarine && (status != null && (status!.status == SwapStatus.invoiceFailedToPay));
 
+  bool claimableSubmarine() =>
+      isSubmarine &&
+      status != null &&
+      (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed);
+
   bool claimableReverse() =>
       !isSubmarine &&
       status != null &&
@@ -287,6 +292,18 @@ class SwapTx with _$SwapTx {
     final feesPercent = ((fee / outAmount) * 100).toInt();
     if (feesPercent > 3) return feesPercent;
     return null;
+  }
+
+  String actionPrefixStr() {
+    if (isSubmarine) {
+      if (paidSubmarine()) return 'Sending';
+      if (settledSubmarine() || claimableSubmarine()) return 'Sent';
+    } else {
+      if (paidReverse()) return 'Receiving';
+      if (settledReverse()) return 'Received';
+    }
+
+    return '';
   }
 }
 
