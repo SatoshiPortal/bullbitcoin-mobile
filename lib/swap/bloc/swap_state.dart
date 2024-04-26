@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:boltz_dart/boltz_dart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap_state.freezed.dart';
@@ -16,6 +17,8 @@ class SwapState with _$SwapState {
     @Default(false) bool errSmallAmt,
     int? errHighFees,
     Wallet? updatedWallet,
+    AllFees? allFees,
+    String? errAllFees,
   }) = _SwapState;
   const SwapState._();
 

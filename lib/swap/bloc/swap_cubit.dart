@@ -31,6 +31,18 @@ class SwapCubit extends Cubit<SwapState> {
     emit(state.copyWith(invoice: inv));
   }
 
+  Future<void> fetchFees(bool isTestnet) async {
+    final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
+    final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
+      boltzUrl: boltzurl,
+      outAmount: 0,
+    );
+    if (errFees != null) {
+      emit(state.copyWith(errAllFees: errFees.toString()));
+    }
+    emit(state.copyWith(allFees: fees));
+  }
+
   void createRevSwapForReceive({
     required Wallet wallet,
     required int amount,
@@ -106,8 +118,8 @@ class SwapCubit extends Cubit<SwapState> {
 
     final updatedSwap = swap!.copyWith(
       boltzFees: !walletIsLiquid
-          ? (fees.btcReverse.boltzFeesRate * outAmount).toInt()
-          : (fees.lbtcReverse.boltzFeesRate * outAmount).toInt(),
+          ? fees.btcReverse.boltzFeesRate * outAmount ~/ 100
+          : fees.lbtcReverse.boltzFeesRate * outAmount ~/ 100,
       lockupFees: !walletIsLiquid ? fees.btcReverse.lockupFees : fees.lbtcReverse.lockupFees,
       claimFees:
           !walletIsLiquid ? fees.btcReverse.claimFeesEstimate : fees.lbtcReverse.claimFeesEstimate,
@@ -185,9 +197,9 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     final updatedSwap = swap!.copyWith(
-      boltzFees: (fees.btcSubmarine.boltzFeesRate * amount) as int,
-      lockupFees: fees.btcSubmarine.lockupFeesEstimate,
-      claimFees: fees.btcSubmarine.claimFees,
+      boltzFees: (fees.btcReverse.boltzFeesRate * amount / 100) as int,
+      lockupFees: fees.btcReverse.lockupFees,
+      claimFees: fees.btcReverse.claimFeesEstimate,
     );
 
     emit(

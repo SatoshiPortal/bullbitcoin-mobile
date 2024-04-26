@@ -59,7 +59,7 @@ class _ReceivePageState extends State<ReceivePage> {
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
-    );
+    )..fetchFees(context.read<NetworkCubit>().state.testnet);
 
     _currencyCubit = CurrencyCubit(
       hiveStorage: locator<HiveStorage>(),
@@ -519,6 +519,27 @@ class CreateLightningInvoice extends StatelessWidget {
     final description = context.select((ReceiveCubit _) => _.state.description);
     final err = context.select((SwapCubit _) => _.state.errCreatingSwapInv);
     final creatingInv = context.select((SwapCubit _) => _.state.generatingSwapInv);
+    final allFees = context.select((SwapCubit x) => x.state.allFees);
+    final amount = context.select((CurrencyCubit x) => x.state.amount);
+
+    final isLiquid =
+        context.select((ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid());
+
+    int finalFee = 0;
+
+    if (allFees != null) {
+      if (isLiquid == true) {
+        finalFee = (((allFees.lbtcReverse.boltzFeesRate) * amount / 100) +
+                (allFees.lbtcReverse.claimFeesEstimate) +
+                (allFees.lbtcReverse.lockupFees))
+            .toInt();
+      } else {
+        finalFee = (((allFees.btcReverse.boltzFeesRate) * amount / 100) +
+                (allFees.btcReverse.claimFeesEstimate) +
+                (allFees.btcReverse.lockupFees))
+            .toInt();
+      }
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -526,6 +547,7 @@ class CreateLightningInvoice extends StatelessWidget {
         const BBText.title(' Amount (required)'),
         const Gap(4),
         const EnterAmount2(),
+        if (amount > 0) BBText.title('    Approx fees: $finalFee sats'),
         const Gap(24),
         const BBText.title(' Description'),
         const Gap(4),
