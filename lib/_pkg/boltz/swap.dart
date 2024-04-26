@@ -143,7 +143,7 @@ class SwapBoltz {
 
   Future<(BoltzApi?, Err?)> initializeBoltzApi(bool isTestnet) async {
     try {
-      final api = await BoltzApi.newBoltzApi(isTestnet: isTestnet);
+      final api = await BoltzApi.newBoltzApi('https://api.testnet.boltz.exchange');
 
       // This is not needed here. It happens internally in the library
       // api.initialize();
