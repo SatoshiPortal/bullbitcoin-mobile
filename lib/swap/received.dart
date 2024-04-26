@@ -56,22 +56,28 @@ class SwapAppListener extends StatelessWidget {
             final prefix = swap.actionPrefixStr();
 
             final tx = wallet.getTxWithSwap(swap)?.copyWith(wallet: wallet);
-            if (tx == null) return;
-
-            final isReceivePage = GoRouterState.of(context).uri.toString() == '/receive';
-
-            if (!isReceivePage)
+            if (tx == null) {
               showToastWidget(
                 position: ToastPosition.top,
-                _AlertUI(
-                  text: '$prefix $amtStr',
-                  onTap: () {
-                    context.push('/tx', extra: tx);
-                  },
-                ),
+                _AlertUI(text: '$prefix $amtStr'),
               );
-            else
-              context.push('/swap-receive', extra: tx);
+              return;
+            } else {
+              final isReceivePage = GoRouterState.of(context).uri.toString() == '/receive';
+
+              if (!isReceivePage)
+                showToastWidget(
+                  position: ToastPosition.top,
+                  _AlertUI(
+                    text: '$prefix $amtStr',
+                    onTap: () {
+                      context.push('/tx', extra: tx);
+                    },
+                  ),
+                );
+              else
+                context.push('/swap-receive', extra: tx);
+            }
 
             context
                 .read<HomeCubit>()
