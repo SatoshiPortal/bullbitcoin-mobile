@@ -143,7 +143,7 @@ class SwapBoltz {
 
   Future<(BoltzApi?, Err?)> initializeBoltzApi(bool isTestnet) async {
     try {
-      final api = await BoltzApi.newBoltzApi(isTestnet: isTestnet);
+      final api = await BoltzApi.newBoltzApi('api.testnet.boltz.exchange');
 
       return (api, null);
     } catch (e) {
