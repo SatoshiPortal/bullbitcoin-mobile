@@ -11,9 +11,9 @@ _$BullbitcoinElectrumNetworkImpl _$$BullbitcoinElectrumNetworkImplFromJson(
     _$BullbitcoinElectrumNetworkImpl(
       mainnet: json['mainnet'] as String? ?? 'ssl://$bbelectrum:50002',
       testnet: json['testnet'] as String? ?? 'ssl://$bbelectrum:60002',
-      stopGap: json['stopGap'] as int? ?? 20,
-      timeout: json['timeout'] as int? ?? 5,
-      retry: json['retry'] as int? ?? 5,
+      stopGap: (json['stopGap'] as num?)?.toInt() ?? 20,
+      timeout: (json['timeout'] as num?)?.toInt() ?? 5,
+      retry: (json['retry'] as num?)?.toInt() ?? 5,
       validateDomain: json['validateDomain'] as bool? ?? true,
       name: json['name'] as String? ?? 'bullbitcoin',
       type: $enumDecodeNullable(_$ElectrumTypesEnumMap, json['type']) ??
@@ -46,9 +46,9 @@ _$DefaultElectrumNetworkImpl _$$DefaultElectrumNetworkImplFromJson(
     _$DefaultElectrumNetworkImpl(
       mainnet: json['mainnet'] as String? ?? 'ssl://$openelectrum:50002',
       testnet: json['testnet'] as String? ?? 'ssl://$openelectrum:60002',
-      stopGap: json['stopGap'] as int? ?? 20,
-      timeout: json['timeout'] as int? ?? 5,
-      retry: json['retry'] as int? ?? 5,
+      stopGap: (json['stopGap'] as num?)?.toInt() ?? 20,
+      timeout: (json['timeout'] as num?)?.toInt() ?? 5,
+      retry: (json['retry'] as num?)?.toInt() ?? 5,
       validateDomain: json['validateDomain'] as bool? ?? true,
       name: json['name'] as String? ?? 'blockstream',
       type: $enumDecodeNullable(_$ElectrumTypesEnumMap, json['type']) ??
@@ -75,9 +75,9 @@ _$CustomElectrumNetworkImpl _$$CustomElectrumNetworkImplFromJson(
     _$CustomElectrumNetworkImpl(
       mainnet: json['mainnet'] as String,
       testnet: json['testnet'] as String,
-      stopGap: json['stopGap'] as int? ?? 20,
-      timeout: json['timeout'] as int? ?? 5,
-      retry: json['retry'] as int? ?? 5,
+      stopGap: (json['stopGap'] as num?)?.toInt() ?? 20,
+      timeout: (json['timeout'] as num?)?.toInt() ?? 5,
+      retry: (json['retry'] as num?)?.toInt() ?? 5,
       validateDomain: json['validateDomain'] as bool? ?? true,
       name: json['name'] as String? ?? 'custom',
       type: $enumDecodeNullable(_$ElectrumTypesEnumMap, json['type']) ??

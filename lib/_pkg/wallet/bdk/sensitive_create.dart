@@ -170,7 +170,7 @@ class BDKSensitiveCreate {
     wallet44 = wallet44.copyWith(
       name: wallet44.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: firstAddress44.address.toString(),
+        address: await firstAddress44.address.asString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,
@@ -199,7 +199,7 @@ class BDKSensitiveCreate {
     wallet49 = wallet49.copyWith(
       name: wallet49.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: firstAddress49.address.toString(),
+        address: await firstAddress49.address.asString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,
@@ -228,7 +228,7 @@ class BDKSensitiveCreate {
     wallet84 = wallet84.copyWith(
       name: wallet84.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: firstAddress84.address.toString(),
+        address: await firstAddress84.address.asString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,
@@ -353,7 +353,7 @@ class BDKSensitiveCreate {
     wallet = wallet.copyWith(
       name: wallet.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: firstAddress.address.toString(),
+        address: await firstAddress.address.asString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,

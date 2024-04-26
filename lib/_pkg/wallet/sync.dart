@@ -34,7 +34,7 @@ class WalletSync implements IWalletSync {
           final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet);
           if (errWallet != null) throw errWallet;
           final (updatedBdkWallet, errSyncing) =
-              await _bdkSync.syncWallet(bdkWallet: bdkWallet!, blockChain: blockchain!);
+              await _bdkSync.syncWalletOld(bdkWallet: bdkWallet!, blockChain: blockchain!);
           if (errSyncing != null) throw errSyncing;
           final err = _walletsRepository.replaceBdkWallet(wallet, updatedBdkWallet!);
           if (err != null) throw err;
@@ -44,7 +44,7 @@ class WalletSync implements IWalletSync {
           final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
           if (errWallet != null) throw errWallet;
           final (updatedLiqWallet, errSyncing) =
-              await _lwkSync.syncWallet(lwkWallet: liqWallet!, blockChain: blockchain!);
+              await _lwkSync.syncLiquidWalletOld(lwkWallet: liqWallet!, blockChain: blockchain!);
           if (errSyncing != null) throw errSyncing;
           final err = _walletsRepository.replaceLwkWallet(wallet, updatedLiqWallet!);
           if (err != null) throw err;

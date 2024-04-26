@@ -25,6 +25,7 @@ import 'package:flutter_translate/flutter_translate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lwk_dart/lwk_dart.dart';
 import 'package:no_screenshot/no_screenshot.dart';
+import 'package:oktoast/oktoast.dart';
 
 Future main({bool fromTest = false}) async {
   if (!fromTest) WidgetsFlutterBinding.ensureInitialized();
@@ -78,43 +79,45 @@ class BullBitcoinWalletApp extends StatelessWidget {
                   return AnimatedSwitcher(
                     duration: 600.ms,
                     switchInCurve: Curves.easeInOutCubic,
-                    child: MaterialApp.router(
-                      theme: Themes.lightTheme,
-                      darkTheme: lightingState.dark(),
-                      themeMode: lightingState.mode(),
-                      routerConfig: router,
-                      debugShowCheckedModeBanner: false,
-                      localizationsDelegates: [
-                        localizationDelegate,
-                      ],
-                      supportedLocales: localizationDelegate.supportedLocales,
-                      locale: localizationDelegate.currentLocale,
-                      builder: (context, child) {
-                        scheduleMicrotask(() async {
-                          await Future.delayed(200.ms);
-                          SystemChrome.setSystemUIOverlayStyle(
-                            SystemUiOverlayStyle(
-                              statusBarColor: context.colour.background,
+                    child: OKToast(
+                      child: MaterialApp.router(
+                        theme: Themes.lightTheme,
+                        darkTheme: lightingState.dark(),
+                        themeMode: lightingState.mode(),
+                        routerConfig: router,
+                        debugShowCheckedModeBanner: false,
+                        localizationsDelegates: [
+                          localizationDelegate,
+                        ],
+                        supportedLocales: localizationDelegate.supportedLocales,
+                        locale: localizationDelegate.currentLocale,
+                        builder: (context, child) {
+                          scheduleMicrotask(() async {
+                            await Future.delayed(200.ms);
+                            SystemChrome.setSystemUIOverlayStyle(
+                              SystemUiOverlayStyle(
+                                statusBarColor: context.colour.background,
+                              ),
+                            );
+                          });
+
+                          SystemChrome.setPreferredOrientations([
+                            DeviceOrientation.portraitUp,
+                          ]);
+                          if (child == null) return Container();
+                          return GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                            },
+                            child: MediaQuery(
+                              data: MediaQuery.of(context).copyWith(
+                                textScaler: TextScaler.noScaling,
+                              ),
+                              child: AppLifecycleOverlay(child: child),
                             ),
                           );
-                        });
-
-                        SystemChrome.setPreferredOrientations([
-                          DeviceOrientation.portraitUp,
-                        ]);
-                        if (child == null) return Container();
-                        return GestureDetector(
-                          onTap: () {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                          },
-                          child: MediaQuery(
-                            data: MediaQuery.of(context).copyWith(
-                              textScaler: TextScaler.noScaling,
-                            ),
-                            child: AppLifecycleOverlay(child: child),
-                          ),
-                        );
-                      },
+                        },
+                      ),
                     ),
                   );
                 },

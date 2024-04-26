@@ -18,6 +18,8 @@ import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/lighting.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -311,6 +313,7 @@ class TestNetButton extends StatelessWidget {
       listenWhen: (previous, current) => previous.testnet != current.testnet,
       listener: (context, state) {
         context.read<NetworkFeesCubit>().loadFees();
+        context.read<WatchTxsBloc>().add(InitializeSwapWatcher(isTestnet: state.testnet));
       },
       child: Row(
         children: [

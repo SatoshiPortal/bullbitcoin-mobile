@@ -9,12 +9,13 @@ part of 'networkfees_state.dart';
 _$NetworkFeesStateImpl _$$NetworkFeesStateImplFromJson(
         Map<String, dynamic> json) =>
     _$NetworkFeesStateImpl(
-      fees: json['fees'] as int?,
-      feesList:
-          (json['feesList'] as List<dynamic>?)?.map((e) => e as int).toList(),
-      selectedFeesOption: json['selectedFeesOption'] as int? ?? 2,
-      tempFees: json['tempFees'] as int?,
-      tempSelectedFeesOption: json['tempSelectedFeesOption'] as int?,
+      fees: (json['fees'] as num?)?.toInt(),
+      feesList: (json['feesList'] as List<dynamic>?)
+          ?.map((e) => (e as num).toInt())
+          .toList(),
+      selectedFeesOption: (json['selectedFeesOption'] as num?)?.toInt() ?? 2,
+      tempFees: (json['tempFees'] as num?)?.toInt(),
+      tempSelectedFeesOption: (json['tempSelectedFeesOption'] as num?)?.toInt(),
       feesSaved: json['feesSaved'] as bool? ?? false,
       loadingFees: json['loadingFees'] as bool? ?? false,
       errLoadingFees: json['errLoadingFees'] as String? ?? '',

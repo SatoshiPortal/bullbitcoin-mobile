@@ -9,10 +9,17 @@ void _syncBdkIsolate(List<dynamic> args) async {
   final bdkWallet = args[1] as bdk.Wallet;
   final blockChain = args[2] as bdk.Blockchain;
 
+  print(1);
+
   try {
     await bdkWallet.sync(blockchain: blockChain);
+    print(2);
+
     sendPort.send(bdkWallet);
+    print(3);
   } catch (e) {
+    print('4' + e.toString());
+
     sendPort.send(
       Err(
         e.toString(),
@@ -51,6 +58,25 @@ class BDKSync {
         null,
         Err(
           e.toString(),
+          title: 'Error occurred while syncing wallet',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
+
+  Future<(bdk.Wallet?, Err?)> syncWalletOld({
+    required bdk.Wallet bdkWallet,
+    required bdk.Blockchain blockChain,
+  }) async {
+    try {
+      await bdkWallet.sync(blockchain: blockChain);
+      return (bdkWallet, null);
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
           title: 'Error occurred while syncing wallet',
           solution: 'Please try again.',
         )

@@ -90,6 +90,9 @@ class _ReceivePageState extends State<ReceivePage> {
 
   @override
   Widget build(BuildContext context) {
+    final r = GoRouterState.of(context).uri.toString();
+    print('Route:: ' + r);
+
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _receiveCubit),
@@ -280,8 +283,8 @@ class SelectWalletType extends StatelessWidget {
       value: paymentNetwork,
       items: const {
         ReceivePaymentNetwork.lightning: 'Lightning',
-        ReceivePaymentNetwork.liquid: 'Liquid',
         ReceivePaymentNetwork.bitcoin: 'Bitcoin',
+        ReceivePaymentNetwork.liquid: 'Liquid',
       },
       onChanged: (value) {
         if (paymentNetwork == ReceivePaymentNetwork.lightning)

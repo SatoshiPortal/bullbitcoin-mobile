@@ -4,7 +4,11 @@ import 'package:boltz_dart/boltz_dart.dart';
 
 class WatchTxsEvent {}
 
-class InitializeSwapWatcher extends WatchTxsEvent {}
+class InitializeSwapWatcher extends WatchTxsEvent {
+  InitializeSwapWatcher({required this.isTestnet});
+
+  final bool isTestnet;
+}
 
 class ProcessSwapTx extends WatchTxsEvent {
   ProcessSwapTx({required this.walletId, required this.swapTx});

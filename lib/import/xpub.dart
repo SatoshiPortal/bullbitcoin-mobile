@@ -5,7 +5,7 @@ import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
-import 'package:bb_mobile/_ui/toast.dart';
+// import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/page.dart';
@@ -23,31 +23,31 @@ class ImportXpubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
+    return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Gap(32),
-          Padding(
+          const Gap(32),
+          const Padding(
             padding: EdgeInsets.only(
-              left: 24.0,
+              left: 16.0,
               right: 24.0,
             ),
-            child: BBText.bodySmall(desc),
+            child: BBText.body(desc, isBold: true),
           ),
-          Gap(16),
-          Padding(
+          const Gap(16),
+          const Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
                   padding: EdgeInsets.only(
-                    left: 24.0,
+                    left: 8.0,
                     right: 24.0,
                   ),
                   child: BBText.title(
-                    'Master public key (xpub, zpub)',
+                    'Paste or scan xpub, zpub or descriptor',
                   ),
                 ),
                 Gap(8),
@@ -55,12 +55,28 @@ class ImportXpubScreen extends StatelessWidget {
               ],
             ),
           ),
-          Gap(40),
-          ColdCardSection(),
-          _ImportExtra(),
-          WalletLabel(),
-          _ImportButtons(),
-          Gap(36),
+          const Gap(24),
+          BBButton.big(
+            label: 'Upload file',
+            center: true,
+            onPressed: () {
+              context.read<ImportWalletCubit>().coldCardFileClicked();
+            },
+          ),
+          const Gap(8),
+          BBButton.big(
+            label: 'Scan QR code',
+            center: true,
+            onPressed: () {
+              context.read<ImportWalletCubit>().scanQRClicked();
+            },
+          ),
+          // const Gap(300),
+          // const ColdCardSection(),
+          // const _ImportExtra(),
+          const WalletLabel(),
+          const _ImportButtons(),
+          const Gap(36),
         ],
       ),
     ).animate(delay: 200.ms).fadeIn();
@@ -152,32 +168,43 @@ class _XpubTextFieldAreaState extends State<XpubTextFieldArea> {
                 onChanged: (value) {
                   context.read<ImportWalletCubit>().xpubChanged(value);
                 },
-                rightIcon: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: FaIcon(
-                        FontAwesomeIcons.qrcode,
-                        color: context.colour.surface,
-                      ),
-                      onPressed: () {
-                        context.read<ImportWalletCubit>().scanQRClicked();
-                      },
-                    ),
-                    const Gap(4),
-                    IconButton(
-                      onPressed: () async {
-                        if (!locator.isRegistered<Clippboard>()) return;
-                        final data = await locator<Clippboard>().paste();
-                        if (data == null) return;
-                        context.read<ImportWalletCubit>().xpubChanged(data);
-                      },
-                      iconSize: 20,
-                      color: context.colour.surface,
-                      icon: const FaIcon(FontAwesomeIcons.paste),
-                    ),
-                  ],
+                rightIcon: IconButton(
+                  onPressed: () async {
+                    if (!locator.isRegistered<Clippboard>()) return;
+                    final data = await locator<Clippboard>().paste();
+                    if (data == null) return;
+                    context.read<ImportWalletCubit>().xpubChanged(data);
+                  },
+                  iconSize: 20,
+                  color: context.colour.surface,
+                  icon: const FaIcon(FontAwesomeIcons.paste),
                 ),
+                // rightIcon: Column(
+                //   crossAxisAlignment: CrossAxisAlignment.end,
+                //   children: [
+                //     // IconButton(
+                //     //   icon: FaIcon(
+                //     //     FontAwesomeIcons.qrcode,
+                //     //     color: context.colour.surface,
+                //     //   ),
+                //     //   onPressed: () {
+                //     //     context.read<ImportWalletCubit>().scanQRClicked();
+                //     //   },
+                //     // ),
+                //     // const Gap(4),
+                //     IconButton(
+                //       onPressed: () async {
+                //         if (!locator.isRegistered<Clippboard>()) return;
+                //         final data = await locator<Clippboard>().paste();
+                //         if (data == null) return;
+                //         context.read<ImportWalletCubit>().xpubChanged(data);
+                //       },
+                //       iconSize: 20,
+                //       color: context.colour.surface,
+                //       icon: const FaIcon(FontAwesomeIcons.paste),
+                //     ),
+                //   ],
+                // ),
                 hint: 'Paste or scan xpub',
               ),
             ),
@@ -189,41 +216,41 @@ class _XpubTextFieldAreaState extends State<XpubTextFieldArea> {
   }
 }
 
-class _ImportExtra extends StatelessWidget {
-  const _ImportExtra();
+// class _ImportExtra extends StatelessWidget {
+//   const _ImportExtra();
 
-  @override
-  Widget build(BuildContext context) {
-    final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+//   @override
+//   Widget build(BuildContext context) {
+//     final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
 
-    return Padding(
-      padding: const EdgeInsets.only(
-        left: 24.0,
-        right: 24.0,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BBButton.text(
-            label: 'Hardware wallet instruction',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
-            },
-          ),
-          BBButton.text(
-            label: 'Advanced Options',
-            onPressed: () {
-              // AdvancedOptions.openPopUp(context);
-              ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
-            },
-          ),
-          const Gap(8),
-          if (err.isNotEmpty) BBText.error(err, textAlign: TextAlign.center),
-        ],
-      ),
-    );
-  }
-}
+//     return Padding(
+//       padding: const EdgeInsets.only(
+//         left: 24.0,
+//         right: 24.0,
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.stretch,
+//         children: [
+//           BBButton.text(
+//             label: 'Hardware wallet instruction',
+//             onPressed: () {
+//               ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
+//             },
+//           ),
+//           BBButton.text(
+//             label: 'Advanced Options',
+//             onPressed: () {
+//               // AdvancedOptions.openPopUp(context);
+//               ScaffoldMessenger.of(context).showSnackBar(context.showToast('Coming soon'));
+//             },
+//           ),
+//           const Gap(8),
+//           if (err.isNotEmpty) BBText.error(err, textAlign: TextAlign.center),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class _ImportButtons extends StatelessWidget {
   const _ImportButtons();
@@ -425,5 +452,6 @@ const steps = '''
 6. Use Bull Bitcoin to scan QR code
 ''';
 
-const desc =
-    'Import a hardware wallet or an external Bitcoin wallet. You will be able to monitor your balance and transactions, receive Bitcoin and create unsigned Bitcoin transactions (PSBT).';
+const desc = 'Import a hardware wallet or any external Bitcoin wallet.'; 
+    
+    // You will be able to monitor your balance and transactions, receive Bitcoin and create unsigned Bitcoin transactions (PSBT).';

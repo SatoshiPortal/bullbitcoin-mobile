@@ -11,7 +11,7 @@ _$ColdCardImpl _$$ColdCardImplFromJson(Map<String, dynamic> json) =>
       chain: json['chain'] as String?,
       xpub: json['xpub'] as String?,
       xfp: json['xfp'] as String?,
-      account: json['account'] as int?,
+      account: (json['account'] as num?)?.toInt(),
       bip49: json['bip49'] == null
           ? null
           : ColdWallet.fromJson(json['bip49'] as Map<String, dynamic>),

@@ -48,6 +48,7 @@ import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get_it/get_it.dart';
 
 const bbVersion = '0.2.0-1';
@@ -260,8 +261,11 @@ Future _setupBlocs() async {
     ),
   );
 
+  await Future.delayed(1000.ms);
+
   locator.registerSingleton<WatchTxsBloc>(
     WatchTxsBloc(
+      isTestnet: locator<NetworkCubit>().state.testnet,
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
       homeCubit: locator<HomeCubit>(),

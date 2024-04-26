@@ -19,7 +19,7 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
       scriptType: $enumDecode(_$ScriptTypeEnumMap, json['scriptType']),
       name: json['name'] as String?,
       path: json['path'] as String?,
-      balance: json['balance'] as int?,
+      balance: (json['balance'] as num?)?.toInt(),
       fullBalance: json['fullBalance'] == null
           ? null
           : Balance.fromJson(json['fullBalance'] as Map<String, dynamic>),
@@ -50,8 +50,8 @@ _$WalletImpl _$$WalletImplFromJson(Map<String, dynamic> json) => _$WalletImpl(
               ?.map((e) => SwapTx.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      revKeyIndex: json['revKeyIndex'] as int? ?? 0,
-      subKeyIndex: json['subKeyIndex'] as int? ?? 0,
+      revKeyIndex: (json['revKeyIndex'] as num?)?.toInt() ?? 0,
+      subKeyIndex: (json['subKeyIndex'] as num?)?.toInt() ?? 0,
       backupTested: json['backupTested'] as bool? ?? false,
       lastBackupTested: json['lastBackupTested'] == null
           ? null
@@ -119,12 +119,12 @@ const _$BaseWalletTypeEnumMap = {
 
 _$BalanceImpl _$$BalanceImplFromJson(Map<String, dynamic> json) =>
     _$BalanceImpl(
-      immature: json['immature'] as int,
-      trustedPending: json['trustedPending'] as int,
-      untrustedPending: json['untrustedPending'] as int,
-      confirmed: json['confirmed'] as int,
-      spendable: json['spendable'] as int,
-      total: json['total'] as int,
+      immature: (json['immature'] as num).toInt(),
+      trustedPending: (json['trustedPending'] as num).toInt(),
+      untrustedPending: (json['untrustedPending'] as num).toInt(),
+      confirmed: (json['confirmed'] as num).toInt(),
+      spendable: (json['spendable'] as num).toInt(),
+      total: (json['total'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$BalanceImplToJson(_$BalanceImpl instance) =>
