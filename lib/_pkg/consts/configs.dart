@@ -12,8 +12,8 @@ const openelectrum = 'electrum.blockstream.info';
 const liquidElectrumUrl = 'blockstream.info:995';
 const liquidElectrumTestUrl = 'blockstream.info:465';
 
-const boltzTestnet = 'https://api.testnet.boltz.exchange';
-const boltzMainnet = 'https://api.boltz.exchange';
+const boltzTestnet = 'api.testnet.boltz.exchange';
+const boltzMainnet = 'api.boltz.exchange';
 
 final exchangeapi = bbexchangeapi;
 final mempoolapi = bbmempoolapi;

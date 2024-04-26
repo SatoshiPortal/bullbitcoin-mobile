@@ -66,44 +66,44 @@ class BullBitcoinWalletApp extends StatelessWidget {
           BlocProvider.value(value: locator<HomeCubit>()),
           BlocProvider.value(value: locator<WatchTxsBloc>()),
         ],
-        child: SwapAppListener(
-          child: BlocListener<SettingsCubit, SettingsState>(
-            listener: (context, state) {
-              if (state.language != localizationDelegate.currentLocale.languageCode)
-                localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
-            },
-            child: DeepLinker(
-              child: BlocBuilder<Lighting, ThemeLighting>(
-                builder: (context, lightingState) {
-                  return AnimatedSwitcher(
-                    duration: 600.ms,
-                    switchInCurve: Curves.easeInOutCubic,
-                    child: MaterialApp.router(
-                      theme: Themes.lightTheme,
-                      darkTheme: lightingState.dark(),
-                      themeMode: lightingState.mode(),
-                      routerConfig: router,
-                      debugShowCheckedModeBanner: false,
-                      localizationsDelegates: [
-                        localizationDelegate,
-                      ],
-                      supportedLocales: localizationDelegate.supportedLocales,
-                      locale: localizationDelegate.currentLocale,
-                      builder: (context, child) {
-                        scheduleMicrotask(() async {
-                          await Future.delayed(200.ms);
-                          SystemChrome.setSystemUIOverlayStyle(
-                            SystemUiOverlayStyle(
-                              statusBarColor: context.colour.background,
-                            ),
-                          );
-                        });
+        child: BlocListener<SettingsCubit, SettingsState>(
+          listener: (context, state) {
+            if (state.language != localizationDelegate.currentLocale.languageCode)
+              localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
+          },
+          child: DeepLinker(
+            child: BlocBuilder<Lighting, ThemeLighting>(
+              builder: (context, lightingState) {
+                return AnimatedSwitcher(
+                  duration: 600.ms,
+                  switchInCurve: Curves.easeInOutCubic,
+                  child: MaterialApp.router(
+                    theme: Themes.lightTheme,
+                    darkTheme: lightingState.dark(),
+                    themeMode: lightingState.mode(),
+                    routerConfig: router,
+                    debugShowCheckedModeBanner: false,
+                    localizationsDelegates: [
+                      localizationDelegate,
+                    ],
+                    supportedLocales: localizationDelegate.supportedLocales,
+                    locale: localizationDelegate.currentLocale,
+                    builder: (context, child) {
+                      scheduleMicrotask(() async {
+                        await Future.delayed(200.ms);
+                        SystemChrome.setSystemUIOverlayStyle(
+                          SystemUiOverlayStyle(
+                            statusBarColor: context.colour.background,
+                          ),
+                        );
+                      });
 
-                        SystemChrome.setPreferredOrientations([
-                          DeviceOrientation.portraitUp,
-                        ]);
-                        if (child == null) return Container();
-                        return OKToast(
+                      SystemChrome.setPreferredOrientations([
+                        DeviceOrientation.portraitUp,
+                      ]);
+                      if (child == null) return Container();
+                      return SwapAppListener(
+                        child: OKToast(
                           child: GestureDetector(
                             onTap: () {
                               FocusScope.of(context).requestFocus(FocusNode());
@@ -115,12 +115,12 @@ class BullBitcoinWalletApp extends StatelessWidget {
                               child: AppLifecycleOverlay(child: child),
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
           ),
         ),

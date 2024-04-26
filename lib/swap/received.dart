@@ -13,6 +13,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:oktoast/oktoast.dart';
 
 class SwapAppListener extends StatelessWidget {
@@ -48,15 +49,29 @@ class SwapAppListener extends StatelessWidget {
           listener: (context, state) {
             if (state.syncWallet == null) return;
 
-            final tx = state.txPaid!;
-            final amt = tx.outAmount;
+            final wallet = state.syncWallet!;
+            final swap = state.txPaid!;
+            final amt = swap.outAmount;
             final amtStr = context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
-            final prefix = tx.actionPrefixStr();
+            final prefix = swap.actionPrefixStr();
 
-            showToastWidget(
-              position: ToastPosition.top,
-              _AlertUI(text: '$prefix $amtStr'),
-            );
+            final tx = wallet.getTxWithSwap(swap)?.copyWith(wallet: wallet);
+            if (tx == null) return;
+
+            final isReceivePage = GoRouterState.of(context).uri.toString() == '/receive';
+
+            if (!isReceivePage)
+              showToastWidget(
+                position: ToastPosition.top,
+                _AlertUI(
+                  text: '$prefix $amtStr',
+                  onTap: () {
+                    context.push('/tx', extra: tx);
+                  },
+                ),
+              );
+            else
+              context.push('/swap-receive', extra: tx);
 
             context
                 .read<HomeCubit>()
@@ -109,11 +124,11 @@ class _AlertUI extends StatelessWidget {
 class ReceiveSwapPaidSuccessPage extends StatelessWidget {
   const ReceiveSwapPaidSuccessPage({super.key, required this.tx});
 
-  final SwapTx tx;
+  final Transaction tx;
 
   @override
   Widget build(BuildContext context) {
-    final amt = tx.outAmount;
+    final amt = tx.getAmount();
     final amtStr = context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
     return Scaffold(
       appBar: AppBar(flexibleSpace: const BBAppBar(text: 'Swap Received')),
@@ -134,6 +149,13 @@ class ReceiveSwapPaidSuccessPage extends StatelessWidget {
           ).animate().scale(),
           const Gap(16),
           BBText.body(amtStr),
+          const Gap(40),
+          BBButton.big(
+            label: 'View Transaction',
+            onPressed: () {
+              context.push('/tx', extra: tx);
+            },
+          ),
         ],
       ),
     );
