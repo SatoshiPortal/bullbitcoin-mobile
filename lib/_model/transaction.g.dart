@@ -8,18 +8,18 @@ part of 'transaction.dart';
 
 _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
     _$TransactionImpl(
-      timestamp: (json['timestamp'] as num).toInt(),
+      timestamp: json['timestamp'] as int,
       txid: json['txid'] as String,
-      received: (json['received'] as num?)?.toInt(),
-      sent: (json['sent'] as num?)?.toInt(),
-      fee: (json['fee'] as num?)?.toInt(),
-      height: (json['height'] as num?)?.toInt(),
+      received: json['received'] as int?,
+      sent: json['sent'] as int?,
+      fee: json['fee'] as int?,
+      height: json['height'] as int?,
       label: json['label'] as String?,
       toAddress: json['toAddress'] as String?,
       psbt: json['psbt'] as String?,
       rbfEnabled: json['rbfEnabled'] as bool? ?? true,
       oldTx: json['oldTx'] as bool? ?? false,
-      broadcastTime: (json['broadcastTime'] as num?)?.toInt(),
+      broadcastTime: json['broadcastTime'] as int?,
       outAddrs: (json['outAddrs'] as List<dynamic>?)
               ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -56,7 +56,7 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
 _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       id: json['id'] as String,
       txid: json['txid'] as String?,
-      keyIndex: (json['keyIndex'] as num?)?.toInt(),
+      keyIndex: json['keyIndex'] as int?,
       isSubmarine: json['isSubmarine'] as bool,
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
       walletType: $enumDecode(_$BaseWalletTypeEnumMap, json['walletType']),
@@ -66,7 +66,7 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       hash160: json['hash160'] as String?,
       redeemScript: json['redeemScript'] as String,
       invoice: json['invoice'] as String,
-      outAmount: (json['outAmount'] as num).toInt(),
+      outAmount: json['outAmount'] as int,
       scriptAddress: json['scriptAddress'] as String,
       electrumUrl: json['electrumUrl'] as String,
       boltzUrl: json['boltzUrl'] as String,
@@ -74,9 +74,9 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
           ? null
           : SwapStatusResponse.fromJson(json['status'] as Map<String, dynamic>),
       blindingKey: json['blindingKey'] as String?,
-      boltzFees: (json['boltzFees'] as num?)?.toInt(),
-      lockupFees: (json['lockupFees'] as num?)?.toInt(),
-      claimFees: (json['claimFees'] as num?)?.toInt(),
+      boltzFees: json['boltzFees'] as int?,
+      lockupFees: json['lockupFees'] as int?,
+      claimFees: json['claimFees'] as int?,
     );
 
 Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
@@ -142,13 +142,13 @@ Map<String, dynamic> _$$SwapTxSensitiveImplToJson(
 
 _$InvoiceImpl _$$InvoiceImplFromJson(Map<String, dynamic> json) =>
     _$InvoiceImpl(
-      msats: (json['msats'] as num).toInt(),
-      expiry: (json['expiry'] as num).toInt(),
-      expiresIn: (json['expiresIn'] as num).toInt(),
-      expiresAt: (json['expiresAt'] as num).toInt(),
+      msats: json['msats'] as int,
+      expiry: json['expiry'] as int,
+      expiresIn: json['expiresIn'] as int,
+      expiresAt: json['expiresAt'] as int,
       isExpired: json['isExpired'] as bool,
       network: json['network'] as String,
-      cltvExpDelta: (json['cltvExpDelta'] as num).toInt(),
+      cltvExpDelta: json['cltvExpDelta'] as int,
       invoice: json['invoice'] as String,
     );
 
