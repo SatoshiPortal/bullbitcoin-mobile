@@ -216,7 +216,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
 
     add(DeleteSensitiveSwapData(swapToDelete.id));
-    add(WatchWalletTxs(wallet: wallet));
+    // add(WatchWalletTxs(wallet: wallet));
 
     return;
   }

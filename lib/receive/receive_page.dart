@@ -90,9 +90,6 @@ class _ReceivePageState extends State<ReceivePage> {
 
   @override
   Widget build(BuildContext context) {
-    final r = GoRouterState.of(context).uri.toString();
-    print('Route:: ' + r);
-
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _receiveCubit),

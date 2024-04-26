@@ -33,7 +33,7 @@ class SwapAppListener extends StatelessWidget {
 
             final tx = state.txPaid!;
             final amt = tx.outAmount;
-            final amtStr = context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
+            final amtStr = context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = tx.actionPrefixStr();
 
             showToastWidget(
@@ -52,7 +52,7 @@ class SwapAppListener extends StatelessWidget {
             final wallet = state.syncWallet!;
             final swap = state.txPaid!;
             final amt = swap.outAmount;
-            final amtStr = context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
+            final amtStr = context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = swap.actionPrefixStr();
 
             final tx = wallet.getTxWithSwap(swap)?.copyWith(wallet: wallet);
