@@ -44,7 +44,8 @@ class Transaction with _$Transaction {
   }) = _Transaction;
   const Transaction._();
 
-  factory Transaction.fromJson(Map<String, dynamic> json) => _$TransactionFromJson(json);
+  factory Transaction.fromJson(Map<String, dynamic> json) =>
+      _$TransactionFromJson(json);
 
   factory Transaction.fromSwapTx(SwapTx swapTx) {
     return Transaction(
@@ -55,7 +56,8 @@ class Transaction with _$Transaction {
     );
   }
 
-  Uint8List? get psbtAsBytes => psbt == null ? null : Uint8List.fromList(psbt!.codeUnits);
+  Uint8List? get psbtAsBytes =>
+      psbt == null ? null : Uint8List.fromList(psbt!.codeUnits);
 
   Address? mapOutValueToAddress(int value) {
     if (outAddrs.isEmpty) return null;
@@ -74,7 +76,8 @@ class Transaction with _$Transaction {
     return outAddrs;
   }
 
-  bool isReceived() => sent == 0 || sent != null && received != null && received! > sent!;
+  bool isReceived() =>
+      sent == 0 || sent != null && received != null && received! > sent!;
 
   bool isReceivedCatchSelfPayment() =>
       sent == 0 || sent != null && received != null && received! > sent!;
@@ -135,18 +138,22 @@ class Transaction with _$Transaction {
     if (dt.year == 1970) {
       dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     }
-    if (dt.isAfter(DateTime.now().subtract(const Duration(days: 2)))) return timeago.format(dt);
-    final day = dt.day.toString().length == 1 ? '0${dt.day}' : dt.day.toString();
+    if (dt.isAfter(DateTime.now().subtract(const Duration(days: 2))))
+      return timeago.format(dt);
+    final day =
+        dt.day.toString().length == 1 ? '0${dt.day}' : dt.day.toString();
     return months[dt.month - 1] + ' ' + day + ', ' + dt.year.toString();
   }
 
-  DateTime? getBroadcastDateTime() =>
-      broadcastTime == null ? null : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
+  DateTime? getBroadcastDateTime() => broadcastTime == null
+      ? null
+      : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
 
   bool canRBF() => rbfEnabled == true && timestamp == 0;
 }
 
-DateTime getDateTimeFromInt(int time) => DateTime.fromMillisecondsSinceEpoch(time * 1000);
+DateTime getDateTimeFromInt(int time) =>
+    DateTime.fromMillisecondsSinceEpoch(time * 1000);
 
 class SerializedTx {
   SerializedTx({this.version, this.lockTime, this.input, this.output});
@@ -155,8 +162,9 @@ class SerializedTx {
     return SerializedTx(
       version: json['version'] as int?,
       lockTime: json['lock_time'] as int?,
-      input:
-          (json['input'] as List?)?.map((e) => Input.fromJson(e as Map<String, dynamic>)).toList(),
+      input: (json['input'] as List?)
+          ?.map((e) => Input.fromJson(e as Map<String, dynamic>))
+          .toList(),
       output: (json['output'] as List?)
           ?.map((e) => Output.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -229,7 +237,8 @@ class SwapTx with _$SwapTx {
   factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
 
   int? totalFees() {
-    if (boltzFees == null || lockupFees == null || claimFees == null) return null;
+    if (boltzFees == null || lockupFees == null || claimFees == null)
+      return null;
 
     return boltzFees! + lockupFees! + claimFees!;
   }
@@ -242,23 +251,28 @@ class SwapTx with _$SwapTx {
   bool paidSubmarine() =>
       isSubmarine &&
       (status != null &&
-          (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed));
+          (status!.status == SwapStatus.txnMempool ||
+              status!.status == SwapStatus.txnConfirmed));
 
   bool settledSubmarine() =>
-      isSubmarine && (status != null && (status!.status == SwapStatus.txnClaimed));
+      isSubmarine &&
+      (status != null && (status!.status == SwapStatus.txnClaimed));
 
   bool refundableSubmarine() =>
-      isSubmarine && (status != null && (status!.status == SwapStatus.invoiceFailedToPay));
+      isSubmarine &&
+      (status != null && (status!.status == SwapStatus.invoiceFailedToPay));
 
   bool claimableSubmarine() =>
       isSubmarine &&
       status != null &&
-      (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed);
+      (status!.status == SwapStatus.txnMempool ||
+          status!.status == SwapStatus.txnConfirmed);
 
   bool claimableReverse() =>
       !isSubmarine &&
       status != null &&
-      (status!.status == SwapStatus.txnMempool || status!.status == SwapStatus.txnConfirmed);
+      (status!.status == SwapStatus.txnMempool ||
+          status!.status == SwapStatus.txnConfirmed);
 
   bool expiredReverse() =>
       !isSubmarine &&
@@ -267,10 +281,12 @@ class SwapTx with _$SwapTx {
               status!.status == SwapStatus.swapExpired));
 
   bool settledReverse() =>
-      !isSubmarine && (status != null && (status!.status == SwapStatus.invoiceSettled));
+      !isSubmarine &&
+      (status != null && (status!.status == SwapStatus.invoiceSettled));
 
   bool paidReverse() =>
-      !isSubmarine && (status != null && (status!.status == SwapStatus.txnMempool));
+      !isSubmarine &&
+      (status != null && (status!.status == SwapStatus.txnMempool));
 
   bool receiveAction() => settledReverse() || paidReverse();
 
@@ -281,8 +297,12 @@ class SwapTx with _$SwapTx {
       expiredReverse() ||
       paidReverse();
 
+  bool close() => settledReverse() || settledSubmarine() || expiredReverse();
+
   String splitInvoice() =>
-      invoice.substring(0, 5) + ' .... ' + invoice.substring(invoice.length - 10);
+      invoice.substring(0, 5) +
+      ' .... ' +
+      invoice.substring(invoice.length - 10);
 
   bool smallAmt() => outAmount < 1000000;
 
@@ -321,7 +341,8 @@ class SwapTxSensitive with _$SwapTxSensitive {
   }) = _SwapTxSensitive;
   const SwapTxSensitive._();
 
-  factory SwapTxSensitive.fromJson(Map<String, dynamic> json) => _$SwapTxSensitiveFromJson(json);
+  factory SwapTxSensitive.fromJson(Map<String, dynamic> json) =>
+      _$SwapTxSensitiveFromJson(json);
 }
 
 @freezed
@@ -338,9 +359,13 @@ class Invoice with _$Invoice {
   }) = _Invoice;
   const Invoice._();
 
-  factory Invoice.fromJson(Map<String, dynamic> json) => _$InvoiceFromJson(json);
+  factory Invoice.fromJson(Map<String, dynamic> json) =>
+      _$InvoiceFromJson(json);
 
-  factory Invoice.fromDecodedInvoice(DecodedInvoice decodedInvoice, String invoice) {
+  factory Invoice.fromDecodedInvoice(
+    DecodedInvoice decodedInvoice,
+    String invoice,
+  ) {
     return Invoice(
       invoice: invoice,
       msats: decodedInvoice.msats,

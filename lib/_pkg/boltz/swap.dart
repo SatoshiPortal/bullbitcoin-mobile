@@ -153,7 +153,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(BoltzApi?, Err?)> addSwapSubs({
+  Future<Err?> addSwapSubs({
     required BoltzApi api,
     required List<String> swapIds,
     required void Function(
@@ -165,9 +165,9 @@ class SwapBoltz {
       api.subscribeSwapStatus(swapIds).listen((event) {
         onUpdate(event.id, event);
       });
-      return (api, null);
+      return null;
     } catch (e) {
-      return (null, Err(e.toString()));
+      return Err(e.toString());
     }
   }
 

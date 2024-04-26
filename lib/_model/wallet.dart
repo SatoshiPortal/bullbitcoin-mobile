@@ -68,7 +68,8 @@ class Wallet with _$Wallet {
   }
 
   SwapTx? getOngoingSwap(String id) {
-    if (hasOngoingSwap(id)) return swaps.firstWhere((element) => element.id == id);
+    if (hasOngoingSwap(id))
+      return swaps.firstWhere((element) => element.id == id);
     return null;
   }
 
@@ -80,12 +81,13 @@ class Wallet with _$Wallet {
     final List<Address> sortedAddresses = List.from(myAddressBook)
       ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
 
-    final int lastUsedIndex =
-        sortedAddresses.lastIndexWhere((address) => address.state == AddressStatus.used);
-    final int lastActiveIndex =
-        sortedAddresses.lastIndexWhere((address) => address.state == AddressStatus.active);
+    final int lastUsedIndex = sortedAddresses
+        .lastIndexWhere((address) => address.state == AddressStatus.used);
+    final int lastActiveIndex = sortedAddresses
+        .lastIndexWhere((address) => address.state == AddressStatus.active);
 
-    final lastIndexForGap = (lastActiveIndex > lastUsedIndex) ? lastActiveIndex : lastUsedIndex;
+    final lastIndexForGap =
+        (lastActiveIndex > lastUsedIndex) ? lastActiveIndex : lastUsedIndex;
     // If there's no address with status "used", return the count of all addresses as they're all unused
     if (lastIndexForGap == -1) {
       return sortedAddresses.length;
@@ -165,9 +167,11 @@ class Wallet with _$Wallet {
   String getAddressFromTxid(String txid) {
     // TODO: UTXO
     // Updated / Simplified (Seach specific to utxos. Is this fine?)
-    for (final utxo in utxos) if (utxo.txid == txid) return utxo.address.address;
+    for (final utxo in utxos)
+      if (utxo.txid == txid) return utxo.address.address;
     for (final tx in transactions) {
-      for (final addrs in tx.outAddrs) if (addrs.spentTxId == txid) return addrs.address;
+      for (final addrs in tx.outAddrs)
+        if (addrs.spentTxId == txid) return addrs.address;
     }
     return '';
 
@@ -194,7 +198,8 @@ class Wallet with _$Wallet {
     bool isSend = false,
     AddressKind? kind,
   }) {
-    for (final address in (isSend ? externalAddressBook : myAddressBook) ?? <Address>[])
+    for (final address
+        in (isSend ? externalAddressBook : myAddressBook) ?? <Address>[])
       if (isSend) {
         if (address.spentTxId == txid) {
           if (kind == null) {
@@ -310,7 +315,9 @@ class Wallet with _$Wallet {
     switch (type) {
       case BBWalletType.secure:
       case BBWalletType.words:
-        return shorten ? '$networkStr on-chain' : 'Regular on-chain $networkStr Network';
+        return shorten
+            ? '$networkStr on-chain'
+            : 'Regular on-chain $networkStr Network';
       case BBWalletType.xpub:
       case BBWalletType.coldcard:
       case BBWalletType.descriptors:
@@ -400,11 +407,16 @@ class Wallet with _$Wallet {
       ...externalAddressBook ?? <Address>[],
     ];
     final unspendable = addresses.where((_) => !_.spendable).toList();
-    final totalFrozen = unspendable.fold<int>(0, (value, _) => value + _.balance);
+    final totalFrozen =
+        unspendable.fold<int>(0, (value, _) => value + _.balance);
     return totalFrozen;
   }
 
-  int balanceWithoutFrozenUTXOs() => (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
+  int balanceWithoutFrozenUTXOs() =>
+      (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
+
+  List<SwapTx> swapsToProcess() =>
+      swaps.where((swap) => swap.proceesTx()).toList();
 }
 
 @freezed
@@ -419,7 +431,8 @@ class Balance with _$Balance {
   }) = _Balance;
   const Balance._();
 
-  factory Balance.fromJson(Map<String, dynamic> json) => _$BalanceFromJson(json);
+  factory Balance.fromJson(Map<String, dynamic> json) =>
+      _$BalanceFromJson(json);
 }
 
 String scriptTypeString(ScriptType scriptType) {

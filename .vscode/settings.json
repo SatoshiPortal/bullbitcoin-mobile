@@ -11,17 +11,16 @@
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
         "editor.rulers": [],
-        "editor.selectionHighlight": false,
-        "editor.suggest.snippetsPreventQuickSuggestions": false,
-        "editor.suggestSelection": "first",
-        "editor.tabCompletion": "onlySnippets",
-        "editor.wordBasedSuggestions": "off",
+        "editor.selectionHighlight": true,
+        // "editor.suggest.snippetsPreventQuickSuggestions": false,
+        // "editor.suggestSelection": "first",
+        // "editor.tabCompletion": "onlySnippets",
+        // "editor.wordBasedSuggestions": "off",
         "editor.codeActionsOnSave": {
             "source.fixAll": "explicit",
             "source.organizeImports": "explicit"
         },
     },
-    "dart.lineLength": 100,
     "files.exclude": {
         "**/.metadata": true,
         "**/.packages": true,

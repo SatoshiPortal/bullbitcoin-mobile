@@ -33,7 +33,8 @@ class SwapAppListener extends StatelessWidget {
 
             final tx = state.txPaid!;
             final amt = tx.outAmount;
-            final amtStr = context.read<CurrencyCubit>().state.getAmountInUnits(amt);
+            final amtStr =
+                context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = tx.actionPrefixStr();
 
             showToastWidget(
@@ -45,14 +46,16 @@ class SwapAppListener extends StatelessWidget {
           },
         ),
         BlocListener<WatchTxsBloc, WatchTxsState>(
-          listenWhen: (previous, current) => previous.syncWallet != current.syncWallet,
+          listenWhen: (previous, current) =>
+              previous.syncWallet != current.syncWallet,
           listener: (context, state) async {
             if (state.syncWallet == null) return;
 
             final wallet = state.syncWallet!;
             final swap = state.txPaid!;
             final amt = swap.outAmount;
-            final amtStr = context.read<CurrencyCubit>().state.getAmountInUnits(amt);
+            final amtStr =
+                context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = swap.actionPrefixStr();
 
             final tx = wallet.getTxWithSwap(swap)?.copyWith(wallet: wallet);
@@ -63,7 +66,8 @@ class SwapAppListener extends StatelessWidget {
               );
               return;
             } else {
-              final isReceivePage = GoRouterState.of(context).uri.toString() == '/receive';
+              final isReceivePage =
+                  GoRouterState.of(context).uri.toString() == '/receive';
 
               if (!isReceivePage)
                 showToastWidget(
@@ -137,7 +141,8 @@ class ReceiveSwapPaidSuccessPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final amt = tx.getAmount();
-    final amtStr = context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
+    final amtStr =
+        context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
     return Scaffold(
       appBar: AppBar(flexibleSpace: const BBAppBar(text: 'Swap Received')),
       body: Column(

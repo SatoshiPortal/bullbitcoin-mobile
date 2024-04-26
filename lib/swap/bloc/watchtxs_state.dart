@@ -37,10 +37,24 @@ class WatchTxsState with _$WatchTxsState {
 
   bool isClaiming(String swap) => claimingSwapTxIds.any((_) => _ == swap);
 
-  List<String>? addClaimingTx(String id) => isClaiming(id) ? null : [id, ...claimingSwapTxIds];
+  List<String>? addClaimingTx(String id) =>
+      isClaiming(id) ? null : [id, ...claimingSwapTxIds];
 
   List<String> removeClaimingTx(String id) {
-    final List<String> updatedList = List<String>.from(claimingSwapTxIds)..remove(id);
+    final List<String> updatedList = List<String>.from(claimingSwapTxIds)
+      ..remove(id);
     return updatedList;
+  }
+
+  List<String> removeListeningTx(String id) {
+    final List<String> updatedList = List<String>.from(listeningTxs)
+      ..remove(id);
+    return updatedList;
+    // final idx = state.listeningTxs.indexWhere((element) => element == swapTx.id);
+    // if (idx != -1) {
+    //   final newListeningTxs =
+    //       state.listeningTxs.where((element) => element != swapTx.id).toList();
+    //   emit(state.copyWith(listeningTxs: newListeningTxs));
+    // }
   }
 }
