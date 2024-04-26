@@ -47,11 +47,12 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
   final (out, errrOut) = await secureStorage.getAll();
   print(jsonEncode(out));
 
-  final (version, errr) = await secureStorage.getValue(StorageKeys.version);
+  var (version, errr) = await secureStorage.getValue(StorageKeys.version);
   if (errr != null) {
     print('::::no storage version saved');
     print(errr);
 
+    version = bbVersion;
     await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
     // } else if (version != bbVersion) {
     // await doMigration(version!, bbVersion, hiveStorage);
