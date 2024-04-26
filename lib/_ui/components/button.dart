@@ -205,13 +205,13 @@ class BBButton extends StatelessWidget {
                   width: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(context.colour.primary),
+                    valueColor: AlwaysStoppedAnimation<Color>(context.colour.surface),
                   ),
                 ),
                 const Gap(8),
                 BBText.title(
                   loadingText ?? label,
-                  isRed: !filled,
+                  // isRed: !filled,
                   onSurface: filled,
                 ),
               ],

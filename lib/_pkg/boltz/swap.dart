@@ -34,7 +34,7 @@ class SwapBoltz {
   }) async {
     try {
       final res = await AllFees.fetch(
-        boltzUrl: boltzUrl,
+        boltzUrl: 'https://' + boltzUrl,
       );
       return (res, null);
     } catch (e) {
