@@ -290,6 +290,8 @@ class SelectWalletType extends StatelessWidget {
         if (paymentNetwork == ReceivePaymentNetwork.lightning)
           context.read<SwapCubit>().clearSwapTx();
 
+        context.read<SwapCubit>().removeWarnings();
+
         final isTestnet = context.read<NetworkCubit>().state.testnet;
         context.read<ReceiveCubit>().updateWalletType(value, isTestnet);
       },

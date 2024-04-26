@@ -19,5 +19,9 @@ class SwapState with _$SwapState {
   }) = _SwapState;
   const SwapState._();
 
-  bool showWarning() => errSmallAmt || errHighFees != null;
+  bool showWarning() {
+    final errH = errHighFees;
+    final errSA = errSmallAmt;
+    return errH != null || errSA;
+  }
 }
