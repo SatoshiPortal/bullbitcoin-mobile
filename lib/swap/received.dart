@@ -46,7 +46,7 @@ class SwapAppListener extends StatelessWidget {
         ),
         BlocListener<WatchTxsBloc, WatchTxsState>(
           listenWhen: (previous, current) => previous.syncWallet != current.syncWallet,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state.syncWallet == null) return;
 
             final wallet = state.syncWallet!;
@@ -79,15 +79,17 @@ class SwapAppListener extends StatelessWidget {
                 context.push('/swap-receive', extra: tx);
             }
 
+            context.read<WatchTxsBloc>().add(ClearAlerts());
+
+            await Future.delayed(const Duration(seconds: 10));
+
             context
                 .read<HomeCubit>()
                 .state
                 .getWalletBloc(
-                  state.syncWallet!,
+                  wallet,
                 )
                 ?.add(SyncWallet());
-
-            context.read<WatchTxsBloc>().add(ClearAlerts());
           },
         ),
       ],
