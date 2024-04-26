@@ -78,6 +78,7 @@ Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStor
         if (mainWalletIndex == 0) {
           walletObj['type'] = 'secure';
           walletObj['name'] = 'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
+          walletObj['mainWallet'] = true;
           mainWalletIndex++;
 
           final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
@@ -94,6 +95,7 @@ Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStor
         if (testWalletIndex == 0) {
           walletObj['type'] = 'secure';
           walletObj['name'] = 'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
+          walletObj['mainWallet'] = true;
           testWalletIndex++;
 
           final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
@@ -149,7 +151,7 @@ Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStor
       network: BBNetwork.Mainnet,
       walletCreate: walletCreate,
     );
-    final liquidWallet = lw?.copyWith(name: lw.creationName());
+    final liquidWallet = lw?.copyWith(name: lw.creationName(), mainWallet: true);
     print(liquidWallet?.id);
     await walletsStorageRepository.newWallet(liquidWallet!);
   }
@@ -165,7 +167,7 @@ Future<void> doMigration01to02(SecureStorage secureStorage, HiveStorage hiveStor
       network: BBNetwork.Testnet,
       walletCreate: walletCreate,
     );
-    final liquidWallet = lw?.copyWith(name: lw.creationName());
+    final liquidWallet = lw?.copyWith(name: lw.creationName(), mainWallet: true);
     print(liquidWallet?.id);
     await walletsStorageRepository.newWallet(liquidWallet!);
   }
