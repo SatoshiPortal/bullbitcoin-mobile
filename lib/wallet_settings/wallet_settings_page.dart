@@ -138,14 +138,14 @@ class _ScreenState extends State<_Screen> {
                 children: [
                   const Gap(16),
                   const WalletType(),
-                  const Gap(16),
-                  const Balances(),
+                  // const Gap(16),
+                  // const Balances(),
                   const Gap(24),
                   if (!watchOnly) ...[
                     const BackupButton(),
                     const Gap(8),
-                    const TestBackupButton(),
-                    const Gap(8),
+                    // const TestBackupButton(),
+                    // const Gap(8),
                   ],
                   // const PublicDescriptorButton(),
                   // const Gap(8),
@@ -479,6 +479,8 @@ class BackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTested = context.select((WalletBloc x) => x.state.wallet!.backupTested);
+
     return BBButton.textWithStatusAndRightArrow(
       onPressed: () async {
         context.push(
@@ -491,6 +493,8 @@ class BackupButton extends StatelessWidget {
         // await BackupScreen.openPopup(context);
       },
       label: 'Backup',
+      statusText: isTested ? 'Tested' : 'Not Tested',
+      isRed: !isTested,
     );
   }
 }
