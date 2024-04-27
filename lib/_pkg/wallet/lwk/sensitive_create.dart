@@ -31,7 +31,7 @@ class LWKSensitiveCreate {
     final lwkNetwork = network == BBNetwork.Mainnet
         ? lwk.Network.mainnet
         : lwk.Network.testnet;
-    final lwk.DescriptorBase descriptor = lwk.DescriptorBase(
+    final lwk.Descriptor descriptor = await lwk.Descriptor.newConfidential(
       network: lwkNetwork,
       mnemonic: seed.mnemonic,
     );
@@ -128,7 +128,7 @@ class LWKSensitiveCreate {
       final appDocDir = await getApplicationDocumentsDirectory();
       final String dbDir = '${appDocDir.path}/db';
 
-      final lwk.DescriptorBase descriptor = lwk.DescriptorBase(
+      final lwk.Descriptor descriptor = await lwk.Descriptor.newConfidential(
         network: network,
         mnemonic: seed.mnemonic,
       );
