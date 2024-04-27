@@ -623,7 +623,7 @@ mixin _$SwapTx {
   String get scriptAddress => throw _privateConstructorUsedError;
   String get electrumUrl => throw _privateConstructorUsedError;
   String get boltzUrl => throw _privateConstructorUsedError;
-  SwapStatusResponse? get status =>
+  SwapStreamStatus? get status =>
       throw _privateConstructorUsedError; // should this be SwapStaus?
   String? get blindingKey => throw _privateConstructorUsedError; // sensitive
   int? get boltzFees => throw _privateConstructorUsedError;
@@ -657,13 +657,13 @@ abstract class $SwapTxCopyWith<$Res> {
       String scriptAddress,
       String electrumUrl,
       String boltzUrl,
-      SwapStatusResponse? status,
+      SwapStreamStatus? status,
       String? blindingKey,
       int? boltzFees,
       int? lockupFees,
       int? claimFees});
 
-  $SwapStatusResponseCopyWith<$Res>? get status;
+  $SwapStreamStatusCopyWith<$Res>? get status;
 }
 
 /// @nodoc
@@ -769,7 +769,7 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as SwapStatusResponse?,
+              as SwapStreamStatus?,
       blindingKey: freezed == blindingKey
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
@@ -791,12 +791,12 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
 
   @override
   @pragma('vm:prefer-inline')
-  $SwapStatusResponseCopyWith<$Res>? get status {
+  $SwapStreamStatusCopyWith<$Res>? get status {
     if (_value.status == null) {
       return null;
     }
 
-    return $SwapStatusResponseCopyWith<$Res>(_value.status!, (value) {
+    return $SwapStreamStatusCopyWith<$Res>(_value.status!, (value) {
       return _then(_value.copyWith(status: value) as $Val);
     });
   }
@@ -826,14 +826,14 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String scriptAddress,
       String electrumUrl,
       String boltzUrl,
-      SwapStatusResponse? status,
+      SwapStreamStatus? status,
       String? blindingKey,
       int? boltzFees,
       int? lockupFees,
       int? claimFees});
 
   @override
-  $SwapStatusResponseCopyWith<$Res>? get status;
+  $SwapStreamStatusCopyWith<$Res>? get status;
 }
 
 /// @nodoc
@@ -937,7 +937,7 @@ class __$$SwapTxImplCopyWithImpl<$Res>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as SwapStatusResponse?,
+              as SwapStreamStatus?,
       blindingKey: freezed == blindingKey
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
@@ -1021,7 +1021,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   @override
   final String boltzUrl;
   @override
-  final SwapStatusResponse? status;
+  final SwapStreamStatus? status;
 // should this be SwapStaus?
   @override
   final String? blindingKey;
@@ -1167,7 +1167,7 @@ abstract class _SwapTx extends SwapTx {
       required final String scriptAddress,
       required final String electrumUrl,
       required final String boltzUrl,
-      final SwapStatusResponse? status,
+      final SwapStreamStatus? status,
       final String? blindingKey,
       final int? boltzFees,
       final int? lockupFees,
@@ -1209,7 +1209,7 @@ abstract class _SwapTx extends SwapTx {
   @override
   String get boltzUrl;
   @override
-  SwapStatusResponse? get status;
+  SwapStreamStatus? get status;
   @override // should this be SwapStaus?
   String? get blindingKey;
   @override // sensitive

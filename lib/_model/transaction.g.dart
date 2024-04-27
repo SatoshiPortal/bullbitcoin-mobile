@@ -72,7 +72,7 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       boltzUrl: json['boltzUrl'] as String,
       status: json['status'] == null
           ? null
-          : SwapStatusResponse.fromJson(json['status'] as Map<String, dynamic>),
+          : SwapStreamStatus.fromJson(json['status'] as Map<String, dynamic>),
       blindingKey: json['blindingKey'] as String?,
       boltzFees: (json['boltzFees'] as num?)?.toInt(),
       lockupFees: (json['lockupFees'] as num?)?.toInt(),

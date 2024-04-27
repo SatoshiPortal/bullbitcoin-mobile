@@ -158,7 +158,7 @@ class SwapBoltz {
     required List<String> swapIds,
     required void Function(
       String id,
-      SwapStatusResponse status,
+      SwapStreamStatus status,
     ) onUpdate,
   }) async {
     try {
@@ -180,7 +180,8 @@ class SwapBoltz {
       final address = wallet.lastGeneratedAddress?.address;
       if (address == null || address.isEmpty) throw 'Address not found';
 
-      final boltzurl = wallet.network == BBNetwork.Testnet ? boltzTestnet : boltzMainnet;
+      final boltzurl =
+          wallet.network == BBNetwork.Testnet ? boltzTestnet : boltzMainnet;
 
       final (fees, errFees) = await getFeesAndLimits(
         boltzUrl: boltzurl,
@@ -195,16 +196,18 @@ class SwapBoltz {
       );
       if (err != null) throw err;
 
-      final swapSensitive =
-          SwapTxSensitive.fromJson(jsonDecode(swapSentive!) as Map<String, dynamic>);
+      final swapSensitive = SwapTxSensitive.fromJson(
+        jsonDecode(swapSentive!) as Map<String, dynamic>,
+      );
 
       if (!shouldRefund) {
         final DateTime now = DateTime.now();
         final String formattedDate =
             '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}:${now.millisecond}';
         final Random random = Random();
-        final int randomNumber =
-            random.nextInt(10000); // This will generate a random number between 0 and 9999
+        final int randomNumber = random.nextInt(
+          10000,
+        ); // This will generate a random number between 0 and 9999
 
         print('ATTEMPT CLAIMING: $randomNumber AT: $formattedDate');
         if (isLiquid) {
@@ -265,7 +268,8 @@ class SwapBoltz {
 
   Future<Err?> deleteSwapSensitive({required String id}) async {
     try {
-      final err = await _secureStorage.deleteValue(StorageKeys.swapTxSensitive + '_' + id);
+      final err = await _secureStorage
+          .deleteValue(StorageKeys.swapTxSensitive + '_' + id);
       if (err != null) throw err;
       return null;
     } catch (e) {

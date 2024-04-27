@@ -225,7 +225,7 @@ class SwapTx with _$SwapTx {
     required String scriptAddress,
     required String electrumUrl,
     required String boltzUrl,
-    SwapStatusResponse? status, // should this be SwapStaus?
+    SwapStreamStatus? status, // should this be SwapStaus?
     String? blindingKey, // sensitive
     int? boltzFees,
     int? lockupFees,

@@ -196,7 +196,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   void __swapStatusUpdated(
     Emitter<WatchTxsState> emit, {
     required String swapId,
-    required SwapStatusResponse status,
+    required SwapStreamStatus status,
     required String walletId,
   }) async {
     for (final walletBloc in _homeCubit.state.walletBlocs!) {
