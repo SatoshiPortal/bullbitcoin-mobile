@@ -82,11 +82,13 @@ class SecureBitcoinWallet extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Secure Bitcoin wallet',
       onPressed: () {
-        final walletBlocs = context.read<HomeCubit>().state.walletBlocs;
-        final network = context.read<NetworkCubit>().state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
-        final walletBloc = walletBlocs
-            ?.where((w) => w.state.wallet?.network == network && w.state.wallet?.type == BBWalletType.secure)
-            .first;
+        // final walletBlocs = context.read<HomeCubit>().state.walletBlocs;
+        final network = context.read<NetworkCubit>().state.getBBNetwork();
+        final walletBloc =
+            context.read<HomeCubit>().state.getMainSecureWallet(network);
+        // final walletBloc = walletBlocs
+        //     ?.where((w) => w.state.wallet?.network == network && w.state.wallet?.type == BBWalletType.secure)
+        //     .first;
         context.push('/wallet-settings', extra: walletBloc);
       },
     );
@@ -101,11 +103,9 @@ class InstantPaymentsWallet extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Instant Payments wallet',
       onPressed: () {
-        final walletBlocs = context.read<HomeCubit>().state.walletBlocs;
-        final network = context.read<NetworkCubit>().state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
-        final walletBloc = walletBlocs
-            ?.where((w) => w.state.wallet?.network == network && w.state.wallet?.type == BBWalletType.instant)
-            .first;
+        final network = context.read<NetworkCubit>().state.getBBNetwork();
+        final walletBloc =
+            context.read<HomeCubit>().state.getMainInstantWallet(network);
         context.push('/wallet-settings', extra: walletBloc);
       },
     );
@@ -121,9 +121,15 @@ class ColdcardWallet extends StatelessWidget {
       label: 'Coldcard wallet',
       onPressed: () {
         final walletBlocs = context.read<HomeCubit>().state.walletBlocs;
-        final network = context.read<NetworkCubit>().state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+        final network = context.read<NetworkCubit>().state.testnet
+            ? BBNetwork.Testnet
+            : BBNetwork.Mainnet;
         final walletBloc = walletBlocs
-            ?.where((w) => w.state.wallet?.network == network && w.state.wallet?.type == BBWalletType.coldcard)
+            ?.where(
+              (w) =>
+                  w.state.wallet?.network == network &&
+                  w.state.wallet?.type == BBWalletType.coldcard,
+            )
             .first;
         context.push('/wallet-settings', extra: walletBloc);
       },
