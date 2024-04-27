@@ -2,11 +2,9 @@ import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/extensions.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -15,7 +13,6 @@ import 'package:bb_mobile/network/popup.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:extra_alignments/extra_alignments.dart';
@@ -66,14 +63,14 @@ class _Screen extends StatelessWidget {
                 ElectrumServerButton(),
                 Gap(8),
                 BroadCastButton(),
-                Gap(8),
-                SearchAddressButton(),
+                // Gap(8),
+                // SearchAddressButton(),
                 Gap(8),
                 NewWalletButton(),
-                Gap(8),
-                ArchivedWalletsButton(),
-                Gap(8),
-                ReplaceDefaultSeedButton(),
+                // Gap(8),
+                // ArchivedWalletsButton(),
+                // Gap(8),
+                // ReplaceDefaultSeedButton(),
                 Gap(80),
               ],
             ),
@@ -183,20 +180,6 @@ class NewWalletButton extends StatelessWidget {
       label: 'Import Bitcoin Wallet',
       onPressed: () {
         context.push('/import');
-      },
-    );
-  }
-}
-
-class SeedViewButton extends StatelessWidget {
-  const SeedViewButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BBButton.textWithStatusAndRightArrow(
-      label: 'View Seeds',
-      onPressed: () {
-        context.push('/seed-view');
       },
     );
   }
@@ -357,65 +340,6 @@ class ElectrumServerButton extends StatelessWidget {
             err,
           ),
       ],
-    );
-  }
-}
-
-class SelectHomeLayoutButton extends StatelessWidget {
-  const SelectHomeLayoutButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BBButton.textWithStatusAndRightArrow(
-      label: 'Home Layout',
-      onPressed: () {
-        SelectHomeLayoutPopUp.openPopUp(context);
-      },
-    );
-  }
-}
-
-class SelectHomeLayoutPopUp extends StatelessWidget {
-  const SelectHomeLayoutPopUp({super.key});
-
-  static Future openPopUp(BuildContext context) async {
-    return showBBBottomSheet(
-      context: context,
-      child: const SelectHomeLayoutPopUp(),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final layoutIdx = context.select((SettingsCubit _) => _.state.homeLayout);
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0, bottom: 56, left: 24, right: 24),
-      child: Column(
-        children: [
-          BBHeader.popUpCenteredText(
-            text: 'Home Layout',
-            isLeft: true,
-            onBack: () => context.pop(),
-          ),
-          const Gap(8),
-          for (int i = 0; i < 2; i++)
-            ListTile(
-              title: BBText.body('$i'),
-              onTap: () async {
-                context.read<SettingsCubit>().updateHomeLayout(i);
-              },
-              leading: Radio<int>(
-                fillColor: MaterialStateProperty.all(context.colour.primary),
-                value: i,
-                groupValue: layoutIdx,
-                onChanged: (value) {
-                  context.read<SettingsCubit>().updateHomeLayout(value!);
-                },
-              ),
-            ),
-        ],
-      ),
     );
   }
 }

@@ -60,80 +60,89 @@ class BBDropDown<T> extends StatelessWidget {
     required this.items,
     required this.onChanged,
     required this.value,
+    this.isCentered = true,
   });
 
   final Map<T, String> items;
   final void Function(T) onChanged;
   final T value;
+  final bool isCentered;
 
   @override
   Widget build(BuildContext context) {
-    final darkMode =
-        context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
+    final darkMode = context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
 
     final bgColour = darkMode ? context.colour.background : NewColours.offWhite;
 
-    return Center(
-      child: SizedBox(
-        width: 225,
-        height: 45,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(8.0),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+    final widget = SizedBox(
+      width: 225,
+      height: 45,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(
+            Radius.circular(8.0),
           ),
-          child: DropdownButtonFormField<T>(
-            padding: EdgeInsets.zero,
-            elevation: 4,
-            borderRadius: BorderRadius.circular(8),
-            isExpanded: true,
-            decoration: InputDecoration(
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: bgColour,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              border: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: bgColour,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              filled: true,
-              fillColor: bgColour,
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: bgColour),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-            value: value,
-            onChanged: (value) {
-              if (value == null) return;
-              onChanged.call(value);
-            },
-            items: [
-              for (final key in items.keys)
-                DropdownMenuItem<T>(
-                  value: key,
-                  child: Center(
-                    child: BBText.body(items[key]!),
-                  ),
-                ),
-            ],
+          ],
+        ),
+        child: DropdownButtonFormField<T>(
+          padding: EdgeInsets.zero,
+          elevation: 4,
+          borderRadius: BorderRadius.circular(8),
+          isExpanded: true,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: bgColour,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: bgColour,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            filled: true,
+            fillColor: bgColour,
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: bgColour),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           ),
+          value: value,
+          onChanged: (value) {
+            if (value == null) return;
+            onChanged.call(value);
+          },
+          items: [
+            for (final key in items.keys)
+              DropdownMenuItem<T>(
+                value: key,
+                child: isCentered
+                    ? Center(
+                        child: BBText.body(items[key]!),
+                      )
+                    : BBText.body(items[key]!),
+              ),
+          ],
         ),
       ),
     );
+
+    if (isCentered) {
+      return Center(
+        child: widget,
+      );
+    } else {
+      return widget;
+    }
   }
 }
 

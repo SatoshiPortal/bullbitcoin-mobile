@@ -1,7 +1,10 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,7 +82,12 @@ class SecureBitcoinWallet extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Secure Bitcoin wallet',
       onPressed: () {
-        context.push('/change-pin');
+        final walletBlocs = context.read<HomeCubit>().state.walletBlocs;
+        final network = context.read<NetworkCubit>().state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+        final walletBloc = walletBlocs
+            ?.where((w) => w.state.wallet?.network == network && w.state.wallet?.type == BBWalletType.secure)
+            .first;
+        context.push('/wallet-settings', extra: walletBloc);
       },
     );
   }
@@ -93,7 +101,12 @@ class InstantPaymentsWallet extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Instant Payments wallet',
       onPressed: () {
-        context.push('/change-pin');
+        final walletBlocs = context.read<HomeCubit>().state.walletBlocs;
+        final network = context.read<NetworkCubit>().state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+        final walletBloc = walletBlocs
+            ?.where((w) => w.state.wallet?.network == network && w.state.wallet?.type == BBWalletType.instant)
+            .first;
+        context.push('/wallet-settings', extra: walletBloc);
       },
     );
   }
@@ -107,7 +120,12 @@ class ColdcardWallet extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Coldcard wallet',
       onPressed: () {
-        context.push('coldcard-settings');
+        final walletBlocs = context.read<HomeCubit>().state.walletBlocs;
+        final network = context.read<NetworkCubit>().state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+        final walletBloc = walletBlocs
+            ?.where((w) => w.state.wallet?.network == network && w.state.wallet?.type == BBWalletType.coldcard)
+            .first;
+        context.push('/wallet-settings', extra: walletBloc);
       },
     );
   }

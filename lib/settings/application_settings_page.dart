@@ -1,13 +1,10 @@
 import 'package:bb_mobile/_pkg/consts/keys.dart';
-import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
-import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/dropdown.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/lighting.dart';
-import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -55,27 +52,6 @@ class _Screen extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class SourceCodeButton extends StatelessWidget {
-  const SourceCodeButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CenterLeft(
-      child: InkWell(
-        onTap: () {
-          const link = 'https://github.com/SatoshiPortal/bullbitcoin-mobile';
-          locator<Launcher>().launchApp(link);
-        },
-        child: const BBText.bodySmall(
-          'Source',
-          isBold: true,
-          isBlue: true,
         ),
       ),
     );
