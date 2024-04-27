@@ -29,15 +29,13 @@ import 'package:oktoast/oktoast.dart';
 
 Future main({bool fromTest = false}) async {
   if (!fromTest) WidgetsFlutterBinding.ensureInitialized();
-
+  await LibLwk.init();
+  await LibBoltz.init();
   await dotenv.load(isOptional: true);
   Bloc.observer = BBlocObserver();
   // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-
   await setupLocator(fromTest: fromTest);
   final delegate = await Localise.getDelegate();
-  LwkCore.init();
-  BoltzCore.init();
   runApp(
     LocalizedApp(
       delegate,

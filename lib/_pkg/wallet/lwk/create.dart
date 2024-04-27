@@ -6,12 +6,14 @@ import 'package:path_provider/path_provider.dart';
 class LWKCreate {
   Future<(lwk.Wallet?, Err?)> loadPublicLwkWallet(Wallet wallet) async {
     try {
-      final network =
-          wallet.network == BBNetwork.Mainnet ? lwk.Network.mainnet : lwk.Network.testnet;
+      final network = wallet.network == BBNetwork.Mainnet
+          ? lwk.Network.mainnet
+          : lwk.Network.testnet;
 
       final appDocDir = await getApplicationDocumentsDirectory();
       final String dbDir = '${appDocDir.path}/db';
-      final descriptor = lwk.DescriptorBase.raw(ctDescriptor: wallet.externalPublicDescriptor);
+      final descriptor =
+          lwk.DescriptorBase.raw(ctDescriptor: wallet.externalPublicDescriptor);
       final w = lwk.Wallet(
         network: network,
         dbpath: dbDir,
