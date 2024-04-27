@@ -40,7 +40,7 @@ class SwapAppListener extends StatelessWidget {
             if (state.syncWallet != null) return;
 
             final tx = state.txPaid!;
-            final amt = tx.outAmount;
+            final amt = tx.recievableAmount()!;
             final amtStr =
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = tx.actionPrefixStr();

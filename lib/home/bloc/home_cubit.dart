@@ -150,7 +150,8 @@ class HomeCubit extends Cubit<HomeState> {
         ? state.walletBlocs!.toList()
         : <WalletBloc>[];
     walletBlocs.removeWhere(
-        (wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id);
+      (wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id,
+    );
 
     emit(
       state.copyWith(

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
@@ -30,7 +29,6 @@ class SwapBoltz {
 
   Future<(AllFees?, Err?)> getFeesAndLimits({
     required String boltzUrl,
-    required int outAmount,
   }) async {
     try {
       final res = await AllFees.fetch(
@@ -185,9 +183,11 @@ class SwapBoltz {
 
       final (fees, errFees) = await getFeesAndLimits(
         boltzUrl: boltzurl,
-        outAmount: swapTx.outAmount,
       );
-      if (errFees != null) throw errFees;
+      if (errFees != null) {
+        print(errFees.message);
+        throw errFees;
+      }
 
       final isLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
 
@@ -201,15 +201,15 @@ class SwapBoltz {
       );
 
       if (!shouldRefund) {
-        final DateTime now = DateTime.now();
-        final String formattedDate =
-            '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}:${now.millisecond}';
-        final Random random = Random();
-        final int randomNumber = random.nextInt(
-          10000,
-        ); // This will generate a random number between 0 and 9999
+        // final DateTime now = DateTime.now();
+        // final String formattedDate =
+        //     '${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}:${now.millisecond}';
+        // final Random random = Random();
+        // final int randomNumber = random.nextInt(
+        //   10000,
+        // ); // This will generate a random number between 0 and 9999
 
-        print('ATTEMPT CLAIMING: $randomNumber AT: $formattedDate');
+        // print('ATTEMPT CLAIMING: $randomNumber AT: $formattedDate');
         if (isLiquid) {
           final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
           if (claimFeesEstimate == null) throw 'Fees estimate not found';
@@ -221,46 +221,46 @@ class SwapBoltz {
             absFee: claimFeesEstimate,
           );
           return (resp, null);
+        } else {
+          final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
+          if (claimFeesEstimate == null) throw 'Fees estimate not found';
+
+          final swap = swapTx.toBtcLnSwap(swapSensitive);
+
+          final resp = await swap.claim(
+            outAddress: address,
+            absFee: claimFeesEstimate,
+          );
+
+          return (resp, null);
         }
+      } else {
+        if (isLiquid) {
+          final refundFeesEstimate = fees?.lbtcSubmarine.claimFees;
+          if (refundFeesEstimate == null) throw 'Fees estimate not found';
 
-        final claimFeesEstimate = fees?.btcSubmarine.claimFees;
-        if (claimFeesEstimate == null) throw 'Fees estimate not found';
+          final swap = swapTx.toLbtcLnSwap(swapSensitive);
 
-        final swap = swapTx.toBtcLnSwap(swapSensitive);
+          final resp = await swap.refund(
+            outAddress: address,
+            absFee: refundFeesEstimate,
+          );
 
-        final resp = await swap.claim(
-          outAddress: address,
-          absFee: claimFeesEstimate,
-        );
+          return (resp, null);
+        } else {
+          final refundFeesEstimate = fees?.btcSubmarine.claimFees;
+          if (refundFeesEstimate == null) throw 'Fees estimate not found';
 
-        return (resp, null);
+          final swap = swapTx.toBtcLnSwap(swapSensitive);
+
+          final resp = await swap.refund(
+            outAddress: address,
+            absFee: refundFeesEstimate,
+          );
+
+          return (resp, null);
+        }
       }
-
-      if (isLiquid) {
-        final refundFeesEstimate = fees?.lbtcSubmarine.claimFees;
-        if (refundFeesEstimate == null) throw 'Fees estimate not found';
-
-        final swap = swapTx.toLbtcLnSwap(swapSensitive);
-
-        final resp = await swap.refund(
-          outAddress: address,
-          absFee: refundFeesEstimate,
-        );
-
-        return (resp, null);
-      }
-
-      final refundFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
-      if (refundFeesEstimate == null) throw 'Fees estimate not found';
-
-      final swap = swapTx.toBtcLnSwap(swapSensitive);
-
-      final resp = await swap.refund(
-        outAddress: address,
-        absFee: refundFeesEstimate,
-      );
-
-      return (resp, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
