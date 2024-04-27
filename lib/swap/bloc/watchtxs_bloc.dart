@@ -147,13 +147,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         await __claimOrRefundSwap(shouldRefund, swapTx, walletBloc, emit);
     if (txid == null) return;
 
-    await __updateSwapTxsAfterClaimOrRefund(
-      txid,
-      swapTx,
-      walletBloc,
-      wallet,
-      emit,
-    );
+    await __updateSwapTxsAfterClaimOrRefund(txid, swapTx, walletBloc, emit);
   }
 
   void __watchSwapStatus(
@@ -323,7 +317,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     String txid,
     SwapTx swapTx,
     WalletBloc walletBloc,
-    Wallet wallet,
+    // Wallet wallet,
     Emitter<WatchTxsState> emit,
   ) async {
     final updatedSwap = swapTx.copyWith(txid: txid);
@@ -334,8 +328,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    final (resp, err1) =
-        _walletTx.updateSwapTxs(swapTx: updatedSwap, wallet: wallet);
+    final (resp, err1) = _walletTx.updateSwapTxs(
+      swapTx: updatedSwap,
+      wallet: walletBloc.state.wallet!,
+    );
     if (err1 != null) {
       emit(state.copyWith(errClaimingSwap: err1.toString()));
       return;
