@@ -11,7 +11,10 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 // import 'package:bb_mobile/seeds/seeds_page.dart';
 import 'package:bb_mobile/send/send_page.dart';
+import 'package:bb_mobile/settings/application_settings_page.dart';
+import 'package:bb_mobile/settings/bitcoin_settings_page.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
+import 'package:bb_mobile/settings/core_wallet_settings_page.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
@@ -88,6 +91,25 @@ final GoRouter router = GoRouter(
         return const SettingsPage();
       },
     ),
+    GoRoute(
+      path: '/bitcoin-settings',
+      builder: (context, state) {
+        return const BitcoinSettingsPage();
+      },
+    ),
+    GoRoute(
+      path: '/application-settings',
+      builder: (context, state) {
+        return const ApplicationSettingsPage();
+      },
+    ),
+    GoRoute(
+      path: '/core-wallet-settings',
+      builder: (context, state) {
+        return const CoreWalletSettingsPage();
+      },
+    ),
+
     GoRoute(
       path: '/tx',
       builder: (context, state) {

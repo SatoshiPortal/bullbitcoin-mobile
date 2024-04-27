@@ -50,6 +50,7 @@ class SettingsCurrencyDropDown extends StatelessWidget {
         ),
         const Gap(4),
         BBDropDown<Currency>(
+          isCentered: false,
           items: {
             for (final c in currencies) c: c.getFullName(),
           },
