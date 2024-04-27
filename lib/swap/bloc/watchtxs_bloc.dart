@@ -325,9 +325,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     ProcessSwapTx event,
     Emitter<WatchTxsState> emit,
   ) async {
-    final walletId = event.walletId;
     final swapTx = event.swapTx;
-    final walletBloc = _homeCubit.state.getWalletBlocById(walletId);
+    final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;
     if (walletBloc == null || wallet == null) return;
 

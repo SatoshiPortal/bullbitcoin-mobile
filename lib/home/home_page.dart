@@ -464,12 +464,12 @@ class WalletTag extends StatelessWidget {
   final Transaction tx;
 
   static (String, Color) _buildTagDetails(
-    BuildContext context,
-    Wallet wallet,
+    // BuildContext context,
+    bool walletIsLiquid,
     Transaction tx,
   ) {
     final hasSwap = tx.swapTx.notNull();
-    final walletIsLiquid = wallet.isLiquid();
+    // final walletIsLiquid = wallet.isLiquid();
 
     Color colour;
     String text;
@@ -491,12 +491,8 @@ class WalletTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.read<HomeCubit>().state.getWalletFromTx(tx);
-    final (name, color) = _buildTagDetails(
-      context,
-      wallet!,
-      tx,
-    );
+    final isLiquid = context.read<HomeCubit>().state.walletIsLiquidFromTx(tx);
+    final (name, color) = _buildTagDetails(isLiquid, tx);
 
     return Container(
       padding: const EdgeInsets.symmetric(

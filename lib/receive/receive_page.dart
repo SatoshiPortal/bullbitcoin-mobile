@@ -33,6 +33,7 @@ import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
@@ -150,7 +151,7 @@ class _ReceivePageState extends State<ReceivePage> {
           BlocListener<SwapCubit, SwapState>(
             listenWhen: (previous, current) =>
                 previous.updatedWallet != current.updatedWallet,
-            listener: (context, state) {
+            listener: (context, state) async {
               final updatedWallet = state.updatedWallet;
               if (updatedWallet == null) return;
 
@@ -169,6 +170,8 @@ class _ReceivePageState extends State<ReceivePage> {
                       ],
                     ),
                   );
+
+              await Future.delayed(500.ms);
 
               final isTestnet = context.read<NetworkCubit>().state.testnet;
 

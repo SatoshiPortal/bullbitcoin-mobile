@@ -108,6 +108,11 @@ class HomeState with _$HomeState {
     return walletBloc?.state.wallet;
   }
 
+  bool walletIsLiquidFromTx(Transaction tx) {
+    final wallet = getWalletFromTx(tx);
+    return wallet?.baseWalletType == BaseWalletType.Liquid;
+  }
+
   WalletBloc? getWalletBlocById(String id) {
     // final walletIdx = wallets!.indexWhere((w) => w.id == id);
     // if (walletIdx == -1) return null;
