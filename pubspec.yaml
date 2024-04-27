@@ -10,13 +10,12 @@ dependencies:
   flutter:
     sdk: flutter
 
-  bdk_flutter: 
-      # ^0.31.1-dev
+  bdk_flutter: ^0.31.2-dev
       # ^0.28.3
       # path: ../bdk-flutter
-    git:
-      url: https://github.com/LtbLightning/bdk-flutter
-      ref: pre-compiled-binaries
+    # git:
+    #   url: https://github.com/LtbLightning/bdk-flutter
+    #   ref: pre-compiled-binaries
   cupertino_icons: ^1.0.2
   flutter_bloc: ^8.1.5
   freezed: ^2.4.5
