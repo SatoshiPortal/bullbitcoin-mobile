@@ -28,7 +28,9 @@ class LWKSensitiveCreate {
     required WalletCreate walletCreate,
     // bool isImported,
   }) async {
-    final lwkNetwork = network == BBNetwork.Mainnet ? lwk.Network.mainnet : lwk.Network.testnet;
+    final lwkNetwork = network == BBNetwork.Mainnet
+        ? lwk.Network.mainnet
+        : lwk.Network.testnet;
     final lwk.DescriptorBase descriptor = lwk.DescriptorBase(
       network: lwkNetwork,
       mnemonic: seed.mnemonic,
@@ -71,15 +73,19 @@ class LWKSensitiveCreate {
     );
     */
 
-    final descHashId =
-        createDescriptorHashId(descriptor.ctDescriptor.substring(0, 12), network: network);
+    final descHashId = createDescriptorHashId(
+      descriptor.ctDescriptor.substring(0, 12),
+      network: network,
+    );
     // final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
     // final type = isImported ? BBWalletType.words : BBWalletType.newSeed;
 
     var wallet = Wallet(
       id: descHashId,
-      externalPublicDescriptor: descriptor.ctDescriptor, // TODO: // await external.asString(),
-      internalPublicDescriptor: descriptor.ctDescriptor, // TODO: // await internal.asString(),
+      externalPublicDescriptor:
+          descriptor.ctDescriptor, // TODO: // await external.asString(),
+      internalPublicDescriptor:
+          descriptor.ctDescriptor, // TODO: // await internal.asString(),
       mnemonicFingerprint: seed.mnemonicFingerprint,
       sourceFingerprint: sourceFingerprint!,
       network: network,
@@ -115,8 +121,9 @@ class LWKSensitiveCreate {
     Seed seed,
   ) async {
     try {
-      final network =
-          wallet.network == BBNetwork.Mainnet ? lwk.Network.mainnet : lwk.Network.testnet;
+      final network = wallet.network == BBNetwork.Mainnet
+          ? lwk.Network.mainnet
+          : lwk.Network.testnet;
 
       final appDocDir = await getApplicationDocumentsDirectory();
       final String dbDir = '${appDocDir.path}/db';
@@ -126,7 +133,7 @@ class LWKSensitiveCreate {
         mnemonic: seed.mnemonic,
       );
 
-      final w = lwk.Wallet(
+      final w = await lwk.Wallet.init(
         network: network,
         dbpath: dbDir,
         descriptor: descriptor,

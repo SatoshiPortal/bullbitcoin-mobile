@@ -221,7 +221,8 @@ class _ImportWalletTypeButton extends StatelessWidget {
     final scriptType = wallet.scriptType;
 
     final selected = context.select(
-        (ImportWalletCubit cubit) => cubit.state.isSelected(scriptType));
+      (ImportWalletCubit cubit) => cubit.state.isSelected(scriptType),
+    );
 
     final name = context.select(
       (ImportWalletCubit cubit) => cubit.state.walletName(scriptType),
@@ -264,7 +265,9 @@ class _ImportWalletTypeButton extends StatelessWidget {
                     child: Container(
                       constraints: const BoxConstraints(minHeight: 100),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 16),
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius:
                             const BorderRadius.all(Radius.circular(32.0)),
@@ -409,8 +412,11 @@ class _ImportWalletTypeButton extends StatelessWidget {
 }
 
 class ImportWalletDetailsPopUp extends StatelessWidget {
-  const ImportWalletDetailsPopUp(
-      {super.key, required this.wallet, required this.scriptType});
+  const ImportWalletDetailsPopUp({
+    super.key,
+    required this.wallet,
+    required this.scriptType,
+  });
 
   final Wallet wallet;
   final ScriptType scriptType;
