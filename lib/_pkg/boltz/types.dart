@@ -7,8 +7,10 @@ extension Btcln on BtcLnV1Swap {
     return SwapTx(
       id: id,
       isSubmarine: kind == SwapType.submarine,
-      // network: network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
-      network: BBNetwork.Testnet,
+      network: network == Chain.bitcoinTestnet
+          ? BBNetwork.Testnet
+          : BBNetwork.Mainnet,
+      // network: BBNetwork.Testnet,
       walletType: (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
           ? BaseWalletType.Bitcoin
           : BaseWalletType.Liquid,
@@ -40,7 +42,9 @@ extension Lbtcln on LbtcLnV1Swap {
       id: id,
       isSubmarine: kind == SwapType.submarine,
       // network: network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
-      network: BBNetwork.Testnet,
+      network: network == Chain.liquidTestnet
+          ? BBNetwork.Testnet
+          : BBNetwork.Mainnet,
       walletType: (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
           ? BaseWalletType.Bitcoin
           : BaseWalletType.Liquid,
@@ -79,8 +83,9 @@ extension SwapExt on SwapTx {
       scriptAddress: tx.scriptAddress,
       electrumUrl: tx.electrumUrl.replaceAll('ssl://', ''),
       boltzUrl: tx.boltzUrl,
-      kind: SwapType.reverse,
-      network: network == BBNetwork.Testnet ? Chain.bitcoinTestnet : Chain.bitcoin,
+      kind: tx.isSubmarine ? SwapType.submarine : SwapType.reverse,
+      network:
+          network == BBNetwork.Testnet ? Chain.bitcoinTestnet : Chain.bitcoin,
       keys: KeyPair(
         secretKey: sensitive.secretKey,
         publicKey: sensitive.publicKey,
@@ -103,8 +108,9 @@ extension SwapExt on SwapTx {
       scriptAddress: tx.scriptAddress,
       electrumUrl: tx.electrumUrl.replaceAll('ssl://', ''),
       boltzUrl: tx.boltzUrl,
-      kind: SwapType.reverse,
-      network: network == BBNetwork.Testnet ? Chain.liquidTestnet : Chain.liquid,
+      kind: tx.isSubmarine ? SwapType.submarine : SwapType.reverse,
+      network:
+          network == BBNetwork.Testnet ? Chain.liquidTestnet : Chain.liquid,
       keys: KeyPair(
         secretKey: sensitive.secretKey,
         publicKey: sensitive.publicKey,
