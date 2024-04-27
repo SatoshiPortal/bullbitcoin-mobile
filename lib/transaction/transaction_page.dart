@@ -38,10 +38,10 @@ class TxPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final home = locator<HomeCubit>();
+    // final home = context.read<HomeCubit>();
     // final wallet = home.state.selectedWalletCubit!;
-    final wallet = tx.wallet!;
-    final walletBloc = home.state.getWalletBloc(wallet);
+    // final wallet = ;
+    final walletBloc = context.read<HomeCubit>().state.getWalletBlocFromTx(tx);
     if (walletBloc == null) {
       context.pop();
       return const SizedBox.shrink();
@@ -100,7 +100,8 @@ class _TxAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = context.select((TransactionCubit cubit) => cubit.state.tx.label ?? '');
+    final label =
+        context.select((TransactionCubit cubit) => cubit.state.tx.label ?? '');
 
     return BBAppBar(
       text: label.isNotEmpty ? label : 'Transaction',
@@ -179,23 +180,29 @@ class _TxDetails extends StatelessWidget {
 
     // final toAddresses = tx.outAddresses ?? [];
 
-    final err = context.select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
+    final err = context
+        .select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
 
     final txid = tx.txid;
     final amt = tx.getAmount().abs();
     final isReceived = tx.isReceived();
     final fees = tx.fee ?? 0;
     final amtStr = context.select(
-      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(amt, removeText: true),
+      (CurrencyCubit cubit) =>
+          cubit.state.getAmountInUnits(amt, removeText: true),
     );
     final feeStr = context.select(
-      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(fees, removeText: true),
+      (CurrencyCubit cubit) =>
+          cubit.state.getAmountInUnits(fees, removeText: true),
     );
     final units = context.select(
-      (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: tx.wallet?.isLiquid() ?? false),
+      (CurrencyCubit cubit) =>
+          cubit.state.getUnitString(isLiquid: tx.wallet?.isLiquid() ?? false),
     );
     final status = tx.timestamp == 0 ? 'Pending' : 'Confirmed';
-    final time = tx.timestamp == 0 ? 'Waiting for confirmations' : timeago.format(tx.getDateTime());
+    final time = tx.timestamp == 0
+        ? 'Waiting for confirmations'
+        : timeago.format(tx.getDateTime());
     final broadcastTime = tx.getBroadcastDateTime();
 
     final recipients = tx.outAddrs;
@@ -259,13 +266,15 @@ class _TxDetails extends StatelessWidget {
             const Gap(4),
             InkWell(
               onTap: () {
-                final url = context.read<NetworkCubit>().state.explorerTxUrl(txid);
+                final url =
+                    context.read<NetworkCubit>().state.explorerTxUrl(txid);
                 locator<Launcher>().launchApp(url);
               },
               child: BBText.body(txid, isBlue: true),
             ),
             const Gap(24),
-            if (recipients.isNotEmpty && recipientAddress.address.isNotEmpty) ...[
+            if (recipients.isNotEmpty &&
+                recipientAddress.address.isNotEmpty) ...[
               const BBText.title('Recipient Bitcoin Address'),
               // const Gap(4),
               InkWell(
@@ -355,8 +364,9 @@ class _SwapDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
-    final status =
-        context.select((TransactionCubit cubit) => cubit.state.tx.swapTx?.status?.status);
+    final status = context.select(
+      (TransactionCubit cubit) => cubit.state.tx.swapTx?.status?.status,
+    );
     final statusStr = status?.toString() ?? '';
     // final showQr = status?.showQR ?? true; // may not be required
 
@@ -366,15 +376,17 @@ class _SwapDetails extends StatelessWidget {
     final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
     final amt = swap.outAmount;
-    final amount =
-        context.select((CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true));
+    final amount = context.select(
+      (CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true),
+    );
     final isReceive = !swap.isSubmarine;
 
     final date = tx.getDateTimeStr();
     final id = swap.id;
     final fees = swap.totalFees() ?? 0;
-    final feesAmount =
-        context.select((CurrencyCubit x) => x.state.getAmountInUnits(fees, removeText: true));
+    final feesAmount = context.select(
+      (CurrencyCubit x) => x.state.getAmountInUnits(fees, removeText: true),
+    );
     // final invoice = swap.invoice;
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),

@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 
 class WatchTxsEvent {}
 
@@ -9,10 +8,10 @@ class InitializeSwapWatcher extends WatchTxsEvent {
   final bool isTestnet;
 }
 
-class WatchWalletTxs extends WatchTxsEvent {
-  WatchWalletTxs({required this.wallet});
+class WatchWallets extends WatchTxsEvent {
+  WatchWallets({required this.isTestnet});
 
-  final Wallet wallet;
+  final bool isTestnet;
 }
 
 class ClearAlerts extends WatchTxsEvent {}

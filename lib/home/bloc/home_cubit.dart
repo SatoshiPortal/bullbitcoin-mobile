@@ -30,6 +30,8 @@ class HomeCubit extends Cubit<HomeState> {
     final blocs = state.createWalletBlocs(wallets);
     await Future.delayed(const Duration(milliseconds: 300));
 
+    print('Wallets: $wallets');
+
     emit(
       state.copyWith(
         // wallets: wallets,
@@ -144,8 +146,11 @@ class HomeCubit extends Cubit<HomeState> {
   void removeWallet(WalletBloc walletBloc) {
     // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
     // wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
-    final walletBlocs = state.walletBlocs != null ? state.walletBlocs!.toList() : <WalletBloc>[];
-    walletBlocs.removeWhere((wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id);
+    final walletBlocs = state.walletBlocs != null
+        ? state.walletBlocs!.toList()
+        : <WalletBloc>[];
+    walletBlocs.removeWhere(
+        (wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id);
 
     emit(
       state.copyWith(

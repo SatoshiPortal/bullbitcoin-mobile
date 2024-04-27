@@ -96,7 +96,8 @@ class _ScreenState extends State<_Screen> {
     if (loading) return const Scaffold(body: SizedBox.shrink());
 
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final walletBlocs = context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+    final walletBlocs = context
+        .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
 
     if (walletBlocs.isEmpty) {
       final isTestnet = network == BBNetwork.Testnet;
@@ -163,7 +164,11 @@ class _ScreenState extends State<_Screen> {
 }
 
 class CardsList extends StatelessWidget {
-  const CardsList({super.key, required this.walletBlocs, required this.onChanged});
+  const CardsList({
+    super.key,
+    required this.walletBlocs,
+    required this.onChanged,
+  });
 
   final List<WalletBloc> walletBlocs;
   final Function(int) onChanged;
@@ -274,19 +279,25 @@ class CardItem extends StatelessWidget {
     final (color, _) = WalletCardDetails.cardDetails(context, wallet);
 
     final name = context.select((WalletBloc x) => x.state.wallet?.name);
-    final fingerprint = context.select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
-    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeStr());
+    final fingerprint = context
+        .select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
+    final walletStr =
+        context.select((WalletBloc x) => x.state.wallet?.getWalletTypeStr());
 
     final sats = context.select((WalletBloc x) => x.state.balanceSats());
 
-    final balance =
-        context.select((CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true));
-    final unit =
-        context.select((CurrencyCubit x) => x.state.getUnitString(isLiquid: wallet.isLiquid()));
+    final balance = context.select(
+      (CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true),
+    );
+    final unit = context.select(
+      (CurrencyCubit x) => x.state.getUnitString(isLiquid: wallet.isLiquid()),
+    );
 
-    final fiatCurrency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
+    final fiatCurrency =
+        context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
 
-    final fiatAmt = context.select((NetworkCubit x) => x.state.calculatePrice(sats, fiatCurrency));
+    final fiatAmt = context
+        .select((NetworkCubit x) => x.state.calculatePrice(sats, fiatCurrency));
 
     // return const SizedBox(
     //   height: 125,
@@ -443,9 +454,13 @@ extension O on Object? {
 }
 
 class WalletTag extends StatelessWidget {
-  const WalletTag({super.key, required this.wallet, required this.tx});
+  const WalletTag({
+    super.key,
+    // required this.wallet,
+    required this.tx,
+  });
 
-  final Wallet wallet;
+  // final Wallet wallet;
   final Transaction tx;
 
   static (String, Color) _buildTagDetails(
@@ -476,7 +491,12 @@ class WalletTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (name, color) = _buildTagDetails(context, wallet, tx);
+    final wallet = context.read<HomeCubit>().state.getWalletFromTx(tx);
+    final (name, color) = _buildTagDetails(
+      context,
+      wallet!,
+      tx,
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -504,7 +524,8 @@ class HomeTopBar2 extends StatelessWidget {
     // final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     // final totalSats = context.select((HomeCubit _) => _.state.totalBalanceSats(network));
 
-    final currency = context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+    final currency =
+        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
     // final fiatCurrency = context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
 
     // final fiatAmt =
@@ -547,7 +568,9 @@ class HomeTopBar2 extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       BBText.bodySmall(
-                        currency.price.toString() + ' ' + currency.shortName.toUpperCase(),
+                        currency.price.toString() +
+                            ' ' +
+                            currency.shortName.toUpperCase(),
                         // fontSize: 18,
                       ),
                       // const Gap(4),
@@ -699,8 +722,9 @@ class ScanButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final darkMode =
-        context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
+    final darkMode = context.select(
+      (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
+    );
 
     final bgColour = darkMode ? context.colour.background : NewColours.offWhite;
 
@@ -740,7 +764,8 @@ class HomeLoadingTxsIndicator extends StatefulWidget {
   const HomeLoadingTxsIndicator({super.key});
 
   @override
-  State<HomeLoadingTxsIndicator> createState() => _HomeLoadingTxsIndicatorState();
+  State<HomeLoadingTxsIndicator> createState() =>
+      _HomeLoadingTxsIndicatorState();
 }
 
 class _HomeLoadingTxsIndicatorState extends State<HomeLoadingTxsIndicator> {
@@ -750,14 +775,16 @@ class _HomeLoadingTxsIndicatorState extends State<HomeLoadingTxsIndicator> {
   @override
   Widget build(BuildContext context) {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final walletBlocs = context.select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+    final walletBlocs = context
+        .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
 
     return MultiBlocListener(
       listeners: [
         for (final walletBloc in walletBlocs)
           BlocListener<WalletBloc, WalletState>(
             bloc: walletBloc,
-            listenWhen: (previous, current) => previous.loading() != current.loading(),
+            listenWhen: (previous, current) =>
+                previous.loading() != current.loading(),
             listener: (context, state) {
               if (state.loading())
                 loadingMap[state.wallet!.id] = true;
@@ -899,7 +926,8 @@ class HomeWarnings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final warnings = context.select((HomeCubit x) => x.state.homeWarnings(network));
+    final warnings =
+        context.select((HomeCubit x) => x.state.homeWarnings(network));
     return Column(
       children: [
         for (final w in warnings)
