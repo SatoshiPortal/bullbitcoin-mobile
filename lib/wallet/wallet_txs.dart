@@ -1,8 +1,12 @@
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +27,10 @@ class WalletTxList extends StatelessWidget {
     // final loadingBal = context.select((WalletBloc x) => x.state.loadingBalance);
     final loading = context.select((WalletBloc x) => x.state.loading());
 
-    final confirmedTXs = context.select((WalletBloc x) => x.state.wallet?.getConfirmedTxs() ?? []);
-    final pendingTXs = context.select((WalletBloc x) => x.state.wallet?.getPendingTxs() ?? []);
+    final confirmedTXs = context
+        .select((WalletBloc x) => x.state.wallet?.getConfirmedTxs() ?? []);
+    final pendingTXs =
+        context.select((WalletBloc x) => x.state.wallet?.getPendingTxs() ?? []);
     final zeroPending = pendingTXs.isEmpty;
 
     if (loading && confirmedTXs.isEmpty && pendingTXs.isEmpty) {
@@ -49,10 +55,30 @@ class WalletTxList extends StatelessWidget {
       return TopLeft(
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: 48.0,
+            horizontal: 32.0,
             vertical: 24,
           ),
-          child: const BBText.titleLarge('No Transaction yet').animate(delay: 300.ms).fadeIn(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const BBText.titleLarge('No Transactions yet')
+                  .animate(delay: 300.ms)
+                  .fadeIn(),
+              BBButton.text(
+                label: 'Sync transactions',
+                fontSize: 11,
+                onPressed: () {
+                  final network =
+                      context.read<NetworkCubit>().state.getBBNetwork();
+                  final wallets = context
+                      .read<HomeCubit>()
+                      .state
+                      .walletBlocsFromNetwork(network);
+                  for (final wallet in wallets) wallet.add(SyncWallet());
+                },
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -82,7 +108,10 @@ class WalletTxList extends StatelessWidget {
           ],
           if (confirmedTXs.isNotEmpty) ...[
             if (!zeroPending)
-              const BBText.titleLarge('    Confirmed Transactions', isBold: true)
+              const BBText.titleLarge(
+                '    Confirmed Transactions',
+                isBold: true,
+              )
             else
               const BBText.titleLarge('    Transactions', isBold: true),
             const Gap(8),
@@ -179,7 +208,8 @@ class BackupAlertBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _ = context.select((WalletBloc x) => x.state.wallet);
-    final backupTested = context.select((WalletBloc x) => x.state.wallet?.backupTested ?? true);
+    final backupTested =
+        context.select((WalletBloc x) => x.state.wallet?.backupTested ?? true);
 
     if (backupTested) return const SizedBox.shrink();
 

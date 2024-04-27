@@ -13,7 +13,7 @@ import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
-import 'package:bb_mobile/swap/received.dart';
+import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/details.dart';

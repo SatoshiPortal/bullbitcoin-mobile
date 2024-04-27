@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -132,6 +133,19 @@ class NoTxs extends StatelessWidget {
             const BBText.titleLarge('No Transactions yet')
                 .animate(delay: 300.ms)
                 .fadeIn(),
+            BBButton.text(
+              label: 'Sync transactions',
+              fontSize: 11,
+              onPressed: () {
+                final network =
+                    context.read<NetworkCubit>().state.getBBNetwork();
+                final wallets = context
+                    .read<HomeCubit>()
+                    .state
+                    .walletBlocsFromNetwork(network);
+                for (final wallet in wallets) wallet.add(SyncWallet());
+              },
+            ),
             const Gap(16),
             const HomeLoadingTxsIndicator(),
           ],
@@ -186,9 +200,26 @@ class _TxList extends StatelessWidget {
           padding: const EdgeInsets.symmetric(
             horizontal: 48.0,
           ),
-          child: const BBText.titleLarge('No Transactions yet')
-              .animate(delay: 300.ms)
-              .fadeIn(),
+          child: Column(
+            children: [
+              const BBText.titleLarge('No Transactions yet')
+                  .animate(delay: 300.ms)
+                  .fadeIn(),
+              BBButton.text(
+                label: 'Sync transactions',
+                fontSize: 11,
+                onPressed: () {
+                  final network =
+                      context.read<NetworkCubit>().state.getBBNetwork();
+                  final wallets = context
+                      .read<HomeCubit>()
+                      .state
+                      .walletBlocsFromNetwork(network);
+                  for (final wallet in wallets) wallet.add(SyncWallet());
+                },
+              ),
+            ],
+          ),
         ),
       );
 

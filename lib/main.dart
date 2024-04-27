@@ -14,7 +14,7 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_state.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/received.dart';
+import 'package:bb_mobile/swap/listeners.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,7 +68,8 @@ class BullBitcoinWalletApp extends StatelessWidget {
         ],
         child: BlocListener<SettingsCubit, SettingsState>(
           listener: (context, state) {
-            if (state.language != localizationDelegate.currentLocale.languageCode)
+            if (state.language !=
+                localizationDelegate.currentLocale.languageCode)
               localizationDelegate.changeLocale(Locale(state.language ?? 'en'));
           },
           child: DeepLinker(
@@ -138,7 +139,8 @@ class AppLifecycleOverlay extends StatefulWidget {
   State<AppLifecycleOverlay> createState() => _AppLifecycleOverlayState();
 }
 
-class _AppLifecycleOverlayState extends State<AppLifecycleOverlay> with WidgetsBindingObserver {
+class _AppLifecycleOverlayState extends State<AppLifecycleOverlay>
+    with WidgetsBindingObserver {
   bool shouldBlur = false;
   final _noScreenshot = NoScreenshot.instance;
 

@@ -86,9 +86,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     }
     emit(state.copyWith(boltzWatcher: boltzWatcher));
 
-    await Future.delayed(2.seconds);
-
-    add(WatchWallets(isTestnet: event.isTestnet));
+    // await Future.delayed(2.seconds);
+    // add(WatchWallets(isTestnet: event.isTestnet));
   }
 
   void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) {
@@ -112,7 +111,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     __watchSwapStatus(
       emit,
       swapTxsToWatch: swapsToWatch.map((_) => _.id).toList(),
-      // walletId: event.isTestnet.id,
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -9,8 +10,11 @@ import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class SwapHistoryButton extends StatelessWidget {
   const SwapHistoryButton({super.key});
@@ -61,7 +65,10 @@ class SwapTxList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const BBHeader.popUpCenteredText(text: 'Lightning Invoices', isLeft: true),
+          const BBHeader.popUpCenteredText(
+            text: 'Lightning Invoices',
+            isLeft: true,
+          ),
           const Gap(16),
           for (final tx in txs.reversed.toList()) SwapTxItem(tx: tx),
           // ListView.builder(
@@ -147,8 +154,10 @@ class _InvoiceQRPopup extends StatelessWidget {
     final idx = tx.keyIndex?.toString() ?? '0';
     final status = swapTx.status?.toString() ?? '';
     final totalFees = swapTx.totalFees() ?? 0;
-    final fees =
-        context.select((CurrencyCubit x) => x.state.getAmountInUnits(totalFees, removeText: true));
+    final fees = context.select(
+      (CurrencyCubit x) =>
+          x.state.getAmountInUnits(totalFees, removeText: true),
+    );
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),
     );
@@ -181,7 +190,12 @@ class _InvoiceQRPopup extends StatelessWidget {
             ],
           ),
           const Gap(24),
-          Center(child: SizedBox(width: 250, child: ReceiveQRDisplay(address: swapTx.invoice))),
+          Center(
+            child: SizedBox(
+              width: 250,
+              child: ReceiveQRDisplay(address: swapTx.invoice),
+            ),
+          ),
           const Gap(16),
           ReceiveDisplayAddress(addressQr: swapTx.invoice, fontSize: 9),
           const Gap(24),
@@ -217,5 +231,78 @@ class ClaimScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Placeholder();
+  }
+}
+
+class AlertUI extends StatelessWidget {
+  const AlertUI({required this.text, this.onTap});
+
+  final String text;
+  final Function? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(16),
+      color: Colors.green,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(FontAwesomeIcons.circleCheck),
+          const Gap(8),
+          BBText.body(text),
+          const Spacer(),
+          if (onTap != null)
+            BBButton.text(
+              label: 'View',
+              onPressed: onTap!,
+            ),
+          const Gap(8),
+        ],
+      ),
+    );
+  }
+}
+
+class ReceiveSwapPaidSuccessPage extends StatelessWidget {
+  const ReceiveSwapPaidSuccessPage({super.key, required this.tx});
+
+  final Transaction tx;
+
+  @override
+  Widget build(BuildContext context) {
+    final amt = tx.getAmount();
+    final amtStr =
+        context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
+    return Scaffold(
+      appBar: AppBar(flexibleSpace: const BBAppBar(text: 'Swap Received')),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const BBText.body('Payment received'),
+          const Gap(16),
+          const Center(
+            child: SizedBox(
+              height: 200,
+              width: 200,
+              child: Icon(
+                FontAwesomeIcons.circleCheck,
+                color: Colors.green,
+              ),
+            ),
+          ).animate().scale(),
+          const Gap(16),
+          BBText.body(amtStr),
+          const Gap(40),
+          BBButton.big(
+            label: 'View Transaction',
+            onPressed: () {
+              context.push('/tx', extra: tx);
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
