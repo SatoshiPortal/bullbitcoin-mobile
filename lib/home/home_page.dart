@@ -117,13 +117,23 @@ class _ScreenState extends State<_Screen> {
       );
     }
 
+    final warningsSize =
+        context.select((HomeCubit x) => x.state.homeWarnings(network)).length *
+            40.0;
+
     final h = _calculateHeight(walletBlocs.length);
 
     return Scaffold(
       appBar: _buildAppBar(context),
       body: Stack(
         children: [
-          TopCenter(
+          const TopCenter(
+            child: HomeWarnings(),
+          ),
+          PositionedDirectional(
+            top: warningsSize,
+            start: 0,
+            end: 0,
             child: SizedBox(
               height: 310,
               child: CardsList(
@@ -136,7 +146,7 @@ class _ScreenState extends State<_Screen> {
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                height: h,
+                height: h + warningsSize,
                 // height: 310,
               ),
               Expanded(
@@ -924,12 +934,13 @@ class HomeWarnings extends StatelessWidget {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final warnings =
         context.select((HomeCubit x) => x.state.homeWarnings(network));
+
     return Column(
       children: [
         for (final w in warnings)
           WarningBanner(
             onTap: () {
-              // final bloc = w.walletBloc;
+              context.push('/wallet-settings', extra: w.walletBloc);
             },
             info: w.info,
           ),
