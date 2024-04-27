@@ -11,6 +11,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 // import 'package:bb_mobile/seeds/seeds_page.dart';
 import 'package:bb_mobile/send/send_page.dart';
+import 'package:bb_mobile/settings/bitcoin_settings_page.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/swap/received.dart';
@@ -86,6 +87,12 @@ final GoRouter router = GoRouter(
       path: '/settings',
       builder: (context, state) {
         return const SettingsPage();
+      },
+    ),
+    GoRoute(
+      path: '/bitcoin-settings',
+      builder: (context, state) {
+        return const BitcoinSettingsPage();
       },
     ),
     GoRoute(
