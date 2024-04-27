@@ -8,7 +8,6 @@ import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/currency/dropdown.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network/bloc/state.dart';
@@ -16,7 +15,6 @@ import 'package:bb_mobile/network/popup.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/settings/lighting.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
@@ -57,39 +55,26 @@ class _Screen extends StatelessWidget {
             child: Column(
               children: [
                 Gap(8),
-                SettingsCurrencyDropDown(),
-                Gap(8),
-                Units(),
-                Gap(8),
                 TestNetButton(),
                 Gap(8),
                 DefaultRBFToggle(),
                 Gap(8),
+                Units(),
+                Gap(8),
                 SelectFeesButton(fromSettings: true),
+                Gap(8),
+                ElectrumServerButton(),
                 Gap(8),
                 BroadCastButton(),
                 Gap(8),
-                SeedViewButton(),
+                SearchAddressButton(),
                 Gap(8),
                 NewWalletButton(),
                 Gap(8),
-                ChangePin(),
+                ArchivedWalletsButton(),
                 Gap(8),
-                NetworkButton(),
-                Gap(8),
-                LightingButton(),
-                // Gap(8),
-                // SelectHomeLayoutButton(),
+                ReplaceDefaultSeedButton(),
                 Gap(80),
-                CenterLeft(
-                  child: BBText.bodySmall(
-                    'Version $bbVersion',
-                    isBold: true,
-                  ),
-                ),
-                Gap(4),
-                SourceCodeButton(),
-                Gap(24),
               ],
             ),
           ),
@@ -161,13 +146,41 @@ class Units extends StatelessWidget {
   }
 }
 
+class ReplaceDefaultSeedButton extends StatelessWidget {
+  const ReplaceDefaultSeedButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Replace Default Seed',
+      onPressed: () {
+        context.push('/replace-default-seed');
+      },
+    );
+  }
+}
+
+class ArchivedWalletsButton extends StatelessWidget {
+  const ArchivedWalletsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Archived wallets',
+      onPressed: () {
+        context.push('/archived-wallets');
+      },
+    );
+  }
+}
+
 class NewWalletButton extends StatelessWidget {
   const NewWalletButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BBButton.textWithStatusAndRightArrow(
-      label: 'Create / Import Wallet',
+      label: 'Import Bitcoin Wallet',
       onPressed: () {
         context.push('/import');
       },
@@ -234,15 +247,16 @@ class Translate extends StatelessWidget {
   }
 }
 
-class ChangePin extends StatelessWidget {
-  const ChangePin({super.key});
+class SearchAddressButton extends StatelessWidget {
+  const SearchAddressButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BBButton.textWithStatusAndRightArrow(
-      label: 'Change PIN',
+      label: 'Search Address',
       onPressed: () {
-        context.push('/change-pin');
+        context.push('/search-address');
+        // BroadcasePage.openPopUp(context);
       },
     );
   }
@@ -288,20 +302,6 @@ class DefaultRBFToggle extends StatelessWidget {
   }
 }
 
-class LightingButton extends StatelessWidget {
-  const LightingButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BBButton.textWithStatusAndRightArrow(
-      label: 'App Themes',
-      onPressed: () {
-        LightingPopUp.openPopUp(context);
-      },
-    );
-  }
-}
-
 class TestNetButton extends StatelessWidget {
   const TestNetButton({super.key});
 
@@ -335,8 +335,8 @@ class TestNetButton extends StatelessWidget {
   }
 }
 
-class NetworkButton extends StatelessWidget {
-  const NetworkButton({super.key});
+class ElectrumServerButton extends StatelessWidget {
+  const ElectrumServerButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -347,32 +347,11 @@ class NetworkButton extends StatelessWidget {
     return Column(
       children: [
         BBButton.textWithStatusAndRightArrow(
-          label: 'Network settings',
+          label: 'Electrum server',
           onPressed: () {
             NetworkPopup.openPopUp(context);
           },
         ),
-        // InkWell(
-        //   onTap: () {
-        //     NetworkPopup.openPopUp(context);
-        //   },
-        //   child: Row(
-        //     children: [
-        //       BBButton.text(
-        //         onPressed: () {
-        //           NetworkPopup.openPopUp(context);
-        //         },
-        //         label: 'Electrum server',
-        //       ),
-        //       const Gap(6),
-        //       FaIcon(
-        //         FontAwesomeIcons.angleRight,
-        //         size: 14,
-        //         color: context.colour.secondary,
-        //       ),
-        //     ],
-        //   ),
-        // ),
         if (err.isNotEmpty)
           BBText.errorSmall(
             err,

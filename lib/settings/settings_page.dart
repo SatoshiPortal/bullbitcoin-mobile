@@ -107,7 +107,7 @@ class WalletSettingsButton extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Wallet settings',
       onPressed: () {
-        context.push('/wallet-settings');
+        context.push('/core-wallet-settings');
       },
     );
   }
