@@ -29,7 +29,8 @@ class LWKAddress {
 
       final List<Address> addresses = [...wallet.myAddressBook];
 
-      for (var i = 0; i <= addressLastUnused.index; i++) {
+      // for (var i = 0; i <= addressLastUnused.index; i++) {
+      for (var i = 0; i <= 3; i++) {
         final address = await lwkWallet.address(index: i);
         final contain = wallet.myAddressBook.where(
           (element) => element.address == address.confidential,

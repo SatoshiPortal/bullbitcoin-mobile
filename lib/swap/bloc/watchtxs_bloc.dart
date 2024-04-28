@@ -139,19 +139,19 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       if (exists) continue;
       emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
     }
-    // final err = await _swapBoltz.addSwapSubs(
-    //   api: state.boltzWatcher!,
-    //   swapIds: swapTxsToWatch,
-    //   onUpdate: (id, status) {
-    //     __swapStatusUpdated(
-    //       emit,
-    //       swapId: id,
-    //       status: status,
-    //       // walletId: walletId,
-    //     );
-    //   },
-    // );
-    // if (err != null) emit(state.copyWith(errWatchingInvoice: err.toString()));
+    final err = await _swapBoltz.addSwapSubs(
+      api: state.boltzWatcher!,
+      swapIds: swapTxsToWatch,
+      onUpdate: (id, status) {
+        __swapStatusUpdated(
+          emit,
+          swapId: id,
+          status: status,
+          // walletId: walletId,
+        );
+      },
+    );
+    if (err != null) emit(state.copyWith(errWatchingInvoice: err.toString()));
   }
 
   void __swapStatusUpdated(
@@ -218,10 +218,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return null;
     }
 
+    _homeCubit.getWalletsFromStorage();
+
     return null;
   }
 
-  Future __updateWalletTxs(
+  Future<Wallet?> __updateWalletTxs(
     // Wallet wallet,
     SwapTx swapTx,
     WalletBloc walletBloc,
@@ -233,7 +235,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
     if (err != null) {
       emit(state.copyWith(errWatchingInvoice: err.toString()));
-      return;
+      return null;
     }
     final updatedWallet = resp!.wallet;
 
@@ -247,8 +249,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    Future.delayed(20.ms);
-    return;
+    Future.delayed(200.ms);
+    return updatedWallet;
   }
 
   Future<SwapTx?> __claimOrRefundSwap(
@@ -355,10 +357,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         case ReverseSwapActions.settled:
           __swapAlert(swapTx, wallet, emit);
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-          final err =
-              await __mergeSwapIfTxExists(wallet, swapTx, walletBloc, emit);
-          if (err != null) await __closeSwap(swapTx, emit);
+          final w = await __updateWalletTxs(swapTx, walletBloc, emit);
+          if (w == null) return;
+          final err = await __mergeSwapIfTxExists(w, swapTx, walletBloc, emit);
+          if (err == null) await __closeSwap(swapTx, emit);
       }
   }
 }
