@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$HomeState {
-// List<Wallet>? wallets,
+  List<Wallet>? get tempwallets => throw _privateConstructorUsedError;
   List<WalletBloc>? get walletBlocs => throw _privateConstructorUsedError;
   bool get loadingWallets => throw _privateConstructorUsedError;
   String get errLoadingWallets =>
@@ -38,7 +38,8 @@ abstract class $HomeStateCopyWith<$Res> {
       _$HomeStateCopyWithImpl<$Res, HomeState>;
   @useResult
   $Res call(
-      {List<WalletBloc>? walletBlocs,
+      {List<Wallet>? tempwallets,
+      List<WalletBloc>? walletBlocs,
       bool loadingWallets,
       String errLoadingWallets,
       String errDeepLinking,
@@ -58,6 +59,7 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? tempwallets = freezed,
     Object? walletBlocs = freezed,
     Object? loadingWallets = null,
     Object? errLoadingWallets = null,
@@ -65,6 +67,10 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
     Object? moveToIdx = freezed,
   }) {
     return _then(_value.copyWith(
+      tempwallets: freezed == tempwallets
+          ? _value.tempwallets
+          : tempwallets // ignore: cast_nullable_to_non_nullable
+              as List<Wallet>?,
       walletBlocs: freezed == walletBlocs
           ? _value.walletBlocs
           : walletBlocs // ignore: cast_nullable_to_non_nullable
@@ -98,7 +104,8 @@ abstract class _$$HomeStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<WalletBloc>? walletBlocs,
+      {List<Wallet>? tempwallets,
+      List<WalletBloc>? walletBlocs,
       bool loadingWallets,
       String errLoadingWallets,
       String errDeepLinking,
@@ -116,6 +123,7 @@ class __$$HomeStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? tempwallets = freezed,
     Object? walletBlocs = freezed,
     Object? loadingWallets = null,
     Object? errLoadingWallets = null,
@@ -123,6 +131,10 @@ class __$$HomeStateImplCopyWithImpl<$Res>
     Object? moveToIdx = freezed,
   }) {
     return _then(_$HomeStateImpl(
+      tempwallets: freezed == tempwallets
+          ? _value._tempwallets
+          : tempwallets // ignore: cast_nullable_to_non_nullable
+              as List<Wallet>?,
       walletBlocs: freezed == walletBlocs
           ? _value._walletBlocs
           : walletBlocs // ignore: cast_nullable_to_non_nullable
@@ -151,17 +163,27 @@ class __$$HomeStateImplCopyWithImpl<$Res>
 
 class _$HomeStateImpl extends _HomeState {
   const _$HomeStateImpl(
-      {final List<WalletBloc>? walletBlocs,
+      {final List<Wallet>? tempwallets,
+      final List<WalletBloc>? walletBlocs,
       this.loadingWallets = true,
       this.errLoadingWallets = '',
       this.errDeepLinking = '',
       this.moveToIdx})
-      : _walletBlocs = walletBlocs,
+      : _tempwallets = tempwallets,
+        _walletBlocs = walletBlocs,
         super._();
 
-// List<Wallet>? wallets,
+  final List<Wallet>? _tempwallets;
+  @override
+  List<Wallet>? get tempwallets {
+    final value = _tempwallets;
+    if (value == null) return null;
+    if (_tempwallets is EqualUnmodifiableListView) return _tempwallets;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   final List<WalletBloc>? _walletBlocs;
-// List<Wallet>? wallets,
   @override
   List<WalletBloc>? get walletBlocs {
     final value = _walletBlocs;
@@ -189,7 +211,7 @@ class _$HomeStateImpl extends _HomeState {
 
   @override
   String toString() {
-    return 'HomeState(walletBlocs: $walletBlocs, loadingWallets: $loadingWallets, errLoadingWallets: $errLoadingWallets, errDeepLinking: $errDeepLinking, moveToIdx: $moveToIdx)';
+    return 'HomeState(tempwallets: $tempwallets, walletBlocs: $walletBlocs, loadingWallets: $loadingWallets, errLoadingWallets: $errLoadingWallets, errDeepLinking: $errDeepLinking, moveToIdx: $moveToIdx)';
   }
 
   @override
@@ -197,6 +219,8 @@ class _$HomeStateImpl extends _HomeState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$HomeStateImpl &&
+            const DeepCollectionEquality()
+                .equals(other._tempwallets, _tempwallets) &&
             const DeepCollectionEquality()
                 .equals(other._walletBlocs, _walletBlocs) &&
             (identical(other.loadingWallets, loadingWallets) ||
@@ -212,6 +236,7 @@ class _$HomeStateImpl extends _HomeState {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      const DeepCollectionEquality().hash(_tempwallets),
       const DeepCollectionEquality().hash(_walletBlocs),
       loadingWallets,
       errLoadingWallets,
@@ -227,14 +252,17 @@ class _$HomeStateImpl extends _HomeState {
 
 abstract class _HomeState extends HomeState {
   const factory _HomeState(
-      {final List<WalletBloc>? walletBlocs,
+      {final List<Wallet>? tempwallets,
+      final List<WalletBloc>? walletBlocs,
       final bool loadingWallets,
       final String errLoadingWallets,
       final String errDeepLinking,
       final int? moveToIdx}) = _$HomeStateImpl;
   const _HomeState._() : super._();
 
-  @override // List<Wallet>? wallets,
+  @override
+  List<Wallet>? get tempwallets;
+  @override
   List<WalletBloc>? get walletBlocs;
   @override
   bool get loadingWallets;

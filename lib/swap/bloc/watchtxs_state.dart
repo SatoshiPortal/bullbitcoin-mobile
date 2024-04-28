@@ -1,6 +1,5 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:boltz_dart/boltz_dart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'watchtxs_state.freezed.dart';
@@ -11,7 +10,6 @@ class WatchTxsState with _$WatchTxsState {
     @Default('') String errClaimingSwap,
     @Default(false) bool claimingSwap,
     @Default('') String errWatchingInvoice,
-    BoltzApi? boltzWatcher,
     required bool isTestnet,
     @Default([]) List<String> listeningTxs,
     @Default([]) List<String> claimedSwapTxs,

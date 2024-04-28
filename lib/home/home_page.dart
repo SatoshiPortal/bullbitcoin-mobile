@@ -3,13 +3,23 @@ import 'dart:async';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/balance.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+import 'package:bb_mobile/_pkg/wallet/sync.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/home/transactions.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -25,6 +35,52 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+class HomeWalletsSetupListener extends StatelessWidget {
+  const HomeWalletsSetupListener({super.key, required this.child});
+
+  List<WalletBloc> createWalletBlocs(List<Wallet> tempwallets) {
+    final walletCubits = [
+      for (final w in tempwallets)
+        WalletBloc(
+          saveDir: w.getWalletStorageString(),
+          walletSync: locator<WalletSync>(),
+          walletsStorageRepository: locator<WalletsStorageRepository>(),
+          walletBalance: locator<WalletBalance>(),
+          walletAddress: locator<WalletAddress>(),
+          networkCubit: locator<NetworkCubit>(),
+          // swapBloc: locator<WatchTxsBloc>(),
+          networkRepository: locator<NetworkRepository>(),
+          walletsRepository: locator<WalletsRepository>(),
+          walletTransactionn: locator<WalletTx>(),
+          walletCreatee: locator<WalletCreate>(),
+          wallet: w,
+        ),
+    ];
+    return walletCubits;
+  }
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<HomeCubit, HomeState>(
+      listenWhen: (previous, current) =>
+          previous.tempwallets != current.tempwallets,
+      listener: (context, state) {
+        if (state.tempwallets == null || state.tempwallets!.isEmpty) return;
+        // final walletBlocs = createWalletBlocs(state.tempwallets!);
+        context.read<HomeCubit>().updateWalletBlocs(
+              createWalletBlocs(state.tempwallets!),
+            );
+        context.read<HomeCubit>().clearWallets();
+
+        print('Wallets:  ' + state.tempwallets.toString());
+      },
+      child: child,
+    );
+  }
+}
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

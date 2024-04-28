@@ -27,15 +27,16 @@ class HomeCubit extends Cubit<HomeState> {
       return;
     }
 
-    final blocs = state.createWalletBlocs(wallets);
+    // final blocs = state.createWalletBlocs(wallets);
     await Future.delayed(const Duration(milliseconds: 300));
 
-    print('Wallets: $wallets');
+    // print('Wallets: $wallets');
 
     emit(
       state.copyWith(
-        // wallets: wallets,
-        walletBlocs: blocs,
+        tempwallets: wallets,
+        // walletBlocs: blocs,
+        walletBlocs: null,
         loadingWallets: false,
       ),
     );
@@ -45,6 +46,8 @@ class HomeCubit extends Cubit<HomeState> {
     //     fromHome: true,
     //   );
   }
+
+  void clearWallets() => emit(state.copyWith(tempwallets: null));
 
   void updateErrDeepLink(String err) async {
     emit(state.copyWith(errDeepLinking: err));
@@ -63,7 +66,8 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(walletBlocs: walletBlocs));
   }
 
-  // void updateWalletBlocs(List<WalletBloc> blocs) => emit(state.copyWith(walletBlocs: blocs));
+  void updateWalletBlocs(List<WalletBloc> blocs) =>
+      emit(state.copyWith(walletBlocs: blocs));
 
   // void addWallets(List<Wallet> wallets) {
   //   emit(state.copyWith(loadingWallets: true));

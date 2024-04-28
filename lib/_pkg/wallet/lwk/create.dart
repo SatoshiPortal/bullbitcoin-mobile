@@ -6,6 +6,8 @@ import 'package:path_provider/path_provider.dart';
 class LWKCreate {
   Future<(lwk.Wallet?, Err?)> loadPublicLwkWallet(Wallet wallet) async {
     try {
+      // throw 'cool';
+
       final network = wallet.network == BBNetwork.Mainnet
           ? lwk.Network.mainnet
           : lwk.Network.testnet;
@@ -15,11 +17,15 @@ class LWKCreate {
       final descriptor = lwk.Descriptor(
         ctDescriptor: wallet.externalPublicDescriptor,
       );
+
+      print('----load wallet: ' + wallet.id);
       final w = await lwk.Wallet.create(
         network: network,
         dbPath: dbDir,
         descriptor: descriptor,
       );
+
+      print('----loaded wallet: ' + wallet.id);
 
       return (w, null);
     } on Exception catch (e) {

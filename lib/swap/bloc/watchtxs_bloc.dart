@@ -71,21 +71,23 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   final HomeCubit _homeCubit;
 
+  BoltzApi? _boltzWatcher;
+
   void _initializeSwapWatcher(
     InitializeSwapWatcher event,
     Emitter<WatchTxsState> emit,
   ) async {
-    if (state.boltzWatcher != null) return;
+    if (_boltzWatcher != null) return;
 
     emit(state.copyWith(isTestnet: event.isTestnet));
 
-    final (boltzWatcher, err) =
-        await _swapBoltz.initializeBoltzApi(event.isTestnet);
+    final (watcher, err) = await _swapBoltz.initializeBoltzApi(event.isTestnet);
     if (err != null) {
       emit(state.copyWith(errWatchingInvoice: err.message));
       return;
     }
-    emit(state.copyWith(boltzWatcher: boltzWatcher));
+    _boltzWatcher = watcher;
+    // emit(state.copyWith(boltzWatcher: boltzWatcher));
 
     // await Future.delayed(2.seconds);
     // add(WatchWallets(isTestnet: event.isTestnet));
@@ -122,7 +124,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     required List<String> swapTxsToWatch,
   }) async {
     if (swapTxsToWatch.isEmpty) return;
-    if (state.boltzWatcher == null) {
+    if (_boltzWatcher == null) {
       emit(
         state.copyWith(
           errWatchingInvoice:
@@ -140,7 +142,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
     }
     final err = await _swapBoltz.addSwapSubs(
-      api: state.boltzWatcher!,
+      api: _boltzWatcher!,
       swapIds: swapTxsToWatch,
       onUpdate: (id, status) {
         __swapStatusUpdated(
@@ -357,8 +359,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           __swapAlert(swapTx, wallet, emit);
           await __updateWalletTxs(swapTx, walletBloc, emit);
         case ReverseSwapActions.claimable:
-          __swapAlert(swapTx, wallet, emit);
-
           final swap = await __claimOrRefundSwap(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         case ReverseSwapActions.settled:
