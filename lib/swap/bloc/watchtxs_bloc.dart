@@ -227,13 +227,13 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   }
 
   Future __updateWalletTxs(
-    Wallet wallet,
+    // Wallet wallet,
     SwapTx swapTx,
     WalletBloc walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
     final (resp, err) = _walletTx.updateSwapTxs(
-      wallet: wallet,
+      wallet: walletBloc.state.wallet!,
       swapTx: swapTx,
     );
     if (err != null) {
@@ -348,20 +348,19 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     if (!swapTx.isSubmarine)
       switch (swapTx.reverseSwapAction()) {
         case ReverseSwapActions.created:
-          await __updateWalletTxs(wallet, swapTx, walletBloc, emit);
+          await __updateWalletTxs(swapTx, walletBloc, emit);
         case ReverseSwapActions.failed:
-          await __updateWalletTxs(wallet, swapTx, walletBloc, emit);
+          await __updateWalletTxs(swapTx, walletBloc, emit);
           await __closeSwap(swapTx, emit);
         case ReverseSwapActions.paid:
           __swapAlert(swapTx, wallet, emit);
-          await __updateWalletTxs(wallet, swapTx, walletBloc, emit);
+          await __updateWalletTxs(swapTx, walletBloc, emit);
         case ReverseSwapActions.claimable:
           final swap = await __claimOrRefundSwap(swapTx, walletBloc, emit);
-          if (swap != null)
-            await __updateWalletTxs(wallet, swap, walletBloc, emit);
+          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         case ReverseSwapActions.settled:
           __swapAlert(swapTx, wallet, emit);
-          await __updateWalletTxs(wallet, swapTx, walletBloc, emit);
+          await __updateWalletTxs(swapTx, walletBloc, emit);
           final err =
               await __mergeSwapIfTxExists(wallet, swapTx, walletBloc, emit);
           if (err != null) await __closeSwap(swapTx, emit);
