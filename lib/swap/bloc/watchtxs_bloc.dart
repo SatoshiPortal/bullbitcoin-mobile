@@ -93,22 +93,16 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) {
     final walletBlocs = _homeCubit.state.getMainWallets(event.isTestnet);
-
     final swapsToWatch = <SwapTx>[];
-
     for (final walletBloc in walletBlocs) {
       final wallet = walletBloc.state.wallet!;
-
       for (final swapTx in wallet.swapsToProcess())
         add(ProcessSwapTx(walletId: wallet.id, swapTx: swapTx));
-
       swapsToWatch.addAll(wallet.swaps);
     }
-
+    swapsToWatch.removeWhere((_) => _.failed());
     if (swapsToWatch.isEmpty) return;
-
     print('Listening to Swaps: ${swapsToWatch.map((_) => _.id).toList()}');
-
     __watchSwapStatus(
       emit,
       swapTxsToWatch: swapsToWatch.map((_) => _.id).toList(),
@@ -127,6 +121,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // required String walletId,
     required List<String> swapTxsToWatch,
   }) async {
+    if (swapTxsToWatch.isEmpty) return;
     if (state.boltzWatcher == null) {
       emit(
         state.copyWith(
@@ -144,19 +139,19 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       if (exists) continue;
       emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
     }
-    final err = await _swapBoltz.addSwapSubs(
-      api: state.boltzWatcher!,
-      swapIds: swapTxsToWatch,
-      onUpdate: (id, status) {
-        __swapStatusUpdated(
-          emit,
-          swapId: id,
-          status: status,
-          // walletId: walletId,
-        );
-      },
-    );
-    if (err != null) emit(state.copyWith(errWatchingInvoice: err.toString()));
+    // final err = await _swapBoltz.addSwapSubs(
+    //   api: state.boltzWatcher!,
+    //   swapIds: swapTxsToWatch,
+    //   onUpdate: (id, status) {
+    //     __swapStatusUpdated(
+    //       emit,
+    //       swapId: id,
+    //       status: status,
+    //       // walletId: walletId,
+    //     );
+    //   },
+    // );
+    // if (err != null) emit(state.copyWith(errWatchingInvoice: err.toString()));
   }
 
   void __swapStatusUpdated(

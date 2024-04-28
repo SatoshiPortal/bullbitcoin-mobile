@@ -294,7 +294,6 @@ class SwapTx with _$SwapTx {
       paidSubmarine() ||
       settledReverse() ||
       settledSubmarine() ||
-      expiredReverse() ||
       paidReverse();
 
   bool close() => settledReverse() || settledSubmarine() || expiredReverse();
