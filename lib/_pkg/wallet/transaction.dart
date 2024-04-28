@@ -364,6 +364,7 @@ class WalletTx implements IWalletTransactions {
   (({Wallet wallet})?, Err?) updateSwapTxs({
     required SwapTx swapTx,
     required Wallet wallet,
+    bool deleteIfFailed = false,
   }) {
     final swaps = wallet.swaps;
 
@@ -381,14 +382,16 @@ class WalletTx implements IWalletTransactions {
     );
     swapTxs[idx] = updatedSwapTx;
 
-    final swapsToDelete = <SwapTx>[
-      for (final s in swapTxs)
-        if (s.close()) s,
-    ];
+    if (deleteIfFailed) {
+      final swapsToDelete = <SwapTx>[
+        for (final s in swapTxs)
+          if (s.failed()) s,
+      ];
 
-    for (final s in swapsToDelete)
-      if (swapsToDelete.any((_) => _.id == s.id))
-        swapTxs.removeWhere((_) => _.id == s.id);
+      for (final s in swapsToDelete)
+        if (swapsToDelete.any((_) => _.id == s.id))
+          swapTxs.removeWhere((_) => _.id == s.id);
+    }
 
     final updatedWallet = wallet.copyWith(swaps: swapTxs);
 

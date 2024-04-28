@@ -27,28 +27,37 @@ class WalletSync implements IWalletSync {
   @override
   Future<Err?> syncWallet(Wallet wallet) async {
     try {
-      // switch (wallet.baseWalletType) {
-      //   case BaseWalletType.Bitcoin:
-      //     final (blockchain, errNetwork) = _networkRepository.bdkBlockchain;
-      //     if (errNetwork != null) throw errNetwork;
-      //     final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet);
-      //     if (errWallet != null) throw errWallet;
-      //     final (updatedBdkWallet, errSyncing) =
-      //         await _bdkSync.syncWalletOld(bdkWallet: bdkWallet!, blockChain: blockchain!);
-      //     if (errSyncing != null) throw errSyncing;
-      //     final err = _walletsRepository.replaceBdkWallet(wallet, updatedBdkWallet!);
-      //     if (err != null) throw err;
-      //   case BaseWalletType.Liquid:
-      //     final (blockchain, errNetwork) = _networkRepository.liquidUrl;
-      //     if (errNetwork != null) throw errNetwork;
-      //     final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
-      //     if (errWallet != null) throw errWallet;
-      //     final (updatedLiqWallet, errSyncing) =
-      //         await _lwkSync.syncLiquidWalletOld(lwkWallet: liqWallet!, blockChain: blockchain!);
-      //     if (errSyncing != null) throw errSyncing;
-      //     final err = _walletsRepository.replaceLwkWallet(wallet, updatedLiqWallet!);
-      //     if (err != null) throw err;
-      // }
+      switch (wallet.baseWalletType) {
+        case BaseWalletType.Bitcoin:
+          final (blockchain, errNetwork) = _networkRepository.bdkBlockchain;
+          if (errNetwork != null) throw errNetwork;
+          final (bdkWallet, errWallet) =
+              _walletsRepository.getBdkWallet(wallet);
+          if (errWallet != null) throw errWallet;
+          final (updatedBdkWallet, errSyncing) = await _bdkSync.syncWalletOld(
+            bdkWallet: bdkWallet!,
+            blockChain: blockchain!,
+          );
+          if (errSyncing != null) throw errSyncing;
+          final err =
+              _walletsRepository.replaceBdkWallet(wallet, updatedBdkWallet!);
+          if (err != null) throw err;
+        case BaseWalletType.Liquid:
+          final (blockchain, errNetwork) = _networkRepository.liquidUrl;
+          if (errNetwork != null) throw errNetwork;
+          final (liqWallet, errWallet) =
+              _walletsRepository.getLwkWallet(wallet);
+          if (errWallet != null) throw errWallet;
+          final (updatedLiqWallet, errSyncing) =
+              await _lwkSync.syncLiquidWalletOld(
+            lwkWallet: liqWallet!,
+            blockChain: blockchain!,
+          );
+          if (errSyncing != null) throw errSyncing;
+          final err =
+              _walletsRepository.replaceLwkWallet(wallet, updatedLiqWallet!);
+          if (err != null) throw err;
+      }
     } catch (e) {
       return Err(
         e.toString(),

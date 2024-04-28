@@ -130,12 +130,16 @@ class LWKTransactions {
 
     final swapsToDelete = <SwapTx>[
       for (final s in swapTxs)
-        if (s.paidSubmarine() || s.settledReverse() || s.settledSubmarine() || s.expiredReverse())
+        if (s.paidSubmarine() ||
+            s.settledReverse() ||
+            s.settledSubmarine() ||
+            s.expiredReverse())
           s,
     ];
 
     for (final s in swapsToDelete)
-      if (swapsToDelete.any((_) => _.id == s.id)) swapTxs.removeWhere((_) => _.id == s.id);
+      if (swapsToDelete.any((_) => _.id == s.id))
+        swapTxs.removeWhere((_) => _.id == s.id);
 
     final updatedWallet = wallet.copyWith(swaps: swapTxs);
 
@@ -329,15 +333,20 @@ class LWKTransactions {
         final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
 
         Transaction? storedTx;
-        if (storedTxIdx != -1) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
+        if (storedTxIdx != -1)
+          storedTx = storedTxs.elementAtOrNull(storedTxIdx);
         if (idxUnsignedTx != -1) {
-          if (tx.txid == unsignedTxs[idxUnsignedTx].txid) unsignedTxs.removeAt(idxUnsignedTx);
+          if (tx.txid == unsignedTxs[idxUnsignedTx].txid)
+            unsignedTxs.removeAt(idxUnsignedTx);
         }
-        final assetToPick =
-            wallet.network == BBNetwork.Mainnet ? lwk.lBtcAssetId : lwk.lTestAssetId;
+        final assetToPick = wallet.network == BBNetwork.Mainnet
+            ? lwk.lBtcAssetId
+            : lwk.lTestAssetId;
         final balances = tx.balances;
-        final finalBalance =
-            balances.where((e) => e.assetId == assetToPick).map((e) => e.value).first;
+        final finalBalance = balances
+            .where((e) => e.assetId == assetToPick)
+            .map((e) => e.value)
+            .first;
         final txObj = Transaction(
           txid: tx.txid,
           received: tx.kind == 'outgoing' ? 0 : finalBalance,
@@ -397,8 +406,11 @@ class LWKTransactions {
       //   );
       // }
       // final pset = await lwkWallet.build(sats: amount ?? 0, outAddress: address, absFee: feeRate);
-      final pset =
-          await lwkWallet.buildLbtcTx(sats: amount ?? 0, outAddress: address, absFee: feeRate);
+      final pset = await lwkWallet.buildLbtcTx(
+        sats: amount ?? 0,
+        outAddress: address,
+        absFee: feeRate,
+      );
       // pubWallet.sign(network: wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet , pset: pset, mnemonic: mnemonic)
 
       final Transaction tx = Transaction(
@@ -434,7 +446,9 @@ class LWKTransactions {
   }) async {
     try {
       final signedTx = await lwkWallet.signTx(
-        network: wallet.network == BBNetwork.Mainnet ? lwk.Network.mainnet : lwk.Network.testnet,
+        network: wallet.network == BBNetwork.Mainnet
+            ? lwk.Network.mainnet
+            : lwk.Network.testnet,
         pset: pset,
         mnemonic: seed.mnemonic,
       );
@@ -460,7 +474,9 @@ class LWKTransactions {
     try {
       final (blockchain, err) = _networkRepository.liquidUrl;
       if (err != null) throw err;
-      final txid = await lwk.Wallet.broadcastTx(electrumUrl: blockchain!, txBytes: txBytes);
+
+      final txid =
+          await lwk.broadcast(electrumUrl: blockchain!, txBytes: txBytes);
       final newTx = transaction.copyWith(
         txid: txid,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,

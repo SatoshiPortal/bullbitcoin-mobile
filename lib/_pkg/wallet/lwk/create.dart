@@ -15,9 +15,9 @@ class LWKCreate {
       final descriptor = lwk.Descriptor(
         ctDescriptor: wallet.externalPublicDescriptor,
       );
-      final w = await lwk.Wallet.init(
+      final w = await lwk.Wallet.create(
         network: network,
-        dbpath: dbDir,
+        dbPath: dbDir,
         descriptor: descriptor,
       );
 

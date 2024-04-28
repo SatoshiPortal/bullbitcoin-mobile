@@ -299,6 +299,8 @@ class SwapTx with _$SwapTx {
 
   bool close() => settledReverse() || settledSubmarine() || expiredReverse();
 
+  bool failed() => reverseSwapAction() == ReverseSwapActions.failed;
+
   String splitInvoice() =>
       invoice.substring(0, 5) +
       ' .... ' +
@@ -325,6 +327,37 @@ class SwapTx with _$SwapTx {
 
     return '';
   }
+
+  ReverseSwapActions reverseSwapAction() {
+    if (isSubmarine) throw 'Submarine swap cannot be a reverse swap.';
+    final statuss = status?.status;
+
+    if (statuss == null || statuss == SwapStatus.swapCreated)
+      return ReverseSwapActions.created;
+    else if (expiredReverse() ||
+        statuss == SwapStatus.swapExpired ||
+        statuss == SwapStatus.invoiceExpired ||
+        statuss == SwapStatus.swapError ||
+        statuss == SwapStatus.txnFailed ||
+        statuss == SwapStatus.txnLockupFailed)
+      return ReverseSwapActions.failed;
+    else if (claimableReverse())
+      return ReverseSwapActions.claimable;
+    else if (paidReverse())
+      return ReverseSwapActions.paid;
+    else if (settledReverse())
+      return ReverseSwapActions.settled;
+    else
+      return ReverseSwapActions.created;
+  }
+}
+
+enum ReverseSwapActions {
+  created,
+  failed,
+  paid,
+  claimable,
+  settled,
 }
 
 @freezed
