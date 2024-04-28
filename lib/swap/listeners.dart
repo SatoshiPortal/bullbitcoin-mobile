@@ -58,6 +58,15 @@ class SwapAppListener extends StatelessWidget {
               previous.syncWallet != current.syncWallet,
           listener: (context, state) async {
             if (state.syncWallet == null) return;
+            if (state.txPaid == null) {
+              context
+                  .read<HomeCubit>()
+                  .state
+                  .getWalletBloc(state.syncWallet!)
+                  ?.add(SyncWallet());
+              context.read<WatchTxsBloc>().add(ClearAlerts());
+              return;
+            }
 
             final wallet = state.syncWallet!;
             final swap = state.txPaid!;

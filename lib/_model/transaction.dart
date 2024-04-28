@@ -319,12 +319,12 @@ class SwapTx with _$SwapTx {
     if (isSubmarine) {
       if (paidSubmarine()) return 'Sending';
       if (settledSubmarine() || claimableSubmarine()) return 'Sent';
+      return 'Sending';
     } else {
       if (paidReverse()) return 'Receiving';
       if (settledReverse()) return 'Received';
+      return 'Receiving';
     }
-
-    return '';
   }
 
   ReverseSwapActions reverseSwapAction() {

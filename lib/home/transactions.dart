@@ -101,6 +101,7 @@ class _HomeTransactionsState extends State<HomeTransactions> {
               Expanded(
                 child: ListView.builder(
                   itemCount: txs.length,
+                  cacheExtent: 50,
                   itemBuilder: (context, index) {
                     return HomeTxItem2(tx: txs[index]);
                   },

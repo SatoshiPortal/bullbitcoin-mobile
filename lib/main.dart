@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bb_mobile/_pkg/i18n.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
@@ -28,20 +29,28 @@ import 'package:no_screenshot/no_screenshot.dart';
 import 'package:oktoast/oktoast.dart';
 
 Future main({bool fromTest = false}) async {
-  if (!fromTest) WidgetsFlutterBinding.ensureInitialized();
-  await LibLwk.init();
-  await LibBoltz.init();
-  await dotenv.load(isOptional: true);
-  Bloc.observer = BBlocObserver();
-  // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-  await setupLocator(fromTest: fromTest);
-  final delegate = await Localise.getDelegate();
-  runApp(
-    LocalizedApp(
-      delegate,
-      const BullBitcoinWalletApp(),
-    ),
-  );
+  FlutterError.onError = _handleFlutterError;
+
+  runZonedGuarded(() async {
+    if (!fromTest) WidgetsFlutterBinding.ensureInitialized();
+    await LibLwk.init();
+    await LibBoltz.init();
+    print('-------runapp---------');
+    await dotenv.load(isOptional: true);
+    Bloc.observer = BBlocObserver();
+    // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+    await setupLocator(fromTest: fromTest);
+    final delegate = await Localise.getDelegate();
+
+    runApp(
+      LocalizedApp(
+        delegate,
+        const BullBitcoinWalletApp(),
+      ),
+    );
+  }, (error, stack) {
+    log('\n\nError: $error \nStack: $stack\n\n');
+  });
 }
 
 class BullBitcoinWalletApp extends StatelessWidget {
@@ -101,8 +110,8 @@ class BullBitcoinWalletApp extends StatelessWidget {
                         DeviceOrientation.portraitUp,
                       ]);
                       if (child == null) return Container();
-                      return SwapAppListener(
-                        child: OKToast(
+                      return OKToast(
+                        child: SwapAppListener(
                           child: GestureDetector(
                             onTap: () {
                               FocusScope.of(context).requestFocus(FocusNode());
@@ -197,4 +206,10 @@ class _AppLifecycleOverlayState extends State<AppLifecycleOverlay>
       ),
     );
   }
+}
+
+void _handleFlutterError(FlutterErrorDetails details) {
+  log(
+    'Flutter Error:' + details.toString(minLevel: DiagnosticLevel.warning),
+  );
 }

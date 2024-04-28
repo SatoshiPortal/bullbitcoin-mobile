@@ -52,6 +52,17 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(errDeepLinking: ''));
   }
 
+  void updateWalletBloc(WalletBloc bloc) {
+    final walletBlocs = state.walletBlocs != null
+        ? state.walletBlocs!.toList()
+        : <WalletBloc>[];
+    final idx = walletBlocs
+        .indexWhere((wB) => wB.state.wallet!.id == bloc.state.wallet!.id);
+    walletBlocs[idx] = bloc;
+
+    emit(state.copyWith(walletBlocs: walletBlocs));
+  }
+
   // void updateWalletBlocs(List<WalletBloc> blocs) => emit(state.copyWith(walletBlocs: blocs));
 
   // void addWallets(List<Wallet> wallets) {

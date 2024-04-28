@@ -9,6 +9,7 @@
             "request": "launch",
             "type": "dart",
             "args": [
+                "--enable-impeller",
                 "-v",
             ]
         },

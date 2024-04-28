@@ -218,7 +218,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return null;
     }
 
-    _homeCubit.getWalletsFromStorage();
+    Future.delayed(200.ms);
+
+    _homeCubit.updateWalletBloc(walletBloc);
+    // _homeCubit.getWalletsFromStorage();
 
     return null;
   }
@@ -337,6 +340,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     ProcessSwapTx event,
     Emitter<WatchTxsState> emit,
   ) async {
+    await Future.delayed(1.seconds);
     final swapTx = event.swapTx;
     final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;
@@ -353,6 +357,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           __swapAlert(swapTx, wallet, emit);
           await __updateWalletTxs(swapTx, walletBloc, emit);
         case ReverseSwapActions.claimable:
+          __swapAlert(swapTx, wallet, emit);
+
           final swap = await __claimOrRefundSwap(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         case ReverseSwapActions.settled:
