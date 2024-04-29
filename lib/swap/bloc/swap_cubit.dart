@@ -86,7 +86,7 @@ class SwapCubit extends Cubit<SwapState> {
         emit(
           state.copyWith(
             errCreatingSwapInv:
-                'Amount should be greater than 50000 and less than 25000000 sats',
+                'Amount should be greater than ${fees.lbtcLimits.minimal} and less than ${fees.lbtcLimits.maximal} sats',
             generatingSwapInv: false,
           ),
         );
@@ -97,7 +97,7 @@ class SwapCubit extends Cubit<SwapState> {
         emit(
           state.copyWith(
             errCreatingSwapInv:
-                'Amount should be greater than 50000 and less than 25000000 sats',
+                'Amount should be greater than ${fees.btcLimits.minimal} and less than ${fees.btcLimits.maximal} sats',
             generatingSwapInv: false,
           ),
         );
