@@ -116,8 +116,18 @@ class Wallet with _$Wallet {
   }
 
   String derivationPathString() {
-    return 'm/${purposePathString()}/${networkPathString()}/${accountPathString()}'
-        .replaceAll('h', "'");
+    if (baseWalletType == BaseWalletType.Bitcoin) {
+      return 'm/${purposePathString()}/${networkPathString()}/${accountPathString()}'
+          .replaceAll('h', "'");
+    } else {
+      if (network == BBNetwork.Testnet) {
+        return 'm/${purposePathString()}/${networkPathString()}/${accountPathString()}'
+            .replaceAll('h', "'");
+      } else {
+        return 'm/${purposePathString()}/1776h/${accountPathString()}'
+            .replaceAll('h', "'");
+      }
+    }
   }
 
   String originString() {
