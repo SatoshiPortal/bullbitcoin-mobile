@@ -142,7 +142,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         ),
       );
 
-      // add(InitializeSwapWatcher(isTestnet: state.isTestnet));
+      add(InitializeSwapWatcher());
       return;
     }
 
