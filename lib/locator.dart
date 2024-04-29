@@ -205,7 +205,8 @@ Future _setupWalletServices() async {
       walletsRepository: locator<WalletsRepository>(),
       networkRepository: locator<NetworkRepository>(),
       walletAddress: locator<WalletAddress>(),
-      walletSensitiveStorageRepository: locator<WalletSensitiveStorageRepository>(),
+      walletSensitiveStorageRepository:
+          locator<WalletSensitiveStorageRepository>(),
       walletUpdate: locator<WalletUpdate>(),
       bdkTransactions: locator<BDKTransactions>(),
       lwkTransactions: locator<LWKTransactions>(),
@@ -216,7 +217,8 @@ Future _setupWalletServices() async {
     ),
   );
 
-  locator.registerSingleton<SwapBoltz>(SwapBoltz(secureStorage: locator<SecureStorage>()));
+  locator.registerSingleton<SwapBoltz>(
+      SwapBoltz(secureStorage: locator<SecureStorage>()));
   locator.registerSingleton<WalletNetwork>(
     WalletNetwork(
       networkRepository: locator<NetworkRepository>(),
@@ -265,7 +267,7 @@ Future _setupBlocs() async {
 
   locator.registerSingleton<WatchTxsBloc>(
     WatchTxsBloc(
-      isTestnet: locator<NetworkCubit>().state.testnet,
+      // isTestnet: locator<NetworkCubit>().state.testnet,
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
       homeCubit: locator<HomeCubit>(),

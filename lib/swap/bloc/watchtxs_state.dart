@@ -10,7 +10,7 @@ class WatchTxsState with _$WatchTxsState {
     @Default('') String errClaimingSwap,
     @Default(false) bool claimingSwap,
     @Default('') String errWatchingInvoice,
-    required bool isTestnet,
+    // required bool isTestnet,
     @Default([]) List<String> listeningTxs,
     @Default([]) List<String> claimedSwapTxs,
     @Default([]) List<String> claimingSwapTxIds,

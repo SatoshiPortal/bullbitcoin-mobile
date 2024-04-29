@@ -47,14 +47,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 ///   - Assign txid to swapTx and and add swap to claimedSwapTxs and update wallet
 class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   WatchTxsBloc({
-    required bool isTestnet,
     required SwapBoltz swapBoltz,
     required WalletTx walletTx,
     required HomeCubit homeCubit,
   })  : _walletTx = walletTx,
         _homeCubit = homeCubit,
         _swapBoltz = swapBoltz,
-        super(WatchTxsState(isTestnet: isTestnet)) {
+        super(const WatchTxsState()) {
     on<InitializeSwapWatcher>(_initializeSwapWatcher);
     on<WatchWallets>(_onWatchWallets);
     on<ClearAlerts>(_onClearAlerts);
@@ -63,7 +62,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // on<SwapStatusUpdate>(_onSwapStatusUpdate);
     // on<DeleteSensitiveSwapData>(_onDeleteSensitiveSwapData);
 
-    add(InitializeSwapWatcher(isTestnet: isTestnet));
+    add(InitializeSwapWatcher());
   }
 
   final SwapBoltz _swapBoltz;
@@ -72,21 +71,30 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   final HomeCubit _homeCubit;
 
   BoltzApi? _boltzWatcher;
+  BoltzApi? _boltzApiTestnet;
 
   void _initializeSwapWatcher(
     InitializeSwapWatcher event,
     Emitter<WatchTxsState> emit,
   ) async {
-    if (_boltzWatcher != null) return;
+    if (_boltzWatcher != null && _boltzApiTestnet != null) return;
 
-    emit(state.copyWith(isTestnet: event.isTestnet));
+    // emit(state.copyWith(isTestnet: event.isTestnet));
 
-    final (watcher, err) = await _swapBoltz.initializeBoltzApi(event.isTestnet);
+    final (watcher, err) = await _swapBoltz.initializeBoltzApi(false);
     if (err != null) {
       emit(state.copyWith(errWatchingInvoice: err.message));
       return;
     }
     _boltzWatcher = watcher;
+
+    final (watcherTestnet, errTestnet) =
+        await _swapBoltz.initializeBoltzApi(true);
+    if (errTestnet != null) {
+      emit(state.copyWith(errWatchingInvoice: errTestnet.message));
+      return;
+    }
+    _boltzApiTestnet = watcherTestnet;
     // emit(state.copyWith(boltzWatcher: boltzWatcher));
 
     // await Future.delayed(2.seconds);
@@ -108,6 +116,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     __watchSwapStatus(
       emit,
       swapTxsToWatch: swapsToWatch.map((_) => _.id).toList(),
+      isTestnet: event.isTestnet,
     );
   }
 
@@ -122,9 +131,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     Emitter<WatchTxsState> emit, {
     // required String walletId,
     required List<String> swapTxsToWatch,
+    required bool isTestnet,
   }) async {
     if (swapTxsToWatch.isEmpty) return;
-    if (_boltzWatcher == null) {
+    if (_boltzWatcher == null && _boltzApiTestnet == null) {
       emit(
         state.copyWith(
           errWatchingInvoice:
@@ -132,7 +142,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         ),
       );
 
-      add(InitializeSwapWatcher(isTestnet: state.isTestnet));
+      // add(InitializeSwapWatcher(isTestnet: state.isTestnet));
       return;
     }
 
@@ -142,7 +152,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
     }
     final err = await _swapBoltz.addSwapSubs(
-      api: _boltzWatcher!,
+      api: isTestnet ? _boltzApiTestnet! : _boltzWatcher!,
       swapIds: swapTxsToWatch,
       onUpdate: (id, status) {
         __swapStatusUpdated(
@@ -335,7 +345,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       state.copyWith(listeningTxs: state.removeListeningTx(swapTx.id)),
     );
     await Future.delayed(1000.ms);
-    add(WatchWallets(isTestnet: state.isTestnet));
+    final isTestnet = swapTx.network == BBNetwork.Testnet;
+    add(WatchWallets(isTestnet: isTestnet));
   }
 
   Future<void> _onProcessSwapTx(

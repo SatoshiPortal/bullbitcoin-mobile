@@ -18,8 +18,8 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$WatchTxsState {
   String get errClaimingSwap => throw _privateConstructorUsedError;
   bool get claimingSwap => throw _privateConstructorUsedError;
-  String get errWatchingInvoice => throw _privateConstructorUsedError;
-  bool get isTestnet => throw _privateConstructorUsedError;
+  String get errWatchingInvoice =>
+      throw _privateConstructorUsedError; // required bool isTestnet,
   List<String> get listeningTxs => throw _privateConstructorUsedError;
   List<String> get claimedSwapTxs => throw _privateConstructorUsedError;
   List<String> get claimingSwapTxIds => throw _privateConstructorUsedError;
@@ -41,7 +41,6 @@ abstract class $WatchTxsStateCopyWith<$Res> {
       {String errClaimingSwap,
       bool claimingSwap,
       String errWatchingInvoice,
-      bool isTestnet,
       List<String> listeningTxs,
       List<String> claimedSwapTxs,
       List<String> claimingSwapTxIds,
@@ -68,7 +67,6 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
     Object? errClaimingSwap = null,
     Object? claimingSwap = null,
     Object? errWatchingInvoice = null,
-    Object? isTestnet = null,
     Object? listeningTxs = null,
     Object? claimedSwapTxs = null,
     Object? claimingSwapTxIds = null,
@@ -88,10 +86,6 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
           ? _value.errWatchingInvoice
           : errWatchingInvoice // ignore: cast_nullable_to_non_nullable
               as String,
-      isTestnet: null == isTestnet
-          ? _value.isTestnet
-          : isTestnet // ignore: cast_nullable_to_non_nullable
-              as bool,
       listeningTxs: null == listeningTxs
           ? _value.listeningTxs
           : listeningTxs // ignore: cast_nullable_to_non_nullable
@@ -152,7 +146,6 @@ abstract class _$$WatchTxsStateImplCopyWith<$Res>
       {String errClaimingSwap,
       bool claimingSwap,
       String errWatchingInvoice,
-      bool isTestnet,
       List<String> listeningTxs,
       List<String> claimedSwapTxs,
       List<String> claimingSwapTxIds,
@@ -179,7 +172,6 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
     Object? errClaimingSwap = null,
     Object? claimingSwap = null,
     Object? errWatchingInvoice = null,
-    Object? isTestnet = null,
     Object? listeningTxs = null,
     Object? claimedSwapTxs = null,
     Object? claimingSwapTxIds = null,
@@ -199,10 +191,6 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
           ? _value.errWatchingInvoice
           : errWatchingInvoice // ignore: cast_nullable_to_non_nullable
               as String,
-      isTestnet: null == isTestnet
-          ? _value.isTestnet
-          : isTestnet // ignore: cast_nullable_to_non_nullable
-              as bool,
       listeningTxs: null == listeningTxs
           ? _value._listeningTxs
           : listeningTxs // ignore: cast_nullable_to_non_nullable
@@ -234,7 +222,6 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
       {this.errClaimingSwap = '',
       this.claimingSwap = false,
       this.errWatchingInvoice = '',
-      required this.isTestnet,
       final List<String> listeningTxs = const [],
       final List<String> claimedSwapTxs = const [],
       final List<String> claimingSwapTxIds = const [],
@@ -254,9 +241,9 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
   @override
   @JsonKey()
   final String errWatchingInvoice;
-  @override
-  final bool isTestnet;
+// required bool isTestnet,
   final List<String> _listeningTxs;
+// required bool isTestnet,
   @override
   @JsonKey()
   List<String> get listeningTxs {
@@ -291,7 +278,7 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
 
   @override
   String toString() {
-    return 'WatchTxsState(errClaimingSwap: $errClaimingSwap, claimingSwap: $claimingSwap, errWatchingInvoice: $errWatchingInvoice, isTestnet: $isTestnet, listeningTxs: $listeningTxs, claimedSwapTxs: $claimedSwapTxs, claimingSwapTxIds: $claimingSwapTxIds, txPaid: $txPaid, syncWallet: $syncWallet)';
+    return 'WatchTxsState(errClaimingSwap: $errClaimingSwap, claimingSwap: $claimingSwap, errWatchingInvoice: $errWatchingInvoice, listeningTxs: $listeningTxs, claimedSwapTxs: $claimedSwapTxs, claimingSwapTxIds: $claimingSwapTxIds, txPaid: $txPaid, syncWallet: $syncWallet)';
   }
 
   @override
@@ -305,8 +292,6 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
                 other.claimingSwap == claimingSwap) &&
             (identical(other.errWatchingInvoice, errWatchingInvoice) ||
                 other.errWatchingInvoice == errWatchingInvoice) &&
-            (identical(other.isTestnet, isTestnet) ||
-                other.isTestnet == isTestnet) &&
             const DeepCollectionEquality()
                 .equals(other._listeningTxs, _listeningTxs) &&
             const DeepCollectionEquality()
@@ -324,7 +309,6 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
       errClaimingSwap,
       claimingSwap,
       errWatchingInvoice,
-      isTestnet,
       const DeepCollectionEquality().hash(_listeningTxs),
       const DeepCollectionEquality().hash(_claimedSwapTxs),
       const DeepCollectionEquality().hash(_claimingSwapTxIds),
@@ -343,7 +327,6 @@ abstract class _WatchTxsState extends WatchTxsState {
       {final String errClaimingSwap,
       final bool claimingSwap,
       final String errWatchingInvoice,
-      required final bool isTestnet,
       final List<String> listeningTxs,
       final List<String> claimedSwapTxs,
       final List<String> claimingSwapTxIds,
@@ -357,9 +340,7 @@ abstract class _WatchTxsState extends WatchTxsState {
   bool get claimingSwap;
   @override
   String get errWatchingInvoice;
-  @override
-  bool get isTestnet;
-  @override
+  @override // required bool isTestnet,
   List<String> get listeningTxs;
   @override
   List<String> get claimedSwapTxs;

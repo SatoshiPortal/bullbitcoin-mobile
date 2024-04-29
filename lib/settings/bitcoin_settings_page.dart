@@ -296,7 +296,7 @@ class TestNetButton extends StatelessWidget {
       listenWhen: (previous, current) => previous.testnet != current.testnet,
       listener: (context, state) {
         context.read<NetworkFeesCubit>().loadFees();
-        context.read<WatchTxsBloc>().add(InitializeSwapWatcher(isTestnet: state.testnet));
+        // context.read<WatchTxsBloc>().add(InitializeSwapWatcher(isTestnet: state.testnet));
       },
       child: Row(
         children: [

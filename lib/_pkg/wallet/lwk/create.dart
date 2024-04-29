@@ -19,6 +19,7 @@ class LWKCreate {
       );
 
       print('----load wallet: ' + wallet.id);
+
       final w = await lwk.Wallet.create(
         network: network,
         dbPath: dbDir,
@@ -28,11 +29,11 @@ class LWKCreate {
       print('----loaded wallet: ' + wallet.id);
 
       return (w, null);
-    } on Exception catch (e) {
+    } catch (e) {
       return (
         null,
         Err(
-          e.message,
+          e.toString(),
           title: 'Error occurred while creating wallet',
           solution: 'Please try again.',
         )
