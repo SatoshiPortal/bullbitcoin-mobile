@@ -280,9 +280,10 @@ class BDKTransactions {
                 script: scriptPubKey,
                 network: bdkNetwork,
               );
+              final addressStr = await addressStruct.asString();
 
               (externalAddress, _) = await walletAddress.addAddressToWallet(
-                address: (null, addressStruct.toString()),
+                address: (null, addressStr),
                 wallet: wallet,
                 spentTxId: tx.txid,
                 kind: AddressKind.external,
@@ -342,9 +343,10 @@ class BDKTransactions {
                 script: scriptPubKey,
                 network: bdkNetwork,
               );
+              final addressStr = await addressStruct.asString();
 
               (changeAddress, _) = await walletAddress.addAddressToWallet(
-                address: (null, addressStruct.toString()),
+                address: (null, addressStr),
                 wallet: wallet,
                 spentTxId: tx.txid,
                 kind: AddressKind.change,
@@ -392,8 +394,10 @@ class BDKTransactions {
                 script: scriptPubKey,
                 network: bdkNetwork,
               );
+              final addressStr = await addressStruct.asString();
+
               (depositAddress, _) = await walletAddress.addAddressToWallet(
-                address: (null, addressStruct.toString()),
+                address: (null, addressStr),
                 wallet: wallet,
                 spentTxId: tx.txid,
                 kind: AddressKind.deposit,

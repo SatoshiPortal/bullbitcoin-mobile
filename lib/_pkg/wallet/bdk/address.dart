@@ -105,8 +105,9 @@ class BDKAddress {
         final address = await bdkWallet.getInternalAddress(
           addressIndex: bdk.AddressIndex.peek(index: i),
         );
+        final addressStr = await address.address.asString();
         final contain = wallet.myAddressBook.where(
-          (element) => element.address == address.address.toString(),
+          (element) => element.address == addressStr,
         );
         if (contain.isEmpty)
           addresses.add(
@@ -120,8 +121,9 @@ class BDKAddress {
         else {
           // migration for existing users so their change index is updated
           // index used to be null
-          final index = wallet.myAddressBook
-              .indexWhere((element) => element.address == address.address.toString());
+          final index = wallet.myAddressBook.indexWhere(
+            (element) => element.address == addressStr,
+          );
           final change = addresses.removeAt(index);
           addresses.add(change.copyWith(index: i));
         }
@@ -160,7 +162,9 @@ class BDKAddress {
       for (final addr in myAddresses) {
         AddressStatus addressStatus = addr.state;
         int balance = 0;
-        final matches = utxos.where((utxo) => utxo.address.address == addr.address).toList();
+        final matches = utxos
+            .where((utxo) => utxo.address.address == addr.address)
+            .toList();
         if (matches.isEmpty) {
           if (addr.state == AddressStatus.active) {
             addressStatus = AddressStatus.used;
@@ -169,7 +173,8 @@ class BDKAddress {
           addressStatus = AddressStatus.active;
           balance = matches.fold(0, (sum, utxo) => sum + utxo.value);
         }
-        updatedAddresses.add(addr.copyWith(state: addressStatus, balance: balance));
+        updatedAddresses
+            .add(addr.copyWith(state: addressStatus, balance: balance));
       }
       final w = wallet.copyWith(
         myAddressBook: updatedAddresses,
