@@ -78,6 +78,14 @@ class HomeCubit extends Cubit<HomeState> {
     walletBlocs[idx] = bloc;
 
     emit(state.copyWith(walletBlocs: walletBlocs));
+
+    updatedNotifier();
+  }
+
+  void updatedNotifier() async {
+    emit(state.copyWith(updated: true));
+    await Future.delayed(const Duration(seconds: 2));
+    emit(state.copyWith(updated: false));
   }
 
   // void addWallets(List<Wallet> wallets) {

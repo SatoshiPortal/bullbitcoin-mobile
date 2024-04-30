@@ -91,7 +91,7 @@ class _ScreenState extends State<_Screen> {
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((HomeCubit x) => x.state.walletBlocs);
+    final _ = context.select((HomeCubit x) => x.state.updated);
     final loading = context.select((HomeCubit x) => x.state.loadingWallets);
     if (loading) return const Scaffold(body: SizedBox.shrink());
 
@@ -934,9 +934,10 @@ class HomeWarnings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final _ = context.select((HomeCubit _) => _.state.updated);
+    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final warnings =
-        context.select((HomeCubit x) => x.state.homeWarnings(network));
+        context.select((HomeCubit _) => _.state.homeWarnings(network));
 
     return Column(
       children: [

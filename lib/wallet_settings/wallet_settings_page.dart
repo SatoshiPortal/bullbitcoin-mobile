@@ -17,6 +17,7 @@ import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/addresses.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
+import 'package:bb_mobile/wallet_settings/listeners.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -39,7 +40,6 @@ class WalletSettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final home = locator<HomeCubit>();
     // final wallet = home.state.selectedWalletCubit!;
     final walletSettings = WalletSettingsCubit(
       wallet: walletBloc.state.wallet!,
@@ -56,27 +56,7 @@ class WalletSettingsPage extends StatelessWidget {
         BlocProvider.value(value: walletBloc),
         BlocProvider.value(value: walletSettings),
       ],
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<WalletSettingsCubit, WalletSettingsState>(
-            listenWhen: (previous, current) => previous.wallet != current.wallet,
-            listener: (context, state) async {
-              if (!state.deleted) {
-              }
-              // home.updateSelectedWallet(walletBloc);
-              else {
-                await home.getWalletsFromStorage();
-                context.pop();
-              }
-            },
-          ),
-          BlocListener<WalletSettingsCubit, WalletSettingsState>(
-            listenWhen: (previous, current) => previous.savedName != current.savedName,
-            listener: (context, state) {
-              if (state.savedName) FocusScope.of(context).requestFocus(FocusNode());
-            },
-          ),
-        ],
+      child: WalletSettingsListeners(
         child: _Screen(
           // openTestBackup: openTestBackup,
           openBackup: openBackup,
@@ -116,7 +96,8 @@ class _ScreenState extends State<_Screen> {
 
   @override
   Widget build(BuildContext context) {
-    final watchOnly = context.select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
+    final watchOnly = context
+        .select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
 
     return Scaffold(
       appBar: AppBar(
@@ -209,7 +190,8 @@ class _WalletNameState extends State<WalletName> {
 
   @override
   Widget build(BuildContext context) {
-    final mainWallet = context.select((WalletBloc x) => x.state.wallet!.mainWallet);
+    final mainWallet =
+        context.select((WalletBloc x) => x.state.wallet!.mainWallet);
     if (mainWallet) return const SizedBox.shrink();
 
     final saving = context.select(
@@ -268,8 +250,11 @@ class WalletType extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final type = context.select((WalletSettingsCubit x) => x.state.wallet.getWalletTypeString());
-    final scriptType = context.select((WalletSettingsCubit x) => x.state.wallet.scriptType);
+    final type = context.select(
+      (WalletSettingsCubit x) => x.state.wallet.getWalletTypeString(),
+    );
+    final scriptType =
+        context.select((WalletSettingsCubit x) => x.state.wallet.scriptType);
     final _ = scriptTypeString(scriptType);
 
     return Column(
@@ -298,7 +283,8 @@ class Balances extends StatelessWidget {
     final amtReceived = wallet.totalReceived();
 
     final inAmt = context.select(
-      (CurrencyCubit x) => x.state.getAmountInUnits(amtReceived, removeText: true),
+      (CurrencyCubit x) =>
+          x.state.getAmountInUnits(amtReceived, removeText: true),
     );
 
     final outAmt = context.select(
@@ -437,7 +423,8 @@ class TestBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTested = context.select((WalletBloc x) => x.state.wallet!.backupTested);
+    final isTested =
+        context.select((WalletBloc x) => x.state.wallet!.backupTested);
 
     // if (isTested) return const SizedBox.shrink();
     return BBButton.textWithStatusAndRightArrow(
@@ -479,7 +466,8 @@ class BackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTested = context.select((WalletBloc x) => x.state.wallet!.backupTested);
+    final isTested =
+        context.select((WalletBloc x) => x.state.wallet!.backupTested);
 
     return BBButton.textWithStatusAndRightArrow(
       onPressed: () async {
@@ -529,7 +517,8 @@ class DeletePopUp extends StatelessWidget {
           BlocProvider.value(value: settings),
         ],
         child: BlocListener<WalletSettingsCubit, WalletSettingsState>(
-          listenWhen: (previous, current) => previous.deleted != current.deleted,
+          listenWhen: (previous, current) =>
+              previous.deleted != current.deleted,
           listener: (context, state) {
             if (state.deleted) {
               // final walletBloc = settings.walletBloc;
@@ -705,7 +694,8 @@ class LabelSettingPopup extends StatelessWidget {
         ],
         child: BlocListener<WalletSettingsCubit, WalletSettingsState>(
           listenWhen: (previous, current) =>
-              previous.exported != current.exported || previous.imported != current.imported,
+              previous.exported != current.exported ||
+              previous.imported != current.imported,
           listener: (context, state) async {
             if (state.exported || state.imported) {
               await Future.delayed(1.seconds);
@@ -721,12 +711,18 @@ class LabelSettingPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final importing = context.select((WalletSettingsCubit x) => x.state.importing);
-    final exporting = context.select((WalletSettingsCubit x) => x.state.exporting);
-    final errImporting = context.select((WalletSettingsCubit x) => x.state.errImporting);
-    final errExporting = context.select((WalletSettingsCubit x) => x.state.errExporting);
-    final imported = context.select((WalletSettingsCubit x) => x.state.imported);
-    final exported = context.select((WalletSettingsCubit x) => x.state.exported);
+    final importing =
+        context.select((WalletSettingsCubit x) => x.state.importing);
+    final exporting =
+        context.select((WalletSettingsCubit x) => x.state.exporting);
+    final errImporting =
+        context.select((WalletSettingsCubit x) => x.state.errImporting);
+    final errExporting =
+        context.select((WalletSettingsCubit x) => x.state.errExporting);
+    final imported =
+        context.select((WalletSettingsCubit x) => x.state.imported);
+    final exported =
+        context.select((WalletSettingsCubit x) => x.state.exported);
 
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -753,7 +749,10 @@ class LabelSettingPopup extends StatelessWidget {
               else if (errImporting.isNotEmpty)
                 return BBText.error(errImporting);
               else if (imported)
-                return const FaIcon(FontAwesomeIcons.circleCheck, color: Colors.green);
+                return const FaIcon(
+                  FontAwesomeIcons.circleCheck,
+                  color: Colors.green,
+                );
               else
                 return BBButton.text(
                   label: 'Import',
@@ -776,7 +775,10 @@ class LabelSettingPopup extends StatelessWidget {
               else if (errExporting.isNotEmpty)
                 return BBText.error(errExporting);
               else if (exported)
-                return const FaIcon(FontAwesomeIcons.circleCheck, color: Colors.green);
+                return const FaIcon(
+                  FontAwesomeIcons.circleCheck,
+                  color: Colors.green,
+                );
               else
                 return BBButton.text(
                   label: 'Export',

@@ -50,33 +50,36 @@ class WarningBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Spacer(),
-        InkWell(
-          borderRadius: BorderRadius.circular(10),
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: context.colour.error.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              children: [
-                FaIcon(
-                  FontAwesomeIcons.triangleExclamation,
-                  color: context.colour.error,
-                  size: 16,
-                ),
-                const Gap(8),
-                BBText.errorSmall(info),
-              ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          const Spacer(),
+          InkWell(
+            borderRadius: BorderRadius.circular(10),
+            onTap: onTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: context.colour.error.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  FaIcon(
+                    FontAwesomeIcons.triangleExclamation,
+                    color: context.colour.error,
+                    size: 16,
+                  ),
+                  const Gap(8),
+                  BBText.errorSmall(info),
+                ],
+              ),
             ),
           ),
-        ),
-        const Spacer(),
-      ],
+          const Spacer(),
+        ],
+      ),
     );
   }
 }

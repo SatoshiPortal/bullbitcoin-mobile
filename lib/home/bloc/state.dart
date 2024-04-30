@@ -17,6 +17,7 @@ class HomeState with _$HomeState {
     // int? lastTestnetWalletIdx,
     // int? lastMainnetWalletIdx,
     @Default('') String errDeepLinking,
+    @Default(false) bool updated,
     int? moveToIdx,
   }) = _HomeState;
   const HomeState._();
@@ -222,21 +223,36 @@ class HomeState with _$HomeState {
     bool backupWarning(WalletBloc wb) => !wb.state.wallet!.backupTested;
 
     final warnings = <({String info, WalletBloc walletBloc})>{};
+    final List<String> backupWalletFngrforBackupWarning = [];
+
     for (final walletBloc in walletBlocsFromNetwork(network)) {
       if (instantBalWarning(walletBloc))
         warnings.add(
           (info: 'Instant wallet balance is high', walletBloc: walletBloc),
         );
-      if (backupWarning(walletBloc))
+      if (backupWarning(walletBloc)) {
+        final fngr = walletBloc.state.wallet!.sourceFingerprint;
+        if (backupWalletFngrforBackupWarning.contains(fngr)) continue;
         warnings.add(
           (
             info: 'Back up your wallet! Tap to test backup.',
             walletBloc: walletBloc
           ),
         );
+        backupWalletFngrforBackupWarning.add(fngr);
+      }
     }
 
     return warnings;
+  }
+
+  WalletBloc? findWalletBlocWithSameFngr(Wallet wallet) {
+    for (final wb in walletBlocs!) {
+      final w = wb.state.wallet!;
+      if (w.id == wallet.id) continue;
+      if (w.sourceFingerprint == wallet.sourceFingerprint) return wb;
+    }
+    return null;
   }
 
   // int? selectedWalletIdx(BBNetwork network) {

@@ -5,6 +5,7 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
+import 'package:bb_mobile/wallet_settings/listeners.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -14,7 +15,11 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class TestBackupPage extends StatelessWidget {
-  const TestBackupPage({super.key, required this.walletBloc, required this.walletSettings});
+  const TestBackupPage({
+    super.key,
+    required this.walletBloc,
+    required this.walletSettings,
+  });
 
   final WalletBloc walletBloc;
   final WalletSettingsCubit walletSettings;
@@ -28,22 +33,24 @@ class TestBackupPage extends StatelessWidget {
         BlocProvider.value(value: walletBloc),
         BlocProvider.value(value: walletSettings),
       ],
-      child: Builder(
-        builder: (context) {
-          return Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              flexibleSpace: BBAppBar(
-                text: 'Test Backup',
-                onBack: () {
-                  context.pop();
-                  context.read<WalletSettingsCubit>().resetBackupTested();
-                },
+      child: TestBackupListener(
+        child: Builder(
+          builder: (context) {
+            return Scaffold(
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                flexibleSpace: BBAppBar(
+                  text: 'Test Backup',
+                  onBack: () {
+                    context.pop();
+                    context.read<WalletSettingsCubit>().resetBackupTested();
+                  },
+                ),
               ),
-            ),
-            body: const TestBackupScreen(),
-          );
-        },
+              body: const TestBackupScreen(),
+            );
+          },
+        ),
       ),
     );
   }
@@ -54,8 +61,10 @@ class TestBackupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mnemonic = context.select((WalletSettingsCubit cubit) => cubit.state.mnemonic);
-    final tested = context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
+    final mnemonic =
+        context.select((WalletSettingsCubit cubit) => cubit.state.mnemonic);
+    final tested =
+        context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
 
     return SingleChildScrollView(
       child: Padding(
@@ -166,7 +175,8 @@ class BackupTestItemWord extends StatelessWidget {
       (WalletSettingsCubit _) => _.state.shuffleElementAt(index),
     );
 
-    final padLeft = (isSelected && actualIdx.toString().length == 2) ? 12.0 : 16.0;
+    final padLeft =
+        (isSelected && actualIdx.toString().length == 2) ? 12.0 : 16.0;
 
     return Expanded(
       child: Container(
@@ -192,7 +202,9 @@ class BackupTestItemWord extends StatelessWidget {
                   border: Border.all(
                     color: context.colour.surface,
                   ),
-                  color: isSelected ? context.colour.primary : context.colour.onBackground,
+                  color: isSelected
+                      ? context.colour.primary
+                      : context.colour.onBackground,
                 ),
                 child: CenterLeft(
                   child: BBText.body(
@@ -230,14 +242,17 @@ class TestBackupPassField extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tested = context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
+    final tested =
+        context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
     if (tested) return const SizedBox.shrink();
 
-    final hasPassphrase = context.select((WalletBloc x) => x.state.wallet!.hasPassphrase());
+    final hasPassphrase =
+        context.select((WalletBloc x) => x.state.wallet!.hasPassphrase());
 
     if (!hasPassphrase) return const SizedBox.shrink();
 
-    final text = context.select((WalletSettingsCubit x) => x.state.testBackupPassword);
+    final text =
+        context.select((WalletSettingsCubit x) => x.state.testBackupPassword);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -266,8 +281,10 @@ class TestBackupConfirmButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final testing = context.select((WalletSettingsCubit cubit) => cubit.state.testingBackup);
-    final tested = context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
+    final testing = context
+        .select((WalletSettingsCubit cubit) => cubit.state.testingBackup);
+    final tested =
+        context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
 
     return Column(
       children: [
@@ -292,7 +309,8 @@ class TestBackupConfirmButton extends StatelessWidget {
                 disabled: testing,
                 loading: testing,
                 filled: true,
-                onPressed: () => context.read<WalletSettingsCubit>().testBackupClicked(),
+                onPressed: () =>
+                    context.read<WalletSettingsCubit>().testBackupClicked(),
                 label: 'Test Backup',
               ),
             ),

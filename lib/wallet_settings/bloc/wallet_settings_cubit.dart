@@ -58,7 +58,8 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     //   );
     //   return;
     // }
-    _walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
+    _walletBloc
+        .add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
 
     emit(
       state.copyWith(
@@ -101,7 +102,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         testMnemonicOrder: [],
         mnemonic: words,
         errTestingBackup: '',
-        password: seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase,
+        password: seed
+            .getPassphraseFromIndex(state.wallet.sourceFingerprint)
+            .passphrase,
         shuffledMnemonic: shuffled,
       ),
     );
@@ -247,7 +250,10 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
     final mne = seed!.mnemonic == words;
     // final pp = seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase;
-    final psd = seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase == password;
+    final psd = seed
+            .getPassphraseFromIndex(state.wallet.sourceFingerprint)
+            .passphrase ==
+        password;
     if (!mne) {
       {
         emit(
@@ -269,7 +275,8 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
 
-    final wallet = state.wallet.copyWith(backupTested: true, lastBackupTested: DateTime.now());
+    final wallet = state.wallet
+        .copyWith(backupTested: true, lastBackupTested: DateTime.now());
 
     // final updateErr = await walletsStorageRepository.updateWallet(
     //   wallet: wallet,
@@ -286,7 +293,10 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     //   return;
     // }
 
-    _walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
+    _walletBloc
+        .add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
+
+    await Future.delayed(100.ms);
 
     emit(
       state.copyWith(
@@ -341,7 +351,8 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       );
       return;
     }
-    final file = File(appDocDir! + '/bullbitcoin_backup/$folder/$fingerprint.json');
+    final file =
+        File(appDocDir! + '/bullbitcoin_backup/$folder/$fingerprint.json');
 
     final (_, errSave) = await _fileStorage.saveToFile(
       file,
@@ -424,7 +435,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
 
     final List<Wallet> networkSpecificWallets = (wallets != null)
-        ? wallets.where((wallet) => wallet.network == state.wallet.network).toList()
+        ? wallets
+            .where((wallet) => wallet.network == state.wallet.network)
+            .toList()
         : [];
     // check if a wallet exists for this seed, if it does we should not delete the seed
     final walletInUse = await WalletUpdate().walletExists(
@@ -504,15 +517,16 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         return;
       }
       final importedTxs = walletLabels.txsFromBip329(importedLabels!);
-      final importedAddresses = walletLabels.addressesFromBip329(importedLabels);
+      final importedAddresses =
+          walletLabels.addressesFromBip329(importedLabels);
       final (updatedAddressWallet, err) =
           await WalletUpdate().updateAddressLabels(wallet, importedAddresses);
       if (err != null) {
         emit(state.copyWith(errImporting: err.toString(), importing: false));
         return;
       }
-      final (updatedWallet, err2) =
-          await WalletUpdate().updateTransactionLabels(updatedAddressWallet!, importedTxs);
+      final (updatedWallet, err2) = await WalletUpdate()
+          .updateTransactionLabels(updatedAddressWallet!, importedTxs);
       if (err2 != null) {
         emit(state.copyWith(errImporting: err2.toString(), importing: false));
         return;

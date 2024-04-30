@@ -25,6 +25,7 @@ mixin _$HomeState {
 // int? lastTestnetWalletIdx,
 // int? lastMainnetWalletIdx,
   String get errDeepLinking => throw _privateConstructorUsedError;
+  bool get updated => throw _privateConstructorUsedError;
   int? get moveToIdx => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -43,6 +44,7 @@ abstract class $HomeStateCopyWith<$Res> {
       bool loadingWallets,
       String errLoadingWallets,
       String errDeepLinking,
+      bool updated,
       int? moveToIdx});
 }
 
@@ -64,6 +66,7 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
     Object? loadingWallets = null,
     Object? errLoadingWallets = null,
     Object? errDeepLinking = null,
+    Object? updated = null,
     Object? moveToIdx = freezed,
   }) {
     return _then(_value.copyWith(
@@ -87,6 +90,10 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
           ? _value.errDeepLinking
           : errDeepLinking // ignore: cast_nullable_to_non_nullable
               as String,
+      updated: null == updated
+          ? _value.updated
+          : updated // ignore: cast_nullable_to_non_nullable
+              as bool,
       moveToIdx: freezed == moveToIdx
           ? _value.moveToIdx
           : moveToIdx // ignore: cast_nullable_to_non_nullable
@@ -109,6 +116,7 @@ abstract class _$$HomeStateImplCopyWith<$Res>
       bool loadingWallets,
       String errLoadingWallets,
       String errDeepLinking,
+      bool updated,
       int? moveToIdx});
 }
 
@@ -128,6 +136,7 @@ class __$$HomeStateImplCopyWithImpl<$Res>
     Object? loadingWallets = null,
     Object? errLoadingWallets = null,
     Object? errDeepLinking = null,
+    Object? updated = null,
     Object? moveToIdx = freezed,
   }) {
     return _then(_$HomeStateImpl(
@@ -151,6 +160,10 @@ class __$$HomeStateImplCopyWithImpl<$Res>
           ? _value.errDeepLinking
           : errDeepLinking // ignore: cast_nullable_to_non_nullable
               as String,
+      updated: null == updated
+          ? _value.updated
+          : updated // ignore: cast_nullable_to_non_nullable
+              as bool,
       moveToIdx: freezed == moveToIdx
           ? _value.moveToIdx
           : moveToIdx // ignore: cast_nullable_to_non_nullable
@@ -168,6 +181,7 @@ class _$HomeStateImpl extends _HomeState {
       this.loadingWallets = true,
       this.errLoadingWallets = '',
       this.errDeepLinking = '',
+      this.updated = false,
       this.moveToIdx})
       : _tempwallets = tempwallets,
         _walletBlocs = walletBlocs,
@@ -207,11 +221,14 @@ class _$HomeStateImpl extends _HomeState {
   @JsonKey()
   final String errDeepLinking;
   @override
+  @JsonKey()
+  final bool updated;
+  @override
   final int? moveToIdx;
 
   @override
   String toString() {
-    return 'HomeState(tempwallets: $tempwallets, walletBlocs: $walletBlocs, loadingWallets: $loadingWallets, errLoadingWallets: $errLoadingWallets, errDeepLinking: $errDeepLinking, moveToIdx: $moveToIdx)';
+    return 'HomeState(tempwallets: $tempwallets, walletBlocs: $walletBlocs, loadingWallets: $loadingWallets, errLoadingWallets: $errLoadingWallets, errDeepLinking: $errDeepLinking, updated: $updated, moveToIdx: $moveToIdx)';
   }
 
   @override
@@ -229,6 +246,7 @@ class _$HomeStateImpl extends _HomeState {
                 other.errLoadingWallets == errLoadingWallets) &&
             (identical(other.errDeepLinking, errDeepLinking) ||
                 other.errDeepLinking == errDeepLinking) &&
+            (identical(other.updated, updated) || other.updated == updated) &&
             (identical(other.moveToIdx, moveToIdx) ||
                 other.moveToIdx == moveToIdx));
   }
@@ -241,6 +259,7 @@ class _$HomeStateImpl extends _HomeState {
       loadingWallets,
       errLoadingWallets,
       errDeepLinking,
+      updated,
       moveToIdx);
 
   @JsonKey(ignore: true)
@@ -257,6 +276,7 @@ abstract class _HomeState extends HomeState {
       final bool loadingWallets,
       final String errLoadingWallets,
       final String errDeepLinking,
+      final bool updated,
       final int? moveToIdx}) = _$HomeStateImpl;
   const _HomeState._() : super._();
 
@@ -273,6 +293,8 @@ abstract class _HomeState extends HomeState {
 // int? lastTestnetWalletIdx,
 // int? lastMainnetWalletIdx,
   String get errDeepLinking;
+  @override
+  bool get updated;
   @override
   int? get moveToIdx;
   @override
