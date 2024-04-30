@@ -200,11 +200,16 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   // }
 
   Future<Err?> __mergeSwapIfTxExists(
-    Wallet wallet,
+    Wallet w,
     SwapTx swapTx,
-    WalletBloc walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
+    await Future.delayed(200.ms);
+
+    final walletBloc = _homeCubit.state.getWalletBlocById(w.id);
+    final wallet = walletBloc?.state.wallet;
+    if (walletBloc == null || wallet == null) return Err('Wallet not found');
+
     final (walletAndTxs, err) = await _walletTx.mergeSwapTxIntoTx(
       wallet: wallet,
       swapTx: swapTx,
@@ -235,6 +240,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       emit(state.copyWith(errWatchingInvoice: errDelete.toString()));
       return null;
     }
+
+    Future.delayed(500.ms);
 
     emit(state.copyWith(syncWallet: updatedWallet));
 
@@ -386,7 +393,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           __swapAlert(swapTx, wallet, emit);
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);
           if (w == null) return;
-          final err = await __mergeSwapIfTxExists(w, swapTx, walletBloc, emit);
+          final err = await __mergeSwapIfTxExists(w, swapTx, emit);
           if (err == null) await __closeSwap(swapTx, emit);
       }
   }

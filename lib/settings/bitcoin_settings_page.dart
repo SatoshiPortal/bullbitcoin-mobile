@@ -13,8 +13,6 @@ import 'package:bb_mobile/network/popup.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -323,7 +321,8 @@ class ElectrumServerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedNetwork = context.select((NetworkCubit _) => _.state.getNetwork());
+    final selectedNetwork =
+        context.select((NetworkCubit _) => _.state.getNetwork());
     if (selectedNetwork == null) return const SizedBox.shrink();
     final err = context.select((NetworkCubit _) => _.state.errLoadingNetworks);
 

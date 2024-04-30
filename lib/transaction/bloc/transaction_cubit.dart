@@ -167,7 +167,7 @@ class TransactionCubit extends Cubit<TransactionState> {
         w!,
         updateTypes: [
           UpdateWalletTypes.transactions,
-          UpdateWalletTypes.addresses
+          UpdateWalletTypes.addresses,
         ],
       ),
     );
@@ -241,8 +241,12 @@ class TransactionCubit extends Cubit<TransactionState> {
     final (pubBdkWallet, errLoading) =
         _walletsRepository.getBdkWallet(wallet.id);
     if (errLoading != null) {
-      emit(state.copyWith(
-          errBuildingTx: errLoading.toString(), buildingTx: false));
+      emit(
+        state.copyWith(
+          errBuildingTx: errLoading.toString(),
+          buildingTx: false,
+        ),
+      );
       return;
     }
 
