@@ -33,6 +33,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required BDKSensitiveCreate bdkSensitiveCreate,
     required LWKSensitiveCreate lwkSensitiveCreate,
     bool mainWallet = false,
+    bool useTestWallet = false,
   })  : _networkCubit = networkCubit,
         _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,
@@ -49,12 +50,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
             mainWallet: mainWallet,
           ),
         ) {
-    const useTestWallet = false;
-
-    // ignore: dead_code
     if (useTestWallet) {
       emit(state.copyWith(words12: [...importW(instantTN1)]));
-      // ignore: dead_code
     } else {
       clearErrors();
       reset();
