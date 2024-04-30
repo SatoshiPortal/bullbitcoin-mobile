@@ -221,6 +221,8 @@ class SwapTx with _$SwapTx {
     String? sha256,
     String? hash160,
     required String redeemScript,
+    String? boltzPubkey,
+    int? locktime,
     required String invoice,
     required int outAmount,
     required String scriptAddress,

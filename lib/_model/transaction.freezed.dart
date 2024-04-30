@@ -643,6 +643,8 @@ mixin _$SwapTx {
   String? get sha256 => throw _privateConstructorUsedError;
   String? get hash160 => throw _privateConstructorUsedError;
   String get redeemScript => throw _privateConstructorUsedError;
+  String? get boltzPubkey => throw _privateConstructorUsedError;
+  int? get locktime => throw _privateConstructorUsedError;
   String get invoice => throw _privateConstructorUsedError;
   int get outAmount => throw _privateConstructorUsedError;
   String get scriptAddress => throw _privateConstructorUsedError;
@@ -677,6 +679,8 @@ abstract class $SwapTxCopyWith<$Res> {
       String? sha256,
       String? hash160,
       String redeemScript,
+      String? boltzPubkey,
+      int? locktime,
       String invoice,
       int outAmount,
       String scriptAddress,
@@ -715,6 +719,8 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? sha256 = freezed,
     Object? hash160 = freezed,
     Object? redeemScript = null,
+    Object? boltzPubkey = freezed,
+    Object? locktime = freezed,
     Object? invoice = null,
     Object? outAmount = null,
     Object? scriptAddress = null,
@@ -771,6 +777,14 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.redeemScript
           : redeemScript // ignore: cast_nullable_to_non_nullable
               as String,
+      boltzPubkey: freezed == boltzPubkey
+          ? _value.boltzPubkey
+          : boltzPubkey // ignore: cast_nullable_to_non_nullable
+              as String?,
+      locktime: freezed == locktime
+          ? _value.locktime
+          : locktime // ignore: cast_nullable_to_non_nullable
+              as int?,
       invoice: null == invoice
           ? _value.invoice
           : invoice // ignore: cast_nullable_to_non_nullable
@@ -846,6 +860,8 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String? sha256,
       String? hash160,
       String redeemScript,
+      String? boltzPubkey,
+      int? locktime,
       String invoice,
       int outAmount,
       String scriptAddress,
@@ -883,6 +899,8 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? sha256 = freezed,
     Object? hash160 = freezed,
     Object? redeemScript = null,
+    Object? boltzPubkey = freezed,
+    Object? locktime = freezed,
     Object? invoice = null,
     Object? outAmount = null,
     Object? scriptAddress = null,
@@ -939,6 +957,14 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.redeemScript
           : redeemScript // ignore: cast_nullable_to_non_nullable
               as String,
+      boltzPubkey: freezed == boltzPubkey
+          ? _value.boltzPubkey
+          : boltzPubkey // ignore: cast_nullable_to_non_nullable
+              as String?,
+      locktime: freezed == locktime
+          ? _value.locktime
+          : locktime // ignore: cast_nullable_to_non_nullable
+              as int?,
       invoice: null == invoice
           ? _value.invoice
           : invoice // ignore: cast_nullable_to_non_nullable
@@ -998,6 +1024,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       this.sha256,
       this.hash160,
       required this.redeemScript,
+      this.boltzPubkey,
+      this.locktime,
       required this.invoice,
       required this.outAmount,
       required this.scriptAddress,
@@ -1036,6 +1064,10 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   @override
   final String redeemScript;
   @override
+  final String? boltzPubkey;
+  @override
+  final int? locktime;
+  @override
   final String invoice;
   @override
   final int outAmount;
@@ -1060,7 +1092,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, walletType: $walletType, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees)';
+    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, walletType: $walletType, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, boltzPubkey: $boltzPubkey, locktime: $locktime, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees)';
   }
 
   @override
@@ -1079,6 +1111,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('sha256', sha256))
       ..add(DiagnosticsProperty('hash160', hash160))
       ..add(DiagnosticsProperty('redeemScript', redeemScript))
+      ..add(DiagnosticsProperty('boltzPubkey', boltzPubkey))
+      ..add(DiagnosticsProperty('locktime', locktime))
       ..add(DiagnosticsProperty('invoice', invoice))
       ..add(DiagnosticsProperty('outAmount', outAmount))
       ..add(DiagnosticsProperty('scriptAddress', scriptAddress))
@@ -1113,6 +1147,10 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
             (identical(other.hash160, hash160) || other.hash160 == hash160) &&
             (identical(other.redeemScript, redeemScript) ||
                 other.redeemScript == redeemScript) &&
+            (identical(other.boltzPubkey, boltzPubkey) ||
+                other.boltzPubkey == boltzPubkey) &&
+            (identical(other.locktime, locktime) ||
+                other.locktime == locktime) &&
             (identical(other.invoice, invoice) || other.invoice == invoice) &&
             (identical(other.outAmount, outAmount) ||
                 other.outAmount == outAmount) &&
@@ -1148,6 +1186,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
         sha256,
         hash160,
         redeemScript,
+        boltzPubkey,
+        locktime,
         invoice,
         outAmount,
         scriptAddress,
@@ -1187,6 +1227,8 @@ abstract class _SwapTx extends SwapTx {
       final String? sha256,
       final String? hash160,
       required final String redeemScript,
+      final String? boltzPubkey,
+      final int? locktime,
       required final String invoice,
       required final int outAmount,
       required final String scriptAddress,
@@ -1223,6 +1265,10 @@ abstract class _SwapTx extends SwapTx {
   String? get hash160;
   @override
   String get redeemScript;
+  @override
+  String? get boltzPubkey;
+  @override
+  int? get locktime;
   @override
   String get invoice;
   @override
