@@ -13,7 +13,9 @@ class BullBitcoinAPI {
 
   final Dio http;
 
-  Future<(Currency?, Err?)> getExchangeRate({required String toCurrency}) async {
+  Future<(Currency?, Err?)> getExchangeRate({
+    required String toCurrency,
+  }) async {
     try {
       final url = 'https://$exchangeapi';
       final resp = await http.post(
@@ -24,7 +26,8 @@ class BullBitcoinAPI {
           'method': 'getRate',
           'params': {
             'from': 'BTC',
-            'to': toCurrency.toUpperCase() == 'INR' || toCurrency.toUpperCase() == 'CRC'
+            'to': toCurrency.toUpperCase() == 'INR' ||
+                    toCurrency.toUpperCase() == 'CRC'
                 ? 'USD'
                 : toCurrency.toUpperCase(),
           },
@@ -45,10 +48,10 @@ class BullBitcoinAPI {
         name: toCurrency,
         shortName: toCurrency,
         price: toCurrency.toUpperCase() == 'INR'
-            ? rateDouble * INR_USD
+            ? double.parse((rateDouble * INR_USD).toStringAsFixed(2))
             : toCurrency.toUpperCase() == 'CRC'
-                ? rateDouble * CRC_USD
-                : rateDouble,
+                ? double.parse((rateDouble * CRC_USD).toStringAsFixed(2))
+                : double.parse(rateDouble.toStringAsFixed(2)),
       );
 
       return (currency, null);
