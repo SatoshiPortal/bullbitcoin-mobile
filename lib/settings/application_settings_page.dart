@@ -41,11 +41,12 @@ class _Screen extends StatelessWidget {
             child: Column(
               children: [
                 Gap(8),
-                LightingButton(),
+                SettingsCurrencyDropDown(),
                 Gap(8),
                 ChangePin(),
                 Gap(8),
-                SettingsCurrencyDropDown(),
+                LightingButton(),
+
                 Gap(8),
                 // TODO: LanguageDropDown(),
                 Gap(80),

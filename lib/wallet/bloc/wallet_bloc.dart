@@ -123,6 +123,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future _syncWallet(SyncWallet event, Emitter<WalletState> emit) async {
     if (state.wallet == null) return;
     if (state.syncing) return;
+
+    final (wallet, _) = await _walletsStorageRepository.readWallet(
+      walletHashId: state.wallet!.id,
+    );
+    if (wallet != null)
+      emit(
+        state.copyWith(
+          wallet: wallet,
+        ),
+      );
+
     emit(
       state.copyWith(
         syncing: true,

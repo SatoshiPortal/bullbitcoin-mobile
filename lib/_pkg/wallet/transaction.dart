@@ -60,7 +60,7 @@ class WalletTx implements IWalletTransactions {
       switch (wallet.baseWalletType) {
         case BaseWalletType.Bitcoin:
           final (bdkWallet, errWallet) =
-              _walletsRepository.getBdkWallet(wallet);
+              _walletsRepository.getBdkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           final (walletWithDepositAddresses, errAddr1) =
               await _bdkAddress.loadAddresses(
@@ -96,7 +96,7 @@ class WalletTx implements IWalletTransactions {
 
         case BaseWalletType.Liquid:
           final (liqWallet, errWallet) =
-              _walletsRepository.getLwkWallet(wallet);
+              _walletsRepository.getLwkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           final (walletWithDepositAddresses, errAddr) =
               await _lwkAddress.loadLiquidAddresses(
@@ -140,7 +140,7 @@ class WalletTx implements IWalletTransactions {
       switch (wallet.baseWalletType) {
         case BaseWalletType.Bitcoin:
           final (bdkWallet, errWallet) =
-              _walletsRepository.getBdkWallet(wallet);
+              _walletsRepository.getBdkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           final (buildResp, err) = await _bdkTransactions.buildTx(
             wallet: wallet,
@@ -183,7 +183,7 @@ class WalletTx implements IWalletTransactions {
 
         case BaseWalletType.Liquid:
           final (liqWallet, errWallet) =
-              _walletsRepository.getLwkWallet(wallet);
+              _walletsRepository.getLwkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           final (buildResp, errBuild) = await _lwkTransactions.buildLiquidTx(
             wallet: wallet,
@@ -319,7 +319,7 @@ class WalletTx implements IWalletTransactions {
 
         case BaseWalletType.Liquid:
           final (liqWallet, errWallet) =
-              _walletsRepository.getLwkWallet(wallet);
+              _walletsRepository.getLwkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           final (walletAndTxid, errBroadcast) =
               await _lwkTransactions.broadcastLiquidTxWithWallet(

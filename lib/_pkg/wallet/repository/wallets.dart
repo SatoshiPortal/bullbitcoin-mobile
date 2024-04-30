@@ -7,17 +7,17 @@ class WalletsRepository {
   final Set<({String id, bdk.Wallet wallet})> _bdkWallets = {};
   final Set<({String id, lwk.Wallet wallet})> _lwkWallets = {};
 
-  (bdk.Wallet?, Err?) getBdkWallet(Wallet wallet, {bool errExpected = false}) {
+  (bdk.Wallet?, Err?) getBdkWallet(String id, {bool errExpected = false}) {
     for (final bdkWallet in _bdkWallets)
-      if (bdkWallet.id == wallet.id) {
+      if (bdkWallet.id == id) {
         return (bdkWallet.wallet, null);
       }
     return (null, Err('Wallet not found', expected: errExpected));
   }
 
-  (lwk.Wallet?, Err?) getLwkWallet(Wallet wallet, {bool errExpected = false}) {
+  (lwk.Wallet?, Err?) getLwkWallet(String id, {bool errExpected = false}) {
     for (final lwkWallet in _lwkWallets)
-      if (lwkWallet.id == wallet.id) return (lwkWallet.wallet, null);
+      if (lwkWallet.id == id) return (lwkWallet.wallet, null);
 
     return (null, Err('Wallet not found', expected: errExpected));
   }

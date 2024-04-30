@@ -91,7 +91,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       return;
     }
     // remove carriage return and newline from file read strings
-    final tx = file!.replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '');
+    final tx =
+        file!.replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '');
     emit(state.copyWith(loadingFile: false, tx: tx));
   }
 
@@ -129,7 +130,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         final wallets = _homeCubit.state.walletBlocs ?? [];
 
         for (final wallet in wallets) {
-          for (final tx in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
+          for (final tx
+              in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
             if (tx.txid == txid && !tx.isReceived()) {
               transaction = tx;
               relatedWallet = wallet;
@@ -151,7 +153,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             return;
           }
           final (bdkWallet, errLoading) =
-              _walletsRepository.getBdkWallet(relatedWallet.state.wallet!);
+              _walletsRepository.getBdkWallet(relatedWallet.state.wallet!.id);
           if (errLoading != null) {
             emit(
               state.copyWith(
@@ -167,7 +169,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           if (txErr != null) {
             emit(
               state.copyWith(
-                errExtractingTx: 'Error finalizing psbt. Ensure the psbt is signed.',
+                errExtractingTx:
+                    'Error finalizing psbt. Ensure the psbt is signed.',
               ),
             );
             return;
@@ -189,7 +192,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         final nOutputs = outputs.length;
         int verifiedOutputs = 0;
         for (final outpoint in outputs) {
-          final scriptBuf = await bdk.ScriptBuf.fromHex(outpoint.scriptPubkey.toString());
+          final scriptBuf =
+              await bdk.ScriptBuf.fromHex(outpoint.scriptPubkey.toString());
           totalAmount += outpoint.value;
           final addressStruct = await bdk.Address.fromScript(
             script: scriptBuf,
@@ -255,7 +259,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         );
       } else {
         // its a hex
-        final bdkTx = await bdk.Transaction.fromBytes(transactionBytes: hex.decode(tx));
+        final bdkTx =
+            await bdk.Transaction.fromBytes(transactionBytes: hex.decode(tx));
         final txid = await bdkTx.txid();
         final outputs = await bdkTx.output();
         Transaction? transaction;
@@ -263,7 +268,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
 
         final wallets = _homeCubit.state.walletBlocs ?? [];
         for (final wallet in wallets) {
-          for (final tx in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
+          for (final tx
+              in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
             if (tx.txid == txid && !tx.isReceived()) {
               transaction = tx;
               relatedWallet = wallet;
@@ -299,7 +305,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         final List<Address> outAddrs = [];
         for (final outpoint in outputs) {
           totalAmount += outpoint.value;
-          final scriptBuf = await bdk.ScriptBuf.fromHex(outpoint.scriptPubkey.toString());
+          final scriptBuf =
+              await bdk.ScriptBuf.fromHex(outpoint.scriptPubkey.toString());
           final addressStruct = await bdk.Address.fromScript(
             script: scriptBuf,
             network: _networkCubit.state.getBdkNetwork(),
@@ -370,7 +377,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       emit(
         state.copyWith(
           extractingTx: false,
-          errExtractingTx: 'Error decoding transaction. Ensure the transaction is valid.',
+          errExtractingTx:
+              'Error decoding transaction. Ensure the transaction is valid.',
           // step: BroadcastTxStep.import,
           tx: '',
         ),
@@ -406,7 +414,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       ),
     );
     final tx = state.tx;
-    final bdkTx = await bdk.Transaction.fromBytes(transactionBytes: hex.decode(tx));
+    final bdkTx =
+        await bdk.Transaction.fromBytes(transactionBytes: hex.decode(tx));
 
     final (blockchain, errB) = _networkRepository.bdkBlockchain;
     if (errB == null) {
@@ -419,7 +428,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       return;
     }
 
-    final err = await _bdkTransactions.broadcastTx(tx: bdkTx, blockchain: blockchain!);
+    final err =
+        await _bdkTransactions.broadcastTx(tx: bdkTx, blockchain: blockchain!);
     if (err != null) {
       // final error =
       emit(

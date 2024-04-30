@@ -23,14 +23,22 @@ class WalletBalance implements IWalletBalance {
     try {
       switch (wallet.baseWalletType) {
         case BaseWalletType.Bitcoin:
-          final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet);
+          final (bdkWallet, errWallet) =
+              _walletsRepository.getBdkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
-          return await _bdkBalance.getBalance(bdkWallet: bdkWallet!, wallet: wallet);
+          return await _bdkBalance.getBalance(
+            bdkWallet: bdkWallet!,
+            wallet: wallet,
+          );
 
         case BaseWalletType.Liquid:
-          final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
+          final (liqWallet, errWallet) =
+              _walletsRepository.getLwkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
-          return await _lwkBalance.getLiquidBalance(lwkWallet: liqWallet!, wallet: wallet);
+          return await _lwkBalance.getLiquidBalance(
+            lwkWallet: liqWallet!,
+            wallet: wallet,
+          );
       }
     } catch (e) {
       return (

@@ -27,7 +27,7 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //const latestVersion = bbVersion;
-    const latestVersion = '1.0.0+25';
+    const latestVersion = '0.2.0-1';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -49,21 +49,13 @@ class _Screen extends StatelessWidget {
                 const WalletSettingsButton(),
                 const Gap(8),
                 const NewWalletButton(),
-                const Gap(240),
+                const Gap(24),
                 const Center(
                   child: BBText.bodySmall(
                     'App Version: $bbVersion',
                     isBold: true,
                   ),
                 ),
-                const Gap(8),
-                if (bbVersion != latestVersion)
-                  const Center(
-                    child: BBText.bodySmall(
-                      'Latest version: 1.0.0+25',
-                      isBold: true,
-                    ),
-                  ),
                 const Gap(8),
                 if (bbVersion != latestVersion)
                   BBButton.big(

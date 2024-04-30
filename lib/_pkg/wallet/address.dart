@@ -20,16 +20,21 @@ class WalletAddress implements IWalletAddress {
   final LWKAddress _lwkAddress;
 
   @override
-  Future<(String?, Err?)> peekIndex({required Wallet wallet, required int idx}) async {
+  Future<(String?, Err?)> peekIndex({
+    required Wallet wallet,
+    required int idx,
+  }) async {
     try {
       switch (wallet.baseWalletType) {
         case BaseWalletType.Bitcoin:
-          final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet);
+          final (bdkWallet, errWallet) =
+              _walletsRepository.getBdkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           return await _bdkAddress.peekIndex(bdkWallet!, idx);
 
         case BaseWalletType.Liquid:
-          final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
+          final (liqWallet, errWallet) =
+              _walletsRepository.getLwkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           return await _lwkAddress.peekIndex(liqWallet!, idx);
       }
@@ -51,7 +56,8 @@ class WalletAddress implements IWalletAddress {
       String address;
       switch (wallet.baseWalletType) {
         case BaseWalletType.Bitcoin:
-          final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet);
+          final (bdkWallet, errWallet) =
+              _walletsRepository.getBdkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           final lastIdx = wallet.lastGeneratedAddress?.index ?? 0;
           final (addr, errAddr) = await _bdkAddress.peekIndex(
@@ -62,7 +68,8 @@ class WalletAddress implements IWalletAddress {
           address = addr!;
 
         case BaseWalletType.Liquid:
-          final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet);
+          final (liqWallet, errWallet) =
+              _walletsRepository.getLwkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           final lastIdx = wallet.lastGeneratedAddress?.index ?? 0;
           final (addr, errAddr) = await _lwkAddress.peekIndex(
@@ -156,7 +163,10 @@ class WalletAddress implements IWalletAddress {
     }
   }
 
-  Future<String?> getLabel({required Wallet wallet, required String address}) async {
+  Future<String?> getLabel({
+    required Wallet wallet,
+    required String address,
+  }) async {
     final addresses = wallet.myAddressBook;
 
     String? label;

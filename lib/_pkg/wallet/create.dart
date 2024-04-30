@@ -43,7 +43,7 @@ class WalletCreate implements IWalletCreate {
       switch (w.baseWalletType) {
         case BaseWalletType.Bitcoin:
           final (_, errWallet) =
-              _walletsRepository.getBdkWallet(w, errExpected: true);
+              _walletsRepository.getBdkWallet(w.id, errExpected: true);
           if (errWallet == null) {
             return (w, null);
           }
@@ -58,7 +58,7 @@ class WalletCreate implements IWalletCreate {
 
         case BaseWalletType.Liquid:
           final (_, errWallet) =
-              _walletsRepository.getLwkWallet(w, errExpected: true);
+              _walletsRepository.getLwkWallet(w.id, errExpected: true);
           if (errWallet == null) return (w, null);
           final (liqWallet, errLoading) =
               await _lwkCreate.loadPublicLwkWallet(w);

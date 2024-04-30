@@ -150,7 +150,8 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     final updateWallet = _walletBloc.state.wallet!.copyWith(
       transactions: [
-        for (final t in _walletBloc.state.wallet?.transactions ?? <Transaction>[])
+        for (final t
+            in _walletBloc.state.wallet?.transactions ?? <Transaction>[])
           if (t.txid == tx.txid) tx else t,
       ],
     );
@@ -164,7 +165,10 @@ class TransactionCubit extends Cubit<TransactionState> {
     _walletBloc.add(
       UpdateWallet(
         w!,
-        updateTypes: [UpdateWalletTypes.transactions, UpdateWalletTypes.addresses],
+        updateTypes: [
+          UpdateWalletTypes.transactions,
+          UpdateWalletTypes.addresses
+        ],
       ),
     );
 
@@ -227,15 +231,18 @@ class TransactionCubit extends Cubit<TransactionState> {
       return;
     }
 
-    final (bdkSignerWallet, errr) = await _bdkSensitiveCreate.loadPrivateBdkWallet(wallet!, seed!);
+    final (bdkSignerWallet, errr) =
+        await _bdkSensitiveCreate.loadPrivateBdkWallet(wallet!, seed!);
     if (errr != null) {
       emit(state.copyWith(errBuildingTx: errr.toString(), buildingTx: false));
       return;
     }
 
-    final (pubBdkWallet, errLoading) = _walletsRepository.getBdkWallet(wallet);
+    final (pubBdkWallet, errLoading) =
+        _walletsRepository.getBdkWallet(wallet.id);
     if (errLoading != null) {
-      emit(state.copyWith(errBuildingTx: errLoading.toString(), buildingTx: false));
+      emit(state.copyWith(
+          errBuildingTx: errLoading.toString(), buildingTx: false));
       return;
     }
 
