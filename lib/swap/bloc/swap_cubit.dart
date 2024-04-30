@@ -284,7 +284,7 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    await Future.delayed(const Duration(seconds: 5));
+    // await Future.delayed(const Duration(seconds: 5));
 
     emit(state.copyWith(updatedWallet: updatedWallet));
   }

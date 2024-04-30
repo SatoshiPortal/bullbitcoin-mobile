@@ -95,8 +95,6 @@ class ReceiveListeners extends StatelessWidget {
                   ),
                 );
 
-            // await Future.delayed(50.ms);
-
             final isTestnet = context.read<NetworkCubit>().state.testnet;
 
             context

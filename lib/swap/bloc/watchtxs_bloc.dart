@@ -78,10 +78,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   @override
   Future<void> close() {
-    _boltzMainnet = null;
-    _boltzTestnet = null;
     _mainNetStream.cancel();
     _testNetStream.cancel();
+    _boltzMainnet = null;
+    _boltzTestnet = null;
     return super.close();
   }
 
@@ -89,24 +89,24 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     InitializeSwapWatcher event,
     Emitter<WatchTxsState> emit,
   ) async {
-    // if (_boltzMainnet != null && _boltzTestnet != null) return;
+    if (_boltzMainnet != null && _boltzTestnet != null) return;
 
-    // // emit(state.copyWith(isTestnet: event.isTestnet));
+    // emit(state.copyWith(isTestnet: event.isTestnet));
 
-    // final (watcher, err) = await _swapBoltz.initializeBoltzApi(false);
-    // if (err != null) {
-    //   emit(state.copyWith(errWatchingInvoice: err.message));
-    //   return;
-    // }
-    // _boltzMainnet = watcher;
+    final (watcher, err) = await _swapBoltz.initializeBoltzApi(false);
+    if (err != null) {
+      emit(state.copyWith(errWatchingInvoice: err.message));
+      return;
+    }
+    _boltzMainnet = watcher;
 
-    // final (watcherTestnet, errTestnet) =
-    //     await _swapBoltz.initializeBoltzApi(true);
-    // if (errTestnet != null) {
-    //   emit(state.copyWith(errWatchingInvoice: errTestnet.message));
-    //   return;
-    // }
-    // _boltzTestnet = watcherTestnet;
+    final (watcherTestnet, errTestnet) =
+        await _swapBoltz.initializeBoltzApi(true);
+    if (errTestnet != null) {
+      emit(state.copyWith(errWatchingInvoice: errTestnet.message));
+      return;
+    }
+    _boltzTestnet = watcherTestnet;
 
     // emit(state.copyWith(boltzWatcher: boltzWatcher));
 
@@ -114,7 +114,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // add(WatchWallets(isTestnet: event.isTestnet));
   }
 
-  void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) {
+  void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) async {
+    print('WatchWallets: ${event.isTestnet}');
+    await Future.delayed(1.seconds);
     final walletBlocs = _homeCubit.state.getMainWallets(event.isTestnet);
     final swapsToWatch = <SwapTx>[];
     for (final walletBloc in walletBlocs) {
