@@ -51,11 +51,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
             // ],
           ),
         ) {
-    // clearErrors();
-    // reset();
-    // emit(
-    //   state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]),
-    // );
+    clearErrors();
+    reset();
+    emit(
+      state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]),
+    );
 
     if (mainWallet) recoverClicked();
   }
