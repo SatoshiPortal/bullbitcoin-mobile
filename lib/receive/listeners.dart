@@ -9,7 +9,6 @@ import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReceiveListeners extends StatelessWidget {
@@ -96,7 +95,7 @@ class ReceiveListeners extends StatelessWidget {
                   ),
                 );
 
-            await Future.delayed(500.ms);
+            // await Future.delayed(50.ms);
 
             final isTestnet = context.read<NetworkCubit>().state.testnet;
 

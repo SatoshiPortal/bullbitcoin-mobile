@@ -382,6 +382,28 @@ class WalletTx implements IWalletTransactions {
     );
     swapTxs[idx] = updatedSwapTx;
 
+    if (swapTx.txid != null) {
+      final txs = wallet.transactions.toList();
+      final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
+      if (idx == -1) {
+        final newTx = Transaction(
+          txid: swapTx.txid!,
+          timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          swapTx: updatedSwapTx,
+          isSwap: true,
+          received: swapTx.outAmount - (swapTx.totalFees() ?? 0),
+          fee: swapTx.claimFees,
+        );
+        txs.add(newTx);
+      } else {
+        final updatedTx = txs[idx].copyWith(
+          swapTx: updatedSwapTx,
+          isSwap: true,
+        );
+        txs[idx] = updatedTx;
+      }
+    }
+
     if (deleteIfFailed) {
       final swapsToDelete = <SwapTx>[
         for (final s in swapTxs)

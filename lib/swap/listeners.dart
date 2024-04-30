@@ -36,8 +36,8 @@ class SwapAppListener extends StatelessWidget {
         BlocListener<WatchTxsBloc, WatchTxsState>(
           listenWhen: (previous, current) => previous.txPaid != current.txPaid,
           listener: (context, state) {
-            if (state.txPaid == null) return;
-            if (state.syncWallet != null) return;
+            if (state.syncWallet != null || state.txPaid == null) return;
+            // if (state.txPaid == null) return;
 
             final tx = state.txPaid!;
             final amt = tx.recievableAmount()!;
