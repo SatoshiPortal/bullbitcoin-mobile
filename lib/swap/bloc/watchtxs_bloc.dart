@@ -298,6 +298,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       shouldRefund: shouldRefund,
     );
     if (err != null) {
+      print(err.toString());
       emit(
         state.copyWith(
           claimingSwap: false,

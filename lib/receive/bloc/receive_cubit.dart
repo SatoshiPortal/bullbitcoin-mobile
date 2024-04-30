@@ -36,7 +36,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       emit(state.copyWith(defaultAddress: null));
 
     final watchOnly = walletBloc.state.wallet!.watchOnly();
-    if (watchOnly) emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
+    if (watchOnly)
+      emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
     loadAddress();
   }
 
@@ -119,8 +120,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     final Wallet wallet = state.walletBloc!.state.wallet!;
 
-    // If currently selected wallet is bitcoin wallet, then find and load the liquid wallet and get it's lastGeneratedAddress.
-    if (wallet.type != BBWalletType.instant) {
+    // If currently selected wallet is bitcoin? wallet, then find and load the liquid wallet and get it's lastGeneratedAddress.
+    if (wallet.baseWalletType == BaseWalletType.Liquid) {
       emit(
         state.copyWith(
           defaultAddress: wallet.lastGeneratedAddress,
@@ -151,8 +152,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
           defaultLiquidAddress: liquidWallet?.lastGeneratedAddress,
         ),
       );
-      // If currently selected wallet is liquid wallet, then find and load the bitcoin wallet and get it's lastGeneratedAddress.
-    } else if (wallet.type == BBWalletType.instant) {
+      // If currently selected wallet is liquid? wallet, then find and load the bitcoin wallet and get it's lastGeneratedAddress.
+    } else if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
       emit(
         state.copyWith(
           defaultLiquidAddress: wallet.lastGeneratedAddress,
@@ -254,7 +255,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    state.walletBloc!.add(UpdateWallet(updatedWallet!, updateTypes: [UpdateWalletTypes.addresses]));
+    state.walletBloc!.add(UpdateWallet(updatedWallet!,
+        updateTypes: [UpdateWalletTypes.addresses]));
 
     final addressGap = updatedWallet.addressGap();
     if (addressGap >= 5 && addressGap <= 20) {
@@ -328,7 +330,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       spendable: state.defaultAddress!.spendable,
     );
 
-    state.walletBloc!.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+    state.walletBloc!
+        .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
 
     emit(
       state.copyWith(
@@ -367,7 +370,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       kind: AddressKind.deposit,
     );
 
-    state.walletBloc!.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+    state.walletBloc!
+        .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
 
     emit(
       state.copyWith(

@@ -534,7 +534,7 @@ class WalletTag extends StatelessWidget {
     bool walletIsLiquid,
     Transaction tx,
   ) {
-    final hasSwap = tx.swapTx.notNull();
+    final hasSwap = tx.isSwap;
     // final walletIsLiquid = wallet.isLiquid();
 
     Color colour;
@@ -730,10 +730,10 @@ class HomeBottomBar2 extends StatelessWidget {
                       child: BBButton.big(
                         label: 'Send',
                         onPressed: () {
-                          context.push(
-                            '/send',
-                            // extra: walletBloc,
-                          );
+                          // context.push(
+                          //   '/send',
+                          //   // extra: walletBloc,
+                          // );
                         },
                       ),
                     ),
