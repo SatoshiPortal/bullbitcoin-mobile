@@ -40,7 +40,7 @@ class WalletSync implements IWalletSync {
           );
           if (errSyncing != null) throw errSyncing;
           final err =
-              _walletsRepository.replaceBdkWallet(wallet, updatedBdkWallet!);
+              _walletsRepository.updateBdkWallet(wallet, updatedBdkWallet!);
           if (err != null) throw err;
         case BaseWalletType.Liquid:
           final (blockchain, errNetwork) = _networkRepository.liquidUrl;
@@ -55,7 +55,7 @@ class WalletSync implements IWalletSync {
           );
           if (errSyncing != null) throw errSyncing;
           final err =
-              _walletsRepository.replaceLwkWallet(wallet, updatedLiqWallet!);
+              _walletsRepository.updateLwkWallet(wallet, updatedLiqWallet!);
           if (err != null) throw err;
       }
     } catch (e) {

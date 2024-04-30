@@ -17,8 +17,9 @@ class BDKCreate {
     Wallet wallet,
   ) async {
     try {
-      final network =
-          wallet.network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+      final network = wallet.network == BBNetwork.Testnet
+          ? bdk.Network.testnet
+          : bdk.Network.bitcoin;
 
       final external = await bdk.Descriptor.create(
         descriptor: wallet.externalPublicDescriptor,
@@ -30,7 +31,8 @@ class BDKCreate {
       );
 
       final appDocDir = await getApplicationDocumentsDirectory();
-      final String dbDir = appDocDir.path + '/${wallet.getWalletStorageString()}';
+      final String dbDir =
+          appDocDir.path + '/${wallet.getWalletStorageString()}';
 
       final dbConfig = bdk.DatabaseConfig.sqlite(
         config: bdk.SqliteDbConfiguration(path: dbDir),
@@ -62,7 +64,9 @@ class BDKCreate {
   ) async {
     // create all 3 coldcard wallets and return only the one requested
     final fingerprint = coldCard.xfp!;
-    final bdkNetwork = network == BBNetwork.Mainnet ? bdk.Network.bitcoin : bdk.Network.testnet;
+    final bdkNetwork = network == BBNetwork.Mainnet
+        ? bdk.Network.bitcoin
+        : bdk.Network.testnet;
     final ColdWallet coldWallet44 = coldCard.bip44!;
     final xpub44 = coldWallet44.xpub;
     final ColdWallet coldWallet49 = coldCard.bip49!;
@@ -73,13 +77,19 @@ class BDKCreate {
     final networkPath = network == BBNetwork.Mainnet ? '0h' : '1h';
     final accountPath = coldCard.account.toString() + 'h';
 
-    final coldWallet44ExtendedPublic = '[$fingerprint/44h/$networkPath/$accountPath]$xpub44';
-    final coldWallet49ExtendedPublic = '[$fingerprint/49h/$networkPath/$accountPath]$xpub49';
-    final coldWallet84ExtendedPublic = '[$fingerprint/84h/$networkPath/$accountPath]$xpub84';
+    final coldWallet44ExtendedPublic =
+        '[$fingerprint/44h/$networkPath/$accountPath]$xpub44';
+    final coldWallet49ExtendedPublic =
+        '[$fingerprint/49h/$networkPath/$accountPath]$xpub49';
+    final coldWallet84ExtendedPublic =
+        '[$fingerprint/84h/$networkPath/$accountPath]$xpub84';
 
-    final bdkXpub44 = await bdk.DescriptorPublicKey.fromString(coldWallet44ExtendedPublic);
-    final bdkXpub49 = await bdk.DescriptorPublicKey.fromString(coldWallet49ExtendedPublic);
-    final bdkXpub84 = await bdk.DescriptorPublicKey.fromString(coldWallet84ExtendedPublic);
+    final bdkXpub44 =
+        await bdk.DescriptorPublicKey.fromString(coldWallet44ExtendedPublic);
+    final bdkXpub49 =
+        await bdk.DescriptorPublicKey.fromString(coldWallet49ExtendedPublic);
+    final bdkXpub84 =
+        await bdk.DescriptorPublicKey.fromString(coldWallet84ExtendedPublic);
 
     final bdkDescriptor44External = await bdk.Descriptor.newBip44Public(
       publicKey: bdkXpub44,
@@ -119,7 +129,8 @@ class BDKCreate {
     );
 
     final wallet44HashId =
-        createDescriptorHashId(await bdkDescriptor44External.asString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor44External.asString())
+            .substring(0, 12);
     var wallet44 = Wallet(
       id: wallet44HashId,
       externalPublicDescriptor: await bdkDescriptor44External.asString(),
@@ -150,7 +161,8 @@ class BDKCreate {
     );
 
     final wallet49HashId =
-        createDescriptorHashId(await bdkDescriptor49External.asString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor49External.asString())
+            .substring(0, 12);
     var wallet49 = Wallet(
       id: wallet49HashId,
       externalPublicDescriptor: await bdkDescriptor49External.asString(),
@@ -181,7 +193,8 @@ class BDKCreate {
     );
 
     final wallet84HashId =
-        createDescriptorHashId(await bdkDescriptor84External.asString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor84External.asString())
+            .substring(0, 12);
     var wallet84 = Wallet(
       id: wallet84HashId,
       externalPublicDescriptor: await bdkDescriptor84External.asString(),
@@ -211,9 +224,9 @@ class BDKCreate {
       ),
     );
 
-    _walletsRepository.removeBdkWallet(wallet44);
-    _walletsRepository.removeBdkWallet(wallet49);
-    _walletsRepository.removeBdkWallet(wallet84);
+    _walletsRepository.removeBdkWallet(wallet44.id);
+    _walletsRepository.removeBdkWallet(wallet49.id);
+    _walletsRepository.removeBdkWallet(wallet84.id);
 
     if (firstAddress44.address.toString() == coldWallet44.first &&
         firstAddress49.address.toString() == coldWallet49.first &&
@@ -230,16 +243,20 @@ class BDKCreate {
     String slip132Pub,
   ) async {
     try {
-      final network =
-          (slip132Pub.startsWith('t') || slip132Pub.startsWith('u') || slip132Pub.startsWith('v'))
-              ? BBNetwork.Testnet
-              : BBNetwork.Mainnet;
-      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
-      final scriptType = slip132Pub.startsWith('x') || slip132Pub.startsWith('t')
-          ? ScriptType.bip44
-          : slip132Pub.startsWith('y') || slip132Pub.startsWith('u')
-              ? ScriptType.bip49
-              : ScriptType.bip84;
+      final network = (slip132Pub.startsWith('t') ||
+              slip132Pub.startsWith('u') ||
+              slip132Pub.startsWith('v'))
+          ? BBNetwork.Testnet
+          : BBNetwork.Mainnet;
+      final bdkNetwork = network == BBNetwork.Testnet
+          ? bdk.Network.testnet
+          : bdk.Network.bitcoin;
+      final scriptType =
+          slip132Pub.startsWith('x') || slip132Pub.startsWith('t')
+              ? ScriptType.bip44
+              : slip132Pub.startsWith('y') || slip132Pub.startsWith('u')
+                  ? ScriptType.bip49
+                  : ScriptType.bip84;
       final xPub = convertToXpubStr(slip132Pub);
 
       bdk.Descriptor? internal;
@@ -274,7 +291,8 @@ class BDKCreate {
           );
       }
 
-      final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
+      final descHashId =
+          createDescriptorHashId(await external.asString()).substring(0, 12);
       var wallet = Wallet(
         id: descHashId,
         externalPublicDescriptor: await external.asString(),
@@ -305,7 +323,7 @@ class BDKCreate {
 
       wallet = wallet.copyWith(name: wallet.defaultNameString());
 
-      _walletsRepository.removeBdkWallet(wallet);
+      _walletsRepository.removeBdkWallet(wallet.id);
 
       return (wallet, null);
     } on Exception catch (e) {
@@ -324,8 +342,12 @@ class BDKCreate {
     String xpubWithOrigin,
   ) async {
     try {
-      final network = (xpubWithOrigin.contains('tpub')) ? BBNetwork.Testnet : BBNetwork.Mainnet;
-      final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+      final network = (xpubWithOrigin.contains('tpub'))
+          ? BBNetwork.Testnet
+          : BBNetwork.Mainnet;
+      final bdkNetwork = network == BBNetwork.Testnet
+          ? bdk.Network.testnet
+          : bdk.Network.bitcoin;
       final scriptType = xpubWithOrigin.contains('/44')
           ? ScriptType.bip44
           : xpubWithOrigin.contains('/49')
@@ -363,7 +385,8 @@ class BDKCreate {
           );
       }
 
-      final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
+      final descHashId =
+          createDescriptorHashId(await external.asString()).substring(0, 12);
       var wallet = Wallet(
         id: descHashId,
         externalPublicDescriptor: await external.asString(),

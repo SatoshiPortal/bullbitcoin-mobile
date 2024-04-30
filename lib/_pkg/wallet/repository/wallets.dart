@@ -22,46 +22,46 @@ class WalletsRepository {
     return (null, Err('Wallet not found', expected: errExpected));
   }
 
-  Err? setLwkWallet(Wallet wallet, lwk.Wallet lwkWallet) {
-    final added = _lwkWallets.add((id: wallet.id, wallet: lwkWallet));
+  Err? setLwkWallet(String id, lwk.Wallet lwkWallet) {
+    final added = _lwkWallets.add((id: id, wallet: lwkWallet));
     if (!added) return Err('Wallet already exists');
     return null;
   }
 
-  Err? setBdkWallet(Wallet wallet, bdk.Wallet bdkWallet) {
-    final added = _bdkWallets.add((id: wallet.id, wallet: bdkWallet));
+  Err? setBdkWallet(String id, bdk.Wallet bdkWallet) {
+    final added = _bdkWallets.add((id: id, wallet: bdkWallet));
     if (!added) return Err('Wallet already exists');
     return null;
   }
 
-  Err? removeLwkWallet(Wallet wallet) {
-    final exits = _lwkWallets.any((element) => element.id == wallet.id);
+  Err? removeLwkWallet(String id) {
+    final exits = _lwkWallets.any((element) => element.id == id);
     if (!exits) return Err('Wallet does not exist');
-    _lwkWallets.removeWhere((element) => element.id == wallet.id);
+    _lwkWallets.removeWhere((element) => element.id == id);
     return null;
   }
 
-  Err? removeBdkWallet(Wallet wallet) {
-    final exits = _bdkWallets.any((element) => element.id == wallet.id);
+  Err? removeBdkWallet(String id) {
+    final exits = _bdkWallets.any((element) => element.id == id);
     if (!exits) return Err('Wallet does not exist');
-    _bdkWallets.removeWhere((element) => element.id == wallet.id);
+    _bdkWallets.removeWhere((element) => element.id == id);
     return null;
   }
 
-  Err? removeWallet(Wallet wallet) {
+  Err? removeWallet(BaseWalletType baseWalletType, String id) {
     try {
-      switch (wallet.baseWalletType) {
+      switch (baseWalletType) {
         case BaseWalletType.Bitcoin:
-          return removeBdkWallet(wallet);
+          return removeBdkWallet(id);
         case BaseWalletType.Liquid:
-          return removeLwkWallet(wallet);
+          return removeLwkWallet(id);
       }
     } catch (e) {
       return Err(e.toString());
     }
   }
 
-  Err? replaceBdkWallet(Wallet wallet, bdk.Wallet bdkWallet) {
+  Err? updateBdkWallet(Wallet wallet, bdk.Wallet bdkWallet) {
     final exits = _bdkWallets.any((element) => element.id == wallet.id);
     if (!exits) return Err('Wallet does not exist');
     _bdkWallets.removeWhere((element) => element.id == wallet.id);
@@ -69,7 +69,7 @@ class WalletsRepository {
     return null;
   }
 
-  Err? replaceLwkWallet(Wallet wallet, lwk.Wallet lwkWallet) {
+  Err? updateLwkWallet(Wallet wallet, lwk.Wallet lwkWallet) {
     final exits = _lwkWallets.any((element) => element.id == wallet.id);
     if (!exits) return Err('Wallet does not exist');
     _lwkWallets.removeWhere((element) => element.id == wallet.id);

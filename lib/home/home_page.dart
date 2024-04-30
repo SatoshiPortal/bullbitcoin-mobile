@@ -290,7 +290,7 @@ class CardColumn extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 26,
-        // vertical: 24,
+        vertical: 4,
       ),
       child: Column(
         children: [
@@ -398,10 +398,10 @@ class CardItem extends StatelessWidget {
             },
             child: Padding(
               padding: const EdgeInsets.only(
-                // top: 4,
+                top: 3,
                 right: 16.0,
                 left: 24,
-                // bottom: 4,
+                bottom: 3,
               ),
               child: Stack(
                 children: [
@@ -593,105 +593,108 @@ class HomeTopBar2 extends StatelessWidget {
     // final fiatAmt =
     // context.select((NetworkCubit _) => _.state.calculatePrice(totalSats, currency));
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Container(
-          alignment: Alignment.bottomCenter,
-          margin: const EdgeInsets.only(left: 32),
-          child: Image.asset(
-            'assets/bb-logo2.png',
-            height: 50,
-            width: 50,
-          ),
-        ),
-        const Gap(4),
-        GestureDetector(
-          onLongPress: () {
-            context.push('/logs');
-          },
-          child: Container(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
             alignment: Alignment.bottomCenter,
-            padding: const EdgeInsets.only(left: 4),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Image.asset(
-                    'assets/textlogo.png',
-                    height: 20,
-                    width: 108,
-                  ),
-                ),
-                if (currency != null)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      BBText.bodySmall(
-                        currency.price.toString() +
-                            ' ' +
-                            currency.shortName.toUpperCase(),
-                        // fontSize: 18,
-                      ),
-                      // const Gap(4),
-                      // Padding(
-                      //   padding: const EdgeInsets.only(bottom: 2),
-                      //   child: BBText.bodySmall(
-                      //     currency.shortName.toUpperCase(),
-                      //   ),
-                      // ),
-                    ],
-                  ),
-              ],
+            margin: const EdgeInsets.only(left: 32),
+            child: Image.asset(
+              'assets/bb-logo2.png',
+              height: 52,
+              width: 52,
             ),
           ),
-        ),
-        const Spacer(),
-        // IconButton(
-        //   key: UIKeys.homeImportButton,
-        //   color: context.colour.onBackground,
-        //   icon: const Icon(
-        //     FontAwesomeIcons.circlePlus,
-        //     shadows: [],
-        //   ),
-        //   onPressed: () {
-        //     context.push('/import');
-        //   },
-        // ),
-        IconButton(
-          key: UIKeys.homeSettingsButton,
-          color: context.colour.onBackground,
-          padding: const EdgeInsets.only(bottom: 26),
-          visualDensity: VisualDensity.compact,
-          iconSize: 25,
-          icon: const Icon(
-            FontAwesomeIcons.gear,
-            shadows: [],
+          const Gap(4),
+          GestureDetector(
+            onLongPress: () {
+              context.push('/logs');
+            },
+            child: Container(
+              alignment: Alignment.bottomCenter,
+              padding: const EdgeInsets.only(left: 4),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Image.asset(
+                      'assets/textlogo.png',
+                      height: 20,
+                      width: 108,
+                    ),
+                  ),
+                  if (currency != null)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        BBText.bodySmall(
+                          currency.price.toString() +
+                              ' ' +
+                              currency.shortName.toUpperCase(),
+                          // fontSize: 18,
+                        ),
+                        // const Gap(4),
+                        // Padding(
+                        //   padding: const EdgeInsets.only(bottom: 2),
+                        //   child: BBText.bodySmall(
+                        //     currency.shortName.toUpperCase(),
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
           ),
-          onPressed: () {
-            context.push('/settings');
-          },
-        ),
-        IconButton(
-          iconSize: 25,
-
-          // key: UIKeys.homeSettingsButton,
-          color: context.colour.onBackground,
-          visualDensity: VisualDensity.compact,
-
-          padding: const EdgeInsets.only(bottom: 26),
-          icon: const Icon(
-            FontAwesomeIcons.user,
-            shadows: [],
+          const Spacer(),
+          // IconButton(
+          //   key: UIKeys.homeImportButton,
+          //   color: context.colour.onBackground,
+          //   icon: const Icon(
+          //     FontAwesomeIcons.circlePlus,
+          //     shadows: [],
+          //   ),
+          //   onPressed: () {
+          //     context.push('/import');
+          //   },
+          // ),
+          IconButton(
+            key: UIKeys.homeSettingsButton,
+            color: context.colour.onBackground,
+            padding: const EdgeInsets.only(bottom: 12),
+            visualDensity: VisualDensity.compact,
+            iconSize: 30,
+            icon: const Icon(
+              FontAwesomeIcons.gear,
+              shadows: [],
+            ),
+            onPressed: () {
+              context.push('/settings');
+            },
           ),
-          onPressed: () {
-            context.push('/market');
-          },
-        ),
-        const Gap(24),
-      ],
+          IconButton(
+            iconSize: 30,
+
+            // key: UIKeys.homeSettingsButton,
+            color: context.colour.onBackground,
+            visualDensity: VisualDensity.compact,
+
+            padding: const EdgeInsets.only(bottom: 12),
+            icon: const Icon(
+              FontAwesomeIcons.user,
+              shadows: [],
+            ),
+            onPressed: () {
+              context.push('/market');
+            },
+          ),
+          const Gap(24),
+        ],
+      ),
     );
   }
 }

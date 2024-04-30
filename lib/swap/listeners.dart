@@ -48,6 +48,7 @@ class SwapAppListener extends StatelessWidget {
             showToastWidget(
               position: ToastPosition.top,
               AlertUI(text: '$prefix $amtStr'),
+              animationCurve: Curves.decelerate,
             );
 
             context.read<WatchTxsBloc>().add(ClearAlerts());

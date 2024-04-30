@@ -9,8 +9,10 @@ import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class BDKSensitiveCreate {
-  BDKSensitiveCreate({required WalletsRepository walletsRepository, required BDKCreate bdkCreate})
-      : _walletsRepository = walletsRepository,
+  BDKSensitiveCreate({
+    required WalletsRepository walletsRepository,
+    required BDKCreate bdkCreate,
+  })  : _walletsRepository = walletsRepository,
         _bdkCreate = bdkCreate;
 
   final WalletsRepository _walletsRepository;
@@ -76,7 +78,9 @@ class BDKSensitiveCreate {
     required WalletCreate walletCreate,
   }) async {
     final bdkMnemonic = await bdk.Mnemonic.fromString(mnemonic);
-    final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final bdkNetwork = network == BBNetwork.Testnet
+        ? bdk.Network.testnet
+        : bdk.Network.bitcoin;
 
     final rootXprv = await bdk.DescriptorSecretKey.create(
       network: bdkNetwork,
@@ -147,7 +151,8 @@ class BDKSensitiveCreate {
     );
 
     final wallet44HashId =
-        createDescriptorHashId(await bdkDescriptor44External.asString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor44External.asString())
+            .substring(0, 12);
     var wallet44 = Wallet(
       id: wallet44HashId,
       externalPublicDescriptor: await bdkDescriptor44External.asString(),
@@ -160,7 +165,8 @@ class BDKSensitiveCreate {
       backupTested: isImported,
       baseWalletType: BaseWalletType.Bitcoin,
     );
-    final (bdkWallet44, errBdk44) = await _bdkCreate.loadPublicBdkWallet(wallet44);
+    final (bdkWallet44, errBdk44) =
+        await _bdkCreate.loadPublicBdkWallet(wallet44);
     if (errBdk44 != null) return (null, errBdk44);
     // final (bdkWallet44, errLoading44) = _walletsRepository.getBdkWallet(wallet44);
     // if (errLoading44 != null) return (null, errLoading44);
@@ -177,7 +183,8 @@ class BDKSensitiveCreate {
       ),
     );
     final wallet49HashId =
-        createDescriptorHashId(await bdkDescriptor49External.asString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor49External.asString())
+            .substring(0, 12);
     var wallet49 = Wallet(
       id: wallet49HashId,
       externalPublicDescriptor: await bdkDescriptor49External.asString(),
@@ -190,7 +197,8 @@ class BDKSensitiveCreate {
       backupTested: isImported,
       baseWalletType: BaseWalletType.Bitcoin,
     );
-    final (bdkWallet49, errBdk49) = await _bdkCreate.loadPublicBdkWallet(wallet49);
+    final (bdkWallet49, errBdk49) =
+        await _bdkCreate.loadPublicBdkWallet(wallet49);
     if (errBdk49 != null) return (null, errBdk49);
     // final (bdkWallet49, errLoading49) = _walletsRepository.getBdkWallet(wallet49);
     final firstAddress49 = await bdkWallet49!.getAddress(
@@ -206,7 +214,8 @@ class BDKSensitiveCreate {
       ),
     );
     final wallet84HashId =
-        createDescriptorHashId(await bdkDescriptor84External.asString()).substring(0, 12);
+        createDescriptorHashId(await bdkDescriptor84External.asString())
+            .substring(0, 12);
     var wallet84 = Wallet(
       id: wallet84HashId,
       externalPublicDescriptor: await bdkDescriptor84External.asString(),
@@ -219,7 +228,8 @@ class BDKSensitiveCreate {
       backupTested: isImported,
       baseWalletType: BaseWalletType.Bitcoin,
     );
-    final (bdkWallet84, errBdk84) = await _bdkCreate.loadPublicBdkWallet(wallet84);
+    final (bdkWallet84, errBdk84) =
+        await _bdkCreate.loadPublicBdkWallet(wallet84);
     if (errBdk84 != null) return (null, errBdk84);
     // final (bdkWallet84, errLoading84) = _walletsRepository.getBdkWallet(wallet84);
     final firstAddress84 = await bdkWallet84!.getAddress(
@@ -234,9 +244,9 @@ class BDKSensitiveCreate {
         state: AddressStatus.unused,
       ),
     );
-    _walletsRepository.removeBdkWallet(wallet44);
-    _walletsRepository.removeBdkWallet(wallet49);
-    _walletsRepository.removeBdkWallet(wallet84);
+    _walletsRepository.removeBdkWallet(wallet44.id);
+    _walletsRepository.removeBdkWallet(wallet49.id);
+    _walletsRepository.removeBdkWallet(wallet84.id);
 
     return ([wallet44, wallet49, wallet84], null);
   }
@@ -250,7 +260,9 @@ class BDKSensitiveCreate {
     required WalletCreate walletCreate,
   }) async {
     final bdkMnemonic = await bdk.Mnemonic.fromString(seed.mnemonic);
-    final bdkNetwork = network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final bdkNetwork = network == BBNetwork.Testnet
+        ? bdk.Network.testnet
+        : bdk.Network.bitcoin;
     final rootXprv = await bdk.DescriptorSecretKey.create(
       network: bdkNetwork,
       mnemonic: bdkMnemonic,
@@ -273,7 +285,9 @@ class BDKSensitiveCreate {
     switch (scriptType) {
       case ScriptType.bip84:
         final mOnlybdkXpriv84 = await rootXprv.derive(
-          await bdk.DerivationPath.create(path: 'm/84h/$networkPath/$accountPath'),
+          await bdk.DerivationPath.create(
+            path: 'm/84h/$networkPath/$accountPath',
+          ),
         );
 
         final bdkXpub84 = await mOnlybdkXpriv84.asPublic();
@@ -292,7 +306,9 @@ class BDKSensitiveCreate {
         );
       case ScriptType.bip49:
         final bdkXpriv49 = await rootXprv.derive(
-          await bdk.DerivationPath.create(path: 'm/49h/$networkPath/$accountPath'),
+          await bdk.DerivationPath.create(
+            path: 'm/49h/$networkPath/$accountPath',
+          ),
         );
 
         final bdkXpub49 = await bdkXpriv49.asPublic();
@@ -310,7 +326,9 @@ class BDKSensitiveCreate {
         );
       case ScriptType.bip44:
         final bdkXpriv44 = await rootXprv.derive(
-          await bdk.DerivationPath.create(path: 'm/44h/$networkPath/$accountPath'),
+          await bdk.DerivationPath.create(
+            path: 'm/44h/$networkPath/$accountPath',
+          ),
         );
         final bdkXpub44 = await bdkXpriv44.asPublic();
         internal = await bdk.Descriptor.newBip44Public(
@@ -327,7 +345,8 @@ class BDKSensitiveCreate {
         );
     }
 
-    final descHashId = createDescriptorHashId(await external.asString()).substring(0, 12);
+    final descHashId =
+        createDescriptorHashId(await external.asString()).substring(0, 12);
     // final type = isImported ? BBWalletType.words : BBWalletType.newSeed;
 
     var wallet = Wallet(
@@ -359,7 +378,7 @@ class BDKSensitiveCreate {
         state: AddressStatus.unused,
       ),
     );
-    _walletsRepository.removeBdkWallet(wallet);
+    _walletsRepository.removeBdkWallet(wallet.id);
 
     return (wallet, null);
   }
@@ -369,13 +388,16 @@ class BDKSensitiveCreate {
     Seed seed,
   ) async {
     try {
-      final network =
-          wallet.network == BBNetwork.Testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+      final network = wallet.network == BBNetwork.Testnet
+          ? bdk.Network.testnet
+          : bdk.Network.bitcoin;
 
       final mn = await bdk.Mnemonic.fromString(seed.mnemonic);
       final pp = wallet.hasPassphrase()
-          ? seed.passphrases
-              .firstWhere((element) => element.sourceFingerprint == wallet.sourceFingerprint)
+          ? seed.passphrases.firstWhere(
+              (element) =>
+                  element.sourceFingerprint == wallet.sourceFingerprint,
+            )
           : Passphrase(
               sourceFingerprint: wallet.mnemonicFingerprint,
             );

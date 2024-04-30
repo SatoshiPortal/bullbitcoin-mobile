@@ -50,7 +50,7 @@ class WalletCreate implements IWalletCreate {
           final (bdkWallet, errLoading) =
               await _bdkCreate.loadPublicBdkWallet(w);
           if (errLoading != null) throw errLoading;
-          final errSave = _walletsRepository.setBdkWallet(w, bdkWallet!);
+          final errSave = _walletsRepository.setBdkWallet(w.id, bdkWallet!);
           if (errSave != null) {
             throw errSave;
           }
@@ -63,7 +63,7 @@ class WalletCreate implements IWalletCreate {
           final (liqWallet, errLoading) =
               await _lwkCreate.loadPublicLwkWallet(w);
           if (errLoading != null) throw errLoading;
-          final errSave = _walletsRepository.setLwkWallet(w, liqWallet!);
+          final errSave = _walletsRepository.setLwkWallet(w.id, liqWallet!);
           if (errSave != null) throw errSave;
 
           return (w, null);

@@ -73,7 +73,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   @override
   Future<void> close() {
-    _walletsRepository.removeWallet(state.wallet!);
+    _walletsRepository.removeWallet(
+        state.wallet!.baseWalletType, state.wallet!.id);
     return super.close();
   }
 

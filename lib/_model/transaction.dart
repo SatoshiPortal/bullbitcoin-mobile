@@ -317,13 +317,13 @@ class SwapTx with _$SwapTx {
 
   String actionPrefixStr() {
     if (isSubmarine) {
-      if (paidSubmarine()) return 'Sending';
+      if (paidSubmarine()) return 'Outgoing';
       if (settledSubmarine() || claimableSubmarine()) return 'Sent';
-      return 'Sending';
+      return 'Outgoing';
     } else {
-      if (paidReverse()) return 'Receiving';
+      if (paidReverse()) return 'Incoming';
       if (settledReverse()) return 'Received';
-      return 'Receiving';
+      return 'Incoming';
     }
   }
 
