@@ -13,6 +13,7 @@ import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -32,6 +33,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required BDKSensitiveCreate bdkSensitiveCreate,
     required LWKSensitiveCreate lwkSensitiveCreate,
     bool mainWallet = false,
+    bool useTestWallet = false,
   })  : _networkCubit = networkCubit,
         _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,
@@ -46,16 +48,17 @@ class ImportWalletCubit extends Cubit<ImportState> {
         super(
           ImportState(
             mainWallet: mainWallet,
-            // words12: [
-            //   ...importW(instantTN1),
-            // ],
           ),
         ) {
-    // clearErrors();
-    // reset();
-    // emit(
-    //   state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]),
-    // );
+    if (useTestWallet) {
+      emit(state.copyWith(words12: [...importW(instantTN1)]));
+    } else {
+      clearErrors();
+      reset();
+      emit(
+        state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]),
+      );
+    }
 
     if (mainWallet) recoverClicked();
   }
