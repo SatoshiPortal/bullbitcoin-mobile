@@ -9,8 +9,7 @@ import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 class LWKTransactions {
-  LWKTransactions({required NetworkRepository networkRepository})
-      : _networkRepository = networkRepository;
+  LWKTransactions({required NetworkRepository networkRepository}) : _networkRepository = networkRepository;
 
   final NetworkRepository _networkRepository;
 
@@ -130,16 +129,10 @@ class LWKTransactions {
 
     final swapsToDelete = <SwapTx>[
       for (final s in swapTxs)
-        if (s.paidSubmarine() ||
-            s.settledReverse() ||
-            s.settledSubmarine() ||
-            s.expiredReverse())
-          s,
+        if (s.paidSubmarine() || s.settledReverse() || s.settledSubmarine() || s.expiredReverse()) s,
     ];
 
-    for (final s in swapsToDelete)
-      if (swapsToDelete.any((_) => _.id == s.id))
-        swapTxs.removeWhere((_) => _.id == s.id);
+    for (final s in swapsToDelete) if (swapsToDelete.any((_) => _.id == s.id)) swapTxs.removeWhere((_) => _.id == s.id);
 
     final updatedWallet = wallet.copyWith(swaps: swapTxs);
 
@@ -321,10 +314,12 @@ class LWKTransactions {
       final unsignedTxs = wallet.unsignedTxs.toList();
 
       final txs = await lwkWallet.txs();
+      const bKey = ''; // await lwkWallet.blindingKey();
 
       if (txs.isEmpty) return (wallet, null);
 
       final List<Transaction> transactions = [];
+      final lwkNetwork = wallet.network == BBNetwork.Mainnet ? lwk.Network.mainnet : lwk.Network.testnet;
 
       for (final tx in txs) {
         // String? label;
@@ -333,20 +328,24 @@ class LWKTransactions {
         final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
 
         Transaction? storedTx;
-        if (storedTxIdx != -1)
-          storedTx = storedTxs.elementAtOrNull(storedTxIdx);
+        if (storedTxIdx != -1) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
         if (idxUnsignedTx != -1) {
-          if (tx.txid == unsignedTxs[idxUnsignedTx].txid)
-            unsignedTxs.removeAt(idxUnsignedTx);
+          if (tx.txid == unsignedTxs[idxUnsignedTx].txid) unsignedTxs.removeAt(idxUnsignedTx);
         }
-        final assetToPick = wallet.network == BBNetwork.Mainnet
-            ? lwk.lBtcAssetId
-            : lwk.lTestAssetId;
+        final assetToPick = wallet.network == BBNetwork.Mainnet ? lwk.lBtcAssetId : lwk.lTestAssetId;
         final balances = tx.balances;
-        final finalBalance = balances
-            .where((e) => e.assetId == assetToPick)
-            .map((e) => e.value)
-            .first;
+        final finalBalance = balances.where((e) => e.assetId == assetToPick).map((e) => e.value).first;
+
+        final List<Future<Address>>? outAddressFuture;
+        final List<Address>? outAddressFinal;
+        if (storedTx?.outAddrs == null) {
+          outAddressFuture =
+              tx.outputs.map((e) async => convertOutToAddress(tx, e, lwkNetwork, bKey, finalBalance)).toList();
+          outAddressFinal = await Future.wait(outAddressFuture);
+        } else {
+          outAddressFinal = storedTx?.outAddrs;
+        }
+
         final txObj = Transaction(
           txid: tx.txid,
           received: tx.kind == 'outgoing' ? 0 : finalBalance,
@@ -355,18 +354,8 @@ class LWKTransactions {
           height: 100,
           timestamp: tx.timestamp,
           rbfEnabled: false,
-          outAddrs: storedTx?.outAddrs ??
-              tx.outputs
-                  .map(
-                    (e) => Address(
-                      address: e.scriptPubkey,
-                      kind: AddressKind.deposit,
-                      state: AddressStatus.active,
-                    ),
-                  )
-                  .toList(),
+          outAddrs: outAddressFinal!,
         );
-
         transactions.add(txObj);
       }
 
@@ -386,6 +375,55 @@ class LWKTransactions {
           solution: 'Please try again.',
         )
       );
+    }
+  }
+
+  // TODO: This is partially done function
+  Future<Address> convertOutToAddress(
+    lwk.Tx tx,
+    lwk.TxOut e,
+    lwk.Network lwkNetwork,
+    String bKey,
+    int finalBalance,
+  ) async {
+    if (tx.kind == 'outgoing') {
+      final addr = await lwk.Address.addressFromScript(
+        network: lwkNetwork,
+        script: e.scriptPubkey,
+        blindingKey: '',
+      );
+      return Address(
+        address: addr.confidential,
+        standard: addr.standard,
+        kind: AddressKind.external,
+        state: AddressStatus.active,
+      );
+    } else {
+      if (e.unblinded.value == finalBalance) {
+        final addr = await lwk.Address.addressFromScript(
+          network: lwkNetwork,
+          script: e.scriptPubkey,
+          blindingKey: bKey,
+        );
+        return Address(
+          address: addr.confidential,
+          standard: addr.standard,
+          kind: AddressKind.deposit,
+          state: AddressStatus.active,
+        );
+      } else {
+        final addr = await lwk.Address.addressFromScript(
+          network: lwkNetwork,
+          script: e.scriptPubkey,
+          blindingKey: '',
+        );
+        return Address(
+          address: addr.confidential,
+          standard: addr.standard,
+          kind: AddressKind.external,
+          state: AddressStatus.used,
+        );
+      }
     }
   }
 
@@ -446,9 +484,7 @@ class LWKTransactions {
   }) async {
     try {
       final signedTx = await lwkWallet.signTx(
-        network: wallet.network == BBNetwork.Mainnet
-            ? lwk.Network.mainnet
-            : lwk.Network.testnet,
+        network: wallet.network == BBNetwork.Mainnet ? lwk.Network.mainnet : lwk.Network.testnet,
         pset: pset,
         mnemonic: seed.mnemonic,
       );
@@ -475,8 +511,7 @@ class LWKTransactions {
       final (blockchain, err) = _networkRepository.liquidUrl;
       if (err != null) throw err;
 
-      final txid =
-          await lwk.broadcast(electrumUrl: blockchain!, txBytes: txBytes);
+      final txid = await lwk.broadcast(electrumUrl: blockchain!, txBytes: txBytes);
       final newTx = transaction.copyWith(
         txid: txid,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,
