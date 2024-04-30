@@ -1,9 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
-import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
@@ -199,59 +199,59 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   //   final _ = await _swapBoltz.deleteSwapSensitive(id: swapId);
   // }
 
-  Future<Err?> __mergeSwapIfTxExists(
-    Wallet w,
-    SwapTx swapTx,
-    Emitter<WatchTxsState> emit,
-  ) async {
-    await Future.delayed(200.ms);
+  // Future<Err?> __mergeSwapIfTxExists(
+  //   Wallet w,
+  //   SwapTx swapTx,
+  //   Emitter<WatchTxsState> emit,
+  // ) async {
+  //   await Future.delayed(200.ms);
 
-    final walletBloc = _homeCubit.state.getWalletBlocById(w.id);
-    final wallet = walletBloc?.state.wallet;
-    if (walletBloc == null || wallet == null) return Err('Wallet not found');
+  //   final walletBloc = _homeCubit.state.getWalletBlocById(w.id);
+  //   final wallet = walletBloc?.state.wallet;
+  //   if (walletBloc == null || wallet == null) return Err('Wallet not found');
 
-    final (walletAndTxs, err) = await _walletTx.mergeSwapTxIntoTx(
-      wallet: wallet,
-      swapTx: swapTx,
-    );
-    if (err != null) {
-      emit(
-        state.copyWith(
-          errWatchingInvoice: err.toString(),
-        ),
-      );
+  //   final (walletAndTxs, err) = await _walletTx.mergeSwapTxIntoTx(
+  //     wallet: wallet,
+  //     swapTx: swapTx,
+  //   );
+  //   if (err != null) {
+  //     emit(
+  //       state.copyWith(
+  //         errWatchingInvoice: err.toString(),
+  //       ),
+  //     );
 
-      return err;
-    }
-    final updatedWallet = walletAndTxs!.wallet;
-    final swapToDelete = walletAndTxs.swapsToDelete;
-    walletBloc.add(
-      UpdateWallet(
-        updatedWallet,
-        updateTypes: [
-          UpdateWalletTypes.transactions,
-          UpdateWalletTypes.swaps,
-        ],
-      ),
-    );
+  //     return err;
+  //   }
+  //   final updatedWallet = walletAndTxs!.wallet;
+  //   final swapToDelete = walletAndTxs.swapsToDelete;
+  //   walletBloc.add(
+  //     UpdateWallet(
+  //       updatedWallet,
+  //       updateTypes: [
+  //         UpdateWalletTypes.transactions,
+  //         UpdateWalletTypes.swaps,
+  //       ],
+  //     ),
+  //   );
 
-    final errDelete = await _swapBoltz.deleteSwapSensitive(id: swapToDelete.id);
-    if (errDelete != null) {
-      emit(state.copyWith(errWatchingInvoice: errDelete.toString()));
-      return null;
-    }
+  //   final errDelete = await _swapBoltz.deleteSwapSensitive(id: swapToDelete.id);
+  //   if (errDelete != null) {
+  //     emit(state.copyWith(errWatchingInvoice: errDelete.toString()));
+  //     return null;
+  //   }
 
-    Future.delayed(500.ms);
+  //   Future.delayed(500.ms);
 
-    emit(state.copyWith(syncWallet: updatedWallet));
+  //   emit(state.copyWith(syncWallet: updatedWallet));
 
-    Future.delayed(200.ms);
+  //   Future.delayed(200.ms);
 
-    // _homeCubit.updateWalletBloc(walletBloc);
-    // _homeCubit.getWalletsFromStorage();
+  //   // _homeCubit.updateWalletBloc(walletBloc);
+  //   // _homeCubit.getWalletsFromStorage();
 
-    return null;
-  }
+  //   return null;
+  // }
 
   Future<Wallet?> __updateWalletTxs(
     // Wallet wallet,
@@ -324,7 +324,13 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return null;
     }
 
-    final updatedSwap = swapTx.copyWith(txid: txid);
+    SwapTx updatedSwap;
+    try {
+      final json = jsonDecode(txid!) as Map<String, dynamic>;
+      updatedSwap = swapTx.copyWith(txid: json['id'] as String);
+    } catch (e) {
+      updatedSwap = swapTx.copyWith(txid: txid);
+    }
 
     emit(
       state.copyWith(
@@ -392,8 +398,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           __swapAlert(swapTx, wallet, emit);
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);
           if (w == null) return;
-          final err = await __mergeSwapIfTxExists(w, swapTx, emit);
-          if (err == null) await __closeSwap(swapTx, emit);
+          // final err = await __mergeSwapIfTxExists(w, swapTx, emit);
+          await __closeSwap(swapTx, emit);
       }
   }
 }

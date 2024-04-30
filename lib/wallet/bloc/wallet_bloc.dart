@@ -127,15 +127,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (state.wallet == null) return;
     if (state.syncing) return;
 
-    final (wallet, _) = await _walletsStorageRepository.readWallet(
-      walletHashId: state.wallet!.id,
-    );
-    if (wallet != null)
-      emit(
-        state.copyWith(
-          wallet: wallet,
-        ),
-      );
+    // final (wallet, _) = await _walletsStorageRepository.readWallet(
+    //   walletHashId: state.wallet!.id,
+    // );
+    // if (wallet != null)
+    //   emit(
+    //     state.copyWith(
+    //       wallet: wallet,
+    //     ),
+    //   );
 
     emit(
       state.copyWith(

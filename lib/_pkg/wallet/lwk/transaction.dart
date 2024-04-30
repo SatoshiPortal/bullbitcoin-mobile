@@ -536,8 +536,10 @@ class LWKTransactions {
       final (blockchain, err) = _networkRepository.liquidUrl;
       if (err != null) throw err;
 
-      final txid =
-          await lwk.broadcast(electrumUrl: blockchain!, txBytes: txBytes);
+      final txid = await lwk.Wallet.broadcastTx(
+        electrumUrl: blockchain!,
+        txBytes: txBytes,
+      );
       final newTx = transaction.copyWith(
         txid: txid,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,

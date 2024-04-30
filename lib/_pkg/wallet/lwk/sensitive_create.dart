@@ -133,9 +133,9 @@ class LWKSensitiveCreate {
         mnemonic: seed.mnemonic,
       );
 
-      final w = await lwk.Wallet.create(
+      final w = await lwk.Wallet.init(
         network: network,
-        dbPath: dbDir,
+        dbpath: dbDir,
         descriptor: descriptor,
       );
 
