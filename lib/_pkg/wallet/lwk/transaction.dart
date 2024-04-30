@@ -355,6 +355,7 @@ class LWKTransactions {
           timestamp: tx.timestamp,
           rbfEnabled: false,
           outAddrs: outAddressFinal!,
+          isLiquid: true,
         );
         transactions.add(txObj);
       }
