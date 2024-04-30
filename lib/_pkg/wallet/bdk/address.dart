@@ -62,8 +62,7 @@ class BDKAddress {
 
       Wallet w;
 
-      if (wallet.lastGeneratedAddress == null ||
-          addressLastUnused.index >= wallet.lastGeneratedAddress!.index!)
+      if (wallet.lastGeneratedAddress == null || addressLastUnused.index >= wallet.lastGeneratedAddress!.index!)
         w = wallet.copyWith(
           myAddressBook: addresses,
           lastGeneratedAddress: Address(
@@ -112,7 +111,7 @@ class BDKAddress {
         if (contain.isEmpty)
           addresses.add(
             Address(
-              address: address.address.toString(),
+              address: addressStr,
               index: address.index,
               kind: AddressKind.change,
               state: AddressStatus.unused,
@@ -162,9 +161,7 @@ class BDKAddress {
       for (final addr in myAddresses) {
         AddressStatus addressStatus = addr.state;
         int balance = 0;
-        final matches = utxos
-            .where((utxo) => utxo.address.address == addr.address)
-            .toList();
+        final matches = utxos.where((utxo) => utxo.address.address == addr.address).toList();
         if (matches.isEmpty) {
           if (addr.state == AddressStatus.active) {
             addressStatus = AddressStatus.used;
@@ -173,8 +170,7 @@ class BDKAddress {
           addressStatus = AddressStatus.active;
           balance = matches.fold(0, (sum, utxo) => sum + utxo.value);
         }
-        updatedAddresses
-            .add(addr.copyWith(state: addressStatus, balance: balance));
+        updatedAddresses.add(addr.copyWith(state: addressStatus, balance: balance));
       }
       final w = wallet.copyWith(
         myAddressBook: updatedAddresses,
