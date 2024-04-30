@@ -2,9 +2,9 @@ import 'package:bb_mobile/_model/transaction.dart';
 
 class WatchTxsEvent {}
 
-class InitializeSwapWatcher extends WatchTxsEvent {
-  InitializeSwapWatcher();
-}
+// class InitializeSwapWatcher extends WatchTxsEvent {
+//   InitializeSwapWatcher();
+// }
 
 class WatchWallets extends WatchTxsEvent {
   WatchWallets({required this.isTestnet});

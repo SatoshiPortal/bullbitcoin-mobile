@@ -54,7 +54,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         _homeCubit = homeCubit,
         _swapBoltz = swapBoltz,
         super(const WatchTxsState()) {
-    on<InitializeSwapWatcher>(_initializeSwapWatcher);
+    // on<InitializeSwapWatcher>(_initializeSwapWatcher);
     on<WatchWallets>(_onWatchWallets);
     on<ClearAlerts>(_onClearAlerts);
     // on<WatchSwapStatus>(_onWatchSwapStatus);
@@ -62,7 +62,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // on<SwapStatusUpdate>(_onSwapStatusUpdate);
     // on<DeleteSensitiveSwapData>(_onDeleteSensitiveSwapData);
 
-    add(InitializeSwapWatcher());
+    // add(InitializeSwapWatcher());
   }
 
   final SwapBoltz _swapBoltz;
@@ -73,46 +73,55 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   BoltzApi? _boltzMainnet;
   BoltzApi? _boltzTestnet;
 
-  late StreamSubscription _mainNetStream;
-  late StreamSubscription _testNetStream;
+  StreamSubscription? _mainNetStream;
+  StreamSubscription? _testNetStream;
 
   @override
   Future<void> close() {
-    _mainNetStream.cancel();
-    _testNetStream.cancel();
-    _boltzMainnet = null;
-    _boltzTestnet = null;
+    _disposeAll();
     return super.close();
   }
 
-  void _initializeSwapWatcher(
-    InitializeSwapWatcher event,
-    Emitter<WatchTxsState> emit,
-  ) async {
-    if (_boltzMainnet != null && _boltzTestnet != null) return;
+  void _disposeAll() {
+    _mainNetStream?.cancel();
+    _testNetStream?.cancel();
+    _boltzMainnet?.dispose();
+    _boltzTestnet?.dispose();
 
-    // emit(state.copyWith(isTestnet: event.isTestnet));
-
-    final (watcher, err) = await _swapBoltz.initializeBoltzApi(false);
-    if (err != null) {
-      emit(state.copyWith(errWatchingInvoice: err.message));
-      return;
-    }
-    _boltzMainnet = watcher;
-
-    final (watcherTestnet, errTestnet) =
-        await _swapBoltz.initializeBoltzApi(true);
-    if (errTestnet != null) {
-      emit(state.copyWith(errWatchingInvoice: errTestnet.message));
-      return;
-    }
-    _boltzTestnet = watcherTestnet;
-
-    // emit(state.copyWith(boltzWatcher: boltzWatcher));
-
-    // await Future.delayed(2.seconds);
-    // add(WatchWallets(isTestnet: event.isTestnet));
+    _boltzMainnet = null;
+    _boltzTestnet = null;
+    _mainNetStream = null;
+    _testNetStream = null;
   }
+
+  // void _initializeSwapWatcher(
+  //   InitializeSwapWatcher event,
+  //   Emitter<WatchTxsState> emit,
+  // ) async {
+  //   if (_boltzMainnet != null && _boltzTestnet != null) return;
+
+  //   // emit(state.copyWith(isTestnet: event.isTestnet));
+
+  //   // final (watcher, err) = await _swapBoltz.initializeBoltzApi(false);
+  //   // if (err != null) {
+  //   //   emit(state.copyWith(errWatchingInvoice: err.message));
+  //   //   return;
+  //   // }
+  //   // _boltzMainnet = watcher;
+
+  //   // final (watcherTestnet, errTestnet) =
+  //   //     await _swapBoltz.initializeBoltzApi(true);
+  //   // if (errTestnet != null) {
+  //   //   emit(state.copyWith(errWatchingInvoice: errTestnet.message));
+  //   //   return;
+  //   // }
+  //   // _boltzTestnet = watcherTestnet;
+
+  //   // emit(state.copyWith(boltzWatcher: boltzWatcher));
+
+  //   // await Future.delayed(2.seconds);
+  //   // add(WatchWallets(isTestnet: event.isTestnet));
+  // }
 
   void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) async {
     print('WatchWallets: ${event.isTestnet}');
@@ -148,25 +157,37 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     required List<String> swapTxsToWatch,
     required bool isTestnet,
   }) async {
-    if (swapTxsToWatch.isEmpty) return;
-    if (_boltzMainnet == null && _boltzTestnet == null) {
-      emit(
-        state.copyWith(
-          errWatchingInvoice:
-              'Watcher not initialized. Re-initializing. Try Again.',
-        ),
-      );
+    // if (swapTxsToWatch.isEmpty) return;
+    // if (_boltzMainnet == null && _boltzTestnet == null) {
+    //   emit(
+    //     state.copyWith(
+    //       errWatchingInvoice:
+    //           'Watcher not initialized. Re-initializing. Try Again.',
+    //     ),
+    //   );
 
-      // add(InitializeSwapWatcher());
-      return;
-    }
+    //   // add(InitializeSwapWatcher());
+    //   return;
+    // }
 
     for (final swap in swapTxsToWatch) {
       final exists = state.isListening(swap);
       if (exists) continue;
       emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
     }
+
+    _disposeAll();
+
     if (isTestnet) {
+      final (watcherTestnet, errTestnet) =
+          await _swapBoltz.initializeBoltzApi(true);
+      if (errTestnet != null) {
+        emit(state.copyWith(errWatchingInvoice: errTestnet.message));
+        return;
+      }
+
+      _boltzTestnet = watcherTestnet;
+
       _testNetStream =
           _boltzTestnet!.subscribeSwapStatus(swapTxsToWatch).listen(
         (event) {
@@ -178,6 +199,14 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         },
       );
     } else {
+      final (watcher, err) = await _swapBoltz.initializeBoltzApi(false);
+
+      if (err != null) {
+        emit(state.copyWith(errWatchingInvoice: err.message));
+        return;
+      }
+      _boltzMainnet = watcher;
+
       _mainNetStream =
           _boltzMainnet!.subscribeSwapStatus(swapTxsToWatch).listen(
         (event) {

@@ -61,7 +61,7 @@
         "ios": true,
         // 
         // 
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
         // 
         // 
         "**/test": true,

@@ -84,8 +84,10 @@ class SwapAppListener extends StatelessWidget {
               );
               return;
             } else {
+              print('----> 1');
               final isReceivePage =
                   GoRouterState.of(context).uri.toString() == '/receive';
+              print('----> 2 $isReceivePage');
 
               if (!isReceivePage)
                 showToastWidget(
