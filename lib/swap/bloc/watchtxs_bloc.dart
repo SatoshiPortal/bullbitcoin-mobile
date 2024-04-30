@@ -210,7 +210,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       swapTx: swapTx,
     );
     if (err != null) {
-      emit(state.copyWith(errWatchingInvoice: err.toString()));
+      emit(
+        state.copyWith(
+          errWatchingInvoice: err.toString(),
+        ),
+      );
+
       return err;
     }
     final updatedWallet = walletAndTxs!.wallet;
@@ -230,6 +235,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       emit(state.copyWith(errWatchingInvoice: errDelete.toString()));
       return null;
     }
+
+    emit(state.copyWith(syncWallet: updatedWallet));
 
     Future.delayed(200.ms);
 
@@ -317,6 +324,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         claimedSwapTxs: [...state.claimedSwapTxs, updatedSwap.id],
         claimingSwapTxIds: state.removeClaimingTx(updatedSwap.id),
         claimingSwap: false,
+        syncWallet: walletBloc.state.wallet,
       ),
     );
 
