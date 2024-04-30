@@ -7,6 +7,23 @@
             "command": "flutter pub run build_runner watch --delete-conflicting-outputs",
             "isBackground": true,
         },
+        {
+            "label": "Pay LN Invoice",
+            "type": "shell",
+            "command": "ssh debian@${input:LNserver} && entercln && lightning-cli --lightning-dir=/.lightning pay ${input:LNInvoice}",
+        }
     ],
-    "inputs": [],
+    "inputs": [
+        {
+            "id": "LNserver",
+            "description": "Testnet Server IP",
+            "type": "promptString",
+            "default": "170.75.171.46"
+        },
+        {
+            "id": "LNInvoice",
+            "description": "Lightning Invoice",
+            "type": "promptString"
+        }
+    ],
 }

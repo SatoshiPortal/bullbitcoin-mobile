@@ -155,6 +155,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       api: isTestnet ? _boltzApiTestnet! : _boltzWatcher!,
       swapIds: swapTxsToWatch,
       onUpdate: (id, status) {
+        print('SwapStatusUpdatedd: $id - ${status.status}');
         __swapStatusUpdated(
           emit,
           swapId: id,
@@ -298,7 +299,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       shouldRefund: shouldRefund,
     );
     if (err != null) {
-      print(err.toString());
+      print(err);
       emit(
         state.copyWith(
           claimingSwap: false,
