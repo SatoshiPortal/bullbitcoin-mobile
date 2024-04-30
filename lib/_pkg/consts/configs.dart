@@ -17,3 +17,6 @@ const boltzMainnet = 'api.boltz.exchange';
 
 final exchangeapi = bbexchangeapi;
 final mempoolapi = bbmempoolapi;
+
+const liquidMempool = 'https://liquid.network';
+const liquidMempoolTestnet = 'https://liquid.network/testnet';

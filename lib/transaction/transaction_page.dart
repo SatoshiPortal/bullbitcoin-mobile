@@ -100,8 +100,7 @@ class _TxAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label =
-        context.select((TransactionCubit cubit) => cubit.state.tx.label ?? '');
+    final label = context.select((TransactionCubit cubit) => cubit.state.tx.label ?? '');
 
     return BBAppBar(
       text: label.isNotEmpty ? label : 'Transaction',
@@ -180,29 +179,23 @@ class _TxDetails extends StatelessWidget {
 
     // final toAddresses = tx.outAddresses ?? [];
 
-    final err = context
-        .select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
+    final err = context.select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
 
     final txid = tx.txid;
     final amt = tx.getAmount().abs();
     final isReceived = tx.isReceived();
     final fees = tx.fee ?? 0;
     final amtStr = context.select(
-      (CurrencyCubit cubit) =>
-          cubit.state.getAmountInUnits(amt, removeText: true),
+      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(amt, removeText: true),
     );
     final feeStr = context.select(
-      (CurrencyCubit cubit) =>
-          cubit.state.getAmountInUnits(fees, removeText: true),
+      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(fees, removeText: true),
     );
     final units = context.select(
-      (CurrencyCubit cubit) =>
-          cubit.state.getUnitString(isLiquid: tx.wallet?.isLiquid() ?? false),
+      (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: tx.wallet?.isLiquid() ?? false),
     );
     final status = tx.timestamp == 0 ? 'Pending' : 'Confirmed';
-    final time = tx.timestamp == 0
-        ? 'Waiting for confirmations'
-        : timeago.format(tx.getDateTime());
+    final time = tx.timestamp == 0 ? 'Waiting for confirmations' : timeago.format(tx.getDateTime());
     final broadcastTime = tx.getBroadcastDateTime();
 
     final recipients = tx.outAddrs;
@@ -266,15 +259,13 @@ class _TxDetails extends StatelessWidget {
             const Gap(4),
             InkWell(
               onTap: () {
-                final url =
-                    context.read<NetworkCubit>().state.explorerTxUrl(txid);
+                final url = context.read<NetworkCubit>().state.explorerTxUrl(txid, isLiquid: tx.isLiquid);
                 locator<Launcher>().launchApp(url);
               },
               child: BBText.body(txid, isBlue: true),
             ),
             const Gap(24),
-            if (recipients.isNotEmpty &&
-                recipientAddress.address.isNotEmpty) ...[
+            if (recipients.isNotEmpty && recipientAddress.address.isNotEmpty) ...[
               const BBText.title('Recipient Bitcoin Address'),
               // const Gap(4),
               InkWell(
@@ -282,7 +273,7 @@ class _TxDetails extends StatelessWidget {
                   final url = context
                       .read<NetworkCubit>()
                       .state
-                      .explorerAddressUrl(recipientAddress.address);
+                      .explorerAddressUrl(recipientAddress.address, isLiquid: tx.isLiquid);
                   locator<Launcher>().launchApp(url);
                 },
                 child: BBText.body(recipientAddress.address, isBlue: true),

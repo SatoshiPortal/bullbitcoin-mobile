@@ -41,6 +41,7 @@ mixin _$Transaction {
   Wallet? get wallet => throw _privateConstructorUsedError;
   bool get isSwap => throw _privateConstructorUsedError;
   SwapTx? get swapTx => throw _privateConstructorUsedError;
+  bool get isLiquid => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -73,7 +74,8 @@ abstract class $TransactionCopyWith<$Res> {
       bdk.TransactionDetails? bdkTx,
       Wallet? wallet,
       bool isSwap,
-      SwapTx? swapTx});
+      SwapTx? swapTx,
+      bool isLiquid});
 
   $WalletCopyWith<$Res>? get wallet;
   $SwapTxCopyWith<$Res>? get swapTx;
@@ -110,6 +112,7 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? wallet = freezed,
     Object? isSwap = null,
     Object? swapTx = freezed,
+    Object? isLiquid = null,
   }) {
     return _then(_value.copyWith(
       timestamp: null == timestamp
@@ -184,6 +187,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.swapTx
           : swapTx // ignore: cast_nullable_to_non_nullable
               as SwapTx?,
+      isLiquid: null == isLiquid
+          ? _value.isLiquid
+          : isLiquid // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -239,7 +246,8 @@ abstract class _$$TransactionImplCopyWith<$Res>
       bdk.TransactionDetails? bdkTx,
       Wallet? wallet,
       bool isSwap,
-      SwapTx? swapTx});
+      SwapTx? swapTx,
+      bool isLiquid});
 
   @override
   $WalletCopyWith<$Res>? get wallet;
@@ -276,6 +284,7 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? wallet = freezed,
     Object? isSwap = null,
     Object? swapTx = freezed,
+    Object? isLiquid = null,
   }) {
     return _then(_$TransactionImpl(
       timestamp: null == timestamp
@@ -350,6 +359,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.swapTx
           : swapTx // ignore: cast_nullable_to_non_nullable
               as SwapTx?,
+      isLiquid: null == isLiquid
+          ? _value.isLiquid
+          : isLiquid // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -375,7 +388,8 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       @JsonKey(includeFromJson: false, includeToJson: false) this.bdkTx,
       this.wallet,
       this.isSwap = false,
-      this.swapTx})
+      this.swapTx,
+      this.isLiquid = false})
       : _outAddrs = outAddrs,
         super._();
 
@@ -432,10 +446,13 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
   final bool isSwap;
   @override
   final SwapTx? swapTx;
+  @override
+  @JsonKey()
+  final bool isLiquid;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapTx: $swapTx)';
+    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid)';
   }
 
   @override
@@ -460,7 +477,8 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('bdkTx', bdkTx))
       ..add(DiagnosticsProperty('wallet', wallet))
       ..add(DiagnosticsProperty('isSwap', isSwap))
-      ..add(DiagnosticsProperty('swapTx', swapTx));
+      ..add(DiagnosticsProperty('swapTx', swapTx))
+      ..add(DiagnosticsProperty('isLiquid', isLiquid));
   }
 
   @override
@@ -490,31 +508,35 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
             (identical(other.bdkTx, bdkTx) || other.bdkTx == bdkTx) &&
             (identical(other.wallet, wallet) || other.wallet == wallet) &&
             (identical(other.isSwap, isSwap) || other.isSwap == isSwap) &&
-            (identical(other.swapTx, swapTx) || other.swapTx == swapTx));
+            (identical(other.swapTx, swapTx) || other.swapTx == swapTx) &&
+            (identical(other.isLiquid, isLiquid) ||
+                other.isLiquid == isLiquid));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      timestamp,
-      txid,
-      received,
-      sent,
-      fee,
-      height,
-      label,
-      toAddress,
-      psbt,
-      const DeepCollectionEquality().hash(pset),
-      rbfEnabled,
-      oldTx,
-      broadcastTime,
-      const DeepCollectionEquality().hash(_outAddrs),
-      bdkTx,
-      wallet,
-      isSwap,
-      swapTx);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        timestamp,
+        txid,
+        received,
+        sent,
+        fee,
+        height,
+        label,
+        toAddress,
+        psbt,
+        const DeepCollectionEquality().hash(pset),
+        rbfEnabled,
+        oldTx,
+        broadcastTime,
+        const DeepCollectionEquality().hash(_outAddrs),
+        bdkTx,
+        wallet,
+        isSwap,
+        swapTx,
+        isLiquid
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -551,7 +573,8 @@ abstract class _Transaction extends Transaction {
       final bdk.TransactionDetails? bdkTx,
       final Wallet? wallet,
       final bool isSwap,
-      final SwapTx? swapTx}) = _$TransactionImpl;
+      final SwapTx? swapTx,
+      final bool isLiquid}) = _$TransactionImpl;
   const _Transaction._() : super._();
 
   factory _Transaction.fromJson(Map<String, dynamic> json) =
@@ -595,6 +618,8 @@ abstract class _Transaction extends Transaction {
   bool get isSwap;
   @override
   SwapTx? get swapTx;
+  @override
+  bool get isLiquid;
   @override
   @JsonKey(ignore: true)
   _$$TransactionImplCopyWith<_$TransactionImpl> get copyWith =>

@@ -97,12 +97,21 @@ class NetworkState with _$NetworkState {
   // return boltz.Chain.Bitcoin;
   // }
 
-  String explorerTxUrl(String txid) =>
-      testnet ? 'https://$mempoolapi/testnet/tx/$txid' : 'https://$mempoolapi/tx/$txid';
+  String explorerTxUrl(String txid, {bool isLiquid = false}) {
+    if (isLiquid) {
+      return testnet ? '$liquidMempoolTestnet/tx/$txid' : '$liquidMempool/tx/$txid';
+    } else {
+      return testnet ? 'https://$mempoolapi/testnet/tx/$txid' : 'https://$mempoolapi/tx/$txid';
+    }
+  }
 
-  String explorerAddressUrl(String address) => testnet
-      ? 'https://$mempoolapi/testnet/address/$address'
-      : 'https://$mempoolapi/address/$address';
+  String explorerAddressUrl(String address, {bool isLiquid = false}) {
+    if (isLiquid) {
+      return testnet ? '$liquidMempoolTestnet/address/$address' : '$liquidMempool/address/$address';
+    } else {
+      return testnet ? 'https://$mempoolapi/testnet/address/$address' : 'https://$mempoolapi/address/$address';
+    }
+  }
 
   ElectrumTypes? networkFromString(String text) {
     final network = text.toLowerCase().replaceAll(' ', '');
