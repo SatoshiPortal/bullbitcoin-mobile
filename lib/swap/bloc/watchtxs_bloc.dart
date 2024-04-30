@@ -232,7 +232,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     Future.delayed(200.ms);
 
-    _homeCubit.updateWalletBloc(walletBloc);
+    // _homeCubit.updateWalletBloc(walletBloc);
     // _homeCubit.getWalletsFromStorage();
 
     return null;

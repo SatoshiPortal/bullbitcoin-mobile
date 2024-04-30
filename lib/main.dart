@@ -6,7 +6,7 @@ import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/deep_linking.dart';
-import 'package:bb_mobile/home/home_page.dart';
+import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
