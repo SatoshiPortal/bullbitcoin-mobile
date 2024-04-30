@@ -70,31 +70,44 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   final HomeCubit _homeCubit;
 
-  BoltzApi? _boltzWatcher;
-  BoltzApi? _boltzApiTestnet;
+  BoltzApi? _boltzMainnet;
+  BoltzApi? _boltzTestnet;
+
+  late StreamSubscription _mainNetStream;
+  late StreamSubscription _testNetStream;
+
+  @override
+  Future<void> close() {
+    _boltzMainnet = null;
+    _boltzTestnet = null;
+    _mainNetStream.cancel();
+    _testNetStream.cancel();
+    return super.close();
+  }
 
   void _initializeSwapWatcher(
     InitializeSwapWatcher event,
     Emitter<WatchTxsState> emit,
   ) async {
-    if (_boltzWatcher != null && _boltzApiTestnet != null) return;
+    // if (_boltzMainnet != null && _boltzTestnet != null) return;
 
-    // emit(state.copyWith(isTestnet: event.isTestnet));
+    // // emit(state.copyWith(isTestnet: event.isTestnet));
 
-    final (watcher, err) = await _swapBoltz.initializeBoltzApi(false);
-    if (err != null) {
-      emit(state.copyWith(errWatchingInvoice: err.message));
-      return;
-    }
-    _boltzWatcher = watcher;
+    // final (watcher, err) = await _swapBoltz.initializeBoltzApi(false);
+    // if (err != null) {
+    //   emit(state.copyWith(errWatchingInvoice: err.message));
+    //   return;
+    // }
+    // _boltzMainnet = watcher;
 
-    final (watcherTestnet, errTestnet) =
-        await _swapBoltz.initializeBoltzApi(true);
-    if (errTestnet != null) {
-      emit(state.copyWith(errWatchingInvoice: errTestnet.message));
-      return;
-    }
-    _boltzApiTestnet = watcherTestnet;
+    // final (watcherTestnet, errTestnet) =
+    //     await _swapBoltz.initializeBoltzApi(true);
+    // if (errTestnet != null) {
+    //   emit(state.copyWith(errWatchingInvoice: errTestnet.message));
+    //   return;
+    // }
+    // _boltzTestnet = watcherTestnet;
+
     // emit(state.copyWith(boltzWatcher: boltzWatcher));
 
     // await Future.delayed(2.seconds);
@@ -134,7 +147,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     required bool isTestnet,
   }) async {
     if (swapTxsToWatch.isEmpty) return;
-    if (_boltzWatcher == null && _boltzApiTestnet == null) {
+    if (_boltzMainnet == null && _boltzTestnet == null) {
       emit(
         state.copyWith(
           errWatchingInvoice:
@@ -142,7 +155,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         ),
       );
 
-      add(InitializeSwapWatcher());
+      // add(InitializeSwapWatcher());
       return;
     }
 
@@ -151,20 +164,44 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       if (exists) continue;
       emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
     }
-    final err = await _swapBoltz.addSwapSubs(
-      api: isTestnet ? _boltzApiTestnet! : _boltzWatcher!,
-      swapIds: swapTxsToWatch,
-      onUpdate: (id, status) {
-        print('SwapStatusUpdatedd: $id - ${status.status}');
-        __swapStatusUpdated(
-          emit,
-          swapId: id,
-          status: status,
-          // walletId: walletId,
-        );
-      },
-    );
-    if (err != null) emit(state.copyWith(errWatchingInvoice: err.toString()));
+    if (isTestnet) {
+      _testNetStream =
+          _boltzTestnet!.subscribeSwapStatus(swapTxsToWatch).listen(
+        (event) {
+          __swapStatusUpdated(
+            emit,
+            swapId: event.id,
+            status: event,
+          );
+        },
+      );
+    } else {
+      _mainNetStream =
+          _boltzMainnet!.subscribeSwapStatus(swapTxsToWatch).listen(
+        (event) {
+          __swapStatusUpdated(
+            emit,
+            swapId: event.id,
+            status: event,
+          );
+        },
+      );
+    }
+
+    // final err = await _swapBoltz.addSwapSubs(
+    //   api: isTestnet ? _boltzTestnet! : _boltzMainnet!,
+    //   swapIds: swapTxsToWatch,
+    //   onUpdate: (id, status) {
+    //     print('SwapStatusUpdatedd: $id - ${status.status}');
+    //     __swapStatusUpdated(
+    //       emit,
+    //       swapId: id,
+    //       status: status,
+    //       // walletId: walletId,
+    //     );
+    //   },
+    // );
+    // if (err != null) emit(state.copyWith(errWatchingInvoice: err.toString()));
   }
 
   void __swapStatusUpdated(

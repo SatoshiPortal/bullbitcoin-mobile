@@ -151,23 +151,25 @@ class SwapBoltz {
     }
   }
 
-  Future<Err?> addSwapSubs({
-    required BoltzApi api,
-    required List<String> swapIds,
-    required void Function(
-      String id,
-      SwapStreamStatus status,
-    ) onUpdate,
-  }) async {
-    try {
-      api.subscribeSwapStatus(swapIds).listen((event) {
-        onUpdate(event.id, event);
-      });
-      return null;
-    } catch (e) {
-      return Err(e.toString());
-    }
-  }
+  // Future<Err?> addSwapSubs({
+  //   required BoltzApi api,
+  //   required List<String> swapIds,
+  //   required void Function(
+  //     String id,
+  //     SwapStreamStatus status,
+  //   ) onUpdate,
+  // }) async {
+  //   try {
+  //     final completer1 = Completer();
+
+  //     api.subscribeSwapStatus(swapIds).listen((event) {
+  //       onUpdate(event.id, event);
+  //     });
+  //     return null;
+  //   } catch (e) {
+  //     return Err(e.toString());
+  //   }
+  // }
 
   Future<(String?, Err?)> claimOrRefundSwap({
     required SwapTx swapTx,
