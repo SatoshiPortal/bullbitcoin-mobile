@@ -23,17 +23,13 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
+import 'package:bb_mobile/receive/listeners.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
-import 'package:bb_mobile/swap/bloc/swap_state.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/receive.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
@@ -97,98 +93,15 @@ class _ReceivePageState extends State<ReceivePage> {
         BlocProvider.value(value: _currencyCubit),
         BlocProvider.value(value: _swapCubit),
       ],
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<ReceiveCubit, ReceiveState>(
-            listenWhen: (previous, current) =>
-                previous.updateAddressGap != current.updateAddressGap,
-            listener: (context, state) {
-              if (state.updateAddressGap == null) return;
-
-              context
-                  .read<NetworkCubit>()
-                  .updateStopGapAndSave(state.updateAddressGap!);
-            },
-          ),
-          BlocListener<ReceiveCubit, ReceiveState>(
-            listenWhen: (previous, current) =>
-                previous.switchToSecure != current.switchToSecure,
-            listener: (context, state) {
-              if (!state.switchToSecure) return;
-
-              final network = context.read<NetworkCubit>().state.getBBNetwork();
-              final secureWallet =
-                  context.read<HomeCubit>().state.getMainSecureWallet(network);
-              if (secureWallet == null) return;
-              context.read<ReceiveCubit>().updateWalletBloc(secureWallet);
-              context.read<ReceiveCubit>().clearSwitch();
-            },
-          ),
-          BlocListener<ReceiveCubit, ReceiveState>(
-            listenWhen: (previous, current) =>
-                previous.switchToInstant != current.switchToInstant,
-            listener: (context, state) {
-              if (!state.switchToInstant) return;
-
-              final network = context.read<NetworkCubit>().state.getBBNetwork();
-              final instantWallet =
-                  context.read<HomeCubit>().state.getMainInstantWallet(network);
-              if (instantWallet == null) return;
-              context.read<ReceiveCubit>().updateWalletBloc(instantWallet);
-              context.read<ReceiveCubit>().clearSwitch();
-            },
-          ),
-          BlocListener<ReceiveCubit, ReceiveState>(
-            listenWhen: (previous, current) =>
-                previous.defaultAddress != current.defaultAddress,
-            listener: (context, state) {
-              if (state.defaultAddress != null) return;
-
-              context.read<SwapCubit>().clearSwapTx();
-              context.read<CurrencyCubit>().reset();
-            },
-          ),
-          BlocListener<SwapCubit, SwapState>(
-            listenWhen: (previous, current) =>
-                previous.updatedWallet != current.updatedWallet,
-            listener: (context, state) async {
-              final updatedWallet = state.updatedWallet;
-              if (updatedWallet == null) return;
-
-              context
-                  .read<HomeCubit>()
-                  .state
-                  .getWalletBloc(
-                    updatedWallet,
-                  )
-                  ?.add(
-                    UpdateWallet(
-                      updatedWallet,
-                      updateTypes: [
-                        UpdateWalletTypes.swaps,
-                        UpdateWalletTypes.transactions,
-                      ],
-                    ),
-                  );
-
-              await Future.delayed(500.ms);
-
-              final isTestnet = context.read<NetworkCubit>().state.testnet;
-
-              context
-                  .read<WatchTxsBloc>()
-                  .add(WatchWallets(isTestnet: isTestnet));
-
-              context.read<SwapCubit>().clearUpdatedWallet();
-            },
-          ),
-        ],
+      child: ReceiveListeners(
         child: Scaffold(
           appBar: AppBar(
             flexibleSpace: const _ReceiveAppBar(),
             automaticallyImplyLeading: false,
           ),
-          body: const _WalletProvider(child: _Screen()),
+          body: const _WalletProvider(
+            child: _Screen(),
+          ),
         ),
       ),
     );
@@ -284,6 +197,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
       },
       value: walletBloc,
       onChanged: (value) {
+        context.read<SwapCubit>().removeWarnings();
         context.read<ReceiveCubit>().updateWalletBloc(value);
       },
     );

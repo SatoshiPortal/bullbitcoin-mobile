@@ -255,8 +255,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    state.walletBloc!.add(UpdateWallet(updatedWallet!,
-        updateTypes: [UpdateWalletTypes.addresses]));
+    state.walletBloc!.add(
+      UpdateWallet(
+        updatedWallet!,
+        updateTypes: [UpdateWalletTypes.addresses],
+      ),
+    );
 
     final addressGap = updatedWallet.addressGap();
     if (addressGap >= 5 && addressGap <= 20) {
