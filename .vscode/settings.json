@@ -44,7 +44,7 @@
         ".idea": true,
         ".gitignore": true,
         // 
-        "**/analysis_options.yaml": true,
+        // "**/analysis_options.yaml": true,
         "build.yaml": true,
         "**/build": true,
         "**/assets": true,

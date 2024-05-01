@@ -267,12 +267,13 @@ class BBlocObserver extends BlocObserver {
   }
 }
 
-// extension GoRouterExtension on GoRouter {
-//   String location() {
-//     final  lastMatch = routerDelegate.currentConfiguration.last;
-//     final  matchList =
-//         lastMatch is ImperativeRouteMatch ? lastMatch.matches : routerDelegate.currentConfiguration;
-//     final String location = matchList.uri.toString();
-//     return location;
-//   }
-// }
+extension GoRouterExtension on GoRouter {
+  String location() {
+    final lastMatch = routerDelegate.currentConfiguration.last;
+    final matchList = lastMatch is ImperativeRouteMatch
+        ? lastMatch.matches
+        : routerDelegate.currentConfiguration;
+    final String location = matchList.uri.toString();
+    return location;
+  }
+}

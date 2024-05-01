@@ -2,6 +2,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
@@ -21,6 +22,33 @@ class SwapAppListener extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
+        // BlocListener<TestCub, bool>(
+        //   listener: (context, state) {
+        //     print('----> 0 $state');
+        //     try {
+        //       // Navigator.of(context);
+        //       final x = router.location();
+        //       // final x = router.routeInformationProvider.value.uri.toString();
+        //       // router.configuration.
+        //       // navigatorKey.currentState.
+        //       // final x = router.routeInformationParser.configuration.routes.first
+        //       // .toString();
+        //       // router.
+        //       // ModalRoute.of(navigatorKey.currentContext!)?.settings.name ??
+        //       //     'nooo';
+
+        //       final isReceivePage = router.location() == '/receive';
+
+        //       // router.routeInformationParser.configuration.r
+
+        //       // router.routerDelegate.
+        //       // navigatorKey.currentContext;
+        //       print('----> 1 $x');
+        //     } catch (e) {
+        //       print('----> 2 $e');
+        //     }
+        //   },
+        // ),
         BlocListener<HomeCubit, HomeState>(
           listenWhen: (previous, current) =>
               previous.loadingWallets != current.loadingWallets,
@@ -87,8 +115,7 @@ class SwapAppListener extends StatelessWidget {
               print('----> 1');
 
               try {
-                final isReceivePage =
-                    GoRouterState.of(context).uri.toString() == '/receive';
+                final isReceivePage = router.location() == '/receive';
                 print('----> 2 $isReceivePage');
 
                 if (!isReceivePage)
@@ -126,3 +153,18 @@ class SwapAppListener extends StatelessWidget {
     );
   }
 }
+
+// class TestCub extends Cubit<bool> {
+//   TestCub() : super(false) {
+//     _test();
+//   }
+
+//   void toggle() => emit(!state);
+
+//   void _test() async {
+//     for (var i = 0; i < 10; i++) {
+//       await Future.delayed(const Duration(seconds: 10));
+//       toggle();
+//     }
+//   }
+// }

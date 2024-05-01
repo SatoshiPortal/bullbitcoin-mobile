@@ -73,6 +73,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
           BlocProvider.value(value: locator<CurrencyCubit>()),
           BlocProvider.value(value: locator<HomeCubit>()),
           BlocProvider.value(value: locator<WatchTxsBloc>()),
+          // BlocProvider.value(value: TestCub()),
         ],
         child: BlocListener<SettingsCubit, SettingsState>(
           listener: (context, state) {
