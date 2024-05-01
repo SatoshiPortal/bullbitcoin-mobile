@@ -128,6 +128,18 @@ class HomeState with _$HomeState {
     return wallet;
   }
 
+  Transaction? getTxFromSwap(SwapTx swap) {
+    final isLiq = swap.walletType == BaseWalletType.Liquid;
+    final network = swap.network;
+    final wallet = isLiq
+        ? getMainSecureWallet(network)?.state.wallet
+        : getMainInstantWallet(network)?.state.wallet;
+    if (wallet == null) return null;
+    final idx = wallet.transactions.indexWhere((t) => t.swapTx?.id == swap.id);
+    if (idx == -1) return null;
+    return wallet.transactions[idx];
+  }
+
   // int? getLastWalletIdx(BBNetwork network) {
   //   if (network == BBNetwork.Testnet) return lastTestnetWalletIdx;
   //   return lastMainnetWalletIdx;

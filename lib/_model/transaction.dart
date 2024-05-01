@@ -343,9 +343,8 @@ class SwapTx with _$SwapTx {
         statuss == SwapStatus.txnFailed ||
         statuss == SwapStatus.txnLockupFailed)
       return ReverseSwapActions.failed;
-
-    // else if (paidReverse())
-    // return ReverseSwapActions.paid;
+    else if (paidReverse())
+      return ReverseSwapActions.paid;
     else if (claimableReverse())
       return ReverseSwapActions.claimable;
     else if (settledReverse())
@@ -358,7 +357,7 @@ class SwapTx with _$SwapTx {
 enum ReverseSwapActions {
   created,
   failed,
-  // paid,
+  paid,
   claimable,
   settled,
 }

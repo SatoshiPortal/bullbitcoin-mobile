@@ -73,11 +73,17 @@ class SwapAppListener extends StatelessWidget {
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = tx.actionPrefixStr();
 
-            showToastWidget(
-              position: ToastPosition.top,
-              AlertUI(text: '$prefix $amtStr'),
-              animationCurve: Curves.decelerate,
-            );
+            final isReceivePage = router.location() == '/receive';
+
+            if (!isReceivePage) {
+              showToastWidget(
+                position: ToastPosition.top,
+                AlertUI(text: '$prefix $amtStr'),
+                animationCurve: Curves.decelerate,
+              );
+            } else {
+              context.push('/swap-receive', extra: tx);
+            }
 
             context.read<WatchTxsBloc>().add(ClearAlerts());
           },
@@ -115,10 +121,14 @@ class SwapAppListener extends StatelessWidget {
               print('----> 1');
 
               try {
-                final isReceivePage = router.location() == '/receive';
-                print('----> 2 $isReceivePage');
+                final route = router.location();
+                final isReceivePage = route == '/receive';
+                final isSwapReceivePage = route == '/swap-receive';
 
-                if (!isReceivePage)
+                print('----> 2 $isReceivePage');
+                print('----> 2.2 $isSwapReceivePage');
+
+                if (!isReceivePage && !isSwapReceivePage)
                   showToastWidget(
                     position: ToastPosition.top,
                     AlertUI(
@@ -128,7 +138,8 @@ class SwapAppListener extends StatelessWidget {
                       },
                     ),
                   );
-                else
+
+                if (isReceivePage && !isSwapReceivePage)
                   context.push('/swap-receive', extra: tx);
               } catch (e) {
                 print('----> 3 $e');

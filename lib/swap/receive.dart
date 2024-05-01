@@ -5,9 +5,12 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -15,6 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 
 class SwapHistoryButton extends StatelessWidget {
   const SwapHistoryButton({super.key});
@@ -265,44 +269,98 @@ class AlertUI extends StatelessWidget {
   }
 }
 
-class ReceiveSwapPaidSuccessPage extends StatelessWidget {
-  const ReceiveSwapPaidSuccessPage({super.key, required this.tx});
+class ReceivingSwapPage extends StatefulWidget {
+  const ReceivingSwapPage({super.key, required this.tx});
 
-  final Transaction tx;
+  final SwapTx tx;
+
+  @override
+  State<ReceivingSwapPage> createState() => _ReceivingSwapPageState();
+}
+
+class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
+  bool received = false;
 
   @override
   Widget build(BuildContext context) {
-    final amt = tx.getAmount();
+    var amt = widget.tx.recievableAmount() ?? 0;
+
+    final tx = context.select(
+      (HomeCubit cubit) => cubit.state.getTxFromSwap(widget.tx),
+    );
+
+    if (tx != null) amt = tx.getAmount();
+
     final amtStr =
         context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
-    return Scaffold(
-      appBar: AppBar(flexibleSpace: const BBAppBar(text: 'Swap Received')),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const BBText.body('Payment received'),
-          const Gap(16),
-          const Center(
-            child: SizedBox(
-              height: 200,
-              width: 200,
-              child: Icon(
-                FontAwesomeIcons.circleCheck,
-                color: Colors.green,
+
+    return BlocListener<WatchTxsBloc, WatchTxsState>(
+      listenWhen: (previous, current) => previous.txPaid != current.txPaid,
+      listener: (context, state) async {
+        final swapTx = state.txPaid;
+        if (swapTx == null) return;
+        if (swapTx.id != widget.tx.id) return;
+
+        if (swapTx.settledReverse()) {
+          await Future.delayed(200.ms);
+          setState(() {
+            received = true;
+          });
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(flexibleSpace: const BBAppBar(text: 'Swap Received')),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (!received)
+              const BBText.body('Receiving payment')
+            else
+              const BBText.body('Payment received'),
+            const Gap(16),
+            ReceivedTick(received: received),
+            const Gap(16),
+            BBText.body(amtStr),
+            const Gap(40),
+            if (tx != null)
+              BBButton.big(
+                label: 'View Transaction',
+                onPressed: () {
+                  context.push('/tx', extra: tx);
+                },
+              ).animate().fadeIn(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ReceivedTick extends StatelessWidget {
+  const ReceivedTick({super.key, required this.received});
+
+  final bool received;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      height: 400,
+      duration: const Duration(milliseconds: 100),
+      child: received
+          ? LottieBuilder.asset(
+              'assets/loaderanimation.json',
+              repeat: false,
+            )
+          : const Center(
+              child: SizedBox(
+                height: 100,
+                width: 100,
+                child: CircularProgressIndicator(
+                  color: Colors.lightGreen,
+                  strokeWidth: 10,
+                ),
               ),
             ),
-          ).animate().scale(),
-          const Gap(16),
-          BBText.body(amtStr),
-          const Gap(40),
-          BBButton.big(
-            label: 'View Transaction',
-            onPressed: () {
-              context.push('/tx', extra: tx);
-            },
-          ),
-        ],
-      ),
     );
   }
 }
