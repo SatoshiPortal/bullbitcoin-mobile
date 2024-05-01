@@ -130,6 +130,10 @@ _$SwapTxSensitiveImpl _$$SwapTxSensitiveImplFromJson(
       sha256: json['sha256'] as String,
       hash160: json['hash160'] as String,
       redeemScript: json['redeemScript'] as String,
+      boltzPubkey: json['boltzPubkey'] as String?,
+      isSubmarine: json['isSubmarine'] as bool?,
+      scriptAddress: json['scriptAddress'] as String?,
+      locktime: (json['locktime'] as num?)?.toInt(),
       blindingKey: json['blindingKey'] as String?,
     );
 
@@ -143,6 +147,10 @@ Map<String, dynamic> _$$SwapTxSensitiveImplToJson(
       'sha256': instance.sha256,
       'hash160': instance.hash160,
       'redeemScript': instance.redeemScript,
+      'boltzPubkey': instance.boltzPubkey,
+      'isSubmarine': instance.isSubmarine,
+      'scriptAddress': instance.scriptAddress,
+      'locktime': instance.locktime,
       'blindingKey': instance.blindingKey,
     };
 

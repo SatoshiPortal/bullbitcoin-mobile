@@ -278,4 +278,253 @@ class SwapBoltz {
       return Err(e.toString());
     }
   }
+
+  ///
+  ///
+  /// ------------------------- V2 ------------------------------
+  ///
+  ///
+  Future<(SwapTx?, Err?)> receiveV2({
+    required String mnemonic,
+    required int index,
+    required int outAmount,
+    required Chain network,
+    required String electrumUrl,
+    required String boltzUrl,
+    required bool isLiquid,
+  }) async {
+    try {
+      late SwapTx swapTx;
+      if (!isLiquid) {
+        final res = await BtcLnV2Swap.newReverse(
+          mnemonic: mnemonic,
+          index: index,
+          outAmount: outAmount,
+          network: network,
+          electrumUrl: electrumUrl,
+          boltzUrl: boltzUrl,
+        );
+        final obj = res;
+
+        final swapSensitive = res.createSwapFromBtcLnV2Swap();
+        // SwapTxSensitive.fromBtcLnSwap(res);
+        final err = await _secureStorage.saveValue(
+          key: StorageKeys.swapTxSensitive + '_' + obj.id,
+          value: jsonEncode(swapSensitive.toJson()),
+        );
+        if (err != null) throw err;
+        swapTx = res.createSwapFromBtcLnV2Swap();
+        // SwapTx.fromBtcLnSwap(res);
+      } else {
+        final res = await LbtcLnV2Swap.newReverse(
+          mnemonic: mnemonic,
+          index: index,
+          outAmount: outAmount,
+          network: network,
+          electrumUrl: electrumUrl,
+          boltzUrl: boltzUrl,
+        );
+        final obj = res;
+
+        final swapSensitive = res.createSwapFromLbtcLnV2Swap();
+        // SwapTxSensitive.fromLbtcLnSwap(res);
+        final err = await _secureStorage.saveValue(
+          key: StorageKeys.swapTxSensitive + '_' + obj.id,
+          value: jsonEncode(swapSensitive.toJson()),
+        );
+        if (err != null) throw err;
+        swapTx = res.createSwapFromLbtcLnV2Swap();
+        // SwapTx.fromLbtcLnSwap(res);
+      }
+
+      return (swapTx, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(SwapTx?, Err?)> sendV2({
+    required String mnemonic,
+    required int index,
+    required String invoice,
+    required Chain network,
+    required String electrumUrl,
+    required String boltzUrl,
+    required bool isLiquid,
+  }) async {
+    try {
+      if (isLiquid) {
+        final res = await LbtcLnV2Swap.newSubmarine(
+          mnemonic: mnemonic,
+          index: index,
+          invoice: invoice,
+          network: network,
+          electrumUrl: electrumUrl,
+          boltzUrl: boltzUrl,
+        );
+
+        final swapSensitive = res.createSwapFromLbtcLnV2Swap();
+
+        //SwapTxSensitive.fromBtcLnSwap(res);
+        final err = await _secureStorage.saveValue(
+          key: StorageKeys.swapTxSensitive + '_' + res.id,
+          value: jsonEncode(swapSensitive.toJson()),
+        );
+        if (err != null) throw err;
+        final swap = res.createSwapFromLbtcLnV2Swap();
+        // SwapTx.fromBtcLnSwap(res);
+
+        return (swap, null);
+      } else {
+        final res = await BtcLnV2Swap.newSubmarine(
+          mnemonic: mnemonic,
+          index: index,
+          invoice: invoice,
+          network: network,
+          electrumUrl: electrumUrl,
+          boltzUrl: boltzUrl,
+        );
+
+        final swapSensitive = res.createSwapFromBtcLnV2Swap();
+
+        //SwapTxSensitive.fromBtcLnSwap(res);
+        final err = await _secureStorage.saveValue(
+          key: StorageKeys.swapTxSensitive + '_' + res.id,
+          value: jsonEncode(swapSensitive.toJson()),
+        );
+        if (err != null) throw err;
+        final swap = res.createSwapFromBtcLnV2Swap();
+        // SwapTx.fromBtcLnSwap(res);
+
+        return (swap, null);
+      }
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(String?, Err?)> cooperativeClaimOrRefundV2Swap({
+    required SwapTx swapTx,
+    required Wallet wallet,
+    required bool shouldRefund,
+  }) async {
+    try {
+      final address = wallet.lastGeneratedAddress?.address;
+      if (address == null || address.isEmpty) throw 'Address not found';
+
+      final boltzurl =
+          wallet.network == BBNetwork.Testnet ? boltzTestnet : boltzMainnet;
+
+      final (fees, errFees) = await getFeesAndLimits(
+        boltzUrl: boltzurl,
+      );
+      if (errFees != null) {
+        print(errFees.message);
+        throw errFees;
+      }
+
+      final isLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+
+      final (swapSentive, err) = await _secureStorage.getValue(
+        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+      );
+      if (err != null) throw err;
+
+      final swapSensitive = SwapTxSensitive.fromJson(
+        jsonDecode(swapSentive!) as Map<String, dynamic>,
+      );
+
+      if (!shouldRefund) {
+        if (isLiquid) {
+          final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
+          if (claimFeesEstimate == null) throw 'Fees estimate not found';
+
+          final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+
+          final resp = await swap.claim(
+            outAddress: address,
+            absFee: claimFeesEstimate,
+            tryCooperate: true,
+          );
+          return (resp, null);
+        } else {
+          final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
+          if (claimFeesEstimate == null) throw 'Fees estimate not found';
+
+          final swap = swapTx.toBtcLnV2Swap(swapSensitive);
+
+          final resp = await swap.claim(
+            outAddress: address,
+            absFee: claimFeesEstimate,
+            tryCooperate: true,
+          );
+
+          return (resp, null);
+        }
+      } else {
+        if (isLiquid) {
+          final refundFeesEstimate = fees?.lbtcSubmarine.claimFees;
+          if (refundFeesEstimate == null) throw 'Fees estimate not found';
+
+          final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+          // waiting on PR to add cooperative refund
+          final resp = await swap.refund(
+            outAddress: address,
+            absFee: refundFeesEstimate,
+            tryCooperate: true,
+          );
+
+          return (resp, null);
+        } else {
+          final refundFeesEstimate = fees?.btcSubmarine.claimFees;
+          if (refundFeesEstimate == null) throw 'Fees estimate not found';
+
+          final swap = swapTx.toBtcLnV2Swap(swapSensitive);
+
+          final resp = await swap.refund(
+            outAddress: address,
+            absFee: refundFeesEstimate,
+            tryCooperate: true,
+          );
+
+          return (resp, null);
+        }
+      }
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<Err?> cooperativeBoltzSubmarineClaim({
+    required SwapTx swapTx,
+    required Wallet wallet,
+  }) async {
+    try {
+      final isLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+
+      final (swapSentive, err) = await _secureStorage.getValue(
+        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+      );
+      if (err != null) throw err;
+
+      final swapSensitive = SwapTxSensitive.fromJson(
+        jsonDecode(swapSentive!) as Map<String, dynamic>,
+      );
+
+      if (isLiquid) {
+        final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+
+        await swap.coopCloseSubmarine();
+        return null;
+      } else {
+        final swap = swapTx.toBtcLnV2Swap(swapSensitive);
+
+        await swap.coopCloseSubmarine();
+
+        return null;
+      }
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
 }

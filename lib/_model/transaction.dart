@@ -373,6 +373,10 @@ class SwapTxSensitive with _$SwapTxSensitive {
     required String sha256,
     required String hash160,
     required String redeemScript,
+    String? boltzPubkey,
+    bool? isSubmarine,
+    String? scriptAddress,
+    int? locktime,
     String? blindingKey,
   }) = _SwapTxSensitive;
   const SwapTxSensitive._();

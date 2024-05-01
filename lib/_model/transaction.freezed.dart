@@ -1308,6 +1308,10 @@ mixin _$SwapTxSensitive {
   String get sha256 => throw _privateConstructorUsedError;
   String get hash160 => throw _privateConstructorUsedError;
   String get redeemScript => throw _privateConstructorUsedError;
+  String? get boltzPubkey => throw _privateConstructorUsedError;
+  bool? get isSubmarine => throw _privateConstructorUsedError;
+  String? get scriptAddress => throw _privateConstructorUsedError;
+  int? get locktime => throw _privateConstructorUsedError;
   String? get blindingKey => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -1330,6 +1334,10 @@ abstract class $SwapTxSensitiveCopyWith<$Res> {
       String sha256,
       String hash160,
       String redeemScript,
+      String? boltzPubkey,
+      bool? isSubmarine,
+      String? scriptAddress,
+      int? locktime,
       String? blindingKey});
 }
 
@@ -1353,6 +1361,10 @@ class _$SwapTxSensitiveCopyWithImpl<$Res, $Val extends SwapTxSensitive>
     Object? sha256 = null,
     Object? hash160 = null,
     Object? redeemScript = null,
+    Object? boltzPubkey = freezed,
+    Object? isSubmarine = freezed,
+    Object? scriptAddress = freezed,
+    Object? locktime = freezed,
     Object? blindingKey = freezed,
   }) {
     return _then(_value.copyWith(
@@ -1384,6 +1396,22 @@ class _$SwapTxSensitiveCopyWithImpl<$Res, $Val extends SwapTxSensitive>
           ? _value.redeemScript
           : redeemScript // ignore: cast_nullable_to_non_nullable
               as String,
+      boltzPubkey: freezed == boltzPubkey
+          ? _value.boltzPubkey
+          : boltzPubkey // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isSubmarine: freezed == isSubmarine
+          ? _value.isSubmarine
+          : isSubmarine // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      scriptAddress: freezed == scriptAddress
+          ? _value.scriptAddress
+          : scriptAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
+      locktime: freezed == locktime
+          ? _value.locktime
+          : locktime // ignore: cast_nullable_to_non_nullable
+              as int?,
       blindingKey: freezed == blindingKey
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
@@ -1408,6 +1436,10 @@ abstract class _$$SwapTxSensitiveImplCopyWith<$Res>
       String sha256,
       String hash160,
       String redeemScript,
+      String? boltzPubkey,
+      bool? isSubmarine,
+      String? scriptAddress,
+      int? locktime,
       String? blindingKey});
 }
 
@@ -1429,6 +1461,10 @@ class __$$SwapTxSensitiveImplCopyWithImpl<$Res>
     Object? sha256 = null,
     Object? hash160 = null,
     Object? redeemScript = null,
+    Object? boltzPubkey = freezed,
+    Object? isSubmarine = freezed,
+    Object? scriptAddress = freezed,
+    Object? locktime = freezed,
     Object? blindingKey = freezed,
   }) {
     return _then(_$SwapTxSensitiveImpl(
@@ -1460,6 +1496,22 @@ class __$$SwapTxSensitiveImplCopyWithImpl<$Res>
           ? _value.redeemScript
           : redeemScript // ignore: cast_nullable_to_non_nullable
               as String,
+      boltzPubkey: freezed == boltzPubkey
+          ? _value.boltzPubkey
+          : boltzPubkey // ignore: cast_nullable_to_non_nullable
+              as String?,
+      isSubmarine: freezed == isSubmarine
+          ? _value.isSubmarine
+          : isSubmarine // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      scriptAddress: freezed == scriptAddress
+          ? _value.scriptAddress
+          : scriptAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
+      locktime: freezed == locktime
+          ? _value.locktime
+          : locktime // ignore: cast_nullable_to_non_nullable
+              as int?,
       blindingKey: freezed == blindingKey
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
@@ -1480,6 +1532,10 @@ class _$SwapTxSensitiveImpl extends _SwapTxSensitive
       required this.sha256,
       required this.hash160,
       required this.redeemScript,
+      this.boltzPubkey,
+      this.isSubmarine,
+      this.scriptAddress,
+      this.locktime,
       this.blindingKey})
       : super._();
 
@@ -1501,11 +1557,19 @@ class _$SwapTxSensitiveImpl extends _SwapTxSensitive
   @override
   final String redeemScript;
   @override
+  final String? boltzPubkey;
+  @override
+  final bool? isSubmarine;
+  @override
+  final String? scriptAddress;
+  @override
+  final int? locktime;
+  @override
   final String? blindingKey;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTxSensitive(id: $id, secretKey: $secretKey, publicKey: $publicKey, preimage: $preimage, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, blindingKey: $blindingKey)';
+    return 'SwapTxSensitive(id: $id, secretKey: $secretKey, publicKey: $publicKey, preimage: $preimage, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, boltzPubkey: $boltzPubkey, isSubmarine: $isSubmarine, scriptAddress: $scriptAddress, locktime: $locktime, blindingKey: $blindingKey)';
   }
 
   @override
@@ -1520,6 +1584,10 @@ class _$SwapTxSensitiveImpl extends _SwapTxSensitive
       ..add(DiagnosticsProperty('sha256', sha256))
       ..add(DiagnosticsProperty('hash160', hash160))
       ..add(DiagnosticsProperty('redeemScript', redeemScript))
+      ..add(DiagnosticsProperty('boltzPubkey', boltzPubkey))
+      ..add(DiagnosticsProperty('isSubmarine', isSubmarine))
+      ..add(DiagnosticsProperty('scriptAddress', scriptAddress))
+      ..add(DiagnosticsProperty('locktime', locktime))
       ..add(DiagnosticsProperty('blindingKey', blindingKey));
   }
 
@@ -1539,14 +1607,34 @@ class _$SwapTxSensitiveImpl extends _SwapTxSensitive
             (identical(other.hash160, hash160) || other.hash160 == hash160) &&
             (identical(other.redeemScript, redeemScript) ||
                 other.redeemScript == redeemScript) &&
+            (identical(other.boltzPubkey, boltzPubkey) ||
+                other.boltzPubkey == boltzPubkey) &&
+            (identical(other.isSubmarine, isSubmarine) ||
+                other.isSubmarine == isSubmarine) &&
+            (identical(other.scriptAddress, scriptAddress) ||
+                other.scriptAddress == scriptAddress) &&
+            (identical(other.locktime, locktime) ||
+                other.locktime == locktime) &&
             (identical(other.blindingKey, blindingKey) ||
                 other.blindingKey == blindingKey));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, secretKey, publicKey,
-      preimage, sha256, hash160, redeemScript, blindingKey);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      secretKey,
+      publicKey,
+      preimage,
+      sha256,
+      hash160,
+      redeemScript,
+      boltzPubkey,
+      isSubmarine,
+      scriptAddress,
+      locktime,
+      blindingKey);
 
   @JsonKey(ignore: true)
   @override
@@ -1572,6 +1660,10 @@ abstract class _SwapTxSensitive extends SwapTxSensitive {
       required final String sha256,
       required final String hash160,
       required final String redeemScript,
+      final String? boltzPubkey,
+      final bool? isSubmarine,
+      final String? scriptAddress,
+      final int? locktime,
       final String? blindingKey}) = _$SwapTxSensitiveImpl;
   const _SwapTxSensitive._() : super._();
 
@@ -1592,6 +1684,14 @@ abstract class _SwapTxSensitive extends SwapTxSensitive {
   String get hash160;
   @override
   String get redeemScript;
+  @override
+  String? get boltzPubkey;
+  @override
+  bool? get isSubmarine;
+  @override
+  String? get scriptAddress;
+  @override
+  int? get locktime;
   @override
   String? get blindingKey;
   @override
