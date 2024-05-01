@@ -326,7 +326,7 @@ class SwapBoltz {
         );
         final obj = res;
 
-        final swapSensitive = res.createSwapFromLbtcLnV2Swap();
+        final swapSensitive = res.createSwapSensitiveFromLbtcLnV2Swap();
         // SwapTxSensitive.fromLbtcLnSwap(res);
         final err = await _secureStorage.saveValue(
           key: StorageKeys.swapTxSensitive + '_' + obj.id,

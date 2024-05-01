@@ -375,7 +375,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     await Future.delayed(10.seconds);
 
-    final (txid, err) = await _swapBoltz.claimOrRefundSwap(
+    final (txid, err) = await _swapBoltz.cooperativeClaimOrRefundV2Swap(
       swapTx: swapTx,
       wallet: walletBloc.state.wallet!,
       shouldRefund: shouldRefund,

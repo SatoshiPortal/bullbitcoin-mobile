@@ -38,6 +38,7 @@ class SwapCubit extends Cubit<SwapState> {
 
   Future<void> fetchFees(bool isTestnet) async {
     final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
+
     final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
       boltzUrl: boltzurl,
     );
@@ -59,6 +60,7 @@ class SwapCubit extends Cubit<SwapState> {
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
 
     final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
+    final boltzurlV2 = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
 
     // we dont have to make this call here
     // we have fees stored which has a pairHash
@@ -121,14 +123,13 @@ class SwapCubit extends Cubit<SwapState> {
         ? (walletIsLiquid ? Chain.liquidTestnet : Chain.bitcoinTestnet)
         : (walletIsLiquid ? Chain.liquid : Chain.bitcoin);
 
-    final (swap, errCreatingInv) = await _swapBoltz.receive(
+    final (swap, errCreatingInv) = await _swapBoltz.receiveV2(
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
       outAmount: amount,
       network: network,
       electrumUrl: networkUrl,
-      boltzUrl: boltzurl,
-      pairHash: walletIsLiquid ? fees.lbtcPairHash : fees.btcPairHash,
+      boltzUrl: boltzurlV2,
       isLiquid: walletIsLiquid,
     );
     if (errCreatingInv != null) {
@@ -220,14 +221,14 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    final (swap, err) = await _swapBoltz.send(
-      boltzUrl: isTestnet ? boltzTestnet : boltzMainnet,
-      pairHash: fees!.btcPairHash,
+    final (swap, err) = await _swapBoltz.sendV2(
+      boltzUrl: isTestnet ? boltzTestnetV2 : boltzMainnetV2,
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
       invoice: invoice,
       network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
       electrumUrl: networkUrl,
+      isLiquid: false,
     );
     if (err != null) {
       emit(
@@ -240,7 +241,7 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     final updatedSwap = swap!.copyWith(
-      boltzFees: (fees.btcReverse.boltzFeesRate * amount / 100) as int,
+      boltzFees: (fees!.btcReverse.boltzFeesRate * amount / 100) as int,
       lockupFees: fees.btcReverse.lockupFees,
       claimFees: fees.btcReverse.claimFeesEstimate,
     );
