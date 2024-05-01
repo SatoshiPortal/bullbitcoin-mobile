@@ -337,18 +337,17 @@ class LWKTransactions {
         final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
 
         Transaction? storedTx;
-        if (storedTxIdx != -1)
-          storedTx = storedTxs.elementAtOrNull(storedTxIdx);
+        if (storedTxIdx != -1) storedTx = storedTxs[storedTxIdx];
         if (idxUnsignedTx != -1) {
           if (tx.txid == unsignedTxs[idxUnsignedTx].txid)
             unsignedTxs.removeAt(idxUnsignedTx);
         }
-        final assetToPick = wallet.network == BBNetwork.Mainnet
+        final assetID = wallet.network == BBNetwork.Mainnet
             ? lwk.lBtcAssetId
             : lwk.lTestAssetId;
         final balances = tx.balances;
         final finalBalance = balances
-            .where((e) => e.assetId == assetToPick)
+            .where((e) => e.assetId == assetID)
             .map((e) => e.value)
             .first;
 
@@ -380,6 +379,11 @@ class LWKTransactions {
           isSwap: storedTx?.isSwap ?? false,
         );
         transactions.add(txObj);
+      }
+
+      for (final tx in storedTxs) {
+        if (transactions.any((t) => t.txid == tx.txid)) continue;
+        transactions.add(tx);
       }
 
       // Future.delayed(const Duration(milliseconds: 200));

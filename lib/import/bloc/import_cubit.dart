@@ -21,21 +21,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // chicken happy machine rain smile derive swamp clap trick bless balcony soon
 
-const wds = [
-  'chicken',
-  'happy',
-  'machine',
-  'rain',
-  'smile',
-  'derive',
-  'swamp',
-  'clap',
-  'trick',
-  'bless',
-  'balcony',
-  'soon',
-];
-
 class ImportWalletCubit extends Cubit<ImportState> {
   ImportWalletCubit({
     required Barcode barcode,
@@ -50,7 +35,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required BDKSensitiveCreate bdkSensitiveCreate,
     required LWKSensitiveCreate lwkSensitiveCreate,
     bool mainWallet = false,
-    bool useTestWallet = true,
+    bool useTestWallet = false,
   })  : _networkCubit = networkCubit,
         _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,
@@ -62,13 +47,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
         _nfc = nfc,
         _filePicker = filePicker,
         _barcode = barcode,
-        super(
-          ImportState(
-            mainWallet: mainWallet,
-          ),
-        ) {
+        super(ImportState(mainWallet: mainWallet)) {
     if (useTestWallet) {
-      emit(state.copyWith(words12: [...importW(wds)]));
+      emit(state.copyWith(words12: [...importW(instantTN1)]));
     } else {
       clearErrors();
       reset();

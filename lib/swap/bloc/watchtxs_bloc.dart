@@ -463,11 +463,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           final swap = await __claimOrRefundSwap(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         case ReverseSwapActions.settled:
-          __swapAlert(swapTx, wallet, emit);
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);
           if (w == null) return;
           // final err = await __mergeSwapIfTxExists(w, swapTx, emit);
           await __closeSwap(swapTx, emit);
+          __swapAlert(swapTx, wallet, emit);
       }
   }
 }

@@ -432,6 +432,12 @@ class BDKTransactions {
       }
 
       // Future.delayed(const Duration(milliseconds: 200));
+
+      for (final tx in storedTxs) {
+        if (transactions.any((t) => t.txid == tx.txid)) continue;
+        transactions.add(tx);
+      }
+
       final w = wallet.copyWith(
         transactions: transactions,
         unsignedTxs: unsignedTxs,
