@@ -35,9 +35,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     if (state.paymentNetwork == ReceivePaymentNetwork.lightning)
       emit(state.copyWith(defaultAddress: null));
 
-    final watchOnly = walletBloc.state.wallet!.watchOnly();
-    if (watchOnly)
+    if (!walletBloc.state.wallet!.mainWallet)
       emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
+
+    // final watchOnly = walletBloc.state.wallet!.watchOnly();
+    // if (watchOnly)
+    //   emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
     loadAddress();
   }
 
