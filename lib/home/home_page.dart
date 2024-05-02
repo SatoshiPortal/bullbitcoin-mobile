@@ -944,7 +944,7 @@ class HomeWarnings extends StatelessWidget {
         for (final w in warnings)
           WarningBanner(
             onTap: () {
-              context.push('/wallet-settings', extra: w.walletBloc);
+              context.push('/wallet-settings/open-backup', extra: w.walletBloc);
             },
             info: w.info,
           ),

@@ -77,11 +77,18 @@ class _Screen extends StatefulWidget {
 }
 
 class _ScreenState extends State<_Screen> {
+  bool showPage = false;
   @override
   void initState() {
-    if (widget.openBackup)
-      scheduleMicrotask(() async {
-        await Future.delayed(const Duration(milliseconds: 300));
+    _init();
+    super.initState();
+  }
+
+  void _init() {
+    scheduleMicrotask(() async {
+      if (widget.openBackup) {
+        print('----1');
+        // await Future.delayed(const Duration(milliseconds: 300));
         await context.push(
           '/wallet-settings/backup',
           extra: (
@@ -89,15 +96,20 @@ class _ScreenState extends State<_Screen> {
             context.read<WalletSettingsCubit>(),
           ),
         );
-      });
+      } else {
+        print('----2');
 
-    super.initState();
+        showPage = true;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final watchOnly = context
         .select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
+
+    if (!showPage) return const Scaffold(body: SizedBox.shrink());
 
     return Scaffold(
       appBar: AppBar(

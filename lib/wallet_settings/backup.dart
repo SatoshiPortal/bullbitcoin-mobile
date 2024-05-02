@@ -18,7 +18,8 @@ class InfoRead extends Cubit<bool> {
 }
 
 class BackupPage extends StatelessWidget {
-  const BackupPage({super.key, required this.walletBloc, required this.walletSettings});
+  const BackupPage(
+      {super.key, required this.walletBloc, required this.walletSettings});
 
   final WalletBloc walletBloc;
   final WalletSettingsCubit walletSettings;
@@ -43,7 +44,8 @@ class BackupPage extends StatelessWidget {
                 onBack: () {
                   if (state) context.read<InfoRead>().unread();
                   context.read<WalletSettingsCubit>().clearSensitive();
-                  context.pop();
+                  // context.pop();
+                  context.go('/home');
                 },
               ),
             ),
@@ -63,10 +65,11 @@ class BackUpInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lastBackupTested =
-        context.select((WalletBloc cubit) => cubit.state.wallet!.lastBackupTested);
+    final lastBackupTested = context
+        .select((WalletBloc cubit) => cubit.state.wallet!.lastBackupTested);
 
-    final hasPassphrase = context.select((WalletBloc cubit) => cubit.state.wallet!.hasPassphrase());
+    final hasPassphrase = context
+        .select((WalletBloc cubit) => cubit.state.wallet!.hasPassphrase());
     final instructions = backupInstructions(hasPassphrase);
     return SingleChildScrollView(
       child: Padding(
@@ -146,7 +149,8 @@ class BackupScreen extends StatelessWidget {
             ),
             const Gap(8),
             MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: TextScaler.noScaling),
               child: WordGrid(mne: mnemonic),
             ),
             if (password.isNotEmpty) ...[
