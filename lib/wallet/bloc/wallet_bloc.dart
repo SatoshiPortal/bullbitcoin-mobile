@@ -236,37 +236,36 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
     emit(state.copyWith(loadingTxs: true, errLoadingWallet: ''));
 
-    scheduleMicrotask(() async {
-      final (wallet, errTxs) =
-          await _walletTransactionn.getTransactions(state.wallet!);
+    final (wallet, errTxs) =
+        await _walletTransactionn.getTransactions(state.wallet!);
 
-      if (errTxs != null) {
-        emit(
-          state.copyWith(
-            errLoadingWallet: errTxs.toString(),
-            loadingTxs: false,
-          ),
-        );
-        return;
-      }
-
-      add(
-        UpdateWallet(
-          wallet!,
-          saveToStorage: _fromStorage,
-          updateTypes: [
-            UpdateWalletTypes.addresses,
-            UpdateWalletTypes.transactions,
-            UpdateWalletTypes.utxos,
-          ],
-        ),
-      );
+    if (errTxs != null) {
       emit(
         state.copyWith(
+          errLoadingWallet: errTxs.toString(),
           loadingTxs: false,
         ),
       );
-    });
+      return;
+    }
+
+    add(
+      UpdateWallet(
+        wallet!,
+        saveToStorage: _fromStorage,
+        updateTypes: [
+          UpdateWalletTypes.addresses,
+          UpdateWalletTypes.transactions,
+          UpdateWalletTypes.utxos,
+        ],
+      ),
+    );
+    emit(
+      state.copyWith(
+        loadingTxs: false,
+      ),
+    );
+
     await Future.delayed(1000.ms);
 
     // _swapBloc.add(WatchWallets(isTestnet: state.wallet!));

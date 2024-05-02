@@ -77,7 +77,7 @@ class _Screen extends StatefulWidget {
 }
 
 class _ScreenState extends State<_Screen> {
-  bool showPage = false;
+  // bool showPage = false;
   @override
   void initState() {
     _init();
@@ -99,7 +99,7 @@ class _ScreenState extends State<_Screen> {
       } else {
         print('----2');
 
-        showPage = true;
+        // showPage = true;
       }
     });
   }
@@ -109,7 +109,7 @@ class _ScreenState extends State<_Screen> {
     final watchOnly = context
         .select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
 
-    if (!showPage) return const Scaffold(body: SizedBox.shrink());
+    // if (!showPage) return const Scaffold(body: SizedBox.shrink());
 
     return Scaffold(
       appBar: AppBar(
