@@ -10,7 +10,6 @@ import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:oktoast/oktoast.dart';
 
 class SwapAppListener extends StatelessWidget {
@@ -84,7 +83,7 @@ class SwapAppListener extends StatelessWidget {
                 animationCurve: Curves.decelerate,
               );
             } else {
-              context.push('/swap-receive', extra: tx);
+              router.push('/swap-receive', extra: tx);
             }
 
             context.read<WatchTxsBloc>().add(ClearAlerts());
@@ -136,13 +135,13 @@ class SwapAppListener extends StatelessWidget {
                     AlertUI(
                       text: '$prefix $amtStr',
                       onTap: () {
-                        context.push('/tx', extra: tx);
+                        router.push('/tx', extra: tx);
                       },
                     ),
                   );
 
                 if (isReceivePage && !isSwapReceivePage)
-                  context.push('/swap-receive', extra: tx);
+                  router.push('/swap-receive', extra: tx);
               } catch (e) {
                 print('----> 3 $e');
               }
