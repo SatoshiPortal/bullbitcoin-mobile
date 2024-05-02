@@ -18,8 +18,11 @@ class InfoRead extends Cubit<bool> {
 }
 
 class BackupPage extends StatelessWidget {
-  const BackupPage(
-      {super.key, required this.walletBloc, required this.walletSettings});
+  const BackupPage({
+    super.key,
+    required this.walletBloc,
+    required this.walletSettings,
+  });
 
   final WalletBloc walletBloc;
   final WalletSettingsCubit walletSettings;
@@ -36,22 +39,28 @@ class BackupPage extends StatelessWidget {
       ],
       child: BlocBuilder<InfoRead, bool>(
         builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              flexibleSpace: BBAppBar(
-                text: 'Backup',
-                onBack: () {
-                  if (state) context.read<InfoRead>().unread();
-                  context.read<WalletSettingsCubit>().clearSensitive();
-                  // context.pop();
-                  context.go('/home');
-                },
+          return PopScope(
+            canPop: false,
+            onPopInvoked: (canPop) {
+              context.go('/home');
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                flexibleSpace: BBAppBar(
+                  text: 'Backup',
+                  onBack: () {
+                    if (state) context.read<InfoRead>().unread();
+                    context.read<WalletSettingsCubit>().clearSensitive();
+                    // context.pop();
+                    context.go('/home');
+                  },
+                ),
               ),
-            ),
-            body: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: state ? const BackupScreen() : const BackUpInfoScreen(),
+              body: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: state ? const BackupScreen() : const BackUpInfoScreen(),
+              ),
             ),
           );
         },
