@@ -303,11 +303,12 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
         if (swapTx.id != widget.tx.id) return;
 
         if (swapTx.settledReverse()) {
-          await Future.delayed(200.ms);
-          tx = context.read<HomeCubit>().state.getTxFromSwap(widget.tx);
           setState(() {
             received = true;
           });
+          await Future.delayed(800.ms);
+          tx = context.read<HomeCubit>().state.getTxFromSwap(widget.tx);
+          setState(() {});
         }
       },
       child: Scaffold(

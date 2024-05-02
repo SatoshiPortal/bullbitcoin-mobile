@@ -131,12 +131,17 @@ class HomeState with _$HomeState {
   Transaction? getTxFromSwap(SwapTx swap) {
     final isLiq = swap.walletType == BaseWalletType.Liquid;
     final network = swap.network;
+    print('----> 1 $isLiq $network');
     final wallet = !isLiq
         ? getMainSecureWallet(network)?.state.wallet
         : getMainInstantWallet(network)?.state.wallet;
+    print('----> 2 $wallet');
     if (wallet == null) return null;
+    print('----> 3');
     final idx = wallet.transactions.indexWhere((t) => t.swapTx?.id == swap.id);
+    print('----> 4 $idx');
     if (idx == -1) return null;
+    print('----> 5');
     return wallet.transactions[idx];
   }
 
