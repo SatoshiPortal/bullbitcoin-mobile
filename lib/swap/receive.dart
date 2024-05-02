@@ -312,8 +312,9 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
       },
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           flexibleSpace: BBAppBar(
-            text: 'Swap Received',
+            text: 'Payment Status',
             onBack: () {
               if (received)
                 context.go('/home');

@@ -131,7 +131,7 @@ class HomeState with _$HomeState {
   Transaction? getTxFromSwap(SwapTx swap) {
     final isLiq = swap.walletType == BaseWalletType.Liquid;
     final network = swap.network;
-    final wallet = isLiq
+    final wallet = !isLiq
         ? getMainSecureWallet(network)?.state.wallet
         : getMainInstantWallet(network)?.state.wallet;
     if (wallet == null) return null;
