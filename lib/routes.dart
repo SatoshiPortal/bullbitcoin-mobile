@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/create/page.dart';
@@ -233,39 +232,9 @@ GoRouter setupRouter() => GoRouter(
       ],
     );
 
-class BBlocObserver extends BlocObserver {
-  // @override
-  // void onEvent(Bloc bloc, Object? event) {
-  //   super.onEvent(bloc, event);
-  //   debugPrint('\n\n' + event.runtimeType.toString());
-  // }
-
-  // @override
-  // void onChange(BlocBase bloc, Change change) {
-  //   super.onChange(bloc, change);
-  //   // debugPrint('\n\n' + change.toString());
-  // }
-
-  // @override
-  // void onCreate(BlocBase bloc) {
-  //   super.onCreate(bloc);
-  //   // debugPrint('\n\n' + bloc.toString());
-  // }
-
-  // @override
-  // void onTransition(Bloc bloc, Transition transition) {
-  //   super.onTransition(bloc, transition);
-  //   // debugPrint('\n\n' + transition.toString());
-  // }
-
-  @override
-  void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    locator<Logger>().log(
-      error.toString() + '\n' + stackTrace.toString(),
-      printToConsole: true,
-    );
-    super.onError(bloc, error, stackTrace);
-  }
+class NavName extends Cubit<String> {
+  NavName() : super('');
+  void update(String name) => emit(name);
 }
 
 class GoRouterObserver extends NavigatorObserver {
@@ -280,32 +249,19 @@ class GoRouterObserver extends NavigatorObserver {
   }
 
   @override
-  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    print('didRemove: $route');
-  }
-
-  @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
     locator<NavName>().update(newRoute?.settings.name ?? '');
   }
 }
 
-class NavName extends Cubit<String> {
-  NavName() : super('');
 
-  void update(String name) {
-    print('nav: $name');
-    emit(name);
-  }
-}
-
-extension GoRouterExtension on GoRouter {
-  String location() {
-    final lastMatch = routerDelegate.currentConfiguration.last;
-    final matchList = lastMatch is ImperativeRouteMatch
-        ? lastMatch.matches
-        : routerDelegate.currentConfiguration;
-    final String location = matchList.uri.toString();
-    return location;
-  }
-}
+// extension GoRouterExtension on GoRouter {
+//   String location() {
+//     final lastMatch = routerDelegate.currentConfiguration.last;
+//     final matchList = lastMatch is ImperativeRouteMatch
+//         ? lastMatch.matches
+//         : routerDelegate.currentConfiguration;
+//     final String location = matchList.uri.toString();
+//     return location;
+//   }
+// }

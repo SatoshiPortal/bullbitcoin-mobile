@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bb_mobile/_pkg/i18n.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
+import 'package:bb_mobile/_ui/security_overlay.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/deep_linking.dart';
@@ -26,17 +27,16 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lwk_dart/lwk_dart.dart';
-import 'package:no_screenshot/no_screenshot.dart';
 import 'package:oktoast/oktoast.dart';
 
 Future main({bool fromTest = false}) async {
-  FlutterError.onError = _handleFlutterError;
+  FlutterError.onError = (err) =>
+      log('Flutter Error:' + err.toString(minLevel: DiagnosticLevel.warning));
 
   runZonedGuarded(() async {
     if (!fromTest) WidgetsFlutterBinding.ensureInitialized();
     await LibLwk.init();
     await LibBoltz.init();
-    print('-------runapp---------');
     await dotenv.load(isOptional: true);
     Bloc.observer = BBlocObserver();
     // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
@@ -125,7 +125,9 @@ class BullBitcoinWalletApp extends StatelessWidget {
                                 data: MediaQuery.of(context).copyWith(
                                   textScaler: TextScaler.noScaling,
                                 ),
-                                child: AppLifecycleOverlay(child: child),
+                                child: AppLifecycleOverlay(
+                                  child: child,
+                                ),
                               ),
                             ),
                           ),
@@ -141,84 +143,4 @@ class BullBitcoinWalletApp extends StatelessWidget {
       ),
     );
   }
-}
-
-class AppLifecycleOverlay extends StatefulWidget {
-  const AppLifecycleOverlay({super.key, required this.child});
-
-  final Widget child;
-
-  @override
-  State<AppLifecycleOverlay> createState() => _AppLifecycleOverlayState();
-}
-
-class _AppLifecycleOverlayState extends State<AppLifecycleOverlay>
-    with WidgetsBindingObserver {
-  bool shouldBlur = false;
-  final _noScreenshot = NoScreenshot.instance;
-
-  final sensitivePaths = [
-    '/home/import',
-    '/home/wallet/wallet-settings/open-backup',
-    '/home/wallet/wallet-settings/wallet-settings/backup',
-    '/home/wallet/wallet-settings/wallet-settings/test-backup',
-    '/home/wallet-settings/open-backup',
-    '/home/wallet-settings/wallet-settings/backup',
-    '/home/wallet-settings/wallet-settings/test-backup',
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-
-    locator<GoRouter>().routerDelegate.addListener(() {
-      final routePath = locator<GoRouter>()
-          .routerDelegate
-          .currentConfiguration
-          .routes
-          .map((RouteBase e) => (e as GoRoute).path)
-          .join();
-      // print(routePath);
-      if (sensitivePaths.any((path) => routePath.startsWith(path))) {
-        _noScreenshot.screenshotOff();
-      } else {
-        _noScreenshot.screenshotOn();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // _noScreenshot.screenshotOff();
-    setState(() {
-      shouldBlur = state == AppLifecycleState.inactive ||
-          state == AppLifecycleState.paused ||
-          state == AppLifecycleState.hidden ||
-          state == AppLifecycleState.detached;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: context.colour.primary,
-      child: Opacity(
-        opacity: shouldBlur ? 0 : 1,
-        child: widget.child,
-      ),
-    );
-  }
-}
-
-void _handleFlutterError(FlutterErrorDetails details) {
-  log(
-    'Flutter Error:' + details.toString(minLevel: DiagnosticLevel.warning),
-  );
 }

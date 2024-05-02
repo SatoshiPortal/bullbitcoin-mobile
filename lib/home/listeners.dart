@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
@@ -89,5 +90,16 @@ class WalletBlocListeners extends StatelessWidget {
       ],
       child: child,
     );
+  }
+}
+
+class BBlocObserver extends BlocObserver {
+  @override
+  void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
+    locator<Logger>().log(
+      error.toString() + '\n' + stackTrace.toString(),
+      printToConsole: true,
+    );
+    super.onError(bloc, error, stackTrace);
   }
 }
