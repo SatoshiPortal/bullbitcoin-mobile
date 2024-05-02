@@ -69,16 +69,23 @@ class _ReceivePageState extends State<ReceivePage> {
       walletsStorageRepository: locator<WalletsStorageRepository>(),
     );
 
-    _receiveCubit.updateWalletType(
-      ReceivePaymentNetwork.lightning,
-      context.read<NetworkCubit>().state.testnet,
-      onStart: true,
-    );
-
     final network = context.read<NetworkCubit>().state.getBBNetwork();
     final walletBloc = widget.walletBloc ??
         context.read<HomeCubit>().state.getMainInstantWallet(network);
-    if (walletBloc == null) return;
+
+    if (walletBloc!.state.wallet!.isLiquid()) {
+      _receiveCubit.updateWalletType(
+        ReceivePaymentNetwork.lightning,
+        context.read<NetworkCubit>().state.testnet,
+        onStart: true,
+      );
+    } else {
+      _receiveCubit.updateWalletType(
+        ReceivePaymentNetwork.bitcoin,
+        context.read<NetworkCubit>().state.testnet,
+        onStart: true,
+      );
+    }
 
     _receiveCubit.updateWalletBloc(walletBloc);
 
