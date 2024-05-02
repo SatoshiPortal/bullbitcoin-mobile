@@ -92,7 +92,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
                     theme: Themes.lightTheme,
                     darkTheme: lightingState.dark(),
                     themeMode: lightingState.mode(),
-                    routerConfig: router,
+                    routerConfig: locator<GoRouter>(),
                     debugShowCheckedModeBanner: false,
                     localizationsDelegates: [
                       localizationDelegate,
@@ -172,8 +172,11 @@ class _AppLifecycleOverlayState extends State<AppLifecycleOverlay>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    router.routerDelegate.addListener(() {
-      final routePath = router.routerDelegate.currentConfiguration.routes
+    locator<GoRouter>().routerDelegate.addListener(() {
+      final routePath = locator<GoRouter>()
+          .routerDelegate
+          .currentConfiguration
+          .routes
           .map((RouteBase e) => (e as GoRoute).path)
           .join();
       // print(routePath);

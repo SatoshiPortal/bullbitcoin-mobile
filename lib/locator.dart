@@ -51,6 +51,7 @@ import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 const bbVersion = '0.2.0-1';
 
@@ -102,6 +103,7 @@ Future _setupRepositories() async {
 
 Future _setupAppServices() async {
   locator.registerSingleton<NavName>(NavName());
+  locator.registerSingleton<GoRouter>(setupRouter());
   final deepLink = DeepLink();
   locator.registerSingleton<DeepLink>(deepLink);
   locator.registerSingleton<Lighting>(

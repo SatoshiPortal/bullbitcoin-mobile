@@ -1,6 +1,7 @@
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:oktoast/oktoast.dart';
 
 class SwapAppListener extends StatelessWidget {
@@ -83,7 +85,7 @@ class SwapAppListener extends StatelessWidget {
                 animationCurve: Curves.decelerate,
               );
             } else {
-              router.push('/swap-receive', extra: tx);
+              locator<GoRouter>().push('/swap-receive', extra: tx);
             }
 
             context.read<WatchTxsBloc>().add(ClearAlerts());
@@ -135,13 +137,13 @@ class SwapAppListener extends StatelessWidget {
                     AlertUI(
                       text: '$prefix $amtStr',
                       onTap: () {
-                        router.push('/tx', extra: tx);
+                        locator<GoRouter>().push('/tx', extra: tx);
                       },
                     ),
                   );
 
                 if (isReceivePage && !isSwapReceivePage)
-                  router.push('/swap-receive', extra: tx);
+                  locator<GoRouter>().push('/swap-receive', extra: tx);
               } catch (e) {
                 print('----> 3 $e');
               }
