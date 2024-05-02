@@ -22,8 +22,7 @@ enum AddressStatus {
 @freezed
 class Address with _$Address {
   factory Address({
-    required String
-        address, // for btc, this holds regular address; for liquid, this hold confidential address
+    required String address, // for btc, this holds regular address; for liquid, this hold confidential address
     // String? confidential, // For liquid // not used now // remove this
     String? standard, // For liquid
     int? index,
@@ -34,6 +33,7 @@ class Address with _$Address {
     @Default(true) bool spendable,
     @Default(0) int highestPreviousBalance,
     @Default(0) int balance,
+    @Default(false) bool isLiquid,
   }) = _Address;
   const Address._();
 

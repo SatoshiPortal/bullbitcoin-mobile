@@ -32,6 +32,7 @@ mixin _$Address {
   bool get spendable => throw _privateConstructorUsedError;
   int get highestPreviousBalance => throw _privateConstructorUsedError;
   int get balance => throw _privateConstructorUsedError;
+  bool get isLiquid => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -53,7 +54,8 @@ abstract class $AddressCopyWith<$Res> {
       String? spentTxId,
       bool spendable,
       int highestPreviousBalance,
-      int balance});
+      int balance,
+      bool isLiquid});
 }
 
 /// @nodoc
@@ -79,6 +81,7 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
     Object? spendable = null,
     Object? highestPreviousBalance = null,
     Object? balance = null,
+    Object? isLiquid = null,
   }) {
     return _then(_value.copyWith(
       address: null == address
@@ -121,6 +124,10 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
           ? _value.balance
           : balance // ignore: cast_nullable_to_non_nullable
               as int,
+      isLiquid: null == isLiquid
+          ? _value.isLiquid
+          : isLiquid // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -142,7 +149,8 @@ abstract class _$$AddressImplCopyWith<$Res> implements $AddressCopyWith<$Res> {
       String? spentTxId,
       bool spendable,
       int highestPreviousBalance,
-      int balance});
+      int balance,
+      bool isLiquid});
 }
 
 /// @nodoc
@@ -166,6 +174,7 @@ class __$$AddressImplCopyWithImpl<$Res>
     Object? spendable = null,
     Object? highestPreviousBalance = null,
     Object? balance = null,
+    Object? isLiquid = null,
   }) {
     return _then(_$AddressImpl(
       address: null == address
@@ -208,6 +217,10 @@ class __$$AddressImplCopyWithImpl<$Res>
           ? _value.balance
           : balance // ignore: cast_nullable_to_non_nullable
               as int,
+      isLiquid: null == isLiquid
+          ? _value.isLiquid
+          : isLiquid // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -225,7 +238,8 @@ class _$AddressImpl extends _Address {
       this.spentTxId,
       this.spendable = true,
       this.highestPreviousBalance = 0,
-      this.balance = 0})
+      this.balance = 0,
+      this.isLiquid = false})
       : super._();
 
   factory _$AddressImpl.fromJson(Map<String, dynamic> json) =>
@@ -257,10 +271,13 @@ class _$AddressImpl extends _Address {
   @override
   @JsonKey()
   final int balance;
+  @override
+  @JsonKey()
+  final bool isLiquid;
 
   @override
   String toString() {
-    return 'Address(address: $address, standard: $standard, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, highestPreviousBalance: $highestPreviousBalance, balance: $balance)';
+    return 'Address(address: $address, standard: $standard, index: $index, kind: $kind, state: $state, label: $label, spentTxId: $spentTxId, spendable: $spendable, highestPreviousBalance: $highestPreviousBalance, balance: $balance, isLiquid: $isLiquid)';
   }
 
   @override
@@ -281,13 +298,26 @@ class _$AddressImpl extends _Address {
                 other.spendable == spendable) &&
             (identical(other.highestPreviousBalance, highestPreviousBalance) ||
                 other.highestPreviousBalance == highestPreviousBalance) &&
-            (identical(other.balance, balance) || other.balance == balance));
+            (identical(other.balance, balance) || other.balance == balance) &&
+            (identical(other.isLiquid, isLiquid) ||
+                other.isLiquid == isLiquid));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, address, standard, index, kind,
-      state, label, spentTxId, spendable, highestPreviousBalance, balance);
+  int get hashCode => Object.hash(
+      runtimeType,
+      address,
+      standard,
+      index,
+      kind,
+      state,
+      label,
+      spentTxId,
+      spendable,
+      highestPreviousBalance,
+      balance,
+      isLiquid);
 
   @JsonKey(ignore: true)
   @override
@@ -314,7 +344,8 @@ abstract class _Address extends Address {
       final String? spentTxId,
       final bool spendable,
       final int highestPreviousBalance,
-      final int balance}) = _$AddressImpl;
+      final int balance,
+      final bool isLiquid}) = _$AddressImpl;
   _Address._() : super._();
 
   factory _Address.fromJson(Map<String, dynamic> json) = _$AddressImpl.fromJson;
@@ -340,6 +371,8 @@ abstract class _Address extends Address {
   int get highestPreviousBalance;
   @override
   int get balance;
+  @override
+  bool get isLiquid;
   @override
   @JsonKey(ignore: true)
   _$$AddressImplCopyWith<_$AddressImpl> get copyWith =>

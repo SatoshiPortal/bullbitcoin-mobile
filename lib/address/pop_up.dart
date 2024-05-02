@@ -134,7 +134,7 @@ class AddressQR extends StatelessWidget {
   Widget build(BuildContext context) {
     final address = context.select((AddressCubit cubit) => cubit.state.address!);
     final url = context.select(
-      (NetworkCubit _) => _.state.explorerAddressUrl(address.address),
+      (NetworkCubit _) => _.state.explorerAddressUrl(address.address, isLiquid: address.isLiquid),
     );
 
     return Column(
@@ -207,8 +207,7 @@ class AddressActions extends StatelessWidget {
       (AddressCubit cubit) => cubit.state.address!.spendable == false,
     );
     final freezing = context.select((AddressCubit cubit) => cubit.state.freezingAddress);
-    final hasUtxos =
-        context.select((AddressCubit cubit) => cubit.state.address?.state == AddressStatus.active);
+    final hasUtxos = context.select((AddressCubit cubit) => cubit.state.address?.state == AddressStatus.active);
     //TODO: UTXO context.select((AddressCubit cubit) => cubit.state.address!.utxos?.isNotEmpty ?? false);
 
     return Column(
@@ -274,8 +273,7 @@ class _CopyButtonState extends State<CopyButton> {
                     setState(() {
                       _copied = true;
                     });
-                    if (locator.isRegistered<Clippboard>())
-                      locator<Clippboard>().copy(address.address);
+                    if (locator.isRegistered<Clippboard>()) locator<Clippboard>().copy(address.address);
 
                     Future.delayed(const Duration(seconds: 2), () {
                       setState(() {

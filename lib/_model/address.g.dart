@@ -19,6 +19,7 @@ _$AddressImpl _$$AddressImplFromJson(Map<String, dynamic> json) =>
       highestPreviousBalance:
           (json['highestPreviousBalance'] as num?)?.toInt() ?? 0,
       balance: (json['balance'] as num?)?.toInt() ?? 0,
+      isLiquid: json['isLiquid'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$AddressImplToJson(_$AddressImpl instance) =>
@@ -33,6 +34,7 @@ Map<String, dynamic> _$$AddressImplToJson(_$AddressImpl instance) =>
       'spendable': instance.spendable,
       'highestPreviousBalance': instance.highestPreviousBalance,
       'balance': instance.balance,
+      'isLiquid': instance.isLiquid,
     };
 
 const _$AddressKindEnumMap = {
