@@ -19,7 +19,7 @@ class SwapAppListener extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     return MultiBlocListener(
       listeners: [
         // BlocListener<TestCub, bool>(
@@ -27,7 +27,9 @@ class SwapAppListener extends StatelessWidget {
         //     print('----> 0 $state');
         //     try {
         //       // Navigator.of(context);
-        //       final x = router.location();
+        //       // final x = router.location();
+        //       final x = nav.state;
+        //       // print(':::::::: $x');
         //       // final x = router.routeInformationProvider.value.uri.toString();
         //       // router.configuration.
         //       // navigatorKey.currentState.
@@ -37,7 +39,7 @@ class SwapAppListener extends StatelessWidget {
         //       // ModalRoute.of(navigatorKey.currentContext!)?.settings.name ??
         //       //     'nooo';
 
-        //       final isReceivePage = router.location() == '/receive';
+        //       // final isReceivePage = router.location() == '/receive';
 
         //       // router.routeInformationParser.configuration.r
 
@@ -73,7 +75,7 @@ class SwapAppListener extends StatelessWidget {
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = tx.actionPrefixStr();
 
-            final isReceivePage = router.location() == '/receive';
+            final isReceivePage = context.read<NavName>().state == '/receive';
 
             if (!isReceivePage) {
               showToastWidget(
@@ -121,7 +123,7 @@ class SwapAppListener extends StatelessWidget {
               print('----> 1');
 
               try {
-                final route = router.location();
+                final route = context.read<NavName>().state;
                 final isReceivePage = route == '/receive';
                 final isSwapReceivePage = route == '/swap-receive';
 
@@ -170,12 +172,12 @@ class SwapAppListener extends StatelessWidget {
 //     _test();
 //   }
 
-//   void toggle() => emit(!state);
+//   void _toggle() => emit(!state);
 
 //   void _test() async {
 //     for (var i = 0; i < 10; i++) {
 //       await Future.delayed(const Duration(seconds: 10));
-//       toggle();
+//       _toggle();
 //     }
 //   }
 // }

@@ -44,6 +44,7 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
+import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
@@ -100,6 +101,7 @@ Future _setupRepositories() async {
 }
 
 Future _setupAppServices() async {
+  locator.registerSingleton<NavName>(NavName());
   final deepLink = DeepLink();
   locator.registerSingleton<DeepLink>(deepLink);
   locator.registerSingleton<Lighting>(

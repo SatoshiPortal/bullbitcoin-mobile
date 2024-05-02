@@ -44,10 +44,10 @@
         ".idea": true,
         ".gitignore": true,
         // 
-        // "**/analysis_options.yaml": true,
+        "**/analysis_options.yaml": true,
         "build.yaml": true,
         "**/build": true,
-        // "**/assets": true,
+        "**/assets": true,
         "l10n.yaml": true,
         // 
         // 
@@ -61,7 +61,7 @@
         "ios": true,
         // 
         // 
-        "**/pubspec.yaml": true,
+        // "**/pubspec.yaml": true,
         // 
         // 
         "**/test": true,

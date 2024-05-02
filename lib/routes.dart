@@ -35,6 +35,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 final GoRouter router = GoRouter(
   navigatorKey: navigatorKey,
   initialLocation: '/',
+  observers: [GoRouterObserver()],
   routes: <RouteBase>[
     GoRoute(
       path: '/',
@@ -264,6 +265,37 @@ class BBlocObserver extends BlocObserver {
       printToConsole: true,
     );
     super.onError(bloc, error, stackTrace);
+  }
+}
+
+class GoRouterObserver extends NavigatorObserver {
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    locator<NavName>().update(route.settings.name!);
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    locator<NavName>().update(previousRoute!.settings.name!);
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    print('didRemove: $route');
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    locator<NavName>().update(newRoute!.settings.name!);
+  }
+}
+
+class NavName extends Cubit<String> {
+  NavName() : super('');
+
+  void update(String name) {
+    print('nav: $name');
+    emit(name);
   }
 }
 
