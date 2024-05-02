@@ -36,18 +36,24 @@ class TestBackupPage extends StatelessWidget {
       child: TestBackupListener(
         child: Builder(
           builder: (context) {
-            return Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                flexibleSpace: BBAppBar(
-                  text: 'Test Backup',
-                  onBack: () {
-                    context.pop();
-                    context.read<WalletSettingsCubit>().resetBackupTested();
-                  },
+            return PopScope(
+              canPop: false,
+              onPopInvoked: (canPop) {
+                context.go('/home');
+              },
+              child: Scaffold(
+                appBar: AppBar(
+                  automaticallyImplyLeading: false,
+                  flexibleSpace: BBAppBar(
+                    text: 'Test Backup',
+                    onBack: () {
+                      context.pop();
+                      context.read<WalletSettingsCubit>().resetBackupTested();
+                    },
+                  ),
                 ),
+                body: const TestBackupScreen(),
               ),
-              body: const TestBackupScreen(),
             );
           },
         ),
