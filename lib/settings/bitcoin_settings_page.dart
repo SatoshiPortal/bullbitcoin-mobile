@@ -6,6 +6,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network/bloc/state.dart';
@@ -294,6 +295,8 @@ class TestNetButton extends StatelessWidget {
       listenWhen: (previous, current) => previous.testnet != current.testnet,
       listener: (context, state) {
         context.read<NetworkFeesCubit>().loadFees();
+        final network = state.getBBNetwork();
+        context.read<HomeCubit>().loadWalletsForNetwork(network);
         // context.read<WatchTxsBloc>().add(InitializeSwapWatcher(isTestnet: state.testnet));
       },
       child: Row(

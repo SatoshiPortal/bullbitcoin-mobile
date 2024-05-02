@@ -79,6 +79,7 @@ abstract class IWalletCreate {
   Future<(Wallet?, Err?)> loadPublicWallet({
     required String saveDir,
     Wallet? wallet,
+    required BBNetwork network,
   });
 }
 

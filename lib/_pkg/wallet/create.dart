@@ -27,6 +27,7 @@ class WalletCreate implements IWalletCreate {
   Future<(Wallet?, Err?)> loadPublicWallet({
     required String saveDir,
     Wallet? wallet,
+    required BBNetwork network,
   }) async {
     try {
       Wallet w;
@@ -39,6 +40,8 @@ class WalletCreate implements IWalletCreate {
         w = walletFromStorage!;
       } else
         w = wallet;
+
+      if (w.network != network) throw 'Network mismatch';
 
       switch (w.baseWalletType) {
         case BaseWalletType.Bitcoin:
@@ -69,6 +72,7 @@ class WalletCreate implements IWalletCreate {
           return (w, null);
       }
     } catch (e) {
+      print('Error: $e');
       return (
         null,
         Err(

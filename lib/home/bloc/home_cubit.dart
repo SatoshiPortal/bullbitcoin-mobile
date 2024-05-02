@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/home/bloc/state.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -86,6 +88,23 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(updated: true));
     await Future.delayed(const Duration(seconds: 2));
     emit(state.copyWith(updated: false));
+  }
+
+  void loadWalletsForNetwork(BBNetwork network) {
+    print('::::::1');
+    final blocs = state.walletBlocsFromNetwork(network);
+    print('::::::2');
+
+    if (blocs.isEmpty) return;
+    print('::::::3');
+
+    for (final bloc in blocs) {
+      print('::::::4');
+
+      final w = bloc.state.wallet!;
+      bloc.add(LoadWallet(w.getWalletStorageString()));
+    }
+    print('::::::5');
   }
 
   // void addWallets(List<Wallet> wallets) {

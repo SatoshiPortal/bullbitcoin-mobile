@@ -86,6 +86,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     final (wallet, err) = await _walletCreate.loadPublicWallet(
       saveDir: event.saveDir,
       wallet: state.wallet,
+      network: _networkCubit.state.getBBNetwork(),
     );
     if (err != null) {
       emit(
