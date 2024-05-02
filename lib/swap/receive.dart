@@ -280,16 +280,17 @@ class ReceivingSwapPage extends StatefulWidget {
 
 class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
   bool received = false;
+  Transaction? tx;
 
   @override
   Widget build(BuildContext context) {
     var amt = widget.tx.recievableAmount() ?? 0;
 
-    final tx = context.select(
-      (HomeCubit cubit) => cubit.state.getTxFromSwap(widget.tx),
-    );
+    // final tx = context.select(
+    //   (HomeCubit cubit) => cubit.state.getTxFromSwap(widget.tx),
+    // );
 
-    if (tx != null) amt = tx.getAmount();
+    if (tx != null) amt = tx!.getAmount();
 
     final amtStr =
         context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
@@ -303,13 +304,24 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
 
         if (swapTx.settledReverse()) {
           await Future.delayed(200.ms);
+          tx = context.read<HomeCubit>().state.getTxFromSwap(widget.tx);
           setState(() {
             received = true;
           });
         }
       },
       child: Scaffold(
-        appBar: AppBar(flexibleSpace: const BBAppBar(text: 'Swap Received')),
+        appBar: AppBar(
+          flexibleSpace: BBAppBar(
+            text: 'Swap Received',
+            onBack: () {
+              if (received)
+                context.go('/home');
+              else
+                context.pop();
+            },
+          ),
+        ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -344,7 +356,8 @@ class ReceivedTick extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      height: 400,
+      height: 300,
+      width: 300,
       duration: const Duration(milliseconds: 100),
       child: received
           ? LottieBuilder.asset(
