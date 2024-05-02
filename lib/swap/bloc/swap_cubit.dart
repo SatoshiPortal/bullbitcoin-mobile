@@ -185,7 +185,83 @@ class SwapCubit extends Cubit<SwapState> {
   void removeWarnings() =>
       emit(state.copyWith(errSmallAmt: false, errHighFees: null));
 
-  Future createBtcLnSubSwap({
+  // Future createBtcLnSubSwap({
+  //   required Wallet wallet,
+  //   required String invoice,
+  //   required int amount,
+  //   String? label,
+  //   required bool isTestnet,
+  //   required String networkUrl,
+  // }) async {
+  //   emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
+
+  //   final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
+  //     boltzUrl: isTestnet ? boltzTestnet : boltzMainnet,
+  //   );
+  //   if (errFees != null) {
+  //     emit(
+  //       state.copyWith(
+  //         errCreatingSwapInv: errFees.toString(),
+  //         generatingSwapInv: false,
+  //       ),
+  //     );
+  //     return;
+  //   }
+
+  //   final (seed, errReadingSeed) = await _walletSensitiveRepository.readSeed(
+  //     fingerprintIndex: wallet.getRelatedSeedStorageString(),
+  //   );
+  //   if (errReadingSeed != null) {
+  //     emit(
+  //       state.copyWith(
+  //         errCreatingSwapInv: errReadingSeed.toString(),
+  //         generatingSwapInv: false,
+  //       ),
+  //     );
+  //     return;
+  //   }
+
+  //   final (swap, err) = await _swapBoltz.sendV2(
+  //     boltzUrl: isTestnet ? boltzTestnetV2 : boltzMainnetV2,
+  //     mnemonic: seed!.mnemonic,
+  //     index: wallet.revKeyIndex,
+  //     invoice: invoice,
+  //     network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
+  //     electrumUrl: networkUrl,
+  //     isLiquid: false,
+  //   );
+  //   if (err != null) {
+  //     emit(
+  //       state.copyWith(
+  //         errCreatingSwapInv: err.message,
+  //         generatingSwapInv: false,
+  //       ),
+  //     );
+  //     return;
+  //   }
+
+  //   final updatedSwap = swap!.copyWith(
+  //     boltzFees: (fees!.btcReverse.boltzFeesRate * amount / 100) as int,
+  //     lockupFees: fees.btcReverse.lockupFees,
+  //     claimFees: fees.btcReverse.claimFeesEstimate,
+  //   );
+
+  //   emit(
+  //     state.copyWith(
+  //       generatingSwapInv: false,
+  //       errCreatingSwapInv: '',
+  //       swapTx: updatedSwap,
+  //     ),
+  //   );
+
+  //   await _saveSwapToWallet(
+  //     swapTx: updatedSwap,
+  //     wallet: wallet,
+  //     label: label,
+  //   );
+  // }
+
+  Future createSubSwapForSend({
     required Wallet wallet,
     required String invoice,
     required int amount,
@@ -195,8 +271,16 @@ class SwapCubit extends Cubit<SwapState> {
   }) async {
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
 
+    final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
+    final boltzurlV2 = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
+
+    // we dont have to make this call here
+    // we have fees stored which has a pairHash
+    // we use the pairHash when creating a swap
+    // if the swap creation fails because of the pairHash, its because the fees updated and we can recall fetchFees
+    // an optimization for later
     final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
-      boltzUrl: isTestnet ? boltzTestnet : boltzMainnet,
+      boltzUrl: boltzurl,
     );
     if (errFees != null) {
       emit(
@@ -206,6 +290,32 @@ class SwapCubit extends Cubit<SwapState> {
         ),
       );
       return;
+    }
+
+    final walletIsLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+    if (walletIsLiquid) {
+      if (amount < fees!.lbtcLimits.minimal ||
+          amount > fees.lbtcLimits.maximal) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv:
+                'Amount should be greater than ${fees.lbtcLimits.minimal} and less than ${fees.lbtcLimits.maximal} sats',
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
+    } else {
+      if (amount < fees!.btcLimits.minimal || amount > fees.btcLimits.maximal) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv:
+                'Amount should be greater than ${fees.btcLimits.minimal} and less than ${fees.btcLimits.maximal} sats',
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
     }
 
     final (seed, errReadingSeed) = await _walletSensitiveRepository.readSeed(
@@ -220,20 +330,23 @@ class SwapCubit extends Cubit<SwapState> {
       );
       return;
     }
+    final network = isTestnet
+        ? (walletIsLiquid ? Chain.liquidTestnet : Chain.bitcoinTestnet)
+        : (walletIsLiquid ? Chain.liquid : Chain.bitcoin);
 
-    final (swap, err) = await _swapBoltz.sendV2(
-      boltzUrl: isTestnet ? boltzTestnetV2 : boltzMainnetV2,
+    final (swap, errCreatingInv) = await _swapBoltz.sendV2(
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
-      invoice: invoice,
-      network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
+      network: network,
       electrumUrl: networkUrl,
-      isLiquid: false,
+      boltzUrl: boltzurlV2,
+      isLiquid: walletIsLiquid,
+      invoice: invoice,
     );
-    if (err != null) {
+    if (errCreatingInv != null) {
       emit(
         state.copyWith(
-          errCreatingSwapInv: err.message,
+          errCreatingSwapInv: errCreatingInv.toString(),
           generatingSwapInv: false,
         ),
       );
@@ -241,9 +354,15 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     final updatedSwap = swap!.copyWith(
-      boltzFees: (fees!.btcReverse.boltzFeesRate * amount / 100) as int,
-      lockupFees: fees.btcReverse.lockupFees,
-      claimFees: fees.btcReverse.claimFeesEstimate,
+      boltzFees: walletIsLiquid
+          ? fees.lbtcReverse.boltzFeesRate * amount ~/ 100
+          : fees.btcReverse.boltzFeesRate * amount ~/ 100,
+      lockupFees: walletIsLiquid
+          ? fees.lbtcReverse.lockupFees
+          : fees.btcReverse.lockupFees,
+      claimFees: walletIsLiquid
+          ? fees.lbtcReverse.claimFeesEstimate
+          : fees.btcReverse.claimFeesEstimate,
     );
 
     emit(
@@ -254,10 +373,12 @@ class SwapCubit extends Cubit<SwapState> {
       ),
     );
 
-    await _saveSwapToWallet(
+    _showWarnings();
+
+    _saveSwapToWallet(
       swapTx: updatedSwap,
-      wallet: wallet,
       label: label,
+      wallet: wallet,
     );
   }
 
