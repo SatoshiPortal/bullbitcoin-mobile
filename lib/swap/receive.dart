@@ -357,12 +357,14 @@ class ReceivedTick extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       height: 300,
-      width: 300,
+      width: double.infinity,
       duration: const Duration(milliseconds: 100),
       child: received
-          ? LottieBuilder.asset(
-              'assets/loaderanimation.json',
-              repeat: false,
+          ? Center(
+              child: LottieBuilder.asset(
+                'assets/loaderanimation.json',
+                repeat: false,
+              ),
             )
           : const Center(
               child: SizedBox(
