@@ -29,6 +29,7 @@ class ReceiveState with _$ReceiveState {
     int? updateAddressGap,
     @Default(false) bool switchToSecure,
     @Default(false) bool switchToInstant,
+    @Default(false) bool receiveFormSubmitted,
 
     // required SwapCubit swapBloc,
   }) = _ReceiveState;
@@ -71,8 +72,7 @@ class ReceiveState with _$ReceiveState {
 
   bool showQR(SwapTx? swapTx) {
     return (swapTx != null && paymentNetwork == ReceivePaymentNetwork.lightning) ||
-        (paymentNetwork == ReceivePaymentNetwork.bitcoin ||
-            paymentNetwork == ReceivePaymentNetwork.liquid);
+        (paymentNetwork == ReceivePaymentNetwork.bitcoin || paymentNetwork == ReceivePaymentNetwork.liquid);
   }
 
   bool isLn() => paymentNetwork == ReceivePaymentNetwork.lightning;

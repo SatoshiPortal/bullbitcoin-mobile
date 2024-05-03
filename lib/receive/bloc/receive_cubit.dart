@@ -32,16 +32,18 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       ),
     );
 
-    if (state.paymentNetwork == ReceivePaymentNetwork.lightning)
-      emit(state.copyWith(defaultAddress: null));
+    if (state.paymentNetwork == ReceivePaymentNetwork.lightning) emit(state.copyWith(defaultAddress: null));
 
-    if (!walletBloc.state.wallet!.mainWallet)
-      emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
+    if (!walletBloc.state.wallet!.mainWallet) emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
 
     // final watchOnly = walletBloc.state.wallet!.watchOnly();
     // if (watchOnly)
     //   emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
     loadAddress();
+  }
+
+  void setReceiveFormSubmitted(bool formSubmitted) {
+    emit(state.copyWith(receiveFormSubmitted: formSubmitted));
   }
 
   void updateWalletType(
@@ -62,13 +64,11 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     emit(state.copyWith(paymentNetwork: selectedPaymentNetwork));
 
-    if (selectedPaymentNetwork == ReceivePaymentNetwork.lightning)
-      emit(state.copyWith(defaultAddress: null));
+    if (selectedPaymentNetwork == ReceivePaymentNetwork.lightning) emit(state.copyWith(defaultAddress: null));
 
     if (selectedPaymentNetwork != ReceivePaymentNetwork.bitcoin) loadAddress();
 
-    if (currentPayNetwork != ReceivePaymentNetwork.bitcoin &&
-        selectedPaymentNetwork == ReceivePaymentNetwork.bitcoin) {
+    if (currentPayNetwork != ReceivePaymentNetwork.bitcoin && selectedPaymentNetwork == ReceivePaymentNetwork.bitcoin) {
       emit(state.copyWith(switchToSecure: true));
       return;
     }
@@ -79,8 +79,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    if (currentPayNetwork != ReceivePaymentNetwork.liquid &&
-        selectedPaymentNetwork == ReceivePaymentNetwork.liquid) {
+    if (currentPayNetwork != ReceivePaymentNetwork.liquid && selectedPaymentNetwork == ReceivePaymentNetwork.liquid) {
       emit(state.copyWith(switchToInstant: true));
       return;
     }
@@ -337,8 +336,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       spendable: state.defaultAddress!.spendable,
     );
 
-    state.walletBloc!
-        .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+    state.walletBloc!.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
 
     emit(
       state.copyWith(
@@ -377,8 +375,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       kind: AddressKind.deposit,
     );
 
-    state.walletBloc!
-        .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+    state.walletBloc!.add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
 
     emit(
       state.copyWith(
