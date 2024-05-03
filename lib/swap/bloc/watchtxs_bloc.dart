@@ -143,7 +143,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         final id = swapId;
         print('SwapStatusUpdate: $id - ${status.status}');
         if (!state.isListeningId(id)) return;
-        print('Getting ongoing swap');
         final swapTx = walletBloc.state.wallet!
             .getOngoingSwap(id)!
             .copyWith(status: status);
@@ -332,7 +331,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    // await Future.delayed(7.seconds);
+    await Future.delayed(7.seconds);
 
     final err = await _swapBoltz.cooperativeSubmarineClose(
       swapTx: swapTx,
@@ -400,7 +399,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     ProcessSwapTx event,
     Emitter<WatchTxsState> emit,
   ) async {
-    // await Future.delayed(1.seconds);
+    await Future.delayed(1.seconds);
     final swapTx = event.swapTx;
     final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;
@@ -417,8 +416,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
         case ReverseSwapActions.paid:
           __swapAlert(swapTx, wallet, emit);
-          final swap = await __claimSwap(swapTx, walletBloc, emit);
-          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+          await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case ReverseSwapActions.claimable:
           __swapAlert(swapTx, wallet, emit);
