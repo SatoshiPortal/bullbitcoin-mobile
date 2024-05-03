@@ -207,7 +207,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    await Future.delayed(10.seconds);
+    // await Future.delayed(10.seconds);
 
     final (txid, err) = await _swapBoltz.refundV2SubmarineSwap(
       swapTx: swapTx,
@@ -267,7 +267,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    await Future.delayed(10.seconds);
+    // await Future.delayed(10.seconds);
 
     final (txid, err) = await _swapBoltz.claimV2ReverseSwap(
       swapTx: swapTx,
@@ -331,7 +331,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    await Future.delayed(10.seconds);
+    await Future.delayed(7.seconds);
 
     final err = await _swapBoltz.cooperativeSubmarineClose(
       swapTx: swapTx,
