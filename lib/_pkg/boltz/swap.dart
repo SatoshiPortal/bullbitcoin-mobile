@@ -438,14 +438,17 @@ class SwapBoltz {
       if (isLiquid) {
         final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
         if (claimFeesEstimate == null) throw 'Fees estimate not found';
-
         final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
-        Future.delayed(17.seconds);
+        print('Waiting 17s for mempool propogation...');
+        await Future.delayed(17.seconds);
+        print('Claiming swap!');
         final resp = await swap.claim(
           outAddress: address,
           absFee: claimFeesEstimate,
           tryCooperate: tryCooperate,
         );
+        print('Claimed swap!');
+
         return (resp, null);
       } else {
         final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
@@ -462,6 +465,7 @@ class SwapBoltz {
         return (resp, null);
       }
     } catch (e) {
+      print(e);
       return (null, Err(e.toString()));
     }
   }
