@@ -37,7 +37,7 @@ mixin _$SendState {
   String? get psbtSigned => throw _privateConstructorUsedError;
   int? get psbtSignedFeeAmount => throw _privateConstructorUsedError;
   WalletBloc? get selectedWalletBloc => throw _privateConstructorUsedError;
-  SwapCubit get swapCubit => throw _privateConstructorUsedError;
+  Invoice? get invoice => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SendStateCopyWith<SendState> get copyWith =>
@@ -71,9 +71,10 @@ abstract class $SendStateCopyWith<$Res> {
       String? psbtSigned,
       int? psbtSignedFeeAmount,
       WalletBloc? selectedWalletBloc,
-      SwapCubit swapCubit});
+      Invoice? invoice});
 
   $TransactionCopyWith<$Res>? get tx;
+  $InvoiceCopyWith<$Res>? get invoice;
 }
 
 /// @nodoc
@@ -110,7 +111,7 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
     Object? selectedWalletBloc = freezed,
-    Object? swapCubit = null,
+    Object? invoice = freezed,
   }) {
     return _then(_value.copyWith(
       address: null == address
@@ -197,10 +198,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.selectedWalletBloc
           : selectedWalletBloc // ignore: cast_nullable_to_non_nullable
               as WalletBloc?,
-      swapCubit: null == swapCubit
-          ? _value.swapCubit
-          : swapCubit // ignore: cast_nullable_to_non_nullable
-              as SwapCubit,
+      invoice: freezed == invoice
+          ? _value.invoice
+          : invoice // ignore: cast_nullable_to_non_nullable
+              as Invoice?,
     ) as $Val);
   }
 
@@ -213,6 +214,18 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
 
     return $TransactionCopyWith<$Res>(_value.tx!, (value) {
       return _then(_value.copyWith(tx: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $InvoiceCopyWith<$Res>? get invoice {
+    if (_value.invoice == null) {
+      return null;
+    }
+
+    return $InvoiceCopyWith<$Res>(_value.invoice!, (value) {
+      return _then(_value.copyWith(invoice: value) as $Val);
     });
   }
 }
@@ -247,10 +260,12 @@ abstract class _$$SendStateImplCopyWith<$Res>
       String? psbtSigned,
       int? psbtSignedFeeAmount,
       WalletBloc? selectedWalletBloc,
-      SwapCubit swapCubit});
+      Invoice? invoice});
 
   @override
   $TransactionCopyWith<$Res>? get tx;
+  @override
+  $InvoiceCopyWith<$Res>? get invoice;
 }
 
 /// @nodoc
@@ -285,7 +300,7 @@ class __$$SendStateImplCopyWithImpl<$Res>
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
     Object? selectedWalletBloc = freezed,
-    Object? swapCubit = null,
+    Object? invoice = freezed,
   }) {
     return _then(_$SendStateImpl(
       address: null == address
@@ -372,10 +387,10 @@ class __$$SendStateImplCopyWithImpl<$Res>
           ? _value.selectedWalletBloc
           : selectedWalletBloc // ignore: cast_nullable_to_non_nullable
               as WalletBloc?,
-      swapCubit: null == swapCubit
-          ? _value.swapCubit
-          : swapCubit // ignore: cast_nullable_to_non_nullable
-              as SwapCubit,
+      invoice: freezed == invoice
+          ? _value.invoice
+          : invoice // ignore: cast_nullable_to_non_nullable
+              as Invoice?,
     ));
   }
 }
@@ -405,7 +420,7 @@ class _$SendStateImpl extends _SendState {
       this.psbtSigned,
       this.psbtSignedFeeAmount,
       this.selectedWalletBloc,
-      required this.swapCubit})
+      this.invoice})
       : _selectedUtxos = selectedUtxos,
         super._();
 
@@ -475,11 +490,11 @@ class _$SendStateImpl extends _SendState {
   @override
   final WalletBloc? selectedWalletBloc;
   @override
-  final SwapCubit swapCubit;
+  final Invoice? invoice;
 
   @override
   String toString() {
-    return 'SendState(address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedWalletBloc: $selectedWalletBloc, swapCubit: $swapCubit)';
+    return 'SendState(address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice)';
   }
 
   @override
@@ -522,8 +537,7 @@ class _$SendStateImpl extends _SendState {
                 other.psbtSignedFeeAmount == psbtSignedFeeAmount) &&
             (identical(other.selectedWalletBloc, selectedWalletBloc) ||
                 other.selectedWalletBloc == selectedWalletBloc) &&
-            (identical(other.swapCubit, swapCubit) ||
-                other.swapCubit == swapCubit));
+            (identical(other.invoice, invoice) || other.invoice == invoice));
   }
 
   @override
@@ -550,7 +564,7 @@ class _$SendStateImpl extends _SendState {
         psbtSigned,
         psbtSignedFeeAmount,
         selectedWalletBloc,
-        swapCubit
+        invoice
       ]);
 
   @JsonKey(ignore: true)
@@ -583,7 +597,7 @@ abstract class _SendState extends SendState {
       final String? psbtSigned,
       final int? psbtSignedFeeAmount,
       final WalletBloc? selectedWalletBloc,
-      required final SwapCubit swapCubit}) = _$SendStateImpl;
+      final Invoice? invoice}) = _$SendStateImpl;
   const _SendState._() : super._();
 
   @override
@@ -629,7 +643,7 @@ abstract class _SendState extends SendState {
   @override
   WalletBloc? get selectedWalletBloc;
   @override
-  SwapCubit get swapCubit;
+  Invoice? get invoice;
   @override
   @JsonKey(ignore: true)
   _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>

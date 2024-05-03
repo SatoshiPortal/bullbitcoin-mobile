@@ -70,7 +70,8 @@ class _ReceivePageState extends State<ReceivePage> {
     );
 
     final network = context.read<NetworkCubit>().state.getBBNetwork();
-    final walletBloc = widget.walletBloc ?? context.read<HomeCubit>().state.getMainInstantWallet(network);
+    final walletBloc = widget.walletBloc ??
+        context.read<HomeCubit>().state.getMainInstantWallet(network);
 
     if (walletBloc!.state.wallet!.isLiquid()) {
       _receiveCubit.updateWalletType(
@@ -120,24 +121,33 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
-    final isSupported = context.select((ReceiveCubit x) => x.state.isSupported());
+    final isSupported =
+        context.select((ReceiveCubit x) => x.state.isSupported());
     final showQR = context.select((ReceiveCubit x) => x.state.showQR(swapTx));
 
-    final watchOnly = context.select((WalletBloc x) => x.state.wallet!.watchOnly());
-    final mainWallet = context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
+    final watchOnly =
+        context.select((WalletBloc x) => x.state.wallet!.watchOnly());
+    final mainWallet =
+        context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
 
     final walletIsLiquid = context.select(
       (WalletBloc x) => x.state.wallet!.baseWalletType == BaseWalletType.Liquid,
     );
     final showWarning = context.select((SwapCubit x) => x.state.showWarning());
-    final removeWarning = context.select((SettingsCubit x) => x.state.removeSwapWarnings);
+    final removeWarning =
+        context.select((SettingsCubit x) => x.state.removeSwapWarnings);
 
-    final paymentNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
-    final formSubmitted = context.select((ReceiveCubit x) => x.state.receiveFormSubmitted);
-    final shouldShowForm = !formSubmitted && (paymentNetwork == ReceivePaymentNetwork.bitcoin);
+    final paymentNetwork =
+        context.select((ReceiveCubit x) => x.state.paymentNetwork);
+    final formSubmitted =
+        context.select((ReceiveCubit x) => x.state.receiveFormSubmitted);
+    final shouldShowForm =
+        !formSubmitted && (paymentNetwork == ReceivePaymentNetwork.bitcoin);
 
     final description = context.select((ReceiveCubit _) => _.state.description);
-    final shouldShownDescription = (paymentNetwork == ReceivePaymentNetwork.lightning && description.isNotEmpty) ||
+    final shouldShownDescription = (paymentNetwork ==
+                ReceivePaymentNetwork.lightning &&
+            description.isNotEmpty) ||
         (paymentNetwork != ReceivePaymentNetwork.lightning && formSubmitted);
 
     return SingleChildScrollView(
@@ -169,7 +179,9 @@ class _Screen extends StatelessWidget {
                 const ReceiveAddress(),
                 const Gap(8),
                 if (shouldShowForm) const BitcoinReceiveForm(),
-                if (paymentNetwork == ReceivePaymentNetwork.lightning || formSubmitted) const RequestedAmount(),
+                if (paymentNetwork == ReceivePaymentNetwork.lightning ||
+                    formSubmitted)
+                  const RequestedAmount(),
                 if (shouldShownDescription) const Gap(8),
                 if (shouldShownDescription) const PaymentDescription(),
                 const Gap(16),
@@ -197,14 +209,18 @@ class ReceiveWalletsDropDown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
-    final selectedWalletBloc = context.select((ReceiveCubit _) => _.state.walletBloc);
+    final walletBlocs = context
+        .select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    final selectedWalletBloc =
+        context.select((ReceiveCubit _) => _.state.walletBloc);
 
     final walletBloc = selectedWalletBloc ?? walletBlocs.first;
 
     return BBDropDown<WalletBloc>(
       items: {
-        for (final wallet in walletBlocs) wallet: wallet.state.wallet!.name ?? wallet.state.wallet!.sourceFingerprint,
+        for (final wallet in walletBlocs)
+          wallet: wallet.state.wallet!.name ??
+              wallet.state.wallet!.sourceFingerprint,
       },
       value: walletBloc,
       onChanged: (value) {
@@ -221,7 +237,8 @@ class SelectWalletType extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final isTestnet = context.select((NetworkCubit _) => _.state.testnet);
-    final paymentNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
+    final paymentNetwork =
+        context.select((ReceiveCubit x) => x.state.paymentNetwork);
 
     // if (!isTestnet) return const SizedBox.shrink();
 
@@ -233,7 +250,8 @@ class SelectWalletType extends StatelessWidget {
         ReceivePaymentNetwork.liquid: 'Liquid',
       },
       onChanged: (value) {
-        if (paymentNetwork == ReceivePaymentNetwork.lightning) context.read<SwapCubit>().clearSwapTx();
+        if (paymentNetwork == ReceivePaymentNetwork.lightning)
+          context.read<SwapCubit>().clearSwapTx();
 
         context.read<ReceiveCubit>().setReceiveFormSubmitted(false);
         context.read<SwapCubit>().removeWarnings();
@@ -331,8 +349,10 @@ class _Warnings extends StatelessWidget {
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 
-    final errLowAmt = context.select((SwapCubit x) => x.state.swapTx!.smallAmt());
-    final errHighFees = context.select((SwapCubit x) => x.state.swapTx!.highFees());
+    final errLowAmt =
+        context.select((SwapCubit x) => x.state.swapTx!.smallAmt());
+    final errHighFees =
+        context.select((SwapCubit x) => x.state.swapTx!.highFees());
 
     return WarningContainer(
       children: [
@@ -380,7 +400,8 @@ class _RemoveWarningMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final removeWarning = context.select((SettingsCubit x) => x.state.removeSwapWarnings);
+    final removeWarning =
+        context.select((SettingsCubit x) => x.state.removeSwapWarnings);
 
     return Row(
       children: [
@@ -389,7 +410,8 @@ class _RemoveWarningMessage extends StatelessWidget {
           visualDensity: VisualDensity.compact,
           value: removeWarning,
           onChanged: (checked) {
-            if (checked != null) context.read<SettingsCubit>().changeSwapWarnings(checked);
+            if (checked != null)
+              context.read<SettingsCubit>().changeSwapWarnings(checked);
           },
           side: BorderSide(width: 2, color: context.colour.surface),
           // fillColor: context.colour.surface,
@@ -419,8 +441,10 @@ class WalletActions extends StatelessWidget {
     final show = context.select((ReceiveCubit _) => _.state.showQR(swap));
     if (!show) return const SizedBox.shrink();
 
-    final showRequestButton = context.select((ReceiveCubit x) => x.state.showNewRequestButton());
-    final errLoadingAddress = context.select((ReceiveCubit x) => x.state.errLoadingAddress);
+    final showRequestButton =
+        context.select((ReceiveCubit x) => x.state.showNewRequestButton());
+    final errLoadingAddress =
+        context.select((ReceiveCubit x) => x.state.errLoadingAddress);
 
     return Column(
       children: [
@@ -444,8 +468,10 @@ class WalletActions extends StatelessWidget {
           leftSvgAsset: 'assets/new-address.svg',
           onPressed: () {
             context.read<CurrencyCubit>().updateAmountDirect(0);
-            final paymentNetwork = context.read<ReceiveCubit>().state.paymentNetwork;
-            if (paymentNetwork == ReceivePaymentNetwork.lightning) context.read<SwapCubit>().clearSwapTx();
+            final paymentNetwork =
+                context.read<ReceiveCubit>().state.paymentNetwork;
+            if (paymentNetwork == ReceivePaymentNetwork.lightning)
+              context.read<SwapCubit>().clearSwapTx();
 
             context.read<ReceiveCubit>().generateNewAddress();
           },
@@ -463,7 +489,8 @@ class CreateLightningInvoice extends StatelessWidget {
   Widget build(BuildContext context) {
     final description = context.select((ReceiveCubit _) => _.state.description);
     final err = context.select((SwapCubit _) => _.state.errCreatingSwapInv);
-    final creatingInv = context.select((SwapCubit _) => _.state.generatingSwapInv);
+    final creatingInv =
+        context.select((SwapCubit _) => _.state.generatingSwapInv);
     final allFees = context.select((SwapCubit x) => x.state.allFees);
     final amount = context.select((CurrencyCubit x) => x.state.amount);
 
@@ -516,8 +543,10 @@ class CreateLightningInvoice extends StatelessWidget {
             loadingText: 'Creating Invoice',
             onPressed: () async {
               final amt = context.read<CurrencyCubit>().state.amount;
-              final wallet = context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
-              final walletIsLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+              final wallet =
+                  context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
+              final walletIsLiquid =
+                  wallet.baseWalletType == BaseWalletType.Liquid;
               final label = context.read<ReceiveCubit>().state.description;
               final isTestnet = context.read<NetworkCubit>().state.testnet;
               final networkUrl = !walletIsLiquid
@@ -548,11 +577,11 @@ class BitcoinReceiveForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description = context.select((ReceiveCubit _) => _.state.description);
-    final amount = context.select((CurrencyCubit x) => x.state.amount);
+    // final amount = context.select((CurrencyCubit x) => x.state.amount);
 
-    final isLiquid = context.select(
-      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
-    );
+    // final isLiquid = context.select(
+    //   (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
+    // );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -616,7 +645,8 @@ class SwapFeesDetails extends StatelessWidget {
 
     final totalFees = swapTx.totalFees() ?? 0;
     final fees = context.select(
-      (CurrencyCubit x) => x.state.getAmountInUnits(totalFees, removeText: true),
+      (CurrencyCubit x) =>
+          x.state.getAmountInUnits(totalFees, removeText: true),
     );
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),
@@ -624,7 +654,10 @@ class SwapFeesDetails extends StatelessWidget {
 
     return RichText(
       text: TextSpan(
-        style: TextStyle(fontSize: context.font.bodyMedium?.fontSize, color: context.colour.tertiary),
+        style: TextStyle(
+          fontSize: context.font.bodyMedium?.fontSize,
+          color: context.colour.tertiary,
+        ),
         children: <TextSpan>[
           const TextSpan(
             text:
@@ -664,10 +697,13 @@ class ReceiveQR extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
-    final address = context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
-    final amount = context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
+    final address =
+        context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
+    final amount =
+        context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
     final description = context.select((ReceiveCubit x) => x.state.description);
-    final formSubmitted = context.select((ReceiveCubit x) => x.state.receiveFormSubmitted);
+    final formSubmitted =
+        context.select((ReceiveCubit x) => x.state.receiveFormSubmitted);
 
     final finalAddress = formSubmitted
         ? 'bitcoin:$address&amount=$amount${description.isNotEmpty ? '&label=$description' : ''}'
@@ -687,7 +723,8 @@ class ReceiveQRDisplay extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () async {
-          if (locator.isRegistered<Clippboard>()) await locator<Clippboard>().copy(address);
+          if (locator.isRegistered<Clippboard>())
+            await locator<Clippboard>().copy(address);
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Copied to clipboard')),
@@ -715,7 +752,8 @@ class ReceiveAddress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
-    final addressQr = context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
+    final addressQr =
+        context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
 
     return ReceiveDisplayAddress(addressQr: addressQr);
   }
@@ -726,12 +764,16 @@ class RequestedAmount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final payNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
+    final payNetwork =
+        context.select((ReceiveCubit x) => x.state.paymentNetwork);
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
     final amount = context.select((CurrencyCubit x) => x.state.amount);
-    final requestedAmount = payNetwork == ReceivePaymentNetwork.lightning ? (swapTx?.outAmount ?? 0) : amount;
+    final requestedAmount = payNetwork == ReceivePaymentNetwork.lightning
+        ? (swapTx?.outAmount ?? 0)
+        : amount;
     final requestedAmountStr = context.select(
-      (CurrencyCubit x) => x.state.getAmountInUnits(requestedAmount, removeText: true),
+      (CurrencyCubit x) =>
+          x.state.getAmountInUnits(requestedAmount, removeText: true),
     );
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),
@@ -792,7 +834,8 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
     //         ? widget.addressQr
     //         : widget.addressQr.substring(0, 10) + ' ... ' + widget.addressQr.substring(widget.addressQr.length - 5)
     //     : widget.addressQr;
-    final paymentNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
+    final paymentNetwork =
+        context.select((ReceiveCubit x) => x.state.paymentNetwork);
     String receiveAddressLabel = 'Payment invoice';
 
     if (paymentNetwork == ReceivePaymentNetwork.bitcoin) {
@@ -803,9 +846,11 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
 
     final address = widget.addressQr;
 
-    final amount = context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
+    final amount =
+        context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
     final description = context.select((ReceiveCubit x) => x.state.description);
-    final formSubmitted = context.select((ReceiveCubit x) => x.state.receiveFormSubmitted);
+    final formSubmitted =
+        context.select((ReceiveCubit x) => x.state.receiveFormSubmitted);
 
     final finalAddress = formSubmitted
         ? 'bitcoin:$address&amount=$amount${description.isNotEmpty ? '&label=$description' : ''}'
@@ -823,10 +868,13 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
-                          if (locator.isRegistered<Clippboard>()) await locator<Clippboard>().copy(finalAddress);
+                          if (locator.isRegistered<Clippboard>())
+                            await locator<Clippboard>().copy(finalAddress);
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Copied to clipboard')),
+                            const SnackBar(
+                              content: Text('Copied to clipboard'),
+                            ),
                           );
                         },
                         child: BBText.bodySmall(
@@ -837,7 +885,8 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        if (locator.isRegistered<Clippboard>()) await locator<Clippboard>().copy(finalAddress);
+                        if (locator.isRegistered<Clippboard>())
+                          await locator<Clippboard>().copy(finalAddress);
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Copied to clipboard')),
@@ -866,7 +915,8 @@ class CreateInvoice extends StatelessWidget {
     final receiveCubit = context.read<ReceiveCubit>();
     final currencyCubit = context.read<CurrencyCubit>();
 
-    if (currencyCubit.state.amount > 0) currencyCubit.convertAmtOnCurrencyChange();
+    if (currencyCubit.state.amount > 0)
+      currencyCubit.convertAmtOnCurrencyChange();
 
     return showBBBottomSheet(
       context: context,

@@ -22,19 +22,19 @@ class SwapCubit extends Cubit<SwapState> {
   final SwapBoltz _swapBoltz;
   final WalletTx _walletTx;
 
-  void decodeInvoice(String invoice) async {
-    final (inv, err) = await _swapBoltz.decodeInvoice(invoice: invoice);
-    if (err != null) {
-      emit(
-        state.copyWith(
-          errCreatingSwapInv: err.toString(),
-          generatingSwapInv: false,
-        ),
-      );
-      return;
-    }
-    emit(state.copyWith(invoice: inv));
-  }
+  // void decodeInvoice(String invoice) async {
+  //   final (inv, err) = await _swapBoltz.decodeInvoice(invoice: invoice);
+  //   if (err != null) {
+  //     emit(
+  //       state.copyWith(
+  //         errCreatingSwapInv: err.toString(),
+  //         generatingSwapInv: false,
+  //       ),
+  //     );
+  //     return;
+  //   }
+  //   emit(state.copyWith(invoice: inv));
+  // }
 
   Future<void> fetchFees(bool isTestnet) async {
     final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;

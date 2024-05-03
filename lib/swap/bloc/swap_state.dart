@@ -13,7 +13,7 @@ class SwapState with _$SwapState {
     @Default('') String errCreatingSwapInv,
     @Default(false) bool generatingSwapInv,
     SwapTx? swapTx,
-    Invoice? invoice,
+    // Invoice? invoice,
     @Default(false) bool errSmallAmt,
     int? errHighFees,
     Wallet? updatedWallet,
