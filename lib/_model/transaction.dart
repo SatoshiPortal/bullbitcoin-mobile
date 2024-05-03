@@ -263,7 +263,9 @@ class SwapTx with _$SwapTx {
 
   bool refundableSubmarine() =>
       isSubmarine &&
-      (status != null && (status!.status == SwapStatus.invoiceFailedToPay));
+      (status != null &&
+          (status!.status == SwapStatus.invoiceFailedToPay ||
+              status!.status == SwapStatus.txnLockupFailed));
 
   bool claimableSubmarine() =>
       isSubmarine &&
@@ -282,6 +284,10 @@ class SwapTx with _$SwapTx {
       (status != null &&
           (status!.status == SwapStatus.invoiceExpired ||
               status!.status == SwapStatus.swapExpired));
+
+  bool expiredSubmarine() =>
+      isSubmarine &&
+      (status != null && (status!.status == SwapStatus.swapExpired));
 
   bool settledReverse() =>
       !isSubmarine &&
@@ -337,8 +343,6 @@ class SwapTx with _$SwapTx {
     if (statuss == null || statuss == SwapStatus.swapCreated)
       return ReverseSwapActions.created;
     else if (expiredReverse() ||
-        statuss == SwapStatus.swapExpired ||
-        statuss == SwapStatus.invoiceExpired ||
         statuss == SwapStatus.swapError ||
         statuss == SwapStatus.txnFailed ||
         statuss == SwapStatus.txnLockupFailed)
@@ -352,6 +356,29 @@ class SwapTx with _$SwapTx {
     else
       return ReverseSwapActions.created;
   }
+
+  SubmarineSwapActions submarineSwapAction() {
+    if (!isSubmarine) throw 'Reverse swap cannot be a submarine swap.';
+    final statuss = status?.status;
+
+    if (statuss == null || statuss == SwapStatus.swapCreated)
+      return SubmarineSwapActions.created;
+    else if (expiredSubmarine() ||
+        statuss == SwapStatus.swapExpired ||
+        statuss == SwapStatus.swapError ||
+        statuss == SwapStatus.txnFailed)
+      return SubmarineSwapActions.failed;
+    else if (paidSubmarine())
+      return SubmarineSwapActions.paid;
+    else if (claimableSubmarine())
+      return SubmarineSwapActions.claimable;
+    else if (settledSubmarine())
+      return SubmarineSwapActions.settled;
+    else if (refundableSubmarine())
+      return SubmarineSwapActions.refundable;
+    else
+      return SubmarineSwapActions.created;
+  }
 }
 
 enum ReverseSwapActions {
@@ -359,6 +386,15 @@ enum ReverseSwapActions {
   failed,
   paid,
   claimable,
+  settled,
+}
+
+enum SubmarineSwapActions {
+  created,
+  failed,
+  paid,
+  claimable,
+  refundable,
   settled,
 }
 

@@ -403,10 +403,10 @@ class SwapBoltz {
     }
   }
 
-  Future<(String?, Err?)> cooperativeClaimOrRefundV2Swap({
+  Future<(String?, Err?)> claimV2ReverseSwap({
     required SwapTx swapTx,
     required Wallet wallet,
-    required bool shouldRefund,
+    required bool tryCooperate,
   }) async {
     try {
       final address = wallet.lastGeneratedAddress?.address;
@@ -434,68 +434,101 @@ class SwapBoltz {
         jsonDecode(swapSentive!) as Map<String, dynamic>,
       );
 
-      if (!shouldRefund) {
-        if (isLiquid) {
-          final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
-          if (claimFeesEstimate == null) throw 'Fees estimate not found';
+      if (isLiquid) {
+        final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
+        if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
-          final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+        final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
 
-          final resp = await swap.claim(
-            outAddress: address,
-            absFee: claimFeesEstimate,
-            tryCooperate: true,
-          );
-          return (resp, null);
-        } else {
-          final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
-          if (claimFeesEstimate == null) throw 'Fees estimate not found';
-
-          final swap = swapTx.toBtcLnV2Swap(swapSensitive);
-
-          final resp = await swap.claim(
-            outAddress: address,
-            absFee: claimFeesEstimate,
-            tryCooperate: true,
-          );
-
-          return (resp, null);
-        }
+        final resp = await swap.claim(
+          outAddress: address,
+          absFee: claimFeesEstimate,
+          tryCooperate: tryCooperate,
+        );
+        return (resp, null);
       } else {
-        if (isLiquid) {
-          final refundFeesEstimate = fees?.lbtcSubmarine.claimFees;
-          if (refundFeesEstimate == null) throw 'Fees estimate not found';
+        final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
+        if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
-          final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
-          // waiting on PR to add cooperative refund
-          final resp = await swap.refund(
-            outAddress: address,
-            absFee: refundFeesEstimate,
-            tryCooperate: true,
-          );
+        final swap = swapTx.toBtcLnV2Swap(swapSensitive);
 
-          return (resp, null);
-        } else {
-          final refundFeesEstimate = fees?.btcSubmarine.claimFees;
-          if (refundFeesEstimate == null) throw 'Fees estimate not found';
+        final resp = await swap.claim(
+          outAddress: address,
+          absFee: claimFeesEstimate,
+          tryCooperate: tryCooperate,
+        );
 
-          final swap = swapTx.toBtcLnV2Swap(swapSensitive);
-
-          final resp = await swap.refund(
-            outAddress: address,
-            absFee: refundFeesEstimate,
-            tryCooperate: true,
-          );
-
-          return (resp, null);
-        }
+        return (resp, null);
       }
     } catch (e) {
       return (null, Err(e.toString()));
     }
   }
 
-  Future<Err?> cooperativeBoltzSubmarineClaim({
+  Future<(String?, Err?)> refundV2SubmarineSwap({
+    required SwapTx swapTx,
+    required Wallet wallet,
+    required bool tryCooperate,
+  }) async {
+    try {
+      final address = wallet.lastGeneratedAddress?.address;
+      if (address == null || address.isEmpty) throw 'Address not found';
+
+      final boltzurl =
+          wallet.network == BBNetwork.Testnet ? boltzTestnet : boltzMainnet;
+
+      final (fees, errFees) = await getFeesAndLimits(
+        boltzUrl: boltzurl,
+      );
+      if (errFees != null) {
+        print(errFees.message);
+        throw errFees;
+      }
+
+      final isLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+
+      final (swapSentive, err) = await _secureStorage.getValue(
+        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+      );
+      if (err != null) throw err;
+
+      final swapSensitive = SwapTxSensitive.fromJson(
+        jsonDecode(swapSentive!) as Map<String, dynamic>,
+      );
+
+      if (isLiquid) {
+        final refundFeesEstimate = fees?.lbtcSubmarine.claimFees;
+        if (refundFeesEstimate == null) throw 'Fees estimate not found';
+
+        final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+        // waiting on PR to add cooperative refund
+        final resp = await swap.refund(
+          outAddress: address,
+          absFee: refundFeesEstimate,
+          tryCooperate: tryCooperate,
+        );
+
+        return (resp, null);
+      } else {
+        final refundFeesEstimate = fees?.btcSubmarine.claimFees;
+        if (refundFeesEstimate == null) throw 'Fees estimate not found';
+
+        final swap = swapTx.toBtcLnV2Swap(swapSensitive);
+
+        final resp = await swap.refund(
+          outAddress: address,
+          absFee: refundFeesEstimate,
+          tryCooperate: tryCooperate,
+        );
+
+        return (resp, null);
+      }
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<Err?> cooperativeSubmarineClose({
     required SwapTx swapTx,
     required Wallet wallet,
   }) async {
@@ -513,14 +546,11 @@ class SwapBoltz {
 
       if (isLiquid) {
         final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
-
         await swap.coopCloseSubmarine();
         return null;
       } else {
         final swap = swapTx.toBtcLnV2Swap(swapSensitive);
-
         await swap.coopCloseSubmarine();
-
         return null;
       }
     } catch (e) {
