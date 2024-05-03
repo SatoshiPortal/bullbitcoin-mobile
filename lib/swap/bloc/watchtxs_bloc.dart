@@ -421,7 +421,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
 
         case ReverseSwapActions.claimable:
-          // __swapAlert(swapTx, wallet, emit);
+          __swapAlert(swapTx, wallet, emit);
           print('Claimable Reverse');
           final swap = await __claimSwap(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
