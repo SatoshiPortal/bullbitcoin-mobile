@@ -10,8 +10,10 @@ class SendState with _$SendState {
   const factory SendState({
     @Default('') String address,
     @Default('') String note,
+    int? tempAmt,
     @Default(false) bool scanningAddress,
     @Default('') String errScanningAddress,
+    @Default(false) bool showDropdown,
     @Default(false) bool showSendButton,
     @Default(false) bool sending,
     @Default('') String errSending,
@@ -67,12 +69,19 @@ class SendState with _$SendState {
     // if (swapCubit.state.errCreatingInvoice.isNotEmpty) {
     //   return swapCubit.state.errCreatingInvoice;
     // }
-    if (errSending.isNotEmpty) {
-      return errSending;
+
+    if (errScanningAddress.isNotEmpty) {
+      return errScanningAddress;
     }
+
     if (errDownloadingFile.isNotEmpty) {
       return errDownloadingFile;
     }
+
+    if (errSending.isNotEmpty) {
+      return errSending;
+    }
+
     return '';
   }
 

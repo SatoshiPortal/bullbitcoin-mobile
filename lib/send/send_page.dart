@@ -207,7 +207,6 @@ class WalletSelectionDropDown extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (!showSend) context.read<SendCubit>().disabledDropdownClicked();
-        print(':::::::yo');
       },
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),

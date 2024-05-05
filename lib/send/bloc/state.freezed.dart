@@ -18,8 +18,10 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$SendState {
   String get address => throw _privateConstructorUsedError;
   String get note => throw _privateConstructorUsedError;
+  int? get tempAmt => throw _privateConstructorUsedError;
   bool get scanningAddress => throw _privateConstructorUsedError;
   String get errScanningAddress => throw _privateConstructorUsedError;
+  bool get showDropdown => throw _privateConstructorUsedError;
   bool get showSendButton => throw _privateConstructorUsedError;
   bool get sending => throw _privateConstructorUsedError;
   String get errSending => throw _privateConstructorUsedError;
@@ -52,8 +54,10 @@ abstract class $SendStateCopyWith<$Res> {
   $Res call(
       {String address,
       String note,
+      int? tempAmt,
       bool scanningAddress,
       String errScanningAddress,
+      bool showDropdown,
       bool showSendButton,
       bool sending,
       String errSending,
@@ -92,8 +96,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
   $Res call({
     Object? address = null,
     Object? note = null,
+    Object? tempAmt = freezed,
     Object? scanningAddress = null,
     Object? errScanningAddress = null,
+    Object? showDropdown = null,
     Object? showSendButton = null,
     Object? sending = null,
     Object? errSending = null,
@@ -122,6 +128,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.note
           : note // ignore: cast_nullable_to_non_nullable
               as String,
+      tempAmt: freezed == tempAmt
+          ? _value.tempAmt
+          : tempAmt // ignore: cast_nullable_to_non_nullable
+              as int?,
       scanningAddress: null == scanningAddress
           ? _value.scanningAddress
           : scanningAddress // ignore: cast_nullable_to_non_nullable
@@ -130,6 +140,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.errScanningAddress
           : errScanningAddress // ignore: cast_nullable_to_non_nullable
               as String,
+      showDropdown: null == showDropdown
+          ? _value.showDropdown
+          : showDropdown // ignore: cast_nullable_to_non_nullable
+              as bool,
       showSendButton: null == showSendButton
           ? _value.showSendButton
           : showSendButton // ignore: cast_nullable_to_non_nullable
@@ -241,8 +255,10 @@ abstract class _$$SendStateImplCopyWith<$Res>
   $Res call(
       {String address,
       String note,
+      int? tempAmt,
       bool scanningAddress,
       String errScanningAddress,
+      bool showDropdown,
       bool showSendButton,
       bool sending,
       String errSending,
@@ -281,8 +297,10 @@ class __$$SendStateImplCopyWithImpl<$Res>
   $Res call({
     Object? address = null,
     Object? note = null,
+    Object? tempAmt = freezed,
     Object? scanningAddress = null,
     Object? errScanningAddress = null,
+    Object? showDropdown = null,
     Object? showSendButton = null,
     Object? sending = null,
     Object? errSending = null,
@@ -311,6 +329,10 @@ class __$$SendStateImplCopyWithImpl<$Res>
           ? _value.note
           : note // ignore: cast_nullable_to_non_nullable
               as String,
+      tempAmt: freezed == tempAmt
+          ? _value.tempAmt
+          : tempAmt // ignore: cast_nullable_to_non_nullable
+              as int?,
       scanningAddress: null == scanningAddress
           ? _value.scanningAddress
           : scanningAddress // ignore: cast_nullable_to_non_nullable
@@ -319,6 +341,10 @@ class __$$SendStateImplCopyWithImpl<$Res>
           ? _value.errScanningAddress
           : errScanningAddress // ignore: cast_nullable_to_non_nullable
               as String,
+      showDropdown: null == showDropdown
+          ? _value.showDropdown
+          : showDropdown // ignore: cast_nullable_to_non_nullable
+              as bool,
       showSendButton: null == showSendButton
           ? _value.showSendButton
           : showSendButton // ignore: cast_nullable_to_non_nullable
@@ -401,8 +427,10 @@ class _$SendStateImpl extends _SendState {
   const _$SendStateImpl(
       {this.address = '',
       this.note = '',
+      this.tempAmt,
       this.scanningAddress = false,
       this.errScanningAddress = '',
+      this.showDropdown = false,
       this.showSendButton = false,
       this.sending = false,
       this.errSending = '',
@@ -431,11 +459,16 @@ class _$SendStateImpl extends _SendState {
   @JsonKey()
   final String note;
   @override
+  final int? tempAmt;
+  @override
   @JsonKey()
   final bool scanningAddress;
   @override
   @JsonKey()
   final String errScanningAddress;
+  @override
+  @JsonKey()
+  final bool showDropdown;
   @override
   @JsonKey()
   final bool showSendButton;
@@ -494,7 +527,7 @@ class _$SendStateImpl extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(address: $address, note: $note, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice)';
+    return 'SendState(address: $address, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showDropdown: $showDropdown, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice)';
   }
 
   @override
@@ -504,10 +537,13 @@ class _$SendStateImpl extends _SendState {
             other is _$SendStateImpl &&
             (identical(other.address, address) || other.address == address) &&
             (identical(other.note, note) || other.note == note) &&
+            (identical(other.tempAmt, tempAmt) || other.tempAmt == tempAmt) &&
             (identical(other.scanningAddress, scanningAddress) ||
                 other.scanningAddress == scanningAddress) &&
             (identical(other.errScanningAddress, errScanningAddress) ||
                 other.errScanningAddress == errScanningAddress) &&
+            (identical(other.showDropdown, showDropdown) ||
+                other.showDropdown == showDropdown) &&
             (identical(other.showSendButton, showSendButton) ||
                 other.showSendButton == showSendButton) &&
             (identical(other.sending, sending) || other.sending == sending) &&
@@ -545,8 +581,10 @@ class _$SendStateImpl extends _SendState {
         runtimeType,
         address,
         note,
+        tempAmt,
         scanningAddress,
         errScanningAddress,
+        showDropdown,
         showSendButton,
         sending,
         errSending,
@@ -578,8 +616,10 @@ abstract class _SendState extends SendState {
   const factory _SendState(
       {final String address,
       final String note,
+      final int? tempAmt,
       final bool scanningAddress,
       final String errScanningAddress,
+      final bool showDropdown,
       final bool showSendButton,
       final bool sending,
       final String errSending,
@@ -605,9 +645,13 @@ abstract class _SendState extends SendState {
   @override
   String get note;
   @override
+  int? get tempAmt;
+  @override
   bool get scanningAddress;
   @override
   String get errScanningAddress;
+  @override
+  bool get showDropdown;
   @override
   bool get showSendButton;
   @override

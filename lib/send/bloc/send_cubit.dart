@@ -77,6 +77,72 @@ class SendCubit extends Cubit<SendState> {
     updateShowSend(force: true);
   }
 
+  void updateAddress(String address) async {
+    try {
+      if (address.startsWith('bitcoin')) {
+        final bip21Obj = bip21.decode(address);
+        final newAddress = bip21Obj.address;
+        emit(state.copyWith(address: newAddress));
+        final amount = bip21Obj.options['amount'] as num?;
+        if (amount != null) {
+          currencyCubit.btcToCurrentTempAmount(amount.toDouble());
+          final amountInSats = (amount * 100000000).toInt();
+          currencyCubit.updateAmountDirect(amountInSats);
+          emit(state.copyWith(tempAmt: amountInSats));
+        }
+        final label = bip21Obj.options['label'] as String?;
+        if (label != null) {
+          emit(state.copyWith(note: label));
+        }
+      } else if (address.startsWith('ln')) {
+        if (state.checkIfMainWalletSelected()) {
+          emit(state.copyWith(address: address));
+          // state.swapCubit.decodeInvoice(address);
+          final (inv, errInv) =
+              await _swapBoltz.decodeInvoice(invoice: address);
+          if (errInv != null) {
+            emit(state.copyWith(errScanningAddress: errInv.toString()));
+            return;
+          }
+          emit(state.copyWith(invoice: inv));
+        } else {
+          emit(
+            state.copyWith(
+              errScanningAddress:
+                  'Lightning invoices can only be sent from main wallets',
+            ),
+          );
+        }
+      } else
+        emit(state.copyWith(address: address));
+
+      updateShowSend();
+    } catch (e) {
+      emit(
+        state.copyWith(
+          address: '',
+          note: '',
+          errScanningAddress: e.toString(),
+        ),
+      );
+      currencyCubit.updateAmountDirect(0);
+    }
+  }
+
+  void updateShowWallets() {
+    final address = state.address;
+    final inv = state.invoice;
+
+    if (address.isEmpty) {
+      emit(state.copyWith(showSendButton: false));
+      return;
+    }
+
+    final isLiqAddress = address.startsWith('lq');
+    final isLn = inv != null;
+    final isBitAddress = address.startsWith('bc');
+  }
+
   void updateShowSend({bool force = false}) {
     final amount = currencyCubit.state.amount;
     emit(state.copyWith(errSending: ''));
@@ -133,59 +199,9 @@ class SendCubit extends Cubit<SendState> {
     emit(
       state.copyWith(
         errSending:
-            'Please enter payment destination and amount before selecting a wallet. We will select select the best wallet for this transaction. You can override the wallet choice after.',
+            'Please enter payment destination and amount before selecting a wallet. We will select the best wallet for this transaction. You can override the wallet choice after.',
       ),
     );
-  }
-
-  void updateAddress(String address) async {
-    try {
-      if (address.startsWith('bitcoin')) {
-        final bip21Obj = bip21.decode(address);
-        final newAddress = bip21Obj.address;
-        emit(state.copyWith(address: newAddress));
-        final amount = bip21Obj.options['amount'] as num?;
-        if (amount != null) {
-          currencyCubit.btcToCurrentTempAmount(amount.toDouble());
-          final amountInSats = (amount * 100000000).toInt();
-
-          currencyCubit.updateAmountDirect(amountInSats);
-        }
-        final label = bip21Obj.options['label'] as String?;
-        if (label != null) {
-          emit(state.copyWith(note: label));
-        }
-      } else if (address.startsWith('ln')) {
-        if (state.checkIfMainWalletSelected()) {
-          emit(state.copyWith(address: address));
-          // state.swapCubit.decodeInvoice(address);
-          final (inv, errInv) =
-              await _swapBoltz.decodeInvoice(invoice: address);
-          if (errInv != null) {
-            emit(state.copyWith(errScanningAddress: errInv.toString()));
-            return;
-          }
-          emit(state.copyWith(invoice: inv));
-        } else {
-          emit(
-            state.copyWith(
-              errScanningAddress:
-                  'Lightning invoices can only be sent from main wallets',
-            ),
-          );
-        }
-      } else
-        emit(state.copyWith(address: address));
-    } catch (e) {
-      emit(
-        state.copyWith(
-          address: '',
-          note: '',
-          errScanningAddress: e.toString(),
-        ),
-      );
-      currencyCubit.updateAmountDirect(0);
-    }
   }
 
   void scanAddress() async {
@@ -212,13 +228,9 @@ class SendCubit extends Cubit<SendState> {
   void updateAddressError(String err) =>
       emit(state.copyWith(errScanningAddress: err));
 
-  void updateNote(String note) {
-    emit(state.copyWith(note: note));
-  }
+  void updateNote(String note) => emit(state.copyWith(note: note));
 
-  void disableRBF(bool disable) {
-    emit(state.copyWith(disableRBF: disable));
-  }
+  void disableRBF(bool disable) => emit(state.copyWith(disableRBF: disable));
 
   void sendAllCoin(bool sendAll) {
     if (state.selectedWalletBloc == null) return;
