@@ -23,3 +23,5 @@ final mempoolapi = bbmempoolapi;
 
 const liquidMempool = 'https://liquid.network';
 const liquidMempoolTestnet = 'https://liquid.network/testnet';
+
+const liquidAssetId = '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
