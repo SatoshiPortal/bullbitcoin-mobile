@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
+import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
@@ -134,7 +135,8 @@ class _Screen extends StatelessWidget {
 
     final paymentNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
     final formSubmitted = context.select((ReceiveCubit x) => x.state.receiveFormSubmitted);
-    final shouldShowForm = !formSubmitted && (paymentNetwork == ReceivePaymentNetwork.bitcoin);
+    final shouldShowForm =
+        paymentNetwork == ReceivePaymentNetwork.bitcoin || paymentNetwork == ReceivePaymentNetwork.liquid;
 
     final description = context.select((ReceiveCubit _) => _.state.description);
     final shouldShownDescription = (paymentNetwork == ReceivePaymentNetwork.lightning && description.isNotEmpty) ||
@@ -235,7 +237,8 @@ class SelectWalletType extends StatelessWidget {
       onChanged: (value) {
         if (paymentNetwork == ReceivePaymentNetwork.lightning) context.read<SwapCubit>().clearSwapTx();
 
-        context.read<ReceiveCubit>().setReceiveFormSubmitted(false);
+        context.read<CurrencyCubit>().reset();
+        context.read<CurrencyCubit>().updateAmountDirect(0);
         context.read<SwapCubit>().removeWarnings();
 
         final isTestnet = context.read<NetworkCubit>().state.testnet;
@@ -428,15 +431,15 @@ class WalletActions extends StatelessWidget {
         const Gap(8),
         const AddLabelButton(),
         const Gap(8),
-        if (showRequestButton)
-          BBButton.big(
-            buttonKey: UIKeys.receiveRequestPaymentButton,
-            label: 'Request payment',
-            leftSvgAsset: 'assets/request-payment.svg',
-            onPressed: () {
-              CreateInvoice.openPopUp(context);
-            },
-          ),
+        // if (showRequestButton)
+        //   BBButton.big(
+        //     buttonKey: UIKeys.receiveRequestPaymentButton,
+        //     label: 'Request payment',
+        //     leftSvgAsset: 'assets/request-payment.svg',
+        //     onPressed: () {
+        //       CreateInvoice.openPopUp(context);
+        //     },
+        //   ),
         const Gap(8),
         BBButton.big(
           buttonKey: UIKeys.receiveGenerateAddressButton,
@@ -572,31 +575,16 @@ class BitcoinReceiveForm extends StatelessWidget {
           },
         ),
         const Gap(12),
-        Center(
-          child: BBButton.big(
-            label: 'Submit',
-            onPressed: () async {
-              context.read<ReceiveCubit>().setReceiveFormSubmitted(true);
-              final amt = context.read<CurrencyCubit>().state.amount;
-              print(amt);
-              // final wallet = context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
-              // final walletIsLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
-              // final label = context.read<ReceiveCubit>().state.description;
-              // final isTestnet = context.read<NetworkCubit>().state.testnet;
-              // final networkUrl = !walletIsLiquid
-              //     ? context.read<NetworkCubit>().state.getNetworkUrl()
-              //     : context.read<NetworkCubit>().state.getLiquidNetworkUrl();
-
-              // context.read<SwapCubit>().createRevSwapForReceive(
-              //       amount: amt,
-              //       wallet: wallet,
-              //       label: label,
-              //       isTestnet: isTestnet,
-              //       networkUrl: networkUrl,
-              //     );
-            },
-          ),
-        ),
+        // Center(
+        //   child: BBButton.big(
+        //     label: 'Submit',
+        //     onPressed: () async {
+        //       context.read<ReceiveCubit>().setReceiveFormSubmitted(true);
+        //       final amt = context.read<CurrencyCubit>().state.amount;
+        //       print(amt);
+        //     },
+        //   ),
+        // ),
         const Gap(16),
       ],
     );
@@ -663,15 +651,23 @@ class ReceiveQR extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final paymentNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
     final address = context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
     final amount = context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
     final description = context.select((ReceiveCubit x) => x.state.description);
-    final formSubmitted = context.select((ReceiveCubit x) => x.state.receiveFormSubmitted);
+    final isLiquid = context.select(
+      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid() ?? false,
+    );
 
-    final finalAddress = formSubmitted
-        ? 'bitcoin:$address&amount=$amount${description.isNotEmpty ? '&label=$description' : ''}'
-        : address;
+    String finalAddress = '';
+    if (paymentNetwork == ReceivePaymentNetwork.lightning || (amount == 0 && description.isEmpty)) {
+      finalAddress = address;
+    } else {
+      finalAddress = isLiquid
+          ? 'liquidnetwork:$address&amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}&assetid=$liquidAssetId'
+          : 'bitcoin:$address&amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}';
+    }
 
     return ReceiveQRDisplay(address: finalAddress);
   }
@@ -805,11 +801,18 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
 
     final amount = context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
     final description = context.select((ReceiveCubit x) => x.state.description);
-    final formSubmitted = context.select((ReceiveCubit x) => x.state.receiveFormSubmitted);
+    final isLiquid = context.select(
+      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid() ?? false,
+    );
 
-    final finalAddress = formSubmitted
-        ? 'bitcoin:$address&amount=$amount${description.isNotEmpty ? '&label=$description' : ''}'
-        : address;
+    String finalAddress = '';
+    if (paymentNetwork == ReceivePaymentNetwork.lightning || (amount == 0 && description.isEmpty)) {
+      finalAddress = address;
+    } else {
+      finalAddress = isLiquid
+          ? 'liquidnetwork:$address&amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}&assetid=$liquidAssetId'
+          : 'bitcoin:$address&amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}';
+    }
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),

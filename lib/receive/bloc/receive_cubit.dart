@@ -42,10 +42,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     loadAddress();
   }
 
-  void setReceiveFormSubmitted(bool formSubmitted) {
-    emit(state.copyWith(receiveFormSubmitted: formSubmitted));
-  }
-
   void updateWalletType(
     ReceivePaymentNetwork selectedPaymentNetwork,
     bool isTestnet, {
