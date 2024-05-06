@@ -1,6 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -11,8 +10,10 @@ class SendState with _$SendState {
   const factory SendState({
     @Default('') String address,
     @Default('') String note,
+    int? tempAmt,
     @Default(false) bool scanningAddress,
     @Default('') String errScanningAddress,
+    @Default(false) bool showDropdown,
     @Default(false) bool showSendButton,
     @Default(false) bool sending,
     @Default('') String errSending,
@@ -30,7 +31,8 @@ class SendState with _$SendState {
     String? psbtSigned,
     int? psbtSignedFeeAmount,
     WalletBloc? selectedWalletBloc,
-    required SwapCubit swapCubit,
+    Invoice? invoice,
+    // required SwapCubit swapCubit,
   }) = _SendState;
   const SendState._();
 
@@ -57,22 +59,29 @@ class SendState with _$SendState {
     return 'Selected ${selectedUtxos.length} addresses';
   }
 
-  bool generatingSwap() => swapCubit.state.generatingSwapInv;
+  // bool generatingSwap() => swapCubit.state.generatingSwapInv;
 
-  bool loadingWithSwap() {
-    return generatingSwap() || sending || downloadingFile;
-  }
+  // bool loadingWithSwap() {
+  //   return generatingSwap() || sending || downloadingFile;
+  // }
 
-  String errWithSwap() {
-    if (swapCubit.state.errCreatingInvoice.isNotEmpty) {
-      return swapCubit.state.errCreatingInvoice;
+  String errors() {
+    // if (swapCubit.state.errCreatingInvoice.isNotEmpty) {
+    //   return swapCubit.state.errCreatingInvoice;
+    // }
+
+    if (errScanningAddress.isNotEmpty) {
+      return errScanningAddress;
     }
-    if (errSending.isNotEmpty) {
-      return errSending;
-    }
+
     if (errDownloadingFile.isNotEmpty) {
       return errDownloadingFile;
     }
+
+    if (errSending.isNotEmpty) {
+      return errSending;
+    }
+
     return '';
   }
 
@@ -81,5 +90,6 @@ class SendState with _$SendState {
     return showSendButton;
   }
 
-  bool checkIfMainWalletSelected() => selectedWalletBloc?.state.wallet?.mainWallet ?? false;
+  bool checkIfMainWalletSelected() =>
+      selectedWalletBloc?.state.wallet?.mainWallet ?? false;
 }

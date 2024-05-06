@@ -677,10 +677,10 @@ class HomeBottomBar2 extends StatelessWidget {
                       child: BBButton.big(
                         label: 'Send',
                         onPressed: () {
-                          // context.push(
-                          //   '/send',
-                          //   // extra: walletBloc,
-                          // );
+                          context.push(
+                            '/send',
+                            // extra: walletBloc,
+                          );
                         },
                       ),
                     ),

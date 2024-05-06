@@ -551,11 +551,11 @@ class BitcoinReceiveForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description = context.select((ReceiveCubit _) => _.state.description);
-    final amount = context.select((CurrencyCubit x) => x.state.amount);
+    // final amount = context.select((CurrencyCubit x) => x.state.amount);
 
-    final isLiquid = context.select(
-      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
-    );
+    // final isLiquid = context.select(
+    //   (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
+    // );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -612,7 +612,10 @@ class SwapFeesDetails extends StatelessWidget {
 
     return RichText(
       text: TextSpan(
-        style: TextStyle(fontSize: context.font.bodyMedium?.fontSize, color: context.colour.tertiary),
+        style: TextStyle(
+          fontSize: context.font.bodyMedium?.fontSize,
+          color: context.colour.tertiary,
+        ),
         children: <TextSpan>[
           const TextSpan(
             text:
@@ -829,7 +832,9 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                           if (locator.isRegistered<Clippboard>()) await locator<Clippboard>().copy(finalAddress);
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Copied to clipboard')),
+                            const SnackBar(
+                              content: Text('Copied to clipboard'),
+                            ),
                           );
                         },
                         child: BBText.bodySmall(
