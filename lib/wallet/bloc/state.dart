@@ -31,11 +31,16 @@ class WalletState with _$WalletState {
   }) = _WalletState;
   const WalletState._();
 
-  String balanceStr() => ((wallet?.balance ?? 0) / 100000000).toStringAsFixed(8);
+  String balanceStr() =>
+      ((wallet?.balance ?? 0) / 100000000).toStringAsFixed(8);
 
   int balanceSats() => wallet?.balance ?? 0;
 
   bool loading() => syncing || loadingTxs || loadingBalance;
+
+  bool enoughBalance(int amount) => (wallet?.balance ?? 0) >= amount;
+
+  bool isLiq() => wallet?.baseWalletType == BaseWalletType.Liquid;
 
   // (bdk.Wallet?, Err?) getBdkWallet() {
   //   if (wallet!.baseWalletType != BaseWalletType.Bitcoin) return (null, Err('Invalid Wallet Type'));

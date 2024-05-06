@@ -6,8 +6,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
 
-enum ReceivePaymentNetwork { bitcoin, liquid, lightning }
-
 @freezed
 class ReceiveState with _$ReceiveState {
   const factory ReceiveState({
@@ -25,7 +23,7 @@ class ReceiveState with _$ReceiveState {
     @Default(true) bool creatingInvoice,
     @Default('') String errCreatingInvoice,
     WalletBloc? walletBloc,
-    @Default(ReceivePaymentNetwork.bitcoin) ReceivePaymentNetwork paymentNetwork,
+    @Default(PaymentNetwork.bitcoin) PaymentNetwork paymentNetwork,
     int? updateAddressGap,
     @Default(false) bool switchToSecure,
     @Default(false) bool switchToInstant,
@@ -36,7 +34,7 @@ class ReceiveState with _$ReceiveState {
   const ReceiveState._();
 
   String getQRStr({SwapTx? swapTx}) {
-    if (paymentNetwork == ReceivePaymentNetwork.lightning) {
+    if (paymentNetwork == PaymentNetwork.lightning) {
       if (swapTx == null) return '';
       return swapTx.invoice;
       // if (swapBloc.state.swapTx == null) return '';
@@ -47,37 +45,43 @@ class ReceiveState with _$ReceiveState {
       final btcAmt = (savedInvoiceAmount / 100000000).toStringAsFixed(8);
 
       var invoice = 'bitcoin:' + defaultAddress!.address + '?amount=' + btcAmt;
-      if (savedDescription.isNotEmpty) invoice = invoice + '&label=' + savedDescription;
+      if (savedDescription.isNotEmpty)
+        invoice = invoice + '&label=' + savedDescription;
 
       return invoice;
     }
 
-    if (paymentNetwork == ReceivePaymentNetwork.bitcoin)
+    if (paymentNetwork == PaymentNetwork.bitcoin)
       return defaultAddress?.address ?? '';
-    else if (paymentNetwork == ReceivePaymentNetwork.liquid)
+    else if (paymentNetwork == PaymentNetwork.liquid)
       return defaultLiquidAddress?.address ?? '';
     else
       return defaultAddress?.address ?? '';
   }
 
-  bool showNewRequestButton() => savedDescription.isEmpty && savedInvoiceAmount == 0;
+  bool showNewRequestButton() =>
+      savedDescription.isEmpty && savedInvoiceAmount == 0;
 
   bool isSupported() {
-    if (paymentNetwork == ReceivePaymentNetwork.bitcoin &&
-        walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Liquid) return false;
-    if (paymentNetwork == ReceivePaymentNetwork.liquid &&
-        walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Bitcoin) return false;
+    if (paymentNetwork == PaymentNetwork.bitcoin &&
+        walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Liquid)
+      return false;
+    if (paymentNetwork == PaymentNetwork.liquid &&
+        walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Bitcoin)
+      return false;
     return true;
   }
 
   bool showQR(SwapTx? swapTx) {
-    return (swapTx != null && paymentNetwork == ReceivePaymentNetwork.lightning) ||
-        (paymentNetwork == ReceivePaymentNetwork.bitcoin || paymentNetwork == ReceivePaymentNetwork.liquid);
+    return (swapTx != null && paymentNetwork == PaymentNetwork.lightning) ||
+        (paymentNetwork == PaymentNetwork.bitcoin ||
+            paymentNetwork == PaymentNetwork.liquid);
   }
 
-  bool isLn() => paymentNetwork == ReceivePaymentNetwork.lightning;
+  bool isLn() => paymentNetwork == PaymentNetwork.lightning;
 
-  bool checkIfMainWalletSelected() => walletBloc?.state.wallet?.mainWallet ?? false;
+  bool checkIfMainWalletSelected() =>
+      walletBloc?.state.wallet?.mainWallet ?? false;
 
   // bool _swapTxIsNotNull() => swapBloc.state.swapTx != null;
 

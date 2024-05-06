@@ -21,7 +21,7 @@ import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/send/advanced.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
-import 'package:bb_mobile/send/bloc/state.dart';
+import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bb_mobile/send/listeners.dart';
 import 'package:bb_mobile/send/psbt.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
@@ -48,6 +48,7 @@ class _SendPageState extends State<SendPage> {
   late SendCubit send;
   // late HomeCubit home;
   late SwapCubit swap;
+  late CurrencyCubit currency;
 
   @override
   void initState() {
@@ -60,7 +61,7 @@ class _SendPageState extends State<SendPage> {
       // homeCubit: locator<HomeCubit>(),
     );
 
-    final currency = CurrencyCubit(
+    currency = CurrencyCubit(
       hiveStorage: locator<HiveStorage>(),
       bbAPI: locator<BullBitcoinAPI>(),
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
@@ -104,7 +105,7 @@ class _SendPageState extends State<SendPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: send),
-        BlocProvider.value(value: send.currencyCubit),
+        BlocProvider.value(value: currency),
         BlocProvider.value(value: swap),
       ],
       child: Scaffold(
@@ -216,8 +217,11 @@ class WalletSelectionDropDown extends StatelessWidget {
           child: BBDropDown<WalletBloc>(
             items: {
               for (final wallet in walletBlocs)
-                wallet: wallet.state.wallet!.name ??
-                    wallet.state.wallet!.sourceFingerprint,
+                wallet: (
+                  label: wallet.state.wallet!.name ??
+                      wallet.state.wallet!.sourceFingerprint,
+                  enabled: true,
+                ),
             },
             value: walletBloc,
             onChanged: (bloc) {

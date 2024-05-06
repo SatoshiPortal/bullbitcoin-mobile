@@ -82,7 +82,7 @@ class BBDropDown<T> extends StatelessWidget {
     this.isCentered = true,
   });
 
-  final Map<T, String> items;
+  final Map<T, ({String label, bool enabled})> items;
   final void Function(T) onChanged;
   final T value;
   final bool isCentered;
@@ -149,9 +149,9 @@ class BBDropDown<T> extends StatelessWidget {
                 value: key,
                 child: isCentered
                     ? Center(
-                        child: BBText.body(items[key]!),
+                        child: BBText.body(items[key]!.label),
                       )
-                    : BBText.body(items[key]!),
+                    : BBText.body(items[key]!.label),
               ),
           ],
         ),

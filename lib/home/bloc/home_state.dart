@@ -3,7 +3,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'state.freezed.dart';
+part 'home_state.freezed.dart';
 
 @freezed
 class HomeState with _$HomeState {
@@ -48,6 +48,9 @@ class HomeState with _$HomeState {
       if (securewallet != null) securewallet,
     ];
   }
+
+  List<String> getMainWalletIDs(bool isTestnet) =>
+      getMainWallets(isTestnet).map((e) => e.state.wallet!.id).toList();
 
   WalletBloc? getMainInstantWallet(BBNetwork network) {
     final wallets = walletBlocsFromNetwork(network);
@@ -229,6 +232,62 @@ class HomeState with _$HomeState {
       if (enoughBalance) return walletBloc;
     }
     return null;
+  }
+
+  WalletBloc? selectWalletWithHighestBalance(
+    int sats,
+    BBNetwork network, {
+    bool onlyMain = false,
+    bool onlyBitcoin = false,
+    bool onlyLiquid = false,
+  }) {
+    final List<WalletBloc> filteredWallets =
+        walletBlocsFromNetwork(network).where((w) {
+      final wallet = w.state.wallet!;
+      if (onlyMain && !wallet.mainWallet) return false;
+      if (onlyBitcoin && wallet.baseWalletType != BaseWalletType.Bitcoin)
+        return false;
+      if (onlyLiquid && wallet.baseWalletType != BaseWalletType.Liquid)
+        return false;
+      return true;
+    }).toList();
+    WalletBloc? walletBlocWithHighestBalance;
+    for (final walletBloc in filteredWallets) {
+      final enoughBalance = walletBloc.state.balanceSats() >= sats;
+      if (enoughBalance) {
+        if (walletBlocWithHighestBalance == null ||
+            walletBloc.state.balanceSats() >
+                walletBlocWithHighestBalance.state.balanceSats())
+          walletBlocWithHighestBalance = walletBloc;
+      }
+    }
+
+    if (walletBlocWithHighestBalance != null)
+      return walletBlocWithHighestBalance;
+
+    return null;
+  }
+
+  List<WalletBloc> walletsWithEnoughBalance(
+    int sats,
+    BBNetwork network, {
+    bool onlyMain = false,
+  }) {
+    final wallets = walletBlocsFromNetwork(network).where(
+      (_) {
+        final wallet = _.state.wallet!;
+        if (onlyMain && !wallet.mainWallet) return false;
+        return true;
+      },
+    ).toList();
+
+    final List<WalletBloc> walletsWithEnoughBalance = [];
+
+    for (final walletBloc in wallets) {
+      final enoughBalance = walletBloc.state.balanceSats() >= sats;
+      if (enoughBalance) walletsWithEnoughBalance.add(walletBloc);
+    }
+    return walletsWithEnoughBalance;
   }
 
   Set<({String info, WalletBloc walletBloc})> homeWarnings(BBNetwork network) {

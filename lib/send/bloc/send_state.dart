@@ -1,14 +1,17 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'state.freezed.dart';
+part 'send_state.freezed.dart';
 
 @freezed
 class SendState with _$SendState {
   const factory SendState({
     @Default('') String address,
+    @Default([]) List<String> enabledWallets,
+    AddressNetwork? paymentNetwork,
     @Default('') String note,
     int? tempAmt,
     @Default(false) bool scanningAddress,
@@ -36,13 +39,16 @@ class SendState with _$SendState {
   }) = _SendState;
   const SendState._();
 
+  bool walletEnabled(String walletId) => enabledWallets.contains(walletId);
+
   bool selectedAddressesHasEnoughCoins(int amount) {
     return calculateTotalSelected() >= amount;
   }
 
   bool isWatchOnly() => selectedWalletBloc?.state.wallet?.watchOnly() ?? false;
 
-  bool isLnInvoice() => address.startsWith('ln') && !isWatchOnly();
+  bool isLnInvoice() => invoice != null;
+  // address.startsWith('ln') && !isWatchOnly();
 
   int calculateTotalSelected() {
     return selectedUtxos.fold<int>(
@@ -92,4 +98,29 @@ class SendState with _$SendState {
 
   bool checkIfMainWalletSelected() =>
       selectedWalletBloc?.state.wallet?.mainWallet ?? false;
+
+  (AddressNetwork?, Err?) getPaymentNetwork(String address) {
+    try {
+      if (address.contains('bitcoin:'))
+        return (AddressNetwork.bip21Bitcoin, null);
+      else if (address.contains('liquidnetwork:'))
+        return (AddressNetwork.bip21Liquid, null);
+      else if (address.startsWith('ln'))
+        return (AddressNetwork.lightning, null);
+      else if (address.startsWith('lq'))
+        return (AddressNetwork.liquid, null);
+      else if (address.startsWith('btc')) return (AddressNetwork.bitcoin, null);
+      return (null, Err('Invalid address'));
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+}
+
+enum AddressNetwork {
+  bip21Bitcoin,
+  bip21Liquid,
+  lightning,
+  bitcoin,
+  liquid,
 }

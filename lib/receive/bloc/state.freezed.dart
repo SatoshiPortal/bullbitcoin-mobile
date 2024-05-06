@@ -30,8 +30,7 @@ mixin _$ReceiveState {
   bool get creatingInvoice => throw _privateConstructorUsedError;
   String get errCreatingInvoice => throw _privateConstructorUsedError;
   WalletBloc? get walletBloc => throw _privateConstructorUsedError;
-  ReceivePaymentNetwork get paymentNetwork =>
-      throw _privateConstructorUsedError;
+  PaymentNetwork get paymentNetwork => throw _privateConstructorUsedError;
   int? get updateAddressGap => throw _privateConstructorUsedError;
   bool get switchToSecure => throw _privateConstructorUsedError;
   bool get switchToInstant => throw _privateConstructorUsedError;
@@ -63,7 +62,7 @@ abstract class $ReceiveStateCopyWith<$Res> {
       bool creatingInvoice,
       String errCreatingInvoice,
       WalletBloc? walletBloc,
-      ReceivePaymentNetwork paymentNetwork,
+      PaymentNetwork paymentNetwork,
       int? updateAddressGap,
       bool switchToSecure,
       bool switchToInstant,
@@ -166,7 +165,7 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
       paymentNetwork: null == paymentNetwork
           ? _value.paymentNetwork
           : paymentNetwork // ignore: cast_nullable_to_non_nullable
-              as ReceivePaymentNetwork,
+              as PaymentNetwork,
       updateAddressGap: freezed == updateAddressGap
           ? _value.updateAddressGap
           : updateAddressGap // ignore: cast_nullable_to_non_nullable
@@ -234,7 +233,7 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       bool creatingInvoice,
       String errCreatingInvoice,
       WalletBloc? walletBloc,
-      ReceivePaymentNetwork paymentNetwork,
+      PaymentNetwork paymentNetwork,
       int? updateAddressGap,
       bool switchToSecure,
       bool switchToInstant,
@@ -337,7 +336,7 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
       paymentNetwork: null == paymentNetwork
           ? _value.paymentNetwork
           : paymentNetwork // ignore: cast_nullable_to_non_nullable
-              as ReceivePaymentNetwork,
+              as PaymentNetwork,
       updateAddressGap: freezed == updateAddressGap
           ? _value.updateAddressGap
           : updateAddressGap // ignore: cast_nullable_to_non_nullable
@@ -376,7 +375,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.creatingInvoice = true,
       this.errCreatingInvoice = '',
       this.walletBloc,
-      this.paymentNetwork = ReceivePaymentNetwork.bitcoin,
+      this.paymentNetwork = PaymentNetwork.bitcoin,
       this.updateAddressGap,
       this.switchToSecure = false,
       this.switchToInstant = false,
@@ -424,7 +423,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
   final WalletBloc? walletBloc;
   @override
   @JsonKey()
-  final ReceivePaymentNetwork paymentNetwork;
+  final PaymentNetwork paymentNetwork;
   @override
   final int? updateAddressGap;
   @override
@@ -534,7 +533,7 @@ abstract class _ReceiveState extends ReceiveState {
       final bool creatingInvoice,
       final String errCreatingInvoice,
       final WalletBloc? walletBloc,
-      final ReceivePaymentNetwork paymentNetwork,
+      final PaymentNetwork paymentNetwork,
       final int? updateAddressGap,
       final bool switchToSecure,
       final bool switchToInstant,
@@ -570,7 +569,7 @@ abstract class _ReceiveState extends ReceiveState {
   @override
   WalletBloc? get walletBloc;
   @override
-  ReceivePaymentNetwork get paymentNetwork;
+  PaymentNetwork get paymentNetwork;
   @override
   int? get updateAddressGap;
   @override

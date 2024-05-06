@@ -56,7 +56,8 @@ class SettingsCurrencyDropDown extends StatelessWidget {
         BBDropDown<Currency>(
           isCentered: false,
           items: {
-            for (final c in currencies) c: c.getFullName(),
+            for (final c in currencies)
+              c: (label: c.getFullName(), enabled: true),
           },
           onChanged: (value) {
             context.read<CurrencyCubit>().changeDefaultCurrency(value);

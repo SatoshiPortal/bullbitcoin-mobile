@@ -11,7 +11,7 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/send/bloc/state.dart';
+import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -24,13 +24,14 @@ class SendCubit extends Cubit<SendState> {
     required WalletTx walletTx,
     required FileStorage fileStorage,
     required NetworkCubit networkCubit,
-    required this.currencyCubit,
+    required CurrencyCubit currencyCubit,
     required bool openScanner,
     required HomeCubit homeCubit,
     required bool defaultRBF,
     required SwapBoltz swapBoltz,
   })  : _homeCubit = homeCubit,
         _networkCubit = networkCubit,
+        _currencyCubit = currencyCubit,
         _walletTx = walletTx,
         _fileStorage = fileStorage,
         _barcode = barcode,
@@ -52,99 +53,122 @@ class SendCubit extends Cubit<SendState> {
   final SwapBoltz _swapBoltz;
 
   final NetworkCubit _networkCubit;
-  final CurrencyCubit currencyCubit;
+  final CurrencyCubit _currencyCubit;
   final HomeCubit _homeCubit;
 
-  // late StreamSubscription _currencyCubitSub;
-  // late StreamSubscription _swapCubitSub;
-
-  // void swapCubitStateChanged(SwapState swapState) {
-  //   final amount = currencyCubit.state.amount;
-  //   final inv = state.invoice;
-  //   if (inv != null &&
-  //       inv.invoice == state.address &&
-  //       inv.getAmount() != amount) {
-  //     final amt = state.invoice!.getAmount();
-  //     currencyCubit.updateAmountDirect(amt);
-  //     updateShowSend();
-  //   }
-  // }
-
-  // void watchCurrency() async {}
-
-  void updateWalletBloc(WalletBloc walletBloc) {
-    emit(state.copyWith(selectedWalletBloc: walletBloc));
-    updateShowSend(force: true);
-  }
-
   void updateAddress(String address) async {
-    try {
-      if (address.startsWith('bitcoin')) {
+    emit(state.copyWith(errScanningAddress: '', scanningAddress: true));
+    final (paymentNetwork, err) = state.getPaymentNetwork(address);
+    if (err != null) {
+      emit(
+        state.copyWith(
+          errScanningAddress: err.toString(),
+          scanningAddress: false,
+          address: '',
+          note: '',
+        ),
+      );
+      _currencyCubit.updateAmountDirect(0);
+      updateShowWallets();
+      return;
+    }
+
+    emit(state.copyWith(paymentNetwork: paymentNetwork));
+
+    switch (paymentNetwork!) {
+      case AddressNetwork.bip21Bitcoin:
         final bip21Obj = bip21.decode(address);
         final newAddress = bip21Obj.address;
         emit(state.copyWith(address: newAddress));
         final amount = bip21Obj.options['amount'] as num?;
         if (amount != null) {
-          currencyCubit.btcToCurrentTempAmount(amount.toDouble());
+          _currencyCubit.btcToCurrentTempAmount(amount.toDouble());
           final amountInSats = (amount * 100000000).toInt();
-          currencyCubit.updateAmountDirect(amountInSats);
+          _currencyCubit.updateAmountDirect(amountInSats);
           emit(state.copyWith(tempAmt: amountInSats));
         }
         final label = bip21Obj.options['label'] as String?;
         if (label != null) {
           emit(state.copyWith(note: label));
         }
-      } else if (address.startsWith('ln')) {
-        if (state.checkIfMainWalletSelected()) {
-          emit(state.copyWith(address: address));
-          // state.swapCubit.decodeInvoice(address);
-          final (inv, errInv) =
-              await _swapBoltz.decodeInvoice(invoice: address);
-          if (errInv != null) {
-            emit(state.copyWith(errScanningAddress: errInv.toString()));
-            return;
-          }
-          emit(state.copyWith(invoice: inv));
-        } else {
-          emit(
-            state.copyWith(
-              errScanningAddress:
-                  'Lightning invoices can only be sent from main wallets',
-            ),
-          );
+      case AddressNetwork.bip21Liquid:
+        final bip21Obj = bip21.decode(
+          address.replaceFirst('liquidnetwork:', 'bitcoin'),
+        );
+        final newAddress = bip21Obj.address;
+        emit(state.copyWith(address: newAddress));
+        final amount = bip21Obj.options['amount'] as num?;
+        if (amount != null) {
+          _currencyCubit.btcToCurrentTempAmount(amount.toDouble());
+          final amountInSats = (amount * 100000000).toInt();
+          _currencyCubit.updateAmountDirect(amountInSats);
+          emit(state.copyWith(tempAmt: amountInSats));
         }
-      } else
+        final label = bip21Obj.options['label'] as String?;
+        if (label != null) {
+          emit(state.copyWith(note: label));
+        }
+      case AddressNetwork.lightning:
+        final (inv, errInv) = await _swapBoltz.decodeInvoice(invoice: address);
+        if (errInv != null) {
+          emit(state.copyWith(errScanningAddress: errInv.toString()));
+          return;
+        }
+        emit(state.copyWith(invoice: inv));
+      case AddressNetwork.bitcoin:
+      case AddressNetwork.liquid:
         emit(state.copyWith(address: address));
-
-      updateShowSend();
-    } catch (e) {
-      emit(
-        state.copyWith(
-          address: '',
-          note: '',
-          errScanningAddress: e.toString(),
-        ),
-      );
-      currencyCubit.updateAmountDirect(0);
     }
+
+    emit(state.copyWith(scanningAddress: false));
+    updateShowWallets();
   }
 
   void updateShowWallets() {
-    final address = state.address;
-    final inv = state.invoice;
+    if (state.errScanningAddress.isNotEmpty) {
+      emit(state.copyWith(showSendButton: false, enabledWallets: []));
+      return;
+    }
 
+    final isLn = state.isLnInvoice();
+    if (isLn) {
+      final amt = state.invoice!.getAmount();
+      final mainWallets = _homeCubit.state.walletsWithEnoughBalance(
+        amt,
+        _networkCubit.state.getBBNetwork(),
+        onlyMain: true,
+      );
+      if (mainWallets.isEmpty) {
+        emit(
+          state.copyWith(
+            errScanningAddress: 'No wallet with enough balance',
+          ),
+        );
+      }
+
+      // emit(state.copyWith(enabledWallets: mainWallets));
+      updateShowSend();
+      return;
+    }
+
+    final address = state.address;
     if (address.isEmpty) {
       emit(state.copyWith(showSendButton: false));
       return;
     }
 
     final isLiqAddress = address.startsWith('lq');
-    final isLn = inv != null;
     final isBitAddress = address.startsWith('bc');
   }
 
+  void updateWalletBloc(WalletBloc walletBloc) {
+    emit(state.copyWith(selectedWalletBloc: walletBloc));
+    updateShowSend(force: true);
+  }
+
   void updateShowSend({bool force = false}) {
-    final amount = currencyCubit.state.amount;
+    if (state.selectedWalletBloc == null) {}
+    final amount = _currencyCubit.state.amount;
     emit(state.copyWith(errSending: ''));
     if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
@@ -240,7 +264,7 @@ class SendCubit extends Cubit<SendState> {
         sendAllCoin: sendAll,
       ),
     );
-    currencyCubit.updateAmountDirect(sendAll ? balance : 0);
+    _currencyCubit.updateAmountDirect(sendAll ? balance : 0);
     updateShowSend();
   }
 
@@ -368,7 +392,7 @@ class SendCubit extends Cubit<SendState> {
       wallet: localWallet!,
       isManualSend: state.selectedUtxos.isNotEmpty,
       address: address,
-      amount: swaptx != null ? swaptx.outAmount : currencyCubit.state.amount,
+      amount: swaptx != null ? swaptx.outAmount : _currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
       feeRate: fee.toDouble(),
       enableRbf: enableRbf,

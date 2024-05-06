@@ -455,3 +455,5 @@ class Invoice with _$Invoice {
 
   int getAmount() => msats ~/ 1000;
 }
+
+enum PaymentNetwork { bitcoin, liquid, lightning }
