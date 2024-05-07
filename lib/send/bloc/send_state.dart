@@ -20,7 +20,6 @@ class SendState with _$SendState {
     @Default(false) bool scanningAddress,
     @Default('') String errScanningAddress,
     @Default(false) bool showDropdown,
-    @Default(false) bool showSendButton,
     @Default(false) bool sending,
     @Default('') String errSending,
     @Default(false) bool sent,
@@ -36,8 +35,6 @@ class SendState with _$SendState {
     @Default(false) bool signed,
     String? psbtSigned,
     int? psbtSignedFeeAmount,
-
-    // required SwapCubit swapCubit,
   }) = _SendState;
   const SendState._();
 
@@ -50,7 +47,6 @@ class SendState with _$SendState {
   bool isWatchOnly() => selectedWalletBloc?.state.wallet?.watchOnly() ?? false;
 
   bool isLnInvoice() => invoice != null;
-  // address.startsWith('ln') && !isWatchOnly();
 
   int calculateTotalSelected() {
     return selectedUtxos.fold<int>(
@@ -67,17 +63,7 @@ class SendState with _$SendState {
     return 'Selected ${selectedUtxos.length} addresses';
   }
 
-  // bool generatingSwap() => swapCubit.state.generatingSwapInv;
-
-  // bool loadingWithSwap() {
-  //   return generatingSwap() || sending || downloadingFile;
-  // }
-
   String errors() {
-    // if (swapCubit.state.errCreatingInvoice.isNotEmpty) {
-    //   return swapCubit.state.errCreatingInvoice;
-    // }
-
     if (errScanningAddress.isNotEmpty) {
       return errScanningAddress;
     }
@@ -93,9 +79,9 @@ class SendState with _$SendState {
     return '';
   }
 
-  bool showButtons() {
-    // if (!showSendButton && selectedWalletBloc != null) return true;
-    return showSendButton;
+  bool showSendButton() {
+    if (selectedWalletBloc != null) return true;
+    return false;
   }
 
   bool checkIfMainWalletSelected() =>
@@ -132,6 +118,10 @@ class SendState with _$SendState {
           _.state.wallet!.baseWalletType == BaseWalletType.Bitcoin,
     );
     if (secWalletIdx != -1) return blocs[secWalletIdx];
+
+    blocs.sort(
+      (a, b) => b.state.balanceSats().compareTo(a.state.balanceSats()),
+    );
 
     return blocs.first;
   }

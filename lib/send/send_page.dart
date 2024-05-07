@@ -46,7 +46,7 @@ class SendPage extends StatefulWidget {
 
 class _SendPageState extends State<SendPage> {
   late SendCubit send;
-  // late HomeCubit home;
+
   late SwapCubit swap;
   late CurrencyCubit currency;
 
@@ -54,11 +54,8 @@ class _SendPageState extends State<SendPage> {
   void initState() {
     swap = SwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
-      // networkCubit: locator<NetworkCubit>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
-      // watchTxsBloc: locator<WatchTxsBloc>(),
-      // homeCubit: locator<HomeCubit>(),
     );
 
     currency = CurrencyCubit(
@@ -71,19 +68,11 @@ class _SendPageState extends State<SendPage> {
       walletTx: locator<WalletTx>(),
       barcode: locator<Barcode>(),
       defaultRBF: locator<SettingsCubit>().state.defaultRBF,
-      // settingsCubit: locator<SettingsCubit>(),
       fileStorage: locator<FileStorage>(),
       networkCubit: locator<NetworkCubit>(),
       homeCubit: locator<HomeCubit>(),
       swapBoltz: locator<SwapBoltz>(),
-      // networkFeesCubit: NetworkFeesCubit(
-      //   hiveStorage: locator<HiveStorage>(),
-      //   mempoolAPI: locator<MempoolAPI>(),
-      //   networkCubit: locator<NetworkCubit>(),
-      //   defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
-      // ),
       currencyCubit: currency,
-      // swapCubit: swapBloc,
       openScanner: widget.openScanner,
     );
 
@@ -146,7 +135,7 @@ class _Screen extends StatelessWidget {
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
     final showSend =
-        context.select((SendCubit cubit) => cubit.state.showButtons());
+        context.select((SendCubit cubit) => cubit.state.showSendButton());
     return ColoredBox(
       color: sent ? Colors.green : context.colour.background,
       child: SingleChildScrollView(
@@ -195,7 +184,7 @@ class WalletSelectionDropDown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSend =
-        context.select((SendCubit cubit) => cubit.state.showButtons());
+        context.select((SendCubit cubit) => cubit.state.showSendButton());
 
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = context
@@ -240,7 +229,7 @@ class _Balance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSend =
-        context.select((SendCubit cubit) => cubit.state.showButtons());
+        context.select((SendCubit cubit) => cubit.state.showSendButton());
     if (!showSend) return const SizedBox(height: 24);
 
     return const Center(child: SendWalletBalance()).animate().fadeIn();
@@ -364,7 +353,7 @@ class NetworkFees extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSend =
-        context.select((SendCubit cubit) => cubit.state.showButtons());
+        context.select((SendCubit cubit) => cubit.state.showSendButton());
     if (!showSend) return const SizedBox(height: 55);
 
     return const SelectFeesButton().animate().fadeIn();
@@ -377,7 +366,7 @@ class AdvancedOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSend =
-        context.select((SendCubit cubit) => cubit.state.showButtons());
+        context.select((SendCubit cubit) => cubit.state.showSendButton());
     if (!showSend) return const SizedBox(height: 55);
 
     final text = context
@@ -416,10 +405,8 @@ class _SendButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSend =
-        context.select((SendCubit cubit) => cubit.state.showButtons());
+        context.select((SendCubit cubit) => cubit.state.showSendButton());
     if (!showSend) return const SizedBox(height: 55);
-    final enableButton =
-        context.select((SendCubit cubit) => cubit.state.showSendButton);
 
     final watchOnly =
         context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
@@ -444,7 +431,6 @@ class _SendButton extends StatelessWidget {
               PSBTPopUp.openPopUp(context);
             },
             child: BBButton.big(
-              disabled: !enableButton,
               loading: sending,
               leftIcon: Icons.send,
               onPressed: () async {
@@ -787,52 +773,3 @@ class TxSuccess extends StatelessWidget {
     );
   }
 }
-
-// class HighFeeWarning extends StatelessWidget {
-//   const HighFeeWarning({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     const feesStr = '';
-//     const feeFiatStr = '';
-//     const amtStr = '';
-//     const amtFiatStr = '';
-//     const recAmtStr = '';
-//     const recAmtFiatStr = '';
-//     return WarningContainer(
-//       title: 'High Fee Warning',
-//       info: 'Ask the sender of the payment if he can pay you using the Lightning Network instead.',
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.stretch,
-//         children: [
-//           const BBText.body('Bitcoin Network fees are currently high.'),
-//           const BBText.body(
-//             'When receive a regular Bitcoin Network transaction in the Instant Payment Wallet, you must pay Bitcoin Netowkr fees and Swap fees',
-//           ),
-//           const Gap(8),
-//           const BBText.body('The current Network Fee is:'),
-//           const BBText.body(feesStr, isBold: true),
-//           const BBText.body('~ $feeFiatStr'),
-//           const Gap(8),
-//           const BBText.body('Amount you send:'),
-//           const BBText.body(amtStr, isBold: true),
-//           const BBText.body('~ $amtFiatStr'),
-//           const Gap(8),
-//           const BBText.body('Minimum recommended amount:'),
-//           const BBText.body(recAmtStr, isBold: true),
-//           const BBText.body('~ $recAmtFiatStr'),
-//           const Gap(32),
-//           BBButton.big(
-//             label: 'Continue anyways',
-//             leftIcon: Icons.send,
-//             onPressed: () {},
-//           ),
-//           BBButton.big(
-//             label: 'Use Secure Wallet',
-//             onPressed: () {},
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
