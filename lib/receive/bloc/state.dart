@@ -34,7 +34,7 @@ class ReceiveState with _$ReceiveState {
   }) = _ReceiveState;
   const ReceiveState._();
 
-  String getAddressWithAmountAndLabel(double amount, bool isLiquid, {SwapTx? swapTx}) {
+  String getAddressWithAmountAndLabel(double amount, bool isLiquid, {SwapTx? swapTx, bool isTestnet = false}) {
     final String address = getQRStr(swapTx: swapTx);
 
     String finalAddress = '';
@@ -43,8 +43,8 @@ class ReceiveState with _$ReceiveState {
     } else {
       if (isLiquid) {
         // Refer spec: https://github.com/ElementsProject/elements/issues/805
-        final lqAssetId = swapTx?.network == BBNetwork.Mainnet ? liquidMainnetAssetId : liquidTestnetAssetId;
-        final liquidProtocol = swapTx?.network == BBNetwork.Mainnet ? 'liquidnetwork' : 'liquidtestnet';
+        final lqAssetId = isTestnet ? liquidTestnetAssetId : liquidMainnetAssetId;
+        final liquidProtocol = isTestnet ? 'liquidtestnet' : 'liquidnetwork';
         finalAddress =
             '$liquidProtocol:$address?amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}&assetid=$lqAssetId';
       } else {

@@ -658,6 +658,7 @@ class ReceiveQR extends StatelessWidget {
   Widget build(BuildContext context) {
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
     final amount = context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
+    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
     final isLiquid = context.select(
       (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid() ?? false,
     );
@@ -666,6 +667,7 @@ class ReceiveQR extends StatelessWidget {
         amount,
         isLiquid,
         swapTx: swapTx,
+        isTestnet: isTestnet,
       ),
     );
 
@@ -799,6 +801,7 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
 
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
     final amount = context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
+    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
     final isLiquid = context.select(
       (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid() ?? false,
     );
@@ -807,6 +810,7 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
         amount,
         isLiquid,
         swapTx: swapTx,
+        isTestnet: isTestnet,
       ),
     );
 
