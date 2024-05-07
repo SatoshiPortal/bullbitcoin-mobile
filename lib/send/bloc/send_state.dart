@@ -98,20 +98,26 @@ class SendState with _$SendState {
     return showSendButton;
   }
 
-  bool checkIfMainWalletSelected() =>
-      selectedWalletBloc?.state.wallet?.mainWallet ?? false;
+  bool checkIfMainWalletSelected() => selectedWalletBloc?.state.wallet?.mainWallet ?? false;
 
   (AddressNetwork?, Err?) getPaymentNetwork(String address) {
+    final bitcoinMainnetPrefixes = ['1', '3', 'bc1q', 'bc1p'];
+    final bitcoinTestnetPrefixes = ['m', 'n', '2', 'tb1'];
+    final liquidMainnetPrefixes = ['lq1', 'vjl', 'ex1', 'G'];
+    final liquidTestnetPrefixes = ['tlq1'];
+    final lightningPrefixes = ['lnbc', 'lntb', 'lnbs', 'lnbcrt', 'lightning:'];
     try {
       if (address.contains('bitcoin:'))
         return (AddressNetwork.bip21Bitcoin, null);
       else if (address.contains('liquidnetwork:'))
         return (AddressNetwork.bip21Liquid, null);
-      else if (address.startsWith('ln'))
+      else if (lightningPrefixes.any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.lightning, null);
-      else if (address.startsWith('lq'))
+      else if (liquidMainnetPrefixes.any((prefix) => address.startsWith(prefix)) ||
+          liquidTestnetPrefixes.any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.liquid, null);
-      else if (address.startsWith('btc')) return (AddressNetwork.bitcoin, null);
+      else if (bitcoinMainnetPrefixes.any((prefix) => address.startsWith(prefix)) ||
+          bitcoinTestnetPrefixes.any((prefix) => address.startsWith(prefix))) return (AddressNetwork.bitcoin, null);
       return (null, Err('Invalid address'));
     } catch (e) {
       return (null, Err(e.toString()));
@@ -120,16 +126,12 @@ class SendState with _$SendState {
 
   WalletBloc selectLiqThenSecThenOtherBtc(List<WalletBloc> blocs) {
     final liqWalletIdx = blocs.indexWhere(
-      (_) =>
-          _.state.wallet!.mainWallet &&
-          _.state.wallet!.baseWalletType == BaseWalletType.Liquid,
+      (_) => _.state.wallet!.mainWallet && _.state.wallet!.baseWalletType == BaseWalletType.Liquid,
     );
     if (liqWalletIdx != -1) return blocs[liqWalletIdx];
 
     final secWalletIdx = blocs.indexWhere(
-      (_) =>
-          _.state.wallet!.mainWallet &&
-          _.state.wallet!.baseWalletType == BaseWalletType.Bitcoin,
+      (_) => _.state.wallet!.mainWallet && _.state.wallet!.baseWalletType == BaseWalletType.Bitcoin,
     );
     if (secWalletIdx != -1) return blocs[secWalletIdx];
 

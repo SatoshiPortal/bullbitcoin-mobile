@@ -73,8 +73,6 @@ class ReceiveState with _$ReceiveState {
       return defaultAddress?.address ?? '';
   }
 
-  bool showNewRequestButton() => savedDescription.isEmpty && savedInvoiceAmount == 0;
-
   bool isSupported() {
     if (paymentNetwork == PaymentNetwork.bitcoin && walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Liquid)
       return false;

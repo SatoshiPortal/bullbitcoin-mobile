@@ -425,7 +425,6 @@ class WalletActions extends StatelessWidget {
     final show = context.select((ReceiveCubit _) => _.state.showQR(swap));
     if (!show) return const SizedBox.shrink();
 
-    final showRequestButton = context.select((ReceiveCubit x) => x.state.showNewRequestButton());
     final errLoadingAddress = context.select((ReceiveCubit x) => x.state.errLoadingAddress);
 
     return Column(
@@ -657,11 +656,8 @@ class ReceiveQR extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final paymentNetwork = context.select((ReceiveCubit x) => x.state.paymentNetwork);
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
-    final address = context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
     final amount = context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
-    final description = context.select((ReceiveCubit x) => x.state.description);
     final isLiquid = context.select(
       (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid() ?? false,
     );
@@ -801,11 +797,8 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
       receiveAddressLabel = 'Liquid address';
     }
 
-    final address = widget.addressQr;
-
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
     final amount = context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
-    final description = context.select((ReceiveCubit x) => x.state.description);
     final isLiquid = context.select(
       (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid() ?? false,
     );
