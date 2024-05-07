@@ -56,16 +56,6 @@ class SendCubit extends Cubit<SendState> {
   final CurrencyCubit _currencyCubit;
   final HomeCubit _homeCubit;
 
-  // Destination is either Bitcoin or Lightning
-  //
-  // Check if BIP21 contains a Bolt 11
-  // If contains a Bolt 11 invoice, check if Instant Payment Wallet has enough balance
-  // If Instant Payment Wallet does not have enough balance
-  // Check if a fiat account has enough balance
-  // If fiat account has enough balance, use the fiat account for a Lightning transaction
-  // If no fiat account has enough balance, check if Secure Bitcoin Wallet has enough balance
-  // Check if another Bitcoin wallet has enough balance
-  // If no Bitcoin wallet has enough balance, return error message
   void updateAddress(String? addr) async {
     emit(state.copyWith(errScanningAddress: '', scanningAddress: true));
     final address = addr ?? state.address;
@@ -128,6 +118,8 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(invoice: inv));
         await _processLnInvoice();
       case AddressNetwork.bitcoin:
+        emit(state.copyWith(address: address));
+
       case AddressNetwork.liquid:
         emit(state.copyWith(address: address));
     }
@@ -151,15 +143,6 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  // Only LN
-  //
-  // Check if Instant Payment Wallet has enough balance
-  // Check if a fiat account has enough balance (Buy Bitcoin Order)
-  // If more than one fiat account has enough balance, choose whichever is preferred currency
-  // Check if Secure Bitcoin Wallet has enough balance (BTC -> LN swap)
-  // Check if another Bitcoin wallet has enough balance
-  // If more than one secondary Bitcoin wallet has enough balance, choose whichever has the highest balance
-  // If nothing has enough balance, return error message
   Future _processLnInvoice() async {
     final amt = state.invoice!.getAmount();
     final wallets = _homeCubit.state.walletsWithEnoughBalance(
@@ -184,17 +167,8 @@ class SendCubit extends Cubit<SendState> {
         enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
       ),
     );
-
-    updateShowSend();
   }
 
-  // Check if Secure Bitcoin Wallet has enough balance
-  // Check if another Bitcoin wallet has enough balance
-  // If more than one secondary Bitcoin wallet has enough balance, choose whichever has the highest balance
-  // Check if a fiat account has enough balance (Buy Bitcoin Order)
-  // If more than one fiat account has enough balance, choose whichever is preferred currency
-  // Check if Instant Payments Wallet has enough balance (L-BTC -> BTC swap)
-  // If nothing has enough balance, return error message
   Future _processBitcoinAddress() async {
     final amount = _currencyCubit.state.amount;
     final wallets = _homeCubit.state.walletsWithEnoughBalance(
@@ -219,17 +193,8 @@ class SendCubit extends Cubit<SendState> {
         enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
       ),
     );
-
-    updateShowSend();
   }
 
-  // Check if Instant Payment Wallet has enough balance
-  // Check if a fiat account has enough balance (Buy Bitcoin Order)
-  // If more than one fiat account has enough balance, choose whichever is preferred currency
-  // Check if Secure Bitcoin Wallet has enough balance (BTC -> L-BTC swap)
-  // Check if another Bitcoin wallet has enough balance
-  // If more than one secondary Bitcoin wallet has enough balance, choose whichever has the highest balance
-  // If nothing has enough balance, return error message
   Future _processLiquidAddress() async {
     final amount = _currencyCubit.state.amount;
     final wallets = _homeCubit.state.walletsWithEnoughBalance(
@@ -253,8 +218,6 @@ class SendCubit extends Cubit<SendState> {
         enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
       ),
     );
-
-    updateShowSend();
   }
 
   void resetWalletSelection() => emit(
@@ -267,60 +230,6 @@ class SendCubit extends Cubit<SendState> {
 
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(state.copyWith(selectedWalletBloc: walletBloc));
-    updateShowSend(force: true);
-  }
-
-  void updateShowSend({bool force = false}) {
-    if (state.selectedWalletBloc == null) {}
-    final amount = _currencyCubit.state.amount;
-    emit(state.copyWith(errSending: ''));
-    if (amount == 0) {
-      emit(state.copyWith(showSendButton: false));
-      return;
-    }
-    if (state.selectedUtxos.isNotEmpty) {
-      final hasEnoughCoinns = state.selectedAddressesHasEnoughCoins(amount);
-      emit(state.copyWith(showSendButton: hasEnoughCoinns));
-      if (!hasEnoughCoinns)
-        emit(
-          state.copyWith(
-            errSending: 'Selected UTXOs do not cover Transaction Amount & Fees',
-          ),
-        );
-      return;
-    }
-    if (amount == 0) {
-      emit(state.copyWith(showSendButton: false));
-      return;
-    }
-
-    if (force) {
-      final enoughBalance =
-          state.selectedWalletBloc!.state.balanceSats() >= amount;
-      emit(
-        state.copyWith(
-          showSendButton: enoughBalance,
-          errSending: 'This wallet does not have enough balance',
-        ),
-      );
-      return;
-    }
-
-    final walletBloc = _homeCubit.state.firstWalletWithEnoughBalance(
-      amount,
-      _networkCubit.state.getBBNetwork(),
-    );
-    if (walletBloc == null) {
-      emit(
-        state.copyWith(
-          showSendButton: false,
-          errSending: 'No wallet with enough balance',
-        ),
-      );
-      return;
-    }
-
-    emit(state.copyWith(showSendButton: true, selectedWalletBloc: walletBloc));
   }
 
   void disabledDropdownClicked() {
@@ -369,7 +278,6 @@ class SendCubit extends Cubit<SendState> {
       ),
     );
     _currencyCubit.updateAmountDirect(sendAll ? balance : 0);
-    updateShowSend();
   }
 
   void utxoSelected(UTXO utxo) {
@@ -381,8 +289,6 @@ class SendCubit extends Cubit<SendState> {
       selectedUtxos.add(utxo);
 
     emit(state.copyWith(selectedUtxos: selectedUtxos));
-
-    updateShowSend();
   }
 
   void clearSelectedUtxos() {
@@ -446,41 +352,8 @@ class SendCubit extends Cubit<SendState> {
     if (state.sending) return;
     if (state.selectedWalletBloc == null) return;
 
-    // final isLn = state.isLnInvoice();
-    // if (isLn) {
-    //   final walletId = state.selectedWalletBloc!.state.wallet!;
-    //   final isTesnet = _networkCubit.state.testnet;
-    //   final networkUrl = _networkCubit.state.getNetworkUrl();
-
-    //   await state.swapCubit.createSubSwapForSend(
-    //     wallet: walletId,
-    //     invoice: state.address,
-    //     amount: currencyCubit.state.amount,
-    //     isTestnet: isTesnet,
-    //     networkUrl: networkUrl,
-    //   );
-    //   await Future.delayed(const Duration(milliseconds: 500));
-    //   final walletBloc = _homeCubit.state.getWalletBlocById(walletId.id);
-    //   emit(state.copyWith(selectedWalletBloc: walletBloc));
-    //   await Future.delayed(const Duration(milliseconds: 50));
-
-    //   if (state.swapCubit.state.invoice == null ||
-    //       state.swapCubit.state.swapTx == null) {
-    //     emit(
-    //       state.copyWith(
-    //         sending: false,
-    //         errSending: state.swapCubit.state.errCreatingSwapInv,
-    //       ),
-    //     );
-    //     return;
-    //   }
-    // }
-
     final address = swaptx != null ? swaptx.scriptAddress : state.address;
     final fee = networkFees;
-    //  isLn
-    // ? networkFeesCubit.state.feesList![0]
-    // : networkFeesCubit.state.feesList![networkFeesCubit.state.selectedFeesOption];
 
     final bool enableRbf;
     if (swaptx != null)
@@ -558,8 +431,6 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final (wallet, txid) = wtxid!;
-
-    // final isLn = state.isLnInvoice();
 
     if (swaptx != null) {
       final (updatedWalletWithTxid, err2) = await _walletTx.addSwapTxToWallet(

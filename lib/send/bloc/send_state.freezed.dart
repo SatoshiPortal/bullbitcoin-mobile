@@ -26,7 +26,6 @@ mixin _$SendState {
   bool get scanningAddress => throw _privateConstructorUsedError;
   String get errScanningAddress => throw _privateConstructorUsedError;
   bool get showDropdown => throw _privateConstructorUsedError;
-  bool get showSendButton => throw _privateConstructorUsedError;
   bool get sending => throw _privateConstructorUsedError;
   String get errSending => throw _privateConstructorUsedError;
   bool get sent => throw _privateConstructorUsedError;
@@ -64,7 +63,6 @@ abstract class $SendStateCopyWith<$Res> {
       bool scanningAddress,
       String errScanningAddress,
       bool showDropdown,
-      bool showSendButton,
       bool sending,
       String errSending,
       bool sent,
@@ -108,7 +106,6 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? scanningAddress = null,
     Object? errScanningAddress = null,
     Object? showDropdown = null,
-    Object? showSendButton = null,
     Object? sending = null,
     Object? errSending = null,
     Object? sent = null,
@@ -165,10 +162,6 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
       showDropdown: null == showDropdown
           ? _value.showDropdown
           : showDropdown // ignore: cast_nullable_to_non_nullable
-              as bool,
-      showSendButton: null == showSendButton
-          ? _value.showSendButton
-          : showSendButton // ignore: cast_nullable_to_non_nullable
               as bool,
       sending: null == sending
           ? _value.sending
@@ -277,7 +270,6 @@ abstract class _$$SendStateImplCopyWith<$Res>
       bool scanningAddress,
       String errScanningAddress,
       bool showDropdown,
-      bool showSendButton,
       bool sending,
       String errSending,
       bool sent,
@@ -321,7 +313,6 @@ class __$$SendStateImplCopyWithImpl<$Res>
     Object? scanningAddress = null,
     Object? errScanningAddress = null,
     Object? showDropdown = null,
-    Object? showSendButton = null,
     Object? sending = null,
     Object? errSending = null,
     Object? sent = null,
@@ -378,10 +369,6 @@ class __$$SendStateImplCopyWithImpl<$Res>
       showDropdown: null == showDropdown
           ? _value.showDropdown
           : showDropdown // ignore: cast_nullable_to_non_nullable
-              as bool,
-      showSendButton: null == showSendButton
-          ? _value.showSendButton
-          : showSendButton // ignore: cast_nullable_to_non_nullable
               as bool,
       sending: null == sending
           ? _value.sending
@@ -461,7 +448,6 @@ class _$SendStateImpl extends _SendState {
       this.scanningAddress = false,
       this.errScanningAddress = '',
       this.showDropdown = false,
-      this.showSendButton = false,
       this.sending = false,
       this.errSending = '',
       this.sent = false,
@@ -515,9 +501,6 @@ class _$SendStateImpl extends _SendState {
   final bool showDropdown;
   @override
   @JsonKey()
-  final bool showSendButton;
-  @override
-  @JsonKey()
   final bool sending;
   @override
   @JsonKey()
@@ -567,7 +550,7 @@ class _$SendStateImpl extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(address: $address, enabledWallets: $enabledWallets, paymentNetwork: $paymentNetwork, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showDropdown: $showDropdown, showSendButton: $showSendButton, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount)';
+    return 'SendState(address: $address, enabledWallets: $enabledWallets, paymentNetwork: $paymentNetwork, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, showDropdown: $showDropdown, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount)';
   }
 
   @override
@@ -591,8 +574,6 @@ class _$SendStateImpl extends _SendState {
                 other.errScanningAddress == errScanningAddress) &&
             (identical(other.showDropdown, showDropdown) ||
                 other.showDropdown == showDropdown) &&
-            (identical(other.showSendButton, showSendButton) ||
-                other.showSendButton == showSendButton) &&
             (identical(other.sending, sending) || other.sending == sending) &&
             (identical(other.errSending, errSending) ||
                 other.errSending == errSending) &&
@@ -633,7 +614,6 @@ class _$SendStateImpl extends _SendState {
         scanningAddress,
         errScanningAddress,
         showDropdown,
-        showSendButton,
         sending,
         errSending,
         sent,
@@ -670,7 +650,6 @@ abstract class _SendState extends SendState {
       final bool scanningAddress,
       final String errScanningAddress,
       final bool showDropdown,
-      final bool showSendButton,
       final bool sending,
       final String errSending,
       final bool sent,
@@ -708,8 +687,6 @@ abstract class _SendState extends SendState {
   String get errScanningAddress;
   @override
   bool get showDropdown;
-  @override
-  bool get showSendButton;
   @override
   bool get sending;
   @override
