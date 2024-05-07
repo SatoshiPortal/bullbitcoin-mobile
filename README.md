@@ -15,19 +15,19 @@ Both these wallets are able to send and receive payments via the Lightning Netwo
 
 ## Core dependancies
 
-BDK: https://github.com/bitcoindevkit/bdk
-BDK-flutter: https://github.com/LtbLightning/bdk-flutter
-LWK: https://github.com/Blockstream/lwk
-LWK-dart (dart bindings: https://github.com/SatoshiPortal/lwk-dart
-Boltz-rust: https://github.com/SatoshiPortal/boltz-rust
-Boltz-dart: https://github.com/SatoshiPortal/boltz-dart
+- BDK: https://github.com/bitcoindevkit/bdk
+- BDK-flutter: https://github.com/LtbLightning/bdk-flutter
+- LWK: https://github.com/Blockstream/lwk
+- LWK-dart (dart bindings: https://github.com/SatoshiPortal/lwk-dart
+- Boltz-rust: https://github.com/SatoshiPortal/boltz-rust
+- Boltz-dart: https://github.com/SatoshiPortal/boltz-dart
 
 ## Default external service providers
 
-Mempool.space API for fee estimates
-bullbitcoin.com API for fiat prices
-bull bitcoin and blockstream electrum servers for blockchain data
-boltz servers for swap providers
+- Mempool.space API for fee estimates
+- bullbitcoin.com API for fiat prices
+- bull bitcoin and blockstream electrum servers for blockchain data
+- boltz servers for swap providers
 
 ### General features
 
