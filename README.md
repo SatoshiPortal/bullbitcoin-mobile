@@ -1,107 +1,76 @@
-## ⚡️ Quick start
-
-
-
-> Make sure Flutter is installed 
-
-> Make sure either Android Studio or Xcode is installed
-
-> Installation docs [here](https://docs.flutter.dev/get-started/install).
-
-> Make sure the Flutter VSCode Extension is installed
-
-
-<br>
-Clean the project
-
-```bash
-flutter clean
-flutter pub get
-```
-
-<br>
-Run via CLI
-
-> Select device from bottom right of VSCode.
-```bash
-flutter run
-```
-
-<br>
-Run via VSCode debugger
-
-> Select device from bottom right of VSCode.
-
-> Go to 'Run and Debug' panel on the Side Bar
-
-> Select 'debug' from the dropdown
-
-> Click the Play Button 
-
-> Open Debug Console for logs
-
 # About Bull Bitcoin Mobile
 
-Bull Bitcoin Mobile has two main components: an open-source non-custodial Bitcoin wallet and a mobile interface for the Bull Bitcoin exchange and payments service offered at www.BullBitcoin.com. The app is designed to work on Android and iOS.
+Bull Bitcoin Mobile is a self-custodial Bitcoin moible which includes both a Bitcoin Network Wallet and a Liquid Network Wallet.The wallet offers non-custodial atomic swaps between the Lightning Network and the Bitcoin Network, as well as between the Lightning Network and the Liquid Network. This swap service is provdided by third-party service providers not affiliated with Bull Bitcoin that are compatible with the Boltz protocol. 
 
-The Bull Bitcoin wallet can be used by anyone. Trading features and trusted features can be unlocked by logging into a Bull Bitcoin account.
+The wallet philosophy is to provide advanced features that give users the maximum control, while still being easy to use for beginners. Our goal is to make sure that anyone can take self-custody of their Bitcoin.
 
-The wallet is built in the dart/flutter framework using the Bitcoin Development Kit, specifically the BDK-flutter library. 
+## Bitcoin wallet basics
 
-Note: Bitcoin Exchange features not yet released.
+At launch, two wallets are generated: the Secure Bitcoin Wallet and the Instant Payments Wallet. Both wallets are created using the same mnemonic seed, so that a single backup is sufficient for both.
 
-www.bullbitcoin.com
+**Secure Bitcoin Wallet**: this is a descriptor-based Bitcoin network wallet which uses bech32 addresses.
+**Instant Payments Wallet**: this is a descirptor-based Liquid network wallet which uses confidential addresses.
 
-## Motivation 
+Both these wallets are able to send and receive payments via the Lightning Network via the swap provider.
 
-Our mission is to facilitate and encourage the self-custody of Bitcoin by providing an integrated experience that combines a Bitcoin Wallet, Bitcoin Payments service and a Bitcoin Exchange (on-ramp, off-ramp).
+## Core dependancies
 
-Non-custodial Bitcoin exchanges and payment processors such as Bull Bitcoin have existed for over a decade. When a user purchases Bitcoin, the user must first provide a Bitcoin address to the exchange. The exchange will send the Bitcoin directly to the user’s own Bitcoin wallet as soon as the Bitcoin purchase is confirmed.
+- BDK: https://github.com/bitcoindevkit/bdk
+- BDK-flutter: https://github.com/LtbLightning/bdk-flutter
+- LWK: https://github.com/Blockstream/lwk
+- LWK-dart (dart bindings: https://github.com/SatoshiPortal/lwk-dart
+- Boltz-rust: https://github.com/SatoshiPortal/boltz-rust
+- Boltz-dart: https://github.com/SatoshiPortal/boltz-dart
 
-The primary issue with non-custodial exchanges is that they require users to set-up a Bitcoin Wallet using a separate mobile, desktop or web app before being able to purchase Bitcoin. This creates a sub-optimal and confusing user experience, forcing the end-user to use two separate applications, sharing data (bitcoin addresses) back-and-forth between the two. 
+## Default external service providers
 
-Custodial exchanges provide a cleaner and more friendly user experience by providing a Bitcoin balance, a fiat balance, and a mechanism to move funds from a fiat balance to a Bitcoin balance within the same user interface.
-
-Bull Bitcoin Mobile solves the problem of having a single, integrated experience within a single mobile application without requiring the user to give up self-custody.
-
-## Integration with Bull Bitcoin exchange and payment processor [planned]
-
-When installing the Bull Bitcoin Mobile app, a self-custodial wallet will be created, regardless of whether he is a Bull Bitcoin user or not. The user will access the Bull Bitcoin exchange from the same application. When purchasing Bitcoin, the mobile app will automatically create a Bitcoin receiving address and provide it to Bull Bitcoin’s servers as a new payout address and Bull Bitcoin will send the Bitcoin directly to the mobile wallet. There is no need to share the xpub of the wallet to Bull Bitcoin’s servers.
-
-Users of Bull Bitcoin Mobile can also specify an external Bitcoin address, they do not need to use the Bull Bitcoin wallet. 
-
-When spending or selling Bitcoin, the exchange will create a payment invoice (BIP21) that will automatically be opened by the same application. All the user has to do is to confirm or reject that transaction. The experience will be functionally the same as that of a custodial exchange, with the exception that the user will have to do a backup of the Bitcoin wallet.
-
-## Bitcoin wallet features
+- Mempool.space API for fee estimates
+- bullbitcoin.com API for fiat prices
+- bull bitcoin and blockstream electrum servers for blockchain data
+- boltz servers for swap providers
 
 ### General features
 
 - Non-custodial: private keys are generated on the device, and never leave the device.
-- Wallets are descriptor based. Users can export their wallet descriptors.
 - Multiple wallets can be created. Users can switch easily from one wallet to the other on the wallet homepage.
+- Walets with BIP39 passphrases can be created.
 - Amounts can be viewed as Bitcoin or Sats.
 - Users can enable RBF for each transaction.
 - Users can send the full wallet balance (sweep a wallet).
 
 ### Network fee estimation
 
-- Unlike most wallets which rely on Bitcoin Core's smart fee estimation algorithm, Bull Bitcoin wallet fetches the network fee estimation from a Mempool instance.
-- Network fees will be more dynamic, and much cheaper. 
-- Default network fee can be specified in the settings and will be used for all transactions, unless specified when creating a transaction
-- There are for network fee presets:
+Unlike most wallets which rely on Bitcoin Core's smart fee estimation algorithm, Bull Bitcoin wallet fetches the network fee estimation from a Mempool instance. Default network fee can be specified in the settings and will be used for all transactions, unless specified when creating a transaction.
+
+There are for network fee presets:
 1. Fastest: aiming for next block
 2. Fast: aiming for three blocks
 3. Medium: aiming for 6 blocks
 4. Economical: aiming for lowest fee possible without the transaction being purged from mempools
 
-### Hot wallet securiy
+### Fee warning system
+
+We have developped a warning system that aims to prevent the user from making uneconomical Bitcoin transactions. There are three types of warnings:
+- Small utxo warning: receiving Bitcoin network utxos of less than 0.01 BTC is considered to be uneconomical. Users are prompted to use Liquid Network instead.
+- High fee warning: all transactions where the network fee is over 3% of the value of the transaction trigger a warning.
+- Slow payment warning: paying Lightning network invoices from a Bitcoin network wallet will require at least one on-chain confirmation, and thus this warning prevents users from accidentally paying a Lightning Network invoice from a Bitcoin network wallet expecting the payment to be instand.
+
+### Default wallet selection
+
+When receiving payments, the Bull Bitcoin app will select which wallet and which network is most appropriate based on the amount to be received. By default, payments under 0.01 BTC will be directed to the Instant Payments Wallet and payments over 0.01 BTC will be directed to the Secure Bitcoin Wallet. 
+
+When sending payments, the Bull Bitcoin wallet will select the most appropriate wallet based both on the amount to be sent, and the network used by the recipients. 
+We try to always use a wallet that is the same network as the recipient: if recipient is on-chain, use secure Bitcoin wallet and if recipient is Liquid use Instant Payments Wallet. If the recipient is Lightning, use the instant payments wallet.
+
+Automated selection of the wallet can be overriden by the user at any time. This will most likely trigger a warning that the user can choose to ignore.
+
+### Wallet securiy
 
 - An optional pin from 4 to 8 digits can be set for access to the app.
 - The PIN is optional to prevent users from being accidentally locked out of a wallet without having first performed a backup.
 - Private keys are stored in secure storage and only accessed via the applicatiom when signing transactions, viewing the wallet’s private keys for back-up (mnemonic or xpriv). This prevents malicious applications from accessing the private keys. 
 - BIP39 passphrase is also stored in secure storage, and can be viewed only via the application.
 - When initializing the app, a single-sig hot wallet wallet is created. By default, this wallet does not have a BIP39 passphrase.
-- Users can create additional wallets and add an optional BIP39 passphrase.
 - A warning is displayed until the user has tested his backup by successfully entering his mnemonic.
 
 ### Hardware wallets and watch-only wallets
@@ -115,35 +84,47 @@ When spending or selling Bitcoin, the exchange will create a payment invoice (BI
 - Users can create labels for receiving addresses. Transactions sent to a receiving address that has a label will inherit the label of the receiving address.
 - Users can label outbound transactions. The change address of these transactions will inherit the label of the outbound transaction.
 - Coin selection: users can select which utxos will be spent for each transaction. The UTXOs will have the labels of the transactions that created them. When enabling coin selection, only the selected utxos will be used to create a transaction.
-- Users can optionally connect to their own electrum server.
+- Labels can be imported and exported according to the BIP-329 standard.
+- Users can connect to their own electrum server.
 - The default electrum server of Bull Bitcoin does not keep logs. The secondary default electrum server of Blockstream is also believed not to keep logs.
 - Users can free a specific UTXO. It will be added to a list of unspendable utxos, and will never be used when making transcations unless specific overried. Unfreezing a utxo will make the utxo spendable again.
 - Combination of "send full amount" and "coin selection": a user can specific a utxo and spend that utxo's entire balance. The network fee will be deducted from the amount sent. This prevents the creation of any change output when moving a utxo from one wallet to another.
 
-### Roadmap
+## Planned integration with the Bull Bitcoin exchange 
 
-- Extract and display transaction details of a PSBT file before broadcasting.
-- Wallet translation in French and Spanish.
-- Store encrypted backup of wallets on the device.
-- Encrypted cloud wallet backups for registered Bull Bitcoin users, with a scheme similar to photon-sdk. 
-- Display passphrase and encryption password strength estimator.
-- Real-time notification of inbound payments via the mempool websocket server. 
-- Optional push notifications for inbound transactions and transaction confirmations.
-- Integration of Payjoin Client
-- Shielded transactions for registered Bull Bitcoin users [trusted swap]
-- Receive Lightning Network payments with automated conversion to on-chain funds [trusted swap].
-- Integration of compact blocks syncing with the Bitcoin Network, which protects users’ network privacy.
-- Integration of the Lightning Network Development Kit, allowing the user to create a self-custodial Lightning Wallet.
-- Integration of a Lightning Service Provider which would allow the user to seamlessly open balanced Lightning Network channels.
+Our mission is to facilitate and encourage the self-custody of Bitcoin by providing an integrated experience that combines a Bitcoin Wallet, Bitcoin Payments service and a Bitcoin Exchange (on-ramp, off-ramp). For this reason, the wallet will be fully integrated with the Bull Bitcoin API. Users will be able to manage their Bull Bitcoin accounts, buy Bitcoin and sell Bitcoin. This integration will be fully open-source. Use of the Bull Bitcoin exchange is fully optional. Users do not need to register for a Bull Bitcoin account to use all wallet features.
+
+Non-custodial Bitcoin exchanges and payment processors such as Bull Bitcoin have existed for over a decade. When a user purchases Bitcoin, the user must first provide a Bitcoin address to the exchange. The exchange will send the Bitcoin directly to the user’s own Bitcoin wallet as soon as the Bitcoin purchase is confirmed.
+
+The primary issue with non-custodial exchanges is that they require users to set-up a Bitcoin Wallet using a separate mobile, desktop or web app before being able to purchase Bitcoin. This creates a sub-optimal and confusing user experience, forcing the end-user to use two separate applications, sharing data (bitcoin addresses) back-and-forth between the two.  Custodial exchanges provide a cleaner and more friendly user experience by providing a Bitcoin balance, a fiat balance, and a mechanism to move funds from a fiat balance to a Bitcoin balance within the same user interface. Bull Bitcoin Mobile solves the problem of having a single, integrated experience within a single mobile application without requiring the user to give up self-custody.
+
+When installing the Bull Bitcoin Mobile app, a self-custodial wallet will be created, regardless of whether he is a Bull Bitcoin user or not. The user will access the Bull Bitcoin exchange from the same application. When purchasing Bitcoin, the mobile app will automatically create a Bitcoin receiving address and provide it to Bull Bitcoin’s servers as a new payout address and Bull Bitcoin will send the Bitcoin directly to the mobile wallet. There is no need to share the xpub of the wallet to Bull Bitcoin’s servers. Users of Bull Bitcoin Mobile can also specify an external Bitcoin address, they do not need to use the Bull Bitcoin wallet. 
+
+When spending or selling Bitcoin, the exchange will create a payment invoice (BIP21) that will automatically be opened by the same application. All the user has to do is to confirm or reject that transaction. The experience will be functionally the same as that of a custodial exchange, with the exception that the user will have to do a backup of the Bitcoin wallet.
+
+## Roadmap
+
+[ ] Bumping replace-by-fee transactions
+[ ] Integration of Coinkite's BBQR library to export public keys, export PSBTs and import PSBTs
+[ ] Extract and display transaction details of a PSBT file before broadcasting.
+[ ] Bitcoin <> Liquid network swaps (depends on Boltz backend update)
+[ ] Cleaner interface to create new wallets using the same mnemonic but with a different BIP39 passphrase
+[ ] Integrate a client-side passphrase strengh estimator 
+[ ] Encrypted cloud backups connected to a key server, similar to photon-sdk
+[ ] Store persistent encrypted wallet backup on device
+[ ] Payjoin integration .
 
 ## Acknowledgements 
 
-- Most of the code is by Morteza.
-- Credits to i5hi for contributions and advice.
-- Thanks Kexkey and BitcoinZavior for their advice.
-- Big thanks to Spiral, BitcoinZavior for creating BDK-flutter, Thunderbiscuit for BDK-ffi and the BDK team for making this project possible.
-- Thanks to the Electrum project for creating the backend Bitcoin network interface. 
-- Thanks to the Mempool project for their fee estimation API and blockchain explorer interface.
-- Thanks to the Bitcoin Core developers for the underlying node software. 
-- Thanks to Blue Wallet for the inspiration for the user interface.
-- This project is tested with BrowserStack.
+- The project is entirely finance by the revenus generated from bullbitcoin.com 
+- Created by Francis Pouliot and Vishal Menon, project managers.
+- Maintainer: Vishal
+- Main developpers: Vishal, Morteza and Sai
+- Thanks to Raj for his work on on Boltz-rust
+- Thanks to the BDK team: BitcoinZavior and ThunderBiscuit
+- Eternal grattitude to the Boltz team Michael and Killian
+- Thanks to Riccardo and the LWK team
+- Thanks to Blockstream for developping the Liquid Network 
+
+![image](https://github.com/BullishNode/bullbitcoin-mobile/assets/75800272/a61e4ccc-897d-410f-b97b-37a7c2b240cb)
+
