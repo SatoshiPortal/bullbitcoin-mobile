@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -12,6 +13,8 @@ class SendState with _$SendState {
     @Default('') String address,
     @Default([]) List<String> enabledWallets,
     AddressNetwork? paymentNetwork,
+    WalletBloc? selectedWalletBloc,
+    Invoice? invoice,
     @Default('') String note,
     int? tempAmt,
     @Default(false) bool scanningAddress,
@@ -33,8 +36,7 @@ class SendState with _$SendState {
     @Default(false) bool signed,
     String? psbtSigned,
     int? psbtSignedFeeAmount,
-    WalletBloc? selectedWalletBloc,
-    Invoice? invoice,
+
     // required SwapCubit swapCubit,
   }) = _SendState;
   const SendState._();
@@ -114,6 +116,37 @@ class SendState with _$SendState {
     } catch (e) {
       return (null, Err(e.toString()));
     }
+  }
+
+  WalletBloc selectLiqThenSecThenOtherBtc(List<WalletBloc> blocs) {
+    final liqWalletIdx = blocs.indexWhere(
+      (_) =>
+          _.state.wallet!.mainWallet &&
+          _.state.wallet!.baseWalletType == BaseWalletType.Liquid,
+    );
+    if (liqWalletIdx != -1) return blocs[liqWalletIdx];
+
+    final secWalletIdx = blocs.indexWhere(
+      (_) =>
+          _.state.wallet!.mainWallet &&
+          _.state.wallet!.baseWalletType == BaseWalletType.Bitcoin,
+    );
+    if (secWalletIdx != -1) return blocs[secWalletIdx];
+
+    return blocs.first;
+  }
+
+  WalletBloc selectMainBtcThenOtherHighestBalBtc(List<WalletBloc> blocs) {
+    final mainWalletIdx = blocs.indexWhere(
+      (_) => _.state.wallet!.mainWallet,
+    );
+    if (mainWalletIdx != -1) return blocs[mainWalletIdx];
+
+    blocs.sort(
+      (a, b) => b.state.balanceSats().compareTo(a.state.balanceSats()),
+    );
+
+    return blocs.first;
   }
 }
 

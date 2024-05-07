@@ -19,7 +19,8 @@ class SendListeners extends StatelessWidget {
       listeners: [
         BlocListener<CurrencyCubit, CurrencyState>(
           listener: (context, state) {
-            context.read<SendCubit>().updateShowSend();
+            context.read<SendCubit>().selectWallets();
+            // context.read<SendCubit>().updateShowSend();
           },
         ),
         BlocListener<SendCubit, SendState>(
@@ -27,16 +28,16 @@ class SendListeners extends StatelessWidget {
         ),
         BlocListener<SwapCubit, SwapState>(
           listener: (context, state) {
-            final amount = context.read<CurrencyCubit>().state.amount;
-            final inv = context.read<SendCubit>().state.invoice;
-            final address = context.read<SendCubit>().state.address;
-            if (inv != null &&
-                inv.invoice == address &&
-                inv.getAmount() != amount) {
-              final amt = inv.getAmount();
-              context.read<CurrencyCubit>().updateAmountDirect(amt);
-              context.read<SendCubit>().updateShowSend();
-            }
+            // final amount = context.read<CurrencyCubit>().state.amount;
+            // final inv = context.read<SendCubit>().state.invoice;
+            // final address = context.read<SendCubit>().state.address;
+            // if (inv != null &&
+            //     inv.invoice == address &&
+            //     inv.getAmount() != amount) {
+            //   final amt = inv.getAmount();
+            //   context.read<CurrencyCubit>().updateAmountDirect(amt);
+            //   context.read<SendCubit>().updateShowSend();
+            // }
           },
         ),
         BlocListener<SwapCubit, SwapState>(

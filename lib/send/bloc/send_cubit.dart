@@ -56,8 +56,19 @@ class SendCubit extends Cubit<SendState> {
   final CurrencyCubit _currencyCubit;
   final HomeCubit _homeCubit;
 
-  void updateAddress(String address) async {
+  // Destination is either Bitcoin or Lightning
+  //
+  // Check if BIP21 contains a Bolt 11
+  // If contains a Bolt 11 invoice, check if Instant Payment Wallet has enough balance
+  // If Instant Payment Wallet does not have enough balance
+  // Check if a fiat account has enough balance
+  // If fiat account has enough balance, use the fiat account for a Lightning transaction
+  // If no fiat account has enough balance, check if Secure Bitcoin Wallet has enough balance
+  // Check if another Bitcoin wallet has enough balance
+  // If no Bitcoin wallet has enough balance, return error message
+  void updateAddress(String? addr) async {
     emit(state.copyWith(errScanningAddress: '', scanningAddress: true));
+    final address = addr ?? state.address;
     final (paymentNetwork, err) = state.getPaymentNetwork(address);
     if (err != null) {
       emit(
@@ -69,7 +80,7 @@ class SendCubit extends Cubit<SendState> {
         ),
       );
       _currencyCubit.updateAmountDirect(0);
-      updateShowWallets();
+      resetWalletSelection();
       return;
     }
 
@@ -115,51 +126,144 @@ class SendCubit extends Cubit<SendState> {
           return;
         }
         emit(state.copyWith(invoice: inv));
+        await _processLnInvoice();
       case AddressNetwork.bitcoin:
       case AddressNetwork.liquid:
         emit(state.copyWith(address: address));
     }
 
     emit(state.copyWith(scanningAddress: false));
-    updateShowWallets();
   }
 
-  void updateShowWallets() {
-    if (state.errScanningAddress.isNotEmpty) {
-      emit(state.copyWith(showSendButton: false, enabledWallets: []));
-      return;
+  void selectWallets() {
+    if (state.paymentNetwork == null) return;
+    switch (state.paymentNetwork!) {
+      case AddressNetwork.bip21Bitcoin:
+        _processBitcoinAddress();
+      case AddressNetwork.bip21Liquid:
+        _processLiquidAddress();
+      case AddressNetwork.lightning:
+        _processLnInvoice();
+      case AddressNetwork.bitcoin:
+        _processBitcoinAddress();
+      case AddressNetwork.liquid:
+        _processLiquidAddress();
     }
+  }
 
-    final isLn = state.isLnInvoice();
-    if (isLn) {
-      final amt = state.invoice!.getAmount();
-      final mainWallets = _homeCubit.state.walletsWithEnoughBalance(
-        amt,
-        _networkCubit.state.getBBNetwork(),
-        onlyMain: true,
+  // Only LN
+  //
+  // Check if Instant Payment Wallet has enough balance
+  // Check if a fiat account has enough balance (Buy Bitcoin Order)
+  // If more than one fiat account has enough balance, choose whichever is preferred currency
+  // Check if Secure Bitcoin Wallet has enough balance (BTC -> LN swap)
+  // Check if another Bitcoin wallet has enough balance
+  // If more than one secondary Bitcoin wallet has enough balance, choose whichever has the highest balance
+  // If nothing has enough balance, return error message
+  Future _processLnInvoice() async {
+    final amt = state.invoice!.getAmount();
+    final wallets = _homeCubit.state.walletsWithEnoughBalance(
+      amt,
+      _networkCubit.state.getBBNetwork(),
+      onlyMain: true,
+    );
+    if (wallets.isEmpty) {
+      emit(
+        state.copyWith(
+          errScanningAddress: 'No wallet with enough balance',
+        ),
       );
-      if (mainWallets.isEmpty) {
-        emit(
-          state.copyWith(
-            errScanningAddress: 'No wallet with enough balance',
-          ),
-        );
-      }
-
-      // emit(state.copyWith(enabledWallets: mainWallets));
-      updateShowSend();
+      resetWalletSelection();
       return;
     }
 
-    final address = state.address;
-    if (address.isEmpty) {
-      emit(state.copyWith(showSendButton: false));
-      return;
-    }
+    final selectWallet = state.selectLiqThenSecThenOtherBtc(wallets);
+    emit(
+      state.copyWith(
+        selectedWalletBloc: selectWallet,
+        enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
+      ),
+    );
 
-    final isLiqAddress = address.startsWith('lq');
-    final isBitAddress = address.startsWith('bc');
+    updateShowSend();
   }
+
+  // Check if Secure Bitcoin Wallet has enough balance
+  // Check if another Bitcoin wallet has enough balance
+  // If more than one secondary Bitcoin wallet has enough balance, choose whichever has the highest balance
+  // Check if a fiat account has enough balance (Buy Bitcoin Order)
+  // If more than one fiat account has enough balance, choose whichever is preferred currency
+  // Check if Instant Payments Wallet has enough balance (L-BTC -> BTC swap)
+  // If nothing has enough balance, return error message
+  Future _processBitcoinAddress() async {
+    final amount = _currencyCubit.state.amount;
+    final wallets = _homeCubit.state.walletsWithEnoughBalance(
+      amount,
+      _networkCubit.state.getBBNetwork(),
+      onlyBitcoin: true,
+    );
+    if (wallets.isEmpty) {
+      emit(
+        state.copyWith(
+          errScanningAddress: 'No wallet with enough balance',
+        ),
+      );
+      resetWalletSelection();
+      return;
+    }
+
+    final selectWallet = state.selectMainBtcThenOtherHighestBalBtc(wallets);
+    emit(
+      state.copyWith(
+        selectedWalletBloc: selectWallet,
+        enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
+      ),
+    );
+
+    updateShowSend();
+  }
+
+  // Check if Instant Payment Wallet has enough balance
+  // Check if a fiat account has enough balance (Buy Bitcoin Order)
+  // If more than one fiat account has enough balance, choose whichever is preferred currency
+  // Check if Secure Bitcoin Wallet has enough balance (BTC -> L-BTC swap)
+  // Check if another Bitcoin wallet has enough balance
+  // If more than one secondary Bitcoin wallet has enough balance, choose whichever has the highest balance
+  // If nothing has enough balance, return error message
+  Future _processLiquidAddress() async {
+    final amount = _currencyCubit.state.amount;
+    final wallets = _homeCubit.state.walletsWithEnoughBalance(
+      amount,
+      _networkCubit.state.getBBNetwork(),
+      onlyLiquid: true,
+    );
+    if (wallets.isEmpty) {
+      emit(
+        state.copyWith(
+          errScanningAddress: 'No wallet with enough balance',
+        ),
+      );
+      resetWalletSelection();
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        selectedWalletBloc: wallets.first,
+        enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
+      ),
+    );
+
+    updateShowSend();
+  }
+
+  void resetWalletSelection() => emit(
+        state.copyWith(
+          enabledWallets: [],
+          selectedWalletBloc: null,
+          paymentNetwork: null,
+        ),
+      );
 
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(state.copyWith(selectedWalletBloc: walletBloc));
@@ -241,7 +345,7 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    updateAddress(address!);
+    updateAddress(address);
     emit(
       state.copyWith(
         scanningAddress: false,

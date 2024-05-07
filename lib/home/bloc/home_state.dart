@@ -272,11 +272,17 @@ class HomeState with _$HomeState {
     int sats,
     BBNetwork network, {
     bool onlyMain = false,
+    bool onlyBitcoin = false,
+    bool onlyLiquid = false,
   }) {
     final wallets = walletBlocsFromNetwork(network).where(
       (_) {
         final wallet = _.state.wallet!;
         if (onlyMain && !wallet.mainWallet) return false;
+        if (onlyBitcoin && wallet.baseWalletType != BaseWalletType.Bitcoin)
+          return false;
+        if (onlyLiquid && wallet.baseWalletType != BaseWalletType.Liquid)
+          return false;
         return true;
       },
     ).toList();
