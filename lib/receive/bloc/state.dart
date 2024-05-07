@@ -41,9 +41,16 @@ class ReceiveState with _$ReceiveState {
     if (paymentNetwork == PaymentNetwork.lightning || (amount == 0 && description.isEmpty)) {
       finalAddress = address;
     } else {
-      finalAddress = isLiquid
-          ? 'liquidnetwork:$address&amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}&assetid=$liquidAssetId'
-          : 'bitcoin:$address&amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}';
+      if (isLiquid) {
+        // Refer spec: https://github.com/ElementsProject/elements/issues/805
+        final lqAssetId = swapTx?.network == BBNetwork.Mainnet ? liquidMainnetAssetId : liquidTestnetAssetId;
+        final liquidProtocol = swapTx?.network == BBNetwork.Mainnet ? 'liquidnetwork' : 'liquidtestnet';
+        finalAddress =
+            '$liquidProtocol:$address?amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}&assetid=$lqAssetId';
+      } else {
+        finalAddress =
+            'bitcoin:$address?amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}';
+      }
     }
     return finalAddress;
   }
