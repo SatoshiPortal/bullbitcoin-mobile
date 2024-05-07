@@ -40,8 +40,9 @@ Both these wallets are able to send and receive payments via the Lightning Netwo
 
 ### Network fee estimation
 
-Unlike most wallets which rely on Bitcoin Core's smart fee estimation algorithm, Bull Bitcoin wallet fetches the network fee estimation from a Mempool instance. Default network fee can be specified in the settings and will be used for all transactions, unless specified when creating a transaction
-- There are for network fee presets:
+Unlike most wallets which rely on Bitcoin Core's smart fee estimation algorithm, Bull Bitcoin wallet fetches the network fee estimation from a Mempool instance. Default network fee can be specified in the settings and will be used for all transactions, unless specified when creating a transaction.
+
+There are for network fee presets:
 1. Fastest: aiming for next block
 2. Fast: aiming for three blocks
 3. Medium: aiming for 6 blocks
