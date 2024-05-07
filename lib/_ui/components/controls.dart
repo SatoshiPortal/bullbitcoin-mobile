@@ -147,11 +147,15 @@ class BBDropDown<T> extends StatelessWidget {
             for (final key in items.keys)
               DropdownMenuItem<T>(
                 value: key,
-                child: isCentered
-                    ? Center(
-                        child: BBText.body(items[key]!.label),
-                      )
-                    : BBText.body(items[key]!.label),
+                enabled: items[key]!.enabled,
+                child: Opacity(
+                  opacity: items[key]!.enabled ? 1 : 0.3,
+                  child: isCentered
+                      ? Center(
+                          child: BBText.body(items[key]!.label),
+                        )
+                      : BBText.body(items[key]!.label),
+                ),
               ),
           ],
         ),

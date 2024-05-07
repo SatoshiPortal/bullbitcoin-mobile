@@ -209,7 +209,10 @@ class WalletSelectionDropDown extends StatelessWidget {
                 wallet: (
                   label: wallet.state.wallet!.name ??
                       wallet.state.wallet!.sourceFingerprint,
-                  enabled: true,
+                  enabled: context
+                      .read<SendCubit>()
+                      .state
+                      .walletEnabled(wallet.state.wallet!.id),
                 ),
             },
             value: walletBloc,
