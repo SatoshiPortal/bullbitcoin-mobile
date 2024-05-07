@@ -104,24 +104,24 @@ When spending or selling Bitcoin, the exchange will create a payment invoice (BI
 
 ## Roadmap
 
-[] Bumping replace-by-fee transactions
-[] Integration of Coinkite's BBQR library to export public keys, export PSBTs and import PSBTs
-[] Extract and display transaction details of a PSBT file before broadcasting.
-[] Bitcoin <> Liquid network swaps (depends on Boltz backend update)
-[] Cleaner interface to create new wallets using the same mnemonic but with a different BIP39 passphrase
-[] Integrate a client-side passphrase strengh estimator 
-[] Encrypted cloud backups connected to a key server, similar to photon-sdk
-[] Store persistent encrypted wallet backup on device
-[] Payjoin integration .
+[ ] Bumping replace-by-fee transactions
+[ ] Integration of Coinkite's BBQR library to export public keys, export PSBTs and import PSBTs
+[ ] Extract and display transaction details of a PSBT file before broadcasting.
+[ ] Bitcoin <> Liquid network swaps (depends on Boltz backend update)
+[ ] Cleaner interface to create new wallets using the same mnemonic but with a different BIP39 passphrase
+[ ] Integrate a client-side passphrase strengh estimator 
+[ ] Encrypted cloud backups connected to a key server, similar to photon-sdk
+[ ] Store persistent encrypted wallet backup on device
+[ ] Payjoin integration .
 
 ## Acknowledgements 
 
-The project is entirely finance by the revenus generated from bullbitcoin.com 
-Created by Francis Pouliot and Vishal Menon, project managers.
-Maintainer: Vishal
-Main developpers: Vishal, Morteza and Sai
-Thanks to Raj for his work on on Boltz-rust
-Thanks to the BDK team: BitcoinZavior and ThunderBiscuit
-Eternal grattitude to the Boltz team Michael and Killian
-Thanks to Riccardo and the LWK team
-Thanks to Blockstream for developping the Liquid Network 
+- The project is entirely finance by the revenus generated from bullbitcoin.com 
+- Created by Francis Pouliot and Vishal Menon, project managers.
+- Maintainer: Vishal
+- Main developpers: Vishal, Morteza and Sai
+- Thanks to Raj for his work on on Boltz-rust
+- Thanks to the BDK team: BitcoinZavior and ThunderBiscuit
+- Eternal grattitude to the Boltz team Michael and Killian
+- Thanks to Riccardo and the LWK team
+- Thanks to Blockstream for developping the Liquid Network 
