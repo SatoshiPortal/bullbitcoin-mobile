@@ -125,3 +125,6 @@ When spending or selling Bitcoin, the exchange will create a payment invoice (BI
 - Eternal grattitude to the Boltz team Michael and Killian
 - Thanks to Riccardo and the LWK team
 - Thanks to Blockstream for developping the Liquid Network 
+
+![image](https://github.com/BullishNode/bullbitcoin-mobile/assets/75800272/a61e4ccc-897d-410f-b97b-37a7c2b240cb)
+
