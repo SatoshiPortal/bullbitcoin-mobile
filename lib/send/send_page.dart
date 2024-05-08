@@ -37,9 +37,10 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class SendPage extends StatefulWidget {
-  const SendPage({super.key, this.openScanner = false});
+  const SendPage({super.key, this.openScanner = false, this.walletId});
 
   final bool openScanner;
+  final String? walletId;
   @override
   State<SendPage> createState() => _SendPageState();
 }
@@ -64,6 +65,12 @@ class _SendPageState extends State<SendPage> {
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
 
+    WalletBloc? walletBloc;
+
+    if (widget.walletId != null)
+      walletBloc =
+          context.read<HomeCubit>().state.getWalletBlocById(widget.walletId!);
+
     send = SendCubit(
       walletTx: locator<WalletTx>(),
       barcode: locator<Barcode>(),
@@ -74,17 +81,8 @@ class _SendPageState extends State<SendPage> {
       swapBoltz: locator<SwapBoltz>(),
       currencyCubit: currency,
       openScanner: widget.openScanner,
+      walletBloc: walletBloc,
     );
-
-    final network = context.read<NetworkCubit>().state.getBBNetwork();
-
-    final walletBlocs =
-        context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
-    WalletBloc? walletBloc;
-    if (walletBlocs.isNotEmpty) {
-      walletBloc = walletBlocs.first;
-      send.updateWalletBloc(walletBloc);
-    }
 
     super.initState();
   }
@@ -134,8 +132,8 @@ class _Screen extends StatelessWidget {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
-    final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton());
+    // final showSend =
+    //     context.select((SendCubit cubit) => cubit.state.showSendButton);
     return ColoredBox(
       color: sent ? Colors.green : context.colour.background,
       child: SingleChildScrollView(
@@ -155,19 +153,15 @@ class _Screen extends StatelessWidget {
                 const AddressField(),
                 const Gap(24),
                 const AmountField(),
-                if (showSend) ...[
-                  if (!isLn) ...[
-                    const Gap(24),
-                    const NetworkFees(),
-                  ],
-                  const Gap(8),
-                  const AdvancedOptions(),
-                  const Gap(48),
+                if (!isLn) ...[
+                  const Gap(24),
+                  const NetworkFees(),
                 ],
+                const Gap(8),
+                const AdvancedOptions(),
+                const Gap(48),
               ],
-              if (!sent && showSend) ...[
-                const _SendButton(),
-              ],
+              const _SendButton(),
               const SendErrDisplay(),
               const Gap(80),
             ],
@@ -183,8 +177,8 @@ class WalletSelectionDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton());
+    final enableDropdown = context
+        .select((SendCubit cubit) => cubit.state.enabledWallets.isNotEmpty);
 
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = context
@@ -196,13 +190,14 @@ class WalletSelectionDropDown extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        if (!showSend) context.read<SendCubit>().disabledDropdownClicked();
+        if (!enableDropdown)
+          context.read<SendCubit>().disabledDropdownClicked();
       },
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
-        opacity: showSend ? 1 : 0.3,
+        opacity: enableDropdown ? 1 : 0.3,
         child: AbsorbPointer(
-          absorbing: !showSend,
+          absorbing: !enableDropdown,
           child: BBDropDown<WalletBloc>(
             items: {
               for (final wallet in walletBlocs)
@@ -232,7 +227,7 @@ class _Balance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton());
+        context.select((SendCubit cubit) => cubit.state.showSendButton);
     if (!showSend) return const SizedBox(height: 24);
 
     return const Center(child: SendWalletBalance()).animate().fadeIn();
@@ -356,7 +351,7 @@ class NetworkFees extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton());
+        context.select((SendCubit cubit) => cubit.state.showSendButton);
     if (!showSend) return const SizedBox(height: 55);
 
     return const SelectFeesButton().animate().fadeIn();
@@ -369,7 +364,7 @@ class AdvancedOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton());
+        context.select((SendCubit cubit) => cubit.state.showSendButton);
     if (!showSend) return const SizedBox(height: 55);
 
     final text = context
@@ -408,8 +403,9 @@ class _SendButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton());
-    if (!showSend) return const SizedBox(height: 55);
+        context.select((SendCubit cubit) => cubit.state.showSendButton);
+    final sent = context.select((SendCubit cubit) => cubit.state.sent);
+    if (!showSend || sent) return const SizedBox(height: 55);
 
     final watchOnly =
         context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());

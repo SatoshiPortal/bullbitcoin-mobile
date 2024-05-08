@@ -24,7 +24,6 @@ class BBHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isLeft) const Spacer(flex: 2),
           if (leftChild != null)

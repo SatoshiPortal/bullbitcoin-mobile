@@ -15,11 +15,12 @@ class SendState with _$SendState {
     AddressNetwork? paymentNetwork,
     WalletBloc? selectedWalletBloc,
     Invoice? invoice,
+    @Default(false) bool showSendButton,
     @Default('') String note,
     int? tempAmt,
     @Default(false) bool scanningAddress,
     @Default('') String errScanningAddress,
-    @Default(false) bool showDropdown,
+    // @Default(false) bool showDropdown,
     @Default(false) bool sending,
     @Default('') String errSending,
     @Default(false) bool sent,
@@ -79,12 +80,13 @@ class SendState with _$SendState {
     return '';
   }
 
-  bool showSendButton() {
-    if (selectedWalletBloc != null) return true;
-    return false;
-  }
+  // bool showSendButton() {
+  //   if (selectedWalletBloc != null) return true;
+  //   return false;
+  // }
 
-  bool checkIfMainWalletSelected() => selectedWalletBloc?.state.wallet?.mainWallet ?? false;
+  bool checkIfMainWalletSelected() =>
+      selectedWalletBloc?.state.wallet?.mainWallet ?? false;
 
   (AddressNetwork?, Err?) getPaymentNetwork(String address) {
     final bitcoinMainnetPrefixes = ['1', '3', 'bc1q', 'bc1p'];
@@ -99,11 +101,14 @@ class SendState with _$SendState {
         return (AddressNetwork.bip21Liquid, null);
       else if (lightningPrefixes.any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.lightning, null);
-      else if (liquidMainnetPrefixes.any((prefix) => address.startsWith(prefix)) ||
+      else if (liquidMainnetPrefixes
+              .any((prefix) => address.startsWith(prefix)) ||
           liquidTestnetPrefixes.any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.liquid, null);
-      else if (bitcoinMainnetPrefixes.any((prefix) => address.startsWith(prefix)) ||
-          bitcoinTestnetPrefixes.any((prefix) => address.startsWith(prefix))) return (AddressNetwork.bitcoin, null);
+      else if (bitcoinMainnetPrefixes
+              .any((prefix) => address.startsWith(prefix)) ||
+          bitcoinTestnetPrefixes.any((prefix) => address.startsWith(prefix)))
+        return (AddressNetwork.bitcoin, null);
       return (null, Err('Invalid address'));
     } catch (e) {
       return (null, Err(e.toString()));
@@ -112,12 +117,16 @@ class SendState with _$SendState {
 
   WalletBloc selectLiqThenSecThenOtherBtc(List<WalletBloc> blocs) {
     final liqWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.mainWallet && _.state.wallet!.baseWalletType == BaseWalletType.Liquid,
+      (_) =>
+          _.state.wallet!.mainWallet &&
+          _.state.wallet!.baseWalletType == BaseWalletType.Liquid,
     );
     if (liqWalletIdx != -1) return blocs[liqWalletIdx];
 
     final secWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.mainWallet && _.state.wallet!.baseWalletType == BaseWalletType.Bitcoin,
+      (_) =>
+          _.state.wallet!.mainWallet &&
+          _.state.wallet!.baseWalletType == BaseWalletType.Bitcoin,
     );
     if (secWalletIdx != -1) return blocs[secWalletIdx];
 

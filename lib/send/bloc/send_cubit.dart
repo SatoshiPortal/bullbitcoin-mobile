@@ -36,11 +36,15 @@ class SendCubit extends Cubit<SendState> {
         _fileStorage = fileStorage,
         _barcode = barcode,
         _swapBoltz = swapBoltz,
-        super(SendState(selectedWalletBloc: walletBloc)) {
+        super(
+          SendState(
+            selectedWalletBloc: walletBloc,
+          ),
+        ) {
     emit(
       state.copyWith(
         disableRBF: !defaultRBF,
-        selectedWalletBloc: walletBloc,
+        // selectedWalletBloc: walletBloc,
       ),
     );
 
@@ -57,7 +61,15 @@ class SendCubit extends Cubit<SendState> {
   final HomeCubit _homeCubit;
 
   void updateAddress(String? addr) async {
-    emit(state.copyWith(errScanningAddress: '', scanningAddress: true));
+    resetWalletSelection();
+    resetErrors();
+    emit(
+      state.copyWith(
+        errScanningAddress: '',
+        scanningAddress: true,
+        paymentNetwork: null,
+      ),
+    );
     final address = addr ?? state.address;
     final (paymentNetwork, err) = state.getPaymentNetwork(address);
     if (err != null) {
@@ -116,7 +128,6 @@ class SendCubit extends Cubit<SendState> {
           return;
         }
         emit(state.copyWith(invoice: inv));
-        await _processLnInvoice();
       case AddressNetwork.bitcoin:
         emit(state.copyWith(address: address));
 
@@ -125,9 +136,11 @@ class SendCubit extends Cubit<SendState> {
     }
 
     emit(state.copyWith(scanningAddress: false));
+    selectWallets();
   }
 
   void selectWallets() {
+    resetErrors();
     if (state.paymentNetwork == null) return;
     switch (state.paymentNetwork!) {
       case AddressNetwork.bip21Bitcoin:
@@ -167,6 +180,11 @@ class SendCubit extends Cubit<SendState> {
         enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
       ),
     );
+
+    if (amt == 0)
+      emit(state.copyWith(showSendButton: false));
+    else
+      emit(state.copyWith(showSendButton: true));
   }
 
   Future _processBitcoinAddress() async {
@@ -187,12 +205,18 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final selectWallet = state.selectMainBtcThenOtherHighestBalBtc(wallets);
+
     emit(
       state.copyWith(
-        selectedWalletBloc: selectWallet,
         enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
+        selectedWalletBloc: selectWallet,
       ),
     );
+
+    if (amount == 0)
+      emit(state.copyWith(showSendButton: false));
+    else
+      emit(state.copyWith(showSendButton: true));
   }
 
   Future _processLiquidAddress() async {
@@ -218,13 +242,26 @@ class SendCubit extends Cubit<SendState> {
         enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
       ),
     );
+
+    if (amount == 0)
+      emit(state.copyWith(showSendButton: false));
+    else
+      emit(state.copyWith(showSendButton: true));
   }
 
   void resetWalletSelection() => emit(
         state.copyWith(
           enabledWallets: [],
           selectedWalletBloc: null,
-          paymentNetwork: null,
+          showSendButton: false,
+        ),
+      );
+
+  void resetErrors() => emit(
+        state.copyWith(
+          errScanningAddress: '',
+          errSending: '',
+          errDownloadingFile: '',
         ),
       );
 
