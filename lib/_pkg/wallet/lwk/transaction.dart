@@ -477,7 +477,7 @@ class LWKTransactions {
       final pset = await lwkWallet.buildLbtcTx(
         sats: amount ?? 0,
         outAddress: address,
-        feeRate: feeRate,
+        feeRate: feeRate * 1000.0,
       );
       // pubWallet.sign(network: wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet , pset: pset, mnemonic: mnemonic)
 

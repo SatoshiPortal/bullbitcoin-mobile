@@ -91,7 +91,7 @@ class SendState with _$SendState {
   (AddressNetwork?, Err?) getPaymentNetwork(String address) {
     final bitcoinMainnetPrefixes = ['1', '3', 'bc1q', 'bc1p'];
     final bitcoinTestnetPrefixes = ['m', 'n', '2', 'tb1'];
-    final liquidMainnetPrefixes = ['lq1', 'vjl', 'ex1', 'G'];
+    final liquidMainnetPrefixes = ['lq1', 'VJL', 'ex1', 'G'];
     final liquidTestnetPrefixes = ['tlq1'];
     final lightningPrefixes = ['lnbc', 'lntb', 'lnbs', 'lnbcrt', 'lightning:'];
     try {
