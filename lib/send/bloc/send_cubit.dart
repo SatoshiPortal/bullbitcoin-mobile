@@ -408,7 +408,9 @@ class SendCubit extends Cubit<SendState> {
       address: address,
       amount: swaptx != null ? swaptx.outAmount : _currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
-      feeRate: fee.toDouble(),
+      feeRate: localWallet.baseWalletType == BaseWalletType.Liquid
+          ? 0.1
+          : fee.toDouble(),
       enableRbf: enableRbf,
       selectedUtxos: state.selectedUtxos,
       note: state.note,
@@ -425,7 +427,8 @@ class SendCubit extends Cubit<SendState> {
 
     final (wallet, tx, feeAmt) = buildResp!;
     if (wallet!.type == BBWalletType.secure ||
-        wallet.type == BBWalletType.words) {
+        wallet.type == BBWalletType.words ||
+        wallet.type == BBWalletType.instant) {
       emit(
         state.copyWith(
           sending: false,

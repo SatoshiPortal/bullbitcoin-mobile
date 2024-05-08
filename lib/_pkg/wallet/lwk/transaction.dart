@@ -485,7 +485,7 @@ class LWKTransactions {
         txid: '',
         received: 0,
         sent: amount ?? 0,
-        fee: feeRate.toInt(),
+        fee: (feeRate * 100.0).toInt(),
         height: 0,
         timestamp: 0,
         label: '',
@@ -493,7 +493,7 @@ class LWKTransactions {
         outAddrs: [],
         psbt: pset,
       );
-      return ((tx, feeRate.toInt(), pset), null);
+      return ((tx, (feeRate * 1000.0).toInt(), pset), null);
     } on Exception catch (e) {
       return (
         null,
