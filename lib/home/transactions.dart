@@ -9,7 +9,6 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -240,8 +239,8 @@ class HomeTxItem2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showOnlySwap = tx.pageLayout == TxLayout.onlySwapTx;
-    if (showOnlySwap) return _SwapTxHomeListItem(transaction: tx);
+    // final showOnlySwap = tx.pageLayout == TxLayout.onlySwapTx;
+    // if (showOnlySwap) return _SwapTxHomeListItem(transaction: tx);
 
     final label = tx.label ?? '';
 
