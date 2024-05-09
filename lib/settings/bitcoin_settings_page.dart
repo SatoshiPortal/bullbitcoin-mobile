@@ -197,7 +197,7 @@ class Translate extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         BBText.body(
-          'settings.language.title'.translate,
+          'Select Language'.translate,
         ),
         const Gap(4),
         InputDecorator(

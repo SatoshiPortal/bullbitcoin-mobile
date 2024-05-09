@@ -24,7 +24,7 @@
     "files.exclude": {
         "**/.metadata": true,
         "**/.packages": true,
-        // "**/pubspec.lock": true,
+        "**/pubspec.lock": true,
         "**/.flutter-plugins": true,
         "**/.dart_tool": true,
         "**/.flutter-plugins-dependencies": true,
@@ -61,7 +61,7 @@
         "ios": true,
         // 
         // 
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
         // 
         // 
         "**/test": true,

@@ -28,23 +28,23 @@ class AuthState with _$AuthState {
     if (!fromSettings)
       switch (step) {
         case SecurityStep.createPin:
-          return 'auth.steps.create'.translate;
+          return 'Create security pin'.translate;
         case SecurityStep.confirmPin:
-          return 'auth.steps.confirm'.translate;
+          return 'Confirm pin'.translate;
         case SecurityStep.enterPin:
-          return 'auth.steps.enter'.translate;
+          return 'Enter security pin'.translate;
       }
 
     if (fromSettings)
       switch (step) {
         case SecurityStep.enterPin:
-          return 'auth.steps.enter'.translate;
+          return 'Enter security pin'.translate;
 
         case SecurityStep.createPin:
-          return 'auth.steps.createnew'.translate;
+          return 'Create new pin'.translate;
 
         case SecurityStep.confirmPin:
-          return 'auth.steps.confirmnew'.translate;
+          return 'Confirm new pin'.translate;
       }
 
     return '';

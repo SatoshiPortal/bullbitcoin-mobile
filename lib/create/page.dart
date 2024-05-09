@@ -81,7 +81,7 @@ class _Screen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         flexibleSpace: BBAppBar(
-          text: 'create.title'.translate,
+          text: 'Backup Your Wallet'.translate,
           onBack: () {
             context.pop();
           },
@@ -99,7 +99,8 @@ class _Screen extends StatelessWidget {
                   horizontal: 16.0,
                 ),
                 child: BBText.bodySmall(
-                  'create.disclaimer'.translate,
+                  "Write down these 12 words somewhere safe, on a piece of paper or engraved in metal. You'll need them if you lose your phone or access to the Bull Bitcoin app. Don't store them on a phone or computer."
+                      .translate,
                   isBold: true,
                 ),
               ),
@@ -127,8 +128,10 @@ class Words extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mne = context.select((CreateWalletCubit cubit) => cubit.state.mnemonic ?? []);
-    final loading = context.select((CreateWalletCubit cubit) => cubit.state.creatingNmemonic);
+    final mne =
+        context.select((CreateWalletCubit cubit) => cubit.state.mnemonic ?? []);
+    final loading = context
+        .select((CreateWalletCubit cubit) => cubit.state.creatingNmemonic);
 
     if (loading)
       return const Padding(
@@ -177,7 +180,7 @@ class CreateWalletPassField extends HookWidget {
           Padding(
             padding: const EdgeInsets.only(left: 12.0),
             child: BBText.body(
-              'create.passphrase.title'.translate,
+              'Passphrase (optional)'.translate,
             ),
           ),
           const Gap(8),
@@ -200,11 +203,14 @@ class CreateWalletLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mainWallet = context.select((CreateWalletCubit cubit) => cubit.state.mainWallet);
+    final mainWallet =
+        context.select((CreateWalletCubit cubit) => cubit.state.mainWallet);
     if (mainWallet) return const SizedBox.shrink();
 
-    final text = context.select((CreateWalletCubit cubit) => cubit.state.walletLabel ?? '');
-    final err = context.select((CreateWalletCubit cubit) => cubit.state.errSaving);
+    final text = context
+        .select((CreateWalletCubit cubit) => cubit.state.walletLabel ?? '');
+    final err =
+        context.select((CreateWalletCubit cubit) => cubit.state.errSaving);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -213,7 +219,8 @@ class CreateWalletLabel extends StatelessWidget {
         children: [
           BBTextInput.big(
             value: text,
-            onChanged: (value) => context.read<CreateWalletCubit>().walletLabelChanged(value),
+            onChanged: (value) =>
+                context.read<CreateWalletCubit>().walletLabelChanged(value),
             onEnter: () async {
               await Future.delayed(500.ms);
               context.read<ScrollCubit>().state.animateTo(
@@ -326,7 +333,7 @@ class CreateWalletCreateButton extends StatelessWidget {
         if (err.isNotEmpty) return;
         CreateWalletConfirmPopUp.showPopup(context);
       },
-      label: 'create.button'.translate,
+      label: 'Create Wallet'.translate,
     );
   }
 }
