@@ -117,12 +117,19 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final page = context.select((TransactionCubit _) => _.state.tx.pageLayout);
-    return switch (page) {
-      TxLayout.onlyTx => const _OnlyTxPage(),
-      TxLayout.onlySwapTx => const _OnlySwapTxPage(),
-      TxLayout.both => const _CombinedTxAndSwapPage(),
-    };
+    final tx = context.select((TransactionCubit _) => _.state.tx);
+    final swap = tx.swapTx;
+
+    if (swap != null) return const _CombinedTxAndSwapPage();
+    return const _OnlyTxPage();
+
+    // final page = context.select((TransactionCubit _) => _.state.tx.pageLayout);
+    // if()
+    // return switch (page) {
+    //   TxLayout.onlyTx => const _OnlyTxPage(),
+    //   TxLayout.onlySwapTx => const _OnlySwapTxPage(),
+    //   TxLayout.both => const _CombinedTxAndSwapPage(),
+    // };
   }
 }
 
@@ -463,12 +470,14 @@ class _SwapDetails extends StatelessWidget {
             ],
             const Gap(4),
             const Gap(24),
-            BBText.title(
-              isReceive ? 'Tranaction received' : 'Transaction sent',
-            ),
-            const Gap(4),
-            BBText.titleLarge(date, isBold: true),
-            const Gap(32),
+            if (date.isNotEmpty) ...[
+              BBText.title(
+                isReceive ? 'Tranaction received' : 'Transaction sent',
+              ),
+              const Gap(4),
+              BBText.titleLarge(date, isBold: true),
+              const Gap(32),
+            ],
             // if (showQr)
             //   Center(
             //     child: SizedBox(
