@@ -654,7 +654,7 @@ class BDKTransactions {
 
       final outAddrsFutures = outputs.map((txOut) async {
         final scriptAddress = await bdk.Address.fromScript(
-          script: await bdk.ScriptBuf.fromHex(txOut.scriptPubkey.toString()),
+          script: bdk.ScriptBuf(bytes: txOut.scriptPubkey.bytes),
           network: bdkNetwork,
         );
         if (txOut.value == amount! &&
@@ -683,6 +683,8 @@ class BDKTransactions {
 
       final List<Address> outAddrs = await Future.wait(outAddrsFutures);
       final feeAmt = await txResult.$1.feeAmount();
+      final psbtStr = await psbt.serialize();
+
       final Transaction tx = Transaction(
         txid: txDetails.txid,
         rbfEnabled: enableRbf,
@@ -694,9 +696,9 @@ class BDKTransactions {
         label: note,
         toAddress: address,
         outAddrs: outAddrs,
-        psbt: psbt.toString(),
+        psbt: psbtStr,
       );
-      return ((tx, feeAmt, psbt.toString()), null);
+      return ((tx, feeAmt, psbtStr), null);
     } on Exception catch (e) {
       return (
         null,
@@ -751,8 +753,9 @@ class BDKTransactions {
         ),
       );
       // final extracted = await finalized;
+      final psbtStr = await psbtStruct.serialize();
 
-      return ((tx, psbtStruct.toString()), null);
+      return ((tx, psbtStr), null);
     } on Exception catch (e) {
       return (
         null,
