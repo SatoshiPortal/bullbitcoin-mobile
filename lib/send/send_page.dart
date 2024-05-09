@@ -472,13 +472,21 @@ class _SendButton extends StatelessWidget {
                         .confirmClickedd(networkFees: fees);
                     return;
                   }
+                  final wallet = context.read<WalletBloc>().state.wallet!;
+                  final isLiq = wallet.isLiquid();
+                  final networkurl = !isLiq
+                      ? context.read<NetworkCubit>().state.getNetworkUrl()
+                      : context
+                          .read<NetworkCubit>()
+                          .state
+                          .getLiquidNetworkUrl();
+
                   context.read<SwapCubit>().createSubSwapForSend(
-                        wallet: context.read<WalletBloc>().state.wallet!,
+                        wallet: wallet,
                         invoice: context.read<SendCubit>().state.address,
                         amount: context.read<CurrencyCubit>().state.amount,
                         isTestnet: context.read<NetworkCubit>().state.testnet,
-                        networkUrl:
-                            context.read<NetworkCubit>().state.getNetworkUrl(),
+                        networkUrl: networkurl,
                       );
                   return;
                 }
