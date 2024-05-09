@@ -351,7 +351,11 @@ class NetworkFees extends StatelessWidget {
   Widget build(BuildContext context) {
     final showSend =
         context.select((SendCubit cubit) => cubit.state.showSendButton);
-    if (!showSend) return const SizedBox.shrink();
+
+    final isLiquid =
+        context.select((SendCubit cubit) => cubit.state.isLiquidPayment());
+
+    if (!showSend || isLiquid) return const SizedBox.shrink();
 
     return const SelectFeesButton().animate().fadeIn();
   }
