@@ -95,6 +95,8 @@ class SendState with _$SendState {
     final liquidTestnetPrefixes = ['tlq1'];
     final lightningPrefixes = ['lnbc', 'lntb', 'lnbs', 'lnbcrt', 'lightning:'];
     try {
+      if (address.contains('lightning='))
+        return (AddressNetwork.bip21Lightning, null);
       if (address.contains('bitcoin:'))
         return (AddressNetwork.bip21Bitcoin, null);
       else if (address.contains('liquidnetwork:'))
@@ -160,6 +162,7 @@ class SendState with _$SendState {
 enum AddressNetwork {
   bip21Bitcoin,
   bip21Liquid,
+  bip21Lightning,
   lightning,
   bitcoin,
   liquid,
@@ -178,6 +181,8 @@ extension Payment on AddressNetwork {
         return PaymentNetwork.bitcoin;
       case AddressNetwork.liquid:
         return PaymentNetwork.liquid;
+      case AddressNetwork.bip21Lightning:
+        return PaymentNetwork.lightning;
     }
   }
 }

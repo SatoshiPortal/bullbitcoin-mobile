@@ -84,6 +84,7 @@ class SendCubit extends Cubit<SendState> {
       _currencyCubit.updateAmountDirect(0);
       _currencyCubit.updateAmount('');
       resetWalletSelection();
+      if (address.isEmpty) resetErrors();
       return;
     }
 
@@ -129,6 +130,18 @@ class SendCubit extends Cubit<SendState> {
           return;
         }
         emit(state.copyWith(invoice: inv, address: address));
+
+      case AddressNetwork.bip21Lightning:
+        final invoice = address.substring(
+          address.indexOf('lightning=') + 10,
+        );
+        final (inv, errInv) = await _swapBoltz.decodeInvoice(invoice: invoice);
+        if (errInv != null) {
+          emit(state.copyWith(errScanningAddress: errInv.toString()));
+          return;
+        }
+        emit(state.copyWith(invoice: inv, address: invoice));
+
       case AddressNetwork.bitcoin:
         emit(state.copyWith(address: address));
 
@@ -154,6 +167,8 @@ class SendCubit extends Cubit<SendState> {
         _processBitcoinAddress();
       case AddressNetwork.liquid:
         _processLiquidAddress();
+      case AddressNetwork.bip21Lightning:
+        _processLnInvoice();
     }
   }
 
@@ -529,7 +544,7 @@ class SendCubit extends Cubit<SendState> {
 // bitcoin:BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U?amount=0.00001&label=sbddesign%3A%20For%20lunch%20Tuesday&message=For%20lunch%20Tuesday&lightning=LNBC10U1P3PJ257PP5YZTKWJCZ5FTL5LAXKAV23ZMZEKAW37ZK6KMV80PK4XAEV5QHTZ7QDPDWD3XGER9WD5KWM36YPRX7U3QD36KUCMGYP282ETNV3SHJCQZPGXQYZ5VQSP5USYC4LK9CHSFP53KVCNVQ456GANH60D89REYKDNGSMTJ6YW3NHVQ9QYYSSQJCEWM5CJWZ4A6RFJX77C490YCED6PEMK0UPKXHY89CMM7SCT66K8GNEANWYKZGDRWRFJE69H9U5U0W57RRCSYSAS7GADWMZXC8C6T0SPJAZUP6
 
 // BIP21 URI with BOLT 12 offer
-// bitcoin:BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U?amount=0.00001&label=sbddesign%3A%20For%20lunch%20Tuesday&message=For%20lunch%20Tuesday&lightning=LNO1PG257ENXV4EZQCNEYPE82UM50YNHXGRWDAJX283QFWDPL28QQMC78YMLVHMXCSYWDK5WRJNJ36JRYG488QWLRNZYJCZS
+// bitcoin:BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U?amount=0.00021&label=sbddesign%3A%20For%20lunch%20Tuesday&message=For%20lunch%20Tuesday&lightning=LNO1PG257ENXV4EZQCNEYPE82UM50YNHXGRWDAJX283QFWDPL28QQMC78YMLVHMXCSYWDK5WRJNJ36JRYG488QWLRNZYJCZS
 
 // BOLT 11 Invoice mainnet
 // LNBC10U1P3PJ257PP5YZTKWJCZ5FTL5LAXKAV23ZMZEKAW37ZK6KMV80PK4XAEV5QHTZ7QDPDWD3XGER9WD5KWM36YPRX7U3QD36KUCMGYP282ETNV3SHJCQZPGXQYZ5VQSP5USYC4LK9CHSFP53KVCNVQ456GANH60D89REYKDNGSMTJ6YW3NHVQ9QYYSSQJCEWM5CJWZ4A6RFJX77C490YCED6PEMK0UPKXHY89CMM7SCT66K8GNEANWYKZGDRWRFJE69H9U5U0W57RRCSYSAS7GADWMZXC8C6T0SPJAZUP6
