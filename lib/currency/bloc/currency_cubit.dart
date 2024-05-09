@@ -51,7 +51,8 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     final (result, err) = await _hiveStorage.getValue(StorageKeys.currency);
     if (err != null) return;
 
-    final currency = CurrencyState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
+    final currency =
+        CurrencyState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
     emit(currency);
     loadCurrencies();
   }
@@ -59,8 +60,9 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   void loadCurrencyForAmount() async {
     await Future.delayed(300.ms);
     final updatedCurrenciess = state.updatedCurrencyList();
-    final selectedCurrency = updatedCurrenciess
-        .firstWhere((element) => element.name == (state.unitsInSats ? 'sats' : 'btc'));
+    final selectedCurrency = updatedCurrenciess.firstWhere(
+      (element) => element.name == (state.unitsInSats ? 'sats' : 'btc'),
+    );
 
     emit(state.copyWith(currency: selectedCurrency));
   }
@@ -91,8 +93,8 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     emit(
       state.copyWith(
         currency: results.isNotEmpty ? results.first : state.currency,
-        defaultFiatCurrency:
-            state.defaultFiatCurrency ?? (results.isNotEmpty ? results.first : null),
+        defaultFiatCurrency: state.defaultFiatCurrency ??
+            (results.isNotEmpty ? results.first : null),
         currencyList: results.isNotEmpty ? results : state.currencyList,
         loadingCurrency: false,
         lastUpdatedCurrency: DateTime.now(),
@@ -120,7 +122,8 @@ class CurrencyCubit extends Cubit<CurrencyState> {
 
   void updateAmountCurrency(String currency) {
     final currencies = state.updatedCurrencyList();
-    final selectedCurrency = currencies.firstWhere((_) => _.name.toLowerCase() == currency);
+    final selectedCurrency =
+        currencies.firstWhere((_) => _.name.toLowerCase() == currency);
 
     if (currency == 'btc' || currency == 'sats')
       emit(
@@ -196,7 +199,13 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     final currency = state.defaultFiatCurrency;
     final fiatAmt = currency!.price! * (amt / 100000000);
 
-    emit(state.copyWith(amount: amt, fiatAmt: fiatAmt));
+    emit(
+      state.copyWith(
+        amount: amt,
+        fiatAmt: fiatAmt,
+        tempAmount: clean,
+      ),
+    );
     // _updateShowSend();
   }
 

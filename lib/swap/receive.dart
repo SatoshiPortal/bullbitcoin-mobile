@@ -142,9 +142,17 @@ class _InvoiceQRPopup extends StatelessWidget {
   const _InvoiceQRPopup({required this.tx});
 
   static Future openPopUp(BuildContext context, SwapTx tx) {
+    final receive = context.read<ReceiveCubit>();
+    final swap = context.read<SwapCubit>();
     return showBBBottomSheet(
       context: context,
-      child: _InvoiceQRPopup(tx: tx),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: receive),
+          BlocProvider.value(value: swap),
+        ],
+        child: _InvoiceQRPopup(tx: tx),
+      ),
     );
   }
 

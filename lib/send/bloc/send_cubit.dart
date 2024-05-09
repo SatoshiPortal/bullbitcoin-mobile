@@ -127,7 +127,7 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(errScanningAddress: errInv.toString()));
           return;
         }
-        emit(state.copyWith(invoice: inv));
+        emit(state.copyWith(invoice: inv, address: address));
       case AddressNetwork.bitcoin:
         emit(state.copyWith(address: address));
 
@@ -514,3 +514,6 @@ class SendCubit extends Cubit<SendState> {
     super.close();
   }
 }
+
+
+//lntb11110n1pnrc620pp5mpdwk98cl7wnj9mwc69wf7v8t7fadt2n4rx22g8rzf2y48l8m4esdpz2djkuepqw3hjqnpdgf2yxgrpv3j8yetnwvcqz95xqyp2xqsp5vwyhphcdvhc399ffqqsphp4xzjg569rchzkh9kte048hajxu2hns9qyyssqqy24765myh9ew4zklqx8qhycg9g4rn7w56t75vhfqk9a2sjpedsp4t90ms20ufckmc0fgjrhvfxcrdmhv5780wmezl7ps2djcuqtnhsp07jm9w
