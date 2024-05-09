@@ -485,7 +485,8 @@ class LWKTransactions {
         txid: '',
         received: 0,
         sent: amount ?? 0,
-        fee: (feeRate * 100.0).toInt(),
+        fee: (feeRate * 100.0)
+            .toInt(), // this is wrong, abs_fee has to be decoded from the pset
         height: 0,
         timestamp: 0,
         label: '',
@@ -493,7 +494,10 @@ class LWKTransactions {
         outAddrs: [],
         psbt: pset,
       );
-      return ((tx, (feeRate * 1000.0).toInt(), pset), null);
+      return (
+        (tx, (feeRate * 1000.0).toInt(), pset),
+        null
+      ); // abs_fees is wrong here too, has to be decoded from pset
     } on Exception catch (e) {
       return (
         null,
