@@ -4,6 +4,7 @@ import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
+import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
@@ -47,6 +48,7 @@ class SendPage extends StatefulWidget {
 
 class _SendPageState extends State<SendPage> {
   late SendCubit send;
+  late NetworkFeesCubit networkFees;
 
   late SwapCubit swap;
   late CurrencyCubit currency;
@@ -57,6 +59,13 @@ class _SendPageState extends State<SendPage> {
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
+    );
+
+    networkFees = NetworkFeesCubit(
+      networkCubit: locator<NetworkCubit>(),
+      hiveStorage: locator<HiveStorage>(),
+      mempoolAPI: locator<MempoolAPI>(),
+      defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
     );
 
     currency = CurrencyCubit(
@@ -94,6 +103,7 @@ class _SendPageState extends State<SendPage> {
         BlocProvider.value(value: send),
         BlocProvider.value(value: currency),
         BlocProvider.value(value: swap),
+        BlocProvider.value(value: networkFees),
       ],
       child: Scaffold(
         appBar: AppBar(

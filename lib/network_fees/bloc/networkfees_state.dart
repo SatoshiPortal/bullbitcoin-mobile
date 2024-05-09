@@ -18,17 +18,22 @@ class NetworkFeesState with _$NetworkFeesState {
   }) = _NetworkFeesState;
   const NetworkFeesState._();
 
-  factory NetworkFeesState.fromJson(Map<String, dynamic> json) => _$NetworkFeesStateFromJson(json);
+  factory NetworkFeesState.fromJson(Map<String, dynamic> json) =>
+      _$NetworkFeesStateFromJson(json);
 
   String feeButtonText() {
     var str = '';
     try {
       final selectedOption = feeOption();
 
-      if (selectedOption == 0) str = 'Fastest fee rate: ' + feesList![0].toString();
-      if (selectedOption == 1) str = 'Fast fee rate: ' + feesList![1].toString();
-      if (selectedOption == 2) str = 'Medium fee rate: ' + feesList![2].toString();
-      if (selectedOption == 3) str = 'Slow fee rate: ' + feesList![3].toString();
+      if (selectedOption == 0)
+        str = 'Fastest fee rate: ' + feesList![0].toString();
+      if (selectedOption == 1)
+        str = 'Fast fee rate: ' + feesList![1].toString();
+      if (selectedOption == 2)
+        str = 'Medium fee rate: ' + feesList![2].toString();
+      if (selectedOption == 3)
+        str = 'Slow fee rate: ' + feesList![3].toString();
 
       if (selectedFeesOption == 4) str = 'Manual fee rate: ' + fees.toString();
       return str + ' sat/vByte';
@@ -57,7 +62,9 @@ class NetworkFeesState with _$NetworkFeesState {
       ? 0
       : selectFirst
           ? feesList![0]
-          : feesList![selectedFeesOption];
+          : selectedFeesOption == 4
+              ? (fees ?? 0)
+              : feesList![selectedFeesOption];
 
   String defaultFeeStatus() {
     try {
