@@ -149,6 +149,12 @@ class SendState with _$SendState {
 
     return blocs.first;
   }
+
+  bool isLiquidPayment() {
+    if (paymentNetwork == null) return false;
+    final network = paymentNetwork!.toPaymentNetwork();
+    return network == PaymentNetwork.liquid;
+  }
 }
 
 enum AddressNetwork {
@@ -157,4 +163,21 @@ enum AddressNetwork {
   lightning,
   bitcoin,
   liquid,
+}
+
+extension Payment on AddressNetwork {
+  PaymentNetwork toPaymentNetwork() {
+    switch (this) {
+      case AddressNetwork.bip21Bitcoin:
+        return PaymentNetwork.bitcoin;
+      case AddressNetwork.bip21Liquid:
+        return PaymentNetwork.liquid;
+      case AddressNetwork.lightning:
+        return PaymentNetwork.lightning;
+      case AddressNetwork.bitcoin:
+        return PaymentNetwork.bitcoin;
+      case AddressNetwork.liquid:
+        return PaymentNetwork.liquid;
+    }
+  }
 }

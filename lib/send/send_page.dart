@@ -362,12 +362,14 @@ class AdvancedOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton);
-    if (!showSend) return const SizedBox.shrink();
+    final showSend = context.select((SendCubit _) => _.state.showSendButton);
+    final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
+    final isLiquid = context.select((SendCubit _) => _.state.isLiquidPayment());
 
-    final text = context
-        .select((SendCubit cubit) => cubit.state.advancedOptionsButtonText());
+    if (!showSend || isLn || isLiquid) return const SizedBox.shrink();
+
+    final text =
+        context.select((SendCubit _) => _.state.advancedOptionsButtonText());
     return Column(
       children: [
         BBButton.text(
@@ -424,6 +426,7 @@ class _SendButton extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const Gap(24),
         Center(
           child: BlocListener<SendCubit, SendState>(
             listenWhen: (previous, current) =>
