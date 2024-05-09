@@ -19,7 +19,7 @@ import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-// chicken happy machine rain smile derive swamp clap trick bless balcony soon
+//
 
 class ImportWalletCubit extends Cubit<ImportState> {
   ImportWalletCubit({
@@ -35,7 +35,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required BDKSensitiveCreate bdkSensitiveCreate,
     required LWKSensitiveCreate lwkSensitiveCreate,
     bool mainWallet = false,
-    bool useTestWallet = true,
+    bool useTestWallet = false,
   })  : _networkCubit = networkCubit,
         _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,
@@ -49,7 +49,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         _barcode = barcode,
         super(ImportState(mainWallet: mainWallet)) {
     if (useTestWallet)
-      emit(state.copyWith(words12: [...importW(instantTN1)]));
+      emit(state.copyWith(words12: [...importW(secureTN1)]));
     else
       reset();
 

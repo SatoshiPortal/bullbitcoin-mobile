@@ -64,6 +64,21 @@ const instantTN1 = [
   'dial',
 ];
 
+const secureTN2 = [
+  'chicken',
+  'happy',
+  'machine',
+  'rain',
+  'smile',
+  'derive',
+  'swamp',
+  'clap',
+  'trick',
+  'bless',
+  'balcony',
+  'soon',
+];
+
 List<({String word, bool tapped})> importW(List<String> words) =>
     words.map((e) => (word: e, tapped: false)).toList();
 

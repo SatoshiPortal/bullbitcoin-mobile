@@ -82,6 +82,7 @@ class SendCubit extends Cubit<SendState> {
         ),
       );
       _currencyCubit.updateAmountDirect(0);
+      _currencyCubit.updateAmount('');
       resetWalletSelection();
       return;
     }
@@ -254,6 +255,8 @@ class SendCubit extends Cubit<SendState> {
           enabledWallets: [],
           selectedWalletBloc: null,
           showSendButton: false,
+          invoice: null,
+          tempAmt: 0,
         ),
       );
 
@@ -515,5 +518,18 @@ class SendCubit extends Cubit<SendState> {
   }
 }
 
-
+// bolt 11 testnet
 //lntb11110n1pnrc620pp5mpdwk98cl7wnj9mwc69wf7v8t7fadt2n4rx22g8rzf2y48l8m4esdpz2djkuepqw3hjqnpdgf2yxgrpv3j8yetnwvcqz95xqyp2xqsp5vwyhphcdvhc399ffqqsphp4xzjg569rchzkh9kte048hajxu2hns9qyyssqqy24765myh9ew4zklqx8qhycg9g4rn7w56t75vhfqk9a2sjpedsp4t90ms20ufckmc0fgjrhvfxcrdmhv5780wmezl7ps2djcuqtnhsp07jm9w
+
+
+// BIP21 URI with On-chain address
+// bitcoin:BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U?amount=0.00001&label=sbddesign%3A%20For%20lunch%20Tuesday&message=For%20lunch%20Tuesday
+
+// BIP21 URI with BOLT 11 invoice
+// bitcoin:BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U?amount=0.00001&label=sbddesign%3A%20For%20lunch%20Tuesday&message=For%20lunch%20Tuesday&lightning=LNBC10U1P3PJ257PP5YZTKWJCZ5FTL5LAXKAV23ZMZEKAW37ZK6KMV80PK4XAEV5QHTZ7QDPDWD3XGER9WD5KWM36YPRX7U3QD36KUCMGYP282ETNV3SHJCQZPGXQYZ5VQSP5USYC4LK9CHSFP53KVCNVQ456GANH60D89REYKDNGSMTJ6YW3NHVQ9QYYSSQJCEWM5CJWZ4A6RFJX77C490YCED6PEMK0UPKXHY89CMM7SCT66K8GNEANWYKZGDRWRFJE69H9U5U0W57RRCSYSAS7GADWMZXC8C6T0SPJAZUP6
+
+// BIP21 URI with BOLT 12 offer
+// bitcoin:BC1QYLH3U67J673H6Y6ALV70M0PL2YZ53TZHVXGG7U?amount=0.00001&label=sbddesign%3A%20For%20lunch%20Tuesday&message=For%20lunch%20Tuesday&lightning=LNO1PG257ENXV4EZQCNEYPE82UM50YNHXGRWDAJX283QFWDPL28QQMC78YMLVHMXCSYWDK5WRJNJ36JRYG488QWLRNZYJCZS
+
+// BOLT 11 Invoice mainnet
+// LNBC10U1P3PJ257PP5YZTKWJCZ5FTL5LAXKAV23ZMZEKAW37ZK6KMV80PK4XAEV5QHTZ7QDPDWD3XGER9WD5KWM36YPRX7U3QD36KUCMGYP282ETNV3SHJCQZPGXQYZ5VQSP5USYC4LK9CHSFP53KVCNVQ456GANH60D89REYKDNGSMTJ6YW3NHVQ9QYYSSQJCEWM5CJWZ4A6RFJX77C490YCED6PEMK0UPKXHY89CMM7SCT66K8GNEANWYKZGDRWRFJE69H9U5U0W57RRCSYSAS7GADWMZXC8C6T0SPJAZUP6

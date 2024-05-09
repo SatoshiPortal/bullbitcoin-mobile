@@ -41,7 +41,8 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backupTested = context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
+    final backupTested =
+        context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -65,7 +66,7 @@ class _Screen extends StatelessWidget {
             ),
           ),
           BottomCenter(
-            child: HomeActionButtons(
+            child: WalletActionButtons(
               walletBloc: context.read<WalletBloc>(),
             ),
           ),
@@ -95,8 +96,10 @@ class ActionsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backupTested = context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
-    final watchonly = context.select((WalletBloc x) => x.state.wallet?.watchOnly() ?? false);
+    final backupTested =
+        context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
+    final watchonly =
+        context.select((WalletBloc x) => x.state.wallet?.watchOnly() ?? false);
 
     return Material(
       elevation: 1,
@@ -117,7 +120,8 @@ class ActionsRow extends StatelessWidget {
             label: 'Wallet Details',
             isBlue: false,
             onPressed: () {
-              context.push('/wallet/details', extra: context.read<WalletBloc>());
+              context.push('/wallet/details',
+                  extra: context.read<WalletBloc>());
             },
           ),
           BBButton.text(

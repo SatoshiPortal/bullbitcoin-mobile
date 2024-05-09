@@ -5,8 +5,8 @@ import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeActionButtons extends StatelessWidget {
-  const HomeActionButtons({super.key, this.walletBloc});
+class WalletActionButtons extends StatelessWidget {
+  const WalletActionButtons({super.key, this.walletBloc});
 
   final WalletBloc? walletBloc;
 
@@ -54,6 +54,21 @@ class HomeActionButtons extends StatelessWidget {
             SizedBox(
               width: buttonWidth,
               child: BBButton.big(
+                buttonKey: UIKeys.homeReceiveButton,
+                filled: true,
+                onPressed: () async {
+                  context.push('/receive', extra: walletBloc);
+                  // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
+
+                  // await ReceiveScreen.openPopUp(context, wallet);
+                },
+                label: 'Receive',
+              ),
+            ),
+            const SizedBox(width: 16),
+            SizedBox(
+              width: buttonWidth,
+              child: BBButton.big(
                 filled: true,
                 onPressed: () async {
                   // context.push(
@@ -65,21 +80,6 @@ class HomeActionButtons extends StatelessWidget {
                   // await SendPage.SendPage.openSendPopUp(context, wallet);
                 },
                 label: 'Send',
-              ),
-            ),
-            const SizedBox(width: 16),
-            SizedBox(
-              width: buttonWidth,
-              child: BBButton.big(
-                buttonKey: UIKeys.homeReceiveButton,
-                filled: true,
-                onPressed: () async {
-                  context.push('/receive', extra: walletBloc);
-                  // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
-
-                  // await ReceiveScreen.openPopUp(context, wallet);
-                },
-                label: 'Receive',
               ),
             ),
           ],
