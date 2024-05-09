@@ -185,7 +185,7 @@ class SendCubit extends Cubit<SendState> {
           errScanningAddress: 'No wallet with enough balance',
         ),
       );
-      resetWalletSelection();
+      resetWalletSelection(clearInv: false);
       return;
     }
 
@@ -265,12 +265,12 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(showSendButton: true));
   }
 
-  void resetWalletSelection() => emit(
+  void resetWalletSelection({bool clearInv = true}) => emit(
         state.copyWith(
           enabledWallets: [],
           selectedWalletBloc: null,
           showSendButton: false,
-          invoice: null,
+          invoice: clearInv ? null : state.invoice,
           tempAmt: 0,
         ),
       );
@@ -548,3 +548,7 @@ class SendCubit extends Cubit<SendState> {
 
 // BOLT 11 Invoice mainnet
 // LNBC10U1P3PJ257PP5YZTKWJCZ5FTL5LAXKAV23ZMZEKAW37ZK6KMV80PK4XAEV5QHTZ7QDPDWD3XGER9WD5KWM36YPRX7U3QD36KUCMGYP282ETNV3SHJCQZPGXQYZ5VQSP5USYC4LK9CHSFP53KVCNVQ456GANH60D89REYKDNGSMTJ6YW3NHVQ9QYYSSQJCEWM5CJWZ4A6RFJX77C490YCED6PEMK0UPKXHY89CMM7SCT66K8GNEANWYKZGDRWRFJE69H9U5U0W57RRCSYSAS7GADWMZXC8C6T0SPJAZUP6
+
+
+// 6000 sats
+// lnbc60u1pnre9sysp5luy79ufxhywcnage3eswwra6tuk62x4x9p9djgyd5x2jy54gmpmspp5chhrwxtceu20k9nhlsy8zhzwsxht79lvfatu20eegjzmxljrlz8sdpz2djkuepqw3hjqnpdgf2yxgrpv3j8yetnwvxqyp2xqcqz959qxpqysgq8zseyvltvj5ny698mkg20pzccuqk9dpt5stues0jcc4hhdxe8ehrm3x7md52w493udwvz3yastu9ht4zvuykupmdaclf7323djl0mdsp2h2rmx

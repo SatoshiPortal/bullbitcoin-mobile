@@ -292,8 +292,8 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    final walletIsLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
-    if (walletIsLiquid) {
+    final isLiq = wallet.isLiquid();
+    if (isLiq) {
       if (amount < fees!.lbtcLimits.minimal ||
           amount > fees.lbtcLimits.maximal) {
         emit(
@@ -331,8 +331,8 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
     final network = isTestnet
-        ? (walletIsLiquid ? Chain.liquidTestnet : Chain.bitcoinTestnet)
-        : (walletIsLiquid ? Chain.liquid : Chain.bitcoin);
+        ? (isLiq ? Chain.liquidTestnet : Chain.bitcoinTestnet)
+        : (isLiq ? Chain.liquid : Chain.bitcoin);
 
     final (swap, errCreatingInv) = await _swapBoltz.sendV2(
       mnemonic: seed!.mnemonic,
@@ -340,7 +340,7 @@ class SwapCubit extends Cubit<SwapState> {
       network: network,
       electrumUrl: networkUrl,
       boltzUrl: boltzurlV2,
-      isLiquid: walletIsLiquid,
+      isLiquid: isLiq,
       invoice: invoice,
     );
     if (errCreatingInv != null) {
@@ -354,13 +354,12 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     final updatedSwap = swap!.copyWith(
-      boltzFees: walletIsLiquid
+      boltzFees: isLiq
           ? fees.lbtcReverse.boltzFeesRate * amount ~/ 100
           : fees.btcReverse.boltzFeesRate * amount ~/ 100,
-      lockupFees: walletIsLiquid
-          ? fees.lbtcReverse.lockupFees
-          : fees.btcReverse.lockupFees,
-      claimFees: walletIsLiquid
+      lockupFees:
+          isLiq ? fees.lbtcReverse.lockupFees : fees.btcReverse.lockupFees,
+      claimFees: isLiq
           ? fees.lbtcReverse.claimFeesEstimate
           : fees.btcReverse.claimFeesEstimate,
     );

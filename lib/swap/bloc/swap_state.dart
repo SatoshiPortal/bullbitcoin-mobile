@@ -27,4 +27,10 @@ class SwapState with _$SwapState {
     final errSA = errSmallAmt;
     return errH != null || errSA;
   }
+
+  String err() {
+    if (errCreatingSwapInv.isNotEmpty) return errCreatingSwapInv;
+    if (errCreatingInvoice.isNotEmpty) return errCreatingInvoice;
+    return '';
+  }
 }

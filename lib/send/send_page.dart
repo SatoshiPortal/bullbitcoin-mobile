@@ -394,8 +394,7 @@ class SendErrDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final errSend = context.select((SendCubit cubit) => cubit.state.errors());
-    final errSwap =
-        context.select((SwapCubit cubit) => cubit.state.errCreatingInvoice);
+    final errSwap = context.select((SwapCubit cubit) => cubit.state.err());
 
     final err = errSwap.isNotEmpty ? errSwap : errSend;
 
