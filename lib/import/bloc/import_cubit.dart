@@ -35,7 +35,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required BDKSensitiveCreate bdkSensitiveCreate,
     required LWKSensitiveCreate lwkSensitiveCreate,
     bool mainWallet = false,
-    bool useTestWallet = false,
+    bool useTestWallet = true,
   })  : _networkCubit = networkCubit,
         _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,
@@ -48,15 +48,10 @@ class ImportWalletCubit extends Cubit<ImportState> {
         _filePicker = filePicker,
         _barcode = barcode,
         super(ImportState(mainWallet: mainWallet)) {
-    if (useTestWallet) {
+    if (useTestWallet)
       emit(state.copyWith(words12: [...importW(instantTN1)]));
-    } else {
-      clearErrors();
+    else
       reset();
-      emit(
-        state.copyWith(words12: [...emptyWords12], words24: [...emptyWords24]),
-      );
-    }
 
     if (mainWallet) recoverClicked();
   }

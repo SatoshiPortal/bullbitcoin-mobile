@@ -41,7 +41,8 @@ class NetworkCubit extends Cubit<NetworkState> {
       return;
     }
 
-    final network = NetworkState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
+    final network =
+        NetworkState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
     emit(network.copyWith(networkErrorOpened: false));
     await Future.delayed(const Duration(milliseconds: 100));
     loadNetworks();
@@ -55,7 +56,8 @@ class NetworkCubit extends Cubit<NetworkState> {
     final liqNetworks = state.liquidNetworks;
 
     if (networks.isNotEmpty) {
-      final selectedNetwork = networks.firstWhere((_) => _.type == state.selectedNetwork);
+      final selectedNetwork =
+          networks.firstWhere((_) => _.type == state.selectedNetwork);
 
       emit(
         state.copyWith(
@@ -72,11 +74,12 @@ class NetworkCubit extends Cubit<NetworkState> {
         const ElectrumNetwork.bullbitcoin(),
         const ElectrumNetwork.custom(
           mainnet: 'ssl://$bbelectrum:50002',
-          testnet: 'ssl://$bbelectrum:60002',
+          testnet: 'ssl://$openelectrum:60002',
         ),
       ];
 
-      final selectedNetwork = newNetworks.firstWhere((_) => _.type == state.selectedNetwork);
+      final selectedNetwork = newNetworks[2];
+      //.firstWhere((_) => _.type == state.selectedNetwork);
       emit(
         state.copyWith(
           networks: newNetworks,
@@ -89,7 +92,8 @@ class NetworkCubit extends Cubit<NetworkState> {
     }
 
     if (liqNetworks.isNotEmpty) {
-      final selectedNetwork = liqNetworks.firstWhere((_) => _.type == state.selectedLiquidNetwork);
+      final selectedNetwork =
+          liqNetworks.firstWhere((_) => _.type == state.selectedLiquidNetwork);
 
       emit(
         state.copyWith(
@@ -108,8 +112,8 @@ class NetworkCubit extends Cubit<NetworkState> {
           testnet: liquidElectrumTestUrl,
         ),
       ];
-      final selectedLiqNetwork =
-          newLiqNetworks.firstWhere((_) => _.type == state.selectedLiquidNetwork);
+      final selectedLiqNetwork = newLiqNetworks
+          .firstWhere((_) => _.type == state.selectedLiquidNetwork);
 
       emit(
         state.copyWith(
@@ -185,7 +189,8 @@ class NetworkCubit extends Cubit<NetworkState> {
       if (selectedLiqNetwork == null) return;
 
       final errLiquid = await _walletNetwork.createBlockChain(
-        url: isTestnet ? selectedLiqNetwork.testnet : selectedLiqNetwork.mainnet,
+        url:
+            isTestnet ? selectedLiqNetwork.testnet : selectedLiqNetwork.mainnet,
         isTestnet: isTestnet,
       );
       if (errLiquid != null) {
@@ -293,10 +298,16 @@ class NetworkCubit extends Cubit<NetworkState> {
       if (state.tempNetwork == null) return;
       final networks = state.networks.toList();
       final tempNetwork = state.tempNetworkDetails!;
-      final index = networks.indexWhere((element) => element.type == state.tempNetwork);
+      final index =
+          networks.indexWhere((element) => element.type == state.tempNetwork);
       networks.removeAt(index);
       networks.insert(index, state.tempNetworkDetails!);
-      emit(state.copyWith(networks: networks, selectedNetwork: tempNetwork.type));
+      emit(
+        state.copyWith(
+          networks: networks,
+          selectedNetwork: tempNetwork.type,
+        ),
+      );
       await Future.delayed(const Duration(milliseconds: 100));
       setupBlockchain(false);
       return;
@@ -305,10 +316,16 @@ class NetworkCubit extends Cubit<NetworkState> {
     if (state.tempLiquidNetwork == null) return;
     final networks = state.liquidNetworks.toList();
     final tempNetwork = state.tempLiquidNetworkDetails!;
-    final index = networks.indexWhere((element) => element.type == state.tempLiquidNetwork);
+    final index = networks
+        .indexWhere((element) => element.type == state.tempLiquidNetwork);
     networks.removeAt(index);
     networks.insert(index, state.tempLiquidNetworkDetails!);
-    emit(state.copyWith(liquidNetworks: networks, selectedLiquidNetwork: tempNetwork.type));
+    emit(
+      state.copyWith(
+        liquidNetworks: networks,
+        selectedLiquidNetwork: tempNetwork.type,
+      ),
+    );
     await Future.delayed(const Duration(milliseconds: 100));
     setupBlockchain(true);
   }
