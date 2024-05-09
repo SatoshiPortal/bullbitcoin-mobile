@@ -307,7 +307,9 @@ class SwapTx with _$SwapTx {
 
   bool close() => settledReverse() || settledSubmarine() || expiredReverse();
 
-  bool failed() => reverseSwapAction() == ReverseSwapActions.failed;
+  bool failed() => !isSubmarine
+      ? reverseSwapAction() == ReverseSwapActions.failed
+      : submarineSwapAction() == SubmarineSwapActions.failed;
 
   String splitInvoice() =>
       invoice.substring(0, 5) +

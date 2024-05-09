@@ -541,6 +541,7 @@ class CreateLightningInvoice extends StatelessWidget {
             leftSvgAsset: 'assets/request-payment.svg',
             buttonKey: UIKeys.receiveSavePaymentButton,
             loading: creatingInv,
+            disabled: creatingInv,
             label: 'Create Invoice',
             loadingText: 'Creating Invoice',
             onPressed: () async {

@@ -407,9 +407,11 @@ class WalletTx implements IWalletTransactions {
       }
     }
 
-    if (swapTx.settledReverse()) {
-      swapTxs.removeWhere((_) => _.id == swapTx.id);
-    }
+    final settled = swapTx.isSubmarine
+        ? swapTx.settledSubmarine()
+        : swapTx.settledReverse();
+
+    if (settled) swapTxs.removeWhere((_) => _.id == swapTx.id);
 
     if (deleteIfFailed) {
       final swapsToDelete = <SwapTx>[

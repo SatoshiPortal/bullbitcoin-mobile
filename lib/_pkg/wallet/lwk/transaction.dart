@@ -550,6 +550,7 @@ class LWKTransactions {
       final newTx = transaction.copyWith(
         txid: txid,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,
+        swapTx: transaction.swapTx?.copyWith(txid: txid),
       );
 
       final txs = wallet.transactions.toList();

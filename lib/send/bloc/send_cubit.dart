@@ -179,7 +179,7 @@ class SendCubit extends Cubit<SendState> {
     final wallets = _homeCubit.state.walletsWithEnoughBalance(
       amt,
       _networkCubit.state.getBBNetwork(),
-      onlyMain: true,
+      // onlyMain: true,
     );
     if (wallets.isEmpty) {
       emit(
@@ -478,52 +478,53 @@ class SendCubit extends Cubit<SendState> {
   void sendClicked({SwapTx? swaptx}) async {
     if (state.selectedWalletBloc == null) return;
     emit(state.copyWith(sending: true, errSending: ''));
-
+    final address = swaptx != null ? swaptx.scriptAddress : state.address;
     final (wtxid, err) = await _walletTx.broadcastTxWithWallet(
       wallet: state.selectedWalletBloc!.state.wallet!,
-      address: state.address,
+      address: address,
       note: state.note,
-      transaction: state.tx!,
+      transaction: state.tx!.copyWith(swapTx: swaptx),
     );
     if (err != null) {
       emit(state.copyWith(errSending: err.toString(), sending: false));
       return;
     }
 
-    final (wallet, txid) = wtxid!;
+    final (wallet, _) = wtxid!;
 
-    if (swaptx != null) {
-      final (updatedWalletWithTxid, err2) = await _walletTx.addSwapTxToWallet(
-        wallet: wallet,
-        swapTx: swaptx.copyWith(txid: txid),
-      );
+    // if (swaptx != null) {
+    //   final (updatedWalletWithTxid, err2) = await _walletTx.addSwapTxToWallet(
+    //     wallet: wallet,
+    //     swapTx: swaptx.copyWith(txid: txid),
+    //   );
 
-      if (err2 != null) {
-        emit(state.copyWith(errSending: err.toString()));
-        return;
-      }
+    //   if (err2 != null) {
+    //     emit(state.copyWith(errSending: err.toString()));
+    //     return;
+    //   }
 
-      state.selectedWalletBloc!.add(
-        UpdateWallet(
-          updatedWalletWithTxid,
-          updateTypes: [
-            UpdateWalletTypes.addresses,
-            UpdateWalletTypes.transactions,
-            UpdateWalletTypes.swaps,
-          ],
-        ),
-      );
-    } else {
-      state.selectedWalletBloc!.add(
-        UpdateWallet(
-          wallet,
-          updateTypes: [
-            UpdateWalletTypes.addresses,
-            UpdateWalletTypes.transactions,
-          ],
-        ),
-      );
-    }
+    //   state.selectedWalletBloc!.add(
+    //     UpdateWallet(
+    //       updatedWalletWithTxid,
+    //       updateTypes: [
+    //         UpdateWalletTypes.addresses,
+    //         UpdateWalletTypes.transactions,
+    //         UpdateWalletTypes.swaps,
+    //       ],
+    //     ),
+    //   );
+    // } else {
+    state.selectedWalletBloc!.add(
+      UpdateWallet(
+        wallet,
+        updateTypes: [
+          UpdateWalletTypes.addresses,
+          UpdateWalletTypes.transactions,
+          UpdateWalletTypes.swaps,
+        ],
+      ),
+    );
+    // }
     Future.delayed(50.ms);
     state.selectedWalletBloc!.add(SyncWallet());
 
@@ -557,3 +558,6 @@ class SendCubit extends Cubit<SendState> {
 
 // 1234 sats
 // lnbc12340n1pnretv7sp5d87xcykdvf03adm2au86ssury8fggz3jra5af3pmya0ftn32pjhqpp5ekmafv4q72f25d0varnp5h0cmqpqkjv20t9klcj9vaevp7dxd5cqdpz2djkuepqw3hjqnpdgf2yxgrpv3j8yetnwvxqyp2xqcqz959qxpqysgq2357qtv82qgpdttzn82hsnyha3tfgvgldc0fc8nrf7qxaxq0yt79fsehc3wprjld7hqwdeau4ct6fl6gxq99gvaulqthhludgqzmxrgpk4zw6n
+
+// 1234 testnet 
+// lntb12340n1pnrevr8pp57e8n6mqr8zwajjpe4r7nxsy0v4aql2h3edfdyjerda4neghj564qdpz2djkuepqw3hjqnpdgf2yxgrpv3j8yetnwvcqz95xqyp2xqsp52m4ue6g3r56xfeac69e95ewvhnrna8upv25kd97890v8czdyvfnq9qyyssq4g2efr6ck9d8ylyzuv5ahudxfr4zh30p3c5g00xmmkpqex2c08vjlhtjqr7h5lpc04v0e84hav52um4ak2q94zuncxm0vs222pu733gpa6y7fa

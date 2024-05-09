@@ -49,6 +49,11 @@ class SendState with _$SendState {
 
   bool isLnInvoice() => invoice != null;
 
+  // String getAddressFromInvoiceOrAddress() {
+  //   // if (invoice != null) return invoice!.;
+  //   return address;
+  // }
+
   int calculateTotalSelected() {
     return selectedUtxos.fold<int>(
       0,

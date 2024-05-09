@@ -19,8 +19,6 @@ import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-//
-
 class ImportWalletCubit extends Cubit<ImportState> {
   ImportWalletCubit({
     required Barcode barcode,
@@ -49,7 +47,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         _barcode = barcode,
         super(ImportState(mainWallet: mainWallet)) {
     if (useTestWallet)
-      emit(state.copyWith(words12: [...importW(secureTN1)]));
+      emit(state.copyWith(words12: [...importW(instantTN1)]));
     else
       reset();
 

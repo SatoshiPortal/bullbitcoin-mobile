@@ -445,6 +445,7 @@ class _SendButton extends StatelessWidget {
             },
             child: BBButton.big(
               loading: sending,
+              disabled: sending,
               leftIcon: Icons.send,
               onPressed: () async {
                 if (sending) return;
@@ -567,7 +568,12 @@ class TxDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
-    final address = context.select((SendCubit cubit) => cubit.state.address);
+
+    final addr = context.select((SendCubit cubit) => cubit.state.address);
+    final swapAddress =
+        context.select((SwapCubit cubit) => cubit.state.swapTx?.scriptAddress);
+    final address = swapAddress ?? addr;
+
     final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
     final amtStr = context
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
