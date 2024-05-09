@@ -1,15 +1,21 @@
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
+import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
+import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:oktoast/oktoast.dart';
 
 class ReceiveListeners extends StatelessWidget {
   const ReceiveListeners({
@@ -23,6 +29,34 @@ class ReceiveListeners extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
+        BlocListener<WatchTxsBloc, WatchTxsState>(
+          listenWhen: (previous, current) => previous.txPaid != current.txPaid,
+          listener: (context, state) {
+            if (state.syncWallet != null || state.txPaid == null) return;
+
+            final tx = state.txPaid!;
+            final amt = tx.recievableAmount()!;
+            final amtStr =
+                context.read<CurrencyCubit>().state.getAmountInUnits(amt);
+            final prefix = tx.actionPrefixStr();
+
+            final isReceivePage = context.read<NavName>().state == '/receive';
+
+            final swapOnPage = context.read<SwapCubit>().state.swapTx;
+            final sameSwap = swapOnPage?.id == tx.id;
+
+            if (sameSwap && isReceivePage)
+              locator<GoRouter>().push('/swap-receive', extra: tx);
+            else
+              showToastWidget(
+                position: ToastPosition.top,
+                AlertUI(text: '$prefix $amtStr'),
+                animationCurve: Curves.decelerate,
+              );
+
+            context.read<WatchTxsBloc>().add(ClearAlerts());
+          },
+        ),
         BlocListener<ReceiveCubit, ReceiveState>(
           listenWhen: (previous, current) =>
               previous.updateAddressGap != current.updateAddressGap,

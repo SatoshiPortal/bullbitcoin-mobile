@@ -77,16 +77,13 @@ class SwapAppListener extends StatelessWidget {
             final prefix = tx.actionPrefixStr();
 
             final isReceivePage = context.read<NavName>().state == '/receive';
+            if (isReceivePage) return;
 
-            if (!isReceivePage) {
-              showToastWidget(
-                position: ToastPosition.top,
-                AlertUI(text: '$prefix $amtStr'),
-                animationCurve: Curves.decelerate,
-              );
-            } else {
-              locator<GoRouter>().push('/swap-receive', extra: tx);
-            }
+            showToastWidget(
+              position: ToastPosition.top,
+              AlertUI(text: '$prefix $amtStr'),
+              animationCurve: Curves.decelerate,
+            );
 
             context.read<WatchTxsBloc>().add(ClearAlerts());
           },
