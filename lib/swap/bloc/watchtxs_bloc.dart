@@ -58,7 +58,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   }
 
   void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) async {
-    print('WatchWallets: ${event.isTestnet}');
+    print('WatchWallets: istesntnet? ${event.isTestnet}');
     await Future.delayed(1.seconds);
     final walletBlocs = _homeCubit.state.getMainWallets(event.isTestnet);
     final swapsToWatch = <SwapTx>[];

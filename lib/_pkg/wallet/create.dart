@@ -72,7 +72,7 @@ class WalletCreate implements IWalletCreate {
           return (w, null);
       }
     } catch (e) {
-      print('Error: $e');
+      // print('Error: $e');
       return (
         null,
         Err(

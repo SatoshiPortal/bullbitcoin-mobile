@@ -20,7 +20,7 @@ class LWKCreate {
         ctDescriptor: wallet.externalPublicDescriptor,
       );
 
-      print('----load lwk wallet: ' + wallet.id);
+      // print('----load lwk wallet: ' + wallet.id);
 
       final w = await lwk.Wallet.init(
         network: network,
@@ -28,7 +28,7 @@ class LWKCreate {
         descriptor: descriptor,
       );
 
-      print('----loaded lwk  wallet: ' + wallet.id);
+      // print('----loaded lwk  wallet: ' + wallet.id);
 
       return (w, null);
     } catch (e) {

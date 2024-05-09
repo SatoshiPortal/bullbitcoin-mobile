@@ -483,7 +483,10 @@ class SendCubit extends Cubit<SendState> {
       wallet: state.selectedWalletBloc!.state.wallet!,
       address: address,
       note: state.note,
-      transaction: state.tx!.copyWith(swapTx: swaptx),
+      transaction: state.tx!.copyWith(
+        swapTx: swaptx,
+        isSwap: swaptx != null,
+      ),
     );
     if (err != null) {
       emit(state.copyWith(errSending: err.toString(), sending: false));

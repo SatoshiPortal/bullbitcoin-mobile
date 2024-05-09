@@ -478,7 +478,8 @@ class WalletTag extends StatelessWidget {
     bool walletIsLiquid,
     Transaction tx,
   ) {
-    final hasSwap = tx.isSwap;
+    final hasSwap = tx.swapTx != null;
+    // tx.isSwap;
     // final walletIsLiquid = wallet.isLiquid();
 
     Color colour;
