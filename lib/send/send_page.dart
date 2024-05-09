@@ -269,6 +269,7 @@ class _AddressFieldState extends State<AddressField> {
                   if (!locator.isRegistered<Clippboard>()) return;
                   final data = await locator<Clippboard>().paste();
                   if (data == null) return;
+                  context.read<SwapCubit>().clearErrors();
                   context.read<SendCubit>().updateAddress(data);
                 },
                 iconSize: 16,
@@ -286,7 +287,10 @@ class _AddressFieldState extends State<AddressField> {
               ),
             ],
           ),
-          onChanged: context.read<SendCubit>().updateAddress,
+          onChanged: (value) {
+            context.read<SwapCubit>().clearErrors();
+            context.read<SendCubit>().updateAddress(value);
+          },
         ),
       ],
     );

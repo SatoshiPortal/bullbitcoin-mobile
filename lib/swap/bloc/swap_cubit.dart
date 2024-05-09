@@ -413,4 +413,11 @@ class SwapCubit extends Cubit<SwapState> {
   void clearSwapTx() => emit(state.copyWith(swapTx: null));
 
   void clearUpdatedWallet() => emit(state.copyWith(updatedWallet: null));
+
+  void clearErrors() => emit(
+        state.copyWith(
+          errCreatingSwapInv: '',
+          errCreatingInvoice: '',
+        ),
+      );
 }

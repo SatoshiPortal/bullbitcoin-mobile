@@ -129,6 +129,7 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(errScanningAddress: errInv.toString()));
           return;
         }
+        _currencyCubit.updateAmountDirect(inv!.getAmount());
         emit(state.copyWith(invoice: inv, address: address));
 
       case AddressNetwork.bip21Lightning:
@@ -140,6 +141,7 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(errScanningAddress: errInv.toString()));
           return;
         }
+        _currencyCubit.updateAmountDirect(inv!.getAmount());
         emit(state.copyWith(invoice: inv, address: invoice));
 
       case AddressNetwork.bitcoin:
@@ -552,3 +554,6 @@ class SendCubit extends Cubit<SendState> {
 
 // 6000 sats
 // lnbc60u1pnre9sysp5luy79ufxhywcnage3eswwra6tuk62x4x9p9djgyd5x2jy54gmpmspp5chhrwxtceu20k9nhlsy8zhzwsxht79lvfatu20eegjzmxljrlz8sdpz2djkuepqw3hjqnpdgf2yxgrpv3j8yetnwvxqyp2xqcqz959qxpqysgq8zseyvltvj5ny698mkg20pzccuqk9dpt5stues0jcc4hhdxe8ehrm3x7md52w493udwvz3yastu9ht4zvuykupmdaclf7323djl0mdsp2h2rmx
+
+// 1234 sats
+// lnbc12340n1pnretv7sp5d87xcykdvf03adm2au86ssury8fggz3jra5af3pmya0ftn32pjhqpp5ekmafv4q72f25d0varnp5h0cmqpqkjv20t9klcj9vaevp7dxd5cqdpz2djkuepqw3hjqnpdgf2yxgrpv3j8yetnwvxqyp2xqcqz959qxpqysgq2357qtv82qgpdttzn82hsnyha3tfgvgldc0fc8nrf7qxaxq0yt79fsehc3wprjld7hqwdeau4ct6fl6gxq99gvaulqthhludgqzmxrgpk4zw6n
