@@ -277,8 +277,7 @@ class SwapTx with _$SwapTx {
   bool claimableReverse() =>
       !isSubmarine &&
       status != null &&
-      (status!.status == SwapStatus.txnMempool ||
-          status!.status == SwapStatus.txnConfirmed);
+      (status!.status == SwapStatus.txnConfirmed);
 
   bool expiredReverse() =>
       !isSubmarine &&

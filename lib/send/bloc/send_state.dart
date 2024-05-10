@@ -100,8 +100,8 @@ class SendState with _$SendState {
     final liquidTestnetPrefixes = ['tlq1', 'TLQ1'];
     final lightningPrefixes = [
       'lnbc',
-      'LNBC'
-          'lntb',
+      'LNBC',
+      'lntb',
       'LNTB',
       'lnbs',
       'LNBS',
@@ -113,24 +113,22 @@ class SendState with _$SendState {
     const bitcoinUri = 'bitcoin:';
     const liquidUris = ['liquidnetwork:', 'liquidtestnet:'];
 
-    final lowerAddress = address.toLowerCase();
+    // final lowerAddress = address.toLowerCase();
     try {
-      if (lowerAddress.contains(lightningUri))
+      if (address.contains(lightningUri))
         return (AddressNetwork.bip21Lightning, null);
-      if (lowerAddress.contains(bitcoinUri))
+      if (address.contains(bitcoinUri))
         return (AddressNetwork.bip21Bitcoin, null);
-      else if (liquidUris.any((prefix) => lowerAddress.startsWith(prefix)))
+      else if (liquidUris.any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.bip21Liquid, null);
-      else if (lightningPrefixes
-          .any((prefix) => lowerAddress.startsWith(prefix)))
+      else if (lightningPrefixes.any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.lightning, null);
       else if (liquidMainnetPrefixesCase
               .any((prefix) => address.startsWith(prefix)) ||
-          liquidTestnetPrefixes
-              .any((prefix) => lowerAddress.startsWith(prefix)))
+          liquidTestnetPrefixes.any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.liquid, null);
       else if (bitcoinMainnetPrefixes
-              .any((prefix) => lowerAddress.startsWith(prefix)) ||
+              .any((prefix) => address.startsWith(prefix)) ||
           bitcoinTestnetPrefixesCase
               .any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.bitcoin, null);
