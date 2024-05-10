@@ -126,7 +126,9 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(note: label));
         }
       case AddressNetwork.lightning:
-        final (inv, errInv) = await _swapBoltz.decodeInvoice(invoice: address);
+        final (inv, errInv) = await _swapBoltz.decodeInvoice(
+          invoice: address.toLowerCase(),
+        );
         if (errInv != null) {
           emit(state.copyWith(errScanningAddress: errInv.toString()));
           return;
@@ -135,9 +137,7 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(invoice: inv, address: address));
 
       case AddressNetwork.bip21Lightning:
-        final invoice = address.substring(
-          address.indexOf('lightning:') + 11,
-        );
+        final invoice = address.replaceAll('lightning:', '');
         final (inv, errInv) = await _swapBoltz.decodeInvoice(invoice: invoice);
         if (errInv != null) {
           emit(state.copyWith(errScanningAddress: errInv.toString()));
