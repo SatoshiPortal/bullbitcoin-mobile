@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
@@ -451,11 +452,28 @@ class _SwapDetails extends StatelessWidget {
             ],
             const Gap(24),
             if (id.isNotEmpty) ...[
-              const BBText.title('Transaction ID'),
+              const BBText.title('Swap ID'),
               const Gap(4),
-              BBText.titleLarge(
-                id,
-                isBold: true,
+              Row(
+                children: [
+                  BBText.titleLarge(
+                    id,
+                    isBold: true,
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      if (locator.isRegistered<Clippboard>())
+                        await locator<Clippboard>().copy(id);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Copied to clipboard')),
+                      );
+                    },
+                    iconSize: 24,
+                    color: Colors.blue,
+                    icon: const Icon(Icons.copy),
+                  ),
+                ],
               ),
               const Gap(24),
             ],
