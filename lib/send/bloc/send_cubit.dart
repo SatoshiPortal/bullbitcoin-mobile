@@ -134,7 +134,7 @@ class SendCubit extends Cubit<SendState> {
 
       case AddressNetwork.bip21Lightning:
         final invoice = address.substring(
-          address.indexOf('lightning=') + 10,
+          address.indexOf('lightning:') + 11,
         );
         final (inv, errInv) = await _swapBoltz.decodeInvoice(invoice: invoice);
         if (errInv != null) {

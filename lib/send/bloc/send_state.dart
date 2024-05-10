@@ -93,14 +93,15 @@ class SendState with _$SendState {
   bool checkIfMainWalletSelected() =>
       selectedWalletBloc?.state.wallet?.mainWallet ?? false;
 
-  (AddressNetwork?, Err?) getPaymentNetwork(String address) {
+  (AddressNetwork?, Err?) getPaymentNetwork(String addr) {
     final bitcoinMainnetPrefixes = ['1', '3', 'bc1q', 'bc1p'];
     final bitcoinTestnetPrefixes = ['m', 'n', '2', 'tb1'];
     final liquidMainnetPrefixes = ['lq1', 'VJL', 'ex1', 'G'];
     final liquidTestnetPrefixes = ['tlq1'];
     final lightningPrefixes = ['lnbc', 'lntb', 'lnbs', 'lnbcrt', 'lightning:'];
+    final address = addr.toLowerCase();
     try {
-      if (address.contains('lightning='))
+      if (address.contains('lightning:'))
         return (AddressNetwork.bip21Lightning, null);
       if (address.contains('bitcoin:'))
         return (AddressNetwork.bip21Bitcoin, null);
