@@ -93,32 +93,42 @@ class SendState with _$SendState {
   bool checkIfMainWalletSelected() =>
       selectedWalletBloc?.state.wallet?.mainWallet ?? false;
 
-  (AddressNetwork?, Err?) getPaymentNetwork(String addr) {
-    final bitcoinMainnetPrefixes = ['1', '3', 'bc1q', 'bc1p'];
-    final bitcoinTestnetPrefixes = ['m', 'n', '2', 'tb1'];
-    final liquidMainnetPrefixes = ['lq1', 'vjl', 'ex1', 'G'];
+  (AddressNetwork?, Err?) getPaymentNetwork(String address) {
+    final bitcoinMainnetPrefixes = ['1', '3', 'bc1'];
+    final bitcoinTestnetPrefixesCase = ['m', 'n', '2', 'tb1', 'TB1'];
+    final liquidMainnetPrefixesCase = ['lq1', 'LQ1', 'VJL', 'ex1', 'EX1', 'G'];
     final liquidTestnetPrefixes = ['tlq1'];
-    final lightningPrefixes = ['lnbc', 'lntb', 'lnbs', 'lnbcrt', 'lightning:'];
+    final lightningPrefixes = [
+      'lnbc',
+      'lntb',
+      'lnbs',
+      'lnbcrt',
+      'lightning:',
+    ];
     const lightningUri = 'lightning:';
     const bitcoinUri = 'bitcoin:';
     const liquidUris = ['liquidnetwork:', 'liquidtestnet:'];
-    final address = addr.toLowerCase();
+
+    final lowerAddress = address.toLowerCase();
     try {
-      if (address.contains(lightningUri))
+      if (lowerAddress.contains(lightningUri))
         return (AddressNetwork.bip21Lightning, null);
-      if (address.contains(bitcoinUri))
+      if (lowerAddress.contains(bitcoinUri))
         return (AddressNetwork.bip21Bitcoin, null);
-      else if (liquidUris.any((prefix) => address.startsWith(prefix)))
+      else if (liquidUris.any((prefix) => lowerAddress.startsWith(prefix)))
         return (AddressNetwork.bip21Liquid, null);
-      else if (lightningPrefixes.any((prefix) => address.startsWith(prefix)))
+      else if (lightningPrefixes
+          .any((prefix) => lowerAddress.startsWith(prefix)))
         return (AddressNetwork.lightning, null);
-      else if (liquidMainnetPrefixes
+      else if (liquidMainnetPrefixesCase
               .any((prefix) => address.startsWith(prefix)) ||
-          liquidTestnetPrefixes.any((prefix) => address.startsWith(prefix)))
+          liquidTestnetPrefixes
+              .any((prefix) => lowerAddress.startsWith(prefix)))
         return (AddressNetwork.liquid, null);
       else if (bitcoinMainnetPrefixes
-              .any((prefix) => address.startsWith(prefix)) ||
-          bitcoinTestnetPrefixes.any((prefix) => address.startsWith(prefix)))
+              .any((prefix) => lowerAddress.startsWith(prefix)) ||
+          bitcoinTestnetPrefixesCase
+              .any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.bitcoin, null);
       return (null, Err('Invalid address'));
     } catch (e) {
