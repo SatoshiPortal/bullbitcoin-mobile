@@ -94,15 +94,19 @@ class SendState with _$SendState {
       selectedWalletBloc?.state.wallet?.mainWallet ?? false;
 
   (AddressNetwork?, Err?) getPaymentNetwork(String address) {
-    final bitcoinMainnetPrefixes = ['1', '3', 'bc1'];
+    final bitcoinMainnetPrefixes = ['1', '3', 'bc1', 'BC1'];
     final bitcoinTestnetPrefixesCase = ['m', 'n', '2', 'tb1', 'TB1'];
     final liquidMainnetPrefixesCase = ['lq1', 'LQ1', 'VJL', 'ex1', 'EX1', 'G'];
-    final liquidTestnetPrefixes = ['tlq1'];
+    final liquidTestnetPrefixes = ['tlq1', 'TLQ1'];
     final lightningPrefixes = [
       'lnbc',
-      'lntb',
+      'LNBC'
+          'lntb',
+      'LNTB',
       'lnbs',
+      'LNBS',
       'lnbcrt',
+      'LNBCRT',
       'lightning:',
     ];
     const lightningUri = 'lightning:';
