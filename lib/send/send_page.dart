@@ -756,7 +756,10 @@ class TxSuccess extends StatelessWidget {
     final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
     final amtStr = context
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
+    final tx = context.select((SendCubit cubit) => cubit.state.tx);
     final txid = context.select((SendCubit cubit) => cubit.state.tx!.txid);
+    final isLiquid =
+        context.select((SendCubit cubit) => cubit.state.tx!.isLiquid);
     return AnnotatedRegion(
       value: const SystemUiOverlayStyle(statusBarColor: Colors.green),
       child: SizedBox(
@@ -781,8 +784,10 @@ class TxSuccess extends StatelessWidget {
             const Gap(15),
             InkWell(
               onTap: () {
-                final url =
-                    context.read<NetworkCubit>().state.explorerTxUrl(txid);
+                final url = context.read<NetworkCubit>().state.explorerTxUrl(
+                      txid,
+                      isLiquid: isLiquid,
+                    );
                 locator<Launcher>().launchApp(url);
               },
               child: const BBText.body(

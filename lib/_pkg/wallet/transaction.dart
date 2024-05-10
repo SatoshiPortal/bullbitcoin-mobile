@@ -396,6 +396,7 @@ class WalletTx implements IWalletTransactions {
           received:
               isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
           fee: swapTx.claimFees,
+          isLiquid: wallet.baseWalletType == BaseWalletType.Liquid,
         );
         txs.add(newTx);
       } else {

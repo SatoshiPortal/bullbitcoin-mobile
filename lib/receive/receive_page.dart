@@ -28,7 +28,6 @@ import 'package:bb_mobile/receive/listeners.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
-import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -189,8 +188,8 @@ class _Screen extends StatelessWidget {
               ] else if (isSupported) ...[
                 // const Gap(24),
                 const CreateLightningInvoice(),
-                const Gap(24),
-                const SwapHistoryButton(),
+                // const Gap(24),
+                // const SwapHistoryButton(),
               ],
               const Gap(48),
               if (isSupported) const WalletActions(),

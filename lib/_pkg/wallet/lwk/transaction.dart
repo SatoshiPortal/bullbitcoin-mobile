@@ -493,6 +493,7 @@ class LWKTransactions {
         toAddress: address,
         outAddrs: [],
         psbt: pset,
+        isLiquid: true,
       );
       return (
         (tx, (feeRate * 1000.0).toInt(), pset),
