@@ -108,7 +108,9 @@ class SendCubit extends Cubit<SendState> {
         }
       case AddressNetwork.bip21Liquid:
         final bip21Obj = bip21.decode(
-          address.replaceFirst('liquidnetwork:', 'bitcoin:'),
+          address.startsWith('liquidnetwork:')
+              ? address.replaceFirst('liquidnetwork:', 'bitcoin:')
+              : address.replaceFirst('liquidtestnet:', 'bitcoin:'),
         );
         final newAddress = bip21Obj.address;
         emit(state.copyWith(address: newAddress));
