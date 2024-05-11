@@ -495,6 +495,9 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
+    final txWithId = state.tx?.copyWith(txid: wtxid?.$2 ?? '');
+    emit(state.copyWith(tx: txWithId));
+
     final (wallet, _) = wtxid!;
 
     // if (swaptx != null) {
