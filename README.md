@@ -9,6 +9,7 @@ Following the cypherpunk ethods, the Bull Bitcoin Mobile wallet is fully open-so
 At launch, two wallets are generated: the Secure Bitcoin Wallet and the Instant Payments Wallet. Both wallets are created using the same mnemonic seed, so that a single backup is sufficient for both.
 
 **Secure Bitcoin Wallet**: this is a descriptor-based Bitcoin network wallet which uses bech32 addresses.
+
 **Instant Payments Wallet**: this is a descirptor-based Liquid network wallet which uses confidential addresses.
 
 Both these wallets are able to send and receive Lightning Network payments via the swap provider.
