@@ -1,17 +1,17 @@
 # About Bull Bitcoin Mobile
 
-Bull Bitcoin Mobile is a self-custodial Bitcoin moible which includes both a Bitcoin Network Wallet and a Liquid Network Wallet.The wallet offers non-custodial atomic swaps between the Lightning Network and the Bitcoin Network, as well as between the Lightning Network and the Liquid Network. This swap service is provdided by third-party service providers not affiliated with Bull Bitcoin that are compatible with the Boltz protocol. 
+Bull Bitcoin Mobile is a self-custodial Bitcoin and Liquid Network which offers non-custodial atomic swaps across Bitcoin, Lightning and Liquid. The wallet philosophy is to provide advanced features that give users the maximum control, while still being easy to use for beginners. Our goal is to make sure that anyone can take self-custody of their Bitcoin, even in a high fee environment. Our driving principle is to create a user experience which nudges the user into implementing best practices.
 
-The wallet philosophy is to provide advanced features that give users the maximum control, while still being easy to use for beginners. Our goal is to make sure that anyone can take self-custody of their Bitcoin.
+Following the cypherpunk ethods, the Bull Bitcoin Mobile wallet is fully open-source and trustless.
 
-## Bitcoin wallet basics
+## Wallet basics
 
 At launch, two wallets are generated: the Secure Bitcoin Wallet and the Instant Payments Wallet. Both wallets are created using the same mnemonic seed, so that a single backup is sufficient for both.
 
 **Secure Bitcoin Wallet**: this is a descriptor-based Bitcoin network wallet which uses bech32 addresses.
 **Instant Payments Wallet**: this is a descirptor-based Liquid network wallet which uses confidential addresses.
 
-Both these wallets are able to send and receive payments via the Lightning Network via the swap provider.
+Both these wallets are able to send and receive Lightning Network payments via the swap provider.
 
 ## Core dependancies
 
@@ -104,21 +104,23 @@ When spending or selling Bitcoin, the exchange will create a payment invoice (BI
 
 ## Roadmap
 
-[ ] Bumping replace-by-fee transactions
-[ ] Integration of Coinkite's BBQR library to export public keys, export PSBTs and import PSBTs
-[ ] Extract and display transaction details of a PSBT file before broadcasting.
-[ ] Bitcoin <> Liquid network swaps (depends on Boltz backend update)
-[ ] Cleaner interface to create new wallets using the same mnemonic but with a different BIP39 passphrase
-[ ] Integrate a client-side passphrase strengh estimator 
-[ ] Encrypted cloud backups connected to a key server, similar to photon-sdk
-[ ] Store persistent encrypted wallet backup on device
-[ ] Payjoin integration .
+- [ ] Bumping replace-by-fee transactions
+- [ ] Re-implement smarter coin selection and labelling
+- [ ] One mnemonic: new wallets are always creates either as BIP39 passphrase
+- [ ] Good UX/UI for creating PSBT from watch-only wallets
+- [ ] Good UX/UI for decoding and broadcasting PSBTs
+- [ ] Better UX/UI for importing watch-only wallets
+- [ ] Integration of Coinkite's BBQR library to export public keys, export PSBTs and import PSBTs
+- [ ] Bitcoin <> Liquid network swaps (depends on Boltz backend update)
+- [ ] Integrate a client-side passphrase strengh estimator
+- [ ] Encrypted cloud backups connected to a key server, similar to photon-sdk
+- [ ] Store persistent encrypted wallet backup on device
+- [ ] Payjoin integration .
 
 ## Acknowledgements 
 
-- The project is entirely finance by the revenus generated from bullbitcoin.com 
-- Created by Francis Pouliot and Vishal Menon, project managers.
-- Maintainer: Vishal
+- The project is entirely financed by bullbitcoin.com 
+- Created by Francis Pouliot and Vishal Menon
 - Main developpers: Vishal, Morteza and Sai
 - Thanks to Raj for his work on on Boltz-rust
 - Thanks to the BDK team: BitcoinZavior and ThunderBiscuit
