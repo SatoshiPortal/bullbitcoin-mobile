@@ -261,6 +261,10 @@ class HomeTxItem2 extends StatelessWidget {
     final img =
         darkMode ? 'assets/arrow_down_white.png' : 'assets/arrow_down.png';
 
+    final statusImg = tx.timestamp == 0
+        ? 'assets/tx_status_pending.png'
+        : 'assets/tx_status_complete.png';
+
     final isReceive = tx.isReceived();
 
     final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
@@ -324,15 +328,25 @@ class HomeTxItem2 extends StatelessWidget {
                   const Gap(2),
                 ],
                 if (tx.getBroadcastDateTime() != null)
-                  BBText.bodySmall(
-                    timeago.format(tx.getBroadcastDateTime()!),
-                    removeColourOpacity: true,
+                  Row(
+                    children: [
+                      BBText.bodySmall(
+                        timeago.format(tx.getBroadcastDateTime()!),
+                        removeColourOpacity: true,
+                      ),
+                      Image.asset(statusImg),
+                    ],
                   )
                 else
-                  BBText.bodySmall(
-                    (tx.timestamp == 0) ? 'Pending' : tx.getDateTimeStr(),
-                    // : timeago.format(tx.getDateTime()),
-                    removeColourOpacity: true,
+                  Row(
+                    children: [
+                      BBText.bodySmall(
+                        (tx.timestamp == 0) ? 'Pending' : tx.getDateTimeStr(),
+                        // : timeago.format(tx.getDateTime()),
+                        removeColourOpacity: true,
+                      ),
+                      Image.asset(statusImg),
+                    ],
                   ),
               ],
             ),
