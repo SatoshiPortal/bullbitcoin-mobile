@@ -165,7 +165,7 @@ class SwapAppListener extends StatelessWidget {
   }
 }
 
-// class TestCub extends Cubit<bool> {
+// class TestCub extends Cubit<bool> {.,
 //   TestCub() : super(false) {
 //     _test();
 //   }
@@ -178,4 +178,4 @@ class SwapAppListener extends StatelessWidget {
 //       _toggle();
 //     }
 //   }
-// }
+// }a
