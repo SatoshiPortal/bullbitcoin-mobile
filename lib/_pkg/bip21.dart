@@ -25,8 +25,11 @@ class BIP21Codec extends Codec<BIP21, String> {
     return encoder.convert(input);
   }
 
-  String tryEncode(String address,
-      [Map<String, dynamic>? options, String urnScheme = 'bitcoin']) {
+  String tryEncode(
+    String address, [
+    Map<String, dynamic>? options,
+    String urnScheme = 'bitcoin',
+  ]) {
     return encode(BIP21(address, options ?? <String, dynamic>{}, urnScheme));
   }
 }

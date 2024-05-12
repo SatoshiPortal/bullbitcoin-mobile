@@ -9,7 +9,6 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:boltz_dart/boltz_dart.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class SwapBoltz {
   SwapBoltz({
@@ -440,7 +439,7 @@ class SwapBoltz {
         if (claimFeesEstimate == null) throw 'Fees estimate not found';
         final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
         print('Waiting 5s for mempool propogation...');
-        await Future.delayed(5.seconds);
+        // await Future.delayed(5.seconds);
         print('Claiming swap!');
         final resp = await swap.claim(
           outAddress: address,

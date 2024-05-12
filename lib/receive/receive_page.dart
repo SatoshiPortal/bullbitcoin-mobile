@@ -317,7 +317,7 @@ class _Warnings extends StatelessWidget {
   }
 
   Widget _buildHighFeesWarn({
-    required int feePercentage,
+    required double feePercentage,
     required int amt,
     required int fees,
   }) {
@@ -326,8 +326,8 @@ class _Warnings extends StatelessWidget {
       children: [
         const BBText.titleLarge('High fee warning', isRed: true),
         const Gap(8),
-        const BBText.bodySmall(
-          'You are about to pay over 3% in Bitcoin Network fees for this transaction.',
+        BBText.bodySmall(
+          'You are about to pay over ${feePercentage.toStringAsFixed(2)}  in Bitcoin Network fees for this transaction.',
         ),
         const Gap(8),
         Row(
@@ -381,8 +381,8 @@ class _Warnings extends StatelessWidget {
 2. If you want to add funds to your Secure Bitcoin Wallet from an external Lightning Wallet, send a larger amount. We recommend at minimum 0.01 BTC.
 
 3. It is more economical to make fewer swaps of larger amounts than to make many swaps of smaller amounts'''),
-        const Gap(8),
-        const _RemoveWarningMessage(),
+        // const Gap(8),
+        // const _RemoveWarningMessage(),
         const Gap(24),
         Center(
           child: BBButton.big(
@@ -449,10 +449,10 @@ class WalletActions extends StatelessWidget {
 
     return Column(
       children: [
-        const CheckForPaymentsButton(),
-        const Gap(8),
-        const AddLabelButton(),
-        const Gap(8),
+        // const CheckForPaymentsButton(),
+        // const Gap(8),
+        // const AddLabelButton(),
+        // const Gap(8),
         // if (showRequestButton)
         //   BBButton.big(
         //     buttonKey: UIKeys.receiveRequestPaymentButton,

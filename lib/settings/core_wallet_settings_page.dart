@@ -46,7 +46,7 @@ class _Screen extends StatelessWidget {
                 Gap(8),
                 InstantPaymentsWallet(),
                 Gap(8),
-                ColdcardWallet(),
+                // ColdcardWallet(),
                 Gap(80),
               ],
             ),

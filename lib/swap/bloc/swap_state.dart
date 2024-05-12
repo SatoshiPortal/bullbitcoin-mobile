@@ -15,7 +15,7 @@ class SwapState with _$SwapState {
     SwapTx? swapTx,
     // Invoice? invoice,
     @Default(false) bool errSmallAmt,
-    int? errHighFees,
+    double? errHighFees,
     Wallet? updatedWallet,
     AllFees? allFees,
     String? errAllFees,

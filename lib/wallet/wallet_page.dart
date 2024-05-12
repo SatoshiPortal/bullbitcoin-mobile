@@ -120,8 +120,10 @@ class ActionsRow extends StatelessWidget {
             label: 'Wallet Details',
             isBlue: false,
             onPressed: () {
-              context.push('/wallet/details',
-                  extra: context.read<WalletBloc>());
+              context.push(
+                '/wallet/details',
+                extra: context.read<WalletBloc>(),
+              );
             },
           ),
           BBButton.text(

@@ -33,7 +33,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required BDKSensitiveCreate bdkSensitiveCreate,
     required LWKSensitiveCreate lwkSensitiveCreate,
     bool mainWallet = false,
-    bool useTestWallet = false,
+    bool useTestWallet = true,
   })  : _networkCubit = networkCubit,
         _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,

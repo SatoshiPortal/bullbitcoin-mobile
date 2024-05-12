@@ -59,7 +59,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) async {
     print('WatchWallets: istesntnet? ${event.isTestnet}');
-    await Future.delayed(1.seconds);
+    // await Future.delayed(1.seconds);
     final walletBlocs = _homeCubit.state.getMainWallets(event.isTestnet);
     final swapsToWatch = <SwapTx>[];
     for (final walletBloc in walletBlocs) {
@@ -331,7 +331,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    await Future.delayed(7.seconds);
+    // await Future.delayed(7.seconds);
 
     final err = await _swapBoltz.cooperativeSubmarineClose(
       swapTx: swapTx,
@@ -383,7 +383,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     emit(
       state.copyWith(listeningTxs: state.removeListeningTx(swapTx.id)),
     );
-    await Future.delayed(1000.ms);
+    await Future.delayed(100.ms);
     final isTestnet = swapTx.network == BBNetwork.Testnet;
     add(WatchWallets(isTestnet: isTestnet));
   }
@@ -399,7 +399,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     ProcessSwapTx event,
     Emitter<WatchTxsState> emit,
   ) async {
-    await Future.delayed(1.seconds);
+    // await Future.delayed(1.seconds);
     final swapTx = event.swapTx;
     final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;

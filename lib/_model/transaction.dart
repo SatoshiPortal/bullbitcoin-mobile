@@ -318,10 +318,10 @@ class SwapTx with _$SwapTx {
 
   bool smallAmt() => outAmount < 1000000;
 
-  int? highFees() {
+  double? highFees() {
     final fee = totalFees();
     if (fee == null) return null;
-    final feesPercent = ((fee / outAmount) * 100).toInt();
+    final feesPercent = (fee / outAmount) * 100;
     if (feesPercent > 3) return feesPercent;
     return null;
   }
