@@ -480,13 +480,13 @@ class LWKTransactions {
         feeRate: feeRate * 1000.0,
       );
       // pubWallet.sign(network: wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet , pset: pset, mnemonic: mnemonic)
+      final decoded = await lwkWallet.decodeTx(pset: pset);
 
       final Transaction tx = Transaction(
         txid: '',
         received: 0,
         sent: amount ?? 0,
-        fee: (feeRate * 100.0)
-            .toInt(), // this is wrong, abs_fee has to be decoded from the pset
+        fee: decoded.fee,
         height: 0,
         timestamp: 0,
         label: '',
@@ -496,7 +496,7 @@ class LWKTransactions {
         isLiquid: true,
       );
       return (
-        (tx, (feeRate * 1000.0).toInt(), pset),
+        (tx, decoded.fee, pset),
         null
       ); // abs_fees is wrong here too, has to be decoded from pset
     } on Exception catch (e) {
