@@ -261,7 +261,7 @@ class HomeTxItem2 extends StatelessWidget {
     final img =
         darkMode ? 'assets/arrow_down_white.png' : 'assets/arrow_down.png';
 
-    final statusImg = tx.timestamp == 0
+    final statusImg = tx.height == 0
         ? 'assets/tx_status_pending.png'
         : 'assets/tx_status_complete.png';
 

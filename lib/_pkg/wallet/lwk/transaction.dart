@@ -370,7 +370,7 @@ class LWKTransactions {
           received: tx.kind == 'outgoing' ? 0 : finalBalance,
           sent: tx.kind == 'outgoing' ? -finalBalance : 0,
           fee: tx.fee,
-          height: 100,
+          height: tx.height,
           timestamp: tx.timestamp,
           rbfEnabled: false,
           outAddrs: outAddressFinal!,
