@@ -554,6 +554,11 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(sending: false, sent: true));
   }
 
+  void txSettled() {
+    if(state.tx == null) return;
+    
+  }
+
   void dispose() {
     super.close();
   }

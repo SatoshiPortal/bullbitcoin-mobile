@@ -67,17 +67,21 @@ class SwapAppListener extends StatelessWidget {
         BlocListener<WatchTxsBloc, WatchTxsState>(
           listenWhen: (previous, current) => previous.txPaid != current.txPaid,
           listener: (context, state) {
+            final isReceivePage = context.read<NavName>().state == '/receive';
+            final isSendPage = context.read<NavName>().state == '/send';
+
+            if (isReceivePage || isSendPage) return;
+
             if (state.syncWallet != null || state.txPaid == null) return;
             // if (state.txPaid == null) return;
 
             final tx = state.txPaid!;
-            final amt = tx.recievableAmount()!;
+            final isSubmarine = tx.isSubmarine;
+
+            final amt = !isSubmarine ? tx.recievableAmount()! : tx.outAmount;
             final amtStr =
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = tx.actionPrefixStr();
-
-            final isReceivePage = context.read<NavName>().state == '/receive';
-            if (isReceivePage) return;
 
             showToastWidget(
               position: ToastPosition.top,
@@ -124,11 +128,12 @@ class SwapAppListener extends StatelessWidget {
                 final route = context.read<NavName>().state;
                 final isReceivePage = route == '/receive';
                 final isSwapReceivePage = route == '/swap-receive';
+                final isSendPage = route == '/send';
 
                 print('----> 2 $isReceivePage');
                 print('----> 2.2 $isSwapReceivePage');
 
-                if (!isReceivePage && !isSwapReceivePage)
+                if (!isReceivePage && !isSwapReceivePage && !isSendPage)
                   showToastWidget(
                     position: ToastPosition.top,
                     AlertUI(

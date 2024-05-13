@@ -28,6 +28,7 @@ import 'package:bb_mobile/send/psbt.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/send.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -327,7 +328,7 @@ class AmountField extends StatelessWidget {
     final isLnInvoice =
         context.select((SendCubit cubit) => cubit.state.isLnInvoice());
 
-    if (isLnInvoice) return const InvAmtDisplay();
+    if (isLnInvoice) return const SendInvAmtDisplay();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -335,36 +336,6 @@ class AmountField extends StatelessWidget {
         const BBText.title('Amount to send'),
         const Gap(4),
         EnterAmount2(sendAll: sendAll),
-      ],
-    );
-  }
-}
-
-class InvAmtDisplay extends StatelessWidget {
-  const InvAmtDisplay({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final inv = context.select((SendCubit _) => _.state.invoice);
-    if (inv == null) return const SizedBox.shrink();
-    final isLiq = context
-        .select((SendCubit _) => _.state.selectedWalletBloc?.state.isLiq());
-
-    final amtStr = context.select(
-      (CurrencyCubit _) => _.state.getAmountInUnits(
-        inv.getAmount(),
-        isLiquid: isLiq ?? false,
-      ),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const BBText.title('Amount to send'),
-        const Gap(4),
-        BBText.body(amtStr, isBold: true),
-        const Gap(16),
-        const _LnFees(),
       ],
     );
   }
@@ -667,46 +638,6 @@ class TxDetailsScreen extends StatelessWidget {
   }
 }
 
-class _LnFees extends StatelessWidget {
-  const _LnFees();
-
-  @override
-  Widget build(BuildContext context) {
-    final allFees = context.select((SwapCubit cubit) => cubit.state.allFees);
-    if (allFees == null) return const SizedBox.shrink();
-
-    final isLiq = context.select(
-      (SendCubit cubit) => cubit.state.selectedWalletBloc?.state.isLiq(),
-    );
-    if (isLiq == null) return const SizedBox.shrink();
-
-    final fees = isLiq ? allFees.lbtcSubmarine : allFees.btcSubmarine;
-    final totalFees =
-        fees.boltzFeesRate + fees.claimFees + fees.lockupFeesEstimate;
-
-    final amt = context.select(
-      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
-        totalFees.toInt(),
-        isLiquid: isLiq,
-      ),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const BBText.title(
-          'Total Fees',
-        ),
-        const Gap(4),
-        BBText.body(
-          amt,
-          isBold: true,
-        ),
-      ],
-    );
-  }
-}
-
 // class _LnFeesFromSwapTx extends StatelessWidget {
 //   const _LnFeesFromSwapTx();
 
@@ -800,6 +731,9 @@ class TxSuccess extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
+    if (isLn) return const SendingLnTx();
+
     final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
     final amtStr = context
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));

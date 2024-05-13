@@ -374,6 +374,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       emit(state.copyWith(syncWallet: wallet, txPaid: swapTx));
       return;
     }
+
+    if (swapTx.settledSubmarine()) {
+      emit(state.copyWith(syncWallet: wallet, txPaid: swapTx));
+      return;
+    }
   }
 
   Future __closeSwap(
@@ -451,9 +456,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           __swapAlert(swapTx, wallet, emit);
           await __coopCloseSwap(swapTx, walletBloc, emit);
           await __updateWalletTxs(swapTx, walletBloc, emit);
+
         case SubmarineSwapActions.refundable:
           final swap = await __refundSwap(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+
         case SubmarineSwapActions.settled:
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);
           if (w == null) return;
