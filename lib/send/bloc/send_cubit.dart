@@ -484,6 +484,7 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final (wallet, tx, feeAmt) = buildResp!;
+
     if (wallet!.type == BBWalletType.secure ||
         wallet.type == BBWalletType.words ||
         wallet.type == BBWalletType.instant) {
@@ -496,6 +497,8 @@ class SendCubit extends Cubit<SendState> {
           signed: true,
         ),
       );
+      if (swaptx != null) sendClicked(swaptx: swaptx);
+
       return;
     }
 
@@ -516,8 +519,6 @@ class SendCubit extends Cubit<SendState> {
         tx: tx,
       ),
     );
-
-    if (swaptx != null) sendClicked(swaptx: swaptx);
   }
 
   void sendClicked({SwapTx? swaptx}) async {
