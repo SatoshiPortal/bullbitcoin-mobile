@@ -125,6 +125,8 @@ Suggestion to this roadmap can be proposed as Github issues.
 - [ ] Integrate Bull Bitcoin Fee multiple
 - [ ] Auto-consolidation mode for spend
 - [ ] Small utxo warning and consolidation suggestions
+- [ ] Configurable mempool explorer URLs
+- [ ] Configurable swap provider (similar to Electrum server)
 
 ## Acknowledgements 
 
