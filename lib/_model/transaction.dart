@@ -456,6 +456,12 @@ class Invoice with _$Invoice {
   }
 
   int getAmount() => msats ~/ 1000;
+
+  bool? isTestnet() {
+    if (network == 'testnet') return true;
+    if (network == 'bitcoin') return false;
+    return null;
+  }
 }
 
 enum PaymentNetwork { bitcoin, liquid, lightning }

@@ -133,7 +133,11 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(errScanningAddress: errInv.toString()));
           return;
         }
-        _currencyCubit.updateAmountDirect(inv!.getAmount());
+        if (_networkCubit.state.testnet != inv!.isTestnet()) {
+          emit(state.copyWith(errScanningAddress: 'Network mismatch'));
+          return;
+        }
+        _currencyCubit.updateAmountDirect(inv.getAmount());
         emit(state.copyWith(invoice: inv, address: address));
 
       case AddressNetwork.bip21Lightning:
@@ -143,7 +147,11 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(errScanningAddress: errInv.toString()));
           return;
         }
-        _currencyCubit.updateAmountDirect(inv!.getAmount());
+        if (_networkCubit.state.testnet != inv!.isTestnet()) {
+          emit(state.copyWith(errScanningAddress: 'Network mismatch'));
+          return;
+        }
+        _currencyCubit.updateAmountDirect(inv.getAmount());
         emit(state.copyWith(invoice: inv, address: invoice));
 
       case AddressNetwork.bitcoin:
@@ -464,9 +472,14 @@ class SendCubit extends Cubit<SendState> {
     }
 
     state.selectedWalletBloc!.add(
-      UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.transactions]),
+      UpdateWallet(
+        wallet,
+        updateTypes: [
+          UpdateWalletTypes.transactions,
+          UpdateWalletTypes.swaps,
+        ],
+      ),
     );
-    await Future.delayed(const Duration(seconds: 1));
 
     emit(
       state.copyWith(
@@ -475,6 +488,8 @@ class SendCubit extends Cubit<SendState> {
         tx: tx,
       ),
     );
+
+    if (swaptx != null) sendClicked(swaptx: swaptx);
   }
 
   void sendClicked({SwapTx? swaptx}) async {

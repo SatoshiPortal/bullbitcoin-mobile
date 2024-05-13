@@ -59,7 +59,7 @@ class _SendPageState extends State<SendPage> {
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
-    );
+    )..fetchFees(context.read<NetworkCubit>().state.testnet);
 
     networkFees = NetworkFeesCubit(
       networkCubit: locator<NetworkCubit>(),
@@ -153,7 +153,10 @@ class _Screen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (signed) ...[
-                if (!sent) const TxDetailsScreen() else const TxSuccess(),
+                if (!sent && !isLn)
+                  const TxDetailsScreen()
+                else
+                  const TxSuccess(),
               ] else ...[
                 const Gap(32),
                 const WalletSelectionDropDown(),
@@ -344,8 +347,15 @@ class InvAmtDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     final inv = context.select((SendCubit _) => _.state.invoice);
     if (inv == null) return const SizedBox.shrink();
-    final amtStr = context
-        .select((CurrencyCubit _) => _.state.getAmountInUnits(inv.getAmount()));
+    final isLiq = context
+        .select((SendCubit _) => _.state.selectedWalletBloc?.state.isLiq());
+
+    final amtStr = context.select(
+      (CurrencyCubit _) => _.state.getAmountInUnits(
+        inv.getAmount(),
+        isLiquid: isLiq ?? false,
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -353,6 +363,8 @@ class InvAmtDisplay extends StatelessWidget {
         const BBText.title('Amount to send'),
         const Gap(4),
         BBText.body(amtStr, isBold: true),
+        const Gap(16),
+        const _LnFees(),
       ],
     );
   }
@@ -495,8 +507,8 @@ class _SendButton extends StatelessWidget {
                   context.read<SendCubit>().sendClicked();
                   return;
                 }
-                final swaptx = context.read<SwapCubit>().state.swapTx!;
-                context.read<SendCubit>().sendClicked(swaptx: swaptx);
+                // final swaptx = context.read<SwapCubit>().state.swapTx!;
+                // context.read<SendCubit>().sendClicked(swaptx: swaptx);
               },
               label: watchOnly
                   ? 'Generate PSBT'
@@ -585,12 +597,12 @@ class TxDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
+    // final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
 
     final addr = context.select((SendCubit cubit) => cubit.state.address);
-    final swapAddress =
-        context.select((SwapCubit cubit) => cubit.state.swapTx?.scriptAddress);
-    final address = swapAddress ?? addr;
+    // final swapAddress =
+    //     context.select((SwapCubit cubit) => cubit.state.swapTx?.scriptAddress);
+    // final address = swapAddress ?? addr;
 
     final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
     final amtStr = context
@@ -637,23 +649,18 @@ class TxDetailsScreen extends StatelessWidget {
           'Recipient Bitcoin Address',
         ),
         const Gap(4),
-        BBText.body(
-          address,
-        ),
+        BBText.body(addr),
         const Gap(24),
-        if (!isLn) ...[
-          const BBText.title(
-            'Network Fee',
-          ),
-          const Gap(4),
-          BBText.body(
-            feeStr,
-          ),
-          BBText.body(
-            '~ $feeFiat $fiatCurrency',
-          ),
-        ] else
-          const _LnFees(),
+        const BBText.title(
+          'Network Fee',
+        ),
+        const Gap(4),
+        BBText.body(
+          feeStr,
+        ),
+        BBText.body(
+          '~ $feeFiat $fiatCurrency',
+        ),
         const Gap(32),
       ],
     );
@@ -665,88 +672,128 @@ class _LnFees extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((SwapCubit cubit) => cubit.state.swapTx);
-    if (swapTx == null) return const SizedBox.shrink();
+    final allFees = context.select((SwapCubit cubit) => cubit.state.allFees);
+    if (allFees == null) return const SizedBox.shrink();
 
-    final networkFees = swapTx.lockupFees!;
-    final boltzFees = swapTx.boltzFees!;
-    final claimFees = swapTx.claimFees!;
+    final isLiq = context.select(
+      (SendCubit cubit) => cubit.state.selectedWalletBloc?.state.isLiq(),
+    );
+    if (isLiq == null) return const SizedBox.shrink();
 
-    final currency =
-        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+    final fees = isLiq ? allFees.lbtcSubmarine : allFees.btcSubmarine;
+    final totalFees =
+        fees.boltzFeesRate + fees.claimFees + fees.lockupFeesEstimate;
 
-    final networkFeesStr = context.select(
-      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(networkFees),
-    );
-    final networkFeesFiat = context.select(
-      (NetworkCubit cubit) => cubit.state.calculatePrice(networkFees, currency),
-    );
-
-    final boltzFeesStr = context.select(
-      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(boltzFees),
-    );
-    final boltzFeesFiat = context.select(
-      (NetworkCubit cubit) => cubit.state.calculatePrice(boltzFees, currency),
-    );
-
-    final claimFeesStr = context.select(
-      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(claimFees),
-    );
-    final claimFeesFiat = context.select(
-      (NetworkCubit cubit) => cubit.state.calculatePrice(claimFees, currency),
-    );
-
-    final fiatCurrency = context.select(
-      (CurrencyCubit cubit) => cubit.state.defaultFiatCurrency?.shortName ?? '',
+    final amt = context.select(
+      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
+        totalFees.toInt(),
+        isLiquid: isLiq,
+      ),
     );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const BBText.title(
-          'Network Fee',
+          'Total Fees',
         ),
         const Gap(4),
         BBText.body(
-          networkFeesStr,
-        ),
-        BBText.body(
-          '~ $networkFeesFiat $fiatCurrency',
-        ),
-        const Gap(32),
-        const BBText.title(
-          'Boltz Fee',
-        ),
-        const Gap(4),
-        BBText.body(
-          boltzFeesStr,
-        ),
-        BBText.body(
-          '~ $boltzFeesFiat $fiatCurrency',
-        ),
-        const Gap(16),
-        const BBText.title(
-          'Claim Fee',
-        ),
-        const Gap(4),
-        BBText.body(
-          claimFeesStr,
-        ),
-        BBText.body(
-          '~ $claimFeesFiat $fiatCurrency',
-        ),
-        const Gap(16),
-        const BBText.title(
-          'Fees Details',
-        ),
-        const Gap(4),
-        const BBText.body(
-          'Exchange Fees = Boltz Fees + Claim Fees',
+          amt,
+          isBold: true,
         ),
       ],
     );
   }
 }
+
+// class _LnFeesFromSwapTx extends StatelessWidget {
+//   const _LnFeesFromSwapTx();
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final swapTx = context.select((SwapCubit cubit) => cubit.state.swapTx);
+//     if (swapTx == null) return const SizedBox.shrink();
+
+//     final networkFees = swapTx.lockupFees!;
+//     final boltzFees = swapTx.boltzFees!;
+//     final claimFees = swapTx.claimFees!;
+
+//     final currency =
+//         context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+
+//     final networkFeesStr = context.select(
+//       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(networkFees),
+//     );
+//     final networkFeesFiat = context.select(
+//       (NetworkCubit cubit) => cubit.state.calculatePrice(networkFees, currency),
+//     );
+
+//     final boltzFeesStr = context.select(
+//       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(boltzFees),
+//     );
+//     final boltzFeesFiat = context.select(
+//       (NetworkCubit cubit) => cubit.state.calculatePrice(boltzFees, currency),
+//     );
+
+//     final claimFeesStr = context.select(
+//       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(claimFees),
+//     );
+//     final claimFeesFiat = context.select(
+//       (NetworkCubit cubit) => cubit.state.calculatePrice(claimFees, currency),
+//     );
+
+//     final fiatCurrency = context.select(
+//       (CurrencyCubit cubit) => cubit.state.defaultFiatCurrency?.shortName ?? '',
+//     );
+
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.stretch,
+//       children: [
+//         const BBText.title(
+//           'Network Fee',
+//         ),
+//         const Gap(4),
+//         BBText.body(
+//           networkFeesStr,
+//         ),
+//         BBText.body(
+//           '~ $networkFeesFiat $fiatCurrency',
+//         ),
+//         const Gap(32),
+//         const BBText.title(
+//           'Boltz Fee',
+//         ),
+//         const Gap(4),
+//         BBText.body(
+//           boltzFeesStr,
+//         ),
+//         BBText.body(
+//           '~ $boltzFeesFiat $fiatCurrency',
+//         ),
+//         const Gap(16),
+//         const BBText.title(
+//           'Claim Fee',
+//         ),
+//         const Gap(4),
+//         BBText.body(
+//           claimFeesStr,
+//         ),
+//         BBText.body(
+//           '~ $claimFeesFiat $fiatCurrency',
+//         ),
+//         const Gap(16),
+//         const BBText.title(
+//           'Fees Details',
+//         ),
+//         const Gap(4),
+//         const BBText.body(
+//           'Exchange Fees = Boltz Fees + Claim Fees',
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 class TxSuccess extends StatelessWidget {
   const TxSuccess({super.key});
@@ -756,7 +803,7 @@ class TxSuccess extends StatelessWidget {
     final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
     final amtStr = context
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
-    final tx = context.select((SendCubit cubit) => cubit.state.tx);
+    // final tx = context.select((SendCubit cubit) => cubit.state.tx);
     final txid = context.select((SendCubit cubit) => cubit.state.tx!.txid);
     final isLiquid =
         context.select((SendCubit cubit) => cubit.state.tx!.isLiquid);
