@@ -355,13 +355,13 @@ class SwapCubit extends Cubit<SwapState> {
 
     final updatedSwap = swap!.copyWith(
       boltzFees: isLiq
-          ? fees.lbtcReverse.boltzFeesRate * amount ~/ 100
-          : fees.btcReverse.boltzFeesRate * amount ~/ 100,
-      lockupFees:
-          isLiq ? fees.lbtcReverse.lockupFees : fees.btcReverse.lockupFees,
-      claimFees: isLiq
-          ? fees.lbtcReverse.claimFeesEstimate
-          : fees.btcReverse.claimFeesEstimate,
+          ? fees.lbtcSubmarine.boltzFeesRate * amount ~/ 100
+          : fees.btcSubmarine.boltzFeesRate * amount ~/ 100,
+      lockupFees: isLiq
+          ? fees.lbtcSubmarine.lockupFeesEstimate
+          : fees.btcSubmarine.lockupFeesEstimate,
+      claimFees:
+          isLiq ? fees.lbtcSubmarine.claimFees : fees.btcSubmarine.claimFees,
     );
 
     emit(

@@ -439,7 +439,7 @@ class SendCubit extends Cubit<SendState> {
       amount: swaptx != null ? swaptx.outAmount : _currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
       feeRate: localWallet.baseWalletType == BaseWalletType.Liquid
-          ? 0.1
+          ? 0.01
           : fee.toDouble(),
       enableRbf: enableRbf,
       selectedUtxos: state.selectedUtxos,
@@ -555,8 +555,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void txSettled() {
-    if(state.tx == null) return;
-    
+    if (state.tx == null) return;
   }
 
   void dispose() {
