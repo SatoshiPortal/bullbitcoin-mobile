@@ -77,6 +77,14 @@ class BullBitcoinWalletApp extends StatelessWidget {
               // supportedLocales: localizationDelegate.supportedLocales,
               // locale: localizationDelegate.currentLocale,
               builder: (context, child) {
+                // scheduleMicrotask(() async {
+                //   await Future.delayed(100.ms);
+                //   SystemChrome.setSystemUIOverlayStyle(
+                //     SystemUiOverlayStyle(
+                //       statusBarColor: context.colour.background,
+                //     ),
+                //   );
+                // });
                 SystemChrome.setPreferredOrientations([
                   DeviceOrientation.portraitUp,
                 ]);

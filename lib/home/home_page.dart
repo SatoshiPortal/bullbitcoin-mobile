@@ -128,51 +128,56 @@ class _ScreenState extends State<_Screen> {
 
     final h = _calculateHeight(walletBlocs.length);
 
-    return Scaffold(
-      appBar: _buildAppBar(context),
-      body: Stack(
-        children: [
-          const TopCenter(
-            child: HomeWarnings(),
-          ),
-          PositionedDirectional(
-            top: warningsSize,
-            start: 0,
-            end: 0,
-            child: SizedBox(
-              height: 310,
-              child: CardsList(
-                walletBlocs: walletBlocs,
-                onChanged: _onChanged,
-              ),
-            ).animate(delay: 300.ms).fadeIn(),
-          ),
-          Column(
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                height: h + warningsSize,
-                // height: 310,
-              ),
-              Expanded(
-                child: ColoredBox(
-                  color: context.colour.background,
-                  child: const HomeTransactions(),
+    return AnnotatedRegion(
+      value: SystemUiOverlayStyle(
+        statusBarColor: context.colour.background,
+      ),
+      child: Scaffold(
+        appBar: _buildAppBar(context),
+        body: Stack(
+          children: [
+            const TopCenter(
+              child: HomeWarnings(),
+            ),
+            PositionedDirectional(
+              top: warningsSize,
+              start: 0,
+              end: 0,
+              child: SizedBox(
+                height: 310,
+                child: CardsList(
+                  walletBlocs: walletBlocs,
+                  onChanged: _onChanged,
+                ),
+              ).animate(delay: 300.ms).fadeIn(),
+            ),
+            Column(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  height: h + warningsSize,
+                  // height: 310,
+                ),
+                Expanded(
+                  child: ColoredBox(
+                    color: context.colour.background,
+                    child: const HomeTransactions(),
+                  ),
+                ),
+                const Gap(128),
+              ],
+            ),
+            BottomCenter(
+              child: Container(
+                height: 128,
+                margin: const EdgeInsets.only(top: 16),
+                child: HomeBottomBar2(
+                  walletBloc: walletBlocs.length == 1 ? walletBlocs[0] : null,
                 ),
               ),
-              const Gap(128),
-            ],
-          ),
-          BottomCenter(
-            child: Container(
-              height: 128,
-              margin: const EdgeInsets.only(top: 16),
-              child: HomeBottomBar2(
-                walletBloc: walletBlocs.length == 1 ? walletBlocs[0] : null,
-              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -550,11 +555,14 @@ class HomeTopBar2 extends StatelessWidget {
         children: [
           Container(
             alignment: Alignment.bottomCenter,
-            margin: const EdgeInsets.only(left: 32),
+            margin: const EdgeInsets.only(
+              left: 32,
+              top: 28,
+            ),
             child: Image.asset(
-              'assets/bb-logo2.png',
-              height: 52,
-              width: 52,
+              'assets/bb-logo-red.png',
+              height: 60,
+              width: 60,
             ),
           ),
           const Gap(4),
@@ -882,7 +890,7 @@ class HomeNoWallets extends StatelessWidget {
             SizedBox(
               height: 148,
               width: 184,
-              child: Image.asset('assets/bb-white.png'),
+              child: Image.asset('assets/bb-logo-white.png'),
             ),
             const Gap(24),
             Text(
