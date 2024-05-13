@@ -123,6 +123,7 @@ class SwapCubit extends Cubit<SwapState> {
         ? (walletIsLiquid ? Chain.liquidTestnet : Chain.bitcoinTestnet)
         : (walletIsLiquid ? Chain.liquid : Chain.bitcoin);
 
+    final claimAddress = wallet.lastGeneratedAddress!.address;
     final (swap, errCreatingInv) = await _swapBoltz.receiveV2(
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
@@ -131,6 +132,7 @@ class SwapCubit extends Cubit<SwapState> {
       electrumUrl: networkUrl,
       boltzUrl: boltzurlV2,
       isLiquid: walletIsLiquid,
+      claimAddress: claimAddress,
     );
     if (errCreatingInv != null) {
       emit(

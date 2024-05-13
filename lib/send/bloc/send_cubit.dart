@@ -6,6 +6,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bip21.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
+import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -126,14 +127,22 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(note: label));
         }
       case AddressNetwork.lightning:
+        final boltzUrl =
+            _networkCubit.state.testnet ? boltzTestnetV2 : boltzMainnetV2;
         final (inv, errInv) = await _swapBoltz.decodeInvoice(
           invoice: address.toLowerCase(),
+          boltzUrl: boltzUrl,
         );
         if (errInv != null) {
           emit(state.copyWith(errScanningAddress: errInv.toString()));
           return;
         }
-        if (_networkCubit.state.testnet != inv!.isTestnet()) {
+        if (inv!.bip21 != null) {
+          updateAddress(inv.bip21);
+          return;
+        }
+
+        if (_networkCubit.state.testnet != inv.isTestnet()) {
           emit(state.copyWith(errScanningAddress: 'Network mismatch'));
           return;
         }

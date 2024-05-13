@@ -486,7 +486,7 @@ class LWKTransactions {
         txid: '',
         received: 0,
         sent: amount ?? 0,
-        fee: decoded.fee,
+        fee: decoded.absoluteFees,
         height: 0,
         timestamp: 0,
         label: '',
@@ -495,10 +495,7 @@ class LWKTransactions {
         psbt: pset,
         isLiquid: true,
       );
-      return (
-        (tx, decoded.fee, pset),
-        null
-      ); // abs_fees is wrong here too, has to be decoded from pset
+      return ((tx, decoded.absoluteFees, pset), null);
     } on Exception catch (e) {
       return (
         null,

@@ -234,6 +234,7 @@ class SwapTx with _$SwapTx {
     int? boltzFees,
     int? lockupFees,
     int? claimFees,
+    String? claimAddress,
   }) = _SwapTx;
 
   const SwapTx._();
@@ -433,6 +434,7 @@ class Invoice with _$Invoice {
     required String network,
     required int cltvExpDelta,
     required String invoice,
+    String? bip21,
   }) = _Invoice;
   const Invoice._();
 
@@ -452,6 +454,7 @@ class Invoice with _$Invoice {
       isExpired: decodedInvoice.isExpired,
       network: decodedInvoice.network,
       cltvExpDelta: decodedInvoice.cltvExpDelta,
+      bip21: decodedInvoice.bip21,
     );
   }
 

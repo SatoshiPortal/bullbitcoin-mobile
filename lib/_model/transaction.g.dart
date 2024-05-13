@@ -81,6 +81,7 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       boltzFees: (json['boltzFees'] as num?)?.toInt(),
       lockupFees: (json['lockupFees'] as num?)?.toInt(),
       claimFees: (json['claimFees'] as num?)?.toInt(),
+      claimAddress: json['claimAddress'] as String?,
     );
 
 Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
@@ -108,6 +109,7 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
       'boltzFees': instance.boltzFees,
       'lockupFees': instance.lockupFees,
       'claimFees': instance.claimFees,
+      'claimAddress': instance.claimAddress,
     };
 
 const _$BBNetworkEnumMap = {
@@ -164,6 +166,7 @@ _$InvoiceImpl _$$InvoiceImplFromJson(Map<String, dynamic> json) =>
       network: json['network'] as String,
       cltvExpDelta: (json['cltvExpDelta'] as num).toInt(),
       invoice: json['invoice'] as String,
+      bip21: json['bip21'] as String?,
     );
 
 Map<String, dynamic> _$$InvoiceImplToJson(_$InvoiceImpl instance) =>
@@ -176,4 +179,5 @@ Map<String, dynamic> _$$InvoiceImplToJson(_$InvoiceImpl instance) =>
       'network': instance.network,
       'cltvExpDelta': instance.cltvExpDelta,
       'invoice': instance.invoice,
+      'bip21': instance.bip21,
     };

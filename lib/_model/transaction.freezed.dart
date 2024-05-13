@@ -656,6 +656,7 @@ mixin _$SwapTx {
   int? get boltzFees => throw _privateConstructorUsedError;
   int? get lockupFees => throw _privateConstructorUsedError;
   int? get claimFees => throw _privateConstructorUsedError;
+  String? get claimAddress => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -690,7 +691,8 @@ abstract class $SwapTxCopyWith<$Res> {
       String? blindingKey,
       int? boltzFees,
       int? lockupFees,
-      int? claimFees});
+      int? claimFees,
+      String? claimAddress});
 
   $SwapStreamStatusCopyWith<$Res>? get status;
 }
@@ -731,6 +733,7 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? boltzFees = freezed,
     Object? lockupFees = freezed,
     Object? claimFees = freezed,
+    Object? claimAddress = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -825,6 +828,10 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.claimFees
           : claimFees // ignore: cast_nullable_to_non_nullable
               as int?,
+      claimAddress: freezed == claimAddress
+          ? _value.claimAddress
+          : claimAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 
@@ -871,7 +878,8 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String? blindingKey,
       int? boltzFees,
       int? lockupFees,
-      int? claimFees});
+      int? claimFees,
+      String? claimAddress});
 
   @override
   $SwapStreamStatusCopyWith<$Res>? get status;
@@ -911,6 +919,7 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? boltzFees = freezed,
     Object? lockupFees = freezed,
     Object? claimFees = freezed,
+    Object? claimAddress = freezed,
   }) {
     return _then(_$SwapTxImpl(
       id: null == id
@@ -1005,6 +1014,10 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.claimFees
           : claimFees // ignore: cast_nullable_to_non_nullable
               as int?,
+      claimAddress: freezed == claimAddress
+          ? _value.claimAddress
+          : claimAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -1035,7 +1048,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       this.blindingKey,
       this.boltzFees,
       this.lockupFees,
-      this.claimFees})
+      this.claimFees,
+      this.claimAddress})
       : super._();
 
   factory _$SwapTxImpl.fromJson(Map<String, dynamic> json) =>
@@ -1089,10 +1103,12 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   final int? lockupFees;
   @override
   final int? claimFees;
+  @override
+  final String? claimAddress;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, walletType: $walletType, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, boltzPubkey: $boltzPubkey, locktime: $locktime, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees)';
+    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, walletType: $walletType, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, boltzPubkey: $boltzPubkey, locktime: $locktime, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress)';
   }
 
   @override
@@ -1122,7 +1138,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('blindingKey', blindingKey))
       ..add(DiagnosticsProperty('boltzFees', boltzFees))
       ..add(DiagnosticsProperty('lockupFees', lockupFees))
-      ..add(DiagnosticsProperty('claimFees', claimFees));
+      ..add(DiagnosticsProperty('claimFees', claimFees))
+      ..add(DiagnosticsProperty('claimAddress', claimAddress));
   }
 
   @override
@@ -1168,7 +1185,9 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
             (identical(other.lockupFees, lockupFees) ||
                 other.lockupFees == lockupFees) &&
             (identical(other.claimFees, claimFees) ||
-                other.claimFees == claimFees));
+                other.claimFees == claimFees) &&
+            (identical(other.claimAddress, claimAddress) ||
+                other.claimAddress == claimAddress));
   }
 
   @JsonKey(ignore: true)
@@ -1197,7 +1216,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
         blindingKey,
         boltzFees,
         lockupFees,
-        claimFees
+        claimFees,
+        claimAddress
       ]);
 
   @JsonKey(ignore: true)
@@ -1238,7 +1258,8 @@ abstract class _SwapTx extends SwapTx {
       final String? blindingKey,
       final int? boltzFees,
       final int? lockupFees,
-      final int? claimFees}) = _$SwapTxImpl;
+      final int? claimFees,
+      final String? claimAddress}) = _$SwapTxImpl;
   const _SwapTx._() : super._();
 
   factory _SwapTx.fromJson(Map<String, dynamic> json) = _$SwapTxImpl.fromJson;
@@ -1289,6 +1310,8 @@ abstract class _SwapTx extends SwapTx {
   int? get lockupFees;
   @override
   int? get claimFees;
+  @override
+  String? get claimAddress;
   @override
   @JsonKey(ignore: true)
   _$$SwapTxImplCopyWith<_$SwapTxImpl> get copyWith =>
@@ -1714,6 +1737,7 @@ mixin _$Invoice {
   String get network => throw _privateConstructorUsedError;
   int get cltvExpDelta => throw _privateConstructorUsedError;
   String get invoice => throw _privateConstructorUsedError;
+  String? get bip21 => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -1733,7 +1757,8 @@ abstract class $InvoiceCopyWith<$Res> {
       bool isExpired,
       String network,
       int cltvExpDelta,
-      String invoice});
+      String invoice,
+      String? bip21});
 }
 
 /// @nodoc
@@ -1757,6 +1782,7 @@ class _$InvoiceCopyWithImpl<$Res, $Val extends Invoice>
     Object? network = null,
     Object? cltvExpDelta = null,
     Object? invoice = null,
+    Object? bip21 = freezed,
   }) {
     return _then(_value.copyWith(
       msats: null == msats
@@ -1791,6 +1817,10 @@ class _$InvoiceCopyWithImpl<$Res, $Val extends Invoice>
           ? _value.invoice
           : invoice // ignore: cast_nullable_to_non_nullable
               as String,
+      bip21: freezed == bip21
+          ? _value.bip21
+          : bip21 // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -1810,7 +1840,8 @@ abstract class _$$InvoiceImplCopyWith<$Res> implements $InvoiceCopyWith<$Res> {
       bool isExpired,
       String network,
       int cltvExpDelta,
-      String invoice});
+      String invoice,
+      String? bip21});
 }
 
 /// @nodoc
@@ -1832,6 +1863,7 @@ class __$$InvoiceImplCopyWithImpl<$Res>
     Object? network = null,
     Object? cltvExpDelta = null,
     Object? invoice = null,
+    Object? bip21 = freezed,
   }) {
     return _then(_$InvoiceImpl(
       msats: null == msats
@@ -1866,6 +1898,10 @@ class __$$InvoiceImplCopyWithImpl<$Res>
           ? _value.invoice
           : invoice // ignore: cast_nullable_to_non_nullable
               as String,
+      bip21: freezed == bip21
+          ? _value.bip21
+          : bip21 // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -1881,7 +1917,8 @@ class _$InvoiceImpl extends _Invoice with DiagnosticableTreeMixin {
       required this.isExpired,
       required this.network,
       required this.cltvExpDelta,
-      required this.invoice})
+      required this.invoice,
+      this.bip21})
       : super._();
 
   factory _$InvoiceImpl.fromJson(Map<String, dynamic> json) =>
@@ -1903,10 +1940,12 @@ class _$InvoiceImpl extends _Invoice with DiagnosticableTreeMixin {
   final int cltvExpDelta;
   @override
   final String invoice;
+  @override
+  final String? bip21;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Invoice(msats: $msats, expiry: $expiry, expiresIn: $expiresIn, expiresAt: $expiresAt, isExpired: $isExpired, network: $network, cltvExpDelta: $cltvExpDelta, invoice: $invoice)';
+    return 'Invoice(msats: $msats, expiry: $expiry, expiresIn: $expiresIn, expiresAt: $expiresAt, isExpired: $isExpired, network: $network, cltvExpDelta: $cltvExpDelta, invoice: $invoice, bip21: $bip21)';
   }
 
   @override
@@ -1921,7 +1960,8 @@ class _$InvoiceImpl extends _Invoice with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('isExpired', isExpired))
       ..add(DiagnosticsProperty('network', network))
       ..add(DiagnosticsProperty('cltvExpDelta', cltvExpDelta))
-      ..add(DiagnosticsProperty('invoice', invoice));
+      ..add(DiagnosticsProperty('invoice', invoice))
+      ..add(DiagnosticsProperty('bip21', bip21));
   }
 
   @override
@@ -1940,13 +1980,14 @@ class _$InvoiceImpl extends _Invoice with DiagnosticableTreeMixin {
             (identical(other.network, network) || other.network == network) &&
             (identical(other.cltvExpDelta, cltvExpDelta) ||
                 other.cltvExpDelta == cltvExpDelta) &&
-            (identical(other.invoice, invoice) || other.invoice == invoice));
+            (identical(other.invoice, invoice) || other.invoice == invoice) &&
+            (identical(other.bip21, bip21) || other.bip21 == bip21));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, msats, expiry, expiresIn,
-      expiresAt, isExpired, network, cltvExpDelta, invoice);
+      expiresAt, isExpired, network, cltvExpDelta, invoice, bip21);
 
   @JsonKey(ignore: true)
   @override
@@ -1971,7 +2012,8 @@ abstract class _Invoice extends Invoice {
       required final bool isExpired,
       required final String network,
       required final int cltvExpDelta,
-      required final String invoice}) = _$InvoiceImpl;
+      required final String invoice,
+      final String? bip21}) = _$InvoiceImpl;
   const _Invoice._() : super._();
 
   factory _Invoice.fromJson(Map<String, dynamic> json) = _$InvoiceImpl.fromJson;
@@ -1992,6 +2034,8 @@ abstract class _Invoice extends Invoice {
   int get cltvExpDelta;
   @override
   String get invoice;
+  @override
+  String? get bip21;
   @override
   @JsonKey(ignore: true)
   _$$InvoiceImplCopyWith<_$InvoiceImpl> get copyWith =>
