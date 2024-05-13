@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
@@ -101,20 +99,27 @@ class _ScreenState extends State<_Screen> {
 
     if (walletBlocs.isEmpty) {
       final isTestnet = network == BBNetwork.Testnet;
-      if (!isTestnet) {
-        scheduleMicrotask(() async {
-          await Future.delayed(100.ms);
-          SystemChrome.setSystemUIOverlayStyle(
-            SystemUiOverlayStyle(
-              statusBarColor: context.colour.primary,
-            ),
-          );
-        });
-      }
-      return Scaffold(
+      // if (!isTestnet) {
+      //   scheduleMicrotask(() async {
+      //     await Future.delayed(100.ms);
+      //     SystemChrome.setSystemUIOverlayStyle(
+      //       SystemUiOverlayStyle(
+      //         statusBarColor: context.colour.primary,
+      //       ),
+      //     );
+      //   });
+      // }
+      Widget widget = Scaffold(
         appBar: !isTestnet ? null : _buildAppBar(context),
         body: HomeNoWallets(fullRed: !isTestnet),
       );
+      if (!isTestnet)
+        widget = AnnotatedRegion(
+          value: SystemUiOverlayStyle(statusBarColor: context.colour.primary),
+          child: widget,
+        );
+
+      return widget;
     }
 
     final warningsSize =

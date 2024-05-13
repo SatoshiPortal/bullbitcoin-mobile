@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
@@ -15,6 +17,7 @@ import 'package:bb_mobile/settings/bitcoin_settings_page.dart';
 import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/core_wallet_settings_page.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -26,6 +29,8 @@ import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/test-backup.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -76,12 +81,28 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/create-wallet-main',
           builder: (context, state) {
+            scheduleMicrotask(() async {
+              await Future.delayed(100.ms);
+              SystemChrome.setSystemUIOverlayStyle(
+                SystemUiOverlayStyle(
+                  statusBarColor: context.colour.background,
+                ),
+              );
+            });
             return const CreateWalletPage(mainWallet: true);
           },
         ),
         GoRoute(
           path: '/import-main',
           builder: (context, state) {
+            scheduleMicrotask(() async {
+              await Future.delayed(100.ms);
+              SystemChrome.setSystemUIOverlayStyle(
+                SystemUiOverlayStyle(
+                  statusBarColor: context.colour.background,
+                ),
+              );
+            });
             return const ImportWalletPage(mainWallet: true);
           },
         ),
