@@ -79,6 +79,7 @@ class SendCubit extends Cubit<SendState> {
           errScanningAddress: err.toString(),
           scanningAddress: false,
           address: '',
+          invoice: null,
           note: '',
         ),
       );
@@ -141,7 +142,14 @@ class SendCubit extends Cubit<SendState> {
           updateAddress(inv.bip21);
           return;
         }
-
+        if (inv.getAmount() == 0) {
+          emit(
+            state.copyWith(
+              errScanningAddress: 'Invoice must have an amount.',
+            ),
+          );
+          return;
+        }
         if (_networkCubit.state.testnet != inv.isTestnet()) {
           emit(state.copyWith(errScanningAddress: 'Network mismatch'));
           return;
@@ -156,8 +164,19 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(errScanningAddress: errInv.toString()));
           return;
         }
-        if (_networkCubit.state.testnet != inv!.isTestnet()) {
+        if (inv!.getAmount() == 0) {
+          emit(
+            state.copyWith(
+              errScanningAddress: 'Invoice must have an amount.',
+              invoice: inv,
+              address: invoice,
+            ),
+          );
+          return;
+        }
+        if (_networkCubit.state.testnet != inv.isTestnet()) {
           emit(state.copyWith(errScanningAddress: 'Network mismatch'));
+
           return;
         }
         _currencyCubit.updateAmountDirect(inv.getAmount());
@@ -448,7 +467,7 @@ class SendCubit extends Cubit<SendState> {
       amount: swaptx != null ? swaptx.outAmount : _currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
       feeRate: localWallet.baseWalletType == BaseWalletType.Liquid
-          ? 0.01
+          ? 0.1
           : fee.toDouble(),
       enableRbf: enableRbf,
       selectedUtxos: state.selectedUtxos,
