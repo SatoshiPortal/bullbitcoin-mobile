@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
@@ -83,6 +85,10 @@ class _ScreenState extends State<_Screen> {
       shadowColor: context.colour.primary.withOpacity(0.2),
       surfaceTintColor: Colors.transparent,
       elevation: 0,
+      // systemOverlayStyle: SystemUiOverlayStyle(
+      //   statusBarColor: context.colour.background,
+      //   systemStatusBarContrastEnforced: true,
+      // ),
       flexibleSpace: const HomeTopBar2(),
     );
   }
@@ -100,14 +106,7 @@ class _ScreenState extends State<_Screen> {
     if (walletBlocs.isEmpty) {
       final isTestnet = network == BBNetwork.Testnet;
       // if (!isTestnet) {
-      //   scheduleMicrotask(() async {
-      //     await Future.delayed(100.ms);
-      //     SystemChrome.setSystemUIOverlayStyle(
-      //       SystemUiOverlayStyle(
-      //         statusBarColor: context.colour.primary,
-      //       ),
-      //     );
-      //   });
+
       // }
       Widget widget = Scaffold(
         appBar: !isTestnet ? null : _buildAppBar(context),
@@ -128,56 +127,60 @@ class _ScreenState extends State<_Screen> {
 
     final h = _calculateHeight(walletBlocs.length);
 
-    return AnnotatedRegion(
-      value: SystemUiOverlayStyle(
-        statusBarColor: context.colour.background,
-      ),
-      child: Scaffold(
-        appBar: _buildAppBar(context),
-        body: Stack(
-          children: [
-            const TopCenter(
-              child: HomeWarnings(),
-            ),
-            PositionedDirectional(
-              top: warningsSize,
-              start: 0,
-              end: 0,
-              child: SizedBox(
-                height: 310,
-                child: CardsList(
-                  walletBlocs: walletBlocs,
-                  onChanged: _onChanged,
-                ),
-              ).animate(delay: 300.ms).fadeIn(),
-            ),
-            Column(
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  height: h + warningsSize,
-                  // height: 310,
-                ),
-                Expanded(
-                  child: ColoredBox(
-                    color: context.colour.background,
-                    child: const HomeTransactions(),
-                  ),
-                ),
-                const Gap(128),
-              ],
-            ),
-            BottomCenter(
-              child: Container(
-                height: 128,
-                margin: const EdgeInsets.only(top: 16),
-                child: HomeBottomBar2(
-                  walletBloc: walletBlocs.length == 1 ? walletBlocs[0] : null,
+    scheduleMicrotask(() async {
+      await Future.delayed(50.ms);
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarColor: context.colour.background,
+        ),
+      );
+    });
+
+    return Scaffold(
+      appBar: _buildAppBar(context),
+      body: Stack(
+        children: [
+          const TopCenter(
+            child: HomeWarnings(),
+          ),
+          PositionedDirectional(
+            top: warningsSize,
+            start: 0,
+            end: 0,
+            child: SizedBox(
+              height: 310,
+              child: CardsList(
+                walletBlocs: walletBlocs,
+                onChanged: _onChanged,
+              ),
+            ).animate(delay: 300.ms).fadeIn(),
+          ),
+          Column(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: h + warningsSize,
+                // height: 310,
+              ),
+              Expanded(
+                child: ColoredBox(
+                  color: context.colour.background,
+                  child: const HomeTransactions(),
                 ),
               ),
+              const Gap(128),
+            ],
+          ),
+          BottomCenter(
+            child: Container(
+              height: 128,
+              margin: const EdgeInsets.only(top: 16),
+              child: HomeBottomBar2(
+                walletBloc: walletBlocs.length == 1 ? walletBlocs[0] : null,
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
