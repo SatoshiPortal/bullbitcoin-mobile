@@ -103,7 +103,9 @@ When installing the Bull Bitcoin Mobile app, a self-custodial wallet will be cre
 
 When spending or selling Bitcoin, the exchange will create a payment invoice (BIP21) that will automatically be opened by the same application. All the user has to do is to confirm or reject that transaction. The experience will be functionally the same as that of a custodial exchange, with the exception that the user will have to do a backup of the Bitcoin wallet.
 
-## Roadmap
+## Current roadmap
+
+Suggestion to this roadmap can be proposed as Github issues.
 
 - [ ] Bumping replace-by-fee transactions
 - [ ] Re-implement smarter coin selection and labelling
@@ -116,6 +118,9 @@ When spending or selling Bitcoin, the exchange will create a payment invoice (BI
 - [ ] Integrate a client-side passphrase strengh estimator
 - [ ] Encrypted cloud backups connected to a key server, similar to photon-sdk
 - [ ] Store persistent encrypted wallet backup on device
+- [ ] Biometric authentification
+- [ ] Show fiat value of transactions at the approximated time they were made
+- [ ] Spanish and French translactions
 - [ ] Payjoin integration .
 
 ## Acknowledgements 
