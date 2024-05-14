@@ -486,6 +486,7 @@ class SendCubit extends Cubit<SendState> {
         psbtSignedFeeAmount: feeAmt,
         tx: tx,
         signed: true,
+        sending: false,
       ),
     );
   }
