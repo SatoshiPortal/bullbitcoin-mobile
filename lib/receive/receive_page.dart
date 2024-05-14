@@ -326,8 +326,17 @@ class _Warnings extends StatelessWidget {
       children: [
         const BBText.titleLarge('High fee warning', isRed: true),
         const Gap(8),
-        BBText.bodySmall(
-          'You are about to pay over ${feePercentage.toStringAsFixed(2)}  in Bitcoin Network fees for this transaction.',
+        Row(
+          children: [
+            const BBText.bodySmall('You are about to pay over '),
+            BBText.bodySmall(
+              '${feePercentage.toStringAsFixed(2)}% ',
+              isBold: true,
+            ),
+          ],
+        ),
+        const BBText.bodySmall(
+          'in Bitcoin Network fees for this transaction.',
         ),
         const Gap(8),
         Row(

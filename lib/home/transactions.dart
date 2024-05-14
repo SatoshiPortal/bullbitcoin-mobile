@@ -263,7 +263,9 @@ class HomeTxItem2 extends StatelessWidget {
     final img =
         darkMode ? 'assets/arrow_down_white.png' : 'assets/arrow_down.png';
 
-    final statusImg = tx.height == 0
+    // final swapstatus =
+
+    final statusImg = (tx.height == null || tx.height == 0)
         ? 'assets/tx_status_pending.png'
         : 'assets/tx_status_complete.png';
 
@@ -347,6 +349,7 @@ class HomeTxItem2 extends StatelessWidget {
                         // : timeago.format(tx.getDateTime()),
                         removeColourOpacity: true,
                       ),
+                      const Gap(2),
                       Image.asset(statusImg),
                     ],
                   ),

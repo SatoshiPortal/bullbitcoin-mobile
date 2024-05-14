@@ -186,6 +186,8 @@ class _TxDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final tx = context.select((TransactionCubit _) => _.state.tx);
 
+    final isSwapPending = tx.swapIdisTxid();
+
     // final toAddresses = tx.outAddresses ?? [];
 
     final err = context
@@ -270,19 +272,21 @@ class _TxDetails extends StatelessWidget {
               ],
             ),
             const Gap(24),
-            const BBText.title('Transaction ID'),
-            const Gap(4),
-            InkWell(
-              onTap: () {
-                final url = context
-                    .read<NetworkCubit>()
-                    .state
-                    .explorerTxUrl(txid, isLiquid: tx.isLiquid);
-                locator<Launcher>().launchApp(url);
-              },
-              child: BBText.body(txid, isBlue: true),
-            ),
-            const Gap(24),
+            if (!isSwapPending) ...[
+              const BBText.title('Transaction ID'),
+              const Gap(4),
+              InkWell(
+                onTap: () {
+                  final url = context
+                      .read<NetworkCubit>()
+                      .state
+                      .explorerTxUrl(txid, isLiquid: tx.isLiquid);
+                  locator<Launcher>().launchApp(url);
+                },
+                child: BBText.body(txid, isBlue: true),
+              ),
+              const Gap(24),
+            ],
             if (recipients.isNotEmpty &&
                 recipientAddress.address.isNotEmpty) ...[
               const BBText.title('Recipient Bitcoin Address'),
@@ -301,7 +305,7 @@ class _TxDetails extends StatelessWidget {
 
               const Gap(24),
             ],
-            if (status.isNotEmpty) ...[
+            if (status.isNotEmpty && !isSwapPending) ...[
               const BBText.title(
                 'Status',
               ),
@@ -332,25 +336,27 @@ class _TxDetails extends StatelessWidget {
               ],
             ),
             const Gap(24),
-            BBText.title(
-              isReceived ? 'Tranaction received' : 'Transaction sent',
-            ),
-            const Gap(4),
-            BBText.titleLarge(
-              time,
-              isBold: true,
-            ),
-            if (broadcastTime != null) ...[
-              const Gap(24),
-              const BBText.title(
-                'Sent Time',
+            if (!isSwapPending) ...[
+              BBText.title(
+                isReceived ? 'Transaction received' : 'Transaction sent',
               ),
+              const Gap(4),
               BBText.titleLarge(
-                timeago.format(broadcastTime),
+                time,
                 isBold: true,
               ),
+              if (broadcastTime != null) ...[
+                const Gap(24),
+                const BBText.title(
+                  'Sent Time',
+                ),
+                BBText.titleLarge(
+                  timeago.format(broadcastTime),
+                  isBold: true,
+                ),
+              ],
+              const Gap(24),
             ],
-            const Gap(24),
             const BBText.title(
               'Change Label',
             ),

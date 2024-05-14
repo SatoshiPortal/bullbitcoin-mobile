@@ -8,6 +8,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
@@ -353,6 +354,10 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
             ReceivedTick(received: received),
             const Gap(16),
             BBText.body(amtStr),
+            if (!received) ...[
+              const Gap(24),
+              _OnChainWarning(swapTx: widget.tx),
+            ],
             const Gap(40),
             if (tx != null)
               BBButton.big(
@@ -364,6 +369,34 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _OnChainWarning extends StatelessWidget {
+  const _OnChainWarning({required this.swapTx});
+
+  final SwapTx swapTx;
+
+  @override
+  Widget build(BuildContext context) {
+    if (swapTx.isLiquid()) return const SizedBox.shrink();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          FontAwesomeIcons.triangleExclamation,
+          color: context.colour.primary,
+          size: 10,
+        ),
+        const Gap(4),
+        const BBText.bodySmall(
+          'On-chain payments can take a while to confirm',
+          isRed: true,
+          fontSize: 8,
+        ),
+      ],
     );
   }
 }

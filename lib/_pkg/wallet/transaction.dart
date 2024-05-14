@@ -382,11 +382,13 @@ class WalletTx implements IWalletTransactions {
     );
     swapTxs[idx] = updatedSwapTx;
     final txs = wallet.transactions.toList();
+    final isRevSub = !swapTx.isSubmarine;
 
     if (swapTx.txid != null) {
       final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
-      final isRevSub = !swapTx.isSubmarine;
-      if (idx == -1) {
+      final idx2 = txs.indexWhere((_) => _.txid == swapTx.id);
+
+      if (idx == -1 && idx2 == -1) {
         final newTx = Transaction(
           txid: swapTx.txid!,
           timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
@@ -396,7 +398,39 @@ class WalletTx implements IWalletTransactions {
           received:
               isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
           fee: swapTx.claimFees,
-          isLiquid: wallet.baseWalletType == BaseWalletType.Liquid,
+          isLiquid: swapTx.isLiquid(),
+        );
+        txs.add(newTx);
+      } else if (idx != -1) {
+        final updatedTx = txs[idx].copyWith(
+          swapTx: updatedSwapTx,
+          isSwap: true,
+        );
+        txs[idx] = updatedTx;
+      } else if (idx2 != -1) {
+        final updatedTx = txs[idx2].copyWith(
+          swapTx: updatedSwapTx,
+          isSwap: true,
+          txid: swapTx.txid!,
+          timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        );
+        txs[idx2] = updatedTx;
+      }
+    }
+
+    if (swapTx.txid == null && swapTx.paidReverse()) {
+      final idx = txs.indexWhere((_) => _.txid == swapTx.id);
+      if (idx == -1) {
+        final newTx = Transaction(
+          txid: swapTx.id,
+          timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          swapTx: updatedSwapTx,
+          sent: isRevSub ? 0 : swapTx.outAmount - swapTx.totalFees()!,
+          isSwap: true,
+          received:
+              isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
+          fee: swapTx.claimFees,
+          isLiquid: swapTx.isLiquid(),
         );
         txs.add(newTx);
       } else {

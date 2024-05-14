@@ -57,6 +57,8 @@ class Transaction with _$Transaction {
     );
   }
 
+  bool swapIdisTxid() => swapTx != null && swapTx!.id == txid;
+
   Uint8List? get psbtAsBytes =>
       psbt == null ? null : Uint8List.fromList(psbt!.codeUnits);
 
@@ -240,6 +242,8 @@ class SwapTx with _$SwapTx {
   const SwapTx._();
 
   factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
+
+  bool isLiquid() => walletType == BaseWalletType.Liquid;
 
   int? totalFees() {
     if (boltzFees == null || lockupFees == null || claimFees == null)
