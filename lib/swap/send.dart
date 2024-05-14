@@ -35,7 +35,45 @@ class SendInvAmtDisplay extends StatelessWidget {
         const Gap(4),
         BBText.body(amtStr, isBold: true),
         const Gap(16),
-        const SendLnFees(),
+        const _SwapFees(),
+      ],
+    );
+  }
+}
+
+class _SwapFees extends StatelessWidget {
+  const _SwapFees();
+
+  @override
+  Widget build(BuildContext context) {
+    final tx = context.select((SendCubit _) => _.state.tx);
+    final lockupFee = tx?.fee;
+    if (lockupFee == null) return const SizedBox.shrink();
+
+    final allFees = context.select((SwapCubit cubit) => cubit.state.allFees);
+    if (allFees == null) return const SizedBox.shrink();
+
+    final isLiq = context.select(
+      (SendCubit cubit) => cubit.state.selectedWalletBloc!.state.isLiq(),
+    );
+
+    final fees = isLiq ? allFees.lbtcSubmarine : allFees.btcSubmarine;
+
+    final totalFees = fees.boltzFeesRate + fees.claimFees + lockupFee;
+
+    final amt = context.select(
+      (CurrencyCubit _) => _.state.getAmountInUnits(
+        totalFees.toInt(),
+        isLiquid: isLiq,
+      ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const BBText.title('Total Fees'),
+        const Gap(4),
+        BBText.body(amt, isBold: true),
       ],
     );
   }

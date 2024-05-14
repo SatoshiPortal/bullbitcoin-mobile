@@ -156,11 +156,8 @@ class _Screen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (signed) ...[
-                if (!sent && !isLn)
-                  const TxDetailsScreen()
-                else
-                  const TxSuccess(),
+              if (signed && !isLn) ...[
+                if (!sent) const TxDetailsScreen() else const TxSuccess(),
               ] else ...[
                 const Gap(32),
                 const WalletSelectionDropDown(),
@@ -426,6 +423,16 @@ class _SendButton extends StatelessWidget {
 
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
 
+    final label = watchOnly
+        ? 'Generate PSBT'
+        : signed
+            ? sending
+                ? 'Broadcasting'
+                : 'Confirm'
+            : sending
+                ? 'Building Tx'
+                : 'Send';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -458,22 +465,23 @@ class _SendButton extends StatelessWidget {
                         .confirmClickedd(networkFees: fees);
                     return;
                   }
-                  final wallet = context.read<WalletBloc>().state.wallet!;
-                  final isLiq = wallet.isLiquid();
-                  final networkurl = !isLiq
-                      ? context.read<NetworkCubit>().state.getNetworkUrl()
-                      : context
-                          .read<NetworkCubit>()
-                          .state
-                          .getLiquidNetworkUrl();
+                  context.read<SendCubit>().sendSwapClicked();
+                  // final wallet = context.read<WalletBloc>().state.wallet!;
+                  // final isLiq = wallet.isLiquid();
+                  // final networkurl = !isLiq
+                  //     ? context.read<NetworkCubit>().state.getNetworkUrl()
+                  //     : context
+                  //         .read<NetworkCubit>()
+                  //         .state
+                  //         .getLiquidNetworkUrl();
 
-                  context.read<SwapCubit>().createSubSwapForSend(
-                        wallet: wallet,
-                        invoice: context.read<SendCubit>().state.address,
-                        amount: context.read<CurrencyCubit>().state.amount,
-                        isTestnet: context.read<NetworkCubit>().state.testnet,
-                        networkUrl: networkurl,
-                      );
+                  // context.read<SwapCubit>().createSubSwapForSend(
+                  //       wallet: wallet,
+                  //       invoice: context.read<SendCubit>().state.address,
+                  //       amount: context.read<CurrencyCubit>().state.amount,
+                  //       isTestnet: context.read<NetworkCubit>().state.testnet,
+                  //       networkUrl: networkurl,
+                  //     );
                   return;
                 }
 
@@ -484,15 +492,7 @@ class _SendButton extends StatelessWidget {
                 // final swaptx = context.read<SwapCubit>().state.swapTx!;
                 // context.read<SendCubit>().sendClicked(swaptx: swaptx);
               },
-              label: watchOnly
-                  ? 'Generate PSBT'
-                  : signed
-                      ? sending
-                          ? 'Broadcasting'
-                          : 'Confirm'
-                      : sending
-                          ? 'Building Tx'
-                          : 'Send',
+              label: label,
             ),
           ),
         ),

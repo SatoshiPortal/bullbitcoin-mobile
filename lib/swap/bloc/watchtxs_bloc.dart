@@ -472,10 +472,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
 
         case SubmarineSwapActions.settled:
+          __swapAlert(swapTx, wallet, emit);
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);
           if (w == null) return;
           await __closeSwap(swapTx, emit);
-          __swapAlert(swapTx, wallet, emit);
       }
     }
   }

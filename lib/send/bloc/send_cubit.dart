@@ -439,7 +439,7 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(downloadingFile: false, downloaded: true));
   }
 
-  void sendSwapClicked({
+  void buildTxFromSwap({
     required int networkFees,
     required SwapTx swaptx,
   }) async {
@@ -456,7 +456,7 @@ class SendCubit extends Cubit<SendState> {
     final address = swaptx.scriptAddress;
     final fee = networkFees;
 
-    emit(state.copyWith(sending: true, errSending: ''));
+    // emit(state.copyWith(sending: true, errSending: ''));
 
     final (buildResp, err) = await _walletTx.buildTx(
       wallet: localWallet,
@@ -478,23 +478,38 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    final (wallet, tx, _) = buildResp!;
+    final (_, tx, feeAmt) = buildResp!;
 
-    // emit(
-    //   state.copyWith(
-    //     psbtSigned: tx!.psbt,
-    //     psbtSignedFeeAmount: feeAmt,
-    //     tx: tx,
-    //     signed: true,
-    //   ),
-    // );
+    emit(
+      state.copyWith(
+        psbtSigned: tx!.psbt,
+        psbtSignedFeeAmount: feeAmt,
+        tx: tx,
+        signed: true,
+      ),
+    );
+  }
+
+  // -----------------
+  void sendSwapClicked() async {
+    emit(state.copyWith(sending: true, errSending: ''));
+
+    final tx = state.tx!;
+    final swap = state.tx!.swapTx!;
+    final w = state.selectedWalletBloc!.state.wallet;
+
+    final localWalletBloc = _homeCubit.state.getWalletBlocById(w!.id);
+    if (localWalletBloc == null) return;
+    final wallet = localWalletBloc.state.wallet;
+
+    if (!wallet!.mainWallet) return;
 
     final (wtxid, errBroadcast) = await _walletTx.broadcastTxWithWallet(
-      wallet: wallet!,
-      address: address,
+      wallet: wallet,
+      address: swap.scriptAddress,
       note: state.note,
-      transaction: tx!.copyWith(
-        swapTx: swaptx,
+      transaction: tx.copyWith(
+        swapTx: swap,
         isSwap: true,
       ),
     );
