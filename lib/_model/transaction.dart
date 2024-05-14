@@ -259,9 +259,7 @@ class SwapTx with _$SwapTx {
 
   bool paidSubmarine() =>
       isSubmarine &&
-      (status != null &&
-          (status!.status == SwapStatus.txnMempool ||
-              status!.status == SwapStatus.txnConfirmed));
+      (status != null && (status!.status == SwapStatus.txnMempool));
 
   bool settledSubmarine() =>
       isSubmarine &&
@@ -276,7 +274,7 @@ class SwapTx with _$SwapTx {
   bool claimableSubmarine() =>
       isSubmarine &&
       status != null &&
-      (status!.status == SwapStatus.txnMempool ||
+      (status!.status == SwapStatus.txnClaimPending ||
           status!.status == SwapStatus.txnConfirmed);
 
   bool claimableReverse() =>

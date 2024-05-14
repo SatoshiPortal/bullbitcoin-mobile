@@ -321,10 +321,10 @@ class WalletTx implements IWalletTransactions {
           final (liqWallet, errWallet) =
               _walletsRepository.getLwkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
+
           final (walletAndTxid, errBroadcast) =
               await _lwkTransactions.broadcastLiquidTxWithWallet(
             lwkWallet: liqWallet!,
-            txBytes: transaction.pset!,
             transaction: transaction,
             wallet: wallet,
           );

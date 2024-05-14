@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
@@ -309,12 +311,12 @@ class SwapBoltz {
           boltzUrl: boltzUrl,
           outAddress: claimAddress,
         );
-        final obj = res;
+        // final obj = res;
 
-        final swapSensitive = res.createSwapFromBtcLnV2Swap();
+        final swapSensitive = res.createSwapSensitiveFromBtcLnV2Swap();
         // SwapTxSensitive.fromBtcLnSwap(res);
         final err = await _secureStorage.saveValue(
-          key: StorageKeys.swapTxSensitive + '_' + obj.id,
+          key: StorageKeys.swapTxSensitive + '_' + res.id,
           value: jsonEncode(swapSensitive.toJson()),
         );
         if (err != null) throw err;
@@ -332,12 +334,12 @@ class SwapBoltz {
           boltzUrl: boltzUrl,
           outAddress: claimAddress,
         );
-        final obj = res;
+        // final obj = res;
 
         final swapSensitive = res.createSwapSensitiveFromLbtcLnV2Swap();
         // SwapTxSensitive.fromLbtcLnSwap(res);
         final err = await _secureStorage.saveValue(
-          key: StorageKeys.swapTxSensitive + '_' + obj.id,
+          key: StorageKeys.swapTxSensitive + '_' + res.id,
           value: jsonEncode(swapSensitive.toJson()),
         );
         if (err != null) throw err;
@@ -373,7 +375,7 @@ class SwapBoltz {
           boltzUrl: boltzUrl,
         );
 
-        final swapSensitive = res.createSwapFromLbtcLnV2Swap();
+        final swapSensitive = res.createSwapSensitiveFromLbtcLnV2Swap();
 
         //SwapTxSensitive.fromBtcLnSwap(res);
         final err = await _secureStorage.saveValue(
@@ -382,6 +384,7 @@ class SwapBoltz {
         );
         if (err != null) throw err;
         final swap = res.createSwapFromLbtcLnV2Swap();
+
         // SwapTx.fromBtcLnSwap(res);
 
         return (swap, null);
@@ -395,7 +398,7 @@ class SwapBoltz {
           boltzUrl: boltzUrl,
         );
 
-        final swapSensitive = res.createSwapFromBtcLnV2Swap();
+        final swapSensitive = res.createSwapSensitiveFromBtcLnV2Swap();
 
         //SwapTxSensitive.fromBtcLnSwap(res);
         final err = await _secureStorage.saveValue(
@@ -408,6 +411,33 @@ class SwapBoltz {
 
         return (swap, null);
       }
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(String?, Err?)> broadcastV2({
+    required SwapTx swapTx,
+    required Uint8List signedBytes,
+  }) async {
+    try {
+      if (!swapTx.isLiquid()) throw 'Only Liquid';
+
+      final (swapSensitiveStr, err) = await _secureStorage.getValue(
+        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+      );
+      if (err != null) throw err;
+
+      log('-----swap json\n' + swapSensitiveStr.toString() + '\n ------');
+      final swapSensitive = SwapTxSensitive.fromJson(
+        jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
+      );
+
+      final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+
+      final txid = await swap.broadcastTx(signedBytes: signedBytes);
+
+      return (txid, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }

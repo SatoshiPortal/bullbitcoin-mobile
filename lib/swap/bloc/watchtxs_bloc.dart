@@ -138,6 +138,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     required String swapId,
     required SwapStreamStatus status,
   }) async {
+    print('----swapstatus : $swapId - ${status.status}');
     for (final walletBloc in _homeCubit.state.walletBlocs!) {
       if (walletBloc.state.wallet!.hasOngoingSwap(swapId)) {
         final id = swapId;
@@ -407,7 +408,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     ProcessSwapTx event,
     Emitter<WatchTxsState> emit,
   ) async {
-    await Future.delayed(50.ms);
+    await Future.delayed(200.ms);
     final swapTx = event.swapTx;
     final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;
@@ -456,11 +457,14 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
         case SubmarineSwapActions.paid:
           __swapAlert(swapTx, wallet, emit);
+          if (swapTx.isLiquid())
+            await __coopCloseSwap(swapTx, walletBloc, emit);
           await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case SubmarineSwapActions.claimable:
           __swapAlert(swapTx, wallet, emit);
-          await __coopCloseSwap(swapTx, walletBloc, emit);
+          if (!swapTx.isLiquid())
+            await __coopCloseSwap(swapTx, walletBloc, emit);
           await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case SubmarineSwapActions.refundable:

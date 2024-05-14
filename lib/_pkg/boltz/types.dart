@@ -221,7 +221,7 @@ extension BtcLnV2 on BtcLnV2Swap {
     );
   }
 
-  SwapTxSensitive createSwapSensitiveFromLbtcLnV2Swap() {
+  SwapTxSensitive createSwapSensitiveFromBtcLnV2Swap() {
     return SwapTxSensitive(
       id: id,
       preimage: preimage.value,

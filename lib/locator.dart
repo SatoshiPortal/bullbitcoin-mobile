@@ -127,6 +127,12 @@ Future _setupAppServices() async {
 }
 
 Future _setupWalletServices() async {
+  locator.registerSingleton<SwapBoltz>(
+    SwapBoltz(
+      secureStorage: locator<SecureStorage>(),
+    ),
+  );
+
   locator.registerFactory<BDKSync>(() => BDKSync());
   locator.registerFactory<LWKSync>(() => LWKSync());
   locator.registerSingleton<BDKBalance>(BDKBalance());
@@ -138,6 +144,7 @@ Future _setupWalletServices() async {
   locator.registerSingleton<LWKTransactions>(
     LWKTransactions(
       networkRepository: locator<NetworkRepository>(),
+      swapBoltz: locator<SwapBoltz>(),
     ),
   );
   locator.registerSingleton<BDKUtxo>(BDKUtxo());
@@ -221,11 +228,6 @@ Future _setupWalletServices() async {
     ),
   );
 
-  locator.registerSingleton<SwapBoltz>(
-    SwapBoltz(
-      secureStorage: locator<SecureStorage>(),
-    ),
-  );
   locator.registerSingleton<WalletNetwork>(
     WalletNetwork(
       networkRepository: locator<NetworkRepository>(),

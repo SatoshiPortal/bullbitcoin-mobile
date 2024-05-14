@@ -4,15 +4,20 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 class LWKTransactions {
-  LWKTransactions({required NetworkRepository networkRepository})
-      : _networkRepository = networkRepository;
+  LWKTransactions({
+    required NetworkRepository networkRepository,
+    required SwapBoltz swapBoltz,
+  })  : _networkRepository = networkRepository,
+        _swapBoltz = swapBoltz;
 
   final NetworkRepository _networkRepository;
+  final SwapBoltz _swapBoltz;
 
   Transaction addOutputAddresses(Address newAddress, Transaction tx) {
     final outAddrs = List<Address>.from(tx.outAddrs);
@@ -536,19 +541,37 @@ class LWKTransactions {
   }
 
   Future<((Wallet, String)?, Err?)> broadcastLiquidTxWithWallet({
-    required Uint8List txBytes,
     required Wallet wallet,
     required lwk.Wallet lwkWallet,
     required Transaction transaction,
+    bool useOnlyLwk = true, // TODO: Remove this
   }) async {
     try {
       final (blockchain, err) = _networkRepository.liquidUrl;
       if (err != null) throw err;
+      String txid;
 
-      final txid = await lwk.Wallet.broadcastTx(
-        electrumUrl: blockchain!,
-        txBytes: txBytes,
-      );
+      if (useOnlyLwk) {
+        txid = await lwk.Wallet.broadcastTx(
+          electrumUrl: blockchain!,
+          txBytes: transaction.pset!,
+        );
+      } else {
+        if (!transaction.isSwap) {
+          txid = await lwk.Wallet.broadcastTx(
+            electrumUrl: blockchain!,
+            txBytes: transaction.pset!,
+          );
+        } else {
+          final (txxid, errBroadcast) = await _swapBoltz.broadcastV2(
+            swapTx: transaction.swapTx!,
+            signedBytes: transaction.pset!,
+          );
+          if (errBroadcast != null) throw errBroadcast;
+          txid = txxid!;
+        }
+      }
+
       final newTx = transaction.copyWith(
         txid: txid,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,

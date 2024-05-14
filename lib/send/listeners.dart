@@ -13,6 +13,7 @@ import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
 
@@ -30,26 +31,41 @@ class SendListeners extends StatelessWidget {
           listener: (context, state) {
             if (state.syncWallet != null || state.txPaid == null) return;
 
+            print('---- send listener 1');
+
             final tx = state.txPaid!;
             final amt = tx.outAmount;
+            print('---- send listener 2');
+
             final amtStr =
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = tx.actionPrefixStr();
+            print('---- send listener 3');
 
             final isSendPage = context.read<NavName>().state == '/send';
+
+            print('---- send listener 4');
 
             final swapOnPage = context.read<SwapCubit>().state.swapTx;
             final sameSwap = swapOnPage?.id == tx.id;
 
-            if (sameSwap && isSendPage)
+            print('---- send listener 5 ' + (swapOnPage?.id ?? ''));
+            print('---- send listener 5 ' + (tx.id));
+
+            if (sameSwap && isSendPage) {
               context.read<SendCubit>().txSettled();
-            else
+              print('---- send listener 6');
+            } else {
               showToastWidget(
                 position: ToastPosition.top,
                 AlertUI(text: '$prefix $amtStr'),
                 animationCurve: Curves.decelerate,
               );
 
+              print('---- send listener 7');
+            }
+
+            print('---- send listener 8');
             context.read<WatchTxsBloc>().add(ClearAlerts());
           },
         ),
@@ -78,22 +94,30 @@ class SendListeners extends StatelessWidget {
         // ),
         BlocListener<SwapCubit, SwapState>(
           listenWhen: (previous, current) => previous.swapTx != current.swapTx,
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state.swapTx == null) return;
+
+            await Future.delayed(300.ms);
+
             final fees =
                 context.read<NetworkFeesCubit>().state.selectedOrFirst(true);
 
             context
                 .read<SendCubit>()
-                .confirmClickedd(networkFees: fees, swaptx: state.swapTx);
+                .sendSwapClicked(networkFees: fees, swaptx: state.swapTx!);
           },
         ),
         BlocListener<SwapCubit, SwapState>(
           listenWhen: (previous, current) =>
               previous.updatedWallet != current.updatedWallet,
           listener: (context, state) async {
+            print('--- send wallet listener 1');
             final updatedWallet = state.updatedWallet;
+            print('--- send wallet listener 2');
+
             if (updatedWallet == null) return;
+
+            print('--- send wallet listener 3');
 
             context
                 .read<HomeCubit>()
@@ -111,11 +135,18 @@ class SendListeners extends StatelessWidget {
                   ),
                 );
 
+            print('--- send wallet listener 4');
             final isTestnet = context.read<NetworkCubit>().state.testnet;
+
+            print('--- send wallet listener 5');
+
+            // await Future.delayed(100.ms);
 
             context
                 .read<WatchTxsBloc>()
                 .add(WatchWallets(isTestnet: isTestnet));
+
+            print('--- send wallet listener 6');
 
             context.read<SwapCubit>().clearUpdatedWallet();
           },

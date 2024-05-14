@@ -145,6 +145,9 @@ class _Screen extends StatelessWidget {
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
     // final showSend =
     //     context.select((SendCubit cubit) => cubit.state.showSendButton);
+
+    if (sent && isLn) return const SendingLnTx();
+
     return ColoredBox(
       color: sent ? Colors.green : context.colour.background,
       child: SingleChildScrollView(

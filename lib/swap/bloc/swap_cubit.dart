@@ -408,7 +408,7 @@ class SwapCubit extends Cubit<SwapState> {
     }
 
     // await Future.delayed(const Duration(seconds: 5));
-
+    print('-----swap added to wallet ${swapTx.id}');
     emit(state.copyWith(updatedWallet: updatedWallet));
   }
 
