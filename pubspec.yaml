@@ -43,7 +43,7 @@ dependencies:
   dio: ^5.2.1+1
   timeago: ^3.3.0
   pattern_formatter: ^3.0.0
-  flutter_native_splash: ^2.2.17
+  flutter_native_splash: ^2.4.0
   url_launcher: ^6.1.10
   file_picker: ^6.1.1
   loading_animation_widget: ^1.2.0+4
@@ -91,7 +91,7 @@ dev_dependencies:
   json_serializable: ^6.5.4
   bloc_test: ^9.1.7
   mocktail: ^1.0.1
-  # flutter_launcher_icons: 
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
@@ -115,14 +115,14 @@ flutter_native_splash:
   background_image: "assets/splash.png"
   android_12:
     color: "#C50909"
-    image: assets/iconlarge.png
+    image: assets/bb-logo-white-splash.png
     # icon_background_color: "#C50909"
-    icon_background_color: "#000000"
+    icon_background_color: "#C50909"
 
   color_android: "#C50909"
 
-flutter_icons:
+flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icon.png"
+  image_path: "assets/iconnew.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
