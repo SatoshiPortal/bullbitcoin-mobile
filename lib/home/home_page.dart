@@ -31,13 +31,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final homeCubit = context.read<HomeCubit>();
-    // return MultiBlocProvider(
-    //   providers: [
-    //     BlocProvider.value(value: homeCubit),
-    //   ],
-    //   child: const _Screen(),
-    // );
     return const _Screen();
   }
 }
@@ -66,7 +59,6 @@ class _ScreenState extends State<_Screen> {
     if (cardsLen == 2) return _twoCardH;
     if (cardsLen == 3) return _threeCardH;
 
-    // final isOdd = cardsLen % 2 != 0;
     final isLastPage = _currentPage == (cardsLen / 3).floor();
     final cardsOnPage = isLastPage ? cardsLen % 3 : 3;
 
@@ -75,8 +67,6 @@ class _ScreenState extends State<_Screen> {
     if (cardsOnPage == 3) return _threeCardH;
 
     return _threeCardH;
-
-    // return (isLastPage && isOdd) ? _oneCardH : _threeCardH;
   }
 
   static AppBar _buildAppBar(BuildContext context) {
@@ -85,29 +75,19 @@ class _ScreenState extends State<_Screen> {
       shadowColor: context.colour.primary.withOpacity(0.2),
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      // systemOverlayStyle: SystemUiOverlayStyle(
-      //   statusBarColor: context.colour.background,
-      //   systemStatusBarContrastEnforced: true,
-      // ),
       flexibleSpace: const HomeTopBar2(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((HomeCubit x) => x.state.updated);
-    final loading = context.select((HomeCubit x) => x.state.loadingWallets);
-    if (loading) return const Scaffold(body: SizedBox.shrink());
-
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final walletBlocs = context
-        .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+    final walletBlocsLen =
+        context.select((HomeCubit x) => x.state.lenWalletsFromNetwork(network));
 
-    if (walletBlocs.isEmpty) {
+    if (walletBlocsLen == 0) {
       final isTestnet = network == BBNetwork.Testnet;
-      // if (!isTestnet) {
 
-      // }
       Widget widget = Scaffold(
         appBar: !isTestnet ? null : _buildAppBar(context),
         body: HomeNoWallets(fullRed: !isTestnet),
@@ -125,10 +105,11 @@ class _ScreenState extends State<_Screen> {
         context.select((HomeCubit x) => x.state.homeWarnings(network)).length *
             40.0;
 
-    final h = _calculateHeight(walletBlocs.length);
+    final h = _calculateHeight(walletBlocsLen);
 
     scheduleMicrotask(() async {
       await Future.delayed(50.ms);
+
       SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(
           statusBarColor: context.colour.background,
@@ -150,7 +131,6 @@ class _ScreenState extends State<_Screen> {
             child: SizedBox(
               height: 310,
               child: CardsList(
-                walletBlocs: walletBlocs,
                 onChanged: _onChanged,
               ),
             ).animate(delay: 300.ms).fadeIn(),
@@ -160,7 +140,6 @@ class _ScreenState extends State<_Screen> {
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 height: h + warningsSize,
-                // height: 310,
               ),
               Expanded(
                 child: ColoredBox(
@@ -175,9 +154,7 @@ class _ScreenState extends State<_Screen> {
             child: Container(
               height: 128,
               margin: const EdgeInsets.only(top: 16),
-              child: HomeBottomBar2(
-                walletBloc: walletBlocs.length == 1 ? walletBlocs[0] : null,
-              ),
+              child: const HomeBottomBar2(walletBloc: null),
             ),
           ),
         ],
@@ -189,11 +166,9 @@ class _ScreenState extends State<_Screen> {
 class CardsList extends StatelessWidget {
   const CardsList({
     super.key,
-    required this.walletBlocs,
     required this.onChanged,
   });
 
-  final List<WalletBloc> walletBlocs;
   final Function(int) onChanged;
 
   static List<CardColumn> buildCardColumns(List<WalletBloc> wallets) {
@@ -218,6 +193,11 @@ class CardsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _ = context.select((HomeCubit x) => x.state.updated);
+
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final walletBlocs = context
+        .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
     final columns = buildCardColumns(walletBlocs);
 
     return PageView(
@@ -255,7 +235,6 @@ class CardColumn extends StatelessWidget {
             value: walletTop,
             child: const CardItem(),
           ),
-          // const Gap(8),
           if (walletBottom != null)
             BlocProvider.value(
               value: walletBottom!,
@@ -322,15 +301,6 @@ class CardItem extends StatelessWidget {
     final fiatAmt = context
         .select((NetworkCubit x) => x.state.calculatePrice(sats, fiatCurrency));
 
-    // return const SizedBox(
-    //   height: 125,
-    //   width: double.infinity,
-    //   child: Card(
-    //     color: Colors.amber,
-    //     elevation: 2,
-    //   ),
-    // );
-
     return SizedBox(
       width: double.infinity,
       height: 100,
@@ -377,19 +347,7 @@ class CardItem extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // TopLeft(
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.only(
-                  //       top: 8,
-                  //     ),
-                  //     child: BBText.titleLarge(
-                  //       name ?? fingerprint,
-                  //       onSurface: true,
-                  //     ),
-                  //   ),
-                  // ),
                   Column(
-                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const Gap(8),
@@ -400,7 +358,6 @@ class CardItem extends StatelessWidget {
                         compact: true,
                       ),
                       const Gap(4),
-
                       Opacity(
                         opacity: 0.7,
                         child: BBText.bodySmall(
@@ -434,16 +391,12 @@ class CardItem extends StatelessWidget {
                         ],
                       ),
                       if (fiatCurrency != null) ...[
-                        // const Gap(16),
                         Row(
-                          // crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             BBText.bodySmall(
                               '~' + fiatAmt,
                               onSurface: true,
                               fontSize: 12,
-
-                              // isBold: true,
                             ),
                             const Gap(4),
                             Padding(
@@ -452,14 +405,12 @@ class CardItem extends StatelessWidget {
                                 fiatCurrency.shortName.toUpperCase(),
                                 onSurface: true,
                                 fontSize: 12,
-                                // isBold: true,
                               ),
                             ),
                           ],
                         ),
                       ],
                       const Gap(4),
-                      // const Spacer(flex: 2),
                     ],
                   ),
                 ],
@@ -479,21 +430,16 @@ extension O on Object? {
 class WalletTag extends StatelessWidget {
   const WalletTag({
     super.key,
-    // required this.wallet,
     required this.tx,
   });
 
-  // final Wallet wallet;
   final Transaction tx;
 
   static (String, Color) _buildTagDetails(
-    // BuildContext context,
     bool walletIsLiquid,
     Transaction tx,
   ) {
     final hasSwap = tx.swapTx != null;
-    // tx.isSwap;
-    // final walletIsLiquid = wallet.isLiquid();
 
     Color colour;
     String text;
@@ -541,15 +487,8 @@ class HomeTopBar2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    // final totalSats = context.select((HomeCubit _) => _.state.totalBalanceSats(network));
-
     final currency =
         context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
-    // final fiatCurrency = context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
-
-    // final fiatAmt =
-    // context.select((NetworkCubit _) => _.state.calculatePrice(totalSats, currency));
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -596,15 +535,7 @@ class HomeTopBar2 extends StatelessWidget {
                           currency.price.toString() +
                               ' ' +
                               currency.shortName.toUpperCase(),
-                          // fontSize: 18,
                         ),
-                        // const Gap(4),
-                        // Padding(
-                        //   padding: const EdgeInsets.only(bottom: 2),
-                        //   child: BBText.bodySmall(
-                        //     currency.shortName.toUpperCase(),
-                        //   ),
-                        // ),
                       ],
                     ),
                 ],
@@ -612,17 +543,6 @@ class HomeTopBar2 extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          // IconButton(
-          //   key: UIKeys.homeImportButton,
-          //   color: context.colour.onBackground,
-          //   icon: const Icon(
-          //     FontAwesomeIcons.circlePlus,
-          //     shadows: [],
-          //   ),
-          //   onPressed: () {
-          //     context.push('/import');
-          //   },
-          // ),
           IconButton(
             key: UIKeys.homeSettingsButton,
             color: context.colour.onBackground,
@@ -639,11 +559,8 @@ class HomeTopBar2 extends StatelessWidget {
           ),
           IconButton(
             iconSize: 30,
-
-            // key: UIKeys.homeSettingsButton,
             color: context.colour.onBackground,
             visualDensity: VisualDensity.compact,
-
             padding: const EdgeInsets.only(bottom: 12),
             icon: const Icon(
               FontAwesomeIcons.user,
@@ -660,10 +577,27 @@ class HomeTopBar2 extends StatelessWidget {
   }
 }
 
-class HomeBottomBar2 extends StatelessWidget {
+class HomeBottomBar2 extends StatefulWidget {
   const HomeBottomBar2({super.key, required this.walletBloc});
 
   final WalletBloc? walletBloc;
+
+  @override
+  State<HomeBottomBar2> createState() => _HomeBottomBar2State();
+}
+
+class _HomeBottomBar2State extends State<HomeBottomBar2> {
+  WalletBloc? wb;
+  @override
+  void initState() {
+    if (widget.walletBloc == null) {
+      final network = context.read<NetworkCubit>().state.getBBNetwork();
+      final walletBlocs =
+          context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+      if (walletBlocs.length == 1) wb = walletBlocs.first;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -685,7 +619,10 @@ class HomeBottomBar2 extends StatelessWidget {
                       child: BBButton.big(
                         label: 'Receive',
                         onPressed: () {
-                          context.push('/receive', extra: walletBloc);
+                          context.push(
+                            '/receive',
+                            extra: widget.walletBloc ?? wb,
+                          );
                         },
                       ),
                     ),
@@ -696,7 +633,6 @@ class HomeBottomBar2 extends StatelessWidget {
                         onPressed: () {
                           context.push(
                             '/send',
-                            // extra: walletBloc,
                           );
                         },
                       ),
@@ -770,14 +706,11 @@ class ScanButton extends StatelessWidget {
           surfaceTintColor: bgColour.withOpacity(0.5),
           elevation: 2,
           splashFactory: NoSplash.splashFactory,
-          // foregroundColor: Colors.red,
-
           enableFeedback: false,
           padding: EdgeInsets.zero,
         ),
         child: Icon(
           Icons.qr_code_2,
-          // FontAwesomeIcons.barcode,
           color: context.colour.onBackground,
           size: 32,
         ),

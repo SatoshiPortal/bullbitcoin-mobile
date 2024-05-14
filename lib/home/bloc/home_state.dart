@@ -39,6 +39,9 @@ class HomeState with _$HomeState {
     return blocs;
   }
 
+  int lenWalletsFromNetwork(BBNetwork network) =>
+      walletBlocsFromNetwork(network).length;
+
   List<WalletBloc> getMainWallets(bool isTestnet) {
     final network = isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
     final instantwallet = getMainInstantWallet(network);

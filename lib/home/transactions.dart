@@ -31,6 +31,8 @@ class HomeTransactions extends StatefulWidget {
 class _HomeTransactionsState extends State<HomeTransactions> {
   @override
   Widget build(BuildContext context) {
+    final _ = context.select((HomeCubit x) => x.state.updated);
+
     final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocs);
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final txs =
