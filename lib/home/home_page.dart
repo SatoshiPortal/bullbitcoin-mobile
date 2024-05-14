@@ -499,12 +499,14 @@ class HomeTopBar2 extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             margin: const EdgeInsets.only(
               left: 32,
-              top: 28,
+              // top: 28,
             ),
+            height: 40,
+            width: 40,
             child: Image.asset(
-              'assets/bb-logo-red.png',
-              height: 60,
-              width: 60,
+              'assets/bb-logo-small.png',
+              height: 40,
+              width: 40,
             ),
           ),
           const Gap(4),
