@@ -59,7 +59,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) async {
     print('WatchWallets: istesntnet? ${event.isTestnet}');
-    // await Future.delayed(1.seconds);
+    await Future.delayed(100.ms);
     final walletBlocs = _homeCubit.state.getMainWallets(event.isTestnet);
     final swapsToWatch = <SwapTx>[];
     for (final walletBloc in walletBlocs) {
@@ -366,16 +366,19 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     Emitter<WatchTxsState> emit,
   ) async {
     if (swapTx.paidReverse()) {
+      print('ALERT Swap Paid Reverse');
       emit(state.copyWith(txPaid: swapTx));
       return;
     }
 
     if (swapTx.settledReverse()) {
+      print('ALERT Swap Settled Reverse');
       emit(state.copyWith(syncWallet: wallet, txPaid: swapTx));
       return;
     }
 
     if (swapTx.settledSubmarine()) {
+      print('ALERT Swap Settled Submarine');
       emit(state.copyWith(syncWallet: wallet, txPaid: swapTx));
       return;
     }
@@ -404,7 +407,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     ProcessSwapTx event,
     Emitter<WatchTxsState> emit,
   ) async {
-    // await Future.delayed(1.seconds);
+    await Future.delayed(50.ms);
     final swapTx = event.swapTx;
     final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;
@@ -430,8 +433,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
         case ReverseSwapActions.claimable:
           __swapAlert(swapTx, wallet, emit);
-          final swap = await __claimSwap(swapTx, walletBloc, emit);
-          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+          if (!wallet.isLiquid()) {
+            final swap = await __claimSwap(swapTx, walletBloc, emit);
+            if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+          } else
+            await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case ReverseSwapActions.settled:
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);

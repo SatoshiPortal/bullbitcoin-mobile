@@ -307,15 +307,25 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
       listenWhen: (previous, current) => previous.txPaid != current.txPaid,
       listener: (context, state) async {
         final swapTx = state.txPaid;
+        print('----> receiving 1');
         if (swapTx == null) return;
+        print('----> receiving 2');
         if (swapTx.id != widget.tx.id) return;
-
+        print('----> receiving 3');
         if (swapTx.settledReverse()) {
+          print('----> receiving 4');
+
           setState(() {
             received = true;
           });
-          await Future.delayed(800.ms);
+          print('----> receiving 5');
+
+          await Future.delayed(100.ms);
+          print('----> receiving 6');
+
           tx = context.read<HomeCubit>().state.getTxFromSwap(widget.tx);
+          print('----> receiving 7');
+
           setState(() {});
         }
       },
