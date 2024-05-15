@@ -289,6 +289,7 @@ class ReceivingSwapPage extends StatefulWidget {
 
 class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
   bool received = false;
+  bool paid = false;
   Transaction? tx;
 
   @override
@@ -313,6 +314,14 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
         print('----> receiving 2');
         if (swapTx.id != widget.tx.id) return;
         print('----> receiving 3');
+        if (swapTx.paidReverse()) {
+          print('----> receiving paid 4');
+
+          setState(() {
+            paid = true;
+          });
+          print('----> receiving paid 5');
+        }
         if (swapTx.settledReverse()) {
           print('----> receiving 4');
 
@@ -347,7 +356,11 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (!received)
-              const BBText.body('Receiving payment')
+              if (!paid) ...[
+                const BBText.body('Receiving payment'),
+              ] else ...[
+                const BBText.body('Invoice paid'),
+              ]
             else
               const BBText.body('Payment received'),
             const Gap(16),
@@ -388,13 +401,16 @@ class _OnChainWarning extends StatelessWidget {
         Icon(
           FontAwesomeIcons.triangleExclamation,
           color: context.colour.primary,
-          size: 10,
+          size: 20,
         ),
-        const Gap(4),
-        const BBText.bodySmall(
-          'On-chain payments can take a while to confirm',
-          isRed: true,
-          fontSize: 8,
+        const Gap(8),
+        const SizedBox(
+          width: 250,
+          child: BBText.bodySmall(
+            'The sender has sent the lightning payment, but the swap is still in progress. It will take on on-chain confirmation before his Lightning payment succeeds.',
+            isRed: true,
+            fontSize: 10,
+          ),
         ),
       ],
     );

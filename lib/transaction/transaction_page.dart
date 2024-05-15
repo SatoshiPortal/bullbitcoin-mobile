@@ -24,6 +24,7 @@ import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
 import 'package:bb_mobile/transaction/rename_label.dart';
+import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -387,11 +388,11 @@ class _SwapDetails extends StatelessWidget {
     final status = context.select(
       (TransactionCubit cubit) => cubit.state.tx.swapTx?.status?.status,
     );
-    final statusStr = status?.toString() ?? '';
     // final showQr = status?.showQR ?? true; // may not be required
 
     final swap = tx.swapTx;
     if (swap == null) return const SizedBox.shrink();
+    final statusStr = status.getStr(swap.isSubmarine);
 
     final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
@@ -485,12 +486,16 @@ class _SwapDetails extends StatelessWidget {
               const Gap(24),
             ],
             const Gap(4),
-            if (statusStr.isNotEmpty) ...[
+            if (statusStr != null) ...[
               const BBText.title('Status'),
               const Gap(4),
               BBText.titleLarge(
-                statusStr,
+                statusStr.$1,
                 isBold: true,
+              ),
+              const Gap(4),
+              BBText.bodySmall(
+                statusStr.$2,
               ),
             ],
             const Gap(4),
@@ -523,5 +528,52 @@ class _SwapDetails extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+extension X on boltz.SwapStatus? {
+  (String, String)? getStr(bool isSubmarine) {
+    (String, String) status = ('', '');
+    switch (this) {
+      case boltz.SwapStatus.swapCreated:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.swapExpired:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.swapRefunded:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.swapError:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.txnMempool:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.txnClaimPending:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.txnClaimed:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.txnConfirmed:
+        status = ('Confirmed', 'Transaction confirmed');
+      case boltz.SwapStatus.txnRefunded:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.txnFailed:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.txnLockupFailed:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.invoiceSet:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.invoicePending:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.invoicePaid:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.invoiceFailedToPay:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.invoiceSettled:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.invoiceExpired:
+      // TODO: Handle this case.
+      case boltz.SwapStatus.minerfeePaid:
+      // TODO: Handle this case.
+      case null:
+      // TODO: Handle this case.
+    }
+    return status;
   }
 }
