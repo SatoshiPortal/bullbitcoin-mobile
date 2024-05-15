@@ -464,7 +464,10 @@ class SendCubit extends Cubit<SendState> {
       address: address,
       amount: swaptx.outAmount,
       sendAllCoin: false,
-      feeRate: localWallet.isLiquid() ? 0.1 : fee.toDouble(),
+      feeRate:
+          localWallet.isLiquid() && localWallet.network == BBNetwork.Mainnet
+              ? 0.01
+              : fee.toDouble(),
       enableRbf: false,
       note: state.note,
     );

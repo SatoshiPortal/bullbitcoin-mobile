@@ -23,7 +23,6 @@ import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
-import 'package:bb_mobile/transaction/bump_fees.dart';
 import 'package:bb_mobile/transaction/rename_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -241,8 +240,8 @@ class _TxDetails extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Gap(24),
-            const BumpFeesButton(),
+            // const Gap(24),
+            // const BumpFeesButton(),
             BBText.title(
               isReceived ? 'Amount received' : 'Amount sent',
             ),
