@@ -148,9 +148,9 @@ extension SwapExt on SwapTx {
       swapScript: BtcSwapScriptV2Str(
         swapType: tx.isSubmarine ? SwapType.submarine : SwapType.reverse,
         hashlock: sensitive.hash160,
-        receiverPubkey: tx.isSubmarine ? tx.boltzPubkey! : sensitive.publicKey,
+        receiverPubkey: tx.isSubmarine ? tx.boltzPubkey! : tx.publicKey!,
         locktime: tx.locktime!,
-        senderPubkey: tx.isSubmarine ? sensitive.publicKey : tx.boltzPubkey!,
+        senderPubkey: tx.isSubmarine ? tx.publicKey! : tx.boltzPubkey!,
         fundingAddrs: tx.scriptAddress,
       ),
     );

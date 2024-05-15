@@ -378,7 +378,7 @@ class LWKTransactions {
           height: tx.height,
           timestamp: tx.timestamp,
           rbfEnabled: false,
-          outAddrs: outAddressFinal!,
+          outAddrs: outAddressFinal ?? [],
           isLiquid: true,
           swapTx: storedTx?.swapTx,
           isSwap: storedTx?.isSwap ?? false,

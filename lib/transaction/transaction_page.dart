@@ -536,43 +536,65 @@ extension X on boltz.SwapStatus? {
     (String, String) status = ('', '');
     switch (this) {
       case boltz.SwapStatus.swapCreated:
-      // TODO: Handle this case.
+        status =
+            ('Created', 'Swap has been created but no payment has been made.');
       case boltz.SwapStatus.swapExpired:
-      // TODO: Handle this case.
+        status = ('Expired', 'Swap has expired');
       case boltz.SwapStatus.swapRefunded:
-      // TODO: Handle this case.
+        status = ('Refunded', 'Swap has been successfully refunded');
       case boltz.SwapStatus.swapError:
-      // TODO: Handle this case.
+        status = ('Error', 'Swap was unsuccessful');
       case boltz.SwapStatus.txnMempool:
-      // TODO: Handle this case.
+        status = (
+          'Mempool',
+          isSubmarine
+              ? 'You have paid the swap lockup transaction. The invoice will be paid as soon as the transaction is confirmed.'
+              : 'Boltz has made the lockup transaction, you will be able to claim it as soon as the transaction is confirmed.'
+        );
       case boltz.SwapStatus.txnClaimPending:
-      // TODO: Handle this case.
+        status = (
+          'Claim Pending',
+          'The lightning invoice has been paid. Waiting for boltz to complete the swap.'
+        );
       case boltz.SwapStatus.txnClaimed:
-      // TODO: Handle this case.
+        status = ('Claimed', 'The swap is completed.');
       case boltz.SwapStatus.txnConfirmed:
-        status = ('Confirmed', 'Transaction confirmed');
+        status = (
+          'Confirmed',
+          isSubmarine
+              ? 'Your lockup transaction is confirmed. The invoice will be paid momentarily.'
+              : 'Boltz lockup transaction is confirmed. The swap will be claimed and you will recieve funds after the claim transaction gets confirmed.'
+        );
       case boltz.SwapStatus.txnRefunded:
-      // TODO: Handle this case.
+        status = ('Refunded', 'The swap has been successfully refunded.');
       case boltz.SwapStatus.txnFailed:
-      // TODO: Handle this case.
+        status = ('Transaction Failed', 'The swap will be refunded.');
       case boltz.SwapStatus.txnLockupFailed:
-      // TODO: Handle this case.
+        status = ('Transaction  Lockup Failed', 'The swap will be refunded.');
       case boltz.SwapStatus.invoiceSet:
-      // TODO: Handle this case.
+        status = ('Invoice Set', 'The invoice for the swap has been set.');
       case boltz.SwapStatus.invoicePending:
-      // TODO: Handle this case.
+        status = ('Invoice Pending', 'The invoice for the swap is pending.');
       case boltz.SwapStatus.invoicePaid:
-      // TODO: Handle this case.
+        status = ('Invoice-Paid', 'The invoice has been successfully paid.');
       case boltz.SwapStatus.invoiceFailedToPay:
-      // TODO: Handle this case.
+        status = (
+          'Failed to pay invoice',
+          'The invoice has failed to pay. This transaction will be refunded.'
+        );
       case boltz.SwapStatus.invoiceSettled:
-      // TODO: Handle this case.
+        status = (
+          'Invoice Settled',
+          'The invoice has settled and the swap is completed.'
+        );
       case boltz.SwapStatus.invoiceExpired:
-      // TODO: Handle this case.
+        status = (
+          'Invoice Expired',
+          'The invoice has expirted. Swap will be deleted.'
+        );
       case boltz.SwapStatus.minerfeePaid:
-      // TODO: Handle this case.
+        status = ('Miner Fee Paid.', '');
       case null:
-      // TODO: Handle this case.
     }
     return status;
   }
