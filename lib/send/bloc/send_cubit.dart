@@ -484,7 +484,7 @@ class SendCubit extends Cubit<SendState> {
       state.copyWith(
         psbtSigned: tx!.psbt,
         psbtSignedFeeAmount: feeAmt,
-        tx: tx,
+        tx: tx.copyWith(swapTx: swaptx, isSwap: true),
         signed: true,
         sending: false,
       ),

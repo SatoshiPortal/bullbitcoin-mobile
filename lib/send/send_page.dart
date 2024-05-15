@@ -465,7 +465,7 @@ class _SendButton extends StatelessWidget {
                         .confirmClickedd(networkFees: fees);
                     return;
                   }
-                  context.read<SendCubit>().sendSwapClicked();
+                  // context.read<SendCubit>().sendSwapClicked();
                   // final wallet = context.read<WalletBloc>().state.wallet!;
                   // final isLiq = wallet.isLiquid();
                   // final networkurl = !isLiq
@@ -489,6 +489,7 @@ class _SendButton extends StatelessWidget {
                   context.read<SendCubit>().sendClicked();
                   return;
                 }
+                context.read<SendCubit>().sendSwapClicked();
                 // final swaptx = context.read<SwapCubit>().state.swapTx!;
                 // context.read<SendCubit>().sendClicked(swaptx: swaptx);
               },
