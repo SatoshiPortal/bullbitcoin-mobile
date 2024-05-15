@@ -1,12 +1,15 @@
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
@@ -132,6 +135,7 @@ class SendingLnTx extends StatelessWidget {
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
     // final tx = context.select((SendCubit cubit) => cubit.state.tx);
     final tx = context.select((SendCubit cubit) => cubit.state.tx);
+    final swap = context.select((SwapCubit cubit) => cubit.state.swapTx);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -147,6 +151,10 @@ class SendingLnTx extends StatelessWidget {
         SendTick(sent: settled),
         const Gap(16),
         BBText.body(amtStr),
+        if (!settled && swap != null) ...[
+          const Gap(24),
+          _OnChainWarning(swapTx: swap),
+        ],
         const Gap(40),
         if (tx != null)
           BBButton.big(
@@ -194,6 +202,37 @@ class SendTick extends StatelessWidget {
                 ),
               ),
             ),
+    );
+  }
+}
+
+class _OnChainWarning extends StatelessWidget {
+  const _OnChainWarning({required this.swapTx});
+
+  final SwapTx swapTx;
+
+  @override
+  Widget build(BuildContext context) {
+    if (swapTx.isLiquid()) return const SizedBox.shrink();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          FontAwesomeIcons.triangleExclamation,
+          color: context.colour.primary,
+          size: 20,
+        ),
+        const Gap(8),
+        const SizedBox(
+          width: 250,
+          child: BBText.bodySmall(
+            'Your onchain payment has been sent, but the swap is still in progress. It will take on on-chain confirmation before the Lightning payment succeeds.',
+            isRed: true,
+            fontSize: 10,
+          ),
+        ),
+      ],
     );
   }
 }

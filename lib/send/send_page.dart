@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
@@ -13,6 +14,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -143,6 +145,13 @@ class _Screen extends StatelessWidget {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
+
+    final showWarning = context.select((SwapCubit x) => x.state.showWarning());
+
+    final walletIsLiquid = context.select(
+      (WalletBloc x) => x.state.wallet!.baseWalletType == BaseWalletType.Liquid,
+    );
+
     // final showSend =
     //     context.select((SendCubit cubit) => cubit.state.showSendButton);
 
@@ -156,27 +165,31 @@ class _Screen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (signed && !isLn) ...[
-                if (!sent) const TxDetailsScreen() else const TxSuccess(),
+              if (showWarning && !walletIsLiquid) ...[
+                const _Warnings(),
               ] else ...[
-                const Gap(32),
-                const WalletSelectionDropDown(),
-                const Gap(8),
-                const _Balance(),
-                const Gap(48),
-                const AddressField(),
-                const Gap(24),
-                const AmountField(),
-                if (!isLn) ...[
+                if (signed && !isLn) ...[
+                  if (!sent) const TxDetailsScreen() else const TxSuccess(),
+                ] else ...[
+                  const Gap(32),
+                  const WalletSelectionDropDown(),
+                  const Gap(8),
+                  const _Balance(),
+                  const Gap(48),
+                  const AddressField(),
                   const Gap(24),
-                  const NetworkFees(),
+                  const AmountField(),
+                  if (!isLn) ...[
+                    const Gap(24),
+                    const NetworkFees(),
+                  ],
+                  const Gap(8),
+                  const AdvancedOptions(),
                 ],
-                const Gap(8),
-                const AdvancedOptions(),
+                const _SendButton(),
+                const SendErrDisplay(),
+                const Gap(80),
               ],
-              const _SendButton(),
-              const SendErrDisplay(),
-              const Gap(80),
             ],
           ),
         ),
@@ -797,6 +810,119 @@ class TxSuccess extends StatelessWidget {
           ],
         ).animate().fadeIn(),
       ),
+    );
+  }
+}
+
+class _Warnings extends StatelessWidget {
+  const _Warnings();
+
+  Widget _buildLowAmtWarn() {
+    return const Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BBText.titleLarge('Small amount warning', isRed: true),
+        Gap(8),
+        BBText.bodySmall(
+          'You are about to send less than 0.01 BTC as a Lightning Network payment using on-chain Bitcoin from your Secure Bitcoin Wallet.',
+        ),
+        Gap(8),
+        BBText.bodySmall(
+          'Only do this if you specifically want to send funds from your Secure Bitcoin Wallet.',
+          isBold: true,
+        ),
+        Gap(24),
+      ],
+    );
+  }
+
+  Widget _buildHighFeesWarn({
+    required double feePercentage,
+    required int amt,
+    required int fees,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const BBText.titleLarge('High fee warning', isRed: true),
+        const Gap(8),
+        Row(
+          children: [
+            const BBText.bodySmall('You are about to pay over '),
+            BBText.bodySmall(
+              '${feePercentage.toStringAsFixed(2)}% ',
+              isBold: true,
+            ),
+          ],
+        ),
+        const BBText.bodySmall(
+          'in Bitcoin Network fees for this transaction.',
+        ),
+        const Gap(8),
+        Row(
+          children: [
+            const BBText.bodySmall('Amount you send: '),
+            BBText.bodySmall('$amt sats', isBold: true),
+          ],
+        ),
+        Row(
+          children: [
+            const BBText.bodySmall('Network fees: '),
+            BBText.bodySmall('$fees sats', isBold: true),
+          ],
+        ),
+        const Gap(24),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    if (swapTx == null) return const SizedBox.shrink();
+
+    final errLowAmt =
+        context.select((SwapCubit x) => x.state.swapTx!.smallAmt());
+    final errHighFees =
+        context.select((SwapCubit x) => x.state.swapTx!.highFees());
+
+    return WarningContainer(
+      children: [
+        const Gap(24),
+        if (errLowAmt) _buildLowAmtWarn(),
+        if (errHighFees != null)
+          _buildHighFeesWarn(
+            feePercentage: errHighFees,
+            amt: swapTx.outAmount,
+            fees: swapTx.totalFees() ?? 0,
+          ),
+        const Row(
+          children: [
+            Icon(FontAwesomeIcons.lightbulb, size: 32),
+            Gap(8),
+            Expanded(child: BBText.titleLarge('Suggestions', isBold: true)),
+          ],
+        ),
+        const Gap(24),
+        const BBText.bodySmall('''
+1. Use the Instant Payment Wallet instead to receive payments below 0.01 BTC.
+
+2. If you want to add funds to your Secure Bitcoin Wallet from an external Lightning Wallet, send a larger amount. We recommend at minimum 0.01 BTC.
+
+3. It is more economical to make fewer swaps of larger amounts than to make many swaps of smaller amounts'''),
+        // const Gap(8),
+        // const _RemoveWarningMessage(),
+        const Gap(24),
+        Center(
+          child: BBButton.big(
+            leftIcon: Icons.send_outlined,
+            label: 'Continue anyways',
+            onPressed: () {
+              context.read<SwapCubit>().removeWarnings();
+            },
+          ),
+        ),
+      ],
     );
   }
 }
