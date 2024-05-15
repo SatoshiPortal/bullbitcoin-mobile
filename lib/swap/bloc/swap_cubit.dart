@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:boltz_dart/boltz_dart.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SwapCubit extends Cubit<SwapState> {
@@ -366,6 +367,14 @@ class SwapCubit extends Cubit<SwapState> {
           isLiq ? fees.lbtcSubmarine.claimFees : fees.btcSubmarine.claimFees,
     );
 
+    await _saveSwapToWallet(
+      swapTx: updatedSwap,
+      label: label,
+      wallet: wallet,
+    );
+
+    await Future.delayed(500.ms);
+
     emit(
       state.copyWith(
         generatingSwapInv: false,
@@ -375,12 +384,6 @@ class SwapCubit extends Cubit<SwapState> {
     );
 
     _showWarnings();
-
-    _saveSwapToWallet(
-      swapTx: updatedSwap,
-      label: label,
-      wallet: wallet,
-    );
   }
 
   Future _saveSwapToWallet({

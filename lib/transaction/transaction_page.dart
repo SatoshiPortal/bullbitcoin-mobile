@@ -208,8 +208,10 @@ class _TxDetails extends StatelessWidget {
       (CurrencyCubit cubit) =>
           cubit.state.getUnitString(isLiquid: tx.wallet?.isLiquid() ?? false),
     );
-    final status = tx.timestamp == 0 ? 'Pending' : 'Confirmed';
-    final time = tx.timestamp == 0
+
+    final statuss = tx.height == null || tx.height == 0 || tx.timestamp == 0;
+    final status = statuss ? 'Pending' : 'Confirmed';
+    final time = statuss
         ? 'Waiting for confirmations'
         : timeago.format(tx.getDateTime());
     final broadcastTime = tx.getBroadcastDateTime();

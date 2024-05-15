@@ -33,6 +33,7 @@ mixin _$SendState {
   String get psbt => throw _privateConstructorUsedError;
   Transaction? get tx => throw _privateConstructorUsedError;
   bool get txSettled => throw _privateConstructorUsedError;
+  bool get txPaid => throw _privateConstructorUsedError;
   bool get downloadingFile => throw _privateConstructorUsedError;
   String get errDownloadingFile => throw _privateConstructorUsedError;
   bool get downloaded => throw _privateConstructorUsedError;
@@ -71,6 +72,7 @@ abstract class $SendStateCopyWith<$Res> {
       String psbt,
       Transaction? tx,
       bool txSettled,
+      bool txPaid,
       bool downloadingFile,
       String errDownloadingFile,
       bool downloaded,
@@ -115,6 +117,7 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? psbt = null,
     Object? tx = freezed,
     Object? txSettled = null,
+    Object? txPaid = null,
     Object? downloadingFile = null,
     Object? errDownloadingFile = null,
     Object? downloaded = null,
@@ -190,6 +193,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
       txSettled: null == txSettled
           ? _value.txSettled
           : txSettled // ignore: cast_nullable_to_non_nullable
+              as bool,
+      txPaid: null == txPaid
+          ? _value.txPaid
+          : txPaid // ignore: cast_nullable_to_non_nullable
               as bool,
       downloadingFile: null == downloadingFile
           ? _value.downloadingFile
@@ -284,6 +291,7 @@ abstract class _$$SendStateImplCopyWith<$Res>
       String psbt,
       Transaction? tx,
       bool txSettled,
+      bool txPaid,
       bool downloadingFile,
       String errDownloadingFile,
       bool downloaded,
@@ -328,6 +336,7 @@ class __$$SendStateImplCopyWithImpl<$Res>
     Object? psbt = null,
     Object? tx = freezed,
     Object? txSettled = null,
+    Object? txPaid = null,
     Object? downloadingFile = null,
     Object? errDownloadingFile = null,
     Object? downloaded = null,
@@ -404,6 +413,10 @@ class __$$SendStateImplCopyWithImpl<$Res>
           ? _value.txSettled
           : txSettled // ignore: cast_nullable_to_non_nullable
               as bool,
+      txPaid: null == txPaid
+          ? _value.txPaid
+          : txPaid // ignore: cast_nullable_to_non_nullable
+              as bool,
       downloadingFile: null == downloadingFile
           ? _value.downloadingFile
           : downloadingFile // ignore: cast_nullable_to_non_nullable
@@ -468,6 +481,7 @@ class _$SendStateImpl extends _SendState {
       this.psbt = '',
       this.tx,
       this.txSettled = false,
+      this.txPaid = false,
       this.downloadingFile = false,
       this.errDownloadingFile = '',
       this.downloaded = false,
@@ -534,6 +548,9 @@ class _$SendStateImpl extends _SendState {
   final bool txSettled;
   @override
   @JsonKey()
+  final bool txPaid;
+  @override
+  @JsonKey()
   final bool downloadingFile;
   @override
   @JsonKey()
@@ -569,7 +586,7 @@ class _$SendStateImpl extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(address: $address, enabledWallets: $enabledWallets, paymentNetwork: $paymentNetwork, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice, showSendButton: $showSendButton, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, txSettled: $txSettled, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount)';
+    return 'SendState(address: $address, enabledWallets: $enabledWallets, paymentNetwork: $paymentNetwork, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice, showSendButton: $showSendButton, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, txSettled: $txSettled, txPaid: $txPaid, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount)';
   }
 
   @override
@@ -601,6 +618,7 @@ class _$SendStateImpl extends _SendState {
             (identical(other.tx, tx) || other.tx == tx) &&
             (identical(other.txSettled, txSettled) ||
                 other.txSettled == txSettled) &&
+            (identical(other.txPaid, txPaid) || other.txPaid == txPaid) &&
             (identical(other.downloadingFile, downloadingFile) ||
                 other.downloadingFile == downloadingFile) &&
             (identical(other.errDownloadingFile, errDownloadingFile) ||
@@ -641,6 +659,7 @@ class _$SendStateImpl extends _SendState {
         psbt,
         tx,
         txSettled,
+        txPaid,
         downloadingFile,
         errDownloadingFile,
         downloaded,
@@ -678,6 +697,7 @@ abstract class _SendState extends SendState {
       final String psbt,
       final Transaction? tx,
       final bool txSettled,
+      final bool txPaid,
       final bool downloadingFile,
       final String errDownloadingFile,
       final bool downloaded,
@@ -722,6 +742,8 @@ abstract class _SendState extends SendState {
   Transaction? get tx;
   @override
   bool get txSettled;
+  @override
+  bool get txPaid;
   @override
   bool get downloadingFile;
   @override

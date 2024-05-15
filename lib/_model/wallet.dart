@@ -320,20 +320,22 @@ class Wallet with _$Wallet {
 
   String getWalletTypeStr({bool shorten = false}) {
     final isTestnet = network == BBNetwork.Testnet;
-    final networkStr = isTestnet ? 'Testnet' : 'Mainnet';
+    final networkStr = isTestnet ? 'Testnet ' : '';
 
     switch (type) {
       case BBWalletType.secure:
       case BBWalletType.words:
-        return shorten
-            ? '$networkStr on-chain'
-            : 'Regular on-chain $networkStr Network';
+        return 'Bitcoin ${networkStr}Network';
+      // return shorten
+      //     ? 'Bitcoin $networkStr on-chain'
+      //     : 'Regular on-chain $networkStr Network';
       case BBWalletType.xpub:
       case BBWalletType.coldcard:
       case BBWalletType.descriptors:
         return 'Watch Only';
       case BBWalletType.instant:
-        return shorten ? 'Liquid $networkStr' : 'Liquid $networkStr Network';
+        return 'Liquid ${networkStr}Network';
+      // return shorten ? 'Liquid $networkStr' : 'Liquid $networkStr Network';
     }
   }
 

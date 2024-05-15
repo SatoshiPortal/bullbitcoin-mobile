@@ -27,6 +27,7 @@ class SendState with _$SendState {
     @Default('') String psbt,
     Transaction? tx,
     @Default(false) bool txSettled,
+    @Default(false) bool txPaid,
     @Default(false) bool downloadingFile,
     @Default('') String errDownloadingFile,
     @Default(false) bool downloaded,

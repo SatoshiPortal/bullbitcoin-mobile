@@ -466,7 +466,7 @@ class SendCubit extends Cubit<SendState> {
       sendAllCoin: false,
       feeRate:
           localWallet.isLiquid() && localWallet.network == BBNetwork.Mainnet
-              ? 0.01
+              ? 0.1
               : fee.toDouble(),
       enableRbf: false,
       note: state.note,
@@ -686,6 +686,11 @@ class SendCubit extends Cubit<SendState> {
   void txSettled() {
     if (state.tx == null) return;
     emit(state.copyWith(txSettled: true));
+  }
+
+  void txPaid() {
+    if (state.tx == null) return;
+    emit(state.copyWith(txPaid: true));
   }
 
   void dispose() {

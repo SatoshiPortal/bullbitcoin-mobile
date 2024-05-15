@@ -125,6 +125,7 @@ class SendingLnTx extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settled = context.select((SendCubit cubit) => cubit.state.txSettled);
+    final paid = context.select((SendCubit cubit) => cubit.state.txPaid);
 
     final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
     final amtStr = context
@@ -135,9 +136,12 @@ class SendingLnTx extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (!settled)
-          const BBText.body('Payment in progess')
-        else
+        if (!settled) ...[
+          if (!paid)
+            const BBText.body('Payment in progess')
+          else
+            const BBText.body('Invoice paid'),
+        ] else
           const BBText.body('Payment sent'),
         const Gap(16),
         SendTick(sent: settled),

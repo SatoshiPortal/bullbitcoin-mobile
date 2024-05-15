@@ -31,6 +31,47 @@ class SendListeners extends StatelessWidget {
           listener: (context, state) {
             if (state.syncWallet != null || state.txPaid == null) return;
 
+            final tx = state.txPaid!;
+
+            final amt = tx.outAmount;
+
+            final amtStr =
+                context.read<CurrencyCubit>().state.getAmountInUnits(amt);
+            final prefix = tx.actionPrefixStr();
+            print('---- send paid listener 3');
+
+            final isSendPage = context.read<NavName>().state == '/send';
+
+            print('---- send  paid listener 4');
+
+            final swapOnPage = context.read<SwapCubit>().state.swapTx;
+            final sameSwap = swapOnPage?.id == tx.id;
+
+            print('---- send  paid listener 5 ' + (swapOnPage?.id ?? ''));
+            print('---- send  paid listener 5 ' + (tx.id));
+
+            if (sameSwap && isSendPage && tx.paidSubmarine()) {
+              context.read<SendCubit>().txPaid();
+              print('---- send  paid listener 6');
+            } else {
+              showToastWidget(
+                position: ToastPosition.top,
+                AlertUI(text: '$prefix $amtStr'),
+                animationCurve: Curves.decelerate,
+              );
+
+              print('---- send  paid listener 7');
+            }
+
+            print('---- send  paid listener 8');
+            context.read<WatchTxsBloc>().add(ClearAlerts());
+          },
+        ),
+        BlocListener<WatchTxsBloc, WatchTxsState>(
+          listenWhen: (previous, current) => previous.txPaid != current.txPaid,
+          listener: (context, state) {
+            if (state.syncWallet == null || state.txPaid == null) return;
+
             print('---- send listener 1');
 
             final tx = state.txPaid!;
@@ -174,7 +215,7 @@ class SendListeners extends StatelessWidget {
 
             print('--- send wallet listener 5');
 
-            // await Future.delayed(100.ms);
+            // await Future.delayed(300.ms);
 
             context
                 .read<WatchTxsBloc>()

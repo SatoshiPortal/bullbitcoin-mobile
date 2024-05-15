@@ -378,6 +378,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       return;
     }
 
+    if (swapTx.paidSubmarine()) {
+      print('ALERT Swap Paid Submarine');
+      emit(state.copyWith(txPaid: swapTx));
+      return;
+    }
+
     if (swapTx.settledSubmarine()) {
       print('ALERT Swap Settled Submarine');
       emit(state.copyWith(syncWallet: wallet, txPaid: swapTx));
@@ -456,15 +462,21 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __closeSwap(swapTx, emit);
 
         case SubmarineSwapActions.paid:
+          print('---swap paid');
+
           __swapAlert(swapTx, wallet, emit);
-          if (swapTx.isLiquid())
-            await __coopCloseSwap(swapTx, walletBloc, emit);
+          // if (swapTx.isLiquid()) {
+          //   print('\n\n\n-----swap paid - starting coop in 5 seconds... ');
+          //   await Future.delayed(5.seconds);
+          //   await __coopCloseSwap(swapTx, walletBloc, emit);
+          // }
           await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case SubmarineSwapActions.claimable:
+          print('---swap claimable');
           __swapAlert(swapTx, wallet, emit);
-          if (!swapTx.isLiquid())
-            await __coopCloseSwap(swapTx, walletBloc, emit);
+
+          await __coopCloseSwap(swapTx, walletBloc, emit);
           await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case SubmarineSwapActions.refundable:
