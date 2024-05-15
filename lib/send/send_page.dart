@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
@@ -149,7 +148,8 @@ class _Screen extends StatelessWidget {
     final showWarning = context.select((SwapCubit x) => x.state.showWarning());
 
     final walletIsLiquid = context.select(
-      (WalletBloc x) => x.state.wallet!.baseWalletType == BaseWalletType.Liquid,
+      (SendCubit x) =>
+          x.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false,
     );
 
     // final showSend =

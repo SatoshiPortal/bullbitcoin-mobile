@@ -375,6 +375,9 @@ class WalletTx implements IWalletTransactions {
 
     final swapTxs = List<SwapTx>.from(swaps);
 
+    print(
+      '\n\n--- swap update: ${swapTx.id} --- status: ${swapTx.status?.status} ---\n\n',
+    );
     final updatedSwapTx = storedSwap.copyWith(
       status: swapTx.status,
       txid: storedSwap.txid ?? swapTx.txid,
@@ -397,7 +400,7 @@ class WalletTx implements IWalletTransactions {
           isSwap: true,
           received:
               isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
-          fee: swapTx.claimFees,
+          fee: isRevSub ? swapTx.claimFees : swapTx.lockupFees,
           isLiquid: swapTx.isLiquid(),
         );
         txs.add(newTx);
@@ -429,7 +432,7 @@ class WalletTx implements IWalletTransactions {
           isSwap: true,
           received:
               isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
-          fee: swapTx.claimFees,
+          fee: isRevSub ? swapTx.claimFees : swapTx.lockupFees,
           isLiquid: swapTx.isLiquid(),
         );
         txs.add(newTx);
@@ -440,6 +443,16 @@ class WalletTx implements IWalletTransactions {
         );
         txs[idx] = updatedTx;
       }
+    } else if (swapTx.txid == null) {
+      final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
+      final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
+
+      if (txIdx != -1)
+        txs[txIdx] = txs[txIdx].copyWith(
+          swapTx: updatedSwapTx,
+        );
+
+      if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
 
     final settled = swapTx.isSubmarine

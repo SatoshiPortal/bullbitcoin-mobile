@@ -144,14 +144,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         final id = swapId;
         print('SwapStatusUpdate: $id - ${status.status}');
         if (!state.isListeningId(id)) return;
-        final swapTx = walletBloc.state.wallet!
-            .getOngoingSwap(id)!
-            .copyWith(status: status);
+        final swapTx = walletBloc.state.wallet!.getOngoingSwap(id)!;
 
         add(
           ProcessSwapTx(
             walletId: walletBloc.state.wallet!.id,
-            swapTx: swapTx,
+            swapTx: swapTx.copyWith(status: status),
           ),
         );
       }
@@ -398,7 +396,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     emit(
       state.copyWith(listeningTxs: state.removeListeningTx(swapTx.id)),
     );
-    await Future.delayed(100.ms);
+    await Future.delayed(500.ms);
     final isTestnet = swapTx.network == BBNetwork.Testnet;
     add(WatchWallets(isTestnet: isTestnet));
   }
@@ -447,10 +445,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
             await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case ReverseSwapActions.settled:
+          __swapAlert(swapTx, wallet, emit);
+
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);
           if (w == null) return;
+
           await __closeSwap(swapTx, emit);
-          __swapAlert(swapTx, wallet, emit);
       }
     } else {
       switch (swapTx.submarineSwapAction()) {

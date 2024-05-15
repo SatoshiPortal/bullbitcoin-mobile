@@ -296,9 +296,9 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
   Widget build(BuildContext context) {
     var amt = widget.tx.recievableAmount() ?? 0;
 
-    // final tx = context.select(
-    //   (HomeCubit cubit) => cubit.state.getTxFromSwap(widget.tx),
-    // );
+    final txx = context.select(
+      (HomeCubit cubit) => cubit.state.getTxFromSwap(widget.tx),
+    );
 
     if (tx != null) amt = tx!.getAmount();
 
@@ -372,11 +372,14 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
               _OnChainWarning(swapTx: widget.tx),
             ],
             const Gap(40),
-            if (tx != null)
+            if (txx != null)
               BBButton.big(
                 label: 'View Transaction',
                 onPressed: () {
-                  context.push('/tx', extra: tx);
+                  context
+                    ..pop()
+                    ..pop()
+                    ..push('/tx', extra: tx ?? txx);
                 },
               ).animate().fadeIn(),
           ],

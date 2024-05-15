@@ -595,6 +595,7 @@ extension X on boltz.SwapStatus? {
       case boltz.SwapStatus.minerfeePaid:
         status = ('Miner Fee Paid.', '');
       case null:
+        return null;
     }
     return status;
   }

@@ -157,6 +157,14 @@ class SwapCubit extends Cubit<SwapState> {
           : fees.btcReverse.claimFeesEstimate,
     );
 
+    await _saveSwapToWallet(
+      swapTx: updatedSwap,
+      label: label,
+      wallet: wallet,
+    );
+
+    await Future.delayed(800.ms);
+
     emit(
       state.copyWith(
         generatingSwapInv: false,
@@ -166,12 +174,6 @@ class SwapCubit extends Cubit<SwapState> {
     );
 
     _showWarnings();
-
-    _saveSwapToWallet(
-      swapTx: updatedSwap,
-      label: label,
-      wallet: wallet,
-    );
   }
 
   void _showWarnings() {
@@ -373,7 +375,7 @@ class SwapCubit extends Cubit<SwapState> {
       wallet: wallet,
     );
 
-    await Future.delayed(500.ms);
+    await Future.delayed(800.ms);
 
     emit(
       state.copyWith(
