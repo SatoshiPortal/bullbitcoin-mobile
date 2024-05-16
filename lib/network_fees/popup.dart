@@ -272,14 +272,17 @@ class SelectFeesItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var selected = false;
 
-    selected = context.select((NetworkFeesCubit x) => x.state.feeOption() == index);
+    selected =
+        context.select((NetworkFeesCubit x) => x.state.feeOption() == index);
 
     var fee = 0;
     if (!custom) {
-      fee = context.select((NetworkFeesCubit x) => x.state.feesList?[index] ?? 0);
+      fee =
+          context.select((NetworkFeesCubit x) => x.state.feesList?[index] ?? 0);
     }
 
-    final currency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
+    final currency =
+        context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
 
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
 
@@ -291,42 +294,48 @@ class SelectFeesItem extends StatelessWidget {
       ),
     );
 
-    return GestureDetector(
-      onTap: () {
-        context.read<NetworkFeesCubit>().feeOptionSelected(index);
+    return Opacity(
+      opacity: index == 3 ? 0.1 : 1,
+      child: GestureDetector(
+        onTap: () {
+          if (index == 3) return;
+          context.read<NetworkFeesCubit>().feeOptionSelected(index);
 
-        FocusScope.of(context).unfocus();
-      },
-      child: Container(
-        height: 148,
-        width: MediaQuery.of(context).size.width / 2 - 44,
-        padding: const EdgeInsets.only(left: 16, top: 16),
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: selected ? context.colour.primary : context.colour.onBackground,
-            width: selected ? 2 : 1,
+          FocusScope.of(context).unfocus();
+        },
+        child: Container(
+          height: 148,
+          width: MediaQuery.of(context).size.width / 2 - 44,
+          padding: const EdgeInsets.only(left: 16, top: 16),
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: selected
+                  ? context.colour.primary
+                  : context.colour.onBackground,
+              width: selected ? 2 : 1,
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            BBText.body(title, isBold: true),
-            if (!custom) ...[
-              BBText.body(fee.toString() + ' sat/vB'),
-              BBText.body(
-                () {
-                  if (index == 0) return '~ 10 min';
-                  if (index == 1) return '~ 30 min';
-                  if (index == 2) return '~ 60 min';
-                  return '~ few hours';
-                }(),
-              ),
-              BBText.body(fiatRateStr),
-            ] else
-              ...[],
-          ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              BBText.body(title, isBold: true),
+              if (!custom) ...[
+                BBText.body(fee.toString() + ' sat/vB'),
+                BBText.body(
+                  () {
+                    if (index == 0) return '~ 10 min';
+                    if (index == 1) return '~ 30 min';
+                    if (index == 2) return '~ 60 min';
+                    return '~ few hours';
+                  }(),
+                ),
+                BBText.body(fiatRateStr),
+              ] else
+                ...[],
+            ],
+          ),
         ),
       ),
     );
