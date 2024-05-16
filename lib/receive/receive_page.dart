@@ -643,6 +643,11 @@ class SwapFeesDetails extends StatelessWidget {
     if (!isLn) return const SizedBox.shrink();
 
     final totalFees = swapTx.totalFees() ?? 0;
+
+    final isLiquid = swapTx.isLiquid();
+    final unitNetwork =
+        isLiquid ? 'Liquid Network Bitcoin (L-BTC)' : 'On-chain Bitcoin (BTC)';
+
     final fees = context.select(
       (CurrencyCubit x) =>
           x.state.getAmountInUnits(totalFees, removeText: true),
@@ -658,9 +663,9 @@ class SwapFeesDetails extends StatelessWidget {
           color: context.colour.tertiary,
         ),
         children: <TextSpan>[
-          const TextSpan(
+          TextSpan(
             text:
-                'Lightning Network payments are converted instantly to Liquid Network Bitcoin (L-BTC). A swap fee of ',
+                'Lightning Network payments are converted instantly to $unitNetwork. A swap fee of ',
           ),
           TextSpan(
             text: '$fees $units',

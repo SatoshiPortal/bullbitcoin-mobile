@@ -626,7 +626,10 @@ class ImportWalletCubit extends Cubit<ImportState> {
     }
 
     if (state.mainWallet)
-      selectedWallet = selectedWallet.copyWith(mainWallet: true);
+      selectedWallet = selectedWallet.copyWith(
+        mainWallet: true,
+        type: BBWalletType.main,
+      );
     var walletLabel = state.walletLabel ?? '';
     if (state.mainWallet) walletLabel = selectedWallet.creationName();
     final secureWallet = selectedWallet.copyWith(name: walletLabel);
@@ -683,7 +686,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
     }
 
     wallet = wallet!.copyWith(backupTested: true);
-    if (state.mainWallet) wallet = wallet.copyWith(mainWallet: true);
+    if (state.mainWallet)
+      wallet = wallet.copyWith(
+        mainWallet: true,
+        type: BBWalletType.main,
+      );
 
     var walletLabel = state.walletLabel ?? '';
     if (state.mainWallet) walletLabel = wallet.creationName();
