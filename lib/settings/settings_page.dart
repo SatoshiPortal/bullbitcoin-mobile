@@ -35,34 +35,34 @@ class _Screen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: const SettingsAppBar(),
       ),
-      body: SafeArea(
+      body: const SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(24.0),
             child: Column(
               children: [
-                const Gap(8),
-                const BitcoinSettingsButton(),
-                const Gap(8),
-                const ApplicationSettingsButton(),
-                const Gap(8),
-                const WalletSettingsButton(),
-                const Gap(8),
-                const NewWalletButton(),
-                const Gap(24),
-                const Center(
+                Gap(8),
+                BitcoinSettingsButton(),
+                Gap(8),
+                ApplicationSettingsButton(),
+                Gap(8),
+                WalletSettingsButton(),
+                Gap(8),
+                NewWalletButton(),
+                Gap(24),
+                Center(
                   child: BBText.bodySmall(
                     'App Version: $bbVersion',
                     isBold: true,
                   ),
                 ),
-                const Gap(8),
-                if (bbVersion != latestVersion)
-                  BBButton.big(
-                    label: 'Update app',
-                    onPressed: () {},
-                  ),
-                const Gap(24),
+                Gap(8),
+                // if (bbVersion != latestVersion)
+                //   BBButton.big(
+                //     label: 'Update app',
+                //     onPressed: () {},
+                //   ),
+                // const Gap(24),
               ],
             ),
           ),

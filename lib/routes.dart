@@ -22,6 +22,7 @@ import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/details.dart';
+import 'package:bb_mobile/wallet/information_page.dart';
 import 'package:bb_mobile/wallet/wallet_page.dart';
 import 'package:bb_mobile/wallet_settings/accounting.dart';
 import 'package:bb_mobile/wallet_settings/backup.dart';
@@ -128,6 +129,12 @@ GoRouter setupRouter() => GoRouter(
           path: '/core-wallet-settings',
           builder: (context, state) {
             return const CoreWalletSettingsPage();
+          },
+        ),
+        GoRoute(
+          path: '/information',
+          builder: (context, state) {
+            return const InformationPage();
           },
         ),
 

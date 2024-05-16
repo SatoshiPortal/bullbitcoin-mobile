@@ -46,6 +46,8 @@ class _Screen extends StatelessWidget {
                 Gap(8),
                 InstantPaymentsWallet(),
                 Gap(8),
+                InformationButton(),
+                Gap(8),
                 // ColdcardWallet(),
                 Gap(80),
               ],
@@ -132,6 +134,20 @@ class ColdcardWallet extends StatelessWidget {
             )
             .first;
         context.push('/wallet-settings', extra: walletBloc);
+      },
+    );
+  }
+}
+
+class InformationButton extends StatelessWidget {
+  const InformationButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Information',
+      onPressed: () {
+        context.push('/information');
       },
     );
   }

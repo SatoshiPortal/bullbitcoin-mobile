@@ -106,6 +106,8 @@ class _ScreenState extends State<_Screen> {
     final watchOnly = context
         .select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
 
+    final isInstant =
+        context.read<WalletBloc>().state.wallet?.isInstant() ?? false;
     // if (!showPage) return const Scaffold(body: SizedBox.shrink());
 
     return Scaffold(
@@ -148,6 +150,8 @@ class _ScreenState extends State<_Screen> {
 
                   const AccountingButton(),
                   const Gap(8),
+                  if (isInstant) const InformationButton(),
+                  if (isInstant) const Gap(8),
                   const LabelActions(),
                   // const LabelsExportButton(),
                   // const Gap(8),
@@ -814,6 +818,20 @@ class LabelActions extends StatelessWidget {
         await LabelSettingPopup.openPopUp(context);
       },
       label: 'Import / Export Labels',
+    );
+  }
+}
+
+class InformationButton extends StatelessWidget {
+  const InformationButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Information',
+      onPressed: () {
+        context.push('/information');
+      },
     );
   }
 }
