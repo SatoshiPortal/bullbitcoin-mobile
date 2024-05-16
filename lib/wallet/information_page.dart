@@ -32,6 +32,7 @@ class _Screen extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(8.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Title(text: 'What is the Instant Payments Wallet?'),
             Paragraph(
@@ -151,9 +152,12 @@ class Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBText.titleLarge(
-      text,
-      isBold: true,
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: BBText.titleLarge(
+        text,
+        isBold: true,
+      ),
     );
   }
 }
