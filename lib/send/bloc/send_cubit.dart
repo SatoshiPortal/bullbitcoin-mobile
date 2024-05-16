@@ -68,6 +68,8 @@ class SendCubit extends Cubit<SendState> {
   void updateAddress(String? addr) async {
     resetWalletSelection();
     resetErrors();
+    _swapCubit.clearSwapTx();
+    _swapCubit.clearErrors();
     emit(
       state.copyWith(
         errScanningAddress: '',
@@ -329,6 +331,7 @@ class SendCubit extends Cubit<SendState> {
           showSendButton: false,
           invoice: clearInv ? null : state.invoice,
           tempAmt: 0,
+          signed: false,
         ),
       );
 

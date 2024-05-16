@@ -27,7 +27,7 @@ import 'package:oktoast/oktoast.dart';
 
 Future main({bool fromTest = false}) async {
   FlutterError.onError = (err) =>
-      log('Flutter Error:' + err.toString(minLevel: DiagnosticLevel.warning));
+      log('Flutter Error:' + err.toString(minLevel: DiagnosticLevel.debug));
 
   runZonedGuarded(() async {
     if (!fromTest) WidgetsFlutterBinding.ensureInitialized();
