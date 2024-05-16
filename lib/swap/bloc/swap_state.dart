@@ -16,7 +16,7 @@ class SwapState with _$SwapState {
     // Invoice? invoice,
     @Default(false) bool errSmallAmt,
     double? errHighFees,
-    Wallet? updatedWallet,
+    // Wallet? updatedWallet,
     AllFees? allFees,
     String? errAllFees,
   }) = _SwapState;

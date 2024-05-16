@@ -71,10 +71,10 @@ class WalletActionButtons extends StatelessWidget {
               child: BBButton.big(
                 filled: true,
                 onPressed: () async {
-                  // context.push(
-                  //   '/send',
-                  //   // extra: walletBloc,
-                  // );
+                  context.push(
+                    '/send',
+                    // extra: walletBloc,
+                  );
                   // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
 
                   // await SendPage.SendPage.openSendPopUp(context, wallet);

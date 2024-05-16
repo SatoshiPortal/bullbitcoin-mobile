@@ -22,8 +22,8 @@ mixin _$SwapState {
   bool get generatingSwapInv => throw _privateConstructorUsedError;
   SwapTx? get swapTx => throw _privateConstructorUsedError; // Invoice? invoice,
   bool get errSmallAmt => throw _privateConstructorUsedError;
-  double? get errHighFees => throw _privateConstructorUsedError;
-  Wallet? get updatedWallet => throw _privateConstructorUsedError;
+  double? get errHighFees =>
+      throw _privateConstructorUsedError; // Wallet? updatedWallet,
   AllFees? get allFees => throw _privateConstructorUsedError;
   String? get errAllFees => throw _privateConstructorUsedError;
 
@@ -45,12 +45,10 @@ abstract class $SwapStateCopyWith<$Res> {
       SwapTx? swapTx,
       bool errSmallAmt,
       double? errHighFees,
-      Wallet? updatedWallet,
       AllFees? allFees,
       String? errAllFees});
 
   $SwapTxCopyWith<$Res>? get swapTx;
-  $WalletCopyWith<$Res>? get updatedWallet;
   $AllFeesCopyWith<$Res>? get allFees;
 }
 
@@ -74,7 +72,6 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
     Object? swapTx = freezed,
     Object? errSmallAmt = null,
     Object? errHighFees = freezed,
-    Object? updatedWallet = freezed,
     Object? allFees = freezed,
     Object? errAllFees = freezed,
   }) {
@@ -107,10 +104,6 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
           ? _value.errHighFees
           : errHighFees // ignore: cast_nullable_to_non_nullable
               as double?,
-      updatedWallet: freezed == updatedWallet
-          ? _value.updatedWallet
-          : updatedWallet // ignore: cast_nullable_to_non_nullable
-              as Wallet?,
       allFees: freezed == allFees
           ? _value.allFees
           : allFees // ignore: cast_nullable_to_non_nullable
@@ -131,18 +124,6 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
 
     return $SwapTxCopyWith<$Res>(_value.swapTx!, (value) {
       return _then(_value.copyWith(swapTx: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $WalletCopyWith<$Res>? get updatedWallet {
-    if (_value.updatedWallet == null) {
-      return null;
-    }
-
-    return $WalletCopyWith<$Res>(_value.updatedWallet!, (value) {
-      return _then(_value.copyWith(updatedWallet: value) as $Val);
     });
   }
 
@@ -175,14 +156,11 @@ abstract class _$$SwapStateImplCopyWith<$Res>
       SwapTx? swapTx,
       bool errSmallAmt,
       double? errHighFees,
-      Wallet? updatedWallet,
       AllFees? allFees,
       String? errAllFees});
 
   @override
   $SwapTxCopyWith<$Res>? get swapTx;
-  @override
-  $WalletCopyWith<$Res>? get updatedWallet;
   @override
   $AllFeesCopyWith<$Res>? get allFees;
 }
@@ -205,7 +183,6 @@ class __$$SwapStateImplCopyWithImpl<$Res>
     Object? swapTx = freezed,
     Object? errSmallAmt = null,
     Object? errHighFees = freezed,
-    Object? updatedWallet = freezed,
     Object? allFees = freezed,
     Object? errAllFees = freezed,
   }) {
@@ -238,10 +215,6 @@ class __$$SwapStateImplCopyWithImpl<$Res>
           ? _value.errHighFees
           : errHighFees // ignore: cast_nullable_to_non_nullable
               as double?,
-      updatedWallet: freezed == updatedWallet
-          ? _value.updatedWallet
-          : updatedWallet // ignore: cast_nullable_to_non_nullable
-              as Wallet?,
       allFees: freezed == allFees
           ? _value.allFees
           : allFees // ignore: cast_nullable_to_non_nullable
@@ -265,7 +238,6 @@ class _$SwapStateImpl extends _SwapState {
       this.swapTx,
       this.errSmallAmt = false,
       this.errHighFees,
-      this.updatedWallet,
       this.allFees,
       this.errAllFees})
       : super._();
@@ -290,8 +262,7 @@ class _$SwapStateImpl extends _SwapState {
   final bool errSmallAmt;
   @override
   final double? errHighFees;
-  @override
-  final Wallet? updatedWallet;
+// Wallet? updatedWallet,
   @override
   final AllFees? allFees;
   @override
@@ -299,7 +270,7 @@ class _$SwapStateImpl extends _SwapState {
 
   @override
   String toString() {
-    return 'SwapState(creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, swapTx: $swapTx, errSmallAmt: $errSmallAmt, errHighFees: $errHighFees, updatedWallet: $updatedWallet, allFees: $allFees, errAllFees: $errAllFees)';
+    return 'SwapState(creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, swapTx: $swapTx, errSmallAmt: $errSmallAmt, errHighFees: $errHighFees, allFees: $allFees, errAllFees: $errAllFees)';
   }
 
   @override
@@ -320,8 +291,6 @@ class _$SwapStateImpl extends _SwapState {
                 other.errSmallAmt == errSmallAmt) &&
             (identical(other.errHighFees, errHighFees) ||
                 other.errHighFees == errHighFees) &&
-            (identical(other.updatedWallet, updatedWallet) ||
-                other.updatedWallet == updatedWallet) &&
             (identical(other.allFees, allFees) || other.allFees == allFees) &&
             (identical(other.errAllFees, errAllFees) ||
                 other.errAllFees == errAllFees));
@@ -337,7 +306,6 @@ class _$SwapStateImpl extends _SwapState {
       swapTx,
       errSmallAmt,
       errHighFees,
-      updatedWallet,
       allFees,
       errAllFees);
 
@@ -357,7 +325,6 @@ abstract class _SwapState extends SwapState {
       final SwapTx? swapTx,
       final bool errSmallAmt,
       final double? errHighFees,
-      final Wallet? updatedWallet,
       final AllFees? allFees,
       final String? errAllFees}) = _$SwapStateImpl;
   const _SwapState._() : super._();
@@ -376,9 +343,7 @@ abstract class _SwapState extends SwapState {
   bool get errSmallAmt;
   @override
   double? get errHighFees;
-  @override
-  Wallet? get updatedWallet;
-  @override
+  @override // Wallet? updatedWallet,
   AllFees? get allFees;
   @override
   String? get errAllFees;

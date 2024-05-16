@@ -4,7 +4,11 @@ import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,28 +18,20 @@ class SwapCubit extends Cubit<SwapState> {
     required WalletSensitiveStorageRepository walletSensitiveRepository,
     required SwapBoltz swapBoltz,
     required WalletTx walletTx,
+    required HomeCubit homeCubit,
+    required WatchTxsBloc watchTxsBloc,
   })  : _walletTx = walletTx,
         _swapBoltz = swapBoltz,
+        _homeCubit = homeCubit,
+        _watchTxsBloc = watchTxsBloc,
         _walletSensitiveRepository = walletSensitiveRepository,
         super(const SwapState());
 
   final WalletSensitiveStorageRepository _walletSensitiveRepository;
   final SwapBoltz _swapBoltz;
   final WalletTx _walletTx;
-
-  // void decodeInvoice(String invoice) async {
-  //   final (inv, err) = await _swapBoltz.decodeInvoice(invoice: invoice);
-  //   if (err != null) {
-  //     emit(
-  //       state.copyWith(
-  //         errCreatingSwapInv: err.toString(),
-  //         generatingSwapInv: false,
-  //       ),
-  //     );
-  //     return;
-  //   }
-  //   emit(state.copyWith(invoice: inv));
-  // }
+  final HomeCubit _homeCubit;
+  final WatchTxsBloc _watchTxsBloc;
 
   Future<void> fetchFees(bool isTestnet) async {
     final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
@@ -412,14 +408,38 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    // await Future.delayed(const Duration(seconds: 5));
+    _homeCubit.state.getWalletBloc(updatedWallet)?.add(
+          UpdateWallet(
+            updatedWallet,
+            updateTypes: [
+              UpdateWalletTypes.swaps,
+              UpdateWalletTypes.transactions,
+            ],
+          ),
+        );
+
     print('-----swap added to wallet ${swapTx.id}');
-    emit(state.copyWith(updatedWallet: updatedWallet));
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    _watchTxsBloc.add(
+      WatchWallets(
+        isTestnet: updatedWallet.isTestnet(),
+      ),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    //     context
+    //         .read<WatchTxsBloc>()
+    //         .add(WatchWallets(isTestnet: isTestnet));
+
+    // emit(state.copyWith(updatedWallet: updatedWallet));
   }
 
   void clearSwapTx() => emit(state.copyWith(swapTx: null));
 
-  void clearUpdatedWallet() => emit(state.copyWith(updatedWallet: null));
+  // void clearUpdatedWallet() => emit(state.copyWith(updatedWallet: null));
 
   void clearErrors() => emit(
         state.copyWith(

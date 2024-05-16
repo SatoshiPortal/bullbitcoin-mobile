@@ -29,6 +29,7 @@ import 'package:bb_mobile/send/psbt.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/send.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +62,8 @@ class _SendPageState extends State<SendPage> {
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
+      homeCubit: context.read<HomeCubit>(),
+      watchTxsBloc: context.read<WatchTxsBloc>(),
     )..fetchFees(context.read<NetworkCubit>().state.testnet);
 
     networkFees = NetworkFeesCubit(
