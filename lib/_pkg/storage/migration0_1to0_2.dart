@@ -108,13 +108,23 @@ Future<void> doMigration0_1to0_2(
   }
 
   final walletObjs = wallets.map((w) => w.toJson()).toList();
-
+  final List<String> ids = [];
   for (final w in walletObjs) {
+    final id = w['id'] as String;
+    ids.add(id);
     final _ = await hiveStorage.saveValue(
-      key: w['id'] as String,
+      key: id,
       value: jsonEncode(w),
     );
   }
+
+  final idsJsn = jsonEncode({
+    'wallets': [...ids],
+  });
+  final _ = await hiveStorage.saveValue(
+    key: StorageKeys.wallets,
+    value: idsJsn,
+  );
   // Finally update version number to next version
   await secureStorage.saveValue(key: StorageKeys.version, value: '0.2');
 }
@@ -385,7 +395,7 @@ Future<List<Wallet>> createLiquidWallet(
     wallets.add(liquidWallet!);
     // return liquidWallet;
     // print(liquidWallet?.id);
-    // await walletsStorageRepository.newWallet(liquidWallet!);
+    await walletsStorageRepository.newWallet(liquidWallet);
   }
   return wallets;
 }
