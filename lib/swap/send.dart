@@ -146,8 +146,14 @@ class _SendingLnTxState extends State<SendingLnTx> {
   @override
   Widget build(BuildContext context) {
     final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
-    final amtStr = context
-        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
+    final isLiquid = swapTx.isLiquid();
+
+    final amtStr = context.select(
+      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
+        amount,
+        isLiquid: isLiquid,
+      ),
+    );
     final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
 
     return BlocListener<WatchTxsBloc, WatchTxsState>(

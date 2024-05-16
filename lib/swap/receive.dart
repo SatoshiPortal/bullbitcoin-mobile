@@ -309,8 +309,14 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
 
     if (tx != null) amt = tx.getAmount();
 
-    final amtStr =
-        context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
+    final isLiq = swapTx.isLiquid();
+
+    final amtStr = context.select(
+      (CurrencyCubit _) => _.state.getAmountInUnits(
+        amt,
+        isLiquid: isLiq,
+      ),
+    );
 
     return BlocListener<WatchTxsBloc, WatchTxsState>(
       listenWhen: (previous, current) =>
