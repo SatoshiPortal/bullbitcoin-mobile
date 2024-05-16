@@ -89,34 +89,44 @@ Future<Map<String, dynamic>> updateWalletObj(
   // `newSeed` --> Auto created by wallet
   // `worlds` --> Wallet recovered by user
   if (walletObj['type'] == 'newSeed' || walletObj['type'] == 'words') {
-    if (walletObj['network'] == 'Mainnet' && mainWalletIndex == 0) {
-      walletObj['type'] = 'main';
-      walletObj['name'] =
-          'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
-      walletObj['mainWallet'] = true;
-      mainWalletIndex++;
+    if (walletObj['network'] == 'Mainnet') {
+      if (mainWalletIndex == 0) {
+        walletObj['type'] = 'main';
+        walletObj['name'] =
+            'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
+        walletObj['mainWallet'] = true;
+        mainWalletIndex++;
 
-      final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
-      final (seed, _) = await walletSensitiveStorageRepository.readSeed(
-        fingerprintIndex: mnemonicFingerprint,
-      );
+        final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
+        final (seed, _) = await walletSensitiveStorageRepository.readSeed(
+          fingerprintIndex: mnemonicFingerprint,
+        );
 
-      liquidMainnetSeed = seed;
-      mainWalletIndex++;
-    } else if (walletObj['network'] == 'Testnet' && testWalletIndex == 0) {
-      walletObj['type'] = 'main';
-      walletObj['name'] =
-          'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
-      walletObj['mainWallet'] = true;
-      testWalletIndex++;
+        liquidMainnetSeed = seed;
+        mainWalletIndex++;
+      } else if (walletObj['type'] == 'newSeed') {
+        walletObj['type'] = 'words';
+        mainWalletIndex++;
+      }
+    } else if (walletObj['network'] == 'Testnet') {
+      if (testWalletIndex == 0) {
+        walletObj['type'] = 'main';
+        walletObj['name'] =
+            'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
+        walletObj['mainWallet'] = true;
+        testWalletIndex++;
 
-      final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
-      final (seed, _) = await walletSensitiveStorageRepository.readSeed(
-        fingerprintIndex: mnemonicFingerprint,
-      );
+        final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
+        final (seed, _) = await walletSensitiveStorageRepository.readSeed(
+          fingerprintIndex: mnemonicFingerprint,
+        );
 
-      liquidTestnetSeed = seed;
-      testWalletIndex++;
+        liquidTestnetSeed = seed;
+        testWalletIndex++;
+      } else if (walletObj['type'] == 'newSeed') {
+        walletObj['type'] = 'words';
+        testWalletIndex++;
+      }
     }
   }
   walletObj.addAll({'baseWalletType': 'Bitcoin'});
