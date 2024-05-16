@@ -9,6 +9,8 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -28,35 +30,68 @@ class HomeTransactions extends StatefulWidget {
   State<HomeTransactions> createState() => _HomeTransactionsState();
 }
 
-class _HomeTransactionsState extends State<HomeTransactions> {
+class _Listener extends StatelessWidget {
+  const _Listener({
+    super.key,
+    required this.child,
+    required this.onUpdated,
+  });
+
+  final Widget child;
+  final Function onUpdated;
+
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((HomeCubit x) => x.state.updated);
+    final walletBlocs = context.select(
+      (HomeCubit _) => _.state.walletBlocs ?? [],
+    );
 
-    final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocs);
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final txs =
-        context.select((HomeCubit cubit) => cubit.state.getAllTxs(network));
-
+    if (walletBlocs.isEmpty) return child;
     return MultiBlocListener(
       listeners: [
-        for (final walletBloc in walletBlocs ?? <WalletBloc>[])
+        for (final walletBloc in walletBlocs)
           BlocListener<WalletBloc, WalletState>(
             bloc: walletBloc,
             listenWhen: (previous, current) =>
                 previous.wallet?.transactions != current.wallet?.transactions ||
                 previous.wallet?.swaps != current.wallet?.swaps,
             listener: (context, state) {
-              setState(() {});
+              onUpdated();
             },
           ),
       ],
+      child: child,
+    );
+  }
+}
+
+class _HomeTransactionsState extends State<HomeTransactions> {
+  @override
+  Widget build(BuildContext context) {
+    final _ = context.select((HomeCubit x) => x.state.updated);
+
+    // final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocs);
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final txs =
+        context.select((HomeCubit cubit) => cubit.state.getAllTxs(network));
+
+    return _Listener(
+      onUpdated: () {
+        setState(() {});
+      },
       child: RefreshIndicator(
         onRefresh: () async {
-          final network = context.read<NetworkCubit>().state.getBBNetwork();
-          final wallets =
-              context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+          final network = context.read<NetworkCubit>().state;
+
+          final wallets = context
+              .read<HomeCubit>()
+              .state
+              .walletBlocsFromNetwork(network.getBBNetwork());
           for (final wallet in wallets) wallet.add(SyncWallet());
+
+          context
+              .read<WatchTxsBloc>()
+              .add(WatchWallets(isTestnet: network.testnet));
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -81,11 +81,20 @@ class _ScreenState extends State<_Screen> {
 
   @override
   Widget build(BuildContext context) {
+    // final _ = context.select((HomeCubit x) => x.state.updated);
+    final loading = context.select(
+      (HomeCubit x) => x.state.loadingWallets,
+    );
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final walletBlocsLen =
-        context.select((HomeCubit x) => x.state.lenWalletsFromNetwork(network));
 
-    if (walletBlocsLen == 0) {
+    final walletBlocs = context.select(
+      (HomeCubit x) => x.state.walletBlocsFromNetwork(network),
+    );
+
+    // final walletBlocsLen =
+    //     context.select((HomeCubit x) => x.state.lenWalletsFromNetwork(network));
+
+    if (walletBlocs.isEmpty && !loading) {
       final isTestnet = network == BBNetwork.Testnet;
 
       Widget widget = Scaffold(
@@ -105,7 +114,7 @@ class _ScreenState extends State<_Screen> {
         context.select((HomeCubit x) => x.state.homeWarnings(network)).length *
             40.0;
 
-    final h = _calculateHeight(walletBlocsLen);
+    final h = _calculateHeight(walletBlocs.length);
 
     scheduleMicrotask(() async {
       await Future.delayed(50.ms);
@@ -521,13 +530,24 @@ class HomeTopBar2 extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Image.asset(
-                      'assets/textlogo.png',
-                      height: 20,
-                      width: 108,
-                    ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Image.asset(
+                          'assets/textlogo.png',
+                          height: 20,
+                          width: 108,
+                        ),
+                      ),
+                      const Gap(4),
+                      const BBText.bodySmall(
+                        'BETA',
+                        isBold: true,
+                        compact: true,
+                      ),
+                    ],
                   ),
                   if (currency != null)
                     Row(
@@ -738,6 +758,8 @@ class _HomeLoadingTxsIndicatorState extends State<HomeLoadingTxsIndicator> {
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final walletBlocs = context
         .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+
+    if (walletBlocs.isEmpty) return const SizedBox.shrink();
 
     return MultiBlocListener(
       listeners: [
