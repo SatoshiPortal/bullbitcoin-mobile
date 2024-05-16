@@ -1,11 +1,14 @@
 import 'package:bb_mobile/_pkg/consts/keys.dart';
+import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -49,19 +52,38 @@ class _Screen extends StatelessWidget {
                 const WalletSettingsButton(),
                 const Gap(8),
                 const NewWalletButton(),
-                const Gap(24),
+                const Gap(40),
                 const Center(
                   child: BBText.bodySmall(
                     'App Version: $bbVersion',
                     isBold: true,
                   ),
                 ),
-                const Gap(8),
-                if (bbVersion != latestVersion)
-                  BBButton.big(
-                    label: 'Update app',
-                    onPressed: () {},
+                const Gap(40),
+                IconButton(
+                  onPressed: () {
+                    // https://t.me/+gUHV3ZcQ-_RmZDdh
+                    locator<Launcher>().launchApp(
+                      'https://t.me/+gUHV3ZcQ-_RmZDdh',
+                    );
+                  },
+                  icon: FaIcon(
+                    FontAwesomeIcons.telegram,
+                    size: 40,
+                    color: context.colour.onBackground,
                   ),
+                ),
+                const Gap(4),
+                const BBText.bodySmall(
+                  'Join our Telegram group',
+                  isBold: true,
+                  fontSize: 10,
+                ),
+                // if (bbVersion != latestVersion)
+                //   BBButton.big(
+                //     label: 'Update app',
+                //     onPressed: () {},
+                //   ),
                 const Gap(24),
               ],
             ),
