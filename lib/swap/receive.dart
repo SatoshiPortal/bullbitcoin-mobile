@@ -288,9 +288,10 @@ class ReceivingSwapPage extends StatefulWidget {
 }
 
 class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
+  late SwapTx swapTx;
+
   bool received = false;
   bool paid = false;
-  late SwapTx swapTx;
   // Transaction? tx;
 
   @override

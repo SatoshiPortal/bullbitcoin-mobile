@@ -1,6 +1,8 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_wallet_actions.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
@@ -98,8 +100,13 @@ class ActionsRow extends StatelessWidget {
     final watchonly =
         context.select((WalletBloc x) => x.state.wallet?.watchOnly() ?? false);
 
+    final isdarkMode = context.select(
+      (Lighting x) => x.state == ThemeLighting.dark,
+    );
+
     return Material(
       elevation: 1,
+      shadowColor: isdarkMode ? context.colour.surface : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

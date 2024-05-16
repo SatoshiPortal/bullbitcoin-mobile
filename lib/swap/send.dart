@@ -133,9 +133,10 @@ class SendingLnTx extends StatefulWidget {
 
 class _SendingLnTxState extends State<SendingLnTx> {
   late SwapTx swapTx;
+
   bool settled = false;
   bool paid = false;
-  bool failed = false;
+  bool refund = false;
 
   @override
   void initState() {
@@ -181,14 +182,16 @@ class _SendingLnTxState extends State<SendingLnTx> {
 
         if (updatedSwap.refundableSubmarine()) {
           setState(() {
-            failed = true;
+            refund = true;
           });
         }
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        // crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          if (!failed) ...[
+          const SizedBox(width: double.infinity),
+          if (!refund) ...[
             if (!settled) ...[
               if (!paid)
                 const BBText.body('Payment in progess')
@@ -197,10 +200,13 @@ class _SendingLnTxState extends State<SendingLnTx> {
             ] else
               const BBText.body('Payment sent'),
           ] else
-            const BBText.body('Payment failed'),
+            const BBText.body(
+              'Payment failed,\nRefund in progress.',
+              textAlign: TextAlign.center,
+            ),
           const Gap(16),
-          SendTick(sent: settled && !failed),
-          if (failed)
+          if (!refund) SendTick(sent: settled),
+          if (refund)
             const FaIcon(
               FontAwesomeIcons.triangleExclamation,
               color: Colors.red,

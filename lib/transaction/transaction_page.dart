@@ -185,7 +185,7 @@ class _TxDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tx = context.select((TransactionCubit _) => _.state.tx);
-
+    final isLiq = tx.isLiquid;
     final isSwapPending = tx.swapIdisTxid();
 
     // final toAddresses = tx.outAddresses ?? [];
@@ -206,8 +206,7 @@ class _TxDetails extends StatelessWidget {
           cubit.state.getAmountInUnits(fees, removeText: true),
     );
     final units = context.select(
-      (CurrencyCubit cubit) =>
-          cubit.state.getUnitString(isLiquid: tx.wallet?.isLiquid() ?? false),
+      (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
     );
 
     final statuss = tx.height == null || tx.height == 0 || tx.timestamp == 0;
@@ -388,6 +387,7 @@ class _SwapDetails extends StatelessWidget {
     final status = context.select(
       (TransactionCubit cubit) => cubit.state.tx.swapTx?.status?.status,
     );
+    final isLiq = tx.isLiquid;
     // final showQr = status?.showQR ?? true; // may not be required
 
     final swap = tx.swapTx;
@@ -411,7 +411,7 @@ class _SwapDetails extends StatelessWidget {
     );
     // final invoice = swap.invoice;
     final units = context.select(
-      (CurrencyCubit cubit) => cubit.state.getUnitString(),
+      (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
     );
     // status of swap should be read from WalletBloc.state.wallet.transactions
     // final status = context.select((WatchTxsBloc _) => _.state.showStatus(swap));
@@ -456,7 +456,13 @@ class _SwapDetails extends StatelessWidget {
               const Gap(24),
               const BBText.title('Total fees'),
               const Gap(4),
-              BBText.titleLarge(feesAmount + ' ' + units, isBold: true),
+              Row(
+                children: [
+                  BBText.titleLarge(feesAmount, isBold: true),
+                  const Gap(4),
+                  BBText.title(units, isBold: true),
+                ],
+              ),
             ],
             const Gap(24),
             if (id.isNotEmpty) ...[
