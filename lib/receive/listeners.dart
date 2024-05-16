@@ -87,11 +87,12 @@ class ReceiveListeners extends StatelessWidget {
             if (!isReceivePage) return;
 
             final swaptx = state.updatedSwapTx!;
+            if (!swaptx.showAlert()) return;
+
             final sameSwap = swapOnPage.id == swaptx.id;
             if (sameSwap)
               locator<GoRouter>().push('/swap-receive', extra: swaptx);
             else {
-              if (!swaptx.showAlert()) return;
               final amtStr = context
                   .read<CurrencyCubit>()
                   .state
