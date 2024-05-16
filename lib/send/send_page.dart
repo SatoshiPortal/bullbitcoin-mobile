@@ -96,6 +96,7 @@ class _SendPageState extends State<SendPage> {
       currencyCubit: currency,
       openScanner: widget.openScanner,
       walletBloc: walletBloc,
+      swapCubit: swap,
     );
 
     super.initState();

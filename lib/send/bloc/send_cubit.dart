@@ -13,6 +13,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_state.dart';
+import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -30,6 +31,7 @@ class SendCubit extends Cubit<SendState> {
     required HomeCubit homeCubit,
     required bool defaultRBF,
     required SwapBoltz swapBoltz,
+    required SwapCubit swapCubit,
   })  : _homeCubit = homeCubit,
         _networkCubit = networkCubit,
         _currencyCubit = currencyCubit,
@@ -37,6 +39,7 @@ class SendCubit extends Cubit<SendState> {
         _fileStorage = fileStorage,
         _barcode = barcode,
         _swapBoltz = swapBoltz,
+        _swapCubit = swapCubit,
         super(
           SendState(
             selectedWalletBloc: walletBloc,
@@ -60,6 +63,7 @@ class SendCubit extends Cubit<SendState> {
   final NetworkCubit _networkCubit;
   final CurrencyCubit _currencyCubit;
   final HomeCubit _homeCubit;
+  final SwapCubit _swapCubit;
 
   void updateAddress(String? addr) async {
     resetWalletSelection();
@@ -229,10 +233,10 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    final selectWallet = state.selectLiqThenSecThenOtherBtc(wallets);
+    final selectWalletBloc = state.selectLiqThenSecThenOtherBtc(wallets);
     emit(
       state.copyWith(
-        selectedWalletBloc: selectWallet,
+        selectedWalletBloc: selectWalletBloc,
         enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
       ),
     );
@@ -241,6 +245,19 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(showSendButton: false));
     else
       emit(state.copyWith(showSendButton: true));
+
+    final selectedWallet = selectWalletBloc.state.wallet!;
+    final networkurl = selectedWallet.isLiquid()
+        ? _networkCubit.state.getLiquidNetworkUrl()
+        : _networkCubit.state.getNetworkUrl();
+
+    await _swapCubit.createSubSwapForSend(
+      wallet: selectedWallet,
+      invoice: state.address,
+      amount: _currencyCubit.state.amount,
+      isTestnet: _networkCubit.state.testnet,
+      networkUrl: networkurl,
+    );
   }
 
   Future _processBitcoinAddress() async {

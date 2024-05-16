@@ -1,10 +1,8 @@
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/currency/bloc/currency_state.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
-import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
@@ -30,30 +28,7 @@ class SendListeners extends StatelessWidget {
             // context.read<SendCubit>().updateShowSend();
           },
         ),
-        BlocListener<SendCubit, SendState>(
-          listenWhen: (previous, current) =>
-              previous.selectedWalletBloc != current.selectedWalletBloc &&
-              current.selectedWalletBloc != null,
-          listener: (context, state) async {
-            if (state.invoice == null) return;
-            // await Future.delayed(2000.ms);
-            final wallet = state.selectedWalletBloc!.state.wallet;
-            // context.read<WalletBloc>().state.wallet;
-            if (wallet == null) return;
-            final isLiq = wallet.isLiquid();
-            final networkurl = !isLiq
-                ? context.read<NetworkCubit>().state.getNetworkUrl()
-                : context.read<NetworkCubit>().state.getLiquidNetworkUrl();
 
-            context.read<SwapCubit>().createSubSwapForSend(
-                  wallet: wallet,
-                  invoice: context.read<SendCubit>().state.address,
-                  amount: context.read<CurrencyCubit>().state.amount,
-                  isTestnet: context.read<NetworkCubit>().state.testnet,
-                  networkUrl: networkurl,
-                );
-          },
-        ),
         BlocListener<SwapCubit, SwapState>(
           listenWhen: (previous, current) => previous.swapTx != current.swapTx,
           listener: (context, state) async {
