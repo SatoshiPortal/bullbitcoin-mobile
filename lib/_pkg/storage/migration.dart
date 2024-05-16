@@ -43,12 +43,12 @@ Future<void> doMigration(
 ) async {
   print('fromVersion $fromVersion; toVersion $toVersion');
 
-  await doMigration0_1to0_2(
-    secureStorage,
-    hiveStorage,
-    mainBlockchain!,
-    testBlockchain!,
-  );
+  // await doMigration0_1to0_2(
+  //   secureStorage,
+  //   hiveStorage,
+  //   mainBlockchain!,
+  //   testBlockchain!,
+  // );
 
   if (toVersion.startsWith('0.2') && fromVersion.startsWith('0.1')) {
     await doMigration0_1to0_2(
