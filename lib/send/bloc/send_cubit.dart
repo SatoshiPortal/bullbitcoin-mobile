@@ -254,7 +254,7 @@ class SendCubit extends Cubit<SendState> {
     await _swapCubit.createSubSwapForSend(
       wallet: selectedWallet,
       invoice: state.address,
-      amount: _currencyCubit.state.amount,
+      amount: amt,
       isTestnet: _networkCubit.state.testnet,
       networkUrl: networkurl,
     );
@@ -547,6 +547,7 @@ class SendCubit extends Cubit<SendState> {
     state.selectedWalletBloc!.add(
       UpdateWallet(
         updatedWallet,
+        syncAfter: true,
         updateTypes: [
           UpdateWalletTypes.addresses,
           UpdateWalletTypes.transactions,
@@ -556,7 +557,7 @@ class SendCubit extends Cubit<SendState> {
     );
     // }
     Future.delayed(50.ms);
-    state.selectedWalletBloc!.add(SyncWallet());
+    // state.selectedWalletBloc!.add(SyncWallet());
 
     emit(state.copyWith(sending: false, sent: true));
   }

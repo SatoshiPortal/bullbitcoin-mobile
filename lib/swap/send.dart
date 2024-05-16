@@ -135,6 +135,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
   late SwapTx swapTx;
   bool settled = false;
   bool paid = false;
+  bool failed = false;
 
   @override
   void initState() {
@@ -171,19 +172,34 @@ class _SendingLnTxState extends State<SendingLnTx> {
             settled = true;
           });
         }
+
+        if (updatedSwap.refundableSubmarine()) {
+          setState(() {
+            failed = true;
+          });
+        }
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (!settled) ...[
-            if (!paid)
-              const BBText.body('Payment in progess')
-            else
-              const BBText.body('Invoice paid'),
+          if (!failed) ...[
+            if (!settled) ...[
+              if (!paid)
+                const BBText.body('Payment in progess')
+              else
+                const BBText.body('Invoice paid'),
+            ] else
+              const BBText.body('Payment sent'),
           ] else
-            const BBText.body('Payment sent'),
+            const BBText.body('Payment failed'),
           const Gap(16),
-          SendTick(sent: settled),
+          SendTick(sent: settled && !failed),
+          if (failed)
+            const FaIcon(
+              FontAwesomeIcons.triangleExclamation,
+              color: Colors.red,
+              size: 50,
+            ),
           const Gap(16),
           BBText.body(amtStr),
           if (!settled) ...[
