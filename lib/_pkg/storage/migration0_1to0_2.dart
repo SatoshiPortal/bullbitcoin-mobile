@@ -62,12 +62,12 @@ Future<void> doMigration0_1to0_2(
     walletObj = await addIsLiquid(walletObj);
 
     // Change 4: Update change address Index
-    walletObj =
+    final w =
         await updateAddressNullIssue(walletObj, mainBlockchain, testBlockchain);
 
     // print('Save wallet as:');
     // print(jsonEncode(walletObj));
-    final w = Wallet.fromJson(walletObj);
+    // final w = Wallet.fromJson(walletObj);
     wallets.add(w);
   }
 
@@ -102,17 +102,17 @@ Future<void> doMigration0_1to0_2(
     final tempMain = wallets[mainWalletIdx];
     final tempLiq = wallets[liqMainnetIdx];
     wallets.removeAt(mainWalletIdx);
-    wallets.removeAt(liqMainnetIdx);
+    wallets.removeAt(liqMainnetIdx - 1);
     wallets.insert(0, tempMain);
     wallets.insert(1, tempLiq);
   }
 
-  for (final w in wallets) {
+  final walletObjs = wallets.map((w) => w.toJson()).toList();
+
+  for (final w in walletObjs) {
     final _ = await hiveStorage.saveValue(
-      key: w.id,
-      value: jsonEncode(
-        w.toJson(),
-      ),
+      key: w['id'] as String,
+      value: jsonEncode(w),
     );
   }
   // Finally update version number to next version
@@ -174,7 +174,7 @@ Future<Map<String, dynamic>> updateWalletObj(
 // Skipping some addresses. This funciton will fix that
 // TODO: Change address list count or max change address index.
 //  --> Doing max change address will be complex. So need to finalize if its necessary.
-Future<Map<String, dynamic>> updateAddressNullIssue(
+Future<Wallet> updateAddressNullIssue(
   Map<String, dynamic> walletObj,
   bdk.Blockchain mainBlockchain,
   bdk.Blockchain testBlockchain,
@@ -185,10 +185,10 @@ Future<Map<String, dynamic>> updateAddressNullIssue(
   final (bdkWallet, _) = await bdkCreate.loadPublicBdkWallet(w);
 
   print('syncing wallet ${w.id}. Pls wait...');
-  await bdkWallet!.sync(
-    blockchain: bdkWallet.network == BBNetwork.Mainnet
-        ? mainBlockchain
-        : testBlockchain,
+  final network = await bdkWallet!.network();
+  await bdkWallet.sync(
+    blockchain:
+        network == bdk.Network.bitcoin ? mainBlockchain : testBlockchain,
   );
   print('sync done');
 
@@ -293,7 +293,9 @@ Future<Map<String, dynamic>> updateAddressNullIssue(
   // );
   // }
 
-  return w.copyWith(myAddressBook: myAddressBook).toJson();
+  return w.copyWith(
+    myAddressBook: myAddressBook,
+  );
 }
 
 Future<Map<String, dynamic>> addIsLiquid(
