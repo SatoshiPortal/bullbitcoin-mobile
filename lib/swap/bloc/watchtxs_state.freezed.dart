@@ -20,15 +20,13 @@ mixin _$WatchTxsState {
   String get errRefundingSwap => throw _privateConstructorUsedError;
   bool get claimingSwap => throw _privateConstructorUsedError;
   bool get refundingSwap => throw _privateConstructorUsedError;
-  String get errWatchingInvoice =>
-      throw _privateConstructorUsedError; // required bool isTestnet,
+  String get errWatchingInvoice => throw _privateConstructorUsedError;
   List<String> get listeningTxs => throw _privateConstructorUsedError;
   List<String> get claimedSwapTxs => throw _privateConstructorUsedError;
   List<String> get claimingSwapTxIds => throw _privateConstructorUsedError;
   List<String> get refundedSwapTxs => throw _privateConstructorUsedError;
   List<String> get refundingSwapTxIds => throw _privateConstructorUsedError;
-  SwapTx? get txPaid => throw _privateConstructorUsedError;
-  Wallet? get syncWallet => throw _privateConstructorUsedError;
+  SwapTx? get updatedSwapTx => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $WatchTxsStateCopyWith<WatchTxsState> get copyWith =>
@@ -52,11 +50,9 @@ abstract class $WatchTxsStateCopyWith<$Res> {
       List<String> claimingSwapTxIds,
       List<String> refundedSwapTxs,
       List<String> refundingSwapTxIds,
-      SwapTx? txPaid,
-      Wallet? syncWallet});
+      SwapTx? updatedSwapTx});
 
-  $SwapTxCopyWith<$Res>? get txPaid;
-  $WalletCopyWith<$Res>? get syncWallet;
+  $SwapTxCopyWith<$Res>? get updatedSwapTx;
 }
 
 /// @nodoc
@@ -82,8 +78,7 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
     Object? claimingSwapTxIds = null,
     Object? refundedSwapTxs = null,
     Object? refundingSwapTxIds = null,
-    Object? txPaid = freezed,
-    Object? syncWallet = freezed,
+    Object? updatedSwapTx = freezed,
   }) {
     return _then(_value.copyWith(
       errClaimingSwap: null == errClaimingSwap
@@ -126,38 +121,22 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
           ? _value.refundingSwapTxIds
           : refundingSwapTxIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      txPaid: freezed == txPaid
-          ? _value.txPaid
-          : txPaid // ignore: cast_nullable_to_non_nullable
+      updatedSwapTx: freezed == updatedSwapTx
+          ? _value.updatedSwapTx
+          : updatedSwapTx // ignore: cast_nullable_to_non_nullable
               as SwapTx?,
-      syncWallet: freezed == syncWallet
-          ? _value.syncWallet
-          : syncWallet // ignore: cast_nullable_to_non_nullable
-              as Wallet?,
     ) as $Val);
   }
 
   @override
   @pragma('vm:prefer-inline')
-  $SwapTxCopyWith<$Res>? get txPaid {
-    if (_value.txPaid == null) {
+  $SwapTxCopyWith<$Res>? get updatedSwapTx {
+    if (_value.updatedSwapTx == null) {
       return null;
     }
 
-    return $SwapTxCopyWith<$Res>(_value.txPaid!, (value) {
-      return _then(_value.copyWith(txPaid: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $WalletCopyWith<$Res>? get syncWallet {
-    if (_value.syncWallet == null) {
-      return null;
-    }
-
-    return $WalletCopyWith<$Res>(_value.syncWallet!, (value) {
-      return _then(_value.copyWith(syncWallet: value) as $Val);
+    return $SwapTxCopyWith<$Res>(_value.updatedSwapTx!, (value) {
+      return _then(_value.copyWith(updatedSwapTx: value) as $Val);
     });
   }
 }
@@ -181,13 +160,10 @@ abstract class _$$WatchTxsStateImplCopyWith<$Res>
       List<String> claimingSwapTxIds,
       List<String> refundedSwapTxs,
       List<String> refundingSwapTxIds,
-      SwapTx? txPaid,
-      Wallet? syncWallet});
+      SwapTx? updatedSwapTx});
 
   @override
-  $SwapTxCopyWith<$Res>? get txPaid;
-  @override
-  $WalletCopyWith<$Res>? get syncWallet;
+  $SwapTxCopyWith<$Res>? get updatedSwapTx;
 }
 
 /// @nodoc
@@ -211,8 +187,7 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
     Object? claimingSwapTxIds = null,
     Object? refundedSwapTxs = null,
     Object? refundingSwapTxIds = null,
-    Object? txPaid = freezed,
-    Object? syncWallet = freezed,
+    Object? updatedSwapTx = freezed,
   }) {
     return _then(_$WatchTxsStateImpl(
       errClaimingSwap: null == errClaimingSwap
@@ -255,14 +230,10 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
           ? _value._refundingSwapTxIds
           : refundingSwapTxIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      txPaid: freezed == txPaid
-          ? _value.txPaid
-          : txPaid // ignore: cast_nullable_to_non_nullable
+      updatedSwapTx: freezed == updatedSwapTx
+          ? _value.updatedSwapTx
+          : updatedSwapTx // ignore: cast_nullable_to_non_nullable
               as SwapTx?,
-      syncWallet: freezed == syncWallet
-          ? _value.syncWallet
-          : syncWallet // ignore: cast_nullable_to_non_nullable
-              as Wallet?,
     ));
   }
 }
@@ -281,8 +252,7 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
       final List<String> claimingSwapTxIds = const [],
       final List<String> refundedSwapTxs = const [],
       final List<String> refundingSwapTxIds = const [],
-      this.txPaid,
-      this.syncWallet})
+      this.updatedSwapTx})
       : _listeningTxs = listeningTxs,
         _claimedSwapTxs = claimedSwapTxs,
         _claimingSwapTxIds = claimingSwapTxIds,
@@ -305,9 +275,7 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
   @override
   @JsonKey()
   final String errWatchingInvoice;
-// required bool isTestnet,
   final List<String> _listeningTxs;
-// required bool isTestnet,
   @override
   @JsonKey()
   List<String> get listeningTxs {
@@ -355,13 +323,11 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
   }
 
   @override
-  final SwapTx? txPaid;
-  @override
-  final Wallet? syncWallet;
+  final SwapTx? updatedSwapTx;
 
   @override
   String toString() {
-    return 'WatchTxsState(errClaimingSwap: $errClaimingSwap, errRefundingSwap: $errRefundingSwap, claimingSwap: $claimingSwap, refundingSwap: $refundingSwap, errWatchingInvoice: $errWatchingInvoice, listeningTxs: $listeningTxs, claimedSwapTxs: $claimedSwapTxs, claimingSwapTxIds: $claimingSwapTxIds, refundedSwapTxs: $refundedSwapTxs, refundingSwapTxIds: $refundingSwapTxIds, txPaid: $txPaid, syncWallet: $syncWallet)';
+    return 'WatchTxsState(errClaimingSwap: $errClaimingSwap, errRefundingSwap: $errRefundingSwap, claimingSwap: $claimingSwap, refundingSwap: $refundingSwap, errWatchingInvoice: $errWatchingInvoice, listeningTxs: $listeningTxs, claimedSwapTxs: $claimedSwapTxs, claimingSwapTxIds: $claimingSwapTxIds, refundedSwapTxs: $refundedSwapTxs, refundingSwapTxIds: $refundingSwapTxIds, updatedSwapTx: $updatedSwapTx)';
   }
 
   @override
@@ -389,9 +355,8 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
                 .equals(other._refundedSwapTxs, _refundedSwapTxs) &&
             const DeepCollectionEquality()
                 .equals(other._refundingSwapTxIds, _refundingSwapTxIds) &&
-            (identical(other.txPaid, txPaid) || other.txPaid == txPaid) &&
-            (identical(other.syncWallet, syncWallet) ||
-                other.syncWallet == syncWallet));
+            (identical(other.updatedSwapTx, updatedSwapTx) ||
+                other.updatedSwapTx == updatedSwapTx));
   }
 
   @override
@@ -407,8 +372,7 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
       const DeepCollectionEquality().hash(_claimingSwapTxIds),
       const DeepCollectionEquality().hash(_refundedSwapTxs),
       const DeepCollectionEquality().hash(_refundingSwapTxIds),
-      txPaid,
-      syncWallet);
+      updatedSwapTx);
 
   @JsonKey(ignore: true)
   @override
@@ -429,8 +393,7 @@ abstract class _WatchTxsState extends WatchTxsState {
       final List<String> claimingSwapTxIds,
       final List<String> refundedSwapTxs,
       final List<String> refundingSwapTxIds,
-      final SwapTx? txPaid,
-      final Wallet? syncWallet}) = _$WatchTxsStateImpl;
+      final SwapTx? updatedSwapTx}) = _$WatchTxsStateImpl;
   const _WatchTxsState._() : super._();
 
   @override
@@ -443,7 +406,7 @@ abstract class _WatchTxsState extends WatchTxsState {
   bool get refundingSwap;
   @override
   String get errWatchingInvoice;
-  @override // required bool isTestnet,
+  @override
   List<String> get listeningTxs;
   @override
   List<String> get claimedSwapTxs;
@@ -454,9 +417,7 @@ abstract class _WatchTxsState extends WatchTxsState {
   @override
   List<String> get refundingSwapTxIds;
   @override
-  SwapTx? get txPaid;
-  @override
-  Wallet? get syncWallet;
+  SwapTx? get updatedSwapTx;
   @override
   @JsonKey(ignore: true)
   _$$WatchTxsStateImplCopyWith<_$WatchTxsStateImpl> get copyWith =>

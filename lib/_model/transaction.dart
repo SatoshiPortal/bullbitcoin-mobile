@@ -383,6 +383,25 @@ class SwapTx with _$SwapTx {
     else
       return SubmarineSwapActions.created;
   }
+
+  bool showAlert() {
+    if (isSubmarine) {
+      if (paidSubmarine() || settledSubmarine()) return true;
+    } else {
+      if (paidReverse() || settledReverse()) return true;
+    }
+    return false;
+  }
+
+  bool syncWallet() {
+    if (isSubmarine) {
+      if (claimableSubmarine() || refundableSubmarine() || settledSubmarine())
+        return true;
+    } else {
+      if (claimableReverse() || settledReverse()) return true;
+    }
+    return false;
+  }
 }
 
 enum ReverseSwapActions {

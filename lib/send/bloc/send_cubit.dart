@@ -698,15 +698,15 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(sending: false, sent: true));
   }
 
-  void txSettled() {
-    if (state.tx == null) return;
-    emit(state.copyWith(txSettled: true));
-  }
+  // void txSettled() {
+  //   if (state.tx == null) return;
+  //   emit(state.copyWith(txSettled: true));
+  // }
 
-  void txPaid() {
-    if (state.tx == null) return;
-    emit(state.copyWith(txPaid: true));
-  }
+  // void txPaid() {
+  //   if (state.tx == null) return;
+  //   emit(state.copyWith(txPaid: true));
+  // }
 
   void dispose() {
     super.close();
