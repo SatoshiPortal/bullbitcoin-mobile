@@ -23,67 +23,64 @@ class WalletActionButtons extends StatelessWidget {
 
     final color = context.colour.background;
 
-    return Hero(
-      tag: 'wallet-actions',
-      child: Container(
-        padding: const EdgeInsets.only(
-          bottom: 16,
-          top: 48,
-        ),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              color,
-              color,
-              color,
-              color,
-              color,
-              color,
-              color,
-              color.withOpacity(0.9),
-              color.withOpacity(0.5),
-              color.withOpacity(0.0),
-            ],
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: buttonWidth,
-              child: BBButton.big(
-                buttonKey: UIKeys.homeReceiveButton,
-                filled: true,
-                onPressed: () async {
-                  context.push('/receive', extra: walletBloc);
-                  // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
-
-                  // await ReceiveScreen.openPopUp(context, wallet);
-                },
-                label: 'Receive',
-              ),
-            ),
-            const SizedBox(width: 16),
-            SizedBox(
-              width: buttonWidth,
-              child: BBButton.big(
-                filled: true,
-                onPressed: () async {
-                  context.push(
-                    '/send',
-                    // extra: walletBloc,
-                  );
-                  // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
-
-                  // await SendPage.SendPage.openSendPopUp(context, wallet);
-                },
-                label: 'Send',
-              ),
-            ),
+    return Container(
+      padding: const EdgeInsets.only(
+        bottom: 16,
+        top: 48,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            color,
+            color,
+            color,
+            color,
+            color,
+            color,
+            color,
+            color.withOpacity(0.9),
+            color.withOpacity(0.5),
+            color.withOpacity(0.0),
           ],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
         ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: buttonWidth,
+            child: BBButton.big(
+              buttonKey: UIKeys.homeReceiveButton,
+              filled: true,
+              onPressed: () async {
+                context.push('/receive', extra: walletBloc);
+                // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
+
+                // await ReceiveScreen.openPopUp(context, wallet);
+              },
+              label: 'Receive',
+            ),
+          ),
+          const SizedBox(width: 16),
+          SizedBox(
+            width: buttonWidth,
+            child: BBButton.big(
+              filled: true,
+              onPressed: () async {
+                context.push(
+                  '/send',
+                  // extra: walletBloc,
+                );
+                // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
+
+                // await SendPage.SendPage.openSendPopUp(context, wallet);
+              },
+              label: 'Send',
+            ),
+          ),
+        ],
       ),
     );
   }

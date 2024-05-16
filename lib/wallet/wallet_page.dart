@@ -81,12 +81,9 @@ class WalletHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Hero(
-      tag: 'wallet-card',
-      child: SizedBox(
-        height: 150,
-        child: WalletCardDetails(hideSettings: true),
-      ),
+    return const SizedBox(
+      height: 150,
+      child: WalletCardDetails(hideSettings: true),
     );
   }
 }
