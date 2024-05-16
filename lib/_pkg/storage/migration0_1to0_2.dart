@@ -39,9 +39,12 @@ Future<void> doMigration0_1to0_2(
   if (walletIdsErr != null) throw walletIdsErr;
 
   final walletIdsJson = jsonDecode(walletIds!)['wallets'] as List<dynamic>;
+  if (walletIdsJson.isEmpty) throw 'No Wallets found';
 
   final WalletSensitiveStorageRepository walletSensitiveStorageRepository =
       WalletSensitiveStorageRepository(secureStorage: secureStorage);
+
+  final List<Wallet> wallets = [];
 
   for (final walletId in walletIdsJson) {
     // print('walletId: $walletId');
@@ -64,18 +67,54 @@ Future<void> doMigration0_1to0_2(
 
     // print('Save wallet as:');
     // print(jsonEncode(walletObj));
+    final w = Wallet.fromJson(walletObj);
+    wallets.add(w);
+  }
 
+  // move last wallet to idx 1
+  // final lastWallet = wallets.removeLast()
+
+  // final _ = await hiveStorage.saveValue(
+  //     key: walletId,
+  //     value: jsonEncode(
+  //       walletObj,
+  //     ),
+  //   );
+
+  // Change 4: create a new Liquid wallet, based on the Bitcoin wallet
+  final liqWallets = await createLiquidWallet(
+    liquidMainnetSeed,
+    liquidTestnetSeed,
+    hiveStorage,
+  );
+
+  wallets.addAll(liqWallets);
+
+  final mainWalletIdx = wallets.indexWhere(
+    (w) => !w.isTestnet() && w.isSecure(),
+  );
+
+  final liqMainnetIdx = wallets.indexWhere(
+    (w) => !w.isTestnet() && w.isInstant(),
+  );
+
+  if (wallets.length > 2) {
+    final tempMain = wallets[mainWalletIdx];
+    final tempLiq = wallets[liqMainnetIdx];
+    wallets.removeAt(mainWalletIdx);
+    wallets.removeAt(liqMainnetIdx);
+    wallets.insert(0, tempMain);
+    wallets.insert(1, tempLiq);
+  }
+
+  for (final w in wallets) {
     final _ = await hiveStorage.saveValue(
-      key: walletId,
+      key: w.id,
       value: jsonEncode(
-        walletObj,
+        w.toJson(),
       ),
     );
   }
-
-  // Change 4: create a new Liquid wallet, based on the Bitcoin wallet
-  await createLiquidWallet(liquidMainnetSeed, liquidTestnetSeed, hiveStorage);
-
   // Finally update version number to next version
   await secureStorage.saveValue(key: StorageKeys.version, value: '0.2');
 }
@@ -92,8 +131,7 @@ Future<Map<String, dynamic>> updateWalletObj(
     if (walletObj['network'] == 'Mainnet') {
       if (mainWalletIndex == 0) {
         walletObj['type'] = 'main';
-        walletObj['name'] =
-            'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
+        walletObj['name'] = 'Secure Bitcoin Wallet';
         walletObj['mainWallet'] = true;
         mainWalletIndex++;
 
@@ -111,8 +149,7 @@ Future<Map<String, dynamic>> updateWalletObj(
     } else if (walletObj['network'] == 'Testnet') {
       if (testWalletIndex == 0) {
         walletObj['type'] = 'main';
-        walletObj['name'] =
-            'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
+        walletObj['name'] = 'Secure Bitcoin Wallet';
         walletObj['mainWallet'] = true;
         testWalletIndex++;
 
@@ -286,7 +323,7 @@ Future<Map<String, dynamic>> addIsLiquid(
   return walletObj;
 }
 
-Future<void> createLiquidWallet(
+Future<List<Wallet>> createLiquidWallet(
   Seed? liquidMainnetSeed,
   Seed? liquidTestnetSeed,
   HiveStorage hiveStorage,
@@ -309,6 +346,8 @@ Future<void> createLiquidWallet(
     walletsStorageRepository: walletsStorageRepository,
   );
 
+  final List<Wallet> wallets = [];
+
   if (liquidMainnetSeed != null) {
     final (lw, _) = await lwkSensitiveCreate.oneLiquidFromBIP39(
       seed: liquidMainnetSeed,
@@ -323,7 +362,8 @@ Future<void> createLiquidWallet(
     final liquidWallet =
         lw?.copyWith(name: lw.creationName(), mainWallet: true);
     // print(liquidWallet?.id);
-    await walletsStorageRepository.newWallet(liquidWallet!);
+    wallets.add(liquidWallet!);
+    // await walletsStorageRepository.newWallet(liquidWallet!);
   }
 
   if (liquidTestnetSeed != null) {
@@ -339,7 +379,11 @@ Future<void> createLiquidWallet(
     );
     final liquidWallet =
         lw?.copyWith(name: lw.creationName(), mainWallet: true);
+
+    wallets.add(liquidWallet!);
+    // return liquidWallet;
     // print(liquidWallet?.id);
-    await walletsStorageRepository.newWallet(liquidWallet!);
+    // await walletsStorageRepository.newWallet(liquidWallet!);
   }
+  return wallets;
 }
