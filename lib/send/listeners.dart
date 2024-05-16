@@ -38,32 +38,22 @@ class SendListeners extends StatelessWidget {
             final amtStr =
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = tx.actionPrefixStr();
-            print('---- send paid listener 3');
 
             final isSendPage = context.read<NavName>().state == '/send';
-
-            print('---- send  paid listener 4');
 
             final swapOnPage = context.read<SwapCubit>().state.swapTx;
             final sameSwap = swapOnPage?.id == tx.id;
 
-            print('---- send  paid listener 5 ' + (swapOnPage?.id ?? ''));
-            print('---- send  paid listener 5 ' + (tx.id));
-
             if (sameSwap && isSendPage && tx.paidSubmarine()) {
               context.read<SendCubit>().txPaid();
-              print('---- send  paid listener 6');
             } else {
               showToastWidget(
                 position: ToastPosition.top,
                 AlertUI(text: '$prefix $amtStr'),
                 animationCurve: Curves.decelerate,
               );
-
-              print('---- send  paid listener 7');
             }
 
-            print('---- send  paid listener 8');
             context.read<WatchTxsBloc>().add(ClearAlerts());
           },
         ),
@@ -72,41 +62,28 @@ class SendListeners extends StatelessWidget {
           listener: (context, state) {
             if (state.syncWallet == null || state.txPaid == null) return;
 
-            print('---- send listener 1');
-
             final tx = state.txPaid!;
             final amt = tx.outAmount;
-            print('---- send listener 2');
 
             final amtStr =
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = tx.actionPrefixStr();
-            print('---- send listener 3');
 
             final isSendPage = context.read<NavName>().state == '/send';
-
-            print('---- send listener 4');
 
             final swapOnPage = context.read<SwapCubit>().state.swapTx;
             final sameSwap = swapOnPage?.id == tx.id;
 
-            print('---- send listener 5 ' + (swapOnPage?.id ?? ''));
-            print('---- send listener 5 ' + (tx.id));
-
             if (sameSwap && isSendPage) {
               context.read<SendCubit>().txSettled();
-              print('---- send listener 6');
             } else {
               showToastWidget(
                 position: ToastPosition.top,
                 AlertUI(text: '$prefix $amtStr'),
                 animationCurve: Curves.decelerate,
               );
-
-              print('---- send listener 7');
             }
 
-            print('---- send listener 8');
             context.read<WatchTxsBloc>().add(ClearAlerts());
           },
         ),
@@ -186,13 +163,9 @@ class SendListeners extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.updatedWallet != current.updatedWallet,
           listener: (context, state) async {
-            print('--- send wallet listener 1');
             final updatedWallet = state.updatedWallet;
-            print('--- send wallet listener 2');
 
             if (updatedWallet == null) return;
-
-            print('--- send wallet listener 3');
 
             context
                 .read<HomeCubit>()
@@ -210,18 +183,13 @@ class SendListeners extends StatelessWidget {
                   ),
                 );
 
-            print('--- send wallet listener 4');
             final isTestnet = context.read<NetworkCubit>().state.testnet;
-
-            print('--- send wallet listener 5');
 
             // await Future.delayed(300.ms);
 
             context
                 .read<WatchTxsBloc>()
                 .add(WatchWallets(isTestnet: isTestnet));
-
-            print('--- send wallet listener 6');
 
             context.read<SwapCubit>().clearUpdatedWallet();
           },

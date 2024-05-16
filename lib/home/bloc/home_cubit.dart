@@ -91,20 +91,14 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void loadWalletsForNetwork(BBNetwork network) {
-    print('::::::1');
     final blocs = state.walletBlocsFromNetwork(network);
-    print('::::::2');
 
     if (blocs.isEmpty) return;
-    print('::::::3');
 
     for (final bloc in blocs) {
-      print('::::::4');
-
       final w = bloc.state.wallet!;
       bloc.add(LoadWallet(w.getWalletStorageString()));
     }
-    print('::::::5');
   }
 
   // void addWallets(List<Wallet> wallets) {

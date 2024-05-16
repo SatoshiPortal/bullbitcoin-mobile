@@ -9,17 +9,11 @@ void _syncBdkIsolate(List<dynamic> args) async {
   final bdkWallet = args[1] as bdk.Wallet;
   final blockChain = args[2] as bdk.Blockchain;
 
-  print(1);
-
   try {
     await bdkWallet.sync(blockchain: blockChain);
-    print(2);
 
     sendPort.send(bdkWallet);
-    print(3);
   } catch (e) {
-    print('4' + e.toString());
-
     sendPort.send(
       Err(
         e.toString(),
@@ -41,8 +35,10 @@ class BDKSync {
     try {
       final completer = Completer<(bdk.Wallet?, Err?)>();
       _receivePort = ReceivePort();
-      _isolate =
-          await Isolate.spawn(_syncBdkIsolate, [_receivePort!.sendPort, bdkWallet, blockChain]);
+      _isolate = await Isolate.spawn(
+        _syncBdkIsolate,
+        [_receivePort!.sendPort, bdkWallet, blockChain],
+      );
 
       _receivePort!.listen((message) {
         if (message is bdk.Wallet) {

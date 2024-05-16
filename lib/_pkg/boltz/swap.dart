@@ -192,7 +192,6 @@ class SwapBoltz {
         boltzUrl: boltzurl,
       );
       if (errFees != null) {
-        print(errFees.message);
         throw errFees;
       }
 
@@ -459,7 +458,6 @@ class SwapBoltz {
         boltzUrl: boltzurl,
       );
       if (errFees != null) {
-        print(errFees.message);
         throw errFees;
       }
 
@@ -478,15 +476,12 @@ class SwapBoltz {
         final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
         if (claimFeesEstimate == null) throw 'Fees estimate not found';
         final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
-        print('Waiting 5s for mempool propogation...');
         // await Future.delayed(5.seconds);
-        print('Claiming swap!');
         final resp = await swap.claim(
           outAddress: address,
           absFee: claimFeesEstimate,
           tryCooperate: tryCooperate,
         );
-        print('Claimed swap!');
 
         return (resp, null);
       } else {
@@ -504,7 +499,6 @@ class SwapBoltz {
         return (resp, null);
       }
     } catch (e) {
-      print(e);
       return (null, Err(e.toString()));
     }
   }
@@ -525,7 +519,6 @@ class SwapBoltz {
         boltzUrl: boltzurl,
       );
       if (errFees != null) {
-        print(errFees.message);
         throw errFees;
       }
 

@@ -214,7 +214,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       tryCooperate: true,
     );
     if (err != null) {
-      print(err);
       emit(
         state.copyWith(
           refundingSwap: false,
@@ -257,7 +256,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     final updatedClaimingTxs = state.addClaiming(swapTx.id);
     if (updatedClaimingTxs == null) return null;
-    print('Updated Claiming Txs');
+
     emit(
       state.copyWith(
         claimingSwap: true,
@@ -267,14 +266,13 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
 
     // await Future.delayed(10.seconds);
-    print('Initializing Claim');
+
     final (txid, err) = await _swapBoltz.claimV2ReverseSwap(
       swapTx: swapTx,
       wallet: walletBloc.state.wallet!,
       tryCooperate: true,
     );
     if (err != null) {
-      print(err);
       emit(
         state.copyWith(
           claimingSwap: false,
@@ -337,7 +335,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       wallet: walletBloc.state.wallet!,
     );
     if (err != null) {
-      print(err);
+      // print(err);
       emit(
         state.copyWith(
           claimingSwap: false,
@@ -473,7 +471,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case SubmarineSwapActions.claimable:
-          print('---swap claimable');
+          // print('---swap claimable');
           __swapAlert(swapTx, wallet, emit);
 
           await __coopCloseSwap(swapTx, walletBloc, emit);

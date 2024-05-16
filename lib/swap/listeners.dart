@@ -23,35 +23,6 @@ class SwapAppListener extends StatelessWidget {
   Widget build(BuildContext ctx) {
     return MultiBlocListener(
       listeners: [
-        // BlocListener<TestCub, bool>(
-        //   listener: (context, state) {
-        //     print('----> 0 $state');
-        //     try {
-        //       // Navigator.of(context);
-        //       // final x = router.location();
-        //       final x = nav.state;
-        //       // print(':::::::: $x');
-        //       // final x = router.routeInformationProvider.value.uri.toString();
-        //       // router.configuration.
-        //       // navigatorKey.currentState.
-        //       // final x = router.routeInformationParser.configuration.routes.first
-        //       // .toString();
-        //       // router.
-        //       // ModalRoute.of(navigatorKey.currentContext!)?.settings.name ??
-        //       //     'nooo';
-
-        //       // final isReceivePage = router.location() == '/receive';
-
-        //       // router.routeInformationParser.configuration.r
-
-        //       // router.routerDelegate.
-        //       // navigatorKey.currentContext;
-        //       print('----> 1 $x');
-        //     } catch (e) {
-        //       print('----> 2 $e');
-        //     }
-        //   },
-        // ),
         BlocListener<HomeCubit, HomeState>(
           listenWhen: (previous, current) =>
               previous.loadingWallets != current.loadingWallets,
@@ -73,7 +44,6 @@ class SwapAppListener extends StatelessWidget {
             if (isReceivePage || isSendPage) return;
 
             if (state.syncWallet != null || state.txPaid == null) return;
-            // if (state.txPaid == null) return;
 
             final tx = state.txPaid!;
             final isSubmarine = tx.isSubmarine;
@@ -122,16 +92,11 @@ class SwapAppListener extends StatelessWidget {
               );
               return;
             } else {
-              print('----> 1');
-
               try {
                 final route = context.read<NavName>().state;
                 final isReceivePage = route == '/receive';
                 final isSwapReceivePage = route == '/swap-receive';
                 final isSendPage = route == '/send';
-
-                print('----> 2 $isReceivePage');
-                print('----> 2.2 $isSwapReceivePage');
 
                 if (!isReceivePage && !isSwapReceivePage && !isSendPage)
                   showToastWidget(
@@ -147,7 +112,7 @@ class SwapAppListener extends StatelessWidget {
                 if (isReceivePage && !isSwapReceivePage)
                   locator<GoRouter>().push('/swap-receive', extra: tx);
               } catch (e) {
-                print('----> 3 $e');
+                // print('----> 3 $e');
               }
             }
 
@@ -169,18 +134,3 @@ class SwapAppListener extends StatelessWidget {
     );
   }
 }
-
-// class TestCub extends Cubit<bool> {.,
-//   TestCub() : super(false) {
-//     _test();
-//   }
-
-//   void _toggle() => emit(!state);
-
-//   void _test() async {
-//     for (var i = 0; i < 10; i++) {
-//       await Future.delayed(const Duration(seconds: 10));
-//       _toggle();
-//     }
-//   }
-// }a

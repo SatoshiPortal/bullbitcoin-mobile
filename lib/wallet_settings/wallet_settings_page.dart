@@ -87,7 +87,6 @@ class _ScreenState extends State<_Screen> {
   void _init() {
     scheduleMicrotask(() async {
       if (widget.openBackup) {
-        print('----1');
         // await Future.delayed(const Duration(milliseconds: 300));
         await context.push(
           '/wallet-settings/backup',
@@ -97,8 +96,6 @@ class _ScreenState extends State<_Screen> {
           ),
         );
       } else {
-        print('----2');
-
         // showPage = true;
       }
     });

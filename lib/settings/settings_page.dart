@@ -60,9 +60,7 @@ class _Screen extends StatelessWidget {
                 if (bbVersion != latestVersion)
                   BBButton.big(
                     label: 'Update app',
-                    onPressed: () {
-                      print('Update app');
-                    },
+                    onPressed: () {},
                   ),
                 const Gap(24),
               ],

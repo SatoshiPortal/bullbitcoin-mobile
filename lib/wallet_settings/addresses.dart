@@ -38,11 +38,17 @@ class AddressesScreen extends HookWidget {
   Widget build(BuildContext context) {
     final selectedOption = useState(0);
 
-    var addresses = context.select((WalletBloc cubit) => cubit.state.wallet!.myAddressBook);
-    print('');
-    addresses = addresses.toList()..sort((a, b) => (b.index ?? 0).compareTo(a.index ?? 0));
-    final recieveEmpty = addresses.where((element) => element.kind == AddressKind.deposit).isEmpty;
-    final changeEmpty = addresses.where((element) => element.kind == AddressKind.change).isEmpty;
+    var addresses =
+        context.select((WalletBloc cubit) => cubit.state.wallet!.myAddressBook);
+
+    addresses = addresses.toList()
+      ..sort((a, b) => (b.index ?? 0).compareTo(a.index ?? 0));
+    final recieveEmpty = addresses
+        .where((element) => element.kind == AddressKind.deposit)
+        .isEmpty;
+    final changeEmpty = addresses
+        .where((element) => element.kind == AddressKind.change)
+        .isEmpty;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -93,7 +99,8 @@ class AddressesScreen extends HookWidget {
             if (addresses
                 .where(
                   (element) =>
-                      element.kind == AddressKind.deposit && element.state == AddressStatus.active,
+                      element.kind == AddressKind.deposit &&
+                      element.state == AddressStatus.active,
                 )
                 .isNotEmpty) ...[
               const BBText.title(
@@ -109,7 +116,8 @@ class AddressesScreen extends HookWidget {
             if (addresses
                 .where(
                   (element) =>
-                      element.kind == AddressKind.deposit && element.state == AddressStatus.unused,
+                      element.kind == AddressKind.deposit &&
+                      element.state == AddressStatus.unused,
                 )
                 .isNotEmpty) ...[
               const BBText.title(
@@ -125,7 +133,8 @@ class AddressesScreen extends HookWidget {
             if (addresses
                 .where(
                   (element) =>
-                      element.kind == AddressKind.deposit && element.state == AddressStatus.used,
+                      element.kind == AddressKind.deposit &&
+                      element.state == AddressStatus.used,
                 )
                 .isNotEmpty) ...[
               const BBText.title(
@@ -150,7 +159,8 @@ class AddressesScreen extends HookWidget {
             if (addresses
                 .where(
                   (element) =>
-                      element.kind == AddressKind.change && element.state == AddressStatus.active,
+                      element.kind == AddressKind.change &&
+                      element.state == AddressStatus.active,
                 )
                 .isNotEmpty) ...[
               const BBText.title(
@@ -166,7 +176,8 @@ class AddressesScreen extends HookWidget {
             if (addresses
                 .where(
                   (element) =>
-                      element.kind == AddressKind.change && element.state == AddressStatus.used,
+                      element.kind == AddressKind.change &&
+                      element.state == AddressStatus.used,
                 )
                 .isNotEmpty) ...[
               const BBText.title(
@@ -182,7 +193,8 @@ class AddressesScreen extends HookWidget {
             if (addresses
                 .where(
                   (element) =>
-                      element.kind == AddressKind.change && element.state == AddressStatus.unused,
+                      element.kind == AddressKind.change &&
+                      element.state == AddressStatus.unused,
                 )
                 .isNotEmpty) ...[
               const BBText.title(

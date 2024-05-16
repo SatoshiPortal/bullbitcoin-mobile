@@ -33,44 +33,30 @@ class ReceiveListeners extends StatelessWidget {
           listenWhen: (previous, current) => previous.txPaid != current.txPaid,
           listener: (context, state) {
             if (state.syncWallet != null || state.txPaid == null) return;
-            print('------ receive listener 1');
             final tx = state.txPaid!;
-            print('------ receive listener 2');
 
             final amt = tx.recievableAmount()!;
 
-            print('------ receive listener 3');
-
             final amtStr =
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
-            print('------ receive listener 4');
 
             final prefix = tx.actionPrefixStr();
-            print('------ receive listener 5');
 
             final isReceivePage = context.read<NavName>().state == '/receive';
-            print('------ receive listener 6');
 
             final swapOnPage = context.read<SwapCubit>().state.swapTx;
-            print('------ receive listener 7');
 
             final sameSwap = swapOnPage?.id == tx.id;
-            print('------ receive listener 8');
 
             if (sameSwap && isReceivePage) {
-              print('------ receive listener 9');
-
               locator<GoRouter>().push('/swap-receive', extra: tx);
             } else {
-              print('------ receive listener 10');
-
               showToastWidget(
                 position: ToastPosition.top,
                 AlertUI(text: '$prefix $amtStr'),
                 animationCurve: Curves.decelerate,
               );
             }
-            print('------ receive listener 11');
 
             context.read<WatchTxsBloc>().add(ClearAlerts());
           },

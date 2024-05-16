@@ -56,7 +56,7 @@ class HomeWalletsSetupListener extends StatelessWidget {
             );
         context.read<HomeCubit>().clearWallets();
 
-        print('Wallets:  ' + state.tempwallets.toString());
+        // print('Wallets:  ' + state.tempwallets.toString());
       },
       child: WalletBlocListeners(child: child),
     );
