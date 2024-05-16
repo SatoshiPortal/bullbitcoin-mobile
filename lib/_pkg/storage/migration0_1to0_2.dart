@@ -62,12 +62,12 @@ Future<void> doMigration0_1to0_2(
     walletObj = await addIsLiquid(walletObj);
 
     // Change 4: Update change address Index
-    final w =
-        await updateAddressNullIssue(walletObj, mainBlockchain, testBlockchain);
+    // final w =
+    //     await updateAddressNullIssue(walletObj, mainBlockchain, testBlockchain);
 
     // print('Save wallet as:');
     // print(jsonEncode(walletObj));
-    // final w = Wallet.fromJson(walletObj);
+    final w = Wallet.fromJson(walletObj);
     wallets.add(w);
   }
 
