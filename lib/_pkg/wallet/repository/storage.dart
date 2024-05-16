@@ -6,7 +6,8 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 
 class WalletsStorageRepository {
-  WalletsStorageRepository({required HiveStorage hiveStorage}) : _hiveStorage = hiveStorage;
+  WalletsStorageRepository({required HiveStorage hiveStorage})
+      : _hiveStorage = hiveStorage;
 
   final HiveStorage _hiveStorage;
 
@@ -26,7 +27,8 @@ class WalletsStorageRepository {
           value: jsn,
         );
       } else {
-        final walletIdsJson = jsonDecode(walletIds!)['wallets'] as List<dynamic>;
+        final walletIdsJson =
+            jsonDecode(walletIds!)['wallets'] as List<dynamic>;
 
         final List<String> walletHashIds = [];
         for (final id in walletIdsJson) {
@@ -74,21 +76,22 @@ class WalletsStorageRepository {
     } catch (e) {
       return (
         null,
-        Err(e.toString(), expected: e.toString() == 'No Wallet with index $walletHashId')
+        Err(e.toString(),
+            expected: e.toString() == 'No Wallet with index $walletHashId')
       );
     }
   }
 
   Future<(List<Wallet>?, Err?)> readAllWallets() async {
     try {
-      final (walletIds, err) =
-          await _hiveStorage.getValue(StorageKeys.wallets); // returns wallet indexes
+      final (walletIds, err) = await _hiveStorage
+          .getValue(StorageKeys.wallets); // returns wallet indexes
       if (err != null) throw err;
 
       final walletIdsJson = jsonDecode(walletIds!)['wallets'] as List<dynamic>;
 
       final List<Wallet> wallets = [];
-      for (final w in walletIdsJson) {
+      for (final w in walletIdsJson.reversed) {
         try {
           final (wallet, err) = await readWallet(walletHashId: w as String);
           if (err != null) continue;

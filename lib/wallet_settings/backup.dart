@@ -37,34 +37,49 @@ class BackupPage extends StatelessWidget {
         BlocProvider.value(value: walletSettings),
         BlocProvider.value(value: InfoRead()),
       ],
-      child: BlocBuilder<InfoRead, bool>(
-        builder: (context, state) {
-          return PopScope(
-            canPop: false,
-            onPopInvoked: (canPop) {
-              context.go('/home');
-            },
-            child: Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                flexibleSpace: BBAppBar(
-                  text: 'Backup',
-                  onBack: () {
-                    if (state) context.read<InfoRead>().unread();
-                    context.read<WalletSettingsCubit>().clearSensitive();
-                    // context.pop();
-                    context.go('/home');
-                  },
-                ),
-              ),
-              body: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: state ? const BackupScreen() : const BackUpInfoScreen(),
+      child: const _Screen(),
+    );
+  }
+}
+
+class _Screen extends StatelessWidget {
+  const _Screen();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<InfoRead, bool>(
+      builder: (context, state) {
+        return PopScope(
+          canPop: false,
+          onPopInvoked: (canPop) async {
+            if (state) context.read<InfoRead>().unread();
+            await context.read<WalletSettingsCubit>().clearSensitive();
+
+            context.go('/home');
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              flexibleSpace: BBAppBar(
+                text: 'Backup',
+                onBack: () async {
+                  if (state) context.read<InfoRead>().unread();
+                  await context.read<WalletSettingsCubit>().clearSensitive();
+                  // context.pop();
+                  context
+                    ..pop()
+                    ..pop();
+                  // context.go('/home');
+                },
               ),
             ),
-          );
-        },
-      ),
+            body: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: state ? const BackupScreen() : const BackUpInfoScreen(),
+            ),
+          ),
+        );
+      },
     );
   }
 }

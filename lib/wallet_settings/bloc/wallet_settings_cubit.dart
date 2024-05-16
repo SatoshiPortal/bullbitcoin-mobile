@@ -550,7 +550,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
   }
 
-  void clearSensitive() {
+  Future clearSensitive() async {
     clearnMnemonic();
     emit(
       state.copyWith(
