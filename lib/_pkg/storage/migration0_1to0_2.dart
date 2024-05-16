@@ -103,8 +103,8 @@ Future<void> doMigration0_1to0_2(
     final tempLiq = wallets[liqMainnetIdx];
     wallets.removeAt(mainWalletIdx);
     wallets.removeAt(liqMainnetIdx - 1);
-    wallets.insert(0, tempMain);
-    wallets.insert(1, tempLiq);
+    wallets.insert(0, tempLiq);
+    wallets.insert(1, tempMain);
   }
 
   final walletObjs = wallets.map((w) => w.toJson()).toList();
