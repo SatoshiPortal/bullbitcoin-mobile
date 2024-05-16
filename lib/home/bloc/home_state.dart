@@ -58,9 +58,7 @@ class HomeState with _$HomeState {
   WalletBloc? getMainInstantWallet(BBNetwork network) {
     final wallets = walletBlocsFromNetwork(network);
     final idx = wallets.indexWhere(
-      (w) =>
-          w.state.wallet!.type == BBWalletType.instant &&
-          w.state.wallet!.mainWallet,
+      (w) => w.state.wallet!.isInstant() && w.state.wallet!.mainWallet,
     );
     if (idx == -1) return null;
     return wallets[idx];
@@ -69,9 +67,7 @@ class HomeState with _$HomeState {
   WalletBloc? getMainSecureWallet(BBNetwork network) {
     final wallets = walletBlocsFromNetwork(network);
     final idx = wallets.indexWhere(
-      (w) =>
-          w.state.wallet!.type != BBWalletType.instant &&
-          w.state.wallet!.mainWallet,
+      (w) => w.state.wallet!.isSecure() && w.state.wallet!.mainWallet,
     );
     if (idx == -1) return null;
     return wallets[idx];
@@ -301,7 +297,7 @@ class HomeState with _$HomeState {
 
   Set<({String info, WalletBloc walletBloc})> homeWarnings(BBNetwork network) {
     bool instantBalWarning(WalletBloc wb) {
-      if (wb.state.wallet?.type != BBWalletType.instant) return false;
+      if (wb.state.wallet?.isInstant() == false) return false;
       return wb.state.balanceSats() > 100000000;
     }
 

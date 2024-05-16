@@ -156,8 +156,7 @@ class WalletTx implements IWalletTransactions {
           );
           if (err != null) throw err;
           final (tx, feeAmt, psbt) = buildResp!;
-          if (wallet.type == BBWalletType.secure ||
-              wallet.type == BBWalletType.words) {
+          if (!wallet.watchOnly()) {
             final (seed, errSeed) =
                 await _walletSensitiveStorageRepository.readSeed(
               fingerprintIndex: wallet.getRelatedSeedStorageString(),
@@ -172,14 +171,14 @@ class WalletTx implements IWalletTransactions {
             );
             if (errSign != null) throw errSign;
             return ((wallet, tx!.copyWith(psbt: signed!.$2), feeAmt), null);
+          } else {
+            final txs = wallet.transactions.toList();
+            txs.add(tx!);
+            final (w, errAdd) =
+                await addUnsignedTxToWallet(transaction: tx, wallet: wallet);
+            if (errAdd != null) throw errAdd;
+            return ((w, tx, feeAmt), null);
           }
-
-          final txs = wallet.transactions.toList();
-          txs.add(tx!);
-          final (w, errAdd) =
-              await addUnsignedTxToWallet(transaction: tx, wallet: wallet);
-          if (errAdd != null) throw errAdd;
-          return ((w, tx, feeAmt), null);
 
         case BaseWalletType.Liquid:
           final (liqWallet, errWallet) =

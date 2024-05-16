@@ -667,7 +667,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       passphrase: state.passPhrase,
       scriptType: ScriptType.bip84,
       network: network,
-      walletType: BBWalletType.instant,
+      walletType: BBWalletType.main,
       walletCreate: _walletCreate,
       // walletType: network,
       // false,

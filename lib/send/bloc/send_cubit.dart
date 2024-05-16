@@ -584,9 +584,7 @@ class SendCubit extends Cubit<SendState> {
 
     final (wallet, tx, feeAmt) = buildResp!;
 
-    if (wallet!.type == BBWalletType.secure ||
-        wallet.type == BBWalletType.words ||
-        wallet.type == BBWalletType.instant) {
+    if (!wallet!.watchOnly()) {
       emit(
         state.copyWith(
           sending: false,
@@ -599,25 +597,25 @@ class SendCubit extends Cubit<SendState> {
       // if (swaptx != null) sendClicked(swaptx: swaptx);
 
       return;
+    } else {
+      state.selectedWalletBloc!.add(
+        UpdateWallet(
+          wallet,
+          updateTypes: [
+            UpdateWalletTypes.transactions,
+            UpdateWalletTypes.swaps,
+          ],
+        ),
+      );
+
+      emit(
+        state.copyWith(
+          sending: false,
+          psbt: tx!.psbt!,
+          tx: tx,
+        ),
+      );
     }
-
-    state.selectedWalletBloc!.add(
-      UpdateWallet(
-        wallet,
-        updateTypes: [
-          UpdateWalletTypes.transactions,
-          UpdateWalletTypes.swaps,
-        ],
-      ),
-    );
-
-    emit(
-      state.copyWith(
-        sending: false,
-        psbt: tx!.psbt!,
-        tx: tx,
-      ),
-    );
   }
 
   void sendClicked() async {

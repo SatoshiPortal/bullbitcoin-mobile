@@ -480,6 +480,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case SubmarineSwapActions.refundable:
+          await __updateWalletTxs(swapTx, walletBloc, emit);
           final swap = await __refundSwap(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
 

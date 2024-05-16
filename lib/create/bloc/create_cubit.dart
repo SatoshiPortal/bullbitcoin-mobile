@@ -81,7 +81,8 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   //   );
   // }
 
-  void toggleIsInstant(bool isInstant) => emit(state.copyWith(isInstant: isInstant));
+  void toggleIsInstant(bool isInstant) =>
+      emit(state.copyWith(isInstant: isInstant));
 
   Future checkWalletLabel() async {
     if (state.mainWallet) return;
@@ -89,9 +90,17 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (label == null || label == '')
       emit(state.copyWith(errSaving: 'Wallet Label is required'));
     else if (label.length < 3)
-      emit(state.copyWith(errSaving: 'Wallet Label must be at least 3 characters'));
+      emit(
+        state.copyWith(
+          errSaving: 'Wallet Label must be at least 3 characters',
+        ),
+      );
     else if (label.length > 20)
-      emit(state.copyWith(errSaving: 'Wallet Label must be less than 20 characters'));
+      emit(
+        state.copyWith(
+          errSaving: 'Wallet Label must be less than 20 characters',
+        ),
+      );
     else
       emit(state.copyWith(errSaving: ''));
   }
@@ -103,14 +112,21 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     final label = state.walletLabel;
     if (!state.mainWallet) {
       if (label == null || label == '') {
-        emit(state.copyWith(saving: false, errSaving: 'Wallet Label is required'));
+        emit(
+          state.copyWith(
+            saving: false,
+            errSaving: 'Wallet Label is required',
+          ),
+        );
         return;
       }
     }
 
-    final network = _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final network =
+        _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
     final mnemonic = state.mnemonic!.join(' ');
-    final (seed, sErr) = await _walletSensCreate.mnemonicSeed(mnemonic, network);
+    final (seed, sErr) =
+        await _walletSensCreate.mnemonicSeed(mnemonic, network);
     if (sErr != null) {
       emit(state.copyWith(saving: false, errSaving: 'Error Creating Seed'));
       return;
@@ -120,7 +136,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       passphrase: state.passPhrase,
       scriptType: ScriptType.bip84,
       network: network,
-      walletType: state.isInstant ? BBWalletType.instant : BBWalletType.secure,
+      walletType: BBWalletType.main,
       walletCreate: _walletCreate,
       // walletType: network,
       // false,
@@ -202,7 +218,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       passphrase: state.passPhrase,
       scriptType: ScriptType.bip84,
       network: network,
-      walletType: BBWalletType.instant,
+      walletType: BBWalletType.main,
       walletCreate: _walletCreate,
       // walletType: network,
       // false,

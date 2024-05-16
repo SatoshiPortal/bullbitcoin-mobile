@@ -574,7 +574,7 @@ extension X on boltz.SwapStatus? {
       case boltz.SwapStatus.invoiceSet:
         status = ('Invoice Set', 'The invoice for the swap has been set.');
       case boltz.SwapStatus.invoicePending:
-        status = ('Invoice Pending', 'The invoice for the swap is pending.');
+        status = ('Invoice Pending', 'Payment of the invoice is in progress');
       case boltz.SwapStatus.invoicePaid:
         status = ('Invoice-Paid', 'The invoice has been successfully paid.');
       case boltz.SwapStatus.invoiceFailedToPay:

@@ -288,26 +288,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       Future.delayed(const Duration(milliseconds: 100));
     }
 
-    final wallet = state.walletBloc!.state.wallet!;
-    if (wallet.type == BBWalletType.instant) {
-      emit(
-        state.copyWith(
-          defaultLiquidAddress: updatedWallet.lastGeneratedAddress,
-          privateLabel: '',
-          savedDescription: '',
-          description: '',
-        ),
-      );
-    } else {
-      emit(
-        state.copyWith(
-          defaultAddress: updatedWallet.lastGeneratedAddress,
-          privateLabel: '',
-          savedDescription: '',
-          description: '',
-        ),
-      );
-    }
+    emit(
+      state.copyWith(
+        defaultLiquidAddress: updatedWallet.lastGeneratedAddress,
+        privateLabel: '',
+        savedDescription: '',
+        description: '',
+      ),
+    );
   }
 
   void descriptionChanged(String description) {

@@ -98,12 +98,11 @@ const _$BBNetworkEnumMap = {
 };
 
 const _$BBWalletTypeEnumMap = {
-  BBWalletType.secure: 'secure',
+  BBWalletType.main: 'main',
   BBWalletType.xpub: 'xpub',
   BBWalletType.descriptors: 'descriptors',
   BBWalletType.words: 'words',
   BBWalletType.coldcard: 'coldcard',
-  BBWalletType.instant: 'instant',
 };
 
 const _$ScriptTypeEnumMap = {

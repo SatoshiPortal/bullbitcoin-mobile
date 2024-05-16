@@ -12,7 +12,7 @@ part 'wallet.g.dart';
 
 enum BBNetwork { Testnet, Mainnet }
 
-enum BBWalletType { secure, xpub, descriptors, words, coldcard, instant }
+enum BBWalletType { main, xpub, descriptors, words, coldcard }
 
 enum ScriptType { bip84, bip49, bip44 }
 
@@ -250,8 +250,11 @@ class Wallet with _$Wallet {
     String str = '';
 
     switch (type) {
-      case BBWalletType.secure:
-        str = 'Bull Bitcoin Wallet';
+      case BBWalletType.main:
+        if (baseWalletType == BaseWalletType.Bitcoin)
+          str = 'Bull Bitcoin Wallet';
+        else
+          str = 'Instant Payments Wallet';
         if (hasPassphrase())
           str += '\n(Passphrase Protected)';
         else
@@ -270,8 +273,6 @@ class Wallet with _$Wallet {
 
       case BBWalletType.descriptors:
         str = 'Imported Descriptors';
-      case BBWalletType.instant:
-        str = 'Instant Payments Wallet';
     }
 
     return str;
@@ -281,8 +282,11 @@ class Wallet with _$Wallet {
     String str = '';
 
     switch (type) {
-      case BBWalletType.secure:
-        str = 'Bull Wallet' + ':' + id.substring(0, 5);
+      case BBWalletType.main:
+        if (baseWalletType == BaseWalletType.Bitcoin)
+          str = 'Secure' + ':' + id.substring(0, 5);
+        else
+          str = 'Instant' + ':' + id.substring(0, 5);
       case BBWalletType.xpub:
         str = 'Xpub' + ':' + id.substring(0, 5);
       case BBWalletType.words:
@@ -291,8 +295,6 @@ class Wallet with _$Wallet {
         str = 'Coldcard' + ':' + id.substring(0, 5);
       case BBWalletType.descriptors:
         str = 'Imported Descriptor' + ':' + id.substring(0, 5);
-      case BBWalletType.instant:
-        str = 'Instant' + ':' + id.substring(0, 5);
     }
 
     return str;
@@ -303,16 +305,17 @@ class Wallet with _$Wallet {
 
     switch (type) {
       case BBWalletType.words:
-      case BBWalletType.secure:
-        str = 'Secure Bitcoin Wallet';
+      case BBWalletType.main:
+        if (baseWalletType == BaseWalletType.Bitcoin)
+          str = 'Secure Bitcoin Wallet';
+        else
+          str = 'Instant Payments Wallet';
       case BBWalletType.xpub:
         str = 'Xpub' + ':' + id.substring(0, 5);
       case BBWalletType.coldcard:
         str = 'Coldcard' + ':' + id.substring(0, 5);
       case BBWalletType.descriptors:
         str = 'Imported Descriptor' + ':' + id.substring(0, 5);
-      case BBWalletType.instant:
-        str = 'Instant payments wallet';
     }
 
     return str;
@@ -323,7 +326,12 @@ class Wallet with _$Wallet {
     final networkStr = isTestnet ? 'Testnet ' : '';
 
     switch (type) {
-      case BBWalletType.secure:
+      case BBWalletType.main:
+        if (baseWalletType == BaseWalletType.Bitcoin)
+          return 'Bitcoin ${networkStr}Network';
+        else
+          return 'Liquid ${networkStr}Network';
+
       case BBWalletType.words:
         return 'Bitcoin ${networkStr}Network';
       // return shorten
@@ -333,8 +341,6 @@ class Wallet with _$Wallet {
       case BBWalletType.coldcard:
       case BBWalletType.descriptors:
         return 'Watch Only';
-      case BBWalletType.instant:
-        return 'Liquid ${networkStr}Network';
       // return shorten ? 'Liquid $networkStr' : 'Liquid $networkStr Network';
     }
   }
@@ -375,6 +381,12 @@ class Wallet with _$Wallet {
     }
     // return null;
   }
+
+  bool isInstant() =>
+      type == BBWalletType.main && baseWalletType == BaseWalletType.Liquid;
+
+  bool isSecure() =>
+      type == BBWalletType.main && baseWalletType == BaseWalletType.Bitcoin;
 
   bool isSameNetwork(bool isTestnet) {
     return (isTestnet && network == BBNetwork.Testnet) ||
