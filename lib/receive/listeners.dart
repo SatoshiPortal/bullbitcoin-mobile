@@ -7,7 +7,6 @@ import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:flutter/material.dart';
@@ -76,63 +75,35 @@ class ReceiveListeners extends StatelessWidget {
             context.read<CurrencyCubit>().reset();
           },
         ),
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
         BlocListener<WatchTxsBloc, WatchTxsState>(
-          listenWhen: (previous, current) => previous.txPaid != current.txPaid,
+          listenWhen: (previous, current) =>
+              previous.updatedSwapTx != current.updatedSwapTx &&
+              current.updatedSwapTx != null,
           listener: (context, state) {
-            if (state.syncWallet != null || state.txPaid == null) return;
-            final tx = state.txPaid!;
-
-            final amt = tx.recievableAmount()!;
-
-            final amtStr =
-                context.read<CurrencyCubit>().state.getAmountInUnits(amt);
-
-            final prefix = tx.actionPrefixStr();
+            final swapOnPage = context.read<SwapCubit>().state.swapTx;
+            if (swapOnPage == null) return;
 
             final isReceivePage = context.read<NavName>().state == '/receive';
+            if (!isReceivePage) return;
 
-            final swapOnPage = context.read<SwapCubit>().state.swapTx;
+            final swaptx = state.updatedSwapTx!;
+            if (!swaptx.showAlert()) return;
 
-            final sameSwap = swapOnPage?.id == tx.id;
-
-            if (sameSwap && isReceivePage) {
-              locator<GoRouter>().push('/swap-receive', extra: tx);
-            } else {
+            final sameSwap = swapOnPage.id == swaptx.id;
+            if (sameSwap)
+              locator<GoRouter>().push('/swap-receive', extra: swaptx);
+            else {
+              final amtStr = context
+                  .read<CurrencyCubit>()
+                  .state
+                  .getAmountInUnits(swaptx.outAmount);
+              final prefix = swaptx.actionPrefixStr();
               showToastWidget(
                 position: ToastPosition.top,
                 AlertUI(text: '$prefix $amtStr'),
                 animationCurve: Curves.decelerate,
               );
             }
-
-            context.read<WatchTxsBloc>().add(ClearAlerts());
           },
         ),
       ],
@@ -140,5 +111,3 @@ class ReceiveListeners extends StatelessWidget {
     );
   }
 }
-// hello
-// hello

@@ -17,9 +17,15 @@ class SyncWallet extends WalletEvent {
 class KillSync extends WalletEvent {}
 
 class UpdateWallet extends WalletEvent {
-  UpdateWallet(this.wallet, {this.saveToStorage = true, required this.updateTypes});
+  UpdateWallet(
+    this.wallet, {
+    this.saveToStorage = true,
+    required this.updateTypes,
+    this.syncAfter = false,
+  });
   final Wallet wallet;
   final bool saveToStorage;
+  final bool syncAfter;
   final List<UpdateWalletTypes> updateTypes;
 }
 
@@ -33,4 +39,12 @@ class GetFirstAddress extends WalletEvent {}
 
 class GetNewAddress extends WalletEvent {}
 
-enum UpdateWalletTypes { load, balance, transactions, swaps, addresses, settings, utxos }
+enum UpdateWalletTypes {
+  load,
+  balance,
+  transactions,
+  swaps,
+  addresses,
+  settings,
+  utxos
+}

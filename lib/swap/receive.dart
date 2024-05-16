@@ -290,45 +290,55 @@ class ReceivingSwapPage extends StatefulWidget {
 class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
   bool received = false;
   bool paid = false;
-  Transaction? tx;
+  late SwapTx swapTx;
+  // Transaction? tx;
+
+  @override
+  void initState() {
+    swapTx = widget.tx;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    var amt = widget.tx.recievableAmount() ?? 0;
+    var amt = swapTx.recievableAmount() ?? 0;
 
-    final txx = context.select(
-      (HomeCubit cubit) => cubit.state.getTxFromSwap(widget.tx),
+    final tx = context.select(
+      (HomeCubit cubit) => cubit.state.getTxFromSwap(swapTx),
     );
 
-    if (tx != null) amt = tx!.getAmount();
+    if (tx != null) amt = tx.getAmount();
 
     final amtStr =
         context.select((CurrencyCubit _) => _.state.getAmountInUnits(amt));
 
     return BlocListener<WatchTxsBloc, WatchTxsState>(
-      listenWhen: (previous, current) => previous.txPaid != current.txPaid,
+      listenWhen: (previous, current) =>
+          previous.updatedSwapTx != current.updatedSwapTx &&
+          current.updatedSwapTx != null,
       listener: (context, state) async {
-        final swapTx = state.txPaid;
+        final updatedSwapTx = state.updatedSwapTx!;
+        if (updatedSwapTx.id != swapTx.id) return;
 
-        if (swapTx == null) return;
+        setState(() {
+          swapTx = updatedSwapTx;
+        });
 
-        if (swapTx.id != widget.tx.id) return;
-
-        if (swapTx.paidReverse()) {
+        if (updatedSwapTx.paidReverse()) {
           setState(() {
             paid = true;
           });
         }
-        if (swapTx.settledReverse()) {
+        if (updatedSwapTx.settledReverse()) {
           setState(() {
             received = true;
           });
 
-          await Future.delayed(100.ms);
+          // await Future.delayed(100.ms);
 
-          tx = context.read<HomeCubit>().state.getTxFromSwap(widget.tx);
+          // tx = context.read<HomeCubit>().state.getTxFromSwap(widget.tx);
 
-          setState(() {});
+          // setState(() {});
         }
       },
       child: Scaffold(
@@ -361,17 +371,17 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
             BBText.body(amtStr),
             if (!received) ...[
               const Gap(24),
-              _OnChainWarning(swapTx: widget.tx),
+              _OnChainWarning(swapTx: swapTx),
             ],
             const Gap(40),
-            if (txx != null)
+            if (tx != null)
               BBButton.big(
                 label: 'View Transaction',
                 onPressed: () {
                   context
                     ..pop()
                     ..pop()
-                    ..push('/tx', extra: tx ?? txx);
+                    ..push('/tx', extra: tx);
                 },
               ).animate().fadeIn(),
           ],

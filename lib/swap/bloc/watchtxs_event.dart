@@ -12,7 +12,7 @@ class WatchWallets extends WatchTxsEvent {
   final bool isTestnet;
 }
 
-class ClearAlerts extends WatchTxsEvent {}
+// class ClearAlerts extends WatchTxsEvent {}
 
 class ProcessSwapTx extends WatchTxsEvent {
   ProcessSwapTx({required this.walletId, required this.swapTx});

@@ -395,5 +395,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       locator<Logger>().log(err.toString(), printToConsole: true);
     emit(state.copyWith(wallet: storageWallet));
     await Future.delayed(500.ms);
+    if (event.syncAfter) add(SyncWallet());
   }
 }

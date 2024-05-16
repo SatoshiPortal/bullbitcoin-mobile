@@ -6,6 +6,8 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -122,54 +124,100 @@ class SendLnFees extends StatelessWidget {
   }
 }
 
-class SendingLnTx extends StatelessWidget {
+class SendingLnTx extends StatefulWidget {
   const SendingLnTx({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final settled = context.select((SendCubit cubit) => cubit.state.txSettled);
-    final paid = context.select((SendCubit cubit) => cubit.state.txPaid);
+  State<SendingLnTx> createState() => _SendingLnTxState();
+}
 
+class _SendingLnTxState extends State<SendingLnTx> {
+  late SwapTx swapTx;
+  bool settled = false;
+  bool paid = false;
+  bool failed = false;
+
+  @override
+  void initState() {
+    swapTx = context.read<SwapCubit>().state.swapTx!;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
     final amtStr = context
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
-    // final tx = context.select((SendCubit cubit) => cubit.state.tx);
-    final tx = context.select((SendCubit cubit) => cubit.state.tx);
-    final swap = context.select((SwapCubit cubit) => cubit.state.swapTx);
+    final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (!settled) ...[
-          if (!paid)
-            const BBText.body('Payment in progess')
-          else
-            const BBText.body('Invoice paid'),
-        ] else
-          const BBText.body('Payment sent'),
-        const Gap(16),
-        SendTick(sent: settled),
-        const Gap(16),
-        BBText.body(amtStr),
-        if (!settled && swap != null) ...[
-          const Gap(24),
-          _OnChainWarning(swapTx: swap),
+    return BlocListener<WatchTxsBloc, WatchTxsState>(
+      listenWhen: (previous, current) =>
+          previous.updatedSwapTx != current.updatedSwapTx &&
+          current.updatedSwapTx != null,
+      listener: (context, state) {
+        // if (swapTx == null) return;
+        final updatedSwap = state.updatedSwapTx!;
+        if (updatedSwap.id != swapTx.id) return;
+        setState(() {
+          swapTx = updatedSwap;
+        });
+
+        if (updatedSwap.paidSubmarine()) {
+          setState(() {
+            paid = true;
+          });
+        }
+        if (updatedSwap.settledSubmarine()) {
+          setState(() {
+            settled = true;
+          });
+        }
+
+        if (updatedSwap.refundableSubmarine()) {
+          setState(() {
+            failed = true;
+          });
+        }
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (!failed) ...[
+            if (!settled) ...[
+              if (!paid)
+                const BBText.body('Payment in progess')
+              else
+                const BBText.body('Invoice paid'),
+            ] else
+              const BBText.body('Payment sent'),
+          ] else
+            const BBText.body('Payment failed'),
+          const Gap(16),
+          SendTick(sent: settled && !failed),
+          if (failed)
+            const FaIcon(
+              FontAwesomeIcons.triangleExclamation,
+              color: Colors.red,
+              size: 50,
+            ),
+          const Gap(16),
+          BBText.body(amtStr),
+          if (!settled) ...[
+            const Gap(24),
+            _OnChainWarning(swapTx: swapTx),
+          ],
+          const Gap(40),
+          if (tx != null)
+            BBButton.big(
+              label: 'View Transaction',
+              onPressed: () {
+                context
+                  ..pop()
+                  ..push('/tx', extra: tx);
+              },
+            ).animate().fadeIn(),
         ],
-        const Gap(40),
-        if (tx != null)
-          BBButton.big(
-            label: 'View Transaction',
-            onPressed: () {
-              final swap = context.read<SwapCubit>().state.swapTx;
-              final txFromSwap =
-                  context.read<HomeCubit>().state.getTxFromSwap(swap!);
-
-              context
-                ..pop()
-                ..push('/tx', extra: txFromSwap ?? tx);
-            },
-          ).animate().fadeIn(),
-      ],
+      ),
     );
   }
 }

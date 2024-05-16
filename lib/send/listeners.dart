@@ -6,7 +6,6 @@ import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/bloc/swap_state.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:flutter/material.dart';
@@ -25,16 +24,12 @@ class SendListeners extends StatelessWidget {
         BlocListener<CurrencyCubit, CurrencyState>(
           listener: (context, state) {
             context.read<SendCubit>().selectWallets();
-            // context.read<SendCubit>().updateShowSend();
           },
         ),
-
         BlocListener<SwapCubit, SwapState>(
           listenWhen: (previous, current) => previous.swapTx != current.swapTx,
           listener: (context, state) async {
             if (state.swapTx == null) return;
-
-            // await Future.delayed(300.ms);
 
             final fees =
                 context.read<NetworkFeesCubit>().state.selectedOrFirst(true);
@@ -44,113 +39,34 @@ class SendListeners extends StatelessWidget {
                 .buildTxFromSwap(networkFees: fees, swaptx: state.swapTx!);
           },
         ),
-
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
         BlocListener<WatchTxsBloc, WatchTxsState>(
-          listenWhen: (previous, current) => previous.txPaid != current.txPaid,
+          listenWhen: (previous, current) =>
+              previous.updatedSwapTx != current.updatedSwapTx &&
+              current.updatedSwapTx != null,
           listener: (context, state) {
-            if (state.syncWallet != null || state.txPaid == null) return;
-
-            final tx = state.txPaid!;
-
-            final amt = tx.outAmount;
-
-            final amtStr =
-                context.read<CurrencyCubit>().state.getAmountInUnits(amt);
-            final prefix = tx.actionPrefixStr();
+            final swapOnPage = context.read<SwapCubit>().state.swapTx;
+            if (swapOnPage == null) return;
 
             final isSendPage = context.read<NavName>().state == '/send';
+            if (!isSendPage) return;
 
-            final swapOnPage = context.read<SwapCubit>().state.swapTx;
-            final sameSwap = swapOnPage?.id == tx.id;
+            final swapTx = state.updatedSwapTx!;
+            final sameSwap = swapOnPage.id == swapTx.id;
+            if (sameSwap) return;
 
-            if (sameSwap && isSendPage && tx.paidSubmarine()) {
-              context.read<SendCubit>().txPaid();
-            } else {
-              showToastWidget(
-                position: ToastPosition.top,
-                AlertUI(text: '$prefix $amtStr'),
-                animationCurve: Curves.decelerate,
-              );
-            }
+            if (!swapTx.showAlert()) return;
 
-            context.read<WatchTxsBloc>().add(ClearAlerts());
-          },
-        ),
-        BlocListener<WatchTxsBloc, WatchTxsState>(
-          listenWhen: (previous, current) => previous.txPaid != current.txPaid,
-          listener: (context, state) {
-            if (state.syncWallet == null || state.txPaid == null) return;
-
-            final tx = state.txPaid!;
-            final amt = tx.outAmount;
-
+            final amt = swapTx.outAmount;
             final amtStr =
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
-            final prefix = tx.actionPrefixStr();
-
-            final isSendPage = context.read<NavName>().state == '/send';
-
-            final swapOnPage = context.read<SwapCubit>().state.swapTx;
-            final sameSwap = swapOnPage?.id == tx.id;
-
-            if (sameSwap && isSendPage) {
-              context.read<SendCubit>().txSettled();
-            } else {
-              showToastWidget(
-                position: ToastPosition.top,
-                AlertUI(text: '$prefix $amtStr'),
-                animationCurve: Curves.decelerate,
-              );
-            }
-
-            context.read<WatchTxsBloc>().add(ClearAlerts());
+            final prefix = swapTx.actionPrefixStr();
+            showToastWidget(
+              position: ToastPosition.top,
+              AlertUI(text: '$prefix $amtStr'),
+              animationCurve: Curves.decelerate,
+            );
           },
         ),
-
-        // BlocListener<SendCubit, SendState>(
-        //   listener: (context, state) {},
-        // ),
-        // BlocListener<SwapCubit, SwapState>(
-        //   listener: (context, state) {
-        //     // final amount = context.read<CurrencyCubit>().state.amount;
-        //     // final inv = context.read<SendCubit>().state.invoice;
-        //     // final address = context.read<SendCubit>().state.address;
-        //     // if (inv != null &&
-        //     //     inv.invoice == address &&
-        //     //     inv.getAmount() != amount) {
-        //     //   final amt = inv.getAmount();
-        //     //   context.read<CurrencyCubit>().updateAmountDirect(amt);
-        //     //   context.read<SendCubit>().updateShowSend();
-        //     // }
-        //   },
-        // ),
       ],
       child: child,
     );
