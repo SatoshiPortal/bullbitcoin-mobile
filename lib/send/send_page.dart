@@ -3,7 +3,6 @@ import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
-import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
@@ -33,7 +32,6 @@ import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/send.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -162,7 +160,7 @@ class _Screen extends StatelessWidget {
     if (sent && isLn) return const SendingLnTx();
 
     return ColoredBox(
-      color: sent ? Colors.green : context.colour.background,
+      color: context.colour.background,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -754,66 +752,81 @@ class TxSuccess extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
     if (isLn) return const SendingLnTx();
-
-    final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
-    final amtStr = context
-        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
-    // final tx = context.select((SendCubit cubit) => cubit.state.tx);
-    final txid = context.select((SendCubit cubit) => cubit.state.tx!.txid);
     final isLiquid =
         context.select((SendCubit cubit) => cubit.state.tx!.isLiquid);
-    return AnnotatedRegion(
-      value: const SystemUiOverlayStyle(statusBarColor: Colors.green),
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(152),
-            const Icon(Icons.check_circle, size: 120),
-            const Gap(32),
-            const BBText.body(
-              'Transaction sent',
-              textAlign: TextAlign.center,
-              isBold: true,
-            ),
-            const Gap(52),
-            BBText.titleLarge(
-              amtStr,
-              textAlign: TextAlign.center,
-              isBold: true,
-            ),
-            const Gap(15),
-            InkWell(
-              onTap: () {
-                final url = context.read<NetworkCubit>().state.explorerTxUrl(
-                      txid,
-                      isLiquid: isLiquid,
-                    );
-                locator<Launcher>().launchApp(url);
-              },
-              child: const BBText.body(
-                'View Transaction details ->',
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const Gap(24),
-            SizedBox(
-              height: 52,
-              child: TextButton(
-                onPressed: () {
-                  context.go('/home');
-                },
-                child: const BBText.titleLarge(
-                  'Done',
-                  textAlign: TextAlign.center,
-                  isBold: true,
-                ),
-              ),
-            ),
-          ],
-        ).animate().fadeIn(),
+
+    final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
+    final amtStr = context.select(
+      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
+        amount,
+        isLiquid: isLiquid,
       ),
+    );
+    // final tx = context.select((SendCubit cubit) => cubit.state.tx);
+    final tx = context.select((SendCubit _) => _.state.tx);
+
+    return Column(
+      // crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(
+          width: double.infinity,
+          height: 80,
+        ),
+
+        // const Gap(152),
+        // const Icon(Icons.check_circle, size: 120),
+        // const Gap(32),
+        const BBText.body(
+          'Transaction sent',
+          textAlign: TextAlign.center,
+        ),
+        const Gap(16),
+        const SendTick(sent: true),
+        const Gap(16),
+        BBText.body(
+          amtStr,
+          textAlign: TextAlign.center,
+        ),
+        const Gap(40),
+        if (tx != null)
+          BBButton.big(
+            label: 'View Transaction',
+            onPressed: () {
+              context
+                ..pop()
+                ..push('/tx', extra: tx);
+            },
+          ).animate().fadeIn(),
+        // const Gap(15),
+        // InkWell(
+        //   onTap: () {
+        //     final url = context.read<NetworkCubit>().state.explorerTxUrl(
+        //           txid,
+        //           isLiquid: isLiquid,
+        //         );
+        //     locator<Launcher>().launchApp(url);
+        //   },
+        //   child: const BBText.body(
+        //     'View Transaction details ->',
+        //     textAlign: TextAlign.center,
+        //   ),
+        // ),
+        // const Gap(24),
+        // SizedBox(
+        //   height: 52,
+        //   child: TextButton(
+        //     onPressed: () {
+        //       context.go('/home');
+        //     },
+        //     child: const BBText.titleLarge(
+        //       'Done',
+        //       textAlign: TextAlign.center,
+        //       isBold: true,
+        //     ),
+        //   ),
+        // ),
+      ],
     );
   }
 }
