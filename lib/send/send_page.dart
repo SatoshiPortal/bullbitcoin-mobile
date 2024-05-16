@@ -842,40 +842,41 @@ class _Warnings extends StatelessWidget {
 
   Widget _buildHighFeesWarn({
     required double feePercentage,
-    required int amt,
-    required int fees,
+    required String amt,
+    required String amtFiat,
+    required String fees,
+    required String feesFiat,
+    required String minAmt,
+    required String minAmtFiat,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const BBText.titleLarge('High fee warning', isRed: true),
         const Gap(8),
-        Row(
-          children: [
-            const BBText.bodySmall('You are about to pay over '),
-            BBText.bodySmall(
-              '${feePercentage.toStringAsFixed(2)}% ',
-              isBold: true,
-            ),
-          ],
-        ),
-        const BBText.bodySmall(
-          'in Bitcoin Network fees for this transaction.',
+        const BBText.body('Bitcoin Network fees are currently high.'),
+        const Gap(8),
+        const BBText.body(
+          'When sending Bitcoin from the Secure Bitcoin Wallet to a Lightning Invoice or Liquid Address, you must pay Bitcoin Network fees and Swap fees.',
         ),
         const Gap(8),
-        Row(
-          children: [
-            const BBText.bodySmall('Amount you send: '),
-            BBText.bodySmall('$amt sats', isBold: true),
-          ],
-        ),
-        Row(
-          children: [
-            const BBText.bodySmall('Network fees: '),
-            BBText.bodySmall('$fees sats', isBold: true),
-          ],
-        ),
+        const BBText.body('The current Network Fee is:'),
+        BBText.body(fees, isBold: true),
+        BBText.body('~ $feesFiat'),
+        const Gap(8),
+        const BBText.body('Amount you send:'),
+        BBText.body(amt, isBold: true),
+        BBText.body('~ $amtFiat'),
+        const Gap(8),
+        const BBText.body('Minimum recommended amount:'),
+        BBText.body(minAmt, isBold: true),
+        BBText.body('~ $minAmtFiat'),
         const Gap(24),
+        const BBText.titleLarge('Payment may take many hours', isRed: true),
+        const Gap(8),
+        const BBText.body(
+          'It may take many hours to the recipient to see your payment. Do not continue if recipient requires immediate payment.',
+        ),
       ],
     );
   }
@@ -885,35 +886,79 @@ class _Warnings extends StatelessWidget {
     final swapTx = context.select((SwapCubit x) => x.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 
-    final errLowAmt =
-        context.select((SwapCubit x) => x.state.swapTx!.smallAmt());
+    // final errLowAmt =
+    // context.select((SwapCubit x) => x.state.swapTx!.smallAmt());
+
+    final swaptx = context.select((SwapCubit x) => x.state.swapTx!);
+
     final errHighFees =
         context.select((SwapCubit x) => x.state.swapTx!.highFees());
+
+    final amt = swaptx.outAmount;
+
+    const minAmt = 1000000;
+
+    final currency =
+        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+
+    final fees = swaptx.totalFees() ?? 0;
+
+    final feeStr = context
+        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fees));
+
+    final feesFiatStr = context.select(
+      (NetworkCubit cubit) => cubit.state.calculatePrice(fees, currency),
+    );
+
+    final amtStr = context
+        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amt));
+
+    final amtFiatStr = context.select(
+      (NetworkCubit cubit) => cubit.state.calculatePrice(amt, currency),
+    );
+
+    final minAmtStr = context
+        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(minAmt));
+
+    final minAmtFiatStr = context.select(
+      (NetworkCubit cubit) => cubit.state.calculatePrice(minAmt, currency),
+    );
+
+    // final minAmtFiat = context.select(
+    //   (NetworkCubit cubit) =>
+    //       cubit.state.calculatePrice(minAmt, cubit.state.defaultFiatCurrency!),
+    // );
 
     return WarningContainer(
       children: [
         const Gap(24),
-        if (errLowAmt) _buildLowAmtWarn(),
+        // if (errLowAmt) _buildLowAmtWarn(),
         if (errHighFees != null)
           _buildHighFeesWarn(
             feePercentage: errHighFees,
-            amt: swapTx.outAmount,
-            fees: swapTx.totalFees() ?? 0,
+            amt: amtStr,
+            amtFiat: amtFiatStr,
+            fees: feeStr,
+            feesFiat: feesFiatStr,
+            minAmt: minAmtStr,
+            minAmtFiat: minAmtFiatStr,
+            // amt: swapTx.outAmount,
+            // fees: swapTx.totalFees() ?? 0,
           ),
-        const Row(
-          children: [
-            Icon(FontAwesomeIcons.lightbulb, size: 32),
-            Gap(8),
-            Expanded(child: BBText.titleLarge('Suggestions', isBold: true)),
-          ],
-        ),
-        const Gap(24),
-        const BBText.bodySmall('''
-1. Use the Instant Payment Wallet instead to receive payments below 0.01 BTC.
+        // const Row(
+        //   children: [
+        //     Icon(FontAwesomeIcons.lightbulb, size: 32),
+        //     Gap(8),
+        //     Expanded(child: BBText.titleLarge('Suggestions', isBold: true)),
+        //   ],
+        // ),
+        // const Gap(24),
+//         const BBText.bodySmall('''
+// 1. Use the Instant Payment Wallet instead to receive payments below 0.01 BTC.
 
-2. If you want to add funds to your Secure Bitcoin Wallet from an external Lightning Wallet, send a larger amount. We recommend at minimum 0.01 BTC.
+// 2. If you want to add funds to your Secure Bitcoin Wallet from an external Lightning Wallet, send a larger amount. We recommend at minimum 0.01 BTC.
 
-3. It is more economical to make fewer swaps of larger amounts than to make many swaps of smaller amounts'''),
+// 3. It is more economical to make fewer swaps of larger amounts than to make many swaps of smaller amounts'''),
         // const Gap(8),
         // const _RemoveWarningMessage(),
         const Gap(24),
@@ -926,6 +971,19 @@ class _Warnings extends StatelessWidget {
             },
           ),
         ),
+        const Gap(24),
+        const Row(
+          children: [
+            Icon(FontAwesomeIcons.lightbulb, size: 32),
+            Gap(8),
+            Expanded(
+              child: BBText.bodySmall(
+                'Pre-fund your Instant Payments Wallet with 0.01 BTC or more and use it as your daily spending account',
+              ),
+            ),
+          ],
+        ),
+        // const Gap(16),
       ],
     );
   }
