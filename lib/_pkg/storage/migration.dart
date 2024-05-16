@@ -3,6 +3,14 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/migration0_1to0_2.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class MigrationCubit extends Cubit<bool> {
+  MigrationCubit() : super(false);
+  void toggle(bool value) => emit(value);
+}
+
+final migrationCubit = MigrationCubit();
 
 bdk.Blockchain? mainBlockchain;
 bdk.Blockchain? testBlockchain;

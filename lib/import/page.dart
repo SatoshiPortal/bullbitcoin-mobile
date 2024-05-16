@@ -29,9 +29,14 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ImportWalletPage extends StatefulWidget {
-  const ImportWalletPage({super.key, this.mainWallet = false});
+  const ImportWalletPage({
+    super.key,
+    this.mainWallet = false,
+    this.isRecovery = false,
+  });
 
   final bool mainWallet;
+  final bool isRecovery;
 
   @override
   State<ImportWalletPage> createState() => _ImportWalletPageState();
@@ -58,6 +63,8 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
       mainWallet: widget.mainWallet,
     );
 
+    if (widget.isRecovery) importCubit!.recoverClicked();
+
     wordsCubit = locator<WordsCubit>();
 
     super.initState();
@@ -70,24 +77,17 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
         BlocProvider.value(value: importCubit!),
         BlocProvider.value(value: wordsCubit!),
       ],
-      child: const _Page(),
-    );
-  }
-}
-
-class _Page extends StatelessWidget {
-  const _Page();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        flexibleSpace: const ImportAppBar(),
+      child: PopScope(
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            flexibleSpace: ImportAppBar(isRecovery: widget.isRecovery),
+          ),
+          body: const _Screen(),
+        ),
       ),
-      body: const _Screen(),
     );
   }
 }
@@ -95,13 +95,19 @@ class _Page extends StatelessWidget {
 class ImportAppBar extends StatelessWidget {
   const ImportAppBar({
     super.key,
+    this.isRecovery = false,
   });
+
+  final bool isRecovery;
 
   @override
   Widget build(BuildContext context) {
-    final step = context.select((ImportWalletCubit cubit) => cubit.state.importStep);
-    final stepName = context.select((ImportWalletCubit cubit) => cubit.state.stepName());
-    final creatingMainWallet = context.select((ImportWalletCubit cubit) => cubit.state.mainWallet);
+    final step =
+        context.select((ImportWalletCubit cubit) => cubit.state.importStep);
+    final stepName =
+        context.select((ImportWalletCubit cubit) => cubit.state.stepName());
+    final creatingMainWallet =
+        context.select((ImportWalletCubit cubit) => cubit.state.mainWallet);
     Function()? onBack;
 
     if (step == ImportSteps.importXpub ||
@@ -117,8 +123,12 @@ class ImportAppBar extends StatelessWidget {
     if (step == ImportSteps.selectCreateType) onBack = () => context.pop();
 
     if (creatingMainWallet &&
-        (step == ImportSteps.import12Words || step == ImportSteps.import24Words))
-      onBack = () => context.pop();
+        (step == ImportSteps.import12Words ||
+            step == ImportSteps.import24Words)) onBack = () => context.pop();
+
+    if (isRecovery &&
+        (step == ImportSteps.import12Words ||
+            step == ImportSteps.import24Words)) onBack = () => context.pop();
 
     return BBAppBar(text: stepName, onBack: onBack);
   }
@@ -129,12 +139,14 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final step = context.select((ImportWalletCubit cubit) => cubit.state.importStep);
+    final step =
+        context.select((ImportWalletCubit cubit) => cubit.state.importStep);
     return PopScope(
       canPop: step == ImportSteps.selectCreateType,
       onPopInvoked: (_) async {
+        context.pop();
         // if (step == ImportSteps.selectCreateType) context.pop();
-        context.read<ImportWalletCubit>().backClicked();
+        // context.read<ImportWalletCubit>().backClicked();
         // return false;
       },
       child: () {
@@ -208,11 +220,14 @@ class WalletLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mainWallet = context.select((ImportWalletCubit cubit) => cubit.state.mainWallet);
+    final mainWallet =
+        context.select((ImportWalletCubit cubit) => cubit.state.mainWallet);
     if (mainWallet) return const SizedBox.shrink();
 
-    final text = context.select((ImportWalletCubit cubit) => cubit.state.walletLabel ?? '');
-    final err = context.select((ImportWalletCubit cubit) => cubit.state.errSavingWallet);
+    final text = context
+        .select((ImportWalletCubit cubit) => cubit.state.walletLabel ?? '');
+    final err = context
+        .select((ImportWalletCubit cubit) => cubit.state.errSavingWallet);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 8),
@@ -221,7 +236,8 @@ class WalletLabel extends StatelessWidget {
         children: [
           BBTextInput.big(
             value: text,
-            onChanged: (value) => context.read<ImportWalletCubit>().walletLabelChanged(value),
+            onChanged: (value) =>
+                context.read<ImportWalletCubit>().walletLabelChanged(value),
             onEnter: () async {
               await Future.delayed(500.ms);
               context.read<ScrollCubit>().state.animateTo(

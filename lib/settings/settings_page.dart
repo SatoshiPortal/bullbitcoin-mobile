@@ -131,9 +131,12 @@ class NewWalletButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.textWithStatusAndRightArrow(
-      label: 'Create, import or recover wallet',
+      // label: 'Create, import or recover wallet',
+      label: 'Recover wallet',
       onPressed: () {
-        context.push('/import');
+        context.push('/recover');
+
+        // context.push('/import');
       },
     );
   }

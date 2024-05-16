@@ -73,6 +73,12 @@ GoRouter setupRouter() => GoRouter(
             return const ImportWalletPage();
           },
         ),
+        GoRoute(
+          path: '/recover',
+          builder: (context, state) {
+            return const ImportWalletPage(isRecovery: true);
+          },
+        ),
         // GoRoute(
         //   path: '/seed-view',
         //   builder: (context, state) {
