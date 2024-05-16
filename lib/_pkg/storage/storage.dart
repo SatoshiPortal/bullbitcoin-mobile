@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/migration.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:hive/hive.dart';
@@ -43,18 +44,17 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
   final secureStorage = SecureStorage();
   final hiveStorage = HiveStorage();
 
-  final (version, errr) = await secureStorage.getValue(StorageKeys.version);
+  var (version, errr) = await secureStorage.getValue(StorageKeys.version);
   if (errr != null) {
     print('::::no storage version saved');
     print(errr);
 
+    version = bbVersion;
     await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
-  } else if (version != bbVersion) {
-    // await secureStorage.deleteAll();
-    // await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
   }
 
-  final (password, err) = await secureStorage.getValue(StorageKeys.hiveEncryption);
+  final (password, err) =
+      await secureStorage.getValue(StorageKeys.hiveEncryption);
   if (err != null) {
     print('::::new encryption key generated');
     final password = Hive.generateSecureKey();
@@ -66,6 +66,11 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
   } else
     await hiveStorage.init(password: base64Url.decode(password!));
 
+  if (version != bbVersion) {
+    await prepareMigration();
+    await doMigration(version!, bbVersion, secureStorage, hiveStorage);
+    await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
+  }
   // if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
 
   return (secureStorage, hiveStorage);
