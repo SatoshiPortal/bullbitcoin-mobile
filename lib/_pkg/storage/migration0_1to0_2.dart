@@ -23,6 +23,8 @@ import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 Seed? liquidMainnetSeed;
 Seed? liquidTestnetSeed;
+int mainWalletIndex = 0;
+int testWalletIndex = 0;
 
 Future<void> doMigration0_1to0_2(
   SecureStorage secureStorage,
@@ -82,50 +84,39 @@ Future<Map<String, dynamic>> updateWalletObj(
   Map<String, dynamic> walletObj,
   WalletSensitiveStorageRepository walletSensitiveStorageRepository,
 ) async {
-  int mainWalletIndex = 0;
-  int testWalletIndex = 0;
-
   // TODO: Test this assumption
   // Assuming first wallet is to be changed to secure and further wallets to words
   // `newSeed` --> Auto created by wallet
   // `worlds` --> Wallet recovered by user
   if (walletObj['type'] == 'newSeed' || walletObj['type'] == 'words') {
-    if (walletObj['network'] == 'Mainnet') {
-      if (mainWalletIndex == 0) {
-        walletObj['type'] = 'secure';
-        walletObj['name'] =
-            'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
-        walletObj['mainWallet'] = true;
-        mainWalletIndex++;
+    if (walletObj['network'] == 'Mainnet' && mainWalletIndex == 0) {
+      walletObj['type'] = 'main';
+      walletObj['name'] =
+          'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
+      walletObj['mainWallet'] = true;
+      mainWalletIndex++;
 
-        final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
-        final (seed, _) = await walletSensitiveStorageRepository.readSeed(
-          fingerprintIndex: mnemonicFingerprint,
-        );
+      final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
+      final (seed, _) = await walletSensitiveStorageRepository.readSeed(
+        fingerprintIndex: mnemonicFingerprint,
+      );
 
-        liquidMainnetSeed = seed;
-      } else {
-        walletObj['type'] = 'words';
-        mainWalletIndex++;
-      }
-    } else if (walletObj['network'] == 'Testnet') {
-      if (testWalletIndex == 0) {
-        walletObj['type'] = 'secure';
-        walletObj['name'] =
-            'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
-        walletObj['mainWallet'] = true;
-        testWalletIndex++;
+      liquidMainnetSeed = seed;
+      mainWalletIndex++;
+    } else if (walletObj['network'] == 'Testnet' && testWalletIndex == 0) {
+      walletObj['type'] = 'main';
+      walletObj['name'] =
+          'Secure Bitcoin Wallet / ' + (walletObj['name'] as String);
+      walletObj['mainWallet'] = true;
+      testWalletIndex++;
 
-        final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
-        final (seed, _) = await walletSensitiveStorageRepository.readSeed(
-          fingerprintIndex: mnemonicFingerprint,
-        );
+      final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
+      final (seed, _) = await walletSensitiveStorageRepository.readSeed(
+        fingerprintIndex: mnemonicFingerprint,
+      );
 
-        liquidTestnetSeed = seed;
-      } else {
-        walletObj['type'] = 'words';
-        testWalletIndex++;
-      }
+      liquidTestnetSeed = seed;
+      testWalletIndex++;
     }
   }
   walletObj.addAll({'baseWalletType': 'Bitcoin'});
@@ -146,11 +137,13 @@ Future<Map<String, dynamic>> updateAddressNullIssue(
   final bdkCreate = BDKCreate(walletsRepository: walletRepo);
   final (bdkWallet, _) = await bdkCreate.loadPublicBdkWallet(w);
 
+  print('syncing wallet ${w.id}. Pls wait...');
   await bdkWallet!.sync(
     blockchain: bdkWallet.network == BBNetwork.Mainnet
         ? mainBlockchain
         : testBlockchain,
   );
+  print('sync done');
 
   final myAddressBook = [...w.myAddressBook].toList();
 
@@ -313,7 +306,7 @@ Future<void> createLiquidWallet(
           ? liquidMainnetSeed.passphrases[0].passphrase
           : '',
       scriptType: ScriptType.bip84,
-      walletType: BBWalletType.instant,
+      walletType: BBWalletType.main,
       network: BBNetwork.Mainnet,
       walletCreate: walletCreate,
     );
@@ -330,7 +323,7 @@ Future<void> createLiquidWallet(
           ? liquidTestnetSeed.passphrases[0].passphrase
           : '',
       scriptType: ScriptType.bip84,
-      walletType: BBWalletType.instant,
+      walletType: BBWalletType.main,
       network: BBNetwork.Testnet,
       walletCreate: walletCreate,
     );
