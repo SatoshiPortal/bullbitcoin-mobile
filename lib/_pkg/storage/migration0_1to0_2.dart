@@ -102,7 +102,7 @@ Future<void> doMigration0_1to0_2(
     (w) => !w.isTestnet() && w.isInstant(),
   );
 
-  if (mainWalletIdx != -1) {
+  if (mainWalletIdx != -1 && liqMainnetIdx != -1) {
     if (wallets.length > 2) {
       final tempMain = wallets[mainWalletIdx];
       final tempLiq = wallets[liqMainnetIdx];

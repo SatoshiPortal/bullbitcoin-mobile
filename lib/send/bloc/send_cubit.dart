@@ -257,7 +257,8 @@ class SendCubit extends Cubit<SendState> {
 
     await _swapCubit.createSubSwapForSend(
       wallet: selectedWallet,
-      invoice: state.address,
+      address: state.address,
+      invoice: state.invoice!,
       amount: amt,
       isTestnet: _networkCubit.state.testnet,
       networkUrl: networkurl,
@@ -528,10 +529,13 @@ class SendCubit extends Cubit<SendState> {
     if (localWalletBloc == null) return;
     final wallet = localWalletBloc.state.wallet;
 
-    if (!wallet!.mainWallet) return;
+    // if (!wallet!.isMain()) {
+    //   emit(state.copyWith(errSending: "Submarine swaps currently only supported via "));
+    //   return;
+    // };
 
     final (wtxid, errBroadcast) = await _walletTx.broadcastTxWithWallet(
-      wallet: wallet,
+      wallet: wallet!,
       address: swap.scriptAddress,
       note: state.note,
       transaction: tx.copyWith(

@@ -264,11 +264,12 @@ class SwapCubit extends Cubit<SwapState> {
 
   Future createSubSwapForSend({
     required Wallet wallet,
-    required String invoice,
+    required String address,
     required int amount,
     String? label,
     required bool isTestnet,
     required String networkUrl,
+    required Invoice invoice,
   }) async {
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
 
@@ -335,49 +336,60 @@ class SwapCubit extends Cubit<SwapState> {
         ? (isLiq ? Chain.liquidTestnet : Chain.bitcoinTestnet)
         : (isLiq ? Chain.liquid : Chain.bitcoin);
 
-    final (swap, errCreatingInv) = await _swapBoltz.sendV2(
-      mnemonic: seed!.mnemonic,
-      index: wallet.revKeyIndex,
-      network: network,
-      electrumUrl: networkUrl,
-      boltzUrl: boltzurlV2,
-      isLiquid: isLiq,
-      invoice: invoice,
+    final storedSwapTxIdx = wallet.swaps.indexWhere(
+      (_) => _.invoice == invoice.invoice,
     );
-    if (errCreatingInv != null) {
-      emit(
-        state.copyWith(
-          errCreatingSwapInv: errCreatingInv.toString(),
-          generatingSwapInv: false,
-        ),
+
+    SwapTx swapTx;
+    if (storedSwapTxIdx != -1) {
+      swapTx = wallet.swaps[storedSwapTxIdx];
+    } else {
+      final (swap, errCreatingInv) = await _swapBoltz.sendV2(
+        mnemonic: seed!.mnemonic,
+        index: wallet.revKeyIndex,
+        network: network,
+        electrumUrl: networkUrl,
+        boltzUrl: boltzurlV2,
+        isLiquid: isLiq,
+        invoice: address,
       );
-      return;
+      if (errCreatingInv != null) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv: errCreatingInv.toString(),
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
+
+      final updatedSwap = swap!.copyWith(
+        boltzFees: isLiq
+            ? fees.lbtcSubmarine.boltzFeesRate * amount ~/ 100
+            : fees.btcSubmarine.boltzFeesRate * amount ~/ 100,
+        lockupFees: isLiq
+            ? fees.lbtcSubmarine.lockupFeesEstimate
+            : fees.btcSubmarine.lockupFeesEstimate,
+        claimFees:
+            isLiq ? fees.lbtcSubmarine.claimFees : fees.btcSubmarine.claimFees,
+      );
+
+      swapTx = updatedSwap;
+
+      await _saveSwapToWallet(
+        swapTx: swapTx,
+        label: label,
+        wallet: wallet,
+      );
+
+      await Future.delayed(800.ms);
     }
-
-    final updatedSwap = swap!.copyWith(
-      boltzFees: isLiq
-          ? fees.lbtcSubmarine.boltzFeesRate * amount ~/ 100
-          : fees.btcSubmarine.boltzFeesRate * amount ~/ 100,
-      lockupFees: isLiq
-          ? fees.lbtcSubmarine.lockupFeesEstimate
-          : fees.btcSubmarine.lockupFeesEstimate,
-      claimFees:
-          isLiq ? fees.lbtcSubmarine.claimFees : fees.btcSubmarine.claimFees,
-    );
-
-    await _saveSwapToWallet(
-      swapTx: updatedSwap,
-      label: label,
-      wallet: wallet,
-    );
-
-    await Future.delayed(800.ms);
 
     emit(
       state.copyWith(
         generatingSwapInv: false,
         errCreatingSwapInv: '',
-        swapTx: updatedSwap,
+        swapTx: swapTx,
       ),
     );
 
