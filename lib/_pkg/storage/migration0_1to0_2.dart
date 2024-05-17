@@ -58,9 +58,8 @@ Future<void> doMigration0_1to0_2(
     // Change 2: add BaseWalletType as Bitcoin
     final res =
         await updateWalletObj(walletObj, walletSensitiveStorageRepository);
-
-    liquidMainnetSeed = res.liquidMainnetSeed;
-    liquidTestnetSeed = res.liquidTestnetSeed;
+    liquidMainnetSeed ??= res.liquidMainnetSeed;
+    liquidTestnetSeed ??= res.liquidTestnetSeed;
     walletObj = res.walletObj;
 
     // Change 3: add isLiquid to all Txns, Addresses
