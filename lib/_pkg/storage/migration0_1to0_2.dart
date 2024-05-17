@@ -21,11 +21,6 @@ import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
-Seed? liquidMainnetSeed;
-Seed? liquidTestnetSeed;
-int mainWalletIndex = 0;
-int testWalletIndex = 0;
-
 Future<void> doMigration0_1to0_2(
   SecureStorage secureStorage,
   HiveStorage hiveStorage,
@@ -46,6 +41,9 @@ Future<void> doMigration0_1to0_2(
 
   final List<Wallet> wallets = [];
 
+  Seed? liquidMainnetSeed;
+  Seed? liquidTestnetSeed;
+
   for (final walletId in walletIdsJson) {
     // print('walletId: $walletId');
     final (jsn, err) = await hiveStorage.getValue(walletId as String);
@@ -55,8 +53,12 @@ Future<void> doMigration0_1to0_2(
 
     // Change 1: for each wallet with type as newSeed, change it to secure
     // Change 2: add BaseWalletType as Bitcoin
-    walletObj =
+    final res =
         await updateWalletObj(walletObj, walletSensitiveStorageRepository);
+
+    liquidMainnetSeed = res.liquidMainnetSeed;
+    liquidTestnetSeed = res.liquidTestnetSeed;
+    walletObj = res.walletObj;
 
     // Change 3: add isLiquid to all Txns, Addresses
     walletObj = await addIsLiquid(walletObj);
@@ -98,13 +100,15 @@ Future<void> doMigration0_1to0_2(
     (w) => !w.isTestnet() && w.isInstant(),
   );
 
-  if (wallets.length > 2) {
-    final tempMain = wallets[mainWalletIdx];
-    final tempLiq = wallets[liqMainnetIdx];
-    wallets.removeAt(mainWalletIdx);
-    wallets.removeAt(liqMainnetIdx - 1);
-    wallets.insert(0, tempLiq);
-    wallets.insert(1, tempMain);
+  if (mainWalletIdx != -1) {
+    if (wallets.length > 2) {
+      final tempMain = wallets[mainWalletIdx];
+      final tempLiq = wallets[liqMainnetIdx];
+      wallets.removeAt(mainWalletIdx);
+      wallets.removeAt(liqMainnetIdx - 1);
+      wallets.insert(0, tempLiq);
+      wallets.insert(1, tempMain);
+    }
   }
 
   final walletObjs = wallets.map((w) => w.toJson()).toList();
@@ -129,10 +133,19 @@ Future<void> doMigration0_1to0_2(
   await secureStorage.saveValue(key: StorageKeys.version, value: '0.2');
 }
 
-Future<Map<String, dynamic>> updateWalletObj(
+Future<
+    ({
+      Seed? liquidMainnetSeed,
+      Seed? liquidTestnetSeed,
+      Map<String, dynamic> walletObj
+    })> updateWalletObj(
   Map<String, dynamic> walletObj,
   WalletSensitiveStorageRepository walletSensitiveStorageRepository,
 ) async {
+  Seed? liquidMainnetSeed;
+  Seed? liquidTestnetSeed;
+  int mainWalletIndex = 0;
+  int testWalletIndex = 0;
   // TODO: Test this assumption
   // Assuming first wallet is to be changed to secure and further wallets to words
   // `newSeed` --> Auto created by wallet
@@ -175,9 +188,24 @@ Future<Map<String, dynamic>> updateWalletObj(
         testWalletIndex++;
       }
     }
+
+    if (walletObj['type'] == 'xpub' || walletObj['type'] == 'coldcard') {
+      walletObj['mainWallet'] = false;
+    }
   }
   walletObj.addAll({'baseWalletType': 'Bitcoin'});
-  return walletObj;
+
+  final ({
+    Seed? liquidMainnetSeed,
+    Seed? liquidTestnetSeed,
+    Map<String, dynamic> walletObj
+  }) res = (
+    liquidMainnetSeed: liquidMainnetSeed,
+    liquidTestnetSeed: liquidTestnetSeed,
+    walletObj: walletObj,
+  );
+
+  return res;
 }
 
 // Some issue in old build(s), cause some indexes to be null.

@@ -11,6 +11,54 @@ class WalletsStorageRepository {
 
   final HiveStorage _hiveStorage;
 
+  Future<Err?> sortWallets() async {
+    try {
+      final (walletIds, err) = await _hiveStorage.getValue(StorageKeys.wallets);
+      if (err != null) return err;
+      final walletIdsJson = jsonDecode(walletIds!)['wallets'] as List<dynamic>;
+
+      final List<Wallet> wallets = [];
+
+      for (final id in walletIdsJson) {
+        final (wallet, err) = await readWallet(walletHashId: id as String);
+        if (err != null) continue;
+        wallets.add(wallet!);
+      }
+
+      final hasMainWallet = wallets.any((element) => element.mainWallet);
+      if (!hasMainWallet) return Err('No Main Wallet Found');
+
+      final mainWalletIdx = wallets.indexWhere(
+        (w) => !w.isTestnet() && w.isSecure(),
+      );
+
+      final liqMainnetIdx = wallets.indexWhere(
+        (w) => !w.isTestnet() && w.isInstant(),
+      );
+
+      final tempMain = wallets[mainWalletIdx];
+      final tempLiq = wallets[liqMainnetIdx];
+      wallets.removeAt(mainWalletIdx);
+      wallets.removeAt(liqMainnetIdx - 1);
+      wallets.insert(0, tempLiq);
+      wallets.insert(1, tempMain);
+
+      final List<String> ids = [];
+      for (final w in wallets) ids.add(w.id);
+
+      final idsJsn = jsonEncode({
+        'wallets': [...ids],
+      });
+      final _ = await _hiveStorage.saveValue(
+        key: StorageKeys.wallets,
+        value: idsJsn,
+      );
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
+
   Future<Err?> newWallet(
     Wallet wallet,
   ) async {
@@ -76,8 +124,10 @@ class WalletsStorageRepository {
     } catch (e) {
       return (
         null,
-        Err(e.toString(),
-            expected: e.toString() == 'No Wallet with index $walletHashId')
+        Err(
+          e.toString(),
+          expected: e.toString() == 'No Wallet with index $walletHashId',
+        )
       );
     }
   }

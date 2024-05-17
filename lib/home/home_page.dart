@@ -82,19 +82,24 @@ class _ScreenState extends State<_Screen> {
   @override
   Widget build(BuildContext context) {
     // final _ = context.select((HomeCubit x) => x.state.updated);
-    final loading = context.select(
-      (HomeCubit x) => x.state.loadingWallets,
-    );
+    // final loading = context.select(
+    //   (HomeCubit x) => x.state.loadingWallets,
+    // );
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
 
-    final walletBlocs = context.select(
-      (HomeCubit x) => x.state.walletBlocsFromNetwork(network),
+    // final walletBlocs = context.select(
+    //   (HomeCubit x) => x.state.walletBlocsFromNetwork(network),
+    // );
+
+    final hasWallets = context.select((HomeCubit x) => x.state.hasWallets());
+    final hasMainWallets = context.select(
+      (HomeCubit x) => x.state.hasMainWallets(),
     );
 
-    // final walletBlocsLen =
-    //     context.select((HomeCubit x) => x.state.lenWalletsFromNetwork(network));
+    final walletBlocsLen =
+        context.select((HomeCubit x) => x.state.lenWalletsFromNetwork(network));
 
-    if (walletBlocs.isEmpty && !loading) {
+    if (!hasWallets || !hasMainWallets) {
       final isTestnet = network == BBNetwork.Testnet;
 
       Widget widget = Scaffold(
@@ -114,7 +119,7 @@ class _ScreenState extends State<_Screen> {
         context.select((HomeCubit x) => x.state.homeWarnings(network)).length *
             40.0;
 
-    final h = _calculateHeight(walletBlocs.length);
+    final h = _calculateHeight(walletBlocsLen);
 
     scheduleMicrotask(() async {
       await Future.delayed(50.ms);
