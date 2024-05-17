@@ -247,9 +247,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     if (state.walletBloc == null) return;
 
-    final (updatedWallet, err) = await _walletAddress.newAddress(
-      state.walletBloc!.state.wallet!,
-    );
+    final wallet = state.walletBloc!.state.wallet!;
+
+    final (updatedWallet, err) = await _walletAddress.newAddress(wallet);
     if (err != null) {
       emit(
         state.copyWith(
@@ -287,10 +287,23 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       emit(state.copyWith(updateAddressGap: addressGap + 1));
       Future.delayed(const Duration(milliseconds: 100));
     }
+    if (wallet.isLiquid())
+      emit(
+        state.copyWith(
+          defaultLiquidAddress: updatedWallet.lastGeneratedAddress,
+        ),
+      );
+    else
+      emit(
+        state.copyWith(
+          defaultAddress: updatedWallet.lastGeneratedAddress,
+        ),
+      );
 
     emit(
       state.copyWith(
         defaultLiquidAddress: updatedWallet.lastGeneratedAddress,
+        defaultAddress: updatedWallet.lastGeneratedAddress,
         privateLabel: '',
         savedDescription: '',
         description: '',
