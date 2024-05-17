@@ -527,7 +527,7 @@ class SendCubit extends Cubit<SendState> {
     if (localWalletBloc == null) return;
     final wallet = localWalletBloc.state.wallet;
 
-    if (!wallet!.mainWallet) return;
+    if (!wallet!.isMain()) return;
 
     final (wtxid, errBroadcast) = await _walletTx.broadcastTxWithWallet(
       wallet: wallet,

@@ -58,7 +58,7 @@ class Wallet with _$Wallet {
   //     baseWalletType == BaseWalletType.Bitcoin ? lastGeneratedAddress : lastGeneratedLiqAddress;
 
   bool isTestnet() => network == BBNetwork.Testnet;
-
+  bool isMain() => type == BBWalletType.main;
   bool isLiquid() => baseWalletType == BaseWalletType.Liquid;
 
   Wallet setLastAddress(Address address) {
