@@ -51,25 +51,26 @@ class _SwapFees extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tx = context.select((SendCubit _) => _.state.tx);
-    final lockupFee = tx?.fee;
+    // final tx = context.select((SendCubit _) => _.state.tx);
+    // final lockupFee = tx?.fee;
+    // if (lockupFee == null) return const SizedBox.shrink();
+
+    // final allFees = context.select((SwapCubit cubit) => cubit.state.allFees);
+    // if (allFees == null) return const SizedBox.shrink();
+
+    final swaptx = context.select((SwapCubit _) => _.state.swapTx);
+    if (swaptx == null) return const SizedBox.shrink();
+
+    final lockupFee = swaptx.lockupFees;
     if (lockupFee == null) return const SizedBox.shrink();
 
-    final allFees = context.select((SwapCubit cubit) => cubit.state.allFees);
-    if (allFees == null) return const SizedBox.shrink();
-
-    final isLiq = context.select(
-      (SendCubit cubit) => cubit.state.selectedWalletBloc!.state.isLiq(),
-    );
-
-    final fees = isLiq ? allFees.lbtcSubmarine : allFees.btcSubmarine;
-
-    final totalFees = fees.boltzFeesRate + fees.claimFees + lockupFee;
+    final fees = swaptx.totalFees();
+    if (fees == null) return const SizedBox.shrink();
 
     final amt = context.select(
       (CurrencyCubit _) => _.state.getAmountInUnits(
-        totalFees.toInt(),
-        isLiquid: isLiq,
+        fees,
+        isLiquid: swaptx.isLiquid(),
       ),
     );
 
