@@ -16,7 +16,8 @@ class WalletSensitiveStorageRepository {
   }) async {
     try {
       final fingerprintIndex = seed.getSeedStorageString();
-      final (fingerprintIndexes, err) = await _secureStorage.getValue(StorageKeys.seeds);
+      final (fingerprintIndexes, err) =
+          await _secureStorage.getValue(StorageKeys.seeds);
       if (err != null) {
         // no seeds exist make this the first
         final jsn = jsonEncode({
@@ -27,7 +28,8 @@ class WalletSensitiveStorageRepository {
           value: jsn,
         );
       } else {
-        final fingerprintIdsJson = jsonDecode(fingerprintIndexes!)['seeds'] as List<dynamic>;
+        final fingerprintIdsJson =
+            jsonDecode(fingerprintIndexes!)['seeds'] as List<dynamic>;
 
         final List<String> fingerprints = [];
         for (final fingerprint in fingerprintIdsJson) {
@@ -67,7 +69,8 @@ class WalletSensitiveStorageRepository {
     required String seedFingerprintIndex,
   }) async {
     try {
-      final (seedString, err) = await _secureStorage.getValue(seedFingerprintIndex);
+      final (seedString, err) =
+          await _secureStorage.getValue(seedFingerprintIndex);
       if (err != null) {
         // no seeds exist
         return Err('No Seed Exists!');
@@ -80,7 +83,8 @@ class WalletSensitiveStorageRepository {
           return Err('Passphrase Exists!');
         }
       }
-      final updatedPassphrases = List<Passphrase>.from(seed.passphrases)..add(passphrase);
+      final updatedPassphrases = List<Passphrase>.from(seed.passphrases)
+        ..add(passphrase);
       final updatedSeed = seed.copyWith(passphrases: updatedPassphrases);
       await _secureStorage.saveValue(
         key: seedFingerprintIndex,
@@ -108,7 +112,8 @@ class WalletSensitiveStorageRepository {
     } catch (e) {
       return (
         null,
-        Err(e.toString(), expected: e.toString() == 'No Seed with index $fingerprintIndex')
+        Err(e.toString(),
+            expected: e.toString() == 'No Seed with index $fingerprintIndex')
       );
     }
   }
@@ -116,7 +121,6 @@ class WalletSensitiveStorageRepository {
   // Future<(List<Seed>?, Err?)> readAllSeeds() async {
   //   try {
   //     final (seeds, err) = await _secureStorage.getValue(StorageKeys.seeds);
-  //     print(seeds);
   //     final fingerprintIdsJson = jsonDecode(seeds!)['seeds'] as List<dynamic>;
 
   //     if (err != null) throw err;
@@ -165,10 +169,12 @@ class WalletSensitiveStorageRepository {
     required String fingerprint,
   }) async {
     try {
-      final (fingerprintIdxs, err) = await _secureStorage.getValue(StorageKeys.seeds);
+      final (fingerprintIdxs, err) =
+          await _secureStorage.getValue(StorageKeys.seeds);
       if (err != null) throw err;
 
-      final fingerprintsJson = jsonDecode(fingerprintIdxs!)['seeds'] as List<dynamic>;
+      final fingerprintsJson =
+          jsonDecode(fingerprintIdxs!)['seeds'] as List<dynamic>;
 
       final List<String> fingerprints = [];
       for (final fingerprint in fingerprintsJson) {
@@ -203,7 +209,8 @@ class WalletSensitiveStorageRepository {
     required String seedFingerprintIndex,
   }) async {
     try {
-      final (seedString, err) = await _secureStorage.getValue(seedFingerprintIndex);
+      final (seedString, err) =
+          await _secureStorage.getValue(seedFingerprintIndex);
       if (err != null) {
         // no seeds exist
         return Err('No Seed Exists!');
@@ -215,7 +222,8 @@ class WalletSensitiveStorageRepository {
 
       final List<Passphrase> passphrases = [];
       for (final pp in existingPassphrases)
-        if (pp.sourceFingerprint != passphraseFingerprintIndex) passphrases.add(pp);
+        if (pp.sourceFingerprint != passphraseFingerprintIndex)
+          passphrases.add(pp);
 
       seed = seed.copyWith(passphrases: passphrases);
 
