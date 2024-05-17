@@ -40,7 +40,8 @@ class _Screen extends StatelessWidget {
   const _Screen();
 
   void copy(BuildContext context, String text) async {
-    if (locator.isRegistered<Clippboard>()) await locator<Clippboard>().copy(text);
+    if (locator.isRegistered<Clippboard>())
+      await locator<Clippboard>().copy(text);
 
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
@@ -48,19 +49,21 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fingerPrint = context.select((WalletBloc _) => _.state.wallet?.sourceFingerprint ?? '');
+    final fingerPrint = context
+        .select((WalletBloc _) => _.state.wallet?.sourceFingerprint ?? '');
 
-    final descriptorCombined =
-        context.select((WalletBloc _) => _.state.wallet?.getDescriptorCombined() ?? '');
-    final descriptor =
-        context.select((WalletBloc _) => _.state.wallet?.externalPublicDescriptor ?? '');
+    final descriptorCombined = context.select(
+        (WalletBloc _) => _.state.wallet?.getDescriptorCombined() ?? '');
+    final descriptor = context.select(
+        (WalletBloc _) => _.state.wallet?.externalPublicDescriptor ?? '');
     final pub = keyFromDescriptor(descriptor);
-    final scriptType = context.select((WalletBloc _) => _.state.wallet!.scriptType);
+    final scriptType =
+        context.select((WalletBloc _) => _.state.wallet!.scriptType);
     final addressTypeStr = scriptTypeString(scriptType);
     final network = context.select((WalletBloc _) => _.state.wallet!.network);
 
-    final derivationPath =
-        context.select((WalletBloc _) => _.state.wallet?.derivationPathString() ?? '');
+    final derivationPath = context
+        .select((WalletBloc _) => _.state.wallet?.derivationPathString() ?? '');
     final slipKey = convertToSlipPub(scriptType, network, pub);
 
     return Padding(

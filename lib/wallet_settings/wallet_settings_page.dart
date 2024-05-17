@@ -152,8 +152,8 @@ class _ScreenState extends State<_Screen> {
 
                   const AccountingButton(),
                   const Gap(8),
-                  if (isInstant) const InformationButton(),
-                  if (isInstant) const Gap(8),
+                  // if (isInstant) const InformationButton(),
+                  // if (isInstant) const Gap(8),
                   const LabelActions(),
                   // const LabelsExportButton(),
                   // const Gap(8),

@@ -99,6 +99,8 @@ class ActionsRow extends StatelessWidget {
         context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
     final watchonly =
         context.select((WalletBloc x) => x.state.wallet?.watchOnly() ?? false);
+    final isInstant =
+        context.select((WalletBloc x) => x.state.wallet?.isInstant() ?? false);
 
     final isdarkMode = context.select(
       (Lighting x) => x.state == ThemeLighting.dark,
@@ -121,13 +123,15 @@ class ActionsRow extends StatelessWidget {
               },
             ),
           BBButton.text(
-            label: 'Wallet Details',
+            label: isInstant ? 'Information' : 'Wallet Details',
             isBlue: false,
             onPressed: () {
-              context.push(
-                '/wallet/details',
-                extra: context.read<WalletBloc>(),
-              );
+              isInstant
+                  ? context.push('/information')
+                  : context.push(
+                      '/wallet/details',
+                      extra: context.read<WalletBloc>(),
+                    );
             },
           ),
           BBButton.text(
