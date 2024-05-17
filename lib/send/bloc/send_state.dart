@@ -115,22 +115,24 @@ class SendState with _$SendState {
     const bitcoinUri = 'bitcoin:';
     const liquidUris = ['liquidnetwork:', 'liquidtestnet:'];
 
-    // final lowerAddress = address.toLowerCase();
+    final lowerAddress = address.toLowerCase();
     try {
-      if (address.contains(lightningUri))
+      if (lowerAddress.contains(lightningUri))
         return (AddressNetwork.bip21Lightning, null);
-      if (address.contains(bitcoinUri))
+      if (lowerAddress.contains(bitcoinUri))
         return (AddressNetwork.bip21Bitcoin, null);
-      else if (liquidUris.any((prefix) => address.startsWith(prefix)))
+      else if (liquidUris.any((prefix) => lowerAddress.startsWith(prefix)))
         return (AddressNetwork.bip21Liquid, null);
-      else if (lightningPrefixes.any((prefix) => address.startsWith(prefix)))
+      else if (lightningPrefixes
+          .any((prefix) => lowerAddress.startsWith(prefix)))
         return (AddressNetwork.lightning, null);
       else if (liquidMainnetPrefixesCase
               .any((prefix) => address.startsWith(prefix)) ||
-          liquidTestnetPrefixes.any((prefix) => address.startsWith(prefix)))
+          liquidTestnetPrefixes
+              .any((prefix) => lowerAddress.startsWith(prefix)))
         return (AddressNetwork.liquid, null);
       else if (bitcoinMainnetPrefixes
-              .any((prefix) => address.startsWith(prefix)) ||
+              .any((prefix) => lowerAddress.startsWith(prefix)) ||
           bitcoinTestnetPrefixesCase
               .any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.bitcoin, null);

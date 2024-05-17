@@ -116,9 +116,11 @@ class SendCubit extends Cubit<SendState> {
         }
       case AddressNetwork.bip21Liquid:
         final bip21Obj = bip21.decode(
-          address.startsWith('liquidnetwork:')
-              ? address.replaceFirst('liquidnetwork:', 'bitcoin:')
-              : address.replaceFirst('liquidtestnet:', 'bitcoin:'),
+          address.toLowerCase().startsWith('liquidnetwork:')
+              ? address.toLowerCase().replaceFirst('liquidnetwork:', 'bitcoin:')
+              : address
+                  .toLowerCase()
+                  .replaceFirst('liquidtestnet:', 'bitcoin:'),
         );
         final newAddress = bip21Obj.address;
         emit(state.copyWith(address: newAddress));
@@ -164,7 +166,7 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(invoice: inv, address: address));
 
       case AddressNetwork.bip21Lightning:
-        final invoice = address.replaceAll('lightning:', '');
+        final invoice = address.toLowerCase().replaceAll('lightning:', '');
         final (inv, errInv) = await _swapBoltz.decodeInvoice(invoice: invoice);
         if (errInv != null) {
           emit(state.copyWith(errScanningAddress: errInv.toString()));
