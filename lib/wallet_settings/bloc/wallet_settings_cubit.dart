@@ -377,6 +377,15 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(deleting: true, errDeleting: ''));
     _walletBloc.add(KillSync());
     await Future.delayed(200.ms);
+    if (_walletBloc.state.wallet!.type == BBWalletType.main) {
+      emit(
+        state.copyWith(
+          deleting: false,
+          errDeleting: 'Instant or Secure wallets cannot be deleted.',
+        ),
+      );
+      return;
+    }
     final mnemonicFingerprint = state.wallet.getRelatedSeedStorageString();
     final sourceFingerprint = state.wallet.sourceFingerprint;
     final hasPassphrase = state.wallet.hasPassphrase();
@@ -388,6 +397,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       emit(
         state.copyWith(
           deleting: false,
+          deleted: false,
           errDeleting: err.toString(),
         ),
       );

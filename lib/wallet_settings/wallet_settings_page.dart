@@ -108,6 +108,8 @@ class _ScreenState extends State<_Screen> {
 
     final isInstant =
         context.read<WalletBloc>().state.wallet?.isInstant() ?? false;
+    final isSecure =
+        context.read<WalletBloc>().state.wallet?.isSecure() ?? false;
     // if (!showPage) return const Scaffold(body: SizedBox.shrink());
 
     return Scaffold(
@@ -157,7 +159,7 @@ class _ScreenState extends State<_Screen> {
                   // const Gap(8),
                   // const LabelsImportButton(),
                   const Gap(8),
-                  const DeleteButton(),
+                  if (!isInstant && !isSecure) const DeleteButton(),
                   const Gap(24),
                 ],
               ),
