@@ -75,9 +75,10 @@ class _Screen extends StatelessWidget {
                 ),
                 const Gap(4),
                 const BBText.bodySmall(
-                  'Join our Telegram group',
+                  'This wallet is currently in BETA.\nReport bugs on our Telegram group.',
                   isBold: true,
                   fontSize: 10,
+                  textAlign: TextAlign.center,
                 ),
                 // if (bbVersion != latestVersion)
                 //   BBButton.big(
