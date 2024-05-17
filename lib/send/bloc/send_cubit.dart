@@ -255,7 +255,8 @@ class SendCubit extends Cubit<SendState> {
 
     await _swapCubit.createSubSwapForSend(
       wallet: selectedWallet,
-      invoice: state.address,
+      address: state.address,
+      invoice: state.invoice!,
       amount: amt,
       isTestnet: _networkCubit.state.testnet,
       networkUrl: networkurl,
