@@ -27,8 +27,8 @@ import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/receive/listeners.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,11 +49,11 @@ class ReceivePage extends StatefulWidget {
 class _ReceivePageState extends State<ReceivePage> {
   late ReceiveCubit _receiveCubit;
   late CurrencyCubit _currencyCubit;
-  late SwapCubit _swapCubit;
+  late CreateSwapCubit _swapCubit;
 
   @override
   void initState() {
-    _swapCubit = SwapCubit(
+    _swapCubit = CreateSwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
@@ -123,7 +123,7 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     final isSupported =
         context.select((ReceiveCubit x) => x.state.isSupported());
     final showQR = context.select((ReceiveCubit x) => x.state.showQR(swapTx));
@@ -136,7 +136,8 @@ class _Screen extends StatelessWidget {
     final walletIsLiquid = context.select(
       (WalletBloc x) => x.state.wallet!.baseWalletType == BaseWalletType.Liquid,
     );
-    final showWarning = context.select((SwapCubit x) => x.state.showWarning());
+    final showWarning =
+        context.select((CreateSwapCubit x) => x.state.showWarning());
     final removeWarning =
         context.select((SettingsCubit x) => x.state.removeSwapWarnings);
 
@@ -229,7 +230,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
       },
       value: walletBloc,
       onChanged: (value) {
-        context.read<SwapCubit>().removeWarnings();
+        context.read<CreateSwapCubit>().removeWarnings();
         context.read<ReceiveCubit>().updateWalletBloc(value);
       },
     );
@@ -256,11 +257,11 @@ class SelectWalletType extends StatelessWidget {
       },
       onChanged: (value) {
         if (paymentNetwork == PaymentNetwork.lightning)
-          context.read<SwapCubit>().clearSwapTx();
+          context.read<CreateSwapCubit>().clearSwapTx();
 
         context.read<CurrencyCubit>().reset();
         context.read<CurrencyCubit>().updateAmountDirect(0);
-        context.read<SwapCubit>().removeWarnings();
+        context.read<CreateSwapCubit>().removeWarnings();
 
         final isTestnet = context.read<NetworkCubit>().state.testnet;
         context.read<ReceiveCubit>().updateWalletType(value, isTestnet);
@@ -361,13 +362,13 @@ class _Warnings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 
     final errLowAmt =
-        context.select((SwapCubit x) => x.state.swapTx!.smallAmt());
+        context.select((CreateSwapCubit x) => x.state.swapTx!.smallAmt());
     final errHighFees =
-        context.select((SwapCubit x) => x.state.swapTx!.highFees());
+        context.select((CreateSwapCubit x) => x.state.swapTx!.highFees());
 
     return WarningContainer(
       children: [
@@ -401,7 +402,7 @@ class _Warnings extends StatelessWidget {
             leftIcon: Icons.send_outlined,
             label: 'Continue anyways',
             onPressed: () {
-              context.read<SwapCubit>().removeWarnings();
+              context.read<CreateSwapCubit>().removeWarnings();
             },
           ),
         ),
@@ -452,7 +453,7 @@ class WalletActions extends StatelessWidget {
     final isLn = context.select((ReceiveCubit x) => x.state.isLn());
     if (isLn) return const SizedBox.shrink();
 
-    final swap = context.select((SwapCubit _) => _.state.swapTx);
+    final swap = context.select((CreateSwapCubit _) => _.state.swapTx);
     final show = context.select((ReceiveCubit _) => _.state.showQR(swap));
     if (!show) return const SizedBox.shrink();
 
@@ -484,7 +485,7 @@ class WalletActions extends StatelessWidget {
             final paymentNetwork =
                 context.read<ReceiveCubit>().state.paymentNetwork;
             if (paymentNetwork == PaymentNetwork.lightning)
-              context.read<SwapCubit>().clearSwapTx();
+              context.read<CreateSwapCubit>().clearSwapTx();
 
             context.read<ReceiveCubit>().generateNewAddress();
           },
@@ -501,10 +502,11 @@ class CreateLightningInvoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description = context.select((ReceiveCubit _) => _.state.description);
-    final err = context.select((SwapCubit _) => _.state.errCreatingSwapInv);
+    final err =
+        context.select((CreateSwapCubit _) => _.state.errCreatingSwapInv);
     final creatingInv =
-        context.select((SwapCubit _) => _.state.generatingSwapInv);
-    final allFees = context.select((SwapCubit x) => x.state.allFees);
+        context.select((CreateSwapCubit _) => _.state.generatingSwapInv);
+    final allFees = context.select((CreateSwapCubit x) => x.state.allFees);
     final amount = context.select((CurrencyCubit x) => x.state.amount);
 
     final isLiquid = context.select(
@@ -567,7 +569,7 @@ class CreateLightningInvoice extends StatelessWidget {
                   ? context.read<NetworkCubit>().state.getNetworkUrl()
                   : context.read<NetworkCubit>().state.getLiquidNetworkUrl();
 
-              context.read<SwapCubit>().createRevSwapForReceive(
+              context.read<CreateSwapCubit>().createRevSwapForReceive(
                     amount: amt,
                     wallet: wallet,
                     label: label,
@@ -636,7 +638,7 @@ class SwapFeesDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((SwapCubit _) => _.state.swapTx);
+    final swapTx = context.select((CreateSwapCubit _) => _.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 
     final isLn = context.select((ReceiveCubit x) => x.state.isLn());
@@ -700,7 +702,7 @@ class ReceiveQR extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     final amount =
         context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
@@ -758,7 +760,7 @@ class ReceiveAddress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     final addressQr =
         context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
 
@@ -773,7 +775,7 @@ class RequestedAmount extends StatelessWidget {
   Widget build(BuildContext context) {
     final payNetwork =
         context.select((ReceiveCubit x) => x.state.paymentNetwork);
-    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     final amount = context.select((CurrencyCubit x) => x.state.amount);
     final requestedAmount = payNetwork == PaymentNetwork.lightning
         ? (swapTx?.outAmount ?? 0)
@@ -851,7 +853,7 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
       receiveAddressLabel = 'Liquid address';
     }
 
-    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     final amount =
         context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);

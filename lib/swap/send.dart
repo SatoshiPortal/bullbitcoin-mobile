@@ -5,9 +5,9 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
+import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,7 +58,7 @@ class _SwapFees extends StatelessWidget {
     // final allFees = context.select((SwapCubit cubit) => cubit.state.allFees);
     // if (allFees == null) return const SizedBox.shrink();
 
-    final swaptx = context.select((SwapCubit _) => _.state.swapTx);
+    final swaptx = context.select((CreateSwapCubit _) => _.state.swapTx);
     if (swaptx == null) return const SizedBox.shrink();
 
     final lockupFee = swaptx.lockupFees;
@@ -90,7 +90,8 @@ class SendLnFees extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final allFees = context.select((SwapCubit cubit) => cubit.state.allFees);
+    final allFees =
+        context.select((CreateSwapCubit cubit) => cubit.state.allFees);
     if (allFees == null) return const SizedBox.shrink();
 
     final isLiq = context.select(
@@ -141,7 +142,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
 
   @override
   void initState() {
-    swapTx = context.read<SwapCubit>().state.swapTx!;
+    swapTx = context.read<CreateSwapCubit>().state.swapTx!;
     super.initState();
   }
 

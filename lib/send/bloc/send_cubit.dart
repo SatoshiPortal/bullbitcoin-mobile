@@ -13,7 +13,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_state.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -31,7 +31,7 @@ class SendCubit extends Cubit<SendState> {
     required HomeCubit homeCubit,
     required bool defaultRBF,
     required SwapBoltz swapBoltz,
-    required SwapCubit swapCubit,
+    required CreateSwapCubit swapCubit,
   })  : _homeCubit = homeCubit,
         _networkCubit = networkCubit,
         _currencyCubit = currencyCubit,
@@ -63,7 +63,7 @@ class SendCubit extends Cubit<SendState> {
   final NetworkCubit _networkCubit;
   final CurrencyCubit _currencyCubit;
   final HomeCubit _homeCubit;
-  final SwapCubit _swapCubit;
+  final CreateSwapCubit _swapCubit;
 
   void updateAddress(String? addr) async {
     resetWalletSelection();

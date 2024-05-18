@@ -5,16 +5,16 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/swap/bloc/swap_state.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_event.dart';
+import 'package:bb_mobile/swap/create_swap_bloc/swap_state.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SwapCubit extends Cubit<SwapState> {
-  SwapCubit({
+class CreateSwapCubit extends Cubit<SwapState> {
+  CreateSwapCubit({
     required WalletSensitiveStorageRepository walletSensitiveRepository,
     required SwapBoltz swapBoltz,
     required WalletTx walletTx,

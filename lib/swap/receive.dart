@@ -9,9 +9,9 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
+import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -43,7 +43,7 @@ class SwapTxList extends StatelessWidget {
 
   static Future openPopUp(BuildContext context) {
     final receiveCubit = context.read<ReceiveCubit>();
-    final swapBloc = context.read<SwapCubit>();
+    final swapBloc = context.read<CreateSwapCubit>();
     // receiveCubit.state.swapBloc;
     final walletBloc = receiveCubit.state.walletBloc;
 
@@ -144,7 +144,7 @@ class _InvoiceQRPopup extends StatelessWidget {
 
   static Future openPopUp(BuildContext context, SwapTx tx) {
     final receive = context.read<ReceiveCubit>();
-    final swap = context.read<SwapCubit>();
+    final swap = context.read<CreateSwapCubit>();
     return showBBBottomSheet(
       context: context,
       child: MultiBlocProvider(

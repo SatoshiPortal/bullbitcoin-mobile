@@ -3,11 +3,11 @@ import 'package:bb_mobile/currency/bloc/currency_state.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
-import 'package:bb_mobile/swap/bloc/swap_state.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
+import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/create_swap_bloc/swap_state.dart';
 import 'package:bb_mobile/swap/receive.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
@@ -28,7 +28,7 @@ class SendListeners extends StatelessWidget {
             context.read<SendCubit>().selectWallets();
           },
         ),
-        BlocListener<SwapCubit, SwapState>(
+        BlocListener<CreateSwapCubit, SwapState>(
           listenWhen: (previous, current) => previous.swapTx != current.swapTx,
           listener: (context, state) async {
             if (state.swapTx == null) return;
@@ -46,7 +46,7 @@ class SendListeners extends StatelessWidget {
               previous.updatedSwapTx != current.updatedSwapTx &&
               current.updatedSwapTx != null,
           listener: (context, state) {
-            final swapOnPage = context.read<SwapCubit>().state.swapTx;
+            final swapOnPage = context.read<CreateSwapCubit>().state.swapTx;
             if (swapOnPage == null) return;
 
             final isSendPage = context.read<NavName>().state == '/send';

@@ -30,7 +30,7 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //const latestVersion = bbVersion;
-    const latestVersion = '0.2.0-1';
+    // const latestVersion = '0.2.0-1';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -70,7 +70,7 @@ class _Screen extends StatelessWidget {
                   icon: FaIcon(
                     FontAwesomeIcons.telegram,
                     size: 40,
-                    color: context.colour.onBackground,
+                    color: context.colour.onSurface,
                   ),
                 ),
                 const Gap(4),

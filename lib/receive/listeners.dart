@@ -5,10 +5,10 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/routes.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_state.dart';
+import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/receive.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -71,7 +71,7 @@ class ReceiveListeners extends StatelessWidget {
           listener: (context, state) {
             if (state.defaultAddress != null) return;
 
-            context.read<SwapCubit>().clearSwapTx();
+            context.read<CreateSwapCubit>().clearSwapTx();
             context.read<CurrencyCubit>().reset();
           },
         ),
@@ -80,7 +80,7 @@ class ReceiveListeners extends StatelessWidget {
               previous.updatedSwapTx != current.updatedSwapTx &&
               current.updatedSwapTx != null,
           listener: (context, state) {
-            final swapOnPage = context.read<SwapCubit>().state.swapTx;
+            final swapOnPage = context.read<CreateSwapCubit>().state.swapTx;
             if (swapOnPage == null) return;
 
             final isReceivePage = context.read<NavName>().state == '/receive';

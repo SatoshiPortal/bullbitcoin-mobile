@@ -27,9 +27,9 @@ import 'package:bb_mobile/send/listeners.dart';
 import 'package:bb_mobile/send/psbt.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/swap/bloc/swap_cubit.dart';
-import 'package:bb_mobile/swap/bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/send.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -51,12 +51,12 @@ class _SendPageState extends State<SendPage> {
   late SendCubit send;
   late NetworkFeesCubit networkFees;
 
-  late SwapCubit swap;
+  late CreateSwapCubit swap;
   late CurrencyCubit currency;
 
   @override
   void initState() {
-    swap = SwapCubit(
+    swap = CreateSwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
@@ -147,7 +147,8 @@ class _Screen extends StatelessWidget {
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
 
-    final showWarning = context.select((SwapCubit x) => x.state.showWarning());
+    final showWarning =
+        context.select((CreateSwapCubit x) => x.state.showWarning());
 
     final walletIsLiquid = context.select(
       (SendCubit x) =>
@@ -160,7 +161,7 @@ class _Screen extends StatelessWidget {
     if (sent && isLn) return const SendingLnTx();
 
     return ColoredBox(
-      color: context.colour.background,
+      color: context.colour.surface,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -298,26 +299,26 @@ class _AddressFieldState extends State<AddressField> {
                   if (!locator.isRegistered<Clippboard>()) return;
                   final data = await locator<Clippboard>().paste();
                   if (data == null) return;
-                  context.read<SwapCubit>().clearErrors();
+                  context.read<CreateSwapCubit>().clearErrors();
                   context.read<SendCubit>().updateAddress(data);
                 },
                 iconSize: 16,
                 visualDensity: VisualDensity.compact,
                 padding: EdgeInsets.zero,
-                color: context.colour.onBackground,
+                color: context.colour.onSurface,
                 icon: const FaIcon(FontAwesomeIcons.paste),
               ),
               IconButton(
                 onPressed: context.read<SendCubit>().scanAddress,
                 icon: FaIcon(
                   FontAwesomeIcons.barcode,
-                  color: context.colour.onBackground,
+                  color: context.colour.onSurface,
                 ),
               ),
             ],
           ),
           onChanged: (value) {
-            context.read<SwapCubit>().clearErrors();
+            context.read<CreateSwapCubit>().clearErrors();
             context.read<SendCubit>().updateAddress(value);
           },
         ),
@@ -406,7 +407,8 @@ class SendErrDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final errSend = context.select((SendCubit cubit) => cubit.state.errors());
-    final errSwap = context.select((SwapCubit cubit) => cubit.state.err());
+    final errSwap =
+        context.select((CreateSwapCubit cubit) => cubit.state.err());
 
     final err = errSwap.isNotEmpty ? errSwap : errSend;
 
@@ -431,8 +433,8 @@ class _SendButton extends StatelessWidget {
     final watchOnly =
         context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
 
-    final generatingInv =
-        context.select((SwapCubit cubit) => cubit.state.generatingSwapInv);
+    final generatingInv = context
+        .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
     final sendingg = context.select((SendCubit cubit) => cubit.state.sending);
     final sending = generatingInv || sendingg;
 
@@ -896,16 +898,16 @@ class _Warnings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((SwapCubit x) => x.state.swapTx);
+    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 
     // final errLowAmt =
     // context.select((SwapCubit x) => x.state.swapTx!.smallAmt());
 
-    final swaptx = context.select((SwapCubit x) => x.state.swapTx!);
+    final swaptx = context.select((CreateSwapCubit x) => x.state.swapTx!);
 
     final errHighFees =
-        context.select((SwapCubit x) => x.state.swapTx!.highFees());
+        context.select((CreateSwapCubit x) => x.state.swapTx!.highFees());
 
     final amt = swaptx.outAmount;
 
@@ -980,7 +982,7 @@ class _Warnings extends StatelessWidget {
             leftIcon: Icons.send_outlined,
             label: 'Continue anyways',
             onPressed: () {
-              context.read<SwapCubit>().removeWarnings();
+              context.read<CreateSwapCubit>().removeWarnings();
             },
           ),
         ),
