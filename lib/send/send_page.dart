@@ -449,6 +449,8 @@ class _SendButton extends StatelessWidget {
 
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
 
+    final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
+
     final label = watchOnly
         ? 'Generate PSBT'
         : signed
@@ -457,7 +459,9 @@ class _SendButton extends StatelessWidget {
                 : 'Confirm'
             : sending
                 ? 'Building Tx'
-                : 'Send';
+                : !isLn
+                    ? 'Send'
+                    : 'Create Swap';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -492,22 +496,23 @@ class _SendButton extends StatelessWidget {
                     return;
                   }
                   // context.read<SendCubit>().sendSwapClicked();
-                  // final wallet = context.read<WalletBloc>().state.wallet!;
-                  // final isLiq = wallet.isLiquid();
-                  // final networkurl = !isLiq
-                  //     ? context.read<NetworkCubit>().state.getNetworkUrl()
-                  //     : context
-                  //         .read<NetworkCubit>()
-                  //         .state
-                  //         .getLiquidNetworkUrl();
+                  final wallet = context.read<WalletBloc>().state.wallet!;
+                  final isLiq = wallet.isLiquid();
+                  final networkurl = !isLiq
+                      ? context.read<NetworkCubit>().state.getNetworkUrl()
+                      : context
+                          .read<NetworkCubit>()
+                          .state
+                          .getLiquidNetworkUrl();
 
-                  // context.read<SwapCubit>().createSubSwapForSend(
-                  //       wallet: wallet,
-                  //       invoice: context.read<SendCubit>().state.address,
-                  //       amount: context.read<CurrencyCubit>().state.amount,
-                  //       isTestnet: context.read<NetworkCubit>().state.testnet,
-                  //       networkUrl: networkurl,
-                  //     );
+                  context.read<CreateSwapCubit>().createSubSwapForSend(
+                        wallet: wallet,
+                        address: context.read<SendCubit>().state.address,
+                        amount: context.read<CurrencyCubit>().state.amount,
+                        isTestnet: context.read<NetworkCubit>().state.testnet,
+                        invoice: context.read<SendCubit>().state.invoice!,
+                        networkUrl: networkurl,
+                      );
                   return;
                 }
 

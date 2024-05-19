@@ -222,6 +222,48 @@ class SendCubit extends Cubit<SendState> {
 
   Future _processLnInvoice() async {
     final amt = state.invoice!.getAmount();
+
+    final mainWalletsBlocs = _homeCubit.state.walletBlocsFromNetwork(
+      _networkCubit.state.getBBNetwork(),
+    );
+
+    var storedSwapTxIdx = -1;
+    WalletBloc? walletBlocc;
+    for (final walletBloc in mainWalletsBlocs) {
+      final wallet = walletBloc.state.wallet!;
+      storedSwapTxIdx = wallet.swaps.indexWhere(
+        (element) => element.invoice == state.invoice!.invoice,
+      );
+      if (storedSwapTxIdx != -1) {
+        walletBlocc = walletBloc;
+        break;
+      }
+    }
+
+    if (storedSwapTxIdx != -1 && walletBlocc != null) {
+      emit(
+        state.copyWith(
+          selectedWalletBloc: walletBlocc,
+          enabledWallets: [walletBlocc.state.wallet!.id],
+        ),
+      );
+
+      final selectedWallet = walletBlocc.state.wallet!;
+      final networkurl = selectedWallet.isLiquid()
+          ? _networkCubit.state.getLiquidNetworkUrl()
+          : _networkCubit.state.getNetworkUrl();
+
+      await _swapCubit.createSubSwapForSend(
+        wallet: selectedWallet,
+        address: state.address,
+        invoice: state.invoice!,
+        amount: amt,
+        isTestnet: _networkCubit.state.testnet,
+        networkUrl: networkurl,
+      );
+      return;
+    }
+
     final wallets = _homeCubit.state.walletsWithEnoughBalance(
       amt,
       _networkCubit.state.getBBNetwork(),
@@ -249,20 +291,6 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(showSendButton: false));
     else
       emit(state.copyWith(showSendButton: true));
-
-    final selectedWallet = selectWalletBloc.state.wallet!;
-    final networkurl = selectedWallet.isLiquid()
-        ? _networkCubit.state.getLiquidNetworkUrl()
-        : _networkCubit.state.getNetworkUrl();
-
-    await _swapCubit.createSubSwapForSend(
-      wallet: selectedWallet,
-      address: state.address,
-      invoice: state.invoice!,
-      amount: amt,
-      isTestnet: _networkCubit.state.testnet,
-      networkUrl: networkurl,
-    );
   }
 
   Future _processBitcoinAddress() async {
