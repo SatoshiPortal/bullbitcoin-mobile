@@ -21,7 +21,6 @@ class SwapBoltz {
         _dio = dio;
 
   final SecureStorage _secureStorage;
-
   final Dio _dio;
 
   Future<(Invoice?, Err?)> decodeInvoice({

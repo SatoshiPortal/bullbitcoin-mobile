@@ -130,6 +130,7 @@ Future _setupWalletServices() async {
   locator.registerSingleton<SwapBoltz>(
     SwapBoltz(
       secureStorage: locator<SecureStorage>(),
+      dio: locator<Dio>(),
     ),
   );
 
