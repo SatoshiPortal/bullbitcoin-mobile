@@ -81,6 +81,9 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       boltzFees: (json['boltzFees'] as num?)?.toInt(),
       lockupFees: (json['lockupFees'] as num?)?.toInt(),
       claimFees: (json['claimFees'] as num?)?.toInt(),
+      boltzFeesLiquid: (json['boltzFeesLiquid'] as num?)?.toInt(),
+      lockupFeesLiquid: (json['lockupFeesLiquid'] as num?)?.toInt(),
+      claimFeesLiquid: (json['claimFeesLiquid'] as num?)?.toInt(),
       claimAddress: json['claimAddress'] as String?,
     );
 
@@ -109,6 +112,9 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
       'boltzFees': instance.boltzFees,
       'lockupFees': instance.lockupFees,
       'claimFees': instance.claimFees,
+      'boltzFeesLiquid': instance.boltzFeesLiquid,
+      'lockupFeesLiquid': instance.lockupFeesLiquid,
+      'claimFeesLiquid': instance.claimFeesLiquid,
       'claimAddress': instance.claimAddress,
     };
 

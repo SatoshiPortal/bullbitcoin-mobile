@@ -61,7 +61,9 @@ class _SwapFees extends StatelessWidget {
     final swaptx = context.select((CreateSwapCubit _) => _.state.swapTx);
     if (swaptx == null) return const SizedBox.shrink();
 
-    final lockupFee = swaptx.lockupFees;
+    final isLiquid = swaptx.isLiquid();
+
+    final lockupFee = isLiquid ? swaptx.lockupFeesLiquid : swaptx.lockupFees;
     if (lockupFee == null) return const SizedBox.shrink();
 
     final fees = swaptx.totalFees();
@@ -70,7 +72,7 @@ class _SwapFees extends StatelessWidget {
     final amt = context.select(
       (CurrencyCubit _) => _.state.getAmountInUnits(
         fees,
-        isLiquid: swaptx.isLiquid(),
+        isLiquid: isLiquid,
       ),
     );
 
@@ -85,46 +87,46 @@ class _SwapFees extends StatelessWidget {
   }
 }
 
-class SendLnFees extends StatelessWidget {
-  const SendLnFees();
+// class SendLnFees extends StatelessWidget {
+//   const SendLnFees();
 
-  @override
-  Widget build(BuildContext context) {
-    final allFees =
-        context.select((CreateSwapCubit cubit) => cubit.state.allFees);
-    if (allFees == null) return const SizedBox.shrink();
+//   @override
+//   Widget build(BuildContext context) {
+//     final allFees =
+//         context.select((CreateSwapCubit cubit) => cubit.state.allFees);
+//     if (allFees == null) return const SizedBox.shrink();
 
-    final isLiq = context.select(
-      (SendCubit cubit) => cubit.state.selectedWalletBloc?.state.isLiq(),
-    );
-    if (isLiq == null) return const SizedBox.shrink();
+//     final isLiq = context.select(
+//       (SendCubit cubit) => cubit.state.selectedWalletBloc?.state.isLiq(),
+//     );
+//     if (isLiq == null) return const SizedBox.shrink();
 
-    final fees = isLiq ? allFees.lbtcSubmarine : allFees.btcSubmarine;
-    final totalFees =
-        fees.boltzFeesRate + fees.claimFees + fees.lockupFeesEstimate;
+//     final fees = isLiq ? allFees.lbtcSubmarine : allFees.btcSubmarine;
+//     final totalFees =
+//         fees.boltzFeesRate + fees.claimFees + fees.lockupFeesEstimate;
 
-    final amt = context.select(
-      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
-        totalFees.toInt(),
-        isLiquid: isLiq,
-      ),
-    );
+//     final amt = context.select(
+//       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
+//         totalFees.toInt(),
+//         isLiquid: isLiq,
+//       ),
+//     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const BBText.title(
-          'Total Fees',
-        ),
-        const Gap(4),
-        BBText.body(
-          amt,
-          isBold: true,
-        ),
-      ],
-    );
-  }
-}
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.stretch,
+//       children: [
+//         const BBText.title(
+//           'Total Fees',
+//         ),
+//         const Gap(4),
+//         BBText.body(
+//           amt,
+//           isBold: true,
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 class SendingLnTx extends StatefulWidget {
   const SendingLnTx({super.key});

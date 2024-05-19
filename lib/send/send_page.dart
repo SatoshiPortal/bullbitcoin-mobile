@@ -161,7 +161,7 @@ class _Screen extends StatelessWidget {
     if (sent && isLn) return const SendingLnTx();
 
     return ColoredBox(
-      color: context.colour.surface,
+      color: context.colour.background,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -206,8 +206,17 @@ class WalletSelectionDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final enableDropdown = context
+    final loading = context.select((SendCubit _) => _.state.scanningAddress);
+
+    final sending = context.select((SendCubit _) => _.state.sending);
+
+    final generatingInv =
+        context.select((CreateSwapCubit _) => _.state.generatingSwapInv);
+
+    var enableDropdown = context
         .select((SendCubit cubit) => cubit.state.enabledWallets.isNotEmpty);
+
+    if (loading || generatingInv || sending) enableDropdown = true;
 
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = context
@@ -305,14 +314,14 @@ class _AddressFieldState extends State<AddressField> {
                 iconSize: 16,
                 visualDensity: VisualDensity.compact,
                 padding: EdgeInsets.zero,
-                color: context.colour.onSurface,
+                color: context.colour.onBackground,
                 icon: const FaIcon(FontAwesomeIcons.paste),
               ),
               IconButton(
                 onPressed: context.read<SendCubit>().scanAddress,
                 icon: FaIcon(
                   FontAwesomeIcons.barcode,
-                  color: context.colour.onSurface,
+                  color: context.colour.onBackground,
                 ),
               ),
             ],
@@ -659,94 +668,6 @@ class TxDetailsScreen extends StatelessWidget {
   }
 }
 
-// class _LnFeesFromSwapTx extends StatelessWidget {
-//   const _LnFeesFromSwapTx();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final swapTx = context.select((SwapCubit cubit) => cubit.state.swapTx);
-//     if (swapTx == null) return const SizedBox.shrink();
-
-//     final networkFees = swapTx.lockupFees!;
-//     final boltzFees = swapTx.boltzFees!;
-//     final claimFees = swapTx.claimFees!;
-
-//     final currency =
-//         context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
-
-//     final networkFeesStr = context.select(
-//       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(networkFees),
-//     );
-//     final networkFeesFiat = context.select(
-//       (NetworkCubit cubit) => cubit.state.calculatePrice(networkFees, currency),
-//     );
-
-//     final boltzFeesStr = context.select(
-//       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(boltzFees),
-//     );
-//     final boltzFeesFiat = context.select(
-//       (NetworkCubit cubit) => cubit.state.calculatePrice(boltzFees, currency),
-//     );
-
-//     final claimFeesStr = context.select(
-//       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(claimFees),
-//     );
-//     final claimFeesFiat = context.select(
-//       (NetworkCubit cubit) => cubit.state.calculatePrice(claimFees, currency),
-//     );
-
-//     final fiatCurrency = context.select(
-//       (CurrencyCubit cubit) => cubit.state.defaultFiatCurrency?.shortName ?? '',
-//     );
-
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.stretch,
-//       children: [
-//         const BBText.title(
-//           'Network Fee',
-//         ),
-//         const Gap(4),
-//         BBText.body(
-//           networkFeesStr,
-//         ),
-//         BBText.body(
-//           '~ $networkFeesFiat $fiatCurrency',
-//         ),
-//         const Gap(32),
-//         const BBText.title(
-//           'Boltz Fee',
-//         ),
-//         const Gap(4),
-//         BBText.body(
-//           boltzFeesStr,
-//         ),
-//         BBText.body(
-//           '~ $boltzFeesFiat $fiatCurrency',
-//         ),
-//         const Gap(16),
-//         const BBText.title(
-//           'Claim Fee',
-//         ),
-//         const Gap(4),
-//         BBText.body(
-//           claimFeesStr,
-//         ),
-//         BBText.body(
-//           '~ $claimFeesFiat $fiatCurrency',
-//         ),
-//         const Gap(16),
-//         const BBText.title(
-//           'Fees Details',
-//         ),
-//         const Gap(4),
-//         const BBText.body(
-//           'Exchange Fees = Boltz Fees + Claim Fees',
-//         ),
-//       ],
-//     );
-//   }
-// }
-
 class TxSuccess extends StatelessWidget {
   const TxSuccess({super.key});
 
@@ -901,8 +822,8 @@ class _Warnings extends StatelessWidget {
     final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 
-    // final errLowAmt =
-    // context.select((SwapCubit x) => x.state.swapTx!.smallAmt());
+    final errLowAmt =
+        context.select((CreateSwapCubit x) => x.state.swapTx!.smallAmt());
 
     final swaptx = context.select((CreateSwapCubit x) => x.state.swapTx!);
 
@@ -947,7 +868,7 @@ class _Warnings extends StatelessWidget {
     return WarningContainer(
       children: [
         const Gap(24),
-        // if (errLowAmt) _buildLowAmtWarn(),
+        if (errLowAmt) _buildLowAmtWarn(),
         if (errHighFees != null)
           _buildHighFeesWarn(
             feePercentage: errHighFees,

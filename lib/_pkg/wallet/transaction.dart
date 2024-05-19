@@ -373,6 +373,7 @@ class WalletTx implements IWalletTransactions {
     final storedSwap = swaps[idx];
 
     final swapTxs = List<SwapTx>.from(swaps);
+    final isLiq = swapTx.isLiquid();
 
     print(
       '\n\n--- swap update: ${swapTx.id} --- status: ${swapTx.status?.status} ---\n\n',
@@ -399,7 +400,9 @@ class WalletTx implements IWalletTransactions {
           isSwap: true,
           received:
               isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
-          fee: isRevSub ? swapTx.claimFees : swapTx.lockupFees,
+          fee: isRevSub
+              ? (isLiq ? swapTx.claimFeesLiquid : swapTx.claimFees)
+              : (isLiq ? swapTx.lockupFeesLiquid : swapTx.lockupFees),
           isLiquid: swapTx.isLiquid(),
         );
         txs.add(newTx);
@@ -431,7 +434,9 @@ class WalletTx implements IWalletTransactions {
           isSwap: true,
           received:
               isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
-          fee: isRevSub ? swapTx.claimFees : swapTx.lockupFees,
+          fee: isRevSub
+              ? (isLiq ? swapTx.claimFeesLiquid : swapTx.claimFees)
+              : (isLiq ? swapTx.lockupFeesLiquid : swapTx.lockupFees),
           isLiquid: swapTx.isLiquid(),
         );
         txs.add(newTx);

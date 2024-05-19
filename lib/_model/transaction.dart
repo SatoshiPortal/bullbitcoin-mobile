@@ -236,6 +236,9 @@ class SwapTx with _$SwapTx {
     int? boltzFees,
     int? lockupFees,
     int? claimFees,
+    int? boltzFeesLiquid,
+    int? lockupFeesLiquid,
+    int? claimFeesLiquid,
     String? claimAddress,
   }) = _SwapTx;
 
@@ -246,10 +249,18 @@ class SwapTx with _$SwapTx {
   bool isLiquid() => walletType == BaseWalletType.Liquid;
 
   int? totalFees() {
-    if (boltzFees == null || lockupFees == null || claimFees == null)
-      return null;
+    if (!isLiquid()) {
+      if (boltzFees == null || lockupFees == null || claimFees == null)
+        return null;
 
-    return boltzFees! + lockupFees! + claimFees!;
+      return boltzFees! + lockupFees! + claimFees!;
+    } else {
+      if (boltzFeesLiquid == null ||
+          lockupFeesLiquid == null ||
+          claimFeesLiquid == null) return null;
+
+      return boltzFeesLiquid! + lockupFeesLiquid! + claimFeesLiquid!;
+    }
   }
 
   int? recievableAmount() {

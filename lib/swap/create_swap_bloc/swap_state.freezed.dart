@@ -16,8 +16,8 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$SwapState {
-  bool get creatingInvoice => throw _privateConstructorUsedError;
-  String get errCreatingInvoice => throw _privateConstructorUsedError;
+// @Default(false) bool creatingInvoice,
+// @Default('') String errCreatingInvoice,
   String get errCreatingSwapInv => throw _privateConstructorUsedError;
   bool get generatingSwapInv => throw _privateConstructorUsedError;
   SwapTx? get swapTx => throw _privateConstructorUsedError; // Invoice? invoice,
@@ -38,9 +38,7 @@ abstract class $SwapStateCopyWith<$Res> {
       _$SwapStateCopyWithImpl<$Res, SwapState>;
   @useResult
   $Res call(
-      {bool creatingInvoice,
-      String errCreatingInvoice,
-      String errCreatingSwapInv,
+      {String errCreatingSwapInv,
       bool generatingSwapInv,
       SwapTx? swapTx,
       bool errSmallAmt,
@@ -65,8 +63,6 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? creatingInvoice = null,
-    Object? errCreatingInvoice = null,
     Object? errCreatingSwapInv = null,
     Object? generatingSwapInv = null,
     Object? swapTx = freezed,
@@ -76,14 +72,6 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
     Object? errAllFees = freezed,
   }) {
     return _then(_value.copyWith(
-      creatingInvoice: null == creatingInvoice
-          ? _value.creatingInvoice
-          : creatingInvoice // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errCreatingInvoice: null == errCreatingInvoice
-          ? _value.errCreatingInvoice
-          : errCreatingInvoice // ignore: cast_nullable_to_non_nullable
-              as String,
       errCreatingSwapInv: null == errCreatingSwapInv
           ? _value.errCreatingSwapInv
           : errCreatingSwapInv // ignore: cast_nullable_to_non_nullable
@@ -149,9 +137,7 @@ abstract class _$$SwapStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {bool creatingInvoice,
-      String errCreatingInvoice,
-      String errCreatingSwapInv,
+      {String errCreatingSwapInv,
       bool generatingSwapInv,
       SwapTx? swapTx,
       bool errSmallAmt,
@@ -176,8 +162,6 @@ class __$$SwapStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? creatingInvoice = null,
-    Object? errCreatingInvoice = null,
     Object? errCreatingSwapInv = null,
     Object? generatingSwapInv = null,
     Object? swapTx = freezed,
@@ -187,14 +171,6 @@ class __$$SwapStateImplCopyWithImpl<$Res>
     Object? errAllFees = freezed,
   }) {
     return _then(_$SwapStateImpl(
-      creatingInvoice: null == creatingInvoice
-          ? _value.creatingInvoice
-          : creatingInvoice // ignore: cast_nullable_to_non_nullable
-              as bool,
-      errCreatingInvoice: null == errCreatingInvoice
-          ? _value.errCreatingInvoice
-          : errCreatingInvoice // ignore: cast_nullable_to_non_nullable
-              as String,
       errCreatingSwapInv: null == errCreatingSwapInv
           ? _value.errCreatingSwapInv
           : errCreatingSwapInv // ignore: cast_nullable_to_non_nullable
@@ -231,9 +207,7 @@ class __$$SwapStateImplCopyWithImpl<$Res>
 
 class _$SwapStateImpl extends _SwapState {
   const _$SwapStateImpl(
-      {this.creatingInvoice = false,
-      this.errCreatingInvoice = '',
-      this.errCreatingSwapInv = '',
+      {this.errCreatingSwapInv = '',
       this.generatingSwapInv = false,
       this.swapTx,
       this.errSmallAmt = false,
@@ -242,12 +216,8 @@ class _$SwapStateImpl extends _SwapState {
       this.errAllFees})
       : super._();
 
-  @override
-  @JsonKey()
-  final bool creatingInvoice;
-  @override
-  @JsonKey()
-  final String errCreatingInvoice;
+// @Default(false) bool creatingInvoice,
+// @Default('') String errCreatingInvoice,
   @override
   @JsonKey()
   final String errCreatingSwapInv;
@@ -270,7 +240,7 @@ class _$SwapStateImpl extends _SwapState {
 
   @override
   String toString() {
-    return 'SwapState(creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, swapTx: $swapTx, errSmallAmt: $errSmallAmt, errHighFees: $errHighFees, allFees: $allFees, errAllFees: $errAllFees)';
+    return 'SwapState(errCreatingSwapInv: $errCreatingSwapInv, generatingSwapInv: $generatingSwapInv, swapTx: $swapTx, errSmallAmt: $errSmallAmt, errHighFees: $errHighFees, allFees: $allFees, errAllFees: $errAllFees)';
   }
 
   @override
@@ -278,10 +248,6 @@ class _$SwapStateImpl extends _SwapState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SwapStateImpl &&
-            (identical(other.creatingInvoice, creatingInvoice) ||
-                other.creatingInvoice == creatingInvoice) &&
-            (identical(other.errCreatingInvoice, errCreatingInvoice) ||
-                other.errCreatingInvoice == errCreatingInvoice) &&
             (identical(other.errCreatingSwapInv, errCreatingSwapInv) ||
                 other.errCreatingSwapInv == errCreatingSwapInv) &&
             (identical(other.generatingSwapInv, generatingSwapInv) ||
@@ -297,17 +263,8 @@ class _$SwapStateImpl extends _SwapState {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      creatingInvoice,
-      errCreatingInvoice,
-      errCreatingSwapInv,
-      generatingSwapInv,
-      swapTx,
-      errSmallAmt,
-      errHighFees,
-      allFees,
-      errAllFees);
+  int get hashCode => Object.hash(runtimeType, errCreatingSwapInv,
+      generatingSwapInv, swapTx, errSmallAmt, errHighFees, allFees, errAllFees);
 
   @JsonKey(ignore: true)
   @override
@@ -318,9 +275,7 @@ class _$SwapStateImpl extends _SwapState {
 
 abstract class _SwapState extends SwapState {
   const factory _SwapState(
-      {final bool creatingInvoice,
-      final String errCreatingInvoice,
-      final String errCreatingSwapInv,
+      {final String errCreatingSwapInv,
       final bool generatingSwapInv,
       final SwapTx? swapTx,
       final bool errSmallAmt,
@@ -329,11 +284,8 @@ abstract class _SwapState extends SwapState {
       final String? errAllFees}) = _$SwapStateImpl;
   const _SwapState._() : super._();
 
-  @override
-  bool get creatingInvoice;
-  @override
-  String get errCreatingInvoice;
-  @override
+  @override // @Default(false) bool creatingInvoice,
+// @Default('') String errCreatingInvoice,
   String get errCreatingSwapInv;
   @override
   bool get generatingSwapInv;

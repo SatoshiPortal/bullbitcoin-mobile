@@ -141,16 +141,25 @@ class CreateSwapCubit extends Cubit<SwapState> {
       return;
     }
 
+    // final updatedSwap = swap!.copyWith(
+    //   boltzFees: walletIsLiquid
+    //       ? fees.lbtcReverse.boltzFeesRate * amount ~/ 100
+    //       : fees.btcReverse.boltzFeesRate * amount ~/ 100,
+    //   lockupFees: walletIsLiquid
+    //       ? fees.lbtcReverse.lockupFees
+    //       : fees.btcReverse.lockupFees,
+    //   claimFees: walletIsLiquid
+    //       ? fees.lbtcReverse.claimFeesEstimate
+    //       : fees.btcReverse.claimFeesEstimate,
+    // );
+
     final updatedSwap = swap!.copyWith(
-      boltzFees: walletIsLiquid
-          ? fees.lbtcReverse.boltzFeesRate * amount ~/ 100
-          : fees.btcReverse.boltzFeesRate * amount ~/ 100,
-      lockupFees: walletIsLiquid
-          ? fees.lbtcReverse.lockupFees
-          : fees.btcReverse.lockupFees,
-      claimFees: walletIsLiquid
-          ? fees.lbtcReverse.claimFeesEstimate
-          : fees.btcReverse.claimFeesEstimate,
+      boltzFees: fees.btcReverse.boltzFeesRate * amount ~/ 100,
+      lockupFees: fees.btcReverse.lockupFees,
+      claimFees: fees.btcReverse.claimFeesEstimate,
+      boltzFeesLiquid: fees.lbtcReverse.boltzFeesRate * amount ~/ 100,
+      lockupFeesLiquid: fees.lbtcReverse.lockupFees,
+      claimFeesLiquid: fees.lbtcReverse.claimFeesEstimate,
     );
 
     await _saveSwapToWallet(
@@ -364,14 +373,12 @@ class CreateSwapCubit extends Cubit<SwapState> {
       }
 
       final updatedSwap = swap!.copyWith(
-        boltzFees: isLiq
-            ? fees.lbtcSubmarine.boltzFeesRate * amount ~/ 100
-            : fees.btcSubmarine.boltzFeesRate * amount ~/ 100,
-        lockupFees: isLiq
-            ? fees.lbtcSubmarine.lockupFeesEstimate
-            : fees.btcSubmarine.lockupFeesEstimate,
-        claimFees:
-            isLiq ? fees.lbtcSubmarine.claimFees : fees.btcSubmarine.claimFees,
+        boltzFees: fees.btcSubmarine.boltzFeesRate * amount ~/ 100,
+        lockupFees: fees.btcSubmarine.lockupFeesEstimate,
+        claimFees: fees.btcSubmarine.claimFees,
+        boltzFeesLiquid: fees.lbtcSubmarine.boltzFeesRate * amount ~/ 100,
+        lockupFeesLiquid: fees.lbtcSubmarine.lockupFeesEstimate,
+        claimFeesLiquid: fees.lbtcSubmarine.claimFees,
       );
 
       swapTx = updatedSwap;
@@ -456,7 +463,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
   void clearErrors() => emit(
         state.copyWith(
           errCreatingSwapInv: '',
-          errCreatingInvoice: '',
+          // errCreatingInvoice: '',
         ),
       );
 }

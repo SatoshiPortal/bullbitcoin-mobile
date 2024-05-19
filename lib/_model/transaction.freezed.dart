@@ -656,6 +656,9 @@ mixin _$SwapTx {
   int? get boltzFees => throw _privateConstructorUsedError;
   int? get lockupFees => throw _privateConstructorUsedError;
   int? get claimFees => throw _privateConstructorUsedError;
+  int? get boltzFeesLiquid => throw _privateConstructorUsedError;
+  int? get lockupFeesLiquid => throw _privateConstructorUsedError;
+  int? get claimFeesLiquid => throw _privateConstructorUsedError;
   String? get claimAddress => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -692,6 +695,9 @@ abstract class $SwapTxCopyWith<$Res> {
       int? boltzFees,
       int? lockupFees,
       int? claimFees,
+      int? boltzFeesLiquid,
+      int? lockupFeesLiquid,
+      int? claimFeesLiquid,
       String? claimAddress});
 
   $SwapStreamStatusCopyWith<$Res>? get status;
@@ -733,6 +739,9 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? boltzFees = freezed,
     Object? lockupFees = freezed,
     Object? claimFees = freezed,
+    Object? boltzFeesLiquid = freezed,
+    Object? lockupFeesLiquid = freezed,
+    Object? claimFeesLiquid = freezed,
     Object? claimAddress = freezed,
   }) {
     return _then(_value.copyWith(
@@ -828,6 +837,18 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.claimFees
           : claimFees // ignore: cast_nullable_to_non_nullable
               as int?,
+      boltzFeesLiquid: freezed == boltzFeesLiquid
+          ? _value.boltzFeesLiquid
+          : boltzFeesLiquid // ignore: cast_nullable_to_non_nullable
+              as int?,
+      lockupFeesLiquid: freezed == lockupFeesLiquid
+          ? _value.lockupFeesLiquid
+          : lockupFeesLiquid // ignore: cast_nullable_to_non_nullable
+              as int?,
+      claimFeesLiquid: freezed == claimFeesLiquid
+          ? _value.claimFeesLiquid
+          : claimFeesLiquid // ignore: cast_nullable_to_non_nullable
+              as int?,
       claimAddress: freezed == claimAddress
           ? _value.claimAddress
           : claimAddress // ignore: cast_nullable_to_non_nullable
@@ -879,6 +900,9 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       int? boltzFees,
       int? lockupFees,
       int? claimFees,
+      int? boltzFeesLiquid,
+      int? lockupFeesLiquid,
+      int? claimFeesLiquid,
       String? claimAddress});
 
   @override
@@ -919,6 +943,9 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? boltzFees = freezed,
     Object? lockupFees = freezed,
     Object? claimFees = freezed,
+    Object? boltzFeesLiquid = freezed,
+    Object? lockupFeesLiquid = freezed,
+    Object? claimFeesLiquid = freezed,
     Object? claimAddress = freezed,
   }) {
     return _then(_$SwapTxImpl(
@@ -1014,6 +1041,18 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.claimFees
           : claimFees // ignore: cast_nullable_to_non_nullable
               as int?,
+      boltzFeesLiquid: freezed == boltzFeesLiquid
+          ? _value.boltzFeesLiquid
+          : boltzFeesLiquid // ignore: cast_nullable_to_non_nullable
+              as int?,
+      lockupFeesLiquid: freezed == lockupFeesLiquid
+          ? _value.lockupFeesLiquid
+          : lockupFeesLiquid // ignore: cast_nullable_to_non_nullable
+              as int?,
+      claimFeesLiquid: freezed == claimFeesLiquid
+          ? _value.claimFeesLiquid
+          : claimFeesLiquid // ignore: cast_nullable_to_non_nullable
+              as int?,
       claimAddress: freezed == claimAddress
           ? _value.claimAddress
           : claimAddress // ignore: cast_nullable_to_non_nullable
@@ -1049,6 +1088,9 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       this.boltzFees,
       this.lockupFees,
       this.claimFees,
+      this.boltzFeesLiquid,
+      this.lockupFeesLiquid,
+      this.claimFeesLiquid,
       this.claimAddress})
       : super._();
 
@@ -1104,11 +1146,17 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   @override
   final int? claimFees;
   @override
+  final int? boltzFeesLiquid;
+  @override
+  final int? lockupFeesLiquid;
+  @override
+  final int? claimFeesLiquid;
+  @override
   final String? claimAddress;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, walletType: $walletType, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, boltzPubkey: $boltzPubkey, locktime: $locktime, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress)';
+    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, walletType: $walletType, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, boltzPubkey: $boltzPubkey, locktime: $locktime, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, boltzFeesLiquid: $boltzFeesLiquid, lockupFeesLiquid: $lockupFeesLiquid, claimFeesLiquid: $claimFeesLiquid, claimAddress: $claimAddress)';
   }
 
   @override
@@ -1139,6 +1187,9 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('boltzFees', boltzFees))
       ..add(DiagnosticsProperty('lockupFees', lockupFees))
       ..add(DiagnosticsProperty('claimFees', claimFees))
+      ..add(DiagnosticsProperty('boltzFeesLiquid', boltzFeesLiquid))
+      ..add(DiagnosticsProperty('lockupFeesLiquid', lockupFeesLiquid))
+      ..add(DiagnosticsProperty('claimFeesLiquid', claimFeesLiquid))
       ..add(DiagnosticsProperty('claimAddress', claimAddress));
   }
 
@@ -1186,6 +1237,12 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
                 other.lockupFees == lockupFees) &&
             (identical(other.claimFees, claimFees) ||
                 other.claimFees == claimFees) &&
+            (identical(other.boltzFeesLiquid, boltzFeesLiquid) ||
+                other.boltzFeesLiquid == boltzFeesLiquid) &&
+            (identical(other.lockupFeesLiquid, lockupFeesLiquid) ||
+                other.lockupFeesLiquid == lockupFeesLiquid) &&
+            (identical(other.claimFeesLiquid, claimFeesLiquid) ||
+                other.claimFeesLiquid == claimFeesLiquid) &&
             (identical(other.claimAddress, claimAddress) ||
                 other.claimAddress == claimAddress));
   }
@@ -1217,6 +1274,9 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
         boltzFees,
         lockupFees,
         claimFees,
+        boltzFeesLiquid,
+        lockupFeesLiquid,
+        claimFeesLiquid,
         claimAddress
       ]);
 
@@ -1259,6 +1319,9 @@ abstract class _SwapTx extends SwapTx {
       final int? boltzFees,
       final int? lockupFees,
       final int? claimFees,
+      final int? boltzFeesLiquid,
+      final int? lockupFeesLiquid,
+      final int? claimFeesLiquid,
       final String? claimAddress}) = _$SwapTxImpl;
   const _SwapTx._() : super._();
 
@@ -1310,6 +1373,12 @@ abstract class _SwapTx extends SwapTx {
   int? get lockupFees;
   @override
   int? get claimFees;
+  @override
+  int? get boltzFeesLiquid;
+  @override
+  int? get lockupFeesLiquid;
+  @override
+  int? get claimFeesLiquid;
   @override
   String? get claimAddress;
   @override
