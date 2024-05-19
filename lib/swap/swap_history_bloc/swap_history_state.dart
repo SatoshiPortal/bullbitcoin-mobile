@@ -6,7 +6,7 @@ part 'swap_history_state.freezed.dart';
 @freezed
 class SwapHistoryState with _$SwapHistoryState {
   const factory SwapHistoryState({
-    @Default([]) List<SwapTx> swaps,
+    @Default([]) List<(SwapTx, String)> swaps,
     @Default([]) List<Transaction> completeSwaps,
     @Default([]) List<String> refreshing,
     @Default('') String errRefreshing,

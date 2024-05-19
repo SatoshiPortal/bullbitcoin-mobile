@@ -375,9 +375,9 @@ class WalletTx implements IWalletTransactions {
     final swapTxs = List<SwapTx>.from(swaps);
     final isLiq = swapTx.isLiquid();
 
-    print(
-      '\n\n--- swap update: ${swapTx.id} --- status: ${swapTx.status?.status} ---\n\n',
-    );
+    // print(
+    //   '\n\n--- swap update: ${swapTx.id} --- status: ${swapTx.status?.status} ---\n\n',
+    // );
     final updatedSwapTx = storedSwap.copyWith(
       status: swapTx.status,
       txid: storedSwap.txid ?? swapTx.txid,

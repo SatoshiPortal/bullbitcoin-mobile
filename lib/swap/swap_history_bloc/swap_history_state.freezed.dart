@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$SwapHistoryState {
-  List<SwapTx> get swaps => throw _privateConstructorUsedError;
+  List<(SwapTx, String)> get swaps => throw _privateConstructorUsedError;
   List<Transaction> get completeSwaps => throw _privateConstructorUsedError;
   List<String> get refreshing => throw _privateConstructorUsedError;
   String get errRefreshing => throw _privateConstructorUsedError;
@@ -33,7 +33,7 @@ abstract class $SwapHistoryStateCopyWith<$Res> {
       _$SwapHistoryStateCopyWithImpl<$Res, SwapHistoryState>;
   @useResult
   $Res call(
-      {List<SwapTx> swaps,
+      {List<(SwapTx, String)> swaps,
       List<Transaction> completeSwaps,
       List<String> refreshing,
       String errRefreshing});
@@ -61,7 +61,7 @@ class _$SwapHistoryStateCopyWithImpl<$Res, $Val extends SwapHistoryState>
       swaps: null == swaps
           ? _value.swaps
           : swaps // ignore: cast_nullable_to_non_nullable
-              as List<SwapTx>,
+              as List<(SwapTx, String)>,
       completeSwaps: null == completeSwaps
           ? _value.completeSwaps
           : completeSwaps // ignore: cast_nullable_to_non_nullable
@@ -87,7 +87,7 @@ abstract class _$$SwapHistoryStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<SwapTx> swaps,
+      {List<(SwapTx, String)> swaps,
       List<Transaction> completeSwaps,
       List<String> refreshing,
       String errRefreshing});
@@ -113,7 +113,7 @@ class __$$SwapHistoryStateImplCopyWithImpl<$Res>
       swaps: null == swaps
           ? _value._swaps
           : swaps // ignore: cast_nullable_to_non_nullable
-              as List<SwapTx>,
+              as List<(SwapTx, String)>,
       completeSwaps: null == completeSwaps
           ? _value._completeSwaps
           : completeSwaps // ignore: cast_nullable_to_non_nullable
@@ -134,7 +134,7 @@ class __$$SwapHistoryStateImplCopyWithImpl<$Res>
 
 class _$SwapHistoryStateImpl extends _SwapHistoryState {
   const _$SwapHistoryStateImpl(
-      {final List<SwapTx> swaps = const [],
+      {final List<(SwapTx, String)> swaps = const [],
       final List<Transaction> completeSwaps = const [],
       final List<String> refreshing = const [],
       this.errRefreshing = ''})
@@ -143,10 +143,10 @@ class _$SwapHistoryStateImpl extends _SwapHistoryState {
         _refreshing = refreshing,
         super._();
 
-  final List<SwapTx> _swaps;
+  final List<(SwapTx, String)> _swaps;
   @override
   @JsonKey()
-  List<SwapTx> get swaps {
+  List<(SwapTx, String)> get swaps {
     if (_swaps is EqualUnmodifiableListView) return _swaps;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_swaps);
@@ -211,14 +211,14 @@ class _$SwapHistoryStateImpl extends _SwapHistoryState {
 
 abstract class _SwapHistoryState extends SwapHistoryState {
   const factory _SwapHistoryState(
-      {final List<SwapTx> swaps,
+      {final List<(SwapTx, String)> swaps,
       final List<Transaction> completeSwaps,
       final List<String> refreshing,
       final String errRefreshing}) = _$SwapHistoryStateImpl;
   const _SwapHistoryState._() : super._();
 
   @override
-  List<SwapTx> get swaps;
+  List<(SwapTx, String)> get swaps;
   @override
   List<Transaction> get completeSwaps;
   @override

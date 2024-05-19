@@ -28,10 +28,10 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
   void loadSwaps() {
     final isTestnet = _networkCubit.state.testnet;
     final walletBlocs = _homeCubit.state.getMainWallets(isTestnet);
-    final swapsToWatch = <SwapTx>[];
+    final swapsToWatch = <(SwapTx, String)>[];
     for (final walletBloc in walletBlocs) {
       final wallet = walletBloc.state.wallet!;
-      swapsToWatch.addAll(wallet.swaps);
+      for (final swap in wallet.swaps) swapsToWatch.add((swap, wallet.id));
     }
     emit(state.copyWith(swaps: swapsToWatch));
 
@@ -45,7 +45,13 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     }
 
     completedSwaps.removeWhere(
-      (element) => swapsToWatch.map((_) => _.id).contains(element.swapTx!.id),
+      (element) => swapsToWatch
+          .map(
+            (_) => _.$1.id,
+          )
+          .contains(
+            element.swapTx!.id,
+          ),
     );
 
     emit(state.copyWith(completeSwaps: completedSwaps));

@@ -19,6 +19,7 @@ import 'package:bb_mobile/settings/core_wallet_settings_page.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/receive.dart';
+import 'package:bb_mobile/swap/swap_history_page.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/details.dart';
@@ -223,6 +224,12 @@ GoRouter setupRouter() => GoRouter(
           builder: (context, state) {
             final tx = state.extra! as SwapTx;
             return ReceivingSwapPage(tx: tx);
+          },
+        ),
+        GoRoute(
+          path: '/swap-history',
+          builder: (context, state) {
+            return const SwapHistoryPage();
           },
         ),
         GoRoute(

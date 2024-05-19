@@ -52,6 +52,8 @@ class _Screen extends StatelessWidget {
                 const WalletSettingsButton(),
                 const Gap(8),
                 const NewWalletButton(),
+                const Gap(8),
+                const SwapHistoryButton(),
                 const Gap(24),
                 const Center(
                   child: BBText.bodySmall(
@@ -136,6 +138,23 @@ class NewWalletButton extends StatelessWidget {
       label: 'Recover wallet',
       onPressed: () {
         context.push('/recover');
+
+        // context.push('/import');
+      },
+    );
+  }
+}
+
+class SwapHistoryButton extends StatelessWidget {
+  const SwapHistoryButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      // label: 'Create, import or recover wallet',
+      label: 'Swap History',
+      onPressed: () {
+        context.push('/swap-history');
 
         // context.push('/import');
       },
