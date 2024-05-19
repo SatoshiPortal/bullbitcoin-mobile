@@ -20,11 +20,7 @@ NetworkState _$NetworkStateFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$NetworkState {
-  bool get testnet => throw _privateConstructorUsedError; // @JsonKey(
-//   includeFromJson: false,
-//   includeToJson: false,
-// )
-// bdk.Blockchain? blockchain,
+  bool get testnet => throw _privateConstructorUsedError;
   int get reloadWalletTimer => throw _privateConstructorUsedError;
   List<ElectrumNetwork> get networks => throw _privateConstructorUsedError;
   ElectrumTypes get selectedNetwork => throw _privateConstructorUsedError;
@@ -335,11 +331,6 @@ class _$NetworkStateImpl extends _NetworkState {
   @override
   @JsonKey()
   final bool testnet;
-// @JsonKey(
-//   includeFromJson: false,
-//   includeToJson: false,
-// )
-// bdk.Blockchain? blockchain,
   @override
   @JsonKey()
   final int reloadWalletTimer;
@@ -485,11 +476,7 @@ abstract class _NetworkState extends NetworkState {
 
   @override
   bool get testnet;
-  @override // @JsonKey(
-//   includeFromJson: false,
-//   includeToJson: false,
-// )
-// bdk.Blockchain? blockchain,
+  @override
   int get reloadWalletTimer;
   @override
   List<ElectrumNetwork> get networks;

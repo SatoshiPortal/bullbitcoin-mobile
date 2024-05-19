@@ -246,6 +246,8 @@ class SwapTx with _$SwapTx {
 
   factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
 
+  bool isTestnet() => network == BBNetwork.Testnet;
+
   bool isLiquid() => walletType == BaseWalletType.Liquid;
 
   int? totalFees() {

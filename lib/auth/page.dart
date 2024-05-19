@@ -132,6 +132,7 @@ class AuthPasswordField extends StatelessWidget {
             color: pin.isEmpty
                 ? context.colour.surface
                 : context.colour.onBackground,
+            splashColor: Colors.transparent,
             onPressed: () {
               SystemSound.play(SystemSoundType.click);
               HapticFeedback.mediumImpact();
@@ -208,6 +209,9 @@ class _NumberButtonState extends State<NumberButton> {
             });
           },
           child: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              splashFactory: NoSplash.splashFactory,
+            ),
             onPressed: () {
               SystemSound.play(SystemSoundType.click);
               HapticFeedback.mediumImpact();

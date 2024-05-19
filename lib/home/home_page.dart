@@ -564,7 +564,9 @@ class HomeTopBar2 extends StatelessWidget {
                               currency.shortName.toUpperCase(),
                         ),
                       ],
-                    ),
+                    )
+                  else
+                    ...[],
                 ],
               ),
             ),

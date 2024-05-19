@@ -11,13 +11,18 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:boltz_dart/boltz_dart.dart';
+import 'package:dio/dio.dart';
 
 class SwapBoltz {
   SwapBoltz({
     required SecureStorage secureStorage,
-  }) : _secureStorage = secureStorage;
+    required Dio dio,
+  })  : _secureStorage = secureStorage,
+        _dio = dio;
 
   final SecureStorage _secureStorage;
+
+  final Dio _dio;
 
   Future<(Invoice?, Err?)> decodeInvoice({
     required String invoice,
@@ -154,6 +159,21 @@ class SwapBoltz {
       );
 
       return (api, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  Future<(SwapStatusResponse?, Err?)> getSwapStatus(
+    String id,
+    bool isTestnet,
+  ) async {
+    try {
+      final url = isTestnet ? boltzTestnet : boltzMainnet;
+
+      final res = await _dio.post('https://$url/swapstatus', data: {'id': id});
+      final data = res.data as SwapStatusResponse;
+      return (data, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }

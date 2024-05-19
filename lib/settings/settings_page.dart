@@ -70,7 +70,7 @@ class _Screen extends StatelessWidget {
                   icon: FaIcon(
                     FontAwesomeIcons.telegram,
                     size: 40,
-                    color: context.colour.onSurface,
+                    color: context.colour.onBackground,
                   ),
                 ),
                 const Gap(4),

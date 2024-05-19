@@ -15,16 +15,12 @@ part 'state.g.dart';
 class NetworkState with _$NetworkState {
   const factory NetworkState({
     @Default(false) bool testnet,
-    // @JsonKey(
-    //   includeFromJson: false,
-    //   includeToJson: false,
-    // )
-    // bdk.Blockchain? blockchain,
     @Default(20) int reloadWalletTimer,
     @Default([]) List<ElectrumNetwork> networks,
     @Default(ElectrumTypes.bullbitcoin) ElectrumTypes selectedNetwork,
     @Default([]) List<LiquidElectrumNetwork> liquidNetworks,
-    @Default(LiquidElectrumTypes.blockstream) LiquidElectrumTypes selectedLiquidNetwork,
+    @Default(LiquidElectrumTypes.blockstream)
+    LiquidElectrumTypes selectedLiquidNetwork,
     @Default(false) bool loadingNetworks,
     @Default('') String errLoadingNetworks,
     @Default(false) bool networkConnected,
@@ -38,7 +34,8 @@ class NetworkState with _$NetworkState {
   }) = _NetworkState;
   const NetworkState._();
 
-  factory NetworkState.fromJson(Map<String, dynamic> json) => _$NetworkStateFromJson(json);
+  factory NetworkState.fromJson(Map<String, dynamic> json) =>
+      _$NetworkStateFromJson(json);
 
   ElectrumNetwork? getNetwork() {
     if (networks.isEmpty) return null;
@@ -99,17 +96,25 @@ class NetworkState with _$NetworkState {
 
   String explorerTxUrl(String txid, {bool isLiquid = false}) {
     if (isLiquid) {
-      return testnet ? '$liquidMempoolTestnet/tx/$txid' : '$liquidMempool/tx/$txid';
+      return testnet
+          ? '$liquidMempoolTestnet/tx/$txid'
+          : '$liquidMempool/tx/$txid';
     } else {
-      return testnet ? 'https://$mempoolapi/testnet/tx/$txid' : 'https://$mempoolapi/tx/$txid';
+      return testnet
+          ? 'https://$mempoolapi/testnet/tx/$txid'
+          : 'https://$mempoolapi/tx/$txid';
     }
   }
 
   String explorerAddressUrl(String address, {bool isLiquid = false}) {
     if (isLiquid) {
-      return testnet ? '$liquidMempoolTestnet/address/$address' : '$liquidMempool/address/$address';
+      return testnet
+          ? '$liquidMempoolTestnet/address/$address'
+          : '$liquidMempool/address/$address';
     } else {
-      return testnet ? 'https://$mempoolapi/testnet/address/$address' : 'https://$mempoolapi/address/$address';
+      return testnet
+          ? 'https://$mempoolapi/testnet/address/$address'
+          : 'https://$mempoolapi/address/$address';
     }
   }
 
@@ -157,7 +162,8 @@ class NetworkState with _$NetworkState {
 
   ({bool show, String? err}) showConfirmButton({required bool isLiquid}) {
     if (isLiquid) {
-      if (tempLiquidNetwork == null) return (show: false, err: 'Network cannot be empty');
+      if (tempLiquidNetwork == null)
+        return (show: false, err: 'Network cannot be empty');
       return (show: true, err: null);
     }
 

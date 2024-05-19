@@ -411,6 +411,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     ProcessSwapTx event,
     Emitter<WatchTxsState> emit,
   ) async {
+    // locator<Logger>().log('', printToConsole: true);
     emit(state.copyWith(updatedSwapTx: event.swapTx));
     await Future.delayed(200.ms);
     emit(state.copyWith(updatedSwapTx: null));
