@@ -20,7 +20,7 @@ const boltzTestnetV2 = 'api.testnet.boltz.exchange/v2';
 const boltzMainnetV2 = 'api.boltz.exchange/v2';
 
 final exchangeapi = bbexchangeapi;
-final mempoolapi = bbmempoolapi;
+final mempoolapi = openmempoolapi; //bbmempoolapi;
 
 const liquidMempool = 'https://liquid.network';
 const liquidMempoolTestnet = 'https://liquid.network/testnet';

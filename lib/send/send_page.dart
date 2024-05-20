@@ -373,15 +373,27 @@ class NetworkFees extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton);
+    final walletSelected = context.select(
+      (SendCubit cubit) => cubit.state.selectedWalletBloc != null,
+    );
+
+    final sending = context.select((SendCubit cubit) => cubit.state.sending);
+
+    final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
 
     final isLiquid =
         context.select((SendCubit cubit) => cubit.state.isLiquidPayment());
 
-    if (!showSend || isLiquid) return const SizedBox.shrink();
+    if (isLn || isLiquid || !walletSelected) return const SizedBox.shrink();
 
-    return const SelectFeesButton().animate().fadeIn();
+    return AnimatedOpacity(
+      opacity: sending ? 0.3 : 1,
+      duration: const Duration(milliseconds: 300),
+      child: IgnorePointer(
+        ignoring: sending,
+        child: const SelectFeesButton().animate().fadeIn(),
+      ),
+    );
   }
 }
 
@@ -390,24 +402,34 @@ class AdvancedOptions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showSend = context.select((SendCubit _) => _.state.showSendButton);
+    final walletSelected = context.select(
+      (SendCubit cubit) => cubit.state.selectedWalletBloc != null,
+    );
+    final sending = context.select((SendCubit _) => _.state.sending);
     final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
     final isLiquid = context.select((SendCubit _) => _.state.isLiquidPayment());
 
-    if (!showSend || isLn || isLiquid) return const SizedBox.shrink();
+    if (isLn || isLiquid || !walletSelected) return const SizedBox.shrink();
 
     final text =
         context.select((SendCubit _) => _.state.advancedOptionsButtonText());
-    return Column(
-      children: [
-        BBButton.text(
-          onPressed: () {
-            AdvancedOptionsPopUp.openPopup(context);
-          },
-          label: text,
-        ).animate().fadeIn(),
-        const Gap(48),
-      ],
+    return AnimatedOpacity(
+      opacity: sending ? 0.3 : 1,
+      duration: const Duration(milliseconds: 300),
+      child: IgnorePointer(
+        ignoring: sending,
+        child: Column(
+          children: [
+            BBButton.text(
+              onPressed: () {
+                AdvancedOptionsPopUp.openPopup(context);
+              },
+              label: text,
+            ).animate().fadeIn(),
+            const Gap(48),
+          ],
+        ),
+      ),
     );
   }
 }
