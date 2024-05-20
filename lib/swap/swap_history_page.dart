@@ -208,7 +208,7 @@ class SwapItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText.bodySmall('Swap id: ' + swapTx.id),
+                  BBText.bodySmall('Id: ' + swapTx.id),
                   BBText.bodySmall(
                     'Status: ' + (swapTx.status?.status.name ?? ''),
                   ),
