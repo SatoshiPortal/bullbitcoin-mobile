@@ -9,6 +9,7 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/swap_history_bloc/swap_history_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -39,7 +40,25 @@ class _SwapHistoryPageState extends State<SwapHistoryPage> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _swapHistory,
-      child: const _Screen(),
+      child: const _SwapListener(child: _Screen()),
+    );
+  }
+}
+
+class _SwapListener extends StatelessWidget {
+  const _SwapListener({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<WatchTxsBloc, WatchTxsState>(
+      listenWhen: (previous, current) =>
+          previous.updatedSwapTx != current.updatedSwapTx &&
+          current.updatedSwapTx != null,
+      listener: (context, state) =>
+          context.read<SwapHistoryCubit>().swapUpdated(state.updatedSwapTx!),
+      child: child,
     );
   }
 }
@@ -59,25 +78,78 @@ class _Screen extends StatelessWidget {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              BBText.title(
+      body: const SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Gap(24),
+            _Panel(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Panel extends StatefulWidget {
+  const _Panel();
+
+  @override
+  State<_Panel> createState() => _PanelState();
+}
+
+class _PanelState extends State<_Panel> {
+  bool expanded1 = true;
+  bool expanded2 = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionPanelList(
+      dividerColor: context.colour.onBackground,
+      expandedHeaderPadding: EdgeInsets.zero,
+      children: [
+        ExpansionPanel(
+          backgroundColor: context.colour.background,
+          canTapOnHeader: true,
+          isExpanded: expanded1,
+          headerBuilder: (context, isExpanded) {
+            return ListTile(
+              dense: true,
+              // visualDensity: VisualDensity.compact,
+              onTap: () {
+                setState(() {
+                  expanded1 = !expanded1;
+                });
+              },
+              title: BBText.title(
                 'Ongoing Swaps'.toUpperCase(),
                 isBold: true,
               ),
-              const Gap(8),
-              const SwapsList(),
-              const Gap(24),
-              const BBText.title('Completed Swaps'),
-              const TxList(),
-            ],
-          ),
+            );
+          },
+          body: const SwapsList(),
         ),
-      ),
+        ExpansionPanel(
+          backgroundColor: context.colour.background,
+          isExpanded: expanded2,
+          canTapOnHeader: true,
+          headerBuilder: (context, isExpanded) {
+            return ListTile(
+              dense: true,
+              onTap: () {
+                setState(() {
+                  expanded2 = !expanded2;
+                });
+              },
+              title: BBText.title(
+                'Completed Swaps'.toUpperCase(),
+                isBold: true,
+              ),
+            );
+          },
+          body: const TxList(),
+        ),
+      ],
     );
   }
 }
@@ -105,7 +177,15 @@ class TxList extends StatelessWidget {
       (SwapHistoryCubit cubit) => cubit.state.completeSwaps,
     );
     return Column(
-      children: txs.map((tx) => SwapItem(swapTx: tx.swapTx!)).toList(),
+      children: [
+        if (txs.isEmpty)
+          const Padding(
+            padding: EdgeInsets.all(24.0),
+            child: BBText.bodySmall('No completed swaps'),
+          )
+        else
+          ...txs.map((tx) => SwapItem(swapTx: tx.swapTx!)),
+      ],
     );
   }
 }
@@ -118,40 +198,43 @@ class SwapItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Divider(),
-        Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BBText.bodySmall('Swap id: ' + swapTx.id),
-                BBText.bodySmall(
-                  'Status: ' + (swapTx.status?.status.name ?? ''),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
+      child: Column(
+        children: [
+          // const Divider(),
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BBText.bodySmall('Swap id: ' + swapTx.id),
+                  BBText.bodySmall(
+                    'Status: ' + (swapTx.status?.status.name ?? ''),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              // copy id button
+              IconButton(
+                icon: Icon(
+                  Icons.copy,
+                  color: context.colour.onBackground,
                 ),
-              ],
-            ),
-            const Spacer(),
-            // copy id button
-            IconButton(
-              icon: Icon(
-                Icons.copy,
-                color: context.colour.onBackground,
+                onPressed: () {
+                  locator<Clippboard>().copy(swapTx.id);
+                },
               ),
-              onPressed: () {
-                context.read<Clippboard>().copy(swapTx.id);
-              },
-            ),
-            if (walletId != null)
-              RefreshButton(
-                swapTx: swapTx,
-                walletId: walletId!,
-              ),
-          ],
-        ),
-        const Divider(),
-      ],
+              if (walletId != null)
+                RefreshButton(
+                  swapTx: swapTx,
+                  walletId: walletId!,
+                ),
+            ],
+          ),
+          // const Divider(),
+        ],
+      ),
     );
   }
 }
@@ -172,19 +255,32 @@ class RefreshButton extends StatelessWidget {
       (SwapHistoryCubit cubit) => cubit.state.refreshing.contains(swapTx.id),
     );
 
-    return loading
-        ? const CircularProgressIndicator()
-        : IconButton(
-            icon: Icon(
-              Icons.refresh,
-              color: context.colour.onBackground,
-            ),
-            onPressed: () {
-              context.read<SwapHistoryCubit>().refreshSwap(
-                    swaptx: swapTx,
-                    walletId: walletId,
-                  );
-            },
-          );
+    return SizedBox(
+      width: 40,
+      height: 40,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: loading
+            ? const Center(
+                child: SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : IconButton(
+                icon: Icon(
+                  Icons.refresh,
+                  color: context.colour.onBackground,
+                ),
+                onPressed: () {
+                  context.read<SwapHistoryCubit>().refreshSwap(
+                        swaptx: swapTx,
+                        walletId: walletId,
+                      );
+                },
+              ),
+      ),
+    );
   }
 }

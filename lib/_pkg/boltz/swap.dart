@@ -171,8 +171,12 @@ class SwapBoltz {
       final url = isTestnet ? boltzTestnet : boltzMainnet;
 
       final res = await _dio.post('https://$url/swapstatus', data: {'id': id});
-      final data = res.data as SwapStatusResponse;
-      return (data, null);
+
+      final data = res.data['status'] as String;
+      final status = getSwapStatusFromString(data);
+      final resp = SwapStatusResponse(status: status);
+
+      return (resp, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }

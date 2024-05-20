@@ -57,6 +57,17 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     emit(state.copyWith(completeSwaps: completedSwaps));
   }
 
+  void swapUpdated(SwapTx swapTx) {
+    final swaps = state.swaps;
+    final index = swaps.indexWhere((_) => _.$1.id == swapTx.id);
+    if (index == -1) return;
+
+    final updatedSwaps = swaps.toList();
+    updatedSwaps[index] = (swapTx, swaps[index].$2);
+
+    emit(state.copyWith(swaps: updatedSwaps));
+  }
+
   void refreshSwap({
     required SwapTx swaptx,
     required String walletId,
