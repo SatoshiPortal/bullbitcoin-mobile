@@ -24,7 +24,6 @@ import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
 import 'package:bb_mobile/transaction/rename_label.dart';
-import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -534,75 +533,5 @@ class _SwapDetails extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-extension X on boltz.SwapStatus? {
-  (String, String)? getStr(bool isSubmarine) {
-    (String, String) status = ('', '');
-    switch (this) {
-      case boltz.SwapStatus.swapCreated:
-        status =
-            ('Created', 'Swap has been created but no payment has been made.');
-      case boltz.SwapStatus.swapExpired:
-        status = ('Expired', 'Swap has expired');
-      case boltz.SwapStatus.swapRefunded:
-        status = ('Refunded', 'Swap has been successfully refunded');
-      case boltz.SwapStatus.swapError:
-        status = ('Error', 'Swap was unsuccessful');
-      case boltz.SwapStatus.txnMempool:
-        status = (
-          'Mempool',
-          isSubmarine
-              ? 'You have paid the swap lockup transaction. The invoice will be paid as soon as the transaction is confirmed.'
-              : 'Boltz has made the lockup transaction, you will be able to claim it as soon as the transaction is confirmed.'
-        );
-      case boltz.SwapStatus.txnClaimPending:
-        status = (
-          'Claim Pending',
-          'The lightning invoice has been paid. Waiting for boltz to complete the swap.'
-        );
-      case boltz.SwapStatus.txnClaimed:
-        status = ('Claimed', 'The swap is completed.');
-      case boltz.SwapStatus.txnConfirmed:
-        status = (
-          'Confirmed',
-          isSubmarine
-              ? 'Your lockup transaction is confirmed. The invoice will be paid momentarily.'
-              : 'Boltz lockup transaction is confirmed. The swap will be claimed and you will recieve funds after the claim transaction gets confirmed.'
-        );
-      case boltz.SwapStatus.txnRefunded:
-        status = ('Refunded', 'The swap has been successfully refunded.');
-      case boltz.SwapStatus.txnFailed:
-        status = ('Transaction Failed', 'The swap will be refunded.');
-      case boltz.SwapStatus.txnLockupFailed:
-        status = ('Transaction  Lockup Failed', 'The swap will be refunded.');
-      case boltz.SwapStatus.invoiceSet:
-        status = ('Invoice Set', 'The invoice for the swap has been set.');
-      case boltz.SwapStatus.invoicePending:
-        status = ('Invoice Pending', 'Payment of the invoice is in progress');
-      case boltz.SwapStatus.invoicePaid:
-        status = ('Invoice-Paid', 'The invoice has been successfully paid.');
-      case boltz.SwapStatus.invoiceFailedToPay:
-        status = (
-          'Failed to pay invoice',
-          'The invoice has failed to pay. This transaction will be refunded.'
-        );
-      case boltz.SwapStatus.invoiceSettled:
-        status = (
-          'Invoice Settled',
-          'The invoice has settled and the swap is completed.'
-        );
-      case boltz.SwapStatus.invoiceExpired:
-        status = (
-          'Invoice Expired',
-          'The invoice has expirted. Swap will be deleted.'
-        );
-      case boltz.SwapStatus.minerfeePaid:
-        status = ('Miner Fee Paid.', '');
-      case null:
-        return null;
-    }
-    return status;
   }
 }

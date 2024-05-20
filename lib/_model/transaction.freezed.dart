@@ -650,7 +650,7 @@ mixin _$SwapTx {
   String get scriptAddress => throw _privateConstructorUsedError;
   String get electrumUrl => throw _privateConstructorUsedError;
   String get boltzUrl => throw _privateConstructorUsedError;
-  SwapStreamStatus? get status =>
+  boltz.SwapStreamStatus? get status =>
       throw _privateConstructorUsedError; // should this be SwapStaus?
   String? get blindingKey => throw _privateConstructorUsedError; // sensitive
   int? get boltzFees => throw _privateConstructorUsedError;
@@ -687,7 +687,7 @@ abstract class $SwapTxCopyWith<$Res> {
       String scriptAddress,
       String electrumUrl,
       String boltzUrl,
-      SwapStreamStatus? status,
+      boltz.SwapStreamStatus? status,
       String? blindingKey,
       int? boltzFees,
       int? lockupFees,
@@ -811,7 +811,7 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as SwapStreamStatus?,
+              as boltz.SwapStreamStatus?,
       blindingKey: freezed == blindingKey
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
@@ -874,7 +874,7 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String scriptAddress,
       String electrumUrl,
       String boltzUrl,
-      SwapStreamStatus? status,
+      boltz.SwapStreamStatus? status,
       String? blindingKey,
       int? boltzFees,
       int? lockupFees,
@@ -997,7 +997,7 @@ class __$$SwapTxImplCopyWithImpl<$Res>
       status: freezed == status
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
-              as SwapStreamStatus?,
+              as boltz.SwapStreamStatus?,
       blindingKey: freezed == blindingKey
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
@@ -1092,7 +1092,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   @override
   final String boltzUrl;
   @override
-  final SwapStreamStatus? status;
+  final boltz.SwapStreamStatus? status;
 // should this be SwapStaus?
   @override
   final String? blindingKey;
@@ -1254,7 +1254,7 @@ abstract class _SwapTx extends SwapTx {
       required final String scriptAddress,
       required final String electrumUrl,
       required final String boltzUrl,
-      final SwapStreamStatus? status,
+      final boltz.SwapStreamStatus? status,
       final String? blindingKey,
       final int? boltzFees,
       final int? lockupFees,
@@ -1301,7 +1301,7 @@ abstract class _SwapTx extends SwapTx {
   @override
   String get boltzUrl;
   @override
-  SwapStreamStatus? get status;
+  boltz.SwapStreamStatus? get status;
   @override // should this be SwapStaus?
   String? get blindingKey;
   @override // sensitive

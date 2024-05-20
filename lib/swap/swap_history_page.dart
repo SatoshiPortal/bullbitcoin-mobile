@@ -210,7 +210,16 @@ class SwapItem extends StatelessWidget {
                 children: [
                   BBText.bodySmall('Id: ' + swapTx.id),
                   BBText.bodySmall(
-                    'Status: ' + (swapTx.status?.status.name ?? ''),
+                    'Status: ' +
+                        (swapTx.status?.status.getStr(swapTx.isSubmarine)?.$1 ??
+                            ''),
+                  ),
+                  // Expanded(
+                  BBText.bodySmall(
+                    'Message: ' +
+                        (swapTx.status?.status.getStr(swapTx.isSubmarine)?.$2 ??
+                            ''),
+                    // ),
                   ),
                 ],
               ),

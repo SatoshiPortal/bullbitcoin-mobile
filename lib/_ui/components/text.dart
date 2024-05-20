@@ -169,7 +169,8 @@ class BBText extends StatelessWidget {
     if (isRed) style = style.copyWith(color: context.colour.primary);
     if (isGreen) style = style.copyWith(color: Colors.green);
     if (isBold) style = style.copyWith(fontWeight: FontWeight.bold);
-    if (removeColourOpacity) style = style.copyWith(color: context.colour.onBackground);
+    if (removeColourOpacity)
+      style = style.copyWith(color: context.colour.onBackground);
     if (fontSize != null) style = style.copyWith(fontSize: fontSize);
     if (compact) style = style.copyWith(height: 0.8);
 
