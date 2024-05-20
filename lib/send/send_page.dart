@@ -823,23 +823,37 @@ class _Warnings extends StatelessWidget {
       children: [
         const BBText.titleLarge('High fee warning', isRed: true),
         const Gap(8),
-        const BBText.body('Bitcoin Network fees are currently high.'),
-        const Gap(8),
-        const BBText.body(
+        // const BBText.body('Bitcoin Network fees are currently high.'),
+        // const Gap(8),
+        const BBText.bodySmall(
           'When sending Bitcoin from the Secure Bitcoin Wallet to a Lightning Invoice or Liquid Address, you must pay Bitcoin Network fees and Swap fees.',
         ),
         const Gap(8),
-        const BBText.body('The current Network Fee is:'),
-        BBText.body(fees, isBold: true),
-        BBText.body('~ $feesFiat'),
+        Row(
+          children: [
+            const BBText.bodySmall('You are about to pay over '),
+            BBText.bodySmall(
+              '${feePercentage.toStringAsFixed(2)}% ',
+              isBold: true,
+            ),
+          ],
+        ),
+        const BBText.bodySmall(
+          'in Bitcoin Network fees for this transaction.',
+        ),
         const Gap(8),
-        const BBText.body('Amount you send:'),
-        BBText.body(amt, isBold: true),
-        BBText.body('~ $amtFiat'),
-        const Gap(8),
-        const BBText.body('Minimum recommended amount:'),
-        BBText.body(minAmt, isBold: true),
-        BBText.body('~ $minAmtFiat'),
+        Row(
+          children: [
+            const BBText.bodySmall('Amount you send: '),
+            BBText.bodySmall(amt, isBold: true),
+          ],
+        ),
+        Row(
+          children: [
+            const BBText.bodySmall('Network fees: '),
+            BBText.bodySmall(fees, isBold: true),
+          ],
+        ),
         const Gap(24),
         const BBText.titleLarge('Payment may take many hours', isRed: true),
         const Gap(8),

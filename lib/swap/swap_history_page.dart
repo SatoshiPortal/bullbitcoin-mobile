@@ -129,26 +129,26 @@ class _PanelState extends State<_Panel> {
           },
           body: const SwapsList(),
         ),
-        ExpansionPanel(
-          backgroundColor: context.colour.background,
-          isExpanded: expanded2,
-          canTapOnHeader: true,
-          headerBuilder: (context, isExpanded) {
-            return ListTile(
-              dense: true,
-              onTap: () {
-                setState(() {
-                  expanded2 = !expanded2;
-                });
-              },
-              title: BBText.title(
-                'Completed Swaps'.toUpperCase(),
-                isBold: true,
-              ),
-            );
-          },
-          body: const TxList(),
-        ),
+        // ExpansionPanel(
+        //   backgroundColor: context.colour.background,
+        //   isExpanded: expanded2,
+        //   canTapOnHeader: true,
+        //   headerBuilder: (context, isExpanded) {
+        //     return ListTile(
+        //       dense: true,
+        //       onTap: () {
+        //         setState(() {
+        //           expanded2 = !expanded2;
+        //         });
+        //       },
+        //       title: BBText.title(
+        //         'Completed Swaps'.toUpperCase(),
+        //         isBold: true,
+        //       ),
+        //     );
+        //   },
+        //   body: const TxList(),
+        // ),
       ],
     );
   }
@@ -208,22 +208,23 @@ class SwapItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText.bodySmall('Id: ' + swapTx.id),
+                  BBText.bodySmall(
+                    'Id: ' + swapTx.id,
+                    isBold: true,
+                  ),
                   BBText.bodySmall(
                     'Status: ' +
                         (swapTx.status?.status.getStr(swapTx.isSubmarine)?.$1 ??
                             ''),
+                    isBold: true,
                   ),
                   // Expanded(
                   SizedBox(
-                    width: 200,
+                    width: 250,
                     child: BBText.bodySmall(
-                      'Message: ' +
-                          (swapTx.status?.status
-                                  .getStr(swapTx.isSubmarine)
-                                  ?.$2 ??
-                              ''),
-                      fontSize: 8,
+                      swapTx.status?.status.getStr(swapTx.isSubmarine)?.$2 ??
+                          '',
+                      fontSize: 11,
                       // ),
                     ),
                   ),

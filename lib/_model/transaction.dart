@@ -533,9 +533,15 @@ extension X on boltz.SwapStatus? {
       case boltz.SwapStatus.txnLockupFailed:
         status = ('Transaction  Lockup Failed', 'The swap will be refunded.');
       case boltz.SwapStatus.invoiceSet:
-        status = ('Invoice Set', 'The invoice for the swap has been set.');
+        status = (
+          'Invoice Set',
+          'The invoice for the swap has been set. Waiting for an onchain payment to be made. Swap will expire if an onchain payment is not made.'
+        );
       case boltz.SwapStatus.invoicePending:
-        status = ('Invoice Pending', 'Payment of the invoice is in progress');
+        status = (
+          'Invoice Pending',
+          'Onchain transaction confirmed. Payment of the invoice is in progress.'
+        );
       case boltz.SwapStatus.invoicePaid:
         status = ('Invoice Paid', 'The invoice has been successfully paid.');
       case boltz.SwapStatus.invoiceFailedToPay:
