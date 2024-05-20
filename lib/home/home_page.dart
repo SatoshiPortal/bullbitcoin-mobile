@@ -99,7 +99,7 @@ class _ScreenState extends State<_Screen> {
     // final walletBlocsLen =
     //     context.select((HomeCubit x) => x.state.lenWalletsFromNetwork(network));
 
-    if ((!loading && walletBlocs.isEmpty) || !hasMainWallets) {
+    if (!loading && (walletBlocs.isEmpty || !hasMainWallets)) {
       final isTestnet = network == BBNetwork.Testnet;
 
       Widget widget = Scaffold(
@@ -565,8 +565,9 @@ class HomeTopBar2 extends StatelessWidget {
                         ),
                       ],
                     )
-                  else
-                    ...[],
+                  else ...[
+                    const BBText.bodySmall(''),
+                  ],
                 ],
               ),
             ),
