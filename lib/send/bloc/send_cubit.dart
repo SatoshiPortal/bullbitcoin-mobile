@@ -253,6 +253,11 @@ class SendCubit extends Cubit<SendState> {
           ? _networkCubit.state.getLiquidNetworkUrl()
           : _networkCubit.state.getNetworkUrl();
 
+      if (amt == 0)
+        emit(state.copyWith(showSendButton: false));
+      else
+        emit(state.copyWith(showSendButton: true));
+
       await _swapCubit.createSubSwapForSend(
         wallet: selectedWallet,
         address: state.address,
@@ -541,6 +546,7 @@ class SendCubit extends Cubit<SendState> {
         tx: tx.copyWith(swapTx: swaptx, isSwap: true),
         signed: true,
         sending: false,
+        enabledWallets: [localWallet.id],
       ),
     );
   }

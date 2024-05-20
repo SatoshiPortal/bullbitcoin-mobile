@@ -63,7 +63,7 @@ class _SwapFees extends StatelessWidget {
 
     final isLiquid = swaptx.isLiquid();
 
-    final lockupFee = isLiquid ? swaptx.lockupFeesLiquid : swaptx.lockupFees;
+    final lockupFee = swaptx.lockupFees;
     if (lockupFee == null) return const SizedBox.shrink();
 
     final fees = swaptx.totalFees();

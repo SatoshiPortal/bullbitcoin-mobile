@@ -400,9 +400,7 @@ class WalletTx implements IWalletTransactions {
           isSwap: true,
           received:
               isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
-          fee: isRevSub
-              ? (isLiq ? swapTx.claimFeesLiquid : swapTx.claimFees)
-              : (isLiq ? swapTx.lockupFeesLiquid : swapTx.lockupFees),
+          fee: isRevSub ? (swapTx.claimFees) : (swapTx.lockupFees),
           isLiquid: swapTx.isLiquid(),
         );
         txs.add(newTx);
@@ -434,9 +432,7 @@ class WalletTx implements IWalletTransactions {
           isSwap: true,
           received:
               isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
-          fee: isRevSub
-              ? (isLiq ? swapTx.claimFeesLiquid : swapTx.claimFees)
-              : (isLiq ? swapTx.lockupFeesLiquid : swapTx.lockupFees),
+          fee: isRevSub ? (swapTx.claimFees) : (swapTx.lockupFees),
           isLiquid: swapTx.isLiquid(),
         );
         txs.add(newTx);

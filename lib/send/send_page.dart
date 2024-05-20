@@ -213,6 +213,8 @@ class WalletSelectionDropDown extends StatelessWidget {
     final generatingInv =
         context.select((CreateSwapCubit _) => _.state.generatingSwapInv);
 
+    final _ = context.select((SendCubit cubit) => cubit.state.enabledWallets);
+
     var enableDropdown = context
         .select((SendCubit cubit) => cubit.state.enabledWallets.isNotEmpty);
 
@@ -564,6 +566,8 @@ class SendWalletBalance extends StatelessWidget {
     final totalFrozen = context.select(
       (WalletBloc cubit) => cubit.state.wallet?.frozenUTXOTotal() ?? 0,
     );
+    final isLiq = context
+        .select((WalletBloc cubit) => cubit.state.wallet?.isLiquid() ?? false);
 
     if (totalFrozen == 0) {
       final balance = context.select(
@@ -571,7 +575,8 @@ class SendWalletBalance extends StatelessWidget {
       );
 
       final balStr = context.select(
-        (CurrencyCubit cubit) => cubit.state.getAmountInUnits(balance),
+        (CurrencyCubit cubit) =>
+            cubit.state.getAmountInUnits(balance, isLiquid: isLiq),
       );
       return BBText.body(balStr, isBold: true);
     } else {
@@ -580,11 +585,12 @@ class SendWalletBalance extends StatelessWidget {
             cubit.state.wallet?.balanceWithoutFrozenUTXOs() ?? 0,
       );
       final balStr = context.select(
-        (CurrencyCubit cubit) =>
-            cubit.state.getAmountInUnits(balanceWithoutFrozenUTXOs),
+        (CurrencyCubit cubit) => cubit.state
+            .getAmountInUnits(balanceWithoutFrozenUTXOs, isLiquid: isLiq),
       );
       final frozenStr = context.select(
-        (CurrencyCubit cubit) => cubit.state.getAmountInUnits(totalFrozen),
+        (CurrencyCubit cubit) =>
+            cubit.state.getAmountInUnits(totalFrozen, isLiquid: isLiq),
       );
 
       return Column(
