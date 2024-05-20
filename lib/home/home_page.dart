@@ -147,7 +147,7 @@ class _ScreenState extends State<_Screen> {
               child: CardsList(
                 onChanged: _onChanged,
               ),
-            ).animate(delay: 300.ms).fadeIn(),
+            ),
           ),
           Column(
             children: [

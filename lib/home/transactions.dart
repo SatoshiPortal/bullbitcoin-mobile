@@ -145,7 +145,7 @@ class _HomeTransactionsState extends State<HomeTransactions> {
               ),
             ],
           ],
-        ),
+        ).animate(delay: 500.ms).fadeIn(),
       ),
     );
   }
