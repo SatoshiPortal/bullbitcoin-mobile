@@ -440,10 +440,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
         case ReverseSwapActions.claimable:
           // __swapAlert(swapTx, wallet, emit);
-          if (!wallet.isLiquid()) {
-            final swap = await __claimSwap(swapTx, walletBloc, emit);
-            if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
-          } else
+          // if (!wallet.isLiquid()) {
+          final swap = await __claimSwap(swapTx, walletBloc, emit);
+          if (swap != null)
+            await __updateWalletTxs(swap, walletBloc, emit);
+          // } else if{}
+          else
             await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case ReverseSwapActions.settled:
