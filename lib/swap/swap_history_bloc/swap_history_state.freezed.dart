@@ -20,6 +20,7 @@ mixin _$SwapHistoryState {
   List<Transaction> get completeSwaps => throw _privateConstructorUsedError;
   List<String> get refreshing => throw _privateConstructorUsedError;
   String get errRefreshing => throw _privateConstructorUsedError;
+  bool get updateSwaps => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $SwapHistoryStateCopyWith<SwapHistoryState> get copyWith =>
@@ -36,7 +37,8 @@ abstract class $SwapHistoryStateCopyWith<$Res> {
       {List<(SwapTx, String)> swaps,
       List<Transaction> completeSwaps,
       List<String> refreshing,
-      String errRefreshing});
+      String errRefreshing,
+      bool updateSwaps});
 }
 
 /// @nodoc
@@ -56,6 +58,7 @@ class _$SwapHistoryStateCopyWithImpl<$Res, $Val extends SwapHistoryState>
     Object? completeSwaps = null,
     Object? refreshing = null,
     Object? errRefreshing = null,
+    Object? updateSwaps = null,
   }) {
     return _then(_value.copyWith(
       swaps: null == swaps
@@ -74,6 +77,10 @@ class _$SwapHistoryStateCopyWithImpl<$Res, $Val extends SwapHistoryState>
           ? _value.errRefreshing
           : errRefreshing // ignore: cast_nullable_to_non_nullable
               as String,
+      updateSwaps: null == updateSwaps
+          ? _value.updateSwaps
+          : updateSwaps // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -90,7 +97,8 @@ abstract class _$$SwapHistoryStateImplCopyWith<$Res>
       {List<(SwapTx, String)> swaps,
       List<Transaction> completeSwaps,
       List<String> refreshing,
-      String errRefreshing});
+      String errRefreshing,
+      bool updateSwaps});
 }
 
 /// @nodoc
@@ -108,6 +116,7 @@ class __$$SwapHistoryStateImplCopyWithImpl<$Res>
     Object? completeSwaps = null,
     Object? refreshing = null,
     Object? errRefreshing = null,
+    Object? updateSwaps = null,
   }) {
     return _then(_$SwapHistoryStateImpl(
       swaps: null == swaps
@@ -126,6 +135,10 @@ class __$$SwapHistoryStateImplCopyWithImpl<$Res>
           ? _value.errRefreshing
           : errRefreshing // ignore: cast_nullable_to_non_nullable
               as String,
+      updateSwaps: null == updateSwaps
+          ? _value.updateSwaps
+          : updateSwaps // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -137,7 +150,8 @@ class _$SwapHistoryStateImpl extends _SwapHistoryState {
       {final List<(SwapTx, String)> swaps = const [],
       final List<Transaction> completeSwaps = const [],
       final List<String> refreshing = const [],
-      this.errRefreshing = ''})
+      this.errRefreshing = '',
+      this.updateSwaps = false})
       : _swaps = swaps,
         _completeSwaps = completeSwaps,
         _refreshing = refreshing,
@@ -173,10 +187,13 @@ class _$SwapHistoryStateImpl extends _SwapHistoryState {
   @override
   @JsonKey()
   final String errRefreshing;
+  @override
+  @JsonKey()
+  final bool updateSwaps;
 
   @override
   String toString() {
-    return 'SwapHistoryState(swaps: $swaps, completeSwaps: $completeSwaps, refreshing: $refreshing, errRefreshing: $errRefreshing)';
+    return 'SwapHistoryState(swaps: $swaps, completeSwaps: $completeSwaps, refreshing: $refreshing, errRefreshing: $errRefreshing, updateSwaps: $updateSwaps)';
   }
 
   @override
@@ -190,7 +207,9 @@ class _$SwapHistoryStateImpl extends _SwapHistoryState {
             const DeepCollectionEquality()
                 .equals(other._refreshing, _refreshing) &&
             (identical(other.errRefreshing, errRefreshing) ||
-                other.errRefreshing == errRefreshing));
+                other.errRefreshing == errRefreshing) &&
+            (identical(other.updateSwaps, updateSwaps) ||
+                other.updateSwaps == updateSwaps));
   }
 
   @override
@@ -199,7 +218,8 @@ class _$SwapHistoryStateImpl extends _SwapHistoryState {
       const DeepCollectionEquality().hash(_swaps),
       const DeepCollectionEquality().hash(_completeSwaps),
       const DeepCollectionEquality().hash(_refreshing),
-      errRefreshing);
+      errRefreshing,
+      updateSwaps);
 
   @JsonKey(ignore: true)
   @override
@@ -214,7 +234,8 @@ abstract class _SwapHistoryState extends SwapHistoryState {
       {final List<(SwapTx, String)> swaps,
       final List<Transaction> completeSwaps,
       final List<String> refreshing,
-      final String errRefreshing}) = _$SwapHistoryStateImpl;
+      final String errRefreshing,
+      final bool updateSwaps}) = _$SwapHistoryStateImpl;
   const _SwapHistoryState._() : super._();
 
   @override
@@ -225,6 +246,8 @@ abstract class _SwapHistoryState extends SwapHistoryState {
   List<String> get refreshing;
   @override
   String get errRefreshing;
+  @override
+  bool get updateSwaps;
   @override
   @JsonKey(ignore: true)
   _$$SwapHistoryStateImplCopyWith<_$SwapHistoryStateImpl> get copyWith =>

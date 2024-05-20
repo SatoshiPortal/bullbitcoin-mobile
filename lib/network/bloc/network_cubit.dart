@@ -173,12 +173,15 @@ class NetworkCubit extends Cubit<NetworkState> {
       );
       if (errBitcoin != null) {
         if (!state.networkErrorOpened) {
+          emit(state.copyWith(networkErrorOpened: true));
           BBAlert.showErrorAlertPopUp(
             title: errBitcoin.title ?? '',
             err: errBitcoin.message,
             onClose: closeNetworkError,
             onRetry: retryNetwork,
           );
+          await Future.delayed(const Duration(seconds: 10));
+          emit(state.copyWith(networkErrorOpened: false));
         }
         return;
       }
