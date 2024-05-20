@@ -215,11 +215,17 @@ class SwapItem extends StatelessWidget {
                             ''),
                   ),
                   // Expanded(
-                  BBText.bodySmall(
-                    'Message: ' +
-                        (swapTx.status?.status.getStr(swapTx.isSubmarine)?.$2 ??
-                            ''),
-                    // ),
+                  SizedBox(
+                    width: 200,
+                    child: BBText.bodySmall(
+                      'Message: ' +
+                          (swapTx.status?.status
+                                  .getStr(swapTx.isSubmarine)
+                                  ?.$2 ??
+                              ''),
+                      fontSize: 8,
+                      // ),
+                    ),
                   ),
                 ],
               ),

@@ -49,11 +49,11 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     }
     Future.delayed(const Duration(milliseconds: 200));
     final (result, err) = await _hiveStorage.getValue(StorageKeys.currency);
-    if (err == null) {
-      final currency =
-          CurrencyState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
-      emit(currency);
-    }
+    if (err != null) return;
+
+    final currency =
+        CurrencyState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
+    emit(currency);
 
     loadCurrencies();
   }
