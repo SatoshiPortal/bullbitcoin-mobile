@@ -57,6 +57,6 @@ class _Screen extends StatelessWidget {
 final approveText = [
   'If I lose my 12 words, I will not be able to recover access to the Bitcoin Wallet.',
   'Without a passphrase, anybody with access to my 12 words can steal my bitcoins.',
-  'If I lose my passphrase, I will not be able ro recover access to the Bitcoin Wallet.',
+  'If I lose my passphrase, I will not be able to recover access to the Bitcoin Wallet.',
   'Anybody with both the passphrase and the 12 words can steal my bitcoins.',
 ];
