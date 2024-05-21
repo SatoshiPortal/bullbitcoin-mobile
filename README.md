@@ -72,7 +72,7 @@ Automated selection of the wallet can be overriden by the user at any time. This
 - Private keys are stored in secure storage and only accessed via the applicatiom when signing transactions, viewing the wallet’s private keys for back-up (mnemonic or xpriv). This prevents malicious applications from accessing the private keys. 
 - BIP39 passphrase is also stored in secure storage, and can be viewed only via the application.
 - When initializing the app, a single-sig hot wallet wallet is created. By default, this wallet does not have a BIP39 passphrase.
-- A warning is displayed until the user has tested thier backup by successfully entering the mnemonic.
+- A warning is displayed until the user has tested their backup by successfully entering the mnemonic.
 
 ### Hardware wallets and watch-only wallets
 

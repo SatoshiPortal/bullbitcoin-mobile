@@ -522,7 +522,7 @@ class SendCubit extends Cubit<SendState> {
       sendAllCoin: false,
       feeRate:
           localWallet.isLiquid() && localWallet.network == BBNetwork.Mainnet
-              ? 0.1
+              ? 0.01
               : fee.toDouble(),
       enableRbf: false,
       note: state.note,
@@ -627,7 +627,7 @@ class SendCubit extends Cubit<SendState> {
       amount: _currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
       feeRate: localWallet.baseWalletType == BaseWalletType.Liquid
-          ? 0.1
+          ? 0.01
           : fee.toDouble(),
       enableRbf: enableRbf,
       selectedUtxos: state.selectedUtxos,

@@ -423,8 +423,8 @@ class _SwapDetails extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // const Gap(24),
-            BBText.title(
-              isReceive ? 'Amount received' : 'Amount sent',
+            const BBText.title(
+              'Swap Amount',
             ),
             const Gap(4),
             Row(
@@ -482,15 +482,15 @@ class _SwapDetails extends StatelessWidget {
                         const SnackBar(content: Text('Copied to clipboard')),
                       );
                     },
-                    iconSize: 24,
+                    iconSize: 16,
                     color: Colors.blue,
                     icon: const Icon(Icons.copy),
                   ),
                 ],
               ),
-              const Gap(24),
+              // const Gap(24),
             ],
-            const Gap(4),
+            const Gap(16),
             if (statusStr != null) ...[
               const BBText.title('Status'),
               const Gap(4),
@@ -503,7 +503,7 @@ class _SwapDetails extends StatelessWidget {
                 statusStr.$2,
               ),
             ],
-            const Gap(4),
+            // const Gap(4),
             const Gap(24),
             if (date.isNotEmpty) ...[
               BBText.title(

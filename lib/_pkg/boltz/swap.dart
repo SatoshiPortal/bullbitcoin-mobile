@@ -499,6 +499,8 @@ class SwapBoltz {
         final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
         if (claimFeesEstimate == null) throw 'Fees estimate not found';
         final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+        // .copyWith(electrumUrl: 'blockstream.info:995');
+
         // await Future.delayed(5.seconds);
         final resp = await swap.claim(
           outAddress: address,
