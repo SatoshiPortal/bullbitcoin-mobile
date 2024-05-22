@@ -43,8 +43,8 @@ class _Screen extends StatelessWidget {
     if (locator.isRegistered<Clippboard>())
       await locator<Clippboard>().copy(text);
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+    // ScaffoldMessenger.of(context)
+    //     .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
   }
 
   @override
@@ -53,9 +53,11 @@ class _Screen extends StatelessWidget {
         .select((WalletBloc _) => _.state.wallet?.sourceFingerprint ?? '');
 
     final descriptorCombined = context.select(
-        (WalletBloc _) => _.state.wallet?.getDescriptorCombined() ?? '');
+      (WalletBloc _) => _.state.wallet?.getDescriptorCombined() ?? '',
+    );
     final descriptor = context.select(
-        (WalletBloc _) => _.state.wallet?.externalPublicDescriptor ?? '');
+      (WalletBloc _) => _.state.wallet?.externalPublicDescriptor ?? '',
+    );
     final pub = keyFromDescriptor(descriptor);
     final scriptType =
         context.select((WalletBloc _) => _.state.wallet!.scriptType);

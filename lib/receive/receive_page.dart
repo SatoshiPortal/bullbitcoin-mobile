@@ -735,9 +735,9 @@ class ReceiveQRDisplay extends StatelessWidget {
           if (locator.isRegistered<Clippboard>())
             await locator<Clippboard>().copy(address);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Copied to clipboard')),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(content: Text('Copied to clipboard')),
+          // );
         },
         child: Column(
           children: [
@@ -886,11 +886,11 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                           if (locator.isRegistered<Clippboard>())
                             await locator<Clippboard>().copy(addr);
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Copied to clipboard'),
-                            ),
-                          );
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   const SnackBar(
+                          //     content: Text('Copied to clipboard'),
+                          //   ),
+                          // );
                         },
                         child: BBText.bodySmall(
                           addr,
@@ -903,9 +903,9 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                         if (locator.isRegistered<Clippboard>())
                           await locator<Clippboard>().copy(addr);
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Copied to clipboard')),
-                        );
+                        // ScaffoldMessenger.of(context).showSnackBar(
+                        //   const SnackBar(content: Text('Copied to clipboard')),
+                        // );
                       },
                       iconSize: 24,
                       color: Colors.blue,

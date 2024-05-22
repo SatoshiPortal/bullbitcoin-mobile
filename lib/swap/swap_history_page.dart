@@ -104,53 +104,73 @@ class _PanelState extends State<_Panel> {
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionPanelList(
-      dividerColor: context.colour.onBackground,
-      expandedHeaderPadding: EdgeInsets.zero,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ExpansionPanel(
-          backgroundColor: context.colour.background,
-          canTapOnHeader: true,
-          isExpanded: expanded1,
-          headerBuilder: (context, isExpanded) {
-            return ListTile(
-              dense: true,
-              // visualDensity: VisualDensity.compact,
-              // onTap: () {
-              //   // setState(() {
-              //   //   expanded1 = !expanded1;
-              //   // });
-              // },
-              title: BBText.title(
-                'Ongoing Swaps'.toUpperCase(),
-                isBold: true,
-              ),
-            );
-          },
-          body: const SwapsList(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+          child: BBText.title(
+            'Ongoing Swaps'.toUpperCase(),
+            isBold: true,
+          ),
         ),
-        // ExpansionPanel(
-        //   backgroundColor: context.colour.background,
-        //   isExpanded: expanded2,
-        //   canTapOnHeader: true,
-        //   headerBuilder: (context, isExpanded) {
-        //     return ListTile(
-        //       dense: true,
-        //       onTap: () {
-        //         setState(() {
-        //           expanded2 = !expanded2;
-        //         });
-        //       },
-        //       title: BBText.title(
-        //         'Completed Swaps'.toUpperCase(),
-        //         isBold: true,
-        //       ),
-        //     );
-        //   },
-        //   body: const TxList(),
-        // ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: SwapsList(),
+        ),
       ],
     );
+    // return ExpansionPanelList(
+    //   dividerColor: context.colour.onBackground,
+    //   expandedHeaderPadding: EdgeInsets.zero,
+    //   children: [
+    //     ExpansionPanel(
+    //       backgroundColor: context.colour.background,
+    //       isExpanded: expanded1,
+    //       headerBuilder: (context, isExpanded) {
+    //         return ListTile(
+    //           dense: true,
+    //           enabled: false,
+    //           splashColor: Colors.transparent,
+    //           iconColor: Colors.transparent,
+    //           enableFeedback: false,
+
+    //           // visualDensity: VisualDensity.compact,
+    //           // onTap: () {
+    //           //   // setState(() {
+    //           //   //   expanded1 = !expanded1;
+    //           //   // });
+    //           // },
+    //           title: BBText.title(
+    //             'Ongoing Swaps'.toUpperCase(),
+    //             isBold: true,
+    //           ),
+    //         );
+    //       },
+    //       body: const SwapsList(),
+    //     ),
+    //     // ExpansionPanel(
+    //     //   backgroundColor: context.colour.background,
+    //     //   isExpanded: expanded2,
+    //     //   canTapOnHeader: true,
+    //     //   headerBuilder: (context, isExpanded) {
+    //     //     return ListTile(
+    //     //       dense: true,
+    //     //       onTap: () {
+    //     //         setState(() {
+    //     //           expanded2 = !expanded2;
+    //     //         });
+    //     //       },
+    //     //       title: BBText.title(
+    //     //         'Completed Swaps'.toUpperCase(),
+    //     //         isBold: true,
+    //     //       ),
+    //     //     );
+    //     //   },
+    //     //   body: const TxList(),
+    //     // ),
+    //   ],
+    // );
   }
 }
 

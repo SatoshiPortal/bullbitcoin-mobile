@@ -12,7 +12,8 @@ class LoggerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final logs = context.select((Logger logger) => logger.state.reversed.toList());
+    final logs =
+        context.select((Logger logger) => logger.state.reversed.toList());
 
     return Scaffold(
       appBar: AppBar(
@@ -61,10 +62,11 @@ class _LogItem extends StatelessWidget {
       title: BBText.bodySmall(log.$1),
       subtitle: BBText.bodySmall(log.$2.toString(), isBold: true),
       onLongPress: () {
-        if (locator.isRegistered<Clippboard>()) locator<Clippboard>().copy(log.$1);
+        if (locator.isRegistered<Clippboard>())
+          locator<Clippboard>().copy(log.$1);
 
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+        // ScaffoldMessenger.of(context)
+        //     .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
       },
     );
   }
