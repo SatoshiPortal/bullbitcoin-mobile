@@ -42,7 +42,8 @@ class BBAlert extends StatelessWidget {
       },
       transitionBuilder: (context, anim1, anim2, child) {
         return SlideTransition(
-          position: Tween(begin: const Offset(0, 1), end: Offset.zero).animate(anim1),
+          position:
+              Tween(begin: const Offset(0, 1), end: Offset.zero).animate(anim1),
           child: child,
         );
       },
@@ -54,6 +55,8 @@ class BBAlert extends StatelessWidget {
     required String err,
     Function? onClose,
     Function? onRetry,
+    String okButtonText = 'Okay',
+    String retryButtonText = 'Retry',
   }) {
     if (navigatorKey.currentContext == null) return;
 
@@ -70,21 +73,22 @@ class BBAlert extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     BBButton.text(
-                      label: 'Okay',
+                      label: okButtonText,
+                      fontSize: okButtonText.length > 4 ? 11 : null,
                       onPressed: () {
-                        onClose();
                         context.pop();
+                        onClose();
                       },
                     ),
                     const Gap(16),
                     SizedBox(
                       width: 100,
                       child: BBButton.big(
-                        label: 'Retry',
+                        label: retryButtonText,
                         filled: true,
                         onPressed: () {
-                          onRetry();
                           context.pop();
+                          onRetry();
                         },
                       ),
                     ),
@@ -95,11 +99,12 @@ class BBAlert extends StatelessWidget {
                   child: SizedBox(
                     width: 200,
                     child: BBButton.big(
-                      label: 'Okay',
+                      label: okButtonText,
+                      fontSize: okButtonText.length > 4 ? 11 : null,
                       filled: true,
                       onPressed: () {
-                        onClose();
                         context.pop();
+                        onClose();
                       },
                     ),
                   ),
@@ -109,11 +114,11 @@ class BBAlert extends StatelessWidget {
                   child: SizedBox(
                     width: 200,
                     child: BBButton.big(
-                      label: 'Retry',
+                      label: retryButtonText,
                       filled: true,
                       onPressed: () {
-                        onRetry();
                         context.pop();
+                        onRetry();
                       },
                     ),
                   ),
@@ -125,7 +130,11 @@ class BBAlert extends StatelessWidget {
     });
   }
 
-  static void showErrorAlert(BuildContext context, {required String err, Function? onClose}) {
+  static void showErrorAlert(
+    BuildContext context, {
+    required String err,
+    Function? onClose,
+  }) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       BBAlert._openPopUp(
         context,
@@ -166,7 +175,8 @@ class BBAlert extends StatelessWidget {
           backgroundColor: context.colour.background,
           title: title != null ? BBText.titleLarge(title ?? '') : Container(),
           content: BBText.error(text),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
           actions: buttons,
           surfaceTintColor: context.colour.background,
         ),

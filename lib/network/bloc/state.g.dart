@@ -41,6 +41,7 @@ _$NetworkStateImpl _$$NetworkStateImplFromJson(Map<String, dynamic> json) =>
           ? null
           : LiquidElectrumNetwork.fromJson(
               json['tempLiquidNetworkDetails'] as Map<String, dynamic>),
+      goToSettings: json['goToSettings'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$NetworkStateImplToJson(_$NetworkStateImpl instance) =>
@@ -61,6 +62,7 @@ Map<String, dynamic> _$$NetworkStateImplToJson(_$NetworkStateImpl instance) =>
       'tempLiquidNetwork':
           _$LiquidElectrumTypesEnumMap[instance.tempLiquidNetwork],
       'tempLiquidNetworkDetails': instance.tempLiquidNetworkDetails,
+      'goToSettings': instance.goToSettings,
     };
 
 const _$ElectrumTypesEnumMap = {

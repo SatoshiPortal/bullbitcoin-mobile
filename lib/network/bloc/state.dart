@@ -31,6 +31,7 @@ class NetworkState with _$NetworkState {
     ElectrumNetwork? tempNetworkDetails,
     LiquidElectrumTypes? tempLiquidNetwork,
     LiquidElectrumNetwork? tempLiquidNetworkDetails,
+    @Default(false) bool goToSettings,
   }) = _NetworkState;
   const NetworkState._();
 

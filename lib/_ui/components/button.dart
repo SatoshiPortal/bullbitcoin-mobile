@@ -29,13 +29,13 @@ class BBButton extends StatelessWidget {
     this.fillWidth = false,
     this.leftSvgAsset,
     this.center = false,
+    this.fontSize,
   })  : type = _ButtonType.big,
         isBlue = null,
         isRed = null,
         statusText = null,
         centered = null,
-        onSurface = null,
-        fontSize = null;
+        onSurface = null;
 
   const BBButton.text({
     required this.label,
@@ -140,8 +140,9 @@ class BBButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final darkMode =
-        context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
+    final darkMode = context.select(
+      (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
+    );
 
     final bgColour = darkMode ? context.colour.background : NewColours.offWhite;
 
@@ -188,7 +189,10 @@ class BBButton extends StatelessWidget {
                   ),
                   const Gap(16),
                 ],
-                BBText.titleLarge(label, fontSize: 16),
+                BBText.titleLarge(
+                  label,
+                  fontSize: fontSize ?? 16,
+                ),
               ],
             ),
           );
@@ -205,7 +209,8 @@ class BBButton extends StatelessWidget {
                   width: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(context.colour.surface),
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(context.colour.surface),
                   ),
                 ),
                 const Gap(8),
@@ -226,7 +231,9 @@ class BBButton extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: !disabled ? Colors.black.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                color: !disabled
+                    ? Colors.black.withOpacity(0.1)
+                    : Colors.grey.withOpacity(0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -262,7 +269,9 @@ class BBButton extends StatelessWidget {
                           height: 8,
                           width: 66,
                           child: LinearProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(context.colour.primary),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              context.colour.primary,
+                            ),
                             backgroundColor: context.colour.background,
                           ),
                         ),

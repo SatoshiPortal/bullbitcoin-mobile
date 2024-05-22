@@ -39,6 +39,7 @@ mixin _$NetworkState {
       throw _privateConstructorUsedError;
   LiquidElectrumNetwork? get tempLiquidNetworkDetails =>
       throw _privateConstructorUsedError;
+  bool get goToSettings => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -66,7 +67,8 @@ abstract class $NetworkStateCopyWith<$Res> {
       ElectrumTypes? tempNetwork,
       ElectrumNetwork? tempNetworkDetails,
       LiquidElectrumTypes? tempLiquidNetwork,
-      LiquidElectrumNetwork? tempLiquidNetworkDetails});
+      LiquidElectrumNetwork? tempLiquidNetworkDetails,
+      bool goToSettings});
 
   $ElectrumNetworkCopyWith<$Res>? get tempNetworkDetails;
   $LiquidElectrumNetworkCopyWith<$Res>? get tempLiquidNetworkDetails;
@@ -99,6 +101,7 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
     Object? tempNetworkDetails = freezed,
     Object? tempLiquidNetwork = freezed,
     Object? tempLiquidNetworkDetails = freezed,
+    Object? goToSettings = null,
   }) {
     return _then(_value.copyWith(
       testnet: null == testnet
@@ -157,6 +160,10 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
           ? _value.tempLiquidNetworkDetails
           : tempLiquidNetworkDetails // ignore: cast_nullable_to_non_nullable
               as LiquidElectrumNetwork?,
+      goToSettings: null == goToSettings
+          ? _value.goToSettings
+          : goToSettings // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -208,7 +215,8 @@ abstract class _$$NetworkStateImplCopyWith<$Res>
       ElectrumTypes? tempNetwork,
       ElectrumNetwork? tempNetworkDetails,
       LiquidElectrumTypes? tempLiquidNetwork,
-      LiquidElectrumNetwork? tempLiquidNetworkDetails});
+      LiquidElectrumNetwork? tempLiquidNetworkDetails,
+      bool goToSettings});
 
   @override
   $ElectrumNetworkCopyWith<$Res>? get tempNetworkDetails;
@@ -241,6 +249,7 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
     Object? tempNetworkDetails = freezed,
     Object? tempLiquidNetwork = freezed,
     Object? tempLiquidNetworkDetails = freezed,
+    Object? goToSettings = null,
   }) {
     return _then(_$NetworkStateImpl(
       testnet: null == testnet
@@ -299,6 +308,10 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
           ? _value.tempLiquidNetworkDetails
           : tempLiquidNetworkDetails // ignore: cast_nullable_to_non_nullable
               as LiquidElectrumNetwork?,
+      goToSettings: null == goToSettings
+          ? _value.goToSettings
+          : goToSettings // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -320,7 +333,8 @@ class _$NetworkStateImpl extends _NetworkState {
       this.tempNetwork,
       this.tempNetworkDetails,
       this.tempLiquidNetwork,
-      this.tempLiquidNetworkDetails})
+      this.tempLiquidNetworkDetails,
+      this.goToSettings = false})
       : _networks = networks,
         _liquidNetworks = liquidNetworks,
         super._();
@@ -379,10 +393,13 @@ class _$NetworkStateImpl extends _NetworkState {
   final LiquidElectrumTypes? tempLiquidNetwork;
   @override
   final LiquidElectrumNetwork? tempLiquidNetworkDetails;
+  @override
+  @JsonKey()
+  final bool goToSettings;
 
   @override
   String toString() {
-    return 'NetworkState(testnet: $testnet, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, liquidNetworks: $liquidNetworks, selectedLiquidNetwork: $selectedLiquidNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, networkErrorOpened: $networkErrorOpened, tempNetwork: $tempNetwork, tempNetworkDetails: $tempNetworkDetails, tempLiquidNetwork: $tempLiquidNetwork, tempLiquidNetworkDetails: $tempLiquidNetworkDetails)';
+    return 'NetworkState(testnet: $testnet, reloadWalletTimer: $reloadWalletTimer, networks: $networks, selectedNetwork: $selectedNetwork, liquidNetworks: $liquidNetworks, selectedLiquidNetwork: $selectedLiquidNetwork, loadingNetworks: $loadingNetworks, errLoadingNetworks: $errLoadingNetworks, networkConnected: $networkConnected, networkErrorOpened: $networkErrorOpened, tempNetwork: $tempNetwork, tempNetworkDetails: $tempNetworkDetails, tempLiquidNetwork: $tempLiquidNetwork, tempLiquidNetworkDetails: $tempLiquidNetworkDetails, goToSettings: $goToSettings)';
   }
 
   @override
@@ -416,7 +433,9 @@ class _$NetworkStateImpl extends _NetworkState {
                 other.tempLiquidNetwork == tempLiquidNetwork) &&
             (identical(
                     other.tempLiquidNetworkDetails, tempLiquidNetworkDetails) ||
-                other.tempLiquidNetworkDetails == tempLiquidNetworkDetails));
+                other.tempLiquidNetworkDetails == tempLiquidNetworkDetails) &&
+            (identical(other.goToSettings, goToSettings) ||
+                other.goToSettings == goToSettings));
   }
 
   @JsonKey(ignore: true)
@@ -436,7 +455,8 @@ class _$NetworkStateImpl extends _NetworkState {
       tempNetwork,
       tempNetworkDetails,
       tempLiquidNetwork,
-      tempLiquidNetworkDetails);
+      tempLiquidNetworkDetails,
+      goToSettings);
 
   @JsonKey(ignore: true)
   @override
@@ -454,21 +474,21 @@ class _$NetworkStateImpl extends _NetworkState {
 
 abstract class _NetworkState extends NetworkState {
   const factory _NetworkState(
-          {final bool testnet,
-          final int reloadWalletTimer,
-          final List<ElectrumNetwork> networks,
-          final ElectrumTypes selectedNetwork,
-          final List<LiquidElectrumNetwork> liquidNetworks,
-          final LiquidElectrumTypes selectedLiquidNetwork,
-          final bool loadingNetworks,
-          final String errLoadingNetworks,
-          final bool networkConnected,
-          final bool networkErrorOpened,
-          final ElectrumTypes? tempNetwork,
-          final ElectrumNetwork? tempNetworkDetails,
-          final LiquidElectrumTypes? tempLiquidNetwork,
-          final LiquidElectrumNetwork? tempLiquidNetworkDetails}) =
-      _$NetworkStateImpl;
+      {final bool testnet,
+      final int reloadWalletTimer,
+      final List<ElectrumNetwork> networks,
+      final ElectrumTypes selectedNetwork,
+      final List<LiquidElectrumNetwork> liquidNetworks,
+      final LiquidElectrumTypes selectedLiquidNetwork,
+      final bool loadingNetworks,
+      final String errLoadingNetworks,
+      final bool networkConnected,
+      final bool networkErrorOpened,
+      final ElectrumTypes? tempNetwork,
+      final ElectrumNetwork? tempNetworkDetails,
+      final LiquidElectrumTypes? tempLiquidNetwork,
+      final LiquidElectrumNetwork? tempLiquidNetworkDetails,
+      final bool goToSettings}) = _$NetworkStateImpl;
   const _NetworkState._() : super._();
 
   factory _NetworkState.fromJson(Map<String, dynamic> json) =
@@ -502,6 +522,8 @@ abstract class _NetworkState extends NetworkState {
   LiquidElectrumTypes? get tempLiquidNetwork;
   @override
   LiquidElectrumNetwork? get tempLiquidNetworkDetails;
+  @override
+  bool get goToSettings;
   @override
   @JsonKey(ignore: true)
   _$$NetworkStateImplCopyWith<_$NetworkStateImpl> get copyWith =>

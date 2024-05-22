@@ -154,6 +154,9 @@ class NetworkCubit extends Cubit<NetworkState> {
   }
 
   void closeNetworkError() async {
+    emit(state.copyWith(goToSettings: true));
+    await Future.delayed(const Duration(milliseconds: 200));
+    emit(state.copyWith(goToSettings: false));
     await Future.delayed(const Duration(seconds: 20));
     emit(state.copyWith(networkErrorOpened: false));
   }
@@ -187,6 +190,7 @@ class NetworkCubit extends Cubit<NetworkState> {
             title: errBitcoin.title ?? '',
             err: errBitcoin.message,
             onClose: closeNetworkError,
+            okButtonText: 'Change server',
             onRetry: retryNetwork,
           );
           await Future.delayed(const Duration(seconds: 10));
@@ -211,6 +215,7 @@ class NetworkCubit extends Cubit<NetworkState> {
             title: errLiquid.title ?? '',
             err: errLiquid.message,
             onClose: closeNetworkError,
+            okButtonText: 'Change server',
             onRetry: retryNetwork,
           );
         }

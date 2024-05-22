@@ -8,6 +8,7 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/listeners.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
@@ -90,19 +91,17 @@ class BullBitcoinWalletApp extends StatelessWidget {
                 ]);
                 if (child == null) return Container();
                 return OKToast(
-                  child: HomeWalletsSetupListener(
-                    child: SwapAppListener(
-                      child: GestureDetector(
-                        onTap: () {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                        },
-                        child: MediaQuery(
-                          data: MediaQuery.of(context).copyWith(
-                            textScaler: TextScaler.noScaling,
-                          ),
-                          child: AppLifecycleOverlay(
-                            child: child,
-                          ),
+                  child: _AppListeners(
+                    child: GestureDetector(
+                      onTap: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                      },
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaler: TextScaler.noScaling,
+                        ),
+                        child: AppLifecycleOverlay(
+                          child: child,
                         ),
                       ),
                     ),
@@ -112,6 +111,23 @@ class BullBitcoinWalletApp extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _AppListeners extends StatelessWidget {
+  const _AppListeners({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return NetworkListeners(
+      child: HomeWalletsSetupListener(
+        child: SwapAppListener(
+          child: child,
+        ),
       ),
     );
   }
