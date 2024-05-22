@@ -310,7 +310,12 @@ class SwapTx with _$SwapTx {
       settledSubmarine() ||
       paidReverse();
 
-  bool close() => settledReverse() || settledSubmarine() || expiredReverse();
+  bool close() =>
+      settledReverse() ||
+      settledSubmarine() ||
+      expiredReverse() ||
+      expiredSubmarine() ||
+      refundableSubmarine();
 
   bool failed() => !isSubmarine
       ? reverseSwapAction() == ReverseSwapActions.failed
@@ -404,6 +409,20 @@ class SwapTx with _$SwapTx {
       if (claimableReverse() || settledReverse()) return true;
     }
     return false;
+  }
+
+  Transaction toNewTransaction() {
+    final newTx = Transaction(
+      txid: txid!,
+      timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      swapTx: this,
+      sent: !isSubmarine ? 0 : outAmount - totalFees()!,
+      isSwap: true,
+      received: !isSubmarine ? (outAmount - (totalFees() ?? 0)) : 0,
+      fee: !isSubmarine ? claimFees : lockupFees,
+      isLiquid: isLiquid(),
+    );
+    return newTx;
   }
 }
 

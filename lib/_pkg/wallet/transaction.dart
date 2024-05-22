@@ -373,7 +373,6 @@ class WalletTx implements IWalletTransactions {
     final storedSwap = swaps[idx];
 
     final swapTxs = List<SwapTx>.from(swaps);
-    final isLiq = swapTx.isLiquid();
 
     // print(
     //   '\n\n--- swap update: ${swapTx.id} --- status: ${swapTx.status?.status} ---\n\n',
@@ -385,24 +384,13 @@ class WalletTx implements IWalletTransactions {
     );
     swapTxs[idx] = updatedSwapTx;
     final txs = wallet.transactions.toList();
-    final isRevSub = !swapTx.isSubmarine;
 
     if (swapTx.txid != null) {
       final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
       final idx2 = txs.indexWhere((_) => _.txid == swapTx.id);
 
       if (idx == -1 && idx2 == -1) {
-        final newTx = Transaction(
-          txid: swapTx.txid!,
-          timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          swapTx: updatedSwapTx,
-          sent: isRevSub ? 0 : swapTx.outAmount - swapTx.totalFees()!,
-          isSwap: true,
-          received:
-              isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
-          fee: isRevSub ? (swapTx.claimFees) : (swapTx.lockupFees),
-          isLiquid: swapTx.isLiquid(),
-        );
+        final newTx = updatedSwapTx.toNewTransaction();
         txs.add(newTx);
       } else if (idx != -1) {
         final updatedTx = txs[idx].copyWith(
@@ -424,17 +412,7 @@ class WalletTx implements IWalletTransactions {
     if (swapTx.txid == null && swapTx.paidReverse()) {
       final idx = txs.indexWhere((_) => _.txid == swapTx.id);
       if (idx == -1) {
-        final newTx = Transaction(
-          txid: swapTx.id,
-          timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          swapTx: updatedSwapTx,
-          sent: isRevSub ? 0 : swapTx.outAmount - swapTx.totalFees()!,
-          isSwap: true,
-          received:
-              isRevSub ? (swapTx.outAmount - (swapTx.totalFees() ?? 0)) : 0,
-          fee: isRevSub ? (swapTx.claimFees) : (swapTx.lockupFees),
-          isLiquid: swapTx.isLiquid(),
-        );
+        final newTx = updatedSwapTx.toNewTransaction();
         txs.add(newTx);
       } else {
         final updatedTx = txs[idx].copyWith(
@@ -455,11 +433,8 @@ class WalletTx implements IWalletTransactions {
       if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
 
-    final settled = swapTx.isSubmarine
-        ? swapTx.settledSubmarine()
-        : swapTx.settledReverse();
-
-    if (settled) swapTxs.removeWhere((_) => _.id == swapTx.id);
+    final closeSwap = swapTx.close();
+    if (closeSwap) swapTxs.removeWhere((_) => _.id == swapTx.id);
 
     if (deleteIfFailed) {
       final swapsToDelete = <SwapTx>[
