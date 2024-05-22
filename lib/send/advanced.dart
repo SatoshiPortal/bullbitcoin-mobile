@@ -133,6 +133,9 @@ class EnableRBFOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLiq = context.select((WalletBloc x) => x.state.isLiq());
+    if (isLiq) return const SizedBox.shrink();
+
     final disableRBF = context.select((SendCubit x) => x.state.disableRBF);
     return Row(
       children: [

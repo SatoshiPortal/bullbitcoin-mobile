@@ -352,9 +352,10 @@ class LWKTransactions {
             : lwk.lTestAssetId;
         final balances = tx.balances;
         final finalBalance = balances
-            .where((e) => e.assetId == assetID)
-            .map((e) => e.value)
-            .first;
+                .where((e) => e.assetId == assetID)
+                .map((e) => e.value)
+                .firstOrNull ??
+            0;
 
         final List<Future<Address>>? outAddressFuture;
         final List<Address>? outAddressFinal;
@@ -483,6 +484,7 @@ class LWKTransactions {
         sats: amount ?? 0,
         outAddress: address,
         feeRate: feeRate * 1000.0,
+        drain: sendAllCoin,
       );
       // pubWallet.sign(network: wallet.network == BBNetwork.LMainnet ? lwk.Network.Mainnet : lwk.Network.Testnet , pset: pset, mnemonic: mnemonic)
       final decoded = await lwkWallet.decodeTx(pset: pset);

@@ -407,9 +407,9 @@ class AdvancedOptions extends StatelessWidget {
     );
     final sending = context.select((SendCubit _) => _.state.sending);
     final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
-    final isLiquid = context.select((SendCubit _) => _.state.isLiquidPayment());
+    // final isLiquid = context.select((SendCubit _) => _.state.isLiquidPayment());
 
-    if (isLn || isLiquid || !walletSelected) return const SizedBox.shrink();
+    if (isLn || !walletSelected) return const SizedBox.shrink();
 
     final text =
         context.select((SendCubit _) => _.state.advancedOptionsButtonText());

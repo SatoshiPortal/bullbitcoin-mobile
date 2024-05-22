@@ -17,6 +17,7 @@ import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportWalletCubit extends Cubit<ImportState> {
@@ -33,7 +34,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required BDKSensitiveCreate bdkSensitiveCreate,
     required LWKSensitiveCreate lwkSensitiveCreate,
     bool mainWallet = false,
-    bool useTestWallet = false,
+    bool useTestWallet = true,
   })  : _networkCubit = networkCubit,
         _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,
@@ -46,7 +47,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         _filePicker = filePicker,
         _barcode = barcode,
         super(ImportState(mainWallet: mainWallet)) {
-    if (useTestWallet)
+    if (useTestWallet && !kReleaseMode)
       emit(state.copyWith(words12: [...importW(instantTN1)]));
     else
       reset();
