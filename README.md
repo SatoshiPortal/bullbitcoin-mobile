@@ -8,27 +8,28 @@ Following the cypherpunk ethos, the Bull Bitcoin Mobile wallet is fully open-sou
 
 At launch, two wallets are generated: the Secure Bitcoin Wallet and the Instant Payments Wallet. Both wallets are created using the same mnemonic seed, so that a single backup is sufficient for both.
 
-**Secure Bitcoin Wallet**: this is a descriptor-based Bitcoin network wallet which uses bech32 addresses.
+**Secure Bitcoin Wallet**: this is a descriptor-based Bitcoin network wallet which uses bech32 segwit addresses.
 
-**Instant Payments Wallet**: this is a descirptor-based Liquid network wallet which uses confidential addresses.
+**Instant Payments Wallet**: this is a descirptor-based Liquid network wallet which uses bech32 confidential segwit addresses.
 
 Both these wallets are able to send and receive Lightning Network payments via the swap provider.
 
 ## Core dependancies
 
-- BDK: https://github.com/bitcoindevkit/bdk
-- BDK-flutter: https://github.com/LtbLightning/bdk-flutter
-- LWK: https://github.com/Blockstream/lwk
-- LWK-dart (dart bindings: https://github.com/SatoshiPortal/lwk-dart
-- Boltz-rust: https://github.com/SatoshiPortal/boltz-rust
-- Boltz-dart: https://github.com/SatoshiPortal/boltz-dart
+- [bdk](https://github.com/bitcoindevkit/bdk)
+- [bdk-flutter](https://github.com/LtbLightning/bdk-flutter)
+- [lwk](https://github.com/Blockstream/lwk)
+- [lwk-dart](https://github.com/SatoshiPortal/lwk-dart)
+- [boltz-rust](https://github.com/SatoshiPortal/boltz-rust)
+- [boltz-dart](https://github.com/SatoshiPortal/boltz-dart)
 
 ## Default external service providers
 
-- Mempool.space API for fee estimates
+- mempool.space API for fee estimates
+- mempool.bullbitcoin.com / mempool.space for transaction and address explorer
 - bullbitcoin.com API for fiat prices
-- Bull Bitcoin and Blockstream electrum servers for blockchain data
-- Boltz servers for swap providers
+- bullbitcoin.com and blockstream.info electrum servers for blockchain data
+- boltz.exchange for swap services
 
 ### General features
 
