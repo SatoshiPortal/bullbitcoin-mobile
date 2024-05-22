@@ -274,6 +274,12 @@ class SwapTx with _$SwapTx {
           (status!.status == SwapStatus.invoiceFailedToPay ||
               status!.status == SwapStatus.txnLockupFailed));
 
+  bool refundedSubmarine() =>
+      isSubmarine &&
+      (status != null &&
+          (status!.status == SwapStatus.txnRefunded ||
+              status!.status == SwapStatus.swapRefunded));
+
   bool claimableSubmarine() =>
       isSubmarine &&
       status != null &&
@@ -315,7 +321,7 @@ class SwapTx with _$SwapTx {
       settledSubmarine() ||
       expiredReverse() ||
       expiredSubmarine() ||
-      refundableSubmarine();
+      refundedSubmarine();
 
   bool failed() => !isSubmarine
       ? reverseSwapAction() == ReverseSwapActions.failed
