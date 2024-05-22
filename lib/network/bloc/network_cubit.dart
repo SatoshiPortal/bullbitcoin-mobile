@@ -92,13 +92,14 @@ class NetworkCubit extends Cubit<NetworkState> {
     }
 
     if (liqNetworks.isNotEmpty) {
-      final selectedNetwork =
+      var selectedNetwork =
           liqNetworks.firstWhere((_) => _.type == state.selectedLiquidNetwork);
       final updatedLiqNetworks = liqNetworks.toList();
 
-      if (liqNetworks.length == 2)
+      if (liqNetworks.length == 2) {
         updatedLiqNetworks.insert(1, const LiquidElectrumNetwork.bullbitcoin());
-
+        selectedNetwork = updatedLiqNetworks[1];
+      }
       emit(
         state.copyWith(
           loadingNetworks: false,
@@ -118,8 +119,10 @@ class NetworkCubit extends Cubit<NetworkState> {
           testnet: liquidElectrumTestUrl,
         ),
       ];
-      final selectedLiqNetwork = newLiqNetworks
-          .firstWhere((_) => _.type == state.selectedLiquidNetwork);
+      // final selectedLiqNetwork = newLiqNetworks
+      //     .firstWhere((_) => _.type == state.selectedLiquidNetwork);
+
+      final selectedLiqNetwork = newLiqNetworks[1];
 
       emit(
         state.copyWith(

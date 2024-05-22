@@ -116,11 +116,11 @@ class _PanelState extends State<_Panel> {
             return ListTile(
               dense: true,
               // visualDensity: VisualDensity.compact,
-              onTap: () {
-                setState(() {
-                  expanded1 = !expanded1;
-                });
-              },
+              // onTap: () {
+              //   // setState(() {
+              //   //   expanded1 = !expanded1;
+              //   // });
+              // },
               title: BBText.title(
                 'Ongoing Swaps'.toUpperCase(),
                 isBold: true,
@@ -220,7 +220,7 @@ class SwapItem extends StatelessWidget {
                   ),
                   // Expanded(
                   SizedBox(
-                    width: 250,
+                    width: 200,
                     child: BBText.bodySmall(
                       swapTx.status?.status.getStr(swapTx.isSubmarine)?.$2 ??
                           '',
