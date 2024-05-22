@@ -70,9 +70,10 @@ class NetworkCubit extends Cubit<NetworkState> {
           loadingNetworks: false,
           tempNetworkDetails: selectedNetwork,
           tempNetwork: selectedNetwork.type,
+          selectedNetwork: selectedNetwork.type,
         ),
       );
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 200));
       setupBlockchain(false);
     } else {
       final newNetworks = [
@@ -91,9 +92,10 @@ class NetworkCubit extends Cubit<NetworkState> {
           networks: newNetworks,
           tempNetworkDetails: selectedNetwork,
           tempNetwork: selectedNetwork.type,
+          selectedNetwork: selectedNetwork.type,
         ),
       );
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future.delayed(const Duration(milliseconds: 200));
       await setupBlockchain(false);
     }
 
@@ -112,9 +114,10 @@ class NetworkCubit extends Cubit<NetworkState> {
           tempLiquidNetworkDetails: selectedNetwork,
           tempLiquidNetwork: selectedNetwork.type,
           liquidNetworks: updatedLiqNetworks,
+          selectedLiquidNetwork: selectedNetwork.type,
         ),
       );
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 200));
       setupBlockchain(true);
     } else {
       final newLiqNetworks = [
@@ -135,9 +138,10 @@ class NetworkCubit extends Cubit<NetworkState> {
           liquidNetworks: newLiqNetworks,
           tempLiquidNetworkDetails: selectedLiqNetwork,
           tempLiquidNetwork: selectedLiqNetwork.type,
+          selectedLiquidNetwork: selectedLiqNetwork.type,
         ),
       );
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 200));
       setupBlockchain(true);
     }
 
