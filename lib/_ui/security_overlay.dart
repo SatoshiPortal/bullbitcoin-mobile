@@ -19,13 +19,17 @@ class _AppLifecycleOverlayState extends State<AppLifecycleOverlay>
   final _noScreenshot = NoScreenshot.instance;
 
   final sensitivePaths = [
-    '/home/import',
-    '/home/wallet/wallet-settings/open-backup',
-    '/home/wallet/wallet-settings/wallet-settings/backup',
-    '/home/wallet/wallet-settings/wallet-settings/test-backup',
-    '/home/wallet-settings/open-backup',
-    '/home/wallet-settings/wallet-settings/backup',
-    '/home/wallet-settings/wallet-settings/test-backup',
+    '/import',
+    '/open-backup',
+    '/backup',
+    '/test-backup',
+    '/open-backup',
+    '/backup',
+    '/test-backup',
+    '/import-main',
+    '/create-wallet-main',
+    '/recover',
+    '/create-wallet',
   ];
 
   @override
@@ -41,7 +45,7 @@ class _AppLifecycleOverlayState extends State<AppLifecycleOverlay>
           .map((RouteBase e) => (e as GoRoute).path)
           .join();
       // print(routePath);
-      if (sensitivePaths.any((path) => routePath.startsWith(path))) {
+      if (sensitivePaths.any((path) => routePath.endsWith(path))) {
         _noScreenshot.screenshotOff();
       } else {
         _noScreenshot.screenshotOn();
