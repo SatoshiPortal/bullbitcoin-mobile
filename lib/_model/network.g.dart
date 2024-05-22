@@ -126,8 +126,34 @@ Map<String, dynamic> _$$BlockstreamLiquidElectrumNetworkImplToJson(
 
 const _$LiquidElectrumTypesEnumMap = {
   LiquidElectrumTypes.blockstream: 'blockstream',
+  LiquidElectrumTypes.bullbitcoin: 'bullbitcoin',
   LiquidElectrumTypes.custom: 'custom',
 };
+
+_$BullBitcoinLiquidElectrumNetworkImpl
+    _$$BullBitcoinLiquidElectrumNetworkImplFromJson(
+            Map<String, dynamic> json) =>
+        _$BullBitcoinLiquidElectrumNetworkImpl(
+          mainnet: json['mainnet'] as String? ?? bbLiquidElectrumUrl,
+          testnet: json['testnet'] as String? ?? bbLiquidElectrumTestUrl,
+          validateDomain: json['validateDomain'] as bool? ?? true,
+          name: json['name'] as String? ?? 'bullbitcoin',
+          type:
+              $enumDecodeNullable(_$LiquidElectrumTypesEnumMap, json['type']) ??
+                  LiquidElectrumTypes.bullbitcoin,
+          $type: json['runtimeType'] as String?,
+        );
+
+Map<String, dynamic> _$$BullBitcoinLiquidElectrumNetworkImplToJson(
+        _$BullBitcoinLiquidElectrumNetworkImpl instance) =>
+    <String, dynamic>{
+      'mainnet': instance.mainnet,
+      'testnet': instance.testnet,
+      'validateDomain': instance.validateDomain,
+      'name': instance.name,
+      'type': _$LiquidElectrumTypesEnumMap[instance.type]!,
+      'runtimeType': instance.$type,
+    };
 
 _$CustomLiquidElectrumNetworkImpl _$$CustomLiquidElectrumNetworkImplFromJson(
         Map<String, dynamic> json) =>

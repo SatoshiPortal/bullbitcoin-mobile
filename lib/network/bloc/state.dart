@@ -137,6 +137,8 @@ class NetworkState with _$NetworkState {
     switch (network) {
       case 'blockstream':
         return LiquidElectrumTypes.blockstream;
+      case 'bullbitcoin':
+        return LiquidElectrumTypes.bullbitcoin;
       case 'custom':
         return LiquidElectrumTypes.custom;
       default:
@@ -175,5 +177,15 @@ class NetworkState with _$NetworkState {
     if (temp.timeout == 0) return (show: false, err: 'Timeout cannot be 0');
 
     return (show: true, err: null);
+  }
+
+  double pickLiquidFees() {
+    switch (selectedLiquidNetwork) {
+      case LiquidElectrumTypes.custom:
+      case LiquidElectrumTypes.blockstream:
+        return 0.1;
+      case LiquidElectrumTypes.bullbitcoin:
+        return 0.01;
+    }
   }
 }

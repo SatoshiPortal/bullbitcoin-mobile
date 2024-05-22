@@ -71,5 +71,6 @@ const _$ElectrumTypesEnumMap = {
 
 const _$LiquidElectrumTypesEnumMap = {
   LiquidElectrumTypes.blockstream: 'blockstream',
+  LiquidElectrumTypes.bullbitcoin: 'bullbitcoin',
   LiquidElectrumTypes.custom: 'custom',
 };

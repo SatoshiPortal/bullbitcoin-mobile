@@ -609,26 +609,25 @@ class SendCubit extends Cubit<SendState> {
     if (state.sending) return;
     if (state.selectedWalletBloc == null) return;
 
+    final localWallet = state.selectedWalletBloc!.state.wallet;
+    final isLiq = localWallet!.isLiquid();
+
     final address = state.address;
-    final fee = networkFees;
+    final fee =
+        isLiq ? _networkCubit.state.pickLiquidFees() : networkFees.toDouble();
 
     final bool enableRbf;
-
     enableRbf = !state.disableRBF;
 
     emit(state.copyWith(sending: true, errSending: ''));
 
-    final localWallet = state.selectedWalletBloc!.state.wallet;
-
     final (buildResp, err) = await _walletTx.buildTx(
-      wallet: localWallet!,
+      wallet: localWallet,
       isManualSend: state.selectedUtxos.isNotEmpty,
       address: address,
       amount: _currencyCubit.state.amount,
       sendAllCoin: state.sendAllCoin,
-      feeRate: localWallet.baseWalletType == BaseWalletType.Liquid
-          ? 0.01
-          : fee.toDouble(),
+      feeRate: fee,
       enableRbf: enableRbf,
       selectedUtxos: state.selectedUtxos,
       note: state.note,

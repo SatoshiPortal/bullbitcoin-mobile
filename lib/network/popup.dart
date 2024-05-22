@@ -70,6 +70,8 @@ class _NetowrkHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLiq = context.select((_NetworkSelector _) => _.state);
     final networkStr = isLiq ? 'Liquid' : 'Bitcoin';
+    final changeStr =
+        'Configure ' + (isLiq ? 'Bitcoin' : 'Liquid') + ' Network';
 
     return BBHeader.popUpCenteredText(
       text: '', //networkStr + ' Network',
@@ -82,7 +84,7 @@ class _NetowrkHeader extends StatelessWidget {
           ),
           BBButton.text(
             fontSize: 11,
-            label: 'Change network',
+            label: changeStr,
             onPressed: () {
               context.read<_NetworkSelector>().selectNetwork(!isLiq);
             },
@@ -170,12 +172,14 @@ class SelectNetworkSegment extends StatelessWidget {
               : selected == ElectrumTypes.blockstream,
           text: 'Blockstream',
         ),
-        if (!isLiq)
-          _SegmentButton(
-            index: 1,
-            isSelected: selected == ElectrumTypes.bullbitcoin,
-            text: 'Bull Bitcoin',
-          ),
+        // if (!isLiq)
+        _SegmentButton(
+          index: 1,
+          isSelected: isLiq
+              ? liqSelected == LiquidElectrumTypes.bullbitcoin
+              : selected == ElectrumTypes.bullbitcoin,
+          text: 'Bull Bitcoin',
+        ),
         _SegmentButton(
           index: 2,
           isSelected: isLiq

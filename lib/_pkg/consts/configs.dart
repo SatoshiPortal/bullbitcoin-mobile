@@ -10,8 +10,11 @@ final bbexchangeapi = dotenv.env['BB_API'] ?? 'api.bullbitcoin.com/price';
 
 const bbelectrum = 'electrum.bullbitcoin.com';
 const openelectrum = 'electrum.blockstream.info';
+
 const liquidElectrumUrl = 'blockstream.info:995';
 const liquidElectrumTestUrl = 'blockstream.info:465';
+const bbLiquidElectrumUrl = 'les.bullbitcoin.com:995';
+const bbLiquidElectrumTestUrl = 'les.bullbitcoin:465';
 
 const boltzTestnet = 'api.testnet.boltz.exchange';
 const boltzMainnet = 'api.boltz.exchange';

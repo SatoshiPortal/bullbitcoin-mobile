@@ -6,7 +6,7 @@ part 'network.g.dart';
 
 enum ElectrumTypes { blockstream, bullbitcoin, custom }
 
-enum LiquidElectrumTypes { blockstream, custom }
+enum LiquidElectrumTypes { blockstream, bullbitcoin, custom }
 
 @freezed
 class ElectrumNetwork with _$ElectrumNetwork {
@@ -45,7 +45,8 @@ class ElectrumNetwork with _$ElectrumNetwork {
 
   const ElectrumNetwork._();
 
-  factory ElectrumNetwork.fromJson(Map<String, dynamic> json) => _$ElectrumNetworkFromJson(json);
+  factory ElectrumNetwork.fromJson(Map<String, dynamic> json) =>
+      _$ElectrumNetworkFromJson(json);
 
   String getNetworkUrl(bool isTestnet, {bool split = true}) {
     String url;
@@ -69,6 +70,14 @@ class LiquidElectrumNetwork with _$LiquidElectrumNetwork {
     @Default('blockstream') String name,
     @Default(LiquidElectrumTypes.blockstream) LiquidElectrumTypes type,
   }) = _BlockstreamLiquidElectrumNetwork;
+
+  const factory LiquidElectrumNetwork.bullbitcoin({
+    @Default(bbLiquidElectrumUrl) String mainnet,
+    @Default(bbLiquidElectrumTestUrl) String testnet,
+    @Default(true) bool validateDomain,
+    @Default('bullbitcoin') String name,
+    @Default(LiquidElectrumTypes.bullbitcoin) LiquidElectrumTypes type,
+  }) = _BullBitcoinLiquidElectrumNetwork;
 
   const factory LiquidElectrumNetwork.custom({
     required String mainnet,
