@@ -25,11 +25,17 @@ class NetworkCubit extends Cubit<NetworkState> {
   @override
   void onChange(Change<NetworkState> change) {
     super.onChange(change);
-    final state = change.nextState;
-    if (state.networkErrorOpened) return;
+    // final state = change.nextState;
+    // if (state.networkErrorOpened) return;
     _hiveStorage.saveValue(
       key: StorageKeys.network,
-      value: jsonEncode(change.nextState.toJson()),
+      value: jsonEncode(
+        change.nextState
+            .copyWith(
+              networkErrorOpened: false,
+            )
+            .toJson(),
+      ),
     );
   }
 
@@ -310,15 +316,24 @@ class NetworkCubit extends Cubit<NetworkState> {
     emit(state.copyWith(tempNetworkDetails: updatedConfig));
   }
 
+  String _checkURL(String url) {
+    if (!url.contains('://')) return 'ssl://$url';
+    return url;
+  }
+
   void networkConfigsSaveClicked({required bool isLiq}) async {
     if (!isLiq) {
       if (state.tempNetwork == null) return;
       final networks = state.networks.toList();
       final tempNetwork = state.tempNetworkDetails!;
+      final checkedTempNetworkDetails = tempNetwork.copyWith(
+        mainnet: _checkURL(tempNetwork.mainnet),
+        testnet: _checkURL(tempNetwork.testnet),
+      );
       final index =
           networks.indexWhere((element) => element.type == state.tempNetwork);
       networks.removeAt(index);
-      networks.insert(index, state.tempNetworkDetails!);
+      networks.insert(index, checkedTempNetworkDetails);
       emit(
         state.copyWith(
           networks: networks,

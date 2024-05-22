@@ -48,14 +48,17 @@ class ElectrumNetwork with _$ElectrumNetwork {
   factory ElectrumNetwork.fromJson(Map<String, dynamic> json) =>
       _$ElectrumNetworkFromJson(json);
 
-  String getNetworkUrl(bool isTestnet, {bool split = true}) {
+  String getNetworkUrl(bool isTestnet, {bool split = false}) {
     String url;
     if (isTestnet)
       url = testnet;
     else
       url = mainnet;
 
-    if (split) url = url.split('://')[1];
+    if (split) {
+      final spliturl = url.split('://');
+      if (spliturl.length > 1) url = spliturl[1];
+    }
 
     return url;
   }

@@ -71,7 +71,7 @@ class NetworkState with _$NetworkState {
   String getNetworkUrl() {
     final network = getNetwork();
     if (network == null) return '';
-    return network.getNetworkUrl(testnet, split: false);
+    return network.getNetworkUrl(testnet);
   }
 
   String getLiquidNetworkUrl() {
@@ -166,7 +166,11 @@ class NetworkState with _$NetworkState {
   ({bool show, String? err}) showConfirmButton({required bool isLiquid}) {
     if (isLiquid) {
       if (tempLiquidNetwork == null)
-        return (show: false, err: 'Network cannot be empty');
+        return (
+          show: false,
+          err: '',
+          // err: 'Network cannot be empty',
+        );
       return (show: true, err: null);
     }
 

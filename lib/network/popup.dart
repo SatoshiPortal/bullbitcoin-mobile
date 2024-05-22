@@ -132,7 +132,7 @@ class NetworkStatus extends StatelessWidget {
               ),
             ),
             const Gap(8),
-            BBText.body(isLiq ? liqNetwork : network),
+            BBText.bodySmall(isLiq ? liqNetwork : network),
           ],
         ),
         if (errLoadingNetwork.isNotEmpty) ...[
