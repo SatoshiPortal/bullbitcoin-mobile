@@ -348,50 +348,60 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
           // setState(() {});
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          flexibleSpace: BBAppBar(
-            text: 'Payment Status',
-            onBack: () {
-              if (received)
-                context.go('/home');
-              else
-                context.pop();
-            },
+      child: PopScope(
+        onPopInvoked: (didPop) {
+          context
+            ..pop()
+            ..pop();
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            flexibleSpace: BBAppBar(
+              text: 'Payment Status',
+              onBack: () {
+                context
+                  ..pop()
+                  ..pop();
+                // if (received)
+                //   context.go('/home');
+                // else
+                //   context.pop();
+              },
+            ),
           ),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (!received)
-              if (!paid) ...[
-                const BBText.body('Receiving payment'),
-              ] else ...[
-                const BBText.body('Invoice paid'),
-              ]
-            else
-              const BBText.body('Payment received'),
-            const Gap(16),
-            ReceivedTick(received: received),
-            const Gap(16),
-            BBText.body(amtStr),
-            if (!received) ...[
-              const Gap(24),
-              _OnChainWarning(swapTx: swapTx),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (!received)
+                if (!paid) ...[
+                  const BBText.body('Receiving payment'),
+                ] else ...[
+                  const BBText.body('Invoice paid'),
+                ]
+              else
+                const BBText.body('Payment received'),
+              const Gap(16),
+              ReceivedTick(received: received),
+              const Gap(16),
+              BBText.body(amtStr),
+              if (!received) ...[
+                const Gap(24),
+                _OnChainWarning(swapTx: swapTx),
+              ],
+              const Gap(40),
+              if (tx != null)
+                BBButton.big(
+                  label: 'View Transaction',
+                  onPressed: () {
+                    context
+                      ..pop()
+                      ..pop()
+                      ..push('/tx', extra: tx);
+                  },
+                ).animate().fadeIn(),
             ],
-            const Gap(40),
-            if (tx != null)
-              BBButton.big(
-                label: 'View Transaction',
-                onPressed: () {
-                  context
-                    ..pop()
-                    ..pop()
-                    ..push('/tx', extra: tx);
-                },
-              ).animate().fadeIn(),
-          ],
+          ),
         ),
       ),
     );
