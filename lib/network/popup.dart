@@ -328,37 +328,39 @@ class NetworkConfigFields extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Gap(16),
-          const BBText.title('    Mainnet'),
-          const Gap(4),
-          SizedBox(
-            width: fieldWidth,
-            child: BBTextInput.big(
-              onChanged: (t) {
-                if (!isLiq)
-                  context.read<NetworkCubit>().updateTempMainnet(t);
-                else
-                  context.read<NetworkCubit>().updateTempLiquidMainnet(t);
-              },
-              value: mainnet,
-              disabled: disabled,
+          if (!disabled) ...[
+            const BBText.title('    Mainnet'),
+            const Gap(4),
+            SizedBox(
+              width: fieldWidth,
+              child: BBTextInput.big(
+                onChanged: (t) {
+                  if (!isLiq)
+                    context.read<NetworkCubit>().updateTempMainnet(t);
+                  else
+                    context.read<NetworkCubit>().updateTempLiquidMainnet(t);
+                },
+                value: mainnet,
+                disabled: disabled,
+              ),
             ),
-          ),
-          const Gap(16),
-          const BBText.title('    Testnet'),
-          const Gap(4),
-          SizedBox(
-            width: fieldWidth,
-            child: BBTextInput.big(
-              onChanged: (t) {
-                if (!isLiq)
-                  context.read<NetworkCubit>().updateTempTestnet(t);
-                else
-                  context.read<NetworkCubit>().updateTempLiquidTestnet(t);
-              },
-              value: testnet,
-              disabled: disabled,
+            const Gap(16),
+            const BBText.title('    Testnet'),
+            const Gap(4),
+            SizedBox(
+              width: fieldWidth,
+              child: BBTextInput.big(
+                onChanged: (t) {
+                  if (!isLiq)
+                    context.read<NetworkCubit>().updateTempTestnet(t);
+                  else
+                    context.read<NetworkCubit>().updateTempLiquidTestnet(t);
+                },
+                value: testnet,
+                disabled: disabled,
+              ),
             ),
-          ),
+          ],
           if (!isLiq) ...[
             const Gap(16),
             Row(
