@@ -6,6 +6,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/state.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -111,13 +112,16 @@ class NetworkStatus extends StatelessWidget {
     final errLoadingNetwork =
         context.select((NetworkCubit x) => x.state.errLoadingNetworks);
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
-    final network = context.select(
+    var network = context.select(
       (NetworkCubit x) => x.state.getNetwork()?.getNetworkUrl(isTestnet) ?? '',
     );
-    final liqNetwork = context.select(
+    var liqNetwork = context.select(
       (NetworkCubit x) =>
           x.state.getLiquidNetwork()?.getNetworkUrl(isTestnet) ?? '',
     );
+
+    network = removeSubAndPort(network);
+    liqNetwork = removeSubAndPort(liqNetwork);
 
     return Column(
       children: [
@@ -292,6 +296,7 @@ class NetworkConfigFields extends StatelessWidget {
 
     var mainnet = isLiq ? liqNetwork.mainnet : network.mainnet;
     var testnet = isLiq ? liqNetwork.testnet : network.testnet;
+
     final disabled = isLiq
         ? liqType != LiquidElectrumTypes.custom
         : type != ElectrumTypes.custom;
@@ -311,6 +316,11 @@ class NetworkConfigFields extends StatelessWidget {
     if (testnetChanged)
       testnet =
           isLiq ? tempLiqNetworkDetails.testnet : tempNetworkDetails.testnet;
+
+    if (disabled) {
+      mainnet = removeSubAndPort(mainnet);
+      testnet = removeSubAndPort(testnet);
+    }
 
     return Padding(
       padding: const EdgeInsets.only(left: 8.0),

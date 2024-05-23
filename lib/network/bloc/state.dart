@@ -194,3 +194,20 @@ class NetworkState with _$NetworkState {
     }
   }
 }
+
+final cleanupWords = [
+  'ssl://',
+  'les.',
+  'wes.',
+  'electrum.',
+  ':995',
+  ':465',
+  ':50002',
+  ':60002',
+];
+
+String removeSubAndPort(String url) {
+  var cleaned = url;
+  for (final word in cleanupWords) cleaned = cleaned.replaceAll(word, '');
+  return cleaned;
+}
