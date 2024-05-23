@@ -59,10 +59,13 @@ class WalletSync implements IWalletSync {
           if (err != null) throw err;
       }
     } catch (e) {
+      final isLiq = wallet.isLiquid() ? 'Liquid' : 'Secure/Bitcoin';
+      final fngr = wallet.sourceFingerprint;
       return Err(
         e.toString(),
-        title: 'Error occurred while syncing wallet',
+        title: 'Error occurred while syncing $isLiq wallet - $fngr.',
         solution: 'Please try again.',
+        printToConsole: true,
       );
     }
     return null;

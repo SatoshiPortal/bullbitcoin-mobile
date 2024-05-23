@@ -34,7 +34,9 @@ class LWKSync {
       final completer = Completer<(lwk.Wallet?, Err?)>();
       _receivePort = ReceivePort();
       _isolate = await Isolate.spawn(
-          _syncLwkIsolate, [_receivePort!.sendPort, lwkWallet, blockChain]);
+        _syncLwkIsolate,
+        [_receivePort!.sendPort, lwkWallet, blockChain],
+      );
 
       _receivePort!.listen((message) {
         if (message is lwk.Wallet) {
@@ -69,8 +71,9 @@ class LWKSync {
         null,
         Err(
           e.message,
-          title: 'Error occurred while syncing wallet',
+          title: 'Error occurred while syncing LIQUID wallet',
           solution: 'Please try again.',
+          printToConsole: true,
         )
       );
     }

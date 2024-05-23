@@ -34,7 +34,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required BDKSensitiveCreate bdkSensitiveCreate,
     required LWKSensitiveCreate lwkSensitiveCreate,
     bool mainWallet = false,
-    bool useTestWallet = false,
+    bool useTestWallet = true,
   })  : _networkCubit = networkCubit,
         _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,
@@ -48,7 +48,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         _barcode = barcode,
         super(ImportState(mainWallet: mainWallet)) {
     if (useTestWallet && !kReleaseMode)
-      emit(state.copyWith(words12: [...importW(instantTN1)]));
+      emit(state.copyWith(words12: [...importW(secureTN2)]));
     else
       reset();
 

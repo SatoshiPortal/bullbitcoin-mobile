@@ -175,6 +175,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       UpdateWallet(
         updatedWallet,
         syncAfter: swapTx.syncWallet(),
+        delaySync: 200,
         updateTypes: [
           UpdateWalletTypes.swaps,
           UpdateWalletTypes.transactions,
@@ -182,7 +183,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       ),
     );
 
-    Future.delayed(200.ms);
+    await Future.delayed(400.ms);
     return updatedWallet;
   }
 
@@ -395,9 +396,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     emit(
       state.copyWith(listeningTxs: state.removeListeningTx(swapTx.id)),
     );
-    await Future.delayed(500.ms);
-    final isTestnet = swapTx.network == BBNetwork.Testnet;
-    add(WatchWallets(isTestnet: isTestnet));
+    // await Future.delayed(1500.ms);
+    // final isTestnet = swapTx.network == BBNetwork.Testnet;
+    // add(WatchWallets(isTestnet: isTestnet));
   }
 
   // Future<void> _onClearAlerts(

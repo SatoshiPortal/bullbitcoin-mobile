@@ -434,7 +434,9 @@ class WalletTx implements IWalletTransactions {
     }
 
     final closeSwap = swapTx.close();
-    if (closeSwap) swapTxs.removeWhere((_) => _.id == swapTx.id);
+    if (closeSwap) {
+      swapTxs.removeWhere((_) => _.id == swapTx.id);
+    }
 
     if (deleteIfFailed) {
       final swapsToDelete = <SwapTx>[

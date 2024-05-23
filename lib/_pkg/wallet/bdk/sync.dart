@@ -73,7 +73,7 @@ class BDKSync {
         null,
         Err(
           e.message,
-          title: 'Error occurred while syncing wallet',
+          title: 'Error occurred while syncing SECURE/BITCOIN wallet ',
           solution: 'Please try again.',
         )
       );

@@ -10,18 +10,23 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:dio/dio.dart';
+import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 class SwapBoltz {
   SwapBoltz({
     required SecureStorage secureStorage,
     required Dio dio,
+    required NetworkRepository networkRepository,
   })  : _secureStorage = secureStorage,
+        _networkRepository = networkRepository,
         _dio = dio;
 
   final SecureStorage _secureStorage;
   final Dio _dio;
+  final NetworkRepository _networkRepository;
 
   Future<(Invoice?, Err?)> decodeInvoice({
     required String invoice,
@@ -502,13 +507,21 @@ class SwapBoltz {
         // .copyWith(electrumUrl: 'blockstream.info:995');
 
         // await Future.delayed(5.seconds);
-        final resp = await swap.claim(
+        final bytes = await swap.claimBytes(
           outAddress: address,
           absFee: claimFeesEstimate,
           tryCooperate: tryCooperate,
         );
 
-        return (resp, null);
+        final (blockchain, err) = _networkRepository.liquidUrl;
+        if (err != null) throw err;
+
+        final txid = await lwk.Wallet.broadcastTx(
+          electrumUrl: blockchain!,
+          txBytes: bytes,
+        );
+
+        return (txid, null);
       } else {
         final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
         if (claimFeesEstimate == null) throw 'Fees estimate not found';
@@ -564,13 +577,29 @@ class SwapBoltz {
 
         final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
         // waiting on PR to add cooperative refund
-        final resp = await swap.refund(
+        // final resp = await swap.refund(
+        //   outAddress: address,
+        //   absFee: refundFeesEstimate,
+        //   tryCooperate: tryCooperate,
+        // );
+
+        // return (resp, null);
+
+        final bytes = await swap.refundBytes(
           outAddress: address,
           absFee: refundFeesEstimate,
           tryCooperate: tryCooperate,
         );
 
-        return (resp, null);
+        final (blockchain, err) = _networkRepository.liquidUrl;
+        if (err != null) throw err;
+
+        final txid = await lwk.Wallet.broadcastTx(
+          electrumUrl: blockchain!,
+          txBytes: bytes,
+        );
+
+        return (txid, null);
       } else {
         final refundFeesEstimate = fees?.btcSubmarine.claimFees;
         if (refundFeesEstimate == null) throw 'Fees estimate not found';

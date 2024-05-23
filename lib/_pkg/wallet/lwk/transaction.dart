@@ -542,6 +542,28 @@ class LWKTransactions {
     }
   }
 
+  Future<(String?, Err?)> broadcastDirect({required Uint8List bytes}) async {
+    try {
+      final (blockchain, err) = _networkRepository.liquidUrl;
+      if (err != null) throw err;
+
+      final txid = await lwk.Wallet.broadcastTx(
+        electrumUrl: blockchain!,
+        txBytes: bytes,
+      );
+      return (txid, null);
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while broadcasting transaction',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
+
   Future<((Wallet, String)?, Err?)> broadcastLiquidTxWithWallet({
     required Wallet wallet,
     required lwk.Wallet lwkWallet,

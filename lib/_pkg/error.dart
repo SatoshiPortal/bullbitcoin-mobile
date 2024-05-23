@@ -1,7 +1,8 @@
+import 'dart:developer';
+
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/routes.dart';
 
 class Err {
@@ -11,6 +12,7 @@ class Err {
     this.title,
     this.solution,
     this.showAlert = false,
+    this.printToConsole = false,
   }) {
     _init();
   }
@@ -20,20 +22,24 @@ class Err {
   final String? title;
   final String? solution;
   final bool showAlert;
+  final bool printToConsole;
 
   void _init() {
     if (!expected) {
       var trace = StackTrace.current.toString();
       if (trace.length > 1000) trace = trace.substring(0, 1000);
-      if (locator.isRegistered<Logger>()) locator<Logger>().log('Error: $message \n$trace');
+      if (printToConsole) log('Error: $message \n$trace');
+      if (locator.isRegistered<Logger>())
+        locator<Logger>().log('Error: $message \n$trace');
     }
     if (showAlert) openAlert();
-    if (message.toLowerCase().contains('panic')) _handleElectrumException();
+    // if (message.toLowerCase().contains('panic')) _handleElectrumException();
   }
 
-  void _handleElectrumException() {
-    if (locator.isRegistered<NetworkCubit>()) locator<NetworkCubit>().setupBlockchain(false);
-  }
+  // void _handleElectrumException() {
+  //   if (locator.isRegistered<NetworkCubit>())
+  //     locator<NetworkCubit>().setupBlockchain(false);
+  // }
 
   @override
   String toString() =>
@@ -41,7 +47,8 @@ class Err {
       message +
       (solution != null ? '\nSolution: $solution' : '');
 
-  void openAlert() => BBAlert.showErrorAlert(navigatorKey.currentContext!, err: toString());
+  void openAlert() =>
+      BBAlert.showErrorAlert(navigatorKey.currentContext!, err: toString());
 }
 
 extension X on Exception {

@@ -22,10 +22,12 @@ class UpdateWallet extends WalletEvent {
     this.saveToStorage = true,
     required this.updateTypes,
     this.syncAfter = false,
+    this.delaySync = 500,
   });
   final Wallet wallet;
   final bool saveToStorage;
   final bool syncAfter;
+  final int delaySync;
   final List<UpdateWalletTypes> updateTypes;
 }
 

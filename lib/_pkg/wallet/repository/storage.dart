@@ -55,7 +55,10 @@ class WalletsStorageRepository {
       );
       return null;
     } catch (e) {
-      return Err(e.toString());
+      return Err(
+        e.toString(),
+        expected: true,
+      );
     }
   }
 
