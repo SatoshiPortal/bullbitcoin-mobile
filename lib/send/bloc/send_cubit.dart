@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/bip21.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
@@ -504,11 +503,14 @@ class SendCubit extends Cubit<SendState> {
     final localWalletBloc = _homeCubit.state.getWalletBlocById(w!.id);
     if (localWalletBloc == null) return;
     final localWallet = localWalletBloc.state.wallet;
+    final isLiq = localWallet!.isLiquid();
 
-    if (!localWallet!.mainWallet) return;
+    if (!localWallet.mainWallet) return;
 
     final address = swaptx.scriptAddress;
-    final fee = networkFees;
+    // final fee = networkFees;
+    final fee =
+        isLiq ? _networkCubit.state.pickLiquidFees() : networkFees.toDouble();
 
     // emit(state.copyWith(sending: true, errSending: ''));
 
@@ -516,12 +518,10 @@ class SendCubit extends Cubit<SendState> {
       wallet: localWallet,
       isManualSend: false,
       address: address,
-      amount: swaptx.outAmount,
+      // amount: swaptx.outAmount,
+      amount: 1000,
       sendAllCoin: false,
-      feeRate:
-          localWallet.isLiquid() && localWallet.network == BBNetwork.Mainnet
-              ? 0.01
-              : fee.toDouble(),
+      feeRate: fee,
       enableRbf: false,
       note: state.note,
     );
