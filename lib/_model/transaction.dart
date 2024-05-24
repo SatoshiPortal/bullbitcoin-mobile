@@ -555,7 +555,7 @@ extension X on boltz.SwapStatus? {
       case boltz.SwapStatus.txnFailed:
         status = ('Transaction Failed', 'The swap will be refunded.');
       case boltz.SwapStatus.txnLockupFailed:
-        status = ('Transaction  Lockup Failed', 'The swap will be refunded.');
+        status = ('Transaction Lockup Failed', 'The swap will be refunded.');
       case boltz.SwapStatus.invoiceSet:
         status = (
           'Invoice Set',
