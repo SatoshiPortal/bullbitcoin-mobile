@@ -418,7 +418,7 @@ class SwapTx with _$SwapTx {
 
   Transaction toNewTransaction() {
     final newTx = Transaction(
-      txid: txid!,
+      txid: txid ?? id,
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       swapTx: this,
       sent: !isSubmarine ? 0 : outAmount - totalFees()!,
