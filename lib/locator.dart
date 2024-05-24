@@ -131,7 +131,7 @@ Future _setupWalletServices() async {
     SwapBoltz(
       secureStorage: locator<SecureStorage>(),
       dio: locator<Dio>(),
-      networkRepository: locator<NetworkRepository>(),
+      // networkRepository: locator<NetworkRepository>(),
     ),
   );
 

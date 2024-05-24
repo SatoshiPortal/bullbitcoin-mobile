@@ -451,7 +451,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
         case ReverseSwapActions.settled:
           // __swapAlert(swapTx, wallet, emit);
-
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);
           if (w == null) return;
 
