@@ -8,20 +8,28 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/types.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:boltz_dart/boltz_dart.dart';
+import 'package:convert/convert.dart';
 import 'package:dio/dio.dart';
+import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 class SwapBoltz {
   SwapBoltz({
     required SecureStorage secureStorage,
     required Dio dio,
+    required NetworkRepository networkRepository,
   })  : _secureStorage = secureStorage,
+        _networkRepository = networkRepository,
         _dio = dio;
 
   final SecureStorage _secureStorage;
   final Dio _dio;
+  final NetworkRepository _networkRepository;
 
   Future<(Invoice?, Err?)> decodeInvoice({
     required String invoice,
@@ -502,13 +510,32 @@ class SwapBoltz {
         // .copyWith(electrumUrl: 'blockstream.info:995');
 
         // await Future.delayed(5.seconds);
-        final resp = await swap.claim(
+        final signedHex = await swap.claimBytes(
           outAddress: address,
           absFee: claimFeesEstimate,
           tryCooperate: tryCooperate,
         );
+        locator<Logger>()
+            .log('------${swapTx.id}-----\n$signedHex------signed-claim-----');
 
-        return (resp, null);
+        final (blockchain, err) = _networkRepository.liquidUrl;
+        if (err != null) throw err;
+
+        try {
+          final txid = await lwk.Wallet.broadcastTx(
+            electrumUrl: blockchain!,
+            txBytes: Uint8List.fromList(hex.decode(signedHex)),
+          );
+          return (txid, null);
+        } catch (e) {
+          print('Failed to broadcast transaction: $e');
+          await Future.delayed(const Duration(seconds: 5));
+          final txid = await lwk.Wallet.broadcastTx(
+            electrumUrl: blockchain!,
+            txBytes: Uint8List.fromList(hex.decode(signedHex)),
+          );
+          return (txid, null);
+        }
       } else {
         final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
         if (claimFeesEstimate == null) throw 'Fees estimate not found';
@@ -564,13 +591,39 @@ class SwapBoltz {
 
         final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
         // waiting on PR to add cooperative refund
-        final resp = await swap.refund(
+        // final resp = await swap.refund(
+        //   outAddress: address,
+        //   absFee: refundFeesEstimate,
+        //   tryCooperate: tryCooperate,
+        // );
+
+        // return (resp, null);
+
+        final signedHex = await swap.refundBytes(
           outAddress: address,
           absFee: refundFeesEstimate,
           tryCooperate: tryCooperate,
         );
+        locator<Logger>()
+            .log('------${swapTx.id}-----\n$signedHex------signed-refund-----');
+        final (blockchain, err) = _networkRepository.liquidUrl;
+        if (err != null) throw err;
 
-        return (resp, null);
+        try {
+          final txid = await lwk.Wallet.broadcastTx(
+            electrumUrl: blockchain!,
+            txBytes: Uint8List.fromList(hex.decode(signedHex)),
+          );
+          return (txid, null);
+        } catch (e) {
+          print('Failed to broadcast transaction: $e');
+          await Future.delayed(const Duration(seconds: 5));
+          final txid = await lwk.Wallet.broadcastTx(
+            electrumUrl: blockchain!,
+            txBytes: Uint8List.fromList(hex.decode(signedHex)),
+          );
+          return (txid, null);
+        }
       } else {
         final refundFeesEstimate = fees?.btcSubmarine.claimFees;
         if (refundFeesEstimate == null) throw 'Fees estimate not found';

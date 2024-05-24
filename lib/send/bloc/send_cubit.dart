@@ -518,8 +518,8 @@ class SendCubit extends Cubit<SendState> {
       wallet: localWallet,
       isManualSend: false,
       address: address,
-      amount: swaptx.outAmount,
-      // amount: 1000, // to test submarine refund
+      // amount: swaptx.outAmount,
+      amount: 1000, // to test submarine refund
       sendAllCoin: false,
       feeRate: fee,
       enableRbf: false,
