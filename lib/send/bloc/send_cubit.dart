@@ -377,17 +377,23 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(showSendButton: true));
   }
 
-  void resetWalletSelection({bool clearInv = true}) => emit(
-        state.copyWith(
-          enabledWallets: [],
-          selectedWalletBloc: null,
-          showSendButton: false,
-          invoice: clearInv ? null : state.invoice,
-          tempAmt: 0,
-          signed: false,
-          paymentNetwork: null,
-        ),
-      );
+  void resetWalletSelection({bool clearInv = true}) {
+    if (state.oneWallet) {
+      if (clearInv) emit(state.copyWith(invoice: null));
+      return;
+    }
+    emit(
+      state.copyWith(
+        enabledWallets: [],
+        selectedWalletBloc: null,
+        showSendButton: false,
+        invoice: clearInv ? null : state.invoice,
+        tempAmt: 0,
+        signed: false,
+        paymentNetwork: null,
+      ),
+    );
+  }
 
   void resetErrors() => emit(
         state.copyWith(
