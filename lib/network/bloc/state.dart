@@ -20,6 +20,7 @@ class NetworkState with _$NetworkState {
     @Default(ElectrumTypes.bullbitcoin) ElectrumTypes selectedNetwork,
     @Default([]) List<LiquidElectrumNetwork> liquidNetworks,
     @Default(LiquidElectrumTypes.blockstream)
+    @Default(LiquidElectrumNetwork.bullbitcoin)
     LiquidElectrumTypes selectedLiquidNetwork,
     @Default(false) bool loadingNetworks,
     @Default('') String errLoadingNetworks,

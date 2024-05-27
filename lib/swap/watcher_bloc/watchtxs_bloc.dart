@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -20,8 +22,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     required SwapBoltz swapBoltz,
     required WalletTx walletTx,
     required HomeCubit homeCubit,
+    required NetworkCubit networkCubit,
   })  : _walletTx = walletTx,
         _homeCubit = homeCubit,
+        _networkCubit = networkCubit,
         _swapBoltz = swapBoltz,
         super(const WatchTxsState()) {
     on<WatchWallets>(_onWatchWallets);
@@ -31,8 +35,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   final SwapBoltz _swapBoltz;
   final WalletTx _walletTx;
-
   final HomeCubit _homeCubit;
+  final NetworkCubit _networkCubit;
 
   BoltzApi? _boltzMainnet;
   BoltzApi? _boltzTestnet;
@@ -144,12 +148,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         final id = swapId;
         print('SwapStatusUpdate: $id - ${status.status}');
         if (!state.isListeningId(id)) return;
-        final swapTx = walletBloc.state.wallet!.getOngoingSwap(id)!;
+        final swapTx = walletBloc.state.wallet!.getOngoingSwap(id);
 
         add(
           ProcessSwapTx(
             walletId: walletBloc.state.wallet!.id,
-            swapTx: swapTx.copyWith(status: status),
+            swapTx: swapTx!.copyWith(status: status),
           ),
         );
       }
@@ -229,7 +233,13 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     SwapTx updatedSwap;
     try {
       final json = jsonDecode(txid!) as Map<String, dynamic>;
-      updatedSwap = swapTx.copyWith(txid: json['id'] as String);
+      updatedSwap = swapTx.copyWith(
+        txid: json['id'] as String,
+        status: SwapStreamStatus(
+          id: swapTx.id,
+          status: SwapStatus.swapRefunded,
+        ),
+      );
     } catch (e) {
       updatedSwap = swapTx.copyWith(txid: txid);
     }
@@ -420,6 +430,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;
     if (walletBloc == null || wallet == null) return;
+    final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
 
     if (!swapTx.isSubmarine) {
       switch (swapTx.reverseSwapAction()) {
@@ -431,8 +442,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __closeSwap(swapTx, emit);
 
         case ReverseSwapActions.paid:
-          // __swapAlert(swapTx, wallet, emit);
-          if (wallet.isLiquid()) {
+          if (wallet.isLiquid() &&
+              liquidElectrum == LiquidElectrumTypes.bullbitcoin) {
             final swap = await __claimSwap(swapTx, walletBloc, emit);
             if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
             return;
@@ -440,20 +451,15 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case ReverseSwapActions.claimable:
-          // __swapAlert(swapTx, wallet, emit);
-          // if (!wallet.isLiquid()) {
           final swap = await __claimSwap(swapTx, walletBloc, emit);
           if (swap != null)
             await __updateWalletTxs(swap, walletBloc, emit);
-          // } else if{}
           else
             await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case ReverseSwapActions.settled:
-          // __swapAlert(swapTx, wallet, emit);
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);
           if (w == null) return;
-
           await __closeSwap(swapTx, emit);
       }
     } else {
@@ -466,30 +472,30 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __closeSwap(swapTx, emit);
 
         case SubmarineSwapActions.paid:
-          print('---swap paid');
-
-          // __swapAlert(swapTx, wallet, emit);
-          // if (swapTx.isLiquid()) {
-          //   print('\n\n\n-----swap paid - starting coop in 5 seconds... ');
-          //   await Future.delayed(5.seconds);
-          //   await __coopCloseSwap(swapTx, walletBloc, emit);
-          // }
-          await __updateWalletTxs(swapTx, walletBloc, emit);
+          if (swapTx.isLiquid()) {
+            final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
+            if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+            return;
+          } else
+            await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case SubmarineSwapActions.claimable:
-          // print('---swap claimable');
-          // __swapAlert(swapTx, wallet, emit);
-
-          await __coopCloseSwap(swapTx, walletBloc, emit);
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-
+          final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
+          if (swap != null)
+            await __updateWalletTxs(swap, walletBloc, emit);
+          else
+            await __updateWalletTxs(swapTx, walletBloc, emit);
         case SubmarineSwapActions.refundable:
           await __updateWalletTxs(swapTx, walletBloc, emit);
           final swap = await __refundSwap(swapTx, walletBloc, emit);
-          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+          if (swap != null)
+            await __updateWalletTxs(
+              swap,
+              walletBloc,
+              emit,
+            );
 
         case SubmarineSwapActions.settled:
-          // __swapAlert(swapTx, wallet, emit);
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);
           if (w == null) return;
           await __closeSwap(swapTx, emit);

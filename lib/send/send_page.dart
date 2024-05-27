@@ -62,6 +62,7 @@ class _SendPageState extends State<SendPage> {
       walletTx: locator<WalletTx>(),
       homeCubit: context.read<HomeCubit>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
+      networkCubit: context.read<NetworkCubit>(),
     )..fetchFees(context.read<NetworkCubit>().state.testnet);
 
     networkFees = NetworkFeesCubit(
@@ -178,7 +179,7 @@ class _Screen extends StatelessWidget {
                   const WalletSelectionDropDown(),
                   const Gap(8),
                   const _Balance(),
-                  const Gap(48),
+                  const Gap(24),
                   const AddressField(),
                   const Gap(24),
                   const AmountField(),
@@ -191,7 +192,7 @@ class _Screen extends StatelessWidget {
                 ],
                 const _SendButton(),
                 const SendErrDisplay(),
-                const Gap(80),
+                const Gap(80), // why such a big gap at the end
               ],
             ],
           ),

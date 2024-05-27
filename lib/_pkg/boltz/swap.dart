@@ -482,16 +482,6 @@ class SwapBoltz {
       final address = wallet.lastGeneratedAddress?.address;
       if (address == null || address.isEmpty) throw 'Address not found';
 
-      final boltzurl =
-          wallet.network == BBNetwork.Testnet ? boltzTestnet : boltzMainnet;
-
-      final (fees, errFees) = await getFeesAndLimits(
-        boltzUrl: boltzurl,
-      );
-      if (errFees != null) {
-        throw errFees;
-      }
-
       final isLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
 
       final (swapSentive, err) = await _secureStorage.getValue(
@@ -504,22 +494,22 @@ class SwapBoltz {
       );
 
       if (isLiquid) {
-        final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
-        if (claimFeesEstimate == null) throw 'Fees estimate not found';
+        final (blockchain, err) = _networkRepository.liquidUrl;
+        if (err != null) throw err;
+
+        // final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
+        // if (claimFeesEstimate == null) throw 'Fees estimate not found';
         final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
         // .copyWith(electrumUrl: 'blockstream.info:995');
 
         // await Future.delayed(5.seconds);
         final signedHex = await swap.claimBytes(
           outAddress: address,
-          absFee: claimFeesEstimate,
+          absFee: swapTx.claimFees!,
           tryCooperate: tryCooperate,
         );
         locator<Logger>()
             .log('------${swapTx.id}-----\n$signedHex------signed-claim-----');
-
-        final (blockchain, err) = _networkRepository.liquidUrl;
-        if (err != null) throw err;
 
         try {
           final txid = await lwk.Wallet.broadcastTx(
@@ -537,6 +527,16 @@ class SwapBoltz {
           return (txid, null);
         }
       } else {
+        final boltzurl =
+            wallet.network == BBNetwork.Testnet ? boltzTestnet : boltzMainnet;
+
+        final (fees, errFees) = await getFeesAndLimits(
+          boltzUrl: boltzurl,
+        );
+        if (errFees != null) {
+          throw errFees;
+        }
+
         final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
         if (claimFeesEstimate == null) throw 'Fees estimate not found';
 

@@ -53,7 +53,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-const bbVersion = '0.2.1';
+const bbVersion = '0.2.1-1';
 
 GetIt locator = GetIt.instance;
 
@@ -282,6 +282,7 @@ Future _setupBlocs() async {
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
       homeCubit: locator<HomeCubit>(),
+      networkCubit: locator<NetworkCubit>(),
     ),
   );
 }

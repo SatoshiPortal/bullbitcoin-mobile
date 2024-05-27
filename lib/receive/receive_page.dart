@@ -59,6 +59,7 @@ class _ReceivePageState extends State<ReceivePage> {
       walletTx: locator<WalletTx>(),
       homeCubit: context.read<HomeCubit>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
+      networkCubit: context.read<NetworkCubit>(),
     )..fetchFees(context.read<NetworkCubit>().state.testnet);
 
     _currencyCubit = CurrencyCubit(

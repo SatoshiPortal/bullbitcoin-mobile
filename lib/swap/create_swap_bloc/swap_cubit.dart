@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
@@ -5,6 +6,7 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_state.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
@@ -20,11 +22,13 @@ class CreateSwapCubit extends Cubit<SwapState> {
     required WalletTx walletTx,
     required HomeCubit homeCubit,
     required WatchTxsBloc watchTxsBloc,
+    required NetworkCubit networkCubit,
   })  : _walletTx = walletTx,
         _swapBoltz = swapBoltz,
         _homeCubit = homeCubit,
         _watchTxsBloc = watchTxsBloc,
         _walletSensitiveRepository = walletSensitiveRepository,
+        _networkCubit = networkCubit,
         super(const SwapState());
 
   final WalletSensitiveStorageRepository _walletSensitiveRepository;
@@ -32,7 +36,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
   final WalletTx _walletTx;
   final HomeCubit _homeCubit;
   final WatchTxsBloc _watchTxsBloc;
-
+  final NetworkCubit _networkCubit;
   Future<void> fetchFees(bool isTestnet) async {
     final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
 
@@ -152,6 +156,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     //       ? fees.lbtcReverse.claimFeesEstimate
     //       : fees.btcReverse.claimFeesEstimate,
     // );
+    final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
 
     final updatedSwap = swap!.copyWith(
       boltzFees: walletIsLiquid
@@ -161,7 +166,9 @@ class CreateSwapCubit extends Cubit<SwapState> {
           ? fees.lbtcReverse.lockupFees
           : fees.btcReverse.lockupFees,
       claimFees: walletIsLiquid
-          ? fees.lbtcReverse.claimFeesEstimate
+          ? liquidElectrum == LiquidElectrumTypes.bullbitcoin
+              ? fees.lbtcReverse.claimFeesEstimate
+              : fees.lbtcReverse.claimFeesEstimate * 10
           : fees.btcReverse.claimFeesEstimate,
     );
 
