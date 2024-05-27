@@ -32,6 +32,7 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
           ? null
           : SwapTx.fromJson(json['swapTx'] as Map<String, dynamic>),
       isLiquid: json['isLiquid'] as bool? ?? false,
+      unblindedUrl: json['unblindedUrl'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
@@ -53,6 +54,7 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'isSwap': instance.isSwap,
       'swapTx': instance.swapTx,
       'isLiquid': instance.isLiquid,
+      'unblindedUrl': instance.unblindedUrl,
     };
 
 _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(

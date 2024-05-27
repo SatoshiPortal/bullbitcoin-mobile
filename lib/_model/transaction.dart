@@ -43,6 +43,7 @@ class Transaction with _$Transaction {
     @Default(false) bool isSwap,
     SwapTx? swapTx,
     @Default(false) bool isLiquid,
+    @Default('') String unblindedUrl,
   }) = _Transaction;
   const Transaction._();
 

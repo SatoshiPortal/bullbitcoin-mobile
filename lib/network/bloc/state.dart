@@ -96,11 +96,15 @@ class NetworkState with _$NetworkState {
   // return boltz.Chain.Bitcoin;
   // }
 
-  String explorerTxUrl(String txid, {bool isLiquid = false}) {
+  String explorerTxUrl(
+    String txid, {
+    bool isLiquid = false,
+    String unblindedUrl = '',
+  }) {
     if (isLiquid) {
       return testnet
-          ? '$liquidMempoolTestnet/tx/$txid'
-          : '$liquidMempool/tx/$txid';
+          ? '$liquidMempoolTestnet/$unblindedUrl'
+          : '$liquidMempool/$unblindedUrl';
     } else {
       return testnet
           ? 'https://$mempoolapi/testnet/tx/$txid'

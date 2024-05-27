@@ -193,6 +193,7 @@ class _TxDetails extends StatelessWidget {
         .select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
 
     final txid = tx.txid;
+    final unblindedUrl = tx.unblindedUrl;
     final amt = tx.getAmount().abs();
     final isReceived = tx.isReceived();
     final fees = tx.fee ?? 0;
@@ -277,10 +278,11 @@ class _TxDetails extends StatelessWidget {
               const Gap(4),
               InkWell(
                 onTap: () {
-                  final url = context
-                      .read<NetworkCubit>()
-                      .state
-                      .explorerTxUrl(txid, isLiquid: tx.isLiquid);
+                  final url = context.read<NetworkCubit>().state.explorerTxUrl(
+                        txid,
+                        isLiquid: tx.isLiquid,
+                        unblindedUrl: unblindedUrl,
+                      );
                   locator<Launcher>().launchApp(url);
                 },
                 child: BBText.body(txid, isBlue: true),

@@ -340,7 +340,7 @@ class LWKTransactions {
 
         final storedTxIdx = storedTxs.indexWhere((t) => t.txid == tx.txid);
         final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
-
+        final unblindedUrl = tx.unblindedUrl;
         Transaction? storedTx;
         if (storedTxIdx != -1) storedTx = storedTxs[storedTxIdx];
         if (idxUnsignedTx != -1) {
@@ -383,6 +383,7 @@ class LWKTransactions {
           isLiquid: true,
           swapTx: storedTx?.swapTx,
           isSwap: storedTx?.isSwap ?? false,
+          unblindedUrl: unblindedUrl,
         );
         transactions.add(txObj);
       }
