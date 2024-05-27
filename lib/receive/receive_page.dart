@@ -70,6 +70,7 @@ class _ReceivePageState extends State<ReceivePage> {
     _receiveCubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
+      walletBloc: widget.walletBloc,
     );
 
     final network = context.read<NetworkCubit>().state.getBBNetwork();
@@ -211,6 +212,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final oneWallet = context.select((ReceiveCubit _) => _.state.oneWallet);
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = context
         .select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
@@ -219,20 +221,27 @@ class ReceiveWalletsDropDown extends StatelessWidget {
 
     final walletBloc = selectedWalletBloc ?? walletBlocs.first;
 
-    return BBDropDown<WalletBloc>(
-      items: {
-        for (final wallet in walletBlocs)
-          wallet: (
-            label: wallet.state.wallet!.name ??
-                wallet.state.wallet!.sourceFingerprint,
-            enabled: true,
-          ),
-      },
-      value: walletBloc,
-      onChanged: (value) {
-        context.read<CreateSwapCubit>().removeWarnings();
-        context.read<ReceiveCubit>().updateWalletBloc(value);
-      },
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 300),
+      opacity: oneWallet ? 0.3 : 1,
+      child: IgnorePointer(
+        ignoring: oneWallet,
+        child: BBDropDown<WalletBloc>(
+          items: {
+            for (final wallet in walletBlocs)
+              wallet: (
+                label: wallet.state.wallet!.name ??
+                    wallet.state.wallet!.sourceFingerprint,
+                enabled: true,
+              ),
+          },
+          value: walletBloc,
+          onChanged: (value) {
+            context.read<CreateSwapCubit>().removeWarnings();
+            context.read<ReceiveCubit>().updateWalletBloc(value);
+          },
+        ),
+      ),
     );
   }
 }
@@ -246,14 +255,22 @@ class SelectWalletType extends StatelessWidget {
     final paymentNetwork =
         context.select((ReceiveCubit x) => x.state.paymentNetwork);
 
+    final btcAllowed = context.select(
+      (ReceiveCubit _) => _.state.allowedSwitch(PaymentNetwork.bitcoin),
+    );
+
+    final liqAllowed = context.select(
+      (ReceiveCubit _) => _.state.allowedSwitch(PaymentNetwork.liquid),
+    );
+
     // if (!isTestnet) return const SizedBox.shrink();
 
     return BBSwitcher<PaymentNetwork>(
       value: paymentNetwork,
-      items: const {
+      items: {
         PaymentNetwork.lightning: 'Lightning',
-        PaymentNetwork.bitcoin: 'Bitcoin',
-        PaymentNetwork.liquid: 'Liquid',
+        if (btcAllowed) PaymentNetwork.bitcoin: 'Bitcoin',
+        if (liqAllowed) PaymentNetwork.liquid: 'Liquid',
       },
       onChanged: (value) {
         if (paymentNetwork == PaymentNetwork.lightning)

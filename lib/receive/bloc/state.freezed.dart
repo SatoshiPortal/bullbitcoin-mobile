@@ -35,6 +35,7 @@ mixin _$ReceiveState {
   bool get switchToSecure => throw _privateConstructorUsedError;
   bool get switchToInstant => throw _privateConstructorUsedError;
   bool get receiveFormSubmitted => throw _privateConstructorUsedError;
+  bool get oneWallet => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ReceiveStateCopyWith<ReceiveState> get copyWith =>
@@ -66,7 +67,8 @@ abstract class $ReceiveStateCopyWith<$Res> {
       int? updateAddressGap,
       bool switchToSecure,
       bool switchToInstant,
-      bool receiveFormSubmitted});
+      bool receiveFormSubmitted,
+      bool oneWallet});
 
   $AddressCopyWith<$Res>? get defaultAddress;
   $AddressCopyWith<$Res>? get defaultLiquidAddress;
@@ -104,6 +106,7 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? switchToSecure = null,
     Object? switchToInstant = null,
     Object? receiveFormSubmitted = null,
+    Object? oneWallet = null,
   }) {
     return _then(_value.copyWith(
       loadingAddress: null == loadingAddress
@@ -182,6 +185,10 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.receiveFormSubmitted
           : receiveFormSubmitted // ignore: cast_nullable_to_non_nullable
               as bool,
+      oneWallet: null == oneWallet
+          ? _value.oneWallet
+          : oneWallet // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -237,7 +244,8 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       int? updateAddressGap,
       bool switchToSecure,
       bool switchToInstant,
-      bool receiveFormSubmitted});
+      bool receiveFormSubmitted,
+      bool oneWallet});
 
   @override
   $AddressCopyWith<$Res>? get defaultAddress;
@@ -275,6 +283,7 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? switchToSecure = null,
     Object? switchToInstant = null,
     Object? receiveFormSubmitted = null,
+    Object? oneWallet = null,
   }) {
     return _then(_$ReceiveStateImpl(
       loadingAddress: null == loadingAddress
@@ -353,6 +362,10 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
           ? _value.receiveFormSubmitted
           : receiveFormSubmitted // ignore: cast_nullable_to_non_nullable
               as bool,
+      oneWallet: null == oneWallet
+          ? _value.oneWallet
+          : oneWallet // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -379,7 +392,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.updateAddressGap,
       this.switchToSecure = false,
       this.switchToInstant = false,
-      this.receiveFormSubmitted = false})
+      this.receiveFormSubmitted = false,
+      this.oneWallet = false})
       : super._();
 
   @override
@@ -435,10 +449,13 @@ class _$ReceiveStateImpl extends _ReceiveState {
   @override
   @JsonKey()
   final bool receiveFormSubmitted;
+  @override
+  @JsonKey()
+  final bool oneWallet;
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, defaultLiquidAddress: $defaultLiquidAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, updateAddressGap: $updateAddressGap, switchToSecure: $switchToSecure, switchToInstant: $switchToInstant, receiveFormSubmitted: $receiveFormSubmitted)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, defaultLiquidAddress: $defaultLiquidAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, updateAddressGap: $updateAddressGap, switchToSecure: $switchToSecure, switchToInstant: $switchToInstant, receiveFormSubmitted: $receiveFormSubmitted, oneWallet: $oneWallet)';
   }
 
   @override
@@ -483,7 +500,9 @@ class _$ReceiveStateImpl extends _ReceiveState {
             (identical(other.switchToInstant, switchToInstant) ||
                 other.switchToInstant == switchToInstant) &&
             (identical(other.receiveFormSubmitted, receiveFormSubmitted) ||
-                other.receiveFormSubmitted == receiveFormSubmitted));
+                other.receiveFormSubmitted == receiveFormSubmitted) &&
+            (identical(other.oneWallet, oneWallet) ||
+                other.oneWallet == oneWallet));
   }
 
   @override
@@ -507,7 +526,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
         updateAddressGap,
         switchToSecure,
         switchToInstant,
-        receiveFormSubmitted
+        receiveFormSubmitted,
+        oneWallet
       ]);
 
   @JsonKey(ignore: true)
@@ -537,7 +557,8 @@ abstract class _ReceiveState extends ReceiveState {
       final int? updateAddressGap,
       final bool switchToSecure,
       final bool switchToInstant,
-      final bool receiveFormSubmitted}) = _$ReceiveStateImpl;
+      final bool receiveFormSubmitted,
+      final bool oneWallet}) = _$ReceiveStateImpl;
   const _ReceiveState._() : super._();
 
   @override
@@ -578,6 +599,8 @@ abstract class _ReceiveState extends ReceiveState {
   bool get switchToInstant;
   @override
   bool get receiveFormSubmitted;
+  @override
+  bool get oneWallet;
   @override
   @JsonKey(ignore: true)
   _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>

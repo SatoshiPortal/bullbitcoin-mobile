@@ -29,21 +29,29 @@ class ReceiveState with _$ReceiveState {
     @Default(false) bool switchToSecure,
     @Default(false) bool switchToInstant,
     @Default(false) bool receiveFormSubmitted,
+    @Default(false) bool oneWallet,
 
     // required SwapCubit swapBloc,
   }) = _ReceiveState;
   const ReceiveState._();
 
-  String getAddressWithAmountAndLabel(double amount, bool isLiquid, {SwapTx? swapTx, bool isTestnet = false}) {
+  String getAddressWithAmountAndLabel(
+    double amount,
+    bool isLiquid, {
+    SwapTx? swapTx,
+    bool isTestnet = false,
+  }) {
     final String address = getQRStr(swapTx: swapTx);
 
     String finalAddress = '';
-    if (paymentNetwork == PaymentNetwork.lightning || (amount == 0 && description.isEmpty)) {
+    if (paymentNetwork == PaymentNetwork.lightning ||
+        (amount == 0 && description.isEmpty)) {
       finalAddress = address;
     } else {
       if (isLiquid) {
         // Refer spec: https://github.com/ElementsProject/elements/issues/805
-        final lqAssetId = isTestnet ? liquidTestnetAssetId : liquidMainnetAssetId;
+        final lqAssetId =
+            isTestnet ? liquidTestnetAssetId : liquidMainnetAssetId;
         final liquidProtocol = isTestnet ? 'liquidtestnet' : 'liquidnetwork';
         finalAddress =
             '$liquidProtocol:$address?amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}&assetid=$lqAssetId';
@@ -67,7 +75,8 @@ class ReceiveState with _$ReceiveState {
       final btcAmt = (savedInvoiceAmount / 100000000).toStringAsFixed(8);
 
       var invoice = 'bitcoin:' + defaultAddress!.address + '?amount=' + btcAmt;
-      if (savedDescription.isNotEmpty) invoice = invoice + '&label=' + savedDescription;
+      if (savedDescription.isNotEmpty)
+        invoice = invoice + '&label=' + savedDescription;
 
       return invoice;
     }
@@ -81,25 +90,43 @@ class ReceiveState with _$ReceiveState {
   }
 
   bool isSupported() {
-    if (paymentNetwork == PaymentNetwork.bitcoin && walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Liquid)
+    if (paymentNetwork == PaymentNetwork.bitcoin &&
+        walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Liquid)
       return false;
-    if (paymentNetwork == PaymentNetwork.liquid && walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Bitcoin)
+    if (paymentNetwork == PaymentNetwork.liquid &&
+        walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Bitcoin)
       return false;
     return true;
   }
 
   bool showQR(SwapTx? swapTx) {
     return (swapTx != null && paymentNetwork == PaymentNetwork.lightning) ||
-        (paymentNetwork == PaymentNetwork.bitcoin || paymentNetwork == PaymentNetwork.liquid);
+        (paymentNetwork == PaymentNetwork.bitcoin ||
+            paymentNetwork == PaymentNetwork.liquid);
   }
 
   bool isLn() => paymentNetwork == PaymentNetwork.lightning;
 
-  bool checkIfMainWalletSelected() => walletBloc?.state.wallet?.mainWallet ?? false;
+  bool checkIfMainWalletSelected() =>
+      walletBloc?.state.wallet?.mainWallet ?? false;
 
   // bool _swapTxIsNotNull() => swapBloc.state.swapTx != null;
 
   // bool showActionButtons() =>
   //     paymentNetwork == ReceiveWalletType.secure ||
   //     (walletType == ReceiveWalletType.lightning && _swapTxIsNotNull());
+
+  bool allowedSwitch(PaymentNetwork network) {
+    if (!oneWallet) return true;
+
+    final walletType = walletBloc!.state.wallet!.baseWalletType;
+
+    if (network == PaymentNetwork.bitcoin &&
+        walletType == BaseWalletType.Liquid) return false;
+
+    if (network == PaymentNetwork.liquid &&
+        walletType == BaseWalletType.Bitcoin) return false;
+
+    return true;
+  }
 }

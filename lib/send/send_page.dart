@@ -206,6 +206,9 @@ class WalletSelectionDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final oneWallet = context.select(
+      (SendCubit cubit) => cubit.state.oneWallet,
+    );
     final loading = context.select((SendCubit _) => _.state.scanningAddress);
 
     final sending = context.select((SendCubit _) => _.state.sending);
@@ -219,6 +222,7 @@ class WalletSelectionDropDown extends StatelessWidget {
         .select((SendCubit cubit) => cubit.state.enabledWallets.isNotEmpty);
 
     if (loading || generatingInv || sending) enableDropdown = true;
+    if (oneWallet) enableDropdown = false;
 
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = context

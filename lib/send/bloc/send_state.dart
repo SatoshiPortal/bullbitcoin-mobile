@@ -38,6 +38,7 @@ class SendState with _$SendState {
     @Default(false) bool signed,
     String? psbtSigned,
     int? psbtSignedFeeAmount,
+    @Default(false) bool oneWallet,
   }) = _SendState;
   const SendState._();
 
@@ -181,6 +182,20 @@ class SendState with _$SendState {
     if (paymentNetwork == null) return false;
     final network = paymentNetwork!.toPaymentNetwork();
     return network == PaymentNetwork.liquid;
+  }
+
+  bool allowedSwitch(PaymentNetwork network) {
+    if (!oneWallet) return true;
+
+    final walletType = selectedWalletBloc!.state.wallet!.baseWalletType;
+
+    if (network == PaymentNetwork.bitcoin &&
+        walletType == BaseWalletType.Liquid) return false;
+
+    if (network == PaymentNetwork.liquid &&
+        walletType == BaseWalletType.Bitcoin) return false;
+
+    return true;
   }
 }
 

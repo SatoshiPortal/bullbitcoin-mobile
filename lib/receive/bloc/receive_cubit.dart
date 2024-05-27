@@ -15,7 +15,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required WalletsStorageRepository walletsStorageRepository,
   })  : _walletsStorageRepository = walletsStorageRepository,
         _walletAddress = walletAddress,
-        super(ReceiveState(walletBloc: walletBloc)) {
+        super(
+          ReceiveState(
+            walletBloc: walletBloc,
+            oneWallet: walletBloc != null,
+          ),
+        ) {
     loadAddress();
   }
 
@@ -23,6 +28,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final WalletsStorageRepository _walletsStorageRepository;
 
   void updateWalletBloc(WalletBloc walletBloc) {
+    if (state.oneWallet) return;
     emit(
       state.copyWith(
         walletBloc: walletBloc,
@@ -51,6 +57,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     bool onStart = false,
   }) {
     // if (!isTestnet) return;
+
+    if (!state.allowedSwitch(selectedPaymentNetwork)) return;
 
     if (onStart) {
       emit(state.copyWith(paymentNetwork: selectedPaymentNetwork));

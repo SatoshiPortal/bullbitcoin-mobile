@@ -71,7 +71,7 @@ class WalletActionButtons extends StatelessWidget {
               onPressed: () async {
                 context.push(
                   '/send',
-                  // extra: walletBloc,
+                  extra: walletBloc?.state.wallet!.id,
                 );
                 // final wallet = context.read<HomeCubit>().state.selectedWalletCubit!;
 

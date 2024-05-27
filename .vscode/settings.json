@@ -32,9 +32,9 @@
         "**/CHANGELOG.md": true,
         "LICENSE": true,
         "**/packages": true,
-        // "README.md": true,
-        // "**/**.g.dart": true,
-        // "**/**.freezed.dart": true,
+        "README.md": true,
+        "**/**.g.dart": true,
+        "**/**.freezed.dart": true,
         "windows": true,
         "web": true,
         "macos": true,
@@ -47,7 +47,7 @@
         "**/analysis_options.yaml": true,
         "build.yaml": true,
         "**/build": true,
-        // "**/assets": true,
+        "**/assets": true,
         "l10n.yaml": true,
         // 
         // 
@@ -55,13 +55,14 @@
         "repro": true,
         "doc": true,
         "op": true,
+        "docs": true,
         // 
         // 
         "android": true,
         "ios": true,
         // 
         // 
-        // "**/pubspec.yaml": true,
+        "**/pubspec.yaml": true,
         // 
         // 
         "**/test": true,

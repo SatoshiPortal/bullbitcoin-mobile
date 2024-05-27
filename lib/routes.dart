@@ -206,8 +206,12 @@ GoRouter setupRouter() => GoRouter(
           builder: (context, state) {
             final String? deepLinkUri = state.extra as String?;
             final openscanner = deepLinkUri != null && deepLinkUri == 'scan';
-
-            return SendPage(openScanner: openscanner);
+            final String? walletId =
+                !openscanner ? state.extra as String? : null;
+            return SendPage(
+              openScanner: openscanner,
+              walletId: walletId,
+            );
           },
         ),
         GoRoute(

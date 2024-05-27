@@ -42,6 +42,7 @@ class SendCubit extends Cubit<SendState> {
         super(
           SendState(
             selectedWalletBloc: walletBloc,
+            oneWallet: walletBloc != null,
           ),
         ) {
     emit(
@@ -52,6 +53,7 @@ class SendCubit extends Cubit<SendState> {
     );
 
     if (openScanner) scanAddress();
+    if (walletBloc != null) selectWallets(fromStart: true);
   }
 
   final Barcode _barcode;
@@ -65,7 +67,7 @@ class SendCubit extends Cubit<SendState> {
   final CreateSwapCubit _swapCubit;
 
   void updateAddress(String? addr) async {
-    resetWalletSelection();
+    if (!state.oneWallet) resetWalletSelection();
     resetErrors();
     _swapCubit.clearSwapTx();
     _swapCubit.clearErrors();
@@ -73,7 +75,6 @@ class SendCubit extends Cubit<SendState> {
       state.copyWith(
         errScanningAddress: '',
         scanningAddress: true,
-        paymentNetwork: null,
       ),
     );
     final address = addr ?? state.address;
@@ -95,9 +96,18 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
+    if (!state.allowedSwitch(paymentNetwork!.toPaymentNetwork())) {
+      emit(
+        state.copyWith(
+          errScanningAddress: 'Invalid address for this wallet',
+        ),
+      );
+      return;
+    }
+
     emit(state.copyWith(paymentNetwork: paymentNetwork));
 
-    switch (paymentNetwork!) {
+    switch (paymentNetwork) {
       case AddressNetwork.bip21Bitcoin:
         final bip21Obj = bip21.decode(address);
         final newAddress = bip21Obj.address;
@@ -198,9 +208,19 @@ class SendCubit extends Cubit<SendState> {
     selectWallets();
   }
 
-  void selectWallets() {
+  void selectWallets({bool fromStart = false}) {
     resetErrors();
-    if (state.paymentNetwork == null) return;
+    if (!fromStart) {
+      if (state.paymentNetwork == null) return;
+    } else {
+      final isLiq = state.selectedWalletBloc!.state.isLiq();
+      emit(
+        state.copyWith(
+          paymentNetwork:
+              isLiq ? AddressNetwork.liquid : AddressNetwork.bitcoin,
+        ),
+      );
+    }
     switch (state.paymentNetwork!) {
       case AddressNetwork.bip21Bitcoin:
         _processBitcoinAddress();
@@ -365,6 +385,7 @@ class SendCubit extends Cubit<SendState> {
           invoice: clearInv ? null : state.invoice,
           tempAmt: 0,
           signed: false,
+          paymentNetwork: null,
         ),
       );
 
@@ -381,6 +402,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void disabledDropdownClicked() {
+    if (state.oneWallet) return;
     emit(
       state.copyWith(
         errSending:

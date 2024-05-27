@@ -22,6 +22,7 @@ class SendListeners extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         BlocListener<CurrencyCubit, CurrencyState>(
+          listenWhen: (previous, current) => previous.amount != current.amount,
           listener: (context, state) {
             final isLn = context.read<SendCubit>().state.isLnInvoice();
             if (isLn) return;
