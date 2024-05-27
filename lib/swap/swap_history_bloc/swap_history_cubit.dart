@@ -77,7 +77,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     try {
       final swapsToAdd = <SwapTx>[];
       for (final tx in state.completeSwaps)
-        if (tx.txid == tx.swapTx!.id || tx.swapTx!.txid == null) {
+        if (tx.txid == tx.swapTx!.id || (tx.swapTx!.txid == null)) {
           if (!state.checkSwapExists(tx.swapTx!.id)) {
             swapsToAdd.add(tx.swapTx!);
           }

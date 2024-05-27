@@ -14,5 +14,6 @@ class SwapHistoryState with _$SwapHistoryState {
   }) = _SwapHistoryState;
   const SwapHistoryState._();
 
-  bool checkSwapExists(String id) => swaps.any((element) => element.$2 == id);
+  bool checkSwapExists(String id) =>
+      swaps.any((element) => element.$1.id == id);
 }
