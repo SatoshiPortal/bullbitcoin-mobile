@@ -288,7 +288,8 @@ class SwapTx with _$SwapTx {
   bool claimableReverse() =>
       !isSubmarine &&
       status != null &&
-      (status!.status == SwapStatus.txnConfirmed);
+      ((status!.status == SwapStatus.txnConfirmed) ||
+          (status!.status == SwapStatus.invoiceSettled && txid == null));
 
   bool expiredReverse() =>
       !isSubmarine &&
@@ -302,6 +303,7 @@ class SwapTx with _$SwapTx {
 
   bool settledReverse() =>
       !isSubmarine &&
+      txid != null &&
       (status != null && (status!.status == SwapStatus.invoiceSettled));
 
   bool paidReverse() =>

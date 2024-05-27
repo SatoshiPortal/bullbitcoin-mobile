@@ -1,10 +1,12 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
+import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/swap/swap_history_bloc/swap_history_state.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,8 +16,10 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     required NetworkCubit networkCubit,
     required SwapBoltz boltz,
     required WatchTxsBloc watcher,
+    required WalletTx walletTx,
   })  : _homeCubit = homeCubit,
         _networkCubit = networkCubit,
+        _walletTx = walletTx,
         _boltz = boltz,
         _watcher = watcher,
         super(const SwapHistoryState());
@@ -24,6 +28,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
   final NetworkCubit _networkCubit;
   final SwapBoltz _boltz;
   final WatchTxsBloc _watcher;
+  final WalletTx _walletTx;
 
   void loadSwaps() {
     final isTestnet = _networkCubit.state.testnet;
@@ -55,6 +60,66 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     );
 
     emit(state.copyWith(completeSwaps: completedSwaps));
+
+    migrateHistory();
+  }
+
+  void migrateHistory() async {
+    // for state.completeswaps
+    //    - if tx.txid == tx.swaptx.id
+    //    - if tx.swaptx.txid == null
+    //      - add to wallet swaps if not there
+    // if empty return
+
+    // save wallet
+    // loadswaps() and restart watchers
+
+    try {
+      final swapsToAdd = <SwapTx>[];
+      for (final tx in state.completeSwaps)
+        if (tx.txid == tx.swapTx!.id || tx.swapTx!.txid == null) {
+          if (!state.checkSwapExists(tx.swapTx!.id)) {
+            swapsToAdd.add(tx.swapTx!);
+          }
+        }
+
+      if (swapsToAdd.isEmpty) return;
+
+      for (final swap in swapsToAdd) {
+        final walletBloc = _homeCubit.state.getWalletBlocFromSwapTx(swap);
+        if (walletBloc == null) continue;
+        final (updatedWallet, err) = await _walletTx.addSwapTxToWallet(
+          wallet: walletBloc.state.wallet!,
+          swapTx: swap,
+        );
+        if (err != null) {
+          print('Error: Adding SwapTx to Wallet: ${swap.id}, Error: $err');
+          continue;
+        }
+
+        walletBloc.add(
+          UpdateWallet(
+            updatedWallet,
+            updateTypes: [
+              UpdateWalletTypes.swaps,
+              UpdateWalletTypes.transactions,
+            ],
+          ),
+        );
+
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
+
+      _watcher.add(
+        WatchWallets(
+          isTestnet: _networkCubit.state.testnet,
+        ),
+      );
+
+      loadSwaps();
+    } catch (e) {
+      print('Error: Swap History Processing: $e');
+    }
   }
 
   void swapUpdated(SwapTx swapTx) {

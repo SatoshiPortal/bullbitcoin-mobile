@@ -99,6 +99,21 @@ class HomeState with _$HomeState {
     return null;
   }
 
+  WalletBloc? getWalletBlocFromSwapTx(SwapTx swaptx) {
+    if (walletBlocs == null) return null;
+
+    for (final walletBloc in walletBlocs!) {
+      final wallet = walletBloc.state.wallet;
+      if (wallet == null) continue;
+      if (wallet.transactions.indexWhere(
+            (t) => t.swapTx?.id == swaptx.id,
+          ) !=
+          -1) return walletBloc;
+    }
+
+    return null;
+  }
+
   Wallet? getWalletFromTx(Transaction tx) {
     final walletBloc = getWalletBlocFromTx(tx);
     return walletBloc?.state.wallet;

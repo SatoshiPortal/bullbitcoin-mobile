@@ -13,4 +13,6 @@ class SwapHistoryState with _$SwapHistoryState {
     @Default(false) bool updateSwaps,
   }) = _SwapHistoryState;
   const SwapHistoryState._();
+
+  bool checkSwapExists(String id) => swaps.any((element) => element.$2 == id);
 }
