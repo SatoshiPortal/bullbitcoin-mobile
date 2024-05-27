@@ -8,10 +8,25 @@ function main.build {
     version=$1
     v_zone_build=$BBM_OP_HOME/builds/$BBM.$version
     
+    file_path="$BBM_HOME/lib/import/bloc/import_cubit.dart"
+
+    # Check if the file exists
+    if [[ -f $file_path ]]; then
+        # Look for the pattern in the file
+        if grep -q "bool useTestWallet = true" $file_path; then
+            echo "'bool useTestWallet = true'. Updating to 'false'."
+            # Update the pattern to 'false'
+            sed -i 's/bool useTestWallet = true/bool useTestWallet = false/' $file_path
+            echo "The file has been updated."
+        else
+            echo "'bool useTestWallet' is already set to false."
+        fi
+    else
+        echo "The file '$file_path' does not exist."
+    fi
     # $SED_COMPAT "s/const bbVersion = '[^']*';/const bbVersion = '$version';/g" "$BBM_HOME/lib/locator.dart"
     # $SED_COMPAT "s/version: [^ ]*/version: $version/g" "$BBM_HOME/pubspec.yaml"
     # $SED_COMPAT "s/versionName \"[^\"]*\"/versionName \"$version\"/g" "$BBM_HOME/android/app/build.gradle"
-
 
     #------------------ build aab & apk
     cd "$BBM_HOME/lib" || exit 1;
