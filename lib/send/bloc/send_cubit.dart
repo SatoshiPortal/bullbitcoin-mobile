@@ -573,7 +573,7 @@ class SendCubit extends Cubit<SendState> {
     final localWallet = localWalletBloc.state.wallet;
     final isLiq = localWallet!.isLiquid();
 
-    if (!localWallet.mainWallet) return;
+    // if (!localWallet.mainWallet) return;
 
     final address = swaptx.scriptAddress;
     // final fee = networkFees;
