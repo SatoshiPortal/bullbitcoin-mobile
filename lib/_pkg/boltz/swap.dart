@@ -8,11 +8,9 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/types.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:convert/convert.dart';
 import 'package:dio/dio.dart';
@@ -508,8 +506,8 @@ class SwapBoltz {
           absFee: swapTx.claimFees!,
           tryCooperate: tryCooperate,
         );
-        locator<Logger>()
-            .log('------${swapTx.id}-----\n$signedHex------signed-claim-----');
+        // locator<Logger>()
+        //     .log('------${swapTx.id}-----\n$signedHex------signed-claim-----');
 
         try {
           final txid = await lwk.Wallet.broadcastTx(
@@ -604,8 +602,8 @@ class SwapBoltz {
           absFee: refundFeesEstimate,
           tryCooperate: tryCooperate,
         );
-        locator<Logger>()
-            .log('------${swapTx.id}-----\n$signedHex------signed-refund-----');
+        // locator<Logger>()
+        //     .log('------${swapTx.id}-----\n$signedHex------signed-refund-----');
         final (blockchain, err) = _networkRepository.liquidUrl;
         if (err != null) throw err;
 
