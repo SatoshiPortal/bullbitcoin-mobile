@@ -240,20 +240,29 @@ class SendCubit extends Cubit<SendState> {
   Future _processLnInvoice() async {
     final amt = state.invoice!.getAmount();
 
-    final mainWalletsBlocs = _homeCubit.state.walletBlocsFromNetwork(
-      _networkCubit.state.getBBNetwork(),
-    );
-
-    var storedSwapTxIdx = -1;
     WalletBloc? walletBlocc;
-    for (final walletBloc in mainWalletsBlocs) {
-      final wallet = walletBloc.state.wallet!;
-      storedSwapTxIdx = wallet.swaps.indexWhere(
+    var storedSwapTxIdx = -1;
+
+    if (state.oneWallet) {
+      walletBlocc = state.selectedWalletBloc;
+      storedSwapTxIdx = walletBlocc!.state.wallet!.swaps.indexWhere(
         (element) => element.invoice == state.invoice!.invoice,
       );
-      if (storedSwapTxIdx != -1) {
-        walletBlocc = walletBloc;
-        break;
+    } else {
+      final mainWalletsBlocs = _homeCubit.state.walletBlocsFromNetwork(
+        _networkCubit.state.getBBNetwork(),
+      );
+
+      // WalletBloc? walletBlocc;
+      for (final walletBloc in mainWalletsBlocs) {
+        final wallet = walletBloc.state.wallet!;
+        storedSwapTxIdx = wallet.swaps.indexWhere(
+          (element) => element.invoice == state.invoice!.invoice,
+        );
+        if (storedSwapTxIdx != -1) {
+          walletBlocc = walletBloc;
+          break;
+        }
       }
     }
 
@@ -273,7 +282,8 @@ class SendCubit extends Cubit<SendState> {
       if (amt == 0)
         emit(state.copyWith(showSendButton: false));
       else
-        emit(state.copyWith(showSendButton: true));
+        _checkBalance();
+      // emit(state.copyWith(showSendButton: true));
 
       await _swapCubit.createSubSwapForSend(
         wallet: selectedWallet,
@@ -286,95 +296,125 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    final wallets = _homeCubit.state.walletsWithEnoughBalance(
-      amt,
-      _networkCubit.state.getBBNetwork(),
-      // onlyMain: true,
-    );
-    if (wallets.isEmpty) {
+    if (!state.oneWallet) {
+      final wallets = _homeCubit.state.walletsWithEnoughBalance(
+        amt,
+        _networkCubit.state.getBBNetwork(),
+        // onlyMain: true,
+      );
+      if (wallets.isEmpty) {
+        emit(
+          state.copyWith(
+            errScanningAddress: 'No wallet with enough balance',
+          ),
+        );
+        resetWalletSelection(clearInv: false);
+        return;
+      }
+
+      final selectWalletBloc = state.selectLiqThenSecThenOtherBtc(wallets);
       emit(
         state.copyWith(
-          errScanningAddress: 'No wallet with enough balance',
+          selectedWalletBloc: selectWalletBloc,
+          enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
         ),
       );
-      resetWalletSelection(clearInv: false);
-      return;
     }
-
-    final selectWalletBloc = state.selectLiqThenSecThenOtherBtc(wallets);
-    emit(
-      state.copyWith(
-        selectedWalletBloc: selectWalletBloc,
-        enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
-      ),
-    );
 
     if (amt == 0)
       emit(state.copyWith(showSendButton: false));
     else
-      emit(state.copyWith(showSendButton: true));
+      _checkBalance();
+
+    // emit(state.copyWith(showSendButton: true));
   }
 
   Future _processBitcoinAddress() async {
     final amount = _currencyCubit.state.amount;
-    final wallets = _homeCubit.state.walletsWithEnoughBalance(
-      amount,
-      _networkCubit.state.getBBNetwork(),
-      onlyBitcoin: true,
-    );
-    if (wallets.isEmpty) {
+
+    if (!state.oneWallet) {
+      final wallets = _homeCubit.state.walletsWithEnoughBalance(
+        amount,
+        _networkCubit.state.getBBNetwork(),
+        onlyBitcoin: true,
+      );
+      if (wallets.isEmpty) {
+        emit(
+          state.copyWith(
+            errScanningAddress: 'No wallet with enough balance',
+          ),
+        );
+        resetWalletSelection();
+        return;
+      }
+
+      final selectWallet = state.selectMainBtcThenOtherHighestBalBtc(wallets);
+
       emit(
         state.copyWith(
-          errScanningAddress: 'No wallet with enough balance',
+          enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
+          selectedWalletBloc: selectWallet,
         ),
       );
-      resetWalletSelection();
-      return;
     }
-
-    final selectWallet = state.selectMainBtcThenOtherHighestBalBtc(wallets);
-
-    emit(
-      state.copyWith(
-        enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
-        selectedWalletBloc: selectWallet,
-      ),
-    );
 
     if (amount == 0)
       emit(state.copyWith(showSendButton: false));
     else
-      emit(state.copyWith(showSendButton: true));
+      _checkBalance();
+
+    // emit(state.copyWith(showSendButton: true));
   }
 
   Future _processLiquidAddress() async {
     final amount = _currencyCubit.state.amount;
-    final wallets = _homeCubit.state.walletsWithEnoughBalance(
-      amount,
-      _networkCubit.state.getBBNetwork(),
-      onlyLiquid: true,
-    );
-    if (wallets.isEmpty) {
+
+    if (!state.oneWallet) {
+      final wallets = _homeCubit.state.walletsWithEnoughBalance(
+        amount,
+        _networkCubit.state.getBBNetwork(),
+        onlyLiquid: true,
+      );
+      if (wallets.isEmpty) {
+        emit(
+          state.copyWith(
+            errScanningAddress: 'No wallet with enough balance',
+          ),
+        );
+        resetWalletSelection();
+        return;
+      }
+
       emit(
         state.copyWith(
-          errScanningAddress: 'No wallet with enough balance',
+          selectedWalletBloc: wallets.first,
+          enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
         ),
       );
-      resetWalletSelection();
-      return;
     }
-
-    emit(
-      state.copyWith(
-        selectedWalletBloc: wallets.first,
-        enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
-      ),
-    );
 
     if (amount == 0)
       emit(state.copyWith(showSendButton: false));
     else
-      emit(state.copyWith(showSendButton: true));
+      _checkBalance();
+    // emit(state.copyWith(showSendButton: true));
+  }
+
+  void _checkBalance() {
+    final balance = state.selectedWalletBloc!.state.balanceSats();
+    final amount = _currencyCubit.state.amount;
+
+    if (balance < amount) {
+      emit(
+        state.copyWith(
+          errScanningAddress: 'Not enough balance',
+          showSendButton: false,
+        ),
+      );
+      return;
+    }
+
+    emit(state.copyWith(showSendButton: true));
   }
 
   void resetWalletSelection({bool clearInv = true}) {
