@@ -40,6 +40,10 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     );
   }
 
+  void showOnlyFastest(bool set) {
+    emit(state.copyWith(showOnlyFastest: set));
+  }
+
   Future<void> init() async {
     if (_defaultNetworkFeesCubit != null) {
       emit(_defaultNetworkFeesCubit.state);

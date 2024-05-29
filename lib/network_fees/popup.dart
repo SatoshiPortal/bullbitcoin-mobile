@@ -299,11 +299,14 @@ class SelectFeesItem extends StatelessWidget {
       ),
     );
 
+    final disableIndex =
+        context.select((NetworkFeesCubit x) => x.state.showOnlyFastest ? 1 : 3);
+
     return Opacity(
-      opacity: index == 3 ? 0.1 : 1,
+      opacity: index < disableIndex ? 1 : 0.1,
       child: GestureDetector(
         onTap: () {
-          if (index == 3) return;
+          if (index >= disableIndex) return;
           context.read<NetworkFeesCubit>().feeOptionSelected(index);
 
           FocusScope.of(context).unfocus();

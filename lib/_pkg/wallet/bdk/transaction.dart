@@ -878,7 +878,10 @@ class BDKTransactions {
       final txResult = await txBuilder.finish(pubWallet);
       final signedPSBT = await signingWallet.sign(psbt: txResult.$1);
 
+      final psbt = txResult.$1;
       final txDetails = txResult.$2;
+
+      final psbtStr = await psbt.serialize();
 
       final newTx = Transaction(
         txid: txDetails.txid,
@@ -889,7 +892,7 @@ class BDKTransactions {
         timestamp: txDetails.confirmationTime?.timestamp ?? 0,
         label: tx.label,
         toAddress: tx.toAddress,
-        psbt: signedPSBT.toString(),
+        psbt: psbtStr, // txPSBT.toString()
       );
       return (newTx, null);
     } on Exception catch (e) {

@@ -27,6 +27,7 @@ mixin _$NetworkFeesState {
   int? get tempSelectedFeesOption => throw _privateConstructorUsedError;
   bool get feesSaved => throw _privateConstructorUsedError;
   bool get loadingFees => throw _privateConstructorUsedError;
+  bool get showOnlyFastest => throw _privateConstructorUsedError;
   String get errLoadingFees => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,6 +50,7 @@ abstract class $NetworkFeesStateCopyWith<$Res> {
       int? tempSelectedFeesOption,
       bool feesSaved,
       bool loadingFees,
+      bool showOnlyFastest,
       String errLoadingFees});
 }
 
@@ -72,6 +74,7 @@ class _$NetworkFeesStateCopyWithImpl<$Res, $Val extends NetworkFeesState>
     Object? tempSelectedFeesOption = freezed,
     Object? feesSaved = null,
     Object? loadingFees = null,
+    Object? showOnlyFastest = null,
     Object? errLoadingFees = null,
   }) {
     return _then(_value.copyWith(
@@ -103,6 +106,10 @@ class _$NetworkFeesStateCopyWithImpl<$Res, $Val extends NetworkFeesState>
           ? _value.loadingFees
           : loadingFees // ignore: cast_nullable_to_non_nullable
               as bool,
+      showOnlyFastest: null == showOnlyFastest
+          ? _value.showOnlyFastest
+          : showOnlyFastest // ignore: cast_nullable_to_non_nullable
+              as bool,
       errLoadingFees: null == errLoadingFees
           ? _value.errLoadingFees
           : errLoadingFees // ignore: cast_nullable_to_non_nullable
@@ -127,6 +134,7 @@ abstract class _$$NetworkFeesStateImplCopyWith<$Res>
       int? tempSelectedFeesOption,
       bool feesSaved,
       bool loadingFees,
+      bool showOnlyFastest,
       String errLoadingFees});
 }
 
@@ -148,6 +156,7 @@ class __$$NetworkFeesStateImplCopyWithImpl<$Res>
     Object? tempSelectedFeesOption = freezed,
     Object? feesSaved = null,
     Object? loadingFees = null,
+    Object? showOnlyFastest = null,
     Object? errLoadingFees = null,
   }) {
     return _then(_$NetworkFeesStateImpl(
@@ -179,6 +188,10 @@ class __$$NetworkFeesStateImplCopyWithImpl<$Res>
           ? _value.loadingFees
           : loadingFees // ignore: cast_nullable_to_non_nullable
               as bool,
+      showOnlyFastest: null == showOnlyFastest
+          ? _value.showOnlyFastest
+          : showOnlyFastest // ignore: cast_nullable_to_non_nullable
+              as bool,
       errLoadingFees: null == errLoadingFees
           ? _value.errLoadingFees
           : errLoadingFees // ignore: cast_nullable_to_non_nullable
@@ -198,6 +211,7 @@ class _$NetworkFeesStateImpl extends _NetworkFeesState {
       this.tempSelectedFeesOption,
       this.feesSaved = false,
       this.loadingFees = false,
+      this.showOnlyFastest = false,
       this.errLoadingFees = ''})
       : _feesList = feesList,
         super._();
@@ -232,11 +246,14 @@ class _$NetworkFeesStateImpl extends _NetworkFeesState {
   final bool loadingFees;
   @override
   @JsonKey()
+  final bool showOnlyFastest;
+  @override
+  @JsonKey()
   final String errLoadingFees;
 
   @override
   String toString() {
-    return 'NetworkFeesState(fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, tempFees: $tempFees, tempSelectedFeesOption: $tempSelectedFeesOption, feesSaved: $feesSaved, loadingFees: $loadingFees, errLoadingFees: $errLoadingFees)';
+    return 'NetworkFeesState(fees: $fees, feesList: $feesList, selectedFeesOption: $selectedFeesOption, tempFees: $tempFees, tempSelectedFeesOption: $tempSelectedFeesOption, feesSaved: $feesSaved, loadingFees: $loadingFees, showOnlyFastest: $showOnlyFastest, errLoadingFees: $errLoadingFees)';
   }
 
   @override
@@ -256,6 +273,8 @@ class _$NetworkFeesStateImpl extends _NetworkFeesState {
                 other.feesSaved == feesSaved) &&
             (identical(other.loadingFees, loadingFees) ||
                 other.loadingFees == loadingFees) &&
+            (identical(other.showOnlyFastest, showOnlyFastest) ||
+                other.showOnlyFastest == showOnlyFastest) &&
             (identical(other.errLoadingFees, errLoadingFees) ||
                 other.errLoadingFees == errLoadingFees));
   }
@@ -271,6 +290,7 @@ class _$NetworkFeesStateImpl extends _NetworkFeesState {
       tempSelectedFeesOption,
       feesSaved,
       loadingFees,
+      showOnlyFastest,
       errLoadingFees);
 
   @JsonKey(ignore: true)
@@ -297,6 +317,7 @@ abstract class _NetworkFeesState extends NetworkFeesState {
       final int? tempSelectedFeesOption,
       final bool feesSaved,
       final bool loadingFees,
+      final bool showOnlyFastest,
       final String errLoadingFees}) = _$NetworkFeesStateImpl;
   const _NetworkFeesState._() : super._();
 
@@ -317,6 +338,8 @@ abstract class _NetworkFeesState extends NetworkFeesState {
   bool get feesSaved;
   @override
   bool get loadingFees;
+  @override
+  bool get showOnlyFastest;
   @override
   String get errLoadingFees;
   @override

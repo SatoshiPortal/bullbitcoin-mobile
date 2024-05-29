@@ -66,6 +66,27 @@ class BumpFeesButton extends StatelessWidget {
   }
 }
 
+class BumpButton extends StatelessWidget {
+  const BumpButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BBButton.big(
+          label: 'Bump Fees',
+          onPressed: () async {
+            final fees = context.read<NetworkFeesCubit>().state.feesForBump();
+            context.read<TransactionCubit>().buildTx(fees);
+          },
+        ),
+        const Gap(24),
+      ],
+    );
+  }
+}
+
 class BumpFeesPage extends StatefulWidget {
   const BumpFeesPage({super.key, required this.tx});
 
@@ -104,6 +125,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
       networkCubit: locator<NetworkCubit>(),
       defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
     );
+    networkFees.showOnlyFastest(true);
 
     txCubit = TransactionCubit(
       tx: widget.tx,
@@ -143,6 +165,17 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
   }
 
   @override
+  void dispose() {
+    networkFees.showOnlyFastest(false);
+    send.close();
+    txCubit.close();
+    networkFees.close();
+    currency.close();
+    swap.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (walletBloc == null) {
       context.pop();
@@ -167,8 +200,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
           ),
           automaticallyImplyLeading: false,
         ),
-        body:
-            const StackedPage(bottomChild: BumpFeesButton(), child: _Screen()),
+        body: const StackedPage(bottomChild: BumpButton(), child: _Screen()),
       ),
     );
   }
@@ -182,9 +214,6 @@ class _Screen extends StatelessWidget {
     final tx = context.select((TransactionCubit _) => _.state.tx);
     final swap = tx.swapTx;
     final isSwapPending = tx.swapIdisTxid();
-
-    final err = context
-        .select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
 
     final txid = tx.txid;
     final amt = tx.getAmount().abs();
@@ -203,6 +232,11 @@ class _Screen extends StatelessWidget {
     );
 
     final statuss = tx.height == null || tx.height == 0 || tx.timestamp == 0;
+
+    final er = context.select((TransactionCubit x) => x.state.errSendingTx);
+    final err = context.select((TransactionCubit x) => x.state.errBuildingTx);
+
+    final errr = err.isNotEmpty ? err : er;
 
     return SingleChildScrollView(
       child: Padding(
@@ -285,6 +319,8 @@ class _Screen extends StatelessWidget {
                   err,
                 ),
               ],
+              const Gap(24),
+              if (errr.isNotEmpty) BBText.errorSmall(errr),
               // const Gap(100),
             ],
           ),
