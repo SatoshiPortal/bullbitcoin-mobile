@@ -16,9 +16,14 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class SelectFeesButton extends StatelessWidget {
-  const SelectFeesButton({super.key, this.fromSettings = false});
+  const SelectFeesButton({
+    super.key,
+    this.fromSettings = false,
+    this.label,
+  });
 
   final bool fromSettings;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +36,7 @@ class SelectFeesButton extends StatelessWidget {
       txt = context.select((NetworkFeesCubit _) => _.state.defaultFeeStatus());
 
       return BBButton.textWithStatusAndRightArrow(
-        label: 'Default fee rate',
+        label: label ?? 'Default fee rate',
         statusText: txt,
         loading: loading,
         onPressed: () {
@@ -49,7 +54,7 @@ class SelectFeesButton extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const BBText.title('Default fee rate'),
+              BBText.title(label ?? 'Default fee rate'),
               BBText.bodySmall(txt, isBlue: true),
             ],
           ),
