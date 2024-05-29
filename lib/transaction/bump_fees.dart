@@ -66,8 +66,8 @@ class BumpFeesButton extends StatelessWidget {
   }
 }
 
-class BumpButton extends StatelessWidget {
-  const BumpButton({super.key});
+class BumpFooterButton extends StatelessWidget {
+  const BumpFooterButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +200,8 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
           ),
           automaticallyImplyLeading: false,
         ),
-        body: const StackedPage(bottomChild: BumpButton(), child: _Screen()),
+        body: const StackedPage(
+            bottomChild: BumpFooterButton(), child: _Screen()),
       ),
     );
   }
@@ -230,6 +231,11 @@ class _Screen extends StatelessWidget {
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(),
     );
+
+    final feeRate = (tx.feeRate ?? 1).toStringAsFixed(2);
+
+    // final size = await tx.bdkTx.transaction.size(); // cant do await here.
+    // final feesPetByte = fees / size;
 
     final statuss = tx.height == null || tx.height == 0 || tx.timestamp == 0;
 
@@ -308,6 +314,10 @@ class _Screen extends StatelessWidget {
                   BBText.title(
                     units,
                     isBold: true,
+                  ),
+                  const Gap(4),
+                  BBText.title(
+                    '($feeRate sats/vB)',
                   ),
                 ],
               ),

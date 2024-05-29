@@ -197,6 +197,37 @@ class BDKTransactions {
 
       final List<Transaction> transactions = [];
 
+      final List<bdk.TransactionDetails> pending = [];
+      for (final tx in txs) {
+        if (tx.confirmationTime == null ||
+            tx.confirmationTime?.timestamp == 0) {
+          pending.add(tx);
+          // final SerializedTx sTx = SerializedTx.fromJson(
+          //   jsonDecode(tx.transaction!.inner) as Map<String, dynamic>,
+          // );
+          // final outs = sTx.output;
+          // if ((outs?.length ?? 0) > 1) {
+          //   // if (addressStr.endsWith('759')) {
+          //   // if (tx.sent - tx.received == 2463) {
+          //   for (final Output out in sTx.output ?? []) {
+          //     final scriptPubKey = await bdk.ScriptBuf.fromHex(
+          //       out.scriptPubkey ?? '',
+          //     );
+          //     final addressStruct = await bdk.Address.fromScript(
+          //       script: scriptPubKey,
+          //       network: bdkNetwork,
+          //     );
+          //     final addressStr = await addressStruct.asString();
+
+          //     print(
+          //       '${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${sTx.output?.length}:$addressStr',
+          //     );
+          //   }
+          //   // }
+          // }
+        }
+      }
+
       for (final tx in txs) {
         String? label;
 
@@ -210,11 +241,13 @@ class BDKTransactions {
           if (tx.txid == unsignedTxs[idxUnsignedTx].txid)
             unsignedTxs.removeAt(idxUnsignedTx);
         }
+        final vsize = await tx.transaction?.vsize() ?? 1;
         var txObj = Transaction(
           txid: tx.txid,
           received: tx.received,
           sent: tx.sent,
           fee: tx.fee ?? 0,
+          feeRate: (tx.fee ?? 1) / vsize.toDouble(),
           height: tx.confirmationTime?.height ?? 0,
           timestamp: tx.confirmationTime?.timestamp ?? 0,
           bdkTx: tx,
@@ -435,6 +468,10 @@ class BDKTransactions {
 
       for (final tx in storedTxs) {
         if (transactions.any((t) => t.txid == tx.txid)) continue;
+
+        final bool isRbf = await isRBFTx(bdkNetwork, pending, tx);
+        if (isRbf) continue;
+
         transactions.add(tx);
       }
 
@@ -454,6 +491,46 @@ class BDKTransactions {
         )
       );
     }
+  }
+
+  Future<bool> isRBFTx(
+    bdk.Network bdkNetwork,
+    List<bdk.TransactionDetails> pending,
+    Transaction tx,
+  ) async {
+    for (final Address addr in tx.outAddrs) {
+      for (final bdk.TransactionDetails pendingTx in pending) {
+        //print(
+        //  '[stored] ${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${tx.outAddrs.length}:${addr.address}',
+        //);
+
+        final SerializedTx sTx = SerializedTx.fromJson(
+          jsonDecode(pendingTx.transaction!.inner) as Map<String, dynamic>,
+        );
+        final outs = sTx.output;
+        for (final Output out in sTx.output ?? []) {
+          final scriptPubKey = await bdk.ScriptBuf.fromHex(
+            out.scriptPubkey ?? '',
+          );
+          final addressStruct = await bdk.Address.fromScript(
+            script: scriptPubKey,
+            network: bdkNetwork,
+          );
+          final addressStr = await addressStruct.asString();
+
+          final pendingTxId = await pendingTx.transaction?.txid();
+          // print(
+          //   '${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${sTx.output?.length}:$addressStr',
+          // );
+
+          if (addressStr == addr.address) {
+            print('$pendingTxId is RBF of ${tx.txid}');
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   // Future<(Wallet?, Err?)> getTransactionsNew({
@@ -691,6 +768,7 @@ class BDKTransactions {
         received: txDetails.received,
         sent: txDetails.sent,
         fee: feeAmt ?? 0,
+        feeRate: feeRate,
         height: txDetails.confirmationTime?.height,
         timestamp: 0,
         // txDetails.confirmationTime?.timestamp ?? 0,
@@ -888,6 +966,7 @@ class BDKTransactions {
         received: txDetails.received,
         sent: txDetails.sent,
         fee: txDetails.fee ?? 0,
+        feeRate: feeRate,
         height: txDetails.confirmationTime?.height,
         timestamp: txDetails.confirmationTime?.timestamp ?? 0,
         label: tx.label,

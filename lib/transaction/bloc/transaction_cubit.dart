@@ -212,6 +212,15 @@ class TransactionCubit extends Cubit<TransactionState> {
         ),
       );
       return;
+    } else if (fees.toDouble() <= (state.tx.feeRate ?? 1.0)) {
+      emit(
+        state.copyWith(
+          buildingTx: false,
+          errBuildingTx:
+              'New fee rate ($fees sats/vB) must be greater than previous fee rate',
+        ),
+      );
+      return;
     }
 
     final (wallet, err) = await _walletsStorageRepository.readWallet(

@@ -336,6 +336,10 @@ class _TxDetails extends StatelessWidget {
                   units,
                   isBold: true,
                 ),
+                const Gap(4),
+                BBText.title(
+                  '(${tx.feeRate?.toStringAsFixed(2)} sats/vB)',
+                ),
               ],
             ),
             const Gap(24),

@@ -20,6 +20,7 @@ class Transaction with _$Transaction {
     int? received,
     int? sent,
     int? fee,
+    double? feeRate,
     int? height,
     String? label,
     String? toAddress,
