@@ -30,7 +30,7 @@ class Transaction with _$Transaction {
     )
     Uint8List? pset,
     @Default(true) bool rbfEnabled,
-    @Default(false) bool oldTx,
+    // @Default(false) bool oldTx,
     int? broadcastTime,
     // String? serializedTx,
     @Default([]) List<Address> outAddrs,

@@ -788,7 +788,7 @@ class BDKTransactions {
         label: note,
         toAddress: address,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,
-        oldTx: false,
+        // oldTx: false,
       );
 
       final txs = wallet.transactions.toList();

@@ -31,8 +31,8 @@ mixin _$Transaction {
   String? get psbt => throw _privateConstructorUsedError;
   @JsonKey(includeFromJson: false, includeToJson: false)
   Uint8List? get pset => throw _privateConstructorUsedError;
-  bool get rbfEnabled => throw _privateConstructorUsedError;
-  bool get oldTx => throw _privateConstructorUsedError;
+  bool get rbfEnabled =>
+      throw _privateConstructorUsedError; // @Default(false) bool oldTx,
   int? get broadcastTime =>
       throw _privateConstructorUsedError; // String? serializedTx,
   List<Address> get outAddrs => throw _privateConstructorUsedError;
@@ -68,7 +68,6 @@ abstract class $TransactionCopyWith<$Res> {
       String? psbt,
       @JsonKey(includeFromJson: false, includeToJson: false) Uint8List? pset,
       bool rbfEnabled,
-      bool oldTx,
       int? broadcastTime,
       List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
@@ -105,7 +104,6 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? psbt = freezed,
     Object? pset = freezed,
     Object? rbfEnabled = null,
-    Object? oldTx = null,
     Object? broadcastTime = freezed,
     Object? outAddrs = null,
     Object? bdkTx = freezed,
@@ -158,10 +156,6 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
       rbfEnabled: null == rbfEnabled
           ? _value.rbfEnabled
           : rbfEnabled // ignore: cast_nullable_to_non_nullable
-              as bool,
-      oldTx: null == oldTx
-          ? _value.oldTx
-          : oldTx // ignore: cast_nullable_to_non_nullable
               as bool,
       broadcastTime: freezed == broadcastTime
           ? _value.broadcastTime
@@ -227,7 +221,6 @@ abstract class _$$TransactionImplCopyWith<$Res>
       String? psbt,
       @JsonKey(includeFromJson: false, includeToJson: false) Uint8List? pset,
       bool rbfEnabled,
-      bool oldTx,
       int? broadcastTime,
       List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
@@ -263,7 +256,6 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? psbt = freezed,
     Object? pset = freezed,
     Object? rbfEnabled = null,
-    Object? oldTx = null,
     Object? broadcastTime = freezed,
     Object? outAddrs = null,
     Object? bdkTx = freezed,
@@ -317,10 +309,6 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.rbfEnabled
           : rbfEnabled // ignore: cast_nullable_to_non_nullable
               as bool,
-      oldTx: null == oldTx
-          ? _value.oldTx
-          : oldTx // ignore: cast_nullable_to_non_nullable
-              as bool,
       broadcastTime: freezed == broadcastTime
           ? _value.broadcastTime
           : broadcastTime // ignore: cast_nullable_to_non_nullable
@@ -368,7 +356,6 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       this.psbt,
       @JsonKey(includeFromJson: false, includeToJson: false) this.pset,
       this.rbfEnabled = true,
-      this.oldTx = false,
       this.broadcastTime,
       final List<Address> outAddrs = const [],
       @JsonKey(includeFromJson: false, includeToJson: false) this.bdkTx,
@@ -406,9 +393,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
   @override
   @JsonKey()
   final bool rbfEnabled;
-  @override
-  @JsonKey()
-  final bool oldTx;
+// @Default(false) bool oldTx,
   @override
   final int? broadcastTime;
 // String? serializedTx,
@@ -440,7 +425,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid, unblindedUrl: $unblindedUrl)';
+    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid, unblindedUrl: $unblindedUrl)';
   }
 
   @override
@@ -459,7 +444,6 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('psbt', psbt))
       ..add(DiagnosticsProperty('pset', pset))
       ..add(DiagnosticsProperty('rbfEnabled', rbfEnabled))
-      ..add(DiagnosticsProperty('oldTx', oldTx))
       ..add(DiagnosticsProperty('broadcastTime', broadcastTime))
       ..add(DiagnosticsProperty('outAddrs', outAddrs))
       ..add(DiagnosticsProperty('bdkTx', bdkTx))
@@ -489,7 +473,6 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
             const DeepCollectionEquality().equals(other.pset, pset) &&
             (identical(other.rbfEnabled, rbfEnabled) ||
                 other.rbfEnabled == rbfEnabled) &&
-            (identical(other.oldTx, oldTx) || other.oldTx == oldTx) &&
             (identical(other.broadcastTime, broadcastTime) ||
                 other.broadcastTime == broadcastTime) &&
             const DeepCollectionEquality().equals(other._outAddrs, _outAddrs) &&
@@ -504,28 +487,26 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hashAll([
-        runtimeType,
-        timestamp,
-        txid,
-        received,
-        sent,
-        fee,
-        height,
-        label,
-        toAddress,
-        psbt,
-        const DeepCollectionEquality().hash(pset),
-        rbfEnabled,
-        oldTx,
-        broadcastTime,
-        const DeepCollectionEquality().hash(_outAddrs),
-        bdkTx,
-        isSwap,
-        swapTx,
-        isLiquid,
-        unblindedUrl
-      ]);
+  int get hashCode => Object.hash(
+      runtimeType,
+      timestamp,
+      txid,
+      received,
+      sent,
+      fee,
+      height,
+      label,
+      toAddress,
+      psbt,
+      const DeepCollectionEquality().hash(pset),
+      rbfEnabled,
+      broadcastTime,
+      const DeepCollectionEquality().hash(_outAddrs),
+      bdkTx,
+      isSwap,
+      swapTx,
+      isLiquid,
+      unblindedUrl);
 
   @JsonKey(ignore: true)
   @override
@@ -555,7 +536,6 @@ abstract class _Transaction extends Transaction {
       @JsonKey(includeFromJson: false, includeToJson: false)
       final Uint8List? pset,
       final bool rbfEnabled,
-      final bool oldTx,
       final int? broadcastTime,
       final List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
@@ -592,9 +572,7 @@ abstract class _Transaction extends Transaction {
   Uint8List? get pset;
   @override
   bool get rbfEnabled;
-  @override
-  bool get oldTx;
-  @override
+  @override // @Default(false) bool oldTx,
   int? get broadcastTime;
   @override // String? serializedTx,
   List<Address> get outAddrs;

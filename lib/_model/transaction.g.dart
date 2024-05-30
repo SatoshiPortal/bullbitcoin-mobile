@@ -18,7 +18,6 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
       toAddress: json['toAddress'] as String?,
       psbt: json['psbt'] as String?,
       rbfEnabled: json['rbfEnabled'] as bool? ?? true,
-      oldTx: json['oldTx'] as bool? ?? false,
       broadcastTime: (json['broadcastTime'] as num?)?.toInt(),
       outAddrs: (json['outAddrs'] as List<dynamic>?)
               ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
@@ -44,7 +43,6 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'toAddress': instance.toAddress,
       'psbt': instance.psbt,
       'rbfEnabled': instance.rbfEnabled,
-      'oldTx': instance.oldTx,
       'broadcastTime': instance.broadcastTime,
       'outAddrs': instance.outAddrs,
       'isSwap': instance.isSwap,
