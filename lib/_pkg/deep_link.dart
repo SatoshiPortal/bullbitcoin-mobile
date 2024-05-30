@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/bip21.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/wallet/bip21.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +87,9 @@ bool? isTestnetAddress(String address) {
       address.startsWith('n') ||
       address.startsWith('tb1')) return true;
 
-  if (address.startsWith('1') || address.startsWith('3') || address.startsWith('bc1')) return false;
+  if (address.startsWith('1') ||
+      address.startsWith('3') ||
+      address.startsWith('bc1')) return false;
 
   return null;
 }

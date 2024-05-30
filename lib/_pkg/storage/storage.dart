@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/migrations/migration.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/migration.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:hive/hive.dart';
