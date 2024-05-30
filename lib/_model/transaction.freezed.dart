@@ -44,6 +44,7 @@ mixin _$Transaction {
   SwapTx? get swapTx => throw _privateConstructorUsedError;
   bool get isLiquid => throw _privateConstructorUsedError;
   String get unblindedUrl => throw _privateConstructorUsedError;
+  List<String> get rbfTxIds => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -79,7 +80,8 @@ abstract class $TransactionCopyWith<$Res> {
       bool isSwap,
       SwapTx? swapTx,
       bool isLiquid,
-      String unblindedUrl});
+      String unblindedUrl,
+      List<String> rbfTxIds});
 
   $WalletCopyWith<$Res>? get wallet;
   $SwapTxCopyWith<$Res>? get swapTx;
@@ -119,6 +121,7 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? swapTx = freezed,
     Object? isLiquid = null,
     Object? unblindedUrl = null,
+    Object? rbfTxIds = null,
   }) {
     return _then(_value.copyWith(
       timestamp: null == timestamp
@@ -205,6 +208,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.unblindedUrl
           : unblindedUrl // ignore: cast_nullable_to_non_nullable
               as String,
+      rbfTxIds: null == rbfTxIds
+          ? _value.rbfTxIds
+          : rbfTxIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 
@@ -263,7 +270,8 @@ abstract class _$$TransactionImplCopyWith<$Res>
       bool isSwap,
       SwapTx? swapTx,
       bool isLiquid,
-      String unblindedUrl});
+      String unblindedUrl,
+      List<String> rbfTxIds});
 
   @override
   $WalletCopyWith<$Res>? get wallet;
@@ -303,6 +311,7 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? swapTx = freezed,
     Object? isLiquid = null,
     Object? unblindedUrl = null,
+    Object? rbfTxIds = null,
   }) {
     return _then(_$TransactionImpl(
       timestamp: null == timestamp
@@ -389,6 +398,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.unblindedUrl
           : unblindedUrl // ignore: cast_nullable_to_non_nullable
               as String,
+      rbfTxIds: null == rbfTxIds
+          ? _value._rbfTxIds
+          : rbfTxIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -417,8 +430,10 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       this.isSwap = false,
       this.swapTx,
       this.isLiquid = false,
-      this.unblindedUrl = ''})
+      this.unblindedUrl = '',
+      final List<String> rbfTxIds = const []})
       : _outAddrs = outAddrs,
+        _rbfTxIds = rbfTxIds,
         super._();
 
   factory _$TransactionImpl.fromJson(Map<String, dynamic> json) =>
@@ -482,10 +497,18 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
   @override
   @JsonKey()
   final String unblindedUrl;
+  final List<String> _rbfTxIds;
+  @override
+  @JsonKey()
+  List<String> get rbfTxIds {
+    if (_rbfTxIds is EqualUnmodifiableListView) return _rbfTxIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_rbfTxIds);
+  }
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, feeRate: $feeRate, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid, unblindedUrl: $unblindedUrl)';
+    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, feeRate: $feeRate, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid, unblindedUrl: $unblindedUrl, rbfTxIds: $rbfTxIds)';
   }
 
   @override
@@ -513,7 +536,8 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('isSwap', isSwap))
       ..add(DiagnosticsProperty('swapTx', swapTx))
       ..add(DiagnosticsProperty('isLiquid', isLiquid))
-      ..add(DiagnosticsProperty('unblindedUrl', unblindedUrl));
+      ..add(DiagnosticsProperty('unblindedUrl', unblindedUrl))
+      ..add(DiagnosticsProperty('rbfTxIds', rbfTxIds));
   }
 
   @override
@@ -548,7 +572,8 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
             (identical(other.isLiquid, isLiquid) ||
                 other.isLiquid == isLiquid) &&
             (identical(other.unblindedUrl, unblindedUrl) ||
-                other.unblindedUrl == unblindedUrl));
+                other.unblindedUrl == unblindedUrl) &&
+            const DeepCollectionEquality().equals(other._rbfTxIds, _rbfTxIds));
   }
 
   @JsonKey(ignore: true)
@@ -575,7 +600,8 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
         isSwap,
         swapTx,
         isLiquid,
-        unblindedUrl
+        unblindedUrl,
+        const DeepCollectionEquality().hash(_rbfTxIds)
       ]);
 
   @JsonKey(ignore: true)
@@ -616,7 +642,8 @@ abstract class _Transaction extends Transaction {
       final bool isSwap,
       final SwapTx? swapTx,
       final bool isLiquid,
-      final String unblindedUrl}) = _$TransactionImpl;
+      final String unblindedUrl,
+      final List<String> rbfTxIds}) = _$TransactionImpl;
   const _Transaction._() : super._();
 
   factory _Transaction.fromJson(Map<String, dynamic> json) =
@@ -666,6 +693,8 @@ abstract class _Transaction extends Transaction {
   bool get isLiquid;
   @override
   String get unblindedUrl;
+  @override
+  List<String> get rbfTxIds;
   @override
   @JsonKey(ignore: true)
   _$$TransactionImplCopyWith<_$TransactionImpl> get copyWith =>

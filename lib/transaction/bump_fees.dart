@@ -28,9 +28,11 @@ import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
+import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
@@ -47,6 +49,7 @@ class BumpFeesButton extends StatelessWidget {
         context.select((TransactionCubit x) => x.state.tx.isReceived());
     final isBitcoin =
         context.select((TransactionCubit x) => !x.state.tx.isLiquid);
+
     final canBump = isBitcoin && canRbf && !isReceive;
     print('Bump fees :: state.tx :: canBump $canBump');
     if (!canBump) return const SizedBox.shrink();
@@ -81,7 +84,6 @@ class BumpFooterButton extends StatelessWidget {
             context.read<TransactionCubit>().buildTx(fees);
           },
         ),
-        const Gap(24),
       ],
     );
   }
@@ -126,6 +128,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
       defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
     );
     networkFees.showOnlyFastest(true);
+    networkFees.feeOptionSelected(0);
 
     txCubit = TransactionCubit(
       tx: widget.tx,
@@ -190,18 +193,31 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
         BlocProvider.value(value: networkFees),
         BlocProvider.value(value: locator<WatchTxsBloc>()),
       ],
-      child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: BBAppBar(
-            text: 'Bump Tx',
-            onBack: () {
-              context.pop();
-            },
+      child: BlocListener<TransactionCubit, TransactionState>(
+        listenWhen: (previous, current) => previous.sentTx != current.sentTx,
+        listener: (context, state) async {
+          if (state.sentTx) {
+            await Future.delayed(2.seconds);
+            context
+              ..pop()
+              ..pop();
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            flexibleSpace: BBAppBar(
+              text: 'Bump Tx',
+              onBack: () {
+                context.pop();
+              },
+            ),
+            automaticallyImplyLeading: false,
           ),
-          automaticallyImplyLeading: false,
+          body: const StackedPage(
+            bottomChild: BumpFooterButton(),
+            child: _Screen(),
+          ),
         ),
-        body: const StackedPage(
-            bottomChild: BumpFooterButton(), child: _Screen()),
       ),
     );
   }

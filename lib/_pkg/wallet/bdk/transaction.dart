@@ -197,6 +197,7 @@ class BDKTransactions {
 
       final List<Transaction> transactions = [];
 
+      // TODO: pending is not needed. Remove it later.
       final List<bdk.TransactionDetails> pending = [];
       for (final tx in txs) {
         if (tx.confirmationTime == null ||
@@ -255,9 +256,8 @@ class BDKTransactions {
           outAddrs: storedTx?.outAddrs ?? [],
           swapTx: storedTx?.swapTx,
           isSwap: storedTx?.isSwap ?? false,
+          rbfTxIds: storedTx?.rbfTxIds ?? [],
         );
-        // var outAddrs;
-        // var inAddres;
         final SerializedTx sTx = SerializedTx.fromJson(
           jsonDecode(txObj.bdkTx!.transaction!.inner) as Map<String, dynamic>,
         );
@@ -469,8 +469,13 @@ class BDKTransactions {
       for (final tx in storedTxs) {
         if (transactions.any((t) => t.txid == tx.txid)) continue;
 
-        final bool isRbf = await isRBFTx(bdkNetwork, pending, tx);
-        if (isRbf) continue;
+        if (transactions.any((t) {
+          return t.rbfTxIds.any((ids) => ids == tx.txid);
+        })) continue;
+
+        //if (transactions.any((t) =>
+        //    t.txid == tx.txid || t.rbfTxIds.any((ids) => ids == tx.txid)))
+        //  continue;
 
         transactions.add(tx);
       }
@@ -493,6 +498,18 @@ class BDKTransactions {
     }
   }
 
+  // bool isRBFTx(
+  //   List<Transaction> txlist,
+  //   Transaction tx,
+  // ) {
+
+  //   for (final Transactiontx in txlist) {
+  //     final rbfMatch = tx.txid
+  //   }
+  //
+  // }
+
+  /*
   Future<bool> isRBFTx(
     bdk.Network bdkNetwork,
     List<bdk.TransactionDetails> pending,
@@ -523,6 +540,8 @@ class BDKTransactions {
           //   '${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${sTx.output?.length}:$addressStr',
           // );
 
+          // TODO:
+          // 1. In transaction model, have array of txid for storing past RBF txs
           if (addressStr == addr.address) {
             print('$pendingTxId is RBF of ${tx.txid}');
             return true;
@@ -532,6 +551,7 @@ class BDKTransactions {
     }
     return false;
   }
+  */
 
   // Future<(Wallet?, Err?)> getTransactionsNew({
   //   required Wallet wallet,
@@ -954,7 +974,6 @@ class BDKTransactions {
       );
       txBuilder = txBuilder.enableRbf();
       final txResult = await txBuilder.finish(pubWallet);
-      final signedPSBT = await signingWallet.sign(psbt: txResult.$1);
 
       final psbt = txResult.$1;
       final txDetails = txResult.$2;
@@ -971,7 +990,8 @@ class BDKTransactions {
         timestamp: txDetails.confirmationTime?.timestamp ?? 0,
         label: tx.label,
         toAddress: tx.toAddress,
-        psbt: psbtStr, // txPSBT.toString()
+        psbt: psbtStr,
+        rbfTxIds: [...tx.rbfTxIds, tx.txid],
       );
       return (newTx, null);
     } on Exception catch (e) {
