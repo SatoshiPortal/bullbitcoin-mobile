@@ -590,7 +590,7 @@ class SendCubit extends Cubit<SendState> {
       // amount: 1000, // to test submarine refund
       sendAllCoin: false,
       feeRate: fee,
-      enableRbf: false,
+      enableRbf: true,
       note: state.note,
     );
     if (err != null) {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
@@ -252,7 +253,7 @@ class BDKTransactions {
           height: tx.confirmationTime?.height ?? 0,
           timestamp: tx.confirmationTime?.timestamp ?? 0,
           bdkTx: tx,
-          rbfEnabled: storedTx?.rbfEnabled ?? false,
+          rbfEnabled: storedTx?.rbfEnabled ?? true,
           outAddrs: storedTx?.outAddrs ?? [],
           swapTx: storedTx?.swapTx,
           isSwap: storedTx?.isSwap ?? false,
@@ -878,6 +879,19 @@ class BDKTransactions {
     try {
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
       final tx = await psbtStruct.extractTx();
+      log(tx.inner);
+      log(tx.toString());
+      print('---');
+      print(tx.inner);
+      print(tx);
+      final s1 = await psbtStruct.serialize();
+      final s2 = await psbtStruct.jsonSerialize();
+      final s3 = await tx.serialize();
+      final s3Hex = conv.hex.encode(s3);
+      print(s1);
+      print(s2);
+      print(s3);
+      print(s3Hex);
 
       await blockchain.broadcast(transaction: tx);
       final txid = await psbtStruct.txid();
@@ -977,6 +991,12 @@ class BDKTransactions {
 
       final psbt = txResult.$1;
       final txDetails = txResult.$2;
+
+      final etx = await psbt.extractTx();
+      final s3 = await etx.serialize();
+      final s3Hex = conv.hex.encode(s3);
+      print(s3);
+      print(s3Hex);
 
       final psbtStr = await psbt.serialize();
 
