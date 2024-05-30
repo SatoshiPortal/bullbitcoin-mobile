@@ -89,9 +89,7 @@ class _HomeTransactionsState extends State<HomeTransactions> {
               .walletBlocsFromNetwork(network.getBBNetwork());
           for (final wallet in wallets) wallet.add(SyncWallet());
 
-          context
-              .read<WatchTxsBloc>()
-              .add(WatchWallets(isTestnet: network.testnet));
+          context.read<WatchTxsBloc>().add(WatchWallets());
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -7,9 +7,7 @@ class WatchTxsEvent {}
 // }
 
 class WatchWallets extends WatchTxsEvent {
-  WatchWallets({required this.isTestnet});
-
-  final bool isTestnet;
+  WatchWallets();
 }
 
 // class ClearAlerts extends WatchTxsEvent {}

@@ -62,7 +62,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   }
 
   void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) async {
-    print('WatchWallets: istesntnet? ${event.isTestnet}');
+    final isTestnet = _networkCubit.state.testnet;
+    print('WatchWallets: istesntnet? $isTestnet');
     await Future.delayed(100.ms);
     final network = _networkCubit.state.getBBNetwork();
     final walletBlocs = _homeCubit.state.walletBlocsFromNetwork(network);
@@ -79,7 +80,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     __watchSwapStatus(
       emit,
       swapTxsToWatch: swapsToWatch.map((_) => _.id).toList(),
-      isTestnet: event.isTestnet,
+      isTestnet: isTestnet,
     );
   }
 

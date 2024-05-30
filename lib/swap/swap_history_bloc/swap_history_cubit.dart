@@ -110,11 +110,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
         await Future.delayed(const Duration(milliseconds: 300));
       }
 
-      _watcher.add(
-        WatchWallets(
-          isTestnet: _networkCubit.state.testnet,
-        ),
-      );
+      _watcher.add(WatchWallets());
 
       loadSwaps();
     } catch (e) {
