@@ -24,9 +24,6 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      wallet: json['wallet'] == null
-          ? null
-          : Wallet.fromJson(json['wallet'] as Map<String, dynamic>),
       isSwap: json['isSwap'] as bool? ?? false,
       swapTx: json['swapTx'] == null
           ? null
@@ -50,7 +47,6 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'oldTx': instance.oldTx,
       'broadcastTime': instance.broadcastTime,
       'outAddrs': instance.outAddrs,
-      'wallet': instance.wallet,
       'isSwap': instance.isSwap,
       'swapTx': instance.swapTx,
       'isLiquid': instance.isLiquid,

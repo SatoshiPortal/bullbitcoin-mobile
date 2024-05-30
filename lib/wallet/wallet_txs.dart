@@ -138,7 +138,7 @@ class HomeTxItem extends StatelessWidget {
         tx.getAmount(
           sentAsTotal: true,
         ),
-        isLiquid: tx.wallet?.isLiquid() ?? false,
+        isLiquid: tx.isLiquid,
       ),
     );
 

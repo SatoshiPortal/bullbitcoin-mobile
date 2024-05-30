@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
@@ -10,14 +9,13 @@ class WalletNetwork implements IWalletNetwork {
   WalletNetwork({
     required NetworkRepository networkRepository,
     required BDKNetwork bdkNetwork,
-    required Logger logger,
+    // required Logger logger,
   })  : _networkRepository = networkRepository,
-        _bdkNetwork = bdkNetwork,
-        _logger = logger;
+        _bdkNetwork = bdkNetwork;
 
   final NetworkRepository _networkRepository;
   final BDKNetwork _bdkNetwork;
-  final Logger _logger;
+  // final Logger _logger;
 
   @override
   Future<Err?> createBlockChain({

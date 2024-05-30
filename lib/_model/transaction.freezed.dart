@@ -37,8 +37,8 @@ mixin _$Transaction {
       throw _privateConstructorUsedError; // String? serializedTx,
   List<Address> get outAddrs => throw _privateConstructorUsedError;
   @JsonKey(includeFromJson: false, includeToJson: false)
-  bdk.TransactionDetails? get bdkTx => throw _privateConstructorUsedError;
-  Wallet? get wallet => throw _privateConstructorUsedError;
+  bdk.TransactionDetails? get bdkTx =>
+      throw _privateConstructorUsedError; // Wallet? wallet,
   bool get isSwap => throw _privateConstructorUsedError;
   SwapTx? get swapTx => throw _privateConstructorUsedError;
   bool get isLiquid => throw _privateConstructorUsedError;
@@ -73,13 +73,11 @@ abstract class $TransactionCopyWith<$Res> {
       List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       bdk.TransactionDetails? bdkTx,
-      Wallet? wallet,
       bool isSwap,
       SwapTx? swapTx,
       bool isLiquid,
       String unblindedUrl});
 
-  $WalletCopyWith<$Res>? get wallet;
   $SwapTxCopyWith<$Res>? get swapTx;
 }
 
@@ -111,7 +109,6 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? broadcastTime = freezed,
     Object? outAddrs = null,
     Object? bdkTx = freezed,
-    Object? wallet = freezed,
     Object? isSwap = null,
     Object? swapTx = freezed,
     Object? isLiquid = null,
@@ -178,10 +175,6 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.bdkTx
           : bdkTx // ignore: cast_nullable_to_non_nullable
               as bdk.TransactionDetails?,
-      wallet: freezed == wallet
-          ? _value.wallet
-          : wallet // ignore: cast_nullable_to_non_nullable
-              as Wallet?,
       isSwap: null == isSwap
           ? _value.isSwap
           : isSwap // ignore: cast_nullable_to_non_nullable
@@ -199,18 +192,6 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           : unblindedUrl // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $WalletCopyWith<$Res>? get wallet {
-    if (_value.wallet == null) {
-      return null;
-    }
-
-    return $WalletCopyWith<$Res>(_value.wallet!, (value) {
-      return _then(_value.copyWith(wallet: value) as $Val);
-    });
   }
 
   @override
@@ -251,14 +232,11 @@ abstract class _$$TransactionImplCopyWith<$Res>
       List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       bdk.TransactionDetails? bdkTx,
-      Wallet? wallet,
       bool isSwap,
       SwapTx? swapTx,
       bool isLiquid,
       String unblindedUrl});
 
-  @override
-  $WalletCopyWith<$Res>? get wallet;
   @override
   $SwapTxCopyWith<$Res>? get swapTx;
 }
@@ -289,7 +267,6 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? broadcastTime = freezed,
     Object? outAddrs = null,
     Object? bdkTx = freezed,
-    Object? wallet = freezed,
     Object? isSwap = null,
     Object? swapTx = freezed,
     Object? isLiquid = null,
@@ -356,10 +333,6 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value.bdkTx
           : bdkTx // ignore: cast_nullable_to_non_nullable
               as bdk.TransactionDetails?,
-      wallet: freezed == wallet
-          ? _value.wallet
-          : wallet // ignore: cast_nullable_to_non_nullable
-              as Wallet?,
       isSwap: null == isSwap
           ? _value.isSwap
           : isSwap // ignore: cast_nullable_to_non_nullable
@@ -399,7 +372,6 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       this.broadcastTime,
       final List<Address> outAddrs = const [],
       @JsonKey(includeFromJson: false, includeToJson: false) this.bdkTx,
-      this.wallet,
       this.isSwap = false,
       this.swapTx,
       this.isLiquid = false,
@@ -453,8 +425,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   final bdk.TransactionDetails? bdkTx;
-  @override
-  final Wallet? wallet;
+// Wallet? wallet,
   @override
   @JsonKey()
   final bool isSwap;
@@ -469,7 +440,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid, unblindedUrl: $unblindedUrl)';
+    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid, unblindedUrl: $unblindedUrl)';
   }
 
   @override
@@ -492,7 +463,6 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('broadcastTime', broadcastTime))
       ..add(DiagnosticsProperty('outAddrs', outAddrs))
       ..add(DiagnosticsProperty('bdkTx', bdkTx))
-      ..add(DiagnosticsProperty('wallet', wallet))
       ..add(DiagnosticsProperty('isSwap', isSwap))
       ..add(DiagnosticsProperty('swapTx', swapTx))
       ..add(DiagnosticsProperty('isLiquid', isLiquid))
@@ -524,7 +494,6 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
                 other.broadcastTime == broadcastTime) &&
             const DeepCollectionEquality().equals(other._outAddrs, _outAddrs) &&
             (identical(other.bdkTx, bdkTx) || other.bdkTx == bdkTx) &&
-            (identical(other.wallet, wallet) || other.wallet == wallet) &&
             (identical(other.isSwap, isSwap) || other.isSwap == isSwap) &&
             (identical(other.swapTx, swapTx) || other.swapTx == swapTx) &&
             (identical(other.isLiquid, isLiquid) ||
@@ -552,7 +521,6 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
         broadcastTime,
         const DeepCollectionEquality().hash(_outAddrs),
         bdkTx,
-        wallet,
         isSwap,
         swapTx,
         isLiquid,
@@ -592,7 +560,6 @@ abstract class _Transaction extends Transaction {
       final List<Address> outAddrs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       final bdk.TransactionDetails? bdkTx,
-      final Wallet? wallet,
       final bool isSwap,
       final SwapTx? swapTx,
       final bool isLiquid,
@@ -634,9 +601,7 @@ abstract class _Transaction extends Transaction {
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   bdk.TransactionDetails? get bdkTx;
-  @override
-  Wallet? get wallet;
-  @override
+  @override // Wallet? wallet,
   bool get isSwap;
   @override
   SwapTx? get swapTx;

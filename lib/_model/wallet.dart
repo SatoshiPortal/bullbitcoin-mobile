@@ -348,7 +348,9 @@ class Wallet with _$Wallet {
 
   List<Transaction> getPendingTxs() {
     return transactions
-        .map((e) => e.copyWith(wallet: this))
+        // .map(
+        //   (e) => e,//.copyWith(wallet: this),
+        // )
         .where((tx) => tx.timestamp == 0 && !tx.oldTx)
         .toList()
         .reversed
@@ -357,7 +359,7 @@ class Wallet with _$Wallet {
 
   List<Transaction> getConfirmedTxs() {
     final txs = transactions
-        .map((e) => e.copyWith(wallet: this))
+        // .map((e) => e.copyWith(wallet: this))
         .where((tx) => tx.timestamp != 0 && !tx.oldTx)
         .toList();
     txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));

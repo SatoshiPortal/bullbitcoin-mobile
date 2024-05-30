@@ -233,7 +233,7 @@ Future _setupWalletServices() async {
   locator.registerSingleton<WalletNetwork>(
     WalletNetwork(
       networkRepository: locator<NetworkRepository>(),
-      logger: locator<Logger>(),
+      // logger: locator<Logger>(),
       bdkNetwork: locator<BDKNetwork>(),
     ),
   );

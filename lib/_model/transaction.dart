@@ -39,7 +39,7 @@ class Transaction with _$Transaction {
       includeToJson: false,
     )
     bdk.TransactionDetails? bdkTx,
-    Wallet? wallet,
+    // Wallet? wallet,
     @Default(false) bool isSwap,
     SwapTx? swapTx,
     @Default(false) bool isLiquid,
