@@ -19,8 +19,8 @@ import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 
-int mainWalletIndex = 0;
-int testWalletIndex = 0;
+// int mainWalletIndex = 0;
+// int testWalletIndex = 0;
 
 Future<void> doMigration0_1to0_2(
   SecureStorage secureStorage,
@@ -144,6 +144,9 @@ Future<
 ) async {
   Seed? liquidMainnetSeed;
   Seed? liquidTestnetSeed;
+
+  int mainWalletIndex = 0;
+  int testWalletIndex = 0;
 
   // TODO: Test this assumption
   // Assuming first wallet is to be changed to secure and further wallets to words
