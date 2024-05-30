@@ -244,6 +244,8 @@ class BDKTransactions {
             unsignedTxs.removeAt(idxUnsignedTx);
         }
         final vsize = await tx.transaction?.vsize() ?? 1;
+        final isNativeRbf = await tx.transaction?.isExplicitlyRbf() ??
+            (storedTx?.rbfEnabled ?? false);
         var txObj = Transaction(
           txid: tx.txid,
           received: tx.received,
@@ -253,7 +255,8 @@ class BDKTransactions {
           height: tx.confirmationTime?.height ?? 0,
           timestamp: tx.confirmationTime?.timestamp ?? 0,
           bdkTx: tx,
-          rbfEnabled: storedTx?.rbfEnabled ?? true,
+          // rbfEnabled: storedTx?.rbfEnabled ?? isNativeRbf,
+          rbfEnabled: isNativeRbf,
           outAddrs: storedTx?.outAddrs ?? [],
           swapTx: storedTx?.swapTx,
           isSwap: storedTx?.isSwap ?? false,
@@ -876,9 +879,11 @@ class BDKTransactions {
     required Transaction transaction,
     String? note,
   }) async {
+    int vsize = 0;
     try {
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
       final tx = await psbtStruct.extractTx();
+      vsize = await tx.vsize();
       log(tx.inner);
       log(tx.toString());
       print('---');
@@ -916,6 +921,22 @@ class BDKTransactions {
 
       return ((w, txid), null);
     } on Exception catch (e) {
+      final errMsg = e.message;
+      if (errMsg.contains('BdkError.electrum') && errMsg.contains('-26,')) {
+        final requiredSatsStr = errMsg.split('<').last;
+        final requiredSats =
+            double.tryParse(requiredSatsStr.substring(0, 11)) ?? 0.0;
+        final feeRate = ((requiredSats * 100000000) / vsize).ceil();
+
+        return (
+          null,
+          Err(
+            'Min required: $feeRate sats/vB',
+            title: 'Increase fee rate',
+            solution: '',
+          )
+        );
+      }
       return (
         null,
         Err(
