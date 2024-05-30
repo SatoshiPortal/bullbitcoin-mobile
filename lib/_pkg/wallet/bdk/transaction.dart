@@ -988,6 +988,7 @@ class BDKTransactions {
       );
       txBuilder = txBuilder.enableRbf();
       final txResult = await txBuilder.finish(pubWallet);
+      final signedPSBT = await signingWallet.sign(psbt: txResult.$1);
 
       final psbt = txResult.$1;
       final txDetails = txResult.$2;
