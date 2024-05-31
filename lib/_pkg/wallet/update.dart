@@ -10,8 +10,9 @@ class WalletUpdate {
   // check collect vins and vouts
   // check for related addresses and inherit labels
   void updateAddressList(List<Address> addressList, Address address) {
-    final existingAddressIndex =
-        addressList.indexWhere((a) => a.address == address.address && a.kind == address.kind);
+    final existingAddressIndex = addressList.indexWhere(
+      (a) => a.address == address.address && a.kind == address.kind,
+    );
     if (existingAddressIndex != -1) {
       final updatedAddress = addressList[existingAddressIndex].copyWith(
         state: address.state,
@@ -23,13 +24,17 @@ class WalletUpdate {
     }
   }
 
-  Future<(Wallet?, Err?)> updateAddressLabels(Wallet wallet, List<Address> addresses) async {
+  Future<(Wallet?, Err?)> updateAddressLabels(
+    Wallet wallet,
+    List<Address> addresses,
+  ) async {
     List<Address> myAddressBook = [];
     List<Address> externalAddressBook = [];
     myAddressBook = [...wallet.myAddressBook];
     externalAddressBook = [...wallet.externalAddressBook ?? []];
     for (final address in addresses) {
-      final existingMyAddressIndex = myAddressBook.indexWhere((a) => a.address == address.address);
+      final existingMyAddressIndex =
+          myAddressBook.indexWhere((a) => a.address == address.address);
       if (existingMyAddressIndex != -1) {
         final updatedAddress = myAddressBook[existingMyAddressIndex].copyWith(
           label: address.label,
@@ -41,7 +46,8 @@ class WalletUpdate {
           externalAddressBook.indexWhere((a) => a.address == address.address);
 
       if (existingExternalAddressIndex != -1) {
-        final updatedAddress = externalAddressBook[existingExternalAddressIndex].copyWith(
+        final updatedAddress =
+            externalAddressBook[existingExternalAddressIndex].copyWith(
           label: address.label,
         );
         externalAddressBook[existingExternalAddressIndex] = updatedAddress;
@@ -54,7 +60,10 @@ class WalletUpdate {
     return (w, null);
   }
 
-  Future<(Wallet?, Err?)> updateTransactionLabels(Wallet wallet, List<Transaction> txs) async {
+  Future<(Wallet?, Err?)> updateTransactionLabels(
+    Wallet wallet,
+    List<Transaction> txs,
+  ) async {
     List<Transaction> transactions = [];
     transactions = [...wallet.transactions];
     for (final tx in txs) {
@@ -62,7 +71,9 @@ class WalletUpdate {
       if (txIndex != -1) {
         final updatedTx = transactions[txIndex].copyWith(
           label: tx.label,
-          outAddrs: tx.outAddrs.map((addr) => addr.copyWith(label: tx.label)).toList(),
+          outAddrs: tx.outAddrs
+              .map((addr) => addr.copyWith(label: tx.label))
+              .toList(),
         );
         transactions[txIndex] = updatedTx;
       }
@@ -73,7 +84,8 @@ class WalletUpdate {
 
   Future<(Wallet?, Err?)> updateAddressesFromTxs(Wallet wallet) async {
     final updatedAddresses = List<Address>.from(wallet.myAddressBook);
-    final updatedToAddresses = List<Address>.from(wallet.externalAddressBook ?? []);
+    final updatedToAddresses =
+        List<Address>.from(wallet.externalAddressBook ?? []);
 
     for (final tx in wallet.transactions) {
       for (final address in tx.outAddrs) {
@@ -100,10 +112,14 @@ class WalletUpdate {
     );
   }
 
-  Future<(Wallet?, Err?)> updateAddressesForOneTx(Wallet wallet, Transaction tx) async {
+  Future<(Wallet?, Err?)> updateAddressesForOneTx(
+    Wallet wallet,
+    Transaction tx,
+  ) async {
     try {
       final updatedAddresses = List<Address>.from(wallet.myAddressBook);
-      final updatedToAddresses = List<Address>.from(wallet.externalAddressBook ?? []);
+      final updatedToAddresses =
+          List<Address>.from(wallet.externalAddressBook ?? []);
 
       for (final address in tx.outAddrs) {
         if (tx.isReceived()) {
@@ -136,11 +152,31 @@ class WalletUpdate {
     }
   }
 
-  Future<bool> walletExists(String mnemonicFingerprint, List<Wallet> wallets) async {
+  Future<bool> walletExists(
+    String mnemonicFingerprint,
+    List<Wallet> wallets,
+  ) async {
     if (wallets.isEmpty) return false;
     for (final wallet in wallets) {
       if (wallet.mnemonicFingerprint == mnemonicFingerprint) return true;
     }
     return false;
+  }
+
+  Future<(Wallet?, Err?)> removePrevTxofRbf(
+    Wallet wallet,
+    Transaction original,
+    Transaction rbf,
+  ) async {
+    // return (wallet, null);
+    // final txs = [...wallet.transactions];
+    // final originalIndex = txs.indexWhere((tx) => tx.txid == original.txid);
+    // txs[originalIndex] = rbf;
+    // final updatedWallet = wallet.copyWith(transactions: txs);
+    // return (updatedWallet, null);
+    final txs = [...wallet.transactions];
+    txs.removeWhere((tx) => tx.txid == original.txid);
+    final updatedWallet = wallet.copyWith(transactions: txs);
+    return (updatedWallet, null);
   }
 }

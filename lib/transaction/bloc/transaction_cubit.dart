@@ -193,7 +193,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   // }
 
   // SENSITIVE FX
-  void buildTx(int fee) async {
+  void buildRbfTx(int fee) async {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
 
     // final isManualFees = _networkFeesCubit.state.feeOption() == 4;
@@ -291,6 +291,7 @@ class TransactionCubit extends Cubit<TransactionState> {
         updatedTx: newTx,
       ),
     );
+
     await Future.delayed(200.ms);
     sendTx();
   }
@@ -336,9 +337,21 @@ class TransactionCubit extends Cubit<TransactionState> {
 
     // updatedWallet = updatedWallet.copyWith(transactions: txs);
 
+    final (updatedWallet2, err2) =
+        await _walletUpdate.removePrevTxofRbf(updatedWallet, state.tx, tx);
+    if (err2 != null) {
+      emit(
+        state.copyWith(
+          sendingTx: false,
+          errSendingTx: err2.toString(),
+        ),
+      );
+      return;
+    }
+
     _walletBloc.add(
       UpdateWallet(
-        updatedWallet,
+        updatedWallet2!,
         updateTypes: [
           UpdateWalletTypes.transactions,
           UpdateWalletTypes.addresses,

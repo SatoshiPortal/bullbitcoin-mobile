@@ -81,7 +81,7 @@ class BumpFooterButton extends StatelessWidget {
           label: 'Bump Fees',
           onPressed: () async {
             final fees = context.read<NetworkFeesCubit>().state.feesForBump();
-            context.read<TransactionCubit>().buildTx(fees);
+            context.read<TransactionCubit>().buildRbfTx(fees);
           },
         ),
       ],

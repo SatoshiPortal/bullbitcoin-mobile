@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
@@ -197,38 +196,6 @@ class BDKTransactions {
       if (txs.isEmpty) return (wallet, null);
 
       final List<Transaction> transactions = [];
-
-      // TODO: pending is not needed. Remove it later.
-      final List<bdk.TransactionDetails> pending = [];
-      for (final tx in txs) {
-        if (tx.confirmationTime == null ||
-            tx.confirmationTime?.timestamp == 0) {
-          pending.add(tx);
-          // final SerializedTx sTx = SerializedTx.fromJson(
-          //   jsonDecode(tx.transaction!.inner) as Map<String, dynamic>,
-          // );
-          // final outs = sTx.output;
-          // if ((outs?.length ?? 0) > 1) {
-          //   // if (addressStr.endsWith('759')) {
-          //   // if (tx.sent - tx.received == 2463) {
-          //   for (final Output out in sTx.output ?? []) {
-          //     final scriptPubKey = await bdk.ScriptBuf.fromHex(
-          //       out.scriptPubkey ?? '',
-          //     );
-          //     final addressStruct = await bdk.Address.fromScript(
-          //       script: scriptPubKey,
-          //       network: bdkNetwork,
-          //     );
-          //     final addressStr = await addressStruct.asString();
-
-          //     print(
-          //       '${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${sTx.output?.length}:$addressStr',
-          //     );
-          //   }
-          //   // }
-          // }
-        }
-      }
 
       for (final tx in txs) {
         String? label;
@@ -473,10 +440,9 @@ class BDKTransactions {
       for (final tx in storedTxs) {
         if (transactions.any((t) => t.txid == tx.txid)) continue;
 
-        if (transactions.any((t) {
-          return t.rbfTxIds.any((ids) => ids == tx.txid);
-        })) continue;
-
+        // if (transactions.any((t) {
+        //   return t.rbfTxIds.any((ids) => ids == tx.txid);
+        // })) continue;
         //if (transactions.any((t) =>
         //    t.txid == tx.txid || t.rbfTxIds.any((ids) => ids == tx.txid)))
         //  continue;
@@ -884,19 +850,6 @@ class BDKTransactions {
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
       final tx = await psbtStruct.extractTx();
       vsize = await tx.vsize();
-      log(tx.inner);
-      log(tx.toString());
-      print('---');
-      print(tx.inner);
-      print(tx);
-      final s1 = await psbtStruct.serialize();
-      final s2 = await psbtStruct.jsonSerialize();
-      final s3 = await tx.serialize();
-      final s3Hex = conv.hex.encode(s3);
-      print(s1);
-      print(s2);
-      print(s3);
-      print(s3Hex);
 
       await blockchain.broadcast(transaction: tx);
       final txid = await psbtStruct.txid();
@@ -1008,12 +961,6 @@ class BDKTransactions {
 
       final psbt = txResult.$1;
       final txDetails = txResult.$2;
-
-      final etx = await psbt.extractTx();
-      final s3 = await etx.serialize();
-      final s3Hex = conv.hex.encode(s3);
-      print(s3);
-      print(s3Hex);
 
       final psbtStr = await psbt.serialize();
 
