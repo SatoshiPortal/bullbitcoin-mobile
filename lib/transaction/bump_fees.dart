@@ -74,10 +74,15 @@ class BumpFooterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loading = context.select(
+      (TransactionCubit x) => x.state.buildingTx || x.state.sendingTx,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         BBButton.big(
+          loading: loading,
           label: 'Bump Fees',
           onPressed: () async {
             final fees = context.read<NetworkFeesCubit>().state.feesForBump();

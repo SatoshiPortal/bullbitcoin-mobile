@@ -440,9 +440,9 @@ class BDKTransactions {
       for (final tx in storedTxs) {
         if (transactions.any((t) => t.txid == tx.txid)) continue;
 
-        // if (transactions.any((t) {
-        //   return t.rbfTxIds.any((ids) => ids == tx.txid);
-        // })) continue;
+        if (transactions.any((t) {
+          return t.rbfTxIds.any((ids) => ids == tx.txid);
+        })) continue;
         //if (transactions.any((t) =>
         //    t.txid == tx.txid || t.rbfTxIds.any((ids) => ids == tx.txid)))
         //  continue;
