@@ -25,6 +25,10 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      inputs: (json['inputs'] as List<dynamic>?)
+              ?.map((e) => TxIn.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       wallet: json['wallet'] == null
           ? null
           : Wallet.fromJson(json['wallet'] as Map<String, dynamic>),
@@ -56,12 +60,22 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'oldTx': instance.oldTx,
       'broadcastTime': instance.broadcastTime,
       'outAddrs': instance.outAddrs,
+      'inputs': instance.inputs,
       'wallet': instance.wallet,
       'isSwap': instance.isSwap,
       'swapTx': instance.swapTx,
       'isLiquid': instance.isLiquid,
       'unblindedUrl': instance.unblindedUrl,
       'rbfTxIds': instance.rbfTxIds,
+    };
+
+_$TxInImpl _$$TxInImplFromJson(Map<String, dynamic> json) => _$TxInImpl(
+      prevOut: json['prevOut'] as String,
+    );
+
+Map<String, dynamic> _$$TxInImplToJson(_$TxInImpl instance) =>
+    <String, dynamic>{
+      'prevOut': instance.prevOut,
     };
 
 _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(

@@ -213,6 +213,18 @@ class BDKTransactions {
         final vsize = await tx.transaction?.vsize() ?? 1;
         final isNativeRbf = await tx.transaction?.isExplicitlyRbf() ??
             (storedTx?.rbfEnabled ?? false);
+        final SerializedTx sTx = SerializedTx.fromJson(
+          jsonDecode(tx.transaction!.inner) as Map<String, dynamic>,
+        );
+        final inputs = storedTx?.inputs ??
+            sTx.input
+                ?.map(
+                  (e) => TxIn(
+                    prevOut: e.previousOutput ?? '',
+                  ),
+                )
+                .toList() ??
+            [];
         var txObj = Transaction(
           txid: tx.txid,
           received: tx.received,
@@ -225,12 +237,10 @@ class BDKTransactions {
           // rbfEnabled: storedTx?.rbfEnabled ?? isNativeRbf,
           rbfEnabled: isNativeRbf,
           outAddrs: storedTx?.outAddrs ?? [],
+          inputs: inputs,
           swapTx: storedTx?.swapTx,
           isSwap: storedTx?.isSwap ?? false,
           rbfTxIds: storedTx?.rbfTxIds ?? [],
-        );
-        final SerializedTx sTx = SerializedTx.fromJson(
-          jsonDecode(txObj.bdkTx!.transaction!.inner) as Map<String, dynamic>,
         );
         if (storedTxIdx != -1 &&
             storedTxs[storedTxIdx].label != null &&
@@ -435,17 +445,39 @@ class BDKTransactions {
         // Future.delayed(const Duration(milliseconds: 100));
       }
 
+      final List<Transaction> pendingTxs = [];
+      final List<List<bdk.TxIn>> pendingTxInputs = [];
+      for (final tx in transactions) {
+        if (tx.isPending() && tx.isReceived()) {
+          pendingTxs.add(tx);
+          final ip = await tx.bdkTx?.transaction?.input() ?? [];
+          pendingTxInputs.add(ip);
+        }
+      }
+
       // Future.delayed(const Duration(milliseconds: 200));
 
       for (final tx in storedTxs) {
         if (transactions.any((t) => t.txid == tx.txid)) continue;
 
+        // This check is to eliminate sent RBF duplicates
         if (transactions.any((t) {
           return t.rbfTxIds.any((ids) => ids == tx.txid);
         })) continue;
+
+        // TODO: Merged above two into single iteration;
         //if (transactions.any((t) =>
         //    t.txid == tx.txid || t.rbfTxIds.any((ids) => ids == tx.txid)))
         //  continue;
+
+        // This check is to eliminate receive RBF duplicates
+        if (isReceiveRBFParent(tx, pendingTxInputs)) {
+          print('${tx.txid} is RBF parent of a receive tx');
+          if (transactions.any((t) => t.txid == tx.txid)) {
+            print('This is already in transactions array');
+          }
+          continue;
+        }
 
         transactions.add(tx);
       }
@@ -1016,5 +1048,27 @@ class BDKTransactions {
       title: 'Error occurred while broadcasting transaction',
       solution: 'Please try again.',
     );
+  }
+
+  bool isReceiveRBFParent(
+    Transaction tx,
+    List<List<bdk.TxIn>> pendingTxInputs,
+  ) {
+    for (final pendingTxIp in pendingTxInputs) {
+      int index = 0;
+      int matchingInputs = 0;
+      for (final ip in pendingTxIp) {
+        final pOut = '${ip.previousOutput.txid}:${ip.previousOutput.vout}';
+        if (pOut == tx.inputs[index].prevOut) {
+          matchingInputs++;
+        }
+        index++;
+      }
+
+      if (matchingInputs == pendingTxIp.length) {
+        return true;
+      }
+    }
+    return false;
   }
 }

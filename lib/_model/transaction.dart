@@ -35,6 +35,7 @@ class Transaction with _$Transaction {
     int? broadcastTime,
     // String? serializedTx,
     @Default([]) List<Address> outAddrs,
+    @Default([]) List<TxIn> inputs,
     @JsonKey(
       includeFromJson: false,
       includeToJson: false,
@@ -163,6 +164,8 @@ class Transaction with _$Transaction {
       rbfEnabled == true && (timestamp == 0 || height == null || height! > 0);
 
   bool isConfirmed() => timestamp != 0 || height != null || height! > 0;
+
+  bool isPending() => timestamp == 0 || height == null || height! == 0;
 }
 
 DateTime getDateTimeFromInt(int time) =>
@@ -187,6 +190,16 @@ class SerializedTx {
   int? lockTime;
   List<Input>? input;
   List<Output>? output;
+}
+
+@freezed
+class TxIn with _$TxIn {
+  const factory TxIn({
+    required String prevOut, // as txid:index
+  }) = _TxIn;
+  const TxIn._();
+
+  factory TxIn.fromJson(Map<String, dynamic> json) => _$TxInFromJson(json);
 }
 
 class Input {

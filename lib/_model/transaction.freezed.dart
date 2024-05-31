@@ -37,6 +37,7 @@ mixin _$Transaction {
   int? get broadcastTime =>
       throw _privateConstructorUsedError; // String? serializedTx,
   List<Address> get outAddrs => throw _privateConstructorUsedError;
+  List<TxIn> get inputs => throw _privateConstructorUsedError;
   @JsonKey(includeFromJson: false, includeToJson: false)
   bdk.TransactionDetails? get bdkTx => throw _privateConstructorUsedError;
   Wallet? get wallet => throw _privateConstructorUsedError;
@@ -74,6 +75,7 @@ abstract class $TransactionCopyWith<$Res> {
       bool oldTx,
       int? broadcastTime,
       List<Address> outAddrs,
+      List<TxIn> inputs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       bdk.TransactionDetails? bdkTx,
       Wallet? wallet,
@@ -115,6 +117,7 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
     Object? oldTx = null,
     Object? broadcastTime = freezed,
     Object? outAddrs = null,
+    Object? inputs = null,
     Object? bdkTx = freezed,
     Object? wallet = freezed,
     Object? isSwap = null,
@@ -184,6 +187,10 @@ class _$TransactionCopyWithImpl<$Res, $Val extends Transaction>
           ? _value.outAddrs
           : outAddrs // ignore: cast_nullable_to_non_nullable
               as List<Address>,
+      inputs: null == inputs
+          ? _value.inputs
+          : inputs // ignore: cast_nullable_to_non_nullable
+              as List<TxIn>,
       bdkTx: freezed == bdkTx
           ? _value.bdkTx
           : bdkTx // ignore: cast_nullable_to_non_nullable
@@ -264,6 +271,7 @@ abstract class _$$TransactionImplCopyWith<$Res>
       bool oldTx,
       int? broadcastTime,
       List<Address> outAddrs,
+      List<TxIn> inputs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       bdk.TransactionDetails? bdkTx,
       Wallet? wallet,
@@ -305,6 +313,7 @@ class __$$TransactionImplCopyWithImpl<$Res>
     Object? oldTx = null,
     Object? broadcastTime = freezed,
     Object? outAddrs = null,
+    Object? inputs = null,
     Object? bdkTx = freezed,
     Object? wallet = freezed,
     Object? isSwap = null,
@@ -374,6 +383,10 @@ class __$$TransactionImplCopyWithImpl<$Res>
           ? _value._outAddrs
           : outAddrs // ignore: cast_nullable_to_non_nullable
               as List<Address>,
+      inputs: null == inputs
+          ? _value._inputs
+          : inputs // ignore: cast_nullable_to_non_nullable
+              as List<TxIn>,
       bdkTx: freezed == bdkTx
           ? _value.bdkTx
           : bdkTx // ignore: cast_nullable_to_non_nullable
@@ -425,6 +438,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       this.oldTx = false,
       this.broadcastTime,
       final List<Address> outAddrs = const [],
+      final List<TxIn> inputs = const [],
       @JsonKey(includeFromJson: false, includeToJson: false) this.bdkTx,
       this.wallet,
       this.isSwap = false,
@@ -433,6 +447,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       this.unblindedUrl = '',
       final List<String> rbfTxIds = const []})
       : _outAddrs = outAddrs,
+        _inputs = inputs,
         _rbfTxIds = rbfTxIds,
         super._();
 
@@ -481,6 +496,15 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
     return EqualUnmodifiableListView(_outAddrs);
   }
 
+  final List<TxIn> _inputs;
+  @override
+  @JsonKey()
+  List<TxIn> get inputs {
+    if (_inputs is EqualUnmodifiableListView) return _inputs;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_inputs);
+  }
+
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   final bdk.TransactionDetails? bdkTx;
@@ -508,7 +532,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, feeRate: $feeRate, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid, unblindedUrl: $unblindedUrl, rbfTxIds: $rbfTxIds)';
+    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, feeRate: $feeRate, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, oldTx: $oldTx, broadcastTime: $broadcastTime, outAddrs: $outAddrs, inputs: $inputs, bdkTx: $bdkTx, wallet: $wallet, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid, unblindedUrl: $unblindedUrl, rbfTxIds: $rbfTxIds)';
   }
 
   @override
@@ -531,6 +555,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('oldTx', oldTx))
       ..add(DiagnosticsProperty('broadcastTime', broadcastTime))
       ..add(DiagnosticsProperty('outAddrs', outAddrs))
+      ..add(DiagnosticsProperty('inputs', inputs))
       ..add(DiagnosticsProperty('bdkTx', bdkTx))
       ..add(DiagnosticsProperty('wallet', wallet))
       ..add(DiagnosticsProperty('isSwap', isSwap))
@@ -565,6 +590,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
             (identical(other.broadcastTime, broadcastTime) ||
                 other.broadcastTime == broadcastTime) &&
             const DeepCollectionEquality().equals(other._outAddrs, _outAddrs) &&
+            const DeepCollectionEquality().equals(other._inputs, _inputs) &&
             (identical(other.bdkTx, bdkTx) || other.bdkTx == bdkTx) &&
             (identical(other.wallet, wallet) || other.wallet == wallet) &&
             (identical(other.isSwap, isSwap) || other.isSwap == isSwap) &&
@@ -595,6 +621,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
         oldTx,
         broadcastTime,
         const DeepCollectionEquality().hash(_outAddrs),
+        const DeepCollectionEquality().hash(_inputs),
         bdkTx,
         wallet,
         isSwap,
@@ -636,6 +663,7 @@ abstract class _Transaction extends Transaction {
       final bool oldTx,
       final int? broadcastTime,
       final List<Address> outAddrs,
+      final List<TxIn> inputs,
       @JsonKey(includeFromJson: false, includeToJson: false)
       final bdk.TransactionDetails? bdkTx,
       final Wallet? wallet,
@@ -681,6 +709,8 @@ abstract class _Transaction extends Transaction {
   @override // String? serializedTx,
   List<Address> get outAddrs;
   @override
+  List<TxIn> get inputs;
+  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   bdk.TransactionDetails? get bdkTx;
   @override
@@ -698,6 +728,146 @@ abstract class _Transaction extends Transaction {
   @override
   @JsonKey(ignore: true)
   _$$TransactionImplCopyWith<_$TransactionImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+TxIn _$TxInFromJson(Map<String, dynamic> json) {
+  return _TxIn.fromJson(json);
+}
+
+/// @nodoc
+mixin _$TxIn {
+  String get prevOut => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $TxInCopyWith<TxIn> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $TxInCopyWith<$Res> {
+  factory $TxInCopyWith(TxIn value, $Res Function(TxIn) then) =
+      _$TxInCopyWithImpl<$Res, TxIn>;
+  @useResult
+  $Res call({String prevOut});
+}
+
+/// @nodoc
+class _$TxInCopyWithImpl<$Res, $Val extends TxIn>
+    implements $TxInCopyWith<$Res> {
+  _$TxInCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? prevOut = null,
+  }) {
+    return _then(_value.copyWith(
+      prevOut: null == prevOut
+          ? _value.prevOut
+          : prevOut // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$TxInImplCopyWith<$Res> implements $TxInCopyWith<$Res> {
+  factory _$$TxInImplCopyWith(
+          _$TxInImpl value, $Res Function(_$TxInImpl) then) =
+      __$$TxInImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String prevOut});
+}
+
+/// @nodoc
+class __$$TxInImplCopyWithImpl<$Res>
+    extends _$TxInCopyWithImpl<$Res, _$TxInImpl>
+    implements _$$TxInImplCopyWith<$Res> {
+  __$$TxInImplCopyWithImpl(_$TxInImpl _value, $Res Function(_$TxInImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? prevOut = null,
+  }) {
+    return _then(_$TxInImpl(
+      prevOut: null == prevOut
+          ? _value.prevOut
+          : prevOut // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$TxInImpl extends _TxIn with DiagnosticableTreeMixin {
+  const _$TxInImpl({required this.prevOut}) : super._();
+
+  factory _$TxInImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TxInImplFromJson(json);
+
+  @override
+  final String prevOut;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'TxIn(prevOut: $prevOut)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'TxIn'))
+      ..add(DiagnosticsProperty('prevOut', prevOut));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TxInImpl &&
+            (identical(other.prevOut, prevOut) || other.prevOut == prevOut));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, prevOut);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TxInImplCopyWith<_$TxInImpl> get copyWith =>
+      __$$TxInImplCopyWithImpl<_$TxInImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$TxInImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _TxIn extends TxIn {
+  const factory _TxIn({required final String prevOut}) = _$TxInImpl;
+  const _TxIn._() : super._();
+
+  factory _TxIn.fromJson(Map<String, dynamic> json) = _$TxInImpl.fromJson;
+
+  @override
+  String get prevOut;
+  @override
+  @JsonKey(ignore: true)
+  _$$TxInImplCopyWith<_$TxInImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
