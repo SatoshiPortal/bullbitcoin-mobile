@@ -32,7 +32,6 @@ import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
@@ -83,7 +82,8 @@ class BumpFooterButton extends StatelessWidget {
       children: [
         BBButton.big(
           loading: loading,
-          label: 'Bump Fees',
+          disabled: loading,
+          label: loading ? 'Bumping' : 'Bump Fees',
           onPressed: () async {
             final fees = context.read<NetworkFeesCubit>().state.feesForBump();
             context.read<TransactionCubit>().buildRbfTx(fees);
@@ -202,7 +202,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
         listenWhen: (previous, current) => previous.sentTx != current.sentTx,
         listener: (context, state) async {
           if (state.sentTx) {
-            await Future.delayed(2.seconds);
+            await Future.delayed(const Duration(microseconds: 200));
             context
               ..pop()
               ..pop();
