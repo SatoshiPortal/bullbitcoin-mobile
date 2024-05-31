@@ -473,9 +473,6 @@ class BDKTransactions {
         // This check is to eliminate receive RBF duplicates
         if (isReceiveRBFParent(tx, pendingTxInputs)) {
           print('${tx.txid} is RBF parent of a receive tx');
-          if (transactions.any((t) => t.txid == tx.txid)) {
-            print('This is already in transactions array');
-          }
           continue;
         }
 
@@ -1054,7 +1051,14 @@ class BDKTransactions {
     Transaction tx,
     List<List<bdk.TxIn>> pendingTxInputs,
   ) {
+    if (tx.inputs.isEmpty) return false;
     for (final pendingTxIp in pendingTxInputs) {
+      if (pendingTxIp.length != tx.inputs.length) {
+        // return false if inputs lengths of both txs doesn't match
+        return false;
+      }
+
+      // if not, check if each input.prevOut matches
       int index = 0;
       int matchingInputs = 0;
       for (final ip in pendingTxIp) {
