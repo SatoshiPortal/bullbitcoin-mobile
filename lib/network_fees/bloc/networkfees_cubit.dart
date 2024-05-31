@@ -120,14 +120,15 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
 
   void checkMinimumFees() async {
     await Future.delayed(50.ms);
-    final minFees = state.feesList!.last;
     final isTestnet = _networkCubit.state.testnet;
+    final minFees = isTestnet ? 0 : state.feesList!.last;
+
     int max;
 
     if (!isTestnet)
       max = state.feesList!.first * feemultiple;
     else
-      max = 50;
+      max = 1000;
 
     if (state.tempFees != null &&
         state.tempFees! < minFees &&
