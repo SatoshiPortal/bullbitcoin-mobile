@@ -923,20 +923,15 @@ class BDKTransactions {
     } on Exception catch (e) {
       final errMsg = e.message;
       if (errMsg.contains('BdkError.electrum') && errMsg.contains('-26,')) {
-        final requiredSatsStr = errMsg.split('<').last;
-        final requiredSats =
-            double.tryParse(requiredSatsStr.substring(0, 11)) ?? 0.0;
-        final feeRate = ((requiredSats * 100000000) / vsize).ceil();
-
         return (
           null,
-          Err(
-            'Min required: $feeRate sats/vB',
-            title: 'Increase fee rate',
-            solution: '',
+          handleFeesTooLowError(
+            vsize: vsize,
+            errMsg: errMsg,
           )
         );
       }
+
       return (
         null,
         Err(
@@ -1046,5 +1041,33 @@ class BDKTransactions {
         )
       );
     }
+  }
+
+  Err handleFeesTooLowError({
+    required int vsize,
+    required String errMsg,
+  }) {
+    final splits = errMsg.split('<');
+    if (splits.length >= 2) {
+      final requiredSatsStr = splits.last;
+      if (requiredSatsStr.length >= 12) {
+        final requiredSats = double.tryParse(requiredSatsStr.substring(0, 11));
+        if (requiredSats != null) {
+          final feeRate = ((requiredSats * 100000000) / vsize).ceil();
+
+          return Err(
+            'Min required: $feeRate sats/vB',
+            title: 'Increase fee rate',
+            solution: '',
+          );
+        }
+      }
+    }
+
+    return Err(
+      errMsg,
+      title: 'Error occurred while broadcasting transaction',
+      solution: 'Please try again.',
+    );
   }
 }
