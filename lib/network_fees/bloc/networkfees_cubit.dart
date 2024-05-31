@@ -164,8 +164,8 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     if (!isTestnet)
       max = state.feesList!.first * feemultiple;
     else
-      max = 50;
-
+      max = 1000;
+    // can we not just call checkMinimumFees here?
     final tempFees = state.tempFees;
     if (tempFees == null && state.tempSelectedFeesOption == null) return;
     if (tempFees != null && tempFees > max) return;
