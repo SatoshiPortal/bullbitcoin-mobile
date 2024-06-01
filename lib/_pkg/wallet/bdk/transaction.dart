@@ -1053,10 +1053,10 @@ class BDKTransactions {
   ) {
     if (tx.inputs.isEmpty) return false;
     for (final pendingTxIp in pendingTxInputs) {
-      if (pendingTxIp.length != tx.inputs.length) {
-        // return false if inputs lengths of both txs doesn't match
-        return false;
-      }
+      // if (pendingTxIp.length != tx.inputs.length) {
+      //   // return false if inputs lengths of both txs doesn't match
+      //   return false;
+      // }
 
       // if not, check if each input.prevOut matches
       int index = 0;
@@ -1069,7 +1069,7 @@ class BDKTransactions {
         index++;
       }
 
-      if (matchingInputs == pendingTxIp.length) {
+      if (matchingInputs > 0) {
         return true;
       }
     }
