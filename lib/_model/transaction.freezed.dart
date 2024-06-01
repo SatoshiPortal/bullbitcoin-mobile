@@ -488,7 +488,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, broadcastTime: $broadcastTime, outAddrs: $outAddrs, bdkTx: $bdkTx, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid, unblindedUrl: $unblindedUrl)';
+    return 'Transaction(timestamp: $timestamp, txid: $txid, received: $received, sent: $sent, fee: $fee, feeRate: $feeRate, height: $height, label: $label, toAddress: $toAddress, psbt: $psbt, pset: $pset, rbfEnabled: $rbfEnabled, broadcastTime: $broadcastTime, outAddrs: $outAddrs, inputs: $inputs, bdkTx: $bdkTx, isSwap: $isSwap, swapTx: $swapTx, isLiquid: $isLiquid, unblindedUrl: $unblindedUrl, rbfTxIds: $rbfTxIds)';
   }
 
   @override
@@ -556,26 +556,30 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      timestamp,
-      txid,
-      received,
-      sent,
-      fee,
-      height,
-      label,
-      toAddress,
-      psbt,
-      const DeepCollectionEquality().hash(pset),
-      rbfEnabled,
-      broadcastTime,
-      const DeepCollectionEquality().hash(_outAddrs),
-      bdkTx,
-      isSwap,
-      swapTx,
-      isLiquid,
-      unblindedUrl);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        timestamp,
+        txid,
+        received,
+        sent,
+        fee,
+        feeRate,
+        height,
+        label,
+        toAddress,
+        psbt,
+        const DeepCollectionEquality().hash(pset),
+        rbfEnabled,
+        broadcastTime,
+        const DeepCollectionEquality().hash(_outAddrs),
+        const DeepCollectionEquality().hash(_inputs),
+        bdkTx,
+        isSwap,
+        swapTx,
+        isLiquid,
+        unblindedUrl,
+        const DeepCollectionEquality().hash(_rbfTxIds)
+      ]);
 
   @JsonKey(ignore: true)
   @override

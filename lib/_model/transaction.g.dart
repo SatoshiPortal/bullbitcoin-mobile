@@ -24,6 +24,10 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      inputs: (json['inputs'] as List<dynamic>?)
+              ?.map((e) => TxIn.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       isSwap: json['isSwap'] as bool? ?? false,
       swapTx: json['swapTx'] == null
           ? null
@@ -51,6 +55,7 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'rbfEnabled': instance.rbfEnabled,
       'broadcastTime': instance.broadcastTime,
       'outAddrs': instance.outAddrs,
+      'inputs': instance.inputs,
       'isSwap': instance.isSwap,
       'swapTx': instance.swapTx,
       'isLiquid': instance.isLiquid,
