@@ -291,7 +291,7 @@ class TestNetButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final testnet = context.select((NetworkCubit _) => _.state.testnet);
 
-    if (!testnet) return const SizedBox.shrink();
+    // if (!testnet) return const SizedBox.shrink();
 
     return BlocListener<NetworkCubit, NetworkState>(
       listenWhen: (previous, current) => previous.testnet != current.testnet,

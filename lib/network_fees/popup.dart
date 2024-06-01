@@ -16,9 +16,14 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class SelectFeesButton extends StatelessWidget {
-  const SelectFeesButton({super.key, this.fromSettings = false});
+  const SelectFeesButton({
+    super.key,
+    this.fromSettings = false,
+    this.label,
+  });
 
   final bool fromSettings;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +36,7 @@ class SelectFeesButton extends StatelessWidget {
       txt = context.select((NetworkFeesCubit _) => _.state.defaultFeeStatus());
 
       return BBButton.textWithStatusAndRightArrow(
-        label: 'Default fee rate',
+        label: label ?? 'Default fee rate',
         statusText: txt,
         loading: loading,
         onPressed: () {
@@ -49,7 +54,7 @@ class SelectFeesButton extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const BBText.title('Default fee rate'),
+              BBText.title(label ?? 'Default fee rate'),
               BBText.bodySmall(txt, isBlue: true),
             ],
           ),
@@ -294,11 +299,14 @@ class SelectFeesItem extends StatelessWidget {
       ),
     );
 
+    final disableIndex =
+        context.select((NetworkFeesCubit x) => x.state.showOnlyFastest ? 1 : 3);
+
     return Opacity(
-      opacity: index == 3 ? 0.1 : 1,
+      opacity: index < disableIndex ? 1 : 0.1,
       child: GestureDetector(
         onTap: () {
-          if (index == 3) return;
+          if (index >= disableIndex) return;
           context.read<NetworkFeesCubit>().feeOptionSelected(index);
 
           FocusScope.of(context).unfocus();

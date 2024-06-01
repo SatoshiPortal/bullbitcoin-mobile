@@ -40,6 +40,10 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     );
   }
 
+  void showOnlyFastest(bool set) {
+    emit(state.copyWith(showOnlyFastest: set));
+  }
+
   Future<void> init() async {
     if (_defaultNetworkFeesCubit != null) {
       emit(_defaultNetworkFeesCubit.state);
@@ -116,14 +120,15 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
 
   void checkMinimumFees() async {
     await Future.delayed(50.ms);
-    final minFees = state.feesList!.last;
     final isTestnet = _networkCubit.state.testnet;
+    final minFees = isTestnet ? 0 : state.feesList!.last;
+
     int max;
 
     if (!isTestnet)
       max = state.feesList!.first * feemultiple;
     else
-      max = 50;
+      max = 1000;
 
     if (state.tempFees != null &&
         state.tempFees! < minFees &&
@@ -159,8 +164,8 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     if (!isTestnet)
       max = state.feesList!.first * feemultiple;
     else
-      max = 50;
-
+      max = 1000;
+    // can we not just call checkMinimumFees here?
     final tempFees = state.tempFees;
     if (tempFees == null && state.tempSelectedFeesOption == null) return;
     if (tempFees != null && tempFees > max) return;

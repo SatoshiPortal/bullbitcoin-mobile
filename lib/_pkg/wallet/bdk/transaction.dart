@@ -210,23 +210,37 @@ class BDKTransactions {
           if (tx.txid == unsignedTxs[idxUnsignedTx].txid)
             unsignedTxs.removeAt(idxUnsignedTx);
         }
+        final vsize = await tx.transaction?.vsize() ?? 1;
+        final isNativeRbf = await tx.transaction?.isExplicitlyRbf() ??
+            (storedTx?.rbfEnabled ?? false);
+        final SerializedTx sTx = SerializedTx.fromJson(
+          jsonDecode(tx.transaction!.inner) as Map<String, dynamic>,
+        );
+        final inputs = storedTx?.inputs ??
+            sTx.input
+                ?.map(
+                  (e) => TxIn(
+                    prevOut: e.previousOutput ?? '',
+                  ),
+                )
+                .toList() ??
+            [];
         var txObj = Transaction(
           txid: tx.txid,
           received: tx.received,
           sent: tx.sent,
           fee: tx.fee ?? 0,
+          feeRate: (tx.fee ?? 1) / vsize.toDouble(),
           height: tx.confirmationTime?.height ?? 0,
           timestamp: tx.confirmationTime?.timestamp ?? 0,
           bdkTx: tx,
-          rbfEnabled: storedTx?.rbfEnabled ?? false,
+          // rbfEnabled: storedTx?.rbfEnabled ?? isNativeRbf,
+          rbfEnabled: isNativeRbf,
           outAddrs: storedTx?.outAddrs ?? [],
+          inputs: inputs,
           swapTx: storedTx?.swapTx,
           isSwap: storedTx?.isSwap ?? false,
-        );
-        // var outAddrs;
-        // var inAddres;
-        final SerializedTx sTx = SerializedTx.fromJson(
-          jsonDecode(txObj.bdkTx!.transaction!.inner) as Map<String, dynamic>,
+          rbfTxIds: storedTx?.rbfTxIds ?? [],
         );
         if (storedTxIdx != -1 &&
             storedTxs[storedTxIdx].label != null &&
@@ -431,10 +445,37 @@ class BDKTransactions {
         // Future.delayed(const Duration(milliseconds: 100));
       }
 
+      final List<Transaction> pendingTxs = [];
+      final List<List<bdk.TxIn>> pendingTxInputs = [];
+      for (final tx in transactions) {
+        if (tx.isPending() && tx.isReceived()) {
+          pendingTxs.add(tx);
+          final ip = await tx.bdkTx?.transaction?.input() ?? [];
+          pendingTxInputs.add(ip);
+        }
+      }
+
       // Future.delayed(const Duration(milliseconds: 200));
 
       for (final tx in storedTxs) {
         if (transactions.any((t) => t.txid == tx.txid)) continue;
+
+        // This check is to eliminate sent RBF duplicates
+        if (transactions.any((t) {
+          return t.rbfTxIds.any((ids) => ids == tx.txid);
+        })) continue;
+
+        // TODO: Merged above two into single iteration;
+        //if (transactions.any((t) =>
+        //    t.txid == tx.txid || t.rbfTxIds.any((ids) => ids == tx.txid)))
+        //  continue;
+
+        // This check is to eliminate receive RBF duplicates
+        if (isReceiveRBFParent(tx, pendingTxInputs)) {
+          print('${tx.txid} is RBF parent of a receive tx');
+          continue;
+        }
+
         transactions.add(tx);
       }
 
@@ -455,6 +496,61 @@ class BDKTransactions {
       );
     }
   }
+
+  // bool isRBFTx(
+  //   List<Transaction> txlist,
+  //   Transaction tx,
+  // ) {
+
+  //   for (final Transactiontx in txlist) {
+  //     final rbfMatch = tx.txid
+  //   }
+  //
+  // }
+
+  /*
+  Future<bool> isRBFTx(
+    bdk.Network bdkNetwork,
+    List<bdk.TransactionDetails> pending,
+    Transaction tx,
+  ) async {
+    for (final Address addr in tx.outAddrs) {
+      for (final bdk.TransactionDetails pendingTx in pending) {
+        //print(
+        //  '[stored] ${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${tx.outAddrs.length}:${addr.address}',
+        //);
+
+        final SerializedTx sTx = SerializedTx.fromJson(
+          jsonDecode(pendingTx.transaction!.inner) as Map<String, dynamic>,
+        );
+        final outs = sTx.output;
+        for (final Output out in sTx.output ?? []) {
+          final scriptPubKey = await bdk.ScriptBuf.fromHex(
+            out.scriptPubkey ?? '',
+          );
+          final addressStruct = await bdk.Address.fromScript(
+            script: scriptPubKey,
+            network: bdkNetwork,
+          );
+          final addressStr = await addressStruct.asString();
+
+          final pendingTxId = await pendingTx.transaction?.txid();
+          // print(
+          //   '${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${sTx.output?.length}:$addressStr',
+          // );
+
+          // TODO:
+          // 1. In transaction model, have array of txid for storing past RBF txs
+          if (addressStr == addr.address) {
+            print('$pendingTxId is RBF of ${tx.txid}');
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+  */
 
   // Future<(Wallet?, Err?)> getTransactionsNew({
   //   required Wallet wallet,
@@ -691,6 +787,7 @@ class BDKTransactions {
         received: txDetails.received,
         sent: txDetails.sent,
         fee: feeAmt ?? 0,
+        feeRate: feeRate,
         height: txDetails.confirmationTime?.height,
         timestamp: 0,
         // txDetails.confirmationTime?.timestamp ?? 0,
@@ -777,9 +874,11 @@ class BDKTransactions {
     required Transaction transaction,
     String? note,
   }) async {
+    int vsize = 0;
     try {
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
       final tx = await psbtStruct.extractTx();
+      vsize = await tx.vsize();
 
       await blockchain.broadcast(transaction: tx);
       final txid = await psbtStruct.txid();
@@ -804,6 +903,17 @@ class BDKTransactions {
 
       return ((w, txid), null);
     } on Exception catch (e) {
+      final errMsg = e.message;
+      if (errMsg.contains('BdkError.electrum') && errMsg.contains('-26,')) {
+        return (
+          null,
+          handleFeesTooLowError(
+            vsize: vsize,
+            errMsg: errMsg,
+          )
+        );
+      }
+
       return (
         null,
         Err(
@@ -878,18 +988,23 @@ class BDKTransactions {
       final txResult = await txBuilder.finish(pubWallet);
       final signedPSBT = await signingWallet.sign(psbt: txResult.$1);
 
+      final psbt = txResult.$1;
       final txDetails = txResult.$2;
+
+      final psbtStr = await psbt.serialize();
 
       final newTx = Transaction(
         txid: txDetails.txid,
         received: txDetails.received,
         sent: txDetails.sent,
         fee: txDetails.fee ?? 0,
+        feeRate: feeRate,
         height: txDetails.confirmationTime?.height,
         timestamp: txDetails.confirmationTime?.timestamp ?? 0,
         label: tx.label,
         toAddress: tx.toAddress,
-        psbt: signedPSBT.toString(),
+        psbt: psbtStr,
+        rbfTxIds: [...tx.rbfTxIds, tx.txid],
       );
       return (newTx, null);
     } on Exception catch (e) {
@@ -902,5 +1017,62 @@ class BDKTransactions {
         )
       );
     }
+  }
+
+  Err handleFeesTooLowError({
+    required int vsize,
+    required String errMsg,
+  }) {
+    final splits = errMsg.split('<');
+    if (splits.length >= 2) {
+      final requiredSatsStr = splits.last;
+      if (requiredSatsStr.length >= 12) {
+        final requiredSats = double.tryParse(requiredSatsStr.substring(0, 11));
+        if (requiredSats != null) {
+          final feeRate = ((requiredSats * 100000000) / vsize).ceil();
+
+          return Err(
+            'Min required: $feeRate sats/vB',
+            title: 'Increase fee rate',
+            solution: '',
+          );
+        }
+      }
+    }
+
+    return Err(
+      errMsg,
+      title: 'Error occurred while broadcasting transaction',
+      solution: 'Please try again.',
+    );
+  }
+
+  bool isReceiveRBFParent(
+    Transaction tx,
+    List<List<bdk.TxIn>> pendingTxInputs,
+  ) {
+    if (tx.inputs.isEmpty) return false;
+    for (final pendingTxIp in pendingTxInputs) {
+      // if (pendingTxIp.length != tx.inputs.length) {
+      //   // return false if inputs lengths of both txs doesn't match
+      //   return false;
+      // }
+
+      // if not, check if each input.prevOut matches
+      int index = 0;
+      int matchingInputs = 0;
+      for (final ip in pendingTxIp) {
+        final pOut = '${ip.previousOutput.txid}:${ip.previousOutput.vout}';
+        if (pOut == tx.inputs[index].prevOut) {
+          matchingInputs++;
+        }
+        index++;
+      }
+
+      if (matchingInputs > 0) {
+        return true;
+      }
+    }
+    return false;
   }
 }

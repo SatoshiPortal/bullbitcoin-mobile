@@ -18,6 +18,7 @@ _$NetworkFeesStateImpl _$$NetworkFeesStateImplFromJson(
       tempSelectedFeesOption: (json['tempSelectedFeesOption'] as num?)?.toInt(),
       feesSaved: json['feesSaved'] as bool? ?? false,
       loadingFees: json['loadingFees'] as bool? ?? false,
+      showOnlyFastest: json['showOnlyFastest'] as bool? ?? false,
       errLoadingFees: json['errLoadingFees'] as String? ?? '',
     );
 
@@ -31,5 +32,6 @@ Map<String, dynamic> _$$NetworkFeesStateImplToJson(
       'tempSelectedFeesOption': instance.tempSelectedFeesOption,
       'feesSaved': instance.feesSaved,
       'loadingFees': instance.loadingFees,
+      'showOnlyFastest': instance.showOnlyFastest,
       'errLoadingFees': instance.errLoadingFees,
     };

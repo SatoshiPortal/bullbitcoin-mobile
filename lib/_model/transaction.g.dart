@@ -13,6 +13,7 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
       received: (json['received'] as num?)?.toInt(),
       sent: (json['sent'] as num?)?.toInt(),
       fee: (json['fee'] as num?)?.toInt(),
+      feeRate: (json['feeRate'] as num?)?.toDouble(),
       height: (json['height'] as num?)?.toInt(),
       label: json['label'] as String?,
       toAddress: json['toAddress'] as String?,
@@ -29,6 +30,10 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
           : SwapTx.fromJson(json['swapTx'] as Map<String, dynamic>),
       isLiquid: json['isLiquid'] as bool? ?? false,
       unblindedUrl: json['unblindedUrl'] as String? ?? '',
+      rbfTxIds: (json['rbfTxIds'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
@@ -38,6 +43,7 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'received': instance.received,
       'sent': instance.sent,
       'fee': instance.fee,
+      'feeRate': instance.feeRate,
       'height': instance.height,
       'label': instance.label,
       'toAddress': instance.toAddress,
@@ -49,6 +55,16 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'swapTx': instance.swapTx,
       'isLiquid': instance.isLiquid,
       'unblindedUrl': instance.unblindedUrl,
+      'rbfTxIds': instance.rbfTxIds,
+    };
+
+_$TxInImpl _$$TxInImplFromJson(Map<String, dynamic> json) => _$TxInImpl(
+      prevOut: json['prevOut'] as String,
+    );
+
+Map<String, dynamic> _$$TxInImplToJson(_$TxInImpl instance) =>
+    <String, dynamic>{
+      'prevOut': instance.prevOut,
     };
 
 _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(

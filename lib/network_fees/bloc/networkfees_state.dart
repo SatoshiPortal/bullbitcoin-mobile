@@ -14,6 +14,7 @@ class NetworkFeesState with _$NetworkFeesState {
     int? tempSelectedFeesOption,
     @Default(false) bool feesSaved,
     @Default(false) bool loadingFees,
+    @Default(false) bool showOnlyFastest,
     @Default('') String errLoadingFees,
   }) = _NetworkFeesState;
   const NetworkFeesState._();

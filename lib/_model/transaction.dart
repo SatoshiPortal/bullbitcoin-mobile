@@ -20,6 +20,7 @@ class Transaction with _$Transaction {
     int? received,
     int? sent,
     int? fee,
+    double? feeRate,
     int? height,
     String? label,
     String? toAddress,
@@ -34,6 +35,7 @@ class Transaction with _$Transaction {
     int? broadcastTime,
     // String? serializedTx,
     @Default([]) List<Address> outAddrs,
+    @Default([]) List<TxIn> inputs,
     @JsonKey(
       includeFromJson: false,
       includeToJson: false,
@@ -44,6 +46,7 @@ class Transaction with _$Transaction {
     SwapTx? swapTx,
     @Default(false) bool isLiquid,
     @Default('') String unblindedUrl,
+    @Default([]) List<String> rbfTxIds,
   }) = _Transaction;
   const Transaction._();
 
@@ -155,7 +158,13 @@ class Transaction with _$Transaction {
       ? null
       : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
 
-  bool canRBF() => rbfEnabled == true && timestamp == 0;
+  // bool canRBF() => rbfEnabled == true && timestamp == 0;
+  // TODO: New code: Yet to check
+  bool canRBF() => rbfEnabled == true && (height == null || height! == 0);
+
+  bool isConfirmed() => timestamp != 0 || height != null || height! > 0;
+
+  bool isPending() => timestamp == 0 || height == null || height! == 0;
 }
 
 DateTime getDateTimeFromInt(int time) =>
@@ -180,6 +189,16 @@ class SerializedTx {
   int? lockTime;
   List<Input>? input;
   List<Output>? output;
+}
+
+@freezed
+class TxIn with _$TxIn {
+  const factory TxIn({
+    required String prevOut, // as txid:index
+  }) = _TxIn;
+  const TxIn._();
+
+  factory TxIn.fromJson(Map<String, dynamic> json) => _$TxInFromJson(json);
 }
 
 class Input {

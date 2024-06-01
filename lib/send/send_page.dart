@@ -374,7 +374,9 @@ class AmountField extends StatelessWidget {
 }
 
 class NetworkFees extends StatelessWidget {
-  const NetworkFees({super.key});
+  const NetworkFees({super.key, this.label});
+
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -396,7 +398,9 @@ class NetworkFees extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       child: IgnorePointer(
         ignoring: sending,
-        child: const SelectFeesButton().animate().fadeIn(),
+        child: SelectFeesButton(
+          label: label,
+        ).animate().fadeIn(),
       ),
     );
   }

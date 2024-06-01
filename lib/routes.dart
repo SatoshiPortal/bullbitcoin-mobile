@@ -20,6 +20,7 @@ import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/swap/swap_history_page.dart';
+import 'package:bb_mobile/transaction/bump_fees.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/details.dart';
@@ -268,10 +269,19 @@ GoRouter setupRouter() => GoRouter(
             return const BroadcastPage();
           },
         ),
+
         GoRoute(
           path: '/transactions',
           builder: (context, state) {
             return const TransactionHistoryPage();
+          },
+        ),
+
+        GoRoute(
+          path: '/bump',
+          builder: (context, state) {
+            final tx = state.extra! as Transaction;
+            return BumpFeesPage(tx: tx);
           },
         ),
       ],
