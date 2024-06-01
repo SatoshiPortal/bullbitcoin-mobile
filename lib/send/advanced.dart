@@ -8,6 +8,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -33,7 +34,7 @@ class AdvancedOptionsPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final sendAll = context.select((SendCubit x) => x.state.sendAllCoin);
+    final sendAll = context.select((SendCubit x) => x.state.sendAllCoin);
     final isLn = context.select((SendCubit x) => x.state.isLnInvoice());
 
     return Padding(
@@ -73,17 +74,17 @@ class AdvancedOptionsPopUp extends StatelessWidget {
             const EnableRBFOption(),
             const Gap(8),
           ],
-          // if (!sendAll)
-          //   CenterLeft(
-          //     child: BBButton.text(
-          //       // style: TextButton.styleFrom(padding: EdgeInsets.zero),
-          //       onPressed: () {
-          //         AddressSelectionPopUp.openPopup(context);
-          //       },
-          //       label: 'Select coins manually',
-          //       // child: const BBText.body('Manual coin selection'),
-          //     ),
-          //   ),
+          if (!sendAll)
+            CenterLeft(
+              child: BBButton.text(
+                // style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                onPressed: () {
+                  AddressSelectionPopUp.openPopup(context);
+                },
+                label: 'Select coins manually',
+                // child: const BBText.body('Manual coin selection'),
+              ),
+            ),
           // const EnableRBFOption(),
 
           const Gap(40),
