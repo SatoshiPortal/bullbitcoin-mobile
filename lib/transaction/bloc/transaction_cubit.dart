@@ -5,6 +5,7 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
@@ -161,16 +162,50 @@ class TransactionCubit extends Cubit<TransactionState> {
       emit(state.copyWith(errSavingLabel: err.toString(), savingLabel: false));
       return;
     }
+    if (!w!.isLiquid()) {
+      try {
+        final myAddress = tx.outAddrs
+            .where((element) => element.kind != AddressKind.external)
+            .first;
 
-    _walletBloc.add(
-      UpdateWallet(
-        w!,
-        updateTypes: [
-          UpdateWalletTypes.transactions,
-          UpdateWalletTypes.addresses,
-        ],
-      ),
-    );
+        final updatedWallet = await BDKUtxo().updateUtxoLabel(
+          addressStr: myAddress.address,
+          wallet: w,
+          label: state.label,
+        );
+        if (updatedWallet != null) {
+          _walletBloc.add(
+            UpdateWallet(
+              updatedWallet,
+              updateTypes: [
+                UpdateWalletTypes.transactions,
+                UpdateWalletTypes.addresses,
+                UpdateWalletTypes.utxos,
+              ],
+            ),
+          );
+        } else {
+          _walletBloc.add(
+            UpdateWallet(
+              w,
+              updateTypes: [
+                UpdateWalletTypes.transactions,
+                UpdateWalletTypes.addresses,
+              ],
+            ),
+          );
+        }
+      } catch (e) {}
+    } else
+      _walletBloc.add(
+        UpdateWallet(
+          w,
+          updateTypes: [
+            UpdateWalletTypes.transactions,
+            UpdateWalletTypes.addresses,
+          ],
+        ),
+      );
 
     await Future.delayed(const Duration(seconds: 1));
     _walletBloc.add(ListTransactions());
