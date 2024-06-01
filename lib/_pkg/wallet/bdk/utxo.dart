@@ -69,6 +69,30 @@ class BDKUtxo {
     }
   }
 
+  Future<Wallet?> updateUtxoLabel({
+    required String addressStr,
+    required Wallet wallet,
+    required String label,
+  }) async {
+    try {
+      final List<UTXO> utxos = wallet.utxos.toList();
+      final existingIdx = utxos.indexWhere(
+        (element) => element.address.address == addressStr,
+      );
+      if (existingIdx != -1) {
+        final existing = utxos.removeAt(existingIdx);
+        final updated = existing.copyWith(label: label);
+        utxos.insert(existingIdx, updated);
+      }
+
+      final w = wallet.copyWith(utxos: utxos);
+
+      return w;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // Future<(Wallet?, Err? ) updateAddressStates(    required Wallet wallet,
   //   required bdk.Wallet bdkWallet,){
 
