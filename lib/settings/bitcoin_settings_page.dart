@@ -60,7 +60,8 @@ class _Screen extends StatelessWidget {
                 SelectFeesButton(fromSettings: true),
                 Gap(8),
                 ElectrumServerButton(),
-                // Gap(8),
+                Gap(8),
+                HardwareButton(),
                 // BroadCastButton(),
                 // Gap(8),
                 // SearchAddressButton(),
@@ -179,6 +180,20 @@ class NewWalletButton extends StatelessWidget {
       label: 'Import Bitcoin Wallet',
       onPressed: () {
         context.push('/import');
+      },
+    );
+  }
+}
+
+class HardwareButton extends StatelessWidget {
+  const HardwareButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Import Wallet from Hardware Device',
+      onPressed: () {
+        context.push('/hardware-import');
       },
     );
   }

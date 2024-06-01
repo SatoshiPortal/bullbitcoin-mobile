@@ -486,6 +486,19 @@ extension W on ScriptType {
         return '44';
     }
   }
+
+  String getScriptString() {
+    var name = '';
+    switch (this) {
+      case ScriptType.bip84:
+        name = 'Segwit';
+      case ScriptType.bip49:
+        name = 'Legacy Script';
+      case ScriptType.bip44:
+        name = 'Legacy Pubkey';
+    }
+    return name;
+  }
 }
 
 List<String> backupInstructions(bool hasPassphrase) {

@@ -7,6 +7,7 @@ import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/home/market.dart';
 import 'package:bb_mobile/home/transactions.dart';
+import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
@@ -73,6 +74,13 @@ GoRouter setupRouter() => GoRouter(
           path: '/import',
           builder: (context, state) {
             return const ImportWalletPage();
+          },
+        ),
+
+        GoRoute(
+          path: '/hardware-import',
+          builder: (context, state) {
+            return const HardwareImportPage();
           },
         ),
         GoRoute(
