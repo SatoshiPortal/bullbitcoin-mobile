@@ -169,6 +169,8 @@ class BDKAddress {
             .where((utxo) => utxo.address.address == addr.address)
             .toList();
         if (matches.isEmpty) {
+          // this address used to be an active utxo
+          // now it is used
           if (addr.state == AddressStatus.active) {
             addressStatus = AddressStatus.used;
           }

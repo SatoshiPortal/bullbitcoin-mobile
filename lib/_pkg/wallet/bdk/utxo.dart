@@ -26,7 +26,7 @@ class BDKUtxo {
           script: scr,
           network: network,
         );
-        final addressStr = addresss.toString();
+        final addressStr = await addresss.asString();
         final AddressKind addressKind =
             unspent.keychain == bdk.KeychainKind.internalChain
                 ? AddressKind.change

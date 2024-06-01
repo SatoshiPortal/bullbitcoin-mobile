@@ -1057,7 +1057,6 @@ class BDKTransactions {
       //   // return false if inputs lengths of both txs doesn't match
       //   return false;
       // }
-
       // if not, check if each input.prevOut matches
       int index = 0;
       int matchingInputs = 0;
