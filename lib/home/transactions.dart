@@ -32,7 +32,7 @@ class HomeTransactions extends StatefulWidget {
 
 class _Listener extends StatelessWidget {
   const _Listener({
-    super.key,
+    // super.key,
     required this.child,
     required this.onUpdated,
   });
@@ -89,9 +89,7 @@ class _HomeTransactionsState extends State<HomeTransactions> {
               .walletBlocsFromNetwork(network.getBBNetwork());
           for (final wallet in wallets) wallet.add(SyncWallet());
 
-          context
-              .read<WatchTxsBloc>()
-              .add(WatchWallets(isTestnet: network.testnet));
+          context.read<WatchTxsBloc>().add(WatchWallets());
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -287,8 +285,7 @@ class HomeTxItem2 extends StatelessWidget {
     );
 
     final units = context.select(
-      (CurrencyCubit x) =>
-          x.state.getUnitString(isLiquid: tx.wallet?.isLiquid() ?? false),
+      (CurrencyCubit x) => x.state.getUnitString(isLiquid: tx.isLiquid),
     );
 
     final darkMode = context.select(
@@ -404,78 +401,78 @@ class HomeTxItem2 extends StatelessWidget {
   }
 }
 
-class _SwapTxHomeListItem extends StatelessWidget {
-  const _SwapTxHomeListItem({required this.transaction});
+// class _SwapTxHomeListItem extends StatelessWidget {
+//   const _SwapTxHomeListItem({required this.transaction});
 
-  final Transaction transaction;
+//   final Transaction transaction;
 
-  @override
-  Widget build(BuildContext context) {
-    final swap = transaction.swapTx;
-    if (swap == null) return const SizedBox.shrink();
+//   @override
+//   Widget build(BuildContext context) {
+//     final swap = transaction.swapTx;
+//     if (swap == null) return const SizedBox.shrink();
 
-    final amt = swap.outAmount;
-    final amount = context.select(
-      (CurrencyCubit x) => x.state.getAmountInUnits(
-        amt,
-        isLiquid: transaction.wallet?.isLiquid() ?? false,
-      ),
-    );
-    final isReceive = !swap.isSubmarine;
+//     final amt = swap.outAmount;
+//     final amount = context.select(
+//       (CurrencyCubit x) => x.state.getAmountInUnits(
+//         amt,
+//         isLiquid: transaction.isLiquid,
+//       ),
+//     );
+//     final isReceive = !swap.isSubmarine;
 
-    // final invoice = swap.invoice;
-    final date = transaction.getDateTimeStr();
+//     // final invoice = swap.invoice;
+//     final date = transaction.getDateTimeStr();
 
-    return InkWell(
-      onTap: () {
-        context.push('/tx', extra: transaction);
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(
-          top: 8,
-          bottom: 16,
-          left: 24,
-          right: 24,
-        ),
-        child: Row(
-          children: [
-            Container(
-              transformAlignment: Alignment.center,
-              transform: Matrix4.identity()..rotateZ(isReceive ? 1.6 : -1.6),
-              child: const FaIcon(FontAwesomeIcons.arrowRight),
-            ),
-            const Gap(8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BBText.titleLarge(amount),
-                // if (label.isNotEmpty) ...[
-                //   const Gap(4),
-                //   BBText.bodySmall(label),
-                // ],
-              ],
-            ),
-            const Spacer(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                BBText.bodySmall(
-                  date,
-                  // : timeago.format(tx.getDateTime()),
-                  removeColourOpacity: true,
-                ),
-              ],
-            ),
+//     return InkWell(
+//       onTap: () {
+//         context.push('/tx', extra: transaction);
+//       },
+//       child: Padding(
+//         padding: const EdgeInsets.only(
+//           top: 8,
+//           bottom: 16,
+//           left: 24,
+//           right: 24,
+//         ),
+//         child: Row(
+//           children: [
+//             Container(
+//               transformAlignment: Alignment.center,
+//               transform: Matrix4.identity()..rotateZ(isReceive ? 1.6 : -1.6),
+//               child: const FaIcon(FontAwesomeIcons.arrowRight),
+//             ),
+//             const Gap(8),
+//             Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 BBText.titleLarge(amount),
+//                 // if (label.isNotEmpty) ...[
+//                 //   const Gap(4),
+//                 //   BBText.bodySmall(label),
+//                 // ],
+//               ],
+//             ),
+//             const Spacer(),
+//             Column(
+//               crossAxisAlignment: CrossAxisAlignment.end,
+//               children: [
+//                 BBText.bodySmall(
+//                   date,
+//                   // : timeago.format(tx.getDateTime()),
+//                   removeColourOpacity: true,
+//                 ),
+//               ],
+//             ),
 
-            // Align(
-            //   alignment: Alignment.bottomRight,
-            //   child: BBText.bodySmall(
-            //     label,
-            //   ),
-            // ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+//             // Align(
+//             //   alignment: Alignment.bottomRight,
+//             //   child: BBText.bodySmall(
+//             //     label,
+//             //   ),
+//             // ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

@@ -100,7 +100,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
                         data: MediaQuery.of(context).copyWith(
                           textScaler: TextScaler.noScaling,
                         ),
-                        child: AppLifecycleOverlay(
+                        child: SecurityOverlay(
                           child: child,
                         ),
                       ),

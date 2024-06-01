@@ -31,7 +31,7 @@ class Transaction with _$Transaction {
     )
     Uint8List? pset,
     @Default(true) bool rbfEnabled,
-    @Default(false) bool oldTx,
+    // @Default(false) bool oldTx,
     int? broadcastTime,
     // String? serializedTx,
     @Default([]) List<Address> outAddrs,
@@ -41,7 +41,7 @@ class Transaction with _$Transaction {
       includeToJson: false,
     )
     bdk.TransactionDetails? bdkTx,
-    Wallet? wallet,
+    // Wallet? wallet,
     @Default(false) bool isSwap,
     SwapTx? swapTx,
     @Default(false) bool isLiquid,

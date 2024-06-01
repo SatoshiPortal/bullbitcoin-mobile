@@ -19,19 +19,11 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
       toAddress: json['toAddress'] as String?,
       psbt: json['psbt'] as String?,
       rbfEnabled: json['rbfEnabled'] as bool? ?? true,
-      oldTx: json['oldTx'] as bool? ?? false,
       broadcastTime: (json['broadcastTime'] as num?)?.toInt(),
       outAddrs: (json['outAddrs'] as List<dynamic>?)
               ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      inputs: (json['inputs'] as List<dynamic>?)
-              ?.map((e) => TxIn.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const [],
-      wallet: json['wallet'] == null
-          ? null
-          : Wallet.fromJson(json['wallet'] as Map<String, dynamic>),
       isSwap: json['isSwap'] as bool? ?? false,
       swapTx: json['swapTx'] == null
           ? null
@@ -57,11 +49,8 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'toAddress': instance.toAddress,
       'psbt': instance.psbt,
       'rbfEnabled': instance.rbfEnabled,
-      'oldTx': instance.oldTx,
       'broadcastTime': instance.broadcastTime,
       'outAddrs': instance.outAddrs,
-      'inputs': instance.inputs,
-      'wallet': instance.wallet,
       'isSwap': instance.isSwap,
       'swapTx': instance.swapTx,
       'isLiquid': instance.isLiquid,

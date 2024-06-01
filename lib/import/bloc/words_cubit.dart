@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_pkg/mnemonic_word.dart';
+import 'package:bb_mobile/_pkg/wallet/mnemonic_word.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -25,7 +25,9 @@ class WordsState with _$WordsState {
 
   List<String> findWords(String str) {
     if (str.isEmpty) return [];
-    final w = words!.where((word) => word.toLowerCase().startsWith(str.toLowerCase())).toList();
+    final w = words!
+        .where((word) => word.toLowerCase().startsWith(str.toLowerCase()))
+        .toList();
     return w.length > 3 ? w.sublist(0, 3) : w;
   }
 }

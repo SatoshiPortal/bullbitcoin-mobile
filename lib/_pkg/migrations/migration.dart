@@ -1,5 +1,5 @@
+import 'package:bb_mobile/_pkg/migrations/migration0_1to0_2.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/migration0_1to0_2.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 
 // class MigrationCubit extends Cubit<bool> {

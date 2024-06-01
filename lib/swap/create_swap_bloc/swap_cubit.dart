@@ -454,9 +454,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     await Future.delayed(const Duration(milliseconds: 300));
 
     _watchTxsBloc.add(
-      WatchWallets(
-        isTestnet: updatedWallet.isTestnet(),
-      ),
+      WatchWallets(),
     );
 
     await Future.delayed(const Duration(milliseconds: 300));

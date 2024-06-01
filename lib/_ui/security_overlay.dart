@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 
-class AppLifecycleOverlay extends StatefulWidget {
-  const AppLifecycleOverlay({super.key, required this.child});
+class SecurityOverlay extends StatefulWidget {
+  const SecurityOverlay({super.key, required this.child});
 
   final Widget child;
 
   @override
-  State<AppLifecycleOverlay> createState() => _AppLifecycleOverlayState();
+  State<SecurityOverlay> createState() => _SecurityOverlayState();
 }
 
-class _AppLifecycleOverlayState extends State<AppLifecycleOverlay>
+class _SecurityOverlayState extends State<SecurityOverlay>
     with WidgetsBindingObserver {
   bool shouldBlur = false;
   final _noScreenshot = NoScreenshot.instance;

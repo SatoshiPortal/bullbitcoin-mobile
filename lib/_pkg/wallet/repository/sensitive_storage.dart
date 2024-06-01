@@ -112,8 +112,10 @@ class WalletSensitiveStorageRepository {
     } catch (e) {
       return (
         null,
-        Err(e.toString(),
-            expected: e.toString() == 'No Seed with index $fingerprintIndex')
+        Err(
+          e.toString(),
+          expected: e.toString() == 'No Seed with index $fingerprintIndex',
+        )
       );
     }
   }

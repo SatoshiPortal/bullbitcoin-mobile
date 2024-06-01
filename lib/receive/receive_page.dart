@@ -429,39 +429,39 @@ class _Warnings extends StatelessWidget {
   }
 }
 
-class _RemoveWarningMessage extends StatelessWidget {
-  const _RemoveWarningMessage();
+// class _RemoveWarningMessage extends StatelessWidget {
+//   const _RemoveWarningMessage();
 
-  @override
-  Widget build(BuildContext context) {
-    final removeWarning =
-        context.select((SettingsCubit x) => x.state.removeSwapWarnings);
+//   @override
+//   Widget build(BuildContext context) {
+//     final removeWarning =
+//         context.select((SettingsCubit x) => x.state.removeSwapWarnings);
 
-    return Row(
-      children: [
-        Checkbox(
-          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          visualDensity: VisualDensity.compact,
-          value: removeWarning,
-          onChanged: (checked) {
-            if (checked != null)
-              context.read<SettingsCubit>().changeSwapWarnings(checked);
-          },
-          side: BorderSide(width: 2, color: context.colour.surface),
-          // fillColor: context.colour.surface,
-        ),
-        const Gap(2),
-        BBButton.text(
-          label: "Don't show this warning again",
-          fontSize: 12,
-          onPressed: () {
-            context.read<SettingsCubit>().changeSwapWarnings(true);
-          },
-        ),
-      ],
-    );
-  }
-}
+//     return Row(
+//       children: [
+//         Checkbox(
+//           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+//           visualDensity: VisualDensity.compact,
+//           value: removeWarning,
+//           onChanged: (checked) {
+//             if (checked != null)
+//               context.read<SettingsCubit>().changeSwapWarnings(checked);
+//           },
+//           side: BorderSide(width: 2, color: context.colour.surface),
+//           // fillColor: context.colour.surface,
+//         ),
+//         const Gap(2),
+//         BBButton.text(
+//           label: "Don't show this warning again",
+//           fontSize: 12,
+//           onPressed: () {
+//             context.read<SettingsCubit>().changeSwapWarnings(true);
+//           },
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 class WalletActions extends StatelessWidget {
   const WalletActions({super.key});

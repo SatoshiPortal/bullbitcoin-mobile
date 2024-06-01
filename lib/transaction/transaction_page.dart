@@ -143,14 +143,14 @@ class _OnlyTxPage extends StatelessWidget {
   }
 }
 
-class _OnlySwapTxPage extends StatelessWidget {
-  const _OnlySwapTxPage();
+// class _OnlySwapTxPage extends StatelessWidget {
+//   const _OnlySwapTxPage();
 
-  @override
-  Widget build(BuildContext context) {
-    return const SingleChildScrollView(child: _SwapDetails());
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return const SingleChildScrollView(child: _SwapDetails());
+//   }
+// }
 
 class _CombinedTxAndSwapPage extends StatelessWidget {
   const _CombinedTxAndSwapPage();
