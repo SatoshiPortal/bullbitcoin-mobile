@@ -160,8 +160,7 @@ class Transaction with _$Transaction {
 
   // bool canRBF() => rbfEnabled == true && timestamp == 0;
   // TODO: New code: Yet to check
-  bool canRBF() =>
-      rbfEnabled == true && (timestamp == 0 || height == null || height! > 0);
+  bool canRBF() => rbfEnabled == true && (height == null || height! == 0);
 
   bool isConfirmed() => timestamp != 0 || height != null || height! > 0;
 
