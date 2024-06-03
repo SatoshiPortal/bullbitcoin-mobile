@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -42,10 +44,20 @@ class HardwareImportState with _$HardwareImportState {
   }
 
   bool inputScreen() {
-    if (inputText.isNotEmpty && walletDetails != null) return true;
-    return false;
+    if (inputText.isNotEmpty && walletDetails != null) return false;
+    return true;
   }
 
   List<ScriptType> getWalletScripts() =>
       walletDetails?.map((e) => e.scriptType).toList() ?? [];
+
+  ColdCard? parseCC(String input) {
+    try {
+      final ccObj = jsonDecode(input) as Map<String, dynamic>;
+      final coldcard = ColdCard.fromJson(ccObj);
+      return coldcard;
+    } catch (e) {
+      return null;
+    }
+  }
 }

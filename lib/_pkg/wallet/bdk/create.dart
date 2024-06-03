@@ -60,8 +60,9 @@ class BDKCreate {
 
   Future<(List<Wallet>?, Err?)> allFromColdCard(
     ColdCard coldCard,
-    BBNetwork network,
-  ) async {
+    BBNetwork network, {
+    bool checkFirstAddress = true,
+  }) async {
     // create all 3 coldcard wallets and return only the one requested
     final fingerprint = coldCard.xfp!;
     final bdkNetwork = network == BBNetwork.Mainnet
@@ -228,15 +229,19 @@ class BDKCreate {
     _walletsRepository.removeBdkWallet(wallet49.id);
     _walletsRepository.removeBdkWallet(wallet84.id);
 
-    if (firstAddress44.address.toString() == coldWallet44.first &&
-        firstAddress49.address.toString() == coldWallet49.first &&
-        firstAddress84.address.toString() == coldWallet84.first)
-      return ([wallet44, wallet49, wallet84], null);
-    else
-      return (
-        null,
-        Err('First Addresses Did Not Match!'),
-      );
+    if (checkFirstAddress) {
+      if (firstAddress44.address.toString() == coldWallet44.first &&
+          firstAddress49.address.toString() == coldWallet49.first &&
+          firstAddress84.address.toString() == coldWallet84.first)
+        return ([wallet44, wallet49, wallet84], null);
+      else
+        return (
+          null,
+          Err('First Addresses Did Not Match!'),
+        );
+    }
+
+    return ([wallet44, wallet49, wallet84], null);
   }
 
   Future<(Wallet?, Err?)> oneFromSlip132Pub(
@@ -326,6 +331,106 @@ class BDKCreate {
       _walletsRepository.removeBdkWallet(wallet.id);
 
       return (wallet, null);
+    } on Exception catch (e) {
+      return (
+        null,
+        Err(
+          e.message,
+          title: 'Error occurred while creating wallet',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
+
+  Future<(List<Wallet>?, Err?)> allFromMasterXpub(
+    String xpub,
+  ) async {
+    try {
+      if (!xpub.startsWith('x')) return (null, Err('Invalid - only for xpub'));
+      final network =
+          (xpub.startsWith('t') || xpub.startsWith('u') || xpub.startsWith('v'))
+              ? BBNetwork.Testnet
+              : BBNetwork.Mainnet;
+      final bdkNetwork = network == BBNetwork.Testnet
+          ? bdk.Network.testnet
+          : bdk.Network.bitcoin;
+
+      // final scriptType = xpub.startsWith('x') || xpub.startsWith('t')
+      //     ? ScriptType.bip44
+      //     : xpub.startsWith('y') || xpub.startsWith('u')
+      //         ? ScriptType.bip49
+      //         : ScriptType.bip84;
+      // final xPub = convertToXpubStr(xpub);
+
+      final internal84 = await bdk.Descriptor.create(
+        descriptor: 'wpkh($xpub/1/*)',
+        network: bdkNetwork,
+      );
+      final external84 = await bdk.Descriptor.create(
+        descriptor: 'wpkh($xpub/0/*)',
+        network: bdkNetwork,
+      );
+      final internal49 = await bdk.Descriptor.create(
+        descriptor: 'sh(wpkh($xpub/1/*))',
+        network: bdkNetwork,
+      );
+      final external49 = await bdk.Descriptor.create(
+        descriptor: 'sh(wpkh($xpub/0/*))',
+        network: bdkNetwork,
+      );
+      final internal44 = await bdk.Descriptor.create(
+        descriptor: 'pkh($xpub/1/*)',
+        network: bdkNetwork,
+      );
+      final external44 = await bdk.Descriptor.create(
+        descriptor: 'pkh($xpub/0/*)',
+        network: bdkNetwork,
+      );
+
+      final wallet84 = Wallet(
+        id: createDescriptorHashId(await external84.asString())
+            .substring(0, 12),
+        externalPublicDescriptor: await external84.asString(),
+        internalPublicDescriptor: await internal84.asString(),
+        mnemonicFingerprint: 'Unknown',
+        sourceFingerprint: 'Unknown',
+        network: network,
+        type: BBWalletType.xpub,
+        scriptType: ScriptType.bip84,
+        backupTested: true,
+        baseWalletType: BaseWalletType.Bitcoin,
+      );
+
+      final wallet49 = Wallet(
+        id: createDescriptorHashId(await external49.asString())
+            .substring(0, 12),
+        externalPublicDescriptor: await external49.asString(),
+        internalPublicDescriptor: await internal49.asString(),
+        mnemonicFingerprint: 'Unknown',
+        sourceFingerprint: 'Unknown',
+        network: network,
+        type: BBWalletType.xpub,
+        scriptType: ScriptType.bip49,
+        backupTested: true,
+        baseWalletType: BaseWalletType.Bitcoin,
+      );
+
+      final wallet44 = Wallet(
+        id: createDescriptorHashId(await external44.asString())
+            .substring(0, 12),
+        externalPublicDescriptor: await external44.asString(),
+        internalPublicDescriptor: await internal44.asString(),
+        mnemonicFingerprint: 'Unknown',
+        sourceFingerprint: 'Unknown',
+        network: network,
+        type: BBWalletType.xpub,
+        scriptType: ScriptType.bip44,
+        backupTested: true,
+        baseWalletType: BaseWalletType.Bitcoin,
+      );
+
+      return ([wallet84, wallet49, wallet44], null);
     } on Exception catch (e) {
       return (
         null,

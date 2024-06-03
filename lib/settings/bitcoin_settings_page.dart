@@ -191,7 +191,7 @@ class HardwareButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.textWithStatusAndRightArrow(
-      label: 'Import Wallet from Hardware Device',
+      label: 'Import Wallet',
       onPressed: () {
         context.push('/hardware-import');
       },

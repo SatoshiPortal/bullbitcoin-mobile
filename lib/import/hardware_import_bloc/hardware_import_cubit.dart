@@ -1,15 +1,13 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
-import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
-import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
 import 'package:bb_mobile/import/hardware_import_bloc/hardware_import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,35 +15,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class HardwareImportCubit extends Cubit<HardwareImportState> {
   HardwareImportCubit({
     required Barcode barcode,
-    required WalletCreate walletCreate,
-    required WalletSensitiveCreate walletSensCreate,
     required WalletsStorageRepository walletsStorageRepository,
-    required WalletSensitiveStorageRepository walletSensRepository,
     required NetworkCubit networkCubit,
     required BDKCreate bdkCreate,
     required FilePick filePicker,
-    required BDKSensitiveCreate bdkSensitiveCreate,
   })  : _barcode = barcode,
-        _walletCreate = walletCreate,
-        _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,
-        _walletSensCreate = walletSensCreate,
         _networkCubit = networkCubit,
         _bdkCreate = bdkCreate,
         _filePicker = filePicker,
-        _bdkSensitiveCreate = bdkSensitiveCreate,
-        super(const HardwareImportState());
+        super(const HardwareImportState()) {
+    log(jsonEncode(cc2));
+  }
 
   final Barcode _barcode;
   final FilePick _filePicker;
 
-  final WalletCreate _walletCreate;
   final BDKCreate _bdkCreate;
-  final BDKSensitiveCreate _bdkSensitiveCreate;
-  final WalletSensitiveCreate _walletSensCreate;
 
   final WalletsStorageRepository _walletsStorageRepository;
-  final WalletSensitiveStorageRepository _walletSensRepository;
   final NetworkCubit _networkCubit;
 
   void reset() => emit(const HardwareImportState());
@@ -85,23 +73,13 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
   void _processInput() {
     emit(state.copyWith(scanningInput: true));
     if (state.inputText.isEmpty) return;
-    final coldCard = _parseCC(state.inputText);
+    final coldCard = state.parseCC(state.inputText);
     if (coldCard != null) {
       _processColdCard(coldCard);
       return;
     }
 
     _processXpub(state.inputText);
-  }
-
-  ColdCard? _parseCC(String input) {
-    try {
-      final ccObj = jsonDecode(input) as Map<String, dynamic>;
-      final coldcard = ColdCard.fromJson(ccObj);
-      return coldcard;
-    } catch (e) {
-      return null;
-    }
   }
 
   Future checkWalletLabel() async {
@@ -129,14 +107,15 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
 
     final network = _networkCubit.state.getBBNetwork();
 
-    final (cws, wErrs) = await _bdkCreate.allFromColdCard(
+    final (cws, err) = await _bdkCreate.allFromColdCard(
       coldCard,
       network,
+      checkFirstAddress: false,
     );
-    if (wErrs != null) {
+    if (err != null) {
       emit(
         state.copyWith(
-          errScanningInput: 'Error creating Wallets from ColdCard',
+          errScanningInput: err.toString(),
           scanningInput: false,
         ),
       );
@@ -146,6 +125,8 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
 
     emit(
       state.copyWith(
+        coldCardDetected: true,
+        tempColdCard: coldCard,
         walletDetails: wallets,
         scanningInput: false,
       ),
@@ -157,13 +138,13 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
 
     if (xpub.contains('[')) {
       // has origin info
-      final (wxpub, wErrs) = await _bdkCreate.oneFromXpubWithOrigin(
+      final (wxpub, err) = await _bdkCreate.oneFromXpubWithOrigin(
         xpub,
       );
-      if (wErrs != null) {
+      if (err != null) {
         emit(
           state.copyWith(
-            errScanningInput: 'Error creating Wallets from Xpub',
+            errScanningInput: err.toString(),
             scanningInput: false,
           ),
         );
@@ -172,20 +153,37 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
       updateSelectScriptType(wxpub!.scriptType);
       wallets.addAll([wxpub]);
     } else {
-      final (wxpub, wErrs) = await _bdkCreate.oneFromSlip132Pub(
-        xpub,
-      );
-      if (wErrs != null) {
-        emit(
-          state.copyWith(
-            errScanningInput: 'Error creating Wallets from Xpub',
-            scanningInput: false,
-          ),
+      if (xpub.startsWith('ypub') || xpub.startsWith('zpub')) {
+        final (wxpub, err) = await _bdkCreate.oneFromSlip132Pub(
+          xpub,
         );
-        return;
+        if (err != null) {
+          emit(
+            state.copyWith(
+              errScanningInput: err.toString(),
+              scanningInput: false,
+            ),
+          );
+          return;
+        }
+        updateSelectScriptType(wxpub!.scriptType);
+        wallets.addAll([wxpub]);
+      } else {
+        final (wxpub, err) = await _bdkCreate.allFromMasterXpub(
+          xpub,
+        );
+        if (err != null) {
+          emit(
+            state.copyWith(
+              errScanningInput: err.toString(),
+              scanningInput: false,
+            ),
+          );
+          return;
+        }
+        updateSelectScriptType(wxpub!.first.scriptType);
+        wallets.addAll(wxpub);
       }
-      updateSelectScriptType(wxpub!.scriptType);
-      wallets.addAll([wxpub]);
     }
 
     emit(
@@ -202,14 +200,10 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
 
     // final network = _networkCubit.state.getBBNetwork();
 
-    Wallet? selectedWallet = state.getSelectWalletDetails();
+    final selectedWallet = state.getSelectWalletDetails();
     if (selectedWallet == null) return;
-    selectedWallet = (state.label.isEmpty)
-        ? selectedWallet.copyWith(name: state.label)
-        : selectedWallet;
 
-    // var walletLabel = state.label ?? '';
-    final secureWallet = selectedWallet;
+    final secureWallet = selectedWallet.copyWith(name: state.label);
 
     final err = await _walletsStorageRepository.newWallet(
       secureWallet,
@@ -224,7 +218,7 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
       return;
     }
 
-    await Future.delayed(const Duration(seconds: 1));
+    // await Future.delayed(const Duration(seconds: 1));
 
     emit(
       state.copyWith(

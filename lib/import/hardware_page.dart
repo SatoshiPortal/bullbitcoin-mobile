@@ -3,10 +3,6 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
-import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
-import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -39,14 +35,10 @@ class _HardwareImportPageState extends State<HardwareImportPage> {
   void initState() {
     _hardwareImportCubit = HardwareImportCubit(
       barcode: locator<Barcode>(),
-      walletCreate: locator<WalletCreate>(),
-      walletSensCreate: locator<WalletSensitiveCreate>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
-      walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       networkCubit: locator<NetworkCubit>(),
       bdkCreate: locator<BDKCreate>(),
       filePicker: locator<FilePick>(),
-      bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
     );
     super.initState();
   }
@@ -60,6 +52,7 @@ class _HardwareImportPageState extends State<HardwareImportPage> {
       child: HardwareImportListeners(
         child: Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             flexibleSpace: BBAppBar(
               text: 'Import wallet',
               onBack: () {
@@ -120,7 +113,7 @@ class InputScreen extends StatelessWidget {
         XpubField(),
         Gap(24),
         UploadButton(),
-        Gap(4),
+        Gap(8),
         ScanButton(),
       ],
     );
@@ -132,21 +125,24 @@ class XpubDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const xpub = '';
-    return const Column(
+    final xpub = context.select(
+      (HardwareImportCubit _) => _.state.inputText,
+    );
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Gap(24),
-        BBText.body(
+        const Gap(24),
+        const BBText.body(
           'Wallet detected',
           isBold: true,
         ),
-        Gap(16),
+        const Gap(8),
         BBText.bodySmall(xpub),
-        Gap(24),
-        LabelField(),
-        Gap(40),
-        ImportButton(),
+        const Gap(24),
+        const ScriptSelectionDropdown(),
+        const LabelField(),
+        const Gap(40),
+        const ImportButton(),
       ],
     );
   }
@@ -177,17 +173,17 @@ class ColdCardDetails extends StatelessWidget {
         const BBText.body('Identity'),
         const Gap(4),
         BBText.body(identity),
-        const Gap(8),
+        const Gap(24),
         const ScriptSelectionDropdown(),
-        const Gap(8),
+        // const Gap(8),
         const BBText.body('Master public key'),
         const Gap(4),
         BBText.body(pubkey!),
-        const Gap(8),
+        const Gap(24),
         const BBText.body('First wallet address'),
         const Gap(4),
         BBText.body(firstAddress),
-        const Gap(8),
+        const Gap(24),
         const LabelField(),
         const Gap(40),
         const ImportButton(),
@@ -310,7 +306,7 @@ class UploadButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.big(
-      label: 'Update File',
+      label: 'Upload File',
       center: true,
       onPressed: () {
         context.read<HardwareImportCubit>().selectFile();
@@ -375,14 +371,22 @@ class ScriptSelectionDropdown extends StatelessWidget {
     final wallets = context.select(
       (HardwareImportCubit cubit) => cubit.state.walletDetails,
     );
+    if (wallets?.length == 1) return const SizedBox.shrink();
+
     final selectedWalletType = context.select(
       (HardwareImportCubit cubit) => cubit.state.selectScriptType,
     );
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const BBText.body('Select wallet type'),
         const Gap(4),
         BBDropDown<ScriptType>(
+          isCentered: false,
+          onChanged: (v) {
+            context.read<HardwareImportCubit>().updateSelectScriptType(v);
+          },
+          value: selectedWalletType,
           items: {
             for (final wallet in wallets!)
               wallet.scriptType: (
@@ -390,11 +394,8 @@ class ScriptSelectionDropdown extends StatelessWidget {
                 enabled: true
               ),
           },
-          onChanged: (v) {
-            context.read<HardwareImportCubit>().updateSelectScriptType(v);
-          },
-          value: selectedWalletType,
         ),
+        const Gap(24),
       ],
     );
   }
