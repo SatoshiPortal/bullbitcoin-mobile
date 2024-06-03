@@ -47,6 +47,7 @@ class Transaction with _$Transaction {
     @Default(false) bool isLiquid,
     @Default('') String unblindedUrl,
     @Default([]) List<String> rbfTxIds,
+    String? walletId,
   }) = _Transaction;
   const Transaction._();
 

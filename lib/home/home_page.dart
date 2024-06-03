@@ -450,7 +450,7 @@ class WalletTag extends StatelessWidget {
   final Transaction tx;
 
   static (String, Color) _buildTagDetails(
-    bool walletIsLiquid,
+    bool isLiquid,
     Transaction tx,
   ) {
     final hasSwap = tx.swapTx != null;
@@ -460,12 +460,12 @@ class WalletTag extends StatelessWidget {
 
     if (hasSwap)
       text = 'Lightning';
-    else if (walletIsLiquid)
+    else if (isLiquid)
       text = 'Liquid';
     else
       text = 'Bitcoin on-chain';
 
-    if (walletIsLiquid)
+    if (isLiquid)
       colour = CardColours.yellow;
     else
       colour = CardColours.orange;
@@ -475,7 +475,17 @@ class WalletTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiquid = context.read<HomeCubit>().state.walletIsLiquidFromTx(tx);
+    final isLiquid = tx.isLiquid;
+    final watchOnly =
+        context.read<HomeCubit>().state.walletIsWatchOnlyFromTx(tx);
+
+    final darkMode = context.select(
+      (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
+    );
+
+    final watchonlyColor =
+        darkMode ? context.colour.surface : context.colour.onBackground;
+
     final (name, color) = _buildTagDetails(isLiquid, tx);
 
     return Container(
@@ -484,7 +494,7 @@ class WalletTag extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: color,
+        color: watchOnly ? watchonlyColor : color,
         borderRadius: BorderRadius.circular(4),
       ),
       child: BBText.bodySmall(

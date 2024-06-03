@@ -38,6 +38,7 @@ _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      walletId: json['walletId'] as String?,
     );
 
 Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
@@ -61,6 +62,7 @@ Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
       'isLiquid': instance.isLiquid,
       'unblindedUrl': instance.unblindedUrl,
       'rbfTxIds': instance.rbfTxIds,
+      'walletId': instance.walletId,
     };
 
 _$TxInImpl _$$TxInImplFromJson(Map<String, dynamic> json) => _$TxInImpl(

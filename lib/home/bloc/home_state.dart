@@ -124,6 +124,11 @@ class HomeState with _$HomeState {
     return wallet?.baseWalletType == BaseWalletType.Liquid;
   }
 
+  bool walletIsWatchOnlyFromTx(Transaction tx) {
+    final walletBloc = getWalletBlocById(tx.walletId!);
+    return walletBloc?.state.wallet!.watchOnly() ?? false;
+  }
+
   WalletBloc? getWalletBlocById(String id) {
     // final walletIdx = wallets!.indexWhere((w) => w.id == id);
     // if (walletIdx == -1) return null;
@@ -210,7 +215,12 @@ class HomeState with _$HomeState {
           walletBloc.state.wallet?.transactions ?? <Transaction>[];
       // final swapsTxs = walletBloc.state.wallet?.swaps ?? <SwapTx>[];
       // final wallet = walletBloc.state.wallet;
-      for (final tx in walletTxs) txs.add(tx);
+      for (final tx in walletTxs)
+        txs.add(
+          tx.copyWith(
+            walletId: walletBloc.state.wallet!.id,
+          ),
+        );
       // for (final tx in swapsTxs) if (tx.swapTx != null) txs.add(tx.copyWith(wallet: wallet));
     }
 
