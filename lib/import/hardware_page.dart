@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
+import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/hardware_import_bloc/hardware_import_cubit.dart';
@@ -99,22 +100,39 @@ class InputScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final loading = context.select(
+      (HardwareImportCubit _) => _.state.scanningInput,
+    );
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Gap(24),
-        BBText.body(
-          'Import a hardware wallet device or any external Bitcoin wallet',
-          isBold: true,
+        IgnorePointer(
+          ignoring: loading,
+          child: AnimatedOpacity(
+            opacity: loading ? 0.3 : 1,
+            duration: 300.ms,
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Gap(24),
+                BBText.body(
+                  'Import a hardware wallet device or any external Bitcoin wallet',
+                  isBold: true,
+                ),
+                Gap(24),
+                BBText.bodySmall('Paste or scan xpub or zpub'),
+                Gap(4),
+                XpubField(),
+                Gap(24),
+                UploadButton(),
+                Gap(8),
+                ScanButton(),
+              ],
+            ),
+          ),
         ),
-        Gap(24),
-        BBText.bodySmall('Paste or scan xpub or zpub'),
-        Gap(4),
-        XpubField(),
-        Gap(24),
-        UploadButton(),
-        Gap(8),
-        ScanButton(),
+        const Gap(24),
+        if (loading) const BBLoadingRow(),
       ],
     );
   }

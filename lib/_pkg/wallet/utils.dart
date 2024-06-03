@@ -5,7 +5,9 @@ import 'package:bitcoin_utils/xyzpub.dart';
 import 'package:crypto/crypto.dart';
 
 String combinedDescriptorString(String descriptor) {
-  final desc = descriptor.replaceFirst('/0/*', '/<0;1>/*').replaceFirst('/1/*', '/<0;1>/*');
+  final desc = descriptor
+      .replaceFirst('/0/*', '/<0;1>/*')
+      .replaceFirst('/1/*', '/<0;1>/*');
   return removeChecksumFromDesc(desc);
 }
 
@@ -35,13 +37,18 @@ String combinedDescriptorString(String descriptor) {
   }
 }
 
-String createDescriptorHashId(String descriptor, {BBNetwork network = BBNetwork.Mainnet}) {
+String createDescriptorHashId(
+  String descriptor, {
+  BBNetwork network = BBNetwork.Mainnet,
+}) {
   final descHashId = sha1
       .convert(
         utf8.encode(
           // allows passing either internal or external descriptor
           // TODO: Liquid: Added network here to distinguish between Liquid mainnet and testnet. Is this fine?
-          descriptor.replaceFirst('/0/*', '/<0;1>/*').replaceFirst('/1/*', '/<0;1>/*') +
+          descriptor
+                  .replaceFirst('/0/*', '/<0;1>/*')
+                  .replaceFirst('/1/*', '/<0;1>/*') +
               network.toString(),
         ),
       )
@@ -61,11 +68,13 @@ String fingerPrintFromXKeyDesc(
 }
 
 String convertToXpubStr(String xpub) {
-  if (xpub.toLowerCase().startsWith('u') || xpub.toLowerCase().startsWith('v')) {
+  if (xpub.toLowerCase().startsWith('u') ||
+      xpub.toLowerCase().startsWith('v')) {
     final result = convertVersion(xpub, Version.tPub);
     return result;
   }
-  if (xpub.toLowerCase().startsWith('y') || xpub.toLowerCase().startsWith('z')) {
+  if (xpub.toLowerCase().startsWith('y') ||
+      xpub.toLowerCase().startsWith('z')) {
     final result = convertVersion(xpub, Version.xPub);
     return result;
   }
@@ -73,71 +82,83 @@ String convertToXpubStr(String xpub) {
   return xpub;
 }
 
-String? convertToSlipPub(ScriptType script, BBNetwork network, String extendedKey) {
-  switch (script) {
-    case ScriptType.bip44:
-      switch (network) {
-        case BBNetwork.Testnet:
-          final result = convertVersion(
-            extendedKey,
-            Version.tPub,
-          );
-          return result;
-        case BBNetwork.Mainnet:
-          final result = convertVersion(
-            extendedKey,
-            Version.xPub,
-          );
-          return result;
-        // case BBNetwork.LTestnet:
-        // case BBNetwork.LMainnet:
-        //   return null;
-      }
+String? convertToSlipPub(
+  ScriptType script,
+  BBNetwork network,
+  String extendedKey,
+) {
+  try {
+    switch (script) {
+      case ScriptType.bip44:
+        switch (network) {
+          case BBNetwork.Testnet:
+            final result = convertVersion(
+              extendedKey,
+              Version.tPub,
+            );
+            return result;
+          case BBNetwork.Mainnet:
+            final result = convertVersion(
+              extendedKey,
+              Version.xPub,
+            );
+            return result;
+          // case BBNetwork.LTestnet:
+          // case BBNetwork.LMainnet:
+          //   return null;
+        }
 
-    // TODO: Handle this case.
-    case ScriptType.bip84:
-      switch (network) {
-        case BBNetwork.Testnet:
-          final result = convertVersion(
-            extendedKey,
-            Version.vPub,
-          );
-          return result;
-        case BBNetwork.Mainnet:
-          final result = convertVersion(
-            extendedKey,
-            Version.zPub,
-          );
-          return result;
+      // TODO: Handle this case.
+      case ScriptType.bip84:
+        switch (network) {
+          case BBNetwork.Testnet:
+            final result = convertVersion(
+              extendedKey,
+              Version.vPub,
+            );
+            return result;
+          case BBNetwork.Mainnet:
+            final result = convertVersion(
+              extendedKey,
+              Version.zPub,
+            );
+            return result;
 
-        // case BBNetwork.LTestnet:
-        // case BBNetwork.LMainnet:
-        //   return null;
-      }
-    // TODO: Handle this case.
-    case ScriptType.bip49:
-      switch (network) {
-        case BBNetwork.Testnet:
-          final result = convertVersion(
-            extendedKey,
-            Version.uPub,
-          );
-          return result;
-        case BBNetwork.Mainnet:
-          final result = convertVersion(
-            extendedKey,
-            Version.yPub,
-          );
-          return result;
-        // case BBNetwork.LTestnet:
-        // case BBNetwork.LMainnet:
-        //   return null;
-      }
+          // case BBNetwork.LTestnet:
+          // case BBNetwork.LMainnet:
+          //   return null;
+        }
+      // TODO: Handle this case.
+      case ScriptType.bip49:
+        switch (network) {
+          case BBNetwork.Testnet:
+            final result = convertVersion(
+              extendedKey,
+              Version.uPub,
+            );
+            return result;
+          case BBNetwork.Mainnet:
+            final result = convertVersion(
+              extendedKey,
+              Version.yPub,
+            );
+            return result;
+          // case BBNetwork.LTestnet:
+          // case BBNetwork.LMainnet:
+          //   return null;
+        }
+    }
+  } catch (e) {
+    return 'Error: ' + e.toString();
+    // return (null, Err(e.message,
+    // rethrow;
   }
 }
 
 String keyFromDescriptor(String descriptor) {
-  final startIndex = (descriptor.contains('[')) ? descriptor.indexOf(']') : descriptor.indexOf('(');
+  final startIndex = (descriptor.contains('['))
+      ? descriptor.indexOf(']')
+      : descriptor.indexOf('(');
   final cut1 = descriptor.substring(startIndex + 1);
   final endIndex = cut1.indexOf('/');
   return cut1.substring(0, endIndex);
@@ -204,7 +225,9 @@ bool isMainnetAddress(String address) {
     return false;
   }
 
-  return address.startsWith('bc1') || address.startsWith('3') || address.startsWith('1');
+  return address.startsWith('bc1') ||
+      address.startsWith('3') ||
+      address.startsWith('1');
 }
 
 // https://community.liquid.net/c/developers/elements-address-types

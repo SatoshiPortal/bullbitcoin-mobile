@@ -68,15 +68,19 @@ class _Screen extends StatelessWidget {
         .select((WalletBloc _) => _.state.wallet?.derivationPathString() ?? '');
     final slipKey = convertToSlipPub(scriptType, network, pub);
 
+    final showFingerprint = !fingerPrint.toLowerCase().contains('unknown');
+
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const BBText.title('Wallet fingerprint'),
-            BBText.bodySmall(fingerPrint),
-            const Gap(16),
+            if (showFingerprint) ...[
+              const BBText.title('Wallet fingerprint'),
+              BBText.bodySmall(fingerPrint),
+              const Gap(16),
+            ],
             const BBText.title('Pubkey'),
             BBText.bodySmall(slipKey ?? pub),
             BBButton.text(
