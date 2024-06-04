@@ -744,6 +744,7 @@ class BDKTransactions {
 
       final extractedTx = await psbt.extractTx();
       final outputs = await extractedTx.output();
+      final inputs = await extractedTx.input();
 
       final bdkNetwork = wallet.getBdkNetwork();
       if (bdkNetwork == null) throw 'No bdkNetwork';
@@ -753,11 +754,10 @@ class BDKTransactions {
           script: bdk.ScriptBuf(bytes: txOut.scriptPubkey.bytes),
           network: bdkNetwork,
         );
-        if (txOut.value == amount! &&
-            !sendAllCoin &&
-            scriptAddress.toString() == address) {
+        final addressStr = await scriptAddress.asString();
+        if (txOut.value == amount! && !sendAllCoin && addressStr == address) {
           return Address(
-            address: scriptAddress.toString(),
+            address: addressStr,
             kind: AddressKind.external,
             state: AddressStatus.used,
             highestPreviousBalance: amount,
@@ -767,7 +767,7 @@ class BDKTransactions {
           );
         } else {
           return Address(
-            address: scriptAddress.toString(),
+            address: addressStr,
             kind: AddressKind.change,
             state: AddressStatus.used,
             highestPreviousBalance: txOut.value,
@@ -776,10 +776,26 @@ class BDKTransactions {
           );
         }
       });
-
+      final List<String> labels = [];
+      final inAddrsFutures = inputs.map((txIn) async {
+        final txid = txIn.previousOutput.txid;
+        final vout = txIn.previousOutput.vout;
+        try {
+          final input = wallet.utxos.firstWhere(
+            (utxo) =>
+                utxo.txid == txid && utxo.txIndex == vout && utxo.label != '',
+          );
+          labels.add(input.label);
+        } catch (e) {
+          print('no matching input with label');
+        }
+      });
+      await Future.wait(inAddrsFutures);
       final List<Address> outAddrs = await Future.wait(outAddrsFutures);
       final feeAmt = await txResult.$1.feeAmount();
       final psbtStr = await psbt.serialize();
+      // if (note != null || note != '') labels.add(note!);
+      final labelsString = labels.isNotEmpty ? labels.last : '';
 
       final Transaction tx = Transaction(
         txid: txDetails.txid,
@@ -791,7 +807,9 @@ class BDKTransactions {
         height: txDetails.confirmationTime?.height,
         timestamp: 0,
         // txDetails.confirmationTime?.timestamp ?? 0,
-        label: note,
+        label: (note == null || note == '')
+            ? labelsString
+            : note, // for now we just take the first label
         toAddress: address,
         outAddrs: outAddrs,
         psbt: psbtStr,

@@ -347,7 +347,7 @@ class TxInfo extends StatelessWidget {
         context.select((BroadcastTxCubit cubit) => cubit.state.transaction);
     // final psbt = context.select((BroadcastTxCubit cubit) => cubit.state.psbtBDK);
     if (tx == null) return const SizedBox();
-    final label = tx.label ?? 'No Label';
+    final String label = tx.label ?? 'No Labels';
 
     final txamt = context.select(
       (BroadcastTxCubit cubit) => cubit.state.amount ?? 0,
@@ -392,7 +392,7 @@ class TxInfo extends StatelessWidget {
               textBaseline: TextBaseline.alphabetic,
               children: [
                 BBText.bodySmall(
-                  'Label: ' + label,
+                  'Labels: ' + label,
                 ),
               ],
             ),
@@ -458,7 +458,8 @@ class TxInfo extends StatelessWidget {
               children: [
                 BBText.bodySmall(address.miniString()),
                 BBText.bodyBold(
-                    cState.getAmountInUnits(address.highestPreviousBalance)),
+                  cState.getAmountInUnits(address.highestPreviousBalance),
+                ),
               ],
             ),
             const Gap(8),

@@ -312,11 +312,12 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             script: scriptBuf,
             network: _networkCubit.state.getBdkNetwork(),
           );
+          final addressStr = await addressStruct.asString();
           if (transaction != null) {
             try {
               final Address relatedAddress = transaction.outAddrs.firstWhere(
                 (element) =>
-                    element.address == addressStruct.toString() &&
+                    element.address == addressStr &&
                     element.highestPreviousBalance == outpoint.value,
               );
               outAddrs.add(
@@ -326,7 +327,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
             } catch (e) {
               outAddrs.add(
                 Address(
-                  address: addressStruct.toString(),
+                  address: addressStr,
                   kind: AddressKind.external,
                   state: AddressStatus.used,
                   highestPreviousBalance: outpoint.value,
@@ -337,7 +338,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           } else {
             outAddrs.add(
               Address(
-                address: addressStruct.toString(),
+                address: addressStr,
                 kind: AddressKind.external,
                 state: AddressStatus.used,
                 highestPreviousBalance: outpoint.value,
