@@ -49,6 +49,7 @@ class _HardwareImportPageState extends State<HardwareImportPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _hardwareImportCubit),
+        BlocProvider.value(value: ScrollCubit()),
       ],
       child: HardwareImportListeners(
         child: Scaffold(
@@ -61,11 +62,16 @@ class _HardwareImportPageState extends State<HardwareImportPage> {
               },
             ),
           ),
-          body: const SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: _Screen(),
-            ),
+          body: Builder(
+            builder: (context) {
+              return SingleChildScrollView(
+                controller: context.read<ScrollCubit>().state,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: _Screen(),
+                ),
+              );
+            },
           ),
         ),
       ),
