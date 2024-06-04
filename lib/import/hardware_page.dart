@@ -180,10 +180,18 @@ class ColdCardDetails extends StatelessWidget {
     final cc = context.select(
       (HardwareImportCubit _) => _.state.tempColdCard!,
     );
+    final scriptType = context.select(
+      (HardwareImportCubit _) => _.state.selectScriptType,
+    );
 
     final identity = cc.xfp!;
     final pubkey = cc.bip84!.xpub;
-    final firstAddress = cc.bip84!.first!;
+
+    final firstAddress = scriptType == ScriptType.bip84
+        ? cc.bip84!.first!
+        : scriptType == ScriptType.bip49
+            ? cc.bip49!.first!
+            : cc.bip44!.first!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

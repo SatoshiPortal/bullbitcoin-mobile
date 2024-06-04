@@ -85,48 +85,39 @@ class BDKCreate {
     final coldWallet84ExtendedPublic =
         '[$fingerprint/84h/$networkPath/$accountPath]$xpub84';
 
-    final bdkXpub44 =
-        await bdk.DescriptorPublicKey.fromString(coldWallet44ExtendedPublic);
-    final bdkXpub49 =
-        await bdk.DescriptorPublicKey.fromString(coldWallet49ExtendedPublic);
-    final bdkXpub84 =
-        await bdk.DescriptorPublicKey.fromString(coldWallet84ExtendedPublic);
+    // final bdkXpub44 =
+    //     await bdk.DescriptorPublicKey.fromString(coldWallet44ExtendedPublic);
+    // final bdkXpub49 =
+    //     await bdk.DescriptorPublicKey.fromString(coldWallet49ExtendedPublic);
+    // final bdkXpub84 =
+    //     await bdk.DescriptorPublicKey.fromString(coldWallet84ExtendedPublic);
+    // print(coldWallet84ExtendedPublic);
+    // print('bdkXpub84:');
+    // print(await bdkXpub84.asString());
 
-    final bdkDescriptor44External = await bdk.Descriptor.newBip44Public(
-      publicKey: bdkXpub44,
-      fingerPrint: fingerprint,
+    final bdkDescriptor44External = await bdk.Descriptor.create(
+      descriptor: 'pkh($coldWallet44ExtendedPublic/0/*)',
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.externalChain,
     );
-    final bdkDescriptor44Internal = await bdk.Descriptor.newBip44Public(
-      publicKey: bdkXpub44,
-      fingerPrint: fingerprint,
+    final bdkDescriptor44Internal = await bdk.Descriptor.create(
+      descriptor: 'pkh($coldWallet44ExtendedPublic/1/*)',
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.internalChain,
     );
-    final bdkDescriptor49External = await bdk.Descriptor.newBip49Public(
-      publicKey: bdkXpub49,
-      fingerPrint: fingerprint,
+    final bdkDescriptor49External = await bdk.Descriptor.create(
+      descriptor: 'sh(wpkh($coldWallet49ExtendedPublic/0/*))',
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.externalChain,
     );
-    final bdkDescriptor49Internal = await bdk.Descriptor.newBip49Public(
-      publicKey: bdkXpub49,
-      fingerPrint: fingerprint,
+    final bdkDescriptor49Internal = await bdk.Descriptor.create(
+      descriptor: 'sh(wpkh($coldWallet49ExtendedPublic/1/*))',
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.internalChain,
     );
-    final bdkDescriptor84External = await bdk.Descriptor.newBip84Public(
-      publicKey: bdkXpub84,
-      fingerPrint: fingerprint,
+    final bdkDescriptor84External = await bdk.Descriptor.create(
+      descriptor: 'wpkh($coldWallet84ExtendedPublic/0/*)',
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.externalChain,
     );
-    final bdkDescriptor84Internal = await bdk.Descriptor.newBip84Public(
-      publicKey: bdkXpub84,
-      fingerPrint: fingerprint,
+    final bdkDescriptor84Internal = await bdk.Descriptor.create(
+      descriptor: 'wpkh($coldWallet84ExtendedPublic/1/*)',
       network: bdkNetwork,
-      keychain: bdk.KeychainKind.internalChain,
     );
 
     final wallet44HashId =
