@@ -305,8 +305,9 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         final List<Address> outAddrs = [];
         for (final outpoint in outputs) {
           totalAmount += outpoint.value;
-          final scriptBuf =
-              await bdk.ScriptBuf.fromHex(outpoint.scriptPubkey.toString());
+          final scriptBuf = await bdk.ScriptBuf.fromHex(
+            hex.encode(outpoint.scriptPubkey.bytes),
+          );
           final addressStruct = await bdk.Address.fromScript(
             script: scriptBuf,
             network: _networkCubit.state.getBdkNetwork(),
@@ -379,7 +380,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           extractingTx: false,
           errExtractingTx:
               'Error decoding transaction. Ensure the transaction is valid.',
-          // step: BroadcastTxStep.import,
+          step: BroadcastTxStep.import,
           tx: '',
         ),
       );
@@ -388,7 +389,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         state.copyWith(
           extractingTx: false,
           errExtractingTx: e.message,
-          // step: BroadcastTxStep.import,
+          step: BroadcastTxStep.import,
           tx: '',
         ),
       );
@@ -418,7 +419,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         await bdk.Transaction.fromBytes(transactionBytes: hex.decode(tx));
 
     final (blockchain, errB) = _networkRepository.bdkBlockchain;
-    if (errB == null) {
+    if (errB != null) {
       emit(
         state.copyWith(
           broadcastingTx: false,

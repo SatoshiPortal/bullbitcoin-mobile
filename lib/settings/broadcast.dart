@@ -139,7 +139,6 @@ class _Screen extends StatelessWidget {
         buildWhen: (previous, current) => previous.step != current.step,
         builder: (context, state) {
           final step = state.step;
-
           return BlocListener<BroadcastTxCubit, BroadcastTxState>(
             listenWhen: (previous, current) =>
                 previous.hasErr() != current.hasErr() && current.hasErr(),
@@ -254,8 +253,10 @@ class DownloadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final downloading = context.select((BroadcastTxCubit cubit) => cubit.state.downloadingFile);
-    final downloaded = context.select((BroadcastTxCubit cubit) => cubit.state.downloaded);
+    final downloading =
+        context.select((BroadcastTxCubit cubit) => cubit.state.downloadingFile);
+    final downloaded =
+        context.select((BroadcastTxCubit cubit) => cubit.state.downloaded);
 
     if (downloaded)
       return Center(
@@ -287,10 +288,13 @@ class BroadcastSendButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final step = context.select((BroadcastTxCubit cubit) => cubit.state.step);
     final _ = context.select((BroadcastTxCubit cubit) => cubit.state.hasErr());
-    final __ = context.select((BroadcastTxCubit cubit) => cubit.state.getErrors());
+    final __ =
+        context.select((BroadcastTxCubit cubit) => cubit.state.getErrors());
 
-    final broadcasting = context.select((BroadcastTxCubit cubit) => cubit.state.broadcastingTx);
-    final extractingTx = context.select((BroadcastTxCubit cubit) => cubit.state.extractingTx);
+    final broadcasting =
+        context.select((BroadcastTxCubit cubit) => cubit.state.broadcastingTx);
+    final extractingTx =
+        context.select((BroadcastTxCubit cubit) => cubit.state.extractingTx);
     final loading = broadcasting || extractingTx;
 
     final sent = context.select((BroadcastTxCubit cubit) => cubit.state.sent);
@@ -339,7 +343,8 @@ class TxInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final bState = context.select((BroadcastTxCubit cubit) => cubit.state);
 
-    final tx = context.select((BroadcastTxCubit cubit) => cubit.state.transaction);
+    final tx =
+        context.select((BroadcastTxCubit cubit) => cubit.state.transaction);
     // final psbt = context.select((BroadcastTxCubit cubit) => cubit.state.psbtBDK);
     if (tx == null) return const SizedBox();
     final label = tx.label ?? 'No Label';
@@ -347,11 +352,14 @@ class TxInfo extends StatelessWidget {
     final txamt = context.select(
       (BroadcastTxCubit cubit) => cubit.state.amount ?? 0,
     );
-    final txfee = context.select((BroadcastTxCubit cubit) => cubit.state.transaction?.fee ?? 0);
+    final txfee = context
+        .select((BroadcastTxCubit cubit) => cubit.state.transaction?.fee ?? 0);
     // final txAddress = context.select((BroadcastTxCubit _) => _.state.transaction?.outAddrs ?? []);
     final cState = context.select((CurrencyCubit cubit) => cubit.state);
-    final amt = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(txamt));
-    final fee = context.select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(txfee));
+    final amt = context
+        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(txamt));
+    final fee = context
+        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(txfee));
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 16,
@@ -449,7 +457,8 @@ class TxInfo extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 BBText.bodySmall(address.miniString()),
-                BBText.bodyBold(cState.getAmountInUnits(address.highestPreviousBalance)),
+                BBText.bodyBold(
+                    cState.getAmountInUnits(address.highestPreviousBalance)),
               ],
             ),
             const Gap(8),
