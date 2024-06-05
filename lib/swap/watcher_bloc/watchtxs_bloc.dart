@@ -425,13 +425,18 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     Emitter<WatchTxsState> emit,
   ) async {
     // locator<Logger>().log('', printToConsole: true);
-    emit(state.copyWith(updatedSwapTx: event.swapTx));
-    await Future.delayed(200.ms);
-    emit(state.copyWith(updatedSwapTx: null));
-    final swapTx = event.swapTx;
+
     final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;
     if (walletBloc == null || wallet == null) return;
+    final swapFromWallet =
+        walletBloc.state.wallet!.getOngoingSwap(event.swapTx.id);
+    final swapTx = swapFromWallet!.copyWith(status: event.swapTx.status);
+
+    emit(state.copyWith(updatedSwapTx: swapTx));
+    await Future.delayed(200.ms);
+    emit(state.copyWith(updatedSwapTx: null));
+
     final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
 
     if (!swapTx.isSubmarine) {
