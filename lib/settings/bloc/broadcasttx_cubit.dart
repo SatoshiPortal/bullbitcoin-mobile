@@ -106,236 +106,83 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           verified: false,
         ),
       );
+      bdk.Transaction bdkTx;
       final tx = state.tx;
       var isPsbt = false;
       try {
         // check if = is in the string
-        hex.decode(tx);
+        final decodedTx = hex.decode(tx);
+        bdkTx = await bdk.Transaction.fromBytes(transactionBytes: decodedTx);
       } catch (e) {
         isPsbt = true;
+        final psbt = await bdk.PartiallySignedTransaction.fromString(tx);
+        bdkTx = await psbt.extractTx();
+        // maybe this psbt needs to be finalized?
       }
 
-      if (isPsbt) {
-        final psbt = await bdk.PartiallySignedTransaction.fromString(tx);
-        bdk.Transaction bdkTx = await psbt.extractTx();
-        final txid = await bdkTx.txid();
+      final txid = await bdkTx.txid();
+      final outputs = await bdkTx.output();
+      final inputs = await bdkTx.input();
+      Transaction? transaction;
+      WalletBloc? relatedWallet;
 
-        // loop wallet txs if txid match
-        // get address
-        // check if psbt outaddresses matches send tx address
-        // if not show warning
-        // if no tx matches skip checks
-        Transaction? transaction;
-        WalletBloc? relatedWallet;
-        final wallets = _homeCubit.state.walletBlocs ?? [];
-
-        for (final wallet in wallets) {
-          for (final tx
-              in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
-            if (tx.txid == txid && !tx.isReceived()) {
-              transaction = tx;
-              relatedWallet = wallet;
-            }
+      final wallets = _homeCubit.state.walletBlocs ?? [];
+      for (final wallet in wallets) {
+        for (final tx in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
+          if (tx.txid == txid && !tx.isReceived()) {
+            transaction = tx;
+            relatedWallet = wallet;
           }
         }
-        if (transaction != null) {
-          emit(
-            state.copyWith(
-              recognizedTx: true,
-            ),
-          );
-          if (relatedWallet == null) {
-            emit(
-              state.copyWith(
-                errExtractingTx: 'Could not load related wallet',
-              ),
-            );
-            return;
-          }
-          final (bdkWallet, errLoading) =
-              _walletsRepository.getBdkWallet(relatedWallet.state.wallet!.id);
-          if (errLoading != null) {
-            emit(
-              state.copyWith(
-                errExtractingTx: errLoading.toString(),
-              ),
-            );
-            return;
-          }
-          final (bdkTxFinResp, txErr) = await _bdkTransactions.signTx(
-            psbt: tx,
-            bdkWallet: bdkWallet!,
-          );
-          if (txErr != null) {
-            emit(
-              state.copyWith(
-                errExtractingTx:
-                    'Error finalizing psbt. Ensure the psbt is signed.',
-              ),
-            );
-            return;
-          } else
-            bdkTx = bdkTxFinResp!.$1;
-        } else {
-          emit(
-            state.copyWith(
-              recognizedTx: false,
-            ),
-          );
-        }
-        final feeAmount = await psbt.feeAmount();
-        final outputs = await bdkTx.output();
-
-        int totalAmount = 0;
-        final List<Address> outAddrs = [];
-
-        final nOutputs = outputs.length;
-        int verifiedOutputs = 0;
-        for (final outpoint in outputs) {
-          final scriptBuf =
-              await bdk.ScriptBuf.fromHex(outpoint.scriptPubkey.toString());
-          totalAmount += outpoint.value;
-          final addressStruct = await bdk.Address.fromScript(
-            script: scriptBuf,
-            network: _networkCubit.state.getBdkNetwork(),
-          );
-          if (transaction != null) {
-            try {
-              final Address relatedAddress = transaction.outAddrs.firstWhere(
-                (element) =>
-                    element.address == addressStruct.toString() &&
-                    element.highestPreviousBalance == outpoint.value,
-              );
-              outAddrs.add(
-                relatedAddress,
-              );
-              verifiedOutputs += 1;
-            } catch (e) {
-              outAddrs.add(
-                Address(
-                  address: addressStruct.toString(),
-                  kind: AddressKind.external,
-                  state: AddressStatus.used,
-                  highestPreviousBalance: outpoint.value,
-                  balance: outpoint.value,
-                ),
-              );
-            }
-          } else {
-            outAddrs.add(
-              Address(
-                address: addressStruct.toString(),
-                kind: AddressKind.external,
-                state: AddressStatus.used,
-                highestPreviousBalance: outpoint.value,
-                balance: outpoint.value,
-              ),
-            );
-          }
-        }
-
-        transaction ??= Transaction(
-          txid: txid,
-          timestamp: 0,
-        );
-        transaction = transaction.copyWith(
-          fee: feeAmount,
-          outAddrs: outAddrs,
-        );
-        final decodedTx = hex.encode(await bdkTx.serialize());
-        if (verifiedOutputs == nOutputs) {
-          emit(state.copyWith(verified: true));
-        }
+      }
+      if (transaction != null) {
         emit(
           state.copyWith(
-            extractingTx: false,
-            tx: decodedTx,
-            psbtBDK: psbt,
-            transaction: transaction,
-            step: BroadcastTxStep.broadcast,
-            amount: totalAmount,
-            // this is the sum of outputs so its not really what we are sending
+            recognizedTx: true,
           ),
         );
+        if (relatedWallet == null) {
+          emit(
+            state.copyWith(
+              errExtractingTx: 'Could not load related wallet',
+            ),
+          );
+          return;
+        }
       } else {
-        // its a hex
-        final bdkTx =
-            await bdk.Transaction.fromBytes(transactionBytes: hex.decode(tx));
-        final txid = await bdkTx.txid();
-        final outputs = await bdkTx.output();
-        Transaction? transaction;
-        WalletBloc? relatedWallet;
+        emit(
+          state.copyWith(
+            recognizedTx: false,
+          ),
+        );
+      }
 
-        final wallets = _homeCubit.state.walletBlocs ?? [];
-        for (final wallet in wallets) {
-          for (final tx
-              in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
-            if (tx.txid == txid && !tx.isReceived()) {
-              transaction = tx;
-              relatedWallet = wallet;
-            }
-          }
-        }
+      int totalAmount = 0;
+      final nOutputs = outputs.length;
+      int verifiedOutputs = 0;
+      final List<Address> outAddrs = [];
+      for (final outpoint in outputs) {
+        totalAmount += outpoint.value;
+        final scriptBuf = await bdk.ScriptBuf.fromHex(
+          hex.encode(outpoint.scriptPubkey.bytes),
+        );
+        final addressStruct = await bdk.Address.fromScript(
+          script: scriptBuf,
+          network: _networkCubit.state.getBdkNetwork(),
+        );
+        final addressStr = await addressStruct.asString();
         if (transaction != null) {
-          emit(
-            state.copyWith(
-              recognizedTx: true,
-            ),
-          );
-          if (relatedWallet == null) {
-            emit(
-              state.copyWith(
-                errExtractingTx: 'Could not load related wallet',
-              ),
+          try {
+            final Address relatedAddress = transaction.outAddrs.firstWhere(
+              (element) =>
+                  element.address == addressStr &&
+                  element.highestPreviousBalance == outpoint.value,
             );
-            return;
-          }
-        } else {
-          emit(
-            state.copyWith(
-              recognizedTx: false,
-            ),
-          );
-        }
-
-        int totalAmount = 0;
-        final nOutputs = outputs.length;
-        int verifiedOutputs = 0;
-
-        final List<Address> outAddrs = [];
-        for (final outpoint in outputs) {
-          totalAmount += outpoint.value;
-          final scriptBuf = await bdk.ScriptBuf.fromHex(
-            hex.encode(outpoint.scriptPubkey.bytes),
-          );
-          final addressStruct = await bdk.Address.fromScript(
-            script: scriptBuf,
-            network: _networkCubit.state.getBdkNetwork(),
-          );
-          final addressStr = await addressStruct.asString();
-          if (transaction != null) {
-            try {
-              final Address relatedAddress = transaction.outAddrs.firstWhere(
-                (element) =>
-                    element.address == addressStr &&
-                    element.highestPreviousBalance == outpoint.value,
-              );
-              outAddrs.add(
-                relatedAddress,
-              );
-              verifiedOutputs += 1;
-            } catch (e) {
-              outAddrs.add(
-                Address(
-                  address: addressStr,
-                  kind: AddressKind.external,
-                  state: AddressStatus.used,
-                  highestPreviousBalance: outpoint.value,
-                  balance: outpoint.value,
-                ),
-              );
-            }
-          } else {
+            outAddrs.add(
+              relatedAddress,
+            );
+            verifiedOutputs += 1;
+          } catch (e) {
             outAddrs.add(
               Address(
                 address: addressStr,
@@ -346,35 +193,44 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
               ),
             );
           }
+        } else {
+          outAddrs.add(
+            Address(
+              address: addressStr,
+              kind: AddressKind.external,
+              state: AddressStatus.used,
+              highestPreviousBalance: outpoint.value,
+              balance: outpoint.value,
+            ),
+          );
         }
-        final int feeAmount = transaction?.fee ?? 0;
-        // sum of input values - output values = fees
-
-        // TODO: timestamp needs to be properly set
-        transaction ??= Transaction(
-          txid: txid,
-          timestamp: 0,
-        );
-        // transaction ??= Transaction(txid: txid);
-        transaction = transaction.copyWith(
-          fee: feeAmount,
-          outAddrs: outAddrs,
-        );
-        final decodedTx = hex.encode(await bdkTx.serialize());
-        if (verifiedOutputs == nOutputs) {
-          emit(state.copyWith(verified: true));
-        }
-        emit(
-          state.copyWith(
-            extractingTx: false,
-            tx: decodedTx,
-            transaction: transaction,
-            step: BroadcastTxStep.broadcast,
-            amount: totalAmount,
-            // this is the sum of outputs so its not really what we are sending
-          ),
-        );
       }
+      final int feeAmount = transaction?.fee ?? 0;
+      // sum of input values - output values = fees
+
+      // TODO: timestamp needs to be properly set
+      transaction ??= Transaction(
+        txid: txid,
+        timestamp: 0,
+      );
+      // transaction ??= Transaction(txid: txid);
+      transaction = transaction.copyWith(
+        fee: feeAmount,
+        outAddrs: outAddrs,
+      );
+      final decodedTx = hex.encode(await bdkTx.serialize());
+      if (verifiedOutputs == nOutputs) {
+        emit(state.copyWith(verified: true));
+      }
+      emit(
+        state.copyWith(
+          extractingTx: false,
+          tx: decodedTx,
+          transaction: transaction,
+          step: BroadcastTxStep.broadcast,
+          amount: totalAmount,
+        ),
+      );
     } on bdk.EncodeException {
       emit(
         state.copyWith(

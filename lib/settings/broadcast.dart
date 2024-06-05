@@ -383,7 +383,7 @@ class TxInfo extends StatelessWidget {
                 ),
                 const Gap(8),
                 const BBText.bodySmall(
-                  'Verified.',
+                  'Verified: Local transaction detected',
                 ),
               ],
             ),
@@ -410,11 +410,13 @@ class TxInfo extends StatelessWidget {
                 ),
                 const Gap(8),
                 const BBText.bodySmall(
-                  'Transaction not found locally.',
+                  'Unverified: Transaction not found locally.',
                 ),
               ],
             ),
           ],
+          const Gap(8),
+
           const BBText.title('Total output amount'),
           const Gap(4),
           Row(
@@ -435,15 +437,18 @@ class TxInfo extends StatelessWidget {
               ),
             ],
           ),
+          if (bState.recognizedTx == true) ...[
+            const Gap(24),
+            const BBText.title(
+              'Network Fee',
+            ),
+            const Gap(4),
+            BBText.body(
+              fee,
+            ),
+          ],
           const Gap(24),
-          const BBText.title(
-            'Network Fee',
-          ),
-          const Gap(4),
-          BBText.body(
-            fee,
-          ),
-          const Gap(24),
+
           const BBText.title(
             'Outputs',
           ),
