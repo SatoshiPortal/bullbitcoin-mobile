@@ -604,7 +604,8 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final (_, tx, feeAmt) = buildResp!;
-    if (swaptx.totalFees()! > swaptx.outAmount) {
+
+    if (swaptx.totalFees()! + feeAmt! > swaptx.outAmount) {
       emit(
         state.copyWith(errSending: 'Fees is greater than output amount!'),
       );
