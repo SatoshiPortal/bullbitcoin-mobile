@@ -520,7 +520,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
         case SubmarineSwapActions.settled:
           final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
-          final w = await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
+          final w = await __updateWalletTxs(
+              swapTx.copyWith(completionTime: DateTime.now()),
+              walletBloc,
+              emit);
           if (w == null) return;
           await __closeSwap(updatedSwapTx, emit);
       }

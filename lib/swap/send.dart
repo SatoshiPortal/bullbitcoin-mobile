@@ -219,7 +219,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
           const Gap(16),
           BBText.body(amtStr),
           const Gap(24),
-          if (paid) const BBText.body('Closing the swap ...'),
+          if (paid && !settled) const BBText.body('Closing the swap ...'),
           if (settled) const BBText.body('Swap complete'),
           const Gap(24),
           if (!settled) ...[
