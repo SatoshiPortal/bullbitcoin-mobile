@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
@@ -155,7 +156,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     //       ? fees.lbtcReverse.claimFeesEstimate
     //       : fees.btcReverse.claimFeesEstimate,
     // );
-    // final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
+    final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
 
     final updatedSwap = swap!.copyWith(
       boltzFees: walletIsLiquid
@@ -165,7 +166,9 @@ class CreateSwapCubit extends Cubit<SwapState> {
           ? fees.lbtcReverse.lockupFees
           : fees.btcReverse.lockupFees,
       claimFees: walletIsLiquid
-          ? fees.lbtcReverse.claimFeesEstimate
+          ? liquidElectrum == LiquidElectrumTypes.bullbitcoin
+              ? 30 // ***** coop fees would be half, but leaving at 30 incase we don't coop
+              : fees.lbtcReverse.claimFeesEstimate
           : fees.btcReverse.claimFeesEstimate,
     );
 
