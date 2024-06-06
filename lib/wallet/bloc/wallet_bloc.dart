@@ -115,7 +115,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
     await Future.delayed(50.ms);
     add(GetFirstAddress());
-    await Future.delayed(500.ms);
+    await Future.delayed(200.ms);
     add(SyncWallet());
   }
 
@@ -270,7 +270,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    await Future.delayed(1000.ms);
+    await Future.delayed(100.ms);
 
     // _swapBloc.add(WatchWallets(isTestnet: state.wallet!));
   }

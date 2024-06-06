@@ -209,7 +209,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
               textAlign: TextAlign.center,
             ),
           const Gap(16),
-          if (!refund) SendTick(sent: settled),
+          if (!refund) SendTick(sent: paid || settled),
           if (refund)
             const FaIcon(
               FontAwesomeIcons.triangleExclamation,
@@ -218,6 +218,10 @@ class _SendingLnTxState extends State<SendingLnTx> {
             ),
           const Gap(16),
           BBText.body(amtStr),
+          const Gap(24),
+          if (paid) const BBText.body('Closing the swap ...'),
+          if (settled) const BBText.body('Swap complete'),
+          const Gap(24),
           if (!settled) ...[
             const Gap(24),
             _OnChainWarning(swapTx: swapTx),

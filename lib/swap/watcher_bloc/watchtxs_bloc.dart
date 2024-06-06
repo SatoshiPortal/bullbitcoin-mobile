@@ -71,7 +71,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     for (final walletBloc in walletBlocs) {
       final wallet = walletBloc.state.wallet!;
       for (final swapTx in wallet.swapsToProcess())
-        add(ProcessSwapTx(walletId: wallet.id, swapTx: swapTx));
+        add(
+          ProcessSwapTx(
+            walletId: wallet.id,
+            swapTxId: swapTx.id,
+          ),
+        );
       swapsToWatch.addAll(wallet.swaps);
     }
     swapsToWatch.removeWhere((_) => _.failed());
@@ -155,7 +160,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         add(
           ProcessSwapTx(
             walletId: walletBloc.state.wallet!.id,
-            swapTx: swapTx!.copyWith(status: status),
+            status: status,
+            swapTxId: swapTx!.id,
           ),
         );
       }
@@ -430,11 +436,13 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final wallet = walletBloc?.state.wallet;
     if (walletBloc == null || wallet == null) return;
     final swapFromWallet =
-        walletBloc.state.wallet!.getOngoingSwap(event.swapTx.id);
-    final swapTx = swapFromWallet!.copyWith(status: event.swapTx.status);
+        walletBloc.state.wallet!.getOngoingSwap(event.swapTxId);
+    final swapTx = event.status != null
+        ? swapFromWallet!.copyWith(status: event.status)
+        : swapFromWallet!;
 
     emit(state.copyWith(updatedSwapTx: swapTx));
-    await Future.delayed(200.ms);
+    await Future.delayed(100.ms);
     emit(state.copyWith(updatedSwapTx: null));
 
     final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;

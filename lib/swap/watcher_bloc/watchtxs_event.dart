@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_model/transaction.dart';
+import 'package:boltz_dart/boltz_dart.dart';
 
 class WatchTxsEvent {}
 
@@ -13,10 +13,15 @@ class WatchWallets extends WatchTxsEvent {
 // class ClearAlerts extends WatchTxsEvent {}
 
 class ProcessSwapTx extends WatchTxsEvent {
-  ProcessSwapTx({required this.walletId, required this.swapTx});
+  ProcessSwapTx({
+    required this.walletId,
+    required this.swapTxId,
+    this.status,
+  });
 
-  final SwapTx swapTx;
+  final String swapTxId;
   final String walletId;
+  final SwapStreamStatus? status;
 }
 
 // class WatchSwapStatus extends WatchTxsEvent {

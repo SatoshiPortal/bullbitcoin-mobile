@@ -162,9 +162,15 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     }
 
     final stream = boltz.SwapStreamStatus(id: id, status: status!.status);
-    final updatedSwap = swaptx.copyWith(status: stream);
+    // final updatedSwap = swaptx.copyWith(status: stream);
 
-    _watcher.add(ProcessSwapTx(walletId: walletId, swapTx: updatedSwap));
+    _watcher.add(
+      ProcessSwapTx(
+        walletId: walletId,
+        swapTxId: swaptx.id,
+        status: stream,
+      ),
+    );
 
     emit(
       state.copyWith(
