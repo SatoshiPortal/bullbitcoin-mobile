@@ -167,7 +167,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
           : fees.btcReverse.lockupFees,
       claimFees: walletIsLiquid
           ? liquidElectrum == LiquidElectrumTypes.bullbitcoin
-              ? 30 // ***** coop fees would be half, but leaving at 30 incase we don't coop
+              ? 15 // ***** non-coop fees would be double *****
               : fees.lbtcReverse.claimFeesEstimate
           : fees.btcReverse.claimFeesEstimate,
     );
