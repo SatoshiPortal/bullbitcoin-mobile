@@ -20,6 +20,7 @@ extension Btcln on BtcLnV1Swap {
       scriptAddress: scriptAddress,
       electrumUrl: electrumUrl,
       boltzUrl: boltzUrl,
+      creationTime: DateTime.now(),
     );
   }
 
@@ -55,6 +56,7 @@ extension Lbtcln on LbtcLnV1Swap {
       electrumUrl: electrumUrl,
       boltzUrl: boltzUrl,
       blindingKey: blindingKey,
+      creationTime: DateTime.now(),
     );
   }
 
@@ -218,6 +220,7 @@ extension BtcLnV2 on BtcLnV2Swap {
           ? swapScript.senderPubkey
           : swapScript.receiverPubkey,
       locktime: swapScript.locktime,
+      creationTime: DateTime.now(),
     );
   }
 
@@ -265,6 +268,7 @@ extension LbtcLnV2 on LbtcLnV2Swap {
           ? swapScript.senderPubkey
           : swapScript.receiverPubkey,
       locktime: swapScript.locktime,
+      creationTime: DateTime.now(),
     );
   }
 

@@ -870,6 +870,8 @@ mixin _$SwapTx {
   int? get lockupFees => throw _privateConstructorUsedError;
   int? get claimFees => throw _privateConstructorUsedError;
   String? get claimAddress => throw _privateConstructorUsedError;
+  DateTime? get creationTime => throw _privateConstructorUsedError;
+  DateTime? get completionTime => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -905,7 +907,9 @@ abstract class $SwapTxCopyWith<$Res> {
       int? boltzFees,
       int? lockupFees,
       int? claimFees,
-      String? claimAddress});
+      String? claimAddress,
+      DateTime? creationTime,
+      DateTime? completionTime});
 
   $SwapStreamStatusCopyWith<$Res>? get status;
 }
@@ -947,6 +951,8 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? lockupFees = freezed,
     Object? claimFees = freezed,
     Object? claimAddress = freezed,
+    Object? creationTime = freezed,
+    Object? completionTime = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -1045,6 +1051,14 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.claimAddress
           : claimAddress // ignore: cast_nullable_to_non_nullable
               as String?,
+      creationTime: freezed == creationTime
+          ? _value.creationTime
+          : creationTime // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      completionTime: freezed == completionTime
+          ? _value.completionTime
+          : completionTime // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ) as $Val);
   }
 
@@ -1092,7 +1106,9 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       int? boltzFees,
       int? lockupFees,
       int? claimFees,
-      String? claimAddress});
+      String? claimAddress,
+      DateTime? creationTime,
+      DateTime? completionTime});
 
   @override
   $SwapStreamStatusCopyWith<$Res>? get status;
@@ -1133,6 +1149,8 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? lockupFees = freezed,
     Object? claimFees = freezed,
     Object? claimAddress = freezed,
+    Object? creationTime = freezed,
+    Object? completionTime = freezed,
   }) {
     return _then(_$SwapTxImpl(
       id: null == id
@@ -1231,6 +1249,14 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.claimAddress
           : claimAddress // ignore: cast_nullable_to_non_nullable
               as String?,
+      creationTime: freezed == creationTime
+          ? _value.creationTime
+          : creationTime // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      completionTime: freezed == completionTime
+          ? _value.completionTime
+          : completionTime // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
     ));
   }
 }
@@ -1262,7 +1288,9 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       this.boltzFees,
       this.lockupFees,
       this.claimFees,
-      this.claimAddress})
+      this.claimAddress,
+      this.creationTime,
+      this.completionTime})
       : super._();
 
   factory _$SwapTxImpl.fromJson(Map<String, dynamic> json) =>
@@ -1318,10 +1346,14 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   final int? claimFees;
   @override
   final String? claimAddress;
+  @override
+  final DateTime? creationTime;
+  @override
+  final DateTime? completionTime;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, walletType: $walletType, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, boltzPubkey: $boltzPubkey, locktime: $locktime, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress)';
+    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, walletType: $walletType, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, boltzPubkey: $boltzPubkey, locktime: $locktime, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress, creationTime: $creationTime, completionTime: $completionTime)';
   }
 
   @override
@@ -1352,7 +1384,9 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('boltzFees', boltzFees))
       ..add(DiagnosticsProperty('lockupFees', lockupFees))
       ..add(DiagnosticsProperty('claimFees', claimFees))
-      ..add(DiagnosticsProperty('claimAddress', claimAddress));
+      ..add(DiagnosticsProperty('claimAddress', claimAddress))
+      ..add(DiagnosticsProperty('creationTime', creationTime))
+      ..add(DiagnosticsProperty('completionTime', completionTime));
   }
 
   @override
@@ -1400,7 +1434,11 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
             (identical(other.claimFees, claimFees) ||
                 other.claimFees == claimFees) &&
             (identical(other.claimAddress, claimAddress) ||
-                other.claimAddress == claimAddress));
+                other.claimAddress == claimAddress) &&
+            (identical(other.creationTime, creationTime) ||
+                other.creationTime == creationTime) &&
+            (identical(other.completionTime, completionTime) ||
+                other.completionTime == completionTime));
   }
 
   @JsonKey(ignore: true)
@@ -1430,7 +1468,9 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
         boltzFees,
         lockupFees,
         claimFees,
-        claimAddress
+        claimAddress,
+        creationTime,
+        completionTime
       ]);
 
   @JsonKey(ignore: true)
@@ -1472,7 +1512,9 @@ abstract class _SwapTx extends SwapTx {
       final int? boltzFees,
       final int? lockupFees,
       final int? claimFees,
-      final String? claimAddress}) = _$SwapTxImpl;
+      final String? claimAddress,
+      final DateTime? creationTime,
+      final DateTime? completionTime}) = _$SwapTxImpl;
   const _SwapTx._() : super._();
 
   factory _SwapTx.fromJson(Map<String, dynamic> json) = _$SwapTxImpl.fromJson;
@@ -1525,6 +1567,10 @@ abstract class _SwapTx extends SwapTx {
   int? get claimFees;
   @override
   String? get claimAddress;
+  @override
+  DateTime? get creationTime;
+  @override
+  DateTime? get completionTime;
   @override
   @JsonKey(ignore: true)
   _$$SwapTxImplCopyWith<_$SwapTxImpl> get copyWith =>

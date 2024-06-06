@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/transaction.dart';
@@ -69,8 +70,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final walletBlocs = _homeCubit.state.walletBlocsFromNetwork(network);
     final swapsToWatch = <SwapTx>[];
     for (final walletBloc in walletBlocs) {
-      final wallet = walletBloc.state.wallet!;
-      for (final swapTx in wallet.swapsToProcess())
+      final wallet = walletBloc.state.wallet;
+      for (final swapTx in wallet!.swapsToProcess())
         add(
           ProcessSwapTx(
             walletId: wallet.id,
@@ -449,6 +450,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         ? swapFromWallet!.copyWith(status: event.status)
         : swapFromWallet!;
 
+    if (swapTx.id == 'XgYXAdRm3Q1y' || swapTx.id == 'YoLT7bRogU71') {
+      log(jsonEncode(swapTx.toJson()));
+    }
+
+    if (swapTx.id == 'YoLT7bRogU71') return;
+
     emit(state.copyWith(updatedSwapTx: swapTx));
     await Future.delayed(100.ms);
     emit(state.copyWith(updatedSwapTx: null));
@@ -481,9 +488,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
             await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case ReverseSwapActions.settled:
-          final w = await __updateWalletTxs(swapTx, walletBloc, emit);
+          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
+          final w = await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
           if (w == null) return;
-          await __closeSwap(swapTx, emit);
+          await __closeSwap(updatedSwapTx, emit);
       }
     } else {
       switch (swapTx.submarineSwapAction()) {
@@ -519,9 +527,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
             );
 
         case SubmarineSwapActions.settled:
-          final w = await __updateWalletTxs(swapTx, walletBloc, emit);
+          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
+          final w = await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
           if (w == null) return;
-          await __closeSwap(swapTx, emit);
+          await __closeSwap(updatedSwapTx, emit);
       }
     }
   }
