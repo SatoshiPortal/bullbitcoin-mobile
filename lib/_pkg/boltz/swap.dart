@@ -517,7 +517,11 @@ class SwapBoltz {
           return (txid, null);
         } catch (e) {
           print('Failed to broadcast transaction: $e');
-          await Future.delayed(const Duration(seconds: 8));
+          await Future.delayed(
+            const Duration(
+              seconds: 5,
+            ),
+          ); // this non-blocking delay is to accomodate mempool propogation if the first try failed.
           final txid = await lwk.Wallet.broadcastTx(
             electrumUrl: blockchain!,
             txBytes: Uint8List.fromList(hex.decode(signedHex)),
@@ -615,7 +619,11 @@ class SwapBoltz {
           return (txid, null);
         } catch (e) {
           print('Failed to broadcast transaction: $e');
-          await Future.delayed(const Duration(seconds: 8));
+          await Future.delayed(
+            const Duration(
+              seconds: 5,
+            ),
+          ); // this non-blocking delay is to accomodate mempool propogation if the first try failed.
           final txid = await lwk.Wallet.broadcastTx(
             electrumUrl: blockchain!,
             txBytes: Uint8List.fromList(hex.decode(signedHex)),
