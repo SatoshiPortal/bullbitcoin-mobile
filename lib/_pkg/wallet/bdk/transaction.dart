@@ -206,10 +206,7 @@ class BDKTransactions {
         Transaction? storedTx;
         if (storedTxIdx != -1)
           storedTx = storedTxs.elementAtOrNull(storedTxIdx);
-        if (idxUnsignedTx != -1) {
-          if (tx.txid == unsignedTxs[idxUnsignedTx].txid)
-            unsignedTxs.removeAt(idxUnsignedTx);
-        }
+
         final vsize = await tx.transaction?.vsize() ?? 1;
         final isNativeRbf = await tx.transaction?.isExplicitlyRbf() ??
             (storedTx?.rbfEnabled ?? false);
@@ -441,7 +438,14 @@ class BDKTransactions {
             storedTxs[storedTxIdx].label!.isNotEmpty)
           label = storedTxs[storedTxIdx].label;
 
-        transactions.add(txObj.copyWith(label: label));
+        if (idxUnsignedTx != -1) {
+          if (tx.txid == unsignedTxs[idxUnsignedTx].txid) {
+            final usTx = unsignedTxs.removeAt(idxUnsignedTx);
+            transactions.add(txObj.copyWith(label: usTx.label));
+          } else
+            transactions.add(txObj.copyWith(label: label));
+        } else
+          transactions.add(txObj.copyWith(label: label));
         // Future.delayed(const Duration(milliseconds: 100));
       }
 
