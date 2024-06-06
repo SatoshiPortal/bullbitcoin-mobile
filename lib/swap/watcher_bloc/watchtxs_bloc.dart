@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/transaction.dart';
@@ -449,12 +448,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final swapTx = event.status != null
         ? swapFromWallet!.copyWith(status: event.status)
         : swapFromWallet!;
-
-    if (swapTx.id == 'XgYXAdRm3Q1y' || swapTx.id == 'YoLT7bRogU71') {
-      log(jsonEncode(swapTx.toJson()));
-    }
-
-    if (swapTx.id == 'YoLT7bRogU71') return;
 
     emit(state.copyWith(updatedSwapTx: swapTx));
     await Future.delayed(100.ms);
