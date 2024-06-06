@@ -475,6 +475,7 @@ class SwapBoltz {
     required SwapTx swapTx,
     required Wallet wallet,
     required bool tryCooperate,
+    bool broadcastViaBoltz = false,
   }) async {
     try {
       final address = wallet.lastGeneratedAddress?.address;
@@ -508,25 +509,31 @@ class SwapBoltz {
         );
         // locator<Logger>()
         //     .log('------${swapTx.id}-----\n$signedHex------signed-claim-----');
-
-        try {
-          final txid = await lwk.Wallet.broadcastTx(
-            electrumUrl: blockchain!,
-            txBytes: Uint8List.fromList(hex.decode(signedHex)),
+        if (broadcastViaBoltz) {
+          final txid = await swap.broadcastTx(
+            signedBytes: Uint8List.fromList(hex.decode(signedHex)),
           );
           return (txid, null);
-        } catch (e) {
-          print('Failed to broadcast transaction: $e');
-          await Future.delayed(
-            const Duration(
-              seconds: 5,
-            ),
-          ); // this non-blocking delay is to accomodate mempool propogation if the first try failed.
-          final txid = await lwk.Wallet.broadcastTx(
-            electrumUrl: blockchain!,
-            txBytes: Uint8List.fromList(hex.decode(signedHex)),
-          );
-          return (txid, null);
+        } else {
+          try {
+            final txid = await lwk.Wallet.broadcastTx(
+              electrumUrl: blockchain!,
+              txBytes: Uint8List.fromList(hex.decode(signedHex)),
+            );
+            return (txid, null);
+          } catch (e) {
+            print('Failed to broadcast transaction: $e');
+            await Future.delayed(
+              const Duration(
+                seconds: 5,
+              ),
+            ); // this non-blocking delay is to accomodate mempool propogation if the first try failed.
+            final txid = await lwk.Wallet.broadcastTx(
+              electrumUrl: blockchain!,
+              txBytes: Uint8List.fromList(hex.decode(signedHex)),
+            );
+            return (txid, null);
+          }
         }
       } else {
         final boltzurl =
@@ -561,6 +568,7 @@ class SwapBoltz {
     required SwapTx swapTx,
     required Wallet wallet,
     required bool tryCooperate,
+    bool broadcastViaBoltz = false,
   }) async {
     try {
       final address = wallet.lastGeneratedAddress?.address;
@@ -610,25 +618,31 @@ class SwapBoltz {
         //     .log('------${swapTx.id}-----\n$signedHex------signed-refund-----');
         final (blockchain, err) = _networkRepository.liquidUrl;
         if (err != null) throw err;
-
-        try {
-          final txid = await lwk.Wallet.broadcastTx(
-            electrumUrl: blockchain!,
-            txBytes: Uint8List.fromList(hex.decode(signedHex)),
+        if (broadcastViaBoltz) {
+          final txid = await swap.broadcastTx(
+            signedBytes: Uint8List.fromList(hex.decode(signedHex)),
           );
           return (txid, null);
-        } catch (e) {
-          print('Failed to broadcast transaction: $e');
-          await Future.delayed(
-            const Duration(
-              seconds: 5,
-            ),
-          ); // this non-blocking delay is to accomodate mempool propogation if the first try failed.
-          final txid = await lwk.Wallet.broadcastTx(
-            electrumUrl: blockchain!,
-            txBytes: Uint8List.fromList(hex.decode(signedHex)),
-          );
-          return (txid, null);
+        } else {
+          try {
+            final txid = await lwk.Wallet.broadcastTx(
+              electrumUrl: blockchain!,
+              txBytes: Uint8List.fromList(hex.decode(signedHex)),
+            );
+            return (txid, null);
+          } catch (e) {
+            print('Failed to broadcast transaction: $e');
+            await Future.delayed(
+              const Duration(
+                seconds: 5,
+              ),
+            ); // this non-blocking delay is to accomodate mempool propogation if the first try failed.
+            final txid = await lwk.Wallet.broadcastTx(
+              electrumUrl: blockchain!,
+              txBytes: Uint8List.fromList(hex.decode(signedHex)),
+            );
+            return (txid, null);
+          }
         }
       } else {
         final refundFeesEstimate = fees?.btcSubmarine.claimFees;

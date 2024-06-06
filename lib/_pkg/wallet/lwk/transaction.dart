@@ -578,7 +578,7 @@ class LWKTransactions {
 
       if (useOnlyLwk) {
         txid = await lwk.Wallet.broadcastTx(
-          electrumUrl: 'les.bullbitcoin.com:995',
+          electrumUrl: blockchain!,
           txBytes: transaction.pset!,
         );
       } else {

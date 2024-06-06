@@ -296,6 +296,7 @@ class WalletTx implements IWalletTransactions {
     required String address,
     required Transaction transaction,
     String? note,
+    bool useOnlyLwk = false,
   }) async {
     try {
       Wallet w;
@@ -326,6 +327,7 @@ class WalletTx implements IWalletTransactions {
             lwkWallet: liqWallet!,
             transaction: transaction,
             wallet: wallet,
+            useOnlyLwk: useOnlyLwk,
           );
           if (errBroadcast != null) throw errBroadcast;
           w = walletAndTxid!.$1;

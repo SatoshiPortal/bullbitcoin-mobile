@@ -222,10 +222,14 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     // await Future.delayed(10.seconds);
 
+    final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
+        LiquidElectrumTypes.bullbitcoin;
+
     final (txid, err) = await _swapBoltz.refundV2SubmarineSwap(
       swapTx: swapTx,
       wallet: walletBloc.state.wallet!,
       tryCooperate: true,
+      broadcastViaBoltz: broadcastViaBoltz,
     );
     if (err != null) {
       emit(
@@ -286,12 +290,16 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
 
     // await Future.delayed(5.seconds);
+    final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
+        LiquidElectrumTypes.bullbitcoin;
 
     final (txid, err) = await _swapBoltz.claimV2ReverseSwap(
       swapTx: swapTx,
       wallet: walletBloc.state.wallet!,
       tryCooperate: true,
+      broadcastViaBoltz: broadcastViaBoltz,
     );
+
     if (err != null) {
       emit(
         state.copyWith(
