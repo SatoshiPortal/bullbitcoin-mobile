@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
@@ -156,7 +155,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     //       ? fees.lbtcReverse.claimFeesEstimate
     //       : fees.btcReverse.claimFeesEstimate,
     // );
-    final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
+    // final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
 
     final updatedSwap = swap!.copyWith(
       boltzFees: walletIsLiquid
@@ -166,9 +165,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
           ? fees.lbtcReverse.lockupFees
           : fees.btcReverse.lockupFees,
       claimFees: walletIsLiquid
-          ? liquidElectrum == LiquidElectrumTypes.bullbitcoin
-              ? fees.lbtcReverse.claimFeesEstimate
-              : fees.lbtcReverse.claimFeesEstimate * 10
+          ? fees.lbtcReverse.claimFeesEstimate
           : fees.btcReverse.claimFeesEstimate,
     );
 
