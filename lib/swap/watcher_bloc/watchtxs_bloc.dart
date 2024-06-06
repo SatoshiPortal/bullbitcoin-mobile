@@ -465,8 +465,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __closeSwap(swapTx, emit);
 
         case ReverseSwapActions.paid:
-          if (wallet.isLiquid() &&
-              liquidElectrum == LiquidElectrumTypes.bullbitcoin) {
+          if (wallet.isLiquid()) {
             final swap = await __claimSwap(swapTx, walletBloc, emit);
             if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
             return;
@@ -481,6 +480,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
             await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case ReverseSwapActions.settled:
+          Future.delayed(100.ms);
           final w = await __updateWalletTxs(swapTx, walletBloc, emit);
           if (w == null) return;
           await __closeSwap(swapTx, emit);
