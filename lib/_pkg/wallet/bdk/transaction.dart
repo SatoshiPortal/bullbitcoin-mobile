@@ -441,7 +441,12 @@ class BDKTransactions {
         if (idxUnsignedTx != -1) {
           if (tx.txid == unsignedTxs[idxUnsignedTx].txid) {
             final usTx = unsignedTxs.removeAt(idxUnsignedTx);
-            transactions.add(txObj.copyWith(label: usTx.label));
+            transactions.add(
+              txObj.copyWith(
+                label: usTx.label,
+                outAddrs: usTx.outAddrs,
+              ),
+            );
           } else
             transactions.add(txObj.copyWith(label: label));
         } else
