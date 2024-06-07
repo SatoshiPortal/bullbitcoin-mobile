@@ -154,7 +154,8 @@ class Wallet with _$Wallet {
 
   // storage key
   String getRelatedSeedStorageString() {
-    return mnemonicFingerprint;
+    final istestnet = network == BBNetwork.Testnet ? ':testnet' : '';
+    return mnemonicFingerprint + istestnet;
   }
 
   String getWalletStorageString() {

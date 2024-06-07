@@ -571,21 +571,3 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     );
   }
 }
-
-const mn1 = [
-  'arrive',
-  'term',
-  'same',
-  'weird',
-  'genuine',
-  'year',
-  'trash',
-  'autumn',
-  'fancy',
-  'need',
-  'olive',
-  'earn',
-];
-
-// arrive term same weird genuine year trash autumn fancy need olive earn
-// arrive term same weird genuine year trash autumn fancy need olive earn

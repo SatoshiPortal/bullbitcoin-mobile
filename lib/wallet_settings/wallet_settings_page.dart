@@ -557,9 +557,12 @@ class DeletePopUp extends StatelessWidget {
           'Delete wallet',
         ),
         const Gap(24),
-        const BBText.body(
-          'Are you sure you want to delete this wallet?',
-          textAlign: TextAlign.center,
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          child: BBText.bodySmall(
+            'Are you sure you want to delete this wallet?',
+            textAlign: TextAlign.center,
+          ),
         ),
         const Gap(40),
         Padding(

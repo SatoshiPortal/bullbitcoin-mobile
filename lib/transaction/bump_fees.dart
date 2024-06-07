@@ -80,6 +80,7 @@ class BumpFooterButton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         BBButton.big(
+          center: true,
           loading: loading,
           disabled: loading,
           label: loading ? 'Bumping' : 'Bump Fees',

@@ -19,16 +19,16 @@ class _SecurityOverlayState extends State<SecurityOverlay>
   final _noScreenshot = NoScreenshot.instance;
 
   final sensitivePaths = [
-    '/import',
-    '/open-backup',
-    '/backup',
-    '/test-backup',
-    '/open-backup',
-    '/backup',
-    '/test-backup',
+    // '/import',
+    // '/open-backup',
+    // '/backup',
+    // '/test-backup',
+    // '/open-backup',
+    // '/backup',
+    // '/test-backup',
     '/import-main',
     '/create-wallet-main',
-    '/recover',
+    // '/recover',
     '/create-wallet',
   ];
 

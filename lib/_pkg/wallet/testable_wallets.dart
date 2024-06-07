@@ -91,6 +91,21 @@ const secureTN2 = [
   'soon',
 ];
 
+const mn1 = [
+  'arrive',
+  'term',
+  'same',
+  'weird',
+  'genuine',
+  'year',
+  'trash',
+  'autumn',
+  'fancy',
+  'need',
+  'olive',
+  'earn',
+];
+
 List<({String word, bool tapped})> importW(List<String> words) =>
     words.map((e) => (word: e, tapped: false)).toList();
 

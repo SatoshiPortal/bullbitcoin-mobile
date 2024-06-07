@@ -268,7 +268,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     // }
 
     final (seed, errRead) = await _walletSensRepository.readSeed(
-      fingerprintIndex: _walletBloc.state.wallet!.getRelatedSeedStorageString(),
+      fingerprintIndex: wallet.getRelatedSeedStorageString(),
     );
 
     if (errRead != null) {

@@ -208,8 +208,9 @@ class BDKTransactions {
           storedTx = storedTxs.elementAtOrNull(storedTxIdx);
 
         final vsize = await tx.transaction?.vsize() ?? 1;
-        final isNativeRbf = await tx.transaction?.isExplicitlyRbf() ??
-            (storedTx?.rbfEnabled ?? false);
+        final isNativeRbf = storedTx?.rbfEnabled ?? true;
+        //  await tx.transaction?.isExplicitlyRbf() ??
+
         final SerializedTx sTx = SerializedTx.fromJson(
           jsonDecode(tx.transaction!.inner) as Map<String, dynamic>,
         );
