@@ -170,6 +170,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
       walletBloc: walletBloc,
       swapCubit: swap,
     );
+    super.initState();
   }
 
   @override
@@ -234,7 +235,7 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tx = context.select((TransactionCubit _) => _.state.tx);
-    final swap = tx.swapTx;
+    // final swap = tx.swapTx;
     final isSwapPending = tx.swapIdisTxid();
 
     final txid = tx.txid;
@@ -258,7 +259,7 @@ class _Screen extends StatelessWidget {
     // final size = await tx.bdkTx.transaction.size(); // cant do await here.
     // final feesPetByte = fees / size;
 
-    final statuss = tx.height == null || tx.height == 0 || tx.timestamp == 0;
+    // final statuss = tx.height == null || tx.height == 0 || tx.timestamp == 0;
 
     final er = context.select((TransactionCubit x) => x.state.errSendingTx);
     final err = context.select((TransactionCubit x) => x.state.errBuildingTx);
@@ -344,12 +345,7 @@ class _Screen extends StatelessWidget {
               ),
               const Gap(24),
               const NetworkFees(label: 'Set new fee rate'),
-              if (err.isNotEmpty) ...[
-                const Gap(32),
-                BBText.errorSmall(
-                  err,
-                ),
-              ],
+
               const Gap(24),
               if (errr.isNotEmpty) BBText.errorSmall(errr),
               // const Gap(100),
