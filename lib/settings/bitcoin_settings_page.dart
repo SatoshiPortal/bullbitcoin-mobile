@@ -14,6 +14,7 @@ import 'package:bb_mobile/network/popup.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/network_fees/popup.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
+import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,9 +62,16 @@ class _Screen extends StatelessWidget {
                 Gap(8),
                 ElectrumServerButton(),
                 Gap(8),
+                BroadCastButton(),
+                Gap(8),
+                WalletSettingsButton(),
+                Gap(8),
+                NewWalletButton(),
+                Gap(8),
                 HardwareButton(),
                 Gap(8),
-                BroadCastButton(),
+                SwapHistoryButton(),
+
                 // SearchAddressButton(),
                 // Gap(8),
                 // NewWalletButton(),
@@ -177,7 +185,7 @@ class NewWalletButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.textWithStatusAndRightArrow(
-      label: 'Import Bitcoin Wallet',
+      label: 'Recover Wallet',
       onPressed: () {
         context.push('/import');
       },

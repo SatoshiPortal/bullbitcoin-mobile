@@ -48,12 +48,7 @@ class _Screen extends StatelessWidget {
                 const BitcoinSettingsButton(),
                 const Gap(8),
                 const ApplicationSettingsButton(),
-                const Gap(8),
-                const WalletSettingsButton(),
-                const Gap(8),
-                const NewWalletButton(),
-                const Gap(8),
-                const SwapHistoryButton(),
+
                 const Gap(24),
                 const Center(
                   child: BBText.bodySmall(

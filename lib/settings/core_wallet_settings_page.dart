@@ -48,6 +48,7 @@ class _Screen extends StatelessWidget {
                 // Gap(8),
                 // InformationButton(),
                 Gap(8),
+                _ButtonList(),
                 // ColdcardWallet(),
                 // Gap(80),
               ],
@@ -110,6 +111,34 @@ class InstantPaymentsWallet extends StatelessWidget {
             context.read<HomeCubit>().state.getMainInstantWallet(network);
         context.push('/wallet-settings', extra: walletBloc);
       },
+    );
+  }
+}
+
+class _ButtonList extends StatelessWidget {
+  const _ButtonList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final walletBlocs = context.select(
+      (HomeCubit _) => _.state.walletBlocsNotMainFromNetwork(network),
+    );
+
+    if (walletBlocs.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      children: [
+        for (final walletBloc in walletBlocs) ...[
+          BBButton.textWithStatusAndRightArrow(
+            label: walletBloc.state.wallet?.name ?? 'Wallet',
+            onPressed: () {
+              context.push('/wallet-settings', extra: walletBloc);
+            },
+          ),
+          const Gap(8),
+        ],
+      ],
     );
   }
 }
