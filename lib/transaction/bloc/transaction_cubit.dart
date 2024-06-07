@@ -22,7 +22,6 @@ class TransactionCubit extends Cubit<TransactionState> {
     required WalletBloc walletBloc,
     required WalletTx walletTx,
     required BDKTransactions bdkTx,
-    // required WalletsStorageRepository walletsStorageRepository,
     // required HomeCubit homeCubit,
     required WalletSensitiveStorageRepository walletSensRepository,
     required WalletAddress walletAddress,
@@ -34,7 +33,6 @@ class TransactionCubit extends Cubit<TransactionState> {
         _walletAddress = walletAddress,
         _walletSensRepository = walletSensRepository,
         _walletsRepository = walletsRepository,
-        // _walletsStorageRepository = walletsStorageRepository,
         _walletUpdate = walletUpdate,
         _walletTx = walletTx,
         _walletBloc = walletBloc,
@@ -50,7 +48,6 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   final WalletTx _walletTx;
   final WalletUpdate _walletUpdate;
-  // final WalletsStorageRepository _walletsStorageRepository;
   final WalletsRepository _walletsRepository;
   final WalletSensitiveStorageRepository _walletSensRepository;
   final WalletAddress _walletAddress;
