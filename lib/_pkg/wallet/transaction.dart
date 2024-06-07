@@ -398,6 +398,7 @@ class WalletTx implements IWalletTransactions {
         final updatedTx = txs[idx].copyWith(
           swapTx: updatedSwapTx,
           isSwap: true,
+          label: swapTx.label,
         );
         txs[idx] = updatedTx;
       } else if (idx2 != -1) {
@@ -406,6 +407,7 @@ class WalletTx implements IWalletTransactions {
           isSwap: true,
           txid: swapTx.txid!,
           timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          label: swapTx.label,
         );
         txs[idx2] = updatedTx;
       }
@@ -420,6 +422,7 @@ class WalletTx implements IWalletTransactions {
         final updatedTx = txs[idx].copyWith(
           swapTx: updatedSwapTx,
           isSwap: true,
+          label: swapTx.label,
         );
         txs[idx] = updatedTx;
       }
@@ -430,6 +433,7 @@ class WalletTx implements IWalletTransactions {
       if (txIdx != -1)
         txs[txIdx] = txs[txIdx].copyWith(
           swapTx: updatedSwapTx,
+          label: swapTx.label,
         );
 
       if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;

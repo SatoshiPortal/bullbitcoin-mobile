@@ -848,6 +848,7 @@ mixin _$SwapTx {
   String get id => throw _privateConstructorUsedError;
   String? get txid => throw _privateConstructorUsedError;
   int? get keyIndex => throw _privateConstructorUsedError;
+  String? get label => throw _privateConstructorUsedError;
   bool get isSubmarine => throw _privateConstructorUsedError;
   BBNetwork get network => throw _privateConstructorUsedError;
   BaseWalletType get walletType => throw _privateConstructorUsedError;
@@ -887,6 +888,7 @@ abstract class $SwapTxCopyWith<$Res> {
       {String id,
       String? txid,
       int? keyIndex,
+      String? label,
       bool isSubmarine,
       BBNetwork network,
       BaseWalletType walletType,
@@ -930,6 +932,7 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? id = null,
     Object? txid = freezed,
     Object? keyIndex = freezed,
+    Object? label = freezed,
     Object? isSubmarine = null,
     Object? network = null,
     Object? walletType = null,
@@ -967,6 +970,10 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.keyIndex
           : keyIndex // ignore: cast_nullable_to_non_nullable
               as int?,
+      label: freezed == label
+          ? _value.label
+          : label // ignore: cast_nullable_to_non_nullable
+              as String?,
       isSubmarine: null == isSubmarine
           ? _value.isSubmarine
           : isSubmarine // ignore: cast_nullable_to_non_nullable
@@ -1086,6 +1093,7 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       {String id,
       String? txid,
       int? keyIndex,
+      String? label,
       bool isSubmarine,
       BBNetwork network,
       BaseWalletType walletType,
@@ -1128,6 +1136,7 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? id = null,
     Object? txid = freezed,
     Object? keyIndex = freezed,
+    Object? label = freezed,
     Object? isSubmarine = null,
     Object? network = null,
     Object? walletType = null,
@@ -1165,6 +1174,10 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.keyIndex
           : keyIndex // ignore: cast_nullable_to_non_nullable
               as int?,
+      label: freezed == label
+          ? _value.label
+          : label // ignore: cast_nullable_to_non_nullable
+              as String?,
       isSubmarine: null == isSubmarine
           ? _value.isSubmarine
           : isSubmarine // ignore: cast_nullable_to_non_nullable
@@ -1268,6 +1281,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       {required this.id,
       this.txid,
       this.keyIndex,
+      this.label,
       required this.isSubmarine,
       required this.network,
       required this.walletType,
@@ -1302,6 +1316,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   final String? txid;
   @override
   final int? keyIndex;
+  @override
+  final String? label;
   @override
   final bool isSubmarine;
   @override
@@ -1353,7 +1369,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, isSubmarine: $isSubmarine, network: $network, walletType: $walletType, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, boltzPubkey: $boltzPubkey, locktime: $locktime, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress, creationTime: $creationTime, completionTime: $completionTime)';
+    return 'SwapTx(id: $id, txid: $txid, keyIndex: $keyIndex, label: $label, isSubmarine: $isSubmarine, network: $network, walletType: $walletType, secretKey: $secretKey, publicKey: $publicKey, sha256: $sha256, hash160: $hash160, redeemScript: $redeemScript, boltzPubkey: $boltzPubkey, locktime: $locktime, invoice: $invoice, outAmount: $outAmount, scriptAddress: $scriptAddress, electrumUrl: $electrumUrl, boltzUrl: $boltzUrl, status: $status, blindingKey: $blindingKey, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress, creationTime: $creationTime, completionTime: $completionTime)';
   }
 
   @override
@@ -1364,6 +1380,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('txid', txid))
       ..add(DiagnosticsProperty('keyIndex', keyIndex))
+      ..add(DiagnosticsProperty('label', label))
       ..add(DiagnosticsProperty('isSubmarine', isSubmarine))
       ..add(DiagnosticsProperty('network', network))
       ..add(DiagnosticsProperty('walletType', walletType))
@@ -1398,6 +1415,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
             (identical(other.txid, txid) || other.txid == txid) &&
             (identical(other.keyIndex, keyIndex) ||
                 other.keyIndex == keyIndex) &&
+            (identical(other.label, label) || other.label == label) &&
             (identical(other.isSubmarine, isSubmarine) ||
                 other.isSubmarine == isSubmarine) &&
             (identical(other.network, network) || other.network == network) &&
@@ -1448,6 +1466,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
         id,
         txid,
         keyIndex,
+        label,
         isSubmarine,
         network,
         walletType,
@@ -1492,6 +1511,7 @@ abstract class _SwapTx extends SwapTx {
       {required final String id,
       final String? txid,
       final int? keyIndex,
+      final String? label,
       required final bool isSubmarine,
       required final BBNetwork network,
       required final BaseWalletType walletType,
@@ -1525,6 +1545,8 @@ abstract class _SwapTx extends SwapTx {
   String? get txid;
   @override
   int? get keyIndex;
+  @override
+  String? get label;
   @override
   bool get isSubmarine;
   @override

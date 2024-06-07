@@ -810,7 +810,7 @@ class SendCubit extends Cubit<SendState> {
       ),
     );
     // }
-    Future.delayed(50.ms);
+    Future.delayed(150.ms);
     state.selectedWalletBloc!.add(SyncWallet());
 
     emit(state.copyWith(sending: false, sent: true));

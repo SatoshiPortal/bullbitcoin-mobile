@@ -238,6 +238,7 @@ class SwapTx with _$SwapTx {
     required String id,
     String? txid,
     int? keyIndex,
+    String? label,
     required bool isSubmarine,
     required BBNetwork network,
     required BaseWalletType walletType,
@@ -451,6 +452,7 @@ class SwapTx with _$SwapTx {
       received: !isSubmarine ? (outAmount - (totalFees() ?? 0)) : 0,
       fee: !isSubmarine ? claimFees : lockupFees,
       isLiquid: isLiquid(),
+      label: label,
     );
     return newTx;
   }

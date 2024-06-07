@@ -170,11 +170,11 @@ class CreateSwapCubit extends Cubit<SwapState> {
               ? fees.lbtcReverse.claimFeesEstimate
               : fees.lbtcReverse.claimFeesEstimate
           : fees.btcReverse.claimFeesEstimate,
+      label: label,
     );
 
     await _saveSwapToWallet(
       swapTx: updatedSwap,
-      label: label,
       wallet: wallet,
     );
 
@@ -391,13 +391,13 @@ class CreateSwapCubit extends Cubit<SwapState> {
             : fees.btcSubmarine.lockupFeesEstimate,
         claimFees:
             isLiq ? fees.lbtcSubmarine.claimFees : fees.btcSubmarine.claimFees,
+        label: label,
       );
 
       swapTx = updatedSwap;
 
       await _saveSwapToWallet(
         swapTx: swapTx,
-        label: label,
         wallet: wallet,
       );
 
@@ -418,7 +418,6 @@ class CreateSwapCubit extends Cubit<SwapState> {
   Future _saveSwapToWallet({
     required Wallet wallet,
     required SwapTx swapTx,
-    String? label,
   }) async {
     final (updatedWallet, err) = await _walletTx.addSwapTxToWallet(
       wallet: wallet.copyWith(
