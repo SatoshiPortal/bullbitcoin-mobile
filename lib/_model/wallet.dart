@@ -241,7 +241,10 @@ class Wallet with _$Wallet {
           }
         }
         */
-        return null;
+        // TODO: Sai: Removed this unwanted return, to deposit address is properly checked by looping through all address.
+        // With this return, only first address is checked for.
+        // Just look for any negative consequences of this.
+        // return null;
       }
 
     return null;

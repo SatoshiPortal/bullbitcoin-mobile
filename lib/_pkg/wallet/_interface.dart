@@ -69,6 +69,12 @@ abstract class IWalletAddress {
     AddressStatus state = AddressStatus.unused,
     bool spendable = true,
   });
+
+  (Address, Wallet) updateAddressWithLabel({
+    required Wallet wallet,
+    required Address address,
+    required String label,
+  });
 }
 
 abstract class IWalletBalance {

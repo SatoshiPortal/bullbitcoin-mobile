@@ -321,6 +321,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   void descriptionChanged(String description) {
     emit(state.copyWith(description: description));
+    final (addr, w) = _walletAddress.updateAddressWithLabel(
+      wallet: state.walletBloc!.state.wallet!,
+      address: state.defaultAddress!,
+      label: state.description,
+    );
+
+    state.walletBloc!
+        .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
   }
 
   void privateLabelChanged(String privateLabel) {

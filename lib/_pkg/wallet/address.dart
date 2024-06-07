@@ -27,12 +27,14 @@ class WalletAddress implements IWalletAddress {
     try {
       switch (wallet.baseWalletType) {
         case BaseWalletType.Bitcoin:
-          final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet.id);
+          final (bdkWallet, errWallet) =
+              _walletsRepository.getBdkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           return await _bdkAddress.peekIndex(bdkWallet!, idx);
 
         case BaseWalletType.Liquid:
-          final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet.id);
+          final (liqWallet, errWallet) =
+              _walletsRepository.getLwkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           return await _lwkAddress.peekIndex(liqWallet!, idx);
       }
@@ -54,7 +56,8 @@ class WalletAddress implements IWalletAddress {
       String address;
       switch (wallet.baseWalletType) {
         case BaseWalletType.Bitcoin:
-          final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet.id);
+          final (bdkWallet, errWallet) =
+              _walletsRepository.getBdkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           final lastIdx = wallet.lastGeneratedAddress?.index ?? 0;
           final (addr, errAddr) = await _bdkAddress.peekIndex(
@@ -65,7 +68,8 @@ class WalletAddress implements IWalletAddress {
           address = addr!;
 
         case BaseWalletType.Liquid:
-          final (liqWallet, errWallet) = _walletsRepository.getLwkWallet(wallet.id);
+          final (liqWallet, errWallet) =
+              _walletsRepository.getLwkWallet(wallet.id);
           if (errWallet != null) throw errWallet;
           final lastIdx = wallet.lastGeneratedAddress?.index ?? 0;
           final (addr, errAddr) = await _lwkAddress.peekIndex(
@@ -113,9 +117,10 @@ class WalletAddress implements IWalletAddress {
   }) async {
     try {
       final (idx, adr) = address;
-      final addresses =
-          (kind == AddressKind.external ? wallet.externalAddressBook?.toList() : wallet.myAddressBook.toList()) ??
-              <Address>[];
+      final addresses = (kind == AddressKind.external
+              ? wallet.externalAddressBook?.toList()
+              : wallet.myAddressBook.toList()) ??
+          <Address>[];
 
       Address updated;
       final existingIdx = addresses.indexWhere(
@@ -175,5 +180,24 @@ class WalletAddress implements IWalletAddress {
     }
 
     return label;
+  }
+
+  @override
+  (Address, Wallet) updateAddressWithLabel({
+    required Wallet wallet,
+    required Address address,
+    required String label,
+  }) {
+    final labeledAddress = address.copyWith(label: label);
+
+    final addressIndex = wallet.myAddressBook
+        .indexWhere((Address addr) => addr.address == labeledAddress.address);
+
+    final updatedAddressBook = wallet.myAddressBook.toList();
+    updatedAddressBook[addressIndex] = labeledAddress;
+
+    final updatedWallet = wallet.copyWith(myAddressBook: updatedAddressBook);
+
+    return (labeledAddress, updatedWallet);
   }
 }
