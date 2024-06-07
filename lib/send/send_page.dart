@@ -183,6 +183,8 @@ class _Screen extends StatelessWidget {
                   const AddressField(),
                   const Gap(24),
                   const AmountField(),
+                  const Gap(24),
+                  const DescriptionField(),
                   if (!isLn) ...[
                     const Gap(24),
                     const NetworkFees(),
@@ -368,6 +370,30 @@ class AmountField extends StatelessWidget {
         const BBText.title('Amount to send'),
         const Gap(4),
         EnterAmount2(sendAll: sendAll),
+      ],
+    );
+  }
+}
+
+class DescriptionField extends StatelessWidget {
+  const DescriptionField({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final note = context.select((SendCubit cubit) => cubit.state.note);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const BBText.title('Label'),
+        const Gap(4),
+        BBTextInput.big(
+          hint: 'Enter Label',
+          value: note,
+          onChanged: (value) {
+            context.read<SendCubit>().updateNote(value);
+          },
+        ),
       ],
     );
   }
