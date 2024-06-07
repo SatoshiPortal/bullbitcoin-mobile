@@ -10,7 +10,6 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
@@ -143,7 +142,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
       walletTx: locator<WalletTx>(),
       bdkTx: locator<BDKTransactions>(),
       // walletSensTx: locator<WalletSensitiveTx>(),
-      walletsStorageRepository: locator<WalletsStorageRepository>(),
+      // walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       walletAddress: locator<WalletAddress>(),
 
