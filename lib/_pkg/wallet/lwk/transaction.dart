@@ -385,6 +385,7 @@ class LWKTransactions {
           swapTx: storedTx?.swapTx,
           isSwap: storedTx?.isSwap ?? false,
           unblindedUrl: unblindedUrl,
+          label: storedTx?.label,
         );
         transactions.add(txObj);
       }
