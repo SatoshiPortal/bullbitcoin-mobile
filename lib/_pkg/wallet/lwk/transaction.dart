@@ -571,6 +571,7 @@ class LWKTransactions {
     required Wallet wallet,
     required lwk.Wallet lwkWallet,
     required Transaction transaction,
+    String? note,
     bool useOnlyLwk = true, // TODO: Remove this
   }) async {
     try {
@@ -603,6 +604,7 @@ class LWKTransactions {
         txid: txid,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,
         swapTx: transaction.swapTx?.copyWith(txid: txid),
+        label: note,
       );
 
       final txs = wallet.transactions.toList();

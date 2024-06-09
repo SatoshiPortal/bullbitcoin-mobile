@@ -312,6 +312,7 @@ class WalletTx implements IWalletTransactions {
             wallet: wallet,
             address: address,
             transaction: transaction,
+            note: note,
           );
           if (errBroadcast != null) throw errBroadcast;
           w = walletAndTxid!.$1;
@@ -328,6 +329,7 @@ class WalletTx implements IWalletTransactions {
             transaction: transaction,
             wallet: wallet,
             useOnlyLwk: useOnlyLwk,
+            note: note,
           );
           if (errBroadcast != null) throw errBroadcast;
           w = walletAndTxid!.$1;
