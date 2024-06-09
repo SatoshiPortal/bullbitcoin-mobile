@@ -572,7 +572,7 @@ class _SendButton extends StatelessWidget {
                         invoice: context.read<SendCubit>().state.invoice!,
                         networkUrl: networkurl,
                         label: txLabel,
-                      ,);
+                      );
                   return;
                 }
 
