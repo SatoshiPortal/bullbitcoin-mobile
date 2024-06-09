@@ -9,11 +9,11 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
 import 'package:extra_alignments/extra_alignments.dart';
@@ -31,7 +31,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _Screen();
+    return BlocProvider.value(
+      value: HomeLoadingCubit(),
+      child: const HomeWalletLoadingListeners(
+        child: _Screen(),
+      ),
+    );
   }
 }
 
@@ -759,51 +764,66 @@ class ScanButton extends StatelessWidget {
   }
 }
 
-class HomeLoadingTxsIndicator extends StatefulWidget {
+// class HomeLoadingTxsIndicator extends StatefulWidget {
+//   const HomeLoadingTxsIndicator({super.key});
+
+//   @override
+//   State<HomeLoadingTxsIndicator> createState() =>
+//       _HomeLoadingTxsIndicatorState();
+// }
+
+// class _HomeLoadingTxsIndicatorState extends State<HomeLoadingTxsIndicator> {
+//   bool loading = false;
+//   Map<String, bool> loadingMap = {};
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+//     final walletBlocs = context
+//         .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+
+//     if (walletBlocs.isEmpty) return const SizedBox.shrink();
+
+//     return MultiBlocListener(
+//       listeners: [
+//         for (final walletBloc in walletBlocs)
+//           BlocListener<WalletBloc, WalletState>(
+//             bloc: walletBloc,
+//             listenWhen: (previous, current) =>
+//                 previous.loading() != current.loading(),
+//             listener: (context, state) {
+//               if (state.loading())
+//                 loadingMap[state.wallet!.id] = true;
+//               else
+//                 loadingMap[state.wallet!.id] = false;
+
+//               if (loadingMap.values.contains(true))
+//                 setState(() {
+//                   loading = true;
+//                 });
+//               else
+//                 setState(() {
+//                   loading = false;
+//                 });
+//             },
+//           ),
+//       ],
+//       child: _Loading(loading: loading),
+//     );
+//   }
+// }
+
+class HomeLoadingTxsIndicator extends StatelessWidget {
   const HomeLoadingTxsIndicator({super.key});
 
   @override
-  State<HomeLoadingTxsIndicator> createState() =>
-      _HomeLoadingTxsIndicatorState();
-}
-
-class _HomeLoadingTxsIndicatorState extends State<HomeLoadingTxsIndicator> {
-  bool loading = false;
-  Map<String, bool> loadingMap = {};
-
-  @override
   Widget build(BuildContext context) {
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final walletBlocs = context
-        .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
-
-    if (walletBlocs.isEmpty) return const SizedBox.shrink();
-
-    return MultiBlocListener(
-      listeners: [
-        for (final walletBloc in walletBlocs)
-          BlocListener<WalletBloc, WalletState>(
-            bloc: walletBloc,
-            listenWhen: (previous, current) =>
-                previous.loading() != current.loading(),
-            listener: (context, state) {
-              if (state.loading())
-                loadingMap[state.wallet!.id] = true;
-              else
-                loadingMap[state.wallet!.id] = false;
-
-              if (loadingMap.values.contains(true))
-                setState(() {
-                  loading = true;
-                });
-              else
-                setState(() {
-                  loading = false;
-                });
-            },
-          ),
-      ],
-      child: _Loading(loading: loading),
+    return BlocBuilder<HomeLoadingCubit, Map<String, bool>>(
+      buildWhen: (previous, current) => previous.values != current.values,
+      builder: (context, state) {
+        final isLoading = state.values.contains(true);
+        return _Loading(loading: isLoading);
+      },
     );
   }
 }

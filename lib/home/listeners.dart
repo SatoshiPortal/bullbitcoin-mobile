@@ -14,6 +14,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -85,6 +86,65 @@ class WalletBlocListeners extends StatelessWidget {
               if (state.wallet == null) return;
               print('------Updated Wallet: ' + state.wallet!.id);
               context.read<HomeCubit>().updateWalletBloc(w);
+            },
+          ),
+      ],
+      child: child,
+    );
+  }
+}
+
+class HomeLoadingEvent {}
+
+class SetLoading extends HomeLoadingEvent {
+  SetLoading(this.id, this.loading);
+  final String id;
+  final bool loading;
+}
+
+class HomeLoadingCubit extends Bloc<HomeLoadingEvent, Map<String, bool>> {
+  HomeLoadingCubit() : super({}) {
+    on<SetLoading>(
+      (event, emit) {
+        final map = state;
+        map[event.id] = event.loading;
+        emit({});
+        emit(map);
+      },
+      transformer: droppable(),
+    );
+  }
+}
+
+class HomeWalletLoadingListeners extends StatelessWidget {
+  const HomeWalletLoadingListeners({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final walletBlocs = context
+        .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+
+    if (walletBlocs.isEmpty) return child;
+
+    return MultiBlocListener(
+      listeners: [
+        for (final walletBloc in walletBlocs)
+          BlocListener<WalletBloc, WalletState>(
+            bloc: walletBloc,
+            listenWhen: (previous, current) =>
+                previous.syncing != current.syncing,
+            listener: (context, state) {
+              if (state.syncing)
+                context
+                    .read<HomeLoadingCubit>()
+                    .add(SetLoading(state.wallet!.id, true));
+              else
+                context
+                    .read<HomeLoadingCubit>()
+                    .add(SetLoading(state.wallet!.id, false));
             },
           ),
       ],
