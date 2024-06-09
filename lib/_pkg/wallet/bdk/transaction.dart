@@ -158,6 +158,7 @@ class BDKTransactions {
       final newTx = txs[idx].copyWith(
         swapTx: swapTx,
         isSwap: true,
+        label: swapTx.label,
       );
       txs[idx] = newTx;
 

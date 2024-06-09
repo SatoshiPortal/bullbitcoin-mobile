@@ -509,7 +509,7 @@ class _SendButton extends StatelessWidget {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
 
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
-
+    final txLabel = context.select((SendCubit cubit) => cubit.state.note);
     final label = watchOnly
         ? 'Generate PSBT'
         : signed
@@ -571,7 +571,8 @@ class _SendButton extends StatelessWidget {
                         isTestnet: context.read<NetworkCubit>().state.testnet,
                         invoice: context.read<SendCubit>().state.invoice!,
                         networkUrl: networkurl,
-                      );
+                        label: txLabel,
+                      ,);
                   return;
                 }
 
