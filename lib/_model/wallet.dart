@@ -435,7 +435,6 @@ class Wallet with _$Wallet {
   int frozenUTXOTotal() {
     final addresses = <Address>[
       ...myAddressBook,
-      ...externalAddressBook ?? <Address>[],
     ];
     final unspendable = addresses.where((_) => !_.spendable).toList();
     final totalFrozen =
