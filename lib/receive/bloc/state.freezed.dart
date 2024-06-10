@@ -19,8 +19,8 @@ mixin _$ReceiveState {
   bool get loadingAddress => throw _privateConstructorUsedError;
   String get errLoadingAddress => throw _privateConstructorUsedError;
   Address? get defaultAddress => throw _privateConstructorUsedError;
-  Address? get defaultLiquidAddress => throw _privateConstructorUsedError;
-  String get privateLabel => throw _privateConstructorUsedError;
+  Address? get defaultLiquidAddress =>
+      throw _privateConstructorUsedError; // @Default('') String privateLabel,
   bool get savingLabel => throw _privateConstructorUsedError;
   String get errSavingLabel => throw _privateConstructorUsedError;
   bool get labelSaved => throw _privateConstructorUsedError;
@@ -53,7 +53,6 @@ abstract class $ReceiveStateCopyWith<$Res> {
       String errLoadingAddress,
       Address? defaultAddress,
       Address? defaultLiquidAddress,
-      String privateLabel,
       bool savingLabel,
       String errSavingLabel,
       bool labelSaved,
@@ -91,7 +90,6 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? errLoadingAddress = null,
     Object? defaultAddress = freezed,
     Object? defaultLiquidAddress = freezed,
-    Object? privateLabel = null,
     Object? savingLabel = null,
     Object? errSavingLabel = null,
     Object? labelSaved = null,
@@ -125,10 +123,6 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.defaultLiquidAddress
           : defaultLiquidAddress // ignore: cast_nullable_to_non_nullable
               as Address?,
-      privateLabel: null == privateLabel
-          ? _value.privateLabel
-          : privateLabel // ignore: cast_nullable_to_non_nullable
-              as String,
       savingLabel: null == savingLabel
           ? _value.savingLabel
           : savingLabel // ignore: cast_nullable_to_non_nullable
@@ -230,7 +224,6 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       String errLoadingAddress,
       Address? defaultAddress,
       Address? defaultLiquidAddress,
-      String privateLabel,
       bool savingLabel,
       String errSavingLabel,
       bool labelSaved,
@@ -268,7 +261,6 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? errLoadingAddress = null,
     Object? defaultAddress = freezed,
     Object? defaultLiquidAddress = freezed,
-    Object? privateLabel = null,
     Object? savingLabel = null,
     Object? errSavingLabel = null,
     Object? labelSaved = null,
@@ -302,10 +294,6 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
           ? _value.defaultLiquidAddress
           : defaultLiquidAddress // ignore: cast_nullable_to_non_nullable
               as Address?,
-      privateLabel: null == privateLabel
-          ? _value.privateLabel
-          : privateLabel // ignore: cast_nullable_to_non_nullable
-              as String,
       savingLabel: null == savingLabel
           ? _value.savingLabel
           : savingLabel // ignore: cast_nullable_to_non_nullable
@@ -378,7 +366,6 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.errLoadingAddress = '',
       this.defaultAddress,
       this.defaultLiquidAddress,
-      this.privateLabel = '',
       this.savingLabel = false,
       this.errSavingLabel = '',
       this.labelSaved = false,
@@ -406,9 +393,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
   final Address? defaultAddress;
   @override
   final Address? defaultLiquidAddress;
-  @override
-  @JsonKey()
-  final String privateLabel;
+// @Default('') String privateLabel,
   @override
   @JsonKey()
   final bool savingLabel;
@@ -455,7 +440,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, defaultLiquidAddress: $defaultLiquidAddress, privateLabel: $privateLabel, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, updateAddressGap: $updateAddressGap, switchToSecure: $switchToSecure, switchToInstant: $switchToInstant, receiveFormSubmitted: $receiveFormSubmitted, oneWallet: $oneWallet)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, defaultLiquidAddress: $defaultLiquidAddress, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, updateAddressGap: $updateAddressGap, switchToSecure: $switchToSecure, switchToInstant: $switchToInstant, receiveFormSubmitted: $receiveFormSubmitted, oneWallet: $oneWallet)';
   }
 
   @override
@@ -471,8 +456,6 @@ class _$ReceiveStateImpl extends _ReceiveState {
                 other.defaultAddress == defaultAddress) &&
             (identical(other.defaultLiquidAddress, defaultLiquidAddress) ||
                 other.defaultLiquidAddress == defaultLiquidAddress) &&
-            (identical(other.privateLabel, privateLabel) ||
-                other.privateLabel == privateLabel) &&
             (identical(other.savingLabel, savingLabel) ||
                 other.savingLabel == savingLabel) &&
             (identical(other.errSavingLabel, errSavingLabel) ||
@@ -512,7 +495,6 @@ class _$ReceiveStateImpl extends _ReceiveState {
         errLoadingAddress,
         defaultAddress,
         defaultLiquidAddress,
-        privateLabel,
         savingLabel,
         errSavingLabel,
         labelSaved,
@@ -543,7 +525,6 @@ abstract class _ReceiveState extends ReceiveState {
       final String errLoadingAddress,
       final Address? defaultAddress,
       final Address? defaultLiquidAddress,
-      final String privateLabel,
       final bool savingLabel,
       final String errSavingLabel,
       final bool labelSaved,
@@ -569,9 +550,7 @@ abstract class _ReceiveState extends ReceiveState {
   Address? get defaultAddress;
   @override
   Address? get defaultLiquidAddress;
-  @override
-  String get privateLabel;
-  @override
+  @override // @Default('') String privateLabel,
   bool get savingLabel;
   @override
   String get errSavingLabel;

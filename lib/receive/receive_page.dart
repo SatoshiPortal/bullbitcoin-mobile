@@ -1055,71 +1055,71 @@ class CheckForPaymentsButton extends StatelessWidget {
   }
 }
 
-class AddLabelButton extends StatelessWidget {
-  const AddLabelButton({super.key});
+// class AddLabelButton extends StatelessWidget {
+//   const AddLabelButton({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return BBButton.big(
-      label: 'Add address label',
-      // leftIcon: FontAwesomeIcons.penToSquare,
-      leftSvgAsset: 'assets/edit.svg',
-      onPressed: () {
-        AddLabelPopUp.openPopUp(context);
-      },
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return BBButton.big(
+//       label: 'Add address label',
+//       // leftIcon: FontAwesomeIcons.penToSquare,
+//       leftSvgAsset: 'assets/edit.svg',
+//       onPressed: () {
+//         AddLabelPopUp.openPopUp(context);
+//       },
+//     );
+//   }
+// }
 
-class AddLabelPopUp extends StatelessWidget {
-  const AddLabelPopUp({super.key});
+// class AddLabelPopUp extends StatelessWidget {
+//   const AddLabelPopUp({super.key});
 
-  static Future openPopUp(BuildContext context) async {
-    final receive = context.read<ReceiveCubit>();
-    return showBBBottomSheet(
-      context: context,
-      child: BlocProvider.value(
-        value: receive,
-        child: const Padding(
-          padding: EdgeInsets.all(30),
-          child: AddLabelPopUp(),
-        ),
-      ),
-    );
-  }
+//   static Future openPopUp(BuildContext context) async {
+//     final receive = context.read<ReceiveCubit>();
+//     return showBBBottomSheet(
+//       context: context,
+//       child: BlocProvider.value(
+//         value: receive,
+//         child: const Padding(
+//           padding: EdgeInsets.all(30),
+//           child: AddLabelPopUp(),
+//         ),
+//       ),
+//     );
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    final value = context.select((ReceiveCubit x) => x.state.description);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        BBHeader.popUpCenteredText(
-          text: 'Add Label',
-          isLeft: true,
-          onBack: () {
-            context.pop();
-          },
-        ),
-        const Gap(24),
-        BBTextInput.big(
-          hint: 'Enter label',
-          value: value,
-          onChanged: (txt) {
-            context.read<ReceiveCubit>().descriptionChanged(txt);
-          },
-        ),
-        const Gap(40),
-        Center(
-          child: BBButton.big(
-            label: 'Save',
-            onPressed: () {
-              context.read<ReceiveCubit>().saveAddrressLabel();
-            },
-          ),
-        ),
-        const Gap(40),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     final value = context.select((ReceiveCubit x) => x.state.description);
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.stretch,
+//       children: [
+//         BBHeader.popUpCenteredText(
+//           text: 'Add Label',
+//           isLeft: true,
+//           onBack: () {
+//             context.pop();
+//           },
+//         ),
+//         const Gap(24),
+//         BBTextInput.big(
+//           hint: 'Enter label',
+//           value: value,
+//           onChanged: (txt) {
+//             context.read<ReceiveCubit>().descriptionChanged(txt);
+//           },
+//         ),
+//         const Gap(40),
+//         Center(
+//           child: BBButton.big(
+//             label: 'Save',
+//             onPressed: () {
+//               context.read<ReceiveCubit>().saveAddrressLabel();
+//             },
+//           ),
+//         ),
+//         const Gap(40),
+//       ],
+//     );
+//   }
+// }

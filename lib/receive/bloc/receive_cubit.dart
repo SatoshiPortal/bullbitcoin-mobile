@@ -33,7 +33,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       state.copyWith(
         walletBloc: walletBloc,
         defaultAddress: null,
-        privateLabel: '',
+        // privateLabel: '',
         savedDescription: '',
         description: '',
       ),
@@ -341,37 +341,41 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       state.copyWith(
         defaultLiquidAddress: updatedWallet.lastGeneratedAddress,
         defaultAddress: updatedWallet.lastGeneratedAddress,
-        privateLabel: '',
+        // privateLabel: '',
         savedDescription: '',
         description: '',
       ),
     );
   }
 
+  // void descriptionChanged(String description) {
+  //   emit(state.copyWith(description: description));
+  //   final (addr, w) = _walletAddress.updateAddressWithLabel(
+  //     wallet: state.walletBloc!.state.wallet!,
+  //     address: state.defaultAddress!,
+  //     label: state.description,
+  //   );
+
+  //   state.walletBloc!
+  //       .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+  // }
+
+  // void privateLabelChanged(String privateLabel) {
+  //   emit(state.copyWith(privateLabel: privateLabel));
+  // }
+
+  // void clearLabelField() {
+  //   emit(state.copyWith(privateLabel: ''));
+  // }
+
   void descriptionChanged(String description) {
     emit(state.copyWith(description: description));
-    final (addr, w) = _walletAddress.updateAddressWithLabel(
-      wallet: state.walletBloc!.state.wallet!,
-      address: state.defaultAddress!,
-      label: state.description,
-    );
-
-    state.walletBloc!
-        .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
-  }
-
-  void privateLabelChanged(String privateLabel) {
-    emit(state.copyWith(privateLabel: privateLabel));
-  }
-
-  void clearLabelField() {
-    emit(state.copyWith(privateLabel: ''));
   }
 
   void saveAddrressLabel() async {
     if (state.walletBloc == null) return;
 
-    if (state.privateLabel == state.defaultAddress?.label) return;
+    if (state.description == state.defaultAddress?.label) return;
 
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
 
