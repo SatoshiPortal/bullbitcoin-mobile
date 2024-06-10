@@ -73,7 +73,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/import',
           builder: (context, state) {
-            return const ImportWalletPage();
+            return const ImportWalletPage(isRecovery: true);
           },
         ),
 
@@ -120,7 +120,10 @@ GoRouter setupRouter() => GoRouter(
                 ),
               );
             });
-            return const ImportWalletPage(mainWallet: true);
+            return const ImportWalletPage(
+              mainWallet: true,
+              isRecovery: true,
+            );
           },
         ),
         GoRoute(
