@@ -204,6 +204,35 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         errLoadingAddress: '',
       ),
     );
+
+    _checkLabel();
+  }
+
+  void _checkLabel() {
+    final isLn = state.paymentNetwork == PaymentNetwork.lightning;
+    if (isLn) return;
+
+    final isLiq = state.paymentNetwork == PaymentNetwork.liquid;
+    final defaultAddress =
+        isLiq ? state.defaultLiquidAddress : state.defaultAddress;
+    final wallet = state.walletBloc?.state.wallet;
+
+    if (defaultAddress == null) return;
+    if (wallet == null) return;
+
+    final address = wallet.getAddressFromWallet(defaultAddress.address);
+
+    if (address == null) return;
+
+    if (!isLiq && state.defaultAddress != null)
+      emit(
+        state.copyWith(description: address.label ?? ''),
+      );
+
+    if (isLiq && state.defaultLiquidAddress != null)
+      emit(
+        state.copyWith(description: address.label ?? ''),
+      );
   }
 
   /*
@@ -339,19 +368,23 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(privateLabel: ''));
   }
 
-  void saveDefaultAddressLabel() async {
+  void saveAddrressLabel() async {
     if (state.walletBloc == null) return;
 
-    if (state.privateLabel == (state.defaultAddress?.label ?? '')) return;
+    if (state.privateLabel == state.defaultAddress?.label) return;
 
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
 
+    final address = state.paymentNetwork == PaymentNetwork.liquid
+        ? state.defaultLiquidAddress
+        : state.defaultAddress;
+
     final (a, w) = await _walletAddress.addAddressToWallet(
-      address: (state.defaultAddress!.index, state.defaultAddress!.address),
+      address: (address!.index, address.address),
       wallet: state.walletBloc!.state.wallet!,
-      label: state.privateLabel,
-      kind: state.defaultAddress!.kind,
-      state: state.defaultAddress!.state,
+      label: state.description,
+      kind: address.kind,
+      state: address.state,
       spendable:
           state.defaultAddress?.state == AddressStatus.active ? true : false,
     );
@@ -367,6 +400,10 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         defaultAddress: a,
       ),
     );
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    emit(state.copyWith(labelSaved: false));
   }
 
   // void loadInvoice() {
@@ -379,35 +416,39 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(description: ''));
   }
 
-  void saveFinalInvoiceClicked(int amt) async {
-    if (state.walletBloc == null) return;
+  // void saveFinalInvoiceClicked(int amt) async {
+  //   if (state.walletBloc == null) return;
 
-    if (amt <= 0) {
-      emit(state.copyWith(errCreatingInvoice: 'Enter correct amount'));
-      return;
-    }
+  //   if (amt <= 0) {
+  //     emit(state.copyWith(errCreatingInvoice: 'Enter correct amount'));
+  //     return;
+  //   }
 
-    emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
+  //   emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
 
-    final (_, w) = await _walletAddress.addAddressToWallet(
-      address: (state.defaultAddress!.index, state.defaultAddress!.address),
-      wallet: state.walletBloc!.state.wallet!,
-      label: state.description,
-      kind: AddressKind.deposit,
-    );
+  //   final address = state.paymentNetwork == PaymentNetwork.liquid
+  //       ? state.defaultLiquidAddress
+  //       : state.defaultAddress;
 
-    state.walletBloc!
-        .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+  //   final (_, w) = await _walletAddress.addAddressToWallet(
+  //     address: (address!.index, address.address),
+  //     wallet: state.walletBloc!.state.wallet!,
+  //     label: state.description,
+  //     kind: AddressKind.deposit,
+  //   );
 
-    emit(
-      state.copyWith(
-        creatingInvoice: false,
-        errCreatingInvoice: '',
-        savedDescription: state.description,
-        savedInvoiceAmount: amt,
-      ),
-    );
-  }
+  //   state.walletBloc!
+  //       .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+
+  //   emit(
+  //     state.copyWith(
+  //       creatingInvoice: false,
+  //       errCreatingInvoice: '',
+  //       savedDescription: state.description,
+  //       savedInvoiceAmount: amt,
+  //     ),
+  //   );
+  // }
 
   // void createLnInvoiceClicked(int amt) async {
   //   final walletId = state.walletBloc?.state.wallet?.id;

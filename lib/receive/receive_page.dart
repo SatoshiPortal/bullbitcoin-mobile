@@ -23,7 +23,6 @@ import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
-import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/receive/listeners.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -493,6 +492,7 @@ class WalletActions extends StatelessWidget {
         //       CreateInvoice.openPopUp(context);
         //     },
         //   ),
+        const _SaveLabelButton(),
         const Gap(8),
         BBButton.big(
           buttonKey: UIKeys.receiveGenerateAddressButton,
@@ -510,6 +510,28 @@ class WalletActions extends StatelessWidget {
         ),
         BBText.errorSmall(errLoadingAddress),
       ],
+    );
+  }
+}
+
+class _SaveLabelButton extends StatelessWidget {
+  const _SaveLabelButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final saving = context.select((ReceiveCubit x) => x.state.savingLabel);
+    final saved = context.select((ReceiveCubit x) => x.state.labelSaved);
+    return BBButton.big(
+      leftIcon: saved ? Icons.check : Icons.save_as,
+      label: saved ? 'Label Saved' : 'Save Label',
+      loading: saving,
+      disabled: saving || saved,
+      loadingText: 'Saving...',
+      onPressed: () {
+        context.read<ReceiveCubit>().saveAddrressLabel();
+      },
     );
   }
 }
@@ -555,12 +577,12 @@ class CreateLightningInvoice extends StatelessWidget {
         const EnterAmount2(),
         if (amount > 0) BBText.title('    Approx fees: $finalFee sats'),
         const Gap(24),
-        const BBText.title(' Description'),
+        const BBText.title(' Add a Label'),
         const Gap(4),
         BBTextInput.big(
           uiKey: UIKeys.receiveDescriptionField,
           value: description,
-          hint: 'Enter description',
+          hint: 'Enter Label',
           onChanged: (txt) {
             context.read<ReceiveCubit>().descriptionChanged(txt);
           },
@@ -624,12 +646,12 @@ class BitcoinReceiveForm extends StatelessWidget {
         const Gap(4),
         const EnterAmount2(),
         const Gap(12),
-        const BBText.title('Add a description'),
+        const BBText.title('Add a Label'),
         const Gap(4),
         BBTextInput.big(
           uiKey: UIKeys.receiveDescriptionField,
           value: description,
-          hint: 'Enter description',
+          hint: 'Enter Label',
           onChanged: (txt) {
             context.read<ReceiveCubit>().descriptionChanged(txt);
           },
@@ -941,83 +963,83 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
   }
 }
 
-class CreateInvoice extends StatelessWidget {
-  const CreateInvoice({super.key});
+// class CreateInvoice extends StatelessWidget {
+//   const CreateInvoice({super.key});
 
-  static Future openPopUp(BuildContext context) async {
-    final receiveCubit = context.read<ReceiveCubit>();
-    final currencyCubit = context.read<CurrencyCubit>();
+//   static Future openPopUp(BuildContext context) async {
+//     final receiveCubit = context.read<ReceiveCubit>();
+//     final currencyCubit = context.read<CurrencyCubit>();
 
-    if (currencyCubit.state.amount > 0)
-      currencyCubit.convertAmtOnCurrencyChange();
+//     if (currencyCubit.state.amount > 0)
+//       currencyCubit.convertAmtOnCurrencyChange();
 
-    return showBBBottomSheet(
-      context: context,
-      child: BlocProvider.value(
-        value: receiveCubit,
-        child: BlocProvider.value(
-          value: currencyCubit,
-          child: BlocListener<ReceiveCubit, ReceiveState>(
-            listenWhen: (previous, current) =>
-                previous.savedInvoiceAmount != current.savedInvoiceAmount ||
-                previous.savedDescription != current.savedDescription,
-            listener: (context, state) {
-              context.pop();
-            },
-            child: const Padding(
-              padding: EdgeInsets.all(30),
-              child: CreateInvoice(),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+//     return showBBBottomSheet(
+//       context: context,
+//       child: BlocProvider.value(
+//         value: receiveCubit,
+//         child: BlocProvider.value(
+//           value: currencyCubit,
+//           child: BlocListener<ReceiveCubit, ReceiveState>(
+//             listenWhen: (previous, current) =>
+//                 previous.savedInvoiceAmount != current.savedInvoiceAmount ||
+//                 previous.savedDescription != current.savedDescription,
+//             listener: (context, state) {
+//               context.pop();
+//             },
+//             child: const Padding(
+//               padding: EdgeInsets.all(30),
+//               child: CreateInvoice(),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    final description = context.select((ReceiveCubit _) => _.state.description);
+//   @override
+//   Widget build(BuildContext context) {
+//     final description = context.select((ReceiveCubit _) => _.state.description);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        BBHeader.popUpCenteredText(
-          text: 'Request a Payment',
-          onBack: () {
-            context.read<ReceiveCubit>().clearInvoiceFields();
-            context.read<CurrencyCubit>().reset();
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.stretch,
+//       children: [
+//         BBHeader.popUpCenteredText(
+//           text: 'Request a Payment',
+//           onBack: () {
+//             context.read<ReceiveCubit>().clearInvoiceFields();
+//             context.read<CurrencyCubit>().reset();
 
-            context.pop();
-          },
-        ),
-        const Gap(40),
-        const Gap(4),
-        const EnterAmount(uiKey: UIKeys.receiveAmountField),
-        const Gap(24),
-        const BBText.title('   Public description'),
-        const Gap(4),
-        BBTextInput.big(
-          uiKey: UIKeys.receiveDescriptionField,
-          value: description,
-          hint: 'Enter description',
-          onChanged: (txt) {
-            context.read<ReceiveCubit>().descriptionChanged(txt);
-          },
-        ),
-        const Gap(40),
-        BBButton.big(
-          buttonKey: UIKeys.receiveSavePaymentButton,
-          label: 'Save',
-          onPressed: () {
-            final amt = context.read<CurrencyCubit>().state.amount;
-            context.read<ReceiveCubit>().saveFinalInvoiceClicked(amt);
-          },
-        ),
-        const Gap(40),
-      ],
-    );
-  }
-}
+//             context.pop();
+//           },
+//         ),
+//         const Gap(40),
+//         const Gap(4),
+//         const EnterAmount(uiKey: UIKeys.receiveAmountField),
+//         const Gap(24),
+//         const BBText.title('   Public description'),
+//         const Gap(4),
+//         BBTextInput.big(
+//           uiKey: UIKeys.receiveDescriptionField,
+//           value: description,
+//           hint: 'Enter description',
+//           onChanged: (txt) {
+//             context.read<ReceiveCubit>().descriptionChanged(txt);
+//           },
+//         ),
+//         const Gap(40),
+//         BBButton.big(
+//           buttonKey: UIKeys.receiveSavePaymentButton,
+//           label: 'Save',
+//           onPressed: () {
+//             final amt = context.read<CurrencyCubit>().state.amount;
+//             context.read<ReceiveCubit>().saveFinalInvoiceClicked(amt);
+//           },
+//         ),
+//         const Gap(40),
+//       ],
+//     );
+//   }
+// }
 
 class CheckForPaymentsButton extends StatelessWidget {
   const CheckForPaymentsButton({super.key});
@@ -1092,7 +1114,7 @@ class AddLabelPopUp extends StatelessWidget {
           child: BBButton.big(
             label: 'Save',
             onPressed: () {
-              context.read<ReceiveCubit>().saveDefaultAddressLabel();
+              context.read<ReceiveCubit>().saveAddrressLabel();
             },
           ),
         ),

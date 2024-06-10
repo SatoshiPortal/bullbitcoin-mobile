@@ -65,6 +65,13 @@ class Wallet with _$Wallet {
     return copyWith(lastGeneratedAddress: address);
   }
 
+  Address? getAddressFromWallet(String address) {
+    for (final addr in myAddressBook) {
+      if (addr.address == address) return addr;
+    }
+    return null;
+  }
+
   bool hasOngoingSwap(String id) {
     return swaps.any((swap) => swap.id == id);
   }
