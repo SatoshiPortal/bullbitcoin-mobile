@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -38,6 +39,7 @@ class AddressPopUp extends StatelessWidget {
       address: address,
       walletAddress: locator<WalletAddress>(),
       walletBloc: wallet,
+      bdkUtxo: locator<BDKUtxo>(),
     );
 
     return showBBBottomSheet(
@@ -215,8 +217,10 @@ class AddressActions extends StatelessWidget {
     );
     final freezing =
         context.select((AddressCubit cubit) => cubit.state.freezingAddress);
-    final hasUtxos = context.select((AddressCubit cubit) =>
-        cubit.state.address?.state == AddressStatus.active);
+    final hasUtxos = context.select(
+      (AddressCubit cubit) =>
+          cubit.state.address?.state == AddressStatus.active,
+    );
     //TODO: UTXO context.select((AddressCubit cubit) => cubit.state.address!.utxos?.isNotEmpty ?? false);
 
     return Column(

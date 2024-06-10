@@ -93,8 +93,35 @@ class BDKUtxo {
     }
   }
 
-  // Future<(Wallet?, Err? ) updateAddressStates(    required Wallet wallet,
-  //   required bdk.Wallet bdkWallet,){
+  (Wallet?, Err?) updateUtxoFromAddressSpendable({
+    required Wallet wallet,
+    required Address address,
+    required bool spendable,
+  }) {
+    try {
+      final utxos = [...wallet.utxos].toList();
 
-  // }
+      final index =
+          utxos.indexWhere((utxo) => utxo.address.address == address.address);
+
+      if (index == -1) return (wallet, null);
+
+      final utxo = utxos[index].copyWith(spendable: spendable);
+      utxos.removeAt(index);
+      utxos.insert(index, utxo);
+
+      final w = wallet.copyWith(utxos: utxos);
+
+      return (w, null);
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while update UTXO spendable from address',
+          solution: 'Please try again.',
+        )
+      );
+    }
+  }
 }

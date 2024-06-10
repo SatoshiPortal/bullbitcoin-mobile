@@ -11,13 +11,16 @@ class AddressCubit extends Cubit<AddressState> {
     required Address address,
     required WalletBloc walletBloc,
     required WalletAddress walletAddress,
+    required BDKUtxo bdkUtxo,
   })  : _walletAddress = walletAddress,
         _walletBloc = walletBloc,
+        _bdkUtxo = bdkUtxo,
         super(AddressState(address: address));
 
   // final WalletStorage walletStorage;
   final WalletBloc _walletBloc;
   final WalletAddress _walletAddress;
+  final BDKUtxo _bdkUtxo;
 
   void freezeAddress() async {
     emit(state.copyWith(freezingAddress: true, errFreezingAddress: ''));
@@ -31,22 +34,29 @@ class AddressCubit extends Cubit<AddressState> {
       spendable: false,
     );
 
-    // final errUpdate = await walletsStorageRepository.updateWallet(
-    //   wallet: w,
-    //   hiveStore: hiveStorage,
-    // );
-    // if (errUpdate != null) {
-    //   emit(
-    //     state.copyWith(
-    //       freezingAddress: false,
-    //       errFreezingAddress: errUpdate.toString(),
-    //     ),
-    //   );
-    //   return;
-    // }
+    final (utxoWallet, err) = _bdkUtxo.updateUtxoFromAddressSpendable(
+      wallet: w,
+      address: address,
+      spendable: false,
+    );
 
-    _walletBloc
-        .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+    if (err != null) {
+      emit(
+        state.copyWith(
+          freezingAddress: false,
+          errFreezingAddress: err.toString(),
+        ),
+      );
+      return;
+    }
+
+    _walletBloc.add(
+      UpdateWallet(
+        utxoWallet!,
+        updateTypes: [UpdateWalletTypes.addresses, UpdateWalletTypes.utxos],
+      ),
+    );
+
     emit(
       state.copyWith(
         freezingAddress: false,
@@ -67,6 +77,29 @@ class AddressCubit extends Cubit<AddressState> {
       state: state.address!.state,
     );
 
+    final (utxoWallet, err) = _bdkUtxo.updateUtxoFromAddressSpendable(
+      wallet: w,
+      address: address,
+      spendable: true,
+    );
+
+    if (err != null) {
+      emit(
+        state.copyWith(
+          freezingAddress: false,
+          errFreezingAddress: err.toString(),
+        ),
+      );
+      return;
+    }
+
+    _walletBloc.add(
+      UpdateWallet(
+        utxoWallet!,
+        updateTypes: [UpdateWalletTypes.addresses, UpdateWalletTypes.utxos],
+      ),
+    );
+
     // final errUpdate = await walletsStorageRepository.updateWallet(
     //   wallet: w,
     //   hiveStore: hiveStorage,
@@ -80,9 +113,6 @@ class AddressCubit extends Cubit<AddressState> {
     //   );
     //   return;
     // }
-
-    _walletBloc
-        .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
 
     emit(
       state.copyWith(
