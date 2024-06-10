@@ -110,14 +110,16 @@ class ImportAppBar extends StatelessWidget {
         context.select((ImportWalletCubit cubit) => cubit.state.mainWallet);
     Function()? onBack;
 
-    if (step == ImportSteps.importXpub ||
-        step == ImportSteps.import12Words ||
-        step == ImportSteps.import24Words ||
-        step == ImportSteps.scanningNFC ||
-        step == ImportSteps.scanningWallets ||
+    if (
+        // step == ImportSteps.importXpub ||
+        //   step == ImportSteps.import12Words ||
+        //   step == ImportSteps.import24Words ||
+        //   step == ImportSteps.scanningNFC ||
+        //   step == ImportSteps.scanningWallets ||
+
         step == ImportSteps.advancedOptions ||
-        step == ImportSteps.selectWalletFormat ||
-        step == ImportSteps.selectImportType)
+            step == ImportSteps.selectWalletFormat ||
+            step == ImportSteps.selectImportType)
       onBack = () => context.read<ImportWalletCubit>().backClicked();
 
     if (step == ImportSteps.selectCreateType) onBack = () => context.pop();
@@ -129,6 +131,8 @@ class ImportAppBar extends StatelessWidget {
     if (isRecovery &&
         (step == ImportSteps.import12Words ||
             step == ImportSteps.import24Words)) onBack = () => context.pop();
+
+    onBack ??= () => context.pop();
 
     return BBAppBar(text: stepName, onBack: onBack);
   }
@@ -151,17 +155,15 @@ class _Screen extends StatelessWidget {
       },
       child: () {
         switch (step) {
+          // return const ImportScanning(isColdCard: true);
+
           case ImportSteps.selectCreateType:
-            return const _CreateSelectionScreen();
+          // return const _CreateSelectionScreen();
 
           case ImportSteps.selectImportType:
           case ImportSteps.importXpub:
-            return const ImportXpubScreen();
+          // return const ImportXpubScreen();
           case ImportSteps.scanningNFC:
-            return const ImportScanning(isColdCard: true);
-
-          case ImportSteps.advancedOptions:
-            return const AdvancedOptions();
           case ImportSteps.import12Words:
           case ImportSteps.import24Words:
             return const ImportEnterWordsScreen();
@@ -169,6 +171,9 @@ class _Screen extends StatelessWidget {
           case ImportSteps.scanningWallets:
           case ImportSteps.selectWalletFormat:
             return const ImportSelectWalletTypeScreen();
+
+          case ImportSteps.advancedOptions:
+            return const AdvancedOptions();
           default:
             return Container();
         }
