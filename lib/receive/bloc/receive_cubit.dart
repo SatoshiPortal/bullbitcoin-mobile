@@ -352,7 +352,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       label: state.privateLabel,
       kind: state.defaultAddress!.kind,
       state: state.defaultAddress!.state,
-      spendable: state.defaultAddress!.spendable,
+      spendable:
+          state.defaultAddress?.state == AddressStatus.active ? true : false,
     );
 
     state.walletBloc!

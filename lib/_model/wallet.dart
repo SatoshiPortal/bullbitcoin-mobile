@@ -436,7 +436,9 @@ class Wallet with _$Wallet {
     final addresses = <Address>[
       ...myAddressBook,
     ];
-    final unspendable = addresses.where((_) => !_.spendable).toList();
+    final unspendable = addresses
+        .where((_) => !_.spendable && (_.state == AddressStatus.active))
+        .toList();
     final totalFrozen =
         unspendable.fold<int>(0, (value, _) => value + _.balance);
     return totalFrozen;

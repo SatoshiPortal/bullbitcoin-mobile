@@ -343,6 +343,7 @@ class WalletTx implements IWalletTransactions {
         spentTxId: txid,
         kind: AddressKind.external,
         state: AddressStatus.used,
+        spendable: false,
       );
 
       return ((updatedWallet, txid), null);
