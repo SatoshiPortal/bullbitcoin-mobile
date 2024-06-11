@@ -168,6 +168,24 @@ class HomeState with _$HomeState {
     return wallet;
   }
 
+  SwapTx? getSwapTxById(String id) {
+    for (final walletBloc in walletBlocs!) {
+      final wallet = walletBloc.state.wallet;
+      if (wallet == null || wallet.swaps.isEmpty) continue;
+      final idx = wallet.swaps.indexWhere((_) => _.id == id);
+      if (idx != -1) return wallet.swaps[idx];
+    }
+
+    for (final walletBloc in walletBlocs!) {
+      final wallet = walletBloc.state.wallet;
+      if (wallet == null || wallet.transactions.isEmpty) continue;
+      final idx = wallet.transactions.indexWhere((_) => _.swapTx?.id == id);
+      if (idx != -1) return wallet.transactions[idx].swapTx;
+    }
+
+    return null;
+  }
+
   Transaction? getTxFromSwap(SwapTx swap) {
     final isLiq = swap.walletType == BaseWalletType.Liquid;
     final network = swap.network;

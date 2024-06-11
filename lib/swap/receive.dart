@@ -287,17 +287,59 @@ class ReceivingSwapPage extends StatefulWidget {
   State<ReceivingSwapPage> createState() => _ReceivingSwapPageState();
 }
 
-class _ReceivingSwapPageState extends State<ReceivingSwapPage> {
+class _ReceivingSwapPageState extends State<ReceivingSwapPage>
+    with WidgetsBindingObserver {
   late SwapTx swapTx;
 
   bool received = false;
   bool paid = false;
+  bool inBackground = false;
+
   // Transaction? tx;
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
+
     swapTx = widget.tx;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    final inBg = state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.detached;
+
+    if (inBackground && !inBg) {
+      await Future.delayed(400.ms);
+      final updatedSwapTx = context.read<HomeCubit>().state.getSwapTxById(
+            widget.tx.id,
+          );
+
+      if (updatedSwapTx == null) return;
+
+      if (updatedSwapTx.paidReverse()) {
+        setState(() {
+          paid = true;
+        });
+      }
+      if (updatedSwapTx.settledReverse()) {
+        setState(() {
+          received = true;
+        });
+      }
+    }
+
+    inBackground = inBg;
+    super.didChangeAppLifecycleState(state);
   }
 
   @override
