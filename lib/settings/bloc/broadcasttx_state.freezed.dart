@@ -36,6 +36,7 @@ mixin _$BroadcastTxState {
   bool get downloadingFile => throw _privateConstructorUsedError;
   String get errDownloadingFile => throw _privateConstructorUsedError;
   bool get downloaded => throw _privateConstructorUsedError;
+  bool get isSigned => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $BroadcastTxStateCopyWith<BroadcastTxState> get copyWith =>
@@ -67,7 +68,8 @@ abstract class $BroadcastTxStateCopyWith<$Res> {
       bdk.PartiallySignedTransaction? psbtBDK,
       bool downloadingFile,
       String errDownloadingFile,
-      bool downloaded});
+      bool downloaded,
+      bool isSigned});
 
   $TransactionCopyWith<$Res>? get transaction;
 }
@@ -104,6 +106,7 @@ class _$BroadcastTxStateCopyWithImpl<$Res, $Val extends BroadcastTxState>
     Object? downloadingFile = null,
     Object? errDownloadingFile = null,
     Object? downloaded = null,
+    Object? isSigned = null,
   }) {
     return _then(_value.copyWith(
       step: null == step
@@ -182,6 +185,10 @@ class _$BroadcastTxStateCopyWithImpl<$Res, $Val extends BroadcastTxState>
           ? _value.downloaded
           : downloaded // ignore: cast_nullable_to_non_nullable
               as bool,
+      isSigned: null == isSigned
+          ? _value.isSigned
+          : isSigned // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 
@@ -225,7 +232,8 @@ abstract class _$$BroadcastTxStateImplCopyWith<$Res>
       bdk.PartiallySignedTransaction? psbtBDK,
       bool downloadingFile,
       String errDownloadingFile,
-      bool downloaded});
+      bool downloaded,
+      bool isSigned});
 
   @override
   $TransactionCopyWith<$Res>? get transaction;
@@ -261,6 +269,7 @@ class __$$BroadcastTxStateImplCopyWithImpl<$Res>
     Object? downloadingFile = null,
     Object? errDownloadingFile = null,
     Object? downloaded = null,
+    Object? isSigned = null,
   }) {
     return _then(_$BroadcastTxStateImpl(
       step: null == step
@@ -334,6 +343,10 @@ class __$$BroadcastTxStateImplCopyWithImpl<$Res>
           ? _value.downloaded
           : downloaded // ignore: cast_nullable_to_non_nullable
               as bool,
+      isSigned: null == isSigned
+          ? _value.isSigned
+          : isSigned // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -360,7 +373,8 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
       this.psbtBDK,
       this.downloadingFile = false,
       this.errDownloadingFile = '',
-      this.downloaded = false})
+      this.downloaded = false,
+      this.isSigned = false})
       : super._();
 
   @override
@@ -416,10 +430,13 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
   @override
   @JsonKey()
   final bool downloaded;
+  @override
+  @JsonKey()
+  final bool isSigned;
 
   @override
   String toString() {
-    return 'BroadcastTxState(step: $step, tx: $tx, transaction: $transaction, recognizedTx: $recognizedTx, verified: $verified, amount: $amount, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, sent: $sent, extractingTx: $extractingTx, errExtractingTx: $errExtractingTx, psbt: $psbt, errPSBT: $errPSBT, broadcastingTx: $broadcastingTx, errBroadcastingTx: $errBroadcastingTx, psbtBDK: $psbtBDK, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded)';
+    return 'BroadcastTxState(step: $step, tx: $tx, transaction: $transaction, recognizedTx: $recognizedTx, verified: $verified, amount: $amount, loadingFile: $loadingFile, errLoadingFile: $errLoadingFile, sent: $sent, extractingTx: $extractingTx, errExtractingTx: $errExtractingTx, psbt: $psbt, errPSBT: $errPSBT, broadcastingTx: $broadcastingTx, errBroadcastingTx: $errBroadcastingTx, psbtBDK: $psbtBDK, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, isSigned: $isSigned)';
   }
 
   @override
@@ -456,7 +473,9 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
             (identical(other.errDownloadingFile, errDownloadingFile) ||
                 other.errDownloadingFile == errDownloadingFile) &&
             (identical(other.downloaded, downloaded) ||
-                other.downloaded == downloaded));
+                other.downloaded == downloaded) &&
+            (identical(other.isSigned, isSigned) ||
+                other.isSigned == isSigned));
   }
 
   @override
@@ -480,7 +499,8 @@ class _$BroadcastTxStateImpl extends _BroadcastTxState {
         psbtBDK,
         downloadingFile,
         errDownloadingFile,
-        downloaded
+        downloaded,
+        isSigned
       ]);
 
   @JsonKey(ignore: true)
@@ -511,7 +531,8 @@ abstract class _BroadcastTxState extends BroadcastTxState {
       final bdk.PartiallySignedTransaction? psbtBDK,
       final bool downloadingFile,
       final String errDownloadingFile,
-      final bool downloaded}) = _$BroadcastTxStateImpl;
+      final bool downloaded,
+      final bool isSigned}) = _$BroadcastTxStateImpl;
   const _BroadcastTxState._() : super._();
 
   @override
@@ -552,6 +573,8 @@ abstract class _BroadcastTxState extends BroadcastTxState {
   String get errDownloadingFile;
   @override
   bool get downloaded;
+  @override
+  bool get isSigned;
   @override
   @JsonKey(ignore: true)
   _$$BroadcastTxStateImplCopyWith<_$BroadcastTxStateImpl> get copyWith =>

@@ -96,6 +96,15 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     emit(state.copyWith(loadingFile: false, tx: tx));
   }
 
+  Future<bool> checkWitnesses(List<bdk.TxIn> inputs) async {
+    for (final txIn in inputs) {
+      if (txIn.witness.isEmpty) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void extractTxClicked() async {
     try {
       await clearErrors();
@@ -119,10 +128,11 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         bdkTx = await psbt.extractTx();
         // maybe this psbt needs to be finalized?
       }
-
       final txid = await bdkTx.txid();
       final outputs = await bdkTx.output();
       final inputs = await bdkTx.input();
+      final isSigned = await checkWitnesses(inputs);
+
       Transaction? transaction;
       WalletBloc? relatedWallet;
 
@@ -229,6 +239,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           transaction: transaction,
           step: BroadcastTxStep.broadcast,
           amount: totalAmount,
+          isSigned: isSigned,
         ),
       );
     } on bdk.EncodeException {

@@ -28,6 +28,7 @@ class BroadcastTxState with _$BroadcastTxState {
     @Default(false) bool downloadingFile,
     @Default('') String errDownloadingFile,
     @Default(false) bool downloaded,
+    @Default(false) bool isSigned,
   }) = _BroadcastTxState;
   const BroadcastTxState._();
 

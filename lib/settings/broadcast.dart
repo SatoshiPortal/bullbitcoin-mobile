@@ -127,9 +127,11 @@ class BroadcastPopUp extends StatelessWidget {
 
 class _Screen extends StatelessWidget {
   const _Screen();
-
   @override
   Widget build(BuildContext context) {
+    final signed =
+        context.select((BroadcastTxCubit cubit) => cubit.state.isSigned);
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 16,
@@ -142,15 +144,7 @@ class _Screen extends StatelessWidget {
           return BlocListener<BroadcastTxCubit, BroadcastTxState>(
             listenWhen: (previous, current) =>
                 previous.hasErr() != current.hasErr() && current.hasErr(),
-            listener: (context, state) async {
-              // Alert.showErrorAlert(
-              //   context,
-              //   err: state.getErrors(),
-              //   onClose: () {
-              //     context.read<BroadcastTxCubit>().clearErrors();
-              //   },
-              // );
-            },
+            listener: (context, state) async {},
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -212,7 +206,7 @@ class _Screen extends StatelessWidget {
                   const _TxTextField(),
                 ],
                 const Gap(80),
-                const BroadcastSendButton(),
+                if (!signed) const BroadcastSendButton(),
                 const Gap(48),
               ],
             ),
@@ -352,6 +346,9 @@ class TxInfo extends StatelessWidget {
     final txamt = context.select(
       (BroadcastTxCubit cubit) => cubit.state.amount ?? 0,
     );
+    final signed =
+        context.select((BroadcastTxCubit cubit) => cubit.state.isSigned);
+
     final txfee = context
         .select((BroadcastTxCubit cubit) => cubit.state.transaction?.fee ?? 0);
     // final txAddress = context.select((BroadcastTxCubit _) => _.state.transaction?.outAddrs ?? []);
@@ -416,7 +413,45 @@ class TxInfo extends StatelessWidget {
             ),
           ],
           const Gap(8),
-
+          // const Gap(24),
+          if (signed == true) ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Container(
+                  transformAlignment: Alignment.center,
+                  child: const FaIcon(
+                    FontAwesomeIcons.signature,
+                    size: 12,
+                  ),
+                ),
+                const Gap(8),
+                const BBText.bodySmall(
+                  'Signed',
+                ),
+              ],
+            ),
+          ] else ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Container(
+                  transformAlignment: Alignment.center,
+                  child: const FaIcon(
+                    FontAwesomeIcons.signature,
+                    size: 12,
+                  ),
+                ),
+                const Gap(8),
+                const BBText.bodySmall(
+                  'Unsigned',
+                ),
+              ],
+            ),
+          ],
+          const Gap(8),
           const BBText.title('Total output amount'),
           const Gap(4),
           Row(
