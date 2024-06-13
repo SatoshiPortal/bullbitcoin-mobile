@@ -129,9 +129,6 @@ class _Screen extends StatelessWidget {
   const _Screen();
   @override
   Widget build(BuildContext context) {
-    final signed =
-        context.select((BroadcastTxCubit cubit) => cubit.state.isSigned);
-
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 16,
@@ -206,7 +203,7 @@ class _Screen extends StatelessWidget {
                   const _TxTextField(),
                 ],
                 const Gap(80),
-                if (!signed) const BroadcastSendButton(),
+                const BroadcastSendButton(),
                 const Gap(48),
               ],
             ),
@@ -292,6 +289,8 @@ class BroadcastSendButton extends StatelessWidget {
     final loading = broadcasting || extractingTx;
 
     final sent = context.select((BroadcastTxCubit cubit) => cubit.state.sent);
+    final signed =
+        context.select((BroadcastTxCubit cubit) => cubit.state.isSigned);
 
     if (sent)
       return const Center(
@@ -318,7 +317,7 @@ class BroadcastSendButton extends StatelessWidget {
                 // if (loading) return;
                 if (step == BroadcastTxStep.import)
                   context.read<BroadcastTxCubit>().extractTxClicked();
-                if (step == BroadcastTxStep.broadcast)
+                if (step == BroadcastTxStep.broadcast && signed)
                   context.read<BroadcastTxCubit>().broadcastClicked();
               },
               label: (step == BroadcastTxStep.import) ? 'Decode' : 'Broadcast',
