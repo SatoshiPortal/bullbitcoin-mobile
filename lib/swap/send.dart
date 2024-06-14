@@ -234,7 +234,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const BBText.body(' ≈ '),
+                const BBText.body('≈ '),
                 const Gap(4),
                 BBText.body(amt),
                 const Gap(4),

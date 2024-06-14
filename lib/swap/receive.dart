@@ -447,7 +447,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const BBText.body(' ≈ '),
+                    const BBText.body('≈ '),
                     const Gap(4),
                     BBText.body(fiatAmtStr),
                     const Gap(4),
