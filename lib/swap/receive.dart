@@ -6,6 +6,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/styles.dart';
@@ -361,6 +362,16 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
       ),
     );
 
+    context.read<CurrencyCubit>().updateAmount(amt.toString());
+    final defaultCurrency = context
+        .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
+    final fiatAmt =
+        context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
+    final isTestNet =
+        context.select((NetworkCubit cubit) => cubit.state.testnet);
+    final fiatUnit = defaultCurrency?.name ?? '';
+    final fiatAmtStr = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
+
     return BlocListener<WatchTxsBloc, WatchTxsState>(
       listenWhen: (previous, current) =>
           previous.updatedSwapTx != current.updatedSwapTx &&
@@ -431,6 +442,19 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
               ReceivedTick(received: received),
               const Gap(16),
               BBText.body(amtStr),
+              const Gap(8),
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const BBText.body(' ≈ '),
+                    const Gap(4),
+                    BBText.body(fiatAmtStr),
+                    const Gap(4),
+                    BBText.body(fiatUnit),
+                  ],
+                ),
+              ),
               if (!received) ...[
                 const Gap(24),
                 _OnChainWarning(swapTx: swapTx),

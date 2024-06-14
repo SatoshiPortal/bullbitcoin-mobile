@@ -3,6 +3,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
@@ -161,6 +162,16 @@ class _SendingLnTxState extends State<SendingLnTx> {
     );
     final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
 
+    context.read<CurrencyCubit>().updateAmount(amount.toString());
+    final defaultCurrency = context
+        .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
+    final fiatAmt =
+        context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
+    final isTestNet =
+        context.select((NetworkCubit cubit) => cubit.state.testnet);
+    final unit = defaultCurrency?.name ?? '';
+    final amt = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
+
     return BlocListener<WatchTxsBloc, WatchTxsState>(
       listenWhen: (previous, current) =>
           previous.updatedSwapTx != current.updatedSwapTx &&
@@ -198,7 +209,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
           if (!refund) ...[
             if (!settled) ...[
               if (!paid)
-                const BBText.body('Payment in progess')
+                const BBText.body('Payment in progress')
               else
                 const BBText.body('Invoice paid'),
             ] else
@@ -218,6 +229,19 @@ class _SendingLnTxState extends State<SendingLnTx> {
             ),
           const Gap(16),
           BBText.body(amtStr),
+          const Gap(8),
+          Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const BBText.body(' ≈ '),
+                const Gap(4),
+                BBText.body(amt),
+                const Gap(4),
+                BBText.body(unit),
+              ],
+            ),
+          ),
           const Gap(24),
           if (paid && !settled) const BBText.body('Closing the swap ...'),
           if (settled) const BBText.body('Swap complete'),
