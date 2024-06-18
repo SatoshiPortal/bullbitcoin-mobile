@@ -229,13 +229,13 @@ class _SendingLnTxState extends State<SendingLnTx> {
             ),
           const Gap(16),
           BBText.body(amtStr),
-          const Gap(8),
+          const Gap(4),
+          const BBText.body('≈'),
+          const Gap(4),
           Center(
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const BBText.body('≈ '),
-                const Gap(4),
                 BBText.body(amt),
                 const Gap(4),
                 BBText.body(unit),

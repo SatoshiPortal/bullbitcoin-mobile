@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
@@ -179,6 +180,19 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     }
     emit(state.copyWith(tempAmount: amt));
     updateAmount(amt);
+  }
+
+  int convertBtcStringToSats(String btcAmt) {
+    final split = btcAmt.split('.');
+    final amountNo = int.parse(split[0]);
+    final len = min(8, split[1].length);
+    final amountDecimal =
+        int.parse(split[1].substring(0, len)) * pow(10, 8 - len);
+    // print(amountNo);
+    // print(amountDecimal);
+
+    final amountInSats = amountNo * 100000000 + amountDecimal;
+    return amountInSats.toInt();
   }
 
   void updateAmount(String txt) {

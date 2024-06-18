@@ -135,7 +135,9 @@ class SendCubit extends Cubit<SendState> {
         final amount = bip21Obj.options['amount'] as num?;
         if (amount != null) {
           _currencyCubit.btcToCurrentTempAmount(amount.toDouble());
-          final amountInSats = (amount * 100000000).toInt();
+          final amountInSats =
+              _currencyCubit.convertBtcStringToSats(amount.toString());
+          // final amountInSats = (amount * 100000000).toInt();
           _currencyCubit.updateAmountDirect(amountInSats);
           emit(state.copyWith(tempAmt: amountInSats));
         }

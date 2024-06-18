@@ -442,13 +442,13 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
               ReceivedTick(received: received),
               const Gap(16),
               BBText.body(amtStr),
-              const Gap(8),
+              const Gap(4),
+              const BBText.body('≈ '),
+              const Gap(4),
               Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const BBText.body('≈ '),
-                    const Gap(4),
                     BBText.body(fiatAmtStr),
                     const Gap(4),
                     BBText.body(fiatUnit),
