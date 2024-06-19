@@ -12,7 +12,6 @@ import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:boltz_dart/boltz_dart.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateSwapCubit extends Cubit<SwapState> {
@@ -178,7 +177,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
       wallet: wallet,
     );
 
-    await Future.delayed(800.ms);
+    // await Future.delayed(800.ms);
 
     emit(
       state.copyWith(
@@ -401,7 +400,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
         wallet: wallet,
       );
 
-      await Future.delayed(800.ms);
+      // await Future.delayed(300.ms);
     }
 
     emit(
