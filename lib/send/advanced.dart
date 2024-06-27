@@ -69,8 +69,8 @@ class AdvancedOptionsPopUp extends StatelessWidget {
           const Gap(16),
 
           if (!isLn) ...[
-            const SendAllOption(),
-            const Gap(8),
+            // const SendAllOption(),
+            // const Gap(8),
             const EnableRBFOption(),
             const Gap(8),
           ],
@@ -116,7 +116,7 @@ class SendAllOption extends StatelessWidget {
     final sendAll = context.select((SendCubit x) => x.state.sendAllCoin);
     return Row(
       children: [
-        const BBText.body('Send entire wallet balance'),
+        const BBText.title('Send entire wallet balance'),
         const Spacer(),
         BBSwitch(
           value: sendAll,

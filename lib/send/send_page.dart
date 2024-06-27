@@ -183,6 +183,7 @@ class _Screen extends StatelessWidget {
                   const AddressField(),
                   const Gap(24),
                   const AmountField(),
+                  if (!isLn) const SendAllOption(),
                   const Gap(24),
                   const DescriptionField(),
                   if (!isLn) ...[
@@ -496,10 +497,15 @@ class _SendButton extends StatelessWidget {
     final showSend =
         context.select((SendCubit cubit) => cubit.state.showSendButton);
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
-    if (!showSend || sent) return const SizedBox.shrink();
+    //if (!showSend || sent) return const SizedBox.shrink();
+    if (sent) return const SizedBox.shrink();
 
-    final watchOnly =
-        context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
+    // final watchOnly =
+    //     context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
+    final watchOnly = context.select(
+      (SendCubit cubit) =>
+          cubit.state.selectedWalletBloc?.state.wallet?.watchOnly() ?? false,
+    );
 
     final generatingInv = context
         .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
@@ -537,7 +543,7 @@ class _SendButton extends StatelessWidget {
             },
             child: BBButton.big(
               loading: sending,
-              disabled: sending,
+              disabled: sending || !showSend,
               leftIcon: Icons.send,
               onPressed: () async {
                 if (sending) return;
