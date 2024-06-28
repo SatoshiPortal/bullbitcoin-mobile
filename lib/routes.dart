@@ -21,6 +21,7 @@ import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/swap/swap_history_page.dart';
+import 'package:bb_mobile/testground.dart';
 import 'package:bb_mobile/transaction/bump_fees.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -45,6 +46,12 @@ GoRouter setupRouter() => GoRouter(
       initialLocation: '/',
       observers: [GoRouterObserver()],
       routes: <RouteBase>[
+        GoRoute(
+          path: '/testground',
+          builder: (context, state) {
+            return const Testground();
+          },
+        ),
         GoRoute(
           path: '/',
           builder: (context, state) {
@@ -102,7 +109,7 @@ GoRouter setupRouter() => GoRouter(
               await Future.delayed(100.ms);
               SystemChrome.setSystemUIOverlayStyle(
                 SystemUiOverlayStyle(
-                  statusBarColor: context.colour.background,
+                  statusBarColor: context.colour.surface,
                 ),
               );
             });
@@ -116,7 +123,7 @@ GoRouter setupRouter() => GoRouter(
               await Future.delayed(100.ms);
               SystemChrome.setSystemUIOverlayStyle(
                 SystemUiOverlayStyle(
-                  statusBarColor: context.colour.background,
+                  statusBarColor: context.colour.surface,
                 ),
               );
             });
