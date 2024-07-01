@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 
+/*
 extension Btcln on BtcLnV1Swap {
   SwapTx createSwapFromBtcLnSwap() {
     return SwapTx(
@@ -36,7 +37,9 @@ extension Btcln on BtcLnV1Swap {
     );
   }
 }
+*/
 
+/*
 extension Lbtcln on LbtcLnV1Swap {
   SwapTx createSwapFromLbtcLnSwap() {
     return SwapTx(
@@ -73,8 +76,10 @@ extension Lbtcln on LbtcLnV1Swap {
     );
   }
 }
+*/
 
 extension SwapExt on SwapTx {
+  /*
   BtcLnV1Swap toBtcLnSwap(SwapTxSensitive sensitive) {
     final tx = this;
     return BtcLnV1Swap(
@@ -99,32 +104,7 @@ extension SwapExt on SwapTx {
       ),
     );
   }
-
-  LbtcLnV1Swap toLbtcLnSwap(SwapTxSensitive sensitive) {
-    final tx = this;
-    return LbtcLnV1Swap(
-      id: tx.id,
-      redeemScript: tx.redeemScript,
-      invoice: tx.invoice,
-      outAmount: tx.outAmount,
-      scriptAddress: tx.scriptAddress,
-      electrumUrl: tx.electrumUrl.replaceAll('ssl://', ''),
-      boltzUrl: tx.boltzUrl,
-      kind: tx.isSubmarine ? SwapType.submarine : SwapType.reverse,
-      network:
-          network == BBNetwork.Testnet ? Chain.liquidTestnet : Chain.liquid,
-      keys: KeyPair(
-        secretKey: sensitive.secretKey,
-        publicKey: sensitive.publicKey,
-      ),
-      preimage: PreImage(
-        value: sensitive.preimage,
-        sha256: sensitive.sha256,
-        hash160: sensitive.hash160,
-      ),
-      blindingKey: sensitive.blindingKey ?? '',
-    );
-  }
+  */
 
   BtcLnV2Swap toBtcLnV2Swap(SwapTxSensitive sensitive) {
     final tx = this;

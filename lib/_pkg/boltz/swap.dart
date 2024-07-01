@@ -58,6 +58,7 @@ class SwapBoltz {
     }
   }
 
+  /*
   Future<(SwapTx?, Err?)> send({
     required String mnemonic,
     required int index,
@@ -94,7 +95,9 @@ class SwapBoltz {
       return (null, Err(e.toString()));
     }
   }
+  */
 
+  /*
   Future<(SwapTx?, Err?)> receive({
     required String mnemonic,
     required int index,
@@ -156,6 +159,7 @@ class SwapBoltz {
       return (null, Err(e.toString()));
     }
   }
+  */
 
   Future<(BoltzApi?, Err?)> initializeBoltzApi(bool isTestnet) async {
     try {
@@ -249,22 +253,26 @@ class SwapBoltz {
           final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
           if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
-          final swap = swapTx.toLbtcLnSwap(swapSensitive);
+          // final swap = swapTx.toLbtcLnSwap(swapSensitive);
+          final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
 
           final resp = await swap.claim(
             outAddress: swapTx.claimAddress!,
             absFee: claimFeesEstimate,
+            tryCooperate: true,
           );
           return (resp, null);
         } else {
           final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
           if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
-          final swap = swapTx.toBtcLnSwap(swapSensitive);
+          // final swap = swapTx.toBtcLnSwap(swapSensitive);
+          final swap = swapTx.toBtcLnV2Swap(swapSensitive);
 
           final resp = await swap.claim(
             outAddress: swapTx.claimAddress!,
             absFee: claimFeesEstimate,
+            tryCooperate: true,
           );
 
           return (resp, null);
@@ -274,11 +282,13 @@ class SwapBoltz {
           final refundFeesEstimate = fees?.lbtcSubmarine.claimFees;
           if (refundFeesEstimate == null) throw 'Fees estimate not found';
 
-          final swap = swapTx.toLbtcLnSwap(swapSensitive);
+          // final swap = swapTx.toLbtcLnSwap(swapSensitive);
+          final swap = swapTx.toBtcLnV2Swap(swapSensitive);
 
           final resp = await swap.refund(
             outAddress: swapTx.claimAddress!,
             absFee: refundFeesEstimate,
+            tryCooperate: true,
           );
 
           return (resp, null);
@@ -286,11 +296,13 @@ class SwapBoltz {
           final refundFeesEstimate = fees?.btcSubmarine.claimFees;
           if (refundFeesEstimate == null) throw 'Fees estimate not found';
 
-          final swap = swapTx.toBtcLnSwap(swapSensitive);
+          // final swap = swapTx.toBtcLnSwap(swapSensitive);
+          final swap = swapTx.toBtcLnV2Swap(swapSensitive);
 
           final resp = await swap.refund(
             outAddress: swapTx.claimAddress!,
             absFee: refundFeesEstimate,
+            tryCooperate: true,
           );
 
           return (resp, null);
