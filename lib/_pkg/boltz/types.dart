@@ -106,9 +106,9 @@ extension SwapExt on SwapTx {
   }
   */
 
-  BtcLnV2Swap toBtcLnV2Swap(SwapTxSensitive sensitive) {
+  BtcLnSwap toBtcLnV2Swap(SwapTxSensitive sensitive) {
     final tx = this;
-    return BtcLnV2Swap(
+    return BtcLnSwap(
       id: tx.id,
       invoice: tx.invoice,
       outAmount: tx.outAmount,
@@ -127,7 +127,7 @@ extension SwapExt on SwapTx {
         sha256: sensitive.sha256,
         hash160: sensitive.hash160,
       ),
-      swapScript: BtcSwapScriptV2Str(
+      swapScript: BtcSwapScriptStr(
         swapType: tx.isSubmarine ? SwapType.submarine : SwapType.reverse,
         hashlock: sensitive.hash160,
         receiverPubkey: tx.isSubmarine ? tx.boltzPubkey! : tx.publicKey!,
@@ -138,9 +138,9 @@ extension SwapExt on SwapTx {
     );
   }
 
-  LbtcLnV2Swap toLbtcLnV2Swap(SwapTxSensitive sensitive) {
+  LbtcLnSwap toLbtcLnV2Swap(SwapTxSensitive sensitive) {
     final tx = this;
-    return LbtcLnV2Swap(
+    return LbtcLnSwap(
       id: tx.id,
       invoice: tx.invoice,
       outAmount: tx.outAmount,

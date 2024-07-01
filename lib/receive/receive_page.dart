@@ -553,6 +553,23 @@ class CreateLightningInvoice extends StatelessWidget {
 
     int finalFee = 0;
 
+    final reverseFees =
+        context.select((CreateSwapCubit x) => x.state.reverseFees);
+
+    if (reverseFees != null) {
+      if (isLiquid == true) {
+        finalFee = (((reverseFees.lbtcFees.percentage) * amount / 100) +
+                (reverseFees.lbtcFees.minerFees.claim) +
+                (reverseFees.lbtcFees.minerFees.lockup))
+            .toInt();
+      } else {
+        finalFee = (((reverseFees.btcFees.percentage) * amount / 100) +
+                (reverseFees.btcFees.minerFees.claim) +
+                (reverseFees.btcFees.minerFees.lockup))
+            .toInt();
+      }
+    }
+    /*
     if (allFees != null) {
       if (isLiquid == true) {
         finalFee = (((allFees.lbtcReverse.boltzFeesRate) * amount / 100) +
@@ -566,6 +583,7 @@ class CreateLightningInvoice extends StatelessWidget {
             .toInt();
       }
     }
+    */
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
