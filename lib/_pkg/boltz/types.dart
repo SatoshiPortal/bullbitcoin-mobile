@@ -160,7 +160,7 @@ extension SwapExt on SwapTx {
         hash160: sensitive.hash160,
       ),
       blindingKey: sensitive.blindingKey ?? '',
-      swapScript: LBtcSwapScriptV2Str(
+      swapScript: LBtcSwapScriptStr(
         swapType: tx.isSubmarine ? SwapType.submarine : SwapType.reverse,
         hashlock: sensitive.hash160,
         receiverPubkey:
@@ -175,7 +175,7 @@ extension SwapExt on SwapTx {
   }
 }
 
-extension BtcLnV2 on BtcLnV2Swap {
+extension BtcLnV2 on BtcLnSwap {
   SwapTx createSwapFromBtcLnV2Swap() {
     return SwapTx(
       id: id,
@@ -222,7 +222,7 @@ extension BtcLnV2 on BtcLnV2Swap {
   }
 }
 
-extension LbtcLnV2 on LbtcLnV2Swap {
+extension LbtcLnV2 on LbtcLnSwap {
   SwapTx createSwapFromLbtcLnV2Swap() {
     return SwapTx(
       id: id,

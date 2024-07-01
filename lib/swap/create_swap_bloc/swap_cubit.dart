@@ -64,7 +64,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
 
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
 
-    final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
+    //final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
     final boltzurlV2 = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
 
     // we dont have to make this call here
@@ -73,7 +73,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     // if the swap creation fails because of the pairHash, its because the fees updated and we can recall fetchFees
     // an optimization for later
     final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
-      boltzUrl: boltzurl,
+      boltzUrl: boltzurlV2,
     );
     if (errFees != null) {
       emit(
@@ -321,155 +321,159 @@ class CreateSwapCubit extends Cubit<SwapState> {
     required String networkUrl,
     required Invoice invoice,
   }) async {
-    emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
+    try {
+      emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
 
-    final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
-    final boltzurlV2 = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
+      // final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
+      final boltzurlV2 = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
 
-    // we dont have to make this call here
-    // we have fees stored which has a pairHash
-    // we use the pairHash when creating a swap
-    // if the swap creation fails because of the pairHash, its because the fees updated and we can recall fetchFees
-    // an optimization for later
-    final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
-      boltzUrl: boltzurl,
-    );
-    if (errFees != null) {
-      emit(
-        state.copyWith(
-          errCreatingSwapInv: errFees.toString(),
-          generatingSwapInv: false,
-        ),
-      );
-      return;
-    }
-
-    final isLiq = wallet.isLiquid();
-    final submarineFees = await fees?.submarine();
-    if (submarineFees == null) {
-      emit(
-        state.copyWith(
-          errCreatingSwapInv: 'Submarine fees not found',
-          generatingSwapInv: false,
-        ),
-      );
-      return;
-    }
-
-    if (isLiq) {
-      if (amount < submarineFees.lbtcLimits.minimal ||
-          amount > submarineFees.lbtcLimits.maximal) {
-        emit(
-          state.copyWith(
-            errCreatingSwapInv:
-                'Amount should be greater than ${submarineFees.lbtcLimits.minimal} and less than ${submarineFees.lbtcLimits.maximal} sats',
-            generatingSwapInv: false,
-          ),
-        );
-        return;
-      }
-    } else {
-      if (amount < submarineFees.btcLimits.minimal ||
-          amount > submarineFees.btcLimits.maximal) {
-        emit(
-          state.copyWith(
-            errCreatingSwapInv:
-                'Amount should be greater than ${submarineFees.btcLimits.minimal} and less than ${submarineFees.btcLimits.maximal} sats',
-            generatingSwapInv: false,
-          ),
-        );
-        return;
-      }
-    }
-
-    final (seed, errReadingSeed) = await _walletSensitiveRepository.readSeed(
-      fingerprintIndex: wallet.getRelatedSeedStorageString(),
-    );
-    if (errReadingSeed != null) {
-      emit(
-        state.copyWith(
-          errCreatingSwapInv: errReadingSeed.toString(),
-          generatingSwapInv: false,
-        ),
-      );
-      return;
-    }
-    final network = isTestnet
-        ? (isLiq ? Chain.liquidTestnet : Chain.bitcoinTestnet)
-        : (isLiq ? Chain.liquid : Chain.bitcoin);
-
-    final storedSwapTxIdx = wallet.swaps.indexWhere(
-      (_) => _.invoice == invoice.invoice,
-    );
-
-    SwapTx swapTx;
-    if (storedSwapTxIdx != -1) {
-      swapTx = wallet.swaps[storedSwapTxIdx];
-    } else {
-      final (swap, errCreatingInv) = await _swapBoltz.sendV2(
-        mnemonic: seed!.mnemonic,
-        index: wallet.revKeyIndex,
-        network: network,
-        electrumUrl: networkUrl,
+      // we dont have to make this call here
+      // we have fees stored which has a pairHash
+      // we use the pairHash when creating a swap
+      // if the swap creation fails because of the pairHash, its because the fees updated and we can recall fetchFees
+      // an optimization for later
+      final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
         boltzUrl: boltzurlV2,
-        isLiquid: isLiq,
-        invoice: address,
       );
-      if (errCreatingInv != null) {
+      if (errFees != null) {
         emit(
           state.copyWith(
-            errCreatingSwapInv: errCreatingInv.toString(),
+            errCreatingSwapInv: errFees.toString(),
             generatingSwapInv: false,
           ),
         );
         return;
       }
 
-      //final updatedSwap = swap!.copyWith(
-      //  boltzFees: isLiq
-      //      ? fees.lbtcSubmarine.boltzFeesRate * amount ~/ 100
-      //      : fees.btcSubmarine.boltzFeesRate * amount ~/ 100,
-      //  lockupFees: isLiq
-      //      ? fees.lbtcSubmarine.lockupFeesEstimate
-      //      : fees.btcSubmarine.lockupFeesEstimate,
-      //  claimFees:
-      //      isLiq ? fees.lbtcSubmarine.claimFees : fees.btcSubmarine.claimFees,
-      //  label: label,
-      //);
+      final isLiq = wallet.isLiquid();
+      final submarineFees = await fees?.submarine();
+      if (submarineFees == null) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv: 'Submarine fees not found',
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
 
-      // TODO: Test this properly
-      final updatedSwap = swap!.copyWith(
-        boltzFees: isLiq
-            ? submarineFees.lbtcFees.percentage * amount ~/ 100
-            : submarineFees.btcFees.percentage * amount ~/ 100,
-        lockupFees: isLiq
-            ? submarineFees.lbtcFees.minerFees
-            : submarineFees.btcFees.minerFees,
-        claimFees: isLiq
-            ? submarineFees.lbtcFees.minerFees
-            : submarineFees.btcFees.minerFees,
-        label: label,
+      if (isLiq) {
+        if (amount < submarineFees.lbtcLimits.minimal ||
+            amount > submarineFees.lbtcLimits.maximal) {
+          emit(
+            state.copyWith(
+              errCreatingSwapInv:
+                  'Amount should be greater than ${submarineFees.lbtcLimits.minimal} and less than ${submarineFees.lbtcLimits.maximal} sats',
+              generatingSwapInv: false,
+            ),
+          );
+          return;
+        }
+      } else {
+        if (amount < submarineFees.btcLimits.minimal ||
+            amount > submarineFees.btcLimits.maximal) {
+          emit(
+            state.copyWith(
+              errCreatingSwapInv:
+                  'Amount should be greater than ${submarineFees.btcLimits.minimal} and less than ${submarineFees.btcLimits.maximal} sats',
+              generatingSwapInv: false,
+            ),
+          );
+          return;
+        }
+      }
+
+      final (seed, errReadingSeed) = await _walletSensitiveRepository.readSeed(
+        fingerprintIndex: wallet.getRelatedSeedStorageString(),
+      );
+      if (errReadingSeed != null) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv: errReadingSeed.toString(),
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
+      final network = isTestnet
+          ? (isLiq ? Chain.liquidTestnet : Chain.bitcoinTestnet)
+          : (isLiq ? Chain.liquid : Chain.bitcoin);
+
+      final storedSwapTxIdx = wallet.swaps.indexWhere(
+        (_) => _.invoice == invoice.invoice,
       );
 
-      swapTx = updatedSwap;
+      SwapTx swapTx;
+      if (storedSwapTxIdx != -1) {
+        swapTx = wallet.swaps[storedSwapTxIdx];
+      } else {
+        final (swap, errCreatingInv) = await _swapBoltz.sendV2(
+          mnemonic: seed!.mnemonic,
+          index: wallet.revKeyIndex,
+          network: network,
+          electrumUrl: networkUrl,
+          boltzUrl: boltzurlV2,
+          isLiquid: isLiq,
+          invoice: address,
+        );
+        if (errCreatingInv != null) {
+          emit(
+            state.copyWith(
+              errCreatingSwapInv: errCreatingInv.toString(),
+              generatingSwapInv: false,
+            ),
+          );
+          return;
+        }
 
-      await saveSwapToWallet(
-        swapTx: swapTx,
-        wallet: wallet,
+        //final updatedSwap = swap!.copyWith(
+        //  boltzFees: isLiq
+        //      ? fees.lbtcSubmarine.boltzFeesRate * amount ~/ 100
+        //      : fees.btcSubmarine.boltzFeesRate * amount ~/ 100,
+        //  lockupFees: isLiq
+        //      ? fees.lbtcSubmarine.lockupFeesEstimate
+        //      : fees.btcSubmarine.lockupFeesEstimate,
+        //  claimFees:
+        //      isLiq ? fees.lbtcSubmarine.claimFees : fees.btcSubmarine.claimFees,
+        //  label: label,
+        //);
+
+        // TODO: Test this properly
+        final updatedSwap = swap!.copyWith(
+          boltzFees: isLiq
+              ? submarineFees.lbtcFees.percentage * amount ~/ 100
+              : submarineFees.btcFees.percentage * amount ~/ 100,
+          lockupFees: isLiq
+              ? submarineFees.lbtcFees.minerFees
+              : submarineFees.btcFees.minerFees,
+          claimFees: isLiq
+              ? submarineFees.lbtcFees.minerFees
+              : submarineFees.btcFees.minerFees,
+          label: label,
+        );
+
+        swapTx = updatedSwap;
+
+        await saveSwapToWallet(
+          swapTx: swapTx,
+          wallet: wallet,
+        );
+
+        // await Future.delayed(300.ms);
+      }
+
+      emit(
+        state.copyWith(
+          generatingSwapInv: false,
+          errCreatingSwapInv: '',
+          swapTx: swapTx,
+        ),
       );
 
-      // await Future.delayed(300.ms);
+      _showWarnings();
+    } catch (e) {
+      print(e);
     }
-
-    emit(
-      state.copyWith(
-        generatingSwapInv: false,
-        errCreatingSwapInv: '',
-        swapTx: swapTx,
-      ),
-    );
-
-    _showWarnings();
   }
 
   Future saveSwapToWallet({
