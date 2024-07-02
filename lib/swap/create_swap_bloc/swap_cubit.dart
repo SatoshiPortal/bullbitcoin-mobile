@@ -36,7 +36,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
   final WatchTxsBloc _watchTxsBloc;
   final NetworkCubit _networkCubit;
   Future<void> fetchFees(bool isTestnet) async {
-    final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
+    final boltzurl = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
 
     final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
       boltzUrl: boltzurl,

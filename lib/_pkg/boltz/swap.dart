@@ -164,7 +164,7 @@ class SwapBoltz {
   Future<(BoltzApi?, Err?)> initializeBoltzApi(bool isTestnet) async {
     try {
       final api = await BoltzApi.newBoltzApi(
-        isTestnet ? boltzTestnet : boltzMainnet,
+        isTestnet ? boltzTestnetV2 : boltzMainnetV2,
       );
 
       return (api, null);
@@ -178,7 +178,7 @@ class SwapBoltz {
     bool isTestnet,
   ) async {
     try {
-      final url = isTestnet ? boltzTestnet : boltzMainnet;
+      final url = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
 
       final res = await _dio.post('https://$url/swapstatus', data: {'id': id});
 
@@ -219,7 +219,7 @@ class SwapBoltz {
   }) async {
     try {
       final boltzurl =
-          wallet.network == BBNetwork.Testnet ? boltzTestnet : boltzMainnet;
+          wallet.network == BBNetwork.Testnet ? boltzTestnetV2 : boltzMainnetV2;
 
       final (fees, errFees) = await getFeesAndLimits(
         boltzUrl: boltzurl,
@@ -554,8 +554,9 @@ class SwapBoltz {
           }
         }
       } else {
-        final boltzurl =
-            wallet.network == BBNetwork.Testnet ? boltzTestnet : boltzMainnet;
+        final boltzurl = wallet.network == BBNetwork.Testnet
+            ? boltzTestnetV2
+            : boltzMainnetV2;
 
         final (fees, errFees) = await getFeesAndLimits(
           boltzUrl: boltzurl,
@@ -596,7 +597,7 @@ class SwapBoltz {
       if (address == null || address.isEmpty) throw 'Address not found';
 
       final boltzurl =
-          wallet.network == BBNetwork.Testnet ? boltzTestnet : boltzMainnet;
+          wallet.network == BBNetwork.Testnet ? boltzTestnetV2 : boltzMainnetV2;
 
       final (fees, errFees) = await getFeesAndLimits(
         boltzUrl: boltzurl,
