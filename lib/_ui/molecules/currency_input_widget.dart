@@ -2,11 +2,6 @@ import 'package:bb_mobile/_model/currency_new.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 
-const btcCurrency =
-    CurrencyNew(name: 'Bitcoin', price: 0, code: 'BTC', isFiat: false);
-const satsCurrency =
-    CurrencyNew(name: 'Sats', price: 0, code: 'sats', isFiat: false);
-
 class CurrencyInput extends StatefulWidget {
   const CurrencyInput({
     super.key,
@@ -25,7 +20,7 @@ class CurrencyInput extends StatefulWidget {
   final double? initialPrice;
   final CurrencyNew? initialCurrency;
 
-  final Function(double sats, CurrencyNew selectedCurrency)? onChange;
+  final Function(int sats, CurrencyNew selectedCurrency)? onChange;
 
   @override
   State<CurrencyInput> createState() => _CurrencyInputState();
@@ -34,7 +29,7 @@ class CurrencyInput extends StatefulWidget {
 class _CurrencyInputState extends State<CurrencyInput> {
   TextEditingController priceController = TextEditingController();
   CurrencyNew selectedCurrency = btcCurrency;
-  double _sats = 0;
+  int _sats = 0;
 
   bool _isProgrammaticChange = false;
 
@@ -96,7 +91,7 @@ class _CurrencyInputState extends State<CurrencyInput> {
   }
 
   void _onPriceChange(double price) {
-    final double sats = calcualteSats(price, selectedCurrency);
+    final int sats = calcualteSats(price, selectedCurrency);
     setState(() {
       _sats = sats;
     });
@@ -105,20 +100,19 @@ class _CurrencyInputState extends State<CurrencyInput> {
   }
 
   void _onCurrencyChange(CurrencyNew currency) {
-    double textInputValue = 0;
-
+    _isProgrammaticChange = true;
     if (currency.isFiat) {
-      textInputValue = getFiatValueFromSats(_sats, currency);
+      priceController.text = getFiatValueFromSats(_sats, currency)
+          .toStringAsFixed(FIAT_DECIMAL_POINTS);
     } else {
       if (currency.code == 'BTC') {
-        textInputValue = _sats / SATS_IN_BTC;
+        priceController.text =
+            (_sats / SATS_IN_BTC).toStringAsFixed(BTC_DECIMAL_POINTS);
       } else {
-        textInputValue = _sats;
+        priceController.text = _sats.toString();
       }
     }
 
-    _isProgrammaticChange = true;
-    priceController.text = textInputValue.toString();
     _isProgrammaticChange = false;
 
     setState(() {
@@ -136,13 +130,15 @@ class _CurrencyInputState extends State<CurrencyInput> {
       if (widget.unitsInSats) {
         helperText = '= $_sats sats';
       } else {
-        helperText = '= ${_sats / SATS_IN_BTC} BTC';
+        helperText =
+            '= ${(_sats / SATS_IN_BTC).toStringAsFixed(BTC_DECIMAL_POINTS)} BTC';
       }
     } else {
       // Display default FIAT
       final double fiatValue = getFiatValueFromSats(_sats, widget.defaultFiat);
 
-      helperText = '= $fiatValue ${widget.defaultFiat.code}';
+      helperText =
+          '= ${fiatValue.toStringAsFixed(FIAT_DECIMAL_POINTS)} ${widget.defaultFiat.code}';
     }
 
     return Column(

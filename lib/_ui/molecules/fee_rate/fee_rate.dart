@@ -1,11 +1,10 @@
-import 'package:bb_arch/_pkg/fee_rate/models/fee_rate.dart';
-import 'package:bb_arch/_ui/molecules/fee_rate/fee_rate_picker_widget.dart';
+import 'package:bb_mobile/_pkg/fee_rate/models/fee_rate.dart';
+import 'package:bb_mobile/_ui/molecules/fee_rate/fee_rate_picker_widget.dart';
 import 'package:flutter/material.dart';
 
 class FeeRateSelector extends StatelessWidget {
   const FeeRateSelector({
     super.key,
-
     required this.label,
     required this.selectedFeeRate,
     required this.feeRate,
@@ -19,16 +18,21 @@ class FeeRateSelector extends StatelessWidget {
   final int feeRate;
   final FeeRate currentFeeRate;
 
-  final Function({required int updatedDefaultFeeRate, required FeeRateType selectedFeeRate}) onDefaultFeeRateChange;
+  final Function({
+    required int updatedDefaultFeeRate,
+    required FeeRateType selectedFeeRate,
+  }) onDefaultFeeRateChange;
 
   void _onTap(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: ((BuildContext context) {
+      builder: (BuildContext context) {
         return SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
             child: Wrap(
               children: [
                 FeeRatePicker(
@@ -41,7 +45,7 @@ class FeeRateSelector extends StatelessWidget {
             ),
           ),
         );
-      }),
+      },
     );
   }
 
@@ -58,7 +62,7 @@ class FeeRateSelector extends StatelessWidget {
           ],
         ),
       ),
-      onTap: () =>_onTap(context),
+      onTap: () => _onTap(context),
     );
   }
 }

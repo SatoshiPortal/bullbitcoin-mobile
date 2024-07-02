@@ -5,6 +5,9 @@ part 'currency_new.g.dart';
 
 const SATS_IN_BTC = 100000000;
 
+const BTC_DECIMAL_POINTS = 8;
+const FIAT_DECIMAL_POINTS = 2;
+
 @freezed
 class CurrencyNew with _$CurrencyNew {
   const factory CurrencyNew({
@@ -19,26 +22,29 @@ class CurrencyNew with _$CurrencyNew {
       _$CurrencyNewFromJson(json);
 }
 
-double calcualteSats(double price, CurrencyNew currency) {
-  double sats;
+int calcualteSats(double price, CurrencyNew currency) {
+  int sats;
 
   if (currency.isFiat) {
-    final double oneBTCInFiat = currency.price ?? 0.0;
-    final double btcValue = price / oneBTCInFiat;
-    sats = btcValue * SATS_IN_BTC;
+    final int oneBTCInSmallFiatUnit = ((currency.price ?? 0.0) * 100).toInt();
+    final int totalFiatSmallUnitsInvested = (price * 100).toInt();
+
+    final double btcBought =
+        totalFiatSmallUnitsInvested / oneBTCInSmallFiatUnit;
+    sats = (btcBought * SATS_IN_BTC).toInt();
   } else {
     if (currency.code == 'BTC') {
-      sats = price * SATS_IN_BTC;
+      sats = (price * SATS_IN_BTC).toInt();
     } else {
       // Should be sats
-      sats = price;
+      sats = price.toInt();
     }
   }
 
   return sats;
 }
 
-double getFiatValueFromSats(double sats, CurrencyNew fiatCurrency) {
+double getFiatValueFromSats(int sats, CurrencyNew fiatCurrency) {
   final double oneBTCInFiat = fiatCurrency.price ?? 0.0;
   final double oneSatInFiat = oneBTCInFiat / SATS_IN_BTC;
   final double fiatValue = sats * oneSatInFiat;

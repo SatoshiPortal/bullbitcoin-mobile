@@ -1,4 +1,3 @@
-import 'package:bb_arch/settings/view/widgets/menu_widget.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'currency.freezed.dart';
@@ -14,11 +13,14 @@ class Currency with _$Currency {
   }) = _Currency;
   const Currency._();
 
-  factory Currency.fromJson(Map<String, dynamic> json) => _$CurrencyFromJson(json);
+  factory Currency.fromJson(Map<String, dynamic> json) =>
+      _$CurrencyFromJson(json);
 
-  static List<DropDownItem>  toDropDownItems(List<Currency> currencies) {
+  /*
+  static List<DropDownItem> toDropDownItems(List<Currency> currencies) {
     return currencies.map((Currency currency) {
       return DropDownItem(text: currency.name, value: currency.code);
     }).toList();
   }
+  */
 }

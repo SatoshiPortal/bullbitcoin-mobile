@@ -1,15 +1,11 @@
-import 'package:bb_arch/_pkg/currency/models/currency.dart';
-import 'package:bb_arch/_pkg/fee_rate/models/fee_rate.dart';
-import 'package:bb_arch/_pkg/utils.dart';
+import 'package:bb_mobile/_pkg/fee_rate/models/fee_rate.dart';
+import 'package:bb_mobile/_ui/molecules/fee_rate/fee_rate.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-import 'package:bb_arch/_ui/molecules/fee_rate/fee_rate.dart';
-
 @widgetbook.UseCase(name: 'Default', type: FeeRateSelector)
 Widget buildFeeRateSelectorUseCase(BuildContext context) {
-
   return FeeRateSelector(
     label: 'Select fee rate',
     currentFeeRate: FeeRate(
@@ -45,7 +41,7 @@ Widget buildFeeRateSelectorUseCase(BuildContext context) {
         FeeRateType.custom,
       ],
       labelBuilder: (value) {
-        switch(value) {
+        switch (value) {
           case FeeRateType.fastest:
             return 'Fastest';
           case FeeRateType.fast:
@@ -59,7 +55,9 @@ Widget buildFeeRateSelectorUseCase(BuildContext context) {
         }
       },
     ),
-    onDefaultFeeRateChange: ({required FeeRateType selectedFeeRate, required int updatedDefaultFeeRate}) {
+    onDefaultFeeRateChange: (
+        {required FeeRateType selectedFeeRate,
+        required int updatedDefaultFeeRate}) {
       // TODO: Implement this functions
       print('WidgetCatalog :: FeeRateSelector :: onDefaultFeeRateChange');
       print(selectedFeeRate);

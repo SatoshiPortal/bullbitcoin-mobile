@@ -1,4 +1,5 @@
-import 'package:bb_arch/_ui/atoms/bb_form_field.dart';
+import 'package:bb_mobile/_pkg/clipboard.dart';
+import 'package:bb_mobile/_ui/atoms/bb_form_field.dart';
 import 'package:flutter/material.dart';
 
 class AddressInput extends StatelessWidget {
@@ -9,6 +10,8 @@ class AddressInput extends StatelessWidget {
     this.disabled = false,
     this.decoration,
     this.errorMsg = '',
+    this.showPaste = true,
+    this.showScan = true,
   });
 
   final TextEditingController addressController;
@@ -17,6 +20,17 @@ class AddressInput extends StatelessWidget {
   final InputDecoration? decoration;
   final String errorMsg;
 
+  final bool showPaste;
+  final bool showScan;
+
+  void _onPaste() async {
+    final String? text = await BBClipboard.paste();
+
+    addressController.text = text ?? '';
+  }
+
+  void _onScan() async {}
+
   @override
   Widget build(BuildContext context) {
     return BBFormField(
@@ -24,6 +38,23 @@ class AddressInput extends StatelessWidget {
       editingController: addressController,
       disabled: disabled,
       errorMsg: errorMsg,
+      decoration: InputDecoration(
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (showPaste)
+              IconButton(
+                icon: const Icon(Icons.paste),
+                onPressed: _onPaste,
+              ),
+            if (showScan)
+              IconButton(
+                icon: const Icon(Icons.qr_code),
+                onPressed: _onScan,
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

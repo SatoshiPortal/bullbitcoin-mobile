@@ -1,12 +1,10 @@
+import 'package:bb_mobile/_ui/molecules/address/address_input.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-import 'package:bb_arch/_ui/molecules/address/address_input.dart';
-
 @widgetbook.UseCase(name: 'Default', type: AddressInput)
 Widget buildAddressDisplayUseCase(BuildContext context) {
-
   // TODO: Make this Material App structure reusable across all widgets in the catalog
   return MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -17,10 +15,7 @@ Widget buildAddressDisplayUseCase(BuildContext context) {
             label: 'addressController',
           ),
         ),
-        label: context.knobs.string(
-          label: 'label',
-          initialValue: 'Address'
-        ),
+        label: context.knobs.string(label: 'label', initialValue: 'Address'),
         disabled: context.knobs.boolean(
           label: 'disabled',
         ),
