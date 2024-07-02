@@ -12,9 +12,10 @@ const FIAT_DECIMAL_POINTS = 2;
 class CurrencyNew with _$CurrencyNew {
   const factory CurrencyNew({
     required String name,
-    required double? price,
+    required double price,
     required String code,
     required bool isFiat,
+    @Default('') String? logoPath,
   }) = _CurrencyNew;
   const CurrencyNew._();
 
@@ -52,7 +53,32 @@ double getFiatValueFromSats(int sats, CurrencyNew fiatCurrency) {
   return fiatValue;
 }
 
-const btcCurrency =
-    CurrencyNew(name: 'Bitcoin', price: 0, code: 'BTC', isFiat: false);
-const satsCurrency =
-    CurrencyNew(name: 'Sats', price: 0, code: 'sats', isFiat: false);
+const btcCurrency = CurrencyNew(
+  name: 'Bitcoin',
+  price: 0,
+  code: 'BTC',
+  isFiat: false,
+  logoPath: 'assets/images/icon_btc.png',
+);
+const satsCurrency = CurrencyNew(
+  name: 'Sats',
+  price: 0,
+  code: 'sats',
+  isFiat: false,
+  logoPath: 'assets/images/icon_btc.png',
+);
+
+const lbtcCurrency = CurrencyNew(
+  name: 'Liquid Bitcoin',
+  price: 0,
+  code: 'L-BTC',
+  isFiat: false,
+  logoPath: 'assets/images/icon_lbtc.png',
+);
+const lsatsCurrency = CurrencyNew(
+  name: 'Liquid Sats',
+  price: 0,
+  code: 'L-sats',
+  isFiat: false,
+  logoPath: 'assets/images/icon_lbtc.png',
+);

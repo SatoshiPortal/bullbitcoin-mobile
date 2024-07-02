@@ -21,9 +21,10 @@ CurrencyNew _$CurrencyNewFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$CurrencyNew {
   String get name => throw _privateConstructorUsedError;
-  double? get price => throw _privateConstructorUsedError;
+  double get price => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
   bool get isFiat => throw _privateConstructorUsedError;
+  String? get logoPath => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -37,7 +38,8 @@ abstract class $CurrencyNewCopyWith<$Res> {
           CurrencyNew value, $Res Function(CurrencyNew) then) =
       _$CurrencyNewCopyWithImpl<$Res, CurrencyNew>;
   @useResult
-  $Res call({String name, double? price, String code, bool isFiat});
+  $Res call(
+      {String name, double price, String code, bool isFiat, String? logoPath});
 }
 
 /// @nodoc
@@ -54,19 +56,20 @@ class _$CurrencyNewCopyWithImpl<$Res, $Val extends CurrencyNew>
   @override
   $Res call({
     Object? name = null,
-    Object? price = freezed,
+    Object? price = null,
     Object? code = null,
     Object? isFiat = null,
+    Object? logoPath = freezed,
   }) {
     return _then(_value.copyWith(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      price: freezed == price
+      price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as double,
       code: null == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -75,6 +78,10 @@ class _$CurrencyNewCopyWithImpl<$Res, $Val extends CurrencyNew>
           ? _value.isFiat
           : isFiat // ignore: cast_nullable_to_non_nullable
               as bool,
+      logoPath: freezed == logoPath
+          ? _value.logoPath
+          : logoPath // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -87,7 +94,8 @@ abstract class _$$CurrencyNewImplCopyWith<$Res>
       __$$CurrencyNewImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name, double? price, String code, bool isFiat});
+  $Res call(
+      {String name, double price, String code, bool isFiat, String? logoPath});
 }
 
 /// @nodoc
@@ -102,19 +110,20 @@ class __$$CurrencyNewImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? name = null,
-    Object? price = freezed,
+    Object? price = null,
     Object? code = null,
     Object? isFiat = null,
+    Object? logoPath = freezed,
   }) {
     return _then(_$CurrencyNewImpl(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      price: freezed == price
+      price: null == price
           ? _value.price
           : price // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as double,
       code: null == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -123,6 +132,10 @@ class __$$CurrencyNewImplCopyWithImpl<$Res>
           ? _value.isFiat
           : isFiat // ignore: cast_nullable_to_non_nullable
               as bool,
+      logoPath: freezed == logoPath
+          ? _value.logoPath
+          : logoPath // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -134,7 +147,8 @@ class _$CurrencyNewImpl extends _CurrencyNew {
       {required this.name,
       required this.price,
       required this.code,
-      required this.isFiat})
+      required this.isFiat,
+      this.logoPath = ''})
       : super._();
 
   factory _$CurrencyNewImpl.fromJson(Map<String, dynamic> json) =>
@@ -143,15 +157,18 @@ class _$CurrencyNewImpl extends _CurrencyNew {
   @override
   final String name;
   @override
-  final double? price;
+  final double price;
   @override
   final String code;
   @override
   final bool isFiat;
+  @override
+  @JsonKey()
+  final String? logoPath;
 
   @override
   String toString() {
-    return 'CurrencyNew(name: $name, price: $price, code: $code, isFiat: $isFiat)';
+    return 'CurrencyNew(name: $name, price: $price, code: $code, isFiat: $isFiat, logoPath: $logoPath)';
   }
 
   @override
@@ -162,12 +179,15 @@ class _$CurrencyNewImpl extends _CurrencyNew {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.price, price) || other.price == price) &&
             (identical(other.code, code) || other.code == code) &&
-            (identical(other.isFiat, isFiat) || other.isFiat == isFiat));
+            (identical(other.isFiat, isFiat) || other.isFiat == isFiat) &&
+            (identical(other.logoPath, logoPath) ||
+                other.logoPath == logoPath));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, name, price, code, isFiat);
+  int get hashCode =>
+      Object.hash(runtimeType, name, price, code, isFiat, logoPath);
 
   @JsonKey(ignore: true)
   @override
@@ -186,9 +206,10 @@ class _$CurrencyNewImpl extends _CurrencyNew {
 abstract class _CurrencyNew extends CurrencyNew {
   const factory _CurrencyNew(
       {required final String name,
-      required final double? price,
+      required final double price,
       required final String code,
-      required final bool isFiat}) = _$CurrencyNewImpl;
+      required final bool isFiat,
+      final String? logoPath}) = _$CurrencyNewImpl;
   const _CurrencyNew._() : super._();
 
   factory _CurrencyNew.fromJson(Map<String, dynamic> json) =
@@ -197,11 +218,13 @@ abstract class _CurrencyNew extends CurrencyNew {
   @override
   String get name;
   @override
-  double? get price;
+  double get price;
   @override
   String get code;
   @override
   bool get isFiat;
+  @override
+  String? get logoPath;
   @override
   @JsonKey(ignore: true)
   _$$CurrencyNewImplCopyWith<_$CurrencyNewImpl> get copyWith =>

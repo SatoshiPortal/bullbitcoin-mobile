@@ -9,9 +9,10 @@ part of 'currency_new.dart';
 _$CurrencyNewImpl _$$CurrencyNewImplFromJson(Map<String, dynamic> json) =>
     _$CurrencyNewImpl(
       name: json['name'] as String,
-      price: (json['price'] as num?)?.toDouble(),
+      price: (json['price'] as num).toDouble(),
       code: json['code'] as String,
       isFiat: json['isFiat'] as bool,
+      logoPath: json['logoPath'] as String? ?? '',
     );
 
 Map<String, dynamic> _$$CurrencyNewImplToJson(_$CurrencyNewImpl instance) =>
@@ -20,4 +21,5 @@ Map<String, dynamic> _$$CurrencyNewImplToJson(_$CurrencyNewImpl instance) =>
       'price': instance.price,
       'code': instance.code,
       'isFiat': instance.isFiat,
+      'logoPath': instance.logoPath,
     };
