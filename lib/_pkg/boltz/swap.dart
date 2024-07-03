@@ -58,113 +58,10 @@ class SwapBoltz {
     }
   }
 
-  /*
-  Future<(SwapTx?, Err?)> send({
-    required String mnemonic,
-    required int index,
-    required String invoice,
-    required Chain network,
-    required String electrumUrl,
-    required String boltzUrl,
-    required String pairHash,
-  }) async {
-    try {
-      final res = await BtcLnV1Swap.newSubmarine(
-        mnemonic: mnemonic,
-        index: index,
-        invoice: invoice,
-        network: network,
-        electrumUrl: electrumUrl,
-        boltzUrl: boltzUrl,
-        pairHash: pairHash,
-      );
-
-      final swapSensitive = res.createSwapSensitiveFromBtcLnSwap();
-
-      //SwapTxSensitive.fromBtcLnSwap(res);
-      final err = await _secureStorage.saveValue(
-        key: StorageKeys.swapTxSensitive + '_' + res.id,
-        value: jsonEncode(swapSensitive.toJson()),
-      );
-      if (err != null) throw err;
-      final swap = res.createSwapFromBtcLnSwap();
-      // SwapTx.fromBtcLnSwap(res);
-
-      return (swap, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-  */
-
-  /*
-  Future<(SwapTx?, Err?)> receive({
-    required String mnemonic,
-    required int index,
-    required int outAmount,
-    required Chain network,
-    required String electrumUrl,
-    required String boltzUrl,
-    required String pairHash,
-    required bool isLiquid,
-  }) async {
-    try {
-      late SwapTx swapTx;
-      if (!isLiquid) {
-        final res = await BtcLnV1Swap.newReverse(
-          mnemonic: mnemonic,
-          index: index,
-          outAmount: outAmount,
-          network: network,
-          electrumUrl: electrumUrl,
-          boltzUrl: boltzUrl,
-          pairHash: pairHash,
-        );
-        final obj = res;
-
-        final swapSensitive = res.createSwapSensitiveFromBtcLnSwap();
-        // SwapTxSensitive.fromBtcLnSwap(res);
-        final err = await _secureStorage.saveValue(
-          key: StorageKeys.swapTxSensitive + '_' + obj.id,
-          value: jsonEncode(swapSensitive.toJson()),
-        );
-        if (err != null) throw err;
-        swapTx = res.createSwapFromBtcLnSwap();
-        // SwapTx.fromBtcLnSwap(res);
-      } else {
-        final res = await LbtcLnV1Swap.newReverse(
-          mnemonic: mnemonic,
-          index: index,
-          outAmount: outAmount,
-          network: network,
-          electrumUrl: electrumUrl,
-          boltzUrl: boltzUrl,
-          pairHash: pairHash,
-        );
-        final obj = res;
-
-        final swapSensitive = res.createSwapSensitiveFromLbtcLnSwap();
-        // SwapTxSensitive.fromLbtcLnSwap(res);
-        final err = await _secureStorage.saveValue(
-          key: StorageKeys.swapTxSensitive + '_' + obj.id,
-          value: jsonEncode(swapSensitive.toJson()),
-        );
-        if (err != null) throw err;
-        swapTx = res.createSwapFromLbtcLnSwap();
-        // SwapTx.fromLbtcLnSwap(res);
-      }
-
-      return (swapTx, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-  */
-
   Future<(BoltzApi?, Err?)> initializeBoltzApi(bool isTestnet) async {
     try {
       final api = await BoltzApi.newBoltzApi(
-        isTestnet ? boltzTestnetV2 : boltzMainnetV2,
+        isTestnet ? boltzTestnetUrl : boltzMainnetUrl,
       );
 
       return (api, null);
@@ -178,7 +75,7 @@ class SwapBoltz {
     bool isTestnet,
   ) async {
     try {
-      final url = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
+      final url = isTestnet ? boltzTestnetUrl : boltzMainnetUrl;
 
       final res = await _dio.post('https://$url/swapstatus', data: {'id': id});
 
@@ -218,8 +115,9 @@ class SwapBoltz {
     required bool shouldRefund,
   }) async {
     try {
-      final boltzurl =
-          wallet.network == BBNetwork.Testnet ? boltzTestnetV2 : boltzMainnetV2;
+      final boltzurl = wallet.network == BBNetwork.Testnet
+          ? boltzTestnetUrl
+          : boltzMainnetUrl;
 
       final (fees, errFees) = await getFeesAndLimits(
         boltzUrl: boltzurl,
@@ -256,7 +154,7 @@ class SwapBoltz {
           if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
           // final swap = swapTx.toLbtcLnSwap(swapSensitive);
-          final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+          final swap = swapTx.toLbtcLnSwap(swapSensitive);
 
           final resp = await swap.claim(
             outAddress: swapTx.claimAddress!,
@@ -270,7 +168,7 @@ class SwapBoltz {
           if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
           // final swap = swapTx.toBtcLnSwap(swapSensitive);
-          final swap = swapTx.toBtcLnV2Swap(swapSensitive);
+          final swap = swapTx.toBtcLnSwap(swapSensitive);
 
           final resp = await swap.claim(
             outAddress: swapTx.claimAddress!,
@@ -288,7 +186,7 @@ class SwapBoltz {
           if (refundFeesEstimate == null) throw 'Fees estimate not found';
 
           // final swap = swapTx.toLbtcLnSwap(swapSensitive);
-          final swap = swapTx.toBtcLnV2Swap(swapSensitive);
+          final swap = swapTx.toBtcLnSwap(swapSensitive);
 
           final resp = await swap.refund(
             outAddress: swapTx.claimAddress!,
@@ -303,7 +201,7 @@ class SwapBoltz {
           if (refundFeesEstimate == null) throw 'Fees estimate not found';
 
           // final swap = swapTx.toBtcLnSwap(swapSensitive);
-          final swap = swapTx.toBtcLnV2Swap(swapSensitive);
+          final swap = swapTx.toBtcLnSwap(swapSensitive);
 
           final resp = await swap.refund(
             outAddress: swapTx.claimAddress!,
@@ -335,7 +233,7 @@ class SwapBoltz {
   /// ------------------------- V2 ------------------------------
   ///
   ///
-  Future<(SwapTx?, Err?)> receiveV2({
+  Future<(SwapTx?, Err?)> receive({
     required String mnemonic,
     required int index,
     required int outAmount,
@@ -359,16 +257,15 @@ class SwapBoltz {
         );
         // final obj = res;
 
-        final swapSensitive = res.createSwapSensitiveFromBtcLnV2Swap();
+        final swapSensitive = res.createSwapSensitiveFromBtcLnSwap();
         // SwapTxSensitive.fromBtcLnSwap(res);
         final err = await _secureStorage.saveValue(
           key: StorageKeys.swapTxSensitive + '_' + res.id,
           value: jsonEncode(swapSensitive.toJson()),
         );
         if (err != null) throw err;
-        swapTx = res
-            .createSwapFromBtcLnV2Swap()
-            .copyWith(claimAddress: claimAddress);
+        swapTx =
+            res.createSwapFromBtcLnSwap().copyWith(claimAddress: claimAddress);
         // SwapTx.fromBtcLnSwap(res);
       } else {
         final res = await LbtcLnSwap.newReverse(
@@ -382,16 +279,15 @@ class SwapBoltz {
         );
         // final obj = res;
 
-        final swapSensitive = res.createSwapSensitiveFromLbtcLnV2Swap();
+        final swapSensitive = res.createSwapSensitiveFromLbtcLnSwap();
         // SwapTxSensitive.fromLbtcLnSwap(res);
         final err = await _secureStorage.saveValue(
           key: StorageKeys.swapTxSensitive + '_' + res.id,
           value: jsonEncode(swapSensitive.toJson()),
         );
         if (err != null) throw err;
-        swapTx = res
-            .createSwapFromLbtcLnV2Swap()
-            .copyWith(claimAddress: claimAddress);
+        swapTx =
+            res.createSwapFromLbtcLnSwap().copyWith(claimAddress: claimAddress);
         // SwapTx.fromLbtcLnSwap(res);
       }
 
@@ -401,7 +297,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(SwapTx?, Err?)> sendV2({
+  Future<(SwapTx?, Err?)> send({
     required String mnemonic,
     required int index,
     required String invoice,
@@ -421,7 +317,7 @@ class SwapBoltz {
           boltzUrl: boltzUrl,
         );
 
-        final swapSensitive = res.createSwapSensitiveFromLbtcLnV2Swap();
+        final swapSensitive = res.createSwapSensitiveFromLbtcLnSwap();
 
         //SwapTxSensitive.fromBtcLnSwap(res);
         final err = await _secureStorage.saveValue(
@@ -429,7 +325,7 @@ class SwapBoltz {
           value: jsonEncode(swapSensitive.toJson()),
         );
         if (err != null) throw err;
-        final swap = res.createSwapFromLbtcLnV2Swap();
+        final swap = res.createSwapFromLbtcLnSwap();
 
         // SwapTx.fromBtcLnSwap(res);
 
@@ -444,7 +340,7 @@ class SwapBoltz {
           boltzUrl: boltzUrl,
         );
 
-        final swapSensitive = res.createSwapSensitiveFromBtcLnV2Swap();
+        final swapSensitive = res.createSwapSensitiveFromBtcLnSwap();
 
         //SwapTxSensitive.fromBtcLnSwap(res);
         final err = await _secureStorage.saveValue(
@@ -452,7 +348,7 @@ class SwapBoltz {
           value: jsonEncode(swapSensitive.toJson()),
         );
         if (err != null) throw err;
-        final swap = res.createSwapFromBtcLnV2Swap();
+        final swap = res.createSwapFromBtcLnSwap();
         // SwapTx.fromBtcLnSwap(res);
 
         return (swap, null);
@@ -462,7 +358,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(String?, Err?)> broadcastV2({
+  Future<(String?, Err?)> broadcast({
     required SwapTx swapTx,
     required Uint8List signedBytes,
   }) async {
@@ -479,7 +375,7 @@ class SwapBoltz {
         jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
       );
 
-      final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+      final swap = swapTx.toLbtcLnSwap(swapSensitive);
 
       final txid = await swap.broadcastTx(signedBytes: signedBytes);
 
@@ -489,7 +385,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(String?, Err?)> claimV2ReverseSwap({
+  Future<(String?, Err?)> claimReverseSwap({
     required SwapTx swapTx,
     required Wallet wallet,
     required bool tryCooperate,
@@ -516,7 +412,7 @@ class SwapBoltz {
 
         // final claimFeesEstimate = fees?.lbtcReverse.claimFeesEstimate;
         // if (claimFeesEstimate == null) throw 'Fees estimate not found';
-        final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+        final swap = swapTx.toLbtcLnSwap(swapSensitive);
         // .copyWith(electrumUrl: 'blockstream.info:995');
 
         // await Future.delayed(5.seconds);
@@ -555,8 +451,8 @@ class SwapBoltz {
         }
       } else {
         final boltzurl = wallet.network == BBNetwork.Testnet
-            ? boltzTestnetV2
-            : boltzMainnetV2;
+            ? boltzTestnetUrl
+            : boltzMainnetUrl;
 
         final (fees, errFees) = await getFeesAndLimits(
           boltzUrl: boltzurl,
@@ -571,7 +467,7 @@ class SwapBoltz {
         final claimFeesEstimate = reverseFees?.btcFees.minerFees;
         if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
-        final swap = swapTx.toBtcLnV2Swap(swapSensitive);
+        final swap = swapTx.toBtcLnSwap(swapSensitive);
 
         final resp = await swap.claim(
           outAddress: address,
@@ -586,7 +482,7 @@ class SwapBoltz {
     }
   }
 
-  Future<(String?, Err?)> refundV2SubmarineSwap({
+  Future<(String?, Err?)> refundSubmarineSwap({
     required SwapTx swapTx,
     required Wallet wallet,
     required bool tryCooperate,
@@ -596,8 +492,9 @@ class SwapBoltz {
       final address = wallet.lastGeneratedAddress?.address;
       if (address == null || address.isEmpty) throw 'Address not found';
 
-      final boltzurl =
-          wallet.network == BBNetwork.Testnet ? boltzTestnetV2 : boltzMainnetV2;
+      final boltzurl = wallet.network == BBNetwork.Testnet
+          ? boltzTestnetUrl
+          : boltzMainnetUrl;
 
       final (fees, errFees) = await getFeesAndLimits(
         boltzUrl: boltzurl,
@@ -623,7 +520,7 @@ class SwapBoltz {
         final refundFeesEstimate = submarineFees?.lbtcFees.minerFees;
         if (refundFeesEstimate == null) throw 'Fees estimate not found';
 
-        final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+        final swap = swapTx.toLbtcLnSwap(swapSensitive);
         // waiting on PR to add cooperative refund
         // final resp = await swap.refund(
         //   outAddress: address,
@@ -674,7 +571,7 @@ class SwapBoltz {
         final refundFeesEstimate = submarineFees?.btcFees.minerFees;
         if (refundFeesEstimate == null) throw 'Fees estimate not found';
 
-        final swap = swapTx.toBtcLnV2Swap(swapSensitive);
+        final swap = swapTx.toBtcLnSwap(swapSensitive);
 
         final resp = await swap.refund(
           outAddress: address,
@@ -706,11 +603,11 @@ class SwapBoltz {
       );
 
       if (isLiquid) {
-        final swap = swapTx.toLbtcLnV2Swap(swapSensitive);
+        final swap = swapTx.toLbtcLnSwap(swapSensitive);
         await swap.coopCloseSubmarine();
         return null;
       } else {
-        final swap = swapTx.toBtcLnV2Swap(swapSensitive);
+        final swap = swapTx.toBtcLnSwap(swapSensitive);
         await swap.coopCloseSubmarine();
         return null;
       }

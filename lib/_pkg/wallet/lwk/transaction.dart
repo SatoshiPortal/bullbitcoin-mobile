@@ -593,7 +593,7 @@ class LWKTransactions {
             txBytes: transaction.pset!,
           );
         } else {
-          final (txxid, errBroadcast) = await _swapBoltz.broadcastV2(
+          final (txxid, errBroadcast) = await _swapBoltz.broadcast(
             swapTx: transaction.swapTx!,
             signedBytes: transaction.pset!,
           );

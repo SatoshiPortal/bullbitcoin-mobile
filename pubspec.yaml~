@@ -70,7 +70,7 @@ dependencies:
   boltz_dart: 
     git:
       url: https://github.com/SatoshiPortal/boltz-dart.git
-      ref: trunk
+      ref: fees_test
   lwk_dart: 
     git:
       url: https://github.com/SatoshiPortal/lwk-dart.git

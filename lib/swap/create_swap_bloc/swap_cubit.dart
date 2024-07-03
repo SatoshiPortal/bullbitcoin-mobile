@@ -36,7 +36,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
   final WatchTxsBloc _watchTxsBloc;
   final NetworkCubit _networkCubit;
   Future<void> fetchFees(bool isTestnet) async {
-    final boltzurl = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
+    final boltzurl = isTestnet ? boltzTestnetUrl : boltzMainnetUrl;
 
     final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
       boltzUrl: boltzurl,
@@ -64,8 +64,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
 
     emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
 
-    //final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
-    final boltzurlV2 = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
+    final boltzurl = isTestnet ? boltzTestnetUrl : boltzMainnetUrl;
 
     // we dont have to make this call here
     // we have fees stored which has a pairHash
@@ -73,7 +72,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     // if the swap creation fails because of the pairHash, its because the fees updated and we can recall fetchFees
     // an optimization for later
     final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
-      boltzUrl: boltzurlV2,
+      boltzUrl: boltzurl,
     );
     if (errFees != null) {
       emit(
@@ -142,13 +141,13 @@ class CreateSwapCubit extends Cubit<SwapState> {
         : (walletIsLiquid ? Chain.liquid : Chain.bitcoin);
 
     final claimAddress = wallet.lastGeneratedAddress!.address;
-    final (swap, errCreatingInv) = await _swapBoltz.receiveV2(
+    final (swap, errCreatingInv) = await _swapBoltz.receive(
       mnemonic: seed!.mnemonic,
       index: wallet.revKeyIndex,
       outAmount: amount,
       network: network,
       electrumUrl: networkUrl,
-      boltzUrl: boltzurlV2,
+      boltzUrl: boltzurl,
       isLiquid: walletIsLiquid,
       claimAddress: claimAddress,
     );
@@ -324,8 +323,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     try {
       emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
 
-      // final boltzurl = isTestnet ? boltzTestnet : boltzMainnet;
-      final boltzurlV2 = isTestnet ? boltzTestnetV2 : boltzMainnetV2;
+      final boltzurl = isTestnet ? boltzTestnetUrl : boltzMainnetUrl;
 
       // we dont have to make this call here
       // we have fees stored which has a pairHash
@@ -333,7 +331,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
       // if the swap creation fails because of the pairHash, its because the fees updated and we can recall fetchFees
       // an optimization for later
       final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
-        boltzUrl: boltzurlV2,
+        boltzUrl: boltzurl,
       );
       if (errFees != null) {
         emit(
@@ -407,12 +405,12 @@ class CreateSwapCubit extends Cubit<SwapState> {
       if (storedSwapTxIdx != -1) {
         swapTx = wallet.swaps[storedSwapTxIdx];
       } else {
-        final (swap, errCreatingInv) = await _swapBoltz.sendV2(
+        final (swap, errCreatingInv) = await _swapBoltz.send(
           mnemonic: seed!.mnemonic,
           index: wallet.revKeyIndex,
           network: network,
           electrumUrl: networkUrl,
-          boltzUrl: boltzurlV2,
+          boltzUrl: boltzurl,
           isLiquid: isLiq,
           invoice: address,
         );

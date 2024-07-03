@@ -225,7 +225,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
         LiquidElectrumTypes.bullbitcoin;
 
-    final (txid, err) = await _swapBoltz.refundV2SubmarineSwap(
+    final (txid, err) = await _swapBoltz.refundSubmarineSwap(
       swapTx: swapTx,
       wallet: walletBloc.state.wallet!,
       tryCooperate: true,
@@ -293,7 +293,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
         LiquidElectrumTypes.bullbitcoin;
 
-    final (txid, err) = await _swapBoltz.claimV2ReverseSwap(
+    final (txid, err) = await _swapBoltz.claimReverseSwap(
       swapTx: swapTx,
       wallet: walletBloc.state.wallet!,
       tryCooperate: true,

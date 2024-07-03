@@ -195,7 +195,7 @@ class NetworkState with _$NetworkState {
       case LiquidElectrumTypes.blockstream:
         return 0.1;
       case LiquidElectrumTypes.bullbitcoin:
-        return 0.01;
+        return 0.01; // 0.01; TODO: Sai for liquid testnet
     }
   }
 }
