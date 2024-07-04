@@ -233,29 +233,62 @@ class Output {
 }
 
 @freezed
+class ChainSwapDetails with _$ChainSwapDetails {
+  const factory ChainSwapDetails({
+    required ChainSwapDirection direction,
+    required int refundKeyIndex,
+    required String refundSecretKey,
+    required String refundPublicKey,
+    required int claimKeyIndex,
+    required String claimSecretKey,
+    required String claimPublicKey,
+    required int lockupLocktime,
+    required int claimLocktime,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+    required String blindingKey, // sensitive
+  }) = _ChainSwapDetails;
+
+  const ChainSwapDetails._();
+  factory ChainSwapDetails.fromJson(Map<String, dynamic> json) =>
+      _$ChainSwapDetailsFromJson(json);
+}
+
+@freezed
+class LnSwapDetails with _$LnSwapDetails {
+  const factory LnSwapDetails({
+    required SwapType swapType,
+    required String invoice,
+    required String boltzPubKey,
+    required int keyIndex,
+    required String mySecretKey,
+    required String myPublicKey,
+    required String sha256,
+    required String electrumUrl,
+    required int locktime,
+    String? hash160,
+    String? blindingKey, // sensitive
+  }) = _LnSwapDetails;
+
+  const LnSwapDetails._();
+  factory LnSwapDetails.fromJson(Map<String, dynamic> json) =>
+      _$LnSwapDetailsFromJson(json);
+}
+
+@freezed
 class SwapTx with _$SwapTx {
   const factory SwapTx({
     required String id,
-    String? txid,
-    int? keyIndex,
-    String? label,
-    required bool isSubmarine,
     required BBNetwork network,
-    required BaseWalletType walletType,
-    String? secretKey,
-    String? publicKey,
-    String? sha256,
-    String? hash160,
-    required String redeemScript,
-    String? boltzPubkey,
-    int? locktime,
-    required String invoice,
+    required BaseWalletType baseWalletType,
     required int outAmount,
     required String scriptAddress,
-    required String electrumUrl,
     required String boltzUrl,
+    ChainSwapDetails? chainSwapDetails,
+    LnSwapDetails? lnSwapDetails,
+    String? txid,
+    String? label,
     SwapStreamStatus? status, // should this be SwapStaus?
-    String? blindingKey, // sensitive
     int? boltzFees,
     int? lockupFees,
     int? claimFees,
@@ -270,7 +303,7 @@ class SwapTx with _$SwapTx {
 
   bool isTestnet() => network == BBNetwork.Testnet;
 
-  bool isLiquid() => walletType == BaseWalletType.Liquid;
+  bool isLiquid() => baseWalletType == BaseWalletType.Liquid;
 
   int? totalFees() {
     if (boltzFees == null || lockupFees == null || claimFees == null)
@@ -284,16 +317,22 @@ class SwapTx with _$SwapTx {
     return outAmount - totalFees()!;
   }
 
+  bool isLnSwap() => lnSwapDetails != null;
+  bool isChainSwap() => chainSwapDetails != null;
+  bool isSubmarine() =>
+      isLnSwap() && lnSwapDetails!.swapType == SwapType.submarine;
+  bool isReverse() => isLnSwap() && lnSwapDetails!.swapType == SwapType.reverse;
+
   bool paidSubmarine() =>
-      isSubmarine &&
+      isSubmarine() &&
       (status != null && (status!.status == SwapStatus.invoicePaid));
 
   bool settledSubmarine() =>
-      isSubmarine &&
+      isSubmarine() &&
       (status != null && (status!.status == SwapStatus.txnClaimed));
 
   bool refundableSubmarine() =>
-      isSubmarine &&
+      isSubmarine() &&
       (status != null &&
           (status!.status == SwapStatus.invoiceFailedToPay ||
               status!.status == SwapStatus.txnLockupFailed));
@@ -304,33 +343,33 @@ class SwapTx with _$SwapTx {
           status!.status == SwapStatus.txnRefunded);
 
   bool claimableSubmarine() =>
-      isSubmarine &&
+      isSubmarine() &&
       status != null &&
       (status!.status == SwapStatus.txnClaimPending);
 
+  bool expiredSubmarine() =>
+      isSubmarine() &&
+      (status != null && (status!.status == SwapStatus.swapExpired));
+
   bool claimableReverse() =>
-      !isSubmarine &&
+      isReverse() &&
       status != null &&
       ((status!.status == SwapStatus.txnConfirmed) ||
           (status!.status == SwapStatus.invoiceSettled && txid == null));
 
   bool expiredReverse() =>
-      !isSubmarine &&
+      isReverse() &&
       (status != null &&
           (status!.status == SwapStatus.invoiceExpired ||
               status!.status == SwapStatus.swapExpired));
 
-  bool expiredSubmarine() =>
-      isSubmarine &&
-      (status != null && (status!.status == SwapStatus.swapExpired));
-
   bool settledReverse() =>
-      !isSubmarine &&
+      isReverse() &&
       txid != null &&
       (status != null && (status!.status == SwapStatus.invoiceSettled));
 
   bool paidReverse() =>
-      !isSubmarine &&
+      isReverse() &&
       (status != null && (status!.status == SwapStatus.txnMempool));
 
   bool receiveAction() => settledReverse() || paidReverse();
@@ -348,14 +387,14 @@ class SwapTx with _$SwapTx {
       expiredSubmarine() ||
       refundedAny();
 
-  bool failed() => !isSubmarine
+  bool failed() => isReverse()
       ? reverseSwapAction() == ReverseSwapActions.failed
       : submarineSwapAction() == SubmarineSwapActions.failed;
 
   String splitInvoice() =>
-      invoice.substring(0, 5) +
+      lnSwapDetails!.invoice.substring(0, 5) +
       ' .... ' +
-      invoice.substring(invoice.length - 10);
+      lnSwapDetails!.invoice.substring(lnSwapDetails!.invoice.length - 10);
 
   bool smallAmt() => outAmount < 1000000;
 
@@ -368,7 +407,7 @@ class SwapTx with _$SwapTx {
   }
 
   String actionPrefixStr() {
-    if (isSubmarine) {
+    if (isSubmarine()) {
       if (paidSubmarine()) return 'Outgoing';
       if (settledSubmarine() || claimableSubmarine()) return 'Sent';
       return 'Outgoing';
@@ -380,7 +419,7 @@ class SwapTx with _$SwapTx {
   }
 
   ReverseSwapActions reverseSwapAction() {
-    if (isSubmarine) throw 'Submarine swap cannot be a reverse swap.';
+    if (!isReverse()) throw 'Swap is not reverse!';
     final statuss = status?.status;
 
     if (statuss == null || statuss == SwapStatus.swapCreated)
@@ -401,7 +440,7 @@ class SwapTx with _$SwapTx {
   }
 
   SubmarineSwapActions submarineSwapAction() {
-    if (!isSubmarine) throw 'Reverse swap cannot be a submarine swap.';
+    if (!isSubmarine()) throw 'Swap is not submarine!';
     final statuss = status?.status;
 
     if (statuss == null || statuss == SwapStatus.swapCreated)
@@ -424,7 +463,7 @@ class SwapTx with _$SwapTx {
   }
 
   bool showAlert() {
-    if (isSubmarine) {
+    if (isSubmarine()) {
       if (paidSubmarine() || settledSubmarine()) return true;
     } else {
       if (paidReverse() || settledReverse()) return true;
@@ -433,7 +472,7 @@ class SwapTx with _$SwapTx {
   }
 
   bool syncWallet() {
-    if (isSubmarine) {
+    if (isSubmarine()) {
       if (claimableSubmarine() || refundableSubmarine() || settledSubmarine())
         return true;
     } else {
@@ -447,10 +486,10 @@ class SwapTx with _$SwapTx {
       txid: txid ?? id,
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       swapTx: this,
-      sent: !isSubmarine ? 0 : outAmount - totalFees()!,
+      sent: !isSubmarine() ? 0 : outAmount - totalFees()!,
       isSwap: true,
-      received: !isSubmarine ? (outAmount - (totalFees() ?? 0)) : 0,
-      fee: !isSubmarine ? claimFees : lockupFees,
+      received: !isSubmarine() ? (outAmount - (totalFees() ?? 0)) : 0,
+      fee: !isSubmarine() ? claimFees : lockupFees,
       isLiquid: isLiquid(),
       label: label,
     );
@@ -476,25 +515,24 @@ enum SubmarineSwapActions {
 }
 
 @freezed
-class SwapTxSensitive with _$SwapTxSensitive {
-  const factory SwapTxSensitive({
+class LnSwapTxSensitive with _$LnSwapTxSensitive {
+  const factory LnSwapTxSensitive({
     required String id,
     required String secretKey,
     required String publicKey,
     required String preimage,
     required String sha256,
     required String hash160,
-    required String redeemScript,
     String? boltzPubkey,
     bool? isSubmarine,
     String? scriptAddress,
     int? locktime,
     String? blindingKey,
-  }) = _SwapTxSensitive;
-  const SwapTxSensitive._();
+  }) = _LnSwapTxSensitive;
+  const LnSwapTxSensitive._();
 
-  factory SwapTxSensitive.fromJson(Map<String, dynamic> json) =>
-      _$SwapTxSensitiveFromJson(json);
+  factory LnSwapTxSensitive.fromJson(Map<String, dynamic> json) =>
+      _$LnSwapTxSensitiveFromJson(json);
 }
 
 @freezed

@@ -398,7 +398,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
           : (isLiq ? Chain.liquid : Chain.bitcoin);
 
       final storedSwapTxIdx = wallet.swaps.indexWhere(
-        (_) => _.invoice == invoice.invoice,
+        (_) => _.lnSwapDetails!.invoice == invoice.invoice,
       );
 
       SwapTx swapTx;
@@ -481,9 +481,9 @@ class CreateSwapCubit extends Cubit<SwapState> {
     final (updatedWallet, err) = await _walletTx.addSwapTxToWallet(
       wallet: wallet.copyWith(
         revKeyIndex:
-            !swapTx.isSubmarine ? wallet.revKeyIndex + 1 : wallet.revKeyIndex,
+            swapTx.isReverse() ? wallet.revKeyIndex + 1 : wallet.revKeyIndex,
         subKeyIndex:
-            swapTx.isSubmarine ? wallet.subKeyIndex + 1 : wallet.subKeyIndex,
+            swapTx.isSubmarine() ? wallet.subKeyIndex + 1 : wallet.subKeyIndex,
       ),
       swapTx: swapTx,
     );

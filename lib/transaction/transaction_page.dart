@@ -397,7 +397,7 @@ class _SwapDetails extends StatelessWidget {
 
     final swap = tx.swapTx;
     if (swap == null) return const SizedBox.shrink();
-    final statusStr = status.getStr(swap.isSubmarine);
+    final statusStr = status.getStr(swap.isSubmarine());
 
     final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
@@ -405,7 +405,7 @@ class _SwapDetails extends StatelessWidget {
     final amount = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true),
     );
-    final isReceive = !swap.isSubmarine;
+    final isReceive = swap.isReverse();
 
     final date = tx.getDateTimeStr();
     // swap.

@@ -120,7 +120,9 @@ class BDKTransactions {
     final updatedSwapTx = storedSwap.copyWith(
       status: swapTx.status,
       txid: storedSwap.txid ?? swapTx.txid,
-      keyIndex: storedSwap.keyIndex,
+      lnSwapDetails: storedSwap.lnSwapDetails!.copyWith(
+        keyIndex: storedSwap.lnSwapDetails!.keyIndex,
+      ),
     );
     swapTxs[idx] = updatedSwapTx;
 

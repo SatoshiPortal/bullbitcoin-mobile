@@ -104,7 +104,7 @@ class SwapTxItem extends StatelessWidget {
 
     final invoice = swapTx.splitInvoice();
     final amount = swapTx.outAmount.toString() + ' sats';
-    final idx = tx.keyIndex?.toString() ?? '0';
+    final idx = tx.lnSwapDetails!.keyIndex.toString() ?? '0';
     final status = swapTx.status?.toString() ?? '';
 
     return Container(
@@ -165,7 +165,7 @@ class _InvoiceQRPopup extends StatelessWidget {
     final swapTx = tx;
 
     final amount = swapTx.outAmount.toString() + ' sats';
-    final idx = tx.keyIndex?.toString() ?? '0';
+    final idx = tx.lnSwapDetails!.keyIndex.toString() ?? '0';
     final status = swapTx.status?.toString() ?? '';
     final totalFees = swapTx.totalFees() ?? 0;
     final fees = context.select(
@@ -207,11 +207,14 @@ class _InvoiceQRPopup extends StatelessWidget {
           Center(
             child: SizedBox(
               width: 250,
-              child: ReceiveQRDisplay(address: swapTx.invoice),
+              child: ReceiveQRDisplay(address: swapTx.lnSwapDetails!.invoice),
             ),
           ),
           const Gap(16),
-          ReceiveDisplayAddress(addressQr: swapTx.invoice, fontSize: 9),
+          ReceiveDisplayAddress(
+            addressQr: swapTx.lnSwapDetails!.invoice,
+            fontSize: 9,
+          ),
           const Gap(24),
           if (totalFees != 0) ...[
             BBText.bodySmall('Total fees:\n$fees $units'),

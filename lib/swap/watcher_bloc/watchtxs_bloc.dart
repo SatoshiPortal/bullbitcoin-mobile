@@ -455,7 +455,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
 
-    if (!swapTx.isSubmarine) {
+    if (swapTx.isReverse()) {
       switch (swapTx.reverseSwapAction()) {
         case ReverseSwapActions.created:
           await __updateWalletTxs(swapTx, walletBloc, emit);
@@ -521,9 +521,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         case SubmarineSwapActions.settled:
           final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
           final w = await __updateWalletTxs(
-              swapTx.copyWith(completionTime: DateTime.now()),
-              walletBloc,
-              emit);
+            swapTx.copyWith(completionTime: DateTime.now()),
+            walletBloc,
+            emit,
+          );
           if (w == null) return;
           await __closeSwap(updatedSwapTx, emit);
       }

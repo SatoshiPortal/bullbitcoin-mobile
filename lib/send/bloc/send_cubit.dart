@@ -249,7 +249,7 @@ class SendCubit extends Cubit<SendState> {
     if (state.oneWallet) {
       walletBlocc = state.selectedWalletBloc;
       storedSwapTxIdx = walletBlocc!.state.wallet!.swaps.indexWhere(
-        (element) => element.invoice == state.invoice!.invoice,
+        (element) => element.lnSwapDetails!.invoice == state.invoice!.invoice,
       );
     } else {
       final mainWalletsBlocs = _homeCubit.state.walletBlocsFromNetwork(
@@ -260,7 +260,7 @@ class SendCubit extends Cubit<SendState> {
       for (final walletBloc in mainWalletsBlocs) {
         final wallet = walletBloc.state.wallet!;
         storedSwapTxIdx = wallet.swaps.indexWhere(
-          (element) => element.invoice == state.invoice!.invoice,
+          (element) => element.lnSwapDetails!.invoice == state.invoice!.invoice,
         );
         if (storedSwapTxIdx != -1) {
           walletBlocc = walletBloc;

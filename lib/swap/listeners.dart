@@ -41,10 +41,10 @@ class SwapAppListener extends StatelessWidget {
             if (isReceivePage || isSendPage || isSwapReceivePage) return;
 
             final swapTx = state.updatedSwapTx!;
-            final isSubmarine = swapTx.isSubmarine;
+            final isReverse = swapTx.isReverse();
 
             final amt =
-                !isSubmarine ? swapTx.recievableAmount()! : swapTx.outAmount;
+                isReverse ? swapTx.recievableAmount()! : swapTx.outAmount;
             final amtStr =
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = swapTx.actionPrefixStr();

@@ -235,7 +235,9 @@ class SwapItem extends StatelessWidget {
                   ),
                   BBText.bodySmall(
                     'Status: ' +
-                        (swapTx.status?.status.getStr(swapTx.isSubmarine)?.$1 ??
+                        (swapTx.status?.status
+                                .getStr(swapTx.isSubmarine())
+                                ?.$1 ??
                             ''),
                     isBold: true,
                   ),
@@ -252,7 +254,7 @@ class SwapItem extends StatelessWidget {
                   SizedBox(
                     width: 200,
                     child: BBText.bodySmall(
-                      swapTx.status?.status.getStr(swapTx.isSubmarine)?.$2 ??
+                      swapTx.status?.status.getStr(swapTx.isSubmarine())?.$2 ??
                           '',
                       fontSize: 11,
                       // ),

@@ -74,30 +74,102 @@ Map<String, dynamic> _$$TxInImplToJson(_$TxInImpl instance) =>
       'prevOut': instance.prevOut,
     };
 
+_$ChainSwapDetailsImpl _$$ChainSwapDetailsImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ChainSwapDetailsImpl(
+      direction: $enumDecode(_$ChainSwapDirectionEnumMap, json['direction']),
+      refundKeyIndex: (json['refundKeyIndex'] as num).toInt(),
+      refundSecretKey: json['refundSecretKey'] as String,
+      refundPublicKey: json['refundPublicKey'] as String,
+      claimKeyIndex: (json['claimKeyIndex'] as num).toInt(),
+      claimSecretKey: json['claimSecretKey'] as String,
+      claimPublicKey: json['claimPublicKey'] as String,
+      lockupLocktime: (json['lockupLocktime'] as num).toInt(),
+      claimLocktime: (json['claimLocktime'] as num).toInt(),
+      btcElectrumUrl: json['btcElectrumUrl'] as String,
+      lbtcElectrumUrl: json['lbtcElectrumUrl'] as String,
+      blindingKey: json['blindingKey'] as String,
+    );
+
+Map<String, dynamic> _$$ChainSwapDetailsImplToJson(
+        _$ChainSwapDetailsImpl instance) =>
+    <String, dynamic>{
+      'direction': _$ChainSwapDirectionEnumMap[instance.direction]!,
+      'refundKeyIndex': instance.refundKeyIndex,
+      'refundSecretKey': instance.refundSecretKey,
+      'refundPublicKey': instance.refundPublicKey,
+      'claimKeyIndex': instance.claimKeyIndex,
+      'claimSecretKey': instance.claimSecretKey,
+      'claimPublicKey': instance.claimPublicKey,
+      'lockupLocktime': instance.lockupLocktime,
+      'claimLocktime': instance.claimLocktime,
+      'btcElectrumUrl': instance.btcElectrumUrl,
+      'lbtcElectrumUrl': instance.lbtcElectrumUrl,
+      'blindingKey': instance.blindingKey,
+    };
+
+const _$ChainSwapDirectionEnumMap = {
+  ChainSwapDirection.btcToLbtc: 'btcToLbtc',
+  ChainSwapDirection.lbtcToBtc: 'lbtcToBtc',
+};
+
+_$LnSwapDetailsImpl _$$LnSwapDetailsImplFromJson(Map<String, dynamic> json) =>
+    _$LnSwapDetailsImpl(
+      swapType: $enumDecode(_$SwapTypeEnumMap, json['swapType']),
+      invoice: json['invoice'] as String,
+      boltzPubKey: json['boltzPubKey'] as String,
+      keyIndex: (json['keyIndex'] as num).toInt(),
+      mySecretKey: json['mySecretKey'] as String,
+      myPublicKey: json['myPublicKey'] as String,
+      sha256: json['sha256'] as String,
+      electrumUrl: json['electrumUrl'] as String,
+      locktime: (json['locktime'] as num).toInt(),
+      hash160: json['hash160'] as String?,
+      blindingKey: json['blindingKey'] as String?,
+    );
+
+Map<String, dynamic> _$$LnSwapDetailsImplToJson(_$LnSwapDetailsImpl instance) =>
+    <String, dynamic>{
+      'swapType': _$SwapTypeEnumMap[instance.swapType]!,
+      'invoice': instance.invoice,
+      'boltzPubKey': instance.boltzPubKey,
+      'keyIndex': instance.keyIndex,
+      'mySecretKey': instance.mySecretKey,
+      'myPublicKey': instance.myPublicKey,
+      'sha256': instance.sha256,
+      'electrumUrl': instance.electrumUrl,
+      'locktime': instance.locktime,
+      'hash160': instance.hash160,
+      'blindingKey': instance.blindingKey,
+    };
+
+const _$SwapTypeEnumMap = {
+  SwapType.submarine: 'submarine',
+  SwapType.reverse: 'reverse',
+  SwapType.chain: 'chain',
+};
+
 _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       id: json['id'] as String,
-      txid: json['txid'] as String?,
-      keyIndex: (json['keyIndex'] as num?)?.toInt(),
-      label: json['label'] as String?,
-      isSubmarine: json['isSubmarine'] as bool,
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
-      walletType: $enumDecode(_$BaseWalletTypeEnumMap, json['walletType']),
-      secretKey: json['secretKey'] as String?,
-      publicKey: json['publicKey'] as String?,
-      sha256: json['sha256'] as String?,
-      hash160: json['hash160'] as String?,
-      redeemScript: json['redeemScript'] as String,
-      boltzPubkey: json['boltzPubkey'] as String?,
-      locktime: (json['locktime'] as num?)?.toInt(),
-      invoice: json['invoice'] as String,
+      baseWalletType:
+          $enumDecode(_$BaseWalletTypeEnumMap, json['baseWalletType']),
       outAmount: (json['outAmount'] as num).toInt(),
       scriptAddress: json['scriptAddress'] as String,
-      electrumUrl: json['electrumUrl'] as String,
       boltzUrl: json['boltzUrl'] as String,
+      chainSwapDetails: json['chainSwapDetails'] == null
+          ? null
+          : ChainSwapDetails.fromJson(
+              json['chainSwapDetails'] as Map<String, dynamic>),
+      lnSwapDetails: json['lnSwapDetails'] == null
+          ? null
+          : LnSwapDetails.fromJson(
+              json['lnSwapDetails'] as Map<String, dynamic>),
+      txid: json['txid'] as String?,
+      label: json['label'] as String?,
       status: json['status'] == null
           ? null
           : SwapStreamStatus.fromJson(json['status'] as Map<String, dynamic>),
-      blindingKey: json['blindingKey'] as String?,
       boltzFees: (json['boltzFees'] as num?)?.toInt(),
       lockupFees: (json['lockupFees'] as num?)?.toInt(),
       claimFees: (json['claimFees'] as num?)?.toInt(),
@@ -113,26 +185,16 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
 Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'txid': instance.txid,
-      'keyIndex': instance.keyIndex,
-      'label': instance.label,
-      'isSubmarine': instance.isSubmarine,
       'network': _$BBNetworkEnumMap[instance.network]!,
-      'walletType': _$BaseWalletTypeEnumMap[instance.walletType]!,
-      'secretKey': instance.secretKey,
-      'publicKey': instance.publicKey,
-      'sha256': instance.sha256,
-      'hash160': instance.hash160,
-      'redeemScript': instance.redeemScript,
-      'boltzPubkey': instance.boltzPubkey,
-      'locktime': instance.locktime,
-      'invoice': instance.invoice,
+      'baseWalletType': _$BaseWalletTypeEnumMap[instance.baseWalletType]!,
       'outAmount': instance.outAmount,
       'scriptAddress': instance.scriptAddress,
-      'electrumUrl': instance.electrumUrl,
       'boltzUrl': instance.boltzUrl,
+      'chainSwapDetails': instance.chainSwapDetails,
+      'lnSwapDetails': instance.lnSwapDetails,
+      'txid': instance.txid,
+      'label': instance.label,
       'status': instance.status,
-      'blindingKey': instance.blindingKey,
       'boltzFees': instance.boltzFees,
       'lockupFees': instance.lockupFees,
       'claimFees': instance.claimFees,
@@ -151,16 +213,15 @@ const _$BaseWalletTypeEnumMap = {
   BaseWalletType.Liquid: 'Liquid',
 };
 
-_$SwapTxSensitiveImpl _$$SwapTxSensitiveImplFromJson(
+_$LnSwapTxSensitiveImpl _$$LnSwapTxSensitiveImplFromJson(
         Map<String, dynamic> json) =>
-    _$SwapTxSensitiveImpl(
+    _$LnSwapTxSensitiveImpl(
       id: json['id'] as String,
       secretKey: json['secretKey'] as String,
       publicKey: json['publicKey'] as String,
       preimage: json['preimage'] as String,
       sha256: json['sha256'] as String,
       hash160: json['hash160'] as String,
-      redeemScript: json['redeemScript'] as String,
       boltzPubkey: json['boltzPubkey'] as String?,
       isSubmarine: json['isSubmarine'] as bool?,
       scriptAddress: json['scriptAddress'] as String?,
@@ -168,8 +229,8 @@ _$SwapTxSensitiveImpl _$$SwapTxSensitiveImplFromJson(
       blindingKey: json['blindingKey'] as String?,
     );
 
-Map<String, dynamic> _$$SwapTxSensitiveImplToJson(
-        _$SwapTxSensitiveImpl instance) =>
+Map<String, dynamic> _$$LnSwapTxSensitiveImplToJson(
+        _$LnSwapTxSensitiveImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'secretKey': instance.secretKey,
@@ -177,7 +238,6 @@ Map<String, dynamic> _$$SwapTxSensitiveImplToJson(
       'preimage': instance.preimage,
       'sha256': instance.sha256,
       'hash160': instance.hash160,
-      'redeemScript': instance.redeemScript,
       'boltzPubkey': instance.boltzPubkey,
       'isSubmarine': instance.isSubmarine,
       'scriptAddress': instance.scriptAddress,

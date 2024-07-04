@@ -133,7 +133,7 @@ class SwapBoltz {
       );
       if (err != null) throw err;
 
-      final swapSensitive = SwapTxSensitive.fromJson(
+      final swapSensitive = LnSwapTxSensitive.fromJson(
         jsonDecode(swapSentive!) as Map<String, dynamic>,
       );
 
@@ -371,7 +371,7 @@ class SwapBoltz {
       if (err != null) throw err;
 
       log('-----swap json\n' + swapSensitiveStr.toString() + '\n ------');
-      final swapSensitive = SwapTxSensitive.fromJson(
+      final swapSensitive = LnSwapTxSensitive.fromJson(
         jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
       );
 
@@ -402,7 +402,7 @@ class SwapBoltz {
       );
       if (err != null) throw err;
 
-      final swapSensitive = SwapTxSensitive.fromJson(
+      final swapSensitive = LnSwapTxSensitive.fromJson(
         jsonDecode(swapSentive!) as Map<String, dynamic>,
       );
 
@@ -510,7 +510,7 @@ class SwapBoltz {
       );
       if (err != null) throw err;
 
-      final swapSensitive = SwapTxSensitive.fromJson(
+      final swapSensitive = LnSwapTxSensitive.fromJson(
         jsonDecode(swapSentive!) as Map<String, dynamic>,
       );
 
@@ -598,7 +598,7 @@ class SwapBoltz {
       );
       if (err != null) throw err;
 
-      final swapSensitive = SwapTxSensitive.fromJson(
+      final swapSensitive = LnSwapTxSensitive.fromJson(
         jsonDecode(swapSentive!) as Map<String, dynamic>,
       );
 
