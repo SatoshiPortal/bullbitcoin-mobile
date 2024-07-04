@@ -1257,7 +1257,6 @@ mixin _$LnSwapDetails {
   String get invoice => throw _privateConstructorUsedError;
   String get boltzPubKey => throw _privateConstructorUsedError;
   int get keyIndex => throw _privateConstructorUsedError;
-  String get mySecretKey => throw _privateConstructorUsedError;
   String get myPublicKey => throw _privateConstructorUsedError;
   String get sha256 => throw _privateConstructorUsedError;
   String get electrumUrl => throw _privateConstructorUsedError;
@@ -1282,7 +1281,6 @@ abstract class $LnSwapDetailsCopyWith<$Res> {
       String invoice,
       String boltzPubKey,
       int keyIndex,
-      String mySecretKey,
       String myPublicKey,
       String sha256,
       String electrumUrl,
@@ -1308,7 +1306,6 @@ class _$LnSwapDetailsCopyWithImpl<$Res, $Val extends LnSwapDetails>
     Object? invoice = null,
     Object? boltzPubKey = null,
     Object? keyIndex = null,
-    Object? mySecretKey = null,
     Object? myPublicKey = null,
     Object? sha256 = null,
     Object? electrumUrl = null,
@@ -1333,10 +1330,6 @@ class _$LnSwapDetailsCopyWithImpl<$Res, $Val extends LnSwapDetails>
           ? _value.keyIndex
           : keyIndex // ignore: cast_nullable_to_non_nullable
               as int,
-      mySecretKey: null == mySecretKey
-          ? _value.mySecretKey
-          : mySecretKey // ignore: cast_nullable_to_non_nullable
-              as String,
       myPublicKey: null == myPublicKey
           ? _value.myPublicKey
           : myPublicKey // ignore: cast_nullable_to_non_nullable
@@ -1378,7 +1371,6 @@ abstract class _$$LnSwapDetailsImplCopyWith<$Res>
       String invoice,
       String boltzPubKey,
       int keyIndex,
-      String mySecretKey,
       String myPublicKey,
       String sha256,
       String electrumUrl,
@@ -1402,7 +1394,6 @@ class __$$LnSwapDetailsImplCopyWithImpl<$Res>
     Object? invoice = null,
     Object? boltzPubKey = null,
     Object? keyIndex = null,
-    Object? mySecretKey = null,
     Object? myPublicKey = null,
     Object? sha256 = null,
     Object? electrumUrl = null,
@@ -1427,10 +1418,6 @@ class __$$LnSwapDetailsImplCopyWithImpl<$Res>
           ? _value.keyIndex
           : keyIndex // ignore: cast_nullable_to_non_nullable
               as int,
-      mySecretKey: null == mySecretKey
-          ? _value.mySecretKey
-          : mySecretKey // ignore: cast_nullable_to_non_nullable
-              as String,
       myPublicKey: null == myPublicKey
           ? _value.myPublicKey
           : myPublicKey // ignore: cast_nullable_to_non_nullable
@@ -1467,7 +1454,6 @@ class _$LnSwapDetailsImpl extends _LnSwapDetails with DiagnosticableTreeMixin {
       required this.invoice,
       required this.boltzPubKey,
       required this.keyIndex,
-      required this.mySecretKey,
       required this.myPublicKey,
       required this.sha256,
       required this.electrumUrl,
@@ -1488,8 +1474,6 @@ class _$LnSwapDetailsImpl extends _LnSwapDetails with DiagnosticableTreeMixin {
   @override
   final int keyIndex;
   @override
-  final String mySecretKey;
-  @override
   final String myPublicKey;
   @override
   final String sha256;
@@ -1504,7 +1488,7 @@ class _$LnSwapDetailsImpl extends _LnSwapDetails with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'LnSwapDetails(swapType: $swapType, invoice: $invoice, boltzPubKey: $boltzPubKey, keyIndex: $keyIndex, mySecretKey: $mySecretKey, myPublicKey: $myPublicKey, sha256: $sha256, electrumUrl: $electrumUrl, locktime: $locktime, hash160: $hash160, blindingKey: $blindingKey)';
+    return 'LnSwapDetails(swapType: $swapType, invoice: $invoice, boltzPubKey: $boltzPubKey, keyIndex: $keyIndex, myPublicKey: $myPublicKey, sha256: $sha256, electrumUrl: $electrumUrl, locktime: $locktime, hash160: $hash160, blindingKey: $blindingKey)';
   }
 
   @override
@@ -1516,7 +1500,6 @@ class _$LnSwapDetailsImpl extends _LnSwapDetails with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('invoice', invoice))
       ..add(DiagnosticsProperty('boltzPubKey', boltzPubKey))
       ..add(DiagnosticsProperty('keyIndex', keyIndex))
-      ..add(DiagnosticsProperty('mySecretKey', mySecretKey))
       ..add(DiagnosticsProperty('myPublicKey', myPublicKey))
       ..add(DiagnosticsProperty('sha256', sha256))
       ..add(DiagnosticsProperty('electrumUrl', electrumUrl))
@@ -1537,8 +1520,6 @@ class _$LnSwapDetailsImpl extends _LnSwapDetails with DiagnosticableTreeMixin {
                 other.boltzPubKey == boltzPubKey) &&
             (identical(other.keyIndex, keyIndex) ||
                 other.keyIndex == keyIndex) &&
-            (identical(other.mySecretKey, mySecretKey) ||
-                other.mySecretKey == mySecretKey) &&
             (identical(other.myPublicKey, myPublicKey) ||
                 other.myPublicKey == myPublicKey) &&
             (identical(other.sha256, sha256) || other.sha256 == sha256) &&
@@ -1559,7 +1540,6 @@ class _$LnSwapDetailsImpl extends _LnSwapDetails with DiagnosticableTreeMixin {
       invoice,
       boltzPubKey,
       keyIndex,
-      mySecretKey,
       myPublicKey,
       sha256,
       electrumUrl,
@@ -1587,7 +1567,6 @@ abstract class _LnSwapDetails extends LnSwapDetails {
       required final String invoice,
       required final String boltzPubKey,
       required final int keyIndex,
-      required final String mySecretKey,
       required final String myPublicKey,
       required final String sha256,
       required final String electrumUrl,
@@ -1607,8 +1586,6 @@ abstract class _LnSwapDetails extends LnSwapDetails {
   String get boltzPubKey;
   @override
   int get keyIndex;
-  @override
-  String get mySecretKey;
   @override
   String get myPublicKey;
   @override

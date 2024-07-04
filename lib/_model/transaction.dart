@@ -261,7 +261,6 @@ class LnSwapDetails with _$LnSwapDetails {
     required String invoice,
     required String boltzPubKey,
     required int keyIndex,
-    required String mySecretKey,
     required String myPublicKey,
     required String sha256,
     required String electrumUrl,

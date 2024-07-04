@@ -92,7 +92,6 @@ extension BtcLnSwapExt on BtcLnSwap {
             : swapScript.senderPubkey,
         keyIndex:
             0, // this is an issue, we should probably also save the keyIndex in BtcLnSwap
-        mySecretKey: keys.secretKey,
         myPublicKey: kind == SwapType.submarine
             ? swapScript.senderPubkey
             : swapScript.receiverPubkey,
@@ -144,7 +143,6 @@ extension LbtcLnSwapExt on LbtcLnSwap {
             : swapScript.senderPubkey,
         keyIndex:
             0, // this is an issue, we should probably also save the keyIndex in BtcLnSwap
-        mySecretKey: keys.secretKey,
         myPublicKey: kind == SwapType.submarine
             ? swapScript.senderPubkey
             : swapScript.receiverPubkey,
