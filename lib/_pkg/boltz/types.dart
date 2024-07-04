@@ -13,6 +13,7 @@ extension LnSwapExt on SwapTx {
       electrumUrl: tx.lnSwapDetails!.electrumUrl.replaceAll('ssl://', ''),
       boltzUrl: tx.boltzUrl,
       kind: tx.lnSwapDetails!.swapType,
+      keyIndex: tx.lnSwapDetails!.keyIndex,
       network:
           network == BBNetwork.Testnet ? Chain.bitcoinTestnet : Chain.bitcoin,
       keys: KeyPair(
@@ -49,6 +50,7 @@ extension LnSwapExt on SwapTx {
       electrumUrl: tx.lnSwapDetails!.electrumUrl.replaceAll('ssl://', ''),
       boltzUrl: tx.boltzUrl,
       kind: tx.lnSwapDetails!.swapType,
+      keyIndex: tx.lnSwapDetails!.keyIndex,
       network:
           network == BBNetwork.Testnet ? Chain.liquidTestnet : Chain.liquid,
       keys: KeyPair(
