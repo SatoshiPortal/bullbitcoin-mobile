@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/currency_new.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/molecules/currency_input_widget.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +18,10 @@ final lBtcCurrencies = [
 ];
 
 class SwapWidget extends StatefulWidget {
-  const SwapWidget({super.key, required this.wallets});
+  const SwapWidget({super.key, required this.wallets, this.onSwapPressed});
 
   final List<Wallet> wallets;
+  final Function(Wallet from, Wallet to, int amount)? onSwapPressed;
 
   @override
   State<SwapWidget> createState() => _SwapWidgetState();
@@ -71,43 +73,7 @@ class _SwapWidgetState extends State<SwapWidget> {
             for (final wallet in fromWallets)
               wallet: (label: wallet.name!, enabled: true),
           },
-          onChanged: (Wallet wallet) {
-            List<Wallet> toWalletsLocal = [];
-            Wallet? selectedToWalletLocal;
-
-            List<CurrencyNew> fromCurrencies = [];
-            List<CurrencyNew> toCurrencies = [];
-
-            if (wallet.isLiquid()) {
-              toWalletsLocal =
-                  widget.wallets.where((w) => !w.isLiquid()).toList();
-              selectedToWalletLocal = widget.wallets[1];
-
-              fromCurrencies = lBtcCurrencies;
-              toCurrencies = btcCurrencies;
-            } else {
-              toWalletsLocal = [widget.wallets[0]];
-              selectedToWalletLocal = toWalletsLocal[0];
-
-              fromCurrencies = btcCurrencies;
-              toCurrencies = lBtcCurrencies;
-            }
-
-            final isSat = fromPriceCurrency.code.contains('sats');
-
-            setState(() {
-              selectedFromWallet = wallet;
-
-              selectedToWallet = selectedToWalletLocal!;
-              toWallets = toWalletsLocal;
-
-              fromPriceCurrencies = fromCurrencies;
-              toPriceCurrencies = toCurrencies;
-
-              fromPriceCurrency = fromCurrencies[isSat ? 1 : 0];
-              toPriceCurrency = toCurrencies[isSat ? 1 : 0];
-            });
-          },
+          onChanged: _fromWalletChanged,
         ),
         CurrencyInput(
           currencies: fromPriceCurrencies,
@@ -117,36 +83,10 @@ class _SwapWidgetState extends State<SwapWidget> {
           showCurrencyLogos: true,
           textEditingController: fromPriceController,
           label: '',
-          onCurrencyChange: (CurrencyNew? value) {
-            if (value != null && (fromPriceCurrency.code != value.code)) {
-              final isSat = value.code.contains('sats');
-              final isLiquid = value.code.startsWith('L-');
-
-              CurrencyNew toPriceCurrencyLocal;
-
-              if (isLiquid) {
-                if (isSat) {
-                  toPriceCurrencyLocal = btcCurrencies[1];
-                } else {
-                  toPriceCurrencyLocal = btcCurrencies[0];
-                }
-              } else {
-                if (isSat) {
-                  toPriceCurrencyLocal = lBtcCurrencies[1];
-                } else {
-                  toPriceCurrencyLocal = lBtcCurrencies[0];
-                }
-              }
-
-              setState(() {
-                fromPriceCurrency = value;
-                toPriceCurrency = toPriceCurrencyLocal;
-              });
-            }
-          },
+          onCurrencyChange: _fromCurrencyChanged,
         ),
         const SizedBox(
-          height: 15,
+          height: 10,
         ),
         const Text('Swap to'),
         BBDropDown<Wallet>(
@@ -174,7 +114,84 @@ class _SwapWidgetState extends State<SwapWidget> {
           label: '',
           disabled: true,
         ),
+        BBButton.big(label: 'Swap', onPressed: _swapButtonPressed),
       ],
     );
+  }
+
+  void _swapButtonPressed() {
+    print('Swap button pressed');
+    if (widget.onSwapPressed != null) {
+      widget.onSwapPressed?.call(
+        selectedFromWallet,
+        selectedToWallet,
+        int.parse(fromPriceController.text),
+      );
+    }
+  }
+
+  void _fromCurrencyChanged(CurrencyNew? value) {
+    if (value != null && (fromPriceCurrency.code != value.code)) {
+      final isSat = value.code.contains('sats');
+      final isLiquid = value.code.startsWith('L-');
+
+      CurrencyNew toPriceCurrencyLocal;
+
+      if (isLiquid) {
+        if (isSat) {
+          toPriceCurrencyLocal = btcCurrencies[1];
+        } else {
+          toPriceCurrencyLocal = btcCurrencies[0];
+        }
+      } else {
+        if (isSat) {
+          toPriceCurrencyLocal = lBtcCurrencies[1];
+        } else {
+          toPriceCurrencyLocal = lBtcCurrencies[0];
+        }
+      }
+
+      setState(() {
+        fromPriceCurrency = value;
+        toPriceCurrency = toPriceCurrencyLocal;
+      });
+    }
+  }
+
+  void _fromWalletChanged(Wallet wallet) {
+    List<Wallet> toWalletsLocal = [];
+    Wallet? selectedToWalletLocal;
+
+    List<CurrencyNew> fromCurrencies = [];
+    List<CurrencyNew> toCurrencies = [];
+
+    if (wallet.isLiquid()) {
+      toWalletsLocal = widget.wallets.where((w) => !w.isLiquid()).toList();
+      selectedToWalletLocal = widget.wallets[1];
+
+      fromCurrencies = lBtcCurrencies;
+      toCurrencies = btcCurrencies;
+    } else {
+      toWalletsLocal = [widget.wallets[0]];
+      selectedToWalletLocal = toWalletsLocal[0];
+
+      fromCurrencies = btcCurrencies;
+      toCurrencies = lBtcCurrencies;
+    }
+
+    final isSat = fromPriceCurrency.code.contains('sats');
+
+    setState(() {
+      selectedFromWallet = wallet;
+
+      selectedToWallet = selectedToWalletLocal!;
+      toWallets = toWalletsLocal;
+
+      fromPriceCurrencies = fromCurrencies;
+      toPriceCurrencies = toCurrencies;
+
+      fromPriceCurrency = fromCurrencies[isSat ? 1 : 0];
+      toPriceCurrency = toCurrencies[isSat ? 1 : 0];
+    });
   }
 }

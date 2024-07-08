@@ -21,6 +21,7 @@ import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/swap/swap_history_page.dart';
+import 'package:bb_mobile/swap/swap_page.dart';
 import 'package:bb_mobile/testground.dart';
 import 'package:bb_mobile/transaction/bump_fees.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
@@ -56,6 +57,12 @@ GoRouter setupRouter() => GoRouter(
           path: '/',
           builder: (context, state) {
             return const AuthPage(fromSettings: false);
+          },
+        ),
+        GoRoute(
+          path: '/swap-page',
+          builder: (context, state) {
+            return const SwapPage();
           },
         ),
         GoRoute(
