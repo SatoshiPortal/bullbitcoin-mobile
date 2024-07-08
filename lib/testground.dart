@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/swap_widget.dart';
+import 'package:bb_mobile/_ui/organisms/swap_widget.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,10 @@ class Testground extends StatelessWidget {
           },
         ),
       ),
-      body: SwapWidget(wallets: wallets),
+      body: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: SwapWidget(wallets: wallets),
+      ),
     );
   }
 }
