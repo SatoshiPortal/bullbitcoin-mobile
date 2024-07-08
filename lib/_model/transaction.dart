@@ -535,6 +535,22 @@ class LnSwapTxSensitive with _$LnSwapTxSensitive {
 }
 
 @freezed
+class ChainSwapTxSensitive with _$ChainSwapTxSensitive {
+  const factory ChainSwapTxSensitive({
+    required String id,
+    required String refundKeySecret,
+    required String claimKeySecret,
+    required String preimage,
+    required String sha256,
+    required String hash160,
+    required String blindingKey,
+  }) = _ChainSwapTxSensitive;
+
+  factory ChainSwapTxSensitive.fromJson(Map<String, dynamic> json) =>
+      _$ChainSwapTxSensitiveFromJson(json);
+}
+
+@freezed
 class Invoice with _$Invoice {
   const factory Invoice({
     required int msats,

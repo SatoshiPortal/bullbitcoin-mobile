@@ -2547,6 +2547,290 @@ abstract class _LnSwapTxSensitive extends LnSwapTxSensitive {
       throw _privateConstructorUsedError;
 }
 
+ChainSwapTxSensitive _$ChainSwapTxSensitiveFromJson(Map<String, dynamic> json) {
+  return _ChainSwapTxSensitive.fromJson(json);
+}
+
+/// @nodoc
+mixin _$ChainSwapTxSensitive {
+  String get id => throw _privateConstructorUsedError;
+  String get refundKeySecret => throw _privateConstructorUsedError;
+  String get claimKeySecret => throw _privateConstructorUsedError;
+  String get preimage => throw _privateConstructorUsedError;
+  String get sha256 => throw _privateConstructorUsedError;
+  String get hash160 => throw _privateConstructorUsedError;
+  String get blindingKey => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $ChainSwapTxSensitiveCopyWith<ChainSwapTxSensitive> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $ChainSwapTxSensitiveCopyWith<$Res> {
+  factory $ChainSwapTxSensitiveCopyWith(ChainSwapTxSensitive value,
+          $Res Function(ChainSwapTxSensitive) then) =
+      _$ChainSwapTxSensitiveCopyWithImpl<$Res, ChainSwapTxSensitive>;
+  @useResult
+  $Res call(
+      {String id,
+      String refundKeySecret,
+      String claimKeySecret,
+      String preimage,
+      String sha256,
+      String hash160,
+      String blindingKey});
+}
+
+/// @nodoc
+class _$ChainSwapTxSensitiveCopyWithImpl<$Res,
+        $Val extends ChainSwapTxSensitive>
+    implements $ChainSwapTxSensitiveCopyWith<$Res> {
+  _$ChainSwapTxSensitiveCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? refundKeySecret = null,
+    Object? claimKeySecret = null,
+    Object? preimage = null,
+    Object? sha256 = null,
+    Object? hash160 = null,
+    Object? blindingKey = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      refundKeySecret: null == refundKeySecret
+          ? _value.refundKeySecret
+          : refundKeySecret // ignore: cast_nullable_to_non_nullable
+              as String,
+      claimKeySecret: null == claimKeySecret
+          ? _value.claimKeySecret
+          : claimKeySecret // ignore: cast_nullable_to_non_nullable
+              as String,
+      preimage: null == preimage
+          ? _value.preimage
+          : preimage // ignore: cast_nullable_to_non_nullable
+              as String,
+      sha256: null == sha256
+          ? _value.sha256
+          : sha256 // ignore: cast_nullable_to_non_nullable
+              as String,
+      hash160: null == hash160
+          ? _value.hash160
+          : hash160 // ignore: cast_nullable_to_non_nullable
+              as String,
+      blindingKey: null == blindingKey
+          ? _value.blindingKey
+          : blindingKey // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$ChainSwapTxSensitiveImplCopyWith<$Res>
+    implements $ChainSwapTxSensitiveCopyWith<$Res> {
+  factory _$$ChainSwapTxSensitiveImplCopyWith(_$ChainSwapTxSensitiveImpl value,
+          $Res Function(_$ChainSwapTxSensitiveImpl) then) =
+      __$$ChainSwapTxSensitiveImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {String id,
+      String refundKeySecret,
+      String claimKeySecret,
+      String preimage,
+      String sha256,
+      String hash160,
+      String blindingKey});
+}
+
+/// @nodoc
+class __$$ChainSwapTxSensitiveImplCopyWithImpl<$Res>
+    extends _$ChainSwapTxSensitiveCopyWithImpl<$Res, _$ChainSwapTxSensitiveImpl>
+    implements _$$ChainSwapTxSensitiveImplCopyWith<$Res> {
+  __$$ChainSwapTxSensitiveImplCopyWithImpl(_$ChainSwapTxSensitiveImpl _value,
+      $Res Function(_$ChainSwapTxSensitiveImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? refundKeySecret = null,
+    Object? claimKeySecret = null,
+    Object? preimage = null,
+    Object? sha256 = null,
+    Object? hash160 = null,
+    Object? blindingKey = null,
+  }) {
+    return _then(_$ChainSwapTxSensitiveImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      refundKeySecret: null == refundKeySecret
+          ? _value.refundKeySecret
+          : refundKeySecret // ignore: cast_nullable_to_non_nullable
+              as String,
+      claimKeySecret: null == claimKeySecret
+          ? _value.claimKeySecret
+          : claimKeySecret // ignore: cast_nullable_to_non_nullable
+              as String,
+      preimage: null == preimage
+          ? _value.preimage
+          : preimage // ignore: cast_nullable_to_non_nullable
+              as String,
+      sha256: null == sha256
+          ? _value.sha256
+          : sha256 // ignore: cast_nullable_to_non_nullable
+              as String,
+      hash160: null == hash160
+          ? _value.hash160
+          : hash160 // ignore: cast_nullable_to_non_nullable
+              as String,
+      blindingKey: null == blindingKey
+          ? _value.blindingKey
+          : blindingKey // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$ChainSwapTxSensitiveImpl
+    with DiagnosticableTreeMixin
+    implements _ChainSwapTxSensitive {
+  const _$ChainSwapTxSensitiveImpl(
+      {required this.id,
+      required this.refundKeySecret,
+      required this.claimKeySecret,
+      required this.preimage,
+      required this.sha256,
+      required this.hash160,
+      required this.blindingKey});
+
+  factory _$ChainSwapTxSensitiveImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ChainSwapTxSensitiveImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String refundKeySecret;
+  @override
+  final String claimKeySecret;
+  @override
+  final String preimage;
+  @override
+  final String sha256;
+  @override
+  final String hash160;
+  @override
+  final String blindingKey;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'ChainSwapTxSensitive(id: $id, refundKeySecret: $refundKeySecret, claimKeySecret: $claimKeySecret, preimage: $preimage, sha256: $sha256, hash160: $hash160, blindingKey: $blindingKey)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'ChainSwapTxSensitive'))
+      ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('refundKeySecret', refundKeySecret))
+      ..add(DiagnosticsProperty('claimKeySecret', claimKeySecret))
+      ..add(DiagnosticsProperty('preimage', preimage))
+      ..add(DiagnosticsProperty('sha256', sha256))
+      ..add(DiagnosticsProperty('hash160', hash160))
+      ..add(DiagnosticsProperty('blindingKey', blindingKey));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ChainSwapTxSensitiveImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.refundKeySecret, refundKeySecret) ||
+                other.refundKeySecret == refundKeySecret) &&
+            (identical(other.claimKeySecret, claimKeySecret) ||
+                other.claimKeySecret == claimKeySecret) &&
+            (identical(other.preimage, preimage) ||
+                other.preimage == preimage) &&
+            (identical(other.sha256, sha256) || other.sha256 == sha256) &&
+            (identical(other.hash160, hash160) || other.hash160 == hash160) &&
+            (identical(other.blindingKey, blindingKey) ||
+                other.blindingKey == blindingKey));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, refundKeySecret,
+      claimKeySecret, preimage, sha256, hash160, blindingKey);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ChainSwapTxSensitiveImplCopyWith<_$ChainSwapTxSensitiveImpl>
+      get copyWith =>
+          __$$ChainSwapTxSensitiveImplCopyWithImpl<_$ChainSwapTxSensitiveImpl>(
+              this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$ChainSwapTxSensitiveImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _ChainSwapTxSensitive implements ChainSwapTxSensitive {
+  const factory _ChainSwapTxSensitive(
+      {required final String id,
+      required final String refundKeySecret,
+      required final String claimKeySecret,
+      required final String preimage,
+      required final String sha256,
+      required final String hash160,
+      required final String blindingKey}) = _$ChainSwapTxSensitiveImpl;
+
+  factory _ChainSwapTxSensitive.fromJson(Map<String, dynamic> json) =
+      _$ChainSwapTxSensitiveImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get refundKeySecret;
+  @override
+  String get claimKeySecret;
+  @override
+  String get preimage;
+  @override
+  String get sha256;
+  @override
+  String get hash160;
+  @override
+  String get blindingKey;
+  @override
+  @JsonKey(ignore: true)
+  _$$ChainSwapTxSensitiveImplCopyWith<_$ChainSwapTxSensitiveImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
 Invoice _$InvoiceFromJson(Map<String, dynamic> json) {
   return _Invoice.fromJson(json);
 }

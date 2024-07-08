@@ -615,4 +615,45 @@ class SwapBoltz {
       return Err(e.toString());
     }
   }
+
+  Future<(SwapTx?, Err?)> chainSwap({
+    required String mnemonic,
+    required int index,
+    required ChainSwapDirection direction,
+    required int amount,
+    required Chain network,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+    required String boltzUrl,
+    required bool isLiquid,
+  }) async {
+    try {
+      final res = await ChainSwap.newSwap(
+        direction: direction,
+        mnemonic: mnemonic,
+        index: index,
+        amount: amount,
+        isTestnet:
+            network == Chain.bitcoinTestnet || network == Chain.liquidTestnet,
+        btcElectrumUrl: btcElectrumUrl,
+        lbtcElectrumUrl: lbtcElectrumUrl,
+        boltzUrl: boltzUrl,
+      );
+
+      final swapSensitive = res.createSwapSensitiveFromChainSwap();
+
+      //SwapTxSensitive.fromBtcLnSwap(res);
+      final err = await _secureStorage.saveValue(
+        key: StorageKeys.swapTxSensitive + '_' + res.id,
+        value: jsonEncode(swapSensitive.toJson()),
+      );
+      if (err != null) throw err;
+      final swap = res.createSwapFromChainSwap();
+      // SwapTx.fromBtcLnSwap(res);
+
+      return (swap, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
 }

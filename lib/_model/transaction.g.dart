@@ -243,6 +243,30 @@ Map<String, dynamic> _$$LnSwapTxSensitiveImplToJson(
       'blindingKey': instance.blindingKey,
     };
 
+_$ChainSwapTxSensitiveImpl _$$ChainSwapTxSensitiveImplFromJson(
+        Map<String, dynamic> json) =>
+    _$ChainSwapTxSensitiveImpl(
+      id: json['id'] as String,
+      refundKeySecret: json['refundKeySecret'] as String,
+      claimKeySecret: json['claimKeySecret'] as String,
+      preimage: json['preimage'] as String,
+      sha256: json['sha256'] as String,
+      hash160: json['hash160'] as String,
+      blindingKey: json['blindingKey'] as String,
+    );
+
+Map<String, dynamic> _$$ChainSwapTxSensitiveImplToJson(
+        _$ChainSwapTxSensitiveImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'refundKeySecret': instance.refundKeySecret,
+      'claimKeySecret': instance.claimKeySecret,
+      'preimage': instance.preimage,
+      'sha256': instance.sha256,
+      'hash160': instance.hash160,
+      'blindingKey': instance.blindingKey,
+    };
+
 _$InvoiceImpl _$$InvoiceImplFromJson(Map<String, dynamic> json) =>
     _$InvoiceImpl(
       msats: (json['msats'] as num).toInt(),
