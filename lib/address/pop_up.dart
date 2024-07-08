@@ -79,13 +79,13 @@ class _Screen extends StatelessWidget {
           const AddressQR(),
           const Gap(8),
           Divider(
-            color: context.colour.onBackground.withOpacity(0.3),
+            color: context.colour.onPrimaryContainer.withOpacity(0.3),
           ),
           const Gap(8),
           const AddressDetails(),
           const Gap(4),
           Divider(
-            color: context.colour.onBackground.withOpacity(0.3),
+            color: context.colour.onPrimaryContainer.withOpacity(0.3),
           ),
           const Gap(4),
           const AddressActions(),

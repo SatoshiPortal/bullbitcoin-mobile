@@ -38,7 +38,7 @@ class BBHeader extends StatelessWidget {
           if (showBack)
             IconButton(
               icon: const FaIcon(FontAwesomeIcons.xmark),
-              color: context.colour.onBackground,
+              color: context.colour.onPrimaryContainer,
               onPressed: () {
                 if (onBack == null)
                   Navigator.of(context).pop();

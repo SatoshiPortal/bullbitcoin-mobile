@@ -47,10 +47,10 @@ class BBSwitcher<T> extends StatelessWidget {
     );
 
     final colour =
-        darkMode ? context.colour.background : context.colour.surface;
+        darkMode ? context.colour.primaryContainer : context.colour.surface;
 
     final borderColour =
-        darkMode ? context.colour.onBackground : context.colour.onSurface;
+        darkMode ? context.colour.onPrimaryContainer : context.colour.onSurface;
 
     return Container(
       decoration: BoxDecoration(
@@ -94,7 +94,7 @@ class BBDropDown<T> extends StatelessWidget {
     );
 
     final bgColour =
-        darkMode ? context.colour.onBackground : NewColours.offWhite;
+        darkMode ? context.colour.onPrimaryContainer : NewColours.offWhite;
 
     final widget = SizedBox(
       width: 225,
@@ -131,7 +131,7 @@ class BBDropDown<T> extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             filled: true,
-            fillColor: context.colour.background,
+            fillColor: context.colour.primaryContainer,
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: bgColour),
               borderRadius: BorderRadius.circular(8),
@@ -181,10 +181,10 @@ class BBSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Switch(
-      activeColor: context.colour.background,
-      activeTrackColor: context.colour.onBackground,
+      activeColor: context.colour.primaryContainer,
+      activeTrackColor: context.colour.onPrimaryContainer,
       inactiveTrackColor: context.colour.surface,
-      inactiveThumbColor: context.colour.onBackground.withOpacity(0.4),
+      inactiveThumbColor: context.colour.onPrimaryContainer.withOpacity(0.4),
       value: value,
       onChanged: onChanged,
     );

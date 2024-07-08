@@ -21,8 +21,9 @@ class StackedPage extends StatelessWidget {
           child: Container(
             width: double.infinity,
             height: 72,
-            color: context.colour.background.withOpacity(0.95),
-            padding: const EdgeInsets.only(bottom: 16, top: 8, left: 16, right: 16),
+            color: context.colour.primaryContainer.withOpacity(0.95),
+            padding:
+                const EdgeInsets.only(bottom: 16, top: 8, left: 16, right: 16),
             alignment: Alignment.bottomCenter,
             child: bottomChild,
           ),

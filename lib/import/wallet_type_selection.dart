@@ -277,7 +277,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                           width: selected ? 4 : 1,
                           color: selected
                               ? context.colour.primary
-                              : context.colour.onBackground,
+                              : context.colour.onPrimaryContainer,
                         ),
                       ),
                       child: Column(
@@ -310,7 +310,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                     text: 'Wallet fingerprint (XFP): ',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: context.colour.onBackground,
+                                      color: context.colour.onPrimaryContainer,
                                     ),
                                   ),
                                   TextSpan(
@@ -318,7 +318,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: context.colour.onBackground,
+                                      color: context.colour.onPrimaryContainer,
                                     ),
                                   ),
                                 ],
@@ -333,7 +333,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                     text: 'First Address: ',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: context.colour.onBackground,
+                                      color: context.colour.onPrimaryContainer,
                                     ),
                                   ),
                                   TextSpan(
@@ -341,7 +341,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: context.colour.onBackground,
+                                      color: context.colour.onPrimaryContainer,
                                     ),
                                   ),
                                 ],
@@ -356,7 +356,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                     text: 'Balance: ',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: context.colour.onBackground,
+                                      color: context.colour.onPrimaryContainer,
                                     ),
                                   ),
                                   TextSpan(
@@ -364,7 +364,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: context.colour.onBackground,
+                                      color: context.colour.onPrimaryContainer,
                                     ),
                                   ),
                                 ],
@@ -379,7 +379,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                     text: 'Transactions: ',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: context.colour.onBackground,
+                                      color: context.colour.onPrimaryContainer,
                                     ),
                                   ),
                                   TextSpan(
@@ -387,7 +387,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
-                                      color: context.colour.onBackground,
+                                      color: context.colour.onPrimaryContainer,
                                     ),
                                   ),
                                 ],

@@ -6,7 +6,7 @@ extension Xontext on BuildContext {
   SnackBar showToast(String text) {
     return SnackBar(
       content: Center(child: BBText.titleLarge(text)),
-      backgroundColor: colour.background,
+      backgroundColor: colour.primaryContainer,
       elevation: 4,
     );
   }

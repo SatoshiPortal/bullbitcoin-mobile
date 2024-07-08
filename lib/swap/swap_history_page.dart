@@ -123,11 +123,11 @@ class _PanelState extends State<_Panel> {
     //   ],
     // );
     return ExpansionPanelList(
-      dividerColor: context.colour.onBackground,
+      dividerColor: context.colour.onPrimaryContainer,
       expandedHeaderPadding: EdgeInsets.zero,
       children: [
         ExpansionPanel(
-          backgroundColor: context.colour.background,
+          backgroundColor: context.colour.primaryContainer,
           isExpanded: expanded1,
           headerBuilder: (context, isExpanded) {
             return ListTile(
@@ -151,7 +151,7 @@ class _PanelState extends State<_Panel> {
           body: const SwapsList(),
         ),
         ExpansionPanel(
-          backgroundColor: context.colour.background,
+          backgroundColor: context.colour.primaryContainer,
           isExpanded: expanded2,
           canTapOnHeader: true,
           headerBuilder: (context, isExpanded) {
@@ -267,7 +267,7 @@ class SwapItem extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   Icons.copy,
-                  color: context.colour.onBackground,
+                  color: context.colour.onPrimaryContainer,
                 ),
                 onPressed: () {
                   locator<Clippboard>().copy(swapTx.id);
@@ -319,7 +319,7 @@ class RefreshButton extends StatelessWidget {
             : IconButton(
                 icon: Icon(
                   Icons.refresh,
-                  color: context.colour.onBackground,
+                  color: context.colour.onPrimaryContainer,
                 ),
                 onPressed: () {
                   context.read<SwapHistoryCubit>().refreshSwap(

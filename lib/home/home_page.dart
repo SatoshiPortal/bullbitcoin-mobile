@@ -131,7 +131,7 @@ class _ScreenState extends State<_Screen> {
 
       SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(
-          statusBarColor: context.colour.surface,
+          statusBarColor: context.colour.primaryContainer,
         ),
       );
     });
@@ -162,7 +162,7 @@ class _ScreenState extends State<_Screen> {
               ),
               Expanded(
                 child: ColoredBox(
-                  color: context.colour.surface,
+                  color: context.colour.primaryContainer,
                   child: const HomeTransactions(),
                 ),
               ),
@@ -325,7 +325,7 @@ class CardItem extends StatelessWidget {
       height: 100,
       child: Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
-        color: context.colour.surface,
+        color: context.colour.primaryContainer,
         child: DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -489,7 +489,7 @@ class WalletTag extends StatelessWidget {
     );
 
     final watchonlyColor =
-        darkMode ? context.colour.surface : context.colour.onSurface;
+        darkMode ? context.colour.surface : context.colour.onPrimaryContainer;
 
     final (name, color) = _buildTagDetails(isLiquid, tx);
 
@@ -590,7 +590,7 @@ class HomeTopBar2 extends StatelessWidget {
           const Spacer(),
           IconButton(
             key: UIKeys.homeSettingsButton,
-            color: context.colour.error,
+            color: context.colour.onPrimaryContainer,
             padding: const EdgeInsets.only(bottom: 12),
             visualDensity: VisualDensity.compact,
             iconSize: 30,
@@ -604,7 +604,7 @@ class HomeTopBar2 extends StatelessWidget {
           ),
           IconButton(
             iconSize: 30,
-            color: context.colour.error,
+            color: context.colour.onPrimaryContainer,
             visualDensity: VisualDensity.compact,
             padding: const EdgeInsets.only(bottom: 12),
             icon: const Icon(
@@ -733,7 +733,8 @@ class ScanButton extends StatelessWidget {
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
     );
 
-    final bgColour = darkMode ? context.colour.surface : NewColours.offWhite;
+    final bgColour =
+        darkMode ? context.colour.primaryContainer : NewColours.offWhite;
 
     return SizedBox(
       height: 40,
@@ -756,7 +757,7 @@ class ScanButton extends StatelessWidget {
         ),
         child: Icon(
           Icons.qr_code_2,
-          color: context.colour.onSurface,
+          color: context.colour.onPrimaryContainer,
           size: 32,
         ),
       ),
@@ -895,7 +896,7 @@ class HomeNoWallets extends StatelessWidget {
               'BULL BITCOIN',
               style: font.copyWith(
                 fontSize: 80,
-                color: context.colour.surface,
+                color: context.colour.primaryContainer,
                 height: 0.8,
               ),
             ),

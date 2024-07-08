@@ -144,7 +144,8 @@ class BBButton extends StatelessWidget {
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
     );
 
-    final bgColour = darkMode ? context.colour.background : NewColours.offWhite;
+    final bgColour =
+        darkMode ? context.colour.primaryContainer : NewColours.offWhite;
 
     Widget widget;
 
@@ -162,7 +163,7 @@ class BBButton extends StatelessWidget {
           // shadowColor: Colors.transparent,
           padding: const EdgeInsets.symmetric(vertical: 8),
 
-          // disabledForegroundColor: context.colour.onBackground,
+          // disabledForegroundColor: context.colour.onPrimaryContainer,
         );
 
         if (!loading)
@@ -177,7 +178,7 @@ class BBButton extends StatelessWidget {
                   SvgPicture.asset(
                     leftSvgAsset!,
                     colorFilter: ColorFilter.mode(
-                      context.colour.onBackground,
+                      context.colour.onPrimaryContainer,
                       BlendMode.srcIn,
                     ),
                   ),
@@ -185,7 +186,7 @@ class BBButton extends StatelessWidget {
                 ] else if (leftIcon != null) ...[
                   Icon(
                     leftIcon,
-                    color: context.colour.onBackground,
+                    color: context.colour.onPrimaryContainer,
                   ),
                   const Gap(16),
                 ],
@@ -272,14 +273,14 @@ class BBButton extends StatelessWidget {
                             valueColor: AlwaysStoppedAnimation<Color>(
                               context.colour.primary,
                             ),
-                            backgroundColor: context.colour.background,
+                            backgroundColor: context.colour.primaryContainer,
                           ),
                         ),
                 ),
               const Gap(8),
               FaIcon(
                 FontAwesomeIcons.angleRight,
-                color: context.colour.onBackground,
+                color: context.colour.onPrimaryContainer,
                 // size: 16,
               ),
               const Gap(8),

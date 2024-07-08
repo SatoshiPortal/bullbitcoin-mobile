@@ -21,7 +21,7 @@ class WalletActionButtons extends StatelessWidget {
     // const buttonWidth = double.maxFinite;
     //128.0;
 
-    final color = context.colour.background;
+    final color = context.colour.primaryContainer;
 
     return Container(
       padding: const EdgeInsets.only(

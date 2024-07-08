@@ -7,7 +7,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class PopUpBorder extends StatefulWidget {
-  const PopUpBorder({super.key, required this.child, this.scrollToBottom = false});
+  const PopUpBorder(
+      {super.key, required this.child, this.scrollToBottom = false});
 
   final Widget child;
   final bool scrollToBottom;
@@ -66,7 +67,7 @@ class _PopUpBorderState extends State<PopUpBorder> {
                 ignoring: false,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: context.colour.background,
+                    color: context.colour.primaryContainer,
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(25.0),
                     ),

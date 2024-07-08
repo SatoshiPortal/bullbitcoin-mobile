@@ -282,7 +282,7 @@ class AdvancedOptionAdress extends StatelessWidget {
             border: Border.all(
               color: isSelected
                   ? context.colour.primary
-                  : context.colour.onBackground,
+                  : context.colour.onPrimaryContainer,
               width: isSelected ? 3 : 3,
             ),
           ),

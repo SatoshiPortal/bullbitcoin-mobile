@@ -25,7 +25,6 @@ class BBAlert extends StatelessWidget {
   static Future _openPopUp(BuildContext context, AlertData alertData) {
     return showGeneralDialog(
       barrierLabel: 'showGeneralDialog',
-      barrierDismissible: false,
       transitionDuration: const Duration(milliseconds: 600),
       context: context,
       pageBuilder: (context, _, __) {
@@ -172,13 +171,13 @@ class BBAlert extends StatelessWidget {
       child: SizedBox(
         width: width,
         child: AlertDialog(
-          backgroundColor: context.colour.background,
+          backgroundColor: context.colour.primaryContainer,
           title: title != null ? BBText.titleLarge(title ?? '') : Container(),
           content: BBText.error(text),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
           actions: buttons,
-          surfaceTintColor: context.colour.background,
+          surfaceTintColor: context.colour.primaryContainer,
         ),
       ),
     );

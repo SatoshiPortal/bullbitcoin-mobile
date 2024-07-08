@@ -17,7 +17,7 @@ class BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: context.colour.onBackground,
+      color: context.colour.onPrimaryContainer,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

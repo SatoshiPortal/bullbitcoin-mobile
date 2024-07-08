@@ -62,7 +62,7 @@ class SelectFeesButton extends StatelessWidget {
           FaIcon(
             FontAwesomeIcons.chevronRight,
             size: 16,
-            color: context.colour.onBackground,
+            color: context.colour.onPrimaryContainer,
           ),
         ],
       ),
@@ -321,7 +321,7 @@ class SelectFeesItem extends StatelessWidget {
             border: Border.all(
               color: selected
                   ? context.colour.primary
-                  : context.colour.onBackground,
+                  : context.colour.onPrimaryContainer,
               width: selected ? 2 : 1,
             ),
           ),

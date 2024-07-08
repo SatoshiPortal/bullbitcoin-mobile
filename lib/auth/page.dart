@@ -131,7 +131,7 @@ class AuthPasswordField extends StatelessWidget {
             iconSize: 32,
             color: pin.isEmpty
                 ? context.colour.surface
-                : context.colour.onBackground,
+                : context.colour.onPrimaryContainer,
             splashColor: Colors.transparent,
             onPressed: () {
               SystemSound.play(SystemSoundType.click);
@@ -178,14 +178,14 @@ class _NumberButtonState extends State<NumberButton> {
   Widget build(BuildContext context) {
     final _ = OutlinedButton.styleFrom(
       shape: const CircleBorder(),
-      backgroundColor: context.colour.onBackground,
+      backgroundColor: context.colour.onPrimaryContainer,
       foregroundColor: context.colour.primary,
     );
 
     final __ = OutlinedButton.styleFrom(
       shape: const CircleBorder(),
       backgroundColor: context.colour.primary,
-      foregroundColor: context.colour.background,
+      foregroundColor: context.colour.primaryContainer,
     );
 
     return Center(

@@ -54,7 +54,8 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final importType = context.select((ImportWalletCubit cubit) => cubit.state.importType);
+    final importType =
+        context.select((ImportWalletCubit cubit) => cubit.state.importType);
 
     createFocusNodes(importType == ImportTypes.words12);
 
@@ -78,10 +79,10 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                       child: SegmentedButton(
                         style: ButtonStyle(
                           iconColor: MaterialStatePropertyAll<Color>(
-                            context.colour.onBackground,
+                            context.colour.onPrimaryContainer,
                           ),
                           backgroundColor: MaterialStatePropertyAll<Color>(
-                            context.colour.background,
+                            context.colour.primaryContainer,
                           ),
                         ),
                         segments: <ButtonSegment<ImportTypes>>[
@@ -90,7 +91,7 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                             label: Text(
                               '12 words',
                               style: TextStyle(
-                                color: context.colour.onBackground,
+                                color: context.colour.onPrimaryContainer,
                               ),
                             ),
                           ),
@@ -99,7 +100,7 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                             label: Text(
                               '24 words',
                               style: TextStyle(
-                                color: context.colour.onBackground,
+                                color: context.colour.onPrimaryContainer,
                               ),
                             ),
                           ),
@@ -112,7 +113,9 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                             context.read<ImportWalletCubit>().recoverClicked();
 
                           if (value.first == ImportTypes.words24)
-                            context.read<ImportWalletCubit>().recoverClicked24();
+                            context
+                                .read<ImportWalletCubit>()
+                                .recoverClicked24();
                         },
                       ),
                     ),
@@ -128,7 +131,8 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                                     uiKey: UIKeys.importRecoverField(i),
                                     index: i,
                                     focusNode: focusNodes[i],
-                                    returnClicked: (i) => returnClicked(i, importType),
+                                    returnClicked: (i) =>
+                                        returnClicked(i, importType),
                                   ),
                               ],
                             ),
@@ -141,7 +145,8 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                                     uiKey: UIKeys.importRecoverField(i),
                                     index: i,
                                     focusNode: focusNodes[i],
-                                    returnClicked: (i) => returnClicked(i, importType),
+                                    returnClicked: (i) =>
+                                        returnClicked(i, importType),
                                   ),
                               ],
                             ),
@@ -160,7 +165,8 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                                     uiKey: UIKeys.importRecoverField(i),
                                     index: i,
                                     focusNode: focusNodes[i],
-                                    returnClicked: (i) => returnClicked(i, importType),
+                                    returnClicked: (i) =>
+                                        returnClicked(i, importType),
                                   ),
                               ],
                             ),
@@ -173,7 +179,8 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                                     uiKey: UIKeys.importRecoverField(i),
                                     index: i,
                                     focusNode: focusNodes[i],
-                                    returnClicked: (i) => returnClicked(i, importType),
+                                    returnClicked: (i) =>
+                                        returnClicked(i, importType),
                                   ),
                               ],
                             ),
@@ -244,7 +251,8 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
     controller.addListener(() {
       hideOverlay();
       setState(() {
-        suggestions = context.read<WordsCubit>().state.findWords(controller.text);
+        suggestions =
+            context.read<WordsCubit>().state.findWords(controller.text);
       });
       if (tapped) return;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -307,7 +315,9 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
               key: i == 0 ? UIKeys.firstSuggestionWord : null,
               title: BBText.body(suggestions[i]),
               onTap: () {
-                context.read<ImportWalletCubit>().wordChanged(widget.index, suggestions[i], true);
+                context
+                    .read<ImportWalletCubit>()
+                    .wordChanged(widget.index, suggestions[i], true);
                 hideOverlay();
                 setState(() {
                   tapped = true;
@@ -323,7 +333,8 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final is12 = context.select((ImportWalletCubit cubit) => cubit.state.is12());
+    final is12 =
+        context.select((ImportWalletCubit cubit) => cubit.state.is12());
 
     final word = context.select(
       (ImportWalletCubit cubit) => is12
@@ -353,7 +364,8 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
               child: CallbackShortcuts(
                 bindings: {
                   LogicalKeySet(LogicalKeyboardKey.enter): () {
-                    if (widget.focusNode.hasFocus) widget.returnClicked(widget.index);
+                    if (widget.focusNode.hasFocus)
+                      widget.returnClicked(widget.index);
                   },
                 },
                 child: AnimatedOpacity(
@@ -380,7 +392,9 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
                       context.read<ImportWalletCubit>().clearUntappedWords();
                     },
                     onChanged: (value) {
-                      context.read<ImportWalletCubit>().wordChanged(widget.index, value, false);
+                      context
+                          .read<ImportWalletCubit>()
+                          .wordChanged(widget.index, value, false);
                       hideOverlay();
 
                       setState(() {
@@ -404,13 +418,15 @@ class _ImportWordsPassphrase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = context.select((ImportWalletCubit cubit) => cubit.state.passPhrase);
+    final text =
+        context.select((ImportWalletCubit cubit) => cubit.state.passPhrase);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: BBTextInput.big(
         value: text,
-        onChanged: (value) => context.read<ImportWalletCubit>().passPhraseChanged(value),
+        onChanged: (value) =>
+            context.read<ImportWalletCubit>().passPhraseChanged(value),
         hint: 'Enter passphrase if needed',
       ),
     );
@@ -422,8 +438,10 @@ class _ImportWordsRecoverButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recovering = context.select((ImportWalletCubit cubit) => cubit.state.importing);
-    final err = context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
+    final recovering =
+        context.select((ImportWalletCubit cubit) => cubit.state.importing);
+    final err =
+        context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,

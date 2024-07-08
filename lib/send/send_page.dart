@@ -162,7 +162,7 @@ class _Screen extends StatelessWidget {
     if (sent && isLn) return const SendingLnTx();
 
     return ColoredBox(
-      color: context.colour.background,
+      color: context.colour.primaryContainer,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -324,14 +324,14 @@ class _AddressFieldState extends State<AddressField> {
                 iconSize: 16,
                 visualDensity: VisualDensity.compact,
                 padding: EdgeInsets.zero,
-                color: context.colour.onBackground,
+                color: context.colour.onPrimaryContainer,
                 icon: const FaIcon(FontAwesomeIcons.paste),
               ),
               IconButton(
                 onPressed: context.read<SendCubit>().scanAddress,
                 icon: FaIcon(
                   FontAwesomeIcons.barcode,
-                  color: context.colour.onBackground,
+                  color: context.colour.onPrimaryContainer,
                 ),
               ),
             ],

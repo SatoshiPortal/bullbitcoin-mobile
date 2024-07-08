@@ -210,7 +210,7 @@ class BackupTestItemWord extends StatelessWidget {
                   ),
                   color: isSelected
                       ? context.colour.primary
-                      : context.colour.onBackground,
+                      : context.colour.onPrimaryContainer,
                 ),
                 child: CenterLeft(
                   child: BBText.body(
@@ -230,7 +230,7 @@ class BackupTestItemWord extends StatelessWidget {
                     border: Border.all(
                       color: context.colour.surface,
                     ),
-                    color: context.colour.background,
+                    color: context.colour.primaryContainer,
                   ),
                   child: CenterLeft(child: BBText.body(word)),
                 ),

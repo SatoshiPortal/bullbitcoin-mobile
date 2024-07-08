@@ -55,10 +55,11 @@ class WalletCardDetails extends StatelessWidget {
     final isInstant = wallet.baseWalletType == BaseWalletType.Liquid;
     final isWatchOnly = wallet.watchOnly();
 
-    final darkMode =
-        context.select((Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
+    final darkMode = context.select(
+        (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
 
-    final watchonlyColor = darkMode ? context.colour.surface : context.colour.onBackground;
+    final watchonlyColor =
+        darkMode ? context.colour.surface : context.colour.onPrimaryContainer;
 
     if (isWatchOnly && !isTestnet) return (watchonlyColor, 'mainnet_watchonly');
     if (isWatchOnly && isTestnet) return (watchonlyColor, 'testnet_watchonly');
@@ -80,19 +81,23 @@ class WalletCardDetails extends StatelessWidget {
     final (color, _) = cardDetails(context, wallet);
 
     final name = context.select((WalletBloc x) => x.state.wallet?.name);
-    final fingerprint = context.select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
-    final walletStr = context.select((WalletBloc x) => x.state.wallet?.getWalletTypeStr());
+    final fingerprint = context
+        .select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
+    final walletStr =
+        context.select((WalletBloc x) => x.state.wallet?.getWalletTypeStr());
 
     final sats = context.select((WalletBloc x) => x.state.balanceSats());
 
-    final balance =
-        context.select((CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true));
-    final unit =
-        context.select((CurrencyCubit x) => x.state.getUnitString(isLiquid: wallet.isLiquid()));
+    final balance = context.select(
+        (CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true));
+    final unit = context.select((CurrencyCubit x) =>
+        x.state.getUnitString(isLiquid: wallet.isLiquid()));
 
-    final fiatCurrency = context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
+    final fiatCurrency =
+        context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
 
-    final fiatAmt = context.select((NetworkCubit x) => x.state.calculatePrice(sats, fiatCurrency));
+    final fiatAmt = context
+        .select((NetworkCubit x) => x.state.calculatePrice(sats, fiatCurrency));
 
     return DecoratedBox(
       decoration: BoxDecoration(

@@ -29,7 +29,7 @@ class BBFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     final borderColor = selected
         ? context.colour.primary
-        : context.colour.onBackground.withOpacity(0.2);
+        : context.colour.onPrimaryContainer.withOpacity(0.2);
 
     // TODO: Ideally move this to theme file
     final InputDecoration decoration = InputDecoration(

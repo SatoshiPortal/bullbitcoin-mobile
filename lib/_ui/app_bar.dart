@@ -16,7 +16,7 @@ class BBAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: context.colour.background,
+      color: context.colour.primaryContainer,
       height: double.infinity,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -28,7 +28,7 @@ class BBAppBar extends StatelessWidget {
                 icon: const FaIcon(FontAwesomeIcons.angleLeft),
                 padding: EdgeInsets.zero,
                 onPressed: onBack,
-                color: context.colour.onBackground,
+                color: context.colour.onPrimaryContainer,
               ).animate(delay: 100.ms).fadeIn(),
             ),
           ],

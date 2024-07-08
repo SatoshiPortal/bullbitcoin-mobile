@@ -82,7 +82,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
                 //   await Future.delayed(100.ms);
                 //   SystemChrome.setSystemUIOverlayStyle(
                 //     SystemUiOverlayStyle(
-                //       statusBarColor: context.colour.background,
+                //       statusBarColor: context.colour.primaryContainer,
                 //     ),
                 //   );
                 // });
