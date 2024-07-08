@@ -7,9 +7,12 @@ class CurrencyInput extends StatefulWidget {
     super.key,
     required this.currencies,
     required this.unitsInSats,
-    this.noFiat = false,
-    this.showImages = false,
+    this.label,
+    this.currency,
+    this.onlyCrypto = false, // No FIAT options, display, conversions
+    this.showCurrencyLogos = false,
     this.defaultFiat,
+    this.disabled = false,
     this.initialPrice,
     this.initialCurrency,
     this.textEditingController,
@@ -19,9 +22,12 @@ class CurrencyInput extends StatefulWidget {
 
   final List<CurrencyNew> currencies;
   final CurrencyNew? defaultFiat;
+  final bool disabled;
   final bool unitsInSats;
-  final bool noFiat;
-  final bool showImages;
+  final String? label;
+  final CurrencyNew? currency;
+  final bool onlyCrypto;
+  final bool showCurrencyLogos;
 
   final double? initialPrice;
   final CurrencyNew? initialCurrency;
@@ -69,9 +75,11 @@ class _CurrencyInputState extends State<CurrencyInput> {
           selectedCurrency = widget.initialCurrency!;
         } else {
           if (widget.unitsInSats) {
-            selectedCurrency = widget.currencies[1]; // Assuming this to be sats
+            selectedCurrency =
+                widget.currencies[1]; // TODO: Asset this to be sats
           } else {
-            selectedCurrency = widget.currencies[0]; // Assuming this to be btc
+            selectedCurrency =
+                widget.currencies[0]; // TODO: Asset this to be btc
           }
         }
       }
@@ -97,12 +105,26 @@ class _CurrencyInputState extends State<CurrencyInput> {
   }
 
   @override
+  void didUpdateWidget(CurrencyInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // If currency prop changes wrt currncies, update selectedCurrency accordingly
+    if (widget.currency != null && widget.currency != oldWidget.currency) {
+      setState(() {
+        selectedCurrency = widget.currency!;
+      });
+    }
+  }
+
+  @override
   void dispose() {
     super.dispose();
     if (widget.textEditingController == null) amountController.dispose();
   }
 
   void _onPriceChange(double price) {
+    // TODO: Bring calculatesSats inside widget file
+    // TODO: This will be needed outside as well. So how?
     final int sats = calcualteSats(price, selectedCurrency);
     setState(() {
       _sats = sats;
@@ -140,7 +162,7 @@ class _CurrencyInputState extends State<CurrencyInput> {
   Widget build(BuildContext context) {
     String helperText = '';
 
-    if (!widget.noFiat) {
+    if (!widget.onlyCrypto) {
       if (selectedCurrency.isFiat) {
         // Display BTC or Sats in the helper
         if (widget.unitsInSats) {
@@ -164,17 +186,20 @@ class _CurrencyInputState extends State<CurrencyInput> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: selectedCurrency.code,
-          onChanged: (String? value) {
-            if (value != null) {
-              final CurrencyNew selectedCurrency = widget.currencies.firstWhere(
-                (currency) => currency.code == value,
-                orElse: () => widget.currencies[0],
-              );
-              _onCurrencyChange(selectedCurrency);
-            }
-          },
+          onChanged: widget.disabled == true
+              ? null
+              : (String? value) {
+                  if (value != null) {
+                    final CurrencyNew selectedCurrency =
+                        widget.currencies.firstWhere(
+                      (currency) => currency.code == value,
+                      orElse: () => widget.currencies[0],
+                    );
+                    _onCurrencyChange(selectedCurrency);
+                  }
+                },
           items: widget.currencies.map((CurrencyNew currency) {
-            final child = widget.showImages
+            final child = widget.showCurrencyLogos
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -203,10 +228,11 @@ class _CurrencyInputState extends State<CurrencyInput> {
     return Column(
       children: [
         BBFormField(
-          label: 'Amount',
+          label: widget.label ?? 'Amount',
           editingController: amountController,
           suffix: currencyPicker,
           keyboardType: TextInputType.number,
+          disabled: widget.disabled,
         ),
         const SizedBox(
           height: 10,

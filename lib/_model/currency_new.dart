@@ -34,7 +34,8 @@ int calcualteSats(double price, CurrencyNew currency) {
         totalFiatSmallUnitsInvested / oneBTCInSmallFiatUnit;
     sats = (btcBought * SATS_IN_BTC).toInt();
   } else {
-    if (currency.code == 'BTC') {
+    if (currency.code == btcCurrency.code ||
+        currency.code == lbtcCurrency.code) {
       sats = (price * SATS_IN_BTC).toInt();
     } else {
       // Should be sats

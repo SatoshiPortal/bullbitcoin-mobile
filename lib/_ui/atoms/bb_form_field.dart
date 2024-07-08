@@ -31,12 +31,17 @@ class BBFormField extends StatelessWidget {
         ? context.colour.primary
         : context.colour.onBackground.withOpacity(0.2);
 
+    // TODO: Ideally move this to theme file
     final InputDecoration decoration = InputDecoration(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.0),
         borderSide: BorderSide(color: borderColor),
       ),
       enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        borderSide: BorderSide(color: borderColor),
+      ),
+      disabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8.0),
         borderSide: BorderSide(color: borderColor),
       ),

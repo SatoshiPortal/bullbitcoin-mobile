@@ -38,22 +38,20 @@ class AddressInput extends StatelessWidget {
       editingController: addressController,
       disabled: disabled,
       errorMsg: errorMsg,
-      decoration: InputDecoration(
-        suffixIcon: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (showPaste)
-              IconButton(
-                icon: const Icon(Icons.paste),
-                onPressed: _onPaste,
-              ),
-            if (showScan)
-              IconButton(
-                icon: const Icon(Icons.qr_code),
-                onPressed: _onScan,
-              ),
-          ],
-        ),
+      suffix: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (showPaste)
+            IconButton(
+              icon: const Icon(Icons.paste),
+              onPressed: _onPaste,
+            ),
+          if (showScan)
+            IconButton(
+              icon: const Icon(Icons.qr_code),
+              onPressed: _onScan,
+            ),
+        ],
       ),
     );
   }
