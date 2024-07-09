@@ -485,7 +485,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           if (w == null) return;
           await __closeSwap(updatedSwapTx, emit);
       }
-    } else {
+    } else if (swapTx.isSubmarine()) {
       switch (swapTx.submarineSwapAction()) {
         case SubmarineSwapActions.created:
           await __updateWalletTxs(swapTx, walletBloc, emit);
@@ -528,6 +528,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           if (w == null) return;
           await __closeSwap(updatedSwapTx, emit);
       }
+    } else if (swapTx.isChainSwap()) {
+      print('process Chain Swap');
     }
   }
 }

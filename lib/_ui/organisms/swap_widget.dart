@@ -18,8 +18,14 @@ final lBtcCurrencies = [
 ];
 
 class SwapWidget extends StatefulWidget {
-  const SwapWidget({super.key, required this.wallets, this.onSwapPressed});
+  const SwapWidget({
+    super.key,
+    this.loading = false,
+    required this.wallets,
+    this.onSwapPressed,
+  });
 
+  final bool loading;
   final List<Wallet> wallets;
   final Function(Wallet from, Wallet to, int amount)? onSwapPressed;
 
@@ -114,7 +120,13 @@ class _SwapWidgetState extends State<SwapWidget> {
           label: '',
           disabled: true,
         ),
-        BBButton.big(label: 'Swap', onPressed: _swapButtonPressed),
+        BBButton.big(
+          label: 'Swap',
+          onPressed: _swapButtonPressed,
+          loading: widget.loading,
+          disabled: widget.loading,
+          loadingText: 'Pls wait...',
+        ),
       ],
     );
   }

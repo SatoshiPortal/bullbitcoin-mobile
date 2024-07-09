@@ -8,6 +8,7 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/organisms/swap_widget.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -92,6 +93,8 @@ class _SwapPageState extends State<SwapPage> {
       providers: [
         BlocProvider.value(value: currency),
         BlocProvider.value(value: networkFees),
+        BlocProvider.value(value: swap),
+        BlocProvider.value(value: send),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -114,6 +117,23 @@ class _Screen extends StatelessWidget {
         context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
     final wallets = walletBlocs.map((bloc) => bloc.state.wallet!).toList();
 
+    final sent = context.select((SendCubit cubit) => cubit.state.sent);
+    if (sent) return const SizedBox.shrink();
+
+    final watchOnly = context.select(
+      (SendCubit cubit) =>
+          cubit.state.selectedWalletBloc?.state.wallet?.watchOnly() ?? false,
+    );
+
+    final generatingInv = context
+        .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
+    final sendingg = context.select((SendCubit cubit) => cubit.state.sending);
+    final sending = generatingInv || sendingg;
+
+    final signed = context.select((SendCubit cubit) => cubit.state.signed);
+
+    // final txLabel = context.select((SendCubit cubit) => cubit.state.note);
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -123,10 +143,18 @@ class _Screen extends StatelessWidget {
               height: 100,
             ),
             SwapWidget(
+              loading: sending,
               wallets: wallets,
               onSwapPressed: (Wallet fromWallet, Wallet toWallet, int amount) =>
                   _swapButtonPressed(context, fromWallet, toWallet, amount),
             ),
+            if (signed)
+              BBButton.big(
+                label: 'Broadcast',
+                onPressed: () {
+                  context.read<SendCubit>().sendSwapClicked();
+                },
+              ),
           ],
         ),
       ),
@@ -150,7 +178,7 @@ class _Screen extends StatelessWidget {
 
     context.read<CreateSwapCubit>().createOnChainSwap(
           wallet: fromWallet,
-          amount: amount,
+          amount: 1400000, // amount,
           isTestnet: true,
           btcElectrumUrl: 'electrum.blockstream.info:60002',
           lbtcElectrumUrl: 'blockstream.info:465',

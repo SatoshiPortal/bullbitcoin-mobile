@@ -386,9 +386,16 @@ class SwapTx with _$SwapTx {
       expiredSubmarine() ||
       refundedAny();
 
-  bool failed() => isReverse()
-      ? reverseSwapAction() == ReverseSwapActions.failed
-      : submarineSwapAction() == SubmarineSwapActions.failed;
+  bool failed() => isChainSwap()
+      ? chainSwapAction()
+      : isReverse()
+          ? reverseSwapAction() == ReverseSwapActions.failed
+          : submarineSwapAction() == SubmarineSwapActions.failed;
+
+  //TODO:Onchain
+  bool chainSwapAction() {
+    return status?.status == boltz.SwapStatus.txnFailed;
+  }
 
   String splitInvoice() =>
       lnSwapDetails!.invoice.substring(0, 5) +

@@ -34,13 +34,17 @@ class OnchainListeners extends StatelessWidget {
           listener: (context, state) async {
             if (state.swapTx == null) return;
 
-            final fees =
-                context.read<NetworkFeesCubit>().state.selectedOrFirst(true);
+            try {
+              final fees =
+                  context.read<NetworkFeesCubit>().state.selectedOrFirst(true);
 
-            context.read<SendCubit>().buildOnchainTxFromSwap(
-                  networkFees: fees,
-                  swaptx: state.swapTx!,
-                );
+              context.read<SendCubit>().buildOnchainTxFromSwap(
+                    networkFees: fees,
+                    swaptx: state.swapTx!,
+                  );
+            } catch (e) {
+              print(e);
+            }
           },
         ),
         BlocListener<WatchTxsBloc, WatchTxsState>(
