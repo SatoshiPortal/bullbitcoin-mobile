@@ -563,6 +563,69 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(downloadingFile: false, downloaded: true));
   }
 
+  void buildOnchainTxFromSwap({
+    required int networkFees,
+    required SwapTx swaptx,
+  }) async {
+    if (state.sending) return;
+    if (state.selectedWalletBloc == null) return;
+    final w = state.selectedWalletBloc!.state.wallet;
+
+    final localWalletBloc = _homeCubit.state.getWalletBlocById(w!.id);
+    if (localWalletBloc == null) return;
+    final localWallet = localWalletBloc.state.wallet;
+    final isLiq = localWallet!.isLiquid();
+
+    // if (!localWallet.mainWallet) return;
+
+    final address = swaptx.scriptAddress;
+    // final fee = networkFees;
+    final fee =
+        isLiq ? _networkCubit.state.pickLiquidFees() : networkFees.toDouble();
+
+    // emit(state.copyWith(sending: true, errSending: ''));
+
+    final (buildResp, err) = await _walletTx.buildTx(
+      wallet: localWallet,
+      isManualSend: false,
+      address: address,
+      amount: swaptx.outAmount,
+      // amount: 1000, // to test submarine refund
+      sendAllCoin: false,
+      feeRate: fee,
+      enableRbf: true,
+      note: state.note,
+    );
+    if (err != null) {
+      emit(
+        state.copyWith(
+          errSending: err.toString(),
+          sending: false,
+        ),
+      );
+      return;
+    }
+
+    final (_, tx, feeAmt) = buildResp!;
+
+    if (swaptx.totalFees()! + feeAmt! > swaptx.outAmount) {
+      emit(
+        state.copyWith(errSending: 'Fees is greater than output amount!'),
+      );
+      return;
+    }
+    emit(
+      state.copyWith(
+        psbtSigned: tx!.psbt,
+        psbtSignedFeeAmount: feeAmt,
+        tx: tx.copyWith(swapTx: swaptx, isSwap: true),
+        signed: true,
+        sending: false,
+        enabledWallets: [localWallet.id],
+      ),
+    );
+  }
+
   void buildTxFromSwap({
     required int networkFees,
     required SwapTx swaptx,
