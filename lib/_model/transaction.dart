@@ -246,7 +246,11 @@ class ChainSwapDetails with _$ChainSwapDetails {
     required int claimLocktime,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
-    required String blindingKey, // sensitive
+    required String blindingKey, //TODO:onchain sensitive
+    required String btcScriptSenderPublicKey,
+    required String btcScriptReceiverPublicKey,
+    required String lbtcScriptSenderPublicKey,
+    required String lbtcScriptReceiverPublicKey,
   }) = _ChainSwapDetails;
 
   const ChainSwapDetails._();
@@ -672,6 +676,16 @@ extension X on boltz.SwapStatus? {
         );
       case boltz.SwapStatus.minerfeePaid:
         status = ('Miner Fee Paid.', '');
+      case boltz.SwapStatus.txnServerMempool:
+        status = (
+          'Boltz Mempool',
+          'Boltz has made thier payment. You can claim once this is confirmed'
+        );
+      case boltz.SwapStatus.txnServerConfirmed:
+        status = (
+          'Boltz Confirmed',
+          'Boltz payment is confirmed. You can claim the onchain swap'
+        );
       case null:
         return null;
     }

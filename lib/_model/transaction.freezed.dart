@@ -856,7 +856,12 @@ mixin _$ChainSwapDetails {
   int get claimLocktime => throw _privateConstructorUsedError;
   String get btcElectrumUrl => throw _privateConstructorUsedError;
   String get lbtcElectrumUrl => throw _privateConstructorUsedError;
-  String get blindingKey => throw _privateConstructorUsedError;
+  String get blindingKey =>
+      throw _privateConstructorUsedError; //TODO:onchain sensitive
+  String get btcScriptSenderPublicKey => throw _privateConstructorUsedError;
+  String get btcScriptReceiverPublicKey => throw _privateConstructorUsedError;
+  String get lbtcScriptSenderPublicKey => throw _privateConstructorUsedError;
+  String get lbtcScriptReceiverPublicKey => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -882,7 +887,11 @@ abstract class $ChainSwapDetailsCopyWith<$Res> {
       int claimLocktime,
       String btcElectrumUrl,
       String lbtcElectrumUrl,
-      String blindingKey});
+      String blindingKey,
+      String btcScriptSenderPublicKey,
+      String btcScriptReceiverPublicKey,
+      String lbtcScriptSenderPublicKey,
+      String lbtcScriptReceiverPublicKey});
 }
 
 /// @nodoc
@@ -910,6 +919,10 @@ class _$ChainSwapDetailsCopyWithImpl<$Res, $Val extends ChainSwapDetails>
     Object? btcElectrumUrl = null,
     Object? lbtcElectrumUrl = null,
     Object? blindingKey = null,
+    Object? btcScriptSenderPublicKey = null,
+    Object? btcScriptReceiverPublicKey = null,
+    Object? lbtcScriptSenderPublicKey = null,
+    Object? lbtcScriptReceiverPublicKey = null,
   }) {
     return _then(_value.copyWith(
       direction: null == direction
@@ -960,6 +973,22 @@ class _$ChainSwapDetailsCopyWithImpl<$Res, $Val extends ChainSwapDetails>
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
               as String,
+      btcScriptSenderPublicKey: null == btcScriptSenderPublicKey
+          ? _value.btcScriptSenderPublicKey
+          : btcScriptSenderPublicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      btcScriptReceiverPublicKey: null == btcScriptReceiverPublicKey
+          ? _value.btcScriptReceiverPublicKey
+          : btcScriptReceiverPublicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      lbtcScriptSenderPublicKey: null == lbtcScriptSenderPublicKey
+          ? _value.lbtcScriptSenderPublicKey
+          : lbtcScriptSenderPublicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      lbtcScriptReceiverPublicKey: null == lbtcScriptReceiverPublicKey
+          ? _value.lbtcScriptReceiverPublicKey
+          : lbtcScriptReceiverPublicKey // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -984,7 +1013,11 @@ abstract class _$$ChainSwapDetailsImplCopyWith<$Res>
       int claimLocktime,
       String btcElectrumUrl,
       String lbtcElectrumUrl,
-      String blindingKey});
+      String blindingKey,
+      String btcScriptSenderPublicKey,
+      String btcScriptReceiverPublicKey,
+      String lbtcScriptSenderPublicKey,
+      String lbtcScriptReceiverPublicKey});
 }
 
 /// @nodoc
@@ -1010,6 +1043,10 @@ class __$$ChainSwapDetailsImplCopyWithImpl<$Res>
     Object? btcElectrumUrl = null,
     Object? lbtcElectrumUrl = null,
     Object? blindingKey = null,
+    Object? btcScriptSenderPublicKey = null,
+    Object? btcScriptReceiverPublicKey = null,
+    Object? lbtcScriptSenderPublicKey = null,
+    Object? lbtcScriptReceiverPublicKey = null,
   }) {
     return _then(_$ChainSwapDetailsImpl(
       direction: null == direction
@@ -1060,6 +1097,22 @@ class __$$ChainSwapDetailsImplCopyWithImpl<$Res>
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
               as String,
+      btcScriptSenderPublicKey: null == btcScriptSenderPublicKey
+          ? _value.btcScriptSenderPublicKey
+          : btcScriptSenderPublicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      btcScriptReceiverPublicKey: null == btcScriptReceiverPublicKey
+          ? _value.btcScriptReceiverPublicKey
+          : btcScriptReceiverPublicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      lbtcScriptSenderPublicKey: null == lbtcScriptSenderPublicKey
+          ? _value.lbtcScriptSenderPublicKey
+          : lbtcScriptSenderPublicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      lbtcScriptReceiverPublicKey: null == lbtcScriptReceiverPublicKey
+          ? _value.lbtcScriptReceiverPublicKey
+          : lbtcScriptReceiverPublicKey // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -1080,7 +1133,11 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
       required this.claimLocktime,
       required this.btcElectrumUrl,
       required this.lbtcElectrumUrl,
-      required this.blindingKey})
+      required this.blindingKey,
+      required this.btcScriptSenderPublicKey,
+      required this.btcScriptReceiverPublicKey,
+      required this.lbtcScriptSenderPublicKey,
+      required this.lbtcScriptReceiverPublicKey})
       : super._();
 
   factory _$ChainSwapDetailsImpl.fromJson(Map<String, dynamic> json) =>
@@ -1110,10 +1167,19 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
   final String lbtcElectrumUrl;
   @override
   final String blindingKey;
+//TODO:onchain sensitive
+  @override
+  final String btcScriptSenderPublicKey;
+  @override
+  final String btcScriptReceiverPublicKey;
+  @override
+  final String lbtcScriptSenderPublicKey;
+  @override
+  final String lbtcScriptReceiverPublicKey;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'ChainSwapDetails(direction: $direction, refundKeyIndex: $refundKeyIndex, refundSecretKey: $refundSecretKey, refundPublicKey: $refundPublicKey, claimKeyIndex: $claimKeyIndex, claimSecretKey: $claimSecretKey, claimPublicKey: $claimPublicKey, lockupLocktime: $lockupLocktime, claimLocktime: $claimLocktime, btcElectrumUrl: $btcElectrumUrl, lbtcElectrumUrl: $lbtcElectrumUrl, blindingKey: $blindingKey)';
+    return 'ChainSwapDetails(direction: $direction, refundKeyIndex: $refundKeyIndex, refundSecretKey: $refundSecretKey, refundPublicKey: $refundPublicKey, claimKeyIndex: $claimKeyIndex, claimSecretKey: $claimSecretKey, claimPublicKey: $claimPublicKey, lockupLocktime: $lockupLocktime, claimLocktime: $claimLocktime, btcElectrumUrl: $btcElectrumUrl, lbtcElectrumUrl: $lbtcElectrumUrl, blindingKey: $blindingKey, btcScriptSenderPublicKey: $btcScriptSenderPublicKey, btcScriptReceiverPublicKey: $btcScriptReceiverPublicKey, lbtcScriptSenderPublicKey: $lbtcScriptSenderPublicKey, lbtcScriptReceiverPublicKey: $lbtcScriptReceiverPublicKey)';
   }
 
   @override
@@ -1132,7 +1198,15 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
       ..add(DiagnosticsProperty('claimLocktime', claimLocktime))
       ..add(DiagnosticsProperty('btcElectrumUrl', btcElectrumUrl))
       ..add(DiagnosticsProperty('lbtcElectrumUrl', lbtcElectrumUrl))
-      ..add(DiagnosticsProperty('blindingKey', blindingKey));
+      ..add(DiagnosticsProperty('blindingKey', blindingKey))
+      ..add(DiagnosticsProperty(
+          'btcScriptSenderPublicKey', btcScriptSenderPublicKey))
+      ..add(DiagnosticsProperty(
+          'btcScriptReceiverPublicKey', btcScriptReceiverPublicKey))
+      ..add(DiagnosticsProperty(
+          'lbtcScriptSenderPublicKey', lbtcScriptSenderPublicKey))
+      ..add(DiagnosticsProperty(
+          'lbtcScriptReceiverPublicKey', lbtcScriptReceiverPublicKey));
   }
 
   @override
@@ -1163,7 +1237,21 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
             (identical(other.lbtcElectrumUrl, lbtcElectrumUrl) ||
                 other.lbtcElectrumUrl == lbtcElectrumUrl) &&
             (identical(other.blindingKey, blindingKey) ||
-                other.blindingKey == blindingKey));
+                other.blindingKey == blindingKey) &&
+            (identical(
+                    other.btcScriptSenderPublicKey, btcScriptSenderPublicKey) ||
+                other.btcScriptSenderPublicKey == btcScriptSenderPublicKey) &&
+            (identical(other.btcScriptReceiverPublicKey,
+                    btcScriptReceiverPublicKey) ||
+                other.btcScriptReceiverPublicKey ==
+                    btcScriptReceiverPublicKey) &&
+            (identical(other.lbtcScriptSenderPublicKey,
+                    lbtcScriptSenderPublicKey) ||
+                other.lbtcScriptSenderPublicKey == lbtcScriptSenderPublicKey) &&
+            (identical(other.lbtcScriptReceiverPublicKey,
+                    lbtcScriptReceiverPublicKey) ||
+                other.lbtcScriptReceiverPublicKey ==
+                    lbtcScriptReceiverPublicKey));
   }
 
   @JsonKey(ignore: true)
@@ -1181,7 +1269,11 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
       claimLocktime,
       btcElectrumUrl,
       lbtcElectrumUrl,
-      blindingKey);
+      blindingKey,
+      btcScriptSenderPublicKey,
+      btcScriptReceiverPublicKey,
+      lbtcScriptSenderPublicKey,
+      lbtcScriptReceiverPublicKey);
 
   @JsonKey(ignore: true)
   @override
@@ -1200,18 +1292,23 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
 
 abstract class _ChainSwapDetails extends ChainSwapDetails {
   const factory _ChainSwapDetails(
-      {required final boltz.ChainSwapDirection direction,
-      required final int refundKeyIndex,
-      required final String refundSecretKey,
-      required final String refundPublicKey,
-      required final int claimKeyIndex,
-      required final String claimSecretKey,
-      required final String claimPublicKey,
-      required final int lockupLocktime,
-      required final int claimLocktime,
-      required final String btcElectrumUrl,
-      required final String lbtcElectrumUrl,
-      required final String blindingKey}) = _$ChainSwapDetailsImpl;
+          {required final boltz.ChainSwapDirection direction,
+          required final int refundKeyIndex,
+          required final String refundSecretKey,
+          required final String refundPublicKey,
+          required final int claimKeyIndex,
+          required final String claimSecretKey,
+          required final String claimPublicKey,
+          required final int lockupLocktime,
+          required final int claimLocktime,
+          required final String btcElectrumUrl,
+          required final String lbtcElectrumUrl,
+          required final String blindingKey,
+          required final String btcScriptSenderPublicKey,
+          required final String btcScriptReceiverPublicKey,
+          required final String lbtcScriptSenderPublicKey,
+          required final String lbtcScriptReceiverPublicKey}) =
+      _$ChainSwapDetailsImpl;
   const _ChainSwapDetails._() : super._();
 
   factory _ChainSwapDetails.fromJson(Map<String, dynamic> json) =
@@ -1241,6 +1338,14 @@ abstract class _ChainSwapDetails extends ChainSwapDetails {
   String get lbtcElectrumUrl;
   @override
   String get blindingKey;
+  @override //TODO:onchain sensitive
+  String get btcScriptSenderPublicKey;
+  @override
+  String get btcScriptReceiverPublicKey;
+  @override
+  String get lbtcScriptSenderPublicKey;
+  @override
+  String get lbtcScriptReceiverPublicKey;
   @override
   @JsonKey(ignore: true)
   _$$ChainSwapDetailsImplCopyWith<_$ChainSwapDetailsImpl> get copyWith =>

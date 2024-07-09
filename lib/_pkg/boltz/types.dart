@@ -131,52 +131,6 @@ extension BtcLnSwapExt on BtcLnSwap {
   }
 }
 
-extension ChainSwapExt on ChainSwap {
-  SwapTx createSwapFromChainSwap() {
-    return SwapTx(
-      id: id,
-      chainSwapDetails: ChainSwapDetails(
-        direction: direction,
-        refundKeyIndex: refundIndex,
-        claimKeyIndex: claimIndex,
-        refundPublicKey: refundKeys.publicKey,
-        refundSecretKey: refundKeys.secretKey,
-        claimPublicKey: claimKeys.publicKey,
-        claimSecretKey: claimKeys.secretKey,
-        lockupLocktime: direction == ChainSwapDirection.btcToLbtc
-            ? btcScriptStr.locktime
-            : lbtcScriptStr.locktime,
-        claimLocktime: direction == ChainSwapDirection.lbtcToBtc
-            ? btcScriptStr.locktime
-            : lbtcScriptStr.locktime,
-        blindingKey: blindingKey,
-        btcElectrumUrl: btcElectrumUrl,
-        lbtcElectrumUrl: lbtcElectrumUrl,
-      ),
-      network: isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet,
-      baseWalletType: direction == ChainSwapDirection.btcToLbtc
-          ? BaseWalletType.Bitcoin
-          : BaseWalletType.Liquid,
-      outAmount: outAmount,
-      scriptAddress: scriptAddress,
-      boltzUrl: boltzUrl,
-      creationTime: DateTime.now(),
-    );
-  }
-
-  ChainSwapTxSensitive createSwapSensitiveFromChainSwap() {
-    return ChainSwapTxSensitive(
-      id: id,
-      refundKeySecret: refundKeys.secretKey,
-      claimKeySecret: claimKeys.secretKey,
-      preimage: preimage.value,
-      sha256: preimage.sha256,
-      hash160: preimage.hash160,
-      blindingKey: blindingKey,
-    );
-  }
-}
-
 extension LbtcLnSwapExt on LbtcLnSwap {
   SwapTx createSwapFromLbtcLnSwap() {
     return SwapTx(
@@ -226,6 +180,106 @@ extension LbtcLnSwapExt on LbtcLnSwap {
           : swapScript.senderPubkey,
       locktime: swapScript.locktime,
       isSubmarine: kind == SwapType.submarine,
+    );
+  }
+}
+
+extension ChSwapExt on SwapTx {
+  ChainSwap toChainSwap(ChainSwapTxSensitive sensitive) {
+    return ChainSwap(
+      id: id,
+      isTestnet: network == BBNetwork.Testnet,
+      direction: chainSwapDetails!.direction,
+      refundKeys: KeyPair(
+        publicKey: chainSwapDetails!.refundPublicKey,
+        secretKey: sensitive.refundKeySecret,
+      ),
+      refundIndex: chainSwapDetails!.refundKeyIndex,
+      claimKeys: KeyPair(
+        publicKey: chainSwapDetails!.claimPublicKey,
+        secretKey: sensitive.claimKeySecret,
+      ),
+      claimIndex: chainSwapDetails!.claimKeyIndex,
+      preimage: PreImage(
+        value: sensitive.preimage,
+        sha256: sensitive.sha256,
+        hash160: sensitive.hash160,
+      ),
+      btcScriptStr: BtcSwapScriptStr(
+        swapType: SwapType.chain,
+        hashlock: sensitive.hash160,
+        receiverPubkey: chainSwapDetails!.btcScriptReceiverPublicKey,
+        locktime: chainSwapDetails!.direction == ChainSwapDirection.btcToLbtc
+            ? chainSwapDetails!.lockupLocktime
+            : chainSwapDetails!.claimLocktime,
+        senderPubkey: chainSwapDetails!.btcScriptSenderPublicKey,
+      ),
+      lbtcScriptStr: LBtcSwapScriptStr(
+        swapType: SwapType.chain,
+        hashlock: sensitive.hash160,
+        receiverPubkey: chainSwapDetails!.lbtcScriptReceiverPublicKey,
+        locktime: chainSwapDetails!.direction == ChainSwapDirection.lbtcToBtc
+            ? chainSwapDetails!.lockupLocktime
+            : chainSwapDetails!.claimLocktime,
+        senderPubkey: chainSwapDetails!.lbtcScriptSenderPublicKey,
+        blindingKey: sensitive.blindingKey,
+      ),
+      scriptAddress: scriptAddress,
+      outAmount: outAmount,
+      btcElectrumUrl: chainSwapDetails!.btcElectrumUrl,
+      lbtcElectrumUrl: chainSwapDetails!.lbtcElectrumUrl,
+      boltzUrl: boltzUrl,
+      blindingKey: sensitive.blindingKey,
+    );
+  }
+}
+
+extension ChainSwapExt on ChainSwap {
+  SwapTx createSwapFromChainSwap() {
+    return SwapTx(
+      id: id,
+      chainSwapDetails: ChainSwapDetails(
+        direction: direction,
+        refundKeyIndex: refundIndex,
+        claimKeyIndex: claimIndex,
+        refundPublicKey: refundKeys.publicKey,
+        refundSecretKey: refundKeys.secretKey,
+        claimPublicKey: claimKeys.publicKey,
+        claimSecretKey: claimKeys.secretKey,
+        lockupLocktime: direction == ChainSwapDirection.btcToLbtc
+            ? btcScriptStr.locktime
+            : lbtcScriptStr.locktime,
+        claimLocktime: direction == ChainSwapDirection.lbtcToBtc
+            ? btcScriptStr.locktime
+            : lbtcScriptStr.locktime,
+        blindingKey: blindingKey,
+        btcElectrumUrl: btcElectrumUrl,
+        lbtcElectrumUrl: lbtcElectrumUrl,
+        btcScriptReceiverPublicKey: btcScriptStr.receiverPubkey,
+        btcScriptSenderPublicKey: btcScriptStr.senderPubkey,
+        lbtcScriptReceiverPublicKey: lbtcScriptStr.receiverPubkey,
+        lbtcScriptSenderPublicKey: lbtcScriptStr.senderPubkey,
+      ),
+      network: isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet,
+      baseWalletType: direction == ChainSwapDirection.btcToLbtc
+          ? BaseWalletType.Bitcoin
+          : BaseWalletType.Liquid,
+      outAmount: outAmount,
+      scriptAddress: scriptAddress,
+      boltzUrl: boltzUrl,
+      creationTime: DateTime.now(),
+    );
+  }
+
+  ChainSwapTxSensitive createSwapSensitiveFromChainSwap() {
+    return ChainSwapTxSensitive(
+      id: id,
+      refundKeySecret: refundKeys.secretKey,
+      claimKeySecret: claimKeys.secretKey,
+      preimage: preimage.value,
+      sha256: preimage.sha256,
+      hash160: preimage.hash160,
+      blindingKey: blindingKey,
     );
   }
 }

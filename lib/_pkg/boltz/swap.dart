@@ -616,6 +616,54 @@ class SwapBoltz {
     }
   }
 
+  Future<(String?, Err?)> claimChainSwap({
+    required SwapTx swapTx,
+    required Wallet wallet,
+    required bool tryCooperate,
+  }) async {
+    try {
+      final (swapSentive, err) = await _secureStorage.getValue(
+        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+      );
+      if (err != null) throw err;
+
+      final swapSensitive = LnSwapTxSensitive.fromJson(
+        jsonDecode(swapSentive!) as Map<String, dynamic>,
+      );
+
+      final boltzurl = wallet.network == BBNetwork.Testnet
+          ? boltzTestnetUrl
+          : boltzMainnetUrl;
+
+      final (fees, errFees) = await getFeesAndLimits(
+        boltzUrl: boltzurl,
+      );
+      if (errFees != null) {
+        throw errFees;
+      }
+
+      final onchainFees = await fees?.chain();
+
+      final claimFeesEstimate =
+          swapTx.chainSwapDetails!.direction == ChainSwapDirection.btcToLbtc
+              ? onchainFees?.lbtcFees.userClaim
+              : onchainFees?.btcFees.userClaim;
+      if (claimFeesEstimate == null) throw 'Fees estimate not found';
+
+      final swap = swapTx.toBtcLnSwap(swapSensitive);
+
+      final resp = await swap.claim(
+        outAddress: swapTx.scriptAddress,
+        absFee: claimFeesEstimate,
+        tryCooperate: tryCooperate,
+      );
+
+      return (resp, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
   Future<(SwapTx?, Err?)> chainSwap({
     required String mnemonic,
     required int index,

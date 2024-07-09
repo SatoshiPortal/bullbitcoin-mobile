@@ -89,6 +89,11 @@ _$ChainSwapDetailsImpl _$$ChainSwapDetailsImplFromJson(
       btcElectrumUrl: json['btcElectrumUrl'] as String,
       lbtcElectrumUrl: json['lbtcElectrumUrl'] as String,
       blindingKey: json['blindingKey'] as String,
+      btcScriptSenderPublicKey: json['btcScriptSenderPublicKey'] as String,
+      btcScriptReceiverPublicKey: json['btcScriptReceiverPublicKey'] as String,
+      lbtcScriptSenderPublicKey: json['lbtcScriptSenderPublicKey'] as String,
+      lbtcScriptReceiverPublicKey:
+          json['lbtcScriptReceiverPublicKey'] as String,
     );
 
 Map<String, dynamic> _$$ChainSwapDetailsImplToJson(
@@ -106,6 +111,10 @@ Map<String, dynamic> _$$ChainSwapDetailsImplToJson(
       'btcElectrumUrl': instance.btcElectrumUrl,
       'lbtcElectrumUrl': instance.lbtcElectrumUrl,
       'blindingKey': instance.blindingKey,
+      'btcScriptSenderPublicKey': instance.btcScriptSenderPublicKey,
+      'btcScriptReceiverPublicKey': instance.btcScriptReceiverPublicKey,
+      'lbtcScriptSenderPublicKey': instance.lbtcScriptSenderPublicKey,
+      'lbtcScriptReceiverPublicKey': instance.lbtcScriptReceiverPublicKey,
     };
 
 const _$ChainSwapDirectionEnumMap = {
