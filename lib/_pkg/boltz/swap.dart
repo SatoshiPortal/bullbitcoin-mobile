@@ -627,8 +627,10 @@ class SwapBoltz {
       );
       if (err != null) throw err;
 
-      final swapSensitive = LnSwapTxSensitive.fromJson(
-        jsonDecode(swapSentive!) as Map<String, dynamic>,
+      log(swapSentive!);
+
+      final swapSensitive = ChainSwapTxSensitive.fromJson(
+        jsonDecode(swapSentive) as Map<String, dynamic>,
       );
 
       final boltzurl = wallet.network == BBNetwork.Testnet
@@ -650,10 +652,12 @@ class SwapBoltz {
               : onchainFees?.btcFees.userClaim;
       if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
-      final swap = swapTx.toBtcLnSwap(swapSensitive);
+      final swap = swapTx.toChainSwap(swapSensitive);
 
       final resp = await swap.claim(
-        outAddress: swapTx.scriptAddress,
+        outAddress:
+            'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la',
+        refundAddress: 'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz',
         absFee: claimFeesEstimate,
         tryCooperate: tryCooperate,
       );

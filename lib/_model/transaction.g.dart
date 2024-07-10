@@ -89,8 +89,10 @@ _$ChainSwapDetailsImpl _$$ChainSwapDetailsImplFromJson(
       btcElectrumUrl: json['btcElectrumUrl'] as String,
       lbtcElectrumUrl: json['lbtcElectrumUrl'] as String,
       blindingKey: json['blindingKey'] as String,
+      btcFundingAddress: json['btcFundingAddress'] as String,
       btcScriptSenderPublicKey: json['btcScriptSenderPublicKey'] as String,
       btcScriptReceiverPublicKey: json['btcScriptReceiverPublicKey'] as String,
+      lbtcFundingAddress: json['lbtcFundingAddress'] as String,
       lbtcScriptSenderPublicKey: json['lbtcScriptSenderPublicKey'] as String,
       lbtcScriptReceiverPublicKey:
           json['lbtcScriptReceiverPublicKey'] as String,
@@ -111,8 +113,10 @@ Map<String, dynamic> _$$ChainSwapDetailsImplToJson(
       'btcElectrumUrl': instance.btcElectrumUrl,
       'lbtcElectrumUrl': instance.lbtcElectrumUrl,
       'blindingKey': instance.blindingKey,
+      'btcFundingAddress': instance.btcFundingAddress,
       'btcScriptSenderPublicKey': instance.btcScriptSenderPublicKey,
       'btcScriptReceiverPublicKey': instance.btcScriptReceiverPublicKey,
+      'lbtcFundingAddress': instance.lbtcFundingAddress,
       'lbtcScriptSenderPublicKey': instance.lbtcScriptSenderPublicKey,
       'lbtcScriptReceiverPublicKey': instance.lbtcScriptReceiverPublicKey,
     };

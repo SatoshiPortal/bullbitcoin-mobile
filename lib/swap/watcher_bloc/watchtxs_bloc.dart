@@ -529,7 +529,72 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __closeSwap(updatedSwapTx, emit);
       }
     } else if (swapTx.isChainSwap()) {
-      print('process Chain Swap');
+      print('process Chain Swap: ${swapTx.status!.status}');
+      switch (swapTx.status!.status) {
+        case SwapStatus.txnServerConfirmed:
+          // Go for claim here
+          final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
+          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+        default:
+      }
     }
+  }
+
+  Future<SwapTx?> __onChainclaimSwap(
+    SwapTx swapTx,
+    WalletBloc walletBloc,
+    Emitter<WatchTxsState> emit,
+  ) async {
+    if (state.swapClaimed(swapTx.id) || (state.isClaiming(swapTx.id))) {
+      emit(state.copyWith(errClaimingSwap: 'Swap claimed/claiming'));
+      return null;
+    }
+
+    final updatedClaimingTxs = state.addClaiming(swapTx.id);
+    if (updatedClaimingTxs == null) return null;
+
+    emit(
+      state.copyWith(
+        claimingSwap: true,
+        errClaimingSwap: '',
+        claimingSwapTxIds: updatedClaimingTxs,
+      ),
+    );
+
+    final (txid, err) = await _swapBoltz.claimChainSwap(
+      swapTx: swapTx,
+      wallet: walletBloc.state.wallet!,
+      tryCooperate: true,
+    );
+
+    if (err != null) {
+      emit(
+        state.copyWith(
+          claimingSwap: false,
+          errClaimingSwap: err.toString(),
+          claimingSwapTxIds: state.removeClaiming(swapTx.id),
+        ),
+      );
+      return null;
+    }
+
+    SwapTx updatedSwap;
+    try {
+      final json = jsonDecode(txid!) as Map<String, dynamic>;
+      updatedSwap = swapTx.copyWith(txid: json['id'] as String);
+    } catch (e) {
+      updatedSwap = swapTx.copyWith(txid: txid);
+    }
+
+    emit(
+      state.copyWith(
+        claimedSwapTxs: [...state.claimedSwapTxs, updatedSwap.id],
+        claimingSwapTxIds: state.removeClaiming(updatedSwap.id),
+        claimingSwap: false,
+        // syncWallet: walletBloc.state.wallet,
+      ),
+    );
+
+    return updatedSwap;
   }
 }

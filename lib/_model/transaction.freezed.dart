@@ -858,8 +858,10 @@ mixin _$ChainSwapDetails {
   String get lbtcElectrumUrl => throw _privateConstructorUsedError;
   String get blindingKey =>
       throw _privateConstructorUsedError; //TODO:onchain sensitive
+  String get btcFundingAddress => throw _privateConstructorUsedError;
   String get btcScriptSenderPublicKey => throw _privateConstructorUsedError;
   String get btcScriptReceiverPublicKey => throw _privateConstructorUsedError;
+  String get lbtcFundingAddress => throw _privateConstructorUsedError;
   String get lbtcScriptSenderPublicKey => throw _privateConstructorUsedError;
   String get lbtcScriptReceiverPublicKey => throw _privateConstructorUsedError;
 
@@ -888,8 +890,10 @@ abstract class $ChainSwapDetailsCopyWith<$Res> {
       String btcElectrumUrl,
       String lbtcElectrumUrl,
       String blindingKey,
+      String btcFundingAddress,
       String btcScriptSenderPublicKey,
       String btcScriptReceiverPublicKey,
+      String lbtcFundingAddress,
       String lbtcScriptSenderPublicKey,
       String lbtcScriptReceiverPublicKey});
 }
@@ -919,8 +923,10 @@ class _$ChainSwapDetailsCopyWithImpl<$Res, $Val extends ChainSwapDetails>
     Object? btcElectrumUrl = null,
     Object? lbtcElectrumUrl = null,
     Object? blindingKey = null,
+    Object? btcFundingAddress = null,
     Object? btcScriptSenderPublicKey = null,
     Object? btcScriptReceiverPublicKey = null,
+    Object? lbtcFundingAddress = null,
     Object? lbtcScriptSenderPublicKey = null,
     Object? lbtcScriptReceiverPublicKey = null,
   }) {
@@ -973,6 +979,10 @@ class _$ChainSwapDetailsCopyWithImpl<$Res, $Val extends ChainSwapDetails>
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
               as String,
+      btcFundingAddress: null == btcFundingAddress
+          ? _value.btcFundingAddress
+          : btcFundingAddress // ignore: cast_nullable_to_non_nullable
+              as String,
       btcScriptSenderPublicKey: null == btcScriptSenderPublicKey
           ? _value.btcScriptSenderPublicKey
           : btcScriptSenderPublicKey // ignore: cast_nullable_to_non_nullable
@@ -980,6 +990,10 @@ class _$ChainSwapDetailsCopyWithImpl<$Res, $Val extends ChainSwapDetails>
       btcScriptReceiverPublicKey: null == btcScriptReceiverPublicKey
           ? _value.btcScriptReceiverPublicKey
           : btcScriptReceiverPublicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      lbtcFundingAddress: null == lbtcFundingAddress
+          ? _value.lbtcFundingAddress
+          : lbtcFundingAddress // ignore: cast_nullable_to_non_nullable
               as String,
       lbtcScriptSenderPublicKey: null == lbtcScriptSenderPublicKey
           ? _value.lbtcScriptSenderPublicKey
@@ -1014,8 +1028,10 @@ abstract class _$$ChainSwapDetailsImplCopyWith<$Res>
       String btcElectrumUrl,
       String lbtcElectrumUrl,
       String blindingKey,
+      String btcFundingAddress,
       String btcScriptSenderPublicKey,
       String btcScriptReceiverPublicKey,
+      String lbtcFundingAddress,
       String lbtcScriptSenderPublicKey,
       String lbtcScriptReceiverPublicKey});
 }
@@ -1043,8 +1059,10 @@ class __$$ChainSwapDetailsImplCopyWithImpl<$Res>
     Object? btcElectrumUrl = null,
     Object? lbtcElectrumUrl = null,
     Object? blindingKey = null,
+    Object? btcFundingAddress = null,
     Object? btcScriptSenderPublicKey = null,
     Object? btcScriptReceiverPublicKey = null,
+    Object? lbtcFundingAddress = null,
     Object? lbtcScriptSenderPublicKey = null,
     Object? lbtcScriptReceiverPublicKey = null,
   }) {
@@ -1097,6 +1115,10 @@ class __$$ChainSwapDetailsImplCopyWithImpl<$Res>
           ? _value.blindingKey
           : blindingKey // ignore: cast_nullable_to_non_nullable
               as String,
+      btcFundingAddress: null == btcFundingAddress
+          ? _value.btcFundingAddress
+          : btcFundingAddress // ignore: cast_nullable_to_non_nullable
+              as String,
       btcScriptSenderPublicKey: null == btcScriptSenderPublicKey
           ? _value.btcScriptSenderPublicKey
           : btcScriptSenderPublicKey // ignore: cast_nullable_to_non_nullable
@@ -1104,6 +1126,10 @@ class __$$ChainSwapDetailsImplCopyWithImpl<$Res>
       btcScriptReceiverPublicKey: null == btcScriptReceiverPublicKey
           ? _value.btcScriptReceiverPublicKey
           : btcScriptReceiverPublicKey // ignore: cast_nullable_to_non_nullable
+              as String,
+      lbtcFundingAddress: null == lbtcFundingAddress
+          ? _value.lbtcFundingAddress
+          : lbtcFundingAddress // ignore: cast_nullable_to_non_nullable
               as String,
       lbtcScriptSenderPublicKey: null == lbtcScriptSenderPublicKey
           ? _value.lbtcScriptSenderPublicKey
@@ -1134,8 +1160,10 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
       required this.btcElectrumUrl,
       required this.lbtcElectrumUrl,
       required this.blindingKey,
+      required this.btcFundingAddress,
       required this.btcScriptSenderPublicKey,
       required this.btcScriptReceiverPublicKey,
+      required this.lbtcFundingAddress,
       required this.lbtcScriptSenderPublicKey,
       required this.lbtcScriptReceiverPublicKey})
       : super._();
@@ -1169,9 +1197,13 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
   final String blindingKey;
 //TODO:onchain sensitive
   @override
+  final String btcFundingAddress;
+  @override
   final String btcScriptSenderPublicKey;
   @override
   final String btcScriptReceiverPublicKey;
+  @override
+  final String lbtcFundingAddress;
   @override
   final String lbtcScriptSenderPublicKey;
   @override
@@ -1179,7 +1211,7 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'ChainSwapDetails(direction: $direction, refundKeyIndex: $refundKeyIndex, refundSecretKey: $refundSecretKey, refundPublicKey: $refundPublicKey, claimKeyIndex: $claimKeyIndex, claimSecretKey: $claimSecretKey, claimPublicKey: $claimPublicKey, lockupLocktime: $lockupLocktime, claimLocktime: $claimLocktime, btcElectrumUrl: $btcElectrumUrl, lbtcElectrumUrl: $lbtcElectrumUrl, blindingKey: $blindingKey, btcScriptSenderPublicKey: $btcScriptSenderPublicKey, btcScriptReceiverPublicKey: $btcScriptReceiverPublicKey, lbtcScriptSenderPublicKey: $lbtcScriptSenderPublicKey, lbtcScriptReceiverPublicKey: $lbtcScriptReceiverPublicKey)';
+    return 'ChainSwapDetails(direction: $direction, refundKeyIndex: $refundKeyIndex, refundSecretKey: $refundSecretKey, refundPublicKey: $refundPublicKey, claimKeyIndex: $claimKeyIndex, claimSecretKey: $claimSecretKey, claimPublicKey: $claimPublicKey, lockupLocktime: $lockupLocktime, claimLocktime: $claimLocktime, btcElectrumUrl: $btcElectrumUrl, lbtcElectrumUrl: $lbtcElectrumUrl, blindingKey: $blindingKey, btcFundingAddress: $btcFundingAddress, btcScriptSenderPublicKey: $btcScriptSenderPublicKey, btcScriptReceiverPublicKey: $btcScriptReceiverPublicKey, lbtcFundingAddress: $lbtcFundingAddress, lbtcScriptSenderPublicKey: $lbtcScriptSenderPublicKey, lbtcScriptReceiverPublicKey: $lbtcScriptReceiverPublicKey)';
   }
 
   @override
@@ -1199,10 +1231,12 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
       ..add(DiagnosticsProperty('btcElectrumUrl', btcElectrumUrl))
       ..add(DiagnosticsProperty('lbtcElectrumUrl', lbtcElectrumUrl))
       ..add(DiagnosticsProperty('blindingKey', blindingKey))
+      ..add(DiagnosticsProperty('btcFundingAddress', btcFundingAddress))
       ..add(DiagnosticsProperty(
           'btcScriptSenderPublicKey', btcScriptSenderPublicKey))
       ..add(DiagnosticsProperty(
           'btcScriptReceiverPublicKey', btcScriptReceiverPublicKey))
+      ..add(DiagnosticsProperty('lbtcFundingAddress', lbtcFundingAddress))
       ..add(DiagnosticsProperty(
           'lbtcScriptSenderPublicKey', lbtcScriptSenderPublicKey))
       ..add(DiagnosticsProperty(
@@ -1238,6 +1272,8 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
                 other.lbtcElectrumUrl == lbtcElectrumUrl) &&
             (identical(other.blindingKey, blindingKey) ||
                 other.blindingKey == blindingKey) &&
+            (identical(other.btcFundingAddress, btcFundingAddress) ||
+                other.btcFundingAddress == btcFundingAddress) &&
             (identical(
                     other.btcScriptSenderPublicKey, btcScriptSenderPublicKey) ||
                 other.btcScriptSenderPublicKey == btcScriptSenderPublicKey) &&
@@ -1245,6 +1281,8 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
                     btcScriptReceiverPublicKey) ||
                 other.btcScriptReceiverPublicKey ==
                     btcScriptReceiverPublicKey) &&
+            (identical(other.lbtcFundingAddress, lbtcFundingAddress) ||
+                other.lbtcFundingAddress == lbtcFundingAddress) &&
             (identical(other.lbtcScriptSenderPublicKey,
                     lbtcScriptSenderPublicKey) ||
                 other.lbtcScriptSenderPublicKey == lbtcScriptSenderPublicKey) &&
@@ -1270,8 +1308,10 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
       btcElectrumUrl,
       lbtcElectrumUrl,
       blindingKey,
+      btcFundingAddress,
       btcScriptSenderPublicKey,
       btcScriptReceiverPublicKey,
+      lbtcFundingAddress,
       lbtcScriptSenderPublicKey,
       lbtcScriptReceiverPublicKey);
 
@@ -1304,8 +1344,10 @@ abstract class _ChainSwapDetails extends ChainSwapDetails {
           required final String btcElectrumUrl,
           required final String lbtcElectrumUrl,
           required final String blindingKey,
+          required final String btcFundingAddress,
           required final String btcScriptSenderPublicKey,
           required final String btcScriptReceiverPublicKey,
+          required final String lbtcFundingAddress,
           required final String lbtcScriptSenderPublicKey,
           required final String lbtcScriptReceiverPublicKey}) =
       _$ChainSwapDetailsImpl;
@@ -1339,9 +1381,13 @@ abstract class _ChainSwapDetails extends ChainSwapDetails {
   @override
   String get blindingKey;
   @override //TODO:onchain sensitive
+  String get btcFundingAddress;
+  @override
   String get btcScriptSenderPublicKey;
   @override
   String get btcScriptReceiverPublicKey;
+  @override
+  String get lbtcFundingAddress;
   @override
   String get lbtcScriptSenderPublicKey;
   @override

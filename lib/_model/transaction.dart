@@ -247,8 +247,10 @@ class ChainSwapDetails with _$ChainSwapDetails {
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
     required String blindingKey, //TODO:onchain sensitive
+    required String btcFundingAddress,
     required String btcScriptSenderPublicKey,
     required String btcScriptReceiverPublicKey,
+    required String lbtcFundingAddress,
     required String lbtcScriptSenderPublicKey,
     required String lbtcScriptReceiverPublicKey,
   }) = _ChainSwapDetails;

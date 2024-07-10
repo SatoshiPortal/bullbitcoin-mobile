@@ -188,7 +188,7 @@ extension ChSwapExt on SwapTx {
   ChainSwap toChainSwap(ChainSwapTxSensitive sensitive) {
     return ChainSwap(
       id: id,
-      isTestnet: network == BBNetwork.Testnet,
+      isTestnet: network == BBNetwork.Testnet, // TODO:onChain
       direction: chainSwapDetails!.direction,
       refundKeys: KeyPair(
         publicKey: chainSwapDetails!.refundPublicKey,
@@ -208,21 +208,25 @@ extension ChSwapExt on SwapTx {
       btcScriptStr: BtcSwapScriptStr(
         swapType: SwapType.chain,
         hashlock: sensitive.hash160,
+        fundingAddrs: chainSwapDetails!.btcFundingAddress,
         receiverPubkey: chainSwapDetails!.btcScriptReceiverPublicKey,
         locktime: chainSwapDetails!.direction == ChainSwapDirection.btcToLbtc
             ? chainSwapDetails!.lockupLocktime
             : chainSwapDetails!.claimLocktime,
         senderPubkey: chainSwapDetails!.btcScriptSenderPublicKey,
+        side: Side.lockup,
       ),
       lbtcScriptStr: LBtcSwapScriptStr(
         swapType: SwapType.chain,
         hashlock: sensitive.hash160,
+        fundingAddrs: chainSwapDetails!.lbtcFundingAddress,
         receiverPubkey: chainSwapDetails!.lbtcScriptReceiverPublicKey,
         locktime: chainSwapDetails!.direction == ChainSwapDirection.lbtcToBtc
             ? chainSwapDetails!.lockupLocktime
             : chainSwapDetails!.claimLocktime,
         senderPubkey: chainSwapDetails!.lbtcScriptSenderPublicKey,
         blindingKey: sensitive.blindingKey,
+        side: Side.claim,
       ),
       scriptAddress: scriptAddress,
       outAmount: outAmount,
@@ -255,8 +259,10 @@ extension ChainSwapExt on ChainSwap {
         blindingKey: blindingKey,
         btcElectrumUrl: btcElectrumUrl,
         lbtcElectrumUrl: lbtcElectrumUrl,
+        btcFundingAddress: btcScriptStr.fundingAddrs ?? '',
         btcScriptReceiverPublicKey: btcScriptStr.receiverPubkey,
         btcScriptSenderPublicKey: btcScriptStr.senderPubkey,
+        lbtcFundingAddress: lbtcScriptStr.fundingAddrs ?? '',
         lbtcScriptReceiverPublicKey: lbtcScriptStr.receiverPubkey,
         lbtcScriptSenderPublicKey: lbtcScriptStr.senderPubkey,
       ),
