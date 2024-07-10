@@ -16,6 +16,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
+import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/onchain_listeners.dart';
@@ -155,6 +156,7 @@ class _Screen extends StatelessWidget {
                   context.read<SendCubit>().sendSwapClicked();
                 },
               ),
+            const SendErrDisplay(),
           ],
         ),
       ),
@@ -171,8 +173,13 @@ class _Screen extends StatelessWidget {
 
     final walletBloc =
         context.read<HomeCubit>().state.getWalletBlocById(fromWallet.id);
-
     context.read<SendCubit>().updateWalletBloc(walletBloc!);
+
+    final recipientAddress = toWallet.lastGeneratedAddress;
+
+    final liqNetworkurl =
+        context.read<NetworkCubit>().state.getLiquidNetworkUrl();
+    final btcNetworkUrl = context.read<NetworkCubit>().state.getNetworkUrl();
 
     await Future.delayed(Duration.zero);
 
@@ -180,11 +187,13 @@ class _Screen extends StatelessWidget {
           wallet: fromWallet,
           amount: 1400000, // amount,
           isTestnet: true,
-          btcElectrumUrl: 'electrum.blockstream.info:60002',
-          lbtcElectrumUrl: 'blockstream.info:465',
+          btcElectrumUrl: btcNetworkUrl, // 'electrum.blockstream.info:60002',
+          lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
           toAddress:
-              'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la', // TODO: Derive this from toWallet.lastUnused
-          direction: ChainSwapDirection.btcToLbtc,
+              'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la', // recipientAddress.address;
+          direction: fromWallet.baseWalletType == BaseWalletType.Bitcoin
+              ? ChainSwapDirection.btcToLbtc
+              : ChainSwapDirection.lbtcToBtc,
         );
   }
 }
