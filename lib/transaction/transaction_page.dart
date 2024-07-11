@@ -397,7 +397,9 @@ class _SwapDetails extends StatelessWidget {
 
     final swap = tx.swapTx;
     if (swap == null) return const SizedBox.shrink();
-    final statusStr = status.getStr(swap.isSubmarine());
+    final statusStr = swap.isChainSwap()
+        ? status.getOnChainStr()
+        : status.getStr(swap.isSubmarine());
 
     final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 

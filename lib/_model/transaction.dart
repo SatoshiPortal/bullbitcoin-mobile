@@ -610,6 +610,99 @@ class Invoice with _$Invoice {
 enum PaymentNetwork { bitcoin, liquid, lightning }
 
 extension X on boltz.SwapStatus? {
+  (String, String)? getOnChainStr() {
+    (String, String) status = ('', '');
+    switch (this) {
+      case boltz.SwapStatus.swapCreated:
+        status =
+            ('Created', 'Swap has been created but no payment has been made.');
+      case boltz.SwapStatus.swapExpired:
+        status = ('Expired', 'Swap has expired');
+      case boltz.SwapStatus.swapRefunded:
+        status = ('Refunded', 'Swap has been successfully refunded');
+      case boltz.SwapStatus.swapError:
+        status = ('Error', 'Swap was unsuccessful');
+      case boltz.SwapStatus.txnMempool:
+        status = (
+          'Mempool',
+          'You have paid the swap lockup transaction. Waiting for block confirmation'
+        );
+
+      /// TODO: This happens with onchain swap?
+      case boltz.SwapStatus.txnClaimPending:
+        status = (
+          'Claim Pending',
+          'The lightning invoice has been paid. Waiting for boltz to complete the swap.'
+        );
+      case boltz.SwapStatus.txnClaimed:
+        status = ('Claimed', 'The swap is completed.');
+      case boltz.SwapStatus.txnConfirmed:
+        status = (
+          'Confirmed',
+          'Your lockup transaction is confirmed. Waiting for Boltz lockup'
+        );
+      case boltz.SwapStatus.txnRefunded:
+        status = ('Refunded', 'The swap has been successfully refunded.');
+      case boltz.SwapStatus.txnFailed:
+        status = ('Transaction Failed', 'The swap will be refunded.');
+      case boltz.SwapStatus.txnLockupFailed:
+        status = ('Transaction Lockup Failed', 'The swap will be refunded.');
+
+      /// TODO: This happens with onchain swap?
+      case boltz.SwapStatus.invoiceSet:
+        status = ('Invoice Set', 'The invoice for the swap has been set.');
+
+      /// TODO: This happens with onchain swap?
+      case boltz.SwapStatus.invoicePending:
+        status = (
+          'Invoice Pending',
+          'Onchain transaction confirmed. Payment of the invoice is in progress.'
+        );
+
+      /// TODO: This happens with onchain swap?
+      case boltz.SwapStatus.invoicePaid:
+        status = ('Invoice Paid', 'The invoice has been successfully paid.');
+
+      /// TODO: This happens with onchain swap?
+      case boltz.SwapStatus.invoiceFailedToPay:
+        status = (
+          'Failed to pay invoice',
+          'The invoice has failed to pay. This transaction will be refunded.'
+        );
+
+      /// TODO: This happens with onchain swap?
+      case boltz.SwapStatus.invoiceSettled:
+        status = (
+          'Invoice Settled',
+          'The invoice has settled and the swap is completed.'
+        );
+
+      /// TODO: This happens with onchain swap?
+      case boltz.SwapStatus.invoiceExpired:
+        status = (
+          'Invoice Expired',
+          'The invoice has expirted. Swap will be deleted.'
+        );
+
+      /// TODO: This happens with onchain swap?
+      case boltz.SwapStatus.minerfeePaid:
+        status = ('Miner Fee Paid.', '');
+      case boltz.SwapStatus.txnServerMempool:
+        status = (
+          'Boltz Mempool',
+          'Boltz has made thier payment. You can claim once this is confirmed'
+        );
+      case boltz.SwapStatus.txnServerConfirmed:
+        status = (
+          'Boltz Confirmed',
+          'Boltz payment is confirmed. You can claim the onchain swap'
+        );
+      case null:
+        return null;
+    }
+    return status;
+  }
+
   (String, String)? getStr(bool isSubmarine) {
     (String, String) status = ('', '');
     switch (this) {

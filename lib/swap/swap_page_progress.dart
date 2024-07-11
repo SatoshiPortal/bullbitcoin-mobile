@@ -24,7 +24,7 @@ class SendingOnChainTx extends StatefulWidget {
 
 class _SendingOnChainTxState extends State<SendingOnChainTx> {
   late SwapTx swapTx;
-  String label = '';
+  String label = 'Broadcasting...';
   bool success = false;
 
   @override
