@@ -66,7 +66,7 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         final updatedSwap = state.updatedSwapTx!;
         if (updatedSwap.id != swapTx.id) return;
 
-        String labelLocal = '';
+        String labelLocal = 'Broadcasting...';
         bool successLocal = false;
         if (updatedSwap.status?.status == SwapStatus.swapCreated) {
           labelLocal = 'Broadcasting...';

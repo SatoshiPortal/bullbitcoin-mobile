@@ -666,7 +666,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
         label: label,
       );
 
-      swapTx = updatedSwap;
+      swapTx = updatedSwap.copyWith(claimAddress: toAddress);
 
       await saveSwapToWallet(
         swapTx: swapTx,

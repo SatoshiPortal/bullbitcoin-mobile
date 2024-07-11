@@ -23,11 +23,13 @@ class SwapWidget extends StatefulWidget {
     this.loading = false,
     required this.wallets,
     this.onSwapPressed,
+    this.swapButtonLabel = 'Swap',
   });
 
   final bool loading;
   final List<Wallet> wallets;
   final Function(Wallet from, Wallet to, int amount)? onSwapPressed;
+  final String swapButtonLabel;
 
   @override
   State<SwapWidget> createState() => _SwapWidgetState();
@@ -121,7 +123,7 @@ class _SwapWidgetState extends State<SwapWidget> {
           disabled: true,
         ),
         BBButton.big(
-          label: 'Swap',
+          label: widget.swapButtonLabel,
           onPressed: _swapButtonPressed,
           loading: widget.loading,
           disabled: widget.loading,

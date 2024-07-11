@@ -8,7 +8,6 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/organisms/swap_widget.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -147,16 +146,17 @@ class _Screen extends StatelessWidget {
             SwapWidget(
               loading: sending,
               wallets: wallets,
-              onSwapPressed: (Wallet fromWallet, Wallet toWallet, int amount) =>
-                  _swapButtonPressed(context, fromWallet, toWallet, amount),
+              swapButtonLabel: signed == true ? 'Broadcast' : 'Swap',
+              onSwapPressed: (Wallet fromWallet, Wallet toWallet, int amount) {
+                _swapButtonPressed(
+                  context,
+                  fromWallet,
+                  toWallet,
+                  amount,
+                  signed,
+                );
+              },
             ),
-            if (signed)
-              BBButton.big(
-                label: 'Broadcast',
-                onPressed: () {
-                  context.read<SendCubit>().sendSwapClicked();
-                },
-              ),
             const SendErrDisplay(),
           ],
         ),
@@ -169,14 +169,19 @@ class _Screen extends StatelessWidget {
     Wallet fromWallet,
     Wallet toWallet,
     int amount,
+    bool toBroadcast,
   ) async {
+    if (toBroadcast) {
+      context.read<SendCubit>().sendSwapClicked();
+      return;
+    }
     print('Swap $amount from ${fromWallet.name} to ${toWallet.name}');
 
     final walletBloc =
         context.read<HomeCubit>().state.getWalletBlocById(fromWallet.id);
     context.read<SendCubit>().updateWalletBloc(walletBloc!);
 
-    final recipientAddress = toWallet.lastGeneratedAddress;
+    final recipientAddress = toWallet.lastGeneratedAddress?.address ?? '';
 
     final liqNetworkurl =
         context.read<NetworkCubit>().state.getLiquidNetworkUrl();
@@ -186,12 +191,11 @@ class _Screen extends StatelessWidget {
 
     context.read<CreateSwapCubit>().createOnChainSwap(
           wallet: fromWallet,
-          amount: 20000, // 1010000, // amount,
+          amount: amount, //20000, // 1010000, // amount,
           isTestnet: true,
           btcElectrumUrl: btcNetworkUrl, // 'electrum.blockstream.info:60002',
           lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
-          toAddress:
-              'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la', // recipientAddress.address;
+          toAddress: recipientAddress, // recipientAddress.address;
           direction: fromWallet.baseWalletType == BaseWalletType.Bitcoin
               ? ChainSwapDirection.btcToLbtc
               : ChainSwapDirection.lbtcToBtc,

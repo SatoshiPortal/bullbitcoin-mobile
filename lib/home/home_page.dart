@@ -463,9 +463,12 @@ class WalletTag extends StatelessWidget {
     Color colour;
     String text;
 
-    if (hasSwap)
-      text = 'Lightning';
-    else if (isLiquid)
+    if (hasSwap) {
+      if (tx.swapTx?.isChainSwap() == true)
+        text = 'On-chain swap';
+      else
+        text = 'Lightning';
+    } else if (isLiquid)
       text = 'Liquid';
     else
       text = 'Bitcoin on-chain';
