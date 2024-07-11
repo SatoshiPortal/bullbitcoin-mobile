@@ -529,10 +529,13 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __closeSwap(updatedSwapTx, emit);
       }
     } else if (swapTx.isChainSwap()) {
-      print('process Chain Swap: ${swapTx.status!.status}');
+      print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
       switch (swapTx.status!.status) {
+        case SwapStatus.txnMempool:
+        case SwapStatus.txnConfirmed:
+        case SwapStatus.txnServerMempool:
+          await __updateWalletTxs(swapTx, walletBloc, emit);
         case SwapStatus.txnServerConfirmed:
-          // Go for claim here
           final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         default:

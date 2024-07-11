@@ -76,8 +76,10 @@ class SwapBoltz {
   ) async {
     try {
       final url = isTestnet ? boltzTestnetUrl : boltzMainnetUrl;
+      final urlWithoutVersion = url.endsWith('/v2') ? url.split('/')[0] : url;
 
-      final res = await _dio.post('https://$url/swapstatus', data: {'id': id});
+      final res = await _dio
+          .post('https://$urlWithoutVersion/swapstatus', data: {'id': id});
 
       final data = res.data['status'] as String;
       final status = getSwapStatusFromString(data);

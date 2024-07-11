@@ -35,7 +35,9 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
 
   @override
   Widget build(BuildContext context) {
-    final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
+    final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
+    // final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
+    final amount = tx?.getAmount(sentAsTotal: true) ?? 0;
     final isLiquid = swapTx.isLiquid();
 
     final amtStr = context.select(
@@ -44,7 +46,6 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         isLiquid: isLiquid,
       ),
     );
-    final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
 
     context.read<CurrencyCubit>().updateAmount(amount.toString());
     final defaultCurrency = context
@@ -67,16 +68,19 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
 
         String labelLocal = '';
         bool successLocal = false;
-        if (updatedSwap.status?.status == SwapStatus.txnMempool) {
-          labelLocal = 'Our txn waiting for confirmation';
+        if (updatedSwap.status?.status == SwapStatus.swapCreated) {
+          labelLocal = 'Broadcasting...';
+        } else if (updatedSwap.status?.status == SwapStatus.txnMempool) {
+          labelLocal = 'Our txn waiting for confirmation (1/3)';
         } else if (updatedSwap.status?.status == SwapStatus.txnConfirmed) {
           labelLocal = 'Waiting for boltz payment';
         } else if (updatedSwap.status?.status == SwapStatus.txnServerMempool) {
-          labelLocal = 'Our txn waiting for confirmation';
-        } else if (updatedSwap.status?.status == SwapStatus.txnServerMempool) {
-          labelLocal = 'Waiting for boltz payment';
+          labelLocal = 'Boltz txn waiting for confirmation (2/3)';
+        } else if (updatedSwap.status?.status ==
+            SwapStatus.txnServerConfirmed) {
+          labelLocal = 'Claiming... (3/3)';
         } else if (updatedSwap.status?.status == SwapStatus.txnClaimed) {
-          labelLocal = 'Success';
+          labelLocal = 'Success / Swap complete';
           successLocal = true;
         }
         setState(() {
@@ -91,7 +95,8 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
           const SizedBox(width: double.infinity),
           BBText.body(label),
           const Gap(16),
-          if (success) const SendTick(sent: true),
+          SendTick(sent: success),
+          // if (success) const SendTick(sent: true),
           //if (refund)
           //  const FaIcon(
           //    FontAwesomeIcons.triangleExclamation,

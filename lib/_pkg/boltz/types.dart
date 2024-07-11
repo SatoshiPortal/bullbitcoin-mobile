@@ -230,7 +230,8 @@ extension ChSwapExt on SwapTx {
       ),
       scriptAddress: scriptAddress,
       outAmount: outAmount,
-      btcElectrumUrl: chainSwapDetails!.btcElectrumUrl,
+      btcElectrumUrl:
+          'electrum.blockstream.info:60002', // chainSwapDetails!.btcElectrumUrl, // TODO:onchain
       lbtcElectrumUrl: chainSwapDetails!.lbtcElectrumUrl,
       boltzUrl: boltzUrl,
       blindingKey: sensitive.blindingKey,
@@ -257,7 +258,8 @@ extension ChainSwapExt on ChainSwap {
             ? btcScriptStr.locktime
             : lbtcScriptStr.locktime,
         blindingKey: blindingKey,
-        btcElectrumUrl: btcElectrumUrl,
+        btcElectrumUrl:
+            'electrum.blockstream.info:60002', // btcElectrumUrl, // TODO:chainswap
         lbtcElectrumUrl: lbtcElectrumUrl,
         btcFundingAddress: btcScriptStr.fundingAddrs ?? '',
         btcScriptReceiverPublicKey: btcScriptStr.receiverPubkey,

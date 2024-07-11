@@ -20,6 +20,7 @@ import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/onchain_listeners.dart';
+import 'package:bb_mobile/swap/swap_page_progress.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:boltz_dart/boltz_dart.dart';
@@ -119,7 +120,7 @@ class _Screen extends StatelessWidget {
     final wallets = walletBlocs.map((bloc) => bloc.state.wallet!).toList();
 
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
-    if (sent) return const SizedBox.shrink();
+    if (sent) return const SendingOnChainTx();
 
     final watchOnly = context.select(
       (SendCubit cubit) =>
@@ -185,7 +186,7 @@ class _Screen extends StatelessWidget {
 
     context.read<CreateSwapCubit>().createOnChainSwap(
           wallet: fromWallet,
-          amount: 1400000, // amount,
+          amount: 20000, // 1010000, // amount,
           isTestnet: true,
           btcElectrumUrl: btcNetworkUrl, // 'electrum.blockstream.info:60002',
           lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',

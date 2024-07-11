@@ -385,9 +385,17 @@ class WalletTx implements IWalletTransactions {
     final updatedSwapTx = storedSwap.copyWith(
       status: swapTx.status,
       txid: storedSwap.txid ?? swapTx.txid,
-      lnSwapDetails: storedSwap.lnSwapDetails!.copyWith(
-        keyIndex: storedSwap.lnSwapDetails!.keyIndex,
-      ),
+      lnSwapDetails: swapTx.isChainSwap()
+          ? null
+          : storedSwap.lnSwapDetails!.copyWith(
+              keyIndex: storedSwap.lnSwapDetails!.keyIndex,
+            ),
+      chainSwapDetails: swapTx.isChainSwap()
+          ? storedSwap.chainSwapDetails!.copyWith(
+              refundKeyIndex: swapTx.chainSwapDetails!.refundKeyIndex,
+              claimKeyIndex: swapTx.chainSwapDetails!.claimKeyIndex,
+            )
+          : null,
     );
     swapTxs[idx] = updatedSwapTx;
     final txs = wallet.transactions.toList();
