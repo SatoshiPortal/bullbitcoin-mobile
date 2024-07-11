@@ -110,7 +110,7 @@ class SendCubit extends Cubit<SendState> {
 
     switch (paymentNetwork) {
       case AddressNetwork.bip21Bitcoin:
-        final bip21Obj = bip21.decode(address);
+        final bip21Obj = bip21.decode(address.toLowerCase());
         final newAddress = bip21Obj.address;
         emit(state.copyWith(address: newAddress));
         final amount = bip21Obj.options['amount'] as num?;
