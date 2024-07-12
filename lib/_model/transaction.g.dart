@@ -185,6 +185,7 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       lockupFees: (json['lockupFees'] as num?)?.toInt(),
       claimFees: (json['claimFees'] as num?)?.toInt(),
       claimAddress: json['claimAddress'] as String?,
+      refundAddress: json['refundAddress'] as String?,
       creationTime: json['creationTime'] == null
           ? null
           : DateTime.parse(json['creationTime'] as String),
@@ -210,6 +211,7 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
       'lockupFees': instance.lockupFees,
       'claimFees': instance.claimFees,
       'claimAddress': instance.claimAddress,
+      'refundAddress': instance.refundAddress,
       'creationTime': instance.creationTime?.toIso8601String(),
       'completionTime': instance.completionTime?.toIso8601String(),
     };

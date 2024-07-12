@@ -148,9 +148,11 @@ class _Screen extends StatelessWidget {
               height: 100,
             ),
             SwapWidget(
-              loading: sending,
+              loading: sending | signed,
               wallets: wallets,
               swapButtonLabel: signed == true ? 'Broadcast' : 'Swap',
+              swapButtonLoadingLabel:
+                  signed == true ? 'Broadcasting' : 'Creating swap',
               unitInSats: unitInSats,
               onSwapPressed: (Wallet fromWallet, Wallet toWallet, int amount) {
                 _swapButtonPressed(
@@ -180,6 +182,14 @@ class _Screen extends StatelessWidget {
       context.read<SendCubit>().sendSwapClicked();
       return;
     }
+
+    if (amount > fromWallet.balance!) {
+      context.read<CreateSwapCubit>().setValidationError(
+            'Not enough balance.\nWallet balance is: ${fromWallet.balance!}.',
+          );
+      return;
+    }
+
     print('Swap $amount from ${fromWallet.name} to ${toWallet.name}');
 
     final walletBloc =
@@ -187,6 +197,7 @@ class _Screen extends StatelessWidget {
     context.read<SendCubit>().updateWalletBloc(walletBloc!);
 
     final recipientAddress = toWallet.lastGeneratedAddress?.address ?? '';
+    final refundAddress = fromWallet.lastGeneratedAddress?.address ?? '';
 
     final liqNetworkurl =
         context.read<NetworkCubit>().state.getLiquidNetworkUrl();
@@ -205,6 +216,7 @@ class _Screen extends StatelessWidget {
               btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
           lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
           toAddress: recipientAddress, // recipientAddress.address;
+          refundAddress: refundAddress,
           direction: fromWallet.baseWalletType == BaseWalletType.Bitcoin
               ? ChainSwapDirection.btcToLbtc
               : ChainSwapDirection.lbtcToBtc,

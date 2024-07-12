@@ -298,6 +298,7 @@ class SwapTx with _$SwapTx {
     int? lockupFees,
     int? claimFees,
     String? claimAddress,
+    String? refundAddress,
     DateTime? creationTime,
     DateTime? completionTime,
   }) = _SwapTx;

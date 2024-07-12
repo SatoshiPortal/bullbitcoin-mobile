@@ -535,6 +535,9 @@ class CreateSwapCubit extends Cubit<SwapState> {
         ),
       );
 
+  void setValidationError(String validationMsg) =>
+      emit(state.copyWith(errCreatingSwapInv: validationMsg));
+
   void createOnChainSwap({
     required Wallet wallet,
     required int amount,
@@ -543,6 +546,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
     required String toAddress,
+    required String refundAddress,
     required ChainSwapDirection direction,
   }) async {
     try {
@@ -666,7 +670,8 @@ class CreateSwapCubit extends Cubit<SwapState> {
         label: label,
       );
 
-      swapTx = updatedSwap.copyWith(claimAddress: toAddress);
+      swapTx = updatedSwap.copyWith(
+          claimAddress: toAddress, refundAddress: refundAddress);
 
       await saveSwapToWallet(
         swapTx: swapTx,

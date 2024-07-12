@@ -1777,6 +1777,7 @@ mixin _$SwapTx {
   int? get lockupFees => throw _privateConstructorUsedError;
   int? get claimFees => throw _privateConstructorUsedError;
   String? get claimAddress => throw _privateConstructorUsedError;
+  String? get refundAddress => throw _privateConstructorUsedError;
   DateTime? get creationTime => throw _privateConstructorUsedError;
   DateTime? get completionTime => throw _privateConstructorUsedError;
 
@@ -1806,6 +1807,7 @@ abstract class $SwapTxCopyWith<$Res> {
       int? lockupFees,
       int? claimFees,
       String? claimAddress,
+      String? refundAddress,
       DateTime? creationTime,
       DateTime? completionTime});
 
@@ -1842,6 +1844,7 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? lockupFees = freezed,
     Object? claimFees = freezed,
     Object? claimAddress = freezed,
+    Object? refundAddress = freezed,
     Object? creationTime = freezed,
     Object? completionTime = freezed,
   }) {
@@ -1905,6 +1908,10 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
       claimAddress: freezed == claimAddress
           ? _value.claimAddress
           : claimAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
+      refundAddress: freezed == refundAddress
+          ? _value.refundAddress
+          : refundAddress // ignore: cast_nullable_to_non_nullable
               as String?,
       creationTime: freezed == creationTime
           ? _value.creationTime
@@ -1977,6 +1984,7 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       int? lockupFees,
       int? claimFees,
       String? claimAddress,
+      String? refundAddress,
       DateTime? creationTime,
       DateTime? completionTime});
 
@@ -2014,6 +2022,7 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? lockupFees = freezed,
     Object? claimFees = freezed,
     Object? claimAddress = freezed,
+    Object? refundAddress = freezed,
     Object? creationTime = freezed,
     Object? completionTime = freezed,
   }) {
@@ -2078,6 +2087,10 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.claimAddress
           : claimAddress // ignore: cast_nullable_to_non_nullable
               as String?,
+      refundAddress: freezed == refundAddress
+          ? _value.refundAddress
+          : refundAddress // ignore: cast_nullable_to_non_nullable
+              as String?,
       creationTime: freezed == creationTime
           ? _value.creationTime
           : creationTime // ignore: cast_nullable_to_non_nullable
@@ -2109,6 +2122,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       this.lockupFees,
       this.claimFees,
       this.claimAddress,
+      this.refundAddress,
       this.creationTime,
       this.completionTime})
       : super._();
@@ -2148,13 +2162,15 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   @override
   final String? claimAddress;
   @override
+  final String? refundAddress;
+  @override
   final DateTime? creationTime;
   @override
   final DateTime? completionTime;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, network: $network, baseWalletType: $baseWalletType, outAmount: $outAmount, scriptAddress: $scriptAddress, boltzUrl: $boltzUrl, chainSwapDetails: $chainSwapDetails, lnSwapDetails: $lnSwapDetails, txid: $txid, label: $label, status: $status, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress, creationTime: $creationTime, completionTime: $completionTime)';
+    return 'SwapTx(id: $id, network: $network, baseWalletType: $baseWalletType, outAmount: $outAmount, scriptAddress: $scriptAddress, boltzUrl: $boltzUrl, chainSwapDetails: $chainSwapDetails, lnSwapDetails: $lnSwapDetails, txid: $txid, label: $label, status: $status, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress, refundAddress: $refundAddress, creationTime: $creationTime, completionTime: $completionTime)';
   }
 
   @override
@@ -2177,6 +2193,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('lockupFees', lockupFees))
       ..add(DiagnosticsProperty('claimFees', claimFees))
       ..add(DiagnosticsProperty('claimAddress', claimAddress))
+      ..add(DiagnosticsProperty('refundAddress', refundAddress))
       ..add(DiagnosticsProperty('creationTime', creationTime))
       ..add(DiagnosticsProperty('completionTime', completionTime));
   }
@@ -2211,6 +2228,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
                 other.claimFees == claimFees) &&
             (identical(other.claimAddress, claimAddress) ||
                 other.claimAddress == claimAddress) &&
+            (identical(other.refundAddress, refundAddress) ||
+                other.refundAddress == refundAddress) &&
             (identical(other.creationTime, creationTime) ||
                 other.creationTime == creationTime) &&
             (identical(other.completionTime, completionTime) ||
@@ -2236,6 +2255,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       lockupFees,
       claimFees,
       claimAddress,
+      refundAddress,
       creationTime,
       completionTime);
 
@@ -2270,6 +2290,7 @@ abstract class _SwapTx extends SwapTx {
       final int? lockupFees,
       final int? claimFees,
       final String? claimAddress,
+      final String? refundAddress,
       final DateTime? creationTime,
       final DateTime? completionTime}) = _$SwapTxImpl;
   const _SwapTx._() : super._();
@@ -2306,6 +2327,8 @@ abstract class _SwapTx extends SwapTx {
   int? get claimFees;
   @override
   String? get claimAddress;
+  @override
+  String? get refundAddress;
   @override
   DateTime? get creationTime;
   @override

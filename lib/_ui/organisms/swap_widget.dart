@@ -137,7 +137,7 @@ class _SwapWidgetState extends State<SwapWidget> {
           onPressed: _swapButtonPressed,
           loading: widget.loading,
           disabled: widget.loading,
-          loadingText: 'Pls wait...',
+          loadingText: widget.swapButtonLoadingLabel,
         ),
       ],
     );

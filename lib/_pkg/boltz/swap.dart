@@ -658,7 +658,11 @@ class SwapBoltz {
 
       final resp = await swap.claim(
         outAddress: swapTx.claimAddress!,
-        refundAddress: 'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz',
+        refundAddress: swapTx.refundAddress!,
+        // refundAddress: swap.direction == ChainSwapDirection.btcToLbtc
+        //     ? 'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz'
+        //     : 'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la',
+        // TODO:Onchain
         absFee: claimFeesEstimate,
         tryCooperate: tryCooperate,
       );
