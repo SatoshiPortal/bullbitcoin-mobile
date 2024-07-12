@@ -543,7 +543,7 @@ class _SendButton extends StatelessWidget {
             },
             child: BBButton.big(
               loading: sending,
-              disabled: sending || !showSend,
+              disabled: sending, // || !showSend,
               leftIcon: Icons.send,
               onPressed: () async {
                 if (sending) return;

@@ -24,12 +24,16 @@ class SwapWidget extends StatefulWidget {
     required this.wallets,
     this.onSwapPressed,
     this.swapButtonLabel = 'Swap',
+    this.swapButtonLoadingLabel = 'Pls wait...',
+    this.unitInSats = true,
   });
 
   final bool loading;
   final List<Wallet> wallets;
   final Function(Wallet from, Wallet to, int amount)? onSwapPressed;
   final String swapButtonLabel;
+  final String swapButtonLoadingLabel;
+  final bool unitInSats;
 
   @override
   State<SwapWidget> createState() => _SwapWidgetState();
@@ -67,6 +71,11 @@ class _SwapWidgetState extends State<SwapWidget> {
     fromPriceController.addListener(() {
       toPriceController.text = fromPriceController.text;
     });
+
+    if (widget.unitInSats) {
+      fromPriceCurrency = lBtcCurrencies[1];
+      toPriceCurrency = btcCurrencies[1];
+    }
   }
 
   @override
@@ -86,12 +95,13 @@ class _SwapWidgetState extends State<SwapWidget> {
         CurrencyInput(
           currencies: fromPriceCurrencies,
           currency: fromPriceCurrency,
-          unitsInSats: true,
+          unitsInSats: widget.unitInSats,
           onlyCrypto: true,
           showCurrencyLogos: true,
           textEditingController: fromPriceController,
           label: '',
           onCurrencyChange: _fromCurrencyChanged,
+          disabled: widget.loading,
         ),
         const SizedBox(
           height: 10,
@@ -120,7 +130,7 @@ class _SwapWidgetState extends State<SwapWidget> {
           showCurrencyLogos: true,
           textEditingController: toPriceController,
           label: '',
-          disabled: true,
+          disabled: widget.loading,
         ),
         BBButton.big(
           label: widget.swapButtonLabel,
@@ -136,10 +146,15 @@ class _SwapWidgetState extends State<SwapWidget> {
   void _swapButtonPressed() {
     print('Swap button pressed');
     if (widget.onSwapPressed != null) {
+      final isSat = fromPriceCurrency.code.contains('sats');
+      final int sats = isSat
+          ? int.parse(fromPriceController.text)
+          : (double.parse(fromPriceController.text) * SATS_IN_BTC).toInt();
+
       widget.onSwapPressed?.call(
         selectedFromWallet,
         selectedToWallet,
-        int.parse(fromPriceController.text),
+        sats,
       );
     }
   }

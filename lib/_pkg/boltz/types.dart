@@ -214,7 +214,9 @@ extension ChSwapExt on SwapTx {
             ? chainSwapDetails!.lockupLocktime
             : chainSwapDetails!.claimLocktime,
         senderPubkey: chainSwapDetails!.btcScriptSenderPublicKey,
-        side: Side.lockup,
+        side: chainSwapDetails!.direction == ChainSwapDirection.btcToLbtc
+            ? Side.lockup
+            : Side.claim,
       ),
       lbtcScriptStr: LBtcSwapScriptStr(
         swapType: SwapType.chain,
@@ -226,12 +228,14 @@ extension ChSwapExt on SwapTx {
             : chainSwapDetails!.claimLocktime,
         senderPubkey: chainSwapDetails!.lbtcScriptSenderPublicKey,
         blindingKey: sensitive.blindingKey,
-        side: Side.claim,
+        side: chainSwapDetails!.direction == ChainSwapDirection.lbtcToBtc
+            ? Side.lockup
+            : Side.claim,
       ),
       scriptAddress: scriptAddress,
       outAmount: outAmount,
-      btcElectrumUrl:
-          'electrum.blockstream.info:60002', // chainSwapDetails!.btcElectrumUrl, // TODO:onchain
+      btcElectrumUrl: chainSwapDetails!.btcElectrumUrl,
+      // 'electrum.blockstream.info:60002', // chainSwapDetails!.btcElectrumUrl, // TODO:onchain
       lbtcElectrumUrl: chainSwapDetails!.lbtcElectrumUrl,
       boltzUrl: boltzUrl,
       blindingKey: sensitive.blindingKey,
@@ -258,8 +262,8 @@ extension ChainSwapExt on ChainSwap {
             ? btcScriptStr.locktime
             : lbtcScriptStr.locktime,
         blindingKey: blindingKey,
-        btcElectrumUrl:
-            'electrum.blockstream.info:60002', // btcElectrumUrl, // TODO:chainswap
+        btcElectrumUrl: btcElectrumUrl,
+        // 'electrum.blockstream.info:60002', // btcElectrumUrl, // TODO:chainswap // TODO:Onchain
         lbtcElectrumUrl: lbtcElectrumUrl,
         btcFundingAddress: btcScriptStr.fundingAddrs ?? '',
         btcScriptReceiverPublicKey: btcScriptStr.receiverPubkey,

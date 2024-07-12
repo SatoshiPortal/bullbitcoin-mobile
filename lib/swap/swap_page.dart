@@ -133,6 +133,10 @@ class _Screen extends StatelessWidget {
 
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
 
+    final unitInSats = context.select(
+      (CurrencyCubit cubit) => cubit.state.unitsInSats,
+    );
+
     // final txLabel = context.select((SendCubit cubit) => cubit.state.note);
 
     return SingleChildScrollView(
@@ -147,6 +151,7 @@ class _Screen extends StatelessWidget {
               loading: sending,
               wallets: wallets,
               swapButtonLabel: signed == true ? 'Broadcast' : 'Swap',
+              unitInSats: unitInSats,
               onSwapPressed: (Wallet fromWallet, Wallet toWallet, int amount) {
                 _swapButtonPressed(
                   context,
@@ -186,6 +191,9 @@ class _Screen extends StatelessWidget {
     final liqNetworkurl =
         context.read<NetworkCubit>().state.getLiquidNetworkUrl();
     final btcNetworkUrl = context.read<NetworkCubit>().state.getNetworkUrl();
+    final btcNetworkUrlWithoutSSL = btcNetworkUrl.startsWith('ssl://')
+        ? btcNetworkUrl.split('//')[1]
+        : btcNetworkUrl;
 
     await Future.delayed(Duration.zero);
 
@@ -193,7 +201,8 @@ class _Screen extends StatelessWidget {
           wallet: fromWallet,
           amount: amount, //20000, // 1010000, // amount,
           isTestnet: true,
-          btcElectrumUrl: btcNetworkUrl, // 'electrum.blockstream.info:60002',
+          btcElectrumUrl:
+              btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
           lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
           toAddress: recipientAddress, // recipientAddress.address;
           direction: fromWallet.baseWalletType == BaseWalletType.Bitcoin

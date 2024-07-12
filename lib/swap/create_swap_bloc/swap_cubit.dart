@@ -653,7 +653,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
         return;
       }
 
-      // TODO: Test this properly
+      // TODO:Onchain Test this properly
       final updatedSwap = swap!.copyWith(
         boltzFees: isLiq
             ? chainFees.lbtcFees.percentage * amount ~/ 100
