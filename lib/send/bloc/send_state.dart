@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/utils.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -137,6 +138,8 @@ class SendState with _$SendState {
           bitcoinTestnetPrefixesCase
               .any((prefix) => address.startsWith(prefix)))
         return (AddressNetwork.bitcoin, null);
+      else if (isValidEmail(address))
+        return (null, Err('LNURL not supported yet'));
       return (null, Err('Invalid address'));
     } catch (e) {
       return (null, Err(e.toString()));
