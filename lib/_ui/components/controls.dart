@@ -4,6 +4,7 @@ import 'package:bb_mobile/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 
 class BBSwitcher<T> extends StatelessWidget {
   const BBSwitcher({
@@ -82,7 +83,7 @@ class BBDropDown<T> extends StatelessWidget {
     this.isCentered = true,
   });
 
-  final Map<T, ({String label, bool enabled})> items;
+  final Map<T, ({String label, bool enabled, String? imagePath})> items;
   final void Function(T) onChanged;
   final T value;
   final bool isCentered;
@@ -97,7 +98,7 @@ class BBDropDown<T> extends StatelessWidget {
         darkMode ? context.colour.onPrimaryContainer : NewColours.offWhite;
 
     final widget = SizedBox(
-      width: 225,
+      width: 280,
       height: 45,
       child: Container(
         decoration: BoxDecoration(
@@ -152,9 +153,36 @@ class BBDropDown<T> extends StatelessWidget {
                   opacity: items[key]!.enabled ? 1 : 0.3,
                   child: isCentered
                       ? Center(
-                          child: BBText.body(items[key]!.label),
+                          child: items[key]?.imagePath == null
+                              ? BBText.body(
+                                  items[key]!.label,
+                                  removeColourOpacity: true,
+                                )
+                              : Row(
+                                  children: [
+                                    BBText.body(items[key]!.label),
+                                    const Gap(4),
+                                    Image.asset(
+                                      items[key]!.imagePath!,
+                                      width: 24,
+                                      height: 24,
+                                    ),
+                                  ],
+                                ),
                         )
-                      : BBText.body(items[key]!.label),
+                      : items[key]?.imagePath == null
+                          ? BBText.body(items[key]!.label)
+                          : Row(
+                              children: [
+                                BBText.body(items[key]!.label),
+                                const Gap(4),
+                                Image.asset(
+                                  items[key]!.imagePath!,
+                                  width: 24,
+                                  height: 24,
+                                ),
+                              ],
+                            ),
                 ),
               ),
           ],

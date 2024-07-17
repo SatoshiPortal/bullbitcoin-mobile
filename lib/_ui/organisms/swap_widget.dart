@@ -88,7 +88,7 @@ class _SwapWidgetState extends State<SwapWidget> {
           value: selectedFromWallet,
           items: {
             for (final wallet in fromWallets)
-              wallet: (label: wallet.name!, enabled: true),
+              wallet: (label: wallet.name!, enabled: true, imagePath: null),
           },
           onChanged: _fromWalletChanged,
         ),
@@ -111,7 +111,7 @@ class _SwapWidgetState extends State<SwapWidget> {
           value: selectedToWallet,
           items: {
             for (final wallet in toWallets)
-              wallet: (label: wallet.name!, enabled: true),
+              wallet: (label: wallet.name!, enabled: true, imagePath: null),
           },
           // items: toWallets.map((Wallet wallet) {
           //   return DropdownMenuItem(value: wallet, child: Text(wallet.name!));
@@ -130,7 +130,7 @@ class _SwapWidgetState extends State<SwapWidget> {
           showCurrencyLogos: true,
           textEditingController: toPriceController,
           label: '',
-          disabled: widget.loading,
+          disabled: true,
         ),
         BBButton.big(
           label: widget.swapButtonLabel,

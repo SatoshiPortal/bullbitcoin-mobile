@@ -231,6 +231,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
                 label: wallet.state.wallet!.name ??
                     wallet.state.wallet!.sourceFingerprint,
                 enabled: true,
+                imagePath: wallet.state.wallet!.baseWalletType.getImage,
               ),
           },
           value: walletBloc,

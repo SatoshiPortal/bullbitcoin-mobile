@@ -18,6 +18,17 @@ enum ScriptType { bip84, bip49, bip44 }
 
 enum BaseWalletType { Bitcoin, Liquid }
 
+extension BaseWalletTypeExtension on BaseWalletType {
+  String get getImage {
+    switch (this) {
+      case BaseWalletType.Bitcoin:
+        return 'assets/images/icon_btc.png';
+      case BaseWalletType.Liquid:
+        return 'assets/images/icon_lbtc.png';
+    }
+  }
+}
+
 @freezed
 class Wallet with _$Wallet {
   const factory Wallet({

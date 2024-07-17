@@ -423,7 +423,8 @@ class ScriptSelectionDropdown extends StatelessWidget {
             for (final wallet in wallets!)
               wallet.scriptType: (
                 label: wallet.scriptType.getScriptString(),
-                enabled: true
+                enabled: true,
+                imagePath: null
               ),
           },
         ),

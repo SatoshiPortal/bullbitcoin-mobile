@@ -148,7 +148,7 @@ class _Screen extends StatelessWidget {
               height: 100,
             ),
             SwapWidget(
-              loading: sending | signed,
+              loading: sending,
               wallets: wallets,
               swapButtonLabel: signed == true ? 'Broadcast' : 'Swap',
               swapButtonLoadingLabel:
@@ -178,6 +178,7 @@ class _Screen extends StatelessWidget {
     int amount,
     bool toBroadcast,
   ) async {
+    print('swap button pressed $toBroadcast');
     if (toBroadcast) {
       context.read<SendCubit>().sendSwapClicked();
       return;
@@ -211,7 +212,7 @@ class _Screen extends StatelessWidget {
     context.read<CreateSwapCubit>().createOnChainSwap(
           wallet: fromWallet,
           amount: amount, //20000, // 1010000, // amount,
-          isTestnet: true,
+          isTestnet: context.read<NetworkCubit>().state.testnet,
           btcElectrumUrl:
               btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
           lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',

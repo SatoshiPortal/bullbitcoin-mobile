@@ -57,7 +57,7 @@ class SettingsCurrencyDropDown extends StatelessWidget {
           isCentered: false,
           items: {
             for (final c in currencies)
-              c: (label: c.getFullName(), enabled: true),
+              c: (label: c.getFullName(), enabled: true, imagePath: null),
           },
           onChanged: (value) {
             context.read<CurrencyCubit>().changeDefaultCurrency(value);

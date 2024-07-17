@@ -71,16 +71,16 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         if (updatedSwap.status?.status == SwapStatus.swapCreated) {
           labelLocal = 'Broadcasting...';
         } else if (updatedSwap.status?.status == SwapStatus.txnMempool) {
-          labelLocal = 'Our txn waiting for confirmation (1/3)';
+          labelLocal = 'Our tx in mempool (1/3)';
         } else if (updatedSwap.status?.status == SwapStatus.txnConfirmed) {
           labelLocal = 'Waiting for boltz payment';
         } else if (updatedSwap.status?.status == SwapStatus.txnServerMempool) {
-          labelLocal = 'Boltz txn waiting for confirmation (2/3)';
+          labelLocal = 'Boltz tx in mempool (2/3)';
         } else if (updatedSwap.status?.status ==
             SwapStatus.txnServerConfirmed) {
           labelLocal = 'Claiming... (3/3)';
         } else if (updatedSwap.status?.status == SwapStatus.txnClaimed) {
-          labelLocal = 'Success / Swap complete';
+          labelLocal = 'Success';
           successLocal = true;
         }
         setState(() {
@@ -93,9 +93,9 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(width: double.infinity),
-          BBText.body(label),
-          const Gap(16),
           SendTick(sent: success),
+          const Gap(16),
+          BBText.body(label),
           // if (success) const SendTick(sent: true),
           //if (refund)
           //  const FaIcon(
