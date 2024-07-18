@@ -225,6 +225,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
       child: IgnorePointer(
         ignoring: oneWallet,
         child: BBDropDown<WalletBloc>(
+          walletSelector: true,
           items: {
             for (final wallet in walletBlocs)
               wallet: (

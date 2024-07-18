@@ -248,6 +248,7 @@ class WalletSelectionDropDown extends StatelessWidget {
         child: AbsorbPointer(
           absorbing: !enableDropdown,
           child: BBDropDown<WalletBloc>(
+            walletSelector: true,
             items: {
               for (final wallet in walletBlocs)
                 wallet: (

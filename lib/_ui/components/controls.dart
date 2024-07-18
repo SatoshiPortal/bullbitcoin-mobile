@@ -81,12 +81,15 @@ class BBDropDown<T> extends StatelessWidget {
     required this.onChanged,
     required this.value,
     this.isCentered = true,
+    this.walletSelector =
+        false, // TODO: Ideally build a WalletSelector control that wraps BBDropDown
   });
 
   final Map<T, ({String label, bool enabled, String? imagePath})> items;
   final void Function(T) onChanged;
   final T value;
   final bool isCentered;
+  final bool walletSelector;
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +101,7 @@ class BBDropDown<T> extends StatelessWidget {
         darkMode ? context.colour.onPrimaryContainer : NewColours.offWhite;
 
     final widget = SizedBox(
-      width: 280,
+      width: 225,
       height: 45,
       child: Container(
         decoration: BoxDecoration(
@@ -144,46 +147,23 @@ class BBDropDown<T> extends StatelessWidget {
             if (value == null) return;
             onChanged.call(value);
           },
+          selectedItemBuilder: walletSelector == true
+              ? (context) => List.generate(
+                    1,
+                    (index) => value != null
+                        ? buildMenuItem(
+                            value,
+                            shorten: true,
+                          )
+                        : const Text(''),
+                  )
+              : null,
           items: [
             for (final key in items.keys)
               DropdownMenuItem<T>(
                 value: key,
                 enabled: items[key]!.enabled,
-                child: Opacity(
-                  opacity: items[key]!.enabled ? 1 : 0.3,
-                  child: isCentered
-                      ? Center(
-                          child: items[key]?.imagePath == null
-                              ? BBText.body(
-                                  items[key]!.label,
-                                  removeColourOpacity: true,
-                                )
-                              : Row(
-                                  children: [
-                                    BBText.body(items[key]!.label),
-                                    const Gap(4),
-                                    Image.asset(
-                                      items[key]!.imagePath!,
-                                      width: 24,
-                                      height: 24,
-                                    ),
-                                  ],
-                                ),
-                        )
-                      : items[key]?.imagePath == null
-                          ? BBText.body(items[key]!.label)
-                          : Row(
-                              children: [
-                                BBText.body(items[key]!.label),
-                                const Gap(4),
-                                Image.asset(
-                                  items[key]!.imagePath!,
-                                  width: 24,
-                                  height: 24,
-                                ),
-                              ],
-                            ),
-                ),
+                child: buildMenuItem(key),
               ),
           ],
         ),
@@ -197,6 +177,52 @@ class BBDropDown<T> extends StatelessWidget {
     } else {
       return widget;
     }
+  }
+
+  Opacity buildMenuItem<U>(U key, {bool shorten = false}) {
+    final ({String label, bool enabled, String? imagePath}) item = items[key]!;
+
+    final text = shorten
+        ? item.label.length > 12
+            ? item.label.substring(0, 12) + '...'
+            : item.label
+        : item.label;
+
+    final textWidget = BBText.body(text);
+
+    if (item.imagePath == null) {
+      return Opacity(
+        key: Key(item.label),
+        opacity: item.enabled ? 1 : 0.3,
+        child: isCentered
+            ? Center(
+                child: textWidget,
+              )
+            : textWidget,
+      );
+    }
+
+    final textWithLogo = Row(
+      children: [
+        textWidget,
+        const Gap(4),
+        Image.asset(
+          item.imagePath ?? '',
+          width: 24,
+          height: 24,
+        ),
+      ],
+    );
+
+    return Opacity(
+      key: Key(item.label),
+      opacity: item.enabled ? 1 : 0.3,
+      child: isCentered
+          ? Center(
+              child: textWithLogo,
+            )
+          : textWithLogo,
+    );
   }
 }
 
