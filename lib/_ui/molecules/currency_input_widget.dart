@@ -2,26 +2,55 @@ import 'package:bb_mobile/_model/currency_new.dart';
 import 'package:bb_mobile/_ui/atoms/bb_form_field.dart';
 import 'package:flutter/material.dart';
 
+/// Constraints: This component always require sats and btc to be first two currencies.
+/// This satisfies almost all requirements in app right now.
+/// In case, any future requirement needs only fiat currency selection, this can be refactored.
 class CurrencyInput extends StatefulWidget {
-  const CurrencyInput({
+  CurrencyInput({
     super.key,
     required this.currencies,
     required this.unitsInSats,
     this.label,
+
+    /// To use this Widget as a controlled component, this currency is set.
+    /// In that case, any changes to currency is synced with internal state variable `selectedCurrency`.
+    ///
+    /// Otherwise, this is not set and currency is handled with internal state variable `selectedCurrency`.
     this.currency,
-    this.onlyCrypto = false, // No FIAT options, display, conversions
+
+    /// When set, No FIAT options, display, conversions are displayed
+    this.onlyCrypto = false,
+
+    /// To display currency logos.
+    /// currencies[].logoPath should be set.
     this.showCurrencyLogos = false,
-    this.defaultFiat,
+    this.defaultFiatCurrency,
     this.disabled = false,
     this.initialPrice,
     this.initialCurrency,
     this.textEditingController,
     this.onChange,
     this.onCurrencyChange,
-  });
+  })  : assert(
+          (initialPrice == null && initialCurrency == null) ||
+              (initialPrice != null && initialCurrency != null),
+          'initialPrice and initialCurrency should be both set together',
+        ),
+        assert(
+          currencies.length >= 2,
+          'Atleast 2 currencies: sats and btc should be present',
+        ),
+        assert(
+          currencies[0].code.toLowerCase().contains('btc'),
+          'First currency should always be btc',
+        ),
+        assert(
+          currencies[1].code.toLowerCase().contains('sats'),
+          'Second currency should always be sats',
+        );
 
   final List<CurrencyNew> currencies;
-  final CurrencyNew? defaultFiat;
+  final CurrencyNew? defaultFiatCurrency;
   final bool disabled;
   final bool unitsInSats;
   final String? label;
@@ -56,31 +85,18 @@ class _CurrencyInputState extends State<CurrencyInput> {
     amountController = widget.textEditingController ?? TextEditingController();
 
     if (widget.initialPrice != null) {
-      if (widget.initialCurrency == null) {
-        throw Exception(
-          'If initialPrice is used, initialCurrency should also be used',
-        );
-      } else {
-        amountController.text = widget.initialPrice!.toString();
-      }
+      amountController.text = widget.initialPrice!.toString();
     }
 
     if (widget.initialCurrency != null) {
-      if (widget.initialPrice == null) {
-        throw Exception(
-          'If initialCurrency is used, initialPrice should also be used',
-        );
+      if (widget.initialCurrency!.isFiat) {
+        selectedCurrency = widget.initialCurrency!;
       } else {
-        if (widget.initialCurrency!.isFiat) {
-          selectedCurrency = widget.initialCurrency!;
+        if (widget.unitsInSats) {
+          selectedCurrency =
+              widget.currencies[1]; // TODO: Asset this to be sats
         } else {
-          if (widget.unitsInSats) {
-            selectedCurrency =
-                widget.currencies[1]; // TODO: Asset this to be sats
-          } else {
-            selectedCurrency =
-                widget.currencies[0]; // TODO: Asset this to be btc
-          }
+          selectedCurrency = widget.currencies[0]; // TODO: Asset this to be btc
         }
       }
     } else {
@@ -174,10 +190,10 @@ class _CurrencyInputState extends State<CurrencyInput> {
       } else {
         // Display default FIAT
         final double fiatValue =
-            getFiatValueFromSats(_sats, widget.defaultFiat!);
+            getFiatValueFromSats(_sats, widget.defaultFiatCurrency!);
 
         helperText =
-            '= ${fiatValue.toStringAsFixed(FIAT_DECIMAL_POINTS)} ${widget.defaultFiat!.code}';
+            '= ${fiatValue.toStringAsFixed(FIAT_DECIMAL_POINTS)} ${widget.defaultFiatCurrency!.code}';
       }
     }
 

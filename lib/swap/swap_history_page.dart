@@ -219,6 +219,9 @@ class SwapItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final status = swapTx.isChainSwap()
+        ? swapTx.status?.status.getOnChainStr()
+        : swapTx.status?.status.getStr(swapTx.isSubmarine());
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
       child: Column(
@@ -234,11 +237,7 @@ class SwapItem extends StatelessWidget {
                     isBold: true,
                   ),
                   BBText.bodySmall(
-                    'Status: ' +
-                        (swapTx.status?.status
-                                .getStr(swapTx.isSubmarine())
-                                ?.$1 ??
-                            ''),
+                    'Status: ' + (status?.$1 ?? ''),
                     isBold: true,
                   ),
                   if (swapTx.creationTime != null &&
@@ -254,8 +253,7 @@ class SwapItem extends StatelessWidget {
                   SizedBox(
                     width: 200,
                     child: BBText.bodySmall(
-                      swapTx.status?.status.getStr(swapTx.isSubmarine())?.$2 ??
-                          '',
+                      status?.$2 ?? '',
                       fontSize: 11,
                       // ),
                     ),
