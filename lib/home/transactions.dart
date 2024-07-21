@@ -292,8 +292,12 @@ class HomeTxItem2 extends StatelessWidget {
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
     );
 
-    final img =
-        darkMode ? 'assets/arrow_down_white.png' : 'assets/arrow_down.png';
+    // final img =
+    //     darkMode ? 'assets/arrow_down_white.png' : 'assets/arrow_down.png';
+    final isChainSwap = tx.isSwap && tx.swapTx!.isChainSwap();
+    final imgBaseName =
+        isChainSwap ? 'assets/images/swap_icon' : 'assets/images/arrow_down';
+    final img = darkMode ? '${imgBaseName}_white.png' : '$imgBaseName.png';
 
     // final swapstatus =
 
@@ -325,11 +329,13 @@ class HomeTxItem2 extends StatelessWidget {
               child: SizedBox(
                 height: 24,
                 width: 14,
-                // padding: const EdgeInsets.only(top: 8),
                 child: Container(
                   // color: Colors.red,
                   transformAlignment: Alignment.center,
-                  transform: Matrix4.identity()..rotateZ(isReceive ? 0 : 3.16),
+                  transform: isChainSwap
+                      ? (Matrix4.identity()..scale(2.0))
+                      : Matrix4.identity()
+                    ..rotateZ(isReceive ? 0 : 3.16),
                   child: Image.asset(img),
                 ),
               ),
