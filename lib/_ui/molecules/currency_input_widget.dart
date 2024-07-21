@@ -142,11 +142,12 @@ class _CurrencyInputState extends State<CurrencyInput> {
     // TODO: Bring calculatesSats inside widget file
     // TODO: This will be needed outside as well. So how?
     final int sats = calcualteSats(price, selectedCurrency);
+
+    if (sats != _sats) widget.onChange?.call(sats, selectedCurrency);
+
     setState(() {
       _sats = sats;
     });
-
-    widget.onChange?.call(sats, selectedCurrency);
   }
 
   void _onCurrencyChange(CurrencyNew currency) {

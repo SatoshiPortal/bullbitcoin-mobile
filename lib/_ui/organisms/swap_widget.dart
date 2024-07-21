@@ -24,6 +24,7 @@ class SwapWidget extends StatefulWidget {
     super.key,
     this.loading = false,
     required this.wallets,
+    this.onChange,
     this.onSwapPressed,
     this.swapButtonLabel = 'Swap',
     this.swapButtonLoadingLabel = 'Pls wait...',
@@ -34,6 +35,7 @@ class SwapWidget extends StatefulWidget {
 
   final bool loading;
   final List<Wallet> wallets;
+  final Function(Wallet from, Wallet to, int amount)? onChange;
   final Function(Wallet from, Wallet to, int amount)? onSwapPressed;
   final String swapButtonLabel;
   final String swapButtonLoadingLabel;
@@ -106,6 +108,13 @@ class _SwapWidgetState extends State<SwapWidget> {
           showCurrencyLogos: true,
           textEditingController: fromPriceController,
           label: '',
+          onChange: (sats, selectedCurrency) {
+            _onChange(
+              selectedFromWallet,
+              selectedToWallet,
+              sats: sats,
+            );
+          },
           onCurrencyChange: _fromCurrencyChanged,
           disabled: widget.loading,
         ),
@@ -126,6 +135,10 @@ class _SwapWidgetState extends State<SwapWidget> {
             setState(() {
               selectedToWallet = wallet;
             });
+            _onChange(
+              selectedFromWallet,
+              wallet,
+            );
           },
         ),
         CurrencyInput(
@@ -135,6 +148,13 @@ class _SwapWidgetState extends State<SwapWidget> {
           onlyCrypto: true,
           showCurrencyLogos: true,
           textEditingController: toPriceController,
+          onChange: (sats, selectedCurrency) {
+            _onChange(
+              selectedFromWallet,
+              selectedToWallet,
+              sats: sats,
+            );
+          },
           label: '',
           disabled: true,
         ),
@@ -183,6 +203,19 @@ class _SwapWidgetState extends State<SwapWidget> {
         sats,
       );
     }
+  }
+
+  void _onChange(Wallet fromWallet, Wallet toWallet, {int? sats}) {
+    final isSat = fromPriceCurrency.code.contains('sats');
+    final int localSats = isSat
+        ? int.parse(fromPriceController.text)
+        : (double.parse(fromPriceController.text) * SATS_IN_BTC).toInt();
+
+    widget.onChange?.call(
+      fromWallet,
+      toWallet,
+      sats ?? localSats,
+    );
   }
 
   void _fromCurrencyChanged(CurrencyNew? value) {
@@ -248,5 +281,10 @@ class _SwapWidgetState extends State<SwapWidget> {
       fromPriceCurrency = fromCurrencies[isSat ? 1 : 0];
       toPriceCurrency = toCurrencies[isSat ? 1 : 0];
     });
+
+    _onChange(
+      wallet,
+      selectedToWallet,
+    );
   }
 }

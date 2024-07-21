@@ -169,6 +169,14 @@ class _Screen extends StatelessWidget {
               swapButtonLoadingLabel:
                   signed == true ? 'Broadcasting' : 'Creating swap',
               unitInSats: unitInSats,
+              fee: swapTx != null ? feeStr : null,
+              feeFiat: swapTx != null ? '~ $feeFiat $fiatCurrency' : null,
+              onChange: (Wallet fromWallet, Wallet toWallet, int amount) {
+                if (swapTx != null) {
+                  context.read<CreateSwapCubit>().clearSwapTx();
+                  context.read<SendCubit>().reset();
+                }
+              },
               onSwapPressed: (Wallet fromWallet, Wallet toWallet, int amount) {
                 _swapButtonPressed(
                   context,
@@ -178,8 +186,6 @@ class _Screen extends StatelessWidget {
                   signed,
                 );
               },
-              fee: swapTx != null ? feeStr : null,
-              feeFiat: swapTx != null ? '~ $feeFiat $fiatCurrency' : null,
             ),
             const SendErrDisplay(),
           ],

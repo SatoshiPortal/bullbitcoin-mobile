@@ -881,6 +881,18 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(sending: false, sent: true));
   }
 
+  void reset() async {
+    emit(
+      state.copyWith(
+        tx: null,
+        signed: false,
+        psbtSigned: null,
+        psbtSignedFeeAmount: 0,
+        enabledWallets: [],
+      ),
+    );
+  }
+
   // void txSettled() {
   //   if (state.tx == null) return;
   //   emit(state.copyWith(txSettled: true));
