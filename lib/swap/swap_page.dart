@@ -137,7 +137,8 @@ class _Screen extends StatelessWidget {
       (CurrencyCubit cubit) => cubit.state.unitsInSats,
     );
 
-    // final txLabel = context.select((SendCubit cubit) => cubit.state.note);
+    final swapTx =
+        context.select((CreateSwapCubit cubit) => cubit.state.swapTx);
 
     return SingleChildScrollView(
       child: Padding(
@@ -163,6 +164,8 @@ class _Screen extends StatelessWidget {
                   signed,
                 );
               },
+              fee: '4520 sats',
+              feeFiat: '~ Rs. 421.4005',
             ),
             const SendErrDisplay(),
           ],

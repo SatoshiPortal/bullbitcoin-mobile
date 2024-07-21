@@ -147,17 +147,12 @@ class BBDropDown<T> extends StatelessWidget {
             if (value == null) return;
             onChanged.call(value);
           },
-          selectedItemBuilder: walletSelector == true
-              ? (context) => List.generate(
-                    1,
-                    (index) => value != null
-                        ? buildMenuItem(
-                            value,
-                            shorten: true,
-                          )
-                        : const Text(''),
-                  )
-              : null,
+          // selectedItemBuilder: walletSelector == true && value != null
+          //     ? (context) => [value].map((key) {
+          //           final widget = buildMenuItem(key, shorten: true);
+          //           return widget;
+          //         }).toList()
+          //     : null,
           items: [
             for (final key in items.keys)
               DropdownMenuItem<T>(
@@ -170,6 +165,7 @@ class BBDropDown<T> extends StatelessWidget {
       ),
     );
 
+    // return widget;
     if (isCentered) {
       return Center(
         child: widget,
@@ -217,6 +213,7 @@ class BBDropDown<T> extends StatelessWidget {
     return Opacity(
       key: Key(item.label),
       opacity: item.enabled ? 1 : 0.3,
+      // child: textWithLogo,
       child: isCentered
           ? Center(
               child: textWithLogo,

@@ -2,8 +2,10 @@ import 'package:bb_mobile/_model/currency_new.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
+import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/molecules/currency_input_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 const SATS_IN_BTC = 100000000;
 
@@ -26,6 +28,8 @@ class SwapWidget extends StatefulWidget {
     this.swapButtonLabel = 'Swap',
     this.swapButtonLoadingLabel = 'Pls wait...',
     this.unitInSats = true,
+    this.fee,
+    this.feeFiat,
   });
 
   final bool loading;
@@ -34,6 +38,8 @@ class SwapWidget extends StatefulWidget {
   final String swapButtonLabel;
   final String swapButtonLoadingLabel;
   final bool unitInSats;
+  final String? fee;
+  final String? feeFiat;
 
   @override
   State<SwapWidget> createState() => _SwapWidgetState();
@@ -132,6 +138,25 @@ class _SwapWidgetState extends State<SwapWidget> {
           label: '',
           disabled: true,
         ),
+        if (widget.fee != null)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const BBText.title(
+                  'Network Feeeeeeee',
+                ),
+                const Gap(4),
+                BBText.body(
+                  widget.fee!,
+                ),
+                BBText.body(
+                  widget.feeFiat!,
+                ),
+              ],
+            ),
+          ),
         BBButton.big(
           label: widget.swapButtonLabel,
           onPressed: _swapButtonPressed,

@@ -16,6 +16,7 @@ import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
+import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -465,7 +466,10 @@ class WalletTag extends StatelessWidget {
 
     if (hasSwap) {
       if (tx.swapTx?.isChainSwap() == true)
-        text = 'On-chain swap';
+        text = tx.swapTx?.chainSwapDetails?.direction ==
+                boltz.ChainSwapDirection.btcToLbtc
+            ? 'BTC -> LBTC swap'
+            : 'LBTC -> BTC swap';
       else
         text = 'Lightning';
     } else if (isLiquid)

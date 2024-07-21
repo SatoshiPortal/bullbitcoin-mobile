@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -10,10 +9,8 @@ import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class SendingOnChainTx extends StatefulWidget {
   const SendingOnChainTx({super.key});
@@ -56,6 +53,7 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         context.select((NetworkCubit cubit) => cubit.state.testnet);
     final unit = defaultCurrency?.name ?? '';
     final amt = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
+    // final amt = fiatAmt.toStringAsFixed(2);
 
     return BlocListener<WatchTxsBloc, WatchTxsState>(
       listenWhen: (previous, current) =>
@@ -126,16 +124,16 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
           //   const Gap(24),
           //   // _OnChainWarning(swapTx: swapTx),
           // ],
-          const Gap(40),
-          if (tx != null)
-            BBButton.big(
-              label: 'View Transaction',
-              onPressed: () {
-                context
-                  ..pop()
-                  ..push('/tx', extra: tx);
-              },
-            ).animate().fadeIn(),
+          // const Gap(40),
+          // if (tx != null)
+          //   BBButton.big(
+          //     label: 'View Transaction',
+          //     onPressed: () {
+          //       context
+          //         ..pop()
+          //         ..push('/tx', extra: tx);
+          //     },
+          //   ).animate().fadeIn(),
         ],
       ),
     );

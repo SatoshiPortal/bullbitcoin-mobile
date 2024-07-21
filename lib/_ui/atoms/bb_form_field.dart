@@ -76,7 +76,7 @@ class BBFormField extends StatelessWidget {
           decoration: decoration,
         ),
         const SizedBox(
-          height: 20,
+          height: 10,
         ),
       ],
     );
