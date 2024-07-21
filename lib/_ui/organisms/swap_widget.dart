@@ -140,12 +140,12 @@ class _SwapWidgetState extends State<SwapWidget> {
         ),
         if (widget.fee != null)
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topLeft,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const BBText.title(
-                  'Network Feeeeeeee',
+                  'Network Fee',
                 ),
                 const Gap(4),
                 BBText.body(
@@ -157,6 +157,7 @@ class _SwapWidgetState extends State<SwapWidget> {
               ],
             ),
           ),
+        const Gap(20),
         BBButton.big(
           label: widget.swapButtonLabel,
           onPressed: _swapButtonPressed,

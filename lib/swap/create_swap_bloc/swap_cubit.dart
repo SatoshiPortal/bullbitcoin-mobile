@@ -572,7 +572,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
         return;
       }
 
-      final isLiq = wallet.isLiquid();
+      final isFromWalletLiq = wallet.isLiquid();
       final chainFees = await fees?.chain();
       if (chainFees == null) {
         emit(
@@ -584,7 +584,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
         return;
       }
 
-      if (isLiq) {
+      if (isFromWalletLiq) {
         if (amount < chainFees.lbtcLimits.minimal ||
             amount > chainFees.lbtcLimits.maximal) {
           emit(
@@ -623,8 +623,8 @@ class CreateSwapCubit extends Cubit<SwapState> {
         return;
       }
       final network = isTestnet
-          ? (isLiq ? Chain.liquidTestnet : Chain.bitcoinTestnet)
-          : (isLiq ? Chain.liquid : Chain.bitcoin);
+          ? (isFromWalletLiq ? Chain.liquidTestnet : Chain.bitcoinTestnet)
+          : (isFromWalletLiq ? Chain.liquid : Chain.bitcoin);
 
       /*
       final storedSwapTxIdx = wallet.swaps.indexWhere(
@@ -643,7 +643,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
         btcElectrumUrl: btcElectrumUrl, // 'electrum.blockstream.info:60002',
         lbtcElectrumUrl: lbtcElectrumUrl, // 'blockstream.info:465',
         boltzUrl: boltzurl,
-        isLiquid: isLiq,
+        isLiquid: isFromWalletLiq,
         direction: direction,
         amount: amount,
       );
@@ -659,19 +659,22 @@ class CreateSwapCubit extends Cubit<SwapState> {
 
       // TODO:Onchain Test this properly
       final updatedSwap = swap!.copyWith(
-        boltzFees: isLiq
+        boltzFees: isFromWalletLiq
             ? chainFees.lbtcFees.percentage * amount ~/ 100
             : chainFees.btcFees.percentage * amount ~/ 100,
-        lockupFees: isLiq
-            ? chainFees.lbtcFees.userLockup
-            : chainFees.btcFees.userLockup,
-        claimFees:
-            isLiq ? chainFees.lbtcFees.userClaim : chainFees.btcFees.userClaim,
+        lockupFees: isFromWalletLiq
+            ? chainFees.btcFees.userLockup
+            : chainFees.lbtcFees.userLockup,
+        claimFees: isFromWalletLiq
+            ? chainFees.btcFees.userClaim
+            : chainFees.lbtcFees.userClaim,
         label: label,
       );
 
       swapTx = updatedSwap.copyWith(
-          claimAddress: toAddress, refundAddress: refundAddress);
+        claimAddress: toAddress,
+        refundAddress: refundAddress,
+      );
 
       await saveSwapToWallet(
         swapTx: swapTx,

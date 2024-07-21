@@ -121,10 +121,10 @@ class _Screen extends StatelessWidget {
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     if (sent) return const SendingOnChainTx();
 
-    final watchOnly = context.select(
-      (SendCubit cubit) =>
-          cubit.state.selectedWalletBloc?.state.wallet?.watchOnly() ?? false,
-    );
+    // final watchOnly = context.select(
+    //   (SendCubit cubit) =>
+    //       cubit.state.selectedWalletBloc?.state.wallet?.watchOnly() ?? false,
+    // );
 
     final generatingInv = context
         .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
@@ -139,6 +139,20 @@ class _Screen extends StatelessWidget {
 
     final swapTx =
         context.select((CreateSwapCubit cubit) => cubit.state.swapTx);
+
+    final fee = swapTx?.totalFees() ?? 0;
+    final feeStr = context
+        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
+
+    final currency =
+        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+    final feeFiat = context.select(
+      (NetworkCubit cubit) => cubit.state.calculatePrice(fee, currency),
+    );
+
+    final fiatCurrency = context.select(
+      (CurrencyCubit cubit) => cubit.state.defaultFiatCurrency?.shortName ?? '',
+    );
 
     return SingleChildScrollView(
       child: Padding(
@@ -164,8 +178,8 @@ class _Screen extends StatelessWidget {
                   signed,
                 );
               },
-              fee: '4520 sats',
-              feeFiat: '~ Rs. 421.4005',
+              fee: swapTx != null ? feeStr : null,
+              feeFiat: swapTx != null ? '~ $feeFiat $fiatCurrency' : null,
             ),
             const SendErrDisplay(),
           ],
