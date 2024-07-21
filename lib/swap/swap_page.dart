@@ -129,7 +129,9 @@ class _Screen extends StatelessWidget {
     final generatingInv = context
         .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
     final sendingg = context.select((SendCubit cubit) => cubit.state.sending);
-    final sending = generatingInv || sendingg;
+    final buildingOnChain =
+        context.select((SendCubit cubit) => cubit.state.buildingOnChain);
+    final sending = generatingInv || sendingg || buildingOnChain;
 
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
 

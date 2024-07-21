@@ -14,6 +14,7 @@ import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -301,9 +302,13 @@ class HomeTxItem2 extends StatelessWidget {
 
     // final swapstatus =
 
-    final statusImg = (tx.height == null || tx.height == 0)
+    String statusImg = (tx.height == null || tx.height == 0)
         ? 'assets/tx_status_pending.png'
         : 'assets/tx_status_complete.png';
+    statusImg = isChainSwap == true &&
+            tx.swapTx!.status?.status != boltz.SwapStatus.txnClaimed
+        ? 'assets/tx_status_pending.png'
+        : statusImg;
 
     final isReceive = tx.isReceived();
 

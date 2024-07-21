@@ -22,6 +22,7 @@ mixin _$SendState {
   WalletBloc? get selectedWalletBloc => throw _privateConstructorUsedError;
   Invoice? get invoice => throw _privateConstructorUsedError;
   bool get showSendButton => throw _privateConstructorUsedError;
+  bool get buildingOnChain => throw _privateConstructorUsedError;
   String get note => throw _privateConstructorUsedError;
   int? get tempAmt => throw _privateConstructorUsedError;
   bool get scanningAddress => throw _privateConstructorUsedError;
@@ -63,6 +64,7 @@ abstract class $SendStateCopyWith<$Res> {
       WalletBloc? selectedWalletBloc,
       Invoice? invoice,
       bool showSendButton,
+      bool buildingOnChain,
       String note,
       int? tempAmt,
       bool scanningAddress,
@@ -107,6 +109,7 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? selectedWalletBloc = freezed,
     Object? invoice = freezed,
     Object? showSendButton = null,
+    Object? buildingOnChain = null,
     Object? note = null,
     Object? tempAmt = freezed,
     Object? scanningAddress = null,
@@ -152,6 +155,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
       showSendButton: null == showSendButton
           ? _value.showSendButton
           : showSendButton // ignore: cast_nullable_to_non_nullable
+              as bool,
+      buildingOnChain: null == buildingOnChain
+          ? _value.buildingOnChain
+          : buildingOnChain // ignore: cast_nullable_to_non_nullable
               as bool,
       note: null == note
           ? _value.note
@@ -276,6 +283,7 @@ abstract class _$$SendStateImplCopyWith<$Res>
       WalletBloc? selectedWalletBloc,
       Invoice? invoice,
       bool showSendButton,
+      bool buildingOnChain,
       String note,
       int? tempAmt,
       bool scanningAddress,
@@ -320,6 +328,7 @@ class __$$SendStateImplCopyWithImpl<$Res>
     Object? selectedWalletBloc = freezed,
     Object? invoice = freezed,
     Object? showSendButton = null,
+    Object? buildingOnChain = null,
     Object? note = null,
     Object? tempAmt = freezed,
     Object? scanningAddress = null,
@@ -365,6 +374,10 @@ class __$$SendStateImplCopyWithImpl<$Res>
       showSendButton: null == showSendButton
           ? _value.showSendButton
           : showSendButton // ignore: cast_nullable_to_non_nullable
+              as bool,
+      buildingOnChain: null == buildingOnChain
+          ? _value.buildingOnChain
+          : buildingOnChain // ignore: cast_nullable_to_non_nullable
               as bool,
       note: null == note
           ? _value.note
@@ -460,6 +473,7 @@ class _$SendStateImpl extends _SendState {
       this.selectedWalletBloc,
       this.invoice,
       this.showSendButton = false,
+      this.buildingOnChain = false,
       this.note = '',
       this.tempAmt,
       this.scanningAddress = false,
@@ -505,6 +519,9 @@ class _$SendStateImpl extends _SendState {
   @override
   @JsonKey()
   final bool showSendButton;
+  @override
+  @JsonKey()
+  final bool buildingOnChain;
   @override
   @JsonKey()
   final String note;
@@ -573,7 +590,7 @@ class _$SendStateImpl extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(address: $address, enabledWallets: $enabledWallets, paymentNetwork: $paymentNetwork, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice, showSendButton: $showSendButton, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, oneWallet: $oneWallet)';
+    return 'SendState(address: $address, enabledWallets: $enabledWallets, paymentNetwork: $paymentNetwork, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice, showSendButton: $showSendButton, buildingOnChain: $buildingOnChain, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, oneWallet: $oneWallet)';
   }
 
   @override
@@ -591,6 +608,8 @@ class _$SendStateImpl extends _SendState {
             (identical(other.invoice, invoice) || other.invoice == invoice) &&
             (identical(other.showSendButton, showSendButton) ||
                 other.showSendButton == showSendButton) &&
+            (identical(other.buildingOnChain, buildingOnChain) ||
+                other.buildingOnChain == buildingOnChain) &&
             (identical(other.note, note) || other.note == note) &&
             (identical(other.tempAmt, tempAmt) || other.tempAmt == tempAmt) &&
             (identical(other.scanningAddress, scanningAddress) ||
@@ -635,6 +654,7 @@ class _$SendStateImpl extends _SendState {
         selectedWalletBloc,
         invoice,
         showSendButton,
+        buildingOnChain,
         note,
         tempAmt,
         scanningAddress,
@@ -672,6 +692,7 @@ abstract class _SendState extends SendState {
       final WalletBloc? selectedWalletBloc,
       final Invoice? invoice,
       final bool showSendButton,
+      final bool buildingOnChain,
       final String note,
       final int? tempAmt,
       final bool scanningAddress,
@@ -706,6 +727,8 @@ abstract class _SendState extends SendState {
   Invoice? get invoice;
   @override
   bool get showSendButton;
+  @override
+  bool get buildingOnChain;
   @override
   String get note;
   @override

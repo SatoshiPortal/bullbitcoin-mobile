@@ -17,6 +17,7 @@ class SendState with _$SendState {
     WalletBloc? selectedWalletBloc,
     Invoice? invoice,
     @Default(false) bool showSendButton,
+    @Default(false) bool buildingOnChain,
     @Default('') String note,
     int? tempAmt,
     @Default(false) bool scanningAddress,

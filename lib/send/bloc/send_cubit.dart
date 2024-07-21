@@ -571,6 +571,8 @@ class SendCubit extends Cubit<SendState> {
     if (state.selectedWalletBloc == null) return;
     final w = state.selectedWalletBloc!.state.wallet;
 
+    emit(state.copyWith(buildingOnChain: true));
+
     final localWalletBloc = _homeCubit.state.getWalletBlocById(w!.id);
     if (localWalletBloc == null) return;
     final localWallet = localWalletBloc.state.wallet;
@@ -601,6 +603,7 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           errSending: err.toString(),
           sending: false,
+          buildingOnChain: false,
         ),
       );
       return;
@@ -610,7 +613,9 @@ class SendCubit extends Cubit<SendState> {
 
     if (swaptx.totalFees()! + feeAmt! > swaptx.outAmount) {
       emit(
-        state.copyWith(errSending: 'Fees is greater than output amount!'),
+        state.copyWith(
+            errSending: 'Fees is greater than output amount!',
+            buildingOnChain: false),
       );
       return;
     }
@@ -622,6 +627,7 @@ class SendCubit extends Cubit<SendState> {
         signed: true,
         sending: false,
         enabledWallets: [localWallet.id],
+        buildingOnChain: false,
       ),
     );
   }
