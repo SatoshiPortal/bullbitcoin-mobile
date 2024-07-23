@@ -29,9 +29,12 @@ class WalletDropDown extends StatelessWidget {
     final bgColour =
         darkMode ? context.colour.onPrimaryContainer : NewColours.offWhite;
 
+    return WalletCard(wallet: value, balance: '1000', balanceUnit: 'sats');
+
+    /*
     final widget = DropdownButtonHideUnderline(
       child: DropdownButton<Wallet>(
-      itemHeight: 100,
+        itemHeight: 100,
         value: value,
         onChanged: (value) {
           if (value == null) return;
@@ -52,33 +55,31 @@ class WalletDropDown extends StatelessWidget {
     );
 
     return widget;
+    */
+  }
 }
-  }
 
-  Widget buildCard(Wallet w) {
-    return WalletCard(wallet: w, balance: '100', balanceUnit: 'sats');
-  }
+Widget buildCard(Wallet w) {
+  return WalletCard(wallet: w, balance: '100', balanceUnit: 'sats');
+}
 
-  Opacity buildMenuItem(Wallet w) {
-    /*
+Opacity buildMenuItem(Wallet w) {
+  /*
     final text = shorten
         ? item.label.length > 12
             ? item.label.substring(0, 12) + '...'
             : item.label
         : item.label;
         */
-    final text = w.name!;
+  final text = w.name!;
 
-    final textWidget = BBText.body(text);
+  final textWidget = BBText.body(text);
 
-    return Opacity(
-      key: Key(text),
-      opacity: 1,
-      child: isCentered
-          ? Center(
-              child: textWidget,
-            )
-          : textWidget,
-    );
-  }
+  return Opacity(
+    key: Key(text),
+    opacity: 1,
+    child: Center(
+      child: textWidget,
+    ),
+  );
 }
