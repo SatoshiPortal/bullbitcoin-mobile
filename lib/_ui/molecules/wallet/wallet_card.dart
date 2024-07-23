@@ -33,6 +33,7 @@ class WalletCard extends StatelessWidget {
     final fingerprint = wallet.sourceFingerprint;
 
     return Card(
+      margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       color: context.colour.primaryContainer,
       child: SizedBox(
@@ -51,23 +52,22 @@ class WalletCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(
               top: 4,
-              right: 8.0,
-              left: 8.0,
+              right: 6.0,
+              left: 12.0,
               bottom: 4,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(
-                  width: 240,
+                  width: 260,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const Gap(8),
-                      BBText.titleLarge(
+                      BBText.title(
                         name ?? fingerprint,
                         onSurface: true,
-                        fontSize: 18,
                         compact: true,
                       ),
                       const Gap(14),
@@ -78,7 +78,6 @@ class WalletCard extends StatelessWidget {
                             walletStr ?? '',
                             onSurface: true,
                             isBold: true,
-                            fontSize: 12,
                           ),
                         ),
                       if (walletStr != null) const Spacer(),

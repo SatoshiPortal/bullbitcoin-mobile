@@ -120,13 +120,16 @@ class _SwapWidget2State extends State<SwapWidget2> {
           disabled: widget.loading,
         ),
         const Text('From'),
+        const SizedBox(
+          height: 4,
+        ),
         WalletDropDown(
           items: fromWallets,
           onChanged: _fromWalletChanged,
           value: selectedFromWallet,
         ),
         const SizedBox(
-          height: 10,
+          height: 20,
         ),
         Align(
           alignment: Alignment.centerRight,
@@ -137,6 +140,9 @@ class _SwapWidget2State extends State<SwapWidget2> {
           ),
         ),
         const Text('To'),
+        const SizedBox(
+          height: 4,
+        ),
         WalletDropDown(
           items: toWallets,
           value: selectedToWallet,
@@ -156,6 +162,9 @@ class _SwapWidget2State extends State<SwapWidget2> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(
+                  height: 20,
+                ),
                 const BBText.title(
                   'Network Fee',
                 ),

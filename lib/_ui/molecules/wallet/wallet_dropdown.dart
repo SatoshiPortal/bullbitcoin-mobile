@@ -40,6 +40,7 @@ class WalletDropDown extends StatelessWidget {
 
     final widget = DropdownButtonHideUnderline(
       child: DropdownButton<Wallet>(
+        padding: EdgeInsets.zero,
         itemHeight: null,
         iconSize: 0.0,
         value: value,

@@ -162,7 +162,7 @@ class _Screen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(
-              height: 100,
+              height: 60,
             ),
             SwapWidget2(
               loading: sending,
