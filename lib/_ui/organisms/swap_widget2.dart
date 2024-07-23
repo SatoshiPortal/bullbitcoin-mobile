@@ -1,11 +1,12 @@
 import 'package:bb_mobile/_model/currency_new.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
-import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/molecules/currency_input_widget.dart';
 import 'package:bb_mobile/_ui/molecules/wallet/wallet_dropdown.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 const SATS_IN_BTC = 100000000;
@@ -89,15 +90,17 @@ class _SwapWidget2State extends State<SwapWidget2> {
 
   @override
   Widget build(BuildContext context) {
+    final darkMode = context.select(
+      (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
+    );
+
+    const imgBaseName = 'assets/images/swap_icon';
+    final img = darkMode ? '${imgBaseName}_white.png' : '$imgBaseName.png';
+
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Text('Swap from'),
-        WalletDropDown(
-          items: fromWallets,
-          onChanged: _fromWalletChanged,
-          value: selectedFromWallet,
-        ),
+        const Text('Swap'),
         CurrencyInput(
           currencies: fromPriceCurrencies,
           currency: fromPriceCurrency,
@@ -116,19 +119,27 @@ class _SwapWidget2State extends State<SwapWidget2> {
           onCurrencyChange: _fromCurrencyChanged,
           disabled: widget.loading,
         ),
+        const Text('From'),
+        WalletDropDown(
+          items: fromWallets,
+          onChanged: _fromWalletChanged,
+          value: selectedFromWallet,
+        ),
         const SizedBox(
           height: 10,
         ),
-        const Text('Swap to'),
-        BBDropDown<Wallet>(
+        Align(
+          alignment: Alignment.centerRight,
+          child: Image.asset(
+            img,
+            width: 32,
+            height: 32,
+          ),
+        ),
+        const Text('To'),
+        WalletDropDown(
+          items: toWallets,
           value: selectedToWallet,
-          items: {
-            for (final wallet in toWallets)
-              wallet: (label: wallet.name!, enabled: true, imagePath: null),
-          },
-          // items: toWallets.map((Wallet wallet) {
-          //   return DropdownMenuItem(value: wallet, child: Text(wallet.name!));
-          // }).toList(),
           onChanged: (Wallet wallet) {
             setState(() {
               selectedToWallet = wallet;
@@ -138,23 +149,6 @@ class _SwapWidget2State extends State<SwapWidget2> {
               wallet,
             );
           },
-        ),
-        CurrencyInput(
-          currencies: toPriceCurrencies,
-          currency: toPriceCurrency,
-          unitsInSats: toPriceCurrency.code.contains('sats'),
-          onlyCrypto: true,
-          showCurrencyLogos: true,
-          textEditingController: toPriceController,
-          onChange: (sats, selectedCurrency) {
-            _onChange(
-              selectedFromWallet,
-              selectedToWallet,
-              sats: sats,
-            );
-          },
-          label: '',
-          disabled: true,
         ),
         if (widget.fee != null)
           Align(
@@ -176,12 +170,14 @@ class _SwapWidget2State extends State<SwapWidget2> {
             ),
           ),
         const Gap(20),
-        BBButton.big(
-          label: widget.swapButtonLabel,
-          onPressed: _swapButtonPressed,
-          loading: widget.loading,
-          disabled: widget.loading,
-          loadingText: widget.swapButtonLoadingLabel,
+        Align(
+          child: BBButton.big(
+            label: widget.swapButtonLabel,
+            onPressed: _swapButtonPressed,
+            loading: widget.loading,
+            disabled: widget.loading,
+            loadingText: widget.swapButtonLoadingLabel,
+          ),
         ),
       ],
     );
