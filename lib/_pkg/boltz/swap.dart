@@ -373,13 +373,22 @@ class SwapBoltz {
       if (err != null) throw err;
 
       log('-----swap json\n' + swapSensitiveStr.toString() + '\n ------');
-      final swapSensitive = LnSwapTxSensitive.fromJson(
-        jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
-      );
 
-      final swap = swapTx.toLbtcLnSwap(swapSensitive);
-
-      final txid = await swap.broadcastTx(signedBytes: signedBytes);
+      String txid = '';
+      if (swapTx.isChainSwap()) {
+        final swapSensitive = ChainSwapTxSensitive.fromJson(
+          jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
+        );
+        final swap = swapTx.toChainSwap(swapSensitive);
+        // TODO: How to broadcast this.
+        // txid = await swap.broadcastTx(signedBytes: signedBytes);
+      } else {
+        final swapSensitive = LnSwapTxSensitive.fromJson(
+          jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
+        );
+        final swap = swapTx.toLbtcLnSwap(swapSensitive);
+        txid = await swap.broadcastTx(signedBytes: signedBytes);
+      }
 
       return (txid, null);
     } catch (e) {

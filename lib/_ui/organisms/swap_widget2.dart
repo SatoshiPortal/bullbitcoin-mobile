@@ -146,15 +146,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
         WalletDropDown(
           items: toWallets,
           value: selectedToWallet,
-          onChanged: (Wallet wallet) {
-            setState(() {
-              selectedToWallet = wallet;
-            });
-            _onChange(
-              selectedFromWallet,
-              wallet,
-            );
-          },
+          onChanged: _toWalletChanged,
         ),
         if (widget.fee != null)
           Align(
@@ -288,6 +280,16 @@ class _SwapWidget2State extends State<SwapWidget2> {
     _onChange(
       wallet,
       selectedToWallet,
+    );
+  }
+
+  void _toWalletChanged(Wallet wallet) {
+    setState(() {
+      selectedToWallet = wallet;
+    });
+    _onChange(
+      selectedFromWallet,
+      wallet,
     );
   }
 }

@@ -46,12 +46,10 @@ class WalletDropDown extends StatelessWidget {
         value: value,
         onChanged: (value) {
           if (value == null) return;
-          print('onChanged');
           onChanged.call(value);
         },
         selectedItemBuilder: (context) => items.map((key) {
           final widget = buildCard(key, balance, unit);
-          print(widget);
           return widget;
         }).toList(),
         items: [
@@ -69,8 +67,6 @@ class WalletDropDown extends StatelessWidget {
 }
 
 Widget buildCard(Wallet w, String balance, String unit) {
-  print('buildCard');
-  print(w.name);
   return WalletCard(
     wallet: w,
     balance: balance,
