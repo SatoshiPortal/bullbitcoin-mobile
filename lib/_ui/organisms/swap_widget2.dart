@@ -100,26 +100,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Text('Swap'),
-        CurrencyInput(
-          currencies: fromPriceCurrencies,
-          currency: fromPriceCurrency,
-          unitsInSats: widget.unitInSats,
-          onlyCrypto: true,
-          showCurrencyLogos: true,
-          textEditingController: fromPriceController,
-          label: '',
-          onChange: (sats, selectedCurrency) {
-            _onChange(
-              selectedFromWallet,
-              selectedToWallet,
-              sats: sats,
-            );
-          },
-          onCurrencyChange: _fromCurrencyChanged,
-          disabled: widget.loading,
-        ),
-        const Text('From'),
+        const Text('Swap from'),
         const SizedBox(
           height: 4,
         ),
@@ -139,7 +120,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
             height: 32,
           ),
         ),
-        const Text('To'),
+        const Text('Swap to'),
         const SizedBox(
           height: 4,
         ),
@@ -147,6 +128,27 @@ class _SwapWidget2State extends State<SwapWidget2> {
           items: toWallets,
           value: selectedToWallet,
           onChanged: _toWalletChanged,
+        ),
+        const SizedBox(
+          height: 32,
+        ),
+        CurrencyInput(
+          currencies: fromPriceCurrencies,
+          currency: fromPriceCurrency,
+          unitsInSats: widget.unitInSats,
+          onlyCrypto: true,
+          showCurrencyLogos: true,
+          textEditingController: fromPriceController,
+          label: 'Swap amount',
+          onChange: (sats, selectedCurrency) {
+            _onChange(
+              selectedFromWallet,
+              selectedToWallet,
+              sats: sats,
+            );
+          },
+          onCurrencyChange: _fromCurrencyChanged,
+          disabled: widget.loading,
         ),
         if (widget.fee != null)
           Align(
