@@ -3,14 +3,23 @@ import 'dart:async';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/warning.dart';
+import 'package:bb_mobile/create/bloc/create_cubit.dart';
+import 'package:bb_mobile/create/bloc/state.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/home/transactions.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -110,7 +119,7 @@ class _ScreenState extends State<_Screen> {
 
       Widget widget = Scaffold(
         appBar: !isTestnet ? null : _buildAppBar(context),
-        body: HomeNoWallets(fullRed: !isTestnet),
+        body: HomeNoWalletsWithCreation(fullRed: !isTestnet),
       );
       if (!isTestnet)
         widget = AnnotatedRegion(
@@ -943,6 +952,146 @@ class HomeNoWallets extends StatelessWidget {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class HomeNoWalletsWithCreation extends StatelessWidget {
+  const HomeNoWalletsWithCreation({super.key, this.fullRed = true});
+
+  final bool fullRed;
+
+  @override
+  Widget build(BuildContext context1) {
+    final createWallet = CreateWalletCubit(
+      walletSensCreate: locator<WalletSensitiveCreate>(),
+      walletsStorageRepository: locator<WalletsStorageRepository>(),
+      walletSensRepository: locator<WalletSensitiveStorageRepository>(),
+      networkCubit: locator<NetworkCubit>(),
+      walletCreate: locator<WalletCreate>(),
+      bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
+      lwkSensitiveCreate: locator<LWKSensitiveCreate>(),
+      mainWallet: true,
+    );
+
+    if (!fullRed)
+      return Padding(
+        padding: const EdgeInsets.all(48.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BBButton.big(
+              label: 'Create new wallet',
+              onPressed: () {
+                context1.push('/create-wallet-main');
+              },
+            ),
+            const Gap(16),
+            BBButton.text(
+              label: 'Recover wallet backup',
+              centered: true,
+              onPressed: () {
+                context1.push('/import-main');
+              },
+            ),
+          ],
+        ),
+      );
+
+    final font = GoogleFonts.bebasNeue();
+    final w = MediaQuery.of(context1).size.width;
+
+    return BlocProvider.value(
+      value: createWallet,
+      child: HomeNoWalletsView(font: font, w: w),
+    );
+  }
+}
+
+class HomeNoWalletsView extends StatelessWidget {
+  const HomeNoWalletsView({
+    super.key,
+    required this.font,
+    required this.w,
+  });
+
+  final TextStyle font;
+  final double w;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<CreateWalletCubit, CreateWalletState>(
+      listenWhen: (previous, current) => previous.saved != current.saved,
+      listener: (context3, state) async {
+        if (state.saved) {
+          if (state.savedWallets == null) return;
+          if (state.mainWallet)
+            await locator<WalletsStorageRepository>().sortWallets();
+          locator<HomeCubit>().getWalletsFromStorage();
+          context3.go('/home');
+        }
+      },
+      child: ColoredBox(
+        color: context.colour.primary,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 148,
+                width: 184,
+                child: Image.asset('assets/bb-logo-white.png'),
+              ),
+              const Gap(24),
+              Text(
+                'BULL BITCOIN',
+                style: font.copyWith(
+                  fontSize: 80,
+                  color: context.colour.primaryContainer,
+                  height: 0.8,
+                ),
+              ),
+              Text(
+                'OWN YOUR MONEY',
+                style: font.copyWith(
+                  fontSize: 59,
+                  height: 0.8,
+                ),
+              ),
+              const Gap(8),
+              SizedBox(
+                width: w * 0.8,
+                child: const BBText.body(
+                  'Sovereign non-custodial Bitcoin wallet and Bitcoin-only exchange service. ',
+                  onSurface: true,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const Gap(128),
+              Center(
+                child: BBButton.big(
+                  label: 'Create new wallet',
+                  onPressed: () {
+                    context.read<CreateWalletCubit>().confirmClicked();
+                    // context.push('/create-wallet-main');
+                  },
+                ),
+              ),
+              BBButton.text(
+                label: 'Recover wallet backup',
+                centered: true,
+                onSurface: true,
+                isBlue: false,
+                fontSize: 11,
+                onPressed: () {
+                  context.push('/import-main');
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
