@@ -37,8 +37,8 @@ class SwapWidget2 extends StatefulWidget {
 
   final bool loading;
   final List<Wallet> wallets;
-  final Function(Wallet from, Wallet to, int amount)? onChange;
-  final Function(Wallet from, Wallet to, int amount)? onSwapPressed;
+  final Function(Wallet from, Wallet to, int amount, bool sweep)? onChange;
+  final Function(Wallet from, Wallet to, int amount, bool sweep)? onSwapPressed;
   final String swapButtonLabel;
   final String swapButtonLoadingLabel;
   final bool unitInSats;
@@ -67,6 +67,8 @@ class _SwapWidget2State extends State<SwapWidget2> {
 
   List<CurrencyNew> fromPriceCurrencies = lBtcCurrencies;
   List<CurrencyNew> toPriceCurrencies = btcCurrencies;
+
+  bool sweep = false;
 
   @override
   void initState() {
@@ -140,10 +142,12 @@ class _SwapWidget2State extends State<SwapWidget2> {
           showCurrencyLogos: true,
           textEditingController: fromPriceController,
           label: 'Swap amount',
-          onChange: (sats, selectedCurrency) {
+          sweepLabel: 'Swap entire balance',
+          onChange: (sats, sweep, selectedCurrency) {
             _onChange(
               selectedFromWallet,
               selectedToWallet,
+              sweep,
               sats: sats,
             );
           },
@@ -190,29 +194,56 @@ class _SwapWidget2State extends State<SwapWidget2> {
     print('Swap button pressed');
     if (widget.onSwapPressed != null) {
       final isSat = fromPriceCurrency.code.contains('sats');
-      final int sats = isSat
-          ? int.parse(fromPriceController.text)
-          : (double.parse(fromPriceController.text) * SATS_IN_BTC).toInt();
+
+      int sats = 0;
+      try {
+        sats = isSat
+            ? int.parse(fromPriceController.text)
+            : (double.parse(fromPriceController.text) * SATS_IN_BTC).toInt();
+      } catch (e) {
+        sats = 0;
+        print(e);
+      }
 
       widget.onSwapPressed?.call(
         selectedFromWallet,
         selectedToWallet,
         sats,
+        sweep,
       );
     }
   }
 
-  void _onChange(Wallet fromWallet, Wallet toWallet, {int? sats}) {
+  void _onChange(
+    Wallet fromWallet,
+    Wallet toWallet,
+    bool localSweep, {
+    int? sats,
+  }) {
     final isSat = fromPriceCurrency.code.contains('sats');
-    final int localSats = isSat
-        ? int.parse(fromPriceController.text)
-        : (double.parse(fromPriceController.text) * SATS_IN_BTC).toInt();
+
+    int localSats = 0;
+    if (localSweep == false) {
+      try {
+        localSats = isSat
+            ? int.parse(fromPriceController.text)
+            : (double.parse(fromPriceController.text) * SATS_IN_BTC).toInt();
+      } on FormatException catch (e) {
+        print(e);
+        localSats = 0;
+      }
+    }
 
     widget.onChange?.call(
       fromWallet,
       toWallet,
       sats ?? localSats,
+      localSweep,
     );
+
+    setState(() {
+      sweep = localSweep;
+    });
   }
 
   void _fromCurrencyChanged(CurrencyNew? value) {
@@ -282,6 +313,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
     _onChange(
       wallet,
       selectedToWallet,
+      sweep,
     );
   }
 
@@ -292,6 +324,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
     _onChange(
       selectedFromWallet,
       wallet,
+      false,
     );
   }
 }

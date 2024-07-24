@@ -1,11 +1,13 @@
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class BBFormField extends StatelessWidget {
   const BBFormField({
     super.key,
     required this.editingController,
     this.label = '',
+    this.placeholderText,
     this.suffix,
     this.keyboardType,
     this.disabled = false,
@@ -13,10 +15,12 @@ class BBFormField extends StatelessWidget {
     this.selected = false,
     this.errorMsg = '',
     this.decoration,
+    this.bottomPadding = 10.0,
   });
 
   final TextEditingController editingController;
   final String label;
+  final String? placeholderText;
   final TextInputType? keyboardType;
   final Widget? suffix;
   final bool disabled;
@@ -24,6 +28,7 @@ class BBFormField extends StatelessWidget {
   final bool selected;
   final String errorMsg;
   final InputDecoration? decoration;
+  final double bottomPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +54,7 @@ class BBFormField extends StatelessWidget {
         borderRadius: BorderRadius.circular(8.0),
         borderSide: BorderSide(color: borderColor),
       ),
-      contentPadding: const EdgeInsets.only(bottom: 8, left: 24),
+      contentPadding: const EdgeInsets.only(bottom: 8, left: 16),
       error: errorMsg.isNotEmpty
           ? Text(
               errorMsg,
@@ -57,6 +62,7 @@ class BBFormField extends StatelessWidget {
             )
           : null,
       suffixIcon: suffix,
+      hintText: placeholderText,
       // scrollPadding: EdgeInsets.only(bottom:40),
     );
 
@@ -75,9 +81,7 @@ class BBFormField extends StatelessWidget {
           enabled: !disabled,
           decoration: decoration,
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        Gap(bottomPadding),
       ],
     );
   }

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/currency_new.dart';
 import 'package:bb_mobile/_ui/atoms/bb_form_field.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:flutter/material.dart';
 
 /// Constraints: This component always require sats and btc to be first two currencies.
@@ -10,6 +11,7 @@ class CurrencyInput extends StatefulWidget {
     super.key,
     required this.currencies,
     required this.unitsInSats,
+    this.sweepLabel,
     this.label,
 
     /// To use this Widget as a controlled component, this currency is set.
@@ -24,6 +26,7 @@ class CurrencyInput extends StatefulWidget {
     /// To display currency logos.
     /// currencies[].logoPath should be set.
     this.showCurrencyLogos = false,
+    this.hideSweep = false,
     this.defaultFiatCurrency,
     this.disabled = false,
     this.initialPrice,
@@ -54,15 +57,17 @@ class CurrencyInput extends StatefulWidget {
   final bool disabled;
   final bool unitsInSats;
   final String? label;
+  final String? sweepLabel;
   final CurrencyNew? currency;
   final bool onlyCrypto;
   final bool showCurrencyLogos;
+  final bool hideSweep;
 
   final double? initialPrice;
   final CurrencyNew? initialCurrency;
   final TextEditingController? textEditingController;
 
-  final Function(int sats, CurrencyNew selectedCurrency)? onChange;
+  final Function(int sats, bool sweep, CurrencyNew selectedCurrency)? onChange;
   final Function(CurrencyNew currency)? onCurrencyChange;
 
   @override
@@ -73,6 +78,7 @@ class _CurrencyInputState extends State<CurrencyInput> {
   late TextEditingController amountController;
   late CurrencyNew selectedCurrency; // = btcCurrency;
   int _sats = 0;
+  bool sweep = false;
 
   bool _isProgrammaticChange = false;
 
@@ -143,10 +149,11 @@ class _CurrencyInputState extends State<CurrencyInput> {
     // TODO: This will be needed outside as well. So how?
     final int sats = calcualteSats(price, selectedCurrency);
 
-    if (sats != _sats) widget.onChange?.call(sats, selectedCurrency);
+    if (sats != _sats) widget.onChange?.call(sats, false, selectedCurrency);
 
     setState(() {
       _sats = sats;
+      if (sats != 0) sweep = false;
     });
   }
 
@@ -171,8 +178,17 @@ class _CurrencyInputState extends State<CurrencyInput> {
       selectedCurrency = currency;
     });
 
-    widget.onChange?.call(_sats, currency);
+    widget.onChange?.call(_sats, sweep, currency);
     widget.onCurrencyChange?.call(currency);
+  }
+
+  void _onSweep() {
+    setState(() {
+      sweep = true;
+      _sats = 0;
+    });
+    amountController.text = '';
+    widget.onChange?.call(0, true, selectedCurrency);
   }
 
   @override
@@ -250,7 +266,15 @@ class _CurrencyInputState extends State<CurrencyInput> {
           suffix: currencyPicker,
           keyboardType: TextInputType.number,
           disabled: widget.disabled,
+          bottomPadding: 0.0,
+          placeholderText: sweep == true ? '[Send MAX]' : null,
         ),
+        if (widget.hideSweep == false)
+          BBButton.text(
+            label: widget.sweepLabel ?? 'Sweep',
+            onPressed: _onSweep,
+            fontSize: 12.0,
+          ),
         const SizedBox(
           height: 10,
         ),

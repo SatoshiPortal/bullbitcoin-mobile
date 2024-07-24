@@ -108,7 +108,7 @@ class _SwapWidgetState extends State<SwapWidget> {
           showCurrencyLogos: true,
           textEditingController: fromPriceController,
           label: '',
-          onChange: (sats, selectedCurrency) {
+          onChange: (sats, sweep, selectedCurrency) {
             _onChange(
               selectedFromWallet,
               selectedToWallet,
@@ -148,7 +148,7 @@ class _SwapWidgetState extends State<SwapWidget> {
           onlyCrypto: true,
           showCurrencyLogos: true,
           textEditingController: toPriceController,
-          onChange: (sats, selectedCurrency) {
+          onChange: (sats, sweep, selectedCurrency) {
             _onChange(
               selectedFromWallet,
               selectedToWallet,

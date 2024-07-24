@@ -173,18 +173,21 @@ class _Screen extends StatelessWidget {
               unitInSats: unitInSats,
               fee: swapTx != null ? feeStr : null,
               feeFiat: swapTx != null ? '~ $feeFiat $fiatCurrency' : null,
-              onChange: (Wallet fromWallet, Wallet toWallet, int amount) {
+              onChange:
+                  (Wallet fromWallet, Wallet toWallet, int amount, bool sweep) {
                 if (swapTx != null) {
                   context.read<CreateSwapCubit>().clearSwapTx();
                   context.read<SendCubit>().reset();
                 }
               },
-              onSwapPressed: (Wallet fromWallet, Wallet toWallet, int amount) {
+              onSwapPressed:
+                  (Wallet fromWallet, Wallet toWallet, int amount, bool sweep) {
                 _swapButtonPressed(
                   context,
                   fromWallet,
                   toWallet,
                   amount,
+                  sweep,
                   signed,
                 );
               },
@@ -201,6 +204,7 @@ class _Screen extends StatelessWidget {
     Wallet fromWallet,
     Wallet toWallet,
     int amount,
+    bool sweep,
     bool toBroadcast,
   ) async {
     print('swap button pressed $toBroadcast');
@@ -256,7 +260,7 @@ class _SwapAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBAppBar(
-      text: 'Swap',
+      text: 'Swap Bitcoin',
       onBack: () {
         context.pop();
       },
