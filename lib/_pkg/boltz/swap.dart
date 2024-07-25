@@ -663,8 +663,8 @@ class SwapBoltz {
 
       final claimFeesEstimate =
           swapTx.chainSwapDetails!.direction == ChainSwapDirection.btcToLbtc
-              ? onchainFees?.btcFees.userClaim
-              : onchainFees?.lbtcFees.userClaim;
+              ? onchainFees?.lbtcFees.userClaim
+              : onchainFees?.btcFees.userClaim;
       if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
       final swap = swapTx.toChainSwap(swapSensitive);

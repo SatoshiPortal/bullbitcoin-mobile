@@ -142,7 +142,10 @@ class _Screen extends StatelessWidget {
     final swapTx =
         context.select((CreateSwapCubit cubit) => cubit.state.swapTx);
 
-    final fee = swapTx?.totalFees() ?? 0;
+    final swapFees = swapTx?.totalFees() ?? 0;
+    final senderFee =
+        context.select((SendCubit send) => send.state.psbtSignedFeeAmount ?? 0);
+    final fee = swapFees + senderFee;
     final feeStr = context
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
 
