@@ -14,6 +14,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/molecules/wallet/wallet_dropdown.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -155,7 +156,7 @@ class _Screen extends StatelessWidget {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -224,6 +225,21 @@ class ReceiveWalletsDropDown extends StatelessWidget {
       opacity: oneWallet ? 0.3 : 1,
       child: IgnorePointer(
         ignoring: oneWallet,
+        child: WalletDropDown(
+          items: walletBlocs.map((wb) => wb.state.wallet!).toList(),
+          onChanged: (wallet) {
+            final blocs =
+                walletBlocs.where((wb) => wb.state.wallet == wallet).toList();
+            if (blocs.isNotEmpty) {
+              context.read<CreateSwapCubit>().removeWarnings();
+              context.read<ReceiveCubit>().updateWalletBloc(blocs[0]);
+            }
+          },
+          value:
+              selectedWalletBloc?.state.wallet ?? walletBlocs[0].state.wallet!,
+        ),
+
+        /*
         child: BBDropDown<WalletBloc>(
           walletSelector: true,
           items: {
@@ -241,6 +257,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
             context.read<ReceiveCubit>().updateWalletBloc(value);
           },
         ),
+        */
       ),
     );
   }
