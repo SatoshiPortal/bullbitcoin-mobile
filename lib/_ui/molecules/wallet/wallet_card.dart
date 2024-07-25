@@ -32,12 +32,13 @@ class WalletCard extends StatelessWidget {
     final name = wallet.name;
     final fingerprint = wallet.sourceFingerprint;
 
-    return Card(
-      margin: EdgeInsets.zero,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      color: context.colour.primaryContainer,
-      child: SizedBox(
-        height: 70,
+    return SizedBox(
+      width: MediaQuery.of(context).size.width - 48, // TODO: Better way?
+      height: 70,
+      child: Card(
+        margin: EdgeInsets.zero,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        color: context.colour.primaryContainer,
         child: DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -57,74 +58,70 @@ class WalletCard extends StatelessWidget {
               bottom: 4,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
-                  width: 260,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Gap(8),
-                      BBText.title(
-                        name ?? fingerprint,
-                        onSurface: true,
-                        compact: true,
+                Column(
+                  children: [
+                    const Gap(8),
+                    BBText.title(
+                      name ?? fingerprint,
+                      onSurface: true,
+                      compact: true,
+                    ),
+                    const Gap(14),
+                    if (walletStr != null)
+                      Opacity(
+                        opacity: 0.7,
+                        child: BBText.bodySmall(
+                          walletStr ?? '',
+                          onSurface: true,
+                          isBold: true,
+                        ),
                       ),
-                      const Gap(14),
-                      if (walletStr != null)
-                        Opacity(
-                          opacity: 0.7,
-                          child: BBText.bodySmall(
-                            walletStr ?? '',
+                    if (walletStr != null) const Spacer(),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BBText.titleLarge(
+                          balance,
+                          onSurface: true,
+                          isBold: true,
+                          compact: true,
+                        ),
+                        const Gap(4),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 1),
+                          child: BBText.title(
+                            balanceUnit,
                             onSurface: true,
                             isBold: true,
                           ),
                         ),
-                      if (walletStr != null) const Spacer(),
+                      ],
+                    ),
+                    if (fiatCurrency != null) ...[
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          BBText.titleLarge(
-                            balance,
+                          BBText.bodySmall(
+                            '~' + (fiatAmt ?? ''),
                             onSurface: true,
-                            isBold: true,
-                            compact: true,
+                            fontSize: 12,
                           ),
                           const Gap(4),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 1),
-                            child: BBText.title(
-                              balanceUnit,
+                            child: BBText.bodySmall(
+                              fiatCurrency!.shortName.toUpperCase(),
                               onSurface: true,
-                              isBold: true,
+                              fontSize: 12,
                             ),
                           ),
                         ],
                       ),
-                      if (fiatCurrency != null) ...[
-                        Row(
-                          children: [
-                            BBText.bodySmall(
-                              '~' + (fiatAmt ?? ''),
-                              onSurface: true,
-                              fontSize: 12,
-                            ),
-                            const Gap(4),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 1),
-                              child: BBText.bodySmall(
-                                fiatCurrency!.shortName.toUpperCase(),
-                                onSurface: true,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      const Gap(4),
                     ],
-                  ),
+                    const Gap(4),
+                  ],
                 ),
+                const Spacer(),
                 Icon(
                   Icons.keyboard_arrow_down_outlined,
                   color: context.colour.onPrimaryContainer,

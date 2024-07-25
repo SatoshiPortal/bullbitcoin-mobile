@@ -271,7 +271,9 @@ class _CurrencyInputState extends State<CurrencyInput> {
         ),
         if (widget.hideSweep == false)
           BBButton.text(
-            label: widget.sweepLabel ?? 'Sweep',
+            label: sweep == true
+                ? 'Sending entire balance'
+                : widget.sweepLabel ?? 'Sweep',
             onPressed: _onSweep,
             fontSize: 12.0,
           ),

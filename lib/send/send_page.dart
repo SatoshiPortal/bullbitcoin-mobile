@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
@@ -10,9 +9,9 @@ import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
-import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
+import 'package:bb_mobile/_ui/molecules/wallet/wallet_dropdown.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -245,28 +244,48 @@ class WalletSelectionDropDown extends StatelessWidget {
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: enableDropdown ? 1 : 0.3,
-        child: AbsorbPointer(
-          absorbing: !enableDropdown,
-          child: BBDropDown<WalletBloc>(
-            walletSelector: true,
-            items: {
-              for (final wallet in walletBlocs)
-                wallet: (
-                  label: wallet.state.wallet!.name ??
-                      wallet.state.wallet!.sourceFingerprint,
-                  enabled: context
-                      .read<SendCubit>()
-                      .state
-                      .walletEnabled(wallet.state.wallet!.id),
-                  imagePath: wallet.state.wallet!.baseWalletType.getImage,
-                ),
-            },
-            value: walletBloc,
-            onChanged: (bloc) {
-              context.read<SendCubit>().updateWalletBloc(bloc);
-            },
-          ).animate().fadeIn(),
+        /*
+        child: WalletCard(
+          wallet: walletBlocs[0].state.wallet!,
+          balance: '1000',
+          balanceUnit: 'sats',
         ),
+        */
+
+        child: WalletDropDown(
+          items: walletBlocs.map((wb) => wb.state.wallet!).toList(),
+          onChanged: (wallet) {
+            final blocs =
+                walletBlocs.where((wb) => wb.state.wallet == wallet).toList();
+            if (blocs.isNotEmpty) {
+              context.read<SendCubit>().updateWalletBloc(blocs[0]);
+            }
+          },
+          value:
+              selectedWalletBloc?.state.wallet ?? walletBlocs[0].state.wallet!,
+        ).animate().fadeIn(),
+
+        /*
+        child: BBDropDown<WalletBloc>(
+          walletSelector: true,
+          items: {
+            for (final wallet in walletBlocs)
+              wallet: (
+                label: wallet.state.wallet!.name ??
+                    wallet.state.wallet!.sourceFingerprint,
+                enabled: context
+                    .read<SendCubit>()
+                    .state
+                    .walletEnabled(wallet.state.wallet!.id),
+                imagePath: wallet.state.wallet!.baseWalletType.getImage,
+              ),
+          },
+          value: walletBloc,
+          onChanged: (bloc) {
+            context.read<SendCubit>().updateWalletBloc(bloc);
+          },
+        ).animate().fadeIn(),
+        */
       ),
     );
   }

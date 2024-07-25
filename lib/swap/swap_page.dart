@@ -158,8 +158,9 @@ class _Screen extends StatelessWidget {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(
               height: 60,
@@ -173,15 +174,23 @@ class _Screen extends StatelessWidget {
               unitInSats: unitInSats,
               fee: swapTx != null ? feeStr : null,
               feeFiat: swapTx != null ? '~ $feeFiat $fiatCurrency' : null,
-              onChange:
-                  (Wallet fromWallet, Wallet toWallet, int amount, bool sweep) {
+              onChange: (
+                Wallet fromWallet,
+                Wallet toWallet,
+                int amount,
+                bool sweep,
+              ) {
                 if (swapTx != null) {
                   context.read<CreateSwapCubit>().clearSwapTx();
                   context.read<SendCubit>().reset();
                 }
               },
-              onSwapPressed:
-                  (Wallet fromWallet, Wallet toWallet, int amount, bool sweep) {
+              onSwapPressed: (
+                Wallet fromWallet,
+                Wallet toWallet,
+                int amount,
+                bool sweep,
+              ) {
                 _swapButtonPressed(
                   context,
                   fromWallet,
@@ -241,6 +250,7 @@ class _Screen extends StatelessWidget {
     context.read<CreateSwapCubit>().createOnChainSwap(
           wallet: fromWallet,
           amount: amount, //20000, // 1010000, // amount,
+          sweep: sweep,
           isTestnet: context.read<NetworkCubit>().state.testnet,
           btcElectrumUrl:
               btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',

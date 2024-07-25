@@ -541,6 +541,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
   void createOnChainSwap({
     required Wallet wallet,
     required int amount,
+    bool sweep = false,
     String? label,
     required bool isTestnet,
     required String btcElectrumUrl,
