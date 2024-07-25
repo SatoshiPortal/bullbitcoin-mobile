@@ -649,6 +649,10 @@ class SwapBoltz {
           : boltzMainnetUrl;
 
       final (fees, errFees) = await getFeesAndLimits(
+        // refundAddress: swap.direction == ChainSwapDirection.btcToLbtc
+        //     ? 'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz'
+        //     : 'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la',
+        // TODO:Onchain
         boltzUrl: boltzurl,
       );
       if (errFees != null) {
@@ -659,8 +663,8 @@ class SwapBoltz {
 
       final claimFeesEstimate =
           swapTx.chainSwapDetails!.direction == ChainSwapDirection.btcToLbtc
-              ? onchainFees?.lbtcFees.userClaim
-              : onchainFees?.btcFees.userClaim;
+              ? onchainFees?.btcFees.userClaim
+              : onchainFees?.lbtcFees.userClaim;
       if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
       final swap = swapTx.toChainSwap(swapSensitive);
@@ -668,10 +672,6 @@ class SwapBoltz {
       final resp = await swap.claim(
         outAddress: swapTx.claimAddress!,
         refundAddress: swapTx.refundAddress!,
-        // refundAddress: swap.direction == ChainSwapDirection.btcToLbtc
-        //     ? 'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz'
-        //     : 'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la',
-        // TODO:Onchain
         absFee: claimFeesEstimate,
         tryCooperate: tryCooperate,
       );

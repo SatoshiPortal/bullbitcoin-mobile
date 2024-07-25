@@ -258,24 +258,60 @@ class CardColumn extends StatelessWidget {
         horizontal: 26,
         vertical: 4,
       ),
-      child: Column(
+      child: Stack(
         children: [
-          BlocProvider.value(
-            value: walletTop,
-            child: const CardItem(),
+          Column(
+            children: [
+              BlocProvider.value(
+                value: walletTop,
+                child: const CardItem(),
+              ),
+              if (walletBottom != null)
+                BlocProvider.value(
+                  value: walletBottom!,
+                  child: const CardItem(),
+                ),
+              if (walletLast != null)
+                BlocProvider.value(
+                  value: walletLast!,
+                  child: const CardItem(),
+                )
+              else if (!onlyOne)
+                const EmptyCard(),
+            ],
           ),
-          if (walletBottom != null)
-            BlocProvider.value(
-              value: walletBottom!,
-              child: const CardItem(),
+          Positioned(
+            left: 126, // 76 // 120
+            top: 83, //87 // 84
+            child: SizedBox(
+              height: 40,
+              width: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  context.push('/swap-page');
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  side: const BorderSide(color: NewColours.lightGray),
+                  backgroundColor: context.colour.primaryContainer,
+                  surfaceTintColor:
+                      context.colour.primaryContainer.withOpacity(0.5),
+                  elevation: 2,
+                  splashFactory: NoSplash.splashFactory,
+                  enableFeedback: false,
+                  padding: EdgeInsets.zero,
+                ),
+                child: Icon(
+                  Icons.swap_horiz,
+                  color: context.colour.onPrimaryContainer,
+                  size: 32,
+                ),
+              ),
             ),
-          if (walletLast != null)
-            BlocProvider.value(
-              value: walletLast!,
-              child: const CardItem(),
-            )
-          else if (!onlyOne)
-            const EmptyCard(),
+            // child: Center(child: BBButton.big(label: 'Swap', onPressed: () {})),
+          ),
         ],
       ),
     );
@@ -628,7 +664,7 @@ class HomeTopBar2 extends StatelessWidget {
               shadows: [],
             ),
             onPressed: () {
-              context.push('/swap-page');
+              // context.push('/swap-page');
             },
           ),
           const Gap(24),

@@ -116,10 +116,17 @@ class _SwapWidget2State extends State<SwapWidget2> {
         ),
         Align(
           alignment: Alignment.centerRight,
-          child: Image.asset(
-            img,
-            width: 32,
-            height: 32,
+          child: OutlinedButton(
+            onPressed: () {
+              final tmp = selectedFromWallet;
+              _fromWalletChanged(selectedToWallet);
+              _toWalletChanged(tmp);
+            },
+            child: Image.asset(
+              img,
+              width: 32,
+              height: 32,
+            ),
           ),
         ),
         const Text('Swap to'),
@@ -139,7 +146,6 @@ class _SwapWidget2State extends State<SwapWidget2> {
           currency: fromPriceCurrency,
           unitsInSats: widget.unitInSats,
           onlyCrypto: true,
-          showCurrencyLogos: true,
           textEditingController: fromPriceController,
           label: 'Swap amount',
           sweepLabel: 'Swap entire balance',
