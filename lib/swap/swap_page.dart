@@ -267,7 +267,12 @@ class _Screen extends StatelessWidget {
 
       context.read<SendCubit>().reset();
 
-      sweepAmount = walletBloc.state.wallet!.balance! - fees - 1500; // TODO:
+      final int magicNumber =
+          walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
+              ? 20
+              : 1500;
+      sweepAmount =
+          walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:
       // -20 works for btc
       // -1500 works for l-btc
     }

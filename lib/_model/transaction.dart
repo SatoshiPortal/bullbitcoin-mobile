@@ -378,6 +378,21 @@ class SwapTx with _$SwapTx {
       isReverse() &&
       (status != null && (status!.status == SwapStatus.txnMempool));
 
+  bool claimedOnchain() =>
+      isChainSwap() &&
+      // txid != null &&
+      (status != null && (status!.status == SwapStatus.txnClaimed));
+
+  bool expiredOnchain() =>
+      isChainSwap() &&
+      // txid != null &&
+      (status != null && (status!.status == SwapStatus.swapExpired));
+
+  bool uninitiatedOnchain() =>
+      isChainSwap() &&
+      creationTime!.difference(DateTime.now()).inDays > 3 &&
+      (status != null && (status!.status == SwapStatus.swapCreated));
+
   bool receiveAction() => settledReverse() || paidReverse();
 
   bool proceesTx() =>
@@ -391,7 +406,10 @@ class SwapTx with _$SwapTx {
       settledSubmarine() ||
       expiredReverse() ||
       expiredSubmarine() ||
-      refundedAny();
+      refundedAny() ||
+      claimedOnchain() ||
+      expiredOnchain() ||
+      uninitiatedOnchain();
 
   bool failed() => isChainSwap()
       ? chainSwapAction()
