@@ -28,9 +28,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class SwapPage extends StatefulWidget {
-  const SwapPage({super.key});
+  SwapPage({super.key, this.fromWalletId});
 
-  void get openScanner {}
+  String? fromWalletId;
 
   @override
   State<SwapPage> createState() => _SwapPageState();
@@ -102,14 +102,18 @@ class _SwapPageState extends State<SwapPage> {
           flexibleSpace: const _SwapAppBar(),
           automaticallyImplyLeading: false,
         ),
-        body: const OnchainListeners(child: _Screen()),
+        body: OnchainListeners(
+          child: _Screen(fromWalletId: widget.fromWalletId),
+        ),
       ),
     );
   }
 }
 
 class _Screen extends StatelessWidget {
-  const _Screen();
+  _Screen({this.fromWalletId});
+
+  String? fromWalletId;
 
   @override
   Widget build(BuildContext context) {
@@ -171,6 +175,7 @@ class _Screen extends StatelessWidget {
             SwapWidget2(
               loading: sending,
               wallets: wallets,
+              fromWalletId: fromWalletId,
               swapButtonLabel: signed == true ? 'Broadcast' : 'Swap',
               swapButtonLoadingLabel:
                   signed == true ? 'Broadcasting' : 'Creating swap',

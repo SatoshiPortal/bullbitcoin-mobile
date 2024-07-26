@@ -62,7 +62,8 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/swap-page',
           builder: (context, state) {
-            return const SwapPage();
+            final q = state.uri.queryParameters;
+            return SwapPage(fromWalletId: q['fromWalletId']);
           },
         ),
         GoRoute(

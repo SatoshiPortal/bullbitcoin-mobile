@@ -26,6 +26,7 @@ class SwapWidget2 extends StatefulWidget {
     super.key,
     this.loading = false,
     required this.wallets,
+    this.fromWalletId,
     this.onChange,
     this.onSwapPressed,
     this.swapButtonLabel = 'Swap',
@@ -37,6 +38,7 @@ class SwapWidget2 extends StatefulWidget {
 
   final bool loading;
   final List<Wallet> wallets;
+  final String? fromWalletId;
   final Function(Wallet from, Wallet to, int amount, bool sweep)? onChange;
   final Function(Wallet from, Wallet to, int amount, bool sweep)? onSwapPressed;
   final String swapButtonLabel;
@@ -74,20 +76,39 @@ class _SwapWidget2State extends State<SwapWidget2> {
   void initState() {
     super.initState();
 
-    selectedFromWallet = widget.wallets[0];
-    selectedToWallet = widget.wallets[1];
-
     fromWallets = widget.wallets;
-    toWallets = widget.wallets.where((wallet) => !wallet.isLiquid()).toList();
+    if (widget.fromWalletId != null) {
+      final fromWallet =
+          widget.wallets.where((w) => w.id == widget.fromWalletId).first;
+      final toWallet = widget.wallets
+          .where((w) => w.baseWalletType != fromWallet.baseWalletType)
+          .first;
 
-    fromPriceController.addListener(() {
-      toPriceController.text = fromPriceController.text;
-    });
+      selectedFromWallet = fromWallet;
+      selectedToWallet = toWallet;
+
+      if (fromWallet.baseWalletType == BaseWalletType.Bitcoin) {
+        toWallets =
+            widget.wallets.where((wallet) => wallet.isLiquid()).toList();
+      } else {
+        toWallets =
+            widget.wallets.where((wallet) => !wallet.isLiquid()).toList();
+      }
+    } else {
+      selectedFromWallet = widget.wallets[0];
+      selectedToWallet = widget.wallets[1];
+
+      toWallets = widget.wallets.where((wallet) => !wallet.isLiquid()).toList();
+    }
 
     if (widget.unitInSats) {
       fromPriceCurrency = lBtcCurrencies[1];
       toPriceCurrency = btcCurrencies[1];
     }
+
+    fromPriceController.addListener(() {
+      toPriceController.text = fromPriceController.text;
+    });
   }
 
   @override
