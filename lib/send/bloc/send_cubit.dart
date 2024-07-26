@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
@@ -614,8 +615,9 @@ class SendCubit extends Cubit<SendState> {
     if (swaptx.totalFees()! + feeAmt! > swaptx.outAmount) {
       emit(
         state.copyWith(
-            errSending: 'Fees is greater than output amount!',
-            buildingOnChain: false),
+          errSending: 'Fees is greater than output amount!',
+          buildingOnChain: false,
+        ),
       );
       return;
     }
@@ -721,7 +723,7 @@ class SendCubit extends Cubit<SendState> {
         swapTx: swap,
         isSwap: true,
       ),
-      useOnlyLwk: !broadcastViaBoltz,
+      useOnlyLwk: true, // !broadcastViaBoltz,
     );
     if (errBroadcast != null) {
       emit(state.copyWith(errSending: errBroadcast.toString(), sending: false));
@@ -908,6 +910,46 @@ class SendCubit extends Cubit<SendState> {
   //   if (state.tx == null) return;
   //   emit(state.copyWith(txPaid: true));
   // }
+
+  Future<int> calculateFeeForSend({
+    Wallet? wallet,
+    String address = '',
+    required int networkFees,
+  }) async {
+    final isLiq = wallet!.isLiquid();
+
+    final fee =
+        isLiq ? _networkCubit.state.pickLiquidFees() : networkFees.toDouble();
+
+    final bool enableRbf;
+    enableRbf = !state.disableRBF;
+
+    final amount =
+        wallet.balance! - 900 > 1000 ? wallet.balance! - 900 : wallet.balance!;
+
+    final (buildResp, err) = await _walletTx.buildTx(
+      wallet: wallet,
+      isManualSend: false,
+      address: address,
+      amount: amount,
+      sendAllCoin: false,
+      feeRate: fee,
+      enableRbf: true,
+    );
+    if (err != null) {
+      emit(
+        state.copyWith(
+          errSending: err.toString(),
+          sending: false,
+        ),
+      );
+      return 0;
+    }
+
+    final (walletResp, tx, feeAmt) = buildResp!;
+
+    return feeAmt ?? 0;
+  }
 
   void dispose() {
     super.close();

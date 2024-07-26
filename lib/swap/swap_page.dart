@@ -250,9 +250,26 @@ class _Screen extends StatelessWidget {
 
     await Future.delayed(Duration.zero);
 
+    int sweepAmount = 0;
+    if (sweep == true) {
+      final feeRate =
+          context.read<NetworkFeesCubit>().state.selectedOrFirst(false);
+      final fees = await context.read<SendCubit>().calculateFeeForSend(
+            wallet: walletBloc.state.wallet,
+            address: refundAddress,
+            networkFees: feeRate,
+          );
+
+      context.read<SendCubit>().reset();
+
+      sweepAmount = walletBloc.state.wallet!.balance! - fees;
+    }
+
     context.read<CreateSwapCubit>().createOnChainSwap(
           wallet: fromWallet,
-          amount: amount, //20000, // 1010000, // amount,
+          amount: sweep == true
+              ? sweepAmount
+              : amount, //20000, // 1010000, // amount,
           sweep: sweep,
           isTestnet: context.read<NetworkCubit>().state.testnet,
           btcElectrumUrl:
