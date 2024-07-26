@@ -281,7 +281,7 @@ class CardColumn extends StatelessWidget {
             ],
           ),
           Positioned(
-            left: 126, // 76 // 120
+            left: 230, // 126, // 76 // 120
             top: 83, //87 // 84
             child: SizedBox(
               height: 40,

@@ -262,7 +262,7 @@ class _Screen extends StatelessWidget {
 
       context.read<SendCubit>().reset();
 
-      sweepAmount = walletBloc.state.wallet!.balance! - fees;
+      sweepAmount = walletBloc.state.wallet!.balance! - fees - 20; // TODO:
     }
 
     context.read<CreateSwapCubit>().createOnChainSwap(

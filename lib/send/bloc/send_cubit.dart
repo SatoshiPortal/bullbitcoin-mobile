@@ -921,18 +921,15 @@ class SendCubit extends Cubit<SendState> {
     final fee =
         isLiq ? _networkCubit.state.pickLiquidFees() : networkFees.toDouble();
 
-    final bool enableRbf;
-    enableRbf = !state.disableRBF;
-
-    final amount =
-        wallet.balance! - 900 > 1000 ? wallet.balance! - 900 : wallet.balance!;
+    // final amount =
+    //     wallet.balance! - 900 > 1000 ? wallet.balance! - 900 : wallet.balance!;
 
     final (buildResp, err) = await _walletTx.buildTx(
       wallet: wallet,
       isManualSend: false,
       address: address,
-      amount: amount,
-      sendAllCoin: false,
+      amount: wallet.balance,
+      sendAllCoin: true,
       feeRate: fee,
       enableRbf: true,
     );

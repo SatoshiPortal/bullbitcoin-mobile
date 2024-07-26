@@ -661,11 +661,14 @@ class CreateSwapCubit extends Cubit<SwapState> {
       // TODO:Onchain Test this properly
       final updatedSwap = swap!.copyWith(
         boltzFees: isFromWalletLiq
-            ? chainFees.lbtcFees.percentage * amount ~/ 100
-            : chainFees.btcFees.percentage * amount ~/ 100,
-        lockupFees: isFromWalletLiq
-            ? chainFees.btcFees.userLockup
-            : chainFees.lbtcFees.userLockup,
+            ? (chainFees.lbtcFees.percentage * amount ~/ 100) +
+                chainFees.lbtcFees.server
+            : (chainFees.btcFees.percentage * amount ~/ 100) +
+                chainFees.btcFees.server,
+        lockupFees:
+            0, // This is set to 0, since lockup fee is calculated in send tx //  isFromWalletLiq
+        // ? chainFees.btcFees.userLockup
+        // : chainFees.lbtcFees.userLockup,
         claimFees: isFromWalletLiq
             ? chainFees.btcFees.userClaim
             : chainFees.lbtcFees.userClaim,
