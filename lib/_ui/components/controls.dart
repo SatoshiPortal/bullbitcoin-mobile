@@ -118,6 +118,7 @@ class BBDropDown<T> extends StatelessWidget {
         ),
         child: DropdownButtonFormField<T>(
           padding: EdgeInsets.zero,
+          dropdownColor: context.colour.primaryContainer,
           elevation: 4,
           borderRadius: BorderRadius.circular(8),
           isExpanded: true,

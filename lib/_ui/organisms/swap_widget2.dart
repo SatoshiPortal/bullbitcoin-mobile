@@ -135,6 +135,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
         const SizedBox(
           height: 20,
         ),
+        /*
         Align(
           alignment: Alignment.centerRight,
           child: OutlinedButton(
@@ -150,6 +151,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
             ),
           ),
         ),
+        */
         const Text('Swap to'),
         const SizedBox(
           height: 4,

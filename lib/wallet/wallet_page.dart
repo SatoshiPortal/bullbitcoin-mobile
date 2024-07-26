@@ -109,6 +109,7 @@ class ActionsRow extends StatelessWidget {
     return Material(
       elevation: 1,
       shadowColor: isdarkMode ? context.colour.surface : null,
+      color: context.colour.primaryContainer,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [

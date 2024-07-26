@@ -44,6 +44,7 @@ class WalletDropDown extends StatelessWidget {
         itemHeight: null,
         iconSize: 0.0,
         value: value,
+        dropdownColor: context.colour.primaryContainer,
         onChanged: (value) {
           if (value == null) return;
           onChanged.call(value);
