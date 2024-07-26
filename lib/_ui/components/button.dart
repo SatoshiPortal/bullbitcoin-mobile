@@ -28,6 +28,7 @@ class BBButton extends StatelessWidget {
     this.loadingText,
     this.fillWidth = false,
     this.leftSvgAsset,
+    this.leftImage,
     this.center = false,
     this.fontSize,
   })  : type = _ButtonType.big,
@@ -55,6 +56,7 @@ class BBButton extends StatelessWidget {
         statusText = null,
         leftIcon = null,
         leftSvgAsset = null,
+        leftImage = null,
         fillWidth = true;
 
   const BBButton.textWithRightArrow({
@@ -72,6 +74,7 @@ class BBButton extends StatelessWidget {
         statusText = null,
         centered = null,
         leftSvgAsset = null,
+        leftImage = null,
         leftIcon = null,
         fillWidth = true,
         onSurface = null,
@@ -93,6 +96,7 @@ class BBButton extends StatelessWidget {
         centered = null,
         leftIcon = null,
         leftSvgAsset = null,
+        leftImage = null,
         fillWidth = true,
         onSurface = null,
         fontSize = null;
@@ -113,6 +117,7 @@ class BBButton extends StatelessWidget {
         centered = null,
         leftIcon = null,
         leftSvgAsset = null,
+        leftImage = null,
         fillWidth = true,
         onSurface = null,
         fontSize = null;
@@ -128,6 +133,7 @@ class BBButton extends StatelessWidget {
   final _ButtonType type;
   final IconData? leftIcon;
   final String? leftSvgAsset;
+  final String? leftImage;
   final bool fillWidth;
   final double? fontSize;
   final bool? onSurface;
@@ -187,6 +193,13 @@ class BBButton extends StatelessWidget {
                   Icon(
                     leftIcon,
                     color: context.colour.onPrimaryContainer,
+                  ),
+                  const Gap(16),
+                ] else if (leftImage != null) ...[
+                  Image.asset(
+                    leftImage!,
+                    height: 32,
+                    width: 32,
                   ),
                   const Gap(16),
                 ],
