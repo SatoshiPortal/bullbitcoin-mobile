@@ -692,6 +692,7 @@ class SwapBoltz {
     required String lbtcElectrumUrl,
     required String boltzUrl,
     required bool isLiquid,
+    required String toWalletId,
   }) async {
     try {
       final res = await ChainSwap.newSwap(
@@ -714,7 +715,7 @@ class SwapBoltz {
         value: jsonEncode(swapSensitive.toJson()),
       );
       if (err != null) throw err;
-      final swap = res.createSwapFromChainSwap();
+      final swap = res.createSwapFromChainSwap(toWalletId);
       // SwapTx.fromBtcLnSwap(res);
 
       return (swap, null);

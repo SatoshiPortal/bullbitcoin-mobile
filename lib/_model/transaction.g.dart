@@ -96,6 +96,7 @@ _$ChainSwapDetailsImpl _$$ChainSwapDetailsImplFromJson(
       lbtcScriptSenderPublicKey: json['lbtcScriptSenderPublicKey'] as String,
       lbtcScriptReceiverPublicKey:
           json['lbtcScriptReceiverPublicKey'] as String,
+      toWalletId: json['toWalletId'] as String,
     );
 
 Map<String, dynamic> _$$ChainSwapDetailsImplToJson(
@@ -119,6 +120,7 @@ Map<String, dynamic> _$$ChainSwapDetailsImplToJson(
       'lbtcFundingAddress': instance.lbtcFundingAddress,
       'lbtcScriptSenderPublicKey': instance.lbtcScriptSenderPublicKey,
       'lbtcScriptReceiverPublicKey': instance.lbtcScriptReceiverPublicKey,
+      'toWalletId': instance.toWalletId,
     };
 
 const _$ChainSwapDirectionEnumMap = {

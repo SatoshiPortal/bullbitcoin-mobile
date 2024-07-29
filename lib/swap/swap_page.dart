@@ -258,7 +258,7 @@ class _Screen extends StatelessWidget {
     int sweepAmount = 0;
     if (sweep == true) {
       final feeRate =
-          context.read<NetworkFeesCubit>().state.selectedOrFirst(false);
+          context.read<NetworkFeesCubit>().state.selectedOrFirst(true);
       final fees = await context.read<SendCubit>().calculateFeeForSend(
             wallet: walletBloc.state.wallet,
             address: refundAddress,
@@ -269,7 +269,7 @@ class _Screen extends StatelessWidget {
 
       final int magicNumber =
           walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
-              ? 20
+              ? 0
               : 1500;
       sweepAmount =
           walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:

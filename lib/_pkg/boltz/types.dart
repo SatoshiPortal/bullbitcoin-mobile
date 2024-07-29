@@ -244,7 +244,7 @@ extension ChSwapExt on SwapTx {
 }
 
 extension ChainSwapExt on ChainSwap {
-  SwapTx createSwapFromChainSwap() {
+  SwapTx createSwapFromChainSwap(String toWalletId) {
     return SwapTx(
       id: id,
       chainSwapDetails: ChainSwapDetails(
@@ -271,6 +271,7 @@ extension ChainSwapExt on ChainSwap {
         lbtcFundingAddress: lbtcScriptStr.fundingAddrs ?? '',
         lbtcScriptReceiverPublicKey: lbtcScriptStr.receiverPubkey,
         lbtcScriptSenderPublicKey: lbtcScriptStr.senderPubkey,
+        toWalletId: toWalletId,
       ),
       network: isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet,
       baseWalletType: direction == ChainSwapDirection.btcToLbtc

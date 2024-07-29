@@ -549,6 +549,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     required String toAddress,
     required String refundAddress,
     required ChainSwapDirection direction,
+    required String toWalletId,
   }) async {
     try {
       emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
@@ -647,6 +648,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
         isLiquid: isFromWalletLiq,
         direction: direction,
         amount: amount,
+        toWalletId: toWalletId,
       );
       if (errCreatingInv != null) {
         emit(

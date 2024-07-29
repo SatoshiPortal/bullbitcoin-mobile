@@ -60,6 +60,7 @@ class WalletCard extends StatelessWidget {
             child: Row(
               children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Gap(8),
                     BBText.title(
@@ -68,15 +69,6 @@ class WalletCard extends StatelessWidget {
                       compact: true,
                     ),
                     const Gap(14),
-                    if (walletStr != null)
-                      Opacity(
-                        opacity: 0.7,
-                        child: BBText.bodySmall(
-                          walletStr ?? '',
-                          onSurface: true,
-                          isBold: true,
-                        ),
-                      ),
                     if (walletStr != null) const Spacer(),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,26 +90,6 @@ class WalletCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (fiatCurrency != null) ...[
-                      Row(
-                        children: [
-                          BBText.bodySmall(
-                            '~' + (fiatAmt ?? ''),
-                            onSurface: true,
-                            fontSize: 12,
-                          ),
-                          const Gap(4),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 1),
-                            child: BBText.bodySmall(
-                              fiatCurrency!.shortName.toUpperCase(),
-                              onSurface: true,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                     const Gap(4),
                   ],
                 ),

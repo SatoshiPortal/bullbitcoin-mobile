@@ -253,6 +253,7 @@ class ChainSwapDetails with _$ChainSwapDetails {
     required String lbtcFundingAddress,
     required String lbtcScriptSenderPublicKey,
     required String lbtcScriptReceiverPublicKey,
+    required String toWalletId,
   }) = _ChainSwapDetails;
 
   const ChainSwapDetails._();
