@@ -400,7 +400,8 @@ class WalletTx implements IWalletTransactions {
     swapTxs[idx] = updatedSwapTx;
     final txs = wallet.transactions.toList();
 
-    if (swapTx.txid != null) {
+    /*
+    if (swapTx.txid != null && swapTx.isChainSwap() == true) {
       final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
       final idx2 = txs.indexWhere((_) => _.txid == swapTx.id);
 
@@ -421,6 +422,34 @@ class WalletTx implements IWalletTransactions {
           txid: swapTx.txid!,
           timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
           label: swapTx.label,
+        );
+        txs[idx2] = updatedTx;
+      }
+    }
+    */
+
+    if (updatedSwapTx.txid != null) {
+      //  && swapTx.isChainSwap() == false) {
+      final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.txid);
+      final idx2 = txs.indexWhere((_) => _.txid == updatedSwapTx.id);
+
+      if (idx == -1 && idx2 == -1) {
+        final newTx = updatedSwapTx.toNewTransaction();
+        txs.add(newTx);
+      } else if (idx != -1) {
+        final updatedTx = txs[idx].copyWith(
+          swapTx: updatedSwapTx,
+          isSwap: true,
+          label: swapTx.label,
+        );
+        txs[idx] = updatedTx;
+      } else if (idx2 != -1) {
+        final updatedTx = txs[idx2].copyWith(
+          swapTx: updatedSwapTx,
+          isSwap: true,
+          txid: updatedSwapTx.txid!,
+          timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          label: updatedSwapTx.label,
         );
         txs[idx2] = updatedTx;
       }
