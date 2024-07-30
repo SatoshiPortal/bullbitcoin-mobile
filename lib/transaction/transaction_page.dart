@@ -666,6 +666,12 @@ class _OnchainSwapDetails extends StatelessWidget {
           .wallet,
     );
 
+    Transaction? receiveTx;
+
+    if (swap.txid != null && swap.txid!.isNotEmpty) {
+      receiveTx = toWallet!.getTxWithId(swap.txid!);
+    }
+
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: AnimatedContainer(
@@ -673,66 +679,16 @@ class _OnchainSwapDetails extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // const Gap(24),
-            const BBText.title(
-              'From wallet',
-            ),
-            const Gap(4),
-            BBText.titleLarge(
-              fromWallet?.name ?? '',
-              isBold: true,
-            ),
-            const Gap(24),
-            const BBText.title(
-              'Amount',
-            ),
-            const Gap(4),
-            AmountValue(
-              isReceived: tx.isReceived(),
-              amtStr: fromAmtStr,
-              units: fromUnits,
-            ),
-            const Gap(24),
-
-            const BBText.title('Tx ID'),
-            const Gap(4),
-            TxLink(txid: tx.txid, tx: tx, unblindedUrl: tx.unblindedUrl),
-            const Gap(24),
-
-            const BBText.title(
-              'Status',
-            ),
-            const Gap(4),
-            BBText.titleLarge(
-              fromStatusStr,
-              isBold: true,
-            ),
-            const Gap(24),
-            BBText.titleLarge(
-              'To wallet: ${toWallet?.name}',
-              isBold: true,
-            ),
-            const BBText.title(
-              'Amount: {TBD}',
-            ),
-            const BBText.title(
-              'Tx ID: {TBD}',
-            ),
-            const BBText.title(
-              'Status: {TBD}',
-            ),
-            const Gap(24),
             const BBText.title(
               'Swap time',
             ),
             const Gap(4),
             BBText.titleLarge(
-              swap.completionTime?.toIso8601String() ?? 'In progress',
+              date, // swap.creationTime?.toIso8601String() ?? 'In progress',
               isBold: true,
             ),
             const Gap(24),
             if (fees != 0) ...[
-              const Gap(24),
               const BBText.title('Total fees'),
               const Gap(4),
               Row(
@@ -742,8 +698,8 @@ class _OnchainSwapDetails extends StatelessWidget {
                   BBText.title(units, isBold: true),
                 ],
               ),
+              const Gap(24),
             ],
-            const Gap(24),
             if (id.isNotEmpty) ...[
               const BBText.title('Swap ID'),
               const Gap(4),
@@ -768,9 +724,8 @@ class _OnchainSwapDetails extends StatelessWidget {
                   ),
                 ],
               ),
-              // const Gap(24),
+              const Gap(24),
             ],
-            const Gap(16),
             if (statusStr != null) ...[
               const BBText.title('Status'),
               const Gap(4),
@@ -783,8 +738,80 @@ class _OnchainSwapDetails extends StatelessWidget {
                 statusStr.$2,
               ),
             ],
-            // const Gap(4),
             const Gap(24),
+            const BBText.title(
+              'From wallet',
+            ),
+            const Gap(4),
+            BBText.titleLarge(
+              fromWallet?.name ?? '',
+              isBold: true,
+            ),
+            const Gap(24),
+            const BBText.title(
+              'From: Amount',
+            ),
+            const Gap(4),
+            AmountValue(
+              isReceived: tx.isReceived(),
+              amtStr: fromAmtStr,
+              units: fromUnits,
+            ),
+            const Gap(24),
+
+            const BBText.title('From: Tx ID'),
+            const Gap(4),
+            TxLink(txid: tx.txid, tx: tx, unblindedUrl: tx.unblindedUrl),
+            const Gap(24),
+
+            const BBText.title(
+              'From: Status',
+            ),
+            const Gap(4),
+            BBText.titleLarge(
+              fromStatusStr,
+              isBold: true,
+            ),
+            const Gap(24),
+            const BBText.title(
+              'To wallet',
+            ),
+            const Gap(4),
+            BBText.titleLarge(
+              toWallet?.name ?? '',
+              isBold: true,
+            ),
+            const Gap(24),
+            const BBText.title(
+              'To: Amount',
+            ),
+            const Gap(4),
+            const BBText.titleLarge(
+              '{TBD}',
+              isBold: true,
+            ),
+            const Gap(24),
+            const BBText.title(
+              'To: Tx ID',
+            ),
+            const Gap(4),
+            if (receiveTx != null)
+              TxLink(
+                txid: receiveTx.txid,
+                tx: receiveTx,
+                unblindedUrl: receiveTx.unblindedUrl,
+              ),
+            const Gap(24),
+            const BBText.title(
+              'To: Status',
+            ),
+            const Gap(4),
+            const BBText.titleLarge(
+              '{TBD}',
+              isBold: true,
+            ),
+            const Gap(24),
+            // const Gap(4),
             if (date.isNotEmpty) ...[
               BBText.title(
                 isReceive ? 'Tranaction received' : 'Transaction sent',
@@ -793,21 +820,6 @@ class _OnchainSwapDetails extends StatelessWidget {
               BBText.titleLarge(date, isBold: true),
               const Gap(32),
             ],
-            // if (showQr)
-            //   Center(
-            //     child: SizedBox(
-            //       width: 300,
-            //       child: Column(
-            //         children: [
-            //           ReceiveQRDisplay(address: invoice),
-            //           ReceiveDisplayAddress(
-            //             addressQr: invoice,
-            //             fontSize: 10,
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ),
             const Gap(24),
           ],
         ),

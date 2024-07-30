@@ -543,7 +543,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __closeSwap(updatedSwapTx, emit);
         case SwapStatus.txnServerConfirmed:
           final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
-        // if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         default:
       }
     }

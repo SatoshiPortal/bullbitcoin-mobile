@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/send.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
@@ -32,8 +32,9 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
 
   @override
   Widget build(BuildContext context) {
-    final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
+    // final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
     // final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
+    final tx = context.select((SendCubit cubit) => cubit.state.tx);
     final amount = tx?.getAmount(sentAsTotal: true) ?? 0;
     final isLiquid = swapTx.isLiquid();
 

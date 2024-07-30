@@ -390,6 +390,11 @@ class Wallet with _$Wallet {
     return txs;
   }
 
+  Transaction getTxWithId(String id) {
+    final txs = transactions.where((tx) => tx.txid == id).toList();
+    return txs[0];
+  }
+
   bool watchOnly() =>
       type == BBWalletType.xpub ||
       type == BBWalletType.coldcard ||

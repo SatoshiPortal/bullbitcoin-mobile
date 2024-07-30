@@ -269,7 +269,7 @@ class _Screen extends StatelessWidget {
 
       final int magicNumber =
           walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
-              ? 20
+              ? 30
               : 1500;
       sweepAmount =
           walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:

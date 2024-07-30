@@ -19,7 +19,7 @@ class WalletActionButtons extends StatelessWidget {
 
     // if (!hasWallets) return const SizedBox.shrink();
 
-    final buttonWidth = (MediaQuery.of(context).size.width / 2) - 40 - 40;
+    final buttonWidth = (MediaQuery.of(context).size.width / 2) - 40;
 
     final color = context.colour.primaryContainer;
 
@@ -54,10 +54,9 @@ class WalletActionButtons extends StatelessWidget {
         ),
       ),
       child: SizedBox(
-        height: 56, // 110,
+        height: 110, // 56 110,
         child: Column(
           children: [
-            /*
             SizedBox(
               width: 140,
               child: BBButton.big(
@@ -72,7 +71,6 @@ class WalletActionButtons extends StatelessWidget {
                 leftImage: 'assets/images/swap_icon.png',
               ),
             ),
-            */
             const Gap(8),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -100,50 +98,6 @@ class WalletActionButtons extends StatelessWidget {
                       );
                     },
                     label: 'Send',
-                  ),
-                ),
-                const SizedBox(width: 16),
-                SizedBox(
-                  width: 50,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(8.0),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: SizedBox(
-                      height: 45,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          context.push(
-                            '/swap-page?fromWalletId=${walletBloc!.state.wallet?.id}',
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          side: const BorderSide(color: Colors.white),
-                          shadowColor: Colors.black12,
-                          backgroundColor: bgColour,
-                          surfaceTintColor: bgColour,
-                          elevation: 4,
-                          padding: EdgeInsets.zero,
-                        ),
-                        child: Image.asset(
-                          'assets/images/swap_icon.png',
-                          width: 32,
-                          height: 44,
-                        ),
-                      ),
-                    ),
                   ),
                 ),
               ],
