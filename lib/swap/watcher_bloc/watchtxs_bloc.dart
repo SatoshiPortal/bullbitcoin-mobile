@@ -538,8 +538,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         case SwapStatus.txnServerMempool:
           await __updateWalletTxs(swapTx, walletBloc, emit);
         case SwapStatus.txnClaimed:
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-          await __closeSwap(swapTx, emit);
+          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
+          await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
+          await __closeSwap(updatedSwapTx, emit);
         case SwapStatus.txnServerConfirmed:
           final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
         // if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);

@@ -120,7 +120,10 @@ class _Screen extends StatelessWidget {
     final tx = context.select((TransactionCubit _) => _.state.tx);
     final swap = tx.swapTx;
 
-    if (swap != null) return const _CombinedTxAndSwapPage();
+    if (swap != null && !swap.isChainSwap())
+      return const _CombinedTxAndSwapPage();
+    if (swap != null && swap.isChainSwap())
+      return const _CombinedTxAndOnchainSwapPage();
     return const _OnlyTxPage();
 
     // final page = context.select((TransactionCubit _) => _.state.tx.pageLayout);
@@ -169,6 +172,31 @@ class _CombinedTxAndSwapPage extends StatelessWidget {
                 Gap(8),
                 BBText.title('Swap Details'),
                 _SwapDetails(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CombinedTxAndOnchainSwapPage extends StatelessWidget {
+  const _CombinedTxAndOnchainSwapPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.only(left: 16.0),
+            color: context.colour.surface.withOpacity(0.1),
+            child: const Column(
+              children: [
+                Gap(24),
+                _OnchainSwapDetails(),
               ],
             ),
           ),
@@ -248,45 +276,12 @@ class _TxDetails extends StatelessWidget {
               isReceived ? 'Amount received' : 'Amount sent',
             ),
             const Gap(4),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
-                Container(
-                  transformAlignment: Alignment.center,
-                  transform: Matrix4.identity()..rotateZ(isReceived ? 1 : -1),
-                  child: const FaIcon(
-                    FontAwesomeIcons.arrowRight,
-                    size: 12,
-                  ),
-                ),
-                const Gap(8),
-                BBText.titleLarge(
-                  amtStr,
-                  isBold: true,
-                ),
-                const Gap(4),
-                BBText.title(
-                  units,
-                  isBold: true,
-                ),
-              ],
-            ),
+            AmountValue(isReceived: isReceived, amtStr: amtStr, units: units),
             const Gap(24),
             if (!isSwapPending) ...[
               const BBText.title('Transaction ID'),
               const Gap(4),
-              InkWell(
-                onTap: () {
-                  final url = context.read<NetworkCubit>().state.explorerTxUrl(
-                        txid,
-                        isLiquid: tx.isLiquid,
-                        unblindedUrl: unblindedUrl,
-                      );
-                  locator<Launcher>().launchApp(url);
-                },
-                child: BBText.body(txid, isBlue: true),
-              ),
+              TxLink(txid: txid, tx: tx, unblindedUrl: unblindedUrl),
               const Gap(24),
             ],
             if (recipients.isNotEmpty &&
@@ -383,6 +378,75 @@ class _TxDetails extends StatelessWidget {
   }
 }
 
+class TxLink extends StatelessWidget {
+  const TxLink({
+    super.key,
+    required this.txid,
+    required this.tx,
+    required this.unblindedUrl,
+  });
+
+  final String txid;
+  final Transaction tx;
+  final String unblindedUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        final url = context.read<NetworkCubit>().state.explorerTxUrl(
+              txid,
+              isLiquid: tx.isLiquid,
+              unblindedUrl: unblindedUrl,
+            );
+        locator<Launcher>().launchApp(url);
+      },
+      child: BBText.body(txid, isBlue: true),
+    );
+  }
+}
+
+class AmountValue extends StatelessWidget {
+  const AmountValue({
+    super.key,
+    required this.isReceived,
+    required this.amtStr,
+    required this.units,
+  });
+
+  final bool isReceived;
+  final String amtStr;
+  final String units;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        Container(
+          transformAlignment: Alignment.center,
+          transform: Matrix4.identity()..rotateZ(isReceived ? 1 : -1),
+          child: const FaIcon(
+            FontAwesomeIcons.arrowRight,
+            size: 12,
+          ),
+        ),
+        const Gap(8),
+        BBText.titleLarge(
+          amtStr,
+          isBold: true,
+        ),
+        const Gap(4),
+        BBText.title(
+          units,
+          isBold: true,
+        ),
+      ],
+    );
+  }
+}
+
 class _SwapDetails extends StatelessWidget {
   const _SwapDetails();
 
@@ -459,6 +523,214 @@ class _SwapDetails extends StatelessWidget {
                 ),
               ],
             ),
+            if (fees != 0) ...[
+              const Gap(24),
+              const BBText.title('Total fees'),
+              const Gap(4),
+              Row(
+                children: [
+                  BBText.titleLarge(feesAmount, isBold: true),
+                  const Gap(4),
+                  BBText.title(units, isBold: true),
+                ],
+              ),
+            ],
+            const Gap(24),
+            if (id.isNotEmpty) ...[
+              const BBText.title('Swap ID'),
+              const Gap(4),
+              Row(
+                children: [
+                  BBText.titleLarge(
+                    id,
+                    isBold: true,
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      if (locator.isRegistered<Clippboard>())
+                        await locator<Clippboard>().copy(id);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Copied to clipboard')),
+                      );
+                    },
+                    iconSize: 16,
+                    color: Colors.blue,
+                    icon: const Icon(Icons.copy),
+                  ),
+                ],
+              ),
+              // const Gap(24),
+            ],
+            const Gap(16),
+            if (statusStr != null) ...[
+              const BBText.title('Status'),
+              const Gap(4),
+              BBText.titleLarge(
+                statusStr.$1,
+                isBold: true,
+              ),
+              const Gap(4),
+              BBText.bodySmall(
+                statusStr.$2,
+              ),
+            ],
+            // const Gap(4),
+            const Gap(24),
+            if (date.isNotEmpty) ...[
+              BBText.title(
+                isReceive ? 'Tranaction received' : 'Transaction sent',
+              ),
+              const Gap(4),
+              BBText.titleLarge(date, isBold: true),
+              const Gap(32),
+            ],
+            // if (showQr)
+            //   Center(
+            //     child: SizedBox(
+            //       width: 300,
+            //       child: Column(
+            //         children: [
+            //           ReceiveQRDisplay(address: invoice),
+            //           ReceiveDisplayAddress(
+            //             addressQr: invoice,
+            //             fontSize: 10,
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            const Gap(24),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OnchainSwapDetails extends StatelessWidget {
+  const _OnchainSwapDetails();
+
+  @override
+  Widget build(BuildContext context) {
+    final tx = context.select((TransactionCubit cubit) => cubit.state.tx);
+    final status = context.select(
+      (TransactionCubit cubit) => cubit.state.tx.swapTx?.status?.status,
+    );
+    final isLiq = tx.isLiquid;
+    // final showQr = status?.showQR ?? true; // may not be required
+
+    final swap = tx.swapTx;
+    if (swap == null) return const SizedBox.shrink();
+    final statusStr = swap.isChainSwap()
+        ? status.getOnChainStr()
+        : status.getStr(swap.isSubmarine());
+
+    final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
+
+    final amt = swap.outAmount;
+    final amount = context.select(
+      (CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true),
+    );
+    final isReceive = swap.isReverse();
+
+    final date = tx.getDateTimeStr();
+    // swap.
+    final id = swap.id;
+    final fees = swap.totalFees() ?? 0;
+    final feesAmount = context.select(
+      (CurrencyCubit x) => x.state.getAmountInUnits(fees, removeText: true),
+    );
+    // final invoice = swap.invoice;
+    final units = context.select(
+      (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
+    );
+    // status of swap should be read from WalletBloc.state.wallet.transactions
+    // final status = context.select((WatchTxsBloc _) => _.state.showStatus(swap));
+    final fromWallet =
+        context.select((HomeCubit cubit) => cubit.state.getWalletFromTx(tx));
+    final fromStatus = tx.height == null || tx.height == 0 || tx.timestamp == 0;
+    final fromStatusStr = fromStatus ? 'Pending' : 'Confirmed';
+    final fromAmtStr = context.select(
+      (CurrencyCubit cubit) => cubit.state
+          .getAmountInUnits(tx.getAmount(sentAsTotal: true), removeText: true),
+    );
+    final fromUnits = context.select(
+      (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
+    );
+
+    final toWallet = context.select(
+      (HomeCubit cubit) => cubit.state
+          .getWalletBlocById(swap.chainSwapDetails!.toWalletId)
+          ?.state
+          .wallet,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 800),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // const Gap(24),
+            const BBText.title(
+              'From wallet',
+            ),
+            const Gap(4),
+            BBText.titleLarge(
+              fromWallet?.name ?? '',
+              isBold: true,
+            ),
+            const Gap(24),
+            const BBText.title(
+              'Amount',
+            ),
+            const Gap(4),
+            AmountValue(
+              isReceived: tx.isReceived(),
+              amtStr: fromAmtStr,
+              units: fromUnits,
+            ),
+            const Gap(24),
+
+            const BBText.title('Tx ID'),
+            const Gap(4),
+            TxLink(txid: tx.txid, tx: tx, unblindedUrl: tx.unblindedUrl),
+            const Gap(24),
+
+            const BBText.title(
+              'Status',
+            ),
+            const Gap(4),
+            BBText.titleLarge(
+              fromStatusStr,
+              isBold: true,
+            ),
+            const Gap(24),
+            BBText.titleLarge(
+              'To wallet: ${toWallet?.name}',
+              isBold: true,
+            ),
+            const BBText.title(
+              'Amount: {TBD}',
+            ),
+            const BBText.title(
+              'Tx ID: {TBD}',
+            ),
+            const BBText.title(
+              'Status: {TBD}',
+            ),
+            const Gap(24),
+            const BBText.title(
+              'Swap time',
+            ),
+            const Gap(4),
+            BBText.titleLarge(
+              swap.completionTime?.toIso8601String() ?? 'In progress',
+              isBold: true,
+            ),
+            const Gap(24),
             if (fees != 0) ...[
               const Gap(24),
               const BBText.title('Total fees'),

@@ -269,7 +269,7 @@ class _Screen extends StatelessWidget {
 
       final int magicNumber =
           walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
-              ? 0
+              ? 20
               : 1500;
       sweepAmount =
           walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:
@@ -292,6 +292,7 @@ class _Screen extends StatelessWidget {
           direction: fromWallet.baseWalletType == BaseWalletType.Bitcoin
               ? ChainSwapDirection.btcToLbtc
               : ChainSwapDirection.lbtcToBtc,
+          toWalletId: toWallet.id,
         );
   }
 }
