@@ -390,9 +390,9 @@ class Wallet with _$Wallet {
     return txs;
   }
 
-  Transaction getTxWithId(String id) {
+  Transaction? getTxWithId(String id) {
     final txs = transactions.where((tx) => tx.txid == id).toList();
-    return txs[0];
+    return txs.isNotEmpty ? txs[0] : null;
   }
 
   bool watchOnly() =>

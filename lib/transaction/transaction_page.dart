@@ -667,9 +667,28 @@ class _OnchainSwapDetails extends StatelessWidget {
     );
 
     Transaction? receiveTx;
+    String? toAmtStr;
+    String? toUnits;
+    String? toStatusStr;
 
     if (swap.txid != null && swap.txid!.isNotEmpty) {
       receiveTx = toWallet!.getTxWithId(swap.txid!);
+      if (receiveTx != null) {
+        toAmtStr = context.select(
+          (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
+            receiveTx!.getAmount(sentAsTotal: true),
+            removeText: true,
+          ),
+        );
+        toUnits = context.select(
+          (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
+        );
+
+        final toStatus = receiveTx.height == null ||
+            receiveTx.height == 0 ||
+            receiveTx.timestamp == 0;
+        toStatusStr = toStatus ? 'Pending' : 'Confirmed';
+      }
     }
 
     return Padding(
@@ -739,6 +758,11 @@ class _OnchainSwapDetails extends StatelessWidget {
               ),
             ],
             const Gap(24),
+            const BBText.body(
+              'From wallet',
+              textAlign: TextAlign.center,
+            ),
+            const Gap(24),
             const BBText.title(
               'From wallet',
             ),
@@ -758,12 +782,10 @@ class _OnchainSwapDetails extends StatelessWidget {
               units: fromUnits,
             ),
             const Gap(24),
-
             const BBText.title('From: Tx ID'),
             const Gap(4),
             TxLink(txid: tx.txid, tx: tx, unblindedUrl: tx.unblindedUrl),
             const Gap(24),
-
             const BBText.title(
               'From: Status',
             ),
@@ -771,6 +793,11 @@ class _OnchainSwapDetails extends StatelessWidget {
             BBText.titleLarge(
               fromStatusStr,
               isBold: true,
+            ),
+            const Gap(24),
+            const BBText.body(
+              'To wallet',
+              textAlign: TextAlign.center,
             ),
             const Gap(24),
             const BBText.title(
@@ -786,15 +813,27 @@ class _OnchainSwapDetails extends StatelessWidget {
               'To: Amount',
             ),
             const Gap(4),
-            const BBText.titleLarge(
-              '{TBD}',
-              isBold: true,
-            ),
+            if (receiveTx == null)
+              const BBText.titleLarge(
+                'Not claimed yet',
+                isBold: true,
+              ),
+            if (receiveTx != null)
+              AmountValue(
+                isReceived: receiveTx.isReceived(),
+                amtStr: toAmtStr!,
+                units: toUnits!,
+              ),
             const Gap(24),
             const BBText.title(
               'To: Tx ID',
             ),
             const Gap(4),
+            if (receiveTx == null)
+              const BBText.titleLarge(
+                'Not claimed yet',
+                isBold: true,
+              ),
             if (receiveTx != null)
               TxLink(
                 txid: receiveTx.txid,
@@ -806,20 +845,16 @@ class _OnchainSwapDetails extends StatelessWidget {
               'To: Status',
             ),
             const Gap(4),
-            const BBText.titleLarge(
-              '{TBD}',
-              isBold: true,
-            ),
-            const Gap(24),
-            // const Gap(4),
-            if (date.isNotEmpty) ...[
-              BBText.title(
-                isReceive ? 'Tranaction received' : 'Transaction sent',
+            if (receiveTx == null)
+              const BBText.titleLarge(
+                'Not claimed yet',
+                isBold: true,
               ),
-              const Gap(4),
-              BBText.titleLarge(date, isBold: true),
-              const Gap(32),
-            ],
+            if (receiveTx != null)
+              BBText.titleLarge(
+                toStatusStr!,
+                isBold: true,
+              ),
             const Gap(24),
           ],
         ),
