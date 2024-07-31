@@ -6,13 +6,13 @@ import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -146,6 +146,15 @@ class HomeTxItem extends StatelessWidget {
 
     // final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
 
+    final darkMode = context.select(
+      (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
+    );
+
+    final isChainSwap = tx.isSwap && tx.swapTx!.isChainSwap();
+    final imgBaseName =
+        isChainSwap ? 'assets/images/swap_icon' : 'assets/images/arrow_down';
+    final img = darkMode ? '${imgBaseName}_white.png' : '$imgBaseName.png';
+
     return InkWell(
       onTap: () {
         context.push('/tx', extra: tx);
@@ -153,16 +162,24 @@ class HomeTxItem extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(
           top: 8,
-          bottom: 16,
+          bottom: 8,
           left: 24,
           right: 8,
         ),
         child: Row(
           children: [
-            Container(
-              transformAlignment: Alignment.center,
-              transform: Matrix4.identity()..rotateZ(isReceive ? 1.6 : -1.6),
-              child: const FaIcon(FontAwesomeIcons.arrowRight),
+            SizedBox(
+              height: 24,
+              width: 14,
+              child: Container(
+                // color: Colors.red,
+                transformAlignment: Alignment.center,
+                transform: isChainSwap
+                    ? (Matrix4.identity()..scale(2.0))
+                    : Matrix4.identity()
+                  ..rotateZ(isReceive ? 0 : 3.16),
+                child: Image.asset(img),
+              ),
             ),
             const Gap(8),
             Column(
