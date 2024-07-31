@@ -401,13 +401,11 @@ class WalletTx implements IWalletTransactions {
     swapTxs[idx] = updatedSwapTx;
     final txs = wallet.transactions.toList();
 
-    if (swapTx.isChainSwap()) {}
-
     // TODO: This whole block is not needed, unless we need to update towallet.tx with this swap
     if (swapTx.txid != null && swapTx.isChainSwap() == true) {
       // TODO: Match txid against txs in toWallet. But should we associate that tx with the swap?
       // final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
-      // final idx2 = txs.indexWhere((_) => _.txid == swapTx.id);
+      final idx2 = txs.indexWhere((_) => _.txid == swapTx.id);
 
       // if (idx == -1 && idx2 == -1) {
       //   final newTx = updatedSwapTx.toNewTransaction();
@@ -472,6 +470,19 @@ class WalletTx implements IWalletTransactions {
         txs[idx] = updatedTx;
       }
     } else if (swapTx.txid == null) {
+      final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
+      final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
+
+      if (txIdx != -1)
+        txs[txIdx] = txs[txIdx].copyWith(
+          swapTx: updatedSwapTx,
+          label: swapTx.label,
+        );
+
+      if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
+    }
+
+    if (swapTx.txid != null && swapTx.isChainSwap()) {
       final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
       final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
 

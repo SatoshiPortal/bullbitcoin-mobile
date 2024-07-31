@@ -538,12 +538,18 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         case SwapStatus.txnServerMempool:
           await __updateWalletTxs(swapTx, walletBloc, emit);
         case SwapStatus.txnServerConfirmed:
+          await Future.delayed(const Duration(milliseconds: 1000));
           final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
+          // await Future.delayed(const Duration(milliseconds: 500));
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         case SwapStatus.txnClaimed:
-          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
-          await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
-          await __closeSwap(updatedSwapTx, emit);
+          await Future.delayed(const Duration(milliseconds: 2000));
+          print('${swapTx.id}: updateWalletTxs for txnClaimed');
+          // final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
+          await __updateWalletTxs(swapTx, walletBloc, emit);
+          await Future.delayed(const Duration(milliseconds: 1000));
+          await __closeSwap(swapTx, emit);
+        // case failed, expired // TODO:
         default:
       }
     }
