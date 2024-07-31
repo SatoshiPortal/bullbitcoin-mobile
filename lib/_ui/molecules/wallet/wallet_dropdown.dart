@@ -32,7 +32,7 @@ class WalletDropDown extends StatelessWidget {
 
     final balance = context.select(
       (CurrencyCubit x) =>
-          x.state.getAmountInUnits(value.balance!, removeText: true),
+          x.state.getAmountInUnits(value.balance ?? 0, removeText: true),
     );
     final unit = context.select(
       (CurrencyCubit x) => x.state.getUnitString(isLiquid: value.isLiquid()),
@@ -76,14 +76,7 @@ Widget buildCard(Wallet w, String balance, String unit) {
 }
 
 Widget buildMenuItem(Wallet w) {
-  /*
-    final text = shorten
-        ? item.label.length > 12
-            ? item.label.substring(0, 12) + '...'
-            : item.label
-        : item.label;
-        */
-  final text = w.name!;
+  final text = w.name ?? '';
 
   final textWidget = BBText.body(text);
 

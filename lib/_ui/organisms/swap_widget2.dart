@@ -135,23 +135,6 @@ class _SwapWidget2State extends State<SwapWidget2> {
         const SizedBox(
           height: 20,
         ),
-        /*
-        Align(
-          alignment: Alignment.centerRight,
-          child: OutlinedButton(
-            onPressed: () {
-              final tmp = selectedFromWallet;
-              _fromWalletChanged(selectedToWallet);
-              _toWalletChanged(tmp);
-            },
-            child: Image.asset(
-              img,
-              width: 32,
-              height: 32,
-            ),
-          ),
-        ),
-        */
         const Text('Swap to'),
         const SizedBox(
           height: 4,

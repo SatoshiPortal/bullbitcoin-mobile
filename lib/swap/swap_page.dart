@@ -229,6 +229,12 @@ class _Screen extends StatelessWidget {
       context.read<SendCubit>().sendSwapClicked();
       return;
     }
+    if (amount == 0) {
+      context.read<CreateSwapCubit>().setValidationError(
+            'Please enter valid amount',
+          );
+      return;
+    }
 
     if (amount > fromWallet.balance!) {
       context.read<CreateSwapCubit>().setValidationError(

@@ -400,22 +400,24 @@ class WalletTx implements IWalletTransactions {
     swapTxs[idx] = updatedSwapTx;
     final txs = wallet.transactions.toList();
 
-    /*
+    // TODO: This whole block is not needed, unless we need to update towallet.tx with this swap
     if (swapTx.txid != null && swapTx.isChainSwap() == true) {
-      final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
+      // TODO: Match txid against txs in toWallet. But should we associate that tx with the swap?
+      // final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
       final idx2 = txs.indexWhere((_) => _.txid == swapTx.id);
 
-      if (idx == -1 && idx2 == -1) {
-        final newTx = updatedSwapTx.toNewTransaction();
-        txs.add(newTx);
-      } else if (idx != -1) {
-        final updatedTx = txs[idx].copyWith(
-          swapTx: updatedSwapTx,
-          isSwap: true,
-          label: swapTx.label,
-        );
-        txs[idx] = updatedTx;
-      } else if (idx2 != -1) {
+      // if (idx == -1 && idx2 == -1) {
+      //   final newTx = updatedSwapTx.toNewTransaction();
+      //   txs.add(newTx);
+      // } else if (idx != -1) {
+      //   final updatedTx = txs[idx].copyWith(
+      //     swapTx: updatedSwapTx,
+      //     isSwap: true,
+      //     label: swapTx.label,
+      //   );
+      //   txs[idx] = updatedTx;
+      // } else if (idx2 != -1) {
+      if (idx2 != -1) {
         final updatedTx = txs[idx2].copyWith(
           swapTx: updatedSwapTx,
           isSwap: true,
@@ -426,12 +428,10 @@ class WalletTx implements IWalletTransactions {
         txs[idx2] = updatedTx;
       }
     }
-    */
 
-    if (updatedSwapTx.txid != null) {
-      //  && swapTx.isChainSwap() == false) {
-      final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.txid);
-      final idx2 = txs.indexWhere((_) => _.txid == updatedSwapTx.id);
+    if (swapTx.txid != null && swapTx.isChainSwap() == false) {
+      final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
+      final idx2 = txs.indexWhere((_) => _.txid == swapTx.id);
 
       if (idx == -1 && idx2 == -1) {
         final newTx = updatedSwapTx.toNewTransaction();
