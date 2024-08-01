@@ -1,9 +1,11 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
+import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
@@ -15,6 +17,7 @@ import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/molecules/wallet/wallet_dropdown.dart';
+import 'package:bb_mobile/_ui/organisms/swap_widget2.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -23,9 +26,12 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/listeners.dart';
+import 'package:bb_mobile/send/bloc/send_cubit.dart';
+import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/swap_page_progress.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +54,7 @@ class _ReceivePageState extends State<ReceivePage> {
   late ReceiveCubit _receiveCubit;
   late CurrencyCubit _currencyCubit;
   late CreateSwapCubit _swapCubit;
+  late SendCubit _sendCubit;
 
   @override
   void initState() {
@@ -92,6 +99,20 @@ class _ReceivePageState extends State<ReceivePage> {
 
     _receiveCubit.updateWalletBloc(walletBloc);
 
+    _sendCubit = SendCubit(
+      walletTx: locator<WalletTx>(),
+      barcode: locator<Barcode>(),
+      defaultRBF: locator<SettingsCubit>().state.defaultRBF,
+      fileStorage: locator<FileStorage>(),
+      networkCubit: locator<NetworkCubit>(),
+      homeCubit: locator<HomeCubit>(),
+      swapBoltz: locator<SwapBoltz>(),
+      currencyCubit: _currencyCubit,
+      openScanner: false,
+      walletBloc: walletBloc,
+      swapCubit: _swapCubit,
+    );
+
     super.initState();
   }
 
@@ -102,6 +123,7 @@ class _ReceivePageState extends State<ReceivePage> {
         BlocProvider.value(value: _receiveCubit),
         BlocProvider.value(value: _currencyCubit),
         BlocProvider.value(value: _swapCubit),
+        BlocProvider.value(value: _sendCubit),
       ],
       child: ReceiveListeners(
         child: Scaffold(
@@ -124,14 +146,15 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
-    final isSupported =
-        context.select((ReceiveCubit x) => x.state.isSupported());
+    final isChainSwap =
+        context.select((ReceiveCubit x) => x.state.isChainSwap());
     final showQR = context.select((ReceiveCubit x) => x.state.showQR(swapTx));
 
     final watchOnly =
         context.select((WalletBloc x) => x.state.wallet!.watchOnly());
     final mainWallet =
         context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
+    final receiveWallet = context.select((WalletBloc x) => x.state.wallet);
 
     final walletIsLiquid = context.select(
       (WalletBloc x) => x.state.wallet!.baseWalletType == BaseWalletType.Liquid,
@@ -154,6 +177,57 @@ class _Screen extends StatelessWidget {
                 description.isNotEmpty) ||
             (paymentNetwork != PaymentNetwork.lightning && formSubmitted);
 
+    // ****************
+    // BEGIN: ON CHAIN
+    // ****************
+
+    final chainNetwork = context.read<NetworkCubit>().state.getBBNetwork();
+    final chainWalletBlocs =
+        context.read<HomeCubit>().state.walletBlocsFromNetwork(chainNetwork);
+    // final chainWallets = chainWalletBlocs
+    //     .map((bloc) => bloc.state.wallet!)
+    //     .where((w) => w.baseWalletType != receiveWallet?.baseWalletType)
+    //     .toList();
+    final chainWallets =
+        chainWalletBlocs.map((bloc) => bloc.state.wallet!).toList();
+
+    final chainSent = context.select((SendCubit cubit) => cubit.state.sent);
+    if (chainSent) return const SendingOnChainTx();
+
+    final generatingInv = context
+        .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
+    final sendingg = context.select((SendCubit cubit) => cubit.state.sending);
+    final buildingOnChain =
+        context.select((SendCubit cubit) => cubit.state.buildingOnChain);
+    final chainSending = generatingInv || sendingg || buildingOnChain;
+
+    final chainSigned = context.select((SendCubit cubit) => cubit.state.signed);
+
+    final unitInSats = context.select(
+      (CurrencyCubit cubit) => cubit.state.unitsInSats,
+    );
+
+    final swapFees = swapTx?.totalFees() ?? 0;
+    final senderFee =
+        context.select((SendCubit send) => send.state.psbtSignedFeeAmount ?? 0);
+    final fee = swapFees + senderFee;
+    final feeStr = context
+        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
+
+    final currency =
+        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+    final feeFiat = context.select(
+      (NetworkCubit cubit) => cubit.state.calculatePrice(fee, currency),
+    );
+
+    final fiatCurrency = context.select(
+      (CurrencyCubit cubit) => cubit.state.defaultFiatCurrency?.shortName ?? '',
+    );
+
+    // **************
+    // END: ON CHAIN
+    // **************
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -170,14 +244,45 @@ class _Screen extends StatelessWidget {
                 const SelectWalletType(),
                 const Gap(16),
               ],
-              if (!isSupported)
-                const Column(
+              if (isChainSwap)
+                Column(
                   children: [
-                    Center(child: BBText.error('Warning!')),
-                    Center(child: Text('Chain-Chain swaps coming soon!')),
+                    SwapWidget2(
+                      loading: chainSending,
+                      wallets: chainWallets,
+                      hideToWallet: true,
+                      toWalletId: receiveWallet?.id,
+                      swapButtonLabel:
+                          chainSigned == true ? 'Broadcast' : 'Swap',
+                      swapButtonLoadingLabel: chainSigned == true
+                          ? 'Broadcasting'
+                          : 'Creating swap',
+                      unitInSats: unitInSats,
+                      fee: swapTx != null ? feeStr : null,
+                      feeFiat:
+                          swapTx != null ? '~ $feeFiat $fiatCurrency' : null,
+                      onChange: (
+                        Wallet fromWallet,
+                        Wallet toWallet,
+                        int amount,
+                        bool sweep,
+                      ) {
+                        if (swapTx != null) {
+                          context.read<CreateSwapCubit>().clearSwapTx();
+                          context.read<SendCubit>().reset();
+                        }
+                      },
+                      onSwapPressed: (
+                        Wallet fromWallet,
+                        Wallet toWallet,
+                        int amount,
+                        bool sweep,
+                      ) {},
+                    ),
+                    const SendErrDisplay(),
                   ],
                 ),
-              if (isSupported && showQR) ...[
+              if (!isChainSwap && showQR) ...[
                 const ReceiveQR(),
                 const Gap(8),
                 const ReceiveAddress(),
@@ -189,14 +294,14 @@ class _Screen extends StatelessWidget {
                 if (shouldShownDescription) const PaymentDescription(),
                 const Gap(16),
                 const SwapFeesDetails(),
-              ] else if (isSupported) ...[
+              ] else if (!isChainSwap) ...[
                 // const Gap(24),
                 const CreateLightningInvoice(),
                 // const Gap(24),
                 // const SwapHistoryButton(),
               ],
               const Gap(2),
-              if (isSupported) const WalletActions(),
+              if (!isChainSwap) const WalletActions(),
               const Gap(32),
             ],
           ],

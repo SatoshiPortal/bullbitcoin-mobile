@@ -89,14 +89,14 @@ class ReceiveState with _$ReceiveState {
       return defaultAddress?.address ?? '';
   }
 
-  bool isSupported() {
+  bool isChainSwap() {
     if (paymentNetwork == PaymentNetwork.bitcoin &&
         walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Liquid)
-      return false;
+      return true;
     if (paymentNetwork == PaymentNetwork.liquid &&
         walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Bitcoin)
-      return false;
-    return true;
+      return true;
+    return false;
   }
 
   bool showQR(SwapTx? swapTx) {

@@ -27,11 +27,14 @@ class SwapWidget2 extends StatefulWidget {
     this.loading = false,
     required this.wallets,
     this.fromWalletId,
+    this.toWalletId,
     this.onChange,
     this.onSwapPressed,
     this.swapButtonLabel = 'Swap',
     this.swapButtonLoadingLabel = 'Pls wait...',
     this.unitInSats = true,
+    this.hideFromWallet = false,
+    this.hideToWallet = false,
     this.fee,
     this.feeFiat,
   });
@@ -39,11 +42,14 @@ class SwapWidget2 extends StatefulWidget {
   final bool loading;
   final List<Wallet> wallets;
   final String? fromWalletId;
+  final String? toWalletId;
   final Function(Wallet from, Wallet to, int amount, bool sweep)? onChange;
   final Function(Wallet from, Wallet to, int amount, bool sweep)? onSwapPressed;
   final String swapButtonLabel;
   final String swapButtonLoadingLabel;
   final bool unitInSats;
+  final bool hideFromWallet;
+  final bool hideToWallet;
   final String? fee;
   final String? feeFiat;
 
@@ -94,7 +100,27 @@ class _SwapWidget2State extends State<SwapWidget2> {
         toWallets =
             widget.wallets.where((wallet) => !wallet.isLiquid()).toList();
       }
-    } else {
+    }
+    if (widget.toWalletId != null) {
+      final toWallet =
+          widget.wallets.where((w) => w.id == widget.toWalletId).first;
+      final fromWallet = widget.wallets
+          .where((w) => w.baseWalletType != toWallet.baseWalletType)
+          .first;
+
+      selectedFromWallet = fromWallet;
+      selectedToWallet = toWallet;
+
+      if (toWallet.baseWalletType == BaseWalletType.Bitcoin) {
+        fromWallets =
+            widget.wallets.where((wallet) => wallet.isLiquid()).toList();
+      } else {
+        fromWallets =
+            widget.wallets.where((wallet) => !wallet.isLiquid()).toList();
+      }
+    }
+
+    if (widget.fromWalletId == null && widget.toWalletId == null) {
       selectedFromWallet = widget.wallets[0];
       selectedToWallet = widget.wallets[1];
 
@@ -123,30 +149,34 @@ class _SwapWidget2State extends State<SwapWidget2> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Text('Swap from'),
-        const SizedBox(
-          height: 4,
-        ),
-        WalletDropDown(
-          items: fromWallets,
-          onChanged: _fromWalletChanged,
-          value: selectedFromWallet,
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        const Text('Swap to'),
-        const SizedBox(
-          height: 4,
-        ),
-        WalletDropDown(
-          items: toWallets,
-          value: selectedToWallet,
-          onChanged: _toWalletChanged,
-        ),
-        const SizedBox(
-          height: 32,
-        ),
+        if (widget.hideFromWallet == false) ...[
+          const Text('Swap from'),
+          const SizedBox(
+            height: 4,
+          ),
+          WalletDropDown(
+            items: fromWallets,
+            onChanged: _fromWalletChanged,
+            value: selectedFromWallet,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+        ],
+        if (widget.hideToWallet == false) ...[
+          const Text('Swap to'),
+          const SizedBox(
+            height: 4,
+          ),
+          WalletDropDown(
+            items: toWallets,
+            value: selectedToWallet,
+            onChanged: _toWalletChanged,
+          ),
+          const SizedBox(
+            height: 32,
+          ),
+        ],
         CurrencyInput(
           currencies: fromPriceCurrencies,
           currency: fromPriceCurrency,
