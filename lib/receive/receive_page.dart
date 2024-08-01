@@ -24,6 +24,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/listeners.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
@@ -31,9 +32,11 @@ import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/onchain_listeners.dart';
 import 'package:bb_mobile/swap/swap_page_progress.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -132,7 +135,7 @@ class _ReceivePageState extends State<ReceivePage> {
             automaticallyImplyLeading: false,
           ),
           body: const _WalletProvider(
-            child: _Screen(),
+            child: OnchainListeners(child: _Screen()),
           ),
         ),
       ),
@@ -277,7 +280,16 @@ class _Screen extends StatelessWidget {
                         Wallet toWallet,
                         int amount,
                         bool sweep,
-                      ) {},
+                      ) {
+                        _swapButtonPressed(
+                          context,
+                          fromWallet,
+                          toWallet,
+                          amount,
+                          sweep,
+                          chainSigned,
+                        );
+                      },
                     ),
                     const SendErrDisplay(),
                   ],
@@ -308,6 +320,92 @@ class _Screen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _swapButtonPressed(
+    BuildContext context,
+    Wallet fromWallet,
+    Wallet toWallet,
+    int amount,
+    bool sweep,
+    bool toBroadcast,
+  ) async {
+    print('swap button pressed $toBroadcast');
+    if (toBroadcast) {
+      context.read<SendCubit>().sendSwapClicked();
+      return;
+    }
+    if (amount == 0) {
+      context.read<CreateSwapCubit>().setValidationError(
+            'Please enter valid amount',
+          );
+      return;
+    }
+
+    if (amount > fromWallet.balance!) {
+      context.read<CreateSwapCubit>().setValidationError(
+            'Not enough balance.\nWallet balance is: ${fromWallet.balance!}.',
+          );
+      return;
+    }
+
+    print('Swap $amount from ${fromWallet.name} to ${toWallet.name}');
+
+    final walletBloc =
+        context.read<HomeCubit>().state.getWalletBlocById(fromWallet.id);
+    context.read<SendCubit>().updateWalletBloc(walletBloc!);
+
+    final recipientAddress = toWallet.lastGeneratedAddress?.address ?? '';
+    final refundAddress = fromWallet.lastGeneratedAddress?.address ?? '';
+
+    final liqNetworkurl =
+        context.read<NetworkCubit>().state.getLiquidNetworkUrl();
+    final btcNetworkUrl = context.read<NetworkCubit>().state.getNetworkUrl();
+    final btcNetworkUrlWithoutSSL = btcNetworkUrl.startsWith('ssl://')
+        ? btcNetworkUrl.split('//')[1]
+        : btcNetworkUrl;
+
+    await Future.delayed(Duration.zero);
+
+    int sweepAmount = 0;
+    if (sweep == true) {
+      final feeRate =
+          context.read<NetworkFeesCubit>().state.selectedOrFirst(true);
+      final fees = await context.read<SendCubit>().calculateFeeForSend(
+            wallet: walletBloc.state.wallet,
+            address: refundAddress,
+            networkFees: feeRate,
+          );
+
+      context.read<SendCubit>().reset();
+
+      final int magicNumber =
+          walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
+              ? 30
+              : 1500;
+      sweepAmount =
+          walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:
+      // -20 works for btc
+      // -1500 works for l-btc
+    }
+
+    context.read<CreateSwapCubit>().createOnChainSwap(
+          wallet: fromWallet,
+          amount: sweep == true
+              ? sweepAmount
+              : amount, //20000, // 1010000, // amount,
+          sweep: sweep,
+          isTestnet: context.read<NetworkCubit>().state.testnet,
+          btcElectrumUrl:
+              btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
+          lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
+          toAddress: recipientAddress, // recipientAddress.address;
+          refundAddress: refundAddress,
+          direction: fromWallet.baseWalletType == BaseWalletType.Bitcoin
+              ? ChainSwapDirection.btcToLbtc
+              : ChainSwapDirection.lbtcToBtc,
+          toWalletId: toWallet.id,
+        );
   }
 }
 
@@ -440,7 +538,7 @@ class _ReceiveAppBar extends StatelessWidget {
 class _Warnings extends StatelessWidget {
   const _Warnings();
 
-  Widget _buildLowAmtWarn() {
+  Widget buildLowAmtWarn() {
     return const Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -459,7 +557,7 @@ class _Warnings extends StatelessWidget {
     );
   }
 
-  Widget _buildHighFeesWarn({
+  Widget buildHighFeesWarn({
     required double feePercentage,
     required int amt,
     required int fees,
@@ -512,9 +610,9 @@ class _Warnings extends StatelessWidget {
     return WarningContainer(
       children: [
         const Gap(24),
-        if (errLowAmt) _buildLowAmtWarn(),
+        if (errLowAmt) buildLowAmtWarn(),
         if (errHighFees != null)
-          _buildHighFeesWarn(
+          buildHighFeesWarn(
             feePercentage: errHighFees,
             amt: swapTx.outAmount,
             fees: swapTx.totalFees() ?? 0,
