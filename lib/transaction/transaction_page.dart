@@ -698,6 +698,10 @@ class _OnchainSwapDetails extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (tx.timestamp == 0 && tx.isLiquid == false) ...[
+              const BumpFeesButton(),
+              const Gap(24),
+            ],
             const BBText.title(
               'Swap time',
             ),
