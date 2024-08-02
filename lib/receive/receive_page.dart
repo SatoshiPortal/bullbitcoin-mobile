@@ -36,6 +36,15 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+const btcClaimAddress =
+    'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz'; // Vegeta wallet
+const lqClaimAddress =
+    'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la';
+const btcRefundAddress =
+    'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz'; // Vegeta wallet
+const lqRefundAddress =
+    'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la';
+
 class ReceivePage extends StatefulWidget {
   const ReceivePage({super.key, this.walletBloc});
 
@@ -707,7 +716,10 @@ class ChainSwapForm extends StatelessWidget {
                         btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
                     lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
                     toAddress: recipientAddress, // recipientAddress.address;
-                    refundAddress: '',
+                    refundAddress:
+                        receiveWallet.baseWalletType == BaseWalletType.Liquid
+                            ? btcRefundAddress
+                            : lqRefundAddress,
                     direction:
                         receiveWallet.baseWalletType == BaseWalletType.Liquid
                             ? ChainSwapDirection.btcToLbtc

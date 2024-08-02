@@ -82,17 +82,22 @@ class ReceiveListeners extends StatelessWidget {
           listener: (context, state) {
             final swapOnPage = context.read<CreateSwapCubit>().state.swapTx;
             if (swapOnPage == null) return;
+            print('ReceiveListner: swapOnPage: ${swapOnPage.id}');
 
             final isReceivePage = context.read<NavName>().state == '/receive';
             if (!isReceivePage) return;
 
             final swaptx = state.updatedSwapTx!;
+            print('ReceiveListner: showAlert() ${swaptx.showAlert()}');
             if (!swaptx.showAlert()) return;
 
             final sameSwap = swapOnPage.id == swaptx.id;
-            if (sameSwap)
+            print('ReceiveListner: sameSwap');
+            if (sameSwap && swaptx.isChainSwap() == false) {
               locator<GoRouter>().push('/swap-receive', extra: swaptx);
-            else {
+            } else if (sameSwap && swaptx.isChainSwap() == true) {
+              locator<GoRouter>().push('/onchain-swap-receive');
+            } else {
               final amtStr = context
                   .read<CurrencyCubit>()
                   .state

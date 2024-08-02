@@ -495,7 +495,9 @@ class SwapTx with _$SwapTx {
   }
 
   bool showAlert() {
-    if (isSubmarine()) {
+    if (isChainSwap()) {
+      if (claimedOnchain() || expiredOnchain()) return true;
+    } else if (isSubmarine()) {
       if (paidSubmarine() || settledSubmarine()) return true;
     } else {
       if (paidReverse() || settledReverse()) return true;
