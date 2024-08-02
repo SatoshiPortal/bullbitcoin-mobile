@@ -64,9 +64,11 @@ class ReceiveState with _$ReceiveState {
   }
 
   String getQRStr({SwapTx? swapTx}) {
+    if (swapTx?.isChainSwap() == true) {
+      return swapTx!.scriptAddress;
+    }
     if (paymentNetwork == PaymentNetwork.lightning) {
-      if (swapTx == null) return '';
-      return swapTx.lnSwapDetails!.invoice;
+      return swapTx!.lnSwapDetails!.invoice;
       // if (swapBloc.state.swapTx == null) return '';
       // return swapBloc.state.swapTx!.invoice;
     }
@@ -91,15 +93,16 @@ class ReceiveState with _$ReceiveState {
 
   bool isChainSwap() {
     if (paymentNetwork == PaymentNetwork.bitcoin &&
-        walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Liquid)
+        walletBloc?.state.wallet?.baseWalletType == BaseWalletType.Liquid)
       return true;
     if (paymentNetwork == PaymentNetwork.liquid &&
-        walletBloc!.state.wallet?.baseWalletType == BaseWalletType.Bitcoin)
+        walletBloc?.state.wallet?.baseWalletType == BaseWalletType.Bitcoin)
       return true;
     return false;
   }
 
-  bool showQR(SwapTx? swapTx) {
+  bool showQR(SwapTx? swapTx, {bool isChainSwap = false}) {
+    if (isChainSwap == true) return swapTx != null;
     return (swapTx != null && paymentNetwork == PaymentNetwork.lightning) ||
         (paymentNetwork == PaymentNetwork.bitcoin ||
             paymentNetwork == PaymentNetwork.liquid);

@@ -700,4 +700,166 @@ class CreateSwapCubit extends Cubit<SwapState> {
       print(e);
     }
   }
+
+  void createOnChainSwapForReceive({
+    required Wallet toWallet,
+    required int amount,
+    bool sweep = false,
+    String? label,
+    required bool isTestnet,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+    required String toAddress,
+    required String refundAddress,
+    required ChainSwapDirection direction,
+  }) async {
+    try {
+      emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
+
+      final boltzurl = isTestnet ? boltzTestnetUrl : boltzMainnetUrl;
+
+      // we dont have to make this call here
+      // we have fees stored which has a pairHash
+      // we use the pairHash when creating a swap
+      // if the swap creation fails because of the pairHash, its because the fees updated and we can recall fetchFees
+      // an optimization for later
+      final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
+        boltzUrl: boltzurl,
+      );
+      if (errFees != null) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv: errFees.toString(),
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
+
+      final isToWalletLiq = toWallet.isLiquid();
+      final chainFees = await fees?.chain();
+      if (chainFees == null) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv: 'Chain fees not found',
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
+
+      if (isToWalletLiq) {
+        if (amount < chainFees.btcLimits.minimal ||
+            amount > chainFees.btcLimits.maximal) {
+          emit(
+            state.copyWith(
+              errCreatingSwapInv:
+                  'Amount should be greater than ${chainFees.btcLimits.minimal} and less than ${chainFees.btcLimits.maximal} sats',
+              generatingSwapInv: false,
+            ),
+          );
+          return;
+        }
+      } else {
+        if (amount < chainFees.lbtcLimits.minimal ||
+            amount > chainFees.lbtcLimits.maximal) {
+          emit(
+            state.copyWith(
+              errCreatingSwapInv:
+                  'Amount should be greater than ${chainFees.lbtcLimits.minimal} and less than ${chainFees.lbtcLimits.maximal} sats',
+              generatingSwapInv: false,
+            ),
+          );
+          return;
+        }
+      }
+
+      final (seed, errReadingSeed) = await _walletSensitiveRepository.readSeed(
+        fingerprintIndex: toWallet.getRelatedSeedStorageString(),
+      );
+      if (errReadingSeed != null) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv: errReadingSeed.toString(),
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
+      final network = isTestnet
+          ? (isToWalletLiq ? Chain.bitcoinTestnet : Chain.liquidTestnet)
+          : (isToWalletLiq ? Chain.bitcoin : Chain.liquid);
+
+      /*
+      final storedSwapTxIdx = wallet.swaps.indexWhere(
+        (_) => _.chainSwapDetails. == ,
+      );
+      */
+
+      SwapTx swapTx;
+      // if (storedSwapTxIdx != -1) {
+      //   swapTx = wallet.swaps[storedSwapTxIdx];
+      // } else {
+      final (swap, errCreatingInv) = await _swapBoltz.chainSwap(
+        mnemonic: seed!.mnemonic,
+        index: toWallet.revKeyIndex,
+        network: network,
+        btcElectrumUrl: btcElectrumUrl, // 'electrum.blockstream.info:60002',
+        lbtcElectrumUrl: lbtcElectrumUrl, // 'blockstream.info:465',
+        boltzUrl: boltzurl,
+        isLiquid: !isToWalletLiq,
+        direction: direction,
+        amount: amount,
+        toWalletId: toWallet.id,
+      );
+      if (errCreatingInv != null) {
+        emit(
+          state.copyWith(
+            errCreatingSwapInv: errCreatingInv.toString(),
+            generatingSwapInv: false,
+          ),
+        );
+        return;
+      }
+
+      // TODO:Onchain Test this properly
+      final updatedSwap = swap!.copyWith(
+        boltzFees: isToWalletLiq
+            ? (chainFees.btcFees.percentage * amount ~/ 100) +
+                chainFees.btcFees.server
+            : (chainFees.lbtcFees.percentage * amount ~/ 100) +
+                chainFees.lbtcFees.server,
+        lockupFees:
+            0, // This is set to 0, since lockup fee is calculated in send tx //  isFromWalletLiq
+        // ? chainFees.btcFees.userLockup
+        // : chainFees.lbtcFees.userLockup,
+        claimFees: isToWalletLiq
+            ? chainFees.lbtcFees.userClaim
+            : chainFees.btcFees.userClaim,
+        label: label,
+      );
+
+      swapTx = updatedSwap.copyWith(
+        claimAddress: toAddress,
+        refundAddress: refundAddress,
+      );
+
+      await saveSwapToWallet(
+        swapTx: swapTx,
+        wallet: toWallet,
+      );
+
+      emit(
+        state.copyWith(
+          generatingSwapInv: false,
+          errCreatingSwapInv: '',
+          swapTx: swapTx,
+        ),
+      );
+
+      _showWarnings();
+    } catch (e) {
+      print(e);
+    }
+  }
 }
