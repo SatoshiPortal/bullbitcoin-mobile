@@ -627,6 +627,103 @@ class SwapBoltz {
     }
   }
 
+  Future<(String?, Err?)> refundChainSwap({
+    required SwapTx swapTx,
+    required Wallet wallet,
+    required bool tryCooperate,
+    bool broadcastViaBoltz = false,
+  }) async {
+    try {
+      final address = wallet.lastGeneratedAddress?.address;
+      // TODO: (or) swapTx.refundAddress
+      if (address == null || address.isEmpty) throw 'Address not found';
+
+      final boltzurl = wallet.network == BBNetwork.Testnet
+          ? boltzTestnetUrl
+          : boltzMainnetUrl;
+
+      final (fees, errFees) = await getFeesAndLimits(
+        boltzUrl: boltzurl,
+      );
+      if (errFees != null) {
+        throw errFees;
+      }
+
+      final isLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+
+      final (swapSentive, err) = await _secureStorage.getValue(
+        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+      );
+      if (err != null) throw err;
+
+      final swapSensitive = ChainSwapTxSensitive.fromJson(
+        jsonDecode(swapSentive!) as Map<String, dynamic>,
+      );
+
+      final chainFees = await fees?.chain();
+      if (isLiquid) {
+        final refundFeesEstimate = chainFees?.lbtcFees.userClaim;
+        if (refundFeesEstimate == null) throw 'Fees estimate not found';
+
+        final swap = swapTx.toChainSwap(swapSensitive);
+
+        final signedHex = await swap.refund(
+          refundAddress: address,
+          absFee: refundFeesEstimate,
+          tryCooperate: tryCooperate,
+        );
+        // locator<Logger>()
+        //     .log('------${swapTx.id}-----\n$signedHex------signed-refund-----');
+        final (blockchain, err) = _networkRepository.liquidUrl;
+        if (err != null) throw err;
+        if (broadcastViaBoltz) {
+          // final txid = await swap.broadcastTx(
+          //   signedBytes: Uint8List.fromList(hex.decode(signedHex)),
+          // );
+          // return (txid, null);
+          return ('', Err('broadcast via boltz not implemented'));
+        } else {
+          try {
+            final txid = await lwk.Wallet.broadcastTx(
+              electrumUrl: blockchain!,
+              txBytes: Uint8List.fromList(hex.decode(signedHex)),
+            );
+            return (txid, null);
+          } catch (e) {
+            print('Failed to broadcast transaction: $e');
+            await Future.delayed(
+              const Duration(
+                seconds: 5,
+              ),
+            ); // this non-blocking delay is to accomodate mempool propogation if the first try failed.
+            final txid = await lwk.Wallet.broadcastTx(
+              electrumUrl: blockchain!,
+              txBytes: Uint8List.fromList(hex.decode(signedHex)),
+            );
+            return (txid, null);
+          }
+        }
+      } else {
+        // final refundFeesEstimate = fees?.btcSubmarine.claimFees;
+        final chainFees = await fees?.chain();
+        final refundFeesEstimate = chainFees?.btcFees.userClaim;
+        if (refundFeesEstimate == null) throw 'Fees estimate not found';
+
+        final swap = swapTx.toChainSwap(swapSensitive);
+
+        final resp = await swap.refund(
+          refundAddress: address,
+          absFee: refundFeesEstimate,
+          tryCooperate: tryCooperate,
+        );
+
+        return (resp, null);
+      }
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
   Future<(String?, Err?)> claimChainSwap({
     required SwapTx swapTx,
     required Wallet wallet,

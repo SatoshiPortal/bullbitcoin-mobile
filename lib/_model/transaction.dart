@@ -379,6 +379,15 @@ class SwapTx with _$SwapTx {
       isReverse() &&
       (status != null && (status!.status == SwapStatus.txnMempool));
 
+  bool paidOnchain() =>
+      isChainSwap() &&
+      // txid != null &&
+      (status != null &&
+          (status!.status == SwapStatus.txnMempool ||
+              status!.status == SwapStatus.txnConfirmed ||
+              status!.status == SwapStatus.txnServerMempool ||
+              status!.status == SwapStatus.txnServerConfirmed));
+
   bool claimedOnchain() =>
       isChainSwap() &&
       // txid != null &&
@@ -496,7 +505,7 @@ class SwapTx with _$SwapTx {
 
   bool showAlert() {
     if (isChainSwap()) {
-      if (claimedOnchain() || expiredOnchain()) return true;
+      if (paidOnchain() || claimedOnchain()) return true;
     } else if (isSubmarine()) {
       if (paidSubmarine() || settledSubmarine()) return true;
     } else {

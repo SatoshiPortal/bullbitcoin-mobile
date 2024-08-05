@@ -549,7 +549,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __updateWalletTxs(swapTx, walletBloc, emit);
           await Future.delayed(const Duration(milliseconds: 1000));
           await __closeSwap(swapTx, emit);
-        // case failed, expired // TODO:
+        case SwapStatus.txnLockupFailed:
+          final swap = await __onchainRefund(swapTx, walletBloc, emit);
+          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         default:
       }
     }
@@ -606,6 +608,75 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         claimedSwapTxs: [...state.claimedSwapTxs, updatedSwap.id],
         claimingSwapTxIds: state.removeClaiming(updatedSwap.id),
         claimingSwap: false,
+        // syncWallet: walletBloc.state.wallet,
+      ),
+    );
+
+    return updatedSwap;
+  }
+
+  Future<SwapTx?> __onchainRefund(
+    SwapTx swapTx,
+    WalletBloc walletBloc,
+    Emitter<WatchTxsState> emit,
+  ) async {
+    if (state.swapRefunded(swapTx.id) || (state.isRefunding(swapTx.id))) {
+      emit(state.copyWith(errRefundingSwap: 'Swap refunded/refunding'));
+      return null;
+    }
+
+    final updatedRefundingTxs = state.addRefunding(swapTx.id);
+    if (updatedRefundingTxs == null) return null;
+
+    emit(
+      state.copyWith(
+        claimingSwap: true,
+        errRefundingSwap: '',
+        refundingSwapTxIds: updatedRefundingTxs,
+      ),
+    );
+
+    // await Future.delayed(10.seconds);
+
+    final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
+        LiquidElectrumTypes.bullbitcoin;
+
+    final (txid, err) = await _swapBoltz.refundChainSwap(
+      swapTx: swapTx,
+      wallet: walletBloc.state.wallet!,
+      tryCooperate: true,
+      broadcastViaBoltz: broadcastViaBoltz,
+    );
+    if (err != null) {
+      emit(
+        state.copyWith(
+          refundingSwap: false,
+          errRefundingSwap: err.toString(),
+          refundingSwapTxIds: state.removeRefunding(swapTx.id),
+        ),
+      );
+      return null;
+    }
+
+    SwapTx updatedSwap;
+    try {
+      final json = jsonDecode(txid!) as Map<String, dynamic>;
+      updatedSwap = swapTx.copyWith(
+        txid: json['id'] as String,
+        status: SwapStreamStatus(
+          id: swapTx.id,
+          status: SwapStatus.swapRefunded,
+        ),
+      );
+    } catch (e) {
+      updatedSwap = swapTx.copyWith(txid: txid);
+    }
+
+    emit(
+      state.copyWith(
+        refundedSwapTxs: [...state.refundedSwapTxs, updatedSwap.id],
+        refundingSwapTxIds: state.removeRefunding(updatedSwap.id),
+        refundingSwap: false,
         // syncWallet: walletBloc.state.wallet,
       ),
     );

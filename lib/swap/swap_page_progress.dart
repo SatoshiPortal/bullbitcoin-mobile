@@ -2,7 +2,6 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
-import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/send.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
@@ -20,13 +19,13 @@ class SendingOnChainTx extends StatefulWidget {
 }
 
 class _SendingOnChainTxState extends State<SendingOnChainTx> {
-  late SwapTx swapTx;
+  late SwapTx? swapTx;
   String label = 'Broadcasting...';
   bool success = false;
 
   @override
   void initState() {
-    swapTx = context.read<CreateSwapCubit>().state.swapTx!;
+    swapTx = context.read<CreateSwapCubit>().state.swapTx;
     super.initState();
   }
 
@@ -34,9 +33,13 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
   Widget build(BuildContext context) {
     // final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
     // final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
-    final tx = context.select((SendCubit cubit) => cubit.state.tx);
-    final amount = tx?.getAmount(sentAsTotal: true) ?? 0;
-    final isLiquid = swapTx.isLiquid();
+    // // final tx = context.select((SendCubit cubit) => cubit.state.tx);
+    // // final amount = tx != null
+    // //     ? (tx.getAmount(sentAsTotal: true) ?? 0)
+    // //     : (swapTx?.outAmount ?? 0);
+    // // final isLiquid = tx != null ? tx.isLiquid : (swapTx?.isLiquid() ?? false);
+    final amount = swapTx?.outAmount ?? 0;
+    final isLiquid = swapTx?.isLiquid() ?? false;
 
     final amtStr = context.select(
       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
@@ -63,7 +66,7 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
       listener: (context, state) {
         // if (swapTx == null) return;
         final updatedSwap = state.updatedSwapTx!;
-        if (updatedSwap.id != swapTx.id) return;
+        if (updatedSwap.id != swapTx?.id) return;
 
         String labelLocal = 'Broadcasting...';
         bool successLocal = false;
