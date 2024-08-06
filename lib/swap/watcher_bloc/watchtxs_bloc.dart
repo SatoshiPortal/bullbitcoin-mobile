@@ -645,7 +645,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       swapTx: swapTx,
       wallet: walletBloc.state.wallet!,
       tryCooperate: true,
-      broadcastViaBoltz: broadcastViaBoltz,
+      // broadcastViaBoltz: broadcastViaBoltz,
     );
     if (err != null) {
       emit(
@@ -656,21 +656,29 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         ),
       );
       return null;
+
+      // final updatedSwap = swapTx.copyWith(
+      //   status: SwapStreamStatus(
+      //     id: swapTx.id,
+      //     status: SwapStatus.swapRefunded,
+      //   ),
+      // );
+      // return updatedSwap;
     }
 
     SwapTx updatedSwap;
-    try {
-      final json = jsonDecode(txid!) as Map<String, dynamic>;
-      updatedSwap = swapTx.copyWith(
-        txid: json['id'] as String,
-        status: SwapStreamStatus(
-          id: swapTx.id,
-          status: SwapStatus.swapRefunded,
-        ),
-      );
-    } catch (e) {
-      updatedSwap = swapTx.copyWith(txid: txid);
-    }
+    // try {
+    // final json = jsonDecode(txid!) as Map<String, dynamic>;
+    updatedSwap = swapTx.copyWith(
+      txid: txid,
+      status: SwapStreamStatus(
+        id: swapTx.id,
+        status: SwapStatus.swapRefunded,
+      ),
+    );
+    // } catch (e) {
+    //   updatedSwap = swapTx.copyWith(txid: txid);
+    // }
 
     emit(
       state.copyWith(

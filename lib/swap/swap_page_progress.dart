@@ -22,6 +22,7 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
   late SwapTx? swapTx;
   String label = 'Broadcasting...';
   bool success = false;
+  bool failure = false;
 
   @override
   void initState() {
@@ -70,6 +71,7 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
 
         String labelLocal = 'Broadcasting...';
         bool successLocal = false;
+        bool failureLocal = false;
         if (updatedSwap.status?.status == SwapStatus.swapCreated) {
           labelLocal = 'Broadcasting...';
         } else if (updatedSwap.status?.status == SwapStatus.txnMempool) {
@@ -84,18 +86,22 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         } else if (updatedSwap.status?.status == SwapStatus.txnClaimed) {
           labelLocal = 'Success';
           successLocal = true;
+        } else if (updatedSwap.status?.status == SwapStatus.txnLockupFailed) {
+          labelLocal = 'Lockup failed. Initiating refund...';
+          failureLocal = true;
         }
         setState(() {
           swapTx = updatedSwap;
           label = labelLocal;
           success = successLocal;
+          failure = failureLocal;
         });
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(width: double.infinity),
-          SendTick(sent: success),
+          if (failure == false) SendTick(sent: success),
           const Gap(16),
           BBText.body(label),
           // if (success) const SendTick(sent: true),

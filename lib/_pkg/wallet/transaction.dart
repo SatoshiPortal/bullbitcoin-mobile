@@ -401,35 +401,6 @@ class WalletTx implements IWalletTransactions {
     swapTxs[idx] = updatedSwapTx;
     final txs = wallet.transactions.toList();
 
-    // TODO: This whole block is not needed, unless we need to update towallet.tx with this swap
-    if (swapTx.txid != null && swapTx.isChainSwap() == true) {
-      // TODO: Match txid against txs in toWallet. But should we associate that tx with the swap?
-      // final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
-      final idx2 = txs.indexWhere((_) => _.txid == swapTx.id);
-
-      // if (idx == -1 && idx2 == -1) {
-      //   final newTx = updatedSwapTx.toNewTransaction();
-      //   txs.add(newTx);
-      // } else if (idx != -1) {
-      //   final updatedTx = txs[idx].copyWith(
-      //     swapTx: updatedSwapTx,
-      //     isSwap: true,
-      //     label: swapTx.label,
-      //   );
-      //   txs[idx] = updatedTx;
-      // } else if (idx2 != -1) {
-      // if (idx2 != -1) {
-      //   final updatedTx = txs[idx2].copyWith(
-      //     swapTx: updatedSwapTx,
-      //     isSwap: true,
-      //     txid: swapTx.txid!,
-      //     timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      //     label: swapTx.label,
-      //   );
-      //   txs[idx2] = updatedTx;
-      // }
-    }
-
     if (swapTx.txid != null && swapTx.isChainSwap() == false) {
       final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
       final idx2 = txs.indexWhere((_) => _.txid == swapTx.id);
@@ -482,6 +453,7 @@ class WalletTx implements IWalletTransactions {
       if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
 
+    // This covers claim / refund scenarios of chain swap
     if (swapTx.txid != null && swapTx.isChainSwap()) {
       final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
       final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);

@@ -142,7 +142,7 @@ class Transaction with _$Transaction {
   ];
 
   String getDateTimeStr() {
-    if (timestamp == 0) return '';
+    if (timestamp == 0) return 'Pending';
     // final dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     var dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
     if (dt.year == 1970) {
