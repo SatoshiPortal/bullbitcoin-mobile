@@ -702,66 +702,6 @@ class _OnchainSwapDetails extends StatelessWidget {
               const BumpFeesButton(),
               const Gap(24),
             ],
-            const BBText.title(
-              'Swap time',
-            ),
-            const Gap(4),
-            BBText.titleLarge(
-              date, // swap.creationTime?.toIso8601String() ?? 'In progress',
-              isBold: true,
-            ),
-            const Gap(24),
-            if (fees != 0) ...[
-              const BBText.title('Total fees'),
-              const Gap(4),
-              Row(
-                children: [
-                  BBText.titleLarge(feesAmount, isBold: true),
-                  const Gap(4),
-                  BBText.title(units, isBold: true),
-                ],
-              ),
-              const Gap(24),
-            ],
-            if (id.isNotEmpty) ...[
-              const BBText.title('Swap ID'),
-              const Gap(4),
-              Row(
-                children: [
-                  BBText.titleLarge(
-                    id,
-                    isBold: true,
-                  ),
-                  IconButton(
-                    onPressed: () async {
-                      if (locator.isRegistered<Clippboard>())
-                        await locator<Clippboard>().copy(id);
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Copied to clipboard')),
-                      );
-                    },
-                    iconSize: 16,
-                    color: Colors.blue,
-                    icon: const Icon(Icons.copy),
-                  ),
-                ],
-              ),
-              const Gap(24),
-            ],
-            if (statusStr != null) ...[
-              const BBText.title('Status'),
-              const Gap(4),
-              BBText.titleLarge(
-                statusStr.$1,
-                isBold: true,
-              ),
-              const Gap(4),
-              BBText.bodySmall(
-                statusStr.$2,
-              ),
-            ],
-            const Gap(24),
             const BBText.body(
               'From wallet',
               textAlign: TextAlign.center,
@@ -860,6 +800,69 @@ class _OnchainSwapDetails extends StatelessWidget {
                 isBold: true,
               ),
             const Gap(24),
+            const BBText.body(
+              'Swap details',
+              textAlign: TextAlign.center,
+            ),
+            const BBText.title(
+              'Swap time',
+            ),
+            const Gap(4),
+            BBText.titleLarge(
+              date, // swap.creationTime?.toIso8601String() ?? 'In progress',
+              isBold: true,
+            ),
+            const Gap(24),
+            if (fees != 0) ...[
+              const BBText.title('Total fees'),
+              const Gap(4),
+              Row(
+                children: [
+                  BBText.titleLarge(feesAmount, isBold: true),
+                  const Gap(4),
+                  BBText.title(units, isBold: true),
+                ],
+              ),
+              const Gap(24),
+            ],
+            if (id.isNotEmpty) ...[
+              const BBText.title('Swap ID'),
+              const Gap(4),
+              Row(
+                children: [
+                  BBText.titleLarge(
+                    id,
+                    isBold: true,
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      if (locator.isRegistered<Clippboard>())
+                        await locator<Clippboard>().copy(id);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Copied to clipboard')),
+                      );
+                    },
+                    iconSize: 16,
+                    color: Colors.blue,
+                    icon: const Icon(Icons.copy),
+                  ),
+                ],
+              ),
+              const Gap(24),
+            ],
+            if (statusStr != null) ...[
+              const BBText.title('Status'),
+              const Gap(4),
+              BBText.titleLarge(
+                statusStr.$1,
+                isBold: true,
+              ),
+              const Gap(4),
+              BBText.bodySmall(
+                statusStr.$2,
+              ),
+            ],
           ],
         ),
       ),

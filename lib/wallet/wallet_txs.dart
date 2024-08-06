@@ -150,9 +150,8 @@ class HomeTxItem extends StatelessWidget {
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
     );
 
-    final isChainSwap = tx.isSwap && tx.swapTx!.isChainSwap();
-    final imgBaseName =
-        isChainSwap ? 'assets/images/swap_icon' : 'assets/images/arrow_down';
+    // final isChainSwap = tx.isSwap && tx.swapTx!.isChainSwap();
+    const imgBaseName = 'assets/images/arrow_down';
     final img = darkMode ? '${imgBaseName}_white.png' : '$imgBaseName.png';
 
     return InkWell(
@@ -174,10 +173,7 @@ class HomeTxItem extends StatelessWidget {
               child: Container(
                 // color: Colors.red,
                 transformAlignment: Alignment.center,
-                transform: isChainSwap
-                    ? (Matrix4.identity()..scale(2.0))
-                    : Matrix4.identity()
-                  ..rotateZ(isReceive ? 0 : 3.16),
+                transform: Matrix4.identity()..rotateZ(isReceive ? 0 : 3.16),
                 child: Image.asset(img),
               ),
             ),

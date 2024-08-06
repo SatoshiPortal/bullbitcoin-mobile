@@ -281,11 +281,11 @@ class CardColumn extends StatelessWidget {
             ],
           ),
           Positioned(
-            left: 230, // 126, // 76 // 120
+            right: 22, // left: // 126, // 76 // 120
             top: 83, //87 // 84
             child: SizedBox(
-              height: 40,
-              width: 50,
+              height: 32,
+              width: 40,
               child: ElevatedButton(
                 onPressed: () {
                   context.push('/swap-page');
@@ -306,7 +306,7 @@ class CardColumn extends StatelessWidget {
                 child: Icon(
                   Icons.swap_horiz,
                   color: context.colour.onPrimaryContainer,
-                  size: 32,
+                  size: 24,
                 ),
               ),
             ),
@@ -397,6 +397,8 @@ class CardItem extends StatelessWidget {
               ),
               child: Stack(
                 children: [
+                  /*
+                  // Uncomment to get settings button (3 dots) on top right
                   TopRight(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 4),
@@ -412,6 +414,7 @@ class CardItem extends StatelessWidget {
                       ),
                     ),
                   ),
+                  */
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [

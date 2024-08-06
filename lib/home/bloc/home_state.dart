@@ -246,14 +246,17 @@ class HomeState with _$HomeState {
     for (final walletBloc in walletBlocsFromNetwork(network)) {
       final walletTxs =
           walletBloc.state.wallet?.transactions ?? <Transaction>[];
-      // final swapsTxs = walletBloc.state.wallet?.swaps ?? <SwapTx>[];
       // final wallet = walletBloc.state.wallet;
-      for (final tx in walletTxs)
+      for (final tx in walletTxs) {
+        // final isInSwapTx =
+        //     swapTxs.where((swap) => swap.txid == tx.txid).isNotEmpty;
+        // if (isInSwapTx == true) continue;
         txs.add(
           tx.copyWith(
             walletId: walletBloc.state.wallet!.id,
           ),
         );
+      }
       // for (final tx in swapsTxs) if (tx.swapTx != null) txs.add(tx.copyWith(wallet: wallet));
     }
 
@@ -265,6 +268,23 @@ class HomeState with _$HomeState {
       (a, b) =>
           b.timestamp.normaliseTime().compareTo(a.timestamp.normaliseTime()),
     );
+
+    // BEGIN: This is to show only Swap Txs in home page, by remove swap settle txs
+    // Swap settle tx IDs are stored in swap initiate tx.swapTx.txid
+    final swapTxs =
+        txs.where((tx) => tx.swapTx != null).map((tx) => tx.swapTx!);
+    final toRemove = <Transaction>[];
+    for (final tx in txs) {
+      final isInSwapTx =
+          swapTxs.where((swap) => swap.txid == tx.txid).isNotEmpty;
+      if (isInSwapTx == true) toRemove.add(tx);
+    }
+
+    for (final removeTx in toRemove) {
+      txs.removeWhere((tx) => tx.txid == removeTx.txid);
+    }
+    // END: This is to show only Swap Txs in home page, by remove swap settle txs
+
     final zeroTxs = txs.where((tx) => tx.timestamp == 0).toList();
     txs.removeWhere((tx) => tx.timestamp == 0);
     txs.insertAll(0, zeroTxs);
