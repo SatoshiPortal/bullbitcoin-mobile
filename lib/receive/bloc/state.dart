@@ -67,8 +67,8 @@ class ReceiveState with _$ReceiveState {
     if (swapTx?.isChainSwap() == true) {
       return swapTx!.scriptAddress;
     }
-    if (paymentNetwork == PaymentNetwork.lightning) {
-      return swapTx!.lnSwapDetails!.invoice;
+    if (paymentNetwork == PaymentNetwork.lightning && swapTx != null) {
+      return swapTx.lnSwapDetails!.invoice;
       // if (swapBloc.state.swapTx == null) return '';
       // return swapBloc.state.swapTx!.invoice;
     }

@@ -177,8 +177,8 @@ class _Screen extends StatelessWidget {
                 ] else ...[
                   const Gap(32),
                   const WalletSelectionDropDown(),
-                  const Gap(8),
-                  const _Balance(),
+                  // const Gap(8),
+                  // const _Balance(),
                   const Gap(24),
                   const AddressField(),
                   const Gap(24),
@@ -234,24 +234,11 @@ class WalletSelectionDropDown extends StatelessWidget {
     final selectedWalletBloc =
         context.select((SendCubit _) => _.state.selectedWalletBloc);
 
-    final walletBloc = selectedWalletBloc ?? walletBlocs.first;
-
-    return GestureDetector(
-      onTap: () {
-        if (!enableDropdown)
-          context.read<SendCubit>().disabledDropdownClicked();
-      },
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 300),
-        opacity: enableDropdown ? 1 : 0.3,
-        /*
-        child: WalletCard(
-          wallet: walletBlocs[0].state.wallet!,
-          balance: '1000',
-          balanceUnit: 'sats',
-        ),
-        */
-
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 300),
+      opacity: oneWallet ? 0.5 : 1,
+      child: IgnorePointer(
+        ignoring: oneWallet,
         child: WalletDropDown(
           items: walletBlocs.map((wb) => wb.state.wallet!).toList(),
           onChanged: (wallet) {
@@ -264,28 +251,6 @@ class WalletSelectionDropDown extends StatelessWidget {
           value:
               selectedWalletBloc?.state.wallet ?? walletBlocs[0].state.wallet!,
         ).animate().fadeIn(),
-
-        /*
-        child: BBDropDown<WalletBloc>(
-          walletSelector: true,
-          items: {
-            for (final wallet in walletBlocs)
-              wallet: (
-                label: wallet.state.wallet!.name ??
-                    wallet.state.wallet!.sourceFingerprint,
-                enabled: context
-                    .read<SendCubit>()
-                    .state
-                    .walletEnabled(wallet.state.wallet!.id),
-                imagePath: wallet.state.wallet!.baseWalletType.getImage,
-              ),
-          },
-          value: walletBloc,
-          onChanged: (bloc) {
-            context.read<SendCubit>().updateWalletBloc(bloc);
-          },
-        ).animate().fadeIn(),
-        */
       ),
     );
   }

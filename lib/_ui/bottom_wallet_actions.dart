@@ -30,6 +30,9 @@ class WalletActionButtons extends StatelessWidget {
     final bgColour =
         darkMode ? context.colour.primaryContainer : NewColours.offWhite;
 
+    final shouldShowSwap = walletBloc!.state.wallet?.isMain() != true ||
+        walletBloc!.state.wallet?.isLiquid() == true;
+
     return Container(
       padding: const EdgeInsets.only(
         bottom: 16,
@@ -54,23 +57,24 @@ class WalletActionButtons extends StatelessWidget {
         ),
       ),
       child: SizedBox(
-        height: 110, // 56 110,
+        height: shouldShowSwap ? 110 : 56,
         child: Column(
           children: [
-            SizedBox(
-              width: 140,
-              child: BBButton.big(
-                buttonKey: UIKeys.homeReceiveButton,
-                filled: true,
-                onPressed: () async {
-                  context.push(
-                    '/swap-page?fromWalletId=${walletBloc!.state.wallet?.id}',
-                  );
-                },
-                label: 'Swap',
-                leftImage: 'assets/images/swap_icon.png',
+            if (shouldShowSwap)
+              SizedBox(
+                width: 140,
+                child: BBButton.big(
+                  buttonKey: UIKeys.homeReceiveButton,
+                  filled: true,
+                  onPressed: () async {
+                    context.push(
+                      '/swap-page?fromWalletId=${walletBloc!.state.wallet?.id}',
+                    );
+                  },
+                  label: 'Swap',
+                  leftImage: 'assets/images/swap_icon.png',
+                ),
               ),
-            ),
             const Gap(8),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

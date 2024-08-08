@@ -170,6 +170,8 @@ class _Screen extends StatelessWidget {
                 description.isNotEmpty) ||
             (paymentNetwork != PaymentNetwork.lightning && formSubmitted);
 
+    final addressQr =
+        context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
     // ****************
     // BEGIN: ON CHAIN
     // ****************
@@ -217,7 +219,10 @@ class _Screen extends StatelessWidget {
               if (isChainSwap == false && showQR) ...[
                 const ReceiveQR(),
                 const Gap(8),
-                const ReceiveAddress(),
+                ReceiveAddress(
+                  swapTx: swapTx,
+                  addressQr: addressQr,
+                ),
                 const Gap(8),
                 if (shouldShowForm) const BitcoinReceiveForm(),
                 if (paymentNetwork == PaymentNetwork.lightning || formSubmitted)
@@ -255,11 +260,11 @@ class ReceiveWalletsDropDown extends StatelessWidget {
     final selectedWalletBloc =
         context.select((ReceiveCubit _) => _.state.walletBloc);
 
-    final walletBloc = selectedWalletBloc ?? walletBlocs.first;
+    // final walletBloc = selectedWalletBloc ?? walletBlocs.first;
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 300),
-      opacity: oneWallet ? 0.3 : 1,
+      opacity: oneWallet ? 0.5 : 1,
       child: IgnorePointer(
         ignoring: oneWallet,
         child: WalletDropDown(
@@ -329,8 +334,9 @@ class SelectWalletType extends StatelessWidget {
       },
       onChanged: (value) {
         if (paymentNetwork == PaymentNetwork.lightning ||
-            swapTx?.isChainSwap() == true)
+            swapTx?.isChainSwap() == true) {
           context.read<CreateSwapCubit>().clearSwapTx();
+        }
 
         context.read<CurrencyCubit>().reset();
         context.read<CurrencyCubit>().updateAmountDirect(0);
@@ -1017,14 +1023,13 @@ class ReceiveQRDisplay extends StatelessWidget {
 }
 
 class ReceiveAddress extends StatelessWidget {
-  const ReceiveAddress({super.key});
+  const ReceiveAddress({super.key, required this.addressQr, this.swapTx});
+
+  final String addressQr;
+  final SwapTx? swapTx;
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
-    final addressQr =
-        context.select((ReceiveCubit x) => x.state.getQRStr(swapTx: swapTx));
-
     return ReceiveDisplayAddress(addressQr: addressQr);
   }
 }
