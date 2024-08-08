@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
@@ -13,8 +14,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class SendingOnChainTxPage extends StatefulWidget {
-  const SendingOnChainTxPage({super.key});
+  const SendingOnChainTxPage({
+    super.key,
+    required this.swapTx,
+    required this.isReceive,
+  });
 
+  final SwapTx swapTx;
+  final bool isReceive;
   @override
   State<SendingOnChainTxPage> createState() => _SendingOnChainTxPageState();
 }
@@ -32,6 +39,7 @@ class _SendingOnChainTxPageState extends State<SendingOnChainTxPage> {
       watchTxsBloc: context.read<WatchTxsBloc>(),
       networkCubit: context.read<NetworkCubit>(),
     );
+    _swapCubit.setSwapTx(widget.swapTx);
     super.initState();
   }
 
@@ -51,7 +59,7 @@ class _SendingOnChainTxPageState extends State<SendingOnChainTxPage> {
           ),
           automaticallyImplyLeading: false,
         ),
-        body: const SendingOnChainTx(),
+        body: SendingOnChainTx(isReceive: widget.isReceive),
       ),
     );
   }

@@ -279,7 +279,11 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/onchain-swap-receive',
           builder: (context, state) {
-            return const SendingOnChainTxPage();
+            final list = state.extra! as List;
+            final swapTx = list[0] as SwapTx;
+            final isReceive = list[1] as bool;
+
+            return SendingOnChainTxPage(swapTx: swapTx, isReceive: isReceive);
           },
         ),
         GoRoute(

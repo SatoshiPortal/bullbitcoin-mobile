@@ -524,6 +524,8 @@ class CreateSwapCubit extends Cubit<SwapState> {
     // emit(state.copyWith(updatedWallet: updatedWallet));
   }
 
+  void setSwapTx(SwapTx swapTx) => emit(state.copyWith(swapTx: swapTx));
+
   void clearSwapTx() => emit(state.copyWith(swapTx: null));
 
   // void clearUpdatedWallet() => emit(state.copyWith(updatedWallet: null));

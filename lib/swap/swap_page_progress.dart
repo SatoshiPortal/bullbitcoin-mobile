@@ -12,7 +12,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class SendingOnChainTx extends StatefulWidget {
-  const SendingOnChainTx({super.key});
+  SendingOnChainTx({super.key, this.isReceive = false});
+
+  bool isReceive;
 
   @override
   State<SendingOnChainTx> createState() => _SendingOnChainTxState();
@@ -20,25 +22,19 @@ class SendingOnChainTx extends StatefulWidget {
 
 class _SendingOnChainTxState extends State<SendingOnChainTx> {
   late SwapTx? swapTx;
-  String label = 'Broadcasting...';
+  late String label;
   bool success = false;
   bool failure = false;
 
   @override
   void initState() {
     swapTx = context.read<CreateSwapCubit>().state.swapTx;
+    label = widget.isReceive == true ? 'Receiving...' : 'Broadcasting...';
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
-    // final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
-    // // final tx = context.select((SendCubit cubit) => cubit.state.tx);
-    // // final amount = tx != null
-    // //     ? (tx.getAmount(sentAsTotal: true) ?? 0)
-    // //     : (swapTx?.outAmount ?? 0);
-    // // final isLiquid = tx != null ? tx.isLiquid : (swapTx?.isLiquid() ?? false);
     final amount = swapTx?.outAmount ?? 0;
     final isLiquid = swapTx?.isLiquid() ?? false;
 
@@ -62,12 +58,13 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
 
     return BlocListener<WatchTxsBloc, WatchTxsState>(
       listenWhen: (previous, current) =>
-          previous.updatedSwapTx != current.updatedSwapTx &&
-          current.updatedSwapTx != null,
+          current.updatedSwapTx?.id == swapTx?.id,
+      // previous.updatedSwapTx != current.updatedSwapTx &&
+      // current.updatedSwapTx != null,
       listener: (context, state) {
         // if (swapTx == null) return;
         final updatedSwap = state.updatedSwapTx!;
-        if (updatedSwap.id != swapTx?.id) return;
+        // if (updatedSwap.id != swapTx?.id) return;
 
         String labelLocal = 'Broadcasting...';
         bool successLocal = false;
@@ -75,7 +72,8 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         if (updatedSwap.status?.status == SwapStatus.swapCreated) {
           labelLocal = 'Broadcasting...';
         } else if (updatedSwap.status?.status == SwapStatus.txnMempool) {
-          labelLocal = 'Our tx in mempool (1/3)';
+          // labelLocal = 'Our tx in mempool (1/3)';
+          labelLocal = 'Client tx in mempool (1/3)';
         } else if (updatedSwap.status?.status == SwapStatus.txnConfirmed) {
           labelLocal = 'Waiting for boltz payment';
         } else if (updatedSwap.status?.status == SwapStatus.txnServerMempool) {
@@ -130,20 +128,6 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
           // if (paid && !settled) const BBText.body('Closing the swap ...'),
           if (success) const BBText.body('Swap complete'),
           const Gap(24),
-          // if (!settled) ...[
-          //   const Gap(24),
-          //   // _OnChainWarning(swapTx: swapTx),
-          // ],
-          // const Gap(40),
-          // if (tx != null)
-          //   BBButton.big(
-          //     label: 'View Transaction',
-          //     onPressed: () {
-          //       context
-          //         ..pop()
-          //         ..push('/tx', extra: tx);
-          //     },
-          //   ).animate().fadeIn(),
         ],
       ),
     );

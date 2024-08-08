@@ -19,7 +19,6 @@ import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/onchain_listeners.dart';
-import 'package:bb_mobile/swap/swap_page_progress.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:boltz_dart/boltz_dart.dart';
@@ -122,8 +121,8 @@ class _Screen extends StatelessWidget {
         context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
     final wallets = walletBlocs.map((bloc) => bloc.state.wallet!).toList();
 
-    final sent = context.select((SendCubit cubit) => cubit.state.sent);
-    if (sent) return const SendingOnChainTx();
+    // final sent = context.select((SendCubit cubit) => cubit.state.sent);
+    // if (sent) return const SendingOnChainTx();
 
     // final watchOnly = context.select(
     //   (SendCubit cubit) =>
@@ -137,7 +136,7 @@ class _Screen extends StatelessWidget {
         context.select((SendCubit cubit) => cubit.state.buildingOnChain);
     final sending = generatingInv || sendingg || buildingOnChain;
 
-    final signed = context.select((SendCubit cubit) => cubit.state.signed);
+    // final signed = context.select((SendCubit cubit) => cubit.state.signed);
 
     final unitInSats = context.select(
       (CurrencyCubit cubit) => cubit.state.unitsInSats,
@@ -146,22 +145,22 @@ class _Screen extends StatelessWidget {
     final swapTx =
         context.select((CreateSwapCubit cubit) => cubit.state.swapTx);
 
-    final swapFees = swapTx?.totalFees() ?? 0;
-    final senderFee =
-        context.select((SendCubit send) => send.state.psbtSignedFeeAmount ?? 0);
-    final fee = swapFees + senderFee;
-    final feeStr = context
-        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
+    // final swapFees = swapTx?.totalFees() ?? 0;
+    // final senderFee =
+    //     context.select((SendCubit send) => send.state.psbtSignedFeeAmount ?? 0);
+    // final fee = swapFees + senderFee;
+    // final feeStr = context
+    //     .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
 
-    final currency =
-        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
-    final feeFiat = context.select(
-      (NetworkCubit cubit) => cubit.state.calculatePrice(fee, currency),
-    );
+    // final currency =
+    //     context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+    // final feeFiat = context.select(
+    //   (NetworkCubit cubit) => cubit.state.calculatePrice(fee, currency),
+    // );
 
-    final fiatCurrency = context.select(
-      (CurrencyCubit cubit) => cubit.state.defaultFiatCurrency?.shortName ?? '',
-    );
+    // final fiatCurrency = context.select(
+    //   (CurrencyCubit cubit) => cubit.state.defaultFiatCurrency?.shortName ?? '',
+    // );
 
     return SingleChildScrollView(
       child: Padding(
@@ -176,12 +175,10 @@ class _Screen extends StatelessWidget {
               loading: sending,
               wallets: wallets,
               fromWalletId: fromWalletId,
-              swapButtonLabel: signed == true ? 'Broadcast' : 'Swap',
-              swapButtonLoadingLabel:
-                  signed == true ? 'Broadcasting' : 'Creating swap',
+              swapButtonLoadingLabel: 'Creating swap',
               unitInSats: unitInSats,
-              fee: swapTx != null ? feeStr : null,
-              feeFiat: swapTx != null ? '~ $feeFiat $fiatCurrency' : null,
+              // fee: swapTx != null ? feeStr : null,
+              // feeFiat: swapTx != null ? '~ $feeFiat $fiatCurrency' : null,
               onChange: (
                 Wallet fromWallet,
                 Wallet toWallet,
@@ -205,7 +202,6 @@ class _Screen extends StatelessWidget {
                   toWallet,
                   amount,
                   sweep,
-                  signed,
                 );
               },
             ),
@@ -222,13 +218,12 @@ class _Screen extends StatelessWidget {
     Wallet toWallet,
     int amount,
     bool sweep,
-    bool toBroadcast,
   ) async {
-    print('swap button pressed $toBroadcast');
-    if (toBroadcast) {
-      context.read<SendCubit>().sendSwapClicked();
-      return;
-    }
+    // print('swap button pressed $toBroadcast');
+    // if (toBroadcast) {
+    //   context.read<SendCubit>().sendSwapClicked();
+    //   return;
+    // }
     if (amount == 0) {
       context.read<CreateSwapCubit>().setValidationError(
             'Please enter valid amount',
