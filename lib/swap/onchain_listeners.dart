@@ -2,6 +2,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
+import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_state.dart';
 import 'package:bb_mobile/swap/receive.dart';
@@ -9,6 +10,7 @@ import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:oktoast/oktoast.dart';
 
 class OnchainListeners extends StatelessWidget {
@@ -45,6 +47,15 @@ class OnchainListeners extends StatelessWidget {
             } catch (e) {
               print(e);
             }
+          },
+        ),
+        BlocListener<SendCubit, SendState>(
+          listenWhen: (previous, current) =>
+              previous.signed == false && current.signed == true,
+          listener: (context, state) async {
+            final sendCubit = context.read<SendCubit>();
+            final swapCubit = context.read<CreateSwapCubit>();
+            context.push('/swap-confirmation', extra: [sendCubit, swapCubit]);
           },
         ),
         BlocListener<WatchTxsBloc, WatchTxsState>(

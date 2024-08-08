@@ -11,6 +11,7 @@ import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
+import 'package:bb_mobile/send/bloc/send_cubit.dart';
 // import 'package:bb_mobile/seeds/seeds_page.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/application_settings_page.dart';
@@ -19,7 +20,9 @@ import 'package:bb_mobile/settings/broadcast.dart';
 import 'package:bb_mobile/settings/core_wallet_settings_page.dart';
 import 'package:bb_mobile/settings/settings_page.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/receive.dart';
+import 'package:bb_mobile/swap/swap_confirmation.dart';
 import 'package:bb_mobile/swap/swap_history_page.dart';
 import 'package:bb_mobile/swap/swap_page.dart';
 import 'package:bb_mobile/swap/swap_page_progress_page.dart';
@@ -60,6 +63,7 @@ GoRouter setupRouter() => GoRouter(
             return const AuthPage(fromSettings: false);
           },
         ),
+
         GoRoute(
           path: '/swap-page',
           builder: (context, state) {
@@ -67,6 +71,20 @@ GoRouter setupRouter() => GoRouter(
             return SwapPage(fromWalletId: q['fromWalletId']);
           },
         ),
+
+        GoRoute(
+          path: '/swap-confirmation',
+          builder: (context, state) {
+            final params = state.extra! as List;
+            final sendCubit = params[0] as SendCubit;
+            final swapCubit = params[1] as CreateSwapCubit;
+            return SwapConfirmationPage(
+              send: sendCubit,
+              swap: swapCubit,
+            );
+          },
+        ),
+
         GoRoute(
           path: '/change-pin',
           builder: (context, state) {
