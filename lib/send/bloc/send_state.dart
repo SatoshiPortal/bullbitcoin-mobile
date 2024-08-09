@@ -201,6 +201,20 @@ class SendState with _$SendState {
 
     return true;
   }
+
+  bool couldBeOnchainSwap() {
+    if (selectedWalletBloc?.state.wallet!.baseWalletType ==
+            BaseWalletType.Bitcoin &&
+        (paymentNetwork == AddressNetwork.liquid ||
+            paymentNetwork == AddressNetwork.bip21Liquid)) return true;
+
+    if (selectedWalletBloc?.state.wallet!.baseWalletType ==
+            BaseWalletType.Liquid &&
+        (paymentNetwork == AddressNetwork.bitcoin ||
+            paymentNetwork == AddressNetwork.bip21Bitcoin)) return true;
+
+    return false;
+  }
 }
 
 enum AddressNetwork {

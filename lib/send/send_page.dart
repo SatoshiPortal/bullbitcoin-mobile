@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
@@ -31,6 +32,7 @@ import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/send.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -161,6 +163,10 @@ class _Screen extends StatelessWidget {
 
     if (sent && isLn) return const SendingLnTx();
 
+    final potentialonchainSwap = context.select(
+      (SendCubit x) => x.state.couldBeOnchainSwap(),
+    );
+
     return ColoredBox(
       color: context.colour.primaryContainer,
       child: SingleChildScrollView(
@@ -177,7 +183,14 @@ class _Screen extends StatelessWidget {
                 ] else ...[
                   const Gap(32),
                   const WalletSelectionDropDown(),
-                  // const Gap(8),
+                  if (potentialonchainSwap) ...[
+                    const Gap(8),
+                    const BBText.body(
+                      'Onchain swap',
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                  //const Gap(8),
                   // const _Balance(),
                   const Gap(24),
                   const AddressField(),
@@ -503,7 +516,7 @@ class _SendButton extends StatelessWidget {
 
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
     final txLabel = context.select((SendCubit cubit) => cubit.state.note);
-    final label = watchOnly
+    String label = watchOnly
         ? 'Generate PSBT'
         : signed
             ? sending
@@ -514,6 +527,32 @@ class _SendButton extends StatelessWidget {
                 : !isLn
                     ? 'Send'
                     : 'Create Swap';
+
+    final isOnchainSwap = context.select(
+      (SendCubit x) => x.state.couldBeOnchainSwap(),
+    );
+
+    if (isOnchainSwap) {
+      label = 'Create Swap';
+    }
+
+    final wallet = context.select(
+      (SendCubit x) => x.state.selectedWalletBloc?.state.wallet,
+    );
+    final swapAmount = context.select(
+      (CurrencyCubit x) => x.state.amount,
+    );
+
+    final liqNetworkurl =
+        context.read<NetworkCubit>().state.getLiquidNetworkUrl();
+    final btcNetworkUrl = context.read<NetworkCubit>().state.getNetworkUrl();
+    final btcNetworkUrlWithoutSSL = btcNetworkUrl.startsWith('ssl://')
+        ? btcNetworkUrl.split('//')[1]
+        : btcNetworkUrl;
+
+    final recipientAddress = context.select((SendCubit x) => x.state.address);
+
+    final refundAddress = wallet?.lastGeneratedAddress?.address;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -534,6 +573,28 @@ class _SendButton extends StatelessWidget {
               leftIcon: Icons.send,
               onPressed: () async {
                 if (sending) return;
+
+                if (isOnchainSwap) {
+                  context.read<CreateSwapCubit>().createOnChainSwap(
+                        wallet: wallet!,
+                        amount: swapAmount,
+                        isTestnet: context.read<NetworkCubit>().state.testnet,
+                        btcElectrumUrl:
+                            btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
+                        lbtcElectrumUrl:
+                            liqNetworkurl, // 'blockstream.info:465',
+                        toAddress:
+                            recipientAddress, // recipientAddress.address;
+                        refundAddress: refundAddress!,
+                        direction:
+                            wallet.baseWalletType == BaseWalletType.Bitcoin
+                                ? boltz.ChainSwapDirection.btcToLbtc
+                                : boltz.ChainSwapDirection.lbtcToBtc,
+                        toWalletId: '',
+                      );
+                  return;
+                }
+
                 final isLn = context.read<SendCubit>().state.isLnInvoice();
 
                 if (!signed) {
