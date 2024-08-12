@@ -73,7 +73,7 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
           labelLocal = 'Broadcasting...';
         } else if (updatedSwap.status?.status == SwapStatus.txnMempool) {
           // labelLocal = 'Our tx in mempool (1/3)';
-          labelLocal = 'Client tx in mempool (1/3)';
+          labelLocal = 'User tx in mempool (1/3)';
         } else if (updatedSwap.status?.status == SwapStatus.txnConfirmed) {
           labelLocal = 'Waiting for boltz payment';
         } else if (updatedSwap.status?.status == SwapStatus.txnServerMempool) {

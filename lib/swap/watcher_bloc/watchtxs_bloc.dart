@@ -530,26 +530,21 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       }
     } else if (swapTx.isChainSwap()) {
       print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
-      switch (swapTx.status!.status) {
-        case SwapStatus.txnMempool:
+      switch (swapTx.chainSwapAction()) {
+        case ChainSwapActions.paid:
           await __updateWalletTxs(swapTx, walletBloc, emit);
-        case SwapStatus.txnConfirmed:
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-        case SwapStatus.txnServerMempool:
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-        case SwapStatus.txnServerConfirmed:
+        case ChainSwapActions.claimable:
           await Future.delayed(const Duration(milliseconds: 1000));
           final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
-          // await Future.delayed(const Duration(milliseconds: 500));
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
-        case SwapStatus.txnClaimed:
+        case ChainSwapActions.settled:
           await Future.delayed(const Duration(milliseconds: 2000));
           print('${swapTx.id}: updateWalletTxs for txnClaimed');
           // final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
           await __updateWalletTxs(swapTx, walletBloc, emit);
           await Future.delayed(const Duration(milliseconds: 1000));
           await __closeSwap(swapTx, emit);
-        case SwapStatus.txnLockupFailed:
+        case ChainSwapActions.refundable:
           final swap = await __onchainRefund(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         default:

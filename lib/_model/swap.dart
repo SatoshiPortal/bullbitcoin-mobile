@@ -121,6 +121,13 @@ class SwapTx with _$SwapTx {
           (status!.status == SwapStatus.invoiceFailedToPay ||
               status!.status == SwapStatus.txnLockupFailed));
 
+  bool refundableOnchain() =>
+      isChainSwap() &&
+      (status != null &&
+          (status!.status == SwapStatus.invoiceFailedToPay ||
+              status!.status == SwapStatus.txnLockupFailed ||
+              status!.status == SwapStatus.swapExpired));
+
   bool refundedAny() =>
       status != null &&
       (status!.status == SwapStatus.swapRefunded ||
@@ -141,8 +148,21 @@ class SwapTx with _$SwapTx {
       ((status!.status == SwapStatus.txnConfirmed) ||
           (status!.status == SwapStatus.invoiceSettled && txid == null));
 
+  // TODO: Is this right
+  bool claimableOnchain() =>
+      isChainSwap() &&
+      status != null &&
+      (status!.status == SwapStatus.txnServerConfirmed); //  ||
+  // (status!.status == SwapStatus.invoiceSettled && txid == null));
+
   bool expiredReverse() =>
       isReverse() &&
+      (status != null &&
+          (status!.status == SwapStatus.invoiceExpired ||
+              status!.status == SwapStatus.swapExpired));
+
+  bool expiredOnchain() =>
+      isChainSwap() &&
       (status != null &&
           (status!.status == SwapStatus.invoiceExpired ||
               status!.status == SwapStatus.swapExpired));
@@ -152,28 +172,27 @@ class SwapTx with _$SwapTx {
       txid != null &&
       (status != null && (status!.status == SwapStatus.invoiceSettled));
 
+  bool settledOnchain() =>
+      isChainSwap() &&
+      txid != null &&
+      (status != null && (status!.status == SwapStatus.txnClaimed));
+
   bool paidReverse() =>
       isReverse() &&
       (status != null && (status!.status == SwapStatus.txnMempool));
 
   bool paidOnchain() =>
       isChainSwap() &&
-      // txid != null &&
+      txid != null &&
       (status != null &&
           (status!.status == SwapStatus.txnMempool ||
               status!.status == SwapStatus.txnConfirmed ||
-              status!.status == SwapStatus.txnServerMempool ||
-              status!.status == SwapStatus.txnServerConfirmed));
+              status!.status == SwapStatus.txnServerMempool));
 
   bool claimedOnchain() =>
       isChainSwap() &&
       // txid != null &&
       (status != null && (status!.status == SwapStatus.txnClaimed));
-
-  bool expiredOnchain() =>
-      isChainSwap() &&
-      // txid != null &&
-      (status != null && (status!.status == SwapStatus.swapExpired));
 
   bool uninitiatedOnchain() =>
       isChainSwap() &&
@@ -199,13 +218,13 @@ class SwapTx with _$SwapTx {
       uninitiatedOnchain();
 
   bool failed() => isChainSwap()
-      ? chainSwapAction()
+      ? isChainSwapFailed()
       : isReverse()
           ? reverseSwapAction() == ReverseSwapActions.failed
           : submarineSwapAction() == SubmarineSwapActions.failed;
 
   //TODO:Onchain
-  bool chainSwapAction() {
+  bool isChainSwapFailed() {
     return status?.status == SwapStatus.txnFailed;
   }
 
@@ -280,6 +299,29 @@ class SwapTx with _$SwapTx {
       return SubmarineSwapActions.created;
   }
 
+  // TODO:Onchain: Overlap between refundable and expired
+  ChainSwapActions chainSwapAction() {
+    if (!isChainSwap()) throw 'Swap is not chainswap!';
+    final statuss = status?.status;
+
+    if (statuss == null || statuss == SwapStatus.swapCreated)
+      return ChainSwapActions.created;
+    else if (paidOnchain())
+      return ChainSwapActions.paid;
+    else if (claimableOnchain())
+      return ChainSwapActions.claimable;
+    else if (refundableOnchain())
+      return ChainSwapActions.refundable;
+    else if (expiredOnchain() ||
+        statuss == SwapStatus.swapError ||
+        statuss == SwapStatus.txnFailed)
+      return ChainSwapActions.failed;
+    else if (settledOnchain())
+      return ChainSwapActions.settled;
+    else
+      return ChainSwapActions.created;
+  }
+
   bool showAlert() {
     if (isChainSwap()) {
       if (paidOnchain() || claimedOnchain()) return true;
@@ -326,6 +368,15 @@ enum ReverseSwapActions {
 }
 
 enum SubmarineSwapActions {
+  created,
+  failed,
+  paid,
+  claimable,
+  refundable,
+  settled,
+}
+
+enum ChainSwapActions {
   created,
   failed,
   paid,
