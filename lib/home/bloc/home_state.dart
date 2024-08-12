@@ -272,13 +272,16 @@ class HomeState with _$HomeState {
 
     // BEGIN: This is to show only Swap Txs in home page, by remove swap settle txs
     // Swap settle tx IDs are stored in swap initiate tx.swapTx.txid
-    final swapTxs =
-        txs.where((tx) => tx.swapTx != null).map((tx) => tx.swapTx!);
+    final swapTxs = txs
+        .where((tx) => tx.swapTx != null && tx.swapTx?.status?.status != null)
+        .map((tx) => tx.swapTx!)
+        .toList();
     final toRemove = <Transaction>[];
     for (final tx in txs) {
-      final isInSwapTx =
-          swapTxs.where((swap) => swap.txid == tx.txid).isNotEmpty;
-      if (isInSwapTx == true) toRemove.add(tx);
+      final isInSwapTxAndNotPending = swapTxs
+          .where((swap) => swap.txid == tx.txid) // && tx.timestamp != 0)
+          .isNotEmpty;
+      if (isInSwapTxAndNotPending == true) toRemove.add(tx);
     }
 
     for (final removeTx in toRemove) {
