@@ -224,7 +224,7 @@ class _Screen extends StatelessWidget {
     //   context.read<SendCubit>().sendSwapClicked();
     //   return;
     // }
-    if (amount == 0) {
+    if (amount == 0 && sweep == false) {
       context.read<CreateSwapCubit>().setValidationError(
             'Please enter valid amount',
           );
@@ -268,9 +268,12 @@ class _Screen extends StatelessWidget {
 
       context.read<SendCubit>().reset();
 
+      context.read<SendCubit>().updateOnChainAbsFee(fees);
+
+      // sweepAmount = walletBloc.state.wallet!.balance! - fees;
       final int magicNumber =
           walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
-              ? 30
+              ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
               : 1500;
       sweepAmount =
           walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:

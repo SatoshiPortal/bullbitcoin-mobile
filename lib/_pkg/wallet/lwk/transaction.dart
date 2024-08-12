@@ -478,6 +478,7 @@ class LWKTransactions {
     required int? amount,
     required bool sendAllCoin,
     required double feeRate,
+    int? absFee,
   }) async {
     try {
       // final isMainnet = wallet.network == BBNetwork.LMainnet;

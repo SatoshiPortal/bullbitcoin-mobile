@@ -648,25 +648,6 @@ class ChainSwapForm extends StatelessWidget {
 
     const int finalFee = 0;
 
-    /*
-    final allFees =
-        context.select((CreateSwapCubit x) => x.state.allFees);
-
-    if (reverseFees != null) {
-      if (isLiquid == true) {
-        finalFee = (((reverseFees.lbtcFees.percentage) * amount / 100) +
-                (reverseFees.lbtcFees.minerFees.claim) +
-                (reverseFees.lbtcFees.minerFees.lockup))
-            .toInt();
-      } else {
-        finalFee = (((reverseFees.btcFees.percentage) * amount / 100) +
-                (reverseFees.btcFees.minerFees.claim) +
-                (reverseFees.btcFees.minerFees.lockup))
-            .toInt();
-      }
-    }
-    */
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

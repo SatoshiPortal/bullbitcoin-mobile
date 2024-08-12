@@ -124,9 +124,11 @@ class SwapTx with _$SwapTx {
   bool refundableOnchain() =>
       isChainSwap() &&
       (status != null &&
+          txid == null &&
           (status!.status == SwapStatus.invoiceFailedToPay ||
               status!.status == SwapStatus.txnLockupFailed ||
-              status!.status == SwapStatus.swapExpired));
+              status!.status == SwapStatus.swapExpired ||
+              status!.status == SwapStatus.txnRefunded));
 
   bool refundedAny() =>
       status != null &&

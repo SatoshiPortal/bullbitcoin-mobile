@@ -594,6 +594,9 @@ class SendCubit extends Cubit<SendState> {
 
     // emit(state.copyWith(sending: true, errSending: ''));
 
+    final isBitcoinSweep =
+        localWallet.baseWalletType == BaseWalletType.Bitcoin &&
+            state.onChainAbsFee != 0;
     final (buildResp, err) = await _walletTx.buildTx(
       wallet: localWallet,
       isManualSend: false,
@@ -602,7 +605,8 @@ class SendCubit extends Cubit<SendState> {
       // amount: 1500, // to test submarine refund
 
       sendAllCoin: false,
-      feeRate: fee,
+      feeRate: isBitcoinSweep ? 0 : fee,
+      absFee: isBitcoinSweep ? state.onChainAbsFee : 0,
       enableRbf: true,
       note: state.note,
     );
@@ -896,6 +900,15 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(sending: false, sent: true));
   }
 
+  void updateOnChainAbsFee(int fee) {
+    emit(
+      state.copyWith(
+        onChainAbsFee: fee,
+        onChainSweep: true,
+      ),
+    );
+  }
+
   void reset() async {
     emit(
       state.copyWith(
@@ -903,6 +916,8 @@ class SendCubit extends Cubit<SendState> {
         signed: false,
         psbtSigned: null,
         psbtSignedFeeAmount: 0,
+        onChainAbsFee: 0,
+        onChainSweep: false,
         enabledWallets: [],
       ),
     );

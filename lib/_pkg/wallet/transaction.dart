@@ -136,6 +136,7 @@ class WalletTx implements IWalletTransactions {
     required bool isManualSend,
     required bool enableRbf,
     List<UTXO>? selectedUtxos,
+    int? absFee,
   }) async {
     try {
       switch (wallet.baseWalletType) {
@@ -154,6 +155,7 @@ class WalletTx implements IWalletTransactions {
             enableRbf: enableRbf,
             selectedUtxos: selectedUtxos ?? [],
             note: note,
+            absFee: absFee,
           );
           if (err != null) throw err;
           final (tx, feeAmt, psbt) = buildResp!;
@@ -192,6 +194,7 @@ class WalletTx implements IWalletTransactions {
             amount: amount,
             sendAllCoin: sendAllCoin,
             feeRate: feeRate,
+            absFee: absFee,
           );
           if (errBuild != null) throw errBuild;
           final (tx, feeAmt, pset) = buildResp!;

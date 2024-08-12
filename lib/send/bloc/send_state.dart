@@ -41,6 +41,8 @@ class SendState with _$SendState {
     @Default(false) bool signed,
     String? psbtSigned,
     int? psbtSignedFeeAmount,
+    int? onChainAbsFee,
+    @Default(false) bool onChainSweep,
     @Default(false) bool oneWallet,
   }) = _SendState;
   const SendState._();

@@ -708,6 +708,7 @@ class BDKTransactions {
     required double feeRate,
     required bool enableRbf,
     required List<UTXO> selectedUtxos,
+    int? absFee,
     String? note,
   }) async {
     try {
@@ -747,7 +748,9 @@ class BDKTransactions {
         txBuilder = txBuilder.addUtxos(utxos);
       }
 
-      txBuilder = txBuilder.feeRate(feeRate);
+      txBuilder = feeRate == 0
+          ? txBuilder.feeAbsolute(absFee ?? 100)
+          : txBuilder.feeRate(feeRate);
 
       if (enableRbf) txBuilder = txBuilder.enableRbf();
 

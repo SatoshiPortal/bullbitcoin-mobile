@@ -45,6 +45,8 @@ mixin _$SendState {
   bool get signed => throw _privateConstructorUsedError;
   String? get psbtSigned => throw _privateConstructorUsedError;
   int? get psbtSignedFeeAmount => throw _privateConstructorUsedError;
+  int? get onChainAbsFee => throw _privateConstructorUsedError;
+  bool get onChainSweep => throw _privateConstructorUsedError;
   bool get oneWallet => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -84,6 +86,8 @@ abstract class $SendStateCopyWith<$Res> {
       bool signed,
       String? psbtSigned,
       int? psbtSignedFeeAmount,
+      int? onChainAbsFee,
+      bool onChainSweep,
       bool oneWallet});
 
   $InvoiceCopyWith<$Res>? get invoice;
@@ -129,6 +133,8 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? signed = null,
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
+    Object? onChainAbsFee = freezed,
+    Object? onChainSweep = null,
     Object? oneWallet = null,
   }) {
     return _then(_value.copyWith(
@@ -236,6 +242,14 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.psbtSignedFeeAmount
           : psbtSignedFeeAmount // ignore: cast_nullable_to_non_nullable
               as int?,
+      onChainAbsFee: freezed == onChainAbsFee
+          ? _value.onChainAbsFee
+          : onChainAbsFee // ignore: cast_nullable_to_non_nullable
+              as int?,
+      onChainSweep: null == onChainSweep
+          ? _value.onChainSweep
+          : onChainSweep // ignore: cast_nullable_to_non_nullable
+              as bool,
       oneWallet: null == oneWallet
           ? _value.oneWallet
           : oneWallet // ignore: cast_nullable_to_non_nullable
@@ -303,6 +317,8 @@ abstract class _$$SendStateImplCopyWith<$Res>
       bool signed,
       String? psbtSigned,
       int? psbtSignedFeeAmount,
+      int? onChainAbsFee,
+      bool onChainSweep,
       bool oneWallet});
 
   @override
@@ -348,6 +364,8 @@ class __$$SendStateImplCopyWithImpl<$Res>
     Object? signed = null,
     Object? psbtSigned = freezed,
     Object? psbtSignedFeeAmount = freezed,
+    Object? onChainAbsFee = freezed,
+    Object? onChainSweep = null,
     Object? oneWallet = null,
   }) {
     return _then(_$SendStateImpl(
@@ -455,6 +473,14 @@ class __$$SendStateImplCopyWithImpl<$Res>
           ? _value.psbtSignedFeeAmount
           : psbtSignedFeeAmount // ignore: cast_nullable_to_non_nullable
               as int?,
+      onChainAbsFee: freezed == onChainAbsFee
+          ? _value.onChainAbsFee
+          : onChainAbsFee // ignore: cast_nullable_to_non_nullable
+              as int?,
+      onChainSweep: null == onChainSweep
+          ? _value.onChainSweep
+          : onChainSweep // ignore: cast_nullable_to_non_nullable
+              as bool,
       oneWallet: null == oneWallet
           ? _value.oneWallet
           : oneWallet // ignore: cast_nullable_to_non_nullable
@@ -493,6 +519,8 @@ class _$SendStateImpl extends _SendState {
       this.signed = false,
       this.psbtSigned,
       this.psbtSignedFeeAmount,
+      this.onChainAbsFee,
+      this.onChainSweep = false,
       this.oneWallet = false})
       : _enabledWallets = enabledWallets,
         _selectedUtxos = selectedUtxos,
@@ -585,12 +613,17 @@ class _$SendStateImpl extends _SendState {
   @override
   final int? psbtSignedFeeAmount;
   @override
+  final int? onChainAbsFee;
+  @override
+  @JsonKey()
+  final bool onChainSweep;
+  @override
   @JsonKey()
   final bool oneWallet;
 
   @override
   String toString() {
-    return 'SendState(address: $address, enabledWallets: $enabledWallets, paymentNetwork: $paymentNetwork, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice, showSendButton: $showSendButton, buildingOnChain: $buildingOnChain, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, oneWallet: $oneWallet)';
+    return 'SendState(address: $address, enabledWallets: $enabledWallets, paymentNetwork: $paymentNetwork, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice, showSendButton: $showSendButton, buildingOnChain: $buildingOnChain, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, onChainAbsFee: $onChainAbsFee, onChainSweep: $onChainSweep, oneWallet: $oneWallet)';
   }
 
   @override
@@ -641,6 +674,10 @@ class _$SendStateImpl extends _SendState {
                 other.psbtSigned == psbtSigned) &&
             (identical(other.psbtSignedFeeAmount, psbtSignedFeeAmount) ||
                 other.psbtSignedFeeAmount == psbtSignedFeeAmount) &&
+            (identical(other.onChainAbsFee, onChainAbsFee) ||
+                other.onChainAbsFee == onChainAbsFee) &&
+            (identical(other.onChainSweep, onChainSweep) ||
+                other.onChainSweep == onChainSweep) &&
             (identical(other.oneWallet, oneWallet) ||
                 other.oneWallet == oneWallet));
   }
@@ -674,6 +711,8 @@ class _$SendStateImpl extends _SendState {
         signed,
         psbtSigned,
         psbtSignedFeeAmount,
+        onChainAbsFee,
+        onChainSweep,
         oneWallet
       ]);
 
@@ -712,6 +751,8 @@ abstract class _SendState extends SendState {
       final bool signed,
       final String? psbtSigned,
       final int? psbtSignedFeeAmount,
+      final int? onChainAbsFee,
+      final bool onChainSweep,
       final bool oneWallet}) = _$SendStateImpl;
   const _SendState._() : super._();
 
@@ -768,6 +809,10 @@ abstract class _SendState extends SendState {
   String? get psbtSigned;
   @override
   int? get psbtSignedFeeAmount;
+  @override
+  int? get onChainAbsFee;
+  @override
+  bool get onChainSweep;
   @override
   bool get oneWallet;
   @override
