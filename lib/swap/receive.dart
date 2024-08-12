@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';

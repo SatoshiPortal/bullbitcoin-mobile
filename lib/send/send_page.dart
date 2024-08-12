@@ -134,10 +134,11 @@ class _WalletProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final send = context.select((SendCubit _) => _.state.selectedWalletBloc);
+    final sendWalletBloc =
+        context.select((SendCubit _) => _.state.selectedWalletBloc);
 
-    if (send == null) return child;
-    return BlocProvider.value(value: send, child: child);
+    if (sendWalletBloc == null) return child;
+    return BlocProvider.value(value: sendWalletBloc, child: child);
   }
 }
 

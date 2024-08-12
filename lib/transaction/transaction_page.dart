@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
@@ -671,8 +672,8 @@ class _OnchainSwapDetails extends StatelessWidget {
     String? toUnits;
     String? toStatusStr;
 
-    if (swap.txid != null && swap.txid!.isNotEmpty) {
-      receiveTx = toWallet!.getTxWithId(swap.txid!);
+    if (swap.txid != null && swap.txid!.isNotEmpty && toWallet != null) {
+      receiveTx = toWallet.getTxWithId(swap.txid!);
       if (receiveTx != null) {
         toAmtStr = context.select(
           (CurrencyCubit cubit) => cubit.state.getAmountInUnits(

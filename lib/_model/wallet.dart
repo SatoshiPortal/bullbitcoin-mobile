@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:crypto/crypto.dart';

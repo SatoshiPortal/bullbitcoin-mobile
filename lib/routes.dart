@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';

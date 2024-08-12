@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';

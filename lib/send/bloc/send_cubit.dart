@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/network.dart';
-import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
@@ -68,8 +68,8 @@ class SendCubit extends Cubit<SendState> {
   final HomeCubit _homeCubit;
   final CreateSwapCubit _swapCubit;
 
-  void updateAddress(String? addr) async {
-    if (!state.oneWallet) resetWalletSelection();
+  void updateAddress(String? addr, {bool changeWallet = true}) async {
+    if (!state.oneWallet) resetWalletSelection(changeWallet: changeWallet);
     resetErrors();
     _swapCubit.clearSwapTx();
     _swapCubit.clearErrors();
@@ -209,7 +209,9 @@ class SendCubit extends Cubit<SendState> {
     }
 
     emit(state.copyWith(scanningAddress: false));
-    selectWallets();
+    if (changeWallet == true) {
+      selectWallets();
+    }
   }
 
   void selectWallets({bool fromStart = false}) {
@@ -352,7 +354,10 @@ class SendCubit extends Cubit<SendState> {
         return;
       }
 
-      final selectWallet = state.selectMainBtcThenOtherHighestBalBtc(wallets);
+      final couldBeOnChainSwap = state.couldBeOnchainSwap();
+      final selectWallet = couldBeOnChainSwap == true
+          ? state.selectedWalletBloc
+          : state.selectMainBtcThenOtherHighestBalBtc(wallets);
 
       emit(
         state.copyWith(
@@ -421,7 +426,7 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(showSendButton: true));
   }
 
-  void resetWalletSelection({bool clearInv = true}) {
+  void resetWalletSelection({bool clearInv = true, bool changeWallet = true}) {
     if (state.oneWallet) {
       if (clearInv) emit(state.copyWith(invoice: null));
       return;
@@ -429,7 +434,8 @@ class SendCubit extends Cubit<SendState> {
     emit(
       state.copyWith(
         enabledWallets: [],
-        selectedWalletBloc: null,
+        selectedWalletBloc:
+            changeWallet == true ? null : state.selectedWalletBloc,
         showSendButton: false,
         invoice: clearInv ? null : state.invoice,
         tempAmt: 0,
@@ -593,7 +599,8 @@ class SendCubit extends Cubit<SendState> {
       isManualSend: false,
       address: address,
       amount: swaptx.outAmount,
-      // amount: 1000, // to test submarine refund
+      // amount: 1500, // to test submarine refund
+
       sendAllCoin: false,
       feeRate: fee,
       enableRbf: true,

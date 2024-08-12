@@ -27,9 +27,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class SwapPage extends StatefulWidget {
-  SwapPage({super.key, this.fromWalletId});
+  const SwapPage({super.key, this.fromWalletId});
 
-  String? fromWalletId;
+  final String? fromWalletId;
 
   @override
   State<SwapPage> createState() => _SwapPageState();
@@ -110,9 +110,9 @@ class _SwapPageState extends State<SwapPage> {
 }
 
 class _Screen extends StatelessWidget {
-  _Screen({this.fromWalletId});
+  const _Screen({this.fromWalletId});
 
-  String? fromWalletId;
+  final String? fromWalletId;
 
   @override
   Widget build(BuildContext context) {
