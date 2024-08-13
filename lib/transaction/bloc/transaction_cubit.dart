@@ -344,7 +344,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   void sendTx() async {
     emit(state.copyWith(sendingTx: true, errSendingTx: '', buildingTx: false));
     final tx = state.tx.swapTx != null
-        ? state.updatedTx!.copyWith(swapTx: state.tx.swapTx)
+        ? state.updatedTx!.copyWith(swapTx: state.tx.swapTx, isSwap: true)
         : state.updatedTx!;
     final wallet = _walletBloc.state.wallet!;
 
