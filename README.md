@@ -142,3 +142,4 @@ Suggestion to this roadmap can be proposed as Github issues.
 
 ![image](https://github.com/BullishNode/bullbitcoin-mobile/assets/75800272/a61e4ccc-897d-410f-b97b-37a7c2b240cb)
 
+This project is tested with BrowserStack
