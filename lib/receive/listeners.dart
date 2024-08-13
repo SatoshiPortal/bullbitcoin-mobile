@@ -97,6 +97,7 @@ class ReceiveListeners extends StatelessWidget {
               locator<GoRouter>().push('/swap-receive', extra: swaptx);
             } else if (sameSwap && swaptx.isChainSwap() == true) {
               final extra = [swaptx, true];
+              locator<GoRouter>().pop();
               locator<GoRouter>().push('/onchain-swap-receive', extra: extra);
             } else {
               final amtStr = context

@@ -596,6 +596,7 @@ class SendCubit extends Cubit<SendState> {
 
     final isBitcoinSweep =
         localWallet.baseWalletType == BaseWalletType.Bitcoin &&
+            state.onChainAbsFee != null &&
             state.onChainAbsFee != 0;
     final (buildResp, err) = await _walletTx.buildTx(
       wallet: localWallet,

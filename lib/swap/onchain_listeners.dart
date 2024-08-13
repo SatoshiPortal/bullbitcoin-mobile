@@ -55,6 +55,7 @@ class OnchainListeners extends StatelessWidget {
           listener: (context, state) async {
             final sendCubit = context.read<SendCubit>();
             final swapCubit = context.read<CreateSwapCubit>();
+            context.pop();
             context.push('/swap-confirmation', extra: [sendCubit, swapCubit]);
           },
         ),

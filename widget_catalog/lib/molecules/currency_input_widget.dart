@@ -39,7 +39,7 @@ Widget buildCurrencyInputUseCase(BuildContext context) {
             'Making it true will display Sats below when any fiat currencies are chosen'),
 
     // ? NOTE: No knobs or equivalent for action functions. We can just add print statements and see values in the debug console
-    onChange: (int sats, CurrencyNew selectedCurrency) {
+    onChange: (int sats, bool isSweep, CurrencyNew selectedCurrency) {
       print(sats);
       print(selectedCurrency);
     },
@@ -54,15 +54,15 @@ Widget buildCurrencyInputUseCase(BuildContext context) {
     // initialCurrency: currencies[4],
 
     // TODO: Not sure how to make knob for this. Maybe custom knob?
-    defaultFiat: CurrencyNew(
-        code: context.knobs.list(
-          label: 'defaultFiat.code',
-          options: currencies.map((e) => e.name).toList(),
-        ),
-        isFiat: context.knobs.boolean(
-          label: 'defaultFiat.isFiat',
-        ),
-        name: context.knobs.string(label: 'defaultFiat.name'),
-        price: context.knobs.double.input(label: 'defaultFiat.price')),
+    // defaultFiat: CurrencyNew(
+    //     code: context.knobs.list(
+    //       label: 'defaultFiat.code',
+    //       options: currencies.map((e) => e.name).toList(),
+    //     ),
+    //     isFiat: context.knobs.boolean(
+    //       label: 'defaultFiat.isFiat',
+    //     ),
+    //     name: context.knobs.string(label: 'defaultFiat.name'),
+    //     price: context.knobs.double.input(label: 'defaultFiat.price')),
   );
 }

@@ -9,6 +9,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
+import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/swap_page_progress.dart';
 import 'package:flutter/material.dart';
@@ -121,56 +122,59 @@ class _Screen extends StatelessWidget {
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     if (sent) return SendingOnChainTx();
 
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Gap(24),
-          const BBText.titleLarge(
-            'Confirm Transaction',
-          ),
-          const Gap(32),
-          const BBText.title(
-            'Transaction Amount',
-          ),
-          const Gap(4),
-          BBText.bodyBold(
-            amtStr,
-          ),
-          BBText.body(
-            '~ $amtFiat $fiatCurrency ',
-          ),
-          const Gap(24),
-          const BBText.title(
-            'Swap script Address',
-          ),
-          const Gap(4),
-          BBText.body(swapTx!.scriptAddress),
-          const Gap(24),
-          const BBText.title(
-            'Network Fee',
-          ),
-          const Gap(4),
-          BBText.body(
-            feeStr,
-          ),
-          BBText.body(
-            '~ $feeFiat $fiatCurrency',
-          ),
-          const Gap(24),
-          BBButton.big(
-            loading: sending,
-            disabled: sending,
-            label: 'Broadcast',
-            onPressed: () {
-              context.read<SendCubit>().sendSwapClicked();
-            },
-            loadingText: 'Broadcasting',
-          ),
-          const Gap(32),
-        ],
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Gap(24),
+            const BBText.titleLarge(
+              'Confirm Transaction',
+            ),
+            const Gap(32),
+            const BBText.title(
+              'Transaction Amount',
+            ),
+            const Gap(4),
+            BBText.bodyBold(
+              amtStr,
+            ),
+            BBText.body(
+              '~ $amtFiat $fiatCurrency ',
+            ),
+            const Gap(24),
+            const BBText.title(
+              'Swap script Address',
+            ),
+            const Gap(4),
+            BBText.body(swapTx!.scriptAddress),
+            const Gap(24),
+            const BBText.title(
+              'Network Fee',
+            ),
+            const Gap(4),
+            BBText.body(
+              feeStr,
+            ),
+            BBText.body(
+              '~ $feeFiat $fiatCurrency',
+            ),
+            const Gap(24),
+            BBButton.big(
+              loading: sending,
+              disabled: sending,
+              label: 'Broadcast',
+              onPressed: () {
+                context.read<SendCubit>().sendSwapClicked();
+              },
+              loadingText: 'Broadcasting',
+            ),
+            const Gap(32),
+            const SendErrDisplay(),
+          ],
+        ),
       ),
     );
   }
