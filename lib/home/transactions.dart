@@ -268,6 +268,7 @@ class _TxList extends StatelessWidget {
   }
 }
 
+// From Home page
 class HomeTxItem2 extends StatelessWidget {
   const HomeTxItem2({super.key, required this.tx});
 
@@ -318,7 +319,7 @@ class HomeTxItem2 extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        context.push('/tx', extra: tx);
+        context.push('/tx', extra: [tx, true]);
       },
       child: Padding(
         padding: const EdgeInsets.only(

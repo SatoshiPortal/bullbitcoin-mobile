@@ -470,7 +470,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
                     context
                       ..pop()
                       ..pop()
-                      ..push('/tx', extra: tx);
+                      ..push('/tx', extra: [tx, false]);
                   },
                 ).animate().fadeIn(),
             ],

@@ -124,6 +124,7 @@ class WalletTxList extends StatelessWidget {
   }
 }
 
+// From walletpage
 class HomeTxItem extends StatelessWidget {
   const HomeTxItem({super.key, required this.tx});
 
@@ -156,7 +157,7 @@ class HomeTxItem extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        context.push('/tx', extra: tx);
+        context.push('/tx', extra: [tx, false]);
       },
       child: Padding(
         padding: const EdgeInsets.only(

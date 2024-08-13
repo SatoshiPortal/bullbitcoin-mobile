@@ -33,9 +33,10 @@ import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class TxPage extends StatelessWidget {
-  const TxPage({super.key, required this.tx});
+  const TxPage({super.key, required this.tx, this.showOnchainSwap = false});
 
   final Transaction tx;
+  final bool showOnchainSwap;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +90,7 @@ class TxPage extends StatelessWidget {
             automaticallyImplyLeading: false,
             flexibleSpace: const _TxAppBar(),
           ),
-          body: const _Screen(),
+          body: _Screen(showOnchainSwap: showOnchainSwap),
         ),
       ),
     );
@@ -114,7 +115,9 @@ class _TxAppBar extends StatelessWidget {
 }
 
 class _Screen extends StatelessWidget {
-  const _Screen();
+  const _Screen({required this.showOnchainSwap});
+
+  final bool showOnchainSwap;
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +126,7 @@ class _Screen extends StatelessWidget {
 
     if (swap != null && !swap.isChainSwap())
       return const _CombinedTxAndSwapPage();
-    if (swap != null && swap.isChainSwap())
+    if (swap != null && swap.isChainSwap() && showOnchainSwap == true)
       return const _CombinedTxAndOnchainSwapPage();
     return const _OnlyTxPage();
 

@@ -76,6 +76,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/swap-confirmation',
           builder: (context, state) {
+            // TODO: Convert this to proper map
             final params = state.extra! as List;
             final sendCubit = params[0] as SendCubit;
             final swapCubit = params[1] as CreateSwapCubit;
@@ -195,8 +196,16 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/tx',
           builder: (context, state) {
-            final tx = state.extra! as Transaction;
-            return TxPage(tx: tx);
+            // TODO: Convert this to proper map
+            final list = state.extra! as List;
+            final tx = list[0] as Transaction;
+            final showOnchainSwap = list[1] as bool;
+
+            // final tx = state.extra! as Transaction;
+            return TxPage(
+              tx: tx,
+              showOnchainSwap: showOnchainSwap,
+            );
           },
         ),
         GoRoute(
@@ -280,6 +289,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/onchain-swap-receive',
           builder: (context, state) {
+            // TODO: Convert this to proper map
             final list = state.extra! as List;
             final swapTx = list[0] as SwapTx;
             final isReceive = list[1] as bool;

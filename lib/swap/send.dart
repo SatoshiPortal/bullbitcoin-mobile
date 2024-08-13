@@ -257,7 +257,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
               onPressed: () {
                 context
                   ..pop()
-                  ..push('/tx', extra: tx);
+                  ..push('/tx', extra: [tx, false]);
               },
             ).animate().fadeIn(),
         ],
