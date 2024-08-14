@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
@@ -297,6 +298,7 @@ class _Screen extends StatelessWidget {
               ? ChainSwapDirection.btcToLbtc
               : ChainSwapDirection.lbtcToBtc,
           toWalletId: toWallet.id,
+          onChainSwapType: OnChainSwapType.selfSwap,
         );
   }
 }

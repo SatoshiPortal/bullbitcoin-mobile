@@ -21,6 +21,7 @@ ChainSwapDetails _$ChainSwapDetailsFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$ChainSwapDetails {
   ChainSwapDirection get direction => throw _privateConstructorUsedError;
+  OnChainSwapType get onChainType => throw _privateConstructorUsedError;
   int get refundKeyIndex => throw _privateConstructorUsedError;
   String get refundSecretKey => throw _privateConstructorUsedError;
   String get refundPublicKey => throw _privateConstructorUsedError;
@@ -55,6 +56,7 @@ abstract class $ChainSwapDetailsCopyWith<$Res> {
   @useResult
   $Res call(
       {ChainSwapDirection direction,
+      OnChainSwapType onChainType,
       int refundKeyIndex,
       String refundSecretKey,
       String refundPublicKey,
@@ -89,6 +91,7 @@ class _$ChainSwapDetailsCopyWithImpl<$Res, $Val extends ChainSwapDetails>
   @override
   $Res call({
     Object? direction = null,
+    Object? onChainType = null,
     Object? refundKeyIndex = null,
     Object? refundSecretKey = null,
     Object? refundPublicKey = null,
@@ -113,6 +116,10 @@ class _$ChainSwapDetailsCopyWithImpl<$Res, $Val extends ChainSwapDetails>
           ? _value.direction
           : direction // ignore: cast_nullable_to_non_nullable
               as ChainSwapDirection,
+      onChainType: null == onChainType
+          ? _value.onChainType
+          : onChainType // ignore: cast_nullable_to_non_nullable
+              as OnChainSwapType,
       refundKeyIndex: null == refundKeyIndex
           ? _value.refundKeyIndex
           : refundKeyIndex // ignore: cast_nullable_to_non_nullable
@@ -199,6 +206,7 @@ abstract class _$$ChainSwapDetailsImplCopyWith<$Res>
   @useResult
   $Res call(
       {ChainSwapDirection direction,
+      OnChainSwapType onChainType,
       int refundKeyIndex,
       String refundSecretKey,
       String refundPublicKey,
@@ -231,6 +239,7 @@ class __$$ChainSwapDetailsImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? direction = null,
+    Object? onChainType = null,
     Object? refundKeyIndex = null,
     Object? refundSecretKey = null,
     Object? refundPublicKey = null,
@@ -255,6 +264,10 @@ class __$$ChainSwapDetailsImplCopyWithImpl<$Res>
           ? _value.direction
           : direction // ignore: cast_nullable_to_non_nullable
               as ChainSwapDirection,
+      onChainType: null == onChainType
+          ? _value.onChainType
+          : onChainType // ignore: cast_nullable_to_non_nullable
+              as OnChainSwapType,
       refundKeyIndex: null == refundKeyIndex
           ? _value.refundKeyIndex
           : refundKeyIndex // ignore: cast_nullable_to_non_nullable
@@ -337,6 +350,7 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
     with DiagnosticableTreeMixin {
   const _$ChainSwapDetailsImpl(
       {required this.direction,
+      required this.onChainType,
       required this.refundKeyIndex,
       required this.refundSecretKey,
       required this.refundPublicKey,
@@ -362,6 +376,8 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
 
   @override
   final ChainSwapDirection direction;
+  @override
+  final OnChainSwapType onChainType;
   @override
   final int refundKeyIndex;
   @override
@@ -402,7 +418,7 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'ChainSwapDetails(direction: $direction, refundKeyIndex: $refundKeyIndex, refundSecretKey: $refundSecretKey, refundPublicKey: $refundPublicKey, claimKeyIndex: $claimKeyIndex, claimSecretKey: $claimSecretKey, claimPublicKey: $claimPublicKey, lockupLocktime: $lockupLocktime, claimLocktime: $claimLocktime, btcElectrumUrl: $btcElectrumUrl, lbtcElectrumUrl: $lbtcElectrumUrl, blindingKey: $blindingKey, btcFundingAddress: $btcFundingAddress, btcScriptSenderPublicKey: $btcScriptSenderPublicKey, btcScriptReceiverPublicKey: $btcScriptReceiverPublicKey, lbtcFundingAddress: $lbtcFundingAddress, lbtcScriptSenderPublicKey: $lbtcScriptSenderPublicKey, lbtcScriptReceiverPublicKey: $lbtcScriptReceiverPublicKey, toWalletId: $toWalletId)';
+    return 'ChainSwapDetails(direction: $direction, onChainType: $onChainType, refundKeyIndex: $refundKeyIndex, refundSecretKey: $refundSecretKey, refundPublicKey: $refundPublicKey, claimKeyIndex: $claimKeyIndex, claimSecretKey: $claimSecretKey, claimPublicKey: $claimPublicKey, lockupLocktime: $lockupLocktime, claimLocktime: $claimLocktime, btcElectrumUrl: $btcElectrumUrl, lbtcElectrumUrl: $lbtcElectrumUrl, blindingKey: $blindingKey, btcFundingAddress: $btcFundingAddress, btcScriptSenderPublicKey: $btcScriptSenderPublicKey, btcScriptReceiverPublicKey: $btcScriptReceiverPublicKey, lbtcFundingAddress: $lbtcFundingAddress, lbtcScriptSenderPublicKey: $lbtcScriptSenderPublicKey, lbtcScriptReceiverPublicKey: $lbtcScriptReceiverPublicKey, toWalletId: $toWalletId)';
   }
 
   @override
@@ -411,6 +427,7 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
     properties
       ..add(DiagnosticsProperty('type', 'ChainSwapDetails'))
       ..add(DiagnosticsProperty('direction', direction))
+      ..add(DiagnosticsProperty('onChainType', onChainType))
       ..add(DiagnosticsProperty('refundKeyIndex', refundKeyIndex))
       ..add(DiagnosticsProperty('refundSecretKey', refundSecretKey))
       ..add(DiagnosticsProperty('refundPublicKey', refundPublicKey))
@@ -442,6 +459,8 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
             other is _$ChainSwapDetailsImpl &&
             (identical(other.direction, direction) ||
                 other.direction == direction) &&
+            (identical(other.onChainType, onChainType) ||
+                other.onChainType == onChainType) &&
             (identical(other.refundKeyIndex, refundKeyIndex) ||
                 other.refundKeyIndex == refundKeyIndex) &&
             (identical(other.refundSecretKey, refundSecretKey) ||
@@ -491,6 +510,7 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
   int get hashCode => Object.hashAll([
         runtimeType,
         direction,
+        onChainType,
         refundKeyIndex,
         refundSecretKey,
         refundPublicKey,
@@ -529,6 +549,7 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
 abstract class _ChainSwapDetails extends ChainSwapDetails {
   const factory _ChainSwapDetails(
       {required final ChainSwapDirection direction,
+      required final OnChainSwapType onChainType,
       required final int refundKeyIndex,
       required final String refundSecretKey,
       required final String refundPublicKey,
@@ -554,6 +575,8 @@ abstract class _ChainSwapDetails extends ChainSwapDetails {
 
   @override
   ChainSwapDirection get direction;
+  @override
+  OnChainSwapType get onChainType;
   @override
   int get refundKeyIndex;
   @override

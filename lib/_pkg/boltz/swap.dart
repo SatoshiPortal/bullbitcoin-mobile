@@ -783,6 +783,7 @@ class SwapBoltz {
     required String mnemonic,
     required int index,
     required ChainSwapDirection direction,
+    required OnChainSwapType onChainSwapType,
     required int amount,
     required Chain network,
     required String btcElectrumUrl,
@@ -812,7 +813,7 @@ class SwapBoltz {
         value: jsonEncode(swapSensitive.toJson()),
       );
       if (err != null) throw err;
-      final swap = res.createSwapFromChainSwap(toWalletId);
+      final swap = res.createSwapFromChainSwap(toWalletId, onChainSwapType);
       // SwapTx.fromBtcLnSwap(res);
 
       return (swap, null);

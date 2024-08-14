@@ -695,6 +695,134 @@ class _OnchainSwapDetails extends StatelessWidget {
       }
     }
 
+    final selfFromWalletChildren = [
+      const BBText.body(
+        'From wallet',
+        textAlign: TextAlign.center,
+      ),
+      const Gap(24),
+      const BBText.title(
+        'From wallet',
+      ),
+      const Gap(4),
+      BBText.titleLarge(
+        fromWallet?.name ?? '',
+        isBold: true,
+      ),
+      const Gap(24),
+      const BBText.title(
+        'From: Amount',
+      ),
+      const Gap(4),
+      AmountValue(
+        isReceived: tx.isReceived(),
+        amtStr: fromAmtStr,
+        units: fromUnits,
+      ),
+      const Gap(24),
+      const BBText.title('From: Tx ID'),
+      const Gap(4),
+      TxLink(txid: tx.txid, tx: tx, unblindedUrl: tx.unblindedUrl),
+      const Gap(24),
+      const BBText.title(
+        'From: Status',
+      ),
+      const Gap(4),
+      BBText.titleLarge(
+        fromStatusStr,
+        isBold: true,
+      ),
+      const Gap(24),
+    ];
+
+    final externalFromWalletChildren = [
+      const BBText.body(
+        'From wallet',
+        textAlign: TextAlign.center,
+      ),
+      const Gap(24),
+      const BBText.title(
+        'Swap is from an external wallet',
+      ),
+      const Gap(24),
+    ];
+
+    final selfToWalletChildren = [
+      const BBText.body(
+        'To wallet',
+        textAlign: TextAlign.center,
+      ),
+      const Gap(24),
+      const BBText.title(
+        'To wallet',
+      ),
+      const Gap(4),
+      BBText.titleLarge(
+        toWallet?.name ?? '',
+        isBold: true,
+      ),
+      const Gap(24),
+      const BBText.title(
+        'To: Amount',
+      ),
+      const Gap(4),
+      if (receiveTx == null)
+        const BBText.titleLarge(
+          'Not claimed yet',
+          isBold: true,
+        ),
+      if (receiveTx != null)
+        AmountValue(
+          isReceived: receiveTx.isReceived(),
+          amtStr: toAmtStr!,
+          units: toUnits!,
+        ),
+      const Gap(24),
+      const BBText.title(
+        'To: Tx ID',
+      ),
+      const Gap(4),
+      if (receiveTx == null)
+        const BBText.titleLarge(
+          'Not claimed yet',
+          isBold: true,
+        ),
+      if (receiveTx != null)
+        TxLink(
+          txid: receiveTx.txid,
+          tx: receiveTx,
+          unblindedUrl: receiveTx.unblindedUrl,
+        ),
+      const Gap(24),
+      const BBText.title(
+        'To: Status',
+      ),
+      const Gap(4),
+      if (receiveTx == null)
+        const BBText.titleLarge(
+          'Not claimed yet',
+          isBold: true,
+        ),
+      if (receiveTx != null)
+        BBText.titleLarge(
+          toStatusStr!,
+          isBold: true,
+        ),
+      const Gap(24),
+    ];
+
+    final externalToWalletChildren = [
+      const BBText.body(
+        'To wallet',
+        textAlign: TextAlign.center,
+      ),
+      const Gap(24),
+      const BBText.title(
+        'Swap is paying to an external wallet',
+      ),
+      const Gap(24),
+    ];
+
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: AnimatedContainer(
@@ -706,104 +834,20 @@ class _OnchainSwapDetails extends StatelessWidget {
               const BumpFeesButton(),
               const Gap(24),
             ],
-            const BBText.body(
-              'From wallet',
-              textAlign: TextAlign.center,
-            ),
-            const Gap(24),
-            const BBText.title(
-              'From wallet',
-            ),
-            const Gap(4),
-            BBText.titleLarge(
-              fromWallet?.name ?? '',
-              isBold: true,
-            ),
-            const Gap(24),
-            const BBText.title(
-              'From: Amount',
-            ),
-            const Gap(4),
-            AmountValue(
-              isReceived: tx.isReceived(),
-              amtStr: fromAmtStr,
-              units: fromUnits,
-            ),
-            const Gap(24),
-            const BBText.title('From: Tx ID'),
-            const Gap(4),
-            TxLink(txid: tx.txid, tx: tx, unblindedUrl: tx.unblindedUrl),
-            const Gap(24),
-            const BBText.title(
-              'From: Status',
-            ),
-            const Gap(4),
-            BBText.titleLarge(
-              fromStatusStr,
-              isBold: true,
-            ),
-            const Gap(24),
-            const BBText.body(
-              'To wallet',
-              textAlign: TextAlign.center,
-            ),
-            const Gap(24),
-            const BBText.title(
-              'To wallet',
-            ),
-            const Gap(4),
-            BBText.titleLarge(
-              toWallet?.name ?? '',
-              isBold: true,
-            ),
-            const Gap(24),
-            const BBText.title(
-              'To: Amount',
-            ),
-            const Gap(4),
-            if (receiveTx == null)
-              const BBText.titleLarge(
-                'Not claimed yet',
-                isBold: true,
-              ),
-            if (receiveTx != null)
-              AmountValue(
-                isReceived: receiveTx.isReceived(),
-                amtStr: toAmtStr!,
-                units: toUnits!,
-              ),
-            const Gap(24),
-            const BBText.title(
-              'To: Tx ID',
-            ),
-            const Gap(4),
-            if (receiveTx == null)
-              const BBText.titleLarge(
-                'Not claimed yet',
-                isBold: true,
-              ),
-            if (receiveTx != null)
-              TxLink(
-                txid: receiveTx.txid,
-                tx: receiveTx,
-                unblindedUrl: receiveTx.unblindedUrl,
-              ),
-            const Gap(24),
-            const BBText.title(
-              'To: Status',
-            ),
-            const Gap(4),
-            if (receiveTx == null)
-              const BBText.titleLarge(
-                'Not claimed yet',
-                isBold: true,
-              ),
-            if (receiveTx != null)
-              BBText.titleLarge(
-                toStatusStr!,
-                isBold: true,
-              ),
-            const Gap(24),
+            if (swap.chainSwapDetails?.onChainType ==
+                    OnChainSwapType.selfSwap ||
+                swap.chainSwapDetails?.onChainType == OnChainSwapType.sendSwap)
+              ...selfFromWalletChildren,
+            if (swap.chainSwapDetails?.onChainType ==
+                OnChainSwapType.receiveSwap)
+              ...externalFromWalletChildren,
+            if (swap.chainSwapDetails?.onChainType ==
+                    OnChainSwapType.selfSwap ||
+                swap.chainSwapDetails?.onChainType ==
+                    OnChainSwapType.receiveSwap)
+              ...selfToWalletChildren,
+            if (swap.chainSwapDetails?.onChainType == OnChainSwapType.sendSwap)
+              ...externalToWalletChildren,
             const BBText.body(
               'Swap details',
               textAlign: TextAlign.center,

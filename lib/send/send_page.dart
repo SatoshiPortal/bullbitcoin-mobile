@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
@@ -592,6 +593,7 @@ class _SendButton extends StatelessWidget {
                                 ? boltz.ChainSwapDirection.btcToLbtc
                                 : boltz.ChainSwapDirection.lbtcToBtc,
                         toWalletId: '',
+                        onChainSwapType: OnChainSwapType.sendSwap,
                       );
                   return;
                 }

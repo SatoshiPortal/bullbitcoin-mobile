@@ -10,6 +10,7 @@ _$ChainSwapDetailsImpl _$$ChainSwapDetailsImplFromJson(
         Map<String, dynamic> json) =>
     _$ChainSwapDetailsImpl(
       direction: $enumDecode(_$ChainSwapDirectionEnumMap, json['direction']),
+      onChainType: $enumDecode(_$OnChainSwapTypeEnumMap, json['onChainType']),
       refundKeyIndex: (json['refundKeyIndex'] as num).toInt(),
       refundSecretKey: json['refundSecretKey'] as String,
       refundPublicKey: json['refundPublicKey'] as String,
@@ -35,6 +36,7 @@ Map<String, dynamic> _$$ChainSwapDetailsImplToJson(
         _$ChainSwapDetailsImpl instance) =>
     <String, dynamic>{
       'direction': _$ChainSwapDirectionEnumMap[instance.direction]!,
+      'onChainType': _$OnChainSwapTypeEnumMap[instance.onChainType]!,
       'refundKeyIndex': instance.refundKeyIndex,
       'refundSecretKey': instance.refundSecretKey,
       'refundPublicKey': instance.refundPublicKey,
@@ -58,6 +60,12 @@ Map<String, dynamic> _$$ChainSwapDetailsImplToJson(
 const _$ChainSwapDirectionEnumMap = {
   ChainSwapDirection.btcToLbtc: 'btcToLbtc',
   ChainSwapDirection.lbtcToBtc: 'lbtcToBtc',
+};
+
+const _$OnChainSwapTypeEnumMap = {
+  OnChainSwapType.selfSwap: 'selfSwap',
+  OnChainSwapType.receiveSwap: 'receiveSwap',
+  OnChainSwapType.sendSwap: 'sendSwap',
 };
 
 _$LnSwapDetailsImpl _$$LnSwapDetailsImplFromJson(Map<String, dynamic> json) =>

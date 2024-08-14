@@ -9,10 +9,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'swap.freezed.dart';
 part 'swap.g.dart';
 
+enum OnChainSwapType { selfSwap, receiveSwap, sendSwap }
+
 @freezed
 class ChainSwapDetails with _$ChainSwapDetails {
   const factory ChainSwapDetails({
     required ChainSwapDirection direction,
+    required OnChainSwapType onChainType,
     required int refundKeyIndex,
     required String refundSecretKey,
     required String refundPublicKey,
@@ -185,7 +188,7 @@ class SwapTx with _$SwapTx {
 
   bool paidOnchain() =>
       isChainSwap() &&
-      txid != null &&
+      txid == null && // claim or refund tx should be null at this point
       (status != null &&
           (status!.status == SwapStatus.txnMempool ||
               status!.status == SwapStatus.txnConfirmed ||

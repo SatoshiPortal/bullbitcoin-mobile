@@ -552,6 +552,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     required String refundAddress,
     required ChainSwapDirection direction,
     required String toWalletId,
+    required OnChainSwapType onChainSwapType,
   }) async {
     try {
       emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
@@ -651,6 +652,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
         direction: direction,
         amount: amount,
         toWalletId: toWalletId,
+        onChainSwapType: onChainSwapType,
       );
       if (errCreatingInv != null) {
         emit(
@@ -813,6 +815,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
         direction: direction,
         amount: amount,
         toWalletId: toWallet.id,
+        onChainSwapType: OnChainSwapType.receiveSwap,
       );
       if (errCreatingInv != null) {
         emit(
