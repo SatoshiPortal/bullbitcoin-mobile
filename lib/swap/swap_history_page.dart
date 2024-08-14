@@ -220,7 +220,8 @@ class SwapItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = swapTx.isChainSwap()
-        ? swapTx.status?.status.getOnChainStr()
+        ? swapTx.status?.status
+            .getOnChainStr(swapTx.chainSwapDetails!.onChainType)
         : swapTx.status?.status.getStr(swapTx.isSubmarine());
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),

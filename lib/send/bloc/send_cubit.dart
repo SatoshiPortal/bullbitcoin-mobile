@@ -674,10 +674,15 @@ class SendCubit extends Cubit<SendState> {
       address: address,
       amount: swaptx.outAmount,
       // amount: 1000, // to test submarine refund
-      sendAllCoin: false,
-      feeRate: fee,
+      sendAllCoin: false, //swaptx.isChainSwap() ? state.sendAllCoin : false,
+      feeRate: swaptx.isChainSwap() &&
+              state.onChainAbsFee != null &&
+              state.onChainAbsFee! > 0
+          ? 0
+          : fee,
       enableRbf: true,
       note: state.note,
+      absFee: swaptx.isChainSwap() ? state.onChainAbsFee : null,
     );
     if (err != null) {
       emit(

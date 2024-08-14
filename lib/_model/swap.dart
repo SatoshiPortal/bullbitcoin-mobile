@@ -474,7 +474,7 @@ class Invoice with _$Invoice {
 enum PaymentNetwork { bitcoin, liquid, lightning }
 
 extension X on SwapStatus? {
-  (String, String)? getOnChainStr() {
+  (String, String)? getOnChainStr(OnChainSwapType type) {
     (String, String) status = ('', '');
     switch (this) {
       case SwapStatus.swapCreated:
@@ -487,10 +487,17 @@ extension X on SwapStatus? {
       case SwapStatus.swapError:
         status = ('Error', 'Swap was unsuccessful');
       case SwapStatus.txnMempool:
-        status = (
-          'Mempool',
-          'You have paid the swap lockup transaction. Waiting for block confirmation'
-        );
+        if (type == OnChainSwapType.selfSwap ||
+            type == OnChainSwapType.sendSwap)
+          status = (
+            'Mempool',
+            'You have paid the swap lockup transaction. Waiting for block confirmation'
+          );
+        else
+          status = (
+            'Mempool',
+            'Your sender have paid the swap lockup transaction. Waiting for block confirmation'
+          );
 
       /// TODO: This happens with onchain swap?
       case SwapStatus.txnClaimPending:
@@ -501,10 +508,17 @@ extension X on SwapStatus? {
       case SwapStatus.txnClaimed:
         status = ('Claimed', 'The swap is completed.');
       case SwapStatus.txnConfirmed:
-        status = (
-          'Confirmed',
-          'Your lockup transaction is confirmed. Waiting for Boltz lockup'
-        );
+        if (type == OnChainSwapType.selfSwap ||
+            type == OnChainSwapType.sendSwap)
+          status = (
+            'Confirmed',
+            'Your lockup transaction is confirmed. Waiting for Boltz lockup'
+          );
+        else
+          status = (
+            'Confirmed',
+            "Your sender's lockup transaction is confirmed. Waiting for Boltz lockup"
+          );
       case SwapStatus.txnRefunded:
         status = ('Refunded', 'The swap has been successfully refunded.');
       case SwapStatus.txnFailed:

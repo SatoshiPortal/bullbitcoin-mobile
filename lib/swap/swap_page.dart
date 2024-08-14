@@ -271,13 +271,13 @@ class _Screen extends StatelessWidget {
 
       context.read<SendCubit>().updateOnChainAbsFee(fees);
 
-      // sweepAmount = walletBloc.state.wallet!.balance! - fees;
-      final int magicNumber =
-          walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
-              ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
-              : 1500;
-      sweepAmount =
-          walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:
+      sweepAmount = walletBloc.state.wallet!.balance! - fees;
+      // final int magicNumber =
+      //     walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
+      //         ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
+      //         : 1500;
+      // sweepAmount =
+      //     walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:
       // -20 works for btc
       // -1500 works for l-btc
     }

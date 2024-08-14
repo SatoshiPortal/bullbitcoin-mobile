@@ -556,6 +556,44 @@ class _SendButton extends StatelessWidget {
 
     final refundAddress = wallet?.lastGeneratedAddress?.address;
 
+    final sendallCoin = context.select((SendCubit x) => x.state.sendAllCoin);
+    final walletBloc =
+        context.select((SendCubit x) => x.state.selectedWalletBloc);
+
+    void processOnChainSwap() async {
+      int sweepAmount = 0;
+      if (sendallCoin == true) {
+        final feeRate =
+            context.read<NetworkFeesCubit>().state.selectedOrFirst(true);
+        final fees = await context.read<SendCubit>().calculateFeeForSend(
+              wallet: walletBloc?.state.wallet,
+              address: refundAddress!,
+              networkFees: feeRate,
+            );
+
+        context.read<SendCubit>().reset();
+        context.read<SendCubit>().updateOnChainAbsFee(fees);
+
+        sweepAmount = walletBloc!.state.wallet!.balance! - fees;
+      }
+
+      context.read<CreateSwapCubit>().createOnChainSwap(
+            wallet: wallet!,
+            amount: sendallCoin == true ? sweepAmount : swapAmount,
+            isTestnet: context.read<NetworkCubit>().state.testnet,
+            btcElectrumUrl:
+                btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
+            lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
+            toAddress: recipientAddress, // recipientAddress.address;
+            refundAddress: refundAddress!,
+            direction: wallet.baseWalletType == BaseWalletType.Bitcoin
+                ? boltz.ChainSwapDirection.btcToLbtc
+                : boltz.ChainSwapDirection.lbtcToBtc,
+            toWalletId: '',
+            onChainSwapType: OnChainSwapType.sendSwap,
+          );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -577,24 +615,7 @@ class _SendButton extends StatelessWidget {
                 if (sending) return;
 
                 if (isOnchainSwap) {
-                  context.read<CreateSwapCubit>().createOnChainSwap(
-                        wallet: wallet!,
-                        amount: swapAmount,
-                        isTestnet: context.read<NetworkCubit>().state.testnet,
-                        btcElectrumUrl:
-                            btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
-                        lbtcElectrumUrl:
-                            liqNetworkurl, // 'blockstream.info:465',
-                        toAddress:
-                            recipientAddress, // recipientAddress.address;
-                        refundAddress: refundAddress!,
-                        direction:
-                            wallet.baseWalletType == BaseWalletType.Bitcoin
-                                ? boltz.ChainSwapDirection.btcToLbtc
-                                : boltz.ChainSwapDirection.lbtcToBtc,
-                        toWalletId: '',
-                        onChainSwapType: OnChainSwapType.sendSwap,
-                      );
+                  processOnChainSwap();
                   return;
                 }
 
