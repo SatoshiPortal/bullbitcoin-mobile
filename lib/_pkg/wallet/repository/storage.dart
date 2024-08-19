@@ -43,6 +43,29 @@ class WalletsStorageRepository {
       wallets.insert(0, tempLiq);
       wallets.insert(1, tempMain);
 
+      // BEGIN: Testnet wallet sorting
+      final mainTestWalletIdx = wallets.indexWhere(
+        (w) => w.isTestnet() && w.isSecure(),
+      );
+
+      if (mainTestWalletIdx != -1) {
+        final tempMainTest = wallets[mainTestWalletIdx];
+        wallets.removeAt(mainTestWalletIdx);
+
+        final liqTestMainnetIdx = wallets.indexWhere(
+          (w) => w.isTestnet() && w.isInstant(),
+        );
+
+        if (liqTestMainnetIdx != -1) {
+          final tempLiqTest = wallets[liqTestMainnetIdx];
+          wallets.removeAt(liqTestMainnetIdx);
+          wallets.insert(2, tempLiqTest);
+        }
+
+        wallets.insert(3, tempMainTest);
+      }
+      // END: Testnet wallet sorting
+
       final List<String> ids = [];
       for (final w in wallets) ids.add(w.id);
 
