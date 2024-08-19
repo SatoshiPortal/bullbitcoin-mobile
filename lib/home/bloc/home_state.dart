@@ -270,15 +270,21 @@ class HomeState with _$HomeState {
           b.timestamp.normaliseTime().compareTo(a.timestamp.normaliseTime()),
     );
 
-    // BEGIN: This is to show only Swap Txs in home page, by remove swap settle txs
-    // Swap settle tx IDs are stored in swap initiate tx.swapTx.txid
-    final swapTxs = txs
-        .where((tx) => tx.swapTx != null && tx.swapTx?.status?.status != null)
+    // BEGIN: Chainswap filters: This is to show only Swap Txs in home page,
+    // by removing swap settle txs
+    // Swap settle tx IDs (either claim or refund) are stored in swap: tx.swapTx.txid
+    final swapChainTxs = txs
+        .where(
+          (tx) =>
+              tx.swapTx != null &&
+              tx.swapTx!.isChainSwap() == true &&
+              tx.swapTx?.status?.status != null,
+        )
         .map((tx) => tx.swapTx!)
         .toList();
     final toRemove = <Transaction>[];
     for (final tx in txs) {
-      final isInSwapTxAndNotPending = swapTxs
+      final isInSwapTxAndNotPending = swapChainTxs
           .where((swap) => swap.txid == tx.txid) // && tx.timestamp != 0)
           .isNotEmpty;
       if (isInSwapTxAndNotPending == true) toRemove.add(tx);
