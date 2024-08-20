@@ -254,7 +254,6 @@ class WalletsStorageRepository {
     }
   }
 
-<<<<<<< HEAD
   Future<Err?> deleteWalletFile(String walletHashId) async {
     final appDocDir = await getApplicationDocumentsDirectory();
     // final File dbDir = File(appDocDir.path + '/$walletHashId');
@@ -273,24 +272,5 @@ class WalletsStorageRepository {
       await dbDirect.delete(recursive: true);
     }
     return null;
-=======
-  Future<Err?> deleteWalletDb({
-    required String walletHashId,
-  }) async {
-    try {
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final File dbDir = File(appDocDir.path + '/$walletHashId');
-      print('deleting file2: $dbDir');
-      // TODO: Liquid: Getting stuck here. So commented for now
-      await dbDir.delete();
-      return null;
-    } on Exception catch (e) {
-      return Err(
-        e.message,
-        title: 'Error occurred while deleting wallet',
-        solution: 'Please try again.',
-      );
-    }
->>>>>>> origin/main
   }
 }
