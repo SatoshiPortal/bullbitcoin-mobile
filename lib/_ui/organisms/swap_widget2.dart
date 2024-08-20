@@ -122,9 +122,12 @@ class _SwapWidget2State extends State<SwapWidget2> {
 
     if (widget.fromWalletId == null && widget.toWalletId == null) {
       selectedFromWallet = widget.wallets[0];
-      selectedToWallet = widget.wallets[1];
 
-      toWallets = widget.wallets.where((wallet) => !wallet.isLiquid()).toList();
+      toWallets = widget.wallets
+          .where((wallet) => wallet.isLiquid() != selectedFromWallet.isLiquid())
+          .toList();
+
+      selectedToWallet = toWallets[0];
     }
 
     if (widget.unitInSats) {
@@ -325,13 +328,14 @@ class _SwapWidget2State extends State<SwapWidget2> {
 
     if (wallet.isLiquid()) {
       toWalletsLocal = widget.wallets.where((w) => !w.isLiquid()).toList();
-      selectedToWalletLocal = widget.wallets[1];
+      selectedToWalletLocal = toWalletsLocal[0]; //widget.wallets[1];
 
       fromCurrencies = lBtcCurrencies;
       toCurrencies = btcCurrencies;
     } else {
-      toWalletsLocal = [widget.wallets[0]];
-      selectedToWalletLocal = toWalletsLocal[0];
+      toWalletsLocal = widget.wallets.where((w) => w.isLiquid()).toList();
+      // toWalletsLocal = [widget.wallets[0]];
+      selectedToWalletLocal = toWalletsLocal[0]; // toWalletsLocal[0];
 
       fromCurrencies = btcCurrencies;
       toCurrencies = lBtcCurrencies;
