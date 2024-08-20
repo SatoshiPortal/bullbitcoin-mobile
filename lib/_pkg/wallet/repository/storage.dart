@@ -31,15 +31,15 @@ class WalletsStorageRepository {
       final mainWalletIdx = wallets.indexWhere(
         (w) => !w.isTestnet() && w.isSecure(),
       );
+      final tempMain = wallets[mainWalletIdx];
+      wallets.removeAt(mainWalletIdx);
 
       final liqMainnetIdx = wallets.indexWhere(
         (w) => !w.isTestnet() && w.isInstant(),
       );
-
-      final tempMain = wallets[mainWalletIdx];
       final tempLiq = wallets[liqMainnetIdx];
-      wallets.removeAt(mainWalletIdx);
-      wallets.removeAt(liqMainnetIdx - 1);
+      wallets.removeAt(liqMainnetIdx);
+
       wallets.insert(0, tempLiq);
       wallets.insert(1, tempMain);
 
@@ -167,7 +167,7 @@ class WalletsStorageRepository {
       final walletIdsJson = jsonDecode(walletIds!)['wallets'] as List<dynamic>;
 
       final List<Wallet> wallets = [];
-      for (final w in walletIdsJson.reversed) {
+      for (final w in walletIdsJson) {
         try {
           final (wallet, err) = await readWallet(walletHashId: w as String);
           if (err != null) continue;

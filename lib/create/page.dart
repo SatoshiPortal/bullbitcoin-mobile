@@ -56,8 +56,8 @@ class CreateWalletPage extends StatelessWidget {
           listener: (context, state) async {
             if (state.saved) {
               if (state.savedWallets == null) return;
-              if (state.mainWallet)
-                await locator<WalletsStorageRepository>().sortWallets();
+              //if (state.mainWallet)
+              await locator<WalletsStorageRepository>().sortWallets();
               locator<HomeCubit>().getWalletsFromStorage();
               // final wallets = state.savedWallets!;
               // locator<HomeCubit>().addWallets(wallets);

@@ -151,8 +151,12 @@ class NetworkCubit extends Cubit<NetworkState> {
   void toggleTestnet() async {
     final isTestnet = state.testnet;
     await Future.delayed(const Duration(milliseconds: 50));
-    await setupBlockchain(isTestnetLocal: !isTestnet);
-    await Future.delayed(const Duration(milliseconds: 50));
+    try {
+      await setupBlockchain(isTestnetLocal: !isTestnet);
+    } catch (e) {
+      emit(state.copyWith(errLoadingNetworks: e.toString()));
+    }
+    // await Future.delayed(const Duration(milliseconds: 50));
     emit(state.copyWith(testnet: !isTestnet));
     // homeCubit?.networkChanged(state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet);
   }

@@ -1067,8 +1067,8 @@ class HomeNoWalletsView extends StatelessWidget {
       listener: (context3, state) async {
         if (state.saved) {
           if (state.savedWallets == null) return;
-          if (state.mainWallet)
-            await locator<WalletsStorageRepository>().sortWallets();
+          //if (state.mainWallet)
+          await locator<WalletsStorageRepository>().sortWallets();
           locator<HomeCubit>().getWalletsFromStorage();
           context3.go('/home');
         }

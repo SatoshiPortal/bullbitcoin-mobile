@@ -35,8 +35,8 @@ class HomeState with _$HomeState {
   List<WalletBloc> walletBlocsFromNetwork(BBNetwork network) {
     final blocs = walletBlocs
             ?.where((wallet) => wallet.state.wallet?.network == network)
-            .toList()
-            .reversed
+            //.toList()
+            //.reversed
             .toList() ??
         [];
 
