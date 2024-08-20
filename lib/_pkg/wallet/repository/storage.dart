@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:path_provider/path_provider.dart';
 
 class WalletsStorageRepository {
   WalletsStorageRepository({required HiveStorage hiveStorage})
@@ -250,5 +252,25 @@ class WalletsStorageRepository {
         solution: 'Please try again.',
       );
     }
+  }
+
+  Future<Err?> deleteWalletFile(String walletHashId) async {
+    final appDocDir = await getApplicationDocumentsDirectory();
+    // final File dbDir = File(appDocDir.path + '/$walletHashId');
+    // print('deleting file2: $dbDir');
+    // final File dbDirSigner = File(appDocDir.path + '/${walletHashId}_signer');
+    final Directory dbDirect = Directory(appDocDir.path + '/$walletHashId');
+    // return null;
+
+    // if (dbDir.existsSync()) {
+    //   await dbDir.delete(recursive: true);
+    // }
+    // if (dbDirSigner.existsSync()) {
+    //   await dbDirSigner.delete(recursive: true);
+    // }
+    if (dbDirect.existsSync()) {
+      await dbDirect.delete(recursive: true);
+    }
+    return null;
   }
 }

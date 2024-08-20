@@ -6,7 +6,9 @@ import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+import 'package:bb_mobile/locator.dart';
 
 class WalletSync implements IWalletSync {
   WalletSync({
@@ -53,7 +55,17 @@ class WalletSync implements IWalletSync {
             lwkWallet: liqWallet!,
             blockChain: blockchain!,
           );
-          if (errSyncing != null) throw errSyncing;
+          if (errSyncing != null) {
+            if (errSyncing.message.contains(
+              'LwkError(msg: UpdateHeightTooOld { update_tip_height: ',
+            )) {
+              locator
+                  .get<WalletsStorageRepository>()
+                  .deleteWalletFile(wallet.id);
+              // create db file or restart app
+            }
+            throw errSyncing;
+          }
           final err =
               _walletsRepository.updateLwkWallet(wallet, updatedLiqWallet!);
           if (err != null) throw err;
