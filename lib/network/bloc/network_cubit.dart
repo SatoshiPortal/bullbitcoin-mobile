@@ -74,7 +74,7 @@ class NetworkCubit extends Cubit<NetworkState> {
         ),
       );
       await Future.delayed(const Duration(milliseconds: 200));
-      setupBlockchain(false);
+      setupBlockchain(isLiquid: false);
     } else {
       final newNetworks = [
         const ElectrumNetwork.defaultElectrum(),
@@ -96,7 +96,7 @@ class NetworkCubit extends Cubit<NetworkState> {
         ),
       );
       await Future.delayed(const Duration(milliseconds: 200));
-      await setupBlockchain(false);
+      await setupBlockchain(isLiquid: false);
     }
 
     if (liqNetworks.isNotEmpty) {
@@ -118,7 +118,7 @@ class NetworkCubit extends Cubit<NetworkState> {
         ),
       );
       await Future.delayed(const Duration(milliseconds: 200));
-      setupBlockchain(true);
+      setupBlockchain(isLiquid: true);
     } else {
       final newLiqNetworks = [
         const LiquidElectrumNetwork.blockstream(),
@@ -142,7 +142,7 @@ class NetworkCubit extends Cubit<NetworkState> {
         ),
       );
       await Future.delayed(const Duration(milliseconds: 200));
-      setupBlockchain(true);
+      setupBlockchain(isLiquid: true);
     }
 
     emit(state.copyWith(loadingNetworks: false));
@@ -150,10 +150,10 @@ class NetworkCubit extends Cubit<NetworkState> {
 
   void toggleTestnet() async {
     final isTestnet = state.testnet;
+    await Future.delayed(const Duration(milliseconds: 50));
+    await setupBlockchain(isTestnetLocal: !isTestnet);
+    await Future.delayed(const Duration(milliseconds: 50));
     emit(state.copyWith(testnet: !isTestnet));
-    await Future.delayed(const Duration(milliseconds: 50));
-    await setupBlockchain(null);
-    await Future.delayed(const Duration(milliseconds: 50));
     // homeCubit?.networkChanged(state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet);
   }
 
@@ -174,12 +174,12 @@ class NetworkCubit extends Cubit<NetworkState> {
   void retryNetwork() async {
     emit(state.copyWith(networkErrorOpened: false));
     await Future.delayed(const Duration(milliseconds: 100));
-    setupBlockchain(null);
+    setupBlockchain();
   }
 
-  Future setupBlockchain(bool? isLiquid) async {
+  Future setupBlockchain({bool? isLiquid, bool? isTestnetLocal}) async {
     emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
-    final isTestnet = state.testnet;
+    final isTestnet = isTestnetLocal ?? state.testnet;
 
     if (isLiquid == null || !isLiquid) {
       final selectedNetwork = state.getNetwork();
@@ -345,7 +345,7 @@ class NetworkCubit extends Cubit<NetworkState> {
         ),
       );
       await Future.delayed(const Duration(milliseconds: 100));
-      setupBlockchain(false);
+      setupBlockchain(isLiquid: false);
       return;
     }
 
@@ -363,7 +363,7 @@ class NetworkCubit extends Cubit<NetworkState> {
       ),
     );
     await Future.delayed(const Duration(milliseconds: 100));
-    setupBlockchain(true);
+    setupBlockchain(isLiquid: true);
   }
 
   void resetTempNetwork() {
