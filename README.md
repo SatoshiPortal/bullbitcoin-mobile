@@ -108,14 +108,14 @@ When spending or selling Bitcoin, the exchange will create a payment invoice (BI
 
 Suggestion to this roadmap can be proposed as Github issues.
 
-- [ ] Bumping replace-by-fee transactions
+- [x] Bumping replace-by-fee transactions
 - [ ] Re-implement smarter coin selection and labelling
 - [ ] One mnemonic: new wallets are always created as a BIP39 passphrase
 - [ ] Good UX/UI for creating PSBTs from watch-only wallets
 - [ ] Good UX/UI for decoding and broadcasting PSBTs
 - [ ] Better UX/UI for importing watch-only wallets
 - [ ] Integration of Coinkite's BBQR library to export public keys, export PSBTs and import PSBTs
-- [ ] Bitcoin <> Liquid network swaps (depends on Boltz backend update)
+- [x] Bitcoin <> Liquid network swaps (depends on Boltz backend update)
 - [ ] Integrate a client-side passphrase strengh estimator
 - [ ] Encrypted cloud backups connected to a key server, similar to photon-sdk
 - [ ] Store persistent encrypted wallet backup on device
