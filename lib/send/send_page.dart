@@ -572,9 +572,20 @@ class _SendButton extends StatelessWidget {
             );
 
         context.read<SendCubit>().reset();
-        context.read<SendCubit>().updateOnChainAbsFee(fees);
 
-        sweepAmount = walletBloc!.state.wallet!.balance! - fees;
+        if (walletBloc?.state.wallet?.baseWalletType ==
+            BaseWalletType.Bitcoin) {
+          // TODO: Absolute fee doesn't work for liquid build Tx now
+          context.read<SendCubit>().updateOnChainAbsFee(fees);
+        }
+
+        // sweepAmount = walletBloc.state.wallet!.balance! - fees;
+        final int magicNumber =
+            walletBloc?.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
+                ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
+                : 1500;
+        sweepAmount =
+            walletBloc!.state.wallet!.balance! - fees - magicNumber; // TODO
       }
 
       context.read<CreateSwapCubit>().createOnChainSwap(
