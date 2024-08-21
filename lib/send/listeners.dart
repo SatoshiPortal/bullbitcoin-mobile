@@ -49,6 +49,18 @@ class SendListeners extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.signed == false &&
               current.signed == true &&
+              current.couldBeOnchainSwap() == false &&
+              current.isLnInvoice() == true &&
+              current.tx?.isLiquid == true &&
+              current.sent == false,
+          listener: (context, state) async {
+            context.read<SendCubit>().sendSwapClicked();
+          },
+        ),
+        BlocListener<SendCubit, SendState>(
+          listenWhen: (previous, current) =>
+              previous.signed == false &&
+              current.signed == true &&
               current.couldBeOnchainSwap() == true,
           listener: (context, state) async {
             final sendCubit = context.read<SendCubit>();
