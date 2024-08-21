@@ -540,10 +540,15 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         case ChainSwapActions.settled:
           await Future.delayed(const Duration(milliseconds: 2000));
           print('${swapTx.id}: updateWalletTxs for txnClaimed');
-          // final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
-          await __updateWalletTxs(swapTx, walletBloc, emit);
+          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
+          await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
           await Future.delayed(const Duration(milliseconds: 1000));
           await __closeSwap(swapTx, emit);
+          await Future.delayed(const Duration(milliseconds: 2000));
+          final toWalletBloc = _homeCubit.state
+              .getWalletBlocById(swapTx.chainSwapDetails!.toWalletId);
+          toWalletBloc?.add(SyncWallet());
+        // TODO: Better way to sync `to` wallet
         case ChainSwapActions.refundable:
           final swap = await __onchainRefund(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);

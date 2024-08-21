@@ -339,7 +339,10 @@ class SwapTx with _$SwapTx {
   }
 
   bool syncWallet() {
-    if (isSubmarine()) {
+    if (isChainSwap()) {
+      if (claimableOnchain() || refundableOnchain() || settledOnchain())
+        return true;
+    } else if (isSubmarine()) {
       if (claimableSubmarine() || refundableSubmarine() || settledSubmarine())
         return true;
     } else {
