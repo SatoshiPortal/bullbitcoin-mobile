@@ -1,44 +1,7 @@
 import 'package:bb_mobile/_pkg/migrations/migration0_1to0_2.dart';
+import 'package:bb_mobile/_pkg/migrations/migration0_2to0_3.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
-
-// class MigrationCubit extends Cubit<bool> {
-//   MigrationCubit() : super(false);
-//   void toggle(bool value) => emit(value);
-// }
-
-// final migrationCubit = MigrationCubit();
-
-// bdk.Blockchain? mainBlockchain;
-// bdk.Blockchain? testBlockchain;
-
-Future<void> prepareMigration() async {
-  // const ElectrumNetwork electrumNetwork = ElectrumNetwork.bullbitcoin();
-
-  // mainBlockchain = await bdk.Blockchain.create(
-  //   config: bdk.BlockchainConfig.electrum(
-  //     config: bdk.ElectrumConfig(
-  //       url: electrumNetwork.mainnet,
-  //       retry: electrumNetwork.retry,
-  //       timeout: electrumNetwork.timeout,
-  //       stopGap: electrumNetwork.stopGap,
-  //       validateDomain: electrumNetwork.validateDomain,
-  //     ),
-  //   ),
-  // );
-
-  // testBlockchain = await bdk.Blockchain.create(
-  //   config: bdk.BlockchainConfig.electrum(
-  //     config: bdk.ElectrumConfig(
-  //       url: electrumNetwork.testnet,
-  //       retry: electrumNetwork.retry,
-  //       timeout: electrumNetwork.timeout,
-  //       stopGap: electrumNetwork.stopGap,
-  //       validateDomain: electrumNetwork.validateDomain,
-  //     ),
-  //   ),
-  // );
-}
 
 Future<void> doMigration(
   String fromVersion,
@@ -51,56 +14,32 @@ Future<void> doMigration(
   // await doMigration0_1to0_2(
   //   secureStorage,
   //   hiveStorage,
-  //   mainBlockchain!,
-  //   testBlockchain!,
   // );
 
   if (toVersion.startsWith('0.2') && fromVersion.startsWith('0.1')) {
-    await doMigration0_1to0_2(
-      secureStorage,
-      hiveStorage,
-      // mainBlockchain!,
-      // testBlockchain!,
-    );
+    await doMigration0_1to0_2(secureStorage, hiveStorage);
   } else if (toVersion.startsWith('0.3')) {
     if (fromVersion.startsWith('0.1')) {
-      await doMigration0_1to0_2(
-        secureStorage,
-        hiveStorage,
-        // mainBlockchain!,
-        // testBlockchain!,
-      );
-      await doMigration02to03(secureStorage, hiveStorage);
+      await doMigration0_1to0_2(secureStorage, hiveStorage);
+      await doMigration0_2to0_3(secureStorage, hiveStorage);
     } else if (fromVersion.startsWith('0.2')) {
-      await doMigration02to03(secureStorage, hiveStorage);
+      await doMigration0_2to0_3(secureStorage, hiveStorage);
     }
   } else if (toVersion.startsWith('0.4')) {
     if (fromVersion.startsWith('0.1')) {
-      await doMigration0_1to0_2(
-        secureStorage,
-        hiveStorage,
-        // mainBlockchain!,
-        // testBlockchain!,
-      );
-      await doMigration02to03(secureStorage, hiveStorage);
-      await doMigration03to04(secureStorage, hiveStorage);
+      await doMigration0_1to0_2(secureStorage, hiveStorage);
+      await doMigration0_2to0_3(secureStorage, hiveStorage);
+      await doMigration0_3to0_4(secureStorage, hiveStorage);
     } else if (fromVersion.startsWith('0.2')) {
-      await doMigration02to03(secureStorage, hiveStorage);
-      await doMigration03to04(secureStorage, hiveStorage);
+      await doMigration0_2to0_3(secureStorage, hiveStorage);
+      await doMigration0_3to0_4(secureStorage, hiveStorage);
     } else if (fromVersion.startsWith('0.3')) {
-      await doMigration03to04(secureStorage, hiveStorage);
+      await doMigration0_3to0_4(secureStorage, hiveStorage);
     }
   }
 }
 
-Future<void> doMigration02to03(
-  SecureStorage secureStorage,
-  HiveStorage hiveStorage,
-) async {
-  print('Migration: 0.2 to 0.3');
-}
-
-Future<void> doMigration03to04(
+Future<void> doMigration0_3to0_4(
   SecureStorage secureStorage,
   HiveStorage hiveStorage,
 ) async {

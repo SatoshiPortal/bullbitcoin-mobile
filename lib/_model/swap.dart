@@ -66,7 +66,7 @@ class SwapTx with _$SwapTx {
   const factory SwapTx({
     required String id,
     required BBNetwork network,
-    required BaseWalletType baseWalletType,
+    required BaseWalletType walletType,
     required int outAmount,
     required String scriptAddress,
     required String boltzUrl,

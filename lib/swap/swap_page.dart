@@ -9,7 +9,7 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/organisms/swap_widget2.dart';
+import 'package:bb_mobile/_ui/organisms/swap_widget.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -172,7 +172,7 @@ class _Screen extends StatelessWidget {
             const SizedBox(
               height: 60,
             ),
-            SwapWidget2(
+            SwapWidget(
               loading: sending,
               wallets: wallets,
               fromWalletId: fromWalletId,

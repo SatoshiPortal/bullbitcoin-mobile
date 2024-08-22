@@ -25,8 +25,6 @@ import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 Future<void> doMigration0_1to0_2(
   SecureStorage secureStorage,
   HiveStorage hiveStorage,
-  // bdk.Blockchain mainBlockchain,
-  // bdk.Blockchain testBlockchain,
 ) async {
   print('Migration: 0.1 to 0.2');
 
@@ -63,25 +61,11 @@ Future<void> doMigration0_1to0_2(
     // Change 3: add isLiquid to all Txns, Addresses
     walletObj = await addIsLiquid(walletObj);
 
-    // Change 4: Update change address Index
-    // final w =
-    //     await updateAddressNullIssue(walletObj, mainBlockchain, testBlockchain);
-
     // print('Save wallet as:');
     // print(jsonEncode(walletObj));
     final w = Wallet.fromJson(walletObj);
     wallets.add(w);
   }
-
-  // move last wallet to idx 1
-  // final lastWallet = wallets.removeLast()
-
-  // final _ = await hiveStorage.saveValue(
-  //     key: walletId,
-  //     value: jsonEncode(
-  //       walletObj,
-  //     ),
-  //   );
 
   // Change 4: create a new Liquid wallet, based on the Bitcoin wallet
   final liqWallets = await createLiquidWallet(
@@ -151,7 +135,7 @@ Future<
   // TODO: Test this assumption
   // Assuming first wallet is to be changed to secure and further wallets to words
   // `newSeed` --> Auto created by wallet
-  // `worlds` --> Wallet recovered by user
+  // `words` --> Wallet recovered by user
   if (walletObj['type'] == 'newSeed' || walletObj['type'] == 'words') {
     if (walletObj['network'] == 'Mainnet') {
       if (mainWalletIndex == 0) {

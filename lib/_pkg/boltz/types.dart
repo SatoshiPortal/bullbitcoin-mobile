@@ -103,10 +103,9 @@ extension BtcLnSwapExt on BtcLnSwap {
       network: network == Chain.liquidTestnet
           ? BBNetwork.Testnet
           : BBNetwork.Mainnet,
-      baseWalletType:
-          (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
-              ? BaseWalletType.Bitcoin
-              : BaseWalletType.Liquid,
+      walletType: (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
+          ? BaseWalletType.Bitcoin
+          : BaseWalletType.Liquid,
       outAmount: outAmount,
       scriptAddress: scriptAddress,
       boltzUrl: boltzUrl,
@@ -155,10 +154,9 @@ extension LbtcLnSwapExt on LbtcLnSwap {
       network: network == Chain.liquidTestnet
           ? BBNetwork.Testnet
           : BBNetwork.Mainnet,
-      baseWalletType:
-          (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
-              ? BaseWalletType.Bitcoin
-              : BaseWalletType.Liquid,
+      walletType: (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
+          ? BaseWalletType.Bitcoin
+          : BaseWalletType.Liquid,
       outAmount: outAmount,
       scriptAddress: scriptAddress,
       boltzUrl: boltzUrl,
@@ -276,7 +274,7 @@ extension ChainSwapExt on ChainSwap {
         toWalletId: toWalletId,
       ),
       network: isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet,
-      baseWalletType: direction == ChainSwapDirection.btcToLbtc
+      walletType: direction == ChainSwapDirection.btcToLbtc
           ? BaseWalletType.Bitcoin
           : BaseWalletType.Liquid,
       outAmount: outAmount,
