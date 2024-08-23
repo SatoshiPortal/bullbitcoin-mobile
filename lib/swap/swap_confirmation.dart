@@ -167,7 +167,7 @@ class _Screen extends StatelessWidget {
               disabled: sending,
               label: 'Broadcast',
               onPressed: () {
-                context.read<SendCubit>().sendSwapClicked();
+                context.read<SendCubit>().sendSwap();
               },
               loadingText: 'Broadcasting',
             ),

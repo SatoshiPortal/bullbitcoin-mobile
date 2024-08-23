@@ -216,6 +216,8 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(scanningAddress: false));
     if (changeWallet == true) {
       selectWallets();
+    } else {
+      _checkBalance();
     }
   }
 
@@ -736,7 +738,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   // -----------------
-  void sendSwapClicked() async {
+  void sendSwap() async {
     emit(state.copyWith(sending: true, errSending: ''));
 
     final tx = state.tx!;
@@ -791,7 +793,7 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(sending: false, sent: true));
   }
 
-  void confirmClickedd({required int networkFees}) async {
+  void baseLayerBuild({required int networkFees}) async {
     if (state.sending) return;
     if (state.selectedWalletBloc == null) return;
 
@@ -864,7 +866,7 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  void sendClicked() async {
+  void baseLayerSend() async {
     if (state.selectedWalletBloc == null) return;
     emit(state.copyWith(sending: true, errSending: ''));
     final address = state.address;
@@ -1058,7 +1060,7 @@ class SendCubit extends Cubit<SendState> {
     if (!state.signed) {
       if (!isLn) {
         final fees = _networkFeesCubit.state.selectedOrFirst(false);
-        confirmClickedd(networkFees: fees);
+        baseLayerBuild(networkFees: fees);
         return;
       }
       // context.read<WalletBloc>().state.wallet;
@@ -1080,10 +1082,10 @@ class SendCubit extends Cubit<SendState> {
     }
 
     if (!isLn) {
-      sendClicked();
+      baseLayerSend();
       return;
     }
-    sendSwapClicked();
+    sendSwap();
   }
 
   void dispose() {

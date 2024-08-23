@@ -54,7 +54,7 @@ class SendListeners extends StatelessWidget {
               current.tx?.isLiquid == true &&
               current.sent == false,
           listener: (context, state) async {
-            context.read<SendCubit>().sendSwapClicked();
+            context.read<SendCubit>().sendSwap();
           },
         ),
         BlocListener<SendCubit, SendState>(
