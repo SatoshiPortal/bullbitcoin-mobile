@@ -294,8 +294,16 @@ class AddressItem extends StatelessWidget {
           if (address.label != null && address.label!.isNotEmpty) ...[
             const Gap(4),
             InlineLabel(title: 'Label', body: address.label!),
-            const Gap(8),
+            // const Gap(8),
           ],
+          const Gap(4),
+          if (address.state == AddressStatus.active) ...[
+            InlineLabel(
+              title: 'Frozen',
+              body: address.spendable ? 'No' : 'Yes',
+            ),
+            const Gap(8),
+          ]
         ],
       ),
     );

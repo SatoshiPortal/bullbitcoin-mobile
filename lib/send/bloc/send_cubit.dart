@@ -280,7 +280,7 @@ class SendCubit extends Cubit<SendState> {
         if (storedSwapTxIdx != -1) {
           final swap = wallet.swaps[storedSwapTxIdx];
           final status = (swap.status != null) ? swap.status!.status : null;
-          if (status != null && status != boltz.SwapStatus.swapCreated) {
+          if (status != null && status != boltz.SwapStatus.invoiceSet) {
             emit(
               state.copyWith(
                 errScanningAddress: 'Swap for this invoice already exists.',
