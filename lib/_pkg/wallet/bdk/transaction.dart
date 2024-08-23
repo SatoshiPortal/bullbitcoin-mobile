@@ -99,88 +99,6 @@ class BDKTransactions {
     }
   }
 
-  /// If given swap is expired,
-  ///   - check if the swapTx has been refunded
-  ///   - If yes, remove it from wallet.swaps
-  ///   - if not, add it to the list of swaps to refund and return
-  /// If not,
-  ///   - update txid of wallet.swaps with swapTx.txid
-  (({Wallet wallet})?, Err?) updateSwapTxs({
-    required SwapTx swapTx,
-    required Wallet wallet,
-  }) {
-    final swaps = wallet.swaps;
-
-    final idx = swaps.indexWhere((_) => _.id == swapTx.id);
-    if (idx == -1) return (null, Err('No swapTx found'));
-
-    final storedSwap = swaps[idx];
-
-    final swapTxs = List<SwapTx>.from(swaps);
-
-    final updatedSwapTx = storedSwap.copyWith(
-      status: swapTx.status,
-      txid: storedSwap.txid ?? swapTx.txid,
-      lnSwapDetails: storedSwap.lnSwapDetails!.copyWith(
-        keyIndex: storedSwap.lnSwapDetails!.keyIndex,
-      ),
-    );
-    swapTxs[idx] = updatedSwapTx;
-
-    final swapsToDelete = <SwapTx>[
-      for (final s in swapTxs)
-        if (s.paidSubmarine() ||
-            s.settledReverse() ||
-            s.settledSubmarine() ||
-            s.expiredReverse())
-          s,
-    ];
-
-    for (final s in swapsToDelete)
-      if (swapsToDelete.any((_) => _.id == s.id))
-        swapTxs.removeWhere((_) => _.id == s.id);
-
-    final updatedWallet = wallet.copyWith(swaps: swapTxs);
-
-    return ((wallet: updatedWallet), null);
-  }
-
-  Future<(({Wallet wallet, SwapTx swapsToDelete})?, Err?)> mergeSwapTxIntoTx({
-    required Wallet wallet,
-    required SwapTx swapTx,
-  }) async {
-    try {
-      final txs = wallet.transactions.toList();
-      final swaps = wallet.swaps;
-      final updatedSwaps = swaps.toList();
-      // final swapsToDelete = <SwapTx>[];
-
-      final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
-      if (idx == -1) return (null, Err('No new matching tx'));
-
-      final newTx = txs[idx].copyWith(
-        swapTx: swapTx,
-        isSwap: true,
-        label: swapTx.label,
-      );
-      txs[idx] = newTx;
-
-      final swapToDelete = swaps.firstWhere((_) => _.id == swapTx.id);
-      // swapsToDelete.add(swapToDelete);
-      updatedSwaps.removeWhere((_) => _.id == swapTx.id);
-
-      final updatedWallet = wallet.copyWith(
-        transactions: txs,
-        swaps: updatedSwaps,
-      );
-
-      return ((wallet: updatedWallet, swapsToDelete: swapToDelete), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-
-  //
   // THIS NEEDS WORK
   //
   Future<(Wallet?, Err?)> getTransactions({
@@ -511,193 +429,6 @@ class BDKTransactions {
     }
   }
 
-  // bool isRBFTx(
-  //   List<Transaction> txlist,
-  //   Transaction tx,
-  // ) {
-
-  //   for (final Transactiontx in txlist) {
-  //     final rbfMatch = tx.txid
-  //   }
-  //
-  // }
-
-  /*
-  Future<bool> isRBFTx(
-    bdk.Network bdkNetwork,
-    List<bdk.TransactionDetails> pending,
-    Transaction tx,
-  ) async {
-    for (final Address addr in tx.outAddrs) {
-      for (final bdk.TransactionDetails pendingTx in pending) {
-        //print(
-        //  '[stored] ${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${tx.outAddrs.length}:${addr.address}',
-        //);
-
-        final SerializedTx sTx = SerializedTx.fromJson(
-          jsonDecode(pendingTx.transaction!.inner) as Map<String, dynamic>,
-        );
-        final outs = sTx.output;
-        for (final Output out in sTx.output ?? []) {
-          final scriptPubKey = await bdk.ScriptBuf.fromHex(
-            out.scriptPubkey ?? '',
-          );
-          final addressStruct = await bdk.Address.fromScript(
-            script: scriptPubKey,
-            network: bdkNetwork,
-          );
-          final addressStr = await addressStruct.asString();
-
-          final pendingTxId = await pendingTx.transaction?.txid();
-          // print(
-          //   '${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${sTx.output?.length}:$addressStr',
-          // );
-
-          // TODO:
-          // 1. In transaction model, have array of txid for storing past RBF txs
-          if (addressStr == addr.address) {
-            print('$pendingTxId is RBF of ${tx.txid}');
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-  */
-
-  // Future<(Wallet?, Err?)> getTransactionsNew({
-  //   required Wallet wallet,
-  //   required bdk.Wallet bdkWallet,
-  // }) async {
-  //   try {
-  //     final storedTxs = wallet.transactions;
-  //     final unsignedTxs = wallet.unsignedTxs;
-  //     final bdkNetwork = wallet.getBdkNetwork();
-  //     if (bdkNetwork == null) throw 'No bdkNetwork';
-
-  //     final txs = await bdkWallet.listTransactions(true);
-  //     // final x = bdk.TxBuilderResult();
-
-  //     if (txs.isEmpty) return (wallet, null);
-
-  //     final List<Transaction> transactions = [];
-
-  //     for (final tx in txs) {
-  //       String? label;
-
-  //       final storedTxIdx = storedTxs.indexWhere((t) => t.txid == tx.txid);
-  //       final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
-
-  //       Transaction? storedTx;
-  //       if (storedTxIdx != -1) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
-  //       if (idxUnsignedTx != -1) {
-  //         if (tx.txid == unsignedTxs[idxUnsignedTx].txid) unsignedTxs.removeAt(idxUnsignedTx);
-  //       }
-  //       var txObj = Transaction(
-  //         txid: tx.txid,
-  //         received: tx.received,
-  //         sent: tx.sent,
-  //         fee: tx.fee ?? 0,
-  //         height: tx.confirmationTime?.height ?? 0,
-  //         timestamp: tx.confirmationTime?.timestamp ?? 0,
-  //         bdkTx: tx,
-  //         rbfEnabled: storedTx?.rbfEnabled ?? false,
-  //         outAddrs: storedTx?.outAddrs ?? [],
-  //       );
-
-  //       if (storedTxIdx != -1 &&
-  //           storedTxs[storedTxIdx].label != null &&
-  //           storedTxs[storedTxIdx].label!.isNotEmpty) label = storedTxs[storedTxIdx].label;
-
-  //       final SerializedTx sTx = SerializedTx.fromJson(
-  //         jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
-  //       );
-
-  //       const hexDecoder = HexDecoder();
-  //       final outputs = sTx.output;
-
-  //       for (final output in outputs!) {
-  //         final scriptPubKey = await bdk.Script.create(
-  //           hexDecoder.convert(output.scriptPubkey!) as Uint8List,
-  //         );
-
-  //         final addressStruct = await bdk.Address.fromScript(
-  //           scriptPubKey,
-  //           bdkNetwork,
-  //         );
-
-  //         final existing = wallet.findAddressInWallet(addressStruct.toString());
-  //         if (existing != null) {
-  //           // txObj.outAddrs.add(existing);
-  //           if (existing.label == null && existing.label!.isEmpty)
-  //             txObj = addOutputAddresses(existing.copyWith(label: label), txObj);
-  //           else {
-  //             label ??= existing.label;
-  //             txObj = addOutputAddresses(existing, txObj);
-  //           }
-  //         } else {
-  //           if (txObj.isReceived()) {
-  //             // AddressKind.deposit should exist in the addressBook
-  //             // may not be applicable for payjoin
-  //           } else {
-  //             // AddressKind.external wont exist for imported wallets and must be added here
-  //             // AddressKind.change should exist in the addressBook
-  //             final (externalAddress, _) = await WalletAddress().addAddressToWallet(
-  //               address: (null, addressStruct.toString()),
-  //               wallet: wallet,
-  //               spentTxId: tx.txid,
-  //               kind: AddressKind.external,
-  //               state: AddressStatus.used,
-  //               spendable: false,
-  //               label: label,
-  //             );
-  //             txObj = addOutputAddresses(externalAddress, txObj);
-  //           }
-  //         }
-  //       }
-
-  //       if (txObj.isReceived()) {
-  //         final recipients = txObj.outAddrs
-  //             .where((element) => element.kind == AddressKind.deposit)
-  //             .toList()
-  //             .map((e) => e.address);
-  //         // may break for payjoin
-
-  //         txObj = txObj.copyWith(
-  //           toAddress: recipients.toString(),
-  //         );
-  //       } else {
-  //         final recipients = txObj.outAddrs
-  //             .where((element) => element.kind == AddressKind.external)
-  //             .toList()
-  //             .map((e) => e.address);
-  //         txObj = txObj.copyWith(
-  //           toAddress: recipients.toString(),
-  //         );
-  //       }
-
-  //       transactions.add(txObj.copyWith(label: label));
-  //     }
-
-  //     final w = wallet.copyWith(
-  //       transactions: transactions,
-  //       unsignedTxs: unsignedTxs,
-  //     );
-
-  //     return (w, null);
-  //   } on Exception catch (e) {
-  //     return (
-  //       null,
-  //       Err(
-  //         e.message,
-  //         title: 'Error occurred while getting transactions',
-  //         solution: 'Please try again.',
-  //       )
-  //     );
-  //   }
-  // }
-
   Future<((Transaction?, int?, String)?, Err?)> buildTx({
     required Wallet wallet,
     required bdk.Wallet pubWallet,
@@ -844,26 +575,6 @@ class BDKTransactions {
     }
   }
 
-  // Future<(String?, Err?)> signTx({
-  //   required String unsignedPSBT,
-  //   required bdk.Wallet signingWallet,
-  // }) async {
-  //   try {
-  //     final psbt = bdk.PartiallySignedTransaction(psbtBase64: unsignedPSBT);
-  //     final signedPSBT = await signingWallet.sign(psbt: psbt);
-  //     return (signedPSBT.psbtBase64, null);
-  //   } on Exception catch (e) {
-  //     return (
-  //       null,
-  //       Err(
-  //         e.message,
-  //         title: 'Error occurred while signing transaction',
-  //         solution: 'Please try again.',
-  //       )
-  //     );
-  //   }
-  // }
-
   Future<((bdk.Transaction, String)?, Err?)> signTx({
     required String psbt,
     // required bdk.Blockchain blockchain,
@@ -917,11 +628,17 @@ class BDKTransactions {
 
       await blockchain.broadcast(transaction: tx);
       final txid = await psbtStruct.txid();
+
+      final swapTxType = transaction.swapTx?.getSwapTxTypeForParent();
       final newTx = transaction.copyWith(
         txid: txid,
         label: note,
         toAddress: address,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,
+        swapTx: transaction.swapTx?.copyWith(
+          claimTxid: swapTxType == SwapTxType.claim ? txid : null,
+          lockupTxid: swapTxType == SwapTxType.lockup ? txid : null,
+        ),
         // oldTx: false,
       );
 

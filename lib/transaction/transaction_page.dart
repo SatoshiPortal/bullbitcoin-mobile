@@ -469,7 +469,7 @@ class _SwapDetails extends StatelessWidget {
         ? status.getOnChainStr(swap.chainSwapDetails!.onChainType)
         : status.getStr(swap.isSubmarine());
 
-    final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
+    // final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
     final amt = swap.outAmount;
     final amount = context.select(
@@ -630,7 +630,7 @@ class _OnchainSwapDetails extends StatelessWidget {
         ? status.getOnChainStr(swap.chainSwapDetails!.onChainType)
         : status.getStr(swap.isSubmarine());
 
-    final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
+    // final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
     final amt = swap.outAmount;
     final amount = context.select(
@@ -675,8 +675,8 @@ class _OnchainSwapDetails extends StatelessWidget {
     String? toUnits;
     String? toStatusStr;
 
-    if (swap.txid != null && swap.txid!.isNotEmpty && toWallet != null) {
-      receiveTx = toWallet.getTxWithId(swap.txid!);
+    if (swap.claimTxid != null && toWallet != null) {
+      receiveTx = toWallet.getTxWithId(swap.claimTxid!);
       if (receiveTx != null) {
         toAmtStr = context.select(
           (CurrencyCubit cubit) => cubit.state.getAmountInUnits(

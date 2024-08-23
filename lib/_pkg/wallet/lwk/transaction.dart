@@ -130,7 +130,8 @@ class LWKTransactions {
 
     final updatedSwapTx = storedSwap.copyWith(
       status: swapTx.status,
-      txid: storedSwap.txid ?? swapTx.txid,
+      claimTxid: storedSwap.claimTxid ?? swapTx.claimTxid,
+      lockupTxid: storedSwap.lockupTxid ?? swapTx.lockupTxid,
       lnSwapDetails: storedSwap.lnSwapDetails!.copyWith(
         keyIndex: storedSwap.lnSwapDetails!.keyIndex,
       ),
@@ -155,40 +156,40 @@ class LWKTransactions {
     return ((wallet: updatedWallet), null);
   }
 
-  Future<(({Wallet wallet, SwapTx swapsToDelete})?, Err?)> mergeSwapTxIntoTx({
-    required Wallet wallet,
-    required SwapTx swapTx,
-  }) async {
-    try {
-      final txs = wallet.transactions.toList();
-      final swaps = wallet.swaps;
-      final updatedSwaps = swaps.toList();
-      // final swapsToDelete = <SwapTx>[];
+  // Future<(({Wallet wallet, SwapTx swapsToDelete})?, Err?)> mergeSwapTxIntoTx({
+  //   required Wallet wallet,
+  //   required SwapTx swapTx,
+  // }) async {
+  //   try {
+  //     final txs = wallet.transactions.toList();
+  //     final swaps = wallet.swaps;
+  //     final updatedSwaps = swaps.toList();
+  //     // final swapsToDelete = <SwapTx>[];
 
-      final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
-      if (idx == -1) return (null, Err('No new matching tx'));
+  //     final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
+  //     if (idx == -1) return (null, Err('No new matching tx'));
 
-      final newTx = txs[idx].copyWith(
-        swapTx: swapTx,
-        isSwap: true,
-        label: swapTx.label,
-      );
-      txs[idx] = newTx;
+  //     final newTx = txs[idx].copyWith(
+  //       swapTx: swapTx,
+  //       isSwap: true,
+  //       label: swapTx.label,
+  //     );
+  //     txs[idx] = newTx;
 
-      final swapToDelete = swaps.firstWhere((_) => _.id == swapTx.id);
-      // swapsToDelete.add(swapToDelete);
-      updatedSwaps.removeWhere((_) => _.id == swapTx.id);
+  //     final swapToDelete = swaps.firstWhere((_) => _.id == swapTx.id);
+  //     // swapsToDelete.add(swapToDelete);
+  //     updatedSwaps.removeWhere((_) => _.id == swapTx.id);
 
-      final updatedWallet = wallet.copyWith(
-        transactions: txs,
-        swaps: updatedSwaps,
-      );
+  //     final updatedWallet = wallet.copyWith(
+  //       transactions: txs,
+  //       swaps: updatedSwaps,
+  //     );
 
-      return ((wallet: updatedWallet, swapsToDelete: swapToDelete), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
+  //     return ((wallet: updatedWallet, swapsToDelete: swapToDelete), null);
+  //   } catch (e) {
+  //     return (null, Err(e.toString()));
+  //   }
+  // }
 
   // Future<(Wallet?, Err?)> getTransactionsNew({
   //   required Wallet wallet,
@@ -606,11 +607,15 @@ class LWKTransactions {
           txid = txxid!;
         }
       }
+      final swapTxType = transaction.swapTx?.getSwapTxTypeForParent();
 
       final newTx = transaction.copyWith(
         txid: txid,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,
-        swapTx: transaction.swapTx?.copyWith(txid: txid),
+        swapTx: transaction.swapTx?.copyWith(
+          claimTxid: swapTxType == SwapTxType.claim ? txid : null,
+          lockupTxid: swapTxType == SwapTxType.lockup ? txid : null,
+        ),
         label: note,
       );
 

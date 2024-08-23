@@ -402,9 +402,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
           });
 
           // await Future.delayed(100.ms);
-
           // tx = context.read<HomeCubit>().state.getTxFromSwap(widget.tx);
-
           // setState(() {});
         }
       },

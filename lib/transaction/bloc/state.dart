@@ -31,12 +31,12 @@ class TransactionState with _$TransactionState {
   }
 }
 
-extension X on Transaction {
-  TxLayout get pageLayout {
-    final swapTx = this.swapTx;
-    if (swapTx == null) return TxLayout.onlyTx;
-    final idMatches = swapTx.txid == txid;
-    if (idMatches) return TxLayout.both;
-    return TxLayout.onlySwapTx;
-  }
-}
+// extension X on Transaction {
+//   TxLayout get pageLayout {
+//     final swapTx = this.swapTx;
+//     if (swapTx == null) return TxLayout.onlyTx;
+//     final idMatches = swapTx.txid == txid;
+//     if (idMatches) return TxLayout.both;
+//     return TxLayout.onlySwapTx;
+//   }
+// }

@@ -14,6 +14,7 @@ part 'transaction.g.dart';
 class Transaction with _$Transaction {
   const factory Transaction({
     required int timestamp,
+    // lockup submarine + claim reverse + lockup chain.send + lockup chain.self
     required String txid,
     int? received,
     int? sent,

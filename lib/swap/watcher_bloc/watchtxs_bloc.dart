@@ -246,14 +246,14 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     try {
       final json = jsonDecode(txid!) as Map<String, dynamic>;
       updatedSwap = swapTx.copyWith(
-        txid: json['id'] as String,
+        claimTxid: json['id'] as String,
         status: SwapStreamStatus(
           id: swapTx.id,
           status: SwapStatus.swapRefunded,
         ),
       );
     } catch (e) {
-      updatedSwap = swapTx.copyWith(txid: txid);
+      updatedSwap = swapTx.copyWith(claimTxid: txid);
     }
 
     emit(
@@ -314,9 +314,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     SwapTx updatedSwap;
     try {
       final json = jsonDecode(txid!) as Map<String, dynamic>;
-      updatedSwap = swapTx.copyWith(txid: json['id'] as String);
+      updatedSwap = swapTx.copyWith(claimTxid: json['id'] as String);
     } catch (e) {
-      updatedSwap = swapTx.copyWith(txid: txid);
+      updatedSwap = swapTx.copyWith(claimTxid: txid);
     }
 
     emit(
@@ -433,6 +433,141 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   // ) async {
   //   emit(state.copyWith(txPaid: null, syncWallet: null));
   // }
+
+  Future<SwapTx?> __onChainclaimSwap(
+    SwapTx swapTx,
+    WalletBloc walletBloc,
+    Emitter<WatchTxsState> emit,
+  ) async {
+    if (state.swapClaimed(swapTx.id) || (state.isClaiming(swapTx.id))) {
+      emit(state.copyWith(errClaimingSwap: 'Swap claimed/claiming'));
+      return null;
+    }
+
+    final updatedClaimingTxs = state.addClaiming(swapTx.id);
+    if (updatedClaimingTxs == null) return null;
+
+    emit(
+      state.copyWith(
+        claimingSwap: true,
+        errClaimingSwap: '',
+        claimingSwapTxIds: updatedClaimingTxs,
+      ),
+    );
+
+    final (txid, err) = await _swapBoltz.claimChainSwap(
+      swapTx: swapTx,
+      wallet: walletBloc.state.wallet!,
+      tryCooperate: true,
+    );
+
+    if (err != null) {
+      emit(
+        state.copyWith(
+          claimingSwap: false,
+          errClaimingSwap: err.toString(),
+          claimingSwapTxIds: state.removeClaiming(swapTx.id),
+        ),
+      );
+      return null;
+    }
+
+    SwapTx updatedSwap;
+    try {
+      final json = jsonDecode(txid!) as Map<String, dynamic>;
+      updatedSwap = swapTx.copyWith(claimTxid: json['id'] as String);
+    } catch (e) {
+      updatedSwap = swapTx.copyWith(claimTxid: txid);
+    }
+
+    emit(
+      state.copyWith(
+        claimedSwapTxs: [...state.claimedSwapTxs, updatedSwap.id],
+        claimingSwapTxIds: state.removeClaiming(updatedSwap.id),
+        claimingSwap: false,
+        // syncWallet: walletBloc.state.wallet,
+      ),
+    );
+
+    return updatedSwap;
+  }
+
+  Future<SwapTx?> __onchainRefund(
+    SwapTx swapTx,
+    WalletBloc walletBloc,
+    Emitter<WatchTxsState> emit,
+  ) async {
+    if (state.swapRefunded(swapTx.id) || (state.isRefunding(swapTx.id))) {
+      emit(state.copyWith(errRefundingSwap: 'Swap refunded/refunding'));
+      return null;
+    }
+
+    final updatedRefundingTxs = state.addRefunding(swapTx.id);
+    if (updatedRefundingTxs == null) return null;
+
+    emit(
+      state.copyWith(
+        claimingSwap: true,
+        errRefundingSwap: '',
+        refundingSwapTxIds: updatedRefundingTxs,
+      ),
+    );
+
+    // await Future.delayed(10.seconds);
+
+    final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
+        LiquidElectrumTypes.bullbitcoin;
+
+    final (txid, err) = await _swapBoltz.refundChainSwap(
+      swapTx: swapTx,
+      wallet: walletBloc.state.wallet!,
+      tryCooperate: true,
+      // broadcastViaBoltz: broadcastViaBoltz,
+    );
+    if (err != null) {
+      emit(
+        state.copyWith(
+          refundingSwap: false,
+          errRefundingSwap: err.toString(),
+          refundingSwapTxIds: state.removeRefunding(swapTx.id),
+        ),
+      );
+      return null;
+
+      // final updatedSwap = swapTx.copyWith(
+      //   status: SwapStreamStatus(
+      //     id: swapTx.id,
+      //     status: SwapStatus.swapRefunded,
+      //   ),
+      // );
+      // return updatedSwap;
+    }
+
+    SwapTx updatedSwap;
+    // try {
+    // final json = jsonDecode(txid!) as Map<String, dynamic>;
+    updatedSwap = swapTx.copyWith(
+      claimTxid: txid,
+      status: SwapStreamStatus(
+        id: swapTx.id,
+        status: SwapStatus.swapRefunded,
+      ),
+    );
+    // } catch (e) {
+    //   updatedSwap = swapTx.copyWith(txid: txid);
+    // }
+
+    emit(
+      state.copyWith(
+        refundedSwapTxs: [...state.refundedSwapTxs, updatedSwap.id],
+        refundingSwapTxIds: state.removeRefunding(updatedSwap.id),
+        refundingSwap: false,
+        // syncWallet: walletBloc.state.wallet,
+      ),
+    );
+
+    return updatedSwap;
+  }
 
   Future<void> _onProcessSwapTx(
     ProcessSwapTx event,
@@ -555,140 +690,5 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         default:
       }
     }
-  }
-
-  Future<SwapTx?> __onChainclaimSwap(
-    SwapTx swapTx,
-    WalletBloc walletBloc,
-    Emitter<WatchTxsState> emit,
-  ) async {
-    if (state.swapClaimed(swapTx.id) || (state.isClaiming(swapTx.id))) {
-      emit(state.copyWith(errClaimingSwap: 'Swap claimed/claiming'));
-      return null;
-    }
-
-    final updatedClaimingTxs = state.addClaiming(swapTx.id);
-    if (updatedClaimingTxs == null) return null;
-
-    emit(
-      state.copyWith(
-        claimingSwap: true,
-        errClaimingSwap: '',
-        claimingSwapTxIds: updatedClaimingTxs,
-      ),
-    );
-
-    final (txid, err) = await _swapBoltz.claimChainSwap(
-      swapTx: swapTx,
-      wallet: walletBloc.state.wallet!,
-      tryCooperate: true,
-    );
-
-    if (err != null) {
-      emit(
-        state.copyWith(
-          claimingSwap: false,
-          errClaimingSwap: err.toString(),
-          claimingSwapTxIds: state.removeClaiming(swapTx.id),
-        ),
-      );
-      return null;
-    }
-
-    SwapTx updatedSwap;
-    try {
-      final json = jsonDecode(txid!) as Map<String, dynamic>;
-      updatedSwap = swapTx.copyWith(txid: json['id'] as String);
-    } catch (e) {
-      updatedSwap = swapTx.copyWith(txid: txid);
-    }
-
-    emit(
-      state.copyWith(
-        claimedSwapTxs: [...state.claimedSwapTxs, updatedSwap.id],
-        claimingSwapTxIds: state.removeClaiming(updatedSwap.id),
-        claimingSwap: false,
-        // syncWallet: walletBloc.state.wallet,
-      ),
-    );
-
-    return updatedSwap;
-  }
-
-  Future<SwapTx?> __onchainRefund(
-    SwapTx swapTx,
-    WalletBloc walletBloc,
-    Emitter<WatchTxsState> emit,
-  ) async {
-    if (state.swapRefunded(swapTx.id) || (state.isRefunding(swapTx.id))) {
-      emit(state.copyWith(errRefundingSwap: 'Swap refunded/refunding'));
-      return null;
-    }
-
-    final updatedRefundingTxs = state.addRefunding(swapTx.id);
-    if (updatedRefundingTxs == null) return null;
-
-    emit(
-      state.copyWith(
-        claimingSwap: true,
-        errRefundingSwap: '',
-        refundingSwapTxIds: updatedRefundingTxs,
-      ),
-    );
-
-    // await Future.delayed(10.seconds);
-
-    final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
-        LiquidElectrumTypes.bullbitcoin;
-
-    final (txid, err) = await _swapBoltz.refundChainSwap(
-      swapTx: swapTx,
-      wallet: walletBloc.state.wallet!,
-      tryCooperate: true,
-      // broadcastViaBoltz: broadcastViaBoltz,
-    );
-    if (err != null) {
-      emit(
-        state.copyWith(
-          refundingSwap: false,
-          errRefundingSwap: err.toString(),
-          refundingSwapTxIds: state.removeRefunding(swapTx.id),
-        ),
-      );
-      return null;
-
-      // final updatedSwap = swapTx.copyWith(
-      //   status: SwapStreamStatus(
-      //     id: swapTx.id,
-      //     status: SwapStatus.swapRefunded,
-      //   ),
-      // );
-      // return updatedSwap;
-    }
-
-    SwapTx updatedSwap;
-    // try {
-    // final json = jsonDecode(txid!) as Map<String, dynamic>;
-    updatedSwap = swapTx.copyWith(
-      txid: txid,
-      status: SwapStreamStatus(
-        id: swapTx.id,
-        status: SwapStatus.swapRefunded,
-      ),
-    );
-    // } catch (e) {
-    //   updatedSwap = swapTx.copyWith(txid: txid);
-    // }
-
-    emit(
-      state.copyWith(
-        refundedSwapTxs: [...state.refundedSwapTxs, updatedSwap.id],
-        refundingSwapTxIds: state.removeRefunding(updatedSwap.id),
-        refundingSwap: false,
-        // syncWallet: walletBloc.state.wallet,
-      ),
-    );
-
-    return updatedSwap;
   }
 }

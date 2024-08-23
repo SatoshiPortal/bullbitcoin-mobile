@@ -118,7 +118,8 @@ _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
           ? null
           : LnSwapDetails.fromJson(
               json['lnSwapDetails'] as Map<String, dynamic>),
-      txid: json['txid'] as String?,
+      claimTxid: json['claimTxid'] as String?,
+      lockupTxid: json['lockupTxid'] as String?,
       label: json['label'] as String?,
       status: json['status'] == null
           ? null
@@ -146,7 +147,8 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
       'boltzUrl': instance.boltzUrl,
       'chainSwapDetails': instance.chainSwapDetails,
       'lnSwapDetails': instance.lnSwapDetails,
-      'txid': instance.txid,
+      'claimTxid': instance.claimTxid,
+      'lockupTxid': instance.lockupTxid,
       'label': instance.label,
       'status': instance.status,
       'boltzFees': instance.boltzFees,

@@ -285,7 +285,7 @@ class HomeState with _$HomeState {
     final toRemove = <Transaction>[];
     for (final tx in txs) {
       final isInSwapTxAndNotPending = swapChainTxs
-          .where((swap) => swap.txid == tx.txid) // && tx.timestamp != 0)
+          .where((swap) => swap.claimTxid == tx.txid) // && tx.timestamp != 0)
           .isNotEmpty;
       if (isInSwapTxAndNotPending == true) toRemove.add(tx);
     }
