@@ -32,6 +32,7 @@ import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -163,6 +164,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
       defaultRBF: locator<SettingsCubit>().state.defaultRBF,
       fileStorage: locator<FileStorage>(),
       networkCubit: locator<NetworkCubit>(),
+      networkFeesCubit: locator<NetworkFeesCubit>(),
       homeCubit: locator<HomeCubit>(),
       swapBoltz: locator<SwapBoltz>(),
       currencyCubit: currency,

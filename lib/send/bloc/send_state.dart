@@ -218,6 +218,26 @@ class SendState with _$SendState {
 
     return false;
   }
+
+  String getSendButtonLabel(bool sending) {
+    if (couldBeOnchainSwap() == true) return 'Create Swap';
+
+    final watchOnly = selectedWalletBloc?.state.wallet?.watchOnly() ?? false;
+    final isLn = isLnInvoice();
+
+    final String label = watchOnly
+        ? 'Generate PSBT'
+        : signed
+            ? sending
+                ? 'Broadcasting'
+                : 'Confirm'
+            : sending
+                ? 'Building Tx'
+                : !isLn
+                    ? 'Send'
+                    : 'Create Swap';
+    return label;
+  }
 }
 
 enum AddressNetwork {

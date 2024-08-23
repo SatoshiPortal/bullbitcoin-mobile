@@ -13,11 +13,12 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,6 +29,7 @@ class SendCubit extends Cubit<SendState> {
     required WalletTx walletTx,
     required FileStorage fileStorage,
     required NetworkCubit networkCubit,
+    required NetworkFeesCubit networkFeesCubit,
     required CurrencyCubit currencyCubit,
     required bool openScanner,
     required HomeCubit homeCubit,
@@ -36,6 +38,7 @@ class SendCubit extends Cubit<SendState> {
     required CreateSwapCubit swapCubit,
   })  : _homeCubit = homeCubit,
         _networkCubit = networkCubit,
+        _networkFeesCubit = networkFeesCubit,
         _currencyCubit = currencyCubit,
         _walletTx = walletTx,
         _fileStorage = fileStorage,
@@ -65,6 +68,7 @@ class SendCubit extends Cubit<SendState> {
   final SwapBoltz _swapBoltz;
 
   final NetworkCubit _networkCubit;
+  final NetworkFeesCubit _networkFeesCubit;
   final CurrencyCubit _currencyCubit;
   final HomeCubit _homeCubit;
   final CreateSwapCubit _swapCubit;
@@ -274,7 +278,7 @@ class SendCubit extends Cubit<SendState> {
         if (storedSwapTxIdx != -1) {
           final swap = wallet.swaps[storedSwapTxIdx];
           final status = (swap.status != null) ? swap.status!.status : null;
-          if (status != null && status != SwapStatus.swapCreated) {
+          if (status != null && status != boltz.SwapStatus.swapCreated) {
             emit(
               state.copyWith(
                 errScanningAddress: 'Swap for this invoice already exists.',
@@ -991,6 +995,95 @@ class SendCubit extends Cubit<SendState> {
     final (walletResp, tx, feeAmt) = buildResp!;
 
     return feeAmt ?? 0;
+  }
+
+  void processSendButton(CreateSwapCubit createSwapCubit, String label) async {
+    final isOnchainSwap = state.couldBeOnchainSwap();
+    final wallet = state.selectedWalletBloc!.state.wallet!;
+
+    if (isOnchainSwap) {
+      int sweepAmount = 0;
+      final refundAddress = wallet.lastGeneratedAddress?.address;
+      if (state.sendAllCoin == true) {
+        final feeRate = _networkFeesCubit.state.selectedOrFirst(true);
+        final fees = await calculateFeeForSend(
+          wallet: wallet,
+          address: refundAddress!,
+          networkFees: feeRate,
+        );
+
+        reset();
+
+        if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
+          // TODO: Absolute fee doesn't work for liquid build Tx now
+          updateOnChainAbsFee(fees);
+        }
+
+        // sweepAmount = walletBloc.state.wallet!.balance! - fees;
+        final int magicNumber = wallet.baseWalletType == BaseWalletType.Bitcoin
+            ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
+            : 1500;
+        sweepAmount = wallet.balance! - fees - magicNumber; // TODO
+      }
+
+      final swapAmount = _currencyCubit.state.amount;
+
+      final liqNetworkurl = _networkCubit.state.getLiquidNetworkUrl();
+      final btcNetworkUrl = _networkCubit.state.getNetworkUrl();
+      final btcNetworkUrlWithoutSSL = btcNetworkUrl.startsWith('ssl://')
+          ? btcNetworkUrl.split('//')[1]
+          : btcNetworkUrl;
+
+      createSwapCubit.createOnChainSwap(
+        wallet: wallet,
+        amount: state.sendAllCoin == true ? sweepAmount : swapAmount,
+        isTestnet: _networkCubit.state.testnet,
+        btcElectrumUrl:
+            btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
+        lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
+        toAddress: state.address, // recipientAddress.address;
+        refundAddress: refundAddress!,
+        direction: wallet.baseWalletType == BaseWalletType.Bitcoin
+            ? boltz.ChainSwapDirection.btcToLbtc
+            : boltz.ChainSwapDirection.lbtcToBtc,
+        toWalletId: '',
+        onChainSwapType: OnChainSwapType.sendSwap,
+      );
+
+      return;
+    }
+
+    final isLn = state.isLnInvoice();
+
+    if (!state.signed) {
+      if (!isLn) {
+        final fees = _networkFeesCubit.state.selectedOrFirst(false);
+        confirmClickedd(networkFees: fees);
+        return;
+      }
+      // context.read<WalletBloc>().state.wallet;
+      final isLiq = wallet.isLiquid();
+      final networkurl = !isLiq
+          ? _networkCubit.state.getNetworkUrl()
+          : _networkCubit.state.getLiquidNetworkUrl();
+
+      createSwapCubit.createSubSwapForSend(
+        wallet: wallet,
+        address: state.address,
+        amount: _currencyCubit.state.amount,
+        isTestnet: _networkCubit.state.testnet,
+        invoice: state.invoice!,
+        networkUrl: networkurl,
+        label: label,
+      );
+      return;
+    }
+
+    if (!isLn) {
+      sendClicked();
+      return;
+    }
+    sendSwapClicked();
   }
 
   void dispose() {

@@ -77,6 +77,7 @@ class _SwapPageState extends State<SwapPage> {
       defaultRBF: locator<SettingsCubit>().state.defaultRBF,
       fileStorage: locator<FileStorage>(),
       networkCubit: locator<NetworkCubit>(),
+      networkFeesCubit: locator<NetworkFeesCubit>(),
       homeCubit: locator<HomeCubit>(),
       swapBoltz: locator<SwapBoltz>(),
       currencyCubit: currency,
