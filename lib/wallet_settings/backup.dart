@@ -220,14 +220,14 @@ class BackupScreen extends StatelessWidget {
                   filled: true,
                   onPressed: () {
                     context
-                      ..pop()
-                      ..push(
-                        '/wallet-settings/test-backup',
-                        extra: (
-                          context.read<WalletBloc>(),
-                          context.read<WalletSettingsCubit>(),
-                        ),
-                      );
+                        // ..pop()
+                        .push(
+                      '/wallet-settings/test-backup',
+                      extra: (
+                        context.read<WalletBloc>(),
+                        context.read<WalletSettingsCubit>(),
+                      ),
+                    );
                     // context.pop();
                     // TestBackupScreen.openPopup(context);
                   },
