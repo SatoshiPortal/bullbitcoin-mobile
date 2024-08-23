@@ -17,6 +17,7 @@ import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -269,7 +270,19 @@ class SendCubit extends Cubit<SendState> {
               element.lnSwapDetails != null &&
               element.lnSwapDetails!.invoice == state.invoice!.invoice,
         );
+
         if (storedSwapTxIdx != -1) {
+          final swap = wallet.swaps[storedSwapTxIdx];
+          final status = (swap.status != null) ? swap.status!.status : null;
+          if (status != null && status != SwapStatus.swapCreated) {
+            emit(
+              state.copyWith(
+                errScanningAddress: 'Swap for this invoice already exists.',
+                showSendButton: false,
+              ),
+            );
+            return;
+          }
           walletBlocc = walletBloc;
           break;
         }

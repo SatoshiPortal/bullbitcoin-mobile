@@ -620,7 +620,7 @@ class _SendButton extends StatelessWidget {
             },
             child: BBButton.big(
               loading: sending,
-              disabled: sending, // || !showSend,
+              disabled: sending || !showSend, // || !showSend,
               leftIcon: Icons.send,
               onPressed: () async {
                 if (sending) return;
@@ -643,7 +643,9 @@ class _SendButton extends StatelessWidget {
                         .confirmClickedd(networkFees: fees);
                     return;
                   }
-                  // context.read<SendCubit>().sendSwapClicked();
+
+                  final _sendState = context.read<SendCubit>().state;
+
                   final wallet = context.read<WalletBloc>().state.wallet!;
                   final isLiq = wallet.isLiquid();
                   final networkurl = !isLiq
