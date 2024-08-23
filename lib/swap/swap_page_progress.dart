@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/send.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 
 class SendingOnChainTx extends StatefulWidget {
@@ -65,7 +67,6 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         // if (swapTx == null) return;
         final updatedSwap = state.updatedSwapTx!;
         // if (updatedSwap.id != swapTx?.id) return;
-
         String labelLocal = 'Broadcasting...';
         bool successLocal = false;
         bool failureLocal = false;
@@ -73,14 +74,14 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
           labelLocal = 'Broadcasting...';
         } else if (updatedSwap.status?.status == SwapStatus.txnMempool) {
           // labelLocal = 'Our tx in mempool (1/3)';
-          labelLocal = 'User tx in mempool (1/3)';
+          labelLocal = 'User Lockup Broadcasted (1/3)';
         } else if (updatedSwap.status?.status == SwapStatus.txnConfirmed) {
-          labelLocal = 'Waiting for boltz payment';
+          labelLocal = 'User Lockup Confirmed!';
         } else if (updatedSwap.status?.status == SwapStatus.txnServerMempool) {
-          labelLocal = 'Boltz tx in mempool (2/3)';
+          labelLocal = 'Server Lockup Broadcasted (2/3)';
         } else if (updatedSwap.status?.status ==
             SwapStatus.txnServerConfirmed) {
-          labelLocal = 'Claiming... (3/3)';
+          labelLocal = 'Claiming...(3/3)';
         } else if (updatedSwap.status?.status == SwapStatus.txnClaimed) {
           labelLocal = 'Success';
           successLocal = true;
@@ -125,7 +126,22 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
             ),
           ),
           const Gap(24),
-          // if (paid && !settled) const BBText.body('Closing the swap ...'),
+          if (swapTx!.claimTxid == null) ...[
+            // const Gap(24),
+            _OnChainWarning(swapTx: swapTx!),
+          ],
+          // const Gap(40),
+          // if (tx != null)
+          //   BBButton.big(
+          //     label: 'View Transaction',
+          //     onPressed: () {
+          //       context
+          //         ..pop()
+          //         ..pop()
+          //         ..push('/tx', extra: [tx, false]);
+          //     },
+          //   ).animate().fadeIn(),
+          // // if (paid && !settled) const BBText.body('Closing the swap ...'),
           if (success) const BBText.body('Swap complete'),
           const Gap(24),
         ],
@@ -134,4 +150,53 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
   }
 }
 
-class _OnChainWarning {}
+class _OnChainWarning extends StatelessWidget {
+  const _OnChainWarning({required this.swapTx});
+
+  final SwapTx swapTx;
+
+  @override
+  Widget build(BuildContext context) {
+    // if (swapTx.isLiquid()) return const SizedBox.shrink();
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          FontAwesomeIcons.triangleExclamation,
+          color: context.colour.primary,
+          size: 20,
+        ),
+        const Gap(8),
+        if (swapTx.isChainSelf()) ...[
+          const SizedBox(
+            width: 150,
+            child: BBText.bodySmall(
+              'This will take a while.',
+              isRed: true,
+              fontSize: 12,
+            ),
+          ),
+        ] else if (swapTx.isChainReceive()) ...[
+          const SizedBox(
+            width: 250,
+            child: BBText.bodySmall(
+              'Sender has made the onchain payment. It will take onchain confirmation until you can claim. This can take a while',
+              isRed: true,
+              fontSize: 12,
+            ),
+          ),
+        ] else if (swapTx.isChainSend()) ...[
+          const SizedBox(
+            width: 250,
+            child: BBText.bodySmall(
+              'You have made the lockup transaction. It will take onchain confirmation until you can pay the receiver. This can take a while.',
+              isRed: true,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}

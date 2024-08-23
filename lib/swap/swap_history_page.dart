@@ -237,19 +237,17 @@ class SwapItem extends StatelessWidget {
                     'Id: ' + swapTx.id,
                     isBold: true,
                   ),
+                  if (swapTx.creationTime != null &&
+                      swapTx.completionTime != null)
+                    BBText.bodySmall(
+                      'Duration: ' + (swapTx.getDuration() ?? 'N/A'),
+                      isBold: true,
+                    ),
                   BBText.bodySmall(
                     'Status: ' + (status?.$1 ?? ''),
                     isBold: true,
                   ),
-                  if (swapTx.creationTime != null &&
-                      swapTx.completionTime != null)
-                    BBText.bodySmall(
-                      'Duration: ' +
-                          swapTx.completionTime!
-                              .difference(swapTx.creationTime!)
-                              .inMinutes
-                              .toString(),
-                    ),
+
                   // Expanded(
                   SizedBox(
                     width: 200,

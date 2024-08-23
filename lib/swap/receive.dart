@@ -408,9 +408,10 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
       },
       child: PopScope(
         onPopInvoked: (didPop) {
-          context
-            ..pop()
-            ..pop();
+          context.pop();
+          Future.microtask(() {
+            context.pop();
+          });
         },
         child: Scaffold(
           appBar: AppBar(
@@ -502,7 +503,7 @@ class _OnChainWarning extends StatelessWidget {
           child: BBText.bodySmall(
             'The sender has sent the lightning payment, but the swap is still in progress. It will take on on-chain confirmation before his Lightning payment succeeds.',
             isRed: true,
-            fontSize: 10,
+            fontSize: 12,
           ),
         ),
       ],

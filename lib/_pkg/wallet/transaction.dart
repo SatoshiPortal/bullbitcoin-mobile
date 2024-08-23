@@ -439,7 +439,7 @@ class WalletTx implements IWalletTransactions {
     }
     if (updatedSwapTx.settledReverse()) {
       // new reverse swaps need to create a transaction.txid with the swap.id
-      final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.claimTxid);
+      final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.id);
       if (idx != -1) {
         final updatedTx = txs[idx].copyWith(
           swapTx: updatedSwapTx,
@@ -451,7 +451,7 @@ class WalletTx implements IWalletTransactions {
         txs[idx] = updatedTx;
       }
     }
-    if (updatedSwapTx.isChainSwap()) {
+    if (updatedSwapTx.isChainSend() || updatedSwapTx.isChainSelf()) {
       final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
       final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
 
@@ -461,6 +461,19 @@ class WalletTx implements IWalletTransactions {
           label: swapTx.label,
         );
 
+      if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
+    }
+    if (updatedSwapTx.isChainReceive()) {
+      final txIdx = txs.indexWhere((_) => _.txid == swapTx.lockupTxid);
+      final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
+      if (txIdx == -1) {
+        final newTx = updatedSwapTx.toNewTransaction();
+        txs.add(newTx);
+      } else
+        txs[txIdx] = txs[txIdx].copyWith(
+          swapTx: updatedSwapTx,
+          label: swapTx.label,
+        );
       if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
 

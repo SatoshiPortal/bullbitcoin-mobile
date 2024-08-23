@@ -86,10 +86,26 @@ class SwapTx with _$SwapTx {
     DateTime? creationTime,
     DateTime? completionTime,
   }) = _SwapTx;
+  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
 
   const SwapTx._();
 
-  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
+  String? getDuration() {
+    if (completionTime == null) {
+      return null;
+    }
+    final minutes = completionTime!.difference(creationTime!).inMinutes;
+    if (minutes == 0) {
+      final seconds = completionTime?.difference(creationTime!).inSeconds;
+      return '$seconds seconds';
+    } else if (minutes > 60) {
+      final hours = completionTime?.difference(creationTime!).inHours;
+      return '$hours hours';
+    } else {
+      return '$minutes minutes';
+    }
+  }
+
   // lockup: submarine, chain.self (lbtc->btc), chain.send
   // claim: reverse , chain.recieve
   String? getParentTxid() {
@@ -247,11 +263,6 @@ class SwapTx with _$SwapTx {
               status!.status == SwapStatus.txnConfirmed ||
               status!.status == SwapStatus.txnServerMempool));
 
-  bool claimedOnchain() =>
-      isChainSwap() &&
-      claimTxid != null &&
-      (status != null && (status!.status == SwapStatus.txnClaimed));
-
   bool uninitiatedOnchain() =>
       isChainSwap() &&
       creationTime!.difference(DateTime.now()).inDays > 3 &&
@@ -271,9 +282,9 @@ class SwapTx with _$SwapTx {
       expiredReverse() ||
       expiredSubmarine() ||
       refundedAny() ||
-      claimedOnchain() ||
       expiredOnchain() ||
-      uninitiatedOnchain();
+      uninitiatedOnchain() ||
+      settledOnchain();
 
   bool failed() => isChainSwap()
       ? isChainSwapFailed()
@@ -382,7 +393,7 @@ class SwapTx with _$SwapTx {
 
   bool showAlert() {
     if (isChainSwap()) {
-      if (paidOnchain() || claimedOnchain()) return true;
+      if (paidOnchain() || settledOnchain()) return true;
     } else if (isSubmarine()) {
       if (paidSubmarine() || settledSubmarine()) return true;
     } else {
@@ -410,10 +421,7 @@ class SwapTx with _$SwapTx {
             ? lockupTxid
             : claimTxid)
         : isChainSwap()
-            ? ((chainSwapDetails!.onChainType == OnChainSwapType.selfSwap ||
-                    chainSwapDetails!.onChainType == OnChainSwapType.sendSwap)
-                ? lockupTxid
-                : claimTxid)
+            ? lockupTxid
             : null;
     final newTx = bb.Transaction(
       txid: txId ?? id,

@@ -516,8 +516,8 @@ class WalletTag extends StatelessWidget {
       if (tx.swapTx?.isChainSwap() == true)
         text = tx.swapTx?.chainSwapDetails?.direction ==
                 boltz.ChainSwapDirection.btcToLbtc
-            ? 'BTC -> LBTC swap'
-            : 'LBTC -> BTC swap';
+            ? 'BTC -> LBTC'
+            : 'LBTC -> BTC';
       else
         text = 'Lightning';
     } else if (isLiquid)
