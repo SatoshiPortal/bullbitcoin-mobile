@@ -999,7 +999,7 @@ class SendCubit extends Cubit<SendState> {
     return feeAmt ?? 0;
   }
 
-  void processSendButton(CreateSwapCubit createSwapCubit, String label) async {
+  void processSendButton(String label) async {
     final isOnchainSwap = state.couldBeOnchainSwap();
     final wallet = state.selectedWalletBloc!.state.wallet!;
 
@@ -1036,7 +1036,7 @@ class SendCubit extends Cubit<SendState> {
           ? btcNetworkUrl.split('//')[1]
           : btcNetworkUrl;
 
-      createSwapCubit.createOnChainSwap(
+      _swapCubit.createOnChainSwap(
         wallet: wallet,
         amount: state.sendAllCoin == true ? sweepAmount : swapAmount,
         isTestnet: _networkCubit.state.testnet,
@@ -1069,7 +1069,7 @@ class SendCubit extends Cubit<SendState> {
           ? _networkCubit.state.getNetworkUrl()
           : _networkCubit.state.getLiquidNetworkUrl();
 
-      createSwapCubit.createSubSwapForSend(
+      _swapCubit.createSubSwapForSend(
         wallet: wallet,
         address: state.address,
         amount: _currencyCubit.state.amount,
@@ -1086,6 +1086,84 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
     sendSwap();
+  }
+
+  void buildChainSwap(
+      Wallet fromWallet, Wallet toWallet, int amount, bool sweep) async {
+    if (amount == 0 && sweep == false) {
+      _swapCubit.setValidationError(
+        'Please enter valid amount',
+      );
+      return;
+    }
+
+    if (amount > fromWallet.balance!) {
+      _swapCubit.setValidationError(
+        'Not enough balance.\nWallet balance is: ${fromWallet.balance!}.',
+      );
+      return;
+    }
+
+    print('Swap $amount from ${fromWallet.name} to ${toWallet.name}');
+
+    final walletBloc = _homeCubit.state.getWalletBlocById(fromWallet.id);
+    updateWalletBloc(walletBloc!);
+
+    final recipientAddress = toWallet.lastGeneratedAddress?.address ?? '';
+    final refundAddress = fromWallet.lastGeneratedAddress?.address ?? '';
+
+    final liqNetworkurl = _networkCubit.state.getLiquidNetworkUrl();
+    final btcNetworkUrl = _networkCubit.state.getNetworkUrl();
+    final btcNetworkUrlWithoutSSL = btcNetworkUrl.startsWith('ssl://')
+        ? btcNetworkUrl.split('//')[1]
+        : btcNetworkUrl;
+
+    await Future.delayed(Duration.zero);
+
+    int sweepAmount = 0;
+    if (sweep == true) {
+      final feeRate = _networkFeesCubit.state.selectedOrFirst(true);
+      final fees = await calculateFeeForSend(
+        wallet: walletBloc.state.wallet,
+        address: refundAddress,
+        networkFees: feeRate,
+      );
+
+      reset();
+
+      if (walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin) {
+        // TODO: Absolute fee doesn't work for liquid build Tx now
+        updateOnChainAbsFee(fees);
+      }
+
+      // sweepAmount = walletBloc.state.wallet!.balance! - fees;
+      final int magicNumber =
+          walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
+              ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
+              : 1500;
+      sweepAmount =
+          walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:
+      // -20 works for btc
+      // -1500 works for l-btc
+    }
+
+    _swapCubit.createOnChainSwap(
+      wallet: fromWallet,
+      amount:
+          sweep == true ? sweepAmount : amount, //20000, // 1010000, // amount,
+      sweep: sweep,
+      isTestnet: _networkCubit.state.testnet,
+      btcElectrumUrl:
+          btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
+      lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
+      toAddress: recipientAddress, // recipientAddress.address;
+      refundAddress: refundAddress,
+      direction: fromWallet.baseWalletType == BaseWalletType.Bitcoin
+          ? boltz.ChainSwapDirection.btcToLbtc
+          : boltz.ChainSwapDirection.lbtcToBtc,
+      toWalletId: toWallet.id,
+      onChainSwapType: OnChainSwapType.selfSwap,
+    );
   }
 
   void dispose() {

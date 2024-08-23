@@ -641,9 +641,6 @@ class ChainSwapForm extends StatelessWidget {
 
     final generatingInv = context
         .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
-    // final sendingg = context.select((SendCubit cubit) => cubit.state.sending);
-    // final buildingOnChain =
-    //     context.select((SendCubit cubit) => cubit.state.buildingOnChain);
     final sending = generatingInv;
 
     const int finalFee = 0;
@@ -681,28 +678,11 @@ class ChainSwapForm extends StatelessWidget {
               final receiveWallet =
                   context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
               final label = context.read<ReceiveCubit>().state.description;
-              final isTestnet = context.read<NetworkCubit>().state.testnet;
-
-              final liqNetworkurl =
-                  context.read<NetworkCubit>().state.getLiquidNetworkUrl();
-              final btcNetworkUrl =
-                  context.read<NetworkCubit>().state.getNetworkUrl();
-              final btcNetworkUrlWithoutSSL = btcNetworkUrl.startsWith('ssl://')
-                  ? btcNetworkUrl.split('//')[1]
-                  : btcNetworkUrl;
-
-              final recipientAddress =
-                  receiveWallet.lastGeneratedAddress?.address ?? '';
 
               // TODO: How refund happens on any failure?
               context.read<CreateSwapCubit>().createOnChainSwapForReceive(
                     toWallet: receiveWallet,
                     amount: amt,
-                    isTestnet: isTestnet,
-                    btcElectrumUrl:
-                        btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
-                    lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
-                    toAddress: recipientAddress, // recipientAddress.address;
                     refundAddress:
                         receiveWallet.baseWalletType == BaseWalletType.Liquid
                             ? btcRefundAddress

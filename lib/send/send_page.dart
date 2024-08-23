@@ -531,7 +531,6 @@ class _SendButton extends StatelessWidget {
               onPressed: () async {
                 if (sending) return;
                 context.read<SendCubit>().processSendButton(
-                      context.read<CreateSwapCubit>(),
                       txLabel,
                     );
               },
