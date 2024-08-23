@@ -418,7 +418,7 @@ class BDKTransactions {
                 spentTxId: tx.txid,
                 kind: AddressKind.deposit,
                 state: AddressStatus.used,
-                spendable: false,
+                // spendable: true,
                 label: label,
               );
               // Future.delayed(const Duration(milliseconds: 100));
