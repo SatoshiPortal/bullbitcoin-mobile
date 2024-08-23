@@ -151,7 +151,8 @@ class _SendingLnTxState extends State<SendingLnTx> {
 
   @override
   Widget build(BuildContext context) {
-    final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
+    final inv = context.select((SendCubit cubit) => cubit.state.invoice);
+    final amount = inv?.getAmount() ?? 0;
     final isLiquid = swapTx.isLiquid();
 
     final amtStr = context.select(

@@ -1099,7 +1099,7 @@ class SendCubit extends Cubit<SendState> {
 
     if (amount > fromWallet.balance!) {
       _swapCubit.setValidationError(
-        'Not enough balance.\nWallet balance is: ${fromWallet.balance!}.',
+        'Not enough balance.\nWallet balance is: ${fromWallet.balance!} sats.',
       );
       return;
     }
