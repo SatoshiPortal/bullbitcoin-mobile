@@ -218,32 +218,20 @@ class WalletsStorageRepository {
       if (err != null) throw err;
 
       final walletIdsJson = jsonDecode(walletIds!)['wallets'] as List<dynamic>;
-
       final List<String> walletHashIds = [];
       for (final id in walletIdsJson) {
         walletHashIds.add(id as String);
       }
 
       walletHashIds.remove(walletHashId);
-
       final jsn = jsonEncode({
         'wallets': [...walletHashIds],
       });
-
       final _ = await _hiveStorage.saveValue(
         key: StorageKeys.wallets,
         value: jsn,
       );
-
       await _hiveStorage.deleteValue(walletHashId);
-      // final appDocDir = await getApplicationDocumentsDirectory();
-      // final File dbDir = File(appDocDir.path + '/$walletHashId');
-      // print('deleting file2: $dbDir');
-      // final File dbDirSigner = File(appDocDir.path + '/${walletHashId}_signer');
-
-      // TODO: Liquid: Getting stuck here. So commented for now
-      // await dbDir.delete();
-      // await dbDirSigner.delete();
       return null;
     } on Exception catch (e) {
       return Err(
@@ -256,18 +244,7 @@ class WalletsStorageRepository {
 
   Future<Err?> deleteWalletFile(String walletHashId) async {
     final appDocDir = await getApplicationDocumentsDirectory();
-    // final File dbDir = File(appDocDir.path + '/$walletHashId');
-    // print('deleting file2: $dbDir');
-    // final File dbDirSigner = File(appDocDir.path + '/${walletHashId}_signer');
     final Directory dbDirect = Directory(appDocDir.path + '/$walletHashId');
-    // return null;
-
-    // if (dbDir.existsSync()) {
-    //   await dbDir.delete(recursive: true);
-    // }
-    // if (dbDirSigner.existsSync()) {
-    //   await dbDirSigner.delete(recursive: true);
-    // }
     if (dbDirect.existsSync()) {
       await dbDirect.delete(recursive: true);
     }
