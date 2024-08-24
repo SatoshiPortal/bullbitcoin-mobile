@@ -627,6 +627,7 @@ class LWKTransactions {
         txs.insert(idx, newTx);
       } else
         txs.add(newTx);
+
       final w = wallet.copyWith(transactions: txs);
 
       return ((w, txid), null);

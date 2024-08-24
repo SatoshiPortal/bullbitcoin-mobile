@@ -1089,7 +1089,11 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void buildChainSwap(
-      Wallet fromWallet, Wallet toWallet, int amount, bool sweep) async {
+    Wallet fromWallet,
+    Wallet toWallet,
+    int amount,
+    bool sweep,
+  ) async {
     if (amount == 0 && sweep == false) {
       _swapCubit.setValidationError(
         'Please enter valid amount',

@@ -585,8 +585,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         : swapFromWallet!;
 
     emit(state.copyWith(updatedSwapTx: swapTx));
-    await Future.delayed(100.ms);
-    emit(state.copyWith(updatedSwapTx: null));
+    // await Future.delayed(100.ms);
+    // emit(state.copyWith(updatedSwapTx: null));
 
     final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
 

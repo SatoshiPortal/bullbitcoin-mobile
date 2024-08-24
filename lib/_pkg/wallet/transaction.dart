@@ -413,6 +413,8 @@ class WalletTx implements IWalletTransactions {
 
     if (updatedSwapTx.isSubmarine()) {
       final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.lockupTxid);
+      final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
+
       if (idx != -1) {
         final updatedTx = txs[idx].copyWith(
           swapTx: updatedSwapTx,
@@ -421,8 +423,11 @@ class WalletTx implements IWalletTransactions {
         );
         txs[idx] = updatedTx;
       }
+      if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
     if (updatedSwapTx.paidReverse()) {
+      // while this swapTx is paid, this function is called right after it is claimed
+      // so here we will have an updatedTxid
       // new reverse swaps need to create a transaction.txid with the swap.id
       final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.id);
       if (idx == -1) {
@@ -430,6 +435,7 @@ class WalletTx implements IWalletTransactions {
         txs.add(newTx);
       } else {
         final updatedTx = txs[idx].copyWith(
+          txid: updatedSwapTx.claimTxid ?? txs[idx].txid,
           swapTx: updatedSwapTx,
           isSwap: true,
           label: swapTx.label,
@@ -474,6 +480,18 @@ class WalletTx implements IWalletTransactions {
           swapTx: updatedSwapTx,
           label: swapTx.label,
         );
+      if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
+    }
+    if (updatedSwapTx.noClaimTxid() || updatedSwapTx.noLockupTxid()) {
+      final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
+      final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
+
+      if (txIdx != -1)
+        txs[txIdx] = txs[txIdx].copyWith(
+          swapTx: updatedSwapTx,
+          label: swapTx.label,
+        );
+
       if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
 
