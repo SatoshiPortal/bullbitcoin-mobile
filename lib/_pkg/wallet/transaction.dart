@@ -413,7 +413,6 @@ class WalletTx implements IWalletTransactions {
 
     if (updatedSwapTx.isSubmarine()) {
       final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.lockupTxid);
-      final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
 
       if (idx != -1) {
         final updatedTx = txs[idx].copyWith(
@@ -423,14 +422,16 @@ class WalletTx implements IWalletTransactions {
         );
         txs[idx] = updatedTx;
       }
-      if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
-    if (updatedSwapTx.paidReverse() && wallet.isLiquid()) {
+    if (updatedSwapTx.paidReverse()) {
       // liquid is claimed at paid status
       // while this swapTx is paid, this function is called right after it is claimed
-      // so here we will have an updatedTxid
+      // so here we will have an updatedSwap.claimTxid for Liquid
       // new reverse swaps need to create a transaction.txid with the swap.id
-      final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.id);
+      final idx = txs.indexWhere(
+        (_) => _.txid == updatedSwapTx.id,
+      );
+
       if (idx == -1) {
         final newTx = updatedSwapTx.toNewTransaction();
         txs.add(newTx);
@@ -444,23 +445,21 @@ class WalletTx implements IWalletTransactions {
         txs[idx] = updatedTx;
       }
     }
-    if (updatedSwapTx.claimableReverse() && wallet.isBitcoin()) {
+    if (updatedSwapTx.claimableReverse() || updatedSwapTx.settledReverse()) {
       // bitcoin is claimed at claimable status
       // while this swapTx is paid, this function is called right after it is claimed
-      // so here we will have an updatedTxid
-      // new reverse swaps need to create a transaction.txid with the swap.id
-      final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.id);
-      if (idx == -1) {
-        final newTx = updatedSwapTx.toNewTransaction();
-        txs.add(newTx);
-      } else {
-        final updatedTx = txs[idx].copyWith(
-          txid: updatedSwapTx.claimTxid ?? txs[idx].txid,
+      // so here we will have an updatedTxid for Bitcoin
+      // since swap is past paid, it exists within a tx
+      final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
+
+      if (txIdx != -1) {
+        final updatedTx = txs[txIdx].copyWith(
+          txid: updatedSwapTx.claimTxid ?? txs[txIdx].txid,
           swapTx: updatedSwapTx,
           isSwap: true,
           label: swapTx.label,
         );
-        txs[idx] = updatedTx;
+        txs[txIdx] = updatedTx;
       }
     }
     if (updatedSwapTx.settledReverse()) {
@@ -479,19 +478,15 @@ class WalletTx implements IWalletTransactions {
     }
     if (updatedSwapTx.isChainSend() || updatedSwapTx.isChainSelf()) {
       final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
-      final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
 
       if (txIdx != -1)
         txs[txIdx] = txs[txIdx].copyWith(
           swapTx: updatedSwapTx,
           label: swapTx.label,
         );
-
-      if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
     if (updatedSwapTx.isChainReceive()) {
       final txIdx = txs.indexWhere((_) => _.txid == swapTx.lockupTxid);
-      final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
       if (txIdx == -1) {
         final newTx = updatedSwapTx.toNewTransaction();
         txs.add(newTx);
@@ -500,20 +495,17 @@ class WalletTx implements IWalletTransactions {
           swapTx: updatedSwapTx,
           label: swapTx.label,
         );
-      if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
     if (updatedSwapTx.noClaimTxid() || updatedSwapTx.noLockupTxid()) {
       final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
-      final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
-
       if (txIdx != -1)
         txs[txIdx] = txs[txIdx].copyWith(
           swapTx: updatedSwapTx,
           label: swapTx.label,
         );
-
-      if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
+    final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
+    if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
 
     final closeSwap = swapTx.close();
     if (closeSwap) {

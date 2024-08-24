@@ -543,9 +543,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     if (walletBloc == null || wallet == null) return;
     final swapFromWallet =
         walletBloc.state.wallet!.getOngoingSwap(event.swapTxId);
+    if (swapFromWallet == null) return;
     final swapTx = event.status != null
-        ? swapFromWallet!.copyWith(status: event.status)
-        : swapFromWallet!;
+        ? swapFromWallet.copyWith(status: event.status)
+        : swapFromWallet;
 
     emit(state.copyWith(updatedSwapTx: swapTx));
     // await Future.delayed(100.ms);
