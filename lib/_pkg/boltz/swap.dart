@@ -278,7 +278,7 @@ class SwapBoltz {
       final address = wallet.lastGeneratedAddress?.address;
       if (address == null || address.isEmpty) throw 'Address not found';
 
-      final isLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+      final isLiquid = wallet.isLiquid();
 
       final (swapSentive, err) = await _secureStorage.getValue(
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
@@ -386,7 +386,7 @@ class SwapBoltz {
         throw errFees;
       }
 
-      final isLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+      final isLiquid = wallet.isLiquid();
 
       final (swapSentive, err) = await _secureStorage.getValue(
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
@@ -474,7 +474,7 @@ class SwapBoltz {
     required Wallet wallet,
   }) async {
     try {
-      final isLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+      final isLiquid = wallet.isLiquid();
 
       final (swapSentive, err) = await _secureStorage.getValue(
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
@@ -521,7 +521,7 @@ class SwapBoltz {
         throw errFees;
       }
 
-      final isLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+      final isLiquid = wallet.isLiquid();
 
       final (swapSentive, err) = await _secureStorage.getValue(
         StorageKeys.swapTxSensitive + '_' + swapTx.id,

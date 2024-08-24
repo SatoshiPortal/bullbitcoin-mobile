@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
@@ -133,7 +132,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     final Wallet wallet = state.walletBloc!.state.wallet!;
 
     // If currently selected wallet is bitcoin? wallet, then find and load the liquid wallet and get it's lastGeneratedAddress.
-    if (wallet.baseWalletType == BaseWalletType.Liquid) {
+    if (wallet.isLiquid()) {
       emit(
         state.copyWith(
           defaultAddress: wallet.lastGeneratedAddress,
@@ -143,18 +142,18 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       final (allWallets, _) = await _walletsStorageRepository.readAllWallets();
 
       final Wallet? liquidWallet;
-      if (wallet.network == BBNetwork.Mainnet) {
+      if (wallet.isMainnet()) {
         liquidWallet = allWallets?.firstWhere(
           (w) =>
-              w.baseWalletType == BaseWalletType.Liquid &&
-              w.network == BBNetwork.Mainnet &&
+              w.isLiquid() &&
+              w.isMainnet() &&
               w.sourceFingerprint == wallet.sourceFingerprint,
         );
       } else {
         liquidWallet = allWallets?.firstWhere(
           (w) =>
-              w.baseWalletType == BaseWalletType.Liquid &&
-              w.network == BBNetwork.Testnet &&
+              w.isLiquid() &&
+              w.isTestnet() &&
               w.sourceFingerprint == wallet.sourceFingerprint,
         );
       }
@@ -165,7 +164,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         ),
       );
       // If currently selected wallet is liquid? wallet, then find and load the bitcoin wallet and get it's lastGeneratedAddress.
-    } else if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
+    } else if (wallet.isBitcoin()) {
       emit(
         state.copyWith(
           defaultLiquidAddress: wallet.lastGeneratedAddress,
@@ -175,17 +174,17 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       final (allWallets, _) = await _walletsStorageRepository.readAllWallets();
 
       Wallet? btcWallet;
-      if (wallet.network == BBNetwork.Mainnet) {
+      if (wallet.isMainnet()) {
         btcWallet = allWallets?.firstWhere(
           (w) =>
-              w.baseWalletType == BaseWalletType.Bitcoin &&
-              w.network == BBNetwork.Mainnet &&
+              w.isBitcoin() &&
+              w.isMainnet() &&
               w.sourceFingerprint == wallet.sourceFingerprint,
         );
       } else {
         btcWallet = allWallets?.firstWhere(
           (w) =>
-              w.baseWalletType == BaseWalletType.Bitcoin &&
+              w.isBitcoin() &&
               w.network == BBNetwork.Testnet &&
               w.sourceFingerprint == wallet.sourceFingerprint,
         );
@@ -215,13 +214,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     final isLiq = state.paymentNetwork == PaymentNetwork.liquid;
     final defaultAddress =
         isLiq ? state.defaultLiquidAddress : state.defaultAddress;
-    final wallet = state.walletBloc?.state.wallet;
-
     if (defaultAddress == null) return;
+
+    final wallet = state.walletBloc?.state.wallet;
     if (wallet == null) return;
 
     final address = wallet.getAddressFromWallet(defaultAddress.address);
-
     if (address == null) return;
 
     if (!isLiq && state.defaultAddress != null)
@@ -234,43 +232,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         state.copyWith(description: address.label ?? ''),
       );
   }
-
-  /*
-  void loadAddress() async {
-    if (state.walletBloc == null) return;
-    emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
-
-    final address = state.walletBloc!.state.wallet!.getLastAddress();
-    if (address == null) {
-      generateNewAddress();
-      emit(
-        state.copyWith(
-          loadingAddress: false,
-        ),
-      );
-      return;
-    }
-    emit(
-      state.copyWith(
-        defaultAddress: address,
-      ),
-    );
-    final label = await walletAddress.getLabel(
-      address: address.address,
-      wallet: state.walletBloc!.state.wallet!,
-    );
-    final labelUpdated = address.copyWith(label: label);
-
-    if (label != null) emit(state.copyWith(privateLabel: label, defaultAddress: labelUpdated));
-
-    emit(
-      state.copyWith(
-        loadingAddress: false,
-        errLoadingAddress: '',
-      ),
-    );
-  }
-  */
 
   void generateNewAddress() async {
     if (state.paymentNetwork == PaymentNetwork.lightning) return;
@@ -348,26 +309,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
   }
 
-  // void descriptionChanged(String description) {
-  //   emit(state.copyWith(description: description));
-  //   final (addr, w) = _walletAddress.updateAddressWithLabel(
-  //     wallet: state.walletBloc!.state.wallet!,
-  //     address: state.defaultAddress!,
-  //     label: state.description,
-  //   );
-
-  //   state.walletBloc!
-  //       .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
-  // }
-
-  // void privateLabelChanged(String privateLabel) {
-  //   emit(state.copyWith(privateLabel: privateLabel));
-  // }
-
-  // void clearLabelField() {
-  //   emit(state.copyWith(privateLabel: ''));
-  // }
-
   void descriptionChanged(String description) {
     emit(state.copyWith(description: description));
   }
@@ -389,8 +330,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       label: state.description,
       kind: address.kind,
       state: address.state,
-      // spendable:
-      // state.defaultAddress?.state == AddressStatus.active ? true : false,
     );
 
     state.walletBloc!
@@ -410,60 +349,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(labelSaved: false));
   }
 
-  // void loadInvoice() {
-  //   if (state.savedDescription.isNotEmpty)
-  //     emit(state.copyWith(description: state.savedDescription));
-  //   if (state.savedInvoiceAmount > 0) currencyCubfit.updateAmountDirect(state.savedInvoiceAmount);
-  // }
-
   void clearInvoiceFields() {
     emit(state.copyWith(description: ''));
   }
-
-  // void saveFinalInvoiceClicked(int amt) async {
-  //   if (state.walletBloc == null) return;
-
-  //   if (amt <= 0) {
-  //     emit(state.copyWith(errCreatingInvoice: 'Enter correct amount'));
-  //     return;
-  //   }
-
-  //   emit(state.copyWith(creatingInvoice: true, errCreatingInvoice: ''));
-
-  //   final address = state.paymentNetwork == PaymentNetwork.liquid
-  //       ? state.defaultLiquidAddress
-  //       : state.defaultAddress;
-
-  //   final (_, w) = await _walletAddress.addAddressToWallet(
-  //     address: (address!.index, address.address),
-  //     wallet: state.walletBloc!.state.wallet!,
-  //     label: state.description,
-  //     kind: AddressKind.deposit,
-  //   );
-
-  //   state.walletBloc!
-  //       .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
-
-  //   emit(
-  //     state.copyWith(
-  //       creatingInvoice: false,
-  //       errCreatingInvoice: '',
-  //       savedDescription: state.description,
-  //       savedInvoiceAmount: amt,
-  //     ),
-  //   );
-  // }
-
-  // void createLnInvoiceClicked(int amt) async {
-  //   final walletId = state.walletBloc?.state.wallet?.id;
-  //   if (walletId == null) return;
-
-  //   state.swapBloc.createBtcLnRevSwap(
-  //     walletId: walletId,
-  //     amount: amt,
-  //     label: state.description,
-  //   );
-  // }
 
   void shareClicked() {}
 }

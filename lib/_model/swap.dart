@@ -154,6 +154,7 @@ class SwapTx with _$SwapTx {
   bool isTestnet() => network == BBNetwork.Testnet;
 
   bool isLiquid() => baseWalletType == BaseWalletType.Liquid;
+  bool isBitcoin() => baseWalletType == BaseWalletType.Bitcoin;
 
   int? totalFees() {
     if (boltzFees == null || lockupFees == null || claimFees == null)

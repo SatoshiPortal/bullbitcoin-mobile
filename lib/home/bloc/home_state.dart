@@ -137,7 +137,8 @@ class HomeState with _$HomeState {
 
   bool walletIsLiquidFromTx(Transaction tx) {
     final wallet = getWalletFromTx(tx);
-    return wallet?.baseWalletType == BaseWalletType.Liquid;
+    if (wallet == null) return false;
+    return wallet.isLiquid();
   }
 
   bool walletIsWatchOnlyFromTx(Transaction tx) {
@@ -188,7 +189,7 @@ class HomeState with _$HomeState {
   }
 
   Transaction? getTxFromSwap(SwapTx swap) {
-    final isLiq = swap.baseWalletType == BaseWalletType.Liquid;
+    final isLiq = swap.isLiquid();
     final network = swap.network;
     final wallet = !isLiq
         ? getMainSecureWallet(network)?.state.wallet
@@ -330,10 +331,8 @@ class HomeState with _$HomeState {
         walletBlocsFromNetwork(network).where((w) {
       final wallet = w.state.wallet!;
       if (onlyMain && !wallet.mainWallet) return false;
-      if (onlyBitcoin && wallet.baseWalletType != BaseWalletType.Bitcoin)
-        return false;
-      if (onlyLiquid && wallet.baseWalletType != BaseWalletType.Liquid)
-        return false;
+      if (onlyBitcoin && !wallet.isBitcoin()) return false;
+      if (onlyLiquid && !wallet.isLiquid()) return false;
       return true;
     }).toList();
     WalletBloc? walletBlocWithHighestBalance;
@@ -364,10 +363,8 @@ class HomeState with _$HomeState {
       (_) {
         final wallet = _.state.wallet!;
         if (onlyMain && !wallet.mainWallet) return false;
-        if (onlyBitcoin && wallet.baseWalletType != BaseWalletType.Bitcoin)
-          return false;
-        if (onlyLiquid && wallet.baseWalletType != BaseWalletType.Liquid)
-          return false;
+        if (onlyBitcoin && !wallet.isBitcoin()) return false;
+        if (onlyLiquid && !wallet.isLiquid()) return false;
         return true;
       },
     ).toList();

@@ -84,7 +84,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    final walletIsLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+    final walletIsLiquid = wallet.isLiquid();
 
     final reverseFees = await fees?.reverse();
 

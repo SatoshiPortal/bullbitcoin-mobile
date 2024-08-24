@@ -617,10 +617,9 @@ class SendCubit extends Cubit<SendState> {
 
     // emit(state.copyWith(sending: true, errSending: ''));
 
-    final isBitcoinSweep =
-        localWallet.baseWalletType == BaseWalletType.Bitcoin &&
-            state.onChainAbsFee != null &&
-            state.onChainAbsFee != 0;
+    final isBitcoinSweep = localWallet.isBitcoin() &&
+        state.onChainAbsFee != null &&
+        state.onChainAbsFee != 0;
     final (buildResp, err) = await _walletTx.buildTx(
       wallet: localWallet,
       isManualSend: false,
@@ -1016,13 +1015,13 @@ class SendCubit extends Cubit<SendState> {
 
         reset();
 
-        if (wallet.baseWalletType == BaseWalletType.Bitcoin) {
+        if (wallet.isBitcoin()) {
           // TODO: Absolute fee doesn't work for liquid build Tx now
           updateOnChainAbsFee(fees);
         }
 
         // sweepAmount = walletBloc.state.wallet!.balance! - fees;
-        final int magicNumber = wallet.baseWalletType == BaseWalletType.Bitcoin
+        final int magicNumber = wallet.isBitcoin()
             ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
             : 1500;
         sweepAmount = wallet.balance! - fees - magicNumber; // TODO
@@ -1045,7 +1044,7 @@ class SendCubit extends Cubit<SendState> {
         lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
         toAddress: state.address, // recipientAddress.address;
         refundAddress: refundAddress!,
-        direction: wallet.baseWalletType == BaseWalletType.Bitcoin
+        direction: wallet.isBitcoin()
             ? boltz.ChainSwapDirection.btcToLbtc
             : boltz.ChainSwapDirection.lbtcToBtc,
         toWalletId: '',
@@ -1134,17 +1133,17 @@ class SendCubit extends Cubit<SendState> {
       );
 
       reset();
-
-      if (walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin) {
+      final wallet = walletBloc.state.wallet;
+      if (wallet == null) return;
+      if (wallet.isBitcoin()) {
         // TODO: Absolute fee doesn't work for liquid build Tx now
         updateOnChainAbsFee(fees);
       }
 
       // sweepAmount = walletBloc.state.wallet!.balance! - fees;
-      final int magicNumber =
-          walletBloc.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
-              ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
-              : 1500;
+      final int magicNumber = wallet.isBitcoin()
+          ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
+          : 1500;
       sweepAmount =
           walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:
       // -20 works for btc
@@ -1162,7 +1161,7 @@ class SendCubit extends Cubit<SendState> {
       lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
       toAddress: recipientAddress, // recipientAddress.address;
       refundAddress: refundAddress,
-      direction: fromWallet.baseWalletType == BaseWalletType.Bitcoin
+      direction: fromWallet.isBitcoin()
           ? boltz.ChainSwapDirection.btcToLbtc
           : boltz.ChainSwapDirection.lbtcToBtc,
       toWalletId: toWallet.id,

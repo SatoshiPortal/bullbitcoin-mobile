@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_model/swap.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
@@ -150,7 +149,7 @@ class _Screen extends StatelessWidget {
     final receiveWallet = context.select((WalletBloc x) => x.state.wallet);
 
     final walletIsLiquid = context.select(
-      (WalletBloc x) => x.state.wallet!.baseWalletType == BaseWalletType.Liquid,
+      (WalletBloc x) => x.state.wallet!.isLiquid(),
     );
     final showWarning =
         context.select((CreateSwapCubit x) => x.state.showWarning());
@@ -683,14 +682,12 @@ class ChainSwapForm extends StatelessWidget {
               context.read<CreateSwapCubit>().createOnChainSwapForReceive(
                     toWallet: receiveWallet,
                     amount: amt,
-                    refundAddress:
-                        receiveWallet.baseWalletType == BaseWalletType.Liquid
-                            ? btcRefundAddress
-                            : lqRefundAddress,
-                    direction:
-                        receiveWallet.baseWalletType == BaseWalletType.Liquid
-                            ? ChainSwapDirection.btcToLbtc
-                            : ChainSwapDirection.lbtcToBtc,
+                    refundAddress: receiveWallet.isLiquid()
+                        ? btcRefundAddress
+                        : lqRefundAddress,
+                    direction: receiveWallet.isLiquid()
+                        ? ChainSwapDirection.btcToLbtc
+                        : ChainSwapDirection.lbtcToBtc,
                     label: label,
                   );
             },
@@ -789,8 +786,7 @@ class CreateLightningInvoice extends StatelessWidget {
               final amt = context.read<CurrencyCubit>().state.amount;
               final wallet =
                   context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
-              final walletIsLiquid =
-                  wallet.baseWalletType == BaseWalletType.Liquid;
+              final walletIsLiquid = wallet.isLiquid();
               final label = context.read<ReceiveCubit>().state.description;
               final isTestnet = context.read<NetworkCubit>().state.testnet;
               final networkUrl = !walletIsLiquid

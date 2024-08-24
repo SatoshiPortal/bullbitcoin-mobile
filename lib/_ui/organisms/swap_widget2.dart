@@ -93,7 +93,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
       selectedFromWallet = fromWallet;
       selectedToWallet = toWallet;
 
-      if (fromWallet.baseWalletType == BaseWalletType.Bitcoin) {
+      if (fromWallet.isBitcoin()) {
         toWallets =
             widget.wallets.where((wallet) => wallet.isLiquid()).toList();
       } else {
@@ -111,7 +111,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
       selectedFromWallet = fromWallet;
       selectedToWallet = toWallet;
 
-      if (toWallet.baseWalletType == BaseWalletType.Bitcoin) {
+      if (toWallet.isBitcoin()) {
         fromWallets =
             widget.wallets.where((wallet) => wallet.isLiquid()).toList();
       } else {

@@ -1,6 +1,5 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -92,12 +91,11 @@ class ReceiveState with _$ReceiveState {
   }
 
   bool isChainSwap() {
+    if (walletBloc == null || walletBloc?.state.wallet == null) return false;
     if (paymentNetwork == PaymentNetwork.bitcoin &&
-        walletBloc?.state.wallet?.baseWalletType == BaseWalletType.Liquid)
-      return true;
+        walletBloc!.state.wallet!.isLiquid()) return true;
     if (paymentNetwork == PaymentNetwork.liquid &&
-        walletBloc?.state.wallet?.baseWalletType == BaseWalletType.Bitcoin)
-      return true;
+        walletBloc!.state.wallet!.isBitcoin()) return true;
     return false;
   }
 
@@ -121,14 +119,11 @@ class ReceiveState with _$ReceiveState {
 
   bool allowedSwitch(PaymentNetwork network) {
     if (!oneWallet) return true;
+    if (walletBloc == null || walletBloc?.state.wallet == null) return false;
 
-    final walletType = walletBloc!.state.wallet!.baseWalletType;
-
-    if (network == PaymentNetwork.bitcoin &&
-        walletType == BaseWalletType.Liquid) return false;
-
-    if (network == PaymentNetwork.liquid &&
-        walletType == BaseWalletType.Bitcoin) return false;
+    final wallet = walletBloc!.state.wallet!;
+    if (network == PaymentNetwork.bitcoin && wallet.isLiquid()) return false;
+    if (network == PaymentNetwork.liquid && wallet.isBitcoin()) return false;
 
     return true;
   }
