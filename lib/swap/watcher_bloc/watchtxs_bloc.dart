@@ -385,36 +385,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     return null;
   }
 
-  // Future __swapAlert(
-  //   SwapTx swapTx,
-  //   Wallet wallet,
-  //   Emitter<WatchTxsState> emit,
-  // ) async {
-  //   if (swapTx.paidReverse()) {
-  //     print('ALERT Swap Paid Reverse');
-  //     emit(state.copyWith(txPaid: swapTx));
-  //     return;
-  //   }
-
-  //   if (swapTx.settledReverse()) {
-  //     print('ALERT Swap Settled Reverse');
-  //     emit(state.copyWith(syncWallet: wallet, txPaid: swapTx));
-  //     return;
-  //   }
-
-  //   if (swapTx.paidSubmarine()) {
-  //     print('ALERT Swap Paid Submarine');
-  //     emit(state.copyWith(txPaid: swapTx));
-  //     return;
-  //   }
-
-  //   if (swapTx.settledSubmarine()) {
-  //     print('ALERT Swap Settled Submarine');
-  //     emit(state.copyWith(syncWallet: wallet, txPaid: swapTx));
-  //     return;
-  //   }
-  // }
-
   Future __closeSwap(
     SwapTx swapTx,
     Emitter<WatchTxsState> emit,
@@ -426,13 +396,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // final isTestnet = swapTx.network == BBNetwork.Testnet;
     // add(WatchWallets(isTestnet: isTestnet));
   }
-
-  // Future<void> _onClearAlerts(
-  //   ClearAlerts event,
-  //   Emitter<WatchTxsState> emit,
-  // ) async {
-  //   emit(state.copyWith(txPaid: null, syncWallet: null));
-  // }
 
   Future<SwapTx?> __onChainclaimSwap(
     SwapTx swapTx,

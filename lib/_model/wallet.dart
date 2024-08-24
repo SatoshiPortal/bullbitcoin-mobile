@@ -72,6 +72,7 @@ class Wallet with _$Wallet {
   bool isTestnet() => network == BBNetwork.Testnet;
   bool isMain() => type == BBWalletType.main;
   bool isLiquid() => baseWalletType == BaseWalletType.Liquid;
+  bool isBitcoin() => baseWalletType == BaseWalletType.Bitcoin;
 
   Wallet setLastAddress(Address address) {
     return copyWith(lastGeneratedAddress: address);

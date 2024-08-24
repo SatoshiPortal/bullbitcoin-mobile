@@ -425,7 +425,27 @@ class WalletTx implements IWalletTransactions {
       }
       if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
     }
-    if (updatedSwapTx.paidReverse()) {
+    if (updatedSwapTx.paidReverse() && wallet.isLiquid()) {
+      // liquid is claimed at paid status
+      // while this swapTx is paid, this function is called right after it is claimed
+      // so here we will have an updatedTxid
+      // new reverse swaps need to create a transaction.txid with the swap.id
+      final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.id);
+      if (idx == -1) {
+        final newTx = updatedSwapTx.toNewTransaction();
+        txs.add(newTx);
+      } else {
+        final updatedTx = txs[idx].copyWith(
+          txid: updatedSwapTx.claimTxid ?? txs[idx].txid,
+          swapTx: updatedSwapTx,
+          isSwap: true,
+          label: swapTx.label,
+        );
+        txs[idx] = updatedTx;
+      }
+    }
+    if (updatedSwapTx.claimableReverse() && wallet.isBitcoin()) {
+      // bitcoin is claimed at claimable status
       // while this swapTx is paid, this function is called right after it is claimed
       // so here we will have an updatedTxid
       // new reverse swaps need to create a transaction.txid with the swap.id
