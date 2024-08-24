@@ -438,8 +438,8 @@ class WalletTx implements IWalletTransactions {
       }
     }
     if (updatedSwapTx.settledReverse()) {
-      // new reverse swaps need to create a transaction.txid with the swap.id
-      final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.id);
+      // settled reverse will match based on claimTxid
+      final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.claimTxid);
       if (idx != -1) {
         final updatedTx = txs[idx].copyWith(
           swapTx: updatedSwapTx,
