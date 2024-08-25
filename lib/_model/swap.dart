@@ -107,7 +107,7 @@ class SwapTx with _$SwapTx {
   }
 
   bool noClaimTxid() => claimTxid == null;
-  bool noLockupTxid() => claimTxid == null;
+  bool noLockupTxid() => lockupTxid == null;
 
   // lockup: submarine, chain.self (lbtc->btc), chain.send
   // claim: reverse , chain.recieve

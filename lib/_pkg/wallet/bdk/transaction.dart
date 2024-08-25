@@ -644,7 +644,22 @@ class BDKTransactions {
       } else
         txs.add(newTx);
       // txs.add(newTx);
-      final w = wallet.copyWith(transactions: txs);
+
+      // TODO: Not the right place. Also duplicated in BDKTransaction / LWKTransaction
+      // Optimize it later
+      final swaps = wallet.swaps.toList();
+      if (newTx.swapTx != null) {
+        final swapIndex =
+            swaps.indexWhere((swap) => swap.id == newTx.swapTx!.id);
+        if (swapIndex != -1) {
+          swaps.removeAt(swapIndex);
+          swaps.insert(swapIndex, newTx.swapTx!);
+        } else {
+          swaps.add(newTx.swapTx!);
+        }
+      }
+
+      final w = wallet.copyWith(transactions: txs, swaps: swaps);
 
       return ((w, txid), null);
     } on Exception catch (e) {
