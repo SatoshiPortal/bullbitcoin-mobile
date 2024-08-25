@@ -445,7 +445,7 @@ class WalletTx implements IWalletTransactions {
         txs[idx] = updatedTx;
       }
     }
-    if (updatedSwapTx.claimableReverse() || updatedSwapTx.settledReverse()) {
+    if (updatedSwapTx.claimableReverse()) {
       // bitcoin is claimed at claimable status
       // while this swapTx is paid, this function is called right after it is claimed
       // so here we will have an updatedTxid for Bitcoin
@@ -496,14 +496,14 @@ class WalletTx implements IWalletTransactions {
           label: swapTx.label,
         );
     }
-    if (updatedSwapTx.noClaimTxid() || updatedSwapTx.noLockupTxid()) {
-      final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
-      if (txIdx != -1)
-        txs[txIdx] = txs[txIdx].copyWith(
-          swapTx: updatedSwapTx,
-          label: swapTx.label,
-        );
-    }
+
+    final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
+    if (txIdx != -1)
+      txs[txIdx] = txs[txIdx].copyWith(
+        swapTx: updatedSwapTx,
+        label: swapTx.label,
+      );
+
     final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
     if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
 
