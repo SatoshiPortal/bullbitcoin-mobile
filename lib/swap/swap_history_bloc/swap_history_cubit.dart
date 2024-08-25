@@ -44,20 +44,23 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     for (final walletBloc in walletBlocs) {
       final wallet = walletBloc.state.wallet!;
       final txs = wallet.transactions.where(
-        (_) => _.swapTx != null,
+        (_) => _.swapTx != null && _.swapTx!.close(),
       );
       completedSwaps.addAll(txs);
     }
 
-    completedSwaps.removeWhere(
-      (element) => swapsToWatch
-          .map(
-            (_) => _.$1.id,
-          )
-          .contains(
-            element.swapTx!.id,
-          ),
-    );
+    // completedSwaps.removeWhere(
+    //   (element) => swapsToWatch
+    //       .map(
+    //         (_) => _.$1.id,
+    //       )
+    //       .contains(
+    //         element.swapTx!.id,
+    //       ),
+    // );
+    // completedSwaps.removeWhere(
+    //   (element) => element.swapTx!.close(),
+    // );
 
     emit(state.copyWith(completeSwaps: completedSwaps));
 

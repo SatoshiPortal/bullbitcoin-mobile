@@ -761,6 +761,7 @@ class SendCubit extends Cubit<SendState> {
       transaction: tx.copyWith(
         swapTx: swap,
         isSwap: true,
+        // isLiquid: wallet.isLiquid(),
       ),
       useOnlyLwk: true, // !broadcastViaBoltz,
     );

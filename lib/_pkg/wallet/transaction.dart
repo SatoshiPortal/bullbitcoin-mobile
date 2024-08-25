@@ -439,8 +439,6 @@ class WalletTx implements IWalletTransactions {
         final updatedTx = txs[idx].copyWith(
           txid: updatedSwapTx.claimTxid ?? txs[idx].txid,
           swapTx: updatedSwapTx,
-          isSwap: true,
-          label: swapTx.label,
         );
         txs[idx] = updatedTx;
       }
@@ -456,8 +454,6 @@ class WalletTx implements IWalletTransactions {
         final updatedTx = txs[txIdx].copyWith(
           txid: updatedSwapTx.claimTxid ?? txs[txIdx].txid,
           swapTx: updatedSwapTx,
-          isSwap: true,
-          label: swapTx.label,
         );
         txs[txIdx] = updatedTx;
       }
@@ -467,34 +463,29 @@ class WalletTx implements IWalletTransactions {
       final idx = txs.indexWhere((_) => _.txid == updatedSwapTx.claimTxid);
       if (idx != -1) {
         final updatedTx = txs[idx].copyWith(
-          swapTx: updatedSwapTx,
-          isSwap: true,
           txid: updatedSwapTx.claimTxid!,
           timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-          label: updatedSwapTx.label,
+          swapTx: updatedSwapTx,
         );
         txs[idx] = updatedTx;
       }
     }
-    if (updatedSwapTx.isChainSend() || updatedSwapTx.isChainSelf()) {
-      final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
+    // if (updatedSwapTx.isChainSend() || updatedSwapTx.isChainSelf()) {
+    //   final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
 
-      if (txIdx != -1)
-        txs[txIdx] = txs[txIdx].copyWith(
-          swapTx: updatedSwapTx,
-          label: swapTx.label,
-        );
-    }
+    //   if (txIdx != -1)
+    //     txs[txIdx] = txs[txIdx].copyWith(
+    //       swapTx: updatedSwapTx,
+    //       label: swapTx.label,
+    //       isSwap: true,
+    //     );
+    // }
     if (updatedSwapTx.isChainReceive()) {
       final txIdx = txs.indexWhere((_) => _.txid == swapTx.lockupTxid);
       if (txIdx == -1) {
         final newTx = updatedSwapTx.toNewTransaction();
         txs.add(newTx);
-      } else
-        txs[txIdx] = txs[txIdx].copyWith(
-          swapTx: updatedSwapTx,
-          label: swapTx.label,
-        );
+      }
     }
 
     final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
@@ -502,6 +493,7 @@ class WalletTx implements IWalletTransactions {
       txs[txIdx] = txs[txIdx].copyWith(
         swapTx: updatedSwapTx,
         label: swapTx.label,
+        isSwap: true,
       );
 
     final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
