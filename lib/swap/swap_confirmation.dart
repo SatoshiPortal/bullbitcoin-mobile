@@ -123,9 +123,12 @@ class _Screen extends StatelessWidget {
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     if (sent) return SendingOnChainTx();
 
-    final showWarning =
-        context.select((CreateSwapCubit x) => x.state.showWarning());
-    print('Swap.screen.showWarning: $showWarning');
+    final showWarning = context.select(
+      (CreateSwapCubit x) =>
+          x.state.errSmallAmt == false &&
+          x.state.errHighFees != null &&
+          x.state.errHighFees! > 0,
+    );
 
     if (showWarning == true) {
       return const SingleChildScrollView(
@@ -237,9 +240,6 @@ class _Warnings extends StatelessWidget {
     final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 
-    final errLowAmt =
-        context.select((CreateSwapCubit x) => x.state.swapTx!.smallAmt());
-
     final swaptx = context.select((CreateSwapCubit x) => x.state.swapTx!);
 
     final errHighFees =
@@ -280,13 +280,11 @@ class _Warnings extends StatelessWidget {
     //       cubit.state.calculatePrice(minAmt, cubit.state.defaultFiatCurrency!),
     // );
 
-    print('Warning errLowAmt: $errLowAmt');
     print('Warning errHighFees: $errHighFees');
 
     return WarningContainer(
       children: [
         const Gap(24),
-        if (errLowAmt) const LowAmtWarn(),
         if (errHighFees != null)
           HighFeesWarn(
             feePercentage: errHighFees,
@@ -309,31 +307,6 @@ class _Warnings extends StatelessWidget {
             },
           ),
         ),
-      ],
-    );
-  }
-}
-
-// TODO: Does this happen with swap? If not, remove
-class LowAmtWarn extends StatelessWidget {
-  const LowAmtWarn();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        BBText.titleLarge('Small amount warning', isRed: true),
-        Gap(8),
-        BBText.bodySmall(
-          'You are about to send less than 0.01 BTC as a Lightning Network payment using on-chain Bitcoin from your Secure Bitcoin Wallet.',
-        ),
-        Gap(8),
-        BBText.bodySmall(
-          'Only do this if you specifically want to send funds from your Secure Bitcoin Wallet.',
-          isBold: true,
-        ),
-        Gap(24),
       ],
     );
   }

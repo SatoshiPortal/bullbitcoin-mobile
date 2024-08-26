@@ -106,6 +106,15 @@ class SwapTx with _$SwapTx {
     }
   }
 
+  int? amountForDisplay() {
+    if (isSubmarine()) {
+      return outAmount - (claimFees ?? 0) - (boltzFees ?? 0);
+    } else if (isReverse()) {
+      return outAmount;
+    }
+    return outAmount;
+  }
+
   bool noClaimTxid() => claimTxid == null;
   bool noLockupTxid() => lockupTxid == null;
 

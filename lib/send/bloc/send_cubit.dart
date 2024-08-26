@@ -646,7 +646,9 @@ class SendCubit extends Cubit<SendState> {
 
     final (_, tx, feeAmt) = buildResp!;
 
-    if (swaptx.totalFees()! + feeAmt! > swaptx.outAmount) {
+    final updatedSwapTx = swaptx.copyWith(lockupFees: feeAmt);
+
+    if (updatedSwapTx.totalFees()! + feeAmt! > updatedSwapTx.outAmount) {
       emit(
         state.copyWith(
           errSending: 'Fees is greater than output amount!',
@@ -659,7 +661,7 @@ class SendCubit extends Cubit<SendState> {
       state.copyWith(
         psbtSigned: tx!.psbt,
         psbtSignedFeeAmount: feeAmt,
-        tx: tx.copyWith(swapTx: swaptx, isSwap: true),
+        tx: tx.copyWith(swapTx: updatedSwapTx, isSwap: true),
         signed: true,
         sending: false,
         enabledWallets: [localWallet.id],
@@ -718,7 +720,9 @@ class SendCubit extends Cubit<SendState> {
 
     final (_, tx, feeAmt) = buildResp!;
 
-    if (swaptx.totalFees()! + feeAmt! > swaptx.outAmount) {
+    final updatedSwapTx = swaptx.copyWith(lockupFees: feeAmt);
+
+    if (updatedSwapTx.totalFees()! + feeAmt! > updatedSwapTx.outAmount) {
       emit(
         state.copyWith(errSending: 'Fees is greater than output amount!'),
       );
@@ -728,7 +732,7 @@ class SendCubit extends Cubit<SendState> {
       state.copyWith(
         psbtSigned: tx!.psbt,
         psbtSignedFeeAmount: feeAmt,
-        tx: tx.copyWith(swapTx: swaptx, isSwap: true),
+        tx: tx.copyWith(swapTx: updatedSwapTx, isSwap: true),
         signed: true,
         sending: false,
         enabledWallets: [localWallet.id],

@@ -471,7 +471,7 @@ class _SwapDetails extends StatelessWidget {
 
     // final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
-    final amt = swap.outAmount;
+    final amt = swap.amountForDisplay() ?? 0;
     final amount = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true),
     );
@@ -632,7 +632,7 @@ class _OnchainSwapDetails extends StatelessWidget {
 
     // final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
-    final amt = swap.outAmount;
+    final amt = swap.amountForDisplay() ?? 0;
     final amount = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true),
     );
