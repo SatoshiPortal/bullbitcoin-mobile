@@ -144,20 +144,6 @@ class _Screen extends StatelessWidget {
       );
     }
 
-    if (showWarning == true) {
-      return const SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _Warnings(),
-            ],
-          ),
-        ),
-      );
-    }
-
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -235,8 +221,6 @@ class _Warnings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('SwapPage._Warning build');
-
     final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 

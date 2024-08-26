@@ -379,21 +379,21 @@ class _ReceiveAppBar extends StatelessWidget {
 class _Warnings extends StatelessWidget {
   const _Warnings();
 
-  Widget buildLowAmtWarn() {
-    return const Column(
+  Widget buildLowAmtWarn(bool onChain) {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BBText.titleLarge('Small amount warning', isRed: true),
-        Gap(8),
+        const BBText.titleLarge('Small amount warning', isRed: true),
+        const Gap(8),
         BBText.bodySmall(
-          'You are about to receive less than 0.01 BTC as a Lightning Network payment and swap it to on-chain Bitcoin in your Secure Bitcoin Wallet.',
+          'You are about to receive less than 0.01 BTC as ${onChain == true ? 'Onchain swap' : 'a Lightning Network payment'} and swap it to on-chain Bitcoin in your Secure Bitcoin Wallet.',
         ),
-        Gap(8),
-        BBText.bodySmall(
+        const Gap(8),
+        const BBText.bodySmall(
           'Only do this if you specifically want to add funds to your Secure Bitcoin Wallet.',
           isBold: true,
         ),
-        Gap(24),
+        const Gap(24),
       ],
     );
   }
@@ -451,7 +451,7 @@ class _Warnings extends StatelessWidget {
     return WarningContainer(
       children: [
         const Gap(24),
-        if (errLowAmt) buildLowAmtWarn(),
+        if (errLowAmt) buildLowAmtWarn(swapTx.isChainSwap()),
         if (errHighFees != null)
           buildHighFeesWarn(
             feePercentage: errHighFees,
