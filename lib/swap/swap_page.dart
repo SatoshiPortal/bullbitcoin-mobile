@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
@@ -120,7 +119,8 @@ class _Screen extends StatelessWidget {
     final network =
         context.select((NetworkCubit cubit) => cubit.state.getBBNetwork());
     final walletBlocs = context.select(
-        (HomeCubit cubit) => cubit.state.walletBlocsFromNetwork(network));
+      (HomeCubit cubit) => cubit.state.walletBlocsFromNetwork(network),
+    );
     final wallets = walletBlocs.map((bloc) => bloc.state.wallet!).toList();
 
     final generatingInv = context
