@@ -503,7 +503,7 @@ class LWKTransactions {
       final Transaction tx = Transaction(
         txid: '',
         received: 0,
-        sent: amount ?? 0,
+        sent: (amount ?? 0) + decoded.absoluteFees,
         fee: decoded.absoluteFees,
         height: 0,
         timestamp: 0,
