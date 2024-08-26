@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'home_state.freezed.dart';
@@ -274,19 +275,24 @@ class HomeState with _$HomeState {
     // BEGIN: Chainswap filters: This is to show only Swap Txs in home page,
     // by removing swap settle txs
     // Swap settle tx IDs (either claim or refund) are stored in swap: tx.swapTx.txid
+    // For submarine refund, refund txid is stored in swap.claimTxid
     final swapChainTxs = txs
-        .where(
-          (tx) =>
-              tx.swapTx != null &&
-              tx.swapTx!.isChainSwap() == true &&
-              tx.swapTx?.status?.status != null,
-        )
-        .map((tx) => tx.swapTx!)
+        .where((tx) {
+          if (tx.swapTx != null)
+            return (tx.swapTx!.isChainSwap() == true &&
+                    tx.swapTx!.status?.status != null) ||
+                (tx.swapTx!.lnSwapDetails?.swapType ==
+                        boltz.SwapType.submarine &&
+                    tx.swapTx!.status?.status ==
+                        boltz.SwapStatus.txnLockupFailed);
+          return false;
+        })
+        .map((tx) => tx.swapTx)
         .toList();
     final toRemove = <Transaction>[];
     for (final tx in txs) {
       final isInSwapTxAndNotPending = swapChainTxs
-          .where((swap) => swap.claimTxid == tx.txid) // && tx.timestamp != 0)
+          .where((swap) => swap?.claimTxid == tx.txid) // && tx.timestamp != 0)
           .isNotEmpty;
       if (isInSwapTxAndNotPending == true) toRemove.add(tx);
     }
