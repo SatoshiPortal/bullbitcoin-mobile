@@ -161,6 +161,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
             items: fromWallets,
             onChanged: _fromWalletChanged,
             value: selectedFromWallet,
+            disabled: widget.fromWalletId != null,
           ),
           const SizedBox(
             height: 20,
@@ -175,6 +176,7 @@ class _SwapWidget2State extends State<SwapWidget2> {
             items: toWallets,
             value: selectedToWallet,
             onChanged: _toWalletChanged,
+            disabled: widget.toWalletId != null,
           ),
           const SizedBox(
             height: 32,

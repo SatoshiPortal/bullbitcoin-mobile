@@ -47,7 +47,9 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
       ),
     );
 
-    context.read<CurrencyCubit>().updateAmount(amount.toString());
+    final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
+    final amtDouble = isSats ? amount : amount / 100000000;
+    context.read<CurrencyCubit>().updateAmount(amtDouble.toString());
     final defaultCurrency = context
         .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
     final fiatAmt =
@@ -169,13 +171,10 @@ class _OnChainWarning extends StatelessWidget {
         ),
         const Gap(8),
         if (swapTx.isChainSelf()) ...[
-          const SizedBox(
-            width: 150,
-            child: BBText.bodySmall(
-              'This will take a while.',
-              isRed: true,
-              fontSize: 12,
-            ),
+          const BBText.bodySmall(
+            'This will take a while.',
+            isRed: true,
+            fontSize: 12,
           ),
         ] else if (swapTx.isChainReceive()) ...[
           const SizedBox(
