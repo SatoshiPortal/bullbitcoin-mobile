@@ -728,16 +728,35 @@ class SendCubit extends Cubit<SendState> {
       );
       return;
     }
-    emit(
-      state.copyWith(
-        psbtSigned: tx!.psbt,
-        psbtSignedFeeAmount: feeAmt,
-        tx: tx.copyWith(swapTx: updatedSwapTx, isSwap: true),
-        signed: true,
-        sending: false,
-        enabledWallets: [localWallet.id],
-      ),
-    );
+
+    // To auto broadcast the swap in case of LBTC -> LN Swap;
+    if (state.couldBeOnchainSwap() == false &&
+        state.isLnInvoice() == true &&
+        tx?.isLiquid == true) {
+      emit(
+        state.copyWith(
+          psbtSigned: tx!.psbt,
+          psbtSignedFeeAmount: feeAmt,
+          tx: tx.copyWith(swapTx: updatedSwapTx, isSwap: true),
+          signed: true,
+          sending: true,
+          enabledWallets: [localWallet.id],
+        ),
+      );
+
+      sendSwap();
+    } else {
+      emit(
+        state.copyWith(
+          psbtSigned: tx!.psbt,
+          psbtSignedFeeAmount: feeAmt,
+          tx: tx.copyWith(swapTx: updatedSwapTx, isSwap: true),
+          signed: true,
+          sending: false,
+          enabledWallets: [localWallet.id],
+        ),
+      );
+    }
   }
 
   // -----------------

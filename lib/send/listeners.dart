@@ -10,7 +10,6 @@ import 'package:bb_mobile/swap/receive.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:oktoast/oktoast.dart';
@@ -47,19 +46,20 @@ class SendListeners extends StatelessWidget {
           },
         ),
         // Broadcast LBTC -> LN swaps without waiting for user confirmation
-        BlocListener<SendCubit, SendState>(
-          listenWhen: (previous, current) =>
-              previous.signed == false &&
-              current.signed == true &&
-              current.couldBeOnchainSwap() == false &&
-              current.isLnInvoice() == true &&
-              current.tx?.isLiquid == true &&
-              current.sent == false,
-          listener: (context, state) async {
-            await Future.delayed(200.ms);
-            context.read<SendCubit>().sendSwap();
-          },
-        ),
+        // TODO: Comment this out, since `sendSwap` is called from inside of `buildTxFromSwap`
+        // BlocListener<SendCubit, SendState>(
+        //   listenWhen: (previous, current) =>
+        //       previous.signed == false &&
+        //       current.signed == true &&
+        //       current.couldBeOnchainSwap() == false &&
+        //       current.isLnInvoice() == true &&
+        //       current.tx?.isLiquid == true &&
+        //       current.sent == false,
+        //   listener: (context, state) async {
+        //     // await Future.delayed(200.ms);
+        //     // context.read<SendCubit>().sendSwap();
+        //   },
+        // ),
         BlocListener<SendCubit, SendState>(
           listenWhen: (previous, current) =>
               previous.signed == false &&

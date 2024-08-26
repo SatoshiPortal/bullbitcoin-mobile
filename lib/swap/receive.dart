@@ -356,6 +356,9 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
 
     if (tx != null) amt = tx.getAmount();
 
+    final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
+    final amtDouble = isSats ? amt : amt / 100000000;
+
     final isLiq = swapTx.isLiquid();
 
     final amtStr = context.select(
@@ -365,7 +368,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
       ),
     );
 
-    context.read<CurrencyCubit>().updateAmount(amt.toString());
+    context.read<CurrencyCubit>().updateAmount(amtDouble.toString());
     final defaultCurrency = context
         .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
     final fiatAmt =
@@ -408,12 +411,10 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
       },
       child: PopScope(
         onPopInvoked: (didPop) {
-          context
-            ..pop()
-            ..pop();
-          Future.microtask(() {
-            context.pop();
-          });
+          // context.pop();
+          // Future.microtask(() {
+          //   context.pop();
+          // });
         },
         child: Scaffold(
           appBar: AppBar(
@@ -421,9 +422,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
             flexibleSpace: BBAppBar(
               text: 'Payment Status',
               onBack: () {
-                context
-                  ..pop()
-                  ..pop();
+                context.pop();
                 // if (received)
                 //   context.go('/home');
                 // else
@@ -469,7 +468,6 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
                   label: 'View Transaction',
                   onPressed: () {
                     context
-                      ..pop()
                       ..pop()
                       ..push('/tx', extra: [tx, false]);
                   },

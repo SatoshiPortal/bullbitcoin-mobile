@@ -163,7 +163,10 @@ class _SendingLnTxState extends State<SendingLnTx> {
     );
     final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
 
-    context.read<CurrencyCubit>().updateAmount(amount.toString());
+    final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
+    final amtDouble = isSats ? amount : amount / 100000000;
+
+    context.read<CurrencyCubit>().updateAmount(amtDouble.toString());
     final defaultCurrency = context
         .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
     final fiatAmt =
