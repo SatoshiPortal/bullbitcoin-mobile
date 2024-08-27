@@ -75,9 +75,9 @@ Future<Map<String, dynamic>> updateSwaps(
     if (tx['swapTx'] != null && tx['swapTx']['invoice'] != null) {
       final isSubmarine = tx['swapTx']['isSubmarine'] == true;
       if (isSubmarine)
-        tx['swapTx']['lockupTxId'] = tx['swapTx']['txid'];
+        tx['swapTx']['lockupTxid'] = tx['swapTx']['txid'];
       else
-        tx['swapTx']['claimTxId'] = tx['swapTx']['txid'];
+        tx['swapTx']['claimTxid'] = tx['swapTx']['txid'];
 
       tx['swapTx']['lnSwapDetails'] = LnSwapDetails(
         swapType: tx['swapTx']['isSubmarine'] == true
