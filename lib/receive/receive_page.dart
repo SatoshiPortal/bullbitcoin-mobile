@@ -35,14 +35,14 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-const btcClaimAddress =
+const btcAddress =
     'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz'; // Vegeta wallet
-const lqClaimAddress =
+const lqAddress =
     'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la';
-const btcRefundAddress =
-    'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz'; // Vegeta wallet
-const lqRefundAddress =
-    'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la';
+
+const btcMainnetAddress = 'bc1qrh2s82ec3998qeusuy007u6r3z0e4s2xg3s63z';
+const lqMainnetAddress =
+    'lq1qq23h89g7u7ngp2n7p7tvek7n97dckyfyu89e3j875rqz35u8rd9tmy8fss0q7zke3lzj80834zl6t72pw2khqz0fkf6hnswne';
 
 class ReceivePage extends StatefulWidget {
   const ReceivePage({super.key, this.walletBloc});
@@ -683,8 +683,12 @@ class ChainSwapForm extends StatelessWidget {
                     toWallet: receiveWallet,
                     amount: amt,
                     refundAddress: receiveWallet.isLiquid()
-                        ? btcRefundAddress
-                        : lqRefundAddress,
+                        ? (receiveWallet.isTestnet()
+                            ? btcAddress
+                            : btcMainnetAddress)
+                        : (receiveWallet.isTestnet()
+                            ? lqAddress
+                            : lqMainnetAddress),
                     direction: receiveWallet.isLiquid()
                         ? ChainSwapDirection.btcToLbtc
                         : ChainSwapDirection.lbtcToBtc,
