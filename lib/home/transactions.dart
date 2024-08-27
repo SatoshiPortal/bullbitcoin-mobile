@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -306,10 +307,21 @@ class HomeTxItem2 extends StatelessWidget {
     String statusImg = (tx.height == null || tx.height == 0)
         ? 'assets/tx_status_pending.png'
         : 'assets/tx_status_complete.png';
-    statusImg = isChainSwap == true &&
-            tx.swapTx!.status?.status != boltz.SwapStatus.txnClaimed
-        ? 'assets/tx_status_pending.png'
-        : statusImg;
+    if (isChainSwap == true) {
+      // Special condition for chain receive, since tx.height will be null for ChainReceive.
+      // Because this is a placeholder tx created to show the swap tx,
+      // as the actual lockup tx happens in an external wallet.
+      if (tx.swapTx!.isChainReceive()) {
+        final swapStatus = tx.swapTx!.chainSwapAction();
+        statusImg = swapStatus == ChainSwapActions.settled
+            ? 'assets/tx_status_complete.png'
+            : 'assets/tx_status_pending.png';
+      } else {
+        statusImg = tx.swapTx!.status?.status != boltz.SwapStatus.txnClaimed
+            ? 'assets/tx_status_pending.png'
+            : statusImg;
+      }
+    }
 
     final isReceive = tx.isReceived();
 
