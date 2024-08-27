@@ -90,7 +90,7 @@ class SwapTx with _$SwapTx {
 
   bool isTestnet() => network == BBNetwork.Testnet;
 
-  bool isLiquid() => baseWalletType == BaseWalletType.Liquid;
+  bool isLiquid() => walletType == BaseWalletType.Liquid;
 
   int? totalFees() {
     if (boltzFees == null || lockupFees == null || claimFees == null)

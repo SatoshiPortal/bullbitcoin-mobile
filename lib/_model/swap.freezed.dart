@@ -984,7 +984,7 @@ SwapTx _$SwapTxFromJson(Map<String, dynamic> json) {
 mixin _$SwapTx {
   String get id => throw _privateConstructorUsedError;
   BBNetwork get network => throw _privateConstructorUsedError;
-  BaseWalletType get baseWalletType => throw _privateConstructorUsedError;
+  BaseWalletType get walletType => throw _privateConstructorUsedError;
   int get outAmount => throw _privateConstructorUsedError;
   String get scriptAddress => throw _privateConstructorUsedError;
   String get boltzUrl => throw _privateConstructorUsedError;
@@ -1015,7 +1015,7 @@ abstract class $SwapTxCopyWith<$Res> {
   $Res call(
       {String id,
       BBNetwork network,
-      BaseWalletType baseWalletType,
+      BaseWalletType walletType,
       int outAmount,
       String scriptAddress,
       String boltzUrl,
@@ -1052,7 +1052,7 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
   $Res call({
     Object? id = null,
     Object? network = null,
-    Object? baseWalletType = null,
+    Object? walletType = null,
     Object? outAmount = null,
     Object? scriptAddress = null,
     Object? boltzUrl = null,
@@ -1078,9 +1078,9 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.network
           : network // ignore: cast_nullable_to_non_nullable
               as BBNetwork,
-      baseWalletType: null == baseWalletType
-          ? _value.baseWalletType
-          : baseWalletType // ignore: cast_nullable_to_non_nullable
+      walletType: null == walletType
+          ? _value.walletType
+          : walletType // ignore: cast_nullable_to_non_nullable
               as BaseWalletType,
       outAmount: null == outAmount
           ? _value.outAmount
@@ -1192,7 +1192,7 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
   $Res call(
       {String id,
       BBNetwork network,
-      BaseWalletType baseWalletType,
+      BaseWalletType walletType,
       int outAmount,
       String scriptAddress,
       String boltzUrl,
@@ -1230,7 +1230,7 @@ class __$$SwapTxImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? network = null,
-    Object? baseWalletType = null,
+    Object? walletType = null,
     Object? outAmount = null,
     Object? scriptAddress = null,
     Object? boltzUrl = null,
@@ -1256,9 +1256,9 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.network
           : network // ignore: cast_nullable_to_non_nullable
               as BBNetwork,
-      baseWalletType: null == baseWalletType
-          ? _value.baseWalletType
-          : baseWalletType // ignore: cast_nullable_to_non_nullable
+      walletType: null == walletType
+          ? _value.walletType
+          : walletType // ignore: cast_nullable_to_non_nullable
               as BaseWalletType,
       outAmount: null == outAmount
           ? _value.outAmount
@@ -1330,7 +1330,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   const _$SwapTxImpl(
       {required this.id,
       required this.network,
-      required this.baseWalletType,
+      required this.walletType,
       required this.outAmount,
       required this.scriptAddress,
       required this.boltzUrl,
@@ -1356,7 +1356,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   @override
   final BBNetwork network;
   @override
-  final BaseWalletType baseWalletType;
+  final BaseWalletType walletType;
   @override
   final int outAmount;
   @override
@@ -1391,7 +1391,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, network: $network, baseWalletType: $baseWalletType, outAmount: $outAmount, scriptAddress: $scriptAddress, boltzUrl: $boltzUrl, chainSwapDetails: $chainSwapDetails, lnSwapDetails: $lnSwapDetails, txid: $txid, label: $label, status: $status, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress, refundAddress: $refundAddress, creationTime: $creationTime, completionTime: $completionTime)';
+    return 'SwapTx(id: $id, network: $network, walletType: $walletType, outAmount: $outAmount, scriptAddress: $scriptAddress, boltzUrl: $boltzUrl, chainSwapDetails: $chainSwapDetails, lnSwapDetails: $lnSwapDetails, txid: $txid, label: $label, status: $status, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress, refundAddress: $refundAddress, creationTime: $creationTime, completionTime: $completionTime)';
   }
 
   @override
@@ -1401,7 +1401,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('type', 'SwapTx'))
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('network', network))
-      ..add(DiagnosticsProperty('baseWalletType', baseWalletType))
+      ..add(DiagnosticsProperty('walletType', walletType))
       ..add(DiagnosticsProperty('outAmount', outAmount))
       ..add(DiagnosticsProperty('scriptAddress', scriptAddress))
       ..add(DiagnosticsProperty('boltzUrl', boltzUrl))
@@ -1426,8 +1426,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
             other is _$SwapTxImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.network, network) || other.network == network) &&
-            (identical(other.baseWalletType, baseWalletType) ||
-                other.baseWalletType == baseWalletType) &&
+            (identical(other.walletType, walletType) ||
+                other.walletType == walletType) &&
             (identical(other.outAmount, outAmount) ||
                 other.outAmount == outAmount) &&
             (identical(other.scriptAddress, scriptAddress) ||
@@ -1463,7 +1463,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       runtimeType,
       id,
       network,
-      baseWalletType,
+      walletType,
       outAmount,
       scriptAddress,
       boltzUrl,
@@ -1498,7 +1498,7 @@ abstract class _SwapTx extends SwapTx {
   const factory _SwapTx(
       {required final String id,
       required final BBNetwork network,
-      required final BaseWalletType baseWalletType,
+      required final BaseWalletType walletType,
       required final int outAmount,
       required final String scriptAddress,
       required final String boltzUrl,
@@ -1523,7 +1523,7 @@ abstract class _SwapTx extends SwapTx {
   @override
   BBNetwork get network;
   @override
-  BaseWalletType get baseWalletType;
+  BaseWalletType get walletType;
   @override
   int get outAmount;
   @override

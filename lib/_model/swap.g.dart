@@ -105,8 +105,7 @@ const _$SwapTypeEnumMap = {
 _$SwapTxImpl _$$SwapTxImplFromJson(Map<String, dynamic> json) => _$SwapTxImpl(
       id: json['id'] as String,
       network: $enumDecode(_$BBNetworkEnumMap, json['network']),
-      baseWalletType:
-          $enumDecode(_$BaseWalletTypeEnumMap, json['baseWalletType']),
+      walletType: $enumDecode(_$BaseWalletTypeEnumMap, json['walletType']),
       outAmount: (json['outAmount'] as num).toInt(),
       scriptAddress: json['scriptAddress'] as String,
       boltzUrl: json['boltzUrl'] as String,
@@ -140,7 +139,7 @@ Map<String, dynamic> _$$SwapTxImplToJson(_$SwapTxImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'network': _$BBNetworkEnumMap[instance.network]!,
-      'baseWalletType': _$BaseWalletTypeEnumMap[instance.baseWalletType]!,
+      'walletType': _$BaseWalletTypeEnumMap[instance.walletType]!,
       'outAmount': instance.outAmount,
       'scriptAddress': instance.scriptAddress,
       'boltzUrl': instance.boltzUrl,
