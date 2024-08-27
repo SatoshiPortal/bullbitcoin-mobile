@@ -379,7 +379,12 @@ class Wallet with _$Wallet {
         // .map(
         //   (e) => e,//.copyWith(wallet: this),
         // )
-        .where((tx) => tx.timestamp == 0)
+        .where(
+          (tx) =>
+              tx.timestamp == 0 &&
+                  (baseWalletType == BaseWalletType.Bitcoin && !tx.isLiquid) ||
+              (baseWalletType == BaseWalletType.Liquid && tx.isLiquid),
+        )
         .toList()
         .reversed
         .toList();
@@ -388,7 +393,12 @@ class Wallet with _$Wallet {
   List<Transaction> getConfirmedTxs() {
     final txs = transactions
         // .map((e) => e.copyWith(wallet: this))
-        .where((tx) => tx.timestamp != 0)
+        .where(
+          (tx) =>
+              tx.timestamp != 0 &&
+                  (baseWalletType == BaseWalletType.Bitcoin && !tx.isLiquid) ||
+              (baseWalletType == BaseWalletType.Liquid && tx.isLiquid),
+        )
         .toList();
     txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return txs;
