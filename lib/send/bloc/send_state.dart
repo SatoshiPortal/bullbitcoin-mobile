@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/utils.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -152,16 +151,12 @@ class SendState with _$SendState {
 
   WalletBloc selectLiqThenSecThenOtherBtc(List<WalletBloc> blocs) {
     final liqWalletIdx = blocs.indexWhere(
-      (_) =>
-          _.state.wallet!.mainWallet &&
-          _.state.wallet!.baseWalletType == BaseWalletType.Liquid,
+      (_) => _.state.wallet!.isMain() && _.state.wallet!.isLiquid(),
     );
     if (liqWalletIdx != -1) return blocs[liqWalletIdx];
 
     final secWalletIdx = blocs.indexWhere(
-      (_) =>
-          _.state.wallet!.mainWallet &&
-          _.state.wallet!.baseWalletType == BaseWalletType.Bitcoin,
+      (_) => _.state.wallet!.isMain() && _.state.wallet!.isBitcoin(),
     );
     if (secWalletIdx != -1) return blocs[secWalletIdx];
 
@@ -194,29 +189,48 @@ class SendState with _$SendState {
   bool allowedSwitch(PaymentNetwork network) {
     if (!oneWallet) return true;
 
-    final walletType = selectedWalletBloc!.state.wallet!.baseWalletType;
+    final wallet = selectedWalletBloc!.state.wallet;
+    if (wallet == null) return false;
 
-    if (network == PaymentNetwork.bitcoin &&
-        walletType == BaseWalletType.Liquid) return false;
+    if (network == PaymentNetwork.bitcoin && wallet.isLiquid()) return false;
 
-    if (network == PaymentNetwork.liquid &&
-        walletType == BaseWalletType.Bitcoin) return false;
+    if (network == PaymentNetwork.liquid && wallet.isBitcoin()) return false;
 
     return true;
   }
 
   bool couldBeOnchainSwap() {
-    if (selectedWalletBloc?.state.wallet!.baseWalletType ==
-            BaseWalletType.Bitcoin &&
+    if (selectedWalletBloc == null || selectedWalletBloc?.state.wallet == null)
+      return false;
+    if (selectedWalletBloc!.state.wallet!.isBitcoin() &&
         (paymentNetwork == AddressNetwork.liquid ||
             paymentNetwork == AddressNetwork.bip21Liquid)) return true;
 
-    if (selectedWalletBloc?.state.wallet!.baseWalletType ==
-            BaseWalletType.Liquid &&
+    if (selectedWalletBloc!.state.wallet!.isLiquid() &&
         (paymentNetwork == AddressNetwork.bitcoin ||
             paymentNetwork == AddressNetwork.bip21Bitcoin)) return true;
 
     return false;
+  }
+
+  String getSendButtonLabel(bool sending) {
+    if (couldBeOnchainSwap() == true) return 'Create Swap';
+
+    final watchOnly = selectedWalletBloc?.state.wallet?.watchOnly() ?? false;
+    final isLn = isLnInvoice();
+
+    final String label = watchOnly
+        ? 'Generate PSBT'
+        : signed
+            ? sending
+                ? 'Broadcasting'
+                : 'Confirm'
+            : sending
+                ? 'Building Tx'
+                : !isLn
+                    ? 'Send'
+                    : 'Create Swap';
+    return label;
   }
 }
 

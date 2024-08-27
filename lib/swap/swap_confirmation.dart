@@ -4,6 +4,7 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -122,6 +123,27 @@ class _Screen extends StatelessWidget {
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     if (sent) return SendingOnChainTx();
 
+    final showWarning = context.select(
+      (CreateSwapCubit x) =>
+          x.state.errSmallAmt == false &&
+          x.state.errHighFees != null &&
+          x.state.errHighFees! > 0,
+    );
+
+    if (showWarning == true) {
+      return const SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _Warnings(),
+            ],
+          ),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -167,7 +189,7 @@ class _Screen extends StatelessWidget {
               disabled: sending,
               label: 'Broadcast',
               onPressed: () {
-                context.read<SendCubit>().sendSwapClicked();
+                context.read<SendCubit>().sendSwap();
               },
               loadingText: 'Broadcasting',
             ),
@@ -190,6 +212,154 @@ class _SwapAppBar extends StatelessWidget {
       onBack: () {
         context.pop();
       },
+    );
+  }
+}
+
+class _Warnings extends StatelessWidget {
+  const _Warnings();
+
+  @override
+  Widget build(BuildContext context) {
+    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
+    if (swapTx == null) return const SizedBox.shrink();
+
+    final swaptx = context.select((CreateSwapCubit x) => x.state.swapTx!);
+
+    final errHighFees =
+        context.select((CreateSwapCubit x) => x.state.swapTx!.highFees());
+
+    final amt = swaptx.outAmount;
+
+    const minAmt = 1000000;
+
+    final currency =
+        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+
+    final fees = swaptx.totalFees() ?? 0;
+
+    final feeStr = context
+        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fees));
+
+    final feesFiatStr = context.select(
+      (NetworkCubit cubit) => cubit.state.calculatePrice(fees, currency),
+    );
+
+    final amtStr = context
+        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amt));
+
+    final amtFiatStr = context.select(
+      (NetworkCubit cubit) => cubit.state.calculatePrice(amt, currency),
+    );
+
+    final minAmtStr = context
+        .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(minAmt));
+
+    final minAmtFiatStr = context.select(
+      (NetworkCubit cubit) => cubit.state.calculatePrice(minAmt, currency),
+    );
+
+    // final minAmtFiat = context.select(
+    //   (NetworkCubit cubit) =>
+    //       cubit.state.calculatePrice(minAmt, cubit.state.defaultFiatCurrency!),
+    // );
+
+    print('Warning errHighFees: $errHighFees');
+
+    return WarningContainer(
+      children: [
+        const Gap(24),
+        if (errHighFees != null)
+          HighFeesWarn(
+            feePercentage: errHighFees,
+            amt: amtStr,
+            amtFiat: amtFiatStr,
+            fees: feeStr,
+            feesFiat: feesFiatStr,
+            minAmt: minAmtStr,
+            minAmtFiat: minAmtFiatStr,
+            // amt: swapTx.outAmount,
+            // fees: swapTx.totalFees() ?? 0,
+          ),
+        const Gap(24),
+        Center(
+          child: BBButton.big(
+            leftIcon: Icons.send_outlined,
+            label: 'Continue anyways',
+            onPressed: () {
+              context.read<CreateSwapCubit>().removeWarnings();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class HighFeesWarn extends StatelessWidget {
+  const HighFeesWarn({
+    required this.feePercentage,
+    required this.amt,
+    required this.amtFiat,
+    required this.fees,
+    required this.feesFiat,
+    required this.minAmt,
+    required this.minAmtFiat,
+  });
+
+  final double feePercentage;
+  final String amt;
+  final String amtFiat;
+  final String fees;
+  final String feesFiat;
+  final String minAmt;
+  final String minAmtFiat;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const BBText.titleLarge('High fee warning', isRed: true),
+        const Gap(8),
+        // const BBText.body('Bitcoin Network fees are currently high.'),
+        // const Gap(8),
+        const BBText.bodySmall(
+          'When swapping between Instant and Secure wallets, you must pay Bitcoin Network fees and Swap fees.',
+        ),
+        const Gap(8),
+        Row(
+          children: [
+            const BBText.bodySmall('You are about to pay over '),
+            BBText.bodySmall(
+              '${feePercentage.toStringAsFixed(2)}% ',
+              isBold: true,
+            ),
+          ],
+        ),
+        const BBText.bodySmall(
+          'in Bitcoin Network and swap fees for this transaction.',
+        ),
+        const Gap(8),
+        Row(
+          children: [
+            const BBText.bodySmall('Amount you send: '),
+            BBText.bodySmall(amt, isBold: true),
+          ],
+        ),
+        Row(
+          children: [
+            const BBText.bodySmall('Network fees: '),
+            BBText.bodySmall(fees, isBold: true),
+          ],
+        ),
+        const Gap(24),
+        const BBText.titleLarge('Payment may take many hours', isRed: true),
+        const Gap(8),
+        const BBText.body(
+          'It may take many hours to the recipient to see your payment. Do not continue if recipient requires immediate payment.',
+        ),
+      ],
     );
   }
 }

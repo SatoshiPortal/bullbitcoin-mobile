@@ -151,7 +151,8 @@ class _SendingLnTxState extends State<SendingLnTx> {
 
   @override
   Widget build(BuildContext context) {
-    final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
+    final inv = context.select((SendCubit cubit) => cubit.state.invoice);
+    final amount = inv?.getAmount() ?? 0;
     final isLiquid = swapTx.isLiquid();
 
     final amtStr = context.select(
@@ -162,7 +163,10 @@ class _SendingLnTxState extends State<SendingLnTx> {
     );
     final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
 
-    context.read<CurrencyCubit>().updateAmount(amount.toString());
+    final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
+    final amtDouble = isSats ? amount : amount / 100000000;
+
+    context.read<CurrencyCubit>().updateAmount(amtDouble.toString());
     final defaultCurrency = context
         .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
     final fiatAmt =

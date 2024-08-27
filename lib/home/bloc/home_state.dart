@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'home_state.freezed.dart';
@@ -34,7 +35,7 @@ class HomeState with _$HomeState {
 
   List<WalletBloc> walletBlocsFromNetwork(BBNetwork network) {
     final blocs = walletBlocs
-            ?.where((wallet) => wallet.state.wallet?.network == network)
+            ?.where((walletBloc) => walletBloc.state.wallet?.network == network)
             //.toList()
             //.reversed
             .toList() ??
@@ -137,7 +138,8 @@ class HomeState with _$HomeState {
 
   bool walletIsLiquidFromTx(Transaction tx) {
     final wallet = getWalletFromTx(tx);
-    return wallet?.baseWalletType == BaseWalletType.Liquid;
+    if (wallet == null) return false;
+    return wallet.isLiquid();
   }
 
   bool walletIsWatchOnlyFromTx(Transaction tx) {
@@ -188,7 +190,7 @@ class HomeState with _$HomeState {
   }
 
   Transaction? getTxFromSwap(SwapTx swap) {
-    final isLiq = swap.walletType == BaseWalletType.Liquid;
+    final isLiq = swap.isLiquid();
     final network = swap.network;
     final wallet = !isLiq
         ? getMainSecureWallet(network)?.state.wallet
@@ -273,19 +275,24 @@ class HomeState with _$HomeState {
     // BEGIN: Chainswap filters: This is to show only Swap Txs in home page,
     // by removing swap settle txs
     // Swap settle tx IDs (either claim or refund) are stored in swap: tx.swapTx.txid
+    // For submarine refund, refund txid is stored in swap.claimTxid
     final swapChainTxs = txs
-        .where(
-          (tx) =>
-              tx.swapTx != null &&
-              tx.swapTx!.isChainSwap() == true &&
-              tx.swapTx?.status?.status != null,
-        )
-        .map((tx) => tx.swapTx!)
+        .where((tx) {
+          if (tx.swapTx != null)
+            return (tx.swapTx!.isChainSwap() == true &&
+                    tx.swapTx!.status?.status != null) ||
+                (tx.swapTx!.lnSwapDetails?.swapType ==
+                        boltz.SwapType.submarine &&
+                    tx.swapTx!.status?.status ==
+                        boltz.SwapStatus.txnLockupFailed);
+          return false;
+        })
+        .map((tx) => tx.swapTx)
         .toList();
     final toRemove = <Transaction>[];
     for (final tx in txs) {
       final isInSwapTxAndNotPending = swapChainTxs
-          .where((swap) => swap.txid == tx.txid) // && tx.timestamp != 0)
+          .where((swap) => swap?.claimTxid == tx.txid) // && tx.timestamp != 0)
           .isNotEmpty;
       if (isInSwapTxAndNotPending == true) toRemove.add(tx);
     }
@@ -330,10 +337,8 @@ class HomeState with _$HomeState {
         walletBlocsFromNetwork(network).where((w) {
       final wallet = w.state.wallet!;
       if (onlyMain && !wallet.mainWallet) return false;
-      if (onlyBitcoin && wallet.baseWalletType != BaseWalletType.Bitcoin)
-        return false;
-      if (onlyLiquid && wallet.baseWalletType != BaseWalletType.Liquid)
-        return false;
+      if (onlyBitcoin && !wallet.isBitcoin()) return false;
+      if (onlyLiquid && !wallet.isLiquid()) return false;
       return true;
     }).toList();
     WalletBloc? walletBlocWithHighestBalance;
@@ -364,10 +369,8 @@ class HomeState with _$HomeState {
       (_) {
         final wallet = _.state.wallet!;
         if (onlyMain && !wallet.mainWallet) return false;
-        if (onlyBitcoin && wallet.baseWalletType != BaseWalletType.Bitcoin)
-          return false;
-        if (onlyLiquid && wallet.baseWalletType != BaseWalletType.Liquid)
-          return false;
+        if (onlyBitcoin && !wallet.isBitcoin()) return false;
+        if (onlyLiquid && !wallet.isLiquid()) return false;
         return true;
       },
     ).toList();

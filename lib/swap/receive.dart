@@ -356,6 +356,9 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
 
     if (tx != null) amt = tx.getAmount();
 
+    final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
+    final amtDouble = isSats ? amt : amt / 100000000;
+
     final isLiq = swapTx.isLiquid();
 
     final amtStr = context.select(
@@ -365,7 +368,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
       ),
     );
 
-    context.read<CurrencyCubit>().updateAmount(amt.toString());
+    context.read<CurrencyCubit>().updateAmount(amtDouble.toString());
     final defaultCurrency = context
         .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
     final fiatAmt =
@@ -402,17 +405,16 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
           });
 
           // await Future.delayed(100.ms);
-
           // tx = context.read<HomeCubit>().state.getTxFromSwap(widget.tx);
-
           // setState(() {});
         }
       },
       child: PopScope(
         onPopInvoked: (didPop) {
-          context
-            ..pop()
-            ..pop();
+          // context.pop();
+          // Future.microtask(() {
+          //   context.pop();
+          // });
         },
         child: Scaffold(
           appBar: AppBar(
@@ -420,9 +422,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
             flexibleSpace: BBAppBar(
               text: 'Payment Status',
               onBack: () {
-                context
-                  ..pop()
-                  ..pop();
+                context.pop();
                 // if (received)
                 //   context.go('/home');
                 // else
@@ -469,7 +469,6 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
                   onPressed: () {
                     context
                       ..pop()
-                      ..pop()
                       ..push('/tx', extra: [tx, false]);
                   },
                 ).animate().fadeIn(),
@@ -504,7 +503,7 @@ class _OnChainWarning extends StatelessWidget {
           child: BBText.bodySmall(
             'The sender has sent the lightning payment, but the swap is still in progress. It will take on on-chain confirmation before his Lightning payment succeeds.',
             isRed: true,
-            fontSize: 10,
+            fontSize: 12,
           ),
         ),
       ],

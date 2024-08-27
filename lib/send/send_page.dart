@@ -1,5 +1,3 @@
-import 'package:bb_mobile/_model/swap.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
@@ -33,7 +31,6 @@ import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/send.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -93,6 +90,7 @@ class _SendPageState extends State<SendPage> {
       defaultRBF: locator<SettingsCubit>().state.defaultRBF,
       fileStorage: locator<FileStorage>(),
       networkCubit: locator<NetworkCubit>(),
+      networkFeesCubit: locator<NetworkFeesCubit>(),
       homeCubit: locator<HomeCubit>(),
       swapBoltz: locator<SwapBoltz>(),
       currencyCubit: currency,
@@ -445,9 +443,13 @@ class AdvancedOptions extends StatelessWidget {
     );
     final sending = context.select((SendCubit _) => _.state.sending);
     final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
-    // final isLiquid = context.select((SendCubit _) => _.state.isLiquidPayment());
+    final isLiquid = context.select((SendCubit _) =>
+        _.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false);
+    final addressReady =
+        context.select((SendCubit _) => _.state.address.isNotEmpty);
 
-    if (isLn || !walletSelected) return const SizedBox.shrink();
+    if (isLn || !walletSelected || !addressReady || isLiquid == true)
+      return const SizedBox.shrink();
 
     final text =
         context.select((SendCubit _) => _.state.advancedOptionsButtonText());
@@ -502,108 +504,16 @@ class _SendButton extends StatelessWidget {
     //if (!showSend || sent) return const SizedBox.shrink();
     if (sent) return const SizedBox.shrink();
 
-    // final watchOnly =
-    //     context.select((WalletBloc cubit) => cubit.state.wallet!.watchOnly());
-    final watchOnly = context.select(
-      (SendCubit cubit) =>
-          cubit.state.selectedWalletBloc?.state.wallet?.watchOnly() ?? false,
-    );
-
     final generatingInv = context
         .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
     final sendingg = context.select((SendCubit cubit) => cubit.state.sending);
     final sending = generatingInv || sendingg;
 
-    final signed = context.select((SendCubit cubit) => cubit.state.signed);
-
-    final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
     final txLabel = context.select((SendCubit cubit) => cubit.state.note);
-    String label = watchOnly
-        ? 'Generate PSBT'
-        : signed
-            ? sending
-                ? 'Broadcasting'
-                : 'Confirm'
-            : sending
-                ? 'Building Tx'
-                : !isLn
-                    ? 'Send'
-                    : 'Create Swap';
 
-    final isOnchainSwap = context.select(
-      (SendCubit x) => x.state.couldBeOnchainSwap(),
+    final buttonLabel = context.select(
+      (SendCubit cubit) => cubit.state.getSendButtonLabel(sending),
     );
-
-    if (isOnchainSwap) {
-      label = 'Create Swap';
-    }
-
-    final wallet = context.select(
-      (SendCubit x) => x.state.selectedWalletBloc?.state.wallet,
-    );
-    final swapAmount = context.select(
-      (CurrencyCubit x) => x.state.amount,
-    );
-
-    final liqNetworkurl =
-        context.read<NetworkCubit>().state.getLiquidNetworkUrl();
-    final btcNetworkUrl = context.read<NetworkCubit>().state.getNetworkUrl();
-    final btcNetworkUrlWithoutSSL = btcNetworkUrl.startsWith('ssl://')
-        ? btcNetworkUrl.split('//')[1]
-        : btcNetworkUrl;
-
-    final recipientAddress = context.select((SendCubit x) => x.state.address);
-
-    final refundAddress = wallet?.lastGeneratedAddress?.address;
-
-    final sendallCoin = context.select((SendCubit x) => x.state.sendAllCoin);
-    final walletBloc =
-        context.select((SendCubit x) => x.state.selectedWalletBloc);
-
-    void processOnChainSwap() async {
-      int sweepAmount = 0;
-      if (sendallCoin == true) {
-        final feeRate =
-            context.read<NetworkFeesCubit>().state.selectedOrFirst(true);
-        final fees = await context.read<SendCubit>().calculateFeeForSend(
-              wallet: walletBloc?.state.wallet,
-              address: refundAddress!,
-              networkFees: feeRate,
-            );
-
-        context.read<SendCubit>().reset();
-
-        if (walletBloc?.state.wallet?.baseWalletType ==
-            BaseWalletType.Bitcoin) {
-          // TODO: Absolute fee doesn't work for liquid build Tx now
-          context.read<SendCubit>().updateOnChainAbsFee(fees);
-        }
-
-        // sweepAmount = walletBloc.state.wallet!.balance! - fees;
-        final int magicNumber =
-            walletBloc?.state.wallet?.baseWalletType == BaseWalletType.Bitcoin
-                ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
-                : 1500;
-        sweepAmount =
-            walletBloc!.state.wallet!.balance! - fees - magicNumber; // TODO
-      }
-
-      context.read<CreateSwapCubit>().createOnChainSwap(
-            wallet: wallet!,
-            amount: sendallCoin == true ? sweepAmount : swapAmount,
-            isTestnet: context.read<NetworkCubit>().state.testnet,
-            btcElectrumUrl:
-                btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
-            lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
-            toAddress: recipientAddress, // recipientAddress.address;
-            refundAddress: refundAddress!,
-            direction: wallet.baseWalletType == BaseWalletType.Bitcoin
-                ? boltz.ChainSwapDirection.btcToLbtc
-                : boltz.ChainSwapDirection.lbtcToBtc,
-            toWalletId: '',
-            onChainSwapType: OnChainSwapType.sendSwap,
-          );
-    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -620,60 +530,15 @@ class _SendButton extends StatelessWidget {
             },
             child: BBButton.big(
               loading: sending,
-              disabled: sending, // || !showSend,
+              disabled: sending || !showSend, // || !showSend,
               leftIcon: Icons.send,
               onPressed: () async {
                 if (sending) return;
-
-                if (isOnchainSwap) {
-                  processOnChainSwap();
-                  return;
-                }
-
-                final isLn = context.read<SendCubit>().state.isLnInvoice();
-
-                if (!signed) {
-                  if (!isLn) {
-                    final fees = context
-                        .read<NetworkFeesCubit>()
-                        .state
-                        .selectedOrFirst(false);
-                    context
-                        .read<SendCubit>()
-                        .confirmClickedd(networkFees: fees);
-                    return;
-                  }
-                  // context.read<SendCubit>().sendSwapClicked();
-                  final wallet = context.read<WalletBloc>().state.wallet!;
-                  final isLiq = wallet.isLiquid();
-                  final networkurl = !isLiq
-                      ? context.read<NetworkCubit>().state.getNetworkUrl()
-                      : context
-                          .read<NetworkCubit>()
-                          .state
-                          .getLiquidNetworkUrl();
-
-                  context.read<CreateSwapCubit>().createSubSwapForSend(
-                        wallet: wallet,
-                        address: context.read<SendCubit>().state.address,
-                        amount: context.read<CurrencyCubit>().state.amount,
-                        isTestnet: context.read<NetworkCubit>().state.testnet,
-                        invoice: context.read<SendCubit>().state.invoice!,
-                        networkUrl: networkurl,
-                        label: txLabel,
-                      );
-                  return;
-                }
-
-                if (!isLn) {
-                  context.read<SendCubit>().sendClicked();
-                  return;
-                }
-                context.read<SendCubit>().sendSwapClicked();
-                // final swaptx = context.read<SwapCubit>().state.swapTx!;
-                // context.read<SendCubit>().sendClicked(swaptx: swaptx);
+                context.read<SendCubit>().processSendButton(
+                      txLabel,
+                    );
               },
-              label: label,
+              label: buttonLabel,
             ),
           ),
         ),

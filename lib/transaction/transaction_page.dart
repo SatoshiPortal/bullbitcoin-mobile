@@ -334,10 +334,12 @@ class _TxDetails extends StatelessWidget {
                   units,
                   isBold: true,
                 ),
-                const Gap(4),
-                BBText.title(
-                  '(${tx.feeRate?.toStringAsFixed(2)} sats/vB)',
-                ),
+                if (tx.feeRate != null) ...[
+                  const Gap(4),
+                  BBText.title(
+                    '(${tx.feeRate?.toStringAsFixed(2)} sats/vB)',
+                  ),
+                ],
               ],
             ),
             const Gap(24),
@@ -469,9 +471,9 @@ class _SwapDetails extends StatelessWidget {
         ? status.getOnChainStr(swap.chainSwapDetails!.onChainType)
         : status.getStr(swap.isSubmarine());
 
-    final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
+    // final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
-    final amt = swap.outAmount;
+    final amt = swap.amountForDisplay() ?? 0;
     final amount = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true),
     );
@@ -630,9 +632,9 @@ class _OnchainSwapDetails extends StatelessWidget {
         ? status.getOnChainStr(swap.chainSwapDetails!.onChainType)
         : status.getStr(swap.isSubmarine());
 
-    final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
+    // final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
-    final amt = swap.outAmount;
+    final amt = swap.amountForDisplay() ?? 0;
     final amount = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true),
     );
@@ -675,8 +677,8 @@ class _OnchainSwapDetails extends StatelessWidget {
     String? toUnits;
     String? toStatusStr;
 
-    if (swap.txid != null && swap.txid!.isNotEmpty && toWallet != null) {
-      receiveTx = toWallet.getTxWithId(swap.txid!);
+    if (swap.claimTxid != null && toWallet != null) {
+      receiveTx = toWallet.getTxWithId(swap.claimTxid!);
       if (receiveTx != null) {
         toAmtStr = context.select(
           (CurrencyCubit cubit) => cubit.state.getAmountInUnits(

@@ -99,88 +99,6 @@ class BDKTransactions {
     }
   }
 
-  /// If given swap is expired,
-  ///   - check if the swapTx has been refunded
-  ///   - If yes, remove it from wallet.swaps
-  ///   - if not, add it to the list of swaps to refund and return
-  /// If not,
-  ///   - update txid of wallet.swaps with swapTx.txid
-  (({Wallet wallet})?, Err?) updateSwapTxs({
-    required SwapTx swapTx,
-    required Wallet wallet,
-  }) {
-    final swaps = wallet.swaps;
-
-    final idx = swaps.indexWhere((_) => _.id == swapTx.id);
-    if (idx == -1) return (null, Err('No swapTx found'));
-
-    final storedSwap = swaps[idx];
-
-    final swapTxs = List<SwapTx>.from(swaps);
-
-    final updatedSwapTx = storedSwap.copyWith(
-      status: swapTx.status,
-      txid: storedSwap.txid ?? swapTx.txid,
-      lnSwapDetails: storedSwap.lnSwapDetails!.copyWith(
-        keyIndex: storedSwap.lnSwapDetails!.keyIndex,
-      ),
-    );
-    swapTxs[idx] = updatedSwapTx;
-
-    final swapsToDelete = <SwapTx>[
-      for (final s in swapTxs)
-        if (s.paidSubmarine() ||
-            s.settledReverse() ||
-            s.settledSubmarine() ||
-            s.expiredReverse())
-          s,
-    ];
-
-    for (final s in swapsToDelete)
-      if (swapsToDelete.any((_) => _.id == s.id))
-        swapTxs.removeWhere((_) => _.id == s.id);
-
-    final updatedWallet = wallet.copyWith(swaps: swapTxs);
-
-    return ((wallet: updatedWallet), null);
-  }
-
-  Future<(({Wallet wallet, SwapTx swapsToDelete})?, Err?)> mergeSwapTxIntoTx({
-    required Wallet wallet,
-    required SwapTx swapTx,
-  }) async {
-    try {
-      final txs = wallet.transactions.toList();
-      final swaps = wallet.swaps;
-      final updatedSwaps = swaps.toList();
-      // final swapsToDelete = <SwapTx>[];
-
-      final idx = txs.indexWhere((_) => _.txid == swapTx.txid);
-      if (idx == -1) return (null, Err('No new matching tx'));
-
-      final newTx = txs[idx].copyWith(
-        swapTx: swapTx,
-        isSwap: true,
-        label: swapTx.label,
-      );
-      txs[idx] = newTx;
-
-      final swapToDelete = swaps.firstWhere((_) => _.id == swapTx.id);
-      // swapsToDelete.add(swapToDelete);
-      updatedSwaps.removeWhere((_) => _.id == swapTx.id);
-
-      final updatedWallet = wallet.copyWith(
-        transactions: txs,
-        swaps: updatedSwaps,
-      );
-
-      return ((wallet: updatedWallet, swapsToDelete: swapToDelete), null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-
-  //
   // THIS NEEDS WORK
   //
   Future<(Wallet?, Err?)> getTransactions({
@@ -194,32 +112,34 @@ class BDKTransactions {
       final bdkNetwork = wallet.getBdkNetwork();
       if (bdkNetwork == null) throw 'No bdkNetwork';
 
-      final txs = await bdkWallet.listTransactions(includeRaw: true);
+      final bdkTxs = await bdkWallet.listTransactions(includeRaw: true);
       // final x = bdk.TxBuilderResult();
 
-      if (txs.isEmpty) return (wallet, null);
+      if (bdkTxs.isEmpty) return (wallet, null);
 
       final List<Transaction> transactions = [];
 
-      for (final tx in txs) {
+      for (final bdkTx in bdkTxs) {
         String? label;
-
-        final storedTxIdx = storedTxs.indexWhere((t) => t.txid == tx.txid);
-        final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
-
         Transaction? storedTx;
-        if (storedTxIdx != -1)
-          storedTx = storedTxs.elementAtOrNull(storedTxIdx);
 
-        final vsize = await tx.transaction?.vsize() ?? 1;
+        final storedTxIdx = storedTxs.indexWhere((t) => t.txid == bdkTx.txid);
+        final idxUnsignedTx =
+            unsignedTxs.indexWhere((t) => t.txid == bdkTx.txid);
+        final foundStoredTx = storedTxIdx != -1;
+        final foundStoredUTx = idxUnsignedTx != -1;
+
+        if (foundStoredTx) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
+
+        final vsize = await bdkTx.transaction?.vsize() ?? 1;
         final isNativeRbf = storedTx?.rbfEnabled ?? true;
         //  await tx.transaction?.isExplicitlyRbf() ??
 
-        final SerializedTx sTx = SerializedTx.fromJson(
-          jsonDecode(tx.transaction!.inner) as Map<String, dynamic>,
+        final SerializedTx serdBdkTx = SerializedTx.fromJson(
+          jsonDecode(bdkTx.transaction!.inner) as Map<String, dynamic>,
         );
         final inputs = storedTx?.inputs ??
-            sTx.input
+            serdBdkTx.input
                 ?.map(
                   (e) => TxIn(
                     prevOut: e.previousOutput ?? '',
@@ -227,15 +147,15 @@ class BDKTransactions {
                 )
                 .toList() ??
             [];
-        var txObj = Transaction(
-          txid: tx.txid,
-          received: tx.received,
-          sent: tx.sent,
-          fee: tx.fee ?? 0,
-          feeRate: (tx.fee ?? 1) / vsize.toDouble(),
-          height: tx.confirmationTime?.height ?? 0,
-          timestamp: tx.confirmationTime?.timestamp ?? 0,
-          bdkTx: tx,
+        var updatedTx = Transaction(
+          txid: bdkTx.txid,
+          received: bdkTx.received,
+          sent: bdkTx.sent,
+          fee: bdkTx.fee ?? 0,
+          feeRate: (bdkTx.fee ?? 1) / vsize.toDouble(),
+          height: bdkTx.confirmationTime?.height ?? 0,
+          timestamp: bdkTx.confirmationTime?.timestamp ?? 0,
+          bdkTx: bdkTx,
           // rbfEnabled: storedTx?.rbfEnabled ?? isNativeRbf,
           rbfEnabled: isNativeRbf,
           outAddrs: storedTx?.outAddrs ?? [],
@@ -244,42 +164,44 @@ class BDKTransactions {
           isSwap: storedTx?.isSwap ?? false,
           rbfTxIds: storedTx?.rbfTxIds ?? [],
         );
-        if (storedTxIdx != -1 &&
+
+        final storedTxHasLabel = foundStoredTx &&
             storedTxs[storedTxIdx].label != null &&
-            storedTxs[storedTxIdx].label!.isNotEmpty)
-          label = storedTxs[storedTxIdx].label;
+            storedTxs[storedTxIdx].label!.isNotEmpty;
+
+        if (storedTxHasLabel) label = storedTxs[storedTxIdx].label;
 
         Address? externalAddress;
         Address? changeAddress;
         Address? depositAddress;
         // const hexDecoder = HexDecoder();
 
-        if (!txObj.isReceived()) {
+        if (!updatedTx.isReceived()) {
           //
           //
           // HANDLE EXTERNAL RECIPIENT
           //
           //
           externalAddress = wallet.getAddressFromAddresses(
-            txObj.txid,
-            isSend: !txObj.isReceived(),
+            updatedTx.txid,
+            isSend: !updatedTx.isReceived(),
             kind: AddressKind.external,
           );
 
-          final amountSentToExternal = tx.sent - (tx.received + (tx.fee ?? 0));
+          final amountSentToExternal =
+              bdkTx.sent - (bdkTx.received + (bdkTx.fee ?? 0));
 
           if (externalAddress != null) {
-            if (externalAddress.label != null &&
-                externalAddress.label!.isNotEmpty)
+            final extAddressHasLabel = externalAddress.label != null &&
+                externalAddress.label!.isNotEmpty;
+            if (extAddressHasLabel)
               label = externalAddress.label;
             else
               externalAddress = externalAddress.copyWith(label: label);
-
-            // Future.delayed(const Duration(milliseconds: 100));
           } else {
             try {
-              if (sTx.output == null) throw 'No output object';
-              final scriptPubkeyString = sTx.output
+              if (serdBdkTx.output == null) throw 'No output object';
+              final scriptPubkeyString = serdBdkTx.output
                   ?.firstWhere((output) => output.value == amountSentToExternal)
                   .scriptPubkey;
               // also check and update your own change, for older transactions
@@ -301,7 +223,7 @@ class BDKTransactions {
               (externalAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStr),
                 wallet: wallet,
-                spentTxId: tx.txid,
+                spentTxId: bdkTx.txid,
                 kind: AddressKind.external,
                 state: AddressStatus.used,
                 spendable: false,
@@ -311,15 +233,15 @@ class BDKTransactions {
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
-              // print(e);
+              // can also be serializedBdkTx
             }
           }
-          txObj = txObj.copyWith(
+          updatedTx = updatedTx.copyWith(
             toAddress: externalAddress != null ? externalAddress.address : '',
             // fromAddress: '',
           );
           if (externalAddress != null)
-            txObj = addOutputAddresses(externalAddress, txObj);
+            updatedTx = addOutputAddresses(externalAddress, updatedTx);
           //
           //
           // HANDLE CHANGE
@@ -327,12 +249,12 @@ class BDKTransactions {
           //
 
           changeAddress = wallet.getAddressFromAddresses(
-            txObj.txid,
-            isSend: !txObj.isReceived(),
+            updatedTx.txid,
+            isSend: !updatedTx.isReceived(),
             kind: AddressKind.change,
           );
 
-          final amountChange = tx.received;
+          final amountChange = bdkTx.received;
 
           if (changeAddress != null) {
             if (changeAddress.label != null && changeAddress.label!.isNotEmpty)
@@ -342,8 +264,8 @@ class BDKTransactions {
             }
           } else {
             try {
-              if (sTx.output == null) throw 'No output object';
-              final scriptPubkeyString = sTx.output
+              if (serdBdkTx.output == null) throw 'No output object';
+              final scriptPubkeyString = serdBdkTx.output
                   ?.firstWhere((output) => output.value == amountChange)
                   .scriptPubkey;
 
@@ -364,7 +286,7 @@ class BDKTransactions {
               (changeAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStr),
                 wallet: wallet,
-                spentTxId: tx.txid,
+                spentTxId: bdkTx.txid,
                 kind: AddressKind.change,
                 state: AddressStatus.used,
                 label: label,
@@ -377,14 +299,14 @@ class BDKTransactions {
             }
           }
           if (changeAddress != null)
-            txObj = addOutputAddresses(changeAddress, txObj);
-        } else if (txObj.isReceived()) {
+            updatedTx = addOutputAddresses(changeAddress, updatedTx);
+        } else if (updatedTx.isReceived()) {
           depositAddress = wallet.getAddressFromAddresses(
-            txObj.txid,
-            isSend: !txObj.isReceived(),
+            updatedTx.txid,
+            isSend: !updatedTx.isReceived(),
             kind: AddressKind.deposit,
           );
-          final amountReceived = tx.received;
+          final amountReceived = bdkTx.received;
 
           if (depositAddress != null) {
             if (depositAddress.label != null &&
@@ -394,8 +316,8 @@ class BDKTransactions {
               depositAddress = depositAddress.copyWith(label: label);
           } else {
             try {
-              if (sTx.output == null) throw 'No output object';
-              final scriptPubkeyString = sTx.output
+              if (serdBdkTx.output == null) throw 'No output object';
+              final scriptPubkeyString = serdBdkTx.output
                   ?.firstWhere((output) => output.value == amountReceived)
                   .scriptPubkey;
 
@@ -415,10 +337,10 @@ class BDKTransactions {
               (depositAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStr),
                 wallet: wallet,
-                spentTxId: tx.txid,
+                spentTxId: bdkTx.txid,
                 kind: AddressKind.deposit,
                 state: AddressStatus.used,
-                spendable: false,
+                // spendable: true,
                 label: label,
               );
               // Future.delayed(const Duration(milliseconds: 100));
@@ -428,35 +350,26 @@ class BDKTransactions {
               // print(e);
             }
           }
-          txObj = txObj.copyWith(
+          updatedTx = updatedTx.copyWith(
             toAddress: depositAddress != null ? depositAddress.address : '',
             // fromAddress: '',
           );
           if (depositAddress != null) {
-            final txObj2 = addOutputAddresses(depositAddress, txObj);
-            txObj = txObj2.copyWith(outAddrs: txObj2.outAddrs);
+            final txObj2 = addOutputAddresses(depositAddress, updatedTx);
+            updatedTx = txObj2.copyWith(outAddrs: txObj2.outAddrs);
           }
         }
 
-        if (storedTxIdx != -1 &&
-            storedTxs[storedTxIdx].label != null &&
-            storedTxs[storedTxIdx].label!.isNotEmpty)
-          label = storedTxs[storedTxIdx].label;
-
-        if (idxUnsignedTx != -1) {
-          if (tx.txid == unsignedTxs[idxUnsignedTx].txid) {
-            final usTx = unsignedTxs.removeAt(idxUnsignedTx);
-            transactions.add(
-              txObj.copyWith(
-                label: usTx.label,
-                outAddrs: usTx.outAddrs,
-              ),
-            );
-          } else
-            transactions.add(txObj.copyWith(label: label));
+        if (foundStoredUTx) {
+          final uTx = unsignedTxs.removeAt(idxUnsignedTx);
+          transactions.add(
+            updatedTx.copyWith(
+              label: uTx.label,
+              outAddrs: uTx.outAddrs,
+            ),
+          );
         } else
-          transactions.add(txObj.copyWith(label: label));
-        // Future.delayed(const Duration(milliseconds: 100));
+          transactions.add(updatedTx.copyWith(label: label));
       }
 
       final List<Transaction> pendingTxs = [];
@@ -468,8 +381,6 @@ class BDKTransactions {
           pendingTxInputs.add(ip);
         }
       }
-
-      // Future.delayed(const Duration(milliseconds: 200));
 
       for (final tx in storedTxs) {
         if (transactions.any((t) => t.txid == tx.txid)) continue;
@@ -510,193 +421,6 @@ class BDKTransactions {
       );
     }
   }
-
-  // bool isRBFTx(
-  //   List<Transaction> txlist,
-  //   Transaction tx,
-  // ) {
-
-  //   for (final Transactiontx in txlist) {
-  //     final rbfMatch = tx.txid
-  //   }
-  //
-  // }
-
-  /*
-  Future<bool> isRBFTx(
-    bdk.Network bdkNetwork,
-    List<bdk.TransactionDetails> pending,
-    Transaction tx,
-  ) async {
-    for (final Address addr in tx.outAddrs) {
-      for (final bdk.TransactionDetails pendingTx in pending) {
-        //print(
-        //  '[stored] ${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${tx.outAddrs.length}:${addr.address}',
-        //);
-
-        final SerializedTx sTx = SerializedTx.fromJson(
-          jsonDecode(pendingTx.transaction!.inner) as Map<String, dynamic>,
-        );
-        final outs = sTx.output;
-        for (final Output out in sTx.output ?? []) {
-          final scriptPubKey = await bdk.ScriptBuf.fromHex(
-            out.scriptPubkey ?? '',
-          );
-          final addressStruct = await bdk.Address.fromScript(
-            script: scriptPubKey,
-            network: bdkNetwork,
-          );
-          final addressStr = await addressStruct.asString();
-
-          final pendingTxId = await pendingTx.transaction?.txid();
-          // print(
-          //   '${tx.txid} ${tx.sent}/${tx.received} ${tx.fee} ${sTx.output?.length}:$addressStr',
-          // );
-
-          // TODO:
-          // 1. In transaction model, have array of txid for storing past RBF txs
-          if (addressStr == addr.address) {
-            print('$pendingTxId is RBF of ${tx.txid}');
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-  */
-
-  // Future<(Wallet?, Err?)> getTransactionsNew({
-  //   required Wallet wallet,
-  //   required bdk.Wallet bdkWallet,
-  // }) async {
-  //   try {
-  //     final storedTxs = wallet.transactions;
-  //     final unsignedTxs = wallet.unsignedTxs;
-  //     final bdkNetwork = wallet.getBdkNetwork();
-  //     if (bdkNetwork == null) throw 'No bdkNetwork';
-
-  //     final txs = await bdkWallet.listTransactions(true);
-  //     // final x = bdk.TxBuilderResult();
-
-  //     if (txs.isEmpty) return (wallet, null);
-
-  //     final List<Transaction> transactions = [];
-
-  //     for (final tx in txs) {
-  //       String? label;
-
-  //       final storedTxIdx = storedTxs.indexWhere((t) => t.txid == tx.txid);
-  //       final idxUnsignedTx = unsignedTxs.indexWhere((t) => t.txid == tx.txid);
-
-  //       Transaction? storedTx;
-  //       if (storedTxIdx != -1) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
-  //       if (idxUnsignedTx != -1) {
-  //         if (tx.txid == unsignedTxs[idxUnsignedTx].txid) unsignedTxs.removeAt(idxUnsignedTx);
-  //       }
-  //       var txObj = Transaction(
-  //         txid: tx.txid,
-  //         received: tx.received,
-  //         sent: tx.sent,
-  //         fee: tx.fee ?? 0,
-  //         height: tx.confirmationTime?.height ?? 0,
-  //         timestamp: tx.confirmationTime?.timestamp ?? 0,
-  //         bdkTx: tx,
-  //         rbfEnabled: storedTx?.rbfEnabled ?? false,
-  //         outAddrs: storedTx?.outAddrs ?? [],
-  //       );
-
-  //       if (storedTxIdx != -1 &&
-  //           storedTxs[storedTxIdx].label != null &&
-  //           storedTxs[storedTxIdx].label!.isNotEmpty) label = storedTxs[storedTxIdx].label;
-
-  //       final SerializedTx sTx = SerializedTx.fromJson(
-  //         jsonDecode(txObj.bdkTx!.serializedTx!) as Map<String, dynamic>,
-  //       );
-
-  //       const hexDecoder = HexDecoder();
-  //       final outputs = sTx.output;
-
-  //       for (final output in outputs!) {
-  //         final scriptPubKey = await bdk.Script.create(
-  //           hexDecoder.convert(output.scriptPubkey!) as Uint8List,
-  //         );
-
-  //         final addressStruct = await bdk.Address.fromScript(
-  //           scriptPubKey,
-  //           bdkNetwork,
-  //         );
-
-  //         final existing = wallet.findAddressInWallet(addressStruct.toString());
-  //         if (existing != null) {
-  //           // txObj.outAddrs.add(existing);
-  //           if (existing.label == null && existing.label!.isEmpty)
-  //             txObj = addOutputAddresses(existing.copyWith(label: label), txObj);
-  //           else {
-  //             label ??= existing.label;
-  //             txObj = addOutputAddresses(existing, txObj);
-  //           }
-  //         } else {
-  //           if (txObj.isReceived()) {
-  //             // AddressKind.deposit should exist in the addressBook
-  //             // may not be applicable for payjoin
-  //           } else {
-  //             // AddressKind.external wont exist for imported wallets and must be added here
-  //             // AddressKind.change should exist in the addressBook
-  //             final (externalAddress, _) = await WalletAddress().addAddressToWallet(
-  //               address: (null, addressStruct.toString()),
-  //               wallet: wallet,
-  //               spentTxId: tx.txid,
-  //               kind: AddressKind.external,
-  //               state: AddressStatus.used,
-  //               spendable: false,
-  //               label: label,
-  //             );
-  //             txObj = addOutputAddresses(externalAddress, txObj);
-  //           }
-  //         }
-  //       }
-
-  //       if (txObj.isReceived()) {
-  //         final recipients = txObj.outAddrs
-  //             .where((element) => element.kind == AddressKind.deposit)
-  //             .toList()
-  //             .map((e) => e.address);
-  //         // may break for payjoin
-
-  //         txObj = txObj.copyWith(
-  //           toAddress: recipients.toString(),
-  //         );
-  //       } else {
-  //         final recipients = txObj.outAddrs
-  //             .where((element) => element.kind == AddressKind.external)
-  //             .toList()
-  //             .map((e) => e.address);
-  //         txObj = txObj.copyWith(
-  //           toAddress: recipients.toString(),
-  //         );
-  //       }
-
-  //       transactions.add(txObj.copyWith(label: label));
-  //     }
-
-  //     final w = wallet.copyWith(
-  //       transactions: transactions,
-  //       unsignedTxs: unsignedTxs,
-  //     );
-
-  //     return (w, null);
-  //   } on Exception catch (e) {
-  //     return (
-  //       null,
-  //       Err(
-  //         e.message,
-  //         title: 'Error occurred while getting transactions',
-  //         solution: 'Please try again.',
-  //       )
-  //     );
-  //   }
-  // }
 
   Future<((Transaction?, int?, String)?, Err?)> buildTx({
     required Wallet wallet,
@@ -844,26 +568,6 @@ class BDKTransactions {
     }
   }
 
-  // Future<(String?, Err?)> signTx({
-  //   required String unsignedPSBT,
-  //   required bdk.Wallet signingWallet,
-  // }) async {
-  //   try {
-  //     final psbt = bdk.PartiallySignedTransaction(psbtBase64: unsignedPSBT);
-  //     final signedPSBT = await signingWallet.sign(psbt: psbt);
-  //     return (signedPSBT.psbtBase64, null);
-  //   } on Exception catch (e) {
-  //     return (
-  //       null,
-  //       Err(
-  //         e.message,
-  //         title: 'Error occurred while signing transaction',
-  //         solution: 'Please try again.',
-  //       )
-  //     );
-  //   }
-  // }
-
   Future<((bdk.Transaction, String)?, Err?)> signTx({
     required String psbt,
     // required bdk.Blockchain blockchain,
@@ -917,11 +621,17 @@ class BDKTransactions {
 
       await blockchain.broadcast(transaction: tx);
       final txid = await psbtStruct.txid();
+
+      final swapTxType = transaction.swapTx?.getSwapTxTypeForParent();
       final newTx = transaction.copyWith(
         txid: txid,
         label: note,
         toAddress: address,
         broadcastTime: DateTime.now().millisecondsSinceEpoch,
+        swapTx: transaction.swapTx?.copyWith(
+          claimTxid: swapTxType == SwapTxType.claim ? txid : null,
+          lockupTxid: swapTxType == SwapTxType.lockup ? txid : null,
+        ),
         // oldTx: false,
       );
 
@@ -934,7 +644,22 @@ class BDKTransactions {
       } else
         txs.add(newTx);
       // txs.add(newTx);
-      final w = wallet.copyWith(transactions: txs);
+
+      // TODO: Not the right place. Also duplicated in BDKTransaction / LWKTransaction
+      // Optimize it later
+      final swaps = wallet.swaps.toList();
+      if (newTx.swapTx != null) {
+        final swapIndex =
+            swaps.indexWhere((swap) => swap.id == newTx.swapTx!.id);
+        if (swapIndex != -1) {
+          swaps.removeAt(swapIndex);
+          swaps.insert(swapIndex, newTx.swapTx!);
+        } else {
+          swaps.add(newTx.swapTx!);
+        }
+      }
+
+      final w = wallet.copyWith(transactions: txs, swaps: swaps);
 
       return ((w, txid), null);
     } on Exception catch (e) {

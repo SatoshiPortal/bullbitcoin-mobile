@@ -11,6 +11,8 @@ part 'swap.g.dart';
 
 enum OnChainSwapType { selfSwap, receiveSwap, sendSwap }
 
+enum SwapTxType { lockup, claim }
+
 @freezed
 class ChainSwapDetails with _$ChainSwapDetails {
   const factory ChainSwapDetails({
@@ -72,7 +74,8 @@ class SwapTx with _$SwapTx {
     required String boltzUrl,
     ChainSwapDetails? chainSwapDetails,
     LnSwapDetails? lnSwapDetails,
-    String? txid,
+    String? claimTxid, // reverse + chain.self
+    String? lockupTxid, // submarine + chain.sendSwap + chain.sendSwap
     String? label,
     SwapStreamStatus? status, // should this be SwapStaus?
     int? boltzFees,
@@ -83,14 +86,84 @@ class SwapTx with _$SwapTx {
     DateTime? creationTime,
     DateTime? completionTime,
   }) = _SwapTx;
+  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
 
   const SwapTx._();
 
-  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
+  String? getDuration() {
+    if (completionTime == null) {
+      return null;
+    }
+    final minutes = completionTime!.difference(creationTime!).inMinutes;
+    if (minutes == 0) {
+      final seconds = completionTime?.difference(creationTime!).inSeconds;
+      return '$seconds seconds';
+    } else if (minutes > 60) {
+      final hours = completionTime?.difference(creationTime!).inHours;
+      return '$hours hours';
+    } else {
+      return '$minutes minutes';
+    }
+  }
+
+  int? amountForDisplay() {
+    if (isSubmarine()) {
+      return outAmount - (claimFees ?? 0) - (boltzFees ?? 0);
+    } else if (isReverse()) {
+      return outAmount;
+    }
+    return outAmount;
+  }
+
+  bool noClaimTxid() => claimTxid == null;
+  bool noLockupTxid() => lockupTxid == null;
+
+  // lockup: submarine, chain.self (lbtc->btc), chain.send
+  // claim: reverse , chain.recieve
+  String? getParentTxid() {
+    if (isSubmarine()) {
+      return lockupTxid;
+    }
+    if (isReverse()) {
+      return claimTxid;
+    }
+    if (isChainSelf()) {
+      return lockupTxid;
+    }
+    if (isChainReceive()) {
+      return claimTxid;
+    }
+    if (isChainSend()) {
+      return lockupTxid;
+    }
+    return null;
+  }
+
+  // return the swapTxType that needs to be updated for liquid swap tx broadcast
+  SwapTxType getSwapTxTypeForParent() {
+    if (isSubmarine()) {
+      return SwapTxType.lockup;
+    }
+    if (isReverse()) {
+      return SwapTxType.claim;
+    }
+    if (isChainSelf()) {
+      return SwapTxType.lockup;
+    }
+    if (isChainReceive()) {
+      return SwapTxType.claim;
+    }
+    if (isChainSend()) {
+      return SwapTxType.lockup;
+    } else {
+      return SwapTxType.lockup; // should never reach
+    }
+  }
 
   bool isTestnet() => network == BBNetwork.Testnet;
 
   bool isLiquid() => walletType == BaseWalletType.Liquid;
+  bool isBitcoin() => walletType == BaseWalletType.Bitcoin;
 
   int? totalFees() {
     if (boltzFees == null || lockupFees == null || claimFees == null)
@@ -109,6 +182,15 @@ class SwapTx with _$SwapTx {
   bool isSubmarine() =>
       isLnSwap() && lnSwapDetails!.swapType == SwapType.submarine;
   bool isReverse() => isLnSwap() && lnSwapDetails!.swapType == SwapType.reverse;
+  bool isChainSelf() =>
+      isChainSwap() &&
+      chainSwapDetails!.onChainType == OnChainSwapType.selfSwap;
+  bool isChainSend() =>
+      isChainSwap() &&
+      chainSwapDetails!.onChainType == OnChainSwapType.sendSwap;
+  bool isChainReceive() =>
+      isChainSwap() &&
+      chainSwapDetails!.onChainType == OnChainSwapType.receiveSwap;
 
   bool paidSubmarine() =>
       isSubmarine() &&
@@ -127,7 +209,7 @@ class SwapTx with _$SwapTx {
   bool refundableOnchain() =>
       isChainSwap() &&
       (status != null &&
-          txid == null &&
+          claimTxid == null &&
           (status!.status == SwapStatus.invoiceFailedToPay ||
               status!.status == SwapStatus.txnLockupFailed ||
               status!.status == SwapStatus.swapExpired ||
@@ -151,13 +233,14 @@ class SwapTx with _$SwapTx {
       isReverse() &&
       status != null &&
       ((status!.status == SwapStatus.txnConfirmed) ||
-          (status!.status == SwapStatus.invoiceSettled && txid == null));
+          (status!.status == SwapStatus.invoiceSettled && claimTxid == null));
 
   // TODO: Is this right
   bool claimableOnchain() =>
       isChainSwap() &&
       status != null &&
-      (status!.status == SwapStatus.txnServerConfirmed); //  ||
+      (status!.status == SwapStatus.txnServerConfirmed &&
+          claimTxid == null); //  ||
   // (status!.status == SwapStatus.invoiceSettled && txid == null));
 
   bool expiredReverse() =>
@@ -174,12 +257,12 @@ class SwapTx with _$SwapTx {
 
   bool settledReverse() =>
       isReverse() &&
-      txid != null &&
+      claimTxid != null &&
       (status != null && (status!.status == SwapStatus.invoiceSettled));
 
   bool settledOnchain() =>
       isChainSwap() &&
-      txid != null &&
+      claimTxid != null &&
       (status != null && (status!.status == SwapStatus.txnClaimed));
 
   bool paidReverse() =>
@@ -188,16 +271,10 @@ class SwapTx with _$SwapTx {
 
   bool paidOnchain() =>
       isChainSwap() &&
-      txid == null && // claim or refund tx should be null at this point
       (status != null &&
           (status!.status == SwapStatus.txnMempool ||
               status!.status == SwapStatus.txnConfirmed ||
               status!.status == SwapStatus.txnServerMempool));
-
-  bool claimedOnchain() =>
-      isChainSwap() &&
-      // txid != null &&
-      (status != null && (status!.status == SwapStatus.txnClaimed));
 
   bool uninitiatedOnchain() =>
       isChainSwap() &&
@@ -218,9 +295,9 @@ class SwapTx with _$SwapTx {
       expiredReverse() ||
       expiredSubmarine() ||
       refundedAny() ||
-      claimedOnchain() ||
       expiredOnchain() ||
-      uninitiatedOnchain();
+      uninitiatedOnchain() ||
+      settledOnchain();
 
   bool failed() => isChainSwap()
       ? isChainSwapFailed()
@@ -329,7 +406,7 @@ class SwapTx with _$SwapTx {
 
   bool showAlert() {
     if (isChainSwap()) {
-      if (paidOnchain() || claimedOnchain()) return true;
+      if (paidOnchain() || settledOnchain()) return true;
     } else if (isSubmarine()) {
       if (paidSubmarine() || settledSubmarine()) return true;
     } else {
@@ -352,8 +429,15 @@ class SwapTx with _$SwapTx {
   }
 
   bb.Transaction toNewTransaction() {
+    final txId = isLnSwap()
+        ? (lnSwapDetails!.swapType == SwapType.submarine
+            ? lockupTxid
+            : claimTxid)
+        : isChainSwap()
+            ? lockupTxid
+            : claimTxid;
     final newTx = bb.Transaction(
-      txid: txid ?? id,
+      txid: txId ?? id,
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       swapTx: this,
       sent: !isSubmarine() ? 0 : outAmount - totalFees()!,

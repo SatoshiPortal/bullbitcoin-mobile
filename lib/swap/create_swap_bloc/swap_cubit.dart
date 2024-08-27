@@ -84,7 +84,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    final walletIsLiquid = wallet.baseWalletType == BaseWalletType.Liquid;
+    final walletIsLiquid = wallet.isLiquid();
 
     final reverseFees = await fees?.reverse();
 
@@ -398,7 +398,9 @@ class CreateSwapCubit extends Cubit<SwapState> {
           : (isLiq ? Chain.liquid : Chain.bitcoin);
 
       final storedSwapTxIdx = wallet.swaps.indexWhere(
-        (_) => _.lnSwapDetails!.invoice == invoice.invoice,
+        (_) =>
+            _.lnSwapDetails != null &&
+            _.lnSwapDetails!.invoice == invoice.invoice,
       );
 
       SwapTx swapTx;
@@ -710,15 +712,21 @@ class CreateSwapCubit extends Cubit<SwapState> {
     required int amount,
     bool sweep = false,
     String? label,
-    required bool isTestnet,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
-    required String toAddress,
+    // required String toAddress,
     required String refundAddress,
     required ChainSwapDirection direction,
   }) async {
     try {
       emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
+
+      final isTestnet = _networkCubit.state.testnet;
+      final lbtcElectrumUrl = _networkCubit.state.getLiquidNetworkUrl();
+      final btcNetworkUrl = _networkCubit.state.getNetworkUrl();
+      final btcElectrumUrl = btcNetworkUrl.startsWith('ssl://')
+          ? btcNetworkUrl.split('//')[1]
+          : btcNetworkUrl;
+
+      final toAddress = toWallet.lastGeneratedAddress?.address ?? '';
 
       final boltzurl = isTestnet ? boltzTestnetUrl : boltzMainnetUrl;
 

@@ -51,12 +51,13 @@ class WalletCardDetails extends StatelessWidget {
   final bool hideSettings;
 
   static (Color, String) cardDetails(BuildContext context, Wallet wallet) {
-    final isTestnet = wallet.network == BBNetwork.Testnet;
-    final isInstant = wallet.baseWalletType == BaseWalletType.Liquid;
+    final isTestnet = wallet.isTestnet();
+    final isInstant = wallet.isInstant();
     final isWatchOnly = wallet.watchOnly();
 
     final darkMode = context.select(
-        (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark);
+      (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
+    );
 
     final watchonlyColor =
         darkMode ? context.colour.surface : context.colour.onPrimaryContainer;
@@ -89,9 +90,11 @@ class WalletCardDetails extends StatelessWidget {
     final sats = context.select((WalletBloc x) => x.state.balanceSats());
 
     final balance = context.select(
-        (CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true));
-    final unit = context.select((CurrencyCubit x) =>
-        x.state.getUnitString(isLiquid: wallet.isLiquid()));
+      (CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true),
+    );
+    final unit = context.select(
+      (CurrencyCubit x) => x.state.getUnitString(isLiquid: wallet.isLiquid()),
+    );
 
     final fiatCurrency =
         context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);

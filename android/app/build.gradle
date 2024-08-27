@@ -50,7 +50,6 @@ android {
 
     defaultConfig {
         applicationId 'com.bullbitcoin.mobile'
-
         minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()

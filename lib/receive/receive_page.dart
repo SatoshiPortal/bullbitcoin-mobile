@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_model/swap.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
@@ -36,14 +35,14 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-const btcClaimAddress =
+const btcAddress =
     'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz'; // Vegeta wallet
-const lqClaimAddress =
+const lqAddress =
     'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la';
-const btcRefundAddress =
-    'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz'; // Vegeta wallet
-const lqRefundAddress =
-    'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la';
+
+const btcMainnetAddress = 'bc1qrh2s82ec3998qeusuy007u6r3z0e4s2xg3s63z';
+const lqMainnetAddress =
+    'lq1qq23h89g7u7ngp2n7p7tvek7n97dckyfyu89e3j875rqz35u8rd9tmy8fss0q7zke3lzj80834zl6t72pw2khqz0fkf6hnswne';
 
 class ReceivePage extends StatefulWidget {
   const ReceivePage({super.key, this.walletBloc});
@@ -150,7 +149,7 @@ class _Screen extends StatelessWidget {
     final receiveWallet = context.select((WalletBloc x) => x.state.wallet);
 
     final walletIsLiquid = context.select(
-      (WalletBloc x) => x.state.wallet!.baseWalletType == BaseWalletType.Liquid,
+      (WalletBloc x) => x.state.wallet!.isLiquid(),
     );
     final showWarning =
         context.select((CreateSwapCubit x) => x.state.showWarning());
@@ -380,21 +379,21 @@ class _ReceiveAppBar extends StatelessWidget {
 class _Warnings extends StatelessWidget {
   const _Warnings();
 
-  Widget buildLowAmtWarn() {
-    return const Column(
+  Widget buildLowAmtWarn(bool onChain) {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BBText.titleLarge('Small amount warning', isRed: true),
-        Gap(8),
+        const BBText.titleLarge('Small amount warning', isRed: true),
+        const Gap(8),
         BBText.bodySmall(
-          'You are about to receive less than 0.01 BTC as a Lightning Network payment and swap it to on-chain Bitcoin in your Secure Bitcoin Wallet.',
+          'You are about to receive less than 0.01 BTC as ${onChain == true ? 'Onchain swap' : 'a Lightning Network payment'} and swap it to on-chain Bitcoin in your Secure Bitcoin Wallet.',
         ),
-        Gap(8),
-        BBText.bodySmall(
+        const Gap(8),
+        const BBText.bodySmall(
           'Only do this if you specifically want to add funds to your Secure Bitcoin Wallet.',
           isBold: true,
         ),
-        Gap(24),
+        const Gap(24),
       ],
     );
   }
@@ -452,7 +451,7 @@ class _Warnings extends StatelessWidget {
     return WarningContainer(
       children: [
         const Gap(24),
-        if (errLowAmt) buildLowAmtWarn(),
+        if (errLowAmt) buildLowAmtWarn(swapTx.isChainSwap()),
         if (errHighFees != null)
           buildHighFeesWarn(
             feePercentage: errHighFees,
@@ -641,9 +640,6 @@ class ChainSwapForm extends StatelessWidget {
 
     final generatingInv = context
         .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
-    // final sendingg = context.select((SendCubit cubit) => cubit.state.sending);
-    // final buildingOnChain =
-    //     context.select((SendCubit cubit) => cubit.state.buildingOnChain);
     final sending = generatingInv;
 
     const int finalFee = 0;
@@ -681,36 +677,21 @@ class ChainSwapForm extends StatelessWidget {
               final receiveWallet =
                   context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
               final label = context.read<ReceiveCubit>().state.description;
-              final isTestnet = context.read<NetworkCubit>().state.testnet;
-
-              final liqNetworkurl =
-                  context.read<NetworkCubit>().state.getLiquidNetworkUrl();
-              final btcNetworkUrl =
-                  context.read<NetworkCubit>().state.getNetworkUrl();
-              final btcNetworkUrlWithoutSSL = btcNetworkUrl.startsWith('ssl://')
-                  ? btcNetworkUrl.split('//')[1]
-                  : btcNetworkUrl;
-
-              final recipientAddress =
-                  receiveWallet.lastGeneratedAddress?.address ?? '';
 
               // TODO: How refund happens on any failure?
               context.read<CreateSwapCubit>().createOnChainSwapForReceive(
                     toWallet: receiveWallet,
                     amount: amt,
-                    isTestnet: isTestnet,
-                    btcElectrumUrl:
-                        btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
-                    lbtcElectrumUrl: liqNetworkurl, // 'blockstream.info:465',
-                    toAddress: recipientAddress, // recipientAddress.address;
-                    refundAddress:
-                        receiveWallet.baseWalletType == BaseWalletType.Liquid
-                            ? btcRefundAddress
-                            : lqRefundAddress,
-                    direction:
-                        receiveWallet.baseWalletType == BaseWalletType.Liquid
-                            ? ChainSwapDirection.btcToLbtc
-                            : ChainSwapDirection.lbtcToBtc,
+                    refundAddress: receiveWallet.isLiquid()
+                        ? (receiveWallet.isTestnet()
+                            ? btcAddress
+                            : btcMainnetAddress)
+                        : (receiveWallet.isTestnet()
+                            ? lqAddress
+                            : lqMainnetAddress),
+                    direction: receiveWallet.isLiquid()
+                        ? ChainSwapDirection.btcToLbtc
+                        : ChainSwapDirection.lbtcToBtc,
                     label: label,
                   );
             },
@@ -809,8 +790,7 @@ class CreateLightningInvoice extends StatelessWidget {
               final amt = context.read<CurrencyCubit>().state.amount;
               final wallet =
                   context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
-              final walletIsLiquid =
-                  wallet.baseWalletType == BaseWalletType.Liquid;
+              final walletIsLiquid = wallet.isLiquid();
               final label = context.read<ReceiveCubit>().state.description;
               final isTestnet = context.read<NetworkCubit>().state.testnet;
               final networkUrl = !walletIsLiquid

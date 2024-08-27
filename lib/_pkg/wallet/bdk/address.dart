@@ -51,7 +51,7 @@ class BDKAddress {
               index: address.index,
               kind: AddressKind.deposit,
               state: AddressStatus.unused,
-              isLiquid: wallet.baseWalletType == BaseWalletType.Liquid,
+              isLiquid: wallet.isLiquid(),
             ),
           );
       }
@@ -118,7 +118,7 @@ class BDKAddress {
               index: address.index,
               kind: AddressKind.change,
               state: AddressStatus.unused,
-              isLiquid: wallet.baseWalletType == BaseWalletType.Liquid,
+              isLiquid: wallet.isLiquid(),
             ),
           );
         else {

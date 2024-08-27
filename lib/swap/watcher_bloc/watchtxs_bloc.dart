@@ -246,14 +246,14 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     try {
       final json = jsonDecode(txid!) as Map<String, dynamic>;
       updatedSwap = swapTx.copyWith(
-        txid: json['id'] as String,
+        claimTxid: json['id'] as String,
         status: SwapStreamStatus(
           id: swapTx.id,
           status: SwapStatus.swapRefunded,
         ),
       );
     } catch (e) {
-      updatedSwap = swapTx.copyWith(txid: txid);
+      updatedSwap = swapTx.copyWith(claimTxid: txid);
     }
 
     emit(
@@ -314,9 +314,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     SwapTx updatedSwap;
     try {
       final json = jsonDecode(txid!) as Map<String, dynamic>;
-      updatedSwap = swapTx.copyWith(txid: json['id'] as String);
+      updatedSwap = swapTx.copyWith(claimTxid: json['id'] as String);
     } catch (e) {
-      updatedSwap = swapTx.copyWith(txid: txid);
+      updatedSwap = swapTx.copyWith(claimTxid: txid);
     }
 
     emit(
@@ -385,36 +385,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     return null;
   }
 
-  // Future __swapAlert(
-  //   SwapTx swapTx,
-  //   Wallet wallet,
-  //   Emitter<WatchTxsState> emit,
-  // ) async {
-  //   if (swapTx.paidReverse()) {
-  //     print('ALERT Swap Paid Reverse');
-  //     emit(state.copyWith(txPaid: swapTx));
-  //     return;
-  //   }
-
-  //   if (swapTx.settledReverse()) {
-  //     print('ALERT Swap Settled Reverse');
-  //     emit(state.copyWith(syncWallet: wallet, txPaid: swapTx));
-  //     return;
-  //   }
-
-  //   if (swapTx.paidSubmarine()) {
-  //     print('ALERT Swap Paid Submarine');
-  //     emit(state.copyWith(txPaid: swapTx));
-  //     return;
-  //   }
-
-  //   if (swapTx.settledSubmarine()) {
-  //     print('ALERT Swap Settled Submarine');
-  //     emit(state.copyWith(syncWallet: wallet, txPaid: swapTx));
-  //     return;
-  //   }
-  // }
-
   Future __closeSwap(
     SwapTx swapTx,
     Emitter<WatchTxsState> emit,
@@ -425,136 +395,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // await Future.delayed(1500.ms);
     // final isTestnet = swapTx.network == BBNetwork.Testnet;
     // add(WatchWallets(isTestnet: isTestnet));
-  }
-
-  // Future<void> _onClearAlerts(
-  //   ClearAlerts event,
-  //   Emitter<WatchTxsState> emit,
-  // ) async {
-  //   emit(state.copyWith(txPaid: null, syncWallet: null));
-  // }
-
-  Future<void> _onProcessSwapTx(
-    ProcessSwapTx event,
-    Emitter<WatchTxsState> emit,
-  ) async {
-    // locator<Logger>().log('', printToConsole: true);
-
-    final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
-    final wallet = walletBloc?.state.wallet;
-    if (walletBloc == null || wallet == null) return;
-    final swapFromWallet =
-        walletBloc.state.wallet!.getOngoingSwap(event.swapTxId);
-    final swapTx = event.status != null
-        ? swapFromWallet!.copyWith(status: event.status)
-        : swapFromWallet!;
-
-    emit(state.copyWith(updatedSwapTx: swapTx));
-    await Future.delayed(100.ms);
-    emit(state.copyWith(updatedSwapTx: null));
-
-    final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
-
-    if (swapTx.isReverse()) {
-      switch (swapTx.reverseSwapAction()) {
-        case ReverseSwapActions.created:
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-
-        case ReverseSwapActions.failed:
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-          await __closeSwap(swapTx, emit);
-
-        case ReverseSwapActions.paid:
-          if (wallet.isLiquid()) {
-            final swap = await __claimSwap(swapTx, walletBloc, emit);
-            if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
-            return;
-          }
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-
-        case ReverseSwapActions.claimable:
-          final swap = await __claimSwap(swapTx, walletBloc, emit);
-          if (swap != null)
-            await __updateWalletTxs(swap, walletBloc, emit);
-          else
-            await __updateWalletTxs(swapTx, walletBloc, emit);
-
-        case ReverseSwapActions.settled:
-          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
-          final w = await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
-          if (w == null) return;
-          await __closeSwap(updatedSwapTx, emit);
-      }
-    } else if (swapTx.isSubmarine()) {
-      switch (swapTx.submarineSwapAction()) {
-        case SubmarineSwapActions.created:
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-
-        case SubmarineSwapActions.failed:
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-          await __closeSwap(swapTx, emit);
-
-        case SubmarineSwapActions.paid:
-          if (swapTx.isLiquid()) {
-            final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
-            if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
-            return;
-          } else
-            await __updateWalletTxs(swapTx, walletBloc, emit);
-
-        case SubmarineSwapActions.claimable:
-          final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
-          if (swap != null)
-            await __updateWalletTxs(swap, walletBloc, emit);
-          else
-            await __updateWalletTxs(swapTx, walletBloc, emit);
-        case SubmarineSwapActions.refundable:
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-          final swap = await __refundSwap(swapTx, walletBloc, emit);
-          if (swap != null)
-            await __updateWalletTxs(
-              swap,
-              walletBloc,
-              emit,
-            );
-
-        case SubmarineSwapActions.settled:
-          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
-          final w = await __updateWalletTxs(
-            swapTx.copyWith(completionTime: DateTime.now()),
-            walletBloc,
-            emit,
-          );
-          if (w == null) return;
-          await __closeSwap(updatedSwapTx, emit);
-      }
-    } else if (swapTx.isChainSwap()) {
-      print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
-      switch (swapTx.chainSwapAction()) {
-        case ChainSwapActions.paid:
-          await __updateWalletTxs(swapTx, walletBloc, emit);
-        case ChainSwapActions.claimable:
-          await Future.delayed(const Duration(milliseconds: 1000));
-          final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
-          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
-        case ChainSwapActions.settled:
-          await Future.delayed(const Duration(milliseconds: 2000));
-          print('${swapTx.id}: updateWalletTxs for txnClaimed');
-          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
-          await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
-          await Future.delayed(const Duration(milliseconds: 1000));
-          await __closeSwap(swapTx, emit);
-          await Future.delayed(const Duration(milliseconds: 2000));
-          final toWalletBloc = _homeCubit.state
-              .getWalletBlocById(swapTx.chainSwapDetails!.toWalletId);
-          toWalletBloc?.add(SyncWallet());
-        // TODO: Better way to sync `to` wallet
-        case ChainSwapActions.refundable:
-          final swap = await __onchainRefund(swapTx, walletBloc, emit);
-          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
-        default:
-      }
-    }
   }
 
   Future<SwapTx?> __onChainclaimSwap(
@@ -598,9 +438,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     SwapTx updatedSwap;
     try {
       final json = jsonDecode(txid!) as Map<String, dynamic>;
-      updatedSwap = swapTx.copyWith(txid: json['id'] as String);
+      updatedSwap = swapTx.copyWith(claimTxid: json['id'] as String);
     } catch (e) {
-      updatedSwap = swapTx.copyWith(txid: txid);
+      updatedSwap = swapTx.copyWith(claimTxid: txid);
     }
 
     emit(
@@ -670,7 +510,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // try {
     // final json = jsonDecode(txid!) as Map<String, dynamic>;
     updatedSwap = swapTx.copyWith(
-      txid: txid,
+      claimTxid: txid,
       status: SwapStreamStatus(
         id: swapTx.id,
         status: SwapStatus.swapRefunded,
@@ -690,5 +530,148 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
 
     return updatedSwap;
+  }
+
+  Future<void> _onProcessSwapTx(
+    ProcessSwapTx event,
+    Emitter<WatchTxsState> emit,
+  ) async {
+    // locator<Logger>().log('', printToConsole: true);
+
+    final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
+    final wallet = walletBloc?.state.wallet;
+    if (walletBloc == null || wallet == null) return;
+    final swapFromWallet =
+        walletBloc.state.wallet!.getOngoingSwap(event.swapTxId);
+    if (swapFromWallet == null) return;
+    final swapTx = event.status != null
+        ? swapFromWallet.copyWith(status: event.status)
+        : swapFromWallet;
+
+    emit(state.copyWith(updatedSwapTx: swapTx));
+    // await Future.delayed(100.ms);
+    // emit(state.copyWith(updatedSwapTx: null));
+
+    final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
+
+    if (swapTx.isReverse()) {
+      switch (swapTx.reverseSwapAction()) {
+        case ReverseSwapActions.created:
+          await __updateWalletTxs(swapTx, walletBloc, emit);
+
+        case ReverseSwapActions.failed:
+          await __updateWalletTxs(swapTx, walletBloc, emit);
+          await __closeSwap(swapTx, emit);
+
+        case ReverseSwapActions.paid:
+          if (wallet.isLiquid()) {
+            final swap = await __claimSwap(swapTx, walletBloc, emit);
+            if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+            return;
+          }
+          await __updateWalletTxs(swapTx, walletBloc, emit);
+
+        case ReverseSwapActions.claimable:
+          final swap = await __claimSwap(swapTx, walletBloc, emit);
+          if (swap != null)
+            await __updateWalletTxs(swap, walletBloc, emit);
+          else
+            await __updateWalletTxs(swapTx, walletBloc, emit);
+
+        case ReverseSwapActions.settled:
+          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
+          final w = await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
+          if (w == null) return;
+          await __closeSwap(updatedSwapTx, emit);
+      }
+    } else if (swapTx.isSubmarine()) {
+      switch (swapTx.submarineSwapAction()) {
+        case SubmarineSwapActions.created:
+          await __updateWalletTxs(swapTx, walletBloc, emit);
+
+        case SubmarineSwapActions.failed:
+          await __updateWalletTxs(swapTx, walletBloc, emit);
+          await __closeSwap(swapTx, emit);
+
+        case SubmarineSwapActions.paid:
+          if (swapTx.isLiquid()) {
+            final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
+            if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+            return;
+          } else
+            await __updateWalletTxs(swapTx, walletBloc, emit);
+
+        case SubmarineSwapActions.claimable:
+          final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
+          if (swap != null)
+            await __updateWalletTxs(swap, walletBloc, emit);
+          else
+            await __updateWalletTxs(swapTx, walletBloc, emit);
+
+        case SubmarineSwapActions.refundable:
+          await __updateWalletTxs(swapTx, walletBloc, emit);
+          final swap = await __refundSwap(swapTx, walletBloc, emit);
+          if (swap != null)
+            await __updateWalletTxs(
+              swap,
+              walletBloc,
+              emit,
+            );
+
+        case SubmarineSwapActions.settled:
+          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
+          final w = await __updateWalletTxs(
+            updatedSwapTx,
+            walletBloc,
+            emit,
+          );
+          if (w == null) return;
+          await __closeSwap(updatedSwapTx, emit);
+      }
+    } else if (swapTx.isChainSwap()) {
+      print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
+
+      switch (swapTx.chainSwapAction()) {
+        case ChainSwapActions.paid:
+          if (swapTx.isChainReceive() && swapTx.lockupTxid == null) {
+            final (txid, err) = await _swapBoltz.chainUserLockup(
+              swapTx: swapTx,
+              wallet: walletBloc.state.wallet!,
+            );
+            if (err != null) {
+              await __updateWalletTxs(swapTx, walletBloc, emit);
+            }
+            await __updateWalletTxs(
+              swapTx.copyWith(lockupTxid: txid),
+              walletBloc,
+              emit,
+            );
+          } else
+            await __updateWalletTxs(swapTx, walletBloc, emit);
+
+        case ChainSwapActions.claimable:
+          await Future.delayed(const Duration(milliseconds: 100));
+          final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
+          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+
+        case ChainSwapActions.settled:
+          await Future.delayed(const Duration(milliseconds: 200));
+          print('${swapTx.id}: updateWalletTxs for txnClaimed');
+          final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
+          await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
+          await Future.delayed(const Duration(milliseconds: 100));
+          await __closeSwap(swapTx, emit);
+          await Future.delayed(const Duration(milliseconds: 200));
+          final toWalletBloc = _homeCubit.state
+              .getWalletBlocById(swapTx.chainSwapDetails!.toWalletId);
+          toWalletBloc?.add(SyncWallet());
+        // TODO: Better way to sync `to` wallet
+
+        case ChainSwapActions.refundable:
+          final swap = await __onchainRefund(swapTx, walletBloc, emit);
+          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+        default:
+      }
+    }
   }
 }

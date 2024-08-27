@@ -20,7 +20,8 @@ Transaction _$TransactionFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Transaction {
-  int get timestamp => throw _privateConstructorUsedError;
+  int get timestamp =>
+      throw _privateConstructorUsedError; // lockup submarine + claim reverse + lockup chain.send + lockup chain.self
   String get txid => throw _privateConstructorUsedError;
   int? get received => throw _privateConstructorUsedError;
   int? get sent => throw _privateConstructorUsedError;
@@ -429,6 +430,7 @@ class _$TransactionImpl extends _Transaction with DiagnosticableTreeMixin {
 
   @override
   final int timestamp;
+// lockup submarine + claim reverse + lockup chain.send + lockup chain.self
   @override
   final String txid;
   @override
@@ -649,7 +651,7 @@ abstract class _Transaction extends Transaction {
 
   @override
   int get timestamp;
-  @override
+  @override // lockup submarine + claim reverse + lockup chain.send + lockup chain.self
   String get txid;
   @override
   int? get received;

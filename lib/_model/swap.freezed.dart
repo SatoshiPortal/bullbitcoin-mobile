@@ -990,7 +990,10 @@ mixin _$SwapTx {
   String get boltzUrl => throw _privateConstructorUsedError;
   ChainSwapDetails? get chainSwapDetails => throw _privateConstructorUsedError;
   LnSwapDetails? get lnSwapDetails => throw _privateConstructorUsedError;
-  String? get txid => throw _privateConstructorUsedError;
+  String? get claimTxid =>
+      throw _privateConstructorUsedError; // reverse + chain.self
+  String? get lockupTxid =>
+      throw _privateConstructorUsedError; // submarine + chain.sendSwap + chain.sendSwap
   String? get label => throw _privateConstructorUsedError;
   SwapStreamStatus? get status =>
       throw _privateConstructorUsedError; // should this be SwapStaus?
@@ -1021,7 +1024,8 @@ abstract class $SwapTxCopyWith<$Res> {
       String boltzUrl,
       ChainSwapDetails? chainSwapDetails,
       LnSwapDetails? lnSwapDetails,
-      String? txid,
+      String? claimTxid,
+      String? lockupTxid,
       String? label,
       SwapStreamStatus? status,
       int? boltzFees,
@@ -1058,7 +1062,8 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     Object? boltzUrl = null,
     Object? chainSwapDetails = freezed,
     Object? lnSwapDetails = freezed,
-    Object? txid = freezed,
+    Object? claimTxid = freezed,
+    Object? lockupTxid = freezed,
     Object? label = freezed,
     Object? status = freezed,
     Object? boltzFees = freezed,
@@ -1102,9 +1107,13 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
           ? _value.lnSwapDetails
           : lnSwapDetails // ignore: cast_nullable_to_non_nullable
               as LnSwapDetails?,
-      txid: freezed == txid
-          ? _value.txid
-          : txid // ignore: cast_nullable_to_non_nullable
+      claimTxid: freezed == claimTxid
+          ? _value.claimTxid
+          : claimTxid // ignore: cast_nullable_to_non_nullable
+              as String?,
+      lockupTxid: freezed == lockupTxid
+          ? _value.lockupTxid
+          : lockupTxid // ignore: cast_nullable_to_non_nullable
               as String?,
       label: freezed == label
           ? _value.label
@@ -1198,7 +1207,8 @@ abstract class _$$SwapTxImplCopyWith<$Res> implements $SwapTxCopyWith<$Res> {
       String boltzUrl,
       ChainSwapDetails? chainSwapDetails,
       LnSwapDetails? lnSwapDetails,
-      String? txid,
+      String? claimTxid,
+      String? lockupTxid,
       String? label,
       SwapStreamStatus? status,
       int? boltzFees,
@@ -1236,7 +1246,8 @@ class __$$SwapTxImplCopyWithImpl<$Res>
     Object? boltzUrl = null,
     Object? chainSwapDetails = freezed,
     Object? lnSwapDetails = freezed,
-    Object? txid = freezed,
+    Object? claimTxid = freezed,
+    Object? lockupTxid = freezed,
     Object? label = freezed,
     Object? status = freezed,
     Object? boltzFees = freezed,
@@ -1280,9 +1291,13 @@ class __$$SwapTxImplCopyWithImpl<$Res>
           ? _value.lnSwapDetails
           : lnSwapDetails // ignore: cast_nullable_to_non_nullable
               as LnSwapDetails?,
-      txid: freezed == txid
-          ? _value.txid
-          : txid // ignore: cast_nullable_to_non_nullable
+      claimTxid: freezed == claimTxid
+          ? _value.claimTxid
+          : claimTxid // ignore: cast_nullable_to_non_nullable
+              as String?,
+      lockupTxid: freezed == lockupTxid
+          ? _value.lockupTxid
+          : lockupTxid // ignore: cast_nullable_to_non_nullable
               as String?,
       label: freezed == label
           ? _value.label
@@ -1336,7 +1351,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       required this.boltzUrl,
       this.chainSwapDetails,
       this.lnSwapDetails,
-      this.txid,
+      this.claimTxid,
+      this.lockupTxid,
       this.label,
       this.status,
       this.boltzFees,
@@ -1368,7 +1384,11 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
   @override
   final LnSwapDetails? lnSwapDetails;
   @override
-  final String? txid;
+  final String? claimTxid;
+// reverse + chain.self
+  @override
+  final String? lockupTxid;
+// submarine + chain.sendSwap + chain.sendSwap
   @override
   final String? label;
   @override
@@ -1391,7 +1411,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'SwapTx(id: $id, network: $network, walletType: $walletType, outAmount: $outAmount, scriptAddress: $scriptAddress, boltzUrl: $boltzUrl, chainSwapDetails: $chainSwapDetails, lnSwapDetails: $lnSwapDetails, txid: $txid, label: $label, status: $status, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress, refundAddress: $refundAddress, creationTime: $creationTime, completionTime: $completionTime)';
+    return 'SwapTx(id: $id, network: $network, walletType: $walletType, outAmount: $outAmount, scriptAddress: $scriptAddress, boltzUrl: $boltzUrl, chainSwapDetails: $chainSwapDetails, lnSwapDetails: $lnSwapDetails, claimTxid: $claimTxid, lockupTxid: $lockupTxid, label: $label, status: $status, boltzFees: $boltzFees, lockupFees: $lockupFees, claimFees: $claimFees, claimAddress: $claimAddress, refundAddress: $refundAddress, creationTime: $creationTime, completionTime: $completionTime)';
   }
 
   @override
@@ -1407,7 +1427,8 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
       ..add(DiagnosticsProperty('boltzUrl', boltzUrl))
       ..add(DiagnosticsProperty('chainSwapDetails', chainSwapDetails))
       ..add(DiagnosticsProperty('lnSwapDetails', lnSwapDetails))
-      ..add(DiagnosticsProperty('txid', txid))
+      ..add(DiagnosticsProperty('claimTxid', claimTxid))
+      ..add(DiagnosticsProperty('lockupTxid', lockupTxid))
       ..add(DiagnosticsProperty('label', label))
       ..add(DiagnosticsProperty('status', status))
       ..add(DiagnosticsProperty('boltzFees', boltzFees))
@@ -1438,7 +1459,10 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
                 other.chainSwapDetails == chainSwapDetails) &&
             (identical(other.lnSwapDetails, lnSwapDetails) ||
                 other.lnSwapDetails == lnSwapDetails) &&
-            (identical(other.txid, txid) || other.txid == txid) &&
+            (identical(other.claimTxid, claimTxid) ||
+                other.claimTxid == claimTxid) &&
+            (identical(other.lockupTxid, lockupTxid) ||
+                other.lockupTxid == lockupTxid) &&
             (identical(other.label, label) || other.label == label) &&
             (identical(other.status, status) || other.status == status) &&
             (identical(other.boltzFees, boltzFees) ||
@@ -1459,26 +1483,28 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      network,
-      walletType,
-      outAmount,
-      scriptAddress,
-      boltzUrl,
-      chainSwapDetails,
-      lnSwapDetails,
-      txid,
-      label,
-      status,
-      boltzFees,
-      lockupFees,
-      claimFees,
-      claimAddress,
-      refundAddress,
-      creationTime,
-      completionTime);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        id,
+        network,
+        walletType,
+        outAmount,
+        scriptAddress,
+        boltzUrl,
+        chainSwapDetails,
+        lnSwapDetails,
+        claimTxid,
+        lockupTxid,
+        label,
+        status,
+        boltzFees,
+        lockupFees,
+        claimFees,
+        claimAddress,
+        refundAddress,
+        creationTime,
+        completionTime
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -1504,7 +1530,8 @@ abstract class _SwapTx extends SwapTx {
       required final String boltzUrl,
       final ChainSwapDetails? chainSwapDetails,
       final LnSwapDetails? lnSwapDetails,
-      final String? txid,
+      final String? claimTxid,
+      final String? lockupTxid,
       final String? label,
       final SwapStreamStatus? status,
       final int? boltzFees,
@@ -1535,8 +1562,10 @@ abstract class _SwapTx extends SwapTx {
   @override
   LnSwapDetails? get lnSwapDetails;
   @override
-  String? get txid;
-  @override
+  String? get claimTxid;
+  @override // reverse + chain.self
+  String? get lockupTxid;
+  @override // submarine + chain.sendSwap + chain.sendSwap
   String? get label;
   @override
   SwapStreamStatus? get status;

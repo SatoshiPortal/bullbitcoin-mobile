@@ -168,6 +168,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       'End $isLiq Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''),
       printToConsole: true,
     );
+    emit(
+      state.copyWith(
+        errSyncing: err.toString(),
+        syncing: false,
+      ),
+    );
     if (err != null) {
       if (err.message.toLowerCase().contains('panic') &&
           state.syncErrCount < 5) {
@@ -178,12 +184,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         return;
       }
 
-      emit(
-        state.copyWith(
-          errSyncing: err.toString(),
-          syncing: false,
-        ),
-      );
       locator<Logger>().log(err.toString());
       return;
     }

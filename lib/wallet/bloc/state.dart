@@ -40,7 +40,7 @@ class WalletState with _$WalletState {
 
   bool enoughBalance(int amount) => (wallet?.balance ?? 0) >= amount;
 
-  bool isLiq() => wallet?.baseWalletType == BaseWalletType.Liquid;
+  bool isLiq() => wallet?.isLiquid() ?? false;
 
   // (bdk.Wallet?, Err?) getBdkWallet() {
   //   if (wallet!.baseWalletType != BaseWalletType.Bitcoin) return (null, Err('Invalid Wallet Type'));

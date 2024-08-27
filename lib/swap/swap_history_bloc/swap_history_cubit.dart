@@ -7,7 +7,6 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/swap/swap_history_bloc/swap_history_state.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -45,79 +44,82 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     for (final walletBloc in walletBlocs) {
       final wallet = walletBloc.state.wallet!;
       final txs = wallet.transactions.where(
-        (_) => _.swapTx != null,
+        (_) => _.swapTx != null && _.swapTx!.close(),
       );
       completedSwaps.addAll(txs);
     }
 
-    completedSwaps.removeWhere(
-      (element) => swapsToWatch
-          .map(
-            (_) => _.$1.id,
-          )
-          .contains(
-            element.swapTx!.id,
-          ),
-    );
+    // completedSwaps.removeWhere(
+    //   (element) => swapsToWatch
+    //       .map(
+    //         (_) => _.$1.id,
+    //       )
+    //       .contains(
+    //         element.swapTx!.id,
+    //       ),
+    // );
+    // completedSwaps.removeWhere(
+    //   (element) => element.swapTx!.close(),
+    // );
 
     emit(state.copyWith(completeSwaps: completedSwaps));
 
     // migrateHistory();
   }
 
-  void migrateHistory() async {
-    // for state.completeswaps
-    //    - if tx.txid == tx.swaptx.id
-    //    - if tx.swaptx.txid == null
-    //      - add to wallet swaps if not there
-    // if empty return
+  // void migrateHistory() async {
+  //   // for state.completeswaps
+  //   //    - if tx.txid == tx.swaptx.id
+  //   //    - if tx.swaptx.txid == null
+  //   //      - add to wallet swaps if not there
+  //   // if empty return
 
-    // save wallet
-    // loadswaps() and restart watchers
+  //   // save wallet
+  //   // loadswaps() and restart watchers
 
-    try {
-      final swapsToAdd = <SwapTx>[];
-      for (final tx in state.completeSwaps)
-        if (tx.txid == tx.swapTx!.id || (tx.swapTx!.txid == null)) {
-          if (!state.checkSwapExists(tx.swapTx!.id)) {
-            swapsToAdd.add(tx.swapTx!);
-          }
-        }
+  //   try {
+  //     final swapsToAdd = <SwapTx>[];
+  //     for (final tx in state.completeSwaps)
+  //       if (tx.txid == tx.swapTx!.id || (tx.swapTx!.txid == null)) {
+  //         if (!state.checkSwapExists(tx.swapTx!.id)) {
+  //           swapsToAdd.add(tx.swapTx!);
+  //         }
+  //       }
 
-      if (swapsToAdd.isEmpty) return;
+  //     if (swapsToAdd.isEmpty) return;
 
-      for (final swap in swapsToAdd) {
-        final walletBloc = _homeCubit.state.getWalletBlocFromSwapTx(swap);
-        if (walletBloc == null) continue;
-        final (updatedWallet, err) = await _walletTx.addSwapTxToWallet(
-          wallet: walletBloc.state.wallet!,
-          swapTx: swap,
-        );
-        if (err != null) {
-          print('Error: Adding SwapTx to Wallet: ${swap.id}, Error: $err');
-          continue;
-        }
+  //     for (final swap in swapsToAdd) {
+  //       final walletBloc = _homeCubit.state.getWalletBlocFromSwapTx(swap);
+  //       if (walletBloc == null) continue;
+  //       final (updatedWallet, err) = await _walletTx.addSwapTxToWallet(
+  //         wallet: walletBloc.state.wallet!,
+  //         swapTx: swap,
+  //       );
+  //       if (err != null) {
+  //         print('Error: Adding SwapTx to Wallet: ${swap.id}, Error: $err');
+  //         continue;
+  //       }
 
-        walletBloc.add(
-          UpdateWallet(
-            updatedWallet,
-            updateTypes: [
-              UpdateWalletTypes.swaps,
-              UpdateWalletTypes.transactions,
-            ],
-          ),
-        );
+  //       walletBloc.add(
+  //         UpdateWallet(
+  //           updatedWallet,
+  //           updateTypes: [
+  //             UpdateWalletTypes.swaps,
+  //             UpdateWalletTypes.transactions,
+  //           ],
+  //         ),
+  //       );
 
-        await Future.delayed(const Duration(milliseconds: 300));
-      }
+  //       await Future.delayed(const Duration(milliseconds: 300));
+  //     }
 
-      _watcher.add(WatchWallets());
+  //     _watcher.add(WatchWallets());
 
-      loadSwaps();
-    } catch (e) {
-      print('Error: Swap History Processing: $e');
-    }
-  }
+  //     loadSwaps();
+  //   } catch (e) {
+  //     print('Error: Swap History Processing: $e');
+  //   }
+  // }
 
   void swapUpdated(SwapTx swapTx) {
     print('Swap History Updating: ${swapTx.id} - ${swapTx.status?.status}');

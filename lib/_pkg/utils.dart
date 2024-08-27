@@ -5,3 +5,5 @@ bool isValidEmail(String email) {
 
   return emailRegex.hasMatch(email);
 }
+
+bool isNull(Object? o) => o == null;

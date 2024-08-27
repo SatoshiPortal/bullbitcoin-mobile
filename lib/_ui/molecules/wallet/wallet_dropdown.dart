@@ -14,12 +14,14 @@ class WalletDropDown extends StatelessWidget {
     required this.onChanged,
     required this.value,
     this.isCentered = true,
+    this.disabled = false,
   });
 
   final List<Wallet> items;
   final void Function(Wallet) onChanged;
   final Wallet value;
   final bool isCentered;
+  final bool disabled;
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +47,12 @@ class WalletDropDown extends StatelessWidget {
         iconSize: 0.0,
         value: value,
         dropdownColor: context.colour.primaryContainer,
-        onChanged: (value) {
-          if (value == null) return;
-          onChanged.call(value);
-        },
+        onChanged: disabled
+            ? null
+            : (value) {
+                if (value == null) return;
+                onChanged.call(value);
+              },
         selectedItemBuilder: (context) => items.map((key) {
           final widget = buildCard(key, balance, unit);
           return widget;
