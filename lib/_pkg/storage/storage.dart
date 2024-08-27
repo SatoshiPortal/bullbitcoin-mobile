@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/migrations/migration.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/locator.dart';
@@ -68,8 +69,8 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
   // version = '0.2.3';
   if (version != bbVersion) {
     // await prepareMigration();
-    // await doMigration(version, bbVersion, secureStorage, hiveStorage);
-    // await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
+    await doMigration(version!, bbVersion, secureStorage, hiveStorage);
+    await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
   }
   // if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
 

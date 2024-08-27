@@ -62,7 +62,7 @@ Future<void> doMigration0_2to0_3(
   );
 
   // Finally update version number to next version
-  // await secureStorage.saveValue(key: StorageKeys.version, value: '0.3');
+  await secureStorage.saveValue(key: StorageKeys.version, value: '0.3');
 }
 
 Future<Map<String, dynamic>> updateSwaps(
@@ -73,21 +73,25 @@ Future<Map<String, dynamic>> updateSwaps(
       .map((tx) => tx as Map<String, dynamic>)
       .map((tx) {
     if (tx['swapTx'] != null && tx['swapTx']['invoice'] != null) {
-      tx['swapTx'] = tx['swapTx']['lnSwapDetails'] = LnSwapDetails(
+      tx['swapTx']['lnSwapDetails'] = LnSwapDetails(
         swapType: tx['swapTx']['isSubmarine'] == true
             ? SwapType.submarine
             : SwapType.reverse,
         invoice: tx['swapTx']['invoice'] as String,
-        boltzPubKey: tx['swapTx']['boltzPubKey'] as String,
-        keyIndex: tx['swapTx']['keyIndex'] as int,
+        boltzPubKey: tx['swapTx']['boltzPubkey'] as String,
+        keyIndex: tx['swapTx']['keyIndex'] != null
+            ? tx['swapTx']['keyIndex'] as int
+            : 0,
         myPublicKey: tx['swapTx']['publicKey'] as String,
-        sha256: tx['swapTx']['sha256'] as String,
         electrumUrl: tx['swapTx']['electrumUrl'] as String,
         locktime: tx['swapTx']['locktime'] as int,
-        hash160: tx['swapTx']['hash160'] as String, // TODO: Should do this?
-        blindingKey:
-            tx['swapTx']['blindingKey'] as String, // TODO: Should do this?
-      );
+        sha256: tx['swapTx']['sha256'] != null
+            ? tx['swapTx']['sha256'] as String
+            : '', // TODO: Should do this?
+        // hash160: tx['swapTx']['hash160'] as String, // TODO: Should do this?
+        // blindingKey:
+        //     tx['swapTx']['blindingKey'] as String, // TODO: Should do this?
+      ).toJson();
       return tx;
     }
     return tx;
