@@ -265,6 +265,11 @@ class SwapTx with _$SwapTx {
       claimTxid != null &&
       (status != null && (status!.status == SwapStatus.txnClaimed));
 
+  bool refundedOnchain() =>
+      isChainSwap() &&
+      claimTxid != null &&
+      (status != null && (status!.status == SwapStatus.swapRefunded));
+
   bool paidReverse() =>
       isReverse() &&
       (status != null && (status!.status == SwapStatus.txnMempool));
@@ -400,6 +405,8 @@ class SwapTx with _$SwapTx {
       return ChainSwapActions.failed;
     else if (settledOnchain())
       return ChainSwapActions.settled;
+    else if (refundedOnchain())
+      return ChainSwapActions.refunded;
     else
       return ChainSwapActions.created;
   }
@@ -475,6 +482,7 @@ enum ChainSwapActions {
   claimable,
   refundable,
   settled,
+  refunded,
 }
 
 @freezed

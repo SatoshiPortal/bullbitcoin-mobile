@@ -685,11 +685,11 @@ class ChainSwapForm extends StatelessWidget {
                   .map((bloc) => bloc.state.wallet)
                   .where(
                     (wallet) =>
-                        wallet?.baseWalletType !=
-                        receiveWallet.baseWalletType,
+                        wallet?.baseWalletType != receiveWallet.baseWalletType,
                   )
                   .first;
-              final refundAddress = matchingWalletForRefund?.lastGeneratedAddress;
+              final refundAddress =
+                  matchingWalletForRefund?.lastGeneratedAddress;
 
               // TODO: How refund happens on any failure?
               context.read<CreateSwapCubit>().createOnChainSwapForReceive(
@@ -703,7 +703,7 @@ class ChainSwapForm extends StatelessWidget {
                   );
             },
           ),
-        ,,,,),
+        ),
         if (err.isNotEmpty) ...[
           const Gap(8),
           BBText.error(err),

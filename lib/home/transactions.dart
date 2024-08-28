@@ -298,8 +298,10 @@ class HomeTxItem2 extends StatelessWidget {
     // final img =
     //     darkMode ? 'assets/arrow_down_white.png' : 'assets/arrow_down.png';
     final isChainSwap = tx.isSwap && tx.swapTx!.isChainSwap();
+    final isChainSelf = isChainSwap && tx.swapTx!.isChainSelf();
+    final isChainReceive = isChainSwap && tx.swapTx!.isChainReceive();
     final imgBaseName =
-        isChainSwap ? 'assets/images/swap_icon' : 'assets/images/arrow_down';
+        isChainSelf ? 'assets/images/swap_icon' : 'assets/images/arrow_down';
     final img = darkMode ? '${imgBaseName}_white.png' : '$imgBaseName.png';
 
     // final swapstatus =
@@ -311,9 +313,10 @@ class HomeTxItem2 extends StatelessWidget {
       // Special condition for chain receive, since tx.height will be null for ChainReceive.
       // Because this is a placeholder tx created to show the swap tx,
       // as the actual lockup tx happens in an external wallet.
-      if (tx.swapTx!.isChainReceive()) {
+      if (isChainReceive) {
         final swapStatus = tx.swapTx!.chainSwapAction();
-        statusImg = swapStatus == ChainSwapActions.settled
+        statusImg = swapStatus == ChainSwapActions.settled ||
+                swapStatus == ChainSwapActions.refunded
             ? 'assets/tx_status_complete.png'
             : 'assets/tx_status_pending.png';
       } else {
@@ -350,10 +353,10 @@ class HomeTxItem2 extends StatelessWidget {
                 child: Container(
                   // color: Colors.red,
                   transformAlignment: Alignment.center,
-                  transform: isChainSwap
+                  transform: isChainSelf
                       ? (Matrix4.identity()..scale(2.0))
                       : Matrix4.identity()
-                    ..rotateZ(isReceive ? 0 : 3.16),
+                    ..rotateZ(isReceive || isChainReceive ? 0 : 3.16),
                   child: Image.asset(img),
                 ),
               ),

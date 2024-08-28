@@ -506,9 +506,14 @@ class SwapBoltz {
     bool broadcastViaBoltz = false,
   }) async {
     try {
-      final address = wallet.lastGeneratedAddress?.address;
+      String address;
+      if (swapTx.isChainReceive()) {
+        address = swapTx.refundAddress ?? '';
+      } else {
+        address = wallet.lastGeneratedAddress?.address ?? '';
+      }
       // TODO: (or) swapTx.refundAddress
-      if (address == null || address.isEmpty) throw 'Address not found';
+      if (address.isEmpty) throw 'Address not found';
 
       final boltzurl = wallet.network == BBNetwork.Testnet
           ? boltzTestnetUrl
