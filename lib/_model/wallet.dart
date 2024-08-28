@@ -382,8 +382,8 @@ class Wallet with _$Wallet {
         .where(
           (tx) =>
               tx.timestamp == 0 &&
-                  (baseWalletType == BaseWalletType.Bitcoin && !tx.isLiquid) ||
-              (baseWalletType == BaseWalletType.Liquid && tx.isLiquid),
+              ((baseWalletType == BaseWalletType.Bitcoin && !tx.isLiquid) ||
+                  (baseWalletType == BaseWalletType.Liquid && tx.isLiquid)),
         )
         .toList()
         .reversed
@@ -396,8 +396,8 @@ class Wallet with _$Wallet {
         .where(
           (tx) =>
               tx.timestamp != 0 &&
-                  (baseWalletType == BaseWalletType.Bitcoin && !tx.isLiquid) ||
-              (baseWalletType == BaseWalletType.Liquid && tx.isLiquid),
+              ((baseWalletType == BaseWalletType.Bitcoin && !tx.isLiquid) ||
+                  (baseWalletType == BaseWalletType.Liquid && tx.isLiquid)),
         )
         .toList();
     txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
