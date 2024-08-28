@@ -678,17 +678,24 @@ class ChainSwapForm extends StatelessWidget {
                   context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
               final label = context.read<ReceiveCubit>().state.description;
 
+              final matchingWalletForRefund = context
+                  .read<HomeCubit>()
+                  .state
+                  .walletBlocsFromNetwork(receiveWallet.network)
+                  .map((bloc) => bloc.state.wallet)
+                  .where(
+                    (wallet) =>
+                        wallet?.baseWalletType !=
+                        receiveWallet.baseWalletType,
+                  )
+                  .first;
+              final refundAddress = matchingWalletForRefund?.lastGeneratedAddress;
+
               // TODO: How refund happens on any failure?
               context.read<CreateSwapCubit>().createOnChainSwapForReceive(
                     toWallet: receiveWallet,
                     amount: amt,
-                    refundAddress: receiveWallet.isLiquid()
-                        ? (receiveWallet.isTestnet()
-                            ? btcAddress
-                            : btcMainnetAddress)
-                        : (receiveWallet.isTestnet()
-                            ? lqAddress
-                            : lqMainnetAddress),
+                    refundAddress: refundAddress?.address ?? '',
                     direction: receiveWallet.isLiquid()
                         ? ChainSwapDirection.btcToLbtc
                         : ChainSwapDirection.lbtcToBtc,
@@ -696,7 +703,7 @@ class ChainSwapForm extends StatelessWidget {
                   );
             },
           ),
-        ),
+        ,,,,),
         if (err.isNotEmpty) ...[
           const Gap(8),
           BBText.error(err),
