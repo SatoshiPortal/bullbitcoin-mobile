@@ -214,8 +214,11 @@ class _Screen extends StatelessWidget {
                 const Gap(16),
               ],
               if (isChainSwap == true && swapTx == null) const ChainSwapForm(),
-              if (isChainSwap == true && swapTx != null)
+              if (isChainSwap == true && swapTx != null) ...[
                 const ChainSwapDisplayReceive(),
+                const Gap(16),
+                const SwapFeesDetails(),
+              ],
               if (isChainSwap == false && showQR) ...[
                 const ReceiveQR(),
                 const Gap(8),
@@ -886,6 +889,7 @@ class SwapFeesDetails extends StatelessWidget {
     final isLiquid = swapTx.isLiquid();
     final unitNetwork =
         isLiquid ? 'Liquid Network Bitcoin (L-BTC)' : 'On-chain Bitcoin (BTC)';
+
     String fromNetwork = '';
     String toNetwork = '';
     if (isChainSwap) {
@@ -916,7 +920,7 @@ class SwapFeesDetails extends StatelessWidget {
         children: <TextSpan>[
           TextSpan(
             text: isChainSwap
-                ? '$fromNetwork are converted instantly to $toNetwork. A swap fee of'
+                ? '$fromNetwork are converted to $toNetwork. A swap fee of '
                 : 'Lightning Network payments are converted instantly to $unitNetwork. A swap fee of ',
           ),
           TextSpan(
