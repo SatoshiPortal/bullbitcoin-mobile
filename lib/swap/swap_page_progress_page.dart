@@ -59,7 +59,7 @@ class _SendingOnChainTxPageState extends State<SendingOnChainTxPage> {
           ),
           automaticallyImplyLeading: false,
         ),
-        body: SendingOnChainTx(isReceive: widget.isReceive),
+        body: ChainSwapProgressPage(isReceive: widget.isReceive),
       ),
     );
   }

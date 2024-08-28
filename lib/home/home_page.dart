@@ -499,6 +499,16 @@ extension O on Object? {
   bool notNull() => this != null;
 }
 
+///
+/// Color of the tag represents color of our wallet that holds the tx.
+/// Text of the tag represents the external network
+///
+/// Eg.,
+/// Orange Lightning send: Secure wallet paying an LN invoice (Submarine)
+/// Yellow Lightning receive: Lightning receive to Instant wallet (Reverse)
+/// Orange Liquid receive: Chain swap received from liquid network to our Secure wallet
+/// Orange Liquid send: Chain swap sent from from our Secure wallet to a liquid address
+///
 class WalletTag extends StatelessWidget {
   const WalletTag({
     super.key,
@@ -516,23 +526,42 @@ class WalletTag extends StatelessWidget {
     Color colour;
     String text;
 
+    final isChainSwap = tx.isSwap && tx.swapTx!.isChainSwap();
+    final isChainSend = tx.isSwap && tx.swapTx!.isChainSend();
+    final isChainReceive = tx.isSwap && tx.swapTx!.isChainReceive();
     if (hasSwap) {
-      if (tx.swapTx?.isChainSwap() == true)
-        text = tx.swapTx?.chainSwapDetails?.direction ==
-                boltz.ChainSwapDirection.btcToLbtc
-            ? 'BTC -> LBTC'
-            : 'LBTC -> BTC';
-      else
+      if (isChainSwap == true) {
+        if (isChainReceive) {
+          text = tx.swapTx?.chainSwapDetails?.direction ==
+                  boltz.ChainSwapDirection.btcToLbtc
+              ? 'Bitcoin'
+              : 'Liquid';
+        } else {
+          text = tx.swapTx?.chainSwapDetails?.direction ==
+                  boltz.ChainSwapDirection.btcToLbtc
+              ? 'Liquid'
+              : 'Bitcoin';
+        }
+      } else {
         text = 'Lightning';
-    } else if (isLiquid)
+      }
+    } else if (isLiquid) {
       text = 'Liquid';
-    else
+    } else {
       text = 'Bitcoin on-chain';
+    }
 
-    if (isLiquid)
-      colour = CardColours.yellow;
-    else
-      colour = CardColours.orange;
+    if (isChainSwap) {
+      if (isChainSend) {
+        colour = isLiquid ? CardColours.yellow : CardColours.orange;
+      } else if (isChainReceive) {
+        colour = !isLiquid ? CardColours.yellow : CardColours.orange;
+      } else {
+        colour = isLiquid ? CardColours.yellow : CardColours.orange;
+      }
+    } else {
+      colour = isLiquid ? CardColours.yellow : CardColours.orange;
+    }
 
     return (text, colour);
   }

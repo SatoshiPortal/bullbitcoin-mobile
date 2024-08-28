@@ -121,7 +121,7 @@ class _Screen extends StatelessWidget {
     );
 
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
-    if (sent) return SendingOnChainTx();
+    if (sent) return ChainSwapProgressPage();
 
     final showWarning = context.select(
       (CreateSwapCubit x) =>

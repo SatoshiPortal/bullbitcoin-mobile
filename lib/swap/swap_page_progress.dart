@@ -1,28 +1,31 @@
 import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
-import 'package:bb_mobile/swap/send.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
-class SendingOnChainTx extends StatefulWidget {
-  SendingOnChainTx({super.key, this.isReceive = false});
+class ChainSwapProgressPage extends StatefulWidget {
+  ChainSwapProgressPage({super.key, this.isReceive = false});
 
   bool isReceive;
 
   @override
-  State<SendingOnChainTx> createState() => _SendingOnChainTxState();
+  State<ChainSwapProgressPage> createState() => _ChainSwapProgressPageState();
 }
 
-class _SendingOnChainTxState extends State<SendingOnChainTx> {
+class _ChainSwapProgressPageState extends State<ChainSwapProgressPage> {
   late SwapTx? swapTx;
   late String label;
   bool success = false;
@@ -58,6 +61,7 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         context.select((NetworkCubit cubit) => cubit.state.testnet);
     final unit = defaultCurrency?.name ?? '';
     final amt = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
+    final tx = context.select((SendCubit _) => _.state.tx);
     // final amt = fiatAmt.toStringAsFixed(2);
 
     return BlocListener<WatchTxsBloc, WatchTxsState>(
@@ -70,27 +74,31 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         final updatedSwap = state.updatedSwapTx!;
         // if (updatedSwap.id != swapTx?.id) return;
         String labelLocal = 'Broadcasting...';
-        bool successLocal = false;
-        bool failureLocal = false;
+        const bool successLocal = false;
+        const bool failureLocal = false;
         if (updatedSwap.status?.status == SwapStatus.swapCreated) {
           labelLocal = 'Broadcasting...';
-        } else if (updatedSwap.status?.status == SwapStatus.txnMempool) {
+        } else if (updatedSwap.status?.status == SwapStatus.txnMempool ||
+            updatedSwap.status?.status == SwapStatus.txnConfirmed ||
+            updatedSwap.status?.status == SwapStatus.txnServerMempool) {
           // labelLocal = 'Our tx in mempool (1/3)';
-          labelLocal = 'User Lockup Broadcasted (1/3)';
-        } else if (updatedSwap.status?.status == SwapStatus.txnConfirmed) {
-          labelLocal = 'User Lockup Confirmed!';
-        } else if (updatedSwap.status?.status == SwapStatus.txnServerMempool) {
-          labelLocal = 'Server Lockup Broadcasted (2/3)';
-        } else if (updatedSwap.status?.status ==
-            SwapStatus.txnServerConfirmed) {
-          labelLocal = 'Claiming...(3/3)';
-        } else if (updatedSwap.status?.status == SwapStatus.txnClaimed) {
-          labelLocal = 'Success';
-          successLocal = true;
-        } else if (updatedSwap.status?.status == SwapStatus.txnLockupFailed) {
-          labelLocal = 'Lockup failed. Initiating refund...';
-          failureLocal = true;
+          labelLocal =
+              'Swap lockup created.\nThis will get settled in a while.';
         }
+        // } else if (updatedSwap.status?.status == SwapStatus.txnConfirmed) {
+        //   labelLocal = 'User Lockup Confirmed!';
+        // } else if (updatedSwap.status?.status == SwapStatus.txnServerMempool) {
+        //   labelLocal = 'Server Lockup Broadcasted (2/3)';
+        // } else if (updatedSwap.status?.status ==
+        //     SwapStatus.txnServerConfirmed) {
+        //   labelLocal = 'Claiming...(3/3)';
+        // } else if (updatedSwap.status?.status == SwapStatus.txnClaimed) {
+        //   labelLocal = 'Success';
+        //   successLocal = true;
+        // } else if (updatedSwap.status?.status == SwapStatus.txnLockupFailed) {
+        //   labelLocal = 'Lockup failed. Initiating refund...';
+        //   failureLocal = true;
+        // }
         setState(() {
           swapTx = updatedSwap;
           label = labelLocal;
@@ -102,8 +110,13 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(width: double.infinity),
-          if (failure == false) SendTick(sent: success),
-          const Gap(16),
+          if (failure == false)
+            const Icon(
+              FontAwesomeIcons.stopwatch,
+              size: 80,
+              color: Colors.lightGreen,
+            ),
+          const Gap(24),
           BBText.body(label),
           // if (success) const SendTick(sent: true),
           //if (refund)
@@ -128,21 +141,18 @@ class _SendingOnChainTxState extends State<SendingOnChainTx> {
             ),
           ),
           const Gap(24),
-          if (swapTx!.claimTxid == null) ...[
-            // const Gap(24),
-            _OnChainWarning(swapTx: swapTx!),
-          ],
+          // if (swapTx!.claimTxid == null) ...[
+          //   // const Gap(24),
+          //   _OnChainWarning(swapTx: swapTx!),
+          // ],
           // const Gap(40),
-          // if (tx != null)
-          //   BBButton.big(
-          //     label: 'View Transaction',
-          //     onPressed: () {
-          //       context
-          //         ..pop()
-          //         ..pop()
-          //         ..push('/tx', extra: [tx, false]);
-          //     },
-          //   ).animate().fadeIn(),
+          if (tx != null)
+            BBButton.big(
+              label: 'View Transaction',
+              onPressed: () {
+                context.push('/tx', extra: [tx, false]);
+              },
+            ).animate().fadeIn(),
           // // if (paid && !settled) const BBText.body('Closing the swap ...'),
           if (success) const BBText.body('Swap complete'),
           const Gap(24),
