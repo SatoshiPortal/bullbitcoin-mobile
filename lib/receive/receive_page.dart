@@ -27,6 +27,7 @@ import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -691,7 +692,6 @@ class ChainSwapForm extends StatelessWidget {
               final refundAddress =
                   matchingWalletForRefund?.lastGeneratedAddress;
 
-              // TODO: How refund happens on any failure?
               context.read<CreateSwapCubit>().createOnChainSwapForReceive(
                     toWallet: receiveWallet,
                     amount: amt,
@@ -877,13 +877,27 @@ class SwapFeesDetails extends StatelessWidget {
     if (swapTx == null) return const SizedBox.shrink();
 
     final isLn = context.select((ReceiveCubit x) => x.state.isLn());
-    if (!isLn) return const SizedBox.shrink();
+    final isChainSwap =
+        context.select((ReceiveCubit x) => x.state.isChainSwap());
+    if (isLn == false && isChainSwap == false) return const SizedBox.shrink();
 
     final totalFees = swapTx.totalFees() ?? 0;
 
     final isLiquid = swapTx.isLiquid();
     final unitNetwork =
         isLiquid ? 'Liquid Network Bitcoin (L-BTC)' : 'On-chain Bitcoin (BTC)';
+    String fromNetwork = '';
+    String toNetwork = '';
+    if (isChainSwap) {
+      final fromBtc = swapTx.chainSwapDetails?.direction ==
+          boltz.ChainSwapDirection.btcToLbtc;
+      fromNetwork = fromBtc
+          ? 'Bitcoin network payments'
+          : 'Liquid network bitcoin (L-BTC)';
+      toNetwork = fromBtc
+          ? 'Liquid network bitcoin (L-BTC)'
+          : 'Bitcoin network payments';
+    }
 
     final fees = context.select(
       (CurrencyCubit x) =>
@@ -901,8 +915,9 @@ class SwapFeesDetails extends StatelessWidget {
         ),
         children: <TextSpan>[
           TextSpan(
-            text:
-                'Lightning Network payments are converted instantly to $unitNetwork. A swap fee of ',
+            text: isChainSwap
+                ? '$fromNetwork are converted instantly to $toNetwork. A swap fee of'
+                : 'Lightning Network payments are converted instantly to $unitNetwork. A swap fee of ',
           ),
           TextSpan(
             text: '$fees $units',

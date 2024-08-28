@@ -82,8 +82,7 @@ class _ChainSwapProgressPageState extends State<ChainSwapProgressPage> {
             updatedSwap.status?.status == SwapStatus.txnConfirmed ||
             updatedSwap.status?.status == SwapStatus.txnServerMempool) {
           // labelLocal = 'Our tx in mempool (1/3)';
-          labelLocal =
-              'Swap lockup created.\nThis will get settled in a while.';
+          labelLocal = 'Swap created.\nThis will get settled in a while.';
         }
         // } else if (updatedSwap.status?.status == SwapStatus.txnConfirmed) {
         //   labelLocal = 'User Lockup Confirmed!';
@@ -117,7 +116,10 @@ class _ChainSwapProgressPageState extends State<ChainSwapProgressPage> {
               color: Colors.lightGreen,
             ),
           const Gap(24),
-          BBText.body(label),
+          BBText.body(
+            label,
+            textAlign: TextAlign.center,
+          ),
           // if (success) const SendTick(sent: true),
           //if (refund)
           //  const FaIcon(

@@ -30,8 +30,9 @@ class WalletActionButtons extends StatelessWidget {
     final bgColour =
         darkMode ? context.colour.primaryContainer : NewColours.offWhite;
 
-    final shouldShowSwap = walletBloc!.state.wallet?.isMain() != true ||
-        walletBloc!.state.wallet?.isLiquid() == true;
+    final shouldShowSwap = (walletBloc!.state.wallet?.isMain() != true ||
+            walletBloc!.state.wallet?.isLiquid() == true) &&
+        walletBloc!.state.wallet?.watchOnly() == false;
 
     final leftImage = darkMode
         ? 'assets/images/swap_icon_white.png'

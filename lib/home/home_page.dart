@@ -546,7 +546,7 @@ class WalletTag extends StatelessWidget {
         text = 'Lightning';
       }
     } else if (isLiquid) {
-      text = 'Liquid';
+      text = 'Liquid on-chain';
     } else {
       text = 'Bitcoin on-chain';
     }

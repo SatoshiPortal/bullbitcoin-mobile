@@ -229,7 +229,7 @@ class SendState with _$SendState {
                 ? 'Building Tx'
                 : !isLn
                     ? 'Send'
-                    : 'Create Swap';
+                    : 'Send';
     return label;
   }
 }
