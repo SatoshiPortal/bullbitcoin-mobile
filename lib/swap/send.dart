@@ -212,10 +212,9 @@ class _SendingLnTxState extends State<SendingLnTx> {
           const SizedBox(width: double.infinity),
           if (!refund) ...[
             if (!settled) ...[
-              if (!paid)
-                const BBText.body('Payment in progress')
-              else
-                const BBText.body('Invoice paid'),
+              if (!paid && swapTx.isLiquid())
+                const BBText.body('Payment in progress'),
+              if (paid && swapTx.isLiquid()) const BBText.body('Invoice paid'),
             ] else
               const BBText.body('Payment sent'),
           ] else
@@ -224,7 +223,20 @@ class _SendingLnTxState extends State<SendingLnTx> {
               textAlign: TextAlign.center,
             ),
           const Gap(16),
-          if (!refund) SendTick(sent: paid || settled),
+          if (!refund)
+            if (swapTx.isLiquid()) SendTick(sent: paid || settled),
+          if (!swapTx.isLiquid()) ...[
+            const Icon(
+              FontAwesomeIcons.stopwatch,
+              size: 80,
+              color: Colors.lightGreen,
+            ),
+            const Gap(16),
+            const BBText.body(
+              'Swap created.\nThis will get settled in a while.',
+              textAlign: TextAlign.center,
+            ),
+          ],
           if (refund)
             const FaIcon(
               FontAwesomeIcons.triangleExclamation,
@@ -250,11 +262,11 @@ class _SendingLnTxState extends State<SendingLnTx> {
           if (paid && !settled) const BBText.body('Closing the swap ...'),
           if (settled) const BBText.body('Swap complete'),
           const Gap(24),
-          if (!settled) ...[
-            const Gap(24),
-            _OnChainWarning(swapTx: swapTx),
-          ],
-          const Gap(40),
+          // if (!settled) ...[
+          //   const Gap(24),
+          //   _OnChainWarning(swapTx: swapTx),
+          // ],
+          const Gap(24),
           if (tx != null)
             BBButton.big(
               label: 'View Transaction',

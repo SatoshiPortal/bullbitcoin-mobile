@@ -294,7 +294,7 @@ GoRouter setupRouter() => GoRouter(
             final swapTx = list[0] as SwapTx;
             final isReceive = list[1] as bool;
 
-            return SendingOnChainTxPage(swapTx: swapTx, isReceive: isReceive);
+            return ChainSwapProgressPage(swapTx: swapTx, isReceive: isReceive);
           },
         ),
         GoRoute(

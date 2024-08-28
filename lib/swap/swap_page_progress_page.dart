@@ -13,8 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class SendingOnChainTxPage extends StatefulWidget {
-  const SendingOnChainTxPage({
+class ChainSwapProgressPage extends StatefulWidget {
+  const ChainSwapProgressPage({
     super.key,
     required this.swapTx,
     required this.isReceive,
@@ -23,10 +23,10 @@ class SendingOnChainTxPage extends StatefulWidget {
   final SwapTx swapTx;
   final bool isReceive;
   @override
-  State<SendingOnChainTxPage> createState() => _SendingOnChainTxPageState();
+  State<ChainSwapProgressPage> createState() => _ChainSwapProgressPageState();
 }
 
-class _SendingOnChainTxPageState extends State<SendingOnChainTxPage> {
+class _ChainSwapProgressPageState extends State<ChainSwapProgressPage> {
   late CreateSwapCubit _swapCubit;
 
   @override
@@ -59,7 +59,7 @@ class _SendingOnChainTxPageState extends State<SendingOnChainTxPage> {
           ),
           automaticallyImplyLeading: false,
         ),
-        body: ChainSwapProgressPage(isReceive: widget.isReceive),
+        body: ChainSwapProgressWidget(isReceive: widget.isReceive),
       ),
     );
   }

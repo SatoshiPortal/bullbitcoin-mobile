@@ -536,11 +536,16 @@ class WalletTag extends StatelessWidget {
                   boltz.ChainSwapDirection.btcToLbtc
               ? 'Bitcoin'
               : 'Liquid';
-        } else {
+        } else if (isChainSend) {
           text = tx.swapTx?.chainSwapDetails?.direction ==
                   boltz.ChainSwapDirection.btcToLbtc
               ? 'Liquid'
               : 'Bitcoin';
+        } else {
+          text = tx.swapTx?.chainSwapDetails?.direction ==
+                  boltz.ChainSwapDirection.btcToLbtc
+              ? 'BTC -> LBTC'
+              : 'LBTC -> BTC ';
         }
       } else {
         text = 'Lightning';

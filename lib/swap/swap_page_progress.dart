@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -8,7 +9,7 @@ import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,16 +17,17 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ChainSwapProgressPage extends StatefulWidget {
-  ChainSwapProgressPage({super.key, this.isReceive = false});
+class ChainSwapProgressWidget extends StatefulWidget {
+  ChainSwapProgressWidget({super.key, this.isReceive = false});
 
   bool isReceive;
 
   @override
-  State<ChainSwapProgressPage> createState() => _ChainSwapProgressPageState();
+  State<ChainSwapProgressWidget> createState() =>
+      _ChainSwapProgressWidgetState();
 }
 
-class _ChainSwapProgressPageState extends State<ChainSwapProgressPage> {
+class _ChainSwapProgressWidgetState extends State<ChainSwapProgressWidget> {
   late SwapTx? swapTx;
   late String label;
   bool success = false;
@@ -61,7 +63,10 @@ class _ChainSwapProgressPageState extends State<ChainSwapProgressPage> {
         context.select((NetworkCubit cubit) => cubit.state.testnet);
     final unit = defaultCurrency?.name ?? '';
     final amt = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
-    final tx = context.select((SendCubit _) => _.state.tx);
+    Transaction? tx;
+    if (swapTx?.isChainReceive() == false) {
+      tx = context.select((SendCubit _) => _.state.tx);
+    }
     // final amt = fiatAmt.toStringAsFixed(2);
 
     return BlocListener<WatchTxsBloc, WatchTxsState>(
@@ -76,11 +81,11 @@ class _ChainSwapProgressPageState extends State<ChainSwapProgressPage> {
         String labelLocal = 'Broadcasting...';
         const bool successLocal = false;
         const bool failureLocal = false;
-        if (updatedSwap.status?.status == SwapStatus.swapCreated) {
+        if (updatedSwap.status?.status == boltz.SwapStatus.swapCreated) {
           labelLocal = 'Broadcasting...';
-        } else if (updatedSwap.status?.status == SwapStatus.txnMempool ||
-            updatedSwap.status?.status == SwapStatus.txnConfirmed ||
-            updatedSwap.status?.status == SwapStatus.txnServerMempool) {
+        } else if (updatedSwap.status?.status == boltz.SwapStatus.txnMempool ||
+            updatedSwap.status?.status == boltz.SwapStatus.txnConfirmed ||
+            updatedSwap.status?.status == boltz.SwapStatus.txnServerMempool) {
           // labelLocal = 'Our tx in mempool (1/3)';
           labelLocal = 'Swap created.\nThis will get settled in a while.';
         }
