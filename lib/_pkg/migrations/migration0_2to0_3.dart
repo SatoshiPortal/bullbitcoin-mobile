@@ -62,6 +62,7 @@ Future<void> doMigration0_2to0_3(
   );
 
   // Finally update version number to next version
+  // why arent we using toVersion and hardcoding 0.2 here?
   await secureStorage.saveValue(key: StorageKeys.version, value: '0.3');
 }
 
@@ -72,7 +73,9 @@ Future<Map<String, dynamic>> updateSwaps(
   walletObj['transactions'] = walletObj['transactions']
       .map((tx) => tx as Map<String, dynamic>)
       .map((tx) {
-    if (tx['swapTx'] != null && tx['swapTx']['invoice'] != null) {
+    final txHasSwap = tx['swapTx'] != null;
+    final swapTxHasInvoice = txHasSwap && tx['swapTx']['invoice'] != null;
+    if (swapTxHasInvoice) {
       final isSubmarine = tx['swapTx']['isSubmarine'] == true;
       if (isSubmarine)
         tx['swapTx']['lockupTxid'] = tx['swapTx']['txid'];
@@ -80,9 +83,7 @@ Future<Map<String, dynamic>> updateSwaps(
         tx['swapTx']['claimTxid'] = tx['swapTx']['txid'];
 
       tx['swapTx']['lnSwapDetails'] = LnSwapDetails(
-        swapType: tx['swapTx']['isSubmarine'] == true
-            ? SwapType.submarine
-            : SwapType.reverse,
+        swapType: isSubmarine ? SwapType.submarine : SwapType.reverse,
         invoice: tx['swapTx']['invoice'] as String,
         boltzPubKey: tx['swapTx']['boltzPubkey'] as String,
         keyIndex: tx['swapTx']['keyIndex'] != null
@@ -93,10 +94,13 @@ Future<Map<String, dynamic>> updateSwaps(
         locktime: tx['swapTx']['locktime'] as int,
         sha256: tx['swapTx']['sha256'] != null
             ? tx['swapTx']['sha256'] as String
-            : '', // TODO: Should do this?
-        // hash160: tx['swapTx']['hash160'] as String, // TODO: Should do this?
-        // blindingKey:
-        //     tx['swapTx']['blindingKey'] as String, // TODO: Should do this?
+            : '',
+        hash160: tx['swapTx']['hash160'] != null
+            ? tx['swapTx']['hash160'] as String
+            : '',
+        blindingKey: tx['swapTx']['blindingKey'] != null
+            ? tx['swapTx']['blindingKey'] as String
+            : '',
       ).toJson();
       return tx;
     }
