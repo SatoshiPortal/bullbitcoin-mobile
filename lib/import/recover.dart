@@ -312,6 +312,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
         children: [
           for (int i = 0; i < suggestions.length; i++)
             ListTile(
+              tileColor: context.colour.primaryContainer,
               key: i == 0 ? UIKeys.firstSuggestionWord : null,
               title: BBText.body(suggestions[i]),
               onTap: () {

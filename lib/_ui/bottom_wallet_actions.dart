@@ -33,6 +33,9 @@ class WalletActionButtons extends StatelessWidget {
     final shouldShowSwap = walletBloc!.state.wallet?.isMain() != true ||
         walletBloc!.state.wallet?.isLiquid() == true;
 
+    final leftImage = darkMode
+        ? 'assets/images/swap_icon_white.png'
+        : 'assets/images/swap_icon.png';
     return Container(
       padding: const EdgeInsets.only(
         bottom: 16,
@@ -72,7 +75,7 @@ class WalletActionButtons extends StatelessWidget {
                     );
                   },
                   label: 'Swap',
-                  leftImage: 'assets/images/swap_icon.png',
+                  leftImage: leftImage,
                 ),
               ),
             const Gap(8),

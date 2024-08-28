@@ -214,6 +214,7 @@ class CardsList extends StatelessWidget {
           walletBottom: walletBottom,
           walletLast: walletLast,
           onlyOne: isOne,
+          showSwap: i == 0,
         ),
       );
     }
@@ -244,12 +245,14 @@ class CardColumn extends StatelessWidget {
     this.walletBottom,
     this.walletLast,
     this.onlyOne = false,
+    this.showSwap = false,
   });
 
   final WalletBloc walletTop;
   final WalletBloc? walletBottom;
   final WalletBloc? walletLast;
   final bool onlyOne;
+  final bool showSwap;
 
   @override
   Widget build(BuildContext context) {
@@ -280,38 +283,39 @@ class CardColumn extends StatelessWidget {
                 const EmptyCard(),
             ],
           ),
-          Positioned(
-            right: 22, // left: // 126, // 76 // 120
-            top: 83, //87 // 84
-            child: SizedBox(
-              height: 32,
-              width: 40,
-              child: ElevatedButton(
-                onPressed: () {
-                  context.push('/swap-page');
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+          if (showSwap)
+            Positioned(
+              right: 22, // left: // 126, // 76 // 120
+              top: 83, //87 // 84
+              child: SizedBox(
+                height: 32,
+                width: 40,
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.push('/swap-page');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    side: const BorderSide(color: NewColours.lightGray),
+                    backgroundColor: context.colour.primaryContainer,
+                    surfaceTintColor:
+                        context.colour.primaryContainer.withOpacity(0.5),
+                    elevation: 2,
+                    splashFactory: NoSplash.splashFactory,
+                    enableFeedback: false,
+                    padding: EdgeInsets.zero,
                   ),
-                  side: const BorderSide(color: NewColours.lightGray),
-                  backgroundColor: context.colour.primaryContainer,
-                  surfaceTintColor:
-                      context.colour.primaryContainer.withOpacity(0.5),
-                  elevation: 2,
-                  splashFactory: NoSplash.splashFactory,
-                  enableFeedback: false,
-                  padding: EdgeInsets.zero,
-                ),
-                child: Icon(
-                  Icons.swap_horiz,
-                  color: context.colour.onPrimaryContainer,
-                  size: 24,
+                  child: Icon(
+                    Icons.swap_horiz,
+                    color: context.colour.onPrimaryContainer,
+                    size: 24,
+                  ),
                 ),
               ),
+              // child: Center(child: BBButton.big(label: 'Swap', onPressed: () {})),
             ),
-            // child: Center(child: BBButton.big(label: 'Swap', onPressed: () {})),
-          ),
         ],
       ),
     );
