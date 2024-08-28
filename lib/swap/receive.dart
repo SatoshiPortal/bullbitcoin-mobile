@@ -433,16 +433,30 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (!received)
-                if (!paid) ...[
-                  const BBText.body('Receiving payment'),
-                ] else ...[
-                  const BBText.body('Invoice paid'),
-                ]
-              else
-                const BBText.body('Payment received'),
-              const Gap(16),
-              ReceivedTick(received: received),
+              if (isLiq) ...[
+                if (!received)
+                  if (!paid) ...[
+                    const BBText.body('Receiving payment'),
+                  ] else ...[
+                    const BBText.body('Invoice paid'),
+                  ]
+                else
+                  const BBText.body('Payment received'),
+                const Gap(16),
+                ReceivedTick(received: received),
+              ],
+              if (!isLiq) ...[
+                const Icon(
+                  FontAwesomeIcons.stopwatch,
+                  size: 80,
+                  color: Colors.lightGreen,
+                ),
+                const Gap(16),
+                const BBText.body(
+                  'Swap created.\nThis will get settled in a while.',
+                  textAlign: TextAlign.center,
+                ),
+              ],
               const Gap(16),
               BBText.body(amtStr),
               const Gap(4),
@@ -458,7 +472,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
                   ],
                 ),
               ),
-              if (!received) ...[
+              if (!received && isLiq) ...[
                 const Gap(24),
                 _OnChainWarning(swapTx: swapTx),
               ],
