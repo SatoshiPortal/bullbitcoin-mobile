@@ -606,7 +606,9 @@ class ChainSwapDisplayReceive extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx!);
+    final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
+    if (swapTx == null) return const SizedBox.shrink();
+
     final amount = swapTx.outAmount / 100000000.0;
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
     final bip21Address = context.select(
