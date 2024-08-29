@@ -80,6 +80,9 @@ class OnchainListeners extends StatelessWidget {
             final amtStr =
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
             final prefix = swapTx.actionPrefixStr();
+
+            //TODO:DEBUG
+            if (swapTx.isChainSwap()) return;
             showToastWidget(
               position: ToastPosition.top,
               AlertUI(text: '$prefix $amtStr'),

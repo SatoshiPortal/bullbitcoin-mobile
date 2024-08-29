@@ -89,6 +89,9 @@ class SendListeners extends StatelessWidget {
 
             if (!swapTx.showAlert()) return;
 
+            //TODO:DEBUG
+            if (swapTx.isChainSwap()) return;
+
             final amt = swapTx.outAmount;
             final amtStr =
                 context.read<CurrencyCubit>().state.getAmountInUnits(amt);
