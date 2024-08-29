@@ -114,7 +114,7 @@ Future<void> doMigration0_1to0_2(
     value: idsJsn,
   );
   // Finally update version number to next version
-  await secureStorage.saveValue(key: StorageKeys.version, value: '0.2');
+  await secureStorage.saveValue(key: StorageKeys.version, value: '0.2.0');
 }
 
 Future<
