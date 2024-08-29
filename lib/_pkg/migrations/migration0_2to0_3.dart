@@ -69,6 +69,40 @@ Future<Map<String, dynamic>> updateSwaps(
   Map<String, dynamic> walletObj,
   WalletSensitiveStorageRepository walletSensitiveStorageRepository,
 ) async {
+  walletObj['swaps'] = walletObj['swaps']
+      .map((swapTx) => swapTx as Map<String, dynamic>)
+      .map((swapTx) {
+    final isSubmarine = swapTx['isSubmarine'] == true;
+    if (isSubmarine)
+      swapTx['lockupTxid'] = swapTx['txid'];
+    else
+      swapTx['claimTxid'] = swapTx['txid'];
+
+    swapTx['lnSwapDetails'] = LnSwapDetails(
+      swapType:
+          swapTx['isSubmarine'] == true ? SwapType.submarine : SwapType.reverse,
+      invoice: swapTx['invoice'] != null
+          ? (swapTx['invoice'] as String)
+          : '', //TODO:
+      boltzPubKey: swapTx['boltzPubkey'] != null
+          ? (swapTx['boltzPubkey'] as String)
+          : '',
+      keyIndex: swapTx['keyIndex'] != null ? swapTx['keyIndex'] as int : 0,
+      myPublicKey:
+          swapTx['publicKey'] != null ? swapTx['publicKey'] as String : '',
+      electrumUrl:
+          swapTx['electrumUrl'] != null ? swapTx['electrumUrl'] as String : '',
+      locktime: swapTx['locktime'] != null ? swapTx['locktime'] as int : 0,
+      sha256: swapTx['sha256'] != null
+          ? swapTx['sha256'] as String
+          : '', // TODO: Should do this?
+      // hash160: swapTx['hash160'] as String, // TODO: Should do this?
+      // blindingKey:
+      //     swapTx['blindingKey'] as String, // TODO: Should do this?
+    ).toJson();
+    return swapTx;
+  }).toList();
+
   walletObj['transactions'] = walletObj['transactions']
       .map((tx) => tx as Map<String, dynamic>)
       .map((tx) {
