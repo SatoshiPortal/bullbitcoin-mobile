@@ -671,6 +671,9 @@ class _OnchainSwapDetails extends StatelessWidget {
           ?.state
           .wallet,
     );
+    final isRefundedReceive = swap.isChainReceive() && swap.refundedOnchain();
+    final walletReceiveRefundedTo =
+        isRefundedReceive && swap.isLiquid() ? 'Secure' : 'Instant';
 
     Transaction? receiveTx;
     String? toAmtStr;
@@ -696,6 +699,25 @@ class _OnchainSwapDetails extends StatelessWidget {
         toStatusStr = toStatus ? 'Pending' : 'Confirmed';
       }
     }
+    //     if (swap.claimTxid != null && isRefunded) {
+    //   receiveTx = .getTxWithId(swap.claimTxid!);
+    //   if (receiveTx != null) {
+    //     toAmtStr = context.select(
+    //       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
+    //         receiveTx!.getAmount(sentAsTotal: true),
+    //         removeText: true,
+    //       ),
+    //     );
+    //     toUnits = context.select(
+    //       (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
+    //     );
+
+    //     final toStatus = receiveTx.height == null ||
+    //         receiveTx.height == 0 ||
+    //         receiveTx.timestamp == 0;
+    //     toStatusStr = toStatus ? 'Pending' : 'Confirmed';
+    //   }
+    // }
 
     final selfFromWalletChildren = [
       const BBText.body(
@@ -753,6 +775,13 @@ class _OnchainSwapDetails extends StatelessWidget {
       const Gap(24),
     ];
 
+    final refundedReceiveChildren = [
+      BBText.bodySmall(
+        'to $walletReceiveRefundedTo wallet',
+        isBold: true,
+      ),
+      const Gap(24),
+    ];
     final selfToWalletChildren = [
       const BBText.body(
         'To wallet',
@@ -845,12 +874,14 @@ class _OnchainSwapDetails extends StatelessWidget {
                 swap.chainSwapDetails?.onChainType == OnChainSwapType.sendSwap)
               ...selfFromWalletChildren,
             if (swap.chainSwapDetails?.onChainType ==
-                OnChainSwapType.receiveSwap)
+                    OnChainSwapType.receiveSwap &&
+                !isRefundedReceive)
               ...externalFromWalletChildren,
             if (swap.chainSwapDetails?.onChainType ==
                     OnChainSwapType.selfSwap ||
                 swap.chainSwapDetails?.onChainType ==
-                    OnChainSwapType.receiveSwap)
+                        OnChainSwapType.receiveSwap &&
+                    !isRefundedReceive)
               ...selfToWalletChildren,
             if (swap.chainSwapDetails?.onChainType == OnChainSwapType.sendSwap)
               ...externalToWalletChildren,
@@ -917,6 +948,7 @@ class _OnchainSwapDetails extends StatelessWidget {
                 statusStr.$2,
               ),
             ],
+            if (isRefundedReceive) ...refundedReceiveChildren,
           ],
         ),
       ),

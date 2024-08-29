@@ -480,7 +480,7 @@ class WalletTx implements IWalletTransactions {
     //       isSwap: true,
     //     );
     // }
-    if (updatedSwapTx.isChainReceive()) {
+    if (updatedSwapTx.paidOnchain()) {
       final txIdx = txs.indexWhere((_) => _.txid == swapTx.lockupTxid);
       if (txIdx == -1) {
         final newTx = updatedSwapTx.toNewTransaction();

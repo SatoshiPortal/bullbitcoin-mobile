@@ -632,6 +632,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
 
       switch (swapTx.chainSwapAction()) {
+        case ChainSwapActions.created:
+          await __updateWalletTxs(swapTx, walletBloc, emit);
+
         case ChainSwapActions.paid:
           if (swapTx.isChainReceive() && swapTx.lockupTxid == null) {
             final (txid, err) = await _swapBoltz.chainUserLockup(
