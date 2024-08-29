@@ -62,7 +62,7 @@ Future<void> doMigration0_2to0_3(
   );
 
   // Finally update version number to next version
-  await secureStorage.saveValue(key: StorageKeys.version, value: '0.3');
+  // await secureStorage.saveValue(key: StorageKeys.version, value: '0.3');
 }
 
 Future<Map<String, dynamic>> updateSwaps(
