@@ -653,7 +653,7 @@ class SwapBoltz {
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
     required String boltzUrl,
-    required bool isLiquid,
+    // required bool isLiquid,
     required String toWalletId,
   }) async {
     try {

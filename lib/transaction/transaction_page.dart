@@ -672,8 +672,9 @@ class _OnchainSwapDetails extends StatelessWidget {
           .wallet,
     );
     final isRefundedReceive = swap.isChainReceive() && swap.refundedOnchain();
+    // swap.baseWallet is based on direction. btc->lbtc will have base wallet as instant, although receiving in secure
     final walletReceiveRefundedTo =
-        isRefundedReceive && swap.isLiquid() ? 'Secure' : 'Instant';
+        isRefundedReceive && swap.isLiquid() ? 'Instant' : 'Secure';
 
     Transaction? receiveTx;
     String? toAmtStr;

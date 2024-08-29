@@ -243,7 +243,9 @@ extension ChSwapExt on SwapTx {
 
 extension ChainSwapExt on ChainSwap {
   SwapTx createSwapFromChainSwap(
-      String toWalletId, OnChainSwapType onChainSwapType) {
+    String toWalletId,
+    OnChainSwapType onChainSwapType,
+  ) {
     return SwapTx(
       id: id,
       chainSwapDetails: ChainSwapDetails(

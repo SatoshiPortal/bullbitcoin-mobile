@@ -313,22 +313,14 @@ class HomeTxItem2 extends StatelessWidget {
       // Because this is a placeholder tx created to show the swap tx,
       // as the actual lockup tx happens in an external wallet.
       final swapStatus = tx.swapTx!.chainSwapAction();
-      if (isChainReceive) {
-        final swapStatus = tx.swapTx!.chainSwapAction();
 
-        statusImg = swapStatus == ChainSwapActions.settled
-            ? 'assets/tx_status_complete.png'
-            : 'assets/tx_status_pending.png';
+      statusImg = swapStatus == ChainSwapActions.settled
+          ? 'assets/tx_status_complete.png'
+          : 'assets/tx_status_pending.png';
 
-        statusImg = swapStatus == ChainSwapActions.refunded
-            ? 'assets/tx_status_failed.png'
-            : statusImg;
-      } else {
-        statusImg = swapStatus == ChainSwapActions.settled ||
-                swapStatus == ChainSwapActions.refunded
-            ? 'assets/tx_status_complete.png'
-            : 'assets/tx_status_pending.png';
-      }
+      statusImg = swapStatus == ChainSwapActions.refunded
+          ? 'assets/tx_status_failed.png'
+          : statusImg;
     }
 
     final isReceive = tx.isReceived();

@@ -480,14 +480,28 @@ class WalletTx implements IWalletTransactions {
     //       isSwap: true,
     //     );
     // }
-    if (updatedSwapTx.paidOnchain()) {
+    if (updatedSwapTx.paidOnchain() && updatedSwapTx.isChainReceive()) {
       final txIdx = txs.indexWhere((_) => _.txid == swapTx.lockupTxid);
       if (txIdx == -1) {
         final newTx = updatedSwapTx.toNewTransaction();
         txs.add(newTx);
       }
     }
-
+    if (updatedSwapTx.refundedOnchain() && updatedSwapTx.isChainReceive()) {
+      final txIdx = txs.indexWhere((_) => _.txid == swapTx.claimTxid);
+      if (txIdx == -1) {
+        final newTx = updatedSwapTx.toNewTransaction();
+        txs.add(newTx);
+      } else {
+        if (txIdx != -1)
+          txs[txIdx] = txs[txIdx].copyWith(
+            swapTx: updatedSwapTx,
+            txid: updatedSwapTx.claimTxid ?? txs[txIdx].txid,
+            label: swapTx.label,
+            isSwap: true,
+          );
+      }
+    }
     final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
     if (txIdx != -1)
       txs[txIdx] = txs[txIdx].copyWith(
