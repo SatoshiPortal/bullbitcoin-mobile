@@ -448,7 +448,7 @@ class WalletTx implements IWalletTransactions {
       // while this swapTx is paid, this function is called right after it is claimed
       // so here we will have an updatedTxid for Bitcoin
       // since swap is past paid, it exists within a tx
-      final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
+      final txIdx = txs.indexWhere((_) => _.swapTx?.id == updatedSwapTx.id);
 
       if (txIdx != -1) {
         final updatedTx = txs[txIdx].copyWith(
@@ -481,15 +481,19 @@ class WalletTx implements IWalletTransactions {
     //     );
     // }
     if (updatedSwapTx.paidOnchain() && updatedSwapTx.isChainReceive()) {
-      final txIdx = txs.indexWhere((_) => _.txid == swapTx.lockupTxid);
+      final txIdx = txs.indexWhere((_) => _.txid == updatedSwapTx.lockupTxid);
       if (txIdx == -1) {
         final newTx = updatedSwapTx.toNewTransaction();
         txs.add(newTx);
       }
     }
-    if (updatedSwapTx.refundedOnchain() && updatedSwapTx.isChainReceive()) {
-      final txIdx = txs.indexWhere((_) => _.txid == swapTx.claimTxid);
-      if (txIdx == -1) {
+    if ((updatedSwapTx.refundableOnchain() ||
+            updatedSwapTx.refundedOnchain()) &&
+        updatedSwapTx.isChainReceive()) {
+      final txIdx = txs.indexWhere((_) => _.txid == updatedSwapTx.claimTxid);
+      final txIdxById = txs.indexWhere((_) => _.txid == updatedSwapTx.id);
+
+      if (txIdx == -1 && txIdxById == -1) {
         final newTx = updatedSwapTx.toNewTransaction();
         txs.add(newTx);
       } else {
@@ -497,25 +501,26 @@ class WalletTx implements IWalletTransactions {
           txs[txIdx] = txs[txIdx].copyWith(
             swapTx: updatedSwapTx,
             txid: updatedSwapTx.claimTxid ?? txs[txIdx].txid,
-            label: swapTx.label,
+            label: updatedSwapTx.label,
             isSwap: true,
           );
       }
     }
-    final txIdx = txs.indexWhere((_) => _.swapTx?.id == swapTx.id);
+
+    final txIdx = txs.indexWhere((_) => _.swapTx?.id == updatedSwapTx.id);
     if (txIdx != -1)
       txs[txIdx] = txs[txIdx].copyWith(
         swapTx: updatedSwapTx,
-        label: swapTx.label,
+        label: updatedSwapTx.label,
         isSwap: true,
       );
 
-    final swapIdx = swapTxs.indexWhere((_) => _.id == swapTx.id);
+    final swapIdx = swapTxs.indexWhere((_) => _.id == updatedSwapTx.id);
     if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
 
     final closeSwap = swapTx.close();
     if (closeSwap) {
-      swapTxs.removeWhere((_) => _.id == swapTx.id);
+      swapTxs.removeWhere((_) => _.id == updatedSwapTx.id);
     }
 
     if (deleteIfFailed) {

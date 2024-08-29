@@ -778,10 +778,22 @@ class _OnchainSwapDetails extends StatelessWidget {
 
     final refundedReceiveChildren = [
       BBText.bodySmall(
-        'to $walletReceiveRefundedTo wallet',
+        'to $walletReceiveRefundedTo wallet.',
         isBold: true,
       ),
       const Gap(24),
+      const BBText.bodySmall(
+        'External wallet may have sent the wrong amount.',
+        isBold: true,
+      ),
+      const Gap(24),
+      const BBText.title('Refund Tx ID'),
+      const Gap(4),
+      TxLink(
+        txid: swap.claimTxid ?? tx.txid,
+        tx: tx,
+        unblindedUrl: tx.unblindedUrl,
+      ),
     ];
     final selfToWalletChildren = [
       const BBText.body(

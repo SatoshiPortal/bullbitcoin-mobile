@@ -305,9 +305,12 @@ class HomeTxItem2 extends StatelessWidget {
 
     // final swapstatus =
 
-    String statusImg = (tx.height == null || tx.height == 0)
-        ? 'assets/tx_status_pending.png'
-        : 'assets/tx_status_complete.png';
+    String statusImg = (tx.isSwap &&
+            (tx.swapTx!.refundedAny() || tx.swapTx!.refundableSubmarine()))
+        ? 'assets/tx_status_failed.png'
+        : (tx.height == null || tx.height == 0)
+            ? 'assets/tx_status_pending.png'
+            : 'assets/tx_status_complete.png';
     if (isChainSwap == true) {
       // Special condition for chain receive, since tx.height will be null for ChainReceive.
       // Because this is a placeholder tx created to show the swap tx,

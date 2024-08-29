@@ -441,7 +441,9 @@ class SwapTx with _$SwapTx {
             : claimTxid)
         : isChainSwap()
             ? lockupTxid
-            : claimTxid;
+            : isChainReceive()
+                ? claimTxid
+                : lockupTxid;
     final newTx = bb.Transaction(
       txid: txId ?? id,
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
