@@ -1,4 +1,3 @@
-// Change 1: move ln swap fields from SwapTx to SwapTx.lnSwapDetails
 import 'dart:convert';
 
 import 'package:bb_mobile/_model/swap.dart';
@@ -61,8 +60,7 @@ Future<void> doMigration0_2to0_3(
     value: idsJsn,
   );
 
-  // Finally update version number to next version
-  // await secureStorage.saveValue(key: StorageKeys.version, value: '0.3');
+  await secureStorage.saveValue(key: StorageKeys.version, value: '0.3.0');
 }
 
 Future<Map<String, dynamic>> updateSwaps(

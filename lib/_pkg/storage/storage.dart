@@ -69,7 +69,7 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
   if (version != bbVersion) {
     // await prepareMigration();
     await doMigration(version!, bbVersion, secureStorage, hiveStorage);
-    // await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
+    await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
   }
   // if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
 
