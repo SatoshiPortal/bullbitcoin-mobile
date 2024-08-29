@@ -63,6 +63,9 @@ class BBFormField extends StatelessWidget {
           : null,
       suffixIcon: suffix,
       hintText: placeholderText,
+      hintStyle: TextStyle(
+        color: context.colour.onPrimaryContainer,
+      ),
       // scrollPadding: EdgeInsets.only(bottom:40),
     );
 

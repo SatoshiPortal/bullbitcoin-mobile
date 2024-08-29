@@ -22,6 +22,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/listeners.dart';
+import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
@@ -650,6 +651,14 @@ class ChainSwapForm extends StatelessWidget {
 
     const int finalFee = 0;
 
+    final darkMode = context.select(
+      (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
+    );
+
+    final swapIcon = darkMode
+        ? 'assets/images/swap_icon_white.png'
+        : 'assets/images/swap_icon.png';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -672,7 +681,7 @@ class ChainSwapForm extends StatelessWidget {
         Center(
           child: BBButton.big(
             // leftIcon: FontAwesomeIcons.receipt,
-            leftImage: 'assets/images/swap_icon.png',
+            leftImage: swapIcon,
             buttonKey: UIKeys.receiveSavePaymentButton,
             loading: sending,
             disabled: sending,
