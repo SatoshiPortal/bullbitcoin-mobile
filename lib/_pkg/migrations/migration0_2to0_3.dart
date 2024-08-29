@@ -127,8 +127,12 @@ Future<Map<String, dynamic>> updateSwaps(
         sha256: tx['swapTx']['sha256'] != null
             ? tx['swapTx']['sha256'] as String
             : '',
-        hash160: tx['swapTx']['hash160'] as String,
-        blindingKey: tx['swapTx']['blindingKey'] as String,
+        hash160: tx['swapTx']['hash160'] != null
+            ? tx['swapTx']['hash160'] as String
+            : '',
+        blindingKey: tx['swapTx']['hash160'] != null
+            ? tx['swapTx']['blindingKey'] as String
+            : '',
       ).toJson();
       return tx;
     }
