@@ -84,7 +84,7 @@ class WalletBlocListeners extends StatelessWidget {
                 previous.wallet != current.wallet,
             listener: (context, state) {
               if (state.wallet == null) return;
-              print('------Updated Wallet: ' + state.wallet!.id);
+              // print('------Updated Wallet: ' + state.wallet!.id);
               context.read<HomeCubit>().updateWalletBloc(w);
             },
           ),

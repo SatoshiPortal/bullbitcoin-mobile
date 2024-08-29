@@ -59,9 +59,9 @@ Widget buildFeeRateSelectorUseCase(BuildContext context) {
         {required FeeRateType selectedFeeRate,
         required int updatedDefaultFeeRate}) {
       // TODO: Implement this functions
-      print('WidgetCatalog :: FeeRateSelector :: onDefaultFeeRateChange');
-      print(selectedFeeRate);
-      print(updatedDefaultFeeRate);
+      // print('WidgetCatalog :: FeeRateSelector :: onDefaultFeeRateChange');
+      // print(selectedFeeRate);
+      // print(updatedDefaultFeeRate);
     },
   );
 }

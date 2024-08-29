@@ -40,8 +40,8 @@ Widget buildCurrencyInputUseCase(BuildContext context) {
 
     // ? NOTE: No knobs or equivalent for action functions. We can just add print statements and see values in the debug console
     onChange: (int sats, bool isSweep, CurrencyNew selectedCurrency) {
-      print(sats);
-      print(selectedCurrency);
+      // print(sats);
+      // print(selectedCurrency);
     },
 
     // ? NOTE: This will not work now. If this needs to work, we need to populate 'initialCurrency' as well. But knob for initialCurrency is pending.

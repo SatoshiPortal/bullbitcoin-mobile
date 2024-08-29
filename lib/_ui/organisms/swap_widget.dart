@@ -236,7 +236,7 @@ class _SwapWidgetState extends State<SwapWidget> {
   }
 
   void _swapButtonPressed() {
-    print('Swap button pressed');
+    // print('Swap button pressed');
     if (widget.onSwapPressed != null) {
       final isSat = fromPriceCurrency.code.contains('sats');
 
@@ -247,7 +247,7 @@ class _SwapWidgetState extends State<SwapWidget> {
             : (double.parse(fromPriceController.text) * SATS_IN_BTC).toInt();
       } catch (e) {
         sats = 0;
-        print(e);
+        // print(e);
       }
 
       widget.onSwapPressed?.call(
@@ -274,7 +274,7 @@ class _SwapWidgetState extends State<SwapWidget> {
             ? int.parse(fromPriceController.text)
             : (double.parse(fromPriceController.text) * SATS_IN_BTC).toInt();
       } on FormatException catch (e) {
-        print(e);
+        // print(e);
         localSats = 0;
       }
     }

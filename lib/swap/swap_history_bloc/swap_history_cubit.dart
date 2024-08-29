@@ -34,17 +34,33 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     final network = _networkCubit.state.getBBNetwork();
     final walletBlocs = _homeCubit.state.walletBlocsFromNetwork(network);
     final swapsToWatch = <(SwapTx, String)>[];
+    final uniqueIds = <String>[]; // List to track unique swap IDs
+
     for (final walletBloc in walletBlocs) {
       final wallet = walletBloc.state.wallet!;
-      for (final swap in wallet.swaps) swapsToWatch.add((swap, wallet.id));
+      for (final swap in wallet.swaps) {
+        if (!uniqueIds.contains(swap.id)) {
+          uniqueIds.add(swap.id);
+          swapsToWatch.add((swap, wallet.id));
+        }
+      }
+      for (final tx in wallet.transactions) {
+        if (tx.isSwap && !tx.swapTx!.close()) {
+          if (!uniqueIds.contains(tx.swapTx!.id)) {
+            uniqueIds.add(tx.swapTx!.id);
+            swapsToWatch.add((tx.swapTx!, wallet.id));
+          }
+        }
+      }
     }
+
     emit(state.copyWith(swaps: swapsToWatch));
 
     final completedSwaps = <Transaction>[];
     for (final walletBloc in walletBlocs) {
       final wallet = walletBloc.state.wallet!;
       final txs = wallet.transactions.where(
-        (_) => _.swapTx != null && _.swapTx!.close(),
+        (_) => _.isSwap && _.swapTx!.close(),
       );
       completedSwaps.addAll(txs);
     }
@@ -122,7 +138,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
   // }
 
   void swapUpdated(SwapTx swapTx) {
-    print('Swap History Updating: ${swapTx.id} - ${swapTx.status?.status}');
+    // print('Swap History Updating: ${swapTx.id} - ${swapTx.status?.status}');
     emit(state.copyWith(updateSwaps: true));
     final swaps = state.swaps;
     final index = swaps.indexWhere((_) => _.$1.id == swapTx.id);

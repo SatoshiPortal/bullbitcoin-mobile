@@ -319,7 +319,7 @@ class SwapBoltz {
             );
             return (txid, null);
           } catch (e) {
-            print('Failed to broadcast transaction: $e');
+            // print('Failed to broadcast transaction: $e');
             await Future.delayed(
               const Duration(
                 seconds: 5,
@@ -568,7 +568,7 @@ class SwapBoltz {
             );
             return (txid, null);
           } catch (e) {
-            print('Failed to broadcast transaction: $e');
+            // print('Failed to broadcast transaction: $e');
             await Future.delayed(
               const Duration(
                 seconds: 5,

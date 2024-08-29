@@ -137,11 +137,11 @@ class _Screen extends StatelessWidget {
     final isChainSwap =
         context.select((ReceiveCubit x) => x.state.isChainSwap());
 
-    print('isChainSwap: $isChainSwap');
+    // print('isChainSwap: $isChainSwap');
     final showQR = context.select(
       (ReceiveCubit x) => x.state.showQR(swapTx, isChainSwap: isChainSwap),
     );
-    print('isShowQR: $showQR');
+    // print('isShowQR: $showQR');
 
     final watchOnly =
         context.select((WalletBloc x) => x.state.wallet!.watchOnly());

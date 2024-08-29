@@ -158,8 +158,8 @@ class _FeeRatePickerState extends State<FeeRatePicker> {
             ElevatedButton(
               child: const Text('Done'),
               onPressed: () {
-                print('onPressed');
-                print(selectedFeeRate);
+                // print('onPressed');
+                // print(selectedFeeRate);
                 if (selectedFeeRate != FeeRateType.custom ||
                     _customFeeRateKey.currentState!.validate()) {
                   _onDoneTap();

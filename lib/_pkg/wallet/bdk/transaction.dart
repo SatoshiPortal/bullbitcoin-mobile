@@ -397,7 +397,7 @@ class BDKTransactions {
 
         // This check is to eliminate receive RBF duplicates
         if (isReceiveRBFParent(tx, pendingTxInputs)) {
-          print('${tx.txid} is RBF parent of a receive tx');
+          // print('${tx.txid} is RBF parent of a receive tx');
           continue;
         }
 
@@ -528,7 +528,7 @@ class BDKTransactions {
           );
           labels.add(input.label);
         } catch (e) {
-          print('no matching input with label');
+          // print('no matching input with label');
         }
       });
       await Future.wait(inAddrsFutures);
