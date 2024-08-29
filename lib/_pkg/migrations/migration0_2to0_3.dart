@@ -1,4 +1,3 @@
-// Change 1: move ln swap fields from SwapTx to SwapTx.lnSwapDetails
 import 'dart:convert';
 
 import 'package:bb_mobile/_model/swap.dart';
@@ -61,15 +60,48 @@ Future<void> doMigration0_2to0_3(
     value: idsJsn,
   );
 
-  // Finally update version number to next version
   // why arent we using toVersion and hardcoding 0.2 here?
-  await secureStorage.saveValue(key: StorageKeys.version, value: '0.3');
+  await secureStorage.saveValue(key: StorageKeys.version, value: '0.3.0');
 }
 
 Future<Map<String, dynamic>> updateSwaps(
   Map<String, dynamic> walletObj,
   WalletSensitiveStorageRepository walletSensitiveStorageRepository,
 ) async {
+  walletObj['swaps'] = walletObj['swaps']
+      .map((swapTx) => swapTx as Map<String, dynamic>)
+      .map((swapTx) {
+    final isSubmarine = swapTx['isSubmarine'] == true;
+    if (isSubmarine)
+      swapTx['lockupTxid'] = swapTx['txid'];
+    else
+      swapTx['claimTxid'] = swapTx['txid'];
+
+    swapTx['lnSwapDetails'] = LnSwapDetails(
+      swapType:
+          swapTx['isSubmarine'] == true ? SwapType.submarine : SwapType.reverse,
+      invoice: swapTx['invoice'] != null
+          ? (swapTx['invoice'] as String)
+          : '', //TODO:
+      boltzPubKey: swapTx['boltzPubkey'] != null
+          ? (swapTx['boltzPubkey'] as String)
+          : '',
+      keyIndex: swapTx['keyIndex'] != null ? swapTx['keyIndex'] as int : 0,
+      myPublicKey:
+          swapTx['publicKey'] != null ? swapTx['publicKey'] as String : '',
+      electrumUrl:
+          swapTx['electrumUrl'] != null ? swapTx['electrumUrl'] as String : '',
+      locktime: swapTx['locktime'] != null ? swapTx['locktime'] as int : 0,
+      sha256: swapTx['sha256'] != null
+          ? swapTx['sha256'] as String
+          : '', // TODO: Should do this?
+      // hash160: swapTx['hash160'] as String, // TODO: Should do this?
+      // blindingKey:
+      //     swapTx['blindingKey'] as String, // TODO: Should do this?
+    ).toJson();
+    return swapTx;
+  }).toList();
+
   walletObj['transactions'] = walletObj['transactions']
       .map((tx) => tx as Map<String, dynamic>)
       .map((tx) {
