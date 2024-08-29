@@ -124,10 +124,7 @@ class _Screen extends StatelessWidget {
     if (sent) return ChainSwapProgressWidget();
 
     final showWarning = context.select(
-      (CreateSwapCubit x) =>
-          x.state.errSmallAmt == false &&
-          x.state.errHighFees != null &&
-          x.state.errHighFees! > 0,
+      (CreateSwapCubit x) => x.state.showSwapWarning(),
     );
 
     if (showWarning == true) {

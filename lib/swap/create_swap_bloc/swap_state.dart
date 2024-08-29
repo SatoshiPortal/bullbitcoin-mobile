@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_model/swap.dart';
-import 'package:bb_mobile/_model/transaction.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -29,6 +28,11 @@ class SwapState with _$SwapState {
     final errH = errHighFees;
     final errSA = errSmallAmt;
     return errH != null || errSA;
+  }
+
+  bool showSwapWarning() {
+    final errH = errHighFees;
+    return errH != null;
   }
 
   String err() {

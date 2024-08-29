@@ -175,7 +175,9 @@ class _Screen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (showWarning && !walletIsLiquid) ...[
+              if (showWarning &&
+                  !walletIsLiquid &&
+                  potentialonchainSwap == false) ...[
                 const _Warnings(),
               ] else ...[
                 if (signed && !isLn) ...[
@@ -443,8 +445,10 @@ class AdvancedOptions extends StatelessWidget {
     );
     final sending = context.select((SendCubit _) => _.state.sending);
     final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
-    final isLiquid = context.select((SendCubit _) =>
-        _.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false);
+    final isLiquid = context.select(
+      (SendCubit _) =>
+          _.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false,
+    );
     final addressReady =
         context.select((SendCubit _) => _.state.address.isNotEmpty);
 
