@@ -527,7 +527,8 @@ class SwapBoltz {
         throw errFees;
       }
 
-      final isLiquid = swapTx.isLiquid();
+      final isLiquid =
+          swapTx.isChainReceive() ? !wallet.isLiquid() : wallet.isLiquid();
 
       final (swapSentive, err) = await _secureStorage.getValue(
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
@@ -539,64 +540,20 @@ class SwapBoltz {
       );
 
       final chainFees = await fees?.chain();
-      if (isLiquid) {
-        final refundFeesEstimate = chainFees?.lbtcFees.userClaim;
-        if (refundFeesEstimate == null) throw 'Fees estimate not found';
+      final refundFeesEstimate = isLiquid
+          ? chainFees?.lbtcFees.userClaim
+          : chainFees?.btcFees.userClaim;
+      if (refundFeesEstimate == null) throw 'Fees estimate not found';
 
-        final swap = swapTx.toChainSwap(swapSensitive);
+      final swap = swapTx.toChainSwap(swapSensitive);
 
-        final signedHex = await swap.refund(
-          refundAddress: address,
-          absFee: refundFeesEstimate,
-          tryCooperate: tryCooperate,
-        );
-        // locator<Logger>()
-        //     .log('------${swapTx.id}-----\n$signedHex------signed-refund-----');
-        final (blockchain, err) = _networkRepository.liquidUrl;
-        if (err != null) throw err;
-        if (broadcastViaBoltz) {
-          // final txid = await swap.broadcastTx(
-          //   signedBytes: Uint8List.fromList(hex.decode(signedHex)),
-          // );
-          // return (txid, null);
-          return ('', Err('broadcast via boltz not implemented'));
-        } else {
-          try {
-            final txid = await lwk.Wallet.broadcastTx(
-              electrumUrl: blockchain!,
-              txBytes: Uint8List.fromList(hex.decode(signedHex)),
-            );
-            return (txid, null);
-          } catch (e) {
-            // print('Failed to broadcast transaction: $e');
-            await Future.delayed(
-              const Duration(
-                seconds: 5,
-              ),
-            ); // this non-blocking delay is to accomodate mempool propogation if the first try failed.
-            final txid = await lwk.Wallet.broadcastTx(
-              electrumUrl: blockchain!,
-              txBytes: Uint8List.fromList(hex.decode(signedHex)),
-            );
-            return (txid, null);
-          }
-        }
-      } else {
-        // final refundFeesEstimate = fees?.btcSubmarine.claimFees;
-        final chainFees = await fees?.chain();
-        final refundFeesEstimate = chainFees?.btcFees.userClaim;
-        if (refundFeesEstimate == null) throw 'Fees estimate not found';
+      final resp = await swap.refund(
+        refundAddress: address,
+        absFee: refundFeesEstimate,
+        tryCooperate: tryCooperate,
+      );
 
-        final swap = swapTx.toChainSwap(swapSensitive);
-
-        final resp = await swap.refund(
-          refundAddress: address,
-          absFee: refundFeesEstimate,
-          tryCooperate: tryCooperate,
-        );
-
-        return (resp, null);
-      }
+      return (resp, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }

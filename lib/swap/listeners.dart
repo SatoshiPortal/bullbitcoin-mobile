@@ -47,6 +47,7 @@ class SwapAppListener extends StatelessWidget {
             final swapTx = state.updatedSwapTx!;
             final isReverse = swapTx.isReverse();
 
+            //TODO:DEBUG
             if (swapTx.isChainSwap()) return;
 
             final amt =
