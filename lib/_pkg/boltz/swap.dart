@@ -501,7 +501,8 @@ class SwapBoltz {
 
   Future<(String?, Err?)> refundChainSwap({
     required SwapTx swapTx,
-    required Wallet wallet,
+    required Wallet
+        wallet, // do we need to send the entire wallet into this function?
     required bool tryCooperate,
     bool broadcastViaBoltz = false,
   }) async {
@@ -526,7 +527,7 @@ class SwapBoltz {
         throw errFees;
       }
 
-      final isLiquid = wallet.isLiquid();
+      final isLiquid = swapTx.isLiquid();
 
       final (swapSentive, err) = await _secureStorage.getValue(
         StorageKeys.swapTxSensitive + '_' + swapTx.id,

@@ -724,7 +724,11 @@ class _OnchainSwapDetails extends StatelessWidget {
       const Gap(24),
       const BBText.title('From: Tx ID'),
       const Gap(4),
-      TxLink(txid: tx.txid, tx: tx, unblindedUrl: tx.unblindedUrl),
+      TxLink(
+        txid: swap.lockupTxid ?? tx.txid,
+        tx: tx,
+        unblindedUrl: tx.unblindedUrl,
+      ),
       const Gap(24),
       const BBText.title(
         'From: Status',

@@ -210,8 +210,7 @@ class SwapTx with _$SwapTx {
       isChainSwap() &&
       (status != null &&
           claimTxid == null &&
-          (status!.status == SwapStatus.invoiceFailedToPay ||
-              status!.status == SwapStatus.txnLockupFailed ||
+          (status!.status == SwapStatus.txnLockupFailed ||
               status!.status == SwapStatus.swapExpired ||
               status!.status == SwapStatus.txnRefunded));
 

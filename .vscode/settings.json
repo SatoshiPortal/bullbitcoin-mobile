@@ -47,7 +47,7 @@
     "**/analysis_options.yaml": true,
     "build.yaml": true,
     // "**/build": true,
-    "**/assets": true,
+    // "**/assets": true,
     "l10n.yaml": true,
     //
     //
