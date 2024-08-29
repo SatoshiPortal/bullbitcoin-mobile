@@ -1,8 +1,12 @@
 // ignore_for_file: invalid_annotation_target
 
+import 'dart:ui';
+
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -48,10 +52,6 @@ class Transaction with _$Transaction {
     @Default([]) List<String> rbfTxIds,
     String? walletId,
   }) = _Transaction;
-  const Transaction._();
-
-  factory Transaction.fromJson(Map<String, dynamic> json) =>
-      _$TransactionFromJson(json);
 
   factory Transaction.fromSwapTx(SwapTx swapTx) {
     return Transaction(
@@ -60,6 +60,55 @@ class Transaction with _$Transaction {
       swapTx: swapTx,
       isSwap: true,
     );
+  }
+  const Transaction._();
+
+  factory Transaction.fromJson(Map<String, dynamic> json) =>
+      _$TransactionFromJson(json);
+
+  (String, Color) buildTagDetails() {
+    final hasSwap = swapTx != null;
+
+    Color colour;
+    String text;
+
+    final isChainSwap = isSwap && swapTx!.isChainSwap();
+    final isChainSend = isSwap && swapTx!.isChainSend();
+    final isChainReceive = isSwap && swapTx!.isChainReceive();
+    if (hasSwap) {
+      if (isChainSwap == true) {
+        final isBtcToLbtc =
+            swapTx?.chainSwapDetails?.direction == ChainSwapDirection.btcToLbtc;
+        if (isChainReceive) {
+          text = isBtcToLbtc ? 'Bitcoin' : 'Liquid';
+        } else if (isChainSend) {
+          text = isBtcToLbtc ? 'Liquid' : 'Bitcoin';
+        } else {
+          text = isBtcToLbtc ? 'BTC -> LBTC' : 'LBTC -> BTC ';
+        }
+      } else {
+        text = 'Lightning';
+      }
+    } else if (isLiquid) {
+      text = 'Liquid on-chain';
+    } else {
+      text = 'Bitcoin on-chain';
+    }
+
+    if (isChainSwap) {
+      if (isChainSend) {
+        colour = isLiquid ? CardColours.yellow : CardColours.orange;
+      } else if (isChainReceive) {
+        colour = !isLiquid ? CardColours.yellow : CardColours.orange;
+      } else {
+        // self swap we tag with the receiving wallet
+        colour = !isLiquid ? CardColours.yellow : CardColours.orange;
+      }
+    } else {
+      colour = isLiquid ? CardColours.yellow : CardColours.orange;
+    }
+
+    return (text, colour);
   }
 
   bool swapIdisTxid() => swapTx != null && swapTx!.id == txid;

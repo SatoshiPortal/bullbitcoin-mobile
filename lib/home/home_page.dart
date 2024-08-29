@@ -25,7 +25,6 @@ import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
-import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -517,63 +516,8 @@ class WalletTag extends StatelessWidget {
 
   final Transaction tx;
 
-  static (String, Color) _buildTagDetails(
-    bool isLiquid,
-    Transaction tx,
-  ) {
-    final hasSwap = tx.swapTx != null;
-
-    Color colour;
-    String text;
-
-    final isChainSwap = tx.isSwap && tx.swapTx!.isChainSwap();
-    final isChainSend = tx.isSwap && tx.swapTx!.isChainSend();
-    final isChainReceive = tx.isSwap && tx.swapTx!.isChainReceive();
-    if (hasSwap) {
-      if (isChainSwap == true) {
-        if (isChainReceive) {
-          text = tx.swapTx?.chainSwapDetails?.direction ==
-                  boltz.ChainSwapDirection.btcToLbtc
-              ? 'Bitcoin'
-              : 'Liquid';
-        } else if (isChainSend) {
-          text = tx.swapTx?.chainSwapDetails?.direction ==
-                  boltz.ChainSwapDirection.btcToLbtc
-              ? 'Liquid'
-              : 'Bitcoin';
-        } else {
-          text = tx.swapTx?.chainSwapDetails?.direction ==
-                  boltz.ChainSwapDirection.btcToLbtc
-              ? 'BTC -> LBTC'
-              : 'LBTC -> BTC ';
-        }
-      } else {
-        text = 'Lightning';
-      }
-    } else if (isLiquid) {
-      text = 'Liquid on-chain';
-    } else {
-      text = 'Bitcoin on-chain';
-    }
-
-    if (isChainSwap) {
-      if (isChainSend) {
-        colour = isLiquid ? CardColours.yellow : CardColours.orange;
-      } else if (isChainReceive) {
-        colour = !isLiquid ? CardColours.yellow : CardColours.orange;
-      } else {
-        colour = isLiquid ? CardColours.yellow : CardColours.orange;
-      }
-    } else {
-      colour = isLiquid ? CardColours.yellow : CardColours.orange;
-    }
-
-    return (text, colour);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final isLiquid = tx.isLiquid;
     final watchOnly =
         context.read<HomeCubit>().state.walletIsWatchOnlyFromTx(tx);
 
@@ -584,7 +528,7 @@ class WalletTag extends StatelessWidget {
     final watchonlyColor =
         darkMode ? context.colour.surface : context.colour.onPrimaryContainer;
 
-    final (name, color) = _buildTagDetails(isLiquid, tx);
+    final (name, color) = tx.buildTagDetails();
 
     return Container(
       padding: const EdgeInsets.symmetric(
