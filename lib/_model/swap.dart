@@ -267,6 +267,11 @@ class SwapTx with _$SwapTx {
       claimTxid != null &&
       (status != null && (status!.status == SwapStatus.swapRefunded));
 
+  bool expiredSwapRefundedOnchain() =>
+      isChainSwap() &&
+      claimTxid != null &&
+      (status != null && (status!.status == SwapStatus.swapExpired));
+
   bool paidReverse() =>
       isReverse() &&
       (status != null && (status!.status == SwapStatus.txnMempool));
@@ -396,13 +401,11 @@ class SwapTx with _$SwapTx {
       return ChainSwapActions.claimable;
     else if (refundableOnchain())
       return ChainSwapActions.refundable;
-    else if (expiredOnchain() ||
-        statuss == SwapStatus.swapError ||
-        statuss == SwapStatus.txnFailed)
+    else if (statuss == SwapStatus.swapError || statuss == SwapStatus.txnFailed)
       return ChainSwapActions.failed;
     else if (settledOnchain())
       return ChainSwapActions.settled;
-    else if (refundedOnchain())
+    else if (refundedOnchain() || expiredSwapRefundedOnchain())
       return ChainSwapActions.refunded;
     else
       return ChainSwapActions.created;
