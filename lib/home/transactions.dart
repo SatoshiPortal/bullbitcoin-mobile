@@ -306,7 +306,9 @@ class HomeTxItem2 extends StatelessWidget {
     // final swapstatus =
 
     String statusImg = (tx.isSwap &&
-            (tx.swapTx!.refundedAny() || tx.swapTx!.refundableSubmarine()))
+            (tx.swapTx!.refundedAny() ||
+                tx.swapTx!.refundableSubmarine() ||
+                tx.swapTx!.refundableOnchain()))
         ? 'assets/tx_status_failed.png'
         : (tx.height == null || tx.height == 0)
             ? 'assets/tx_status_pending.png'
@@ -321,7 +323,7 @@ class HomeTxItem2 extends StatelessWidget {
           ? 'assets/tx_status_complete.png'
           : 'assets/tx_status_pending.png';
 
-      statusImg = swapStatus == ChainSwapActions.refunded
+      statusImg = tx.swapTx!.refundedOnchain()
           ? 'assets/tx_status_failed.png'
           : statusImg;
     }

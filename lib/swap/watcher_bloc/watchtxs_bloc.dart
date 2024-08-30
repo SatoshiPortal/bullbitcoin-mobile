@@ -541,8 +541,14 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;
     if (walletBloc == null || wallet == null) return;
-    final swapFromWallet =
-        walletBloc.state.wallet!.getOngoingSwap(event.swapTxId);
+    final SwapTx? swapFromWallet =
+        walletBloc.state.wallet!.getOngoingSwap(event.swapTxId) ??
+            event.swapToProcess;
+    // if swapFromWallet == null
+    // then look for swaps from the wallet.transactions
+    // only go ahead with processing it if its claimable or refundable
+    // OR
+    // pass the swapTx via the event ONLY IF ITS FROM SWAP HISTORY PAGE
     if (swapFromWallet == null) return;
     final swapTx = event.status != null
         ? swapFromWallet.copyWith(status: event.status)

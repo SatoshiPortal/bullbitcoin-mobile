@@ -204,7 +204,8 @@ class SwapTx with _$SwapTx {
       isSubmarine() &&
       (status != null &&
           (status!.status == SwapStatus.invoiceFailedToPay ||
-              status!.status == SwapStatus.txnLockupFailed));
+              status!.status == SwapStatus.txnLockupFailed ||
+              status!.status == SwapStatus.swapExpired));
 
   bool refundableOnchain() =>
       isChainSwap() &&
@@ -265,12 +266,9 @@ class SwapTx with _$SwapTx {
   bool refundedOnchain() =>
       isChainSwap() &&
       claimTxid != null &&
-      (status != null && (status!.status == SwapStatus.swapRefunded));
-
-  bool expiredSwapRefundedOnchain() =>
-      isChainSwap() &&
-      claimTxid != null &&
-      (status != null && (status!.status == SwapStatus.swapExpired));
+      status != null &&
+      (status!.status == SwapStatus.swapRefunded ||
+          status!.status == SwapStatus.swapExpired);
 
   bool paidReverse() =>
       isReverse() &&
@@ -302,7 +300,6 @@ class SwapTx with _$SwapTx {
       expiredReverse() ||
       expiredSubmarine() ||
       refundedAny() ||
-      // expiredOnchain() ||
       uninitiatedOnchain() ||
       settledOnchain();
 
@@ -405,7 +402,7 @@ class SwapTx with _$SwapTx {
       return ChainSwapActions.failed;
     else if (settledOnchain())
       return ChainSwapActions.settled;
-    else if (refundedOnchain() || expiredSwapRefundedOnchain())
+    else if (refundedOnchain())
       return ChainSwapActions.refunded;
     else
       return ChainSwapActions.created;
