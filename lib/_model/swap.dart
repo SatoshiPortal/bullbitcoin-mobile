@@ -250,9 +250,7 @@ class SwapTx with _$SwapTx {
 
   bool expiredOnchain() =>
       isChainSwap() &&
-      (status != null &&
-          (status!.status == SwapStatus.invoiceExpired ||
-              status!.status == SwapStatus.swapExpired));
+      (status != null && (status!.status == SwapStatus.swapExpired));
 
   bool settledReverse() =>
       isReverse() &&
@@ -299,7 +297,7 @@ class SwapTx with _$SwapTx {
       expiredReverse() ||
       expiredSubmarine() ||
       refundedAny() ||
-      expiredOnchain() ||
+      // expiredOnchain() ||
       uninitiatedOnchain() ||
       settledOnchain();
 
