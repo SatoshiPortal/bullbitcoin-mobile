@@ -294,7 +294,8 @@ class HomeState with _$HomeState {
     int index = 0;
     for (final tx in txs) {
       final isInSwapTxAndNotPending = swapChainTxs.where((swap) {
-        if (swap?.claimTxid == tx.txid && swap!.isChainReceive()) {
+        if (swap?.claimTxid == tx.txid &&
+            swap!.status?.status == boltz.SwapStatus.swapRefunded) {
           if (tx.label == null) {
             const String lbl = 'Swap refund';
             txsToUpdate.addAll({index: lbl});
@@ -302,7 +303,7 @@ class HomeState with _$HomeState {
             final String lbl = '${tx.label}, Swap refund';
             txsToUpdate.addAll({index: lbl});
           }
-          return false;
+          return false; // So it's not removed from here and shown in home page
         } else {
           return swap?.claimTxid == tx.txid;
         }
