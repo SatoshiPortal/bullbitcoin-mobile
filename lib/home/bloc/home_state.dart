@@ -290,11 +290,30 @@ class HomeState with _$HomeState {
         .map((tx) => tx.swapTx)
         .toList();
     final toRemove = <Transaction>[];
+    final txsToUpdate = <int, String>{};
+    int index = 0;
     for (final tx in txs) {
-      final isInSwapTxAndNotPending = swapChainTxs
-          .where((swap) => swap?.claimTxid == tx.txid) // && tx.timestamp != 0)
+      final isInSwapTxAndNotPending = swapChainTxs.where((swap) {
+        if (swap?.claimTxid == tx.txid && swap!.isChainReceive()) {
+          if (tx.label == null) {
+            const String lbl = 'Swap refund';
+            txsToUpdate.addAll({index: lbl});
+          } else if (tx.label!.contains('Swap Refund') == false) {
+            final String lbl = '${tx.label}, Swap refund';
+            txsToUpdate.addAll({index: lbl});
+          }
+          return false;
+        } else {
+          return swap?.claimTxid == tx.txid;
+        }
+      }) // && tx.timestamp != 0)
           .isNotEmpty;
       if (isInSwapTxAndNotPending == true) toRemove.add(tx);
+      index++;
+    }
+
+    for (final index in txsToUpdate.keys) {
+      txs[index] = txs[index].copyWith(label: txsToUpdate[index]);
     }
 
     for (final removeTx in toRemove) {
