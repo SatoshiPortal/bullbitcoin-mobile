@@ -136,7 +136,7 @@ SPEC CHECKSUMS:
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_native_splash: edf599c81f74d093a4daf8e17bd7a018854bc778
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
-  integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   lwk_dart: 898084320a2ce8ea206010c0dc3e3eead1b2c881
   no_screenshot: 67d110f12466f4913b488803d4e498d03ef2889e
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
