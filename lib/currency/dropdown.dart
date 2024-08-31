@@ -2,6 +2,7 @@ import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -19,8 +20,8 @@ class AmountCurrencyDropDown extends StatelessWidget {
     return DropdownButton<String>(
       value: currency?.name,
       elevation: 16,
-      style: const TextStyle(color: Colors.deepPurple),
       underline: const ColoredBox(color: Colors.transparent),
+      dropdownColor: context.colour.primaryContainer,
       onChanged: (String? value) {
         if (value == null) return;
         context.read<CurrencyCubit>().updateAmountCurrency(value.toLowerCase());
@@ -28,7 +29,9 @@ class AmountCurrencyDropDown extends StatelessWidget {
       items: currencyList.map<DropdownMenuItem<String>>((Currency value) {
         return DropdownMenuItem<String>(
           value: value.name,
-          child: BBText.body(value.shortName),
+          child: BBText.body(
+            value.shortName,
+          ),
         );
       }).toList(),
     );
