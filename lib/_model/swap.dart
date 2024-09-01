@@ -597,7 +597,7 @@ extension X on SwapStatus? {
       case SwapStatus.txnClaimPending:
         status = (
           'Claim Pending',
-          'The lightning invoice has been paid. Waiting for boltz to complete the swap.'
+          'The lightning invoice has been paid. Waiting for Boltz to complete the swap.'
         );
       case SwapStatus.txnClaimed:
         status = ('Claimed', 'The swap is completed.');
@@ -662,7 +662,7 @@ extension X on SwapStatus? {
       case SwapStatus.txnServerMempool:
         status = (
           'Boltz Mempool',
-          'Boltz has made thier payment. You can claim once this is confirmed'
+          'Boltz has made their payment. You can claim once this is confirmed'
         );
       case SwapStatus.txnServerConfirmed:
         status = (
@@ -697,7 +697,7 @@ extension X on SwapStatus? {
       case SwapStatus.txnClaimPending:
         status = (
           'Claim Pending',
-          'The lightning invoice has been paid. Waiting for boltz to complete the swap.'
+          'The lightning invoice has been paid. Waiting for Boltz to complete the swap.'
         );
       case SwapStatus.txnClaimed:
         status = ('Claimed', 'The swap is completed.');
@@ -746,7 +746,7 @@ extension X on SwapStatus? {
       case SwapStatus.txnServerMempool:
         status = (
           'Boltz Mempool',
-          'Boltz has made thier payment. You can claim once this is confirmed'
+          'Boltz has made their payment. You can claim once this is confirmed'
         );
       case SwapStatus.txnServerConfirmed:
         status = (
