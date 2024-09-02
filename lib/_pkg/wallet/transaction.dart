@@ -520,6 +520,7 @@ class WalletTx implements IWalletTransactions {
       );
     } else {
       // This will match ChainSend and ChainSelf. (or) Create a separate if block to handle this
+      // lockup tx's .swapTx is null and also isSwap set to false (happening sometime)
       final searchAgainIndex =
           txs.indexWhere((tx) => tx.toAddress == updatedSwapTx.scriptAddress);
       if (searchAgainIndex != -1) {

@@ -480,12 +480,13 @@ class CreateSwapCubit extends Cubit<SwapState> {
     required Wallet wallet,
     required SwapTx swapTx,
   }) async {
+    final isSend =
+        swapTx.isSubmarine() || swapTx.isChainSend() || swapTx.isChainSelf();
+    final isReceive = swapTx.isReverse() || swapTx.isChainReceive();
     final (updatedWallet, err) = await _walletTx.addSwapTxToWallet(
       wallet: wallet.copyWith(
-        revKeyIndex:
-            swapTx.isReverse() ? wallet.revKeyIndex + 1 : wallet.revKeyIndex,
-        subKeyIndex:
-            swapTx.isSubmarine() ? wallet.subKeyIndex + 1 : wallet.subKeyIndex,
+        revKeyIndex: isReceive ? wallet.revKeyIndex + 1 : wallet.revKeyIndex,
+        subKeyIndex: isSend ? wallet.subKeyIndex + 1 : wallet.subKeyIndex,
       ),
       swapTx: swapTx,
     );
