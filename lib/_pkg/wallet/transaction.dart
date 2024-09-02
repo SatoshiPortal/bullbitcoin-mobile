@@ -401,9 +401,9 @@ class WalletTx implements IWalletTransactions {
       completionTime: swapTx.completionTime,
     );
     if (idx == -1)
-      swapTxs[idx] = updatedSwapTx;
-    else
       swapTxs.add(updatedSwapTx);
+    else
+      swapTxs[idx] = updatedSwapTx;
     final txs = wallet.transactions.toList();
     // lockup submarine / server claim
     // lockup chain.self / self claim
@@ -512,12 +512,24 @@ class WalletTx implements IWalletTransactions {
     }
 
     final txIdx = txs.indexWhere((_) => _.swapTx?.id == updatedSwapTx.id);
-    if (txIdx != -1)
+    if (txIdx != -1) {
       txs[txIdx] = txs[txIdx].copyWith(
         swapTx: updatedSwapTx,
         label: updatedSwapTx.label,
         isSwap: true,
       );
+    } else {
+      // This will match ChainSend and ChainSelf. (or) Create a separate if block to handle this
+      final searchAgainIndex =
+          txs.indexWhere((tx) => tx.toAddress == updatedSwapTx.scriptAddress);
+      if (searchAgainIndex != -1) {
+        txs[searchAgainIndex] = txs[searchAgainIndex].copyWith(
+          swapTx: updatedSwapTx,
+          label: updatedSwapTx.label,
+          isSwap: true,
+        );
+      }
+    }
 
     final swapIdx = swapTxs.indexWhere((_) => _.id == updatedSwapTx.id);
     if (swapIdx != -1) swapTxs[swapIdx] = updatedSwapTx;
