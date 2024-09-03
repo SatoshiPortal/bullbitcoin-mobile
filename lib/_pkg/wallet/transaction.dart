@@ -373,37 +373,31 @@ class WalletTx implements IWalletTransactions {
     required Wallet wallet,
     bool deleteIfFailed = false,
   }) {
-    late SwapTx swapToUpdate;
     final swaps = wallet.swaps;
     final idx = swaps.indexWhere((_) => _.id == swapTx.id);
-    if (idx == -1)
-      swapToUpdate = swapTx;
-    else
-      swapToUpdate = swaps[idx];
+    if (idx == -1) return (null, Err('No swapTx found'));
+    final storedSwap = swaps[idx];
 
     final swapTxs = List<SwapTx>.from(swaps);
 
-    final updatedSwapTx = swapToUpdate.copyWith(
+    final updatedSwapTx = storedSwap.copyWith(
       status: swapTx.status,
-      claimTxid: swapToUpdate.claimTxid ?? swapTx.claimTxid,
-      lockupTxid: swapToUpdate.lockupTxid ?? swapTx.lockupTxid,
+      claimTxid: storedSwap.claimTxid ?? swapTx.claimTxid,
+      lockupTxid: storedSwap.lockupTxid ?? swapTx.lockupTxid,
       lnSwapDetails: swapTx.isLnSwap()
-          ? swapToUpdate.lnSwapDetails!.copyWith(
-              keyIndex: swapToUpdate.lnSwapDetails!.keyIndex,
+          ? storedSwap.lnSwapDetails!.copyWith(
+              keyIndex: storedSwap.lnSwapDetails!.keyIndex,
             )
           : null,
       chainSwapDetails: swapTx.isChainSwap()
-          ? swapToUpdate.chainSwapDetails!.copyWith(
+          ? storedSwap.chainSwapDetails!.copyWith(
               refundKeyIndex: swapTx.chainSwapDetails!.refundKeyIndex,
               claimKeyIndex: swapTx.chainSwapDetails!.claimKeyIndex,
             )
           : null,
       completionTime: swapTx.completionTime,
     );
-    if (idx == -1)
-      swapTxs.add(updatedSwapTx);
-    else
-      swapTxs[idx] = updatedSwapTx;
+    swapTxs[idx] = updatedSwapTx;
     final txs = wallet.transactions.toList();
     // lockup submarine / server claim
     // lockup chain.self / self claim
