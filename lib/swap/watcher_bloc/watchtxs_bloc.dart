@@ -680,11 +680,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
               .getWalletBlocById(swapTx.chainSwapDetails!.toWalletId);
           toWalletBloc?.add(SyncWallet());
         // TODO: Better way to sync `to` wallet
-
         case ChainSwapActions.refundable:
           final swap = await __onchainRefund(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
         default:
+          await __updateWalletTxs(swapTx, walletBloc, emit);
       }
     }
   }

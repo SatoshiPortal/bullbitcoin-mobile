@@ -210,6 +210,7 @@ class SwapTx with _$SwapTx {
   bool refundableOnchain() =>
       isChainSwap() &&
       (status != null &&
+          lockupTxid != null &&
           claimTxid == null &&
           (status!.status == SwapStatus.txnLockupFailed ||
               status!.status == SwapStatus.swapExpired ||
@@ -252,6 +253,7 @@ class SwapTx with _$SwapTx {
 
   bool expiredOnchain() =>
       isChainSwap() &&
+      lockupTxid == null &&
       (status != null && (status!.status == SwapStatus.swapExpired));
 
   bool settledReverse() =>
@@ -301,6 +303,7 @@ class SwapTx with _$SwapTx {
       expiredReverse() ||
       expiredSubmarine() ||
       refundedAny() ||
+      expiredOnchain() ||
       uninitiatedOnchain() ||
       settledOnchain();
 

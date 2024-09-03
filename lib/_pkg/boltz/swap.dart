@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/_model/swap.dart';
@@ -243,8 +242,7 @@ class SwapBoltz {
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
       );
       if (err != null) throw err;
-
-      log('-----swap json\n' + swapSensitiveStr.toString() + '\n ------');
+      if (swapSensitiveStr != null) throw 'Could not find swap secrets';
 
       String txid = '';
       if (swapTx.isChainSwap()) {
@@ -253,7 +251,7 @@ class SwapBoltz {
         );
         final swap = swapTx.toChainSwap(swapSensitive);
         // TODO: How to broadcast this.
-        // txid = await swap.broadcastTx(signedBytes: signedBytes);
+        // txid = await swap.broadcast(signedHex: signedHex);
       } else {
         final swapSensitive = LnSwapTxSensitive.fromJson(
           jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
@@ -530,13 +528,14 @@ class SwapBoltz {
       final isLiquid =
           swapTx.isChainReceive() ? !wallet.isLiquid() : wallet.isLiquid();
 
-      final (swapSentive, err) = await _secureStorage.getValue(
+      final (swapSensitiveStr, err) = await _secureStorage.getValue(
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
       );
       if (err != null) throw err;
+      if (swapSensitiveStr != null) throw 'Could not find swap secrets';
 
       final swapSensitive = ChainSwapTxSensitive.fromJson(
-        jsonDecode(swapSentive!) as Map<String, dynamic>,
+        jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
       );
 
       final chainFees = await fees?.chain();
@@ -565,15 +564,15 @@ class SwapBoltz {
     required bool tryCooperate,
   }) async {
     try {
-      final (swapSentive, err) = await _secureStorage.getValue(
+      final (swapSensitiveStr, err) = await _secureStorage.getValue(
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
       );
       if (err != null) throw err;
 
-      log(swapSentive!);
+      if (swapSensitiveStr != null) throw 'Could not find swap secrets';
 
       final swapSensitive = ChainSwapTxSensitive.fromJson(
-        jsonDecode(swapSentive) as Map<String, dynamic>,
+        jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
       );
 
       final boltzurl = wallet.network == BBNetwork.Testnet
@@ -618,20 +617,17 @@ class SwapBoltz {
     required Wallet wallet,
   }) async {
     try {
-      final (swapSentive, err) = await _secureStorage.getValue(
+      final (swapSensitiveStr, err) = await _secureStorage.getValue(
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
       );
       if (err != null) throw err;
+      if (swapSensitiveStr != null) throw 'Could not find swap secrets';
 
-      log(swapSentive!);
+      // log(swapSentive!);
 
       final swapSensitive = ChainSwapTxSensitive.fromJson(
-        jsonDecode(swapSentive) as Map<String, dynamic>,
+        jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
       );
-
-      final boltzurl = wallet.network == BBNetwork.Testnet
-          ? boltzTestnetUrl
-          : boltzMainnetUrl;
 
       final swap = swapTx.toChainSwap(swapSensitive);
 
