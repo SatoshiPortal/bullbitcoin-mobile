@@ -239,7 +239,8 @@ class SwapTx with _$SwapTx {
   bool claimableOnchain() =>
       isChainSwap() &&
       status != null &&
-      (status!.status == SwapStatus.txnServerConfirmed &&
+      ((status!.status == SwapStatus.txnServerConfirmed ||
+              status!.status == SwapStatus.txnClaimed) &&
           claimTxid == null); //  ||
   // (status!.status == SwapStatus.invoiceSettled && txid == null));
 
