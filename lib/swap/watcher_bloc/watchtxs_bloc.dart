@@ -253,7 +253,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         ),
       );
     } catch (e) {
-      updatedSwap = swapTx.copyWith(claimTxid: txid);
+      updatedSwap = swapTx.copyWith(
+          claimTxid: txid,
+          status: swapTx.status?.copyWith(status: SwapStatus.swapRefunded));
     }
 
     emit(
