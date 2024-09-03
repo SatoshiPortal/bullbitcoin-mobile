@@ -283,8 +283,10 @@ class HomeState with _$HomeState {
                     tx.swapTx!.status?.status != null) ||
                 (tx.swapTx!.lnSwapDetails?.swapType ==
                         boltz.SwapType.submarine &&
-                    tx.swapTx!.status?.status ==
-                        boltz.SwapStatus.txnLockupFailed);
+                    (tx.swapTx!.status?.status ==
+                            boltz.SwapStatus.swapRefunded ||
+                        tx.swapTx!.status?.status ==
+                            boltz.SwapStatus.txnLockupFailed));
           return false;
         })
         .map((tx) => tx.swapTx)
@@ -297,10 +299,10 @@ class HomeState with _$HomeState {
         if (swap?.claimTxid == tx.txid &&
             swap!.status?.status == boltz.SwapStatus.swapRefunded) {
           if (tx.label == null) {
-            const String lbl = 'Swap refund';
+            final String lbl = 'Refund: ${swap.id}';
             txsToUpdate.addAll({index: lbl});
           } else if (tx.label!.contains('Swap Refund') == false) {
-            final String lbl = '${tx.label}, Swap refund';
+            final String lbl = '${tx.label}, Refund: ${swap.id}';
             txsToUpdate.addAll({index: lbl});
           }
           return false; // So it's not removed from here and shown in home page

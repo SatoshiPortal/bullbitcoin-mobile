@@ -490,8 +490,24 @@ class _SwapDetails extends StatelessWidget {
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
     );
-    // status of swap should be read from WalletBloc.state.wallet.transactions
-    // final status = context.select((WatchTxsBloc _) => _.state.showStatus(swap));
+
+    final isRefundedSend = swap.isSubmarine() && swap.refundedAny();
+
+    // Is this needed?
+    final refundChildren = [
+      const BBText.bodySmall(
+        'Our wallet may have sent the wrong amount.',
+        isBold: true,
+      ),
+      const Gap(24),
+      const BBText.title('Refund Tx ID'),
+      const Gap(4),
+      TxLink(
+        txid: swap.claimTxid ?? tx.txid,
+        tx: tx,
+        unblindedUrl: tx.unblindedUrl,
+      ),
+    ];
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -582,6 +598,7 @@ class _SwapDetails extends StatelessWidget {
               ),
             ],
             // const Gap(4),
+            if (isRefundedSend) ...refundChildren,
             const Gap(24),
             if (date.isNotEmpty) ...[
               BBText.title(
@@ -675,6 +692,8 @@ class _OnchainSwapDetails extends StatelessWidget {
     // swap.baseWallet is based on direction. btc->lbtc will have base wallet as instant, although receiving in secure
     final walletReceiveRefundedTo =
         isRefundedReceive && swap.isLiquid() ? 'Instant' : 'Secure';
+    final isRefundedChainSend =
+        (swap.isChainSelf() || swap.isChainSend()) && swap.refundedOnchain();
 
     Transaction? receiveTx;
     String? toAmtStr;
@@ -795,6 +814,23 @@ class _OnchainSwapDetails extends StatelessWidget {
         unblindedUrl: tx.unblindedUrl,
       ),
     ];
+
+    // Is this needed?
+    final refundedSendChildren = [
+      const BBText.bodySmall(
+        'Our wallet may have sent the wrong amount.',
+        isBold: true,
+      ),
+      const Gap(24),
+      const BBText.title('Refund Tx ID'),
+      const Gap(4),
+      TxLink(
+        txid: swap.claimTxid ?? tx.txid,
+        tx: tx,
+        unblindedUrl: tx.unblindedUrl,
+      ),
+    ];
+
     final selfToWalletChildren = [
       const BBText.body(
         'To wallet',
@@ -962,6 +998,7 @@ class _OnchainSwapDetails extends StatelessWidget {
               ),
             ],
             if (isRefundedReceive) ...refundedReceiveChildren,
+            if (isRefundedChainSend) ...refundedSendChildren,
           ],
         ),
       ),
