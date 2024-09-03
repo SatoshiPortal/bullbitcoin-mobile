@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/swap.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 
 class WatchTxsEvent {}
@@ -18,13 +17,11 @@ class ProcessSwapTx extends WatchTxsEvent {
     required this.walletId,
     required this.swapTxId,
     this.status,
-    this.swapToProcess,
   });
 
   final String swapTxId;
   final String walletId;
   final SwapStreamStatus? status;
-  final SwapTx? swapToProcess;
 }
 
 // class WatchSwapStatus extends WatchTxsEvent {

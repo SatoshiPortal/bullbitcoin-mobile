@@ -188,7 +188,6 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
         walletId: walletId,
         swapTxId: swaptx.id,
         status: stream,
-        swapToProcess: swaptx,
       ),
     );
 

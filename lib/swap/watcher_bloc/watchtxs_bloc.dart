@@ -254,8 +254,12 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       );
     } catch (e) {
       updatedSwap = swapTx.copyWith(
-          claimTxid: txid,
-          status: swapTx.status?.copyWith(status: SwapStatus.swapRefunded));
+        claimTxid: txid,
+        status: SwapStreamStatus(
+          id: swapTx.id,
+          status: SwapStatus.swapRefunded,
+        ),
+      );
     }
 
     emit(
@@ -544,8 +548,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final wallet = walletBloc?.state.wallet;
     if (walletBloc == null || wallet == null) return;
     final SwapTx? swapFromWallet =
-        walletBloc.state.wallet!.getOngoingSwap(event.swapTxId) ??
-            event.swapToProcess;
+        walletBloc.state.wallet!.getOngoingSwap(event.swapTxId);
     // if swapFromWallet == null
     // then look for swaps from the wallet.transactions
     // only go ahead with processing it if its claimable or refundable
