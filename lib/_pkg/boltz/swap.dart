@@ -569,10 +569,10 @@ class SwapBoltz {
       );
       if (err != null) throw err;
 
-      if (swapSensitiveStr != null) throw 'Could not find swap secrets';
+      if (swapSensitiveStr == null) throw 'Could not find swap secrets';
 
       final swapSensitive = ChainSwapTxSensitive.fromJson(
-        jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
+        jsonDecode(swapSensitiveStr) as Map<String, dynamic>,
       );
 
       final boltzurl = wallet.network == BBNetwork.Testnet
