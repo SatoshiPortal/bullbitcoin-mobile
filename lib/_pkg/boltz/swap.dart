@@ -317,7 +317,6 @@ class SwapBoltz {
             );
             return (txid, null);
           } catch (e) {
-            // print('Failed to broadcast transaction: $e');
             await Future.delayed(
               const Duration(
                 seconds: 5,
@@ -571,6 +570,8 @@ class SwapBoltz {
 
       if (swapSensitiveStr == null) throw 'Could not find swap secrets';
 
+      // log(jsonEncode(swapTx.toJson()));
+
       final swapSensitive = ChainSwapTxSensitive.fromJson(
         jsonDecode(swapSensitiveStr) as Map<String, dynamic>,
       );
@@ -580,10 +581,6 @@ class SwapBoltz {
           : boltzMainnetUrl;
 
       final (fees, errFees) = await getFeesAndLimits(
-        // refundAddress: swap.direction == ChainSwapDirection.btcToLbtc
-        //     ? 'tb1qlmj5w2upndhhc9rgd9jg07vcuafg3jydef7uvz'
-        //     : 'tlq1qqd8f92dfedpvsydxxk54l8glwa5m8e84ygqz7n5dgyujp37v3n60pjzfrc2xu4a9fla6snzgznn9tjpwc99d7kn2s472sw2la',
-        // TODO:Onchain
         boltzUrl: boltzurl,
       );
       if (errFees != null) {
@@ -603,7 +600,7 @@ class SwapBoltz {
         outAddress: swapTx.claimAddress!,
         refundAddress: swapTx.refundAddress!,
         absFee: claimFeesEstimate,
-        tryCooperate: tryCooperate,
+        tryCooperate: false, // tryCooperate,
       );
 
       return (resp, null);

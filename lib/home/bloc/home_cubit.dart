@@ -29,15 +29,11 @@ class HomeCubit extends Cubit<HomeState> {
       return;
     }
 
-    // final blocs = state.createWalletBlocs(wallets);
     await Future.delayed(const Duration(milliseconds: 300));
-
-    // print('Wallets: $wallets');
 
     emit(
       state.copyWith(
         tempwallets: wallets,
-        // walletBlocs: blocs,
         walletBlocs: null,
         loadingWallets: false,
       ),

@@ -63,7 +63,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) async {
     final isTestnet = _networkCubit.state.testnet;
-    print('WatchWallets: istesntnet? $isTestnet');
     await Future.delayed(100.ms);
     final network = _networkCubit.state.getBBNetwork();
     final walletBlocs = _homeCubit.state.walletBlocsFromNetwork(network);
@@ -81,7 +80,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     }
     swapsToWatch.removeWhere((_) => _.failed());
     if (swapsToWatch.isEmpty) return;
-    print('Listening to Swaps: ${swapsToWatch.map((_) => _.id).toList()}');
+    // print('Listening to Swaps: ${swapsToWatch.map((_) => _.id).toList()}');
     __watchSwapStatus(
       emit,
       swapTxsToWatch: swapsToWatch.map((_) => _.id).toList(),
@@ -149,11 +148,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     required String swapId,
     required SwapStreamStatus status,
   }) async {
-    print('----swapstatus : $swapId - ${status.status}');
+    // print('----swapstatus : $swapId - ${status.status}');
     for (final walletBloc in _homeCubit.state.walletBlocs!) {
       if (walletBloc.state.wallet!.hasOngoingSwap(swapId)) {
         final id = swapId;
-        print('SwapStatusUpdate: $id - ${status.status}');
+        // print('SwapStatusUpdate: $id - ${status.status}');
         if (!state.isListeningId(id)) return;
         final swapTx = walletBloc.state.wallet!.getOngoingSwap(id);
 
@@ -640,7 +639,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __closeSwap(updatedSwapTx, emit);
       }
     } else if (swapTx.isChainSwap()) {
-      print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
+      // print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
 
       switch (swapTx.chainSwapAction()) {
         case ChainSwapActions.created:
@@ -670,7 +669,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
         case ChainSwapActions.settled:
           await Future.delayed(const Duration(milliseconds: 200));
-          print('${swapTx.id}: updateWalletTxs for txnClaimed');
           final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
           await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
           await Future.delayed(const Duration(milliseconds: 100));

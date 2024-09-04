@@ -29,12 +29,9 @@ class LWKTransactions {
 
     if (index != -1) {
       final updatedAddress = outAddrs.removeAt(index);
-      // (state: newAddress.state);
-      // outAddrs[index] = newAddress;
       outAddrs.insert(index, updatedAddress.copyWith(state: newAddress.state));
     } else {
       outAddrs.add(newAddress);
-      // print(outAddrs);
     }
     return tx.copyWith(outAddrs: outAddrs);
   }

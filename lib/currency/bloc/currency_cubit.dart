@@ -188,8 +188,6 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     final len = min(8, split[1].length);
     final amountDecimal =
         int.parse(split[1].substring(0, len)) * pow(10, 8 - len);
-    // print(amountNo);
-    // print(amountDecimal);
 
     final amountInSats = amountNo * 100000000 + amountDecimal;
     return amountInSats.toInt();

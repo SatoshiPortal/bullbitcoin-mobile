@@ -44,7 +44,6 @@ class _SecurityOverlayState extends State<SecurityOverlay>
           .routes
           .map((RouteBase e) => (e as GoRoute).path)
           .join();
-      // print(routePath);
       if (sensitivePaths.any((path) => routePath.endsWith(path))) {
         _noScreenshot.screenshotOff();
       } else {

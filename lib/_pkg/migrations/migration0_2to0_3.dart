@@ -12,8 +12,6 @@ Future<void> doMigration0_2to0_3(
   SecureStorage secureStorage,
   HiveStorage hiveStorage,
 ) async {
-  print('Migration: 0.2 to 0.3');
-
   final (walletIds, walletIdsErr) =
       await hiveStorage.getValue(StorageKeys.wallets);
   if (walletIdsErr != null) throw walletIdsErr;
@@ -27,7 +25,6 @@ Future<void> doMigration0_2to0_3(
   final List<Wallet> wallets = [];
 
   for (final walletId in walletIdsJson) {
-    // print('walletId: $walletId');
     final (jsn, err) = await hiveStorage.getValue(walletId as String);
     if (err != null) throw err;
 

@@ -19,12 +19,9 @@ class BDKTransactions {
 
     if (index != -1) {
       final updatedAddress = outAddrs.removeAt(index);
-      // (state: newAddress.state);
-      // outAddrs[index] = newAddress;
       outAddrs.insert(index, updatedAddress.copyWith(state: newAddress.state));
     } else {
       outAddrs.add(newAddress);
-      // print(outAddrs);
     }
     return tx.copyWith(outAddrs: outAddrs);
   }
@@ -291,7 +288,6 @@ class BDKTransactions {
                 state: AddressStatus.used,
                 label: label,
               );
-              // Future.delayed(const Duration(milliseconds: 100));
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))
@@ -343,7 +339,6 @@ class BDKTransactions {
                 // spendable: true,
                 label: label,
               );
-              // Future.delayed(const Duration(milliseconds: 100));
             } catch (e) {
               // usually scriptpubkey not available
               // results in : BdkException.generic(e: ("script is not a p2pkh, p2sh or witness program"))

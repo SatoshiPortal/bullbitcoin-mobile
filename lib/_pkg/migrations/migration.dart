@@ -9,7 +9,7 @@ Future<void> doMigration(
   SecureStorage secureStorage,
   HiveStorage hiveStorage,
 ) async {
-  print('fromVersion $fromVersion; toVersion $toVersion');
+  // print('fromVersion $fromVersion; toVersion $toVersion');
 
   // await doMigration0_1to0_2(
   //   secureStorage,
@@ -42,6 +42,4 @@ Future<void> doMigration(
 Future<void> doMigration0_3to0_4(
   SecureStorage secureStorage,
   HiveStorage hiveStorage,
-) async {
-  print('Migration: 0.3 to 0.4');
-}
+) async {}

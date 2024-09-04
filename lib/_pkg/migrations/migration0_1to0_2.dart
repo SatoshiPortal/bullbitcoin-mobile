@@ -26,8 +26,6 @@ Future<void> doMigration0_1to0_2(
   SecureStorage secureStorage,
   HiveStorage hiveStorage,
 ) async {
-  print('Migration: 0.1 to 0.2');
-
   final (walletIds, walletIdsErr) =
       await hiveStorage.getValue(StorageKeys.wallets);
   if (walletIdsErr != null) throw walletIdsErr;
@@ -44,7 +42,6 @@ Future<void> doMigration0_1to0_2(
   Seed? liquidTestnetSeed;
 
   for (final walletId in walletIdsJson) {
-    // print('walletId: $walletId');
     final (jsn, err) = await hiveStorage.getValue(walletId as String);
     if (err != null) throw err;
 
@@ -61,8 +58,6 @@ Future<void> doMigration0_1to0_2(
     // Change 3: add isLiquid to all Txns, Addresses
     walletObj = await addIsLiquid(walletObj);
 
-    // print('Save wallet as:');
-    // print(jsonEncode(walletObj));
     final w = Wallet.fromJson(walletObj);
     wallets.add(w);
   }
@@ -209,13 +204,11 @@ Future<
 //   final bdkCreate = BDKCreate(walletsRepository: walletRepo);
 //   final (bdkWallet, _) = await bdkCreate.loadPublicBdkWallet(w);
 
-//   print('syncing wallet ${w.id}. Pls wait...');
 //   final network = await bdkWallet!.network();
 //   // await bdkWallet.sync(
 //   //   blockchain:
 //   //       network == bdk.Network.bitcoin ? mainBlockchain : testBlockchain,
 //   // );
-//   print('sync done');
 
 //   final myAddressBook = [...w.myAddressBook].toList();
 
@@ -235,9 +228,6 @@ Future<
 //   //  } else if (addr.kind == AddressKind.deposit) {
 //   //    depositAddressCount++;
 //   //  }
-//   //  print(
-//   //    'myAddressbook[$ivar] : ${addr.index} ${addr.kind} : (${addr.address})',
-//   //  );
 //   //  ivar++;
 //   //  return addr;
 //   //}).toList();
@@ -254,11 +244,7 @@ Future<
 
 //     final matchIndex =
 //         myAddressBook.indexWhere((a) => a.address == nativeAddrStr);
-//     // print('matchIndex $matchIndex $i $nativeAddrStr');
 //     if (matchIndex != -1) {
-//       // print(
-//       //   'myAddressbook.deposit index $i : ${nativeAddr.index} (${myAddressBook[matchIndex].address}, $nativeAddrStr)',
-//       // );
 //       final newAddr =
 //           myAddressBook[matchIndex].copyWith(index: nativeAddr.index);
 //       myAddressBook[matchIndex] = newAddr;
@@ -288,11 +274,7 @@ Future<
 
 //     final matchIndex =
 //         myAddressBook.indexWhere((a) => a.address == nativeAddrStr);
-//     // print('matchIndex $matchIndex $i');
 //     if (matchIndex != -1) {
-//       // print(
-//       //   'myAddressbook.change index $i : ${nativeAddr.index} (${myAddressBook[matchIndex].address}, $nativeAddrStr)',
-//       // );
 
 //       final newAddr =
 //           myAddressBook[matchIndex].copyWith(index: nativeAddr.index);
@@ -311,11 +293,7 @@ Future<
 //   }
 //   myAddressBook.addAll(toAdd);
 
-//   // print('After patch:');
 //   // for (int i = 0; i < myAddressBook.length; i++) {
-//   // print(
-//   //   'myAddressbook[$i] : ${myAddressBook[i].index} ${myAddressBook[i].kind} : (${myAddressBook[i].address})',
-//   // );
 //   // }
 
 //   return w.copyWith(
@@ -388,9 +366,7 @@ Future<List<Wallet>> createLiquidWallet(
     );
     final liquidWallet =
         lw?.copyWith(name: lw.creationName(), mainWallet: true);
-    // print(liquidWallet?.id);
     wallets.add(liquidWallet!);
-    // await walletsStorageRepository.newWallet(liquidWallet!);
   }
 
   if (liquidTestnetSeed != null) {
@@ -408,8 +384,6 @@ Future<List<Wallet>> createLiquidWallet(
         lw?.copyWith(name: lw.creationName(), mainWallet: true);
 
     wallets.add(liquidWallet!);
-    // return liquidWallet;
-    // print(liquidWallet?.id);
     await walletsStorageRepository.newWallet(liquidWallet);
   }
   return wallets;

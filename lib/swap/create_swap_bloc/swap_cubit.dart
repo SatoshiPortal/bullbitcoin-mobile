@@ -510,8 +510,6 @@ class CreateSwapCubit extends Cubit<SwapState> {
           ),
         );
 
-    print('-----swap added to wallet ${swapTx.id}');
-
     await Future.delayed(const Duration(milliseconds: 300));
 
     _watchTxsBloc.add(

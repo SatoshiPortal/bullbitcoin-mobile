@@ -138,11 +138,9 @@ class _Screen extends StatelessWidget {
     final isChainSwap =
         context.select((ReceiveCubit x) => x.state.isChainSwap());
 
-    // print('isChainSwap: $isChainSwap');
     final showQR = context.select(
       (ReceiveCubit x) => x.state.showQR(swapTx, isChainSwap: isChainSwap),
     );
-    // print('isShowQR: $showQR');
 
     final watchOnly =
         context.select((WalletBloc x) => x.state.wallet!.watchOnly());
@@ -866,17 +864,6 @@ class BitcoinReceiveForm extends StatelessWidget {
           },
         ),
         const Gap(12),
-        // Center(
-        //   child: BBButton.big(
-        //     label: 'Submit',
-        //     onPressed: () async {
-        //       context.read<ReceiveCubit>().setReceiveFormSubmitted(true);
-        //       final amt = context.read<CurrencyCubit>().state.amount;
-        //       print(amt);
-        //     },
-        //   ),
-        // ),
-        const Gap(16),
       ],
     );
   }

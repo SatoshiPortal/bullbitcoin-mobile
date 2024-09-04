@@ -256,13 +256,6 @@ class _Warnings extends StatelessWidget {
       (NetworkCubit cubit) => cubit.state.calculatePrice(minAmt, currency),
     );
 
-    // final minAmtFiat = context.select(
-    //   (NetworkCubit cubit) =>
-    //       cubit.state.calculatePrice(minAmt, cubit.state.defaultFiatCurrency!),
-    // );
-
-    print('Warning errHighFees: $errHighFees');
-
     return WarningContainer(
       children: [
         const Gap(24),

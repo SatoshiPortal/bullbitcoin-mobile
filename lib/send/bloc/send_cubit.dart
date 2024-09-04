@@ -1131,8 +1131,6 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    // print('Swap $amount from ${fromWallet.name} to ${toWallet.name}');
-
     final walletBloc = _homeCubit.state.getWalletBlocById(fromWallet.id);
     updateWalletBloc(walletBloc!);
 

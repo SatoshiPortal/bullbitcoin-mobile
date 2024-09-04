@@ -390,10 +390,6 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
           swapTx = updatedSwapTx;
         });
 
-        print(
-          'updatedSwapTx in listener: ${updatedSwapTx.id} - status: ${updatedSwapTx.status}',
-        );
-
         if (updatedSwapTx.paidReverse()) {
           setState(() {
             paid = true;

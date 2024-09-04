@@ -85,16 +85,6 @@ class BDKCreate {
     final coldWallet84ExtendedPublic =
         '[$fingerprint/84h/$networkPath/$accountPath]$xpub84';
 
-    // final bdkXpub44 =
-    //     await bdk.DescriptorPublicKey.fromString(coldWallet44ExtendedPublic);
-    // final bdkXpub49 =
-    //     await bdk.DescriptorPublicKey.fromString(coldWallet49ExtendedPublic);
-    // final bdkXpub84 =
-    //     await bdk.DescriptorPublicKey.fromString(coldWallet84ExtendedPublic);
-    // print(coldWallet84ExtendedPublic);
-    // print('bdkXpub84:');
-    // print(await bdkXpub84.asString());
-
     final bdkDescriptor44External = await bdk.Descriptor.create(
       descriptor: 'pkh($coldWallet44ExtendedPublic/0/*)',
       network: bdkNetwork,

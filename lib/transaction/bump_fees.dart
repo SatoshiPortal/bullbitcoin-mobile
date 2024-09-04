@@ -49,7 +49,6 @@ class BumpFeesButton extends StatelessWidget {
         context.select((TransactionCubit x) => !x.state.tx.isLiquid);
 
     final canBump = isBitcoin && canRbf && !isReceive;
-    // print('Bump fees :: state.tx :: canBump $canBump');
     if (!canBump) return const SizedBox.shrink();
 
     return Column(
