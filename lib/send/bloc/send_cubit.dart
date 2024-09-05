@@ -434,7 +434,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void _checkBalance() {
-    final balance = state.selectedWalletBloc!.state.balanceSats();
+    final balance = state.selectedWalletBloc?.state.balanceSats() ?? 0;
     final amount = _currencyCubit.state.amount;
 
     if (balance < amount) {
