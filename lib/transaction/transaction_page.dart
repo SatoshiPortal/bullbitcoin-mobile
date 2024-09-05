@@ -495,10 +495,6 @@ class _SwapDetails extends StatelessWidget {
 
     // Is this needed?
     final refundChildren = [
-      const BBText.bodySmall(
-        'Our wallet may have sent the wrong amount.',
-        isBold: true,
-      ),
       const Gap(24),
       const BBText.title('Refund Tx ID'),
       const Gap(4),
@@ -817,10 +813,6 @@ class _OnchainSwapDetails extends StatelessWidget {
 
     // Is this needed?
     final refundedSendChildren = [
-      const BBText.bodySmall(
-        'Our wallet may have sent the wrong amount.',
-        isBold: true,
-      ),
       const Gap(24),
       const BBText.title('Refund Tx ID'),
       const Gap(4),
