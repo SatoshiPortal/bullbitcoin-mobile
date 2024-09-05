@@ -157,15 +157,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
 
     await Future.delayed(100.ms);
-    final isLiq = state.isLiq() ? 'Liquid' : 'Secure/Bitcoin';
+    final isLiq = state.isLiq() ? 'Instant' : 'Secure';
     locator<Logger>().log(
-      'Start $isLiq  Wallet Sync for ' +
-          (state.wallet?.sourceFingerprint ?? ''),
+      'Start $isLiq  Wallet Sync for ' + (state.wallet?.id ?? ''),
       printToConsole: true,
     );
     final err = await _walletSync.syncWallet(state.wallet!);
     locator<Logger>().log(
-      'End $isLiq Wallet Sync for ' + (state.wallet?.sourceFingerprint ?? ''),
+      'End $isLiq Wallet Sync for ' + (state.wallet?.id ?? ''),
       printToConsole: true,
     );
     emit(
