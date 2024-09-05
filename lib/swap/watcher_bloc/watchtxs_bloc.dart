@@ -432,6 +432,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
 
     if (err != null) {
+      locator<Logger>().log('Error Claiming Chain Swap ${swapTx.id}: $err');
       emit(
         state.copyWith(
           claimingSwap: false,
@@ -495,6 +496,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       // broadcastViaBoltz: broadcastViaBoltz,
     );
     if (err != null) {
+      locator<Logger>().log('Error Refunding Chain Swap ${swapTx.id}: $err');
+
       emit(
         state.copyWith(
           refundingSwap: false,
@@ -621,6 +624,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
             await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case SubmarineSwapActions.refundable:
+          // TODO: Is this update required?
           await __updateWalletTxs(swapTx, walletBloc, emit);
           final swap = await __refundSwap(swapTx, walletBloc, emit);
           if (swap != null)

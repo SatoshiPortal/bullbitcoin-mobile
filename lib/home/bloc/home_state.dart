@@ -311,7 +311,7 @@ class HomeState with _$HomeState {
         }
       }) // && tx.timestamp != 0)
           .isNotEmpty;
-      if (isInSwapTxAndNotPending == true) toRemove.add(tx);
+      if (isInSwapTxAndNotPending) toRemove.add(tx);
       index++;
     }
 
