@@ -59,6 +59,8 @@ function main.build {
     cd "$v_zone_build" && cd .. || exit
     zip -r "$v_zone_build.zip" "$BBM.$version"
     win.log "Built & Signed: $BBM.$version"
+    #------------------ stop gradlew            
+
 }   
 
 function sign.build {

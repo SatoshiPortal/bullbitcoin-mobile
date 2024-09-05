@@ -5,8 +5,10 @@ import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
+import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
@@ -541,8 +543,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     ProcessSwapTx event,
     Emitter<WatchTxsState> emit,
   ) async {
-    // locator<Logger>().log('', printToConsole: true);
-
     final walletBloc = _homeCubit.state.getWalletBlocById(event.walletId);
     final wallet = walletBloc?.state.wallet;
     if (walletBloc == null || wallet == null) return;
@@ -557,6 +557,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final swapTx = event.status != null
         ? swapFromWallet.copyWith(status: event.status)
         : swapFromWallet;
+    locator<Logger>()
+        .log('Process Swap ${swapTx.id}: ${swapTx.status!.status}');
 
     emit(state.copyWith(updatedSwapTx: swapTx));
     // await Future.delayed(100.ms);
@@ -639,7 +641,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __closeSwap(updatedSwapTx, emit);
       }
     } else if (swapTx.isChainSwap()) {
-      print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
+      // print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
 
       switch (swapTx.chainSwapAction()) {
         case ChainSwapActions.created:
