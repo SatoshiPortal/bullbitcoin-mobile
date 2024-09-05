@@ -233,6 +233,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       broadcastViaBoltz: broadcastViaBoltz,
     );
     if (err != null) {
+      locator<Logger>()
+          .log('Error Refunding Submarine Swap ${swapTx.id}: $err');
+
       emit(
         state.copyWith(
           refundingSwap: false,
@@ -308,6 +311,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
 
     if (err != null) {
+      locator<Logger>().log('Error Claiming Reverse Swap ${swapTx.id}: $err');
+
       emit(
         state.copyWith(
           claimingSwap: false,
@@ -371,6 +376,9 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
     if (err != null) {
       // print(err);
+      locator<Logger>()
+          .log('Error Coop Closing Submarine Swap ${swapTx.id}: $err');
+
       emit(
         state.copyWith(
           claimingSwap: false,
