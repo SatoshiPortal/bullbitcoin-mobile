@@ -99,7 +99,7 @@ class SendCubit extends Cubit<SendState> {
       );
       _currencyCubit.updateAmountDirect(0);
       _currencyCubit.updateAmount('');
-      resetWalletSelection();
+      resetWalletSelection(changeWallet: changeWallet);
       if (address.isEmpty) resetErrors();
       return;
     }
