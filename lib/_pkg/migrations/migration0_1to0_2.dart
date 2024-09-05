@@ -316,8 +316,6 @@ Future<Map<String, dynamic>> addIsLiquid(
         .toList();
   }
 
-  // log(jsonEncode(walletObj['myAddressBook']));
-
   if (walletObj['externalAddressBook'] != null) {
     walletObj['externalAddressBook'] = walletObj['externalAddressBook']
         .map((addr) => addr as Map<String, dynamic>)

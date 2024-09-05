@@ -302,8 +302,6 @@ class SwapBoltz {
           absFee: swapTx.claimFees!,
           tryCooperate: tryCooperate,
         );
-        // locator<Logger>()
-        //     .log('------${swapTx.id}-----\n$signedHex------signed-claim-----');
         if (broadcastViaBoltz) {
           final txid = await swap.broadcastBoltz(
             signedHex: signedHex,
@@ -415,8 +413,6 @@ class SwapBoltz {
           absFee: refundFeesEstimate,
           tryCooperate: tryCooperate,
         );
-        // locator<Logger>()
-        //     .log('------${swapTx.id}-----\n$signedHex------signed-refund-----');
         final (blockchain, err) = _networkRepository.liquidUrl;
         if (err != null) throw err;
         if (broadcastViaBoltz) {
@@ -570,8 +566,6 @@ class SwapBoltz {
 
       if (swapSensitiveStr == null) throw 'Could not find swap secrets';
 
-      // log(jsonEncode(swapTx.toJson()));
-
       final swapSensitive = ChainSwapTxSensitive.fromJson(
         jsonDecode(swapSensitiveStr) as Map<String, dynamic>,
       );
@@ -596,12 +590,23 @@ class SwapBoltz {
       if (claimFeesEstimate == null) throw 'Fees estimate not found';
 
       final swap = swapTx.toChainSwap(swapSensitive);
-      final resp = await swap.claim(
-        outAddress: swapTx.claimAddress!,
-        refundAddress: swapTx.refundAddress!,
-        absFee: claimFeesEstimate,
-        tryCooperate: false, // tryCooperate,
-      );
+
+      String resp;
+      try {
+        resp = await swap.claim(
+          outAddress: swapTx.claimAddress!,
+          refundAddress: swapTx.refundAddress!,
+          absFee: claimFeesEstimate,
+          tryCooperate: tryCooperate,
+        );
+      } catch (e) {
+        resp = await swap.claim(
+          outAddress: swapTx.claimAddress!,
+          refundAddress: swapTx.refundAddress!,
+          absFee: claimFeesEstimate,
+          tryCooperate: false,
+        );
+      }
 
       return (resp, null);
     } catch (e) {
@@ -619,8 +624,6 @@ class SwapBoltz {
       );
       if (err != null) throw err;
       if (swapSensitiveStr != null) throw 'Could not find swap secrets';
-
-      // log(swapSentive!);
 
       final swapSensitive = ChainSwapTxSensitive.fromJson(
         jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,

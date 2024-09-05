@@ -233,7 +233,6 @@ extension ChSwapExt on SwapTx {
       scriptAddress: scriptAddress,
       outAmount: outAmount,
       btcElectrumUrl: chainSwapDetails!.btcElectrumUrl,
-      // 'electrum.blockstream.info:60002', // chainSwapDetails!.btcElectrumUrl, // TODO:onchain
       lbtcElectrumUrl: chainSwapDetails!.lbtcElectrumUrl,
       boltzUrl: boltzUrl,
       blindingKey: sensitive.blindingKey,

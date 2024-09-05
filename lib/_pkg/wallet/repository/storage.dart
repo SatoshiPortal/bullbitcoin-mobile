@@ -145,7 +145,6 @@ class WalletsStorageRepository {
     try {
       final (jsn, err) = await _hiveStorage.getValue(walletHashId);
       if (err != null) throw err;
-      // log(jsn!);
       final obj = jsonDecode(jsn!) as Map<String, dynamic>;
       final wallet = Wallet.fromJson(obj);
       return (wallet, null);

@@ -28,8 +28,6 @@ class WalletNetwork implements IWalletNetwork {
   }) async {
     try {
       Uri.parse(url);
-      // _logger.log('Connecting to $url');
-
       if (stopGap != null) {
         final (blockchain, errCreate) = await _bdkNetwork.createBlockChain(
           url: url,
