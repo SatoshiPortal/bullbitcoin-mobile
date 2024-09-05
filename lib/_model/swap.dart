@@ -210,7 +210,6 @@ class SwapTx with _$SwapTx {
   bool refundableOnchain() =>
       isChainSwap() &&
       (status != null &&
-          lockupTxid != null &&
           claimTxid == null &&
           (status!.status == SwapStatus.txnLockupFailed ||
               status!.status == SwapStatus.swapExpired ||

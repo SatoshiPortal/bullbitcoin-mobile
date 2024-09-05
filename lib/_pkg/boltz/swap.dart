@@ -531,10 +531,10 @@ class SwapBoltz {
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
       );
       if (err != null) throw err;
-      if (swapSensitiveStr != null) throw 'Could not find swap secrets';
+      if (swapSensitiveStr == null) throw 'Could not find swap secrets';
 
       final swapSensitive = ChainSwapTxSensitive.fromJson(
-        jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
+        jsonDecode(swapSensitiveStr) as Map<String, dynamic>,
       );
 
       final chainFees = await fees?.chain();

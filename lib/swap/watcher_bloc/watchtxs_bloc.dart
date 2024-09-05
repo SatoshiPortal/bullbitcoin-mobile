@@ -639,7 +639,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           await __closeSwap(updatedSwapTx, emit);
       }
     } else if (swapTx.isChainSwap()) {
-      // print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
+      print('process Chain Swap ${swapTx.id}: ${swapTx.status!.status}');
 
       switch (swapTx.chainSwapAction()) {
         case ChainSwapActions.created:
