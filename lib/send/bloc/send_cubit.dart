@@ -36,6 +36,7 @@ class SendCubit extends Cubit<SendState> {
     required bool defaultRBF,
     required SwapBoltz swapBoltz,
     required CreateSwapCubit swapCubit,
+    bool oneWallet = true,
   })  : _homeCubit = homeCubit,
         _networkCubit = networkCubit,
         _networkFeesCubit = networkFeesCubit,
@@ -48,7 +49,7 @@ class SendCubit extends Cubit<SendState> {
         super(
           SendState(
             selectedWalletBloc: walletBloc,
-            oneWallet: walletBloc != null,
+            oneWallet: oneWallet,
           ),
         ) {
     emit(
@@ -478,6 +479,7 @@ class SendCubit extends Cubit<SendState> {
 
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(state.copyWith(selectedWalletBloc: walletBloc));
+    sendAllCoin(false);
   }
 
   void disabledDropdownClicked() {
@@ -625,7 +627,7 @@ class SendCubit extends Cubit<SendState> {
       isManualSend: false,
       address: address,
       amount: swaptx.outAmount,
-      // amount: 1500, // to test submarine refund
+      // amount: 2500, // to test submarine refund
 
       sendAllCoin: false,
       feeRate: isBitcoinSweep ? 0 : fee,
@@ -697,7 +699,7 @@ class SendCubit extends Cubit<SendState> {
       isManualSend: false,
       address: address,
       amount: swaptx.outAmount,
-      // amount: 1000, // to test submarine refund
+      // amount: 2500, // to test submarine refund
       sendAllCoin: false, //swaptx.isChainSwap() ? state.sendAllCoin : false,
       feeRate: swaptx.isChainSwap() &&
               state.onChainAbsFee != null &&

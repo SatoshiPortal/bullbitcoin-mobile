@@ -242,19 +242,19 @@ class SwapBoltz {
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
       );
       if (err != null) throw err;
-      if (swapSensitiveStr != null) throw 'Could not find swap secrets';
+      if (swapSensitiveStr == null) throw 'Could not find swap secrets';
 
       String txid = '';
       if (swapTx.isChainSwap()) {
         final swapSensitive = ChainSwapTxSensitive.fromJson(
-          jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
+          jsonDecode(swapSensitiveStr) as Map<String, dynamic>,
         );
         final swap = swapTx.toChainSwap(swapSensitive);
         // TODO: How to broadcast this.
         // txid = await swap.broadcast(signedHex: signedHex);
       } else {
         final swapSensitive = LnSwapTxSensitive.fromJson(
-          jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
+          jsonDecode(swapSensitiveStr) as Map<String, dynamic>,
         );
         final swap = swapTx.toLbtcLnSwap(swapSensitive);
         txid = await swap.broadcastBoltz(signedHex: signedHex);
@@ -623,10 +623,10 @@ class SwapBoltz {
         StorageKeys.swapTxSensitive + '_' + swapTx.id,
       );
       if (err != null) throw err;
-      if (swapSensitiveStr != null) throw 'Could not find swap secrets';
+      if (swapSensitiveStr == null) throw 'Could not find swap secrets';
 
       final swapSensitive = ChainSwapTxSensitive.fromJson(
-        jsonDecode(swapSensitiveStr!) as Map<String, dynamic>,
+        jsonDecode(swapSensitiveStr) as Map<String, dynamic>,
       );
 
       final swap = swapTx.toChainSwap(swapSensitive);

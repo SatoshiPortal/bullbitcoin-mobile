@@ -80,9 +80,14 @@ class _SendPageState extends State<SendPage> {
 
     WalletBloc? walletBloc;
 
-    if (widget.walletId != null)
+    if (widget.walletId != null) {
       walletBloc =
           context.read<HomeCubit>().state.getWalletBlocById(widget.walletId!);
+    } else {
+      final isTestnet = context.read<NetworkCubit>().state.testnet;
+      walletBloc =
+          context.read<HomeCubit>().state.getMainWallets(isTestnet).first;
+    }
 
     send = SendCubit(
       walletTx: locator<WalletTx>(),
@@ -97,6 +102,7 @@ class _SendPageState extends State<SendPage> {
       openScanner: widget.openScanner,
       walletBloc: walletBloc,
       swapCubit: swap,
+      oneWallet: false,
     );
 
     super.initState();
