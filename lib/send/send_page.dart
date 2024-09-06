@@ -419,6 +419,11 @@ class NetworkFees extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWalletBloc != null,
     );
 
+    final isSelectedWalletLiquid = context.select(
+      (SendCubit cubit) =>
+          cubit.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false,
+    );
+
     final sending = context.select((SendCubit cubit) => cubit.state.sending);
 
     final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
@@ -426,7 +431,8 @@ class NetworkFees extends StatelessWidget {
     final isLiquid =
         context.select((SendCubit cubit) => cubit.state.isLiquidPayment());
 
-    if (isLn || isLiquid || !walletSelected) return const SizedBox.shrink();
+    if (isLn || isLiquid || !walletSelected || isSelectedWalletLiquid)
+      return const SizedBox.shrink();
 
     return AnimatedOpacity(
       opacity: sending ? 0.3 : 1,

@@ -568,8 +568,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final swapTx = event.status != null
         ? swapFromWallet.copyWith(status: event.status)
         : swapFromWallet;
-    locator<Logger>()
-        .log('Process Swap ${swapTx.id}: ${swapTx.status!.status}');
+    locator<Logger>().log('Process Swap ${swapTx.id}: ${swapTx.status!.status}',
+        printToConsole: true);
 
     emit(state.copyWith(updatedSwapTx: swapTx));
     // await Future.delayed(100.ms);
