@@ -225,7 +225,7 @@ bool isMainnetAddress(String address) {
     return false;
   }
 
-  return address.startsWith('bc1') ||
+  return address.toLowerCase().startsWith('bc1') ||
       address.startsWith('3') ||
       address.startsWith('1');
 }
