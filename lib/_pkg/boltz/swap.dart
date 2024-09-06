@@ -352,7 +352,17 @@ class SwapBoltz {
           absFee: claimFeesEstimate.claim,
           tryCooperate: tryCooperate,
         );
-        final txid = await swap.broadcastLocal(signedHex: signedHex);
+
+        final (bitcoinUrl, errUrl) = _networkRepository.bitcoinUrl;
+        if (errUrl != null) {
+          throw errUrl;
+        }
+        final updatedSwap = swap.copyWith(electrumUrl: bitcoinUrl!);
+
+        final (txid, errBroadcast) =
+            await swapInternalBroadcast(updatedSwap, signedHex);
+        if (errBroadcast != null) throw errBroadcast;
+
         return (txid, null);
       }
     } catch (e) {
@@ -454,7 +464,15 @@ class SwapBoltz {
           absFee: refundFeesEstimate,
           tryCooperate: tryCooperate,
         );
-        final txid = await swap.broadcastLocal(signedHex: signedHex);
+
+        final (bitcoinUrl, errUrl) = _networkRepository.bitcoinUrl;
+        if (errUrl != null) throw errUrl;
+        final updatedSwap = swap.copyWith(electrumUrl: bitcoinUrl!);
+
+        final (txid, errBroadcast) =
+            await swapInternalBroadcast(updatedSwap, signedHex);
+        if (errBroadcast != null) throw errBroadcast;
+
         return (txid, null);
       }
     } catch (e) {
@@ -680,5 +698,25 @@ class SwapBoltz {
     } catch (e) {
       return (null, Err(e.toString()));
     }
+  }
+
+  Future<(String?, Err?)> swapInternalBroadcast(
+      BtcLnSwap swap, String signedHex) async {
+    String txid;
+    try {
+      txid = await swap.broadcastLocal(
+        signedHex: signedHex,
+      );
+    } catch (e) {
+      try {
+        txid = await swap.broadcastBoltz(
+          signedHex: signedHex,
+        );
+      } catch (ee) {
+        return (null, Err(ee.toString()));
+      }
+    }
+
+    return (txid, null);
   }
 }

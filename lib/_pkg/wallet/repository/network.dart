@@ -3,11 +3,20 @@ import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class NetworkRepository {
   bdk.Blockchain? _bdkBlockchain;
+  String? _bitcoinUrl;
   String? _liquidUrl;
   // bool _isTestnet = false;
 
   (bdk.Blockchain?, Err?) get bdkBlockchain =>
       _bdkBlockchain != null ? (_bdkBlockchain, null) : (null, Err('Network not setup'));
+
+  (String?, Err?) get bitcoinUrl =>
+      _bitcoinUrl != null ? (_bitcoinUrl, null) : (null, Err('Network not setup'));
+
+  Err? setBitcoinUrl(String url) {
+    _bitcoinUrl = url;
+    return null;
+  }
 
   (String?, Err?) get liquidUrl =>
       _liquidUrl != null ? (_liquidUrl, null) : (null, Err('Network not setup'));

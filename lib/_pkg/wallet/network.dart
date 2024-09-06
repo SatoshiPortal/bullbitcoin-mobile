@@ -37,6 +37,8 @@ class WalletNetwork implements IWalletNetwork {
           validateDomain: validateDomain!,
         );
         if (errCreate != null) return errCreate;
+        final errSetUrl = _networkRepository.setBitcoinUrl(url);
+        if (errSetUrl != null) return errSetUrl;
         final errSet = _networkRepository.setBdkBlockchain(blockchain!);
         if (errSet != null) return errSet;
       } else {
