@@ -78,6 +78,7 @@ dependencies:
       ref: trunk
   oktoast: ^3.4.0
   lottie: ^3.1.0
+  share_plus: ^10.0.2
 
 dev_dependencies:
   build_runner: ^2.4.9

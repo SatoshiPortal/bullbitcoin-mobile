@@ -1,9 +1,7 @@
-import 'dart:io';
+import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:oktoast/oktoast.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Logger extends Cubit<List<(String, DateTime)>> {
   Logger() : super([]);
@@ -15,13 +13,20 @@ class Logger extends Cubit<List<(String, DateTime)>> {
 
   void clear() => emit([]);
 
-  void download() async {
+  void shareLog() async {
     try {
       String logDump;
 
       final logs = state.reversed.toList();
       logDump = logs.join('\n \n');
 
+      final fileName = 'bull-bitcoin-${DateTime.now().toIso8601String()}.log';
+      Share.shareXFiles(
+        [XFile.fromData(utf8.encode(logDump), mimeType: 'text/plain')],
+        fileNameOverrides: [fileName],
+      );
+
+      /*
       final externalDir = await getExternalStorageDirectory();
       if (externalDir != null) {
         final filePath =
@@ -42,6 +47,7 @@ class Logger extends Cubit<List<(String, DateTime)>> {
           duration: const Duration(seconds: 5),
         );
       }
+      */
     } catch (e) {
       log('Error saving logs: $e');
     }

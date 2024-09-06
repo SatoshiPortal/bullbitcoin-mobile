@@ -39,9 +39,9 @@ class LoggerPage extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () {
-                        context.read<Logger>().download();
+                        context.read<Logger>().shareLog();
                       },
-                      child: const BBText.bodySmall('Download'),
+                      child: const BBText.bodySmall('Share logs'),
                     ),
                     TextButton(
                       onPressed: () {
