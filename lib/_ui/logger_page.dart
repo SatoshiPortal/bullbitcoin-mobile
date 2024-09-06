@@ -34,11 +34,22 @@ class LoggerPage extends StatelessWidget {
             else ...[
               Align(
                 alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    context.read<Logger>().clear();
-                  },
-                  child: const BBText.bodySmall('Clear'),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        context.read<Logger>().download();
+                      },
+                      child: const BBText.bodySmall('Download'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.read<Logger>().clear();
+                      },
+                      child: const BBText.bodySmall('Clear'),
+                    ),
+                  ],
                 ),
               ),
               const Divider(),
