@@ -579,9 +579,7 @@ class WalletActions extends StatelessWidget {
 }
 
 class _SaveLabelButton extends StatelessWidget {
-  const _SaveLabelButton({
-    super.key,
-  });
+  const _SaveLabelButton();
 
   @override
   Widget build(BuildContext context) {

@@ -116,7 +116,7 @@ class InstantPaymentsWallet extends StatelessWidget {
 }
 
 class _ButtonList extends StatelessWidget {
-  const _ButtonList({super.key});
+  const _ButtonList();
 
   @override
   Widget build(BuildContext context) {

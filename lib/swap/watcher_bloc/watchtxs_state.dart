@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_model/swap.dart';
-import 'package:bb_mobile/_model/transaction.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'watchtxs_state.freezed.dart';

@@ -7,8 +7,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class PopUpBorder extends StatefulWidget {
-  const PopUpBorder(
-      {super.key, required this.child, this.scrollToBottom = false});
+  const PopUpBorder({
+    super.key,
+    required this.child,
+    this.scrollToBottom = false,
+  });
 
   final Widget child;
   final bool scrollToBottom;

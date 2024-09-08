@@ -205,20 +205,23 @@ class SwapTx with _$SwapTx {
       (status != null &&
           (status!.status == SwapStatus.invoiceFailedToPay ||
               status!.status == SwapStatus.txnLockupFailed ||
-              status!.status == SwapStatus.swapExpired));
+              (lockupTxid != null &&
+                  status!.status == SwapStatus.swapExpired)));
 
   bool refundableOnchain() =>
       isChainSwap() &&
       (status != null &&
           claimTxid == null &&
           (status!.status == SwapStatus.txnLockupFailed ||
-              status!.status == SwapStatus.swapExpired ||
+              (lockupTxid != null &&
+                  status!.status == SwapStatus.swapExpired) ||
               status!.status == SwapStatus.txnRefunded));
 
   bool refundedAny() =>
       status != null &&
       (status!.status == SwapStatus.swapRefunded ||
-          status!.status == SwapStatus.txnRefunded);
+          status!.status == SwapStatus.txnRefunded) &&
+      claimTxid != null;
 
   bool claimableSubmarine() =>
       isSubmarine() &&

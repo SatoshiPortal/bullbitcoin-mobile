@@ -303,7 +303,7 @@ class AddressItem extends StatelessWidget {
               body: address.spendable ? 'No' : 'Yes',
             ),
             const Gap(8),
-          ]
+          ],
         ],
       ),
     );

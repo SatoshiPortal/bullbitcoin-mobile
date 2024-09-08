@@ -90,8 +90,10 @@ class ColdCardSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final loading =
         context.select((ImportWalletCubit cubit) => cubit.state.loadingFile);
-    final scanning = context.select((ImportWalletCubit cubit) =>
-        cubit.state.importStep == ImportSteps.scanningNFC);
+    final scanning = context.select(
+      (ImportWalletCubit cubit) =>
+          cubit.state.importStep == ImportSteps.scanningNFC,
+    );
 
     final err =
         context.select((ImportWalletCubit cubit) => cubit.state.errLoadingFile);
@@ -305,11 +307,13 @@ class AdvancedOptions extends StatelessWidget {
     final fingerprint =
         context.select((ImportWalletCubit x) => x.state.fingerprint);
     final combined = context.select(
-        (ImportWalletCubit x) => x.state.manualCombinedPublicDescriptor ?? '');
+      (ImportWalletCubit x) => x.state.manualCombinedPublicDescriptor ?? '',
+    );
     final descr = context
         .select((ImportWalletCubit x) => x.state.manualPublicDescriptor ?? '');
     final cdescr = context.select(
-        (ImportWalletCubit x) => x.state.manualCombinedPublicDescriptor ?? '');
+      (ImportWalletCubit x) => x.state.manualCombinedPublicDescriptor ?? '',
+    );
 
     final err =
         context.select((ImportWalletCubit cubit) => cubit.state.errImporting);
@@ -323,7 +327,9 @@ class AdvancedOptions extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const BBHeader.popUpCenteredText(
-              text: 'Advanced Options', isLeft: true),
+            text: 'Advanced Options',
+            isLeft: true,
+          ),
           BBTextInput.multiLine(
             value: xpub,
             onChanged: (value) {

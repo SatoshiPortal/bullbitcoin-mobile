@@ -2,10 +2,11 @@
 FLUTTER_ROOT=/Users/ishi/Software/flutter
 FLUTTER_APPLICATION_PATH=/Users/ishi/Code/wallet/bullbitcoin-mobile
 COCOAPODS_PARALLEL_CODE_SIGN=true
+FLUTTER_TARGET=/Users/ishi/Code/wallet/bullbitcoin-mobile/lib/main.dart
 FLUTTER_BUILD_DIR=build
-FLUTTER_BUILD_NAME=0.3.0
-FLUTTER_BUILD_NUMBER=21
+FLUTTER_BUILD_NAME=0.3.1
+FLUTTER_BUILD_NUMBER=22
 DART_OBFUSCATION=false
 TRACK_WIDGET_CREATION=true
 TREE_SHAKE_ICONS=false
-PACKAGE_CONFIG=.dart_tool/package_config.json
+PACKAGE_CONFIG=/Users/ishi/Code/wallet/bullbitcoin-mobile/.dart_tool/package_config.json

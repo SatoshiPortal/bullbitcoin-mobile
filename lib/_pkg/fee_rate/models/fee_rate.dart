@@ -8,11 +8,6 @@ class FeeRate {
     required this.slow,
   });
 
-  final int fastest;
-  final int fast;
-  final int medium;
-  final int slow;
-
   factory FeeRate.createDefaultFeeRate() {
     return FeeRate(
       fastest: 0,
@@ -22,8 +17,13 @@ class FeeRate {
     );
   }
 
+  final int fastest;
+  final int fast;
+  final int medium;
+  final int slow;
+
   int getFeeValue(FeeRateType feeRate) {
-    switch(feeRate) {
+    switch (feeRate) {
       case FeeRateType.fastest:
         return fastest;
       case FeeRateType.fast:
