@@ -80,6 +80,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         );
       swapsToWatch.addAll(wallet.swaps);
     }
+
     swapsToWatch.removeWhere((_) => _.failed());
     if (swapsToWatch.isEmpty) return;
     // print('Listening to Swaps: ${swapsToWatch.map((_) => _.id).toList()}');

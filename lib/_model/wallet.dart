@@ -486,8 +486,9 @@ class Wallet with _$Wallet {
   int balanceWithoutFrozenUTXOs() =>
       (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
 
-  List<SwapTx> swapsToProcess() =>
-      swaps.where((swap) => swap.proceesTx() && !swap.failed()).toList();
+  List<SwapTx> swapsToProcess() {
+    return swaps.where((swap) => swap.proceesTx() && !swap.failed()).toList();
+  }
 }
 
 @freezed
