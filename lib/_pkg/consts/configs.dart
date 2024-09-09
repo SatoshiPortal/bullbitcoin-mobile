@@ -8,8 +8,11 @@ final openmempoolapi = dotenv.env['MEMPOOL_API'] ?? 'mempool.space';
 final bbexchangeapi = dotenv.env['BB_API'] ?? 'api.bullbitcoin.com/price';
 // final bbexchangeapi = dotenv.env['BB_API'] ?? 'pricer.bullbitcoin.dev/api';
 
-const bbelectrum = 'wes.bullbitcoin.com';
-const openelectrum = 'electrum.blockstream.info';
+const bbelectrumMain = 'wes.bullbitcoin.com:50002';
+const openelectrumMain = 'blockstream.info:700';
+// BB test currently not operational
+const bbelectrumTest = 'wes.bullbitcoin.com:60002';
+const openelectrumTest = 'blockstream.info:993';
 
 const liquidElectrumUrl = 'blockstream.info:995';
 const liquidElectrumTestUrl = 'blockstream.info:465';

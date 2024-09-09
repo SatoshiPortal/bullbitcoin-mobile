@@ -11,8 +11,8 @@ enum LiquidElectrumTypes { blockstream, bullbitcoin, custom }
 @freezed
 class ElectrumNetwork with _$ElectrumNetwork {
   const factory ElectrumNetwork.bullbitcoin({
-    @Default('ssl://$bbelectrum:50002') String mainnet,
-    @Default('ssl://$bbelectrum:60002') String testnet,
+    @Default('ssl://$bbelectrumMain') String mainnet,
+    @Default('ssl://$bbelectrumTest') String testnet,
     @Default(20) int stopGap,
     @Default(5) int timeout,
     @Default(5) int retry,
@@ -22,8 +22,8 @@ class ElectrumNetwork with _$ElectrumNetwork {
   }) = _BullbitcoinElectrumNetwork;
 
   const factory ElectrumNetwork.defaultElectrum({
-    @Default('ssl://$openelectrum:50002') String mainnet,
-    @Default('ssl://$openelectrum:60002') String testnet,
+    @Default('ssl://$openelectrumMain') String mainnet,
+    @Default('ssl://$openelectrumTest') String testnet,
     @Default(20) int stopGap,
     @Default(5) int timeout,
     @Default(5) int retry,

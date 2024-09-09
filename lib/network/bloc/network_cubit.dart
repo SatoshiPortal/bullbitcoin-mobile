@@ -80,8 +80,8 @@ class NetworkCubit extends Cubit<NetworkState> {
         const ElectrumNetwork.defaultElectrum(),
         const ElectrumNetwork.bullbitcoin(),
         const ElectrumNetwork.custom(
-          mainnet: 'ssl://$bbelectrum:50002',
-          testnet: 'ssl://$openelectrum:60002',
+          mainnet: 'ssl://$bbelectrumMain',
+          testnet: 'ssl://$openelectrumTest',
         ),
       ];
 
