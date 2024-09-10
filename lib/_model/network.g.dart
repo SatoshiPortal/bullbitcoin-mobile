@@ -9,8 +9,8 @@ part of 'network.dart';
 _$BullbitcoinElectrumNetworkImpl _$$BullbitcoinElectrumNetworkImplFromJson(
         Map<String, dynamic> json) =>
     _$BullbitcoinElectrumNetworkImpl(
-      mainnet: json['mainnet'] as String? ?? 'ssl://$bbelectrum:50002',
-      testnet: json['testnet'] as String? ?? 'ssl://$bbelectrum:60002',
+      mainnet: json['mainnet'] as String? ?? 'ssl://$bbelectrumMain',
+      testnet: json['testnet'] as String? ?? 'ssl://$bbelectrumTest',
       stopGap: (json['stopGap'] as num?)?.toInt() ?? 20,
       timeout: (json['timeout'] as num?)?.toInt() ?? 5,
       retry: (json['retry'] as num?)?.toInt() ?? 5,
@@ -44,8 +44,8 @@ const _$ElectrumTypesEnumMap = {
 _$DefaultElectrumNetworkImpl _$$DefaultElectrumNetworkImplFromJson(
         Map<String, dynamic> json) =>
     _$DefaultElectrumNetworkImpl(
-      mainnet: json['mainnet'] as String? ?? 'ssl://$openelectrum:50002',
-      testnet: json['testnet'] as String? ?? 'ssl://$openelectrum:60002',
+      mainnet: json['mainnet'] as String? ?? 'ssl://$openelectrumMain',
+      testnet: json['testnet'] as String? ?? 'ssl://$openelectrumTest',
       stopGap: (json['stopGap'] as num?)?.toInt() ?? 20,
       timeout: (json['timeout'] as num?)?.toInt() ?? 5,
       retry: (json['retry'] as num?)?.toInt() ?? 5,

@@ -276,7 +276,7 @@ class HomeState with _$HomeState {
     // by removing swap settle txs
     // Swap settle tx IDs (either claim or refund) are stored in swap: tx.swapTx.txid
     // For submarine refund, refund txid is stored in swap.claimTxid
-    final swapChainTxs = txs
+    final swapTxs = txs
         .where((tx) {
           if (tx.swapTx != null)
             return (tx.swapTx!.isChainSwap() == true &&
@@ -295,7 +295,7 @@ class HomeState with _$HomeState {
     final txsToUpdate = <int, String>{};
     int index = 0;
     for (final tx in txs) {
-      final isInSwapTxAndNotPending = swapChainTxs.where((swap) {
+      final isInSwapTxAndNotPending = swapTxs.where((swap) {
         if (swap?.claimTxid == tx.txid &&
             swap!.status?.status == boltz.SwapStatus.swapRefunded) {
           if (tx.label == null) {

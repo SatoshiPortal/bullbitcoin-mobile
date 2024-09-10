@@ -287,8 +287,8 @@ class __$$BullbitcoinElectrumNetworkImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$BullbitcoinElectrumNetworkImpl extends _BullbitcoinElectrumNetwork {
   const _$BullbitcoinElectrumNetworkImpl(
-      {this.mainnet = 'ssl://$bbelectrum:50002',
-      this.testnet = 'ssl://$bbelectrum:60002',
+      {this.mainnet = 'ssl://$bbelectrumMain',
+      this.testnet = 'ssl://$bbelectrumTest',
       this.stopGap = 20,
       this.timeout = 5,
       this.retry = 5,
@@ -601,8 +601,8 @@ class __$$DefaultElectrumNetworkImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$DefaultElectrumNetworkImpl extends _DefaultElectrumNetwork {
   const _$DefaultElectrumNetworkImpl(
-      {this.mainnet = 'ssl://$openelectrum:50002',
-      this.testnet = 'ssl://$openelectrum:60002',
+      {this.mainnet = 'ssl://$openelectrumMain',
+      this.testnet = 'ssl://$openelectrumTest',
       this.stopGap = 20,
       this.timeout = 5,
       this.retry = 5,
