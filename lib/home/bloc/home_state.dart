@@ -275,7 +275,9 @@ class HomeState with _$HomeState {
     // by removing swap claimed txs
     final refundedSwapTxs = txs
         .where(
-          (tx) => tx.swapTx != null && tx.swapTx!.refundedAny(),
+          (tx) =>
+              tx.swapTx != null &&
+              (tx.swapTx!.isChainSwap() || tx.swapTx!.refundedAny()),
         )
         .map((tx) => tx.swapTx)
         .toList();
@@ -284,7 +286,7 @@ class HomeState with _$HomeState {
     int index = 0;
     for (final tx in txs) {
       final isInSwapTxAndNotPending = refundedSwapTxs.where((swap) {
-        if (swap!.claimTxid == tx.txid) {
+        if (swap!.refundedAny() && swap.claimTxid == tx.txid) {
           if (tx.label == null) {
             final String lbl = 'Refund: ${swap.id}';
             txsToUpdate.addAll({index: lbl});
