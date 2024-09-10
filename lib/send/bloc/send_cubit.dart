@@ -528,7 +528,12 @@ class SendCubit extends Cubit<SendState> {
         sendAllCoin: sendAll,
       ),
     );
-    _currencyCubit.updateAmountDirect(sendAll ? balance : 0);
+    final amount = sendAll
+        ? balance
+        : state.isLnInvoice()
+            ? state.invoice!.getAmount()
+            : _currencyCubit.state.amount;
+    _currencyCubit.updateAmountDirect(amount);
   }
 
   void utxoSelected(UTXO utxo) {
@@ -627,7 +632,7 @@ class SendCubit extends Cubit<SendState> {
       isManualSend: false,
       address: address,
       amount: swaptx.outAmount,
-      // amount: 7590, // to test submarine refund
+      //amount: 5000, // to test submarine refund
       sendAllCoin: false,
       feeRate: isBitcoinSweep ? 0 : fee,
       absFee: isBitcoinSweep ? state.onChainAbsFee : 0,
