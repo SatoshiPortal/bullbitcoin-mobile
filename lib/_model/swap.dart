@@ -220,7 +220,8 @@ class SwapTx with _$SwapTx {
   bool refundedAny() =>
       status != null &&
       (status!.status == SwapStatus.swapRefunded ||
-          status!.status == SwapStatus.txnRefunded) &&
+          status!.status == SwapStatus.txnRefunded ||
+          (lockupTxid != null && status!.status == SwapStatus.swapExpired)) &&
       claimTxid != null;
 
   bool claimableSubmarine() =>

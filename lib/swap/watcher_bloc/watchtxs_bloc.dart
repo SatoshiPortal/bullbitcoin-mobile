@@ -636,9 +636,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
         case SubmarineSwapActions.refundable:
           // TODO: Is this update required?
-          await Future.delayed(const Duration(milliseconds: 800));
-          await __updateWalletTxs(swapTx, walletBloc, emit);
+          // await Future.delayed(const Duration(milliseconds: 1000));
+          // await __updateWalletTxs(swapTx, walletBloc, emit);
+          await Future.delayed(const Duration(milliseconds: 1000));
           final swap = await __refundSwap(swapTx, walletBloc, emit);
+          await Future.delayed(const Duration(milliseconds: 1000));
           if (swap != null)
             await __updateWalletTxs(
               swap,
@@ -672,12 +674,13 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
             );
             if (err != null) {
               await __updateWalletTxs(swapTx, walletBloc, emit);
+            } else {
+              await __updateWalletTxs(
+                swapTx.copyWith(lockupTxid: txid),
+                walletBloc,
+                emit,
+              );
             }
-            await __updateWalletTxs(
-              swapTx.copyWith(lockupTxid: txid),
-              walletBloc,
-              emit,
-            );
           } else
             await __updateWalletTxs(swapTx, walletBloc, emit);
 
@@ -698,7 +701,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           toWalletBloc?.add(SyncWallet());
         // TODO: Better way to sync `to` wallet
         case ChainSwapActions.refundable:
-          await Future.delayed(const Duration(milliseconds: 800));
+          await Future.delayed(const Duration(milliseconds: 1000));
           final swap = await __onchainRefund(swapTx, walletBloc, emit);
           await Future.delayed(const Duration(milliseconds: 800));
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);

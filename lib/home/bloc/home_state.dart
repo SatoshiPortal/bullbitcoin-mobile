@@ -2,7 +2,6 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'home_state.freezed.dart';
@@ -272,42 +271,30 @@ class HomeState with _$HomeState {
           b.timestamp.normaliseTime().compareTo(a.timestamp.normaliseTime()),
     );
 
-    // BEGIN: Chainswap filters: This is to show only Swap Txs in home page,
-    // by removing swap settle txs
-    // Swap settle tx IDs (either claim or refund) are stored in swap: tx.swapTx.txid
-    // For submarine refund, refund txid is stored in swap.claimTxid
-    final swapTxs = txs
-        .where((tx) {
-          if (tx.swapTx != null)
-            return (tx.swapTx!.isChainSwap() == true &&
-                    tx.swapTx!.status?.status != null) ||
-                (tx.swapTx!.lnSwapDetails?.swapType ==
-                        boltz.SwapType.submarine &&
-                    (tx.swapTx!.status?.status ==
-                            boltz.SwapStatus.swapRefunded ||
-                        tx.swapTx!.status?.status ==
-                            boltz.SwapStatus.txnLockupFailed));
-          return false;
-        })
+    // BEGIN: Chainswap filters: This is to show only Swap Txs and Swap refund Txs in home page,
+    // by removing swap claimed txs
+    final refundedSwapTxs = txs
+        .where(
+          (tx) => tx.swapTx != null && tx.swapTx!.refundedAny(),
+        )
         .map((tx) => tx.swapTx)
         .toList();
     final toRemove = <Transaction>[];
     final txsToUpdate = <int, String>{};
     int index = 0;
     for (final tx in txs) {
-      final isInSwapTxAndNotPending = swapTxs.where((swap) {
-        if (swap?.claimTxid == tx.txid &&
-            swap!.status?.status == boltz.SwapStatus.swapRefunded) {
+      final isInSwapTxAndNotPending = refundedSwapTxs.where((swap) {
+        if (swap!.claimTxid == tx.txid) {
           if (tx.label == null) {
             final String lbl = 'Refund: ${swap.id}';
             txsToUpdate.addAll({index: lbl});
-          } else if (tx.label!.contains('Swap Refund') == false) {
+          } else if (tx.label!.contains('Refund') == false) {
             final String lbl = '${tx.label}, Refund: ${swap.id}';
             txsToUpdate.addAll({index: lbl});
           }
           return false; // So it's not removed from here and shown in home page
         } else {
-          return swap?.claimTxid == tx.txid;
+          return swap.claimTxid == tx.txid;
         }
       }) // && tx.timestamp != 0)
           .isNotEmpty;
