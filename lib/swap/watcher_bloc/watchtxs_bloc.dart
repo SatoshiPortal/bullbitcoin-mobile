@@ -689,7 +689,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         case ChainSwapActions.claimable:
           // await Future.delayed(const Duration(milliseconds: 100));
           final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
-          if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
+          if (swap != null)
+            await __updateWalletTxs(swap, walletBloc, emit);
+          else
+            await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case ChainSwapActions.settled:
           // await Future.delayed(const Duration(milliseconds: 200));
