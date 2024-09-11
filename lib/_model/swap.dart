@@ -210,13 +210,13 @@ class SwapTx with _$SwapTx {
 
   bool refundableOnchain() =>
       isChainSwap() &&
-      (status != null &&
-          claimTxid == null &&
-          (status!.status == SwapStatus.txnLockupFailed ||
-              status!.status == SwapStatus.txnFailed ||
-              (lockupTxid != null &&
-                  status!.status == SwapStatus.swapExpired) ||
-              status!.status == SwapStatus.txnRefunded));
+      status != null &&
+      claimTxid == null &&
+      (status!.status == SwapStatus.txnLockupFailed ||
+          (lockupTxid != null &&
+              (status!.status == SwapStatus.swapExpired ||
+                  status!.status == SwapStatus.txnFailed ||
+                  status!.status == SwapStatus.txnRefunded)));
 
   bool refundedAny() =>
       status != null &&
@@ -286,7 +286,8 @@ class SwapTx with _$SwapTx {
       (status != null &&
           (status!.status == SwapStatus.txnMempool ||
               status!.status == SwapStatus.txnConfirmed ||
-              status!.status == SwapStatus.txnServerMempool));
+              status!.status == SwapStatus.txnServerMempool ||
+              status!.status == SwapStatus.txnServerConfirmed));
 
   bool uninitiatedOnchain() =>
       isChainSwap() &&
