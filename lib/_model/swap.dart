@@ -213,6 +213,7 @@ class SwapTx with _$SwapTx {
       (status != null &&
           claimTxid == null &&
           (status!.status == SwapStatus.txnLockupFailed ||
+              status!.status == SwapStatus.txnFailed ||
               (lockupTxid != null &&
                   status!.status == SwapStatus.swapExpired) ||
               status!.status == SwapStatus.txnRefunded));

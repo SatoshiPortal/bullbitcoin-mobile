@@ -85,6 +85,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // swapsToWatch.removeWhere((_) => _.failed());
     if (swapsToWatch.isEmpty) return;
     // print('Listening to Swaps: ${swapsToWatch.map((_) => _.id).toList()}');
+    _disposeAll();
+
     __watchSwapStatus(
       emit,
       swapTxsToWatch: swapsToWatch.map((_) => _.id).toList(),
@@ -102,8 +104,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
       if (exists) continue;
       emit(state.copyWith(listeningTxs: [...state.listeningTxs, swap]));
     }
-
-    _disposeAll();
 
     if (isTestnet) {
       final (watcherTestnet, errTestnet) =

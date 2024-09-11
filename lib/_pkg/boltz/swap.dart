@@ -286,11 +286,20 @@ class SwapBoltz {
         // .copyWith(electrumUrl: 'blockstream.info:995');
 
         // await Future.delayed(5.seconds);
-        final signedHex = await swap.claim(
-          outAddress: address,
-          absFee: swapTx.claimFees!,
-          tryCooperate: tryCooperate,
-        );
+        String signedHex;
+        try {
+          signedHex = await swap.claim(
+            outAddress: address,
+            absFee: swapTx.claimFees!,
+            tryCooperate: tryCooperate,
+          );
+        } catch (e) {
+          signedHex = await swap.claim(
+            outAddress: address,
+            absFee: swapTx.claimFees!,
+            tryCooperate: false,
+          );
+        }
 
         final (liquidUrl, err) = _networkRepository.liquidUrl;
         if (err != null) throw err;
@@ -346,14 +355,21 @@ class SwapBoltz {
         // final claimFeesEstimate = fees?.btcReverse.claimFeesEstimate;
         final claimFeesEstimate = reverseFees?.btcFees.minerFees;
         if (claimFeesEstimate == null) throw 'Fees estimate not found';
-
         final swap = swapTx.toBtcLnSwap(swapSensitive);
-
-        final signedHex = await swap.claim(
-          outAddress: address,
-          absFee: claimFeesEstimate.claim,
-          tryCooperate: tryCooperate,
-        );
+        String signedHex;
+        try {
+          signedHex = await swap.claim(
+            outAddress: address,
+            absFee: claimFeesEstimate.claim,
+            tryCooperate: tryCooperate,
+          );
+        } catch (e) {
+          signedHex = await swap.claim(
+            outAddress: address,
+            absFee: claimFeesEstimate.claim,
+            tryCooperate: false,
+          );
+        }
 
         final (bitcoinUrl, errUrl) = _networkRepository.bitcoinUrl;
         if (errUrl != null) {
@@ -419,12 +435,20 @@ class SwapBoltz {
         // );
 
         // return (resp, null);
-
-        final signedHex = await swap.refund(
-          outAddress: address,
-          absFee: refundFeesEstimate,
-          tryCooperate: tryCooperate,
-        );
+        String signedHex;
+        try {
+          signedHex = await swap.refund(
+            outAddress: address,
+            absFee: refundFeesEstimate,
+            tryCooperate: tryCooperate,
+          );
+        } catch (e) {
+          signedHex = await swap.refund(
+            outAddress: address,
+            absFee: refundFeesEstimate,
+            tryCooperate: false,
+          );
+        }
         final (liquidUrl, err) = _networkRepository.liquidUrl;
         if (err != null) throw err;
 
@@ -472,11 +496,20 @@ class SwapBoltz {
 
         final swap = swapTx.toBtcLnSwap(swapSensitive);
 
-        final signedHex = await swap.refund(
-          outAddress: address,
-          absFee: refundFeesEstimate,
-          tryCooperate: tryCooperate,
-        );
+        String signedHex;
+        try {
+          signedHex = await swap.refund(
+            outAddress: address,
+            absFee: refundFeesEstimate,
+            tryCooperate: tryCooperate,
+          );
+        } catch (e) {
+          signedHex = await swap.refund(
+            outAddress: address,
+            absFee: refundFeesEstimate,
+            tryCooperate: false,
+          );
+        }
 
         final (bitcoinUrl, errUrl) = _networkRepository.bitcoinUrl;
         if (errUrl != null) throw errUrl;
@@ -572,11 +605,20 @@ class SwapBoltz {
 
       final swap = swapTx.toChainSwap(swapSensitive);
 
-      final signedHex = await swap.refund(
-        refundAddress: address,
-        absFee: refundFeesEstimate,
-        tryCooperate: tryCooperate,
-      );
+      String signedHex;
+      try {
+        signedHex = await swap.refund(
+          refundAddress: address,
+          absFee: refundFeesEstimate,
+          tryCooperate: tryCooperate,
+        );
+      } catch (e) {
+        signedHex = await swap.refund(
+          refundAddress: address,
+          absFee: refundFeesEstimate,
+          tryCooperate: false,
+        );
+      }
 
       final (btcElectrumUrl, errBtcUrl) = _networkRepository.bitcoinUrl;
       if (errBtcUrl != null) throw errBtcUrl;
