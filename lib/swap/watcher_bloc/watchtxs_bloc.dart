@@ -706,7 +706,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           // Without the delays, swap.status and swap.claimTxId doesn't get updated.
           await Future.delayed(const Duration(milliseconds: 1000));
           final swap = await __onchainRefund(swapTx, walletBloc, emit);
-          await Future.delayed(const Duration(milliseconds: 800));
+          await Future.delayed(const Duration(milliseconds: 1200));
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
           await Future.delayed(const Duration(milliseconds: 1000));
         default:
