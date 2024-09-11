@@ -298,7 +298,10 @@ class SwapTx with _$SwapTx {
       paidSubmarine() ||
       settledReverse() ||
       settledSubmarine() ||
+      refundableOnchain() ||
+      refundableSubmarine() ||
       paidReverse() ||
+      refundedAny() ||
       paidOnchain();
 
   bool close() =>

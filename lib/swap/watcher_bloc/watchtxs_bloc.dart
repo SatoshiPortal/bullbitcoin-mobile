@@ -71,17 +71,18 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     final swapsToWatch = <SwapTx>[];
     for (final walletBloc in walletBlocs) {
       final wallet = walletBloc.state.wallet;
-      for (final swapTx in wallet!.swapsToProcess())
-        add(
-          ProcessSwapTx(
-            walletId: wallet.id,
-            swapTxId: swapTx.id,
-          ),
-        );
+      if (wallet == null) return;
+      // for (final swapTx in wallet!.swapsToProcess())
+      //   add(
+      //     ProcessSwapTx(
+      //       walletId: wallet.id,
+      //       swapTxId: swapTx.id,
+      //     ),
+      //   );
       swapsToWatch.addAll(wallet.swaps);
     }
 
-    swapsToWatch.removeWhere((_) => _.failed());
+    // swapsToWatch.removeWhere((_) => _.failed());
     if (swapsToWatch.isEmpty) return;
     // print('Listening to Swaps: ${swapsToWatch.map((_) => _.id).toList()}');
     __watchSwapStatus(
@@ -154,16 +155,14 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // print('----swapstatus : $swapId - ${status.status}');
     for (final walletBloc in _homeCubit.state.walletBlocs!) {
       if (walletBloc.state.wallet!.hasOngoingSwap(swapId)) {
-        final id = swapId;
         // print('SwapStatusUpdate: $id - ${status.status}');
-        if (!state.isListeningId(id)) return;
-        final swapTx = walletBloc.state.wallet!.getOngoingSwap(id);
-
+        if (!state.isListeningId(swapId)) return;
+        // final swapTx = walletBloc.state.wallet!.getOngoingSwap(swapId);
         add(
           ProcessSwapTx(
             walletId: walletBloc.state.wallet!.id,
             status: status,
-            swapTxId: swapTx!.id,
+            swapTxId: swapId,
           ),
         );
       }
@@ -566,9 +565,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // OR
     // pass the swapTx via the event ONLY IF ITS FROM SWAP HISTORY PAGE
     if (swapFromWallet == null) return;
+
     final swapTx = event.status != null
         ? swapFromWallet.copyWith(status: event.status)
         : swapFromWallet;
+
     locator<Logger>().log(
       'Process Swap ${swapTx.id}: ${swapTx.status!.status}',
       printToConsole: true,
@@ -578,7 +579,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     // await Future.delayed(100.ms);
     // emit(state.copyWith(updatedSwapTx: null));
 
-    final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
+    // final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
 
     if (swapTx.isReverse()) {
       switch (swapTx.reverseSwapAction()) {
@@ -593,7 +594,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           if (wallet.isLiquid()) {
             final swap = await __claimSwap(swapTx, walletBloc, emit);
             if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
-            return;
+            break;
           }
           await __updateWalletTxs(swapTx, walletBloc, emit);
 
@@ -607,7 +608,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         case ReverseSwapActions.settled:
           final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
           final w = await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
-          if (w == null) return;
+          if (w == null) break;
           await __closeSwap(updatedSwapTx, emit);
       }
     } else if (swapTx.isSubmarine()) {
@@ -623,7 +624,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           if (swapTx.isLiquid()) {
             final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
             if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
-            return;
+            break;
           } else
             await __updateWalletTxs(swapTx, walletBloc, emit);
 
@@ -638,17 +639,17 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
           // TODO: Delays are introduced so wallet update actually happens.
           // Without the delays, swap.status and swap.claimTxId doesn't get updated.
           await __updateWalletTxs(swapTx, walletBloc, emit);
-          await Future.delayed(const Duration(milliseconds: 1000));
+          // await Future.delayed(const Duration(milliseconds: 1000));
           final swap = await __refundSwap(swapTx, walletBloc, emit);
           if (swap != null) {
-            await Future.delayed(const Duration(milliseconds: 1000));
+            // await Future.delayed(const Duration(milliseconds: 1000));
             await __updateWalletTxs(
               swap,
               walletBloc,
               emit,
             );
           }
-          await Future.delayed(const Duration(milliseconds: 1000));
+        // await Future.delayed(const Duration(milliseconds: 1000));
 
         case SubmarineSwapActions.settled:
           final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
@@ -657,7 +658,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
             walletBloc,
             emit,
           );
-          if (w == null) return;
+          if (w == null) break;
           await __closeSwap(updatedSwapTx, emit);
       }
     } else if (swapTx.isChainSwap()) {
@@ -686,17 +687,17 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
             await __updateWalletTxs(swapTx, walletBloc, emit);
 
         case ChainSwapActions.claimable:
-          await Future.delayed(const Duration(milliseconds: 100));
+          // await Future.delayed(const Duration(milliseconds: 100));
           final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
 
         case ChainSwapActions.settled:
-          await Future.delayed(const Duration(milliseconds: 200));
+          // await Future.delayed(const Duration(milliseconds: 200));
           final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
           await __updateWalletTxs(updatedSwapTx, walletBloc, emit);
-          await Future.delayed(const Duration(milliseconds: 100));
+          // await Future.delayed(const Duration(milliseconds: 100));
           await __closeSwap(swapTx, emit);
-          await Future.delayed(const Duration(milliseconds: 200));
+          // await Future.delayed(const Duration(milliseconds: 200));
           final toWalletBloc = _homeCubit.state
               .getWalletBlocById(swapTx.chainSwapDetails!.toWalletId);
           toWalletBloc?.add(SyncWallet());
@@ -704,14 +705,20 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         case ChainSwapActions.refundable:
           // TODO: Delays are introduced so wallet update actually happens.
           // Without the delays, swap.status and swap.claimTxId doesn't get updated.
-          await Future.delayed(const Duration(milliseconds: 1000));
+          // await Future.delayed(const Duration(milliseconds: 1000));
           final swap = await __onchainRefund(swapTx, walletBloc, emit);
-          await Future.delayed(const Duration(milliseconds: 1200));
+          // await Future.delayed(const Duration(milliseconds: 1200));
           if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
-          await Future.delayed(const Duration(milliseconds: 1000));
+        // await Future.delayed(const Duration(milliseconds: 1000));
         default:
           await __updateWalletTxs(swapTx, walletBloc, emit);
       }
     }
+    // Give time for the walletBloc to update
+    await Future.delayed(
+      const Duration(
+        milliseconds: 1000,
+      ),
+    );
   }
 }
