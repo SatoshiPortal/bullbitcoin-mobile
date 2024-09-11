@@ -285,9 +285,7 @@ class SwapTx with _$SwapTx {
       isChainSwap() &&
       (status != null &&
           (status!.status == SwapStatus.txnMempool ||
-              status!.status == SwapStatus.txnConfirmed ||
-              status!.status == SwapStatus.txnServerMempool ||
-              status!.status == SwapStatus.txnServerConfirmed));
+              status!.status == SwapStatus.txnConfirmed));
 
   bool uninitiatedOnchain() =>
       isChainSwap() &&
