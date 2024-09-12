@@ -11,7 +11,9 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/fee_popup.dart';
 import 'package:bb_mobile/swap/onchain_listeners.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -93,6 +95,9 @@ class _Screen extends StatelessWidget {
         context.select((SendCubit cubit) => cubit.state.buildingOnChain);
     final sending = generatingInv || sendingg || buildingOnChain;
 
+    final senderFee =
+        context.select((SendCubit send) => send.state.psbtSignedFeeAmount ?? 0);
+
     final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
     final amtStr = context
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
@@ -107,8 +112,6 @@ class _Screen extends StatelessWidget {
         context.select((CreateSwapCubit cubit) => cubit.state.swapTx);
 
     final swapFees = swapTx?.totalFees() ?? 0;
-    final senderFee =
-        context.select((SendCubit send) => send.state.psbtSignedFeeAmount ?? 0);
     final fee = swapFees + senderFee;
     final feeStr = context
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
@@ -126,6 +129,10 @@ class _Screen extends StatelessWidget {
 
     final showWarning = context.select(
       (CreateSwapCubit x) => x.state.showSwapWarning(),
+    );
+
+    final walletName = context.select(
+      (SendCubit x) => x.state.selectedWalletBloc?.state.wallet?.name ?? '',
     );
 
     if (showWarning == true) {
@@ -171,10 +178,30 @@ class _Screen extends StatelessWidget {
             const Gap(4),
             BBText.body(swapTx!.scriptAddress),
             const Gap(24),
-            const BBText.title(
-              'Network Fee',
+            Row(
+              children: [
+                const BBText.title(
+                  'Total Fee',
+                ),
+                IconButton.outlined(
+                  icon: const Icon(Icons.info_outline),
+                  iconSize: 22.0,
+                  padding: EdgeInsets.zero,
+                  color: context.colour.onPrimaryContainer,
+                  onPressed: () {
+                    FeePopUp.openPopup(
+                      context,
+                      walletName,
+                      senderFee,
+                      swapTx.claimFees ?? 0,
+                      swapTx.boltzFees ?? 0,
+                    );
+                    // show popup
+                  },
+                ),
+              ],
             ),
-            const Gap(4),
+            // const Gap(4),
             BBText.body(
               feeStr,
             ),
@@ -185,7 +212,7 @@ class _Screen extends StatelessWidget {
             BBButton.big(
               loading: sending,
               disabled: sending,
-              label: 'Broadcast',
+              label: 'Confirm',
               onPressed: () {
                 context.read<SendCubit>().sendSwap();
               },
