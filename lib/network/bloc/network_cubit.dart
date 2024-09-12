@@ -330,6 +330,7 @@ class NetworkCubit extends Cubit<NetworkState> {
   }
 
   void networkConfigsSaveClicked({required bool isLiq}) async {
+    emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
     if (!isLiq) {
       if (state.tempNetwork == null) return;
       final networks = state.networks.toList();
@@ -338,6 +339,15 @@ class NetworkCubit extends Cubit<NetworkState> {
         mainnet: _checkURL(tempNetwork.mainnet),
         testnet: _checkURL(tempNetwork.testnet),
       );
+
+      final sslRegex =
+          RegExp(r'^ssl:\/\/([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\:[0-9]{2,5}$');
+      if (!(sslRegex.hasMatch(tempNetwork.mainnet) &&
+          sslRegex.hasMatch(tempNetwork.testnet))) {
+        emit(state.copyWith(errLoadingNetworks: 'Invalid Electrum URL'));
+        return;
+      }
+
       final index =
           networks.indexWhere((element) => element.type == state.tempNetwork);
       networks.removeAt(index);

@@ -30,9 +30,18 @@ class NetworkPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _NetworkSelector(),
-      child: const NetworkScreen(),
+    return BlocListener<NetworkCubit, NetworkState>(
+      listenWhen: (previous, current) =>
+          previous.networkConnected == false &&
+          current.networkConnected == true &&
+          current.errLoadingNetworks.isEmpty,
+      listener: (context, state) async {
+        context.pop();
+      },
+      child: BlocProvider.value(
+        value: _NetworkSelector(),
+        child: const NetworkScreen(),
+      ),
     );
   }
 }
@@ -288,7 +297,6 @@ class NetworkConfigFields extends StatelessWidget {
     final type = network.type;
     final liqType = liqNetwork.type;
 
-    final err = context.select((NetworkCubit x) => x.state.errLoadingNetworks);
     final loading = context.select((NetworkCubit x) => x.state.loadingNetworks);
 
     final showButton = context
@@ -387,10 +395,10 @@ class NetworkConfigFields extends StatelessWidget {
             ),
           ],
           const Gap(40),
-          if (err.isNotEmpty) ...[
-            BBText.error(err),
-            const Gap(8),
-          ],
+          // if (err.isNotEmpty) ...[
+          //   BBText.error(err),
+          //   const Gap(8),
+          // ],
           if (showButton.err != null) ...[
             BBText.error(showButton.err!),
             const Gap(8),
@@ -401,7 +409,7 @@ class NetworkConfigFields extends StatelessWidget {
               loadingText: 'Connecting...',
               disabled: !showButton.show,
               onPressed: () async {
-                FocusScope.of(context).requestFocus(FocusNode());
+                // FocusScope.of(context).requestFocus(FocusNode());
 
                 if (type == ElectrumTypes.custom) {
                   await PrivacyNoticePopUp.openPopUp(context);
@@ -411,10 +419,10 @@ class NetworkConfigFields extends StatelessWidget {
                 context
                     .read<NetworkCubit>()
                     .networkConfigsSaveClicked(isLiq: isLiq);
-                await Future.delayed(const Duration(milliseconds: 500));
-                final err =
-                    context.read<NetworkCubit>().state.errLoadingNetworks;
-                if (err.isEmpty) context.pop();
+                // await Future.delayed(const Duration(milliseconds: 500));
+                // final err =
+                // context.read<NetworkCubit>().state.errLoadingNetworks;
+                //if (err.isEmpty) context.pop();
               },
               label: 'SAVE',
               filled: true,
