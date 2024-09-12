@@ -375,6 +375,13 @@ class SendCubit extends Cubit<SendState> {
           ),
         );
         resetWalletSelection();
+        final mainBitcoinWallet = _homeCubit.state
+            .getMainSecureWallet(_networkCubit.state.getBBNetwork());
+        emit(
+          state.copyWith(
+            selectedWalletBloc: mainBitcoinWallet,
+          ),
+        );
         return;
       }
 
