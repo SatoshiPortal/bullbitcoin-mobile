@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
+import 'package:bb_mobile/_pkg/electrum_test.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
@@ -340,11 +341,41 @@ class NetworkCubit extends Cubit<NetworkState> {
         testnet: _checkURL(tempNetwork.testnet),
       );
 
+      // Local validation
       final sslRegex =
           RegExp(r'^ssl:\/\/([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\:[0-9]{2,5}$');
-      if (!(sslRegex.hasMatch(tempNetwork.mainnet) &&
-          sslRegex.hasMatch(tempNetwork.testnet))) {
-        emit(state.copyWith(errLoadingNetworks: 'Invalid Electrum URL'));
+      if (!sslRegex.hasMatch(tempNetwork.mainnet)) {
+        emit(
+          state.copyWith(errLoadingNetworks: 'Invalid mainnet electrum URL'),
+        );
+        return;
+      }
+      if (!sslRegex.hasMatch(tempNetwork.testnet)) {
+        emit(
+          state.copyWith(errLoadingNetworks: 'Invalid testnet electrum URL'),
+        );
+        return;
+      }
+
+      // Connection test with electrum
+      final mainnetElectrumLive = await isElectrumLive(tempNetwork.mainnet);
+      if (!mainnetElectrumLive) {
+        emit(
+          state.copyWith(
+            errLoadingNetworks:
+                'Pls check mainnet electrum URL. Cannot connect to electrum',
+          ),
+        );
+        return;
+      }
+      final testnetElectrumLive = await isElectrumLive(tempNetwork.testnet);
+      if (!testnetElectrumLive) {
+        emit(
+          state.copyWith(
+            errLoadingNetworks:
+                'Pls check testnet electrum URL. Cannot connect to electrum',
+          ),
+        );
         return;
       }
 

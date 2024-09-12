@@ -2,6 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+/// Works for both Bitcoin and Liquid electrum
+/// electrum should be of the format:
+/// ssl://[host]:[port]
+/// Eg:
+/// ssl://electrum.blockstream.info:50002
+/// ssl://blockstream.info:465
 Future<bool> isElectrumLive(String electrumUrl) async {
   try {
     final split = electrumUrl.split(':');
@@ -12,7 +18,11 @@ Future<bool> isElectrumLive(String electrumUrl) async {
 
     final Completer<bool> completer = Completer();
 
-    final SecureSocket socket = await SecureSocket.connect(url, port);
+    final SecureSocket socket = await SecureSocket.connect(
+      url,
+      port,
+      timeout: const Duration(seconds: 15),
+    );
     final Map<String, dynamic> request = {
       'jsonrpc': '2.0',
       'id': '1',
