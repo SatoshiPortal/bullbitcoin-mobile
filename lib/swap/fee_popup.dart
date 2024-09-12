@@ -49,8 +49,8 @@ class FeePopUp extends StatelessWidget {
             isLeft: true,
           ),
 
-          BBText.title(
-            'Send fees (from $fromWalletName)',
+          const BBText.title(
+            'Send network fee',
           ),
           const Gap(4),
           BBText.bodyBold(
@@ -59,16 +59,7 @@ class FeePopUp extends StatelessWidget {
           const Gap(16),
 
           const BBText.title(
-            'Boltz fees (for swap service)',
-          ),
-          const Gap(4),
-          BBText.bodyBold(
-            boltzFees.toStringAsFixed(0) + ' sats',
-          ),
-          const Gap(16),
-
-          const BBText.title(
-            'Swap claim fees (Network fees)',
+            'Claim network fee',
           ),
           const Gap(4),
           BBText.bodyBold(
@@ -77,11 +68,20 @@ class FeePopUp extends StatelessWidget {
           const Gap(16),
 
           const BBText.title(
+            'Boltz service fee',
+          ),
+          const Gap(4),
+          BBText.bodyBold(
+            boltzFees.toStringAsFixed(0) + ' sats',
+          ),
+          const Gap(16),
+
+          const BBText.title(
             'Total fees',
           ),
           const Gap(4),
           BBText.bodyBold(
-            '${(lockupFees + claimFees + boltzFees).toStringAsFixed(0)} sats = $lockupFees + $boltzFees + $claimFees',
+            '${(lockupFees + claimFees + boltzFees).toStringAsFixed(0)} sats = $lockupFees + $claimFees + $boltzFees',
           ),
           const Gap(16),
         ],

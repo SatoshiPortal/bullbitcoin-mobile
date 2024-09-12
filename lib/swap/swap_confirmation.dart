@@ -183,7 +183,7 @@ class _Screen extends StatelessWidget {
                 const BBText.title(
                   'Total Fee',
                 ),
-                IconButton.outlined(
+                IconButton(
                   icon: const Icon(Icons.info_outline),
                   iconSize: 22.0,
                   padding: EdgeInsets.zero,

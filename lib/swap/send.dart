@@ -7,6 +7,7 @@ import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/fee_popup.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:flutter/material.dart';
@@ -77,11 +78,35 @@ class _SwapFees extends StatelessWidget {
       ),
     );
 
+    final walletName = context.select(
+      (SendCubit cubit) =>
+          cubit.state.selectedWalletBloc?.state.wallet?.name ?? '',
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const BBText.title('Total Fees'),
-        const Gap(4),
+        Row(
+          children: [
+            const BBText.title('Total Fees'),
+            IconButton(
+              icon: const Icon(Icons.info_outline),
+              iconSize: 22.0,
+              padding: EdgeInsets.zero,
+              color: context.colour.onPrimaryContainer,
+              onPressed: () {
+                FeePopUp.openPopup(
+                  context,
+                  walletName,
+                  lockupFee,
+                  swaptx.claimFees ?? 0,
+                  swaptx.boltzFees ?? 0,
+                );
+                // show popup
+              },
+            ),
+          ],
+        ),
         BBText.body(amt, isBold: true),
       ],
     );
