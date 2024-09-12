@@ -112,18 +112,18 @@ class _ChainSwapProgressWidgetState extends State<ChainSwapProgressWidget> {
           const Gap(16),
           BBText.body(amtStr),
           const Gap(4),
-          const BBText.body('≈'),
-          const Gap(4),
-          Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                BBText.body(amt),
-                const Gap(4),
-                BBText.body(unit),
-              ],
-            ),
-          ),
+          // const BBText.body('≈'),
+          // const Gap(4),
+          // Center(
+          //   child: Row(
+          //     mainAxisSize: MainAxisSize.min,
+          //     children: [
+          //       BBText.body(amt),
+          //       const Gap(4),
+          //       BBText.body(unit),
+          //     ],
+          //   ),
+          // ),
           const Gap(24),
           if (tx != null)
             BBButton.big(
