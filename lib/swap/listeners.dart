@@ -38,7 +38,7 @@ class SwapAppListener extends StatelessWidget {
             final isReceivePage = route == '/receive';
             final isSendPage = route == '/send';
             final isSwapReceivePage = route == '/swap-receive';
-            final isOnchainSwapReceivePage = route == '/onchain-swap-receive';
+            final isOnchainSwapReceivePage = route == '/onchain-swap-progress';
             if (isReceivePage ||
                 isSendPage ||
                 isSwapReceivePage ||

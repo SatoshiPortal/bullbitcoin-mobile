@@ -6,6 +6,7 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/swap_page_progress.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
@@ -18,10 +19,12 @@ class ChainSwapProgressPage extends StatefulWidget {
     super.key,
     required this.swapTx,
     required this.isReceive,
+    this.sendCubit,
   });
 
   final SwapTx swapTx;
   final bool isReceive;
+  final SendCubit? sendCubit;
   @override
   State<ChainSwapProgressPage> createState() => _ChainSwapProgressPageState();
 }
@@ -48,6 +51,8 @@ class _ChainSwapProgressPageState extends State<ChainSwapProgressPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _swapCubit),
+        if (widget.sendCubit != null)
+          BlocProvider.value(value: widget.sendCubit!),
       ],
       child: Scaffold(
         appBar: AppBar(

@@ -287,14 +287,20 @@ GoRouter setupRouter() => GoRouter(
           },
         ),
         GoRoute(
-          path: '/onchain-swap-receive',
+          path: '/onchain-swap-progress',
           builder: (context, state) {
             // TODO: Convert this to proper map
             final list = state.extra! as List;
             final swapTx = list[0] as SwapTx;
             final isReceive = list[1] as bool;
+            final SendCubit? sendCubit =
+                list.length == 3 ? list[2] as SendCubit : null;
 
-            return ChainSwapProgressPage(swapTx: swapTx, isReceive: isReceive);
+            return ChainSwapProgressPage(
+              swapTx: swapTx,
+              isReceive: isReceive,
+              sendCubit: sendCubit,
+            );
           },
         ),
         GoRoute(

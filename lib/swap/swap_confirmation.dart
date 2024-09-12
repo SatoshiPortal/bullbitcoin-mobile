@@ -12,7 +12,7 @@ import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
-import 'package:bb_mobile/swap/swap_page_progress.dart';
+import 'package:bb_mobile/swap/onchain_listeners.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -72,7 +72,8 @@ class _SwapConfirmationPageState extends State<SwapConfirmationPage> {
           flexibleSpace: const _SwapAppBar(),
           automaticallyImplyLeading: false,
         ),
-        body: _Screen(fromWalletId: widget.fromWalletId),
+        body:
+            OnchainListeners(child: _Screen(fromWalletId: widget.fromWalletId)),
       ),
     );
   }
@@ -120,8 +121,8 @@ class _Screen extends StatelessWidget {
       (CurrencyCubit cubit) => cubit.state.defaultFiatCurrency?.shortName ?? '',
     );
 
-    final sent = context.select((SendCubit cubit) => cubit.state.sent);
-    if (sent) return ChainSwapProgressWidget();
+    // final sent = context.select((SendCubit cubit) => cubit.state.sent);
+    // if (sent) return ChainSwapProgressWidget();
 
     final showWarning = context.select(
       (CreateSwapCubit x) => x.state.showSwapWarning(),

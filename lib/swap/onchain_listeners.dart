@@ -1,4 +1,5 @@
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
@@ -22,15 +23,19 @@ class OnchainListeners extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        // BlocListener<CurrencyCubit, CurrencyState>(
-        //   listenWhen: (previous, current) => previous.amount != current.amount,
-        //   listener: (context, state) {
-        //     final isLn = context.read<SendCubit>().state.isLnInvoice();
-        //     if (isLn) return;
-        //     context.read<SendCubit>().updateAddress(null);
-        //     // context.read<SendCubit>().selectWallets();
-        //   },
-        // ),
+        BlocListener<SendCubit, SendState>(
+          listenWhen: (previous, current) =>
+              previous.sent == false && current.sent == true,
+          listener: (context, state) async {
+            final inConfPage =
+                context.read<NavName>().state == '/swap-confirmation';
+            if (inConfPage == false) return;
+            final sendCubit = context.read<SendCubit>();
+            final extra = [state.tx!.swapTx!, false, sendCubit];
+            locator<GoRouter>().pop();
+            locator<GoRouter>().push('/onchain-swap-progress', extra: extra);
+          },
+        ),
         BlocListener<CreateSwapCubit, SwapState>(
           listenWhen: (previous, current) => previous.swapTx != current.swapTx,
           listener: (context, state) async {
