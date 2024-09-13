@@ -17,7 +17,6 @@ class SwapState with _$SwapState {
     double? errHighFees,
     // Wallet? updatedWallet,
     Fees? allFees, // TODO: Obsolete
-
     SubmarineFeesAndLimits? submarineFees,
     ReverseFeesAndLimits? reverseFees,
     String? errAllFees,

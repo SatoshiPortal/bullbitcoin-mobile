@@ -722,7 +722,10 @@ extension X on SwapStatus? {
       case SwapStatus.txnRefunded:
         status = ('Refunded', 'The swap has been successfully refunded.');
       case SwapStatus.txnFailed:
-        status = ('Transaction Failed', 'The swap will be refunded.');
+        status = (
+          'Transaction Failed',
+          'If a payment was made, it will be refunded.'
+        );
       case SwapStatus.txnLockupFailed:
         status = ('Transaction Lockup Failed', 'The swap will be refunded.');
       case SwapStatus.invoiceSet:

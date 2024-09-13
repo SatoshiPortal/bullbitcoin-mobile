@@ -150,6 +150,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
       boltzUrl: boltzurl,
       isLiquid: walletIsLiquid,
       claimAddress: claimAddress,
+      description: label,
     );
     if (errCreatingInv != null) {
       emit(
@@ -234,82 +235,6 @@ class CreateSwapCubit extends Cubit<SwapState> {
 
   void removeWarnings() =>
       emit(state.copyWith(errSmallAmt: false, errHighFees: null));
-
-  // Future createBtcLnSubSwap({
-  //   required Wallet wallet,
-  //   required String invoice,
-  //   required int amount,
-  //   String? label,
-  //   required bool isTestnet,
-  //   required String networkUrl,
-  // }) async {
-  //   emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
-
-  //   final (fees, errFees) = await _swapBoltz.getFeesAndLimits(
-  //     boltzUrl: isTestnet ? boltzTestnet : boltzMainnet,
-  //   );
-  //   if (errFees != null) {
-  //     emit(
-  //       state.copyWith(
-  //         errCreatingSwapInv: errFees.toString(),
-  //         generatingSwapInv: false,
-  //       ),
-  //     );
-  //     return;
-  //   }
-
-  //   final (seed, errReadingSeed) = await _walletSensitiveRepository.readSeed(
-  //     fingerprintIndex: wallet.getRelatedSeedStorageString(),
-  //   );
-  //   if (errReadingSeed != null) {
-  //     emit(
-  //       state.copyWith(
-  //         errCreatingSwapInv: errReadingSeed.toString(),
-  //         generatingSwapInv: false,
-  //       ),
-  //     );
-  //     return;
-  //   }
-
-  //   final (swap, err) = await _swapBoltz.sendV2(
-  //     boltzUrl: isTestnet ? boltzTestnetV2 : boltzMainnetV2,
-  //     mnemonic: seed!.mnemonic,
-  //     index: wallet.revKeyIndex,
-  //     invoice: invoice,
-  //     network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
-  //     electrumUrl: networkUrl,
-  //     isLiquid: false,
-  //   );
-  //   if (err != null) {
-  //     emit(
-  //       state.copyWith(
-  //         errCreatingSwapInv: err.message,
-  //         generatingSwapInv: false,
-  //       ),
-  //     );
-  //     return;
-  //   }
-
-  //   final updatedSwap = swap!.copyWith(
-  //     boltzFees: (fees!.btcReverse.boltzFeesRate * amount / 100) as int,
-  //     lockupFees: fees.btcReverse.lockupFees,
-  //     claimFees: fees.btcReverse.claimFeesEstimate,
-  //   );
-
-  //   emit(
-  //     state.copyWith(
-  //       generatingSwapInv: false,
-  //       errCreatingSwapInv: '',
-  //       swapTx: updatedSwap,
-  //     ),
-  //   );
-
-  //   await _saveSwapToWallet(
-  //     swapTx: updatedSwap,
-  //     wallet: wallet,
-  //     label: label,
-  //   );
-  // }
 
   Future createSubSwapForSend({
     required Wallet wallet,
@@ -528,8 +453,6 @@ class CreateSwapCubit extends Cubit<SwapState> {
   void setSwapTx(SwapTx swapTx) => emit(state.copyWith(swapTx: swapTx));
 
   void clearSwapTx() => emit(state.copyWith(swapTx: null));
-
-  // void clearUpdatedWallet() => emit(state.copyWith(updatedWallet: null));
 
   void clearErrors() => emit(
         state.copyWith(

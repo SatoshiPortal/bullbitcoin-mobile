@@ -112,6 +112,7 @@ class SwapBoltz {
     required String boltzUrl,
     required bool isLiquid,
     required String claimAddress,
+    String? description,
   }) async {
     try {
       late SwapTx swapTx;
@@ -124,6 +125,7 @@ class SwapBoltz {
           electrumUrl: electrumUrl,
           boltzUrl: boltzUrl,
           outAddress: claimAddress,
+          description: description,
         );
         // final obj = res;
 
@@ -146,6 +148,7 @@ class SwapBoltz {
           electrumUrl: electrumUrl,
           boltzUrl: boltzUrl,
           outAddress: claimAddress,
+          description: description,
         );
         // final obj = res;
 
