@@ -15,6 +15,7 @@ class WalletDropDown extends StatelessWidget {
     required this.value,
     this.isCentered = true,
     this.disabled = false,
+    this.showSpendableBalance = false,
   });
 
   final List<Wallet> items;
@@ -22,6 +23,7 @@ class WalletDropDown extends StatelessWidget {
   final Wallet value;
   final bool isCentered;
   final bool disabled;
+  final bool showSpendableBalance;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +56,7 @@ class WalletDropDown extends StatelessWidget {
                 onChanged.call(value);
               },
         selectedItemBuilder: (context) => items.map((key) {
-          final widget = buildCard(key, balance, unit);
+          final widget = buildCard(key, balance, unit, showSpendableBalance);
           return widget;
         }).toList(),
         items: [
@@ -71,12 +73,30 @@ class WalletDropDown extends StatelessWidget {
   }
 }
 
-Widget buildCard(Wallet w, String balance, String unit) {
-  return WalletCard(
+Widget buildCard(
+  Wallet w,
+  String balance,
+  String unit,
+  bool showSpendableBalance,
+) {
+  final walletCard = WalletCard(
     wallet: w,
     balance: balance,
     balanceUnit: unit,
   );
+  if (showSpendableBalance == false) {
+    return walletCard;
+  }
+
+  final frozenUtxos = w.allFreezedUtxos();
+  if (frozenUtxos.isEmpty) {
+    return walletCard;
+  } else {
+    final balance = w.balanceWithoutFrozenUTXOs();
+    return Column(
+      children: [walletCard, Text('Spendable: $balance sats')],
+    );
+  }
 }
 
 Widget buildMenuItem(Wallet w) {

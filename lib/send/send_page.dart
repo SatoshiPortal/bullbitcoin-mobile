@@ -261,6 +261,7 @@ class WalletSelectionDropDown extends StatelessWidget {
       child: IgnorePointer(
         ignoring: oneWallet,
         child: WalletDropDown(
+          showSpendableBalance: true,
           items: walletBlocs.map((wb) => wb.state.wallet!).toList(),
           onChanged: (wallet) {
             final blocs =

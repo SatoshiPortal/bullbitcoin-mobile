@@ -158,6 +158,7 @@ class _SwapWidgetState extends State<SwapWidget> {
             height: 4,
           ),
           WalletDropDown(
+            showSpendableBalance: true,
             items: fromWallets,
             onChanged: _fromWalletChanged,
             value: selectedFromWallet,
