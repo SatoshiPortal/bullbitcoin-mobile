@@ -149,6 +149,9 @@ class _BBTextInputState extends State<BBTextInput> {
           decoration: InputDecoration(
             suffixIcon: widget.rightIcon,
             hintText: widget.hint,
+            hintStyle: TextStyle(
+              color: context.colour.onPrimaryContainer.withOpacity(0.5),
+            ),
             // suffix: widget.rightIcon,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
@@ -185,6 +188,9 @@ class _BBTextInputState extends State<BBTextInput> {
             onTap: () => widget.onEnter?.call(),
             decoration: InputDecoration(
               hintText: widget.hint,
+              hintStyle: TextStyle(
+                color: context.colour.onPrimaryContainer.withOpacity(0.5),
+              ),
               counterText: '',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -227,6 +233,9 @@ class _BBTextInputState extends State<BBTextInput> {
             onTap: () => widget.onEnter?.call(),
             decoration: InputDecoration(
               hintText: widget.hint,
+              hintStyle: TextStyle(
+                color: context.colour.onPrimaryContainer.withOpacity(0.5),
+              ),
               suffixIcon: IconButton(
                 icon: Padding(
                   padding: const EdgeInsets.only(right: 16),
@@ -269,6 +278,9 @@ class _BBTextInputState extends State<BBTextInput> {
             keyboardType: widget.onlyNumbers ? TextInputType.number : null,
             decoration: InputDecoration(
               hintText: widget.hint,
+              hintStyle: TextStyle(
+                color: context.colour.onPrimaryContainer.withOpacity(0.5),
+              ),
               suffixIcon: widget.rightIcon,
               // IconButton(
               //   icon: Padding(
@@ -314,6 +326,9 @@ class _BBTextInputState extends State<BBTextInput> {
             enableIMEPersonalizedLearning: false,
             decoration: InputDecoration(
               hintText: widget.hint,
+              hintStyle: TextStyle(
+                color: context.colour.onPrimaryContainer.withOpacity(0.5),
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -522,6 +537,9 @@ class _BBAmountInputState2 extends State<BBAmountInput> {
         ],
         decoration: InputDecoration(
           hintText: widget.hint,
+          hintStyle: TextStyle(
+            color: context.colour.onPrimaryContainer.withOpacity(0.5),
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
             borderSide: BorderSide(color: borderColor),
