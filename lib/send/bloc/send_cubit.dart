@@ -869,6 +869,8 @@ class SendCubit extends Cubit<SendState> {
     final (wallet, tx, feeAmt) = buildResp!;
 
     if (!wallet!.watchOnly()) {
+      _currencyCubit.updateAmountDirect((tx?.sent ?? 0) - (tx?.received ?? 0));
+
       emit(
         state.copyWith(
           sending: false,

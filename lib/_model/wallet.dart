@@ -451,13 +451,11 @@ class Wallet with _$Wallet {
   }
 
   List<UTXO> allFreezedUtxos() {
-    final all = <UTXO>[];
-    all.addAll(utxos);
-    return all
-        .where(
-          (utxo) => utxo.spendable == false,
-        )
-        .toList();
+    return utxos.where((utxo) => utxo.spendable == false).toList();
+  }
+
+  List<UTXO> spendableUtxos() {
+    return utxos.where((utxo) => utxo.spendable == true).toList();
   }
 
   bool isActive() {

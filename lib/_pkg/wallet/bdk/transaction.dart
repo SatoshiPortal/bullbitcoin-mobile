@@ -438,22 +438,32 @@ class BDKTransactions {
           Err('Invalid Address. Network Mismatch!'),
         );
       }
+      final frozenUtxos = wallet.allFreezedUtxos();
+      final spendableUtxos = wallet.spendableUtxos();
+
       var txBuilder = bdk.TxBuilder();
       final bdkAddress = await bdk.Address.fromString(
         s: address,
         network: wallet.getBdkNetwork()!,
       );
-      final script = await bdkAddress.scriptPubkey();
-      if (sendAllCoin) {
-        txBuilder = txBuilder.drainWallet().drainTo(script);
-      } else {
-        txBuilder = txBuilder.addRecipient(script, amount!);
-      }
 
-      final frozenUtxos = wallet.allFreezedUtxos();
       for (final utxo in frozenUtxos) {
         final outPoint = utxo.getUtxosOutpoints();
         txBuilder = txBuilder.addUnSpendable(outPoint);
+      }
+
+      final script = await bdkAddress.scriptPubkey();
+      if (sendAllCoin) {
+        if (frozenUtxos.isEmpty) {
+          txBuilder = txBuilder.drainWallet().drainTo(script);
+        } else {
+          amount = spendableUtxos
+              .map((u) => u.value)
+              .reduce((value, element) => value + element);
+          txBuilder = txBuilder.drainWallet().drainTo(script);
+        }
+      } else {
+        txBuilder = txBuilder.addRecipient(script, amount!);
       }
 
       if (isManualSend) {
