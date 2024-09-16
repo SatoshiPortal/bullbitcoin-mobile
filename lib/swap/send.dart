@@ -78,11 +78,6 @@ class _SwapFees extends StatelessWidget {
       ),
     );
 
-    final walletName = context.select(
-      (SendCubit cubit) =>
-          cubit.state.selectedWalletBloc?.state.wallet?.name ?? '',
-    );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -97,7 +92,6 @@ class _SwapFees extends StatelessWidget {
               onPressed: () {
                 FeePopUp.openPopup(
                   context,
-                  walletName,
                   lockupFee,
                   swaptx.claimFees ?? 0,
                   swaptx.boltzFees ?? 0,
@@ -335,37 +329,6 @@ class SendTick extends StatelessWidget {
                 ),
               ),
             ),
-    );
-  }
-}
-
-class _OnChainWarning extends StatelessWidget {
-  const _OnChainWarning({required this.swapTx});
-
-  final SwapTx swapTx;
-
-  @override
-  Widget build(BuildContext context) {
-    if (swapTx.isLiquid()) return const SizedBox.shrink();
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          FontAwesomeIcons.triangleExclamation,
-          color: context.colour.primary,
-          size: 20,
-        ),
-        const Gap(8),
-        const SizedBox(
-          width: 250,
-          child: BBText.bodySmall(
-            'Your onchain payment has been sent, but the swap is still in progress. It will take on on-chain confirmation before the Lightning payment succeeds.',
-            isRed: true,
-            fontSize: 10,
-          ),
-        ),
-      ],
     );
   }
 }

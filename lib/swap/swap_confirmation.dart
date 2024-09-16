@@ -191,7 +191,6 @@ class _Screen extends StatelessWidget {
                   onPressed: () {
                     FeePopUp.openPopup(
                       context,
-                      walletName,
                       senderFee,
                       swapTx.claimFees ?? 0,
                       swapTx.boltzFees ?? 0,

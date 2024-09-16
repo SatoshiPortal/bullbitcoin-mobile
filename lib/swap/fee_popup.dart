@@ -7,20 +7,17 @@ import 'package:gap/gap.dart';
 class FeePopUp extends StatelessWidget {
   const FeePopUp({
     super.key,
-    required this.fromWalletName,
     required this.lockupFees,
     required this.claimFees,
     required this.boltzFees,
   });
 
-  final String fromWalletName;
   final int lockupFees;
   final int claimFees;
   final int boltzFees;
 
   static Future openPopup(
     BuildContext context,
-    String walletName,
     int lockupFees,
     int claimFees,
     int boltzFees,
@@ -28,7 +25,6 @@ class FeePopUp extends StatelessWidget {
     return showBBBottomSheet(
       context: context,
       child: FeePopUp(
-        fromWalletName: walletName,
         lockupFees: lockupFees,
         claimFees: claimFees,
         boltzFees: boltzFees,

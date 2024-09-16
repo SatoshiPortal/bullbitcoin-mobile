@@ -20,6 +20,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/swap/fee_popup.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
@@ -505,6 +506,9 @@ class _SwapDetails extends StatelessWidget {
       ),
     ];
 
+    final lockupFee = swap.isReverse() ? 0 : tx.fee;
+    final claimFee = swap.isReverse() ? tx.fee : swap.claimFees;
+
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: AnimatedContainer(
@@ -543,7 +547,26 @@ class _SwapDetails extends StatelessWidget {
             ),
             if (fees != 0) ...[
               const Gap(24),
-              const BBText.title('Total fees'),
+              Row(
+                children: [
+                  const BBText.title('Total fees'),
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    iconSize: 22.0,
+                    padding: EdgeInsets.zero,
+                    color: context.colour.onPrimaryContainer,
+                    onPressed: () {
+                      FeePopUp.openPopup(
+                        context,
+                        lockupFee ?? 0,
+                        claimFee ?? 0,
+                        swap.boltzFees ?? 0,
+                      );
+                      // show popup
+                    },
+                  ),
+                ],
+              ),
               const Gap(4),
               Row(
                 children: [
@@ -899,6 +922,9 @@ class _OnchainSwapDetails extends StatelessWidget {
       const Gap(24),
     ];
 
+    final lockupFee = swap.isChainReceive() ? 0 : tx.fee;
+    final claimFee = swap.isChainReceive() ? tx.fee : swap.claimFees;
+
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: AnimatedContainer(
@@ -940,7 +966,26 @@ class _OnchainSwapDetails extends StatelessWidget {
             ),
             const Gap(24),
             if (fees != 0) ...[
-              const BBText.title('Total fees'),
+              Row(
+                children: [
+                  const BBText.title('Total fees'),
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    iconSize: 22.0,
+                    padding: EdgeInsets.zero,
+                    color: context.colour.onPrimaryContainer,
+                    onPressed: () {
+                      FeePopUp.openPopup(
+                        context,
+                        lockupFee ?? 0,
+                        claimFee ?? 0,
+                        swap.boltzFees ?? 0,
+                      );
+                      // show popup
+                    },
+                  ),
+                ],
+              ),
               const Gap(4),
               Row(
                 children: [
