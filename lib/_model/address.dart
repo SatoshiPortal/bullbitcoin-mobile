@@ -1,5 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
+import 'dart:core';
+
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -22,7 +24,8 @@ enum AddressStatus {
 @freezed
 class Address with _$Address {
   factory Address({
-    required String address, // for btc, this holds regular address; for liquid, this hold confidential address
+    required String address,
+    // for btc, this holds regular address; for liquid, this hold confidential address
     // String? confidential, // For liquid // not used now // remove this
     String? standard, // For liquid
     int? index,
@@ -37,7 +40,8 @@ class Address with _$Address {
   }) = _Address;
   const Address._();
 
-  factory Address.fromJson(Map<String, dynamic> json) => _$AddressFromJson(json);
+  factory Address.fromJson(Map<String, dynamic> json) =>
+      _$AddressFromJson(json);
 
   // TODO: UTXO
   // Updated with UTXO change
@@ -50,15 +54,21 @@ class Address with _$Address {
   }
 
   String miniString() {
-    return address.substring(0, 6) + '[...]' + address.substring(address.length - 6);
+    return address.substring(0, 6) +
+        '[...]' +
+        address.substring(address.length - 6);
   }
 
   String largeString() {
-    return address.substring(0, 10) + '[...]' + address.substring(address.length - 10);
+    return address.substring(0, 10) +
+        '[...]' +
+        address.substring(address.length - 10);
   }
 
   String toShortString() {
-    return address.substring(0, 5) + '...' + address.substring(address.length - 5);
+    return address.substring(0, 5) +
+        '...' +
+        address.substring(address.length - 5);
   }
 
   String getKindString() {
@@ -92,10 +102,16 @@ class UTXO with _$UTXO {
   String toString() {
     return '$txid:$txIndex';
   }
+
+  bdk.OutPoint getUtxosOutpoints() {
+    return bdk.OutPoint(txid: txid, vout: txIndex);
+  }
 }
 
 extension Y on List<UTXO> {
-  bool containsUtxo(UTXO utxo) => where((utx) => utx.toString() == utxo.toString()).isNotEmpty;
+  bool containsUtxo(UTXO utxo) =>
+      where((utx) => utx.toString() == utxo.toString()).isNotEmpty;
 
-  List<UTXO> removeUtxo(UTXO utxo) => where((utx) => utx.toString() != utxo.toString()).toList();
+  List<UTXO> removeUtxo(UTXO utxo) =>
+      where((utx) => utx.toString() != utxo.toString()).toList();
 }

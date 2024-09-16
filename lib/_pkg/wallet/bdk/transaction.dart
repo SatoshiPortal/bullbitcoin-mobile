@@ -450,10 +450,11 @@ class BDKTransactions {
         txBuilder = txBuilder.addRecipient(script, amount!);
       }
 
-      for (final address in wallet.allFreezedAddresses())
-        for (final unspendable
-            in address.getUnspentUtxosOutpoints(wallet.utxos))
-          txBuilder = txBuilder.addUnSpendable(unspendable);
+      final frozenUtxos = wallet.allFreezedUtxos();
+      for (final utxo in frozenUtxos) {
+        final outPoint = utxo.getUtxosOutpoints();
+        txBuilder = txBuilder.addUnSpendable(outPoint);
+      }
 
       if (isManualSend) {
         txBuilder = txBuilder.manuallySelectedOnly();

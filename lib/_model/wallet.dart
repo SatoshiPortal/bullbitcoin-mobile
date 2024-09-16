@@ -450,6 +450,16 @@ class Wallet with _$Wallet {
         .toList();
   }
 
+  List<UTXO> allFreezedUtxos() {
+    final all = <UTXO>[];
+    all.addAll(utxos);
+    return all
+        .where(
+          (utxo) => utxo.spendable == false,
+        )
+        .toList();
+  }
+
   bool isActive() {
     if (balance != null && balance! > 0) return true;
     if (transactions.isNotEmpty) return true;
