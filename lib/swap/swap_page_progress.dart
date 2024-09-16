@@ -129,7 +129,7 @@ class _ChainSwapProgressWidgetState extends State<ChainSwapProgressWidget> {
             BBButton.big(
               label: 'View Transaction',
               onPressed: () {
-                context.push('/tx', extra: [tx, false]);
+                context.push('/tx', extra: [tx, true]);
               },
             ).animate().fadeIn(),
           // // if (paid && !settled) const BBText.body('Closing the swap ...'),
