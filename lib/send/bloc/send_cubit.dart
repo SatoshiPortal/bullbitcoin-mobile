@@ -454,7 +454,7 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    emit(state.copyWith(showSendButton: true));
+    emit(state.copyWith(showSendButton: true, errScanningAddress: ''));
   }
 
   void resetWalletSelection({bool clearInv = true, bool changeWallet = true}) {
@@ -487,6 +487,7 @@ class SendCubit extends Cubit<SendState> {
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(state.copyWith(selectedWalletBloc: walletBloc));
     sendAllCoin(false);
+    _checkBalance();
   }
 
   void disabledDropdownClicked() {
@@ -541,6 +542,9 @@ class SendCubit extends Cubit<SendState> {
             ? state.invoice!.getAmount()
             : _currencyCubit.state.amount;
     _currencyCubit.updateAmountDirect(amount);
+    _currencyCubit.updateAmount(amount == 0 ? '' : amount.toString());
+
+    _checkBalance();
   }
 
   void utxoSelected(UTXO utxo) {
@@ -843,7 +847,7 @@ class SendCubit extends Cubit<SendState> {
     final bool enableRbf;
     enableRbf = !state.disableRBF;
 
-    emit(state.copyWith(sending: true, errSending: ''));
+    emit(state.copyWith(sending: true, errSending: '', signed: false));
 
     final (buildResp, err) = await _walletTx.buildTx(
       wallet: localWallet,
@@ -869,8 +873,6 @@ class SendCubit extends Cubit<SendState> {
     final (wallet, tx, feeAmt) = buildResp!;
 
     if (!wallet!.watchOnly()) {
-      _currencyCubit.updateAmountDirect((tx?.sent ?? 0) - (tx?.received ?? 0));
-
       emit(
         state.copyWith(
           sending: false,
@@ -880,9 +882,10 @@ class SendCubit extends Cubit<SendState> {
           signed: true,
         ),
       );
-      // if (swaptx != null) sendClicked(swaptx: swaptx);
 
-      return;
+      final amountDirect = (tx.sent ?? 0) - (tx.received ?? 0);
+      print('amountDirect: $amountDirect');
+      // _currencyCubit.updateAmountDirect(amountDirect);
     } else {
       state.selectedWalletBloc!.add(
         UpdateWallet(
