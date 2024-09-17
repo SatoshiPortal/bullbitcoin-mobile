@@ -392,7 +392,9 @@ class HomeState with _$HomeState {
       final enoughBalance = walletBloc.state.balanceSats() >= sats;
       if (enoughBalance) walletsWithEnoughBalance.add(walletBloc);
     }
-    return walletsWithEnoughBalance;
+    return walletsWithEnoughBalance.isEmpty
+        ? wallets
+        : walletsWithEnoughBalance;
   }
 
   Set<({String info, WalletBloc walletBloc})> homeWarnings(BBNetwork network) {
