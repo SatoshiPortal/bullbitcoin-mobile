@@ -376,6 +376,7 @@ class NetworkCubit extends Cubit<NetworkState> {
                 'Pls check testnet electrum URL. Cannot connect to electrum',
           ),
         );
+        return;
       }
 
       final index =
