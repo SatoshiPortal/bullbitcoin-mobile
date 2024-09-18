@@ -147,6 +147,14 @@ class NetworkStatus extends StatelessWidget {
             ),
             const Gap(8),
             BBText.bodySmall(isLiq ? liqNetwork : network),
+            if (networkConnected == false && errLoadingNetwork.isEmpty) ...[
+              const Gap(24),
+              const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(),
+              ),
+            ],
           ],
         ),
         if (errLoadingNetwork.isNotEmpty) ...[
@@ -487,6 +495,8 @@ class PrivacyNoticePopUp extends StatelessWidget {
                     context.read<NetworkCubit>().networkConfigsSaveClicked(
                           isLiq: context.read<_NetworkSelector>().state,
                         );
+                    context.pop();
+                    /*
                     await Future.delayed(const Duration(milliseconds: 500));
                     final err =
                         context.read<NetworkCubit>().state.errLoadingNetworks;
@@ -496,6 +506,7 @@ class PrivacyNoticePopUp extends StatelessWidget {
                       context
                         ..pop()
                         ..pop();
+                        */
                   },
                 ),
               ),
