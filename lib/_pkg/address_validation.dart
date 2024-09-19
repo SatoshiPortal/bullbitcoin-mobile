@@ -59,7 +59,7 @@ Future<(AddressNetwork?, Err?)> checkIfValidBip21BitcoinUri(
   bdk.Network network,
 ) async {
   if (address.length > bitcoinUri.length) {
-    final addr = address.substring(bitcoinUri.length);
+    final addr = address.substring(bitcoinUri.length).split('?').first;
     final (_, err) = await checkIfValidBitcoinUri(addr, network);
 
     if (err == null) {
@@ -90,7 +90,7 @@ Future<(AddressNetwork?, Err?)> checkIfValidBip21LiquidUri(
 ) async {
   if (address.length > liquidUris[0].length) {
     // since both liquid uris are of same length
-    final addr = address.substring(liquidUris[0].length);
+    final addr = address.substring(liquidUris[0].length).split('?').first;
     final (_, err) = await checkIfValidLiquidUri(addr);
 
     if (err == null) {
