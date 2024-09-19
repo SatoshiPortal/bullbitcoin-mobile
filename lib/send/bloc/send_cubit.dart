@@ -94,7 +94,7 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           errScanningAddress: err.toString(),
           scanningAddress: false,
-          address: '',
+          // address: '',
           invoice: null,
           note: '',
         ),
@@ -1043,6 +1043,16 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void processSendButton(String label) async {
+    final network =
+        _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final (_, addressError) =
+        await state.getPaymentNetwork(state.address, network);
+
+    if (addressError != null) {
+      emit(state.copyWith(errAddresses: 'Invalid address'));
+      return;
+    }
+
     final isOnchainSwap = state.couldBeOnchainSwap();
     final wallet = state.selectedWalletBloc!.state.wallet!;
 
