@@ -86,7 +86,9 @@ class SendCubit extends Cubit<SendState> {
       ),
     );
     final address = addr ?? state.address;
-    final (paymentNetwork, err) = state.getPaymentNetwork(address);
+    final network = _networkCubit.state.getBBNetwork();
+    final (paymentNetwork, err) =
+        await state.getPaymentNetwork(address, network);
     if (err != null) {
       emit(
         state.copyWith(

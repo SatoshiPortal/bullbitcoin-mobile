@@ -1,9 +1,12 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/address_validation.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/utils.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'send_state.freezed.dart';
@@ -100,49 +103,69 @@ class SendState with _$SendState {
   bool checkIfMainWalletSelected() =>
       selectedWalletBloc?.state.wallet?.mainWallet ?? false;
 
-  (AddressNetwork?, Err?) getPaymentNetwork(String address) {
-    final bitcoinMainnetPrefixes = ['1', '3', 'bc1', 'BC1'];
-    final bitcoinTestnetPrefixesCase = ['m', 'n', '2', 'tb1', 'TB1'];
-    final liquidMainnetPrefixesCase = ['lq1', 'LQ1', 'VJL', 'ex1', 'EX1', 'G'];
-    final liquidTestnetPrefixes = ['tlq1', 'TLQ1'];
-    final lightningPrefixes = [
-      'lnbc',
-      'LNBC',
-      'lntb',
-      'LNTB',
-      'lnbs',
-      'LNBS',
-      'lnbcrt',
-      'LNBCRT',
-      'lightning:',
-    ];
-    const lightningUri = 'lightning:';
-    const bitcoinUri = 'bitcoin:';
-    const liquidUris = ['liquidnetwork:', 'liquidtestnet:'];
+  Future<(AddressNetwork?, Err?)> getPaymentNetwork(
+    String address,
+    BBNetwork network,
+  ) async {
+    // final bitcoinMainnetPrefixes = ['1', '3', 'bc1', 'BC1'];
+    // final bitcoinTestnetPrefixesCase = ['m', 'n', '2', 'tb1', 'TB1'];
+    // final liquidMainnetPrefixesCase = ['lq1', 'LQ1', 'VJL', 'ex1', 'EX1', 'G'];
+    // final liquidTestnetPrefixes = ['tlq1', 'TLQ1'];
+    // final lightningPrefixes = [
+    //   'lnbc',
+    //   'LNBC',
+    //   'lntb',
+    //   'LNTB',
+    //   'lnbs',
+    //   'LNBS',
+    //   'lnbcrt',
+    //   'LNBCRT',
+    //   'lightning:',
+    // ];
+    // const lightningUri = 'lightning:';
+    // const bitcoinUri = 'bitcoin:';
+    // const liquidUris = ['liquidnetwork:', 'liquidtestnet:'];
+
+    // const a = lwk.Address.new(standard: '', confidential: '', index: 1);
+    // lwk.Address.validate(addressString: '');
+    // boltz.DecodedInvoice.fromString(s: '');
 
     final lowerAddress = address.toLowerCase();
+
+    final bdkNetwork = network == BBNetwork.Mainnet
+        ? bdk.Network.bitcoin
+        : bdk.Network.testnet;
     try {
-      if (lowerAddress.contains(lightningUri))
-        return (AddressNetwork.bip21Lightning, null);
-      if (lowerAddress.contains(bitcoinUri))
-        return (AddressNetwork.bip21Bitcoin, null);
-      else if (liquidUris.any((prefix) => lowerAddress.startsWith(prefix)))
-        return (AddressNetwork.bip21Liquid, null);
-      else if (lightningPrefixes
-          .any((prefix) => lowerAddress.startsWith(prefix)))
-        return (AddressNetwork.lightning, null);
-      else if (liquidMainnetPrefixesCase
-              .any((prefix) => address.startsWith(prefix)) ||
-          liquidTestnetPrefixes
-              .any((prefix) => lowerAddress.startsWith(prefix)))
-        return (AddressNetwork.liquid, null);
-      else if (bitcoinMainnetPrefixes
-              .any((prefix) => lowerAddress.startsWith(prefix)) ||
-          bitcoinTestnetPrefixesCase
-              .any((prefix) => address.startsWith(prefix)))
-        return (AddressNetwork.bitcoin, null);
-      else if (isValidEmail(address))
+      if (lowerAddress.startsWith(lightningUri)) {
+        return checkIfValidLightningUri(lowerAddress);
+      } else if (lowerAddress.startsWith(bitcoinUri)) {
+        return checkIfValidBip21BitcoinUri(
+          lowerAddress,
+          bdkNetwork,
+        );
+      } else if (liquidUris.any((prefix) => lowerAddress.startsWith(prefix))) {
+        return checkIfValidBip21LiquidUri(lowerAddress);
+      }
+
+      final (lnSuccess, _) = await checkIfValidLightningUri(address);
+      if (lnSuccess != null) {
+        return (lnSuccess, null);
+      }
+
+      final (lqSuccess, _) = await checkIfValidLiquidUri(address);
+      if (lqSuccess != null) {
+        return (lqSuccess, null);
+      }
+
+      final (btcSuccess, _) = await checkIfValidBitcoinUri(address, bdkNetwork);
+      if (btcSuccess != null) {
+        return (btcSuccess, null);
+      }
+
+      if (isValidEmail(address)) {
         return (null, Err('LNURL not supported yet'));
+      }
+
       return (null, Err('Invalid address'));
     } catch (e) {
       return (null, Err(e.toString()));
