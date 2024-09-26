@@ -45,7 +45,7 @@ class _Screen extends StatelessWidget {
             ),
             Paragraph(
               text:
-                  'Keeping money on the Liquid Network is much safer using a traditional custodial wallet or an exchange.',
+                  'Keeping money on the Liquid Network is much safer than using a traditional custodial wallet or an exchange.',
             ),
             Paragraph(
               text:
