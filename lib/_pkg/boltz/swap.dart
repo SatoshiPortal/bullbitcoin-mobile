@@ -683,23 +683,6 @@ class SwapBoltz {
 
       final swap = swapTx.toChainSwap(swapSensitive);
 
-      String signedHex;
-      try {
-        signedHex = await swap.claim(
-          outAddress: swapTx.claimAddress!,
-          refundAddress: swapTx.refundAddress!,
-          absFee: claimFeesEstimate,
-          tryCooperate: tryCooperate,
-        );
-      } catch (e) {
-        signedHex = await swap.claim(
-          outAddress: swapTx.claimAddress!,
-          refundAddress: swapTx.refundAddress!,
-          absFee: claimFeesEstimate,
-          tryCooperate: false,
-        );
-      }
-
       final (btcElectrumUrl, errBtcUrl) = _networkRepository.bitcoinUrl;
       if (errBtcUrl != null) throw errBtcUrl;
       final (lbtcElectrumUrl, errLBtcUrl) = _networkRepository.liquidUrl;
@@ -708,6 +691,23 @@ class SwapBoltz {
         btcElectrumUrl: btcElectrumUrl!,
         lbtcElectrumUrl: lbtcElectrumUrl!,
       );
+
+      String signedHex;
+      try {
+        signedHex = await updatedSwap.claim(
+          outAddress: swapTx.claimAddress!,
+          refundAddress: swapTx.refundAddress!,
+          absFee: claimFeesEstimate,
+          tryCooperate: tryCooperate,
+        );
+      } catch (e) {
+        signedHex = await updatedSwap.claim(
+          outAddress: swapTx.claimAddress!,
+          refundAddress: swapTx.refundAddress!,
+          absFee: claimFeesEstimate,
+          tryCooperate: false,
+        );
+      }
 
       final (txid, errBroadcast) = await chainSwapInternalBroadcast(
         updatedSwap,
