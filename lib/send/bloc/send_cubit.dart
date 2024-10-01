@@ -1175,9 +1175,12 @@ class SendCubit extends Cubit<SendState> {
 
     await Future.delayed(Duration.zero);
 
-    int sweepAmount = 0;
+    int finalAmount = amount;
+    bool finalSweep = sweep;
     if (sweep == true) {
+      // } else {
       final feeRate = _networkFeesCubit.state.selectedOrFirst(true);
+
       final fees = await calculateFeeForSend(
         wallet: walletBloc.state.wallet,
         address: refundAddress,
@@ -1193,20 +1196,29 @@ class SendCubit extends Cubit<SendState> {
       }
 
       // sweepAmount = walletBloc.state.wallet!.balance! - fees;
+      final frozenUtxos = fromWallet.allFreezedUtxos().isNotEmpty;
+      int finalBalance = walletBloc.state.wallet!.balance!;
+      if (frozenUtxos == true) {
+        finalBalance = fromWallet.utxos
+            .where((UTXO utxo) => utxo.spendable)
+            .map((UTXO utxo) => utxo.value)
+            .reduce((v, elm) => v + elm);
+        finalSweep = false;
+      }
+
       final int magicNumber = wallet.isBitcoin()
           ? 0 // 30 // Rather abs fee is taken from above dummy drain tx
           : 1500;
-      sweepAmount =
-          walletBloc.state.wallet!.balance! - fees - magicNumber; // TODO:
+      finalAmount = finalBalance - fees - magicNumber; // TODO:
+      // }
       // -20 works for btc
       // -1500 works for l-btc
     }
 
     _swapCubit.createOnChainSwap(
       wallet: fromWallet,
-      amount:
-          sweep == true ? sweepAmount : amount, //20000, // 1010000, // amount,
-      sweep: sweep,
+      amount: finalAmount, //20000,
+      sweep: finalSweep,
       isTestnet: _networkCubit.state.testnet,
       btcElectrumUrl:
           btcNetworkUrlWithoutSSL, // 'electrum.blockstream.info:60002',
