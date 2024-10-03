@@ -43,6 +43,19 @@ class HomeState with _$HomeState {
     return blocs;
   }
 
+  List<WalletBloc> walletBlocsFromNetworkExcludeWatchOnly(BBNetwork network) {
+    final blocs = walletBlocs
+            ?.where(
+              (walletBloc) =>
+                  walletBloc.state.wallet?.network == network &&
+                  walletBloc.state.wallet!.watchOnly() == false,
+            )
+            .toList() ??
+        [];
+
+    return blocs;
+  }
+
   List<WalletBloc> walletBlocsNotMainFromNetwork(BBNetwork network) {
     final blocs = walletBlocs
             ?.where(

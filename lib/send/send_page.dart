@@ -250,8 +250,9 @@ class WalletSelectionDropDown extends StatelessWidget {
     if (oneWallet) enableDropdown = false;
 
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    final walletBlocs = context
-        .select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    final walletBlocs = context.select(
+      (HomeCubit _) => _.state.walletBlocsFromNetworkExcludeWatchOnly(network),
+    );
     final selectedWalletBloc =
         context.select((SendCubit _) => _.state.selectedWalletBloc);
 

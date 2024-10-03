@@ -119,7 +119,8 @@ class _Screen extends StatelessWidget {
     final network =
         context.select((NetworkCubit cubit) => cubit.state.getBBNetwork());
     final walletBlocs = context.select(
-      (HomeCubit cubit) => cubit.state.walletBlocsFromNetwork(network),
+      (HomeCubit cubit) =>
+          cubit.state.walletBlocsFromNetworkExcludeWatchOnly(network),
     );
     final wallets = walletBlocs.map((bloc) => bloc.state.wallet!).toList();
 
