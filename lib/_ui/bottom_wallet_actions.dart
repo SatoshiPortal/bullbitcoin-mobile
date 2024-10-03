@@ -37,6 +37,9 @@ class WalletActionButtons extends StatelessWidget {
     final leftImage = darkMode
         ? 'assets/images/swap_icon_white.png'
         : 'assets/images/swap_icon.png';
+
+    final canShowSend = walletBloc!.state.wallet?.watchOnly() == false;
+
     return Container(
       padding: const EdgeInsets.only(
         bottom: 16,
@@ -94,20 +97,22 @@ class WalletActionButtons extends StatelessWidget {
                     label: 'Receive',
                   ),
                 ),
-                const SizedBox(width: 16),
-                SizedBox(
-                  width: buttonWidth,
-                  child: BBButton.big(
-                    filled: true,
-                    onPressed: () async {
-                      context.push(
-                        '/send',
-                        extra: walletBloc?.state.wallet!.id,
-                      );
-                    },
-                    label: 'Send',
+                if (canShowSend) ...[
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: buttonWidth,
+                    child: BBButton.big(
+                      filled: true,
+                      onPressed: () async {
+                        context.push(
+                          '/send',
+                          extra: walletBloc?.state.wallet!.id,
+                        );
+                      },
+                      label: 'Send',
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ],

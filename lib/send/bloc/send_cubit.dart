@@ -237,19 +237,23 @@ class SendCubit extends Cubit<SendState> {
         ),
       );
     }
-    switch (state.paymentNetwork!) {
-      case AddressNetwork.bip21Bitcoin:
-        _processBitcoinAddress();
-      case AddressNetwork.bip21Liquid:
-        _processLiquidAddress();
-      case AddressNetwork.lightning:
-        _processLnInvoice();
-      case AddressNetwork.bitcoin:
-        _processBitcoinAddress();
-      case AddressNetwork.liquid:
-        _processLiquidAddress();
-      case AddressNetwork.bip21Lightning:
-        _processLnInvoice();
+
+    // Process address only if it has value.
+    if (state.address.isNotEmpty) {
+      switch (state.paymentNetwork!) {
+        case AddressNetwork.bip21Bitcoin:
+          _processBitcoinAddress();
+        case AddressNetwork.bip21Liquid:
+          _processLiquidAddress();
+        case AddressNetwork.lightning:
+          _processLnInvoice();
+        case AddressNetwork.bitcoin:
+          _processBitcoinAddress();
+        case AddressNetwork.liquid:
+          _processLiquidAddress();
+        case AddressNetwork.bip21Lightning:
+          _processLnInvoice();
+      }
     }
   }
 
