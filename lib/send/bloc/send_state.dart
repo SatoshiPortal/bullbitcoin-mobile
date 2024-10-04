@@ -46,6 +46,7 @@ class SendState with _$SendState {
     int? onChainAbsFee,
     @Default(false) bool onChainSweep,
     @Default(false) bool oneWallet,
+    @Default(false) bool drainUtxos,
   }) = _SendState;
   const SendState._();
 
@@ -140,11 +141,11 @@ class SendState with _$SendState {
         return checkIfValidBip21LightningUri(lowerAddress);
       } else if (lowerAddress.startsWith(bitcoinUri)) {
         return checkIfValidBip21BitcoinUri(
-          lowerAddress,
+          address,
           bdkNetwork,
         );
       } else if (liquidUris.any((prefix) => lowerAddress.startsWith(prefix))) {
-        return checkIfValidBip21LiquidUri(lowerAddress);
+        return checkIfValidBip21LiquidUri(address);
       }
 
       final (lnSuccess, _) = await checkIfValidLightningUri(address);
