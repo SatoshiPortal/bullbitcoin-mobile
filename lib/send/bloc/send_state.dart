@@ -137,7 +137,7 @@ class SendState with _$SendState {
         : bdk.Network.testnet;
     try {
       if (lowerAddress.startsWith(lightningUri)) {
-        return checkIfValidLightningUri(lowerAddress);
+        return checkIfValidBip21LightningUri(lowerAddress);
       } else if (lowerAddress.startsWith(bitcoinUri)) {
         return checkIfValidBip21BitcoinUri(
           lowerAddress,
