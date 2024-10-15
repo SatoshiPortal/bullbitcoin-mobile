@@ -196,53 +196,49 @@ class _Screen extends StatelessWidget {
     // END: ON CHAIN
     // **************
 
+    if (showWarning && !removeWarning && !walletIsLiquid)
+      return const _Warnings();
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (showWarning && !removeWarning && !walletIsLiquid)
-              const _Warnings()
-            else ...[
-              const Gap(32),
-              const ReceiveWalletsDropDown(),
-              const Gap(24),
-              if (!watchOnly && mainWallet) ...[
-                const SelectWalletType(),
-                const Gap(16),
-              ],
-              if (isChainSwap == true && swapTx == null) const ChainSwapForm(),
-              if (isChainSwap == true && swapTx != null) ...[
-                const ChainSwapDisplayReceive(),
-                const Gap(16),
-                const SwapFeesDetails(),
-              ],
-              if (isChainSwap == false && showQR) ...[
-                const ReceiveQR(),
-                const Gap(8),
-                ReceiveAddress(
-                  swapTx: swapTx,
-                  addressQr: addressQr,
-                ),
-                const Gap(8),
-                if (shouldShowForm) const BitcoinReceiveForm(),
-                if (paymentNetwork == PaymentNetwork.lightning || formSubmitted)
-                  const RequestedAmount(),
-                if (shouldShownDescription) const Gap(8),
-                if (shouldShownDescription) const PaymentDescription(),
-                const Gap(16),
-                const SwapFeesDetails(),
-              ] else if (isChainSwap == false) ...[
-                // const Gap(24),
-                const CreateLightningInvoice(),
-                // const Gap(24),
-                // const SwapHistoryButton(),
-              ],
-              const Gap(2),
-              if (isChainSwap == false) const WalletActions(),
-              const Gap(32),
+            const Gap(32),
+            const ReceiveWalletsDropDown(),
+            const Gap(24),
+            if (!watchOnly && mainWallet) ...[
+              const SelectWalletType(),
+              const Gap(16),
             ],
+            if (isChainSwap == true && swapTx == null) const ChainSwapForm(),
+            if (isChainSwap == true && swapTx != null) ...[
+              const ChainSwapDisplayReceive(),
+              const Gap(16),
+              const SwapFeesDetails(),
+            ],
+            if (isChainSwap == false && showQR) ...[
+              const ReceiveQR(),
+              const Gap(8),
+              ReceiveAddress(
+                swapTx: swapTx,
+                addressQr: addressQr,
+              ),
+              const Gap(8),
+              if (shouldShowForm) const BitcoinReceiveForm(),
+              if (paymentNetwork == PaymentNetwork.lightning || formSubmitted)
+                const RequestedAmount(),
+              if (shouldShownDescription) const Gap(8),
+              if (shouldShownDescription) const PaymentDescription(),
+              const Gap(16),
+              const SwapFeesDetails(),
+            ] else if (isChainSwap == false) ...[
+              const CreateLightningInvoice(),
+            ],
+            const Gap(2),
+            if (isChainSwap == false) const WalletActions(),
+            const Gap(32),
           ],
         ),
       ),
@@ -451,43 +447,54 @@ class _Warnings extends StatelessWidget {
     final errHighFees =
         context.select((CreateSwapCubit x) => x.state.swapTx!.highFees());
 
-    return WarningContainer(
-      children: [
-        const Gap(24),
-        if (errLowAmt) buildLowAmtWarn(swapTx.isChainSwap()),
-        if (errHighFees != null)
-          buildHighFeesWarn(
-            feePercentage: errHighFees,
-            amt: swapTx.outAmount,
-            fees: swapTx.totalFees() ?? 0,
-          ),
-        const Row(
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Icon(FontAwesomeIcons.lightbulb, size: 32),
-            Gap(8),
-            Expanded(child: BBText.titleLarge('Suggestions', isBold: true)),
-          ],
-        ),
-        const Gap(24),
-        const BBText.bodySmall('''
+            WarningContainer(
+              children: [
+                const Gap(24),
+                if (errLowAmt) buildLowAmtWarn(swapTx.isChainSwap()),
+                if (errHighFees != null)
+                  buildHighFeesWarn(
+                    feePercentage: errHighFees,
+                    amt: swapTx.outAmount,
+                    fees: swapTx.totalFees() ?? 0,
+                  ),
+                const Row(
+                  children: [
+                    Icon(FontAwesomeIcons.lightbulb, size: 32),
+                    Gap(8),
+                    Expanded(
+                        child: BBText.titleLarge('Suggestions', isBold: true)),
+                  ],
+                ),
+                const Gap(24),
+                const BBText.bodySmall('''
 1. Use the Instant Payment Wallet instead to receive payments below 0.01 BTC.
 
 2. If you want to add funds to your Secure Bitcoin Wallet from an external Lightning Wallet, send a larger amount. We recommend at minimum 0.01 BTC.
 
 3. It is more economical to make fewer swaps of larger amounts than to make many swaps of smaller amounts'''),
-        // const Gap(8),
-        // const _RemoveWarningMessage(),
-        const Gap(24),
-        Center(
-          child: BBButton.big(
-            leftIcon: Icons.send_outlined,
-            label: 'Continue anyways',
-            onPressed: () {
-              context.read<CreateSwapCubit>().removeWarnings();
-            },
-          ),
+                // const Gap(8),
+                // const _RemoveWarningMessage(),
+                const Gap(24),
+                Center(
+                  child: BBButton.big(
+                    leftIcon: Icons.send_outlined,
+                    label: 'Continue anyways',
+                    onPressed: () {
+                      context.read<CreateSwapCubit>().removeWarnings();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

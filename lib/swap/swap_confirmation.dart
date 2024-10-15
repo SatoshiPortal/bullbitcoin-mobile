@@ -136,17 +136,7 @@ class _Screen extends StatelessWidget {
     );
 
     if (showWarning == true) {
-      return const SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _Warnings(),
-            ],
-          ),
-        ),
-      );
+      return const _Warnings();
     }
 
     return SingleChildScrollView(
@@ -283,32 +273,42 @@ class _Warnings extends StatelessWidget {
       (NetworkCubit cubit) => cubit.state.calculatePrice(minAmt, currency),
     );
 
-    return WarningContainer(
-      children: [
-        const Gap(24),
-        if (errHighFees != null)
-          HighFeesWarn(
-            feePercentage: errHighFees,
-            amt: amtStr,
-            amtFiat: amtFiatStr,
-            fees: feeStr,
-            feesFiat: feesFiatStr,
-            minAmt: minAmtStr,
-            minAmtFiat: minAmtFiatStr,
-            // amt: swapTx.outAmount,
-            // fees: swapTx.totalFees() ?? 0,
-          ),
-        const Gap(24),
-        Center(
-          child: BBButton.big(
-            leftIcon: Icons.send_outlined,
-            label: 'Continue anyways',
-            onPressed: () {
-              context.read<CreateSwapCubit>().removeWarnings();
-            },
-          ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            WarningContainer(
+              children: [
+                const Gap(24),
+                if (errHighFees != null)
+                  HighFeesWarn(
+                    feePercentage: errHighFees,
+                    amt: amtStr,
+                    amtFiat: amtFiatStr,
+                    fees: feeStr,
+                    feesFiat: feesFiatStr,
+                    minAmt: minAmtStr,
+                    minAmtFiat: minAmtFiatStr,
+                    // amt: swapTx.outAmount,
+                    // fees: swapTx.totalFees() ?? 0,
+                  ),
+                const Gap(24),
+                Center(
+                  child: BBButton.big(
+                    leftIcon: Icons.send_outlined,
+                    label: 'Continue anyways',
+                    onPressed: () {
+                      context.read<CreateSwapCubit>().removeWarnings();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

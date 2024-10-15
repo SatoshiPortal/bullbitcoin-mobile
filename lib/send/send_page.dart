@@ -164,14 +164,21 @@ class _Screen extends StatelessWidget {
           x.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false,
     );
 
-    // final showSend =
-    //     context.select((SendCubit cubit) => cubit.state.showSendButton);
-
     if (sent && isLn) return const SendingLnTx();
 
     final potentialonchainSwap = context.select(
       (SendCubit x) => x.state.couldBeOnchainSwap(),
     );
+
+    if (showWarning && !walletIsLiquid && potentialonchainSwap == false)
+      return const _Warnings();
+
+    if (signed && !isLn) {
+      if (!sent)
+        return const TxDetailsScreen();
+      else
+        return const TxSuccess();
+    }
 
     return ColoredBox(
       color: context.colour.primaryContainer,
@@ -181,43 +188,33 @@ class _Screen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (showWarning &&
-                  !walletIsLiquid &&
-                  potentialonchainSwap == false) ...[
-                const _Warnings(),
-              ] else ...[
-                if (signed && !isLn) ...[
-                  if (!sent) const TxDetailsScreen() else const TxSuccess(),
-                ] else ...[
-                  const Gap(32),
-                  const WalletSelectionDropDown(),
-                  if (potentialonchainSwap) ...[
-                    const Gap(8),
-                    const BBText.body(
-                      'Onchain swap',
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                  //const Gap(8),
-                  // const _Balance(),
-                  const Gap(24),
-                  const AddressField(),
-                  const Gap(24),
-                  const AmountField(),
-                  if (!isLn) const SendAllOption(),
-                  const Gap(24),
-                  const DescriptionField(),
-                  if (!isLn) ...[
-                    const Gap(24),
-                    const NetworkFees(),
-                  ],
-                  const Gap(8),
-                  const AdvancedOptions(),
-                ],
-                const _SendButton(),
-                const SendErrDisplay(),
-                const Gap(80), // why such a big gap at the end
+              const Gap(32),
+              const WalletSelectionDropDown(),
+              if (potentialonchainSwap) ...[
+                const Gap(8),
+                const BBText.body(
+                  'Onchain swap',
+                  textAlign: TextAlign.center,
+                ),
               ],
+              //const Gap(8),
+              // const _Balance(),
+              const Gap(24),
+              const AddressField(),
+              const Gap(24),
+              const AmountField(),
+              if (!isLn) const SendAllOption(),
+              const Gap(24),
+              const DescriptionField(),
+              if (!isLn) ...[
+                const Gap(24),
+                const NetworkFees(),
+              ],
+              const Gap(8),
+              const AdvancedOptions(),
+              const _SendButton(),
+              const SendErrDisplay(),
+              const Gap(80), // why such a big gap at the end
             ],
           ),
         ),
@@ -919,63 +916,56 @@ class _Warnings extends StatelessWidget {
     //   (NetworkCubit cubit) =>
     //       cubit.state.calculatePrice(minAmt, cubit.state.defaultFiatCurrency!),
     // );
-
-    return WarningContainer(
-      children: [
-        const Gap(24),
-        if (errLowAmt) _buildLowAmtWarn(),
-        if (errHighFees != null)
-          _buildHighFeesWarn(
-            feePercentage: errHighFees,
-            amt: amtStr,
-            amtFiat: amtFiatStr,
-            fees: feeStr,
-            feesFiat: feesFiatStr,
-            minAmt: minAmtStr,
-            minAmtFiat: minAmtFiatStr,
-            // amt: swapTx.outAmount,
-            // fees: swapTx.totalFees() ?? 0,
-          ),
-        // const Row(
-        //   children: [
-        //     Icon(FontAwesomeIcons.lightbulb, size: 32),
-        //     Gap(8),
-        //     Expanded(child: BBText.titleLarge('Suggestions', isBold: true)),
-        //   ],
-        // ),
-        // const Gap(24),
-//         const BBText.bodySmall('''
-// 1. Use the Instant Payment Wallet instead to receive payments below 0.01 BTC.
-
-// 2. If you want to add funds to your Secure Bitcoin Wallet from an external Lightning Wallet, send a larger amount. We recommend at minimum 0.01 BTC.
-
-// 3. It is more economical to make fewer swaps of larger amounts than to make many swaps of smaller amounts'''),
-        // const Gap(8),
-        // const _RemoveWarningMessage(),
-        const Gap(24),
-        Center(
-          child: BBButton.big(
-            leftIcon: Icons.send_outlined,
-            label: 'Continue anyways',
-            onPressed: () {
-              context.read<CreateSwapCubit>().removeWarnings();
-            },
-          ),
-        ),
-        const Gap(24),
-        const Row(
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Icon(FontAwesomeIcons.lightbulb, size: 32),
-            Gap(8),
-            Expanded(
-              child: BBText.bodySmall(
-                'Pre-fund your Instant Payments Wallet with 0.01 BTC or more and use it as your daily spending account',
-              ),
+            WarningContainer(
+              children: [
+                const Gap(24),
+                if (errLowAmt) _buildLowAmtWarn(),
+                if (errHighFees != null)
+                  _buildHighFeesWarn(
+                    feePercentage: errHighFees,
+                    amt: amtStr,
+                    amtFiat: amtFiatStr,
+                    fees: feeStr,
+                    feesFiat: feesFiatStr,
+                    minAmt: minAmtStr,
+                    minAmtFiat: minAmtFiatStr,
+                    // amt: swapTx.outAmount,
+                    // fees: swapTx.totalFees() ?? 0,
+                  ),
+                const Gap(24),
+                Center(
+                  child: BBButton.big(
+                    leftIcon: Icons.send_outlined,
+                    label: 'Continue anyways',
+                    onPressed: () {
+                      context.read<CreateSwapCubit>().removeWarnings();
+                    },
+                  ),
+                ),
+                const Gap(24),
+                const Row(
+                  children: [
+                    Icon(FontAwesomeIcons.lightbulb, size: 32),
+                    Gap(8),
+                    Expanded(
+                      child: BBText.bodySmall(
+                        'Pre-fund your Instant Payments Wallet with 0.01 BTC or more and use it as your daily spending account',
+                      ),
+                    ),
+                  ],
+                ),
+                // const Gap(16),
+              ],
             ),
           ],
         ),
-        // const Gap(16),
-      ],
+      ),
     );
   }
 }
