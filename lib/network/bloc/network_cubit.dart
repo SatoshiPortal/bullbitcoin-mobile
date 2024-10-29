@@ -330,6 +330,27 @@ class NetworkCubit extends Cubit<NetworkState> {
     return url;
   }
 
+  bool isTorAddress(String url) {
+    if (url.isEmpty) return false;
+
+    final split = url.split(':');
+    String cleanUrl = split.length > 1
+        ? split[1]
+        : split[0]; // remove uri schema and port number
+
+    cleanUrl = cleanUrl.split('//').last; // to remove the slashes
+
+    final torRegex = RegExp(r'^([a-z2-7]{16}|[a-zA-Z2-7]{56})\.onion$');
+    return torRegex.hasMatch(cleanUrl);
+  }
+
+  String networkLoadError(String url) {
+    if (isTorAddress(url)) {
+      return "Tor isn't supported";
+    }
+    return '';
+  }
+
   void networkConfigsSaveClicked({required bool isLiq}) async {
     emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
     if (!isLiq) {
@@ -345,14 +366,22 @@ class NetworkCubit extends Cubit<NetworkState> {
       final sslRegex =
           RegExp(r'^ssl:\/\/([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\:[0-9]{2,5}$');
       if (!sslRegex.hasMatch(tempNetwork.mainnet)) {
+        final String error = networkLoadError(tempNetwork.mainnet);
+        final String formattedError = error.isNotEmpty ? (': ' + error) : '';
         emit(
-          state.copyWith(errLoadingNetworks: 'Invalid mainnet electrum URL'),
+          state.copyWith(
+            errLoadingNetworks: 'Invalid mainnet electrum URL' + formattedError,
+          ),
         );
         return;
       }
       if (!sslRegex.hasMatch(tempNetwork.testnet)) {
+        final String error = networkLoadError(tempNetwork.testnet);
+        final String formattedError = error.isNotEmpty ? ': ' + error : '';
         emit(
-          state.copyWith(errLoadingNetworks: 'Invalid testnet electrum URL'),
+          state.copyWith(
+            errLoadingNetworks: 'Invalid testnet electrum URL' + formattedError,
+          ),
         );
         return;
       }
