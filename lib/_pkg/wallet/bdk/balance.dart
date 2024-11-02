@@ -8,15 +8,15 @@ class BDKBalance {
     required Wallet wallet,
   }) async {
     try {
-      final bdkbalance = await bdkWallet.getBalance();
+      final bdkbalance = bdkWallet.getBalance();
 
       final balance = Balance(
-        confirmed: bdkbalance.confirmed,
-        untrustedPending: bdkbalance.untrustedPending,
-        immature: bdkbalance.immature,
-        trustedPending: bdkbalance.trustedPending,
-        spendable: bdkbalance.spendable,
-        total: bdkbalance.total,
+        confirmed: bdkbalance.confirmed.toInt(),
+        untrustedPending: bdkbalance.untrustedPending.toInt(),
+        immature: bdkbalance.immature.toInt(),
+        trustedPending: bdkbalance.trustedPending.toInt(),
+        spendable: bdkbalance.spendable.toInt(),
+        total: bdkbalance.total.toInt(),
       );
 
       final w = wallet.copyWith(balance: balance.total, fullBalance: balance);

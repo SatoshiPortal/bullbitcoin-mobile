@@ -21,7 +21,7 @@ class BDKSensitiveCreate {
   Future<(List<String>?, Err?)> createMnemonic() async {
     try {
       final mne = await bdk.Mnemonic.create(bdk.WordCount.words12);
-      final mneString = await mne.asString();
+      final mneString = mne.asString();
       final mneList = mneString.split(' ');
 
       return (mneList, null);
@@ -54,7 +54,7 @@ class BDKSensitiveCreate {
         network: bdk.Network.bitcoin,
         keychain: bdk.KeychainKind.externalChain,
       );
-      final edesc = await externalDescriptor.asString();
+      final edesc = externalDescriptor.asString();
       final fgnr = fingerPrintFromXKeyDesc(edesc);
 
       return (fgnr, null);
@@ -109,9 +109,9 @@ class BDKSensitiveCreate {
       await bdk.DerivationPath.create(path: 'm/84h/$networkPath/$accountPath'),
     );
 
-    final bdkXpub44 = await bdkXpriv44.asPublic();
-    final bdkXpub49 = await bdkXpriv49.asPublic();
-    final bdkXpub84 = await bdkXpriv84.asPublic();
+    final bdkXpub44 = bdkXpriv44.toPublic();
+    final bdkXpub49 = bdkXpriv49.toPublic();
+    final bdkXpub84 = bdkXpriv84.toPublic();
 
     final bdkDescriptor44External = await bdk.Descriptor.newBip44Public(
       publicKey: bdkXpub44,
@@ -151,12 +151,12 @@ class BDKSensitiveCreate {
     );
 
     final wallet44HashId =
-        createDescriptorHashId(await bdkDescriptor44External.asString())
+        createDescriptorHashId(bdkDescriptor44External.asString())
             .substring(0, 12);
     var wallet44 = Wallet(
       id: wallet44HashId,
-      externalPublicDescriptor: await bdkDescriptor44External.asString(),
-      internalPublicDescriptor: await bdkDescriptor44Internal.asString(),
+      externalPublicDescriptor: bdkDescriptor44External.asString(),
+      internalPublicDescriptor: bdkDescriptor44Internal.asString(),
       mnemonicFingerprint: mnemonicFingerprint!,
       sourceFingerprint: sourceFingerprint,
       network: network,
@@ -170,25 +170,25 @@ class BDKSensitiveCreate {
     if (errBdk44 != null) return (null, errBdk44);
     // final (bdkWallet44, errLoading44) = _walletsRepository.getBdkWallet(wallet44);
     // if (errLoading44 != null) return (null, errLoading44);
-    final firstAddress44 = await bdkWallet44!.getAddress(
+    final firstAddress44 = bdkWallet44!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
     wallet44 = wallet44.copyWith(
       name: wallet44.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: await firstAddress44.address.asString(),
+        address: firstAddress44.address.asString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,
       ),
     );
     final wallet49HashId =
-        createDescriptorHashId(await bdkDescriptor49External.asString())
+        createDescriptorHashId(bdkDescriptor49External.asString())
             .substring(0, 12);
     var wallet49 = Wallet(
       id: wallet49HashId,
-      externalPublicDescriptor: await bdkDescriptor49External.asString(),
-      internalPublicDescriptor: await bdkDescriptor49Internal.asString(),
+      externalPublicDescriptor: bdkDescriptor49External.asString(),
+      internalPublicDescriptor: bdkDescriptor49Internal.asString(),
       mnemonicFingerprint: mnemonicFingerprint,
       sourceFingerprint: sourceFingerprint,
       network: network,
@@ -201,25 +201,25 @@ class BDKSensitiveCreate {
         await _bdkCreate.loadPublicBdkWallet(wallet49);
     if (errBdk49 != null) return (null, errBdk49);
     // final (bdkWallet49, errLoading49) = _walletsRepository.getBdkWallet(wallet49);
-    final firstAddress49 = await bdkWallet49!.getAddress(
+    final firstAddress49 = bdkWallet49!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
     wallet49 = wallet49.copyWith(
       name: wallet49.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: await firstAddress49.address.asString(),
+        address: firstAddress49.address.asString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,
       ),
     );
     final wallet84HashId =
-        createDescriptorHashId(await bdkDescriptor84External.asString())
+        createDescriptorHashId(bdkDescriptor84External.asString())
             .substring(0, 12);
     var wallet84 = Wallet(
       id: wallet84HashId,
-      externalPublicDescriptor: await bdkDescriptor84External.asString(),
-      internalPublicDescriptor: await bdkDescriptor84Internal.asString(),
+      externalPublicDescriptor: bdkDescriptor84External.asString(),
+      internalPublicDescriptor: bdkDescriptor84Internal.asString(),
       mnemonicFingerprint: mnemonicFingerprint,
       sourceFingerprint: sourceFingerprint,
       network: network,
@@ -232,13 +232,13 @@ class BDKSensitiveCreate {
         await _bdkCreate.loadPublicBdkWallet(wallet84);
     if (errBdk84 != null) return (null, errBdk84);
     // final (bdkWallet84, errLoading84) = _walletsRepository.getBdkWallet(wallet84);
-    final firstAddress84 = await bdkWallet84!.getAddress(
+    final firstAddress84 = bdkWallet84!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
     wallet84 = wallet84.copyWith(
       name: wallet84.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: await firstAddress84.address.asString(),
+        address: firstAddress84.address.asString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,
@@ -290,7 +290,7 @@ class BDKSensitiveCreate {
           ),
         );
 
-        final bdkXpub84 = await mOnlybdkXpriv84.asPublic();
+        final bdkXpub84 = mOnlybdkXpriv84.toPublic();
 
         internal = await bdk.Descriptor.newBip84Public(
           publicKey: bdkXpub84,
@@ -311,7 +311,7 @@ class BDKSensitiveCreate {
           ),
         );
 
-        final bdkXpub49 = await bdkXpriv49.asPublic();
+        final bdkXpub49 = bdkXpriv49.toPublic();
         internal = await bdk.Descriptor.newBip49Public(
           publicKey: bdkXpub49,
           fingerPrint: sourceFingerprint!,
@@ -330,7 +330,7 @@ class BDKSensitiveCreate {
             path: 'm/44h/$networkPath/$accountPath',
           ),
         );
-        final bdkXpub44 = await bdkXpriv44.asPublic();
+        final bdkXpub44 = bdkXpriv44.toPublic();
         internal = await bdk.Descriptor.newBip44Public(
           publicKey: bdkXpub44,
           fingerPrint: sourceFingerprint!,
@@ -346,13 +346,13 @@ class BDKSensitiveCreate {
     }
 
     final descHashId =
-        createDescriptorHashId(await external.asString()).substring(0, 12);
+        createDescriptorHashId(external.asString()).substring(0, 12);
     // final type = isImported ? BBWalletType.words : BBWalletType.newSeed;
 
     var wallet = Wallet(
       id: descHashId,
-      externalPublicDescriptor: await external.asString(),
-      internalPublicDescriptor: await internal.asString(),
+      externalPublicDescriptor: external.asString(),
+      internalPublicDescriptor: internal.asString(),
       mnemonicFingerprint: seed.mnemonicFingerprint,
       sourceFingerprint: sourceFingerprint,
       network: network,
@@ -366,13 +366,13 @@ class BDKSensitiveCreate {
     final (bdkWallet, errBdk) = await _bdkCreate.loadPublicBdkWallet(wallet);
     if (errBdk != null) return (null, errBdk);
     // final (bdkWallet, errLoading) = _walletsRepository.getBdkWallet(wallet);
-    final firstAddress = await bdkWallet!.getAddress(
+    final firstAddress = bdkWallet!.getAddress(
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
     wallet = wallet.copyWith(
       name: wallet.defaultNameString(),
       lastGeneratedAddress: Address(
-        address: await firstAddress.address.asString(),
+        address: firstAddress.address.asString(),
         index: 0,
         kind: AddressKind.deposit,
         state: AddressStatus.unused,

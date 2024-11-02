@@ -9,7 +9,7 @@ class BDKUtxo {
     required bdk.Wallet bdkWallet,
   }) async {
     try {
-      final unspentList = await bdkWallet.listUnspent();
+      final unspentList = bdkWallet.listUnspent();
       final List<Address> myAddresses = wallet.myAddressBook.toList();
 
       final network = wallet.getBdkNetwork();
@@ -26,7 +26,7 @@ class BDKUtxo {
           script: scr,
           network: network,
         );
-        final addressStr = await addresss.asString();
+        final addressStr = addresss.asString();
         final AddressKind addressKind =
             unspent.keychain == bdk.KeychainKind.internalChain
                 ? AddressKind.change
@@ -43,7 +43,7 @@ class BDKUtxo {
           txid: unspent.outpoint.txid,
           txIndex: unspent.outpoint.vout,
           isSpent: unspent.isSpent,
-          value: unspent.txout.value,
+          value: unspent.txout.value.toInt(),
           label: addressLabel,
           spendable: spendable,
           address: Address(

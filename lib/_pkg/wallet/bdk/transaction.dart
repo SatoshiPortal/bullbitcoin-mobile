@@ -109,7 +109,7 @@ class BDKTransactions {
       final bdkNetwork = wallet.getBdkNetwork();
       if (bdkNetwork == null) throw 'No bdkNetwork';
 
-      final bdkTxs = await bdkWallet.listTransactions(includeRaw: true);
+      final bdkTxs = bdkWallet.listTransactions(includeRaw: true);
       // final x = bdk.TxBuilderResult();
 
       if (bdkTxs.isEmpty) return (wallet, null);
@@ -133,7 +133,7 @@ class BDKTransactions {
         //  await tx.transaction?.isExplicitlyRbf() ??
 
         final SerializedTx serdBdkTx = SerializedTx.fromJson(
-          jsonDecode(bdkTx.transaction!.inner) as Map<String, dynamic>,
+          jsonDecode(bdkTx.transaction!.s) as Map<String, dynamic>,
         );
         final inputs = storedTx?.inputs ??
             serdBdkTx.input
@@ -146,12 +146,12 @@ class BDKTransactions {
             [];
         var updatedTx = Transaction(
           txid: bdkTx.txid,
-          received: bdkTx.received,
-          sent: bdkTx.sent,
-          fee: bdkTx.fee ?? 0,
-          feeRate: (bdkTx.fee ?? 1) / vsize.toDouble(),
+          received: bdkTx.received.toInt(),
+          sent: bdkTx.sent.toInt(),
+          fee: bdkTx.fee?.toInt() ?? 0,
+          feeRate: (bdkTx.fee?.toInt() ?? 1) / (vsize as int).toDouble(),
           height: bdkTx.confirmationTime?.height ?? 0,
-          timestamp: bdkTx.confirmationTime?.timestamp ?? 0,
+          timestamp: bdkTx.confirmationTime?.timestamp.toInt() ?? 0,
           bdkTx: bdkTx,
           // rbfEnabled: storedTx?.rbfEnabled ?? isNativeRbf,
           rbfEnabled: isNativeRbf,
@@ -185,8 +185,8 @@ class BDKTransactions {
             kind: AddressKind.external,
           );
 
-          final amountSentToExternal =
-              bdkTx.sent - (bdkTx.received + (bdkTx.fee ?? 0));
+          final amountSentToExternal = bdkTx.sent -
+              (bdkTx.received + BigInt.from(bdkTx.fee?.toInt() ?? 0));
 
           if (externalAddress != null) {
             final extAddressHasLabel = externalAddress.label != null &&
@@ -199,7 +199,9 @@ class BDKTransactions {
             try {
               if (serdBdkTx.output == null) throw 'No output object';
               final scriptPubkeyString = serdBdkTx.output
-                  ?.firstWhere((output) => output.value == amountSentToExternal)
+                  ?.firstWhere(
+                    (output) => output.value == amountSentToExternal.toInt(),
+                  )
                   .scriptPubkey;
               // also check and update your own change, for older transactions
               // this can help keep an index of change?
@@ -215,7 +217,7 @@ class BDKTransactions {
                 script: scriptPubKey,
                 network: bdkNetwork,
               );
-              final addressStr = await addressStruct.asString();
+              final addressStr = addressStruct.asString();
 
               (externalAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStr),
@@ -278,7 +280,7 @@ class BDKTransactions {
                 script: scriptPubKey,
                 network: bdkNetwork,
               );
-              final addressStr = await addressStruct.asString();
+              final addressStr = addressStruct.asString();
 
               (changeAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStr),
@@ -328,7 +330,7 @@ class BDKTransactions {
                 script: scriptPubKey,
                 network: bdkNetwork,
               );
-              final addressStr = await addressStruct.asString();
+              final addressStr = addressStruct.asString();
 
               (depositAddress, _) = await walletAddress.addAddressToWallet(
                 address: (null, addressStr),
@@ -452,7 +454,7 @@ class BDKTransactions {
         txBuilder = txBuilder.addUnSpendable(outPoint);
       }
 
-      final script = await bdkAddress.scriptPubkey();
+      final script = bdkAddress.scriptPubkey();
       if (sendAllCoin) {
         if (frozenUtxos.isEmpty) {
           txBuilder = txBuilder.drainWallet().drainTo(script);
@@ -463,7 +465,7 @@ class BDKTransactions {
           txBuilder = txBuilder.drainWallet().drainTo(script);
         }
       } else {
-        txBuilder = txBuilder.addRecipient(script, amount!);
+        txBuilder = txBuilder.addRecipient(script, BigInt.from(amount!));
       }
 
       if (isManualSend) {
@@ -479,7 +481,7 @@ class BDKTransactions {
       }
 
       txBuilder = feeRate == 0
-          ? txBuilder.feeAbsolute(absFee ?? 100)
+          ? txBuilder.feeAbsolute(BigInt.from(absFee ?? 100))
           : txBuilder.feeRate(feeRate);
 
       if (enableRbf) txBuilder = txBuilder.enableRbf();
@@ -489,7 +491,7 @@ class BDKTransactions {
       final psbt = txResult.$1;
       final txDetails = txResult.$2;
 
-      final extractedTx = await psbt.extractTx();
+      final extractedTx = psbt.extractTx();
       final outputs = await extractedTx.output();
       final inputs = await extractedTx.input();
 
@@ -501,8 +503,10 @@ class BDKTransactions {
           script: bdk.ScriptBuf(bytes: txOut.scriptPubkey.bytes),
           network: bdkNetwork,
         );
-        final addressStr = await scriptAddress.asString();
-        if (txOut.value == amount! && !sendAllCoin && addressStr == address) {
+        final addressStr = scriptAddress.asString();
+        if (txOut.value == BigInt.from(amount!) &&
+            !sendAllCoin &&
+            addressStr == address) {
           return Address(
             address: addressStr,
             kind: AddressKind.external,
@@ -517,8 +521,8 @@ class BDKTransactions {
             address: addressStr,
             kind: AddressKind.change,
             state: AddressStatus.used,
-            highestPreviousBalance: txOut.value,
-            balance: txOut.value,
+            highestPreviousBalance: txOut.value.toInt(),
+            balance: txOut.value.toInt(),
             label: note ?? '',
           );
         }
@@ -539,17 +543,17 @@ class BDKTransactions {
       });
       await Future.wait(inAddrsFutures);
       final List<Address> outAddrs = await Future.wait(outAddrsFutures);
-      final feeAmt = await txResult.$1.feeAmount();
-      final psbtStr = await psbt.serialize();
+      final feeAmt = txResult.$1.feeAmount();
+      final psbtStr = psbt.serialize();
       // if (note != null || note != '') labels.add(note!);
       final labelsString = labels.isNotEmpty ? labels.last : '';
 
       final Transaction tx = Transaction(
         txid: txDetails.txid,
         rbfEnabled: enableRbf,
-        received: txDetails.received,
-        sent: txDetails.sent,
-        fee: feeAmt ?? 0,
+        received: txDetails.received.toInt(),
+        sent: txDetails.sent.toInt(),
+        fee: feeAmt?.toInt() ?? 0,
         feeRate: feeRate,
         height: txDetails.confirmationTime?.height,
         timestamp: 0,
@@ -559,9 +563,9 @@ class BDKTransactions {
             : note, // for now we just take the first label
         toAddress: address,
         outAddrs: outAddrs,
-        psbt: psbtStr,
+        psbt: base64Encode(psbtStr),
       );
-      return ((tx, feeAmt, psbtStr), null);
+      return ((tx, feeAmt?.toInt(), base64Encode(psbtStr)), null);
     } on Exception catch (e) {
       return (
         null,
@@ -582,7 +586,7 @@ class BDKTransactions {
   }) async {
     try {
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
-      final tx = await psbtStruct.extractTx();
+      final tx = psbtStruct.extractTx();
       final _ = await bdkWallet.sign(
         psbt: psbtStruct,
         signOptions: const bdk.SignOptions(
@@ -596,9 +600,9 @@ class BDKTransactions {
         ),
       );
       // final extracted = await finalized;
-      final psbtStr = await psbtStruct.serialize();
+      final psbtStr = psbtStruct.serialize();
 
-      return ((tx, psbtStr), null);
+      return ((tx, base64Encode(psbtStr)), null);
     } on Exception catch (e) {
       return (
         null,
@@ -622,11 +626,11 @@ class BDKTransactions {
     int vsize = 0;
     try {
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
-      final tx = await psbtStruct.extractTx();
-      vsize = await tx.vsize();
+      final tx = psbtStruct.extractTx();
+      vsize = (await tx.vsize()).toInt();
 
       await blockchain.broadcast(transaction: tx);
-      final txid = await psbtStruct.txid();
+      final txid = psbtStruct.txid();
 
       final swapTxType = transaction.swapTx?.getSwapTxTypeForParent();
       final newTx = transaction.copyWith(
@@ -718,7 +722,7 @@ class BDKTransactions {
 
       if (isPsbt) {
         final psbt = await bdk.PartiallySignedTransaction.fromString(tx);
-        final bdk.Transaction bdkTx = await psbt.extractTx();
+        final bdk.Transaction bdkTx = psbt.extractTx();
         return (bdkTx, null);
       }
 
@@ -757,19 +761,19 @@ class BDKTransactions {
       final psbt = txResult.$1;
       final txDetails = txResult.$2;
 
-      final psbtStr = await psbt.serialize();
+      final psbtStr = psbt.serialize();
 
       final newTx = Transaction(
         txid: txDetails.txid,
-        received: txDetails.received,
-        sent: txDetails.sent,
-        fee: txDetails.fee ?? 0,
+        received: txDetails.received.toInt(),
+        sent: txDetails.sent.toInt(),
+        fee: txDetails.fee?.toInt() ?? 0,
         feeRate: feeRate,
         height: txDetails.confirmationTime?.height,
-        timestamp: txDetails.confirmationTime?.timestamp ?? 0,
+        timestamp: txDetails.confirmationTime?.timestamp.toInt() ?? 0,
         label: tx.label,
         toAddress: tx.toAddress,
-        psbt: psbtStr,
+        psbt: base64Encode(psbtStr),
         rbfTxIds: [...tx.rbfTxIds, tx.txid],
       );
       return (newTx, null);

@@ -8,12 +8,12 @@ extension LnSwapExt on SwapTx {
     return BtcLnSwap(
       id: tx.id,
       invoice: tx.lnSwapDetails!.invoice,
-      outAmount: tx.outAmount,
+      outAmount: BigInt.from(tx.outAmount),
       scriptAddress: tx.scriptAddress,
       electrumUrl: tx.lnSwapDetails!.electrumUrl.replaceAll('ssl://', ''),
       boltzUrl: tx.boltzUrl,
       kind: tx.lnSwapDetails!.swapType,
-      keyIndex: tx.lnSwapDetails!.keyIndex,
+      keyIndex: BigInt.from(tx.lnSwapDetails!.keyIndex),
       network:
           network == BBNetwork.Testnet ? Chain.bitcoinTestnet : Chain.bitcoin,
       keys: KeyPair(
@@ -45,12 +45,12 @@ extension LnSwapExt on SwapTx {
     return LbtcLnSwap(
       id: tx.id,
       invoice: tx.lnSwapDetails!.invoice,
-      outAmount: tx.outAmount,
+      outAmount: BigInt.from(tx.outAmount),
       scriptAddress: tx.scriptAddress,
       electrumUrl: tx.lnSwapDetails!.electrumUrl.replaceAll('ssl://', ''),
       boltzUrl: tx.boltzUrl,
       kind: tx.lnSwapDetails!.swapType,
-      keyIndex: tx.lnSwapDetails!.keyIndex,
+      keyIndex: BigInt.from(tx.lnSwapDetails!.keyIndex),
       network:
           network == BBNetwork.Testnet ? Chain.liquidTestnet : Chain.liquid,
       keys: KeyPair(
@@ -106,7 +106,7 @@ extension BtcLnSwapExt on BtcLnSwap {
       walletType: (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
           ? BaseWalletType.Bitcoin
           : BaseWalletType.Liquid,
-      outAmount: outAmount,
+      outAmount: outAmount.toInt(),
       scriptAddress: scriptAddress,
       boltzUrl: boltzUrl,
       creationTime: DateTime.now(),
@@ -157,7 +157,7 @@ extension LbtcLnSwapExt on LbtcLnSwap {
       walletType: (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
           ? BaseWalletType.Bitcoin
           : BaseWalletType.Liquid,
-      outAmount: outAmount,
+      outAmount: outAmount.toInt(),
       scriptAddress: scriptAddress,
       boltzUrl: boltzUrl,
       creationTime: DateTime.now(),
@@ -192,12 +192,12 @@ extension ChSwapExt on SwapTx {
         publicKey: chainSwapDetails!.refundPublicKey,
         secretKey: sensitive.refundKeySecret,
       ),
-      refundIndex: chainSwapDetails!.refundKeyIndex,
+      refundIndex: BigInt.from(chainSwapDetails!.refundKeyIndex),
       claimKeys: KeyPair(
         publicKey: chainSwapDetails!.claimPublicKey,
         secretKey: sensitive.claimKeySecret,
       ),
-      claimIndex: chainSwapDetails!.claimKeyIndex,
+      claimIndex: BigInt.from(chainSwapDetails!.claimKeyIndex),
       preimage: PreImage(
         value: sensitive.preimage,
         sha256: sensitive.sha256,
@@ -231,7 +231,7 @@ extension ChSwapExt on SwapTx {
             : Side.claim,
       ),
       scriptAddress: scriptAddress,
-      outAmount: outAmount,
+      outAmount: BigInt.from(outAmount),
       btcElectrumUrl: chainSwapDetails!.btcElectrumUrl,
       lbtcElectrumUrl: chainSwapDetails!.lbtcElectrumUrl,
       boltzUrl: boltzUrl,
@@ -250,8 +250,8 @@ extension ChainSwapExt on ChainSwap {
       chainSwapDetails: ChainSwapDetails(
         onChainType: onChainSwapType,
         direction: direction,
-        refundKeyIndex: refundIndex,
-        claimKeyIndex: claimIndex,
+        refundKeyIndex: refundIndex.toInt(),
+        claimKeyIndex: claimIndex.toInt(),
         refundPublicKey: refundKeys.publicKey,
         refundSecretKey: refundKeys.secretKey,
         claimPublicKey: claimKeys.publicKey,
@@ -278,7 +278,7 @@ extension ChainSwapExt on ChainSwap {
       walletType: direction == ChainSwapDirection.btcToLbtc
           ? BaseWalletType.Bitcoin
           : BaseWalletType.Liquid,
-      outAmount: outAmount,
+      outAmount: outAmount.toInt(),
       scriptAddress: scriptAddress,
       boltzUrl: boltzUrl,
       creationTime: DateTime.now(),
