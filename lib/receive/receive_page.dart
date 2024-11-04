@@ -468,7 +468,8 @@ class _Warnings extends StatelessWidget {
                     Icon(FontAwesomeIcons.lightbulb, size: 32),
                     Gap(8),
                     Expanded(
-                        child: BBText.titleLarge('Suggestions', isBold: true)),
+                      child: BBText.titleLarge('Suggestions', isBold: true),
+                    ),
                   ],
                 ),
                 const Gap(24),
@@ -756,13 +757,13 @@ class CreateLightningInvoice extends StatelessWidget {
     if (reverseFees != null) {
       if (isLiquid == true) {
         finalFee = (((reverseFees.lbtcFees.percentage) * amount / 100) +
-                (reverseFees.lbtcFees.minerFees.claim) +
-                (reverseFees.lbtcFees.minerFees.lockup))
+                (reverseFees.lbtcFees.minerFees.claim.toInt()) +
+                (reverseFees.lbtcFees.minerFees.lockup.toInt()))
             .toInt();
       } else {
         finalFee = (((reverseFees.btcFees.percentage) * amount / 100) +
-                (reverseFees.btcFees.minerFees.claim) +
-                (reverseFees.btcFees.minerFees.lockup))
+                (reverseFees.btcFees.minerFees.claim.toInt()) +
+                (reverseFees.btcFees.minerFees.lockup.toInt()))
             .toInt();
       }
     }

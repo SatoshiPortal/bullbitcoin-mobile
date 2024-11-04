@@ -379,7 +379,7 @@ class LWKTransactions {
           txid: tx.txid,
           received: tx.kind == 'outgoing' ? 0 : finalBalance,
           sent: tx.kind == 'outgoing' ? -finalBalance : 0,
-          fee: tx.fee,
+          fee: tx.fee.toInt(),
           feeRate: tx.fee / size,
           height: tx.height ?? 0,
           timestamp: tx.timestamp ?? 0,
@@ -489,7 +489,7 @@ class LWKTransactions {
       // }
       // final pset = await lwkWallet.build(sats: amount ?? 0, outAddress: address, absFee: feeRate);
       final pset = await lwkWallet.buildLbtcTx(
-        sats: amount ?? 0,
+        sats: BigInt.from(amount ?? 0),
         outAddress: address,
         feeRate: feeRate * 1000.0,
         drain: sendAllCoin,
@@ -500,8 +500,8 @@ class LWKTransactions {
       final Transaction tx = Transaction(
         txid: '',
         received: 0,
-        sent: (amount ?? 0) + decoded.absoluteFees,
-        fee: decoded.absoluteFees,
+        sent: (amount ?? 0) + decoded.absoluteFees.toInt(),
+        fee: decoded.absoluteFees.toInt(),
         height: 0,
         timestamp: 0,
         label: '',
@@ -510,7 +510,7 @@ class LWKTransactions {
         psbt: pset,
         isLiquid: true,
       );
-      return ((tx, decoded.absoluteFees, pset), null);
+      return ((tx, decoded.absoluteFees.toInt(), pset), null);
     } on Exception catch (e) {
       return (
         null,

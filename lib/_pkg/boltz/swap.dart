@@ -119,8 +119,8 @@ class SwapBoltz {
       if (!isLiquid) {
         final res = await BtcLnSwap.newReverse(
           mnemonic: mnemonic,
-          index: index,
-          outAmount: outAmount,
+          index: BigInt.from(index),
+          outAmount: BigInt.from(outAmount),
           network: network,
           electrumUrl: electrumUrl,
           boltzUrl: boltzUrl,
@@ -142,8 +142,8 @@ class SwapBoltz {
       } else {
         final res = await LbtcLnSwap.newReverse(
           mnemonic: mnemonic,
-          index: index,
-          outAmount: outAmount,
+          index: BigInt.from(index),
+          outAmount: BigInt.from(outAmount),
           network: network,
           electrumUrl: electrumUrl,
           boltzUrl: boltzUrl,
@@ -183,7 +183,7 @@ class SwapBoltz {
       if (isLiquid) {
         final res = await LbtcLnSwap.newSubmarine(
           mnemonic: mnemonic,
-          index: index,
+          index: BigInt.from(index),
           invoice: invoice,
           network: network,
           electrumUrl: electrumUrl,
@@ -206,7 +206,7 @@ class SwapBoltz {
       } else {
         final res = await BtcLnSwap.newSubmarine(
           mnemonic: mnemonic,
-          index: index,
+          index: BigInt.from(index),
           invoice: invoice,
           network: network,
           electrumUrl: electrumUrl,
@@ -293,13 +293,13 @@ class SwapBoltz {
         try {
           signedHex = await swap.claim(
             outAddress: address,
-            absFee: swapTx.claimFees!,
+            absFee: BigInt.from(swapTx.claimFees!),
             tryCooperate: tryCooperate,
           );
         } catch (e) {
           signedHex = await swap.claim(
             outAddress: address,
-            absFee: swapTx.claimFees!,
+            absFee: BigInt.from(swapTx.claimFees!),
             tryCooperate: false,
           );
         }
@@ -764,7 +764,7 @@ class SwapBoltz {
       final res = await ChainSwap.newSwap(
         direction: direction,
         mnemonic: mnemonic,
-        index: index,
+        index: BigInt.from(index),
         amount: amount,
         isTestnet:
             network == Chain.bitcoinTestnet || network == Chain.liquidTestnet,

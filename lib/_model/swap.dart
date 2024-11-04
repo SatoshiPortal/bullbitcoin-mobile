@@ -556,13 +556,13 @@ class Invoice with _$Invoice {
   ) {
     return Invoice(
       invoice: invoice,
-      msats: decodedInvoice.msats,
-      expiry: decodedInvoice.expiry,
-      expiresIn: decodedInvoice.expiresIn,
-      expiresAt: decodedInvoice.expiresAt,
+      msats: decodedInvoice.msats.toInt(),
+      expiry: decodedInvoice.expiry.toInt(),
+      expiresIn: decodedInvoice.expiresIn.toInt(),
+      expiresAt: decodedInvoice.expiresAt.toInt(),
       isExpired: decodedInvoice.isExpired,
       network: decodedInvoice.network,
-      cltvExpDelta: decodedInvoice.cltvExpDelta,
+      cltvExpDelta: decodedInvoice.cltvExpDelta.toInt(),
       bip21: decodedInvoice.bip21,
     );
   }

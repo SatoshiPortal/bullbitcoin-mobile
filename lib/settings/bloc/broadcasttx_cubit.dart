@@ -125,7 +125,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       } catch (e) {
         isPsbt = true;
         final psbt = await bdk.PartiallySignedTransaction.fromString(tx);
-        bdkTx = await psbt.extractTx();
+        bdkTx = psbt.extractTx();
         // maybe this psbt needs to be finalized?
       }
       final txid = await bdkTx.txid();
@@ -172,7 +172,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       int verifiedOutputs = 0;
       final List<Address> outAddrs = [];
       for (final outpoint in outputs) {
-        totalAmount += outpoint.value;
+        totalAmount += outpoint.value.toInt();
         final scriptBuf = await bdk.ScriptBuf.fromHex(
           hex.encode(outpoint.scriptPubkey.bytes),
         );
@@ -180,7 +180,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
           script: scriptBuf,
           network: _networkCubit.state.getBdkNetwork(),
         );
-        final addressStr = await addressStruct.asString();
+        final addressStr = addressStruct.asString();
         if (transaction != null) {
           try {
             final Address relatedAddress = transaction.outAddrs.firstWhere(
@@ -198,8 +198,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
                 address: addressStr,
                 kind: AddressKind.external,
                 state: AddressStatus.used,
-                highestPreviousBalance: outpoint.value,
-                balance: outpoint.value,
+                highestPreviousBalance: outpoint.value.toInt(),
+                balance: outpoint.value.toInt(),
               ),
             );
           }
@@ -209,8 +209,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
               address: addressStr,
               kind: AddressKind.external,
               state: AddressStatus.used,
-              highestPreviousBalance: outpoint.value,
-              balance: outpoint.value,
+              highestPreviousBalance: outpoint.value.toInt(),
+              balance: outpoint.value.toInt(),
             ),
           );
         }

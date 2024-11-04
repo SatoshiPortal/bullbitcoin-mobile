@@ -18,7 +18,7 @@ class BDKNetwork {
             url: url,
             retry: retry,
             timeout: timeout,
-            stopGap: stopGap,
+            stopGap: BigInt.from(stopGap),
             validateDomain: validateDomain,
           ),
         ),

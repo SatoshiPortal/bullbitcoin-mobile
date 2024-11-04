@@ -22,8 +22,14 @@ class Logger extends Cubit<List<(String, DateTime)>> {
 
       final fileName = 'bull-bitcoin-${DateTime.now().toIso8601String()}.log';
       Share.shareXFiles(
-        [XFile.fromData(utf8.encode(logDump), mimeType: 'text/plain')],
-        fileNameOverrides: [fileName],
+        [
+          XFile.fromData(
+            utf8.encode(logDump),
+            mimeType: 'text/plain',
+            name: fileName,
+          ),
+        ],
+        // fileNameOverrides: [fileName],
       );
 
       /*
