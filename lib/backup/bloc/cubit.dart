@@ -16,70 +16,69 @@ import 'package:intl/intl.dart';
 
 class BackupCubit extends Cubit<BackupState> {
   BackupCubit({
-    required WalletBloc walletBloc,
+    required List<WalletBloc> wallets,
     required WalletSensitiveStorageRepository walletSensitiveStorage,
     required FileStorage fileStorage,
-  })  : _walletBloc = walletBloc,
+  })  : _wallets = wallets,
         _walletSensitiveStorage = walletSensitiveStorage,
         _fileStorage = fileStorage,
-        super(BackupState(backup: const Backup()));
+        super(BackupState(backups: []));
 
   final FileStorage _fileStorage;
-  final WalletBloc _walletBloc;
+  final List<WalletBloc> _wallets;
   final WalletSensitiveStorageRepository _walletSensitiveStorage;
 
-  Future<Backup> loadBackupData() async {
-    emit(BackupState(loading: true, backup: const Backup()));
+  Future<List<Backup>> loadBackupData() async {
+    emit(BackupState(loading: true, backups: []));
 
-    final wallet = _walletBloc.state.wallet!;
-    final (seed, error) = await _walletSensitiveStorage.readSeed(
-      fingerprintIndex: wallet.getRelatedSeedStorageString(),
-    );
-    final mnemonic = seed?.mnemonic.split(' ') ?? [];
+    final backups = <Backup>[];
 
-    final passphrases = <String>[];
-    for (final Passphrase passphrase in seed?.passphrases ?? []) {
-      passphrases.add(passphrase.passphrase);
-    }
+    for (final walletBloc in _wallets) {
+      final wallet = walletBloc.state.wallet!;
 
-    final descriptors = [wallet.getDescriptorCombined()];
+      final (seed, error) = await _walletSensitiveStorage.readSeed(
+        fingerprintIndex: wallet.getRelatedSeedStorageString(),
+      );
+      final mnemonic = seed?.mnemonic.split(' ') ?? [];
 
-    final walletLabels = WalletLabels();
-    final labels = await walletLabels.txsToBip329(
-      wallet.transactions,
-      wallet.originString(),
-    )
-      ..addAll(
-        await walletLabels.addressesToBip329(
-          wallet.myAddressBook,
-          wallet.originString(),
+      final passphrases = <String>[];
+      for (final Passphrase passphrase in seed?.passphrases ?? []) {
+        passphrases.add(passphrase.passphrase);
+      }
+
+      final descriptors = [wallet.getDescriptorCombined()];
+
+      final walletLabels = WalletLabels();
+      final labels = await walletLabels.txsToBip329(
+        wallet.transactions,
+        wallet.originString(),
+      )
+        ..addAll(
+          await walletLabels.addressesToBip329(
+            wallet.myAddressBook,
+            wallet.originString(),
+          ),
+        );
+
+      backups.add(
+        Backup(
+          mnemonic: mnemonic,
+          passphrases: passphrases,
+          descriptors: descriptors,
+          labels: labels,
         ),
       );
+    }
 
-    final backup = Backup(
-      mnemonic: mnemonic,
-      passphrases: passphrases,
-      descriptors: descriptors,
-      labels: labels,
-    );
-
-    emit(BackupState(backup: backup));
-    return backup;
+    emit(BackupState(backups: backups));
+    return backups;
   }
 
-  Future<(String?, Err?)> writeEncryptedBackup({
-    required bool hasMnemonic,
-    required bool hasPassphrases,
-    required bool hasDescriptors,
-  }) async {
-    var backup = state.backup;
-    if (!hasMnemonic) backup = backup.copyWith(mnemonic: []);
-    if (!hasPassphrases) backup = backup.copyWith(passphrases: []);
-    if (!hasDescriptors) backup = backup.copyWith(descriptors: []);
-    if (backup.isEmpty) return (null, Err('Empty backup'));
+  Future<(String?, Err?)> writeEncryptedBackup() async {
+    final backups = state.backups;
 
     final secret = HEX.encode(Crypto.generateRandomBytes(32));
-    final plaintext = json.encode(backup.toJson());
+    final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
     final ciphertext = Crypto.aesEncrypt(plaintext, secret);
 
     final now = DateTime.now();

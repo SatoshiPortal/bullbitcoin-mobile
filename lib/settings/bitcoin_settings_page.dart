@@ -71,8 +71,6 @@ class _Screen extends StatelessWidget {
                 HardwareButton(),
                 Gap(8),
                 SwapHistoryButton(),
-                Gap(8),
-                BackupButton(),
 
                 // SearchAddressButton(),
                 // Gap(8),
