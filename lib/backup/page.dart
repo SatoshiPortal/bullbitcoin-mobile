@@ -2,7 +2,6 @@ import 'package:bb_mobile/_model/backup.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/backup/bloc/cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -12,12 +11,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class TheBackupPage extends StatefulWidget {
-  const TheBackupPage({
-    super.key,
-    required this.walletBloc,
-  });
+  const TheBackupPage({super.key, required this.wallets});
 
-  final WalletBloc walletBloc;
+  final List<WalletBloc> wallets;
 
   @override
   _TheBackupPageState createState() => _TheBackupPageState();
@@ -32,16 +28,13 @@ class _TheBackupPageState extends State<TheBackupPage> {
   @override
   Widget build(BuildContext context) {
     final backupCubit = BackupCubit(
-      walletBloc: widget.walletBloc,
+      wallets: widget.wallets,
       walletSensitiveStorage: locator<WalletSensitiveStorageRepository>(),
       fileStorage: locator<FileStorage>(),
     );
 
     return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: widget.walletBloc),
-        BlocProvider.value(value: backupCubit),
-      ],
+      providers: [BlocProvider.value(value: backupCubit)],
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -50,7 +43,7 @@ class _TheBackupPageState extends State<TheBackupPage> {
             onBack: () => context.pop(),
           ),
         ),
-        body: FutureBuilder<Backup>(
+        body: FutureBuilder<List<Backup>>(
           future: backupCubit.loadBackupData(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -65,34 +58,6 @@ class _TheBackupPageState extends State<TheBackupPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (backup.mnemonic.isNotEmpty && backupKey.isEmpty)
-                      CheckboxListTile(
-                        title: const BBText.body('Mnemonic'),
-                        value: hasMnemonic,
-                        tileColor: Colors.amber,
-                        onChanged: (value) {
-                          setState(() => hasMnemonic = value ?? false);
-                        },
-                      ),
-                    if (backup.passphrases.isNotEmpty && backupKey.isEmpty)
-                      CheckboxListTile(
-                        title: const BBText.body('Passphrases'),
-                        value: hasPassphrases,
-                        tileColor: Colors.amber,
-                        onChanged: (value) {
-                          setState(() => hasPassphrases = value ?? false);
-                        },
-                      ),
-                    if (backup.descriptors.isNotEmpty && backupKey.isEmpty)
-                      CheckboxListTile(
-                        title: const BBText.body('Descriptors'),
-                        value: hasDescriptors,
-                        tileColor: Colors.amber,
-                        onChanged: (value) {
-                          setState(() => hasDescriptors = value ?? false);
-                        },
-                      ),
-                    const SizedBox(height: 20),
                     if (backupKey.isNotEmpty)
                       Container(
                         padding: const EdgeInsets.all(16),
@@ -121,11 +86,7 @@ class _TheBackupPageState extends State<TheBackupPage> {
                       ElevatedButton(
                         onPressed: () async {
                           final (secret, error) =
-                              await backupCubit.writeEncryptedBackup(
-                            hasMnemonic: hasMnemonic,
-                            hasPassphrases: hasPassphrases,
-                            hasDescriptors: hasDescriptors,
-                          );
+                              await backupCubit.writeEncryptedBackup();
                           if (error != null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               context.showToast(error.toString()),
@@ -135,7 +96,7 @@ class _TheBackupPageState extends State<TheBackupPage> {
                           if (secret != null) backupKey = secret;
                           setState(() {});
                         },
-                        child: const Text('Encrypt'),
+                        child: const Text('Backup'),
                       ),
                   ],
                 ),
