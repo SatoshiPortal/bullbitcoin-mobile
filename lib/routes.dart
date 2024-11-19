@@ -4,6 +4,7 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
+import 'package:bb_mobile/backup/page.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/home/market.dart';
@@ -217,6 +218,13 @@ GoRouter setupRouter() => GoRouter(
           builder: (context, state) {
             final walletBloc = state.extra! as WalletBloc;
             return WalletSettingsPage(walletBloc: walletBloc);
+          },
+        ),
+        GoRoute(
+          path: '/backup',
+          builder: (context, state) {
+            final walletBloc = state.extra! as WalletBloc;
+            return TheBackupPage(walletBloc: walletBloc);
           },
         ),
         // GoRoute(
