@@ -3,7 +3,7 @@ import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/toast.dart';
-import 'package:bb_mobile/backup/bloc/cubit.dart';
+import 'package:bb_mobile/backup/bloc/backup_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +20,6 @@ class TheBackupPage extends StatefulWidget {
 }
 
 class _TheBackupPageState extends State<TheBackupPage> {
-  bool hasMnemonic = false;
-  bool hasPassphrases = false;
-  bool hasDescriptors = false;
   String backupKey = '';
 
   @override

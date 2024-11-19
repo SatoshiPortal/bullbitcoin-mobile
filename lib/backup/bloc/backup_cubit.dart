@@ -8,8 +8,10 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/labels.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/backup/bloc/state.dart';
+import 'package:bb_mobile/backup/bloc/backup_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bip85/bip85.dart' as bip85;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
 import 'package:intl/intl.dart';
@@ -77,9 +79,19 @@ class BackupCubit extends Cubit<BackupState> {
   Future<(String?, Err?)> writeEncryptedBackup() async {
     final backups = state.backups;
 
-    final secret = HEX.encode(Crypto.generateRandomBytes(32));
+    final firstMnemonic = backups.first.mnemonic;
+    final bdkMnemonic = await bdk.Mnemonic.fromString(firstMnemonic.join(' '));
+    final xprv = bdk.DescriptorSecretKey.create(
+      network: bdk.Network.bitcoin, // TODO: handle testnet?
+      mnemonic: bdkMnemonic,
+      password: '', // TODO: which passphrase?
+    ).toString();
+
+    const derivation = "m/1608'/0'"; // TODO: key rotation ?
+    final derived = bip85.derive(xprv: xprv, path: derivation);
+    final backupKey = HEX.encode(derived);
     final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
-    final ciphertext = Crypto.aesEncrypt(plaintext, secret);
+    final ciphertext = Crypto.aesEncrypt(plaintext, backupKey);
 
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd_HH-mm-ss').format(now);
@@ -94,6 +106,6 @@ class BackupCubit extends Cubit<BackupState> {
 
     print(f?.path);
 
-    return (secret, null);
+    return (backupKey, null);
   }
 }
