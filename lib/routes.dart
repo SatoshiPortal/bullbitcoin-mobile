@@ -223,8 +223,8 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/backup',
           builder: (context, state) {
-            final walletBloc = state.extra! as WalletBloc;
-            return TheBackupPage(walletBloc: walletBloc);
+            final wallets = state.extra! as List<WalletBloc>;
+            return TheBackupPage(wallets: wallets);
           },
         ),
         // GoRoute(
