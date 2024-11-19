@@ -1,5 +1,5 @@
 PODS:
-  - bdk_flutter (0.31.2-dev.2):
+  - bdk_flutter (0.31.2):
     - Flutter
   - boltz_dart (0.1.6)
   - DKImagePickerController/Core (4.3.9):
@@ -129,7 +129,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  bdk_flutter: af166bdb3f24fa9bac1de94772973f76302cb1c1
+  bdk_flutter: fb57a7400a7f3f181c5977bcdc2a5ef347ae4e7f
   boltz_dart: 7ebb80d3776711efacb5823a3d9a9bb1221bac95
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
@@ -153,4 +153,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
