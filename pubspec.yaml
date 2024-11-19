@@ -90,6 +90,11 @@ dependencies:
   convert: ^3.1.2
   crypto: ^3.0.6
   permission_handler: ^11.3.1
+  bip85:
+    git:
+      url: https://github.com/ethicnology/rust-bip85.git
+      path: bindings/dart-bip85
+      ref: master
 
 dev_dependencies:
   build_runner: ^2.4.9
