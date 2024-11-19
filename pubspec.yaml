@@ -92,6 +92,11 @@ dependencies:
   permission_handler: ^11.3.1
   rxdart: ^0.28.0
   synchronized: ^3.3.0+3
+  bip85:
+    git:
+      url: https://github.com/ethicnology/rust-bip85.git
+      path: bindings/dart-bip85
+      ref: master
 
 dev_dependencies:
   build_runner: ^2.4.9
