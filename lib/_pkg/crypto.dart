@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:hex/hex.dart';
 import 'package:pointycastle/api.dart';
+import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/export.dart' as pc;
 
 class Crypto {
@@ -48,5 +49,9 @@ class Crypto {
       randomIV[i] = secureRandom.nextInt(256);
     }
     return randomIV;
+  }
+
+  static List<int> sha256(List<int> input) {
+    return SHA256Digest().process(Uint8List.fromList(input));
   }
 }

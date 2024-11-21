@@ -21,6 +21,7 @@ class TheBackupPage extends StatefulWidget {
 
 class _TheBackupPageState extends State<TheBackupPage> {
   String backupKey = '';
+  String backupId = '';
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +76,13 @@ class _TheBackupPageState extends State<TheBackupPage> {
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),
+                            ElevatedButton(
+                              onPressed: () => context.push(
+                                '/keychain-backup',
+                                extra: (backupKey, backupId),
+                              ),
+                              child: const Text('Keychain'),
+                            ),
                           ],
                         ),
                       ),
@@ -82,15 +90,17 @@ class _TheBackupPageState extends State<TheBackupPage> {
                     if (backupKey.isEmpty)
                       ElevatedButton(
                         onPressed: () async {
-                          final (secret, error) =
+                          final (key, id) =
                               await backupCubit.writeEncryptedBackup();
-                          if (error != null) {
+                          if (key == null || id == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              context.showToast(error.toString()),
+                              context.showToast('error'),
                             );
+                            return;
                           }
 
-                          if (secret != null) backupKey = secret;
+                          backupKey = key;
+                          backupId = id;
                           setState(() {});
                         },
                         child: const Text('Backup'),

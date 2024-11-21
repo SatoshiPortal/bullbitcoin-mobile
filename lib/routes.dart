@@ -5,6 +5,7 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/backup/backup_page.dart';
+import 'package:bb_mobile/backup/keychain_page.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/home/market.dart';
@@ -225,6 +226,13 @@ GoRouter setupRouter() => GoRouter(
           builder: (context, state) {
             final wallets = state.extra! as List<WalletBloc>;
             return TheBackupPage(wallets: wallets);
+          },
+        ),
+        GoRoute(
+          path: '/keychain-backup',
+          builder: (context, state) {
+            final (backupKey, backupId) = state.extra! as (String, String);
+            return KeychainBackupPage(backupKey: backupKey, backupId: backupId);
           },
         ),
         // GoRoute(
