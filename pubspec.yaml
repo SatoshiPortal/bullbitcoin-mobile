@@ -127,8 +127,8 @@ flutter:
     # - assets/arrow_down_white.png
     # - assets/request-payment.svg
     # - assets/new-address.svg
-
     - assets/bip39_english.txt
+    - .env
 
 flutter_native_splash:
   background_image: "assets/splash.png"

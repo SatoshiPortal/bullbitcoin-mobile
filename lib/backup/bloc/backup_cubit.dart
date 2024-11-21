@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:bb_mobile/_model/backup.dart';
 import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_pkg/crypto.dart';
-import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/labels.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
@@ -74,7 +73,7 @@ class BackupCubit extends Cubit<BackupState> {
     return backups;
   }
 
-  Future<(String?, Err?)> writeEncryptedBackup() async {
+  Future<(String?, String?)> writeEncryptedBackup() async {
     final backups = state.backups;
 
     // final firstMnemonic = backups.first.mnemonic;
@@ -88,22 +87,27 @@ class BackupCubit extends Cubit<BackupState> {
     // const derivation = "m/1608'/0'"; // TODO: key rotation ?
     // final derived = bip85.derive(xprv: xprv, path: derivation);
     final backupKey = HEX.encode(Crypto.generateRandomBytes(32));
+    final backupId = HEX.encode(Crypto.generateRandomBytes(32));
+
     final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
-    final ciphertext = Crypto.aesEncrypt(plaintext, backupKey);
+    final ciphertext =
+        Crypto.aesEncrypt(plaintext, backupKey); // TODO : extract nonce?
 
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd_HH-mm-ss').format(now);
     final filename = '${formattedDate}_backup.txt';
 
     final (directory, errDir) = await _fileStorage.getDownloadDirectory();
-    if (errDir != null) return (null, Err('Fail to get Download directory'));
-    final file = File(directory! + '/' + filename);
+    if (errDir != null) return (null, null); // Fail to get Download directory
 
-    final (f, errSave) = await _fileStorage.saveToFile(file, ciphertext);
-    if (errSave != null) return (null, Err('Fail to save backup'));
+    final file = File(directory! + '/' + filename);
+    final content = json.encode({'id': backupId, 'encrypted': ciphertext});
+
+    final (f, errSave) = await _fileStorage.saveToFile(file, content);
+    if (errSave != null) return (null, null); // Fail to save backup
 
     print(f?.path);
 
-    return (backupKey, null);
+    return (backupKey, backupId);
   }
 }
