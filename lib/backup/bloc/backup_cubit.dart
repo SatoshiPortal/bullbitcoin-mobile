@@ -10,8 +10,6 @@ import 'package:bb_mobile/_pkg/wallet/labels.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/backup/bloc/backup_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:bip85/bip85.dart' as bip85;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
 import 'package:intl/intl.dart';
@@ -79,17 +77,17 @@ class BackupCubit extends Cubit<BackupState> {
   Future<(String?, Err?)> writeEncryptedBackup() async {
     final backups = state.backups;
 
-    final firstMnemonic = backups.first.mnemonic;
-    final bdkMnemonic = await bdk.Mnemonic.fromString(firstMnemonic.join(' '));
-    final xprv = bdk.DescriptorSecretKey.create(
-      network: bdk.Network.bitcoin, // TODO: handle testnet?
-      mnemonic: bdkMnemonic,
-      password: '', // TODO: which passphrase?
-    ).toString();
+    // final firstMnemonic = backups.first.mnemonic;
+    // final bdkMnemonic = await bdk.Mnemonic.fromString(firstMnemonic.join(' '));
+    // final xprv = bdk.DescriptorSecretKey.create(
+    //   network: bdk.Network.bitcoin, // TODO: handle testnet?
+    //   mnemonic: bdkMnemonic,
+    //   password: '', // TODO: which passphrase?
+    // ).toString();
 
-    const derivation = "m/1608'/0'"; // TODO: key rotation ?
-    final derived = bip85.derive(xprv: xprv, path: derivation);
-    final backupKey = HEX.encode(derived);
+    // const derivation = "m/1608'/0'"; // TODO: key rotation ?
+    // final derived = bip85.derive(xprv: xprv, path: derivation);
+    final backupKey = HEX.encode(Crypto.generateRandomBytes(32));
     final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
     final ciphertext = Crypto.aesEncrypt(plaintext, backupKey);
 
