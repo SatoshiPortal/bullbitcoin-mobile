@@ -10,34 +10,30 @@ import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/backup/bloc/backup_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:bip85/bip85.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
 import 'package:intl/intl.dart';
 
 class BackupCubit extends Cubit<BackupState> {
   BackupCubit({
-    required List<WalletBloc> wallets,
-    required WalletSensitiveStorageRepository walletSensitiveStorage,
-    required FileStorage fileStorage,
-  })  : _wallets = wallets,
-        _walletSensitiveStorage = walletSensitiveStorage,
-        _fileStorage = fileStorage,
-        super(BackupState(backups: []));
+    required this.wallets,
+    required this.walletSensitiveStorage,
+    required this.fileStorage,
+  }) : super(BackupState(backups: []));
 
-  final FileStorage _fileStorage;
-  final List<WalletBloc> _wallets;
-  final WalletSensitiveStorageRepository _walletSensitiveStorage;
+  final FileStorage fileStorage;
+  final List<WalletBloc> wallets;
+  final WalletSensitiveStorageRepository walletSensitiveStorage;
 
   Future<List<Backup>> loadBackupData() async {
     emit(BackupState(loading: true, backups: []));
 
     final backups = <Backup>[];
 
-    for (final walletBloc in _wallets) {
+    for (final walletBloc in wallets) {
       final wallet = walletBloc.state.wallet!;
 
-      final (seed, error) = await _walletSensitiveStorage.readSeed(
+      final (seed, error) = await walletSensitiveStorage.readSeed(
         fingerprintIndex: wallet.getRelatedSeedStorageString(),
       );
       final mnemonic = seed?.mnemonic.split(' ') ?? [];
@@ -88,9 +84,9 @@ class BackupCubit extends Cubit<BackupState> {
     final rootXprv = xprv.toString().substring(0, 64); // remove /*
     print('rootXprv: $rootXprv');
 
-    const derivation = "m/1608'/0'"; // TODO: key rotation ?
-    final derived = derive(xprv: rootXprv, path: derivation);
-    print('derived: $derived');
+    // const derivation = "m/1608'/0'"; // TODO: key rotation ?
+    // final derived = derive(xprv: rootXprv, path: derivation);
+    // print('derived: $derived');
 
     final backupKey = HEX.encode(Crypto.generateRandomBytes(32));
     final backupId = HEX.encode(Crypto.generateRandomBytes(32));
@@ -103,13 +99,13 @@ class BackupCubit extends Cubit<BackupState> {
     final formattedDate = DateFormat('yyyy-MM-dd_HH-mm-ss').format(now);
     final filename = '${formattedDate}_backup.txt';
 
-    final (directory, errDir) = await _fileStorage.getDownloadDirectory();
+    final (directory, errDir) = await fileStorage.getDownloadDirectory();
     if (errDir != null) return (null, null); // Fail to get Download directory
 
     final file = File(directory! + '/' + filename);
     final content = json.encode({'id': backupId, 'encrypted': ciphertext});
 
-    final (f, errSave) = await _fileStorage.saveToFile(file, content);
+    final (f, errSave) = await fileStorage.saveToFile(file, content);
     if (errSave != null) return (null, null); // Fail to save backup
 
     print(f?.path);
