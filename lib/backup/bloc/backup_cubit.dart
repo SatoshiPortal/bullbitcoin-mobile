@@ -97,7 +97,7 @@ class BackupCubit extends Cubit<BackupState> {
 
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd_HH-mm-ss').format(now);
-    final filename = '${formattedDate}_backup.txt';
+    final filename = '${formattedDate}_backup.json';
 
     final (directory, errDir) = await fileStorage.getDownloadDirectory();
     if (errDir != null) return (null, null); // Fail to get Download directory
