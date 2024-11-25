@@ -38,22 +38,26 @@ class KeychainCubit extends Cubit<KeychainState> {
     final secretHashBytes = Crypto.sha256(utf8.encode(state.secret));
     final secretHashHex = HEX.encode(secretHashBytes);
 
-    final response = await http.post(
-      Uri.parse('$keychainUrl/store_key'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'backup_id': backupId,
-        'backup_key': backupKey,
-        'secret_hash': secretHashHex,
-      }),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('$keychainUrl/store_key'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'backup_id': backupId,
+          'backup_key': backupKey,
+          'secret_hash': secretHashHex,
+        }),
+      );
 
-    if (response.statusCode == 201) {
-      return null;
-    } else if (response.statusCode == 403) {
-      return Err('Key already stored');
-    } else {
-      return Err('Key not secured \n${response.statusCode}');
+      if (response.statusCode == 201) {
+        return null;
+      } else if (response.statusCode == 403) {
+        return Err('Key already stored');
+      } else {
+        return Err('Key not secured \n${response.statusCode}');
+      }
+    } catch (e) {
+      return Err('Server Inaccessible');
     }
   }
 }
