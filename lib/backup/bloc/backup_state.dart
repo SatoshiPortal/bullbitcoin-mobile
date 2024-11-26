@@ -1,8 +1,15 @@
 import 'package:bb_mobile/_model/backup.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class BackupState {
-  BackupState({this.loading = false, required this.backups});
+part 'backup_state.freezed.dart';
 
-  final bool loading;
-  final List<Backup> backups;
+@freezed
+class BackupState with _$BackupState {
+  const factory BackupState({
+    @Default(true) bool loading,
+    @Default([]) List<Backup> backups,
+    @Default('') String backupId,
+    @Default('') String backupKey,
+    @Default('') String error,
+  }) = _BackupState;
 }
