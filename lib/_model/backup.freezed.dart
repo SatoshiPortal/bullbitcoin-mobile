@@ -21,8 +21,13 @@ Backup _$BackupFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Backup {
   int get version => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get layer => throw _privateConstructorUsedError;
+  String get network => throw _privateConstructorUsedError;
+  String get script => throw _privateConstructorUsedError;
+  String get type => throw _privateConstructorUsedError;
   List<String> get mnemonic => throw _privateConstructorUsedError;
-  List<String> get passphrases => throw _privateConstructorUsedError;
+  String get passphrase => throw _privateConstructorUsedError;
   List<Bip329Label> get labels => throw _privateConstructorUsedError;
   List<String> get descriptors => throw _privateConstructorUsedError;
 
@@ -42,8 +47,13 @@ abstract class $BackupCopyWith<$Res> {
   @useResult
   $Res call(
       {int version,
+      String name,
+      String layer,
+      String network,
+      String script,
+      String type,
       List<String> mnemonic,
-      List<String> passphrases,
+      String passphrase,
       List<Bip329Label> labels,
       List<String> descriptors});
 }
@@ -64,8 +74,13 @@ class _$BackupCopyWithImpl<$Res, $Val extends Backup>
   @override
   $Res call({
     Object? version = null,
+    Object? name = null,
+    Object? layer = null,
+    Object? network = null,
+    Object? script = null,
+    Object? type = null,
     Object? mnemonic = null,
-    Object? passphrases = null,
+    Object? passphrase = null,
     Object? labels = null,
     Object? descriptors = null,
   }) {
@@ -74,14 +89,34 @@ class _$BackupCopyWithImpl<$Res, $Val extends Backup>
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as int,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      layer: null == layer
+          ? _value.layer
+          : layer // ignore: cast_nullable_to_non_nullable
+              as String,
+      network: null == network
+          ? _value.network
+          : network // ignore: cast_nullable_to_non_nullable
+              as String,
+      script: null == script
+          ? _value.script
+          : script // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as String,
       mnemonic: null == mnemonic
           ? _value.mnemonic
           : mnemonic // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      passphrases: null == passphrases
-          ? _value.passphrases
-          : passphrases // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      passphrase: null == passphrase
+          ? _value.passphrase
+          : passphrase // ignore: cast_nullable_to_non_nullable
+              as String,
       labels: null == labels
           ? _value.labels
           : labels // ignore: cast_nullable_to_non_nullable
@@ -103,8 +138,13 @@ abstract class _$$BackupImplCopyWith<$Res> implements $BackupCopyWith<$Res> {
   @useResult
   $Res call(
       {int version,
+      String name,
+      String layer,
+      String network,
+      String script,
+      String type,
       List<String> mnemonic,
-      List<String> passphrases,
+      String passphrase,
       List<Bip329Label> labels,
       List<String> descriptors});
 }
@@ -123,8 +163,13 @@ class __$$BackupImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? version = null,
+    Object? name = null,
+    Object? layer = null,
+    Object? network = null,
+    Object? script = null,
+    Object? type = null,
     Object? mnemonic = null,
-    Object? passphrases = null,
+    Object? passphrase = null,
     Object? labels = null,
     Object? descriptors = null,
   }) {
@@ -133,14 +178,34 @@ class __$$BackupImplCopyWithImpl<$Res>
           ? _value.version
           : version // ignore: cast_nullable_to_non_nullable
               as int,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      layer: null == layer
+          ? _value.layer
+          : layer // ignore: cast_nullable_to_non_nullable
+              as String,
+      network: null == network
+          ? _value.network
+          : network // ignore: cast_nullable_to_non_nullable
+              as String,
+      script: null == script
+          ? _value.script
+          : script // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as String,
       mnemonic: null == mnemonic
           ? _value._mnemonic
           : mnemonic // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      passphrases: null == passphrases
-          ? _value._passphrases
-          : passphrases // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+      passphrase: null == passphrase
+          ? _value.passphrase
+          : passphrase // ignore: cast_nullable_to_non_nullable
+              as String,
       labels: null == labels
           ? _value._labels
           : labels // ignore: cast_nullable_to_non_nullable
@@ -158,12 +223,16 @@ class __$$BackupImplCopyWithImpl<$Res>
 class _$BackupImpl extends _Backup {
   const _$BackupImpl(
       {this.version = 1,
+      this.name = '',
+      this.layer = '',
+      this.network = '',
+      this.script = '',
+      this.type = '',
       final List<String> mnemonic = const <String>[],
-      final List<String> passphrases = const <String>[],
+      this.passphrase = '',
       final List<Bip329Label> labels = const <Bip329Label>[],
       final List<String> descriptors = const <String>[]})
       : _mnemonic = mnemonic,
-        _passphrases = passphrases,
         _labels = labels,
         _descriptors = descriptors,
         super._();
@@ -174,6 +243,21 @@ class _$BackupImpl extends _Backup {
   @override
   @JsonKey()
   final int version;
+  @override
+  @JsonKey()
+  final String name;
+  @override
+  @JsonKey()
+  final String layer;
+  @override
+  @JsonKey()
+  final String network;
+  @override
+  @JsonKey()
+  final String script;
+  @override
+  @JsonKey()
+  final String type;
   final List<String> _mnemonic;
   @override
   @JsonKey()
@@ -183,15 +267,9 @@ class _$BackupImpl extends _Backup {
     return EqualUnmodifiableListView(_mnemonic);
   }
 
-  final List<String> _passphrases;
   @override
   @JsonKey()
-  List<String> get passphrases {
-    if (_passphrases is EqualUnmodifiableListView) return _passphrases;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_passphrases);
-  }
-
+  final String passphrase;
   final List<Bip329Label> _labels;
   @override
   @JsonKey()
@@ -212,7 +290,7 @@ class _$BackupImpl extends _Backup {
 
   @override
   String toString() {
-    return 'Backup(version: $version, mnemonic: $mnemonic, passphrases: $passphrases, labels: $labels, descriptors: $descriptors)';
+    return 'Backup(version: $version, name: $name, layer: $layer, network: $network, script: $script, type: $type, mnemonic: $mnemonic, passphrase: $passphrase, labels: $labels, descriptors: $descriptors)';
   }
 
   @override
@@ -221,9 +299,14 @@ class _$BackupImpl extends _Backup {
         (other.runtimeType == runtimeType &&
             other is _$BackupImpl &&
             (identical(other.version, version) || other.version == version) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.layer, layer) || other.layer == layer) &&
+            (identical(other.network, network) || other.network == network) &&
+            (identical(other.script, script) || other.script == script) &&
+            (identical(other.type, type) || other.type == type) &&
             const DeepCollectionEquality().equals(other._mnemonic, _mnemonic) &&
-            const DeepCollectionEquality()
-                .equals(other._passphrases, _passphrases) &&
+            (identical(other.passphrase, passphrase) ||
+                other.passphrase == passphrase) &&
             const DeepCollectionEquality().equals(other._labels, _labels) &&
             const DeepCollectionEquality()
                 .equals(other._descriptors, _descriptors));
@@ -234,8 +317,13 @@ class _$BackupImpl extends _Backup {
   int get hashCode => Object.hash(
       runtimeType,
       version,
+      name,
+      layer,
+      network,
+      script,
+      type,
       const DeepCollectionEquality().hash(_mnemonic),
-      const DeepCollectionEquality().hash(_passphrases),
+      passphrase,
       const DeepCollectionEquality().hash(_labels),
       const DeepCollectionEquality().hash(_descriptors));
 
@@ -258,8 +346,13 @@ class _$BackupImpl extends _Backup {
 abstract class _Backup extends Backup {
   const factory _Backup(
       {final int version,
+      final String name,
+      final String layer,
+      final String network,
+      final String script,
+      final String type,
       final List<String> mnemonic,
-      final List<String> passphrases,
+      final String passphrase,
       final List<Bip329Label> labels,
       final List<String> descriptors}) = _$BackupImpl;
   const _Backup._() : super._();
@@ -269,9 +362,19 @@ abstract class _Backup extends Backup {
   @override
   int get version;
   @override
+  String get name;
+  @override
+  String get layer;
+  @override
+  String get network;
+  @override
+  String get script;
+  @override
+  String get type;
+  @override
   List<String> get mnemonic;
   @override
-  List<String> get passphrases;
+  String get passphrase;
   @override
   List<Bip329Label> get labels;
   @override

@@ -8,8 +8,13 @@ part 'backup.g.dart';
 class Backup with _$Backup {
   const factory Backup({
     @Default(1) int version,
+    @Default('') String name,
+    @Default('') String layer,
+    @Default('') String network,
+    @Default('') String script,
+    @Default('') String type,
     @Default(<String>[]) List<String> mnemonic,
-    @Default(<String>[]) List<String> passphrases,
+    @Default('') String passphrase,
     @Default(<Bip329Label>[]) List<Bip329Label> labels,
     @Default(<String>[]) List<String> descriptors,
   }) = _Backup;
@@ -20,7 +25,7 @@ class Backup with _$Backup {
 
   bool get isEmpty =>
       mnemonic.isEmpty &&
-      passphrases.isEmpty &&
+      passphrase.isEmpty &&
       labels.isEmpty &&
       descriptors.isEmpty;
 }

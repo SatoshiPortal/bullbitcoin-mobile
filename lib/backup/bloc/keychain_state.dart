@@ -1,9 +1,13 @@
-class KeychainState {
-  KeychainState({
-    required this.secret,
-    required this.secretConfirmed,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final String secret;
-  final bool secretConfirmed;
+part 'keychain_state.freezed.dart';
+
+@freezed
+class KeychainState with _$KeychainState {
+  const factory KeychainState({
+    @Default(false) bool completed,
+    @Default('') String secret,
+    @Default(false) bool secretConfirmed,
+    @Default('') String error,
+  }) = _KeychainState;
 }
