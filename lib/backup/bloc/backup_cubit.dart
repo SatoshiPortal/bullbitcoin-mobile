@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/_model/backup.dart';
-import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_pkg/crypto.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/labels.dart';
@@ -19,15 +18,13 @@ class BackupCubit extends Cubit<BackupState> {
     required this.wallets,
     required this.walletSensitiveStorage,
     required this.fileStorage,
-  }) : super(BackupState(backups: []));
+  }) : super(const BackupState());
 
   final FileStorage fileStorage;
   final List<WalletBloc> wallets;
   final WalletSensitiveStorageRepository walletSensitiveStorage;
 
-  Future<List<Backup>> loadBackupData() async {
-    emit(BackupState(loading: true, backups: []));
-
+  Future<void> loadBackupData() async {
     final backups = <Backup>[];
 
     for (final walletBloc in wallets) {
@@ -38,10 +35,13 @@ class BackupCubit extends Cubit<BackupState> {
       );
       final mnemonic = seed?.mnemonic.split(' ') ?? [];
 
-      final passphrases = <String>[];
-      for (final Passphrase passphrase in seed?.passphrases ?? []) {
-        passphrases.add(passphrase.passphrase);
-      }
+      final passphrase = wallet.hasPassphrase()
+          ? seed!.passphrases
+              .firstWhere(
+                (e) => e.sourceFingerprint == wallet.sourceFingerprint,
+              )
+              .passphrase
+          : '';
 
       final descriptors = [wallet.getDescriptorCombined()];
 
@@ -59,19 +59,23 @@ class BackupCubit extends Cubit<BackupState> {
 
       backups.add(
         Backup(
+          name: wallet.name ?? '',
+          network: wallet.network.name.toLowerCase(),
+          layer: wallet.baseWalletType.name.toLowerCase(),
+          script: wallet.scriptType.name.toLowerCase(),
+          type: wallet.type.name.toLowerCase(),
           mnemonic: mnemonic,
-          passphrases: passphrases,
+          passphrase: passphrase,
           descriptors: descriptors,
           labels: labels,
         ),
       );
     }
 
-    emit(BackupState(backups: backups));
-    return backups;
+    emit(state.copyWith(backups: backups, loading: false));
   }
 
-  Future<(String?, String?)> writeEncryptedBackup() async {
+  Future<void> writeEncryptedBackup() async {
     final backups = state.backups;
 
     final firstMnemonic = backups.first.mnemonic;
@@ -88,28 +92,37 @@ class BackupCubit extends Cubit<BackupState> {
     // final derived = derive(xprv: rootXprv, path: derivation);
     // print('derived: $derived');
 
-    final backupKey = HEX.encode(Crypto.generateRandomBytes(32));
+    // final backupKey = HEX.encode(Crypto.generateRandomBytes(32));
+    // TODO: replace by BIP85
+    const backupKey =
+        '23fe885eb43961829d0951f1f7eb251890512c504f6ea88034e6369491f256dd';
     final backupId = HEX.encode(Crypto.generateRandomBytes(32));
 
     final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
-    final ciphertext =
-        Crypto.aesEncrypt(plaintext, backupKey); // TODO : extract nonce?
+    final ciphertext = Crypto.aesEncrypt(plaintext, backupKey);
+    // TODO : extract nonce?
 
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd_HH-mm-ss').format(now);
-    final filename = '${formattedDate}_backup.json';
+    final filename = '$formattedDate.json';
 
-    final (directory, errDir) = await fileStorage.getDownloadDirectory();
-    if (errDir != null) return (null, null); // Fail to get Download directory
+    final (appDir, errDir) = await fileStorage.getAppDirectory();
+    if (errDir != null) {
+      emit(state.copyWith(error: 'Fail to get Download directory'));
+    }
 
-    final file = File(directory! + '/' + filename);
+    final backupDir =
+        await Directory(appDir! + '/backups/').create(recursive: true);
+    final file = File(backupDir.path + filename);
     final content = json.encode({'id': backupId, 'encrypted': ciphertext});
 
     final (f, errSave) = await fileStorage.saveToFile(file, content);
-    if (errSave != null) return (null, null); // Fail to save backup
+    if (errSave != null) {
+      emit(state.copyWith(error: 'Fail to save backup'));
+    }
 
-    print(f?.path);
-
-    return (backupKey, backupId);
+    emit(state.copyWith(backupId: backupId, backupKey: backupKey));
   }
+
+  void clearError() => emit(state.copyWith(error: ''));
 }

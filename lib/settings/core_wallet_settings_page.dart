@@ -46,7 +46,9 @@ class _Screen extends StatelessWidget {
                 Gap(8),
                 InstantPaymentsWallet(),
                 Gap(8),
-                BackupButton(),
+                BackupBullButton(),
+                Gap(8),
+                RecoverBullButton(),
                 Gap(8),
                 _ButtonList(),
               ],
@@ -113,18 +115,35 @@ class InstantPaymentsWallet extends StatelessWidget {
   }
 }
 
-class BackupButton extends StatelessWidget {
-  const BackupButton({super.key});
+class BackupBullButton extends StatelessWidget {
+  const BackupBullButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BBButton.textWithStatusAndRightArrow(
-      label: 'Backup',
+      label: 'BackupBull',
       onPressed: () {
         final network = context.read<NetworkCubit>().state.getBBNetwork();
         final wallets =
             context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
-        context.push('/backup', extra: wallets);
+        context.push('/backupbull', extra: wallets);
+      },
+    );
+  }
+}
+
+class RecoverBullButton extends StatelessWidget {
+  const RecoverBullButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'RecoverBull',
+      onPressed: () {
+        final network = context.read<NetworkCubit>().state.getBBNetwork();
+        final wallets =
+            context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+        context.push('/recoverbull', extra: wallets);
       },
     );
   }
