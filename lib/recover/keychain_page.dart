@@ -1,32 +1,28 @@
+import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/backup/bloc/keychain_cubit.dart';
-import 'package:bb_mobile/backup/bloc/keychain_state.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/recover/bloc/keychain_cubit.dart';
+import 'package:bb_mobile/recover/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class KeychainBackupPage extends StatelessWidget {
-  const KeychainBackupPage({
-    super.key,
-    required this.backupKey,
-    required this.backupId,
-  });
+class KeychainRecoverPage extends StatelessWidget {
+  const KeychainRecoverPage({super.key, required this.backupId});
 
-  final String backupKey;
   final String backupId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<KeychainCubit>(
-      create: (_) => KeychainCubit(),
+      create: (_) => KeychainCubit(filePicker: locator<FilePick>()),
       child: Scaffold(
         backgroundColor: Colors.amber,
         appBar: AppBar(
           automaticallyImplyLeading: false,
           flexibleSpace: BBAppBar(
-            text: 'Keychain Backup',
+            text: 'Recover Backup',
             onBack: () => context.pop(),
           ),
         ),
@@ -41,33 +37,28 @@ class KeychainBackupPage extends StatelessWidget {
               );
               context.read<KeychainCubit>().clearError();
             }
-            if (state.completed) {
+            if (state.backupKey.isNotEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Keychain completed'),
+                  content: Text('Backup Key recovered'),
                   backgroundColor: Colors.green,
                 ),
               );
-              locator<HomeCubit>().getWalletsFromStorage();
-              context.go('/home');
             }
           },
           child: BlocBuilder<KeychainCubit, KeychainState>(
             builder: (context, state) {
               final cubit = context.read<KeychainCubit>();
+
+              final backupKey = state.backupKey;
+              final secret = state.secret;
+
               return Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Column(
-                    children: [
-                      SelectableText('Backup Key: $backupKey'),
-                      SelectableText('Backup ID: $backupId'),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(
+                  if (backupKey.isEmpty && backupId.isNotEmpty)
+                    Center(
+                      child: SizedBox(
                         width: 100,
                         child: TextFormField(
                           decoration:
@@ -77,30 +68,16 @@ class KeychainBackupPage extends StatelessWidget {
                           onChanged: (value) => cubit.updateSecret(value),
                         ),
                       ),
-                      SizedBox(
-                        width: 100,
-                        child: TextFormField(
-                          decoration:
-                              const InputDecoration(labelText: 'Confirm PIN'),
-                          keyboardType: TextInputType.number,
-                          obscureText: true,
-                          maxLength: 6,
-                          onChanged: (value) => cubit.confirmSecret(value),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (state.secretConfirmed)
-                    ElevatedButton(
-                      onPressed: () =>
-                          cubit.clickSecureKey(backupId, backupKey),
-                      child: const Text('Secure my backup key'),
                     ),
-                  if (!state.secretConfirmed)
-                    const Text(
-                      'PINs do not match! Please confirm your PIN.',
-                      style: TextStyle(color: Colors.red),
+                  if (backupKey.isEmpty &&
+                      backupId.isNotEmpty &&
+                      secret.length == 6)
+                    BBButton.big(
+                      label: 'Recover Backup Key',
+                      center: true,
+                      onPressed: () => cubit.clickRecoverKey(),
                     ),
+                  if (backupKey.isNotEmpty) SelectableText(backupKey),
                 ],
               );
             },
