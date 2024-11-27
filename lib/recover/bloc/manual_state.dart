@@ -8,5 +8,7 @@ class ManualState with _$ManualState {
     @Default('') String error,
     @Default(false) bool recovered,
     @Default('') String backupKey,
+    @Default('') String backupId,
+    @Default('') String encrypted,
   }) = _ManualState;
 }

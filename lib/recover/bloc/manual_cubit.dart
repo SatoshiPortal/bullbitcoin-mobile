@@ -35,6 +35,9 @@ class ManualCubit extends Cubit<ManualState> {
   final WalletCreate walletCreate;
   final LWKSensitiveCreate lwkSensitiveCreate;
 
+  void updateBackupKey(String value) => emit(state.copyWith(backupKey: value));
+  void clearError() => emit(state.copyWith(error: ''));
+
   Future<void> selectFile() async {
     final (file, error) = await filePicker.pickFile();
 
@@ -49,26 +52,29 @@ class ManualCubit extends Cubit<ManualState> {
     }
 
     final json = jsonDecode(file);
-    if (json['encrypted'] == null || json['encrypted'] is! String) {
+    final id = json['id']?.toString() ?? '';
+    final encrypted = json['encrypted']?.toString() ?? '';
+    if (encrypted.isEmpty || id.isEmpty) {
       emit(state.copyWith(error: 'Invalid backup'));
       return;
     }
 
-    final recovered = await _recoverBackup(json);
-    if (recovered) {
-      emit(state.copyWith(recovered: true));
-    }
+    emit(state.copyWith(backupId: id, encrypted: encrypted));
   }
 
-  Future<bool> _recoverBackup(json) async {
+  Future<void> clickRecover() async {
+    final recovered = await _recoverBackup();
+    if (recovered) emit(state.copyWith(recovered: true));
+  }
+
+  Future<bool> _recoverBackup() async {
     if (state.backupKey.length != 64) {
       emit(state.copyWith(error: 'Backup key should be 64 chars'));
       return false;
     }
 
-    final ciphertext = json['encrypted'] as String;
     try {
-      final plaintext = Crypto.aesDecrypt(ciphertext, state.backupKey);
+      final plaintext = Crypto.aesDecrypt(state.encrypted, state.backupKey);
       final decodedJson = jsonDecode(plaintext) as List;
 
       final backups = decodedJson
@@ -112,7 +118,7 @@ class ManualCubit extends Cubit<ManualState> {
         }
 
         if (backup.mnemonic.isNotEmpty) {
-          _addWallet(
+          await _addWallet(
             backup.mnemonic.join(' '),
             backup.passphrase,
             network,
@@ -130,7 +136,7 @@ class ManualCubit extends Cubit<ManualState> {
     }
   }
 
-  void _addWallet(
+  Future<void> _addWallet(
     String mnemonic,
     String passphrase,
     BBNetwork network,
@@ -171,8 +177,4 @@ class ManualCubit extends Cubit<ManualState> {
 
     await walletsStorageRepository.newWallet(wallet!);
   }
-
-  void updateBackupKey(String value) => emit(state.copyWith(backupKey: value));
-
-  void errorDisplayed() => emit(state.copyWith(error: ''));
 }
