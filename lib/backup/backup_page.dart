@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class TheBackupPage extends StatefulWidget {
-  const TheBackupPage({super.key, required this.wallets});
+class ManualBackupPage extends StatefulWidget {
+  const ManualBackupPage({super.key, required this.wallets});
 
   final List<WalletBloc> wallets;
 
@@ -18,7 +18,7 @@ class TheBackupPage extends StatefulWidget {
   _TheBackupPageState createState() => _TheBackupPageState();
 }
 
-class _TheBackupPageState extends State<TheBackupPage> {
+class _TheBackupPageState extends State<ManualBackupPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<BackupCubit>(
@@ -30,6 +30,7 @@ class _TheBackupPageState extends State<TheBackupPage> {
       child: Scaffold(
         backgroundColor: Colors.amber,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           flexibleSpace: BBAppBar(
             text: 'Recover Backup',
             onBack: () => context.pop(),
@@ -65,49 +66,38 @@ class _TheBackupPageState extends State<TheBackupPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (state.backupKey.isNotEmpty)
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border:
-                                    Border.all(color: Colors.amber, width: 2),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Backup Key:',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
+                            Column(
+                              children: [
+                                const Text(
+                                  'Backup Key:',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 10),
+                                SelectableText(
+                                  state.backupKey,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  const SizedBox(height: 10),
-                                  SelectableText(
-                                    state.backupKey,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
+                                ),
+                                if (state.backupId.isNotEmpty)
+                                  ElevatedButton(
+                                    onPressed: () => context.push(
+                                      '/keychain-backup',
+                                      extra: (state.backupKey, state.backupId),
                                     ),
+                                    child: const Text('Keychain'),
                                   ),
-                                  if (state.backupId.isNotEmpty)
-                                    ElevatedButton(
-                                      onPressed: () => context.push(
-                                        '/keychain-backup',
-                                        extra: (
-                                          state.backupKey,
-                                          state.backupId
-                                        ),
-                                      ),
-                                      child: const Text('Keychain'),
-                                    ),
-                                ],
-                              ),
+                              ],
                             ),
                           const SizedBox(height: 20),
                           if (state.backupKey.isEmpty)
-                            ElevatedButton(
-                              onPressed: context
-                                  .read<BackupCubit>()
-                                  .writeEncryptedBackup,
-                              child: const Text('Backup'),
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: context
+                                    .read<BackupCubit>()
+                                    .writeEncryptedBackup,
+                                child: const Text('Generate'),
+                              ),
                             ),
                         ],
                       ),

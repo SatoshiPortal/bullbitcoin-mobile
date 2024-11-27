@@ -14,6 +14,7 @@ import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
+import 'package:bb_mobile/recover/keychain_page.dart';
 import 'package:bb_mobile/recover/manual_page.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 // import 'package:bb_mobile/seeds/seeds_page.dart';
@@ -226,7 +227,7 @@ GoRouter setupRouter() => GoRouter(
           path: '/backupbull',
           builder: (context, state) {
             final wallets = state.extra! as List<WalletBloc>;
-            return TheBackupPage(wallets: wallets);
+            return ManualBackupPage(wallets: wallets);
           },
         ),
         GoRoute(
@@ -240,7 +241,14 @@ GoRouter setupRouter() => GoRouter(
           path: '/recoverbull',
           builder: (context, state) {
             final wallets = state.extra! as List<WalletBloc>;
-            return RecoverManualPage(wallets: wallets);
+            return ManualRecoverPage(wallets: wallets);
+          },
+        ),
+        GoRoute(
+          path: '/keychain-recover',
+          builder: (context, state) {
+            final backupId = state.extra! as String;
+            return KeychainRecoverPage(backupId: backupId);
           },
         ),
         // GoRoute(
