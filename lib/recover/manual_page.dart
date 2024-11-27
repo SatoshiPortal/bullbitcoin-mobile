@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
@@ -16,8 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class RecoverManualPage extends StatelessWidget {
-  const RecoverManualPage({super.key, required this.wallets});
+class ManualRecoverPage extends StatelessWidget {
+  const ManualRecoverPage({super.key, required this.wallets});
 
   final List<WalletBloc> wallets;
 
@@ -37,13 +38,15 @@ class RecoverManualPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.amber,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           flexibleSpace: BBAppBar(
             text: 'Recover Backup',
             onBack: () => context.pop(),
+            buttonKey: UIKeys.settingsBackButton,
           ),
         ),
         body: BlocListener<ManualCubit, ManualState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state.error.isNotEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -51,7 +54,7 @@ class RecoverManualPage extends StatelessWidget {
                   backgroundColor: Colors.red,
                 ),
               );
-              context.read<ManualCubit>().errorDisplayed();
+              context.read<ManualCubit>().clearError();
             }
             if (state.recovered) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -60,7 +63,7 @@ class RecoverManualPage extends StatelessWidget {
                   backgroundColor: Colors.green,
                 ),
               );
-              locator<HomeCubit>().getWalletsFromStorage();
+              await locator<HomeCubit>().getWalletsFromStorage();
               context.go('/home');
             }
           },
@@ -71,20 +74,35 @@ class RecoverManualPage extends StatelessWidget {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  if (!state.recovered)
+                  if (!state.recovered &&
+                      state.backupId.isNotEmpty &&
+                      state.backupKey.isEmpty)
+                    ElevatedButton(
+                      onPressed: () => context.push(
+                        '/keychain-recover',
+                        extra: state.backupId,
+                      ),
+                      child: const Text('Keychain'),
+                    ),
+                  if (!state.recovered && state.backupId.isNotEmpty)
                     TextFormField(
                       decoration:
                           const InputDecoration(labelText: 'Backup Key'),
                       maxLength: 64,
                       onChanged: (value) => cubit.updateBackupKey(value),
                     ),
-                  if (state.backupKey.length == 64 && !state.recovered)
+                  if (!state.recovered && state.backupKey.isEmpty)
                     BBButton.big(
-                      label: 'Recover Backup',
+                      label: 'Select File',
                       center: true,
                       onPressed: () => cubit.selectFile(),
                     ),
-                  if (state.recovered) const Text('Successfully recovered'),
+                  if (!state.recovered && state.backupKey.isNotEmpty)
+                    BBButton.big(
+                      label: 'Recover',
+                      center: true,
+                      onPressed: () => cubit.clickRecover(),
+                    ),
                 ],
               );
             },
