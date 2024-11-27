@@ -3,7 +3,9 @@ import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +50,10 @@ class _Screen extends StatelessWidget {
                 const BitcoinSettingsButton(),
                 const Gap(8),
                 const ApplicationSettingsButton(),
+                const Gap(8),
+                const BackupBullButton(),
+                const Gap(8),
+                const RecoverBullButton(),
 
                 const Gap(24),
                 const Center(
@@ -152,6 +158,40 @@ class SwapHistoryButton extends StatelessWidget {
         context.push('/swap-history');
 
         // context.push('/import');
+      },
+    );
+  }
+}
+
+class BackupBullButton extends StatelessWidget {
+  const BackupBullButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'BackupBull',
+      onPressed: () {
+        final network = context.read<NetworkCubit>().state.getBBNetwork();
+        final wallets =
+            context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+        context.push('/backupbull', extra: wallets);
+      },
+    );
+  }
+}
+
+class RecoverBullButton extends StatelessWidget {
+  const RecoverBullButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'RecoverBull',
+      onPressed: () {
+        final network = context.read<NetworkCubit>().state.getBBNetwork();
+        final wallets =
+            context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+        context.push('/recoverbull', extra: wallets);
       },
     );
   }
