@@ -25,3 +25,7 @@ doc/api/
 
 op/config/.env
 op/builds
+
+# Generated files
+*.freezed.dart
+*.g.dart
