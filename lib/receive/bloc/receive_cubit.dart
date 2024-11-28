@@ -38,11 +38,13 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       ),
     );
 
-    if (state.paymentNetwork == PaymentNetwork.lightning)
+    if (state.paymentNetwork == PaymentNetwork.lightning) {
       emit(state.copyWith(defaultAddress: null));
+    }
 
-    if (!walletBloc.state.wallet!.mainWallet)
+    if (!walletBloc.state.wallet!.mainWallet) {
       emit(state.copyWith(paymentNetwork: PaymentNetwork.bitcoin));
+    }
 
     // final watchOnly = walletBloc.state.wallet!.watchOnly();
     // if (watchOnly)
@@ -70,8 +72,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     emit(state.copyWith(paymentNetwork: selectedPaymentNetwork));
 
-    if (selectedPaymentNetwork == PaymentNetwork.lightning)
+    if (selectedPaymentNetwork == PaymentNetwork.lightning) {
       emit(state.copyWith(defaultAddress: null));
+    }
 
     if (selectedPaymentNetwork != PaymentNetwork.bitcoin) loadAddress();
 
@@ -222,15 +225,17 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     final address = wallet.getAddressFromWallet(defaultAddress.address);
     if (address == null) return;
 
-    if (!isLiq && state.defaultAddress != null)
+    if (!isLiq && state.defaultAddress != null) {
       emit(
         state.copyWith(description: address.label ?? ''),
       );
+    }
 
-    if (isLiq && state.defaultLiquidAddress != null)
+    if (isLiq && state.defaultLiquidAddress != null) {
       emit(
         state.copyWith(description: address.label ?? ''),
       );
+    }
   }
 
   void generateNewAddress() async {
@@ -285,18 +290,19 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       emit(state.copyWith(updateAddressGap: addressGap + 1));
       Future.delayed(const Duration(milliseconds: 100));
     }
-    if (wallet.isLiquid())
+    if (wallet.isLiquid()) {
       emit(
         state.copyWith(
           defaultLiquidAddress: updatedWallet.lastGeneratedAddress,
         ),
       );
-    else
+    } else {
       emit(
         state.copyWith(
           defaultAddress: updatedWallet.lastGeneratedAddress,
         ),
       );
+    }
 
     emit(
       state.copyWith(

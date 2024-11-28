@@ -109,13 +109,15 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                           importType,
                         },
                         onSelectionChanged: (value) {
-                          if (value.first == ImportTypes.words12)
+                          if (value.first == ImportTypes.words12) {
                             context.read<ImportWalletCubit>().recoverClicked();
+                          }
 
-                          if (value.first == ImportTypes.words24)
+                          if (value.first == ImportTypes.words24) {
                             context
                                 .read<ImportWalletCubit>()
                                 .recoverClicked24();
+                          }
                         },
                       ),
                     ),
@@ -244,8 +246,9 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
     widget.focusNode.addListener(() {
       if (widget.focusNode.hasFocus) {
         showOverLay();
-      } else
+      } else {
         hideOverlay();
+      }
     });
 
     controller.addListener(() {
@@ -365,8 +368,9 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
               child: CallbackShortcuts(
                 bindings: {
                   LogicalKeySet(LogicalKeyboardKey.enter): () {
-                    if (widget.focusNode.hasFocus)
+                    if (widget.focusNode.hasFocus) {
                       widget.returnClicked(widget.index);
+                    }
                   },
                 },
                 child: AnimatedOpacity(

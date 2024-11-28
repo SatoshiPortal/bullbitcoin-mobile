@@ -44,7 +44,7 @@ class BDKAddress {
         final contain = wallet.myAddressBook.where(
           (element) => element.address == addressStr,
         );
-        if (contain.isEmpty)
+        if (contain.isEmpty) {
           addresses.add(
             Address(
               address: addressStr,
@@ -54,6 +54,7 @@ class BDKAddress {
               isLiquid: wallet.isLiquid(),
             ),
           );
+        }
       }
       // Future.delayed(const Duration(milliseconds: 1600));
       addresses.sort((a, b) {
@@ -65,7 +66,7 @@ class BDKAddress {
       Wallet w;
 
       if (wallet.lastGeneratedAddress == null ||
-          addressLastUnused.index >= wallet.lastGeneratedAddress!.index!)
+          addressLastUnused.index >= wallet.lastGeneratedAddress!.index!) {
         w = wallet.copyWith(
           myAddressBook: addresses,
           lastGeneratedAddress: Address(
@@ -75,10 +76,11 @@ class BDKAddress {
             state: AddressStatus.unused,
           ),
         );
-      else
+      } else {
         w = wallet.copyWith(
           myAddressBook: addresses,
         );
+      }
       return (w, null);
     } on Exception catch (e) {
       return (
@@ -111,7 +113,7 @@ class BDKAddress {
         final contain = wallet.myAddressBook.where(
           (element) => element.address == addressStr,
         );
-        if (contain.isEmpty)
+        if (contain.isEmpty) {
           addresses.add(
             Address(
               address: addressStr,
@@ -121,7 +123,7 @@ class BDKAddress {
               isLiquid: wallet.isLiquid(),
             ),
           );
-        else {
+        } else {
           // migration for existing users so their change index is updated
           // index used to be null
           final index = wallet.myAddressBook.indexWhere(

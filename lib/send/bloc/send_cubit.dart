@@ -314,10 +314,11 @@ class SendCubit extends Cubit<SendState> {
           ? _networkCubit.state.getLiquidNetworkUrl()
           : _networkCubit.state.getNetworkUrl();
 
-      if (amt == 0)
+      if (amt == 0) {
         emit(state.copyWith(showSendButton: false));
-      else
+      } else {
         _checkBalance();
+      }
       // emit(state.copyWith(showSendButton: true));
 
       await _swapCubit.createSubSwapForSend(
@@ -356,10 +357,11 @@ class SendCubit extends Cubit<SendState> {
       );
     }
 
-    if (amt == 0)
+    if (amt == 0) {
       emit(state.copyWith(showSendButton: false));
-    else
+    } else {
       _checkBalance();
+    }
 
     // emit(state.copyWith(showSendButton: true));
   }
@@ -403,10 +405,11 @@ class SendCubit extends Cubit<SendState> {
       );
     }
 
-    if (amount == 0)
+    if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
-    else
+    } else {
       _checkBalance();
+    }
 
     // emit(state.copyWith(showSendButton: true));
   }
@@ -438,10 +441,11 @@ class SendCubit extends Cubit<SendState> {
       );
     }
 
-    if (amount == 0)
+    if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
-    else
+    } else {
       _checkBalance();
+    }
     // emit(state.copyWith(showSendButton: true));
   }
 
@@ -555,10 +559,11 @@ class SendCubit extends Cubit<SendState> {
   void utxoSelected(UTXO utxo) {
     var selectedUtxos = state.selectedUtxos.toList();
 
-    if (selectedUtxos.containsUtxo(utxo))
+    if (selectedUtxos.containsUtxo(utxo)) {
       selectedUtxos = selectedUtxos.removeUtxo(utxo);
-    else
+    } else {
       selectedUtxos.add(utxo);
+    }
 
     emit(state.copyWith(selectedUtxos: selectedUtxos));
   }

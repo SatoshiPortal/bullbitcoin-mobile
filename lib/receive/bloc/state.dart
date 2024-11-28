@@ -76,18 +76,20 @@ class ReceiveState with _$ReceiveState {
       final btcAmt = (savedInvoiceAmount / 100000000).toStringAsFixed(8);
 
       var invoice = 'bitcoin:' + defaultAddress!.address + '?amount=' + btcAmt;
-      if (savedDescription.isNotEmpty)
+      if (savedDescription.isNotEmpty) {
         invoice = invoice + '&label=' + savedDescription;
+      }
 
       return invoice;
     }
 
-    if (paymentNetwork == PaymentNetwork.bitcoin)
+    if (paymentNetwork == PaymentNetwork.bitcoin) {
       return defaultAddress?.address ?? '';
-    else if (paymentNetwork == PaymentNetwork.liquid)
+    } else if (paymentNetwork == PaymentNetwork.liquid) {
       return defaultLiquidAddress?.address ?? '';
-    else
+    } else {
       return defaultAddress?.address ?? '';
+    }
   }
 
   bool isChainSwap() {

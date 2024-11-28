@@ -98,10 +98,11 @@ class ColdCardSection extends StatelessWidget {
     final err =
         context.select((ImportWalletCubit cubit) => cubit.state.errLoadingFile);
 
-    if (loading)
+    if (loading) {
       return const Center(child: CircularProgressIndicator())
           .animate(delay: 300.ms)
           .fadeIn();
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),

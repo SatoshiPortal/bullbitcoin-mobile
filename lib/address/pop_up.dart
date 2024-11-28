@@ -244,10 +244,11 @@ class AddressActions extends StatelessWidget {
           InkWell(
             onTap: () {
               if (freezing) return;
-              if (frozen)
+              if (frozen) {
                 context.read<AddressCubit>().unfreezeAddress();
-              else
+              } else {
                 context.read<AddressCubit>().freezeAddress();
+              }
             },
             child: BBText.body(
               frozen ? 'Unfreeze address' : 'Freeze address',
@@ -287,8 +288,9 @@ class _CopyButtonState extends State<CopyButton> {
                     setState(() {
                       _copied = true;
                     });
-                    if (locator.isRegistered<Clippboard>())
+                    if (locator.isRegistered<Clippboard>()) {
                       locator<Clippboard>().copy(address.address);
+                    }
 
                     Future.delayed(const Duration(seconds: 2), () {
                       setState(() {
@@ -401,10 +403,11 @@ class _AddressLabelTextFieldState extends State<AddressLabelTextField> {
         context.select((AddressCubit cubit) => cubit.state.savedAddressName);
     final _ = widget.address.label ?? 'Enter Label';
 
-    if (saved)
+    if (saved) {
       const Center(child: BBText.body('Saved!'))
           .animate(delay: 300.ms)
           .fadeIn();
+    }
     return Column(
       children: [
         Padding(

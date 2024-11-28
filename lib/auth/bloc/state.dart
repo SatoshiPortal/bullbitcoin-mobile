@@ -25,7 +25,7 @@ class AuthState with _$AuthState {
   const AuthState._();
 
   String titleText() {
-    if (!fromSettings)
+    if (!fromSettings) {
       switch (step) {
         case SecurityStep.createPin:
           return 'Create security pin'.translate;
@@ -34,8 +34,9 @@ class AuthState with _$AuthState {
         case SecurityStep.enterPin:
           return 'Enter security pin'.translate;
       }
+    }
 
-    if (fromSettings)
+    if (fromSettings) {
       switch (step) {
         case SecurityStep.enterPin:
           return 'Enter security pin'.translate;
@@ -46,6 +47,7 @@ class AuthState with _$AuthState {
         case SecurityStep.confirmPin:
           return 'Confirm new pin'.translate;
       }
+    }
 
     return '';
   }
@@ -64,10 +66,11 @@ class AuthState with _$AuthState {
 
   String displayPin() {
     var text = '';
-    if (step == SecurityStep.enterPin || step == SecurityStep.createPin)
+    if (step == SecurityStep.enterPin || step == SecurityStep.createPin) {
       text = pin;
-    else
+    } else {
       text = confirmPin;
+    }
 
     return 'x' * text.length;
   }

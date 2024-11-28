@@ -326,13 +326,15 @@ class NetworkConfigFields extends StatelessWidget {
         ? testnet != tempLiqNetworkDetails.testnet
         : testnet != tempNetworkDetails.testnet;
 
-    if (mainnetChanged)
+    if (mainnetChanged) {
       mainnet =
           isLiq ? tempLiqNetworkDetails.mainnet : tempNetworkDetails.mainnet;
+    }
 
-    if (testnetChanged)
+    if (testnetChanged) {
       testnet =
           isLiq ? tempLiqNetworkDetails.testnet : tempNetworkDetails.testnet;
+    }
 
     if (disabled) {
       mainnet = removeSubAndPort(mainnet);
@@ -352,10 +354,11 @@ class NetworkConfigFields extends StatelessWidget {
               width: fieldWidth,
               child: BBTextInput.big(
                 onChanged: (t) {
-                  if (!isLiq)
+                  if (!isLiq) {
                     context.read<NetworkCubit>().updateTempMainnet(t);
-                  else
+                  } else {
                     context.read<NetworkCubit>().updateTempLiquidMainnet(t);
+                  }
                 },
                 value: mainnet,
                 disabled: disabled,
@@ -368,10 +371,11 @@ class NetworkConfigFields extends StatelessWidget {
               width: fieldWidth,
               child: BBTextInput.big(
                 onChanged: (t) {
-                  if (!isLiq)
+                  if (!isLiq) {
                     context.read<NetworkCubit>().updateTempTestnet(t);
-                  else
+                  } else {
                     context.read<NetworkCubit>().updateTempLiquidTestnet(t);
+                  }
                 },
                 value: testnet,
                 disabled: disabled,

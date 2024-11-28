@@ -271,12 +271,13 @@ class AuthConfirmButton extends StatelessWidget {
     final showButton = context.select((AuthCubit x) => x.state.showButton());
     final err = context.select((AuthCubit x) => x.state.err);
 
-    if (err.isNotEmpty)
+    if (err.isNotEmpty) {
       return Center(
         child: BBText.errorSmall(
           err,
         ),
       );
+    }
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),

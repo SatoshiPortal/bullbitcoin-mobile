@@ -59,8 +59,9 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
       value: base64UrlEncode(password),
     );
     await hiveStorage.init(password: password);
-  } else
+  } else {
     await hiveStorage.init(password: base64Url.decode(password!));
+  }
 
   if (version != bbVersion) {
     // await prepareMigration();

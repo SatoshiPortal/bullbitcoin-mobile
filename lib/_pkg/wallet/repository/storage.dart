@@ -69,7 +69,9 @@ class WalletsStorageRepository {
       // END: Testnet wallet sorting
 
       final List<String> ids = [];
-      for (final w in wallets) ids.add(w.id);
+      for (final w in wallets) {
+        ids.add(w.id);
+      }
 
       final idsJsn = jsonEncode({
         'wallets': [...ids],
@@ -108,10 +110,11 @@ class WalletsStorageRepository {
 
         final List<String> walletHashIds = [];
         for (final id in walletIdsJson) {
-          if (id == walletIdIndex)
+          if (id == walletIdIndex) {
             return Err('Wallet Exists');
-          else
+          } else {
             walletHashIds.add(id as String);
+          }
         }
 
         walletHashIds.add(walletIdIndex);

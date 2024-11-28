@@ -172,7 +172,7 @@ class BBButton extends StatelessWidget {
           // disabledForegroundColor: context.colour.onPrimaryContainer,
         );
 
-        if (!loading)
+        if (!loading) {
           widget = ElevatedButton(
             key: buttonKey,
             style: style,
@@ -210,7 +210,7 @@ class BBButton extends StatelessWidget {
               ],
             ),
           );
-        else {
+        } else {
           widget = ElevatedButton(
             style: style,
             onPressed: () {},

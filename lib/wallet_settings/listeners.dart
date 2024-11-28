@@ -30,8 +30,9 @@ class WalletSettingsListeners extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.savedName != current.savedName,
           listener: (context, state) {
-            if (state.savedName)
+            if (state.savedName) {
               FocusScope.of(context).requestFocus(FocusNode());
+            }
           },
         ),
       ],

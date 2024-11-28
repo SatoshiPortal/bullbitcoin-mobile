@@ -117,8 +117,9 @@ class ImportAppBar extends StatelessWidget {
 
         step == ImportSteps.advancedOptions ||
             step == ImportSteps.selectWalletFormat ||
-            step == ImportSteps.selectImportType)
+            step == ImportSteps.selectImportType) {
       onBack = () => context.read<ImportWalletCubit>().backClicked();
+    }
 
     if (step == ImportSteps.selectCreateType) onBack = () => context.pop();
 

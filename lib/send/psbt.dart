@@ -39,7 +39,8 @@ class PSBTPopUp extends StatelessWidget {
     // final outAddresses = context.select((SendCubit cubit) => cubit.state.tx?.outAddresses ?? []);
 
     final txamt = tx.getAmount();
-    final isSats = context.select((CurrencyCubit cubit) => cubit.state.unitsInSats);
+    final isSats =
+        context.select((CurrencyCubit cubit) => cubit.state.unitsInSats);
     final txfee = context.select((SendCubit cubit) => cubit.state.tx?.fee ?? 0);
     final toAddress = tx.toAddress ?? '';
     final label = tx.label;
@@ -99,7 +100,10 @@ class PSBTPopUp extends StatelessWidget {
           const Gap(4),
           InkWell(
             onTap: () {
-              final url = context.read<NetworkCubit>().state.explorerAddressUrl(toAddress);
+              final url = context
+                  .read<NetworkCubit>()
+                  .state
+                  .explorerAddressUrl(toAddress);
               locator<Launcher>().launchApp(url);
             },
             child: BBText.body(
@@ -179,10 +183,12 @@ class DownloadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final downloading = context.select((SendCubit cubit) => cubit.state.downloadingFile);
-    final downloaded = context.select((SendCubit cubit) => cubit.state.downloaded);
+    final downloading =
+        context.select((SendCubit cubit) => cubit.state.downloadingFile);
+    final downloaded =
+        context.select((SendCubit cubit) => cubit.state.downloaded);
     // final walletType = context.select((WalletBloc _) => _.state.wallet!);
-    if (downloaded)
+    if (downloaded) {
       return Column(
         children: [
           Center(
@@ -197,6 +203,7 @@ class DownloadButton extends StatelessWidget {
           ),
         ],
       );
+    }
     // if (walletType == BBWalletType.coldcard) {
 
     // }

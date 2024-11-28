@@ -125,10 +125,12 @@ class _Screen extends StatelessWidget {
     final tx = context.select((TransactionCubit _) => _.state.tx);
     final swap = tx.swapTx;
 
-    if (swap != null && !swap.isChainSwap())
+    if (swap != null && !swap.isChainSwap()) {
       return const _CombinedTxAndSwapPage();
-    if (swap != null && swap.isChainSwap() && showOnchainSwap == true)
+    }
+    if (swap != null && swap.isChainSwap() && showOnchainSwap == true) {
       return const _CombinedTxAndOnchainSwapPage();
+    }
     return const _OnlyTxPage();
 
     // final page = context.select((TransactionCubit _) => _.state.tx.pageLayout);
@@ -588,8 +590,9 @@ class _SwapDetails extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () async {
-                      if (locator.isRegistered<Clippboard>())
+                      if (locator.isRegistered<Clippboard>()) {
                         await locator<Clippboard>().copy(id);
+                      }
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Copied to clipboard')),
@@ -1007,8 +1010,9 @@ class _OnchainSwapDetails extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () async {
-                      if (locator.isRegistered<Clippboard>())
+                      if (locator.isRegistered<Clippboard>()) {
                         await locator<Clippboard>().copy(id);
+                      }
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Copied to clipboard')),

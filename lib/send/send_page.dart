@@ -171,8 +171,9 @@ class _Screen extends StatelessWidget {
       (SendCubit x) => x.state.couldBeOnchainSwap(),
     );
 
-    if (showWarning && !walletIsLiquid && potentialonchainSwap == false)
+    if (showWarning && !walletIsLiquid && potentialonchainSwap == false) {
       return const _Warnings();
+    }
 
     return ColoredBox(
       color: context.colour.primaryContainer,
@@ -244,7 +245,7 @@ class WalletSelectionDropDown extends StatelessWidget {
         ignoring: oneWallet,
         child: WalletDropDown(
           showSpendableBalance: true,
-          items: walletBlocs.map((wb) => wb.state.wallet!).toList(),
+          items: walletBlocs.map((wb) => wb.state.wallet).toList(),
           onChanged: (wallet) {
             final blocs =
                 walletBlocs.where((wb) => wb.state.wallet == wallet).toList();
@@ -401,8 +402,9 @@ class NetworkFees extends StatelessWidget {
     final isLiquid =
         context.select((SendCubit cubit) => cubit.state.isLiquidPayment());
 
-    if (isLn || isLiquid || !walletSelected || isSelectedWalletLiquid)
+    if (isLn || isLiquid || !walletSelected || isSelectedWalletLiquid) {
       return const SizedBox.shrink();
+    }
 
     return AnimatedOpacity(
       opacity: sending ? 0.3 : 1,
@@ -434,8 +436,9 @@ class AdvancedOptions extends StatelessWidget {
     final addressReady =
         context.select((SendCubit _) => _.state.address.isNotEmpty);
 
-    if (isLn || !walletSelected || !addressReady || isLiquid == true)
+    if (isLn || !walletSelected || !addressReady || isLiquid == true) {
       return const SizedBox.shrink();
+    }
 
     final text =
         context.select((SendCubit _) => _.state.advancedOptionsButtonText());
@@ -848,7 +851,7 @@ class _Warnings extends StatelessWidget {
     final errLowAmt =
         context.select((CreateSwapCubit x) => x.state.swapTx!.smallAmt());
 
-    final swaptx = context.select((CreateSwapCubit x) => x.state.swapTx!);
+    final swaptx = context.select((CreateSwapCubit x) => x.state.swapTx);
 
     final errHighFees =
         context.select((CreateSwapCubit x) => x.state.swapTx!.highFees());

@@ -213,13 +213,14 @@ class BDKCreate {
     if (checkFirstAddress) {
       if (firstAddress44.address.toString() == coldWallet44.first &&
           firstAddress49.address.toString() == coldWallet49.first &&
-          firstAddress84.address.toString() == coldWallet84.first)
+          firstAddress84.address.toString() == coldWallet84.first) {
         return ([wallet44, wallet49, wallet84], null);
-      else
+      } else {
         return (
           null,
           Err('First Addresses Did Not Match!'),
         );
+      }
     }
 
     return ([wallet44, wallet49, wallet84], null);

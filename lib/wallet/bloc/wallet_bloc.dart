@@ -322,26 +322,29 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (errr != null) locator<Logger>().log(errr.toString());
     if (storageWallet == null) return;
 
-    for (final eventType in event.updateTypes)
+    for (final eventType in event.updateTypes) {
       switch (eventType) {
         case UpdateWalletTypes.load:
           break;
         case UpdateWalletTypes.balance:
-          if (eventWallet.balance != null)
+          if (eventWallet.balance != null) {
             storageWallet = storageWallet!.copyWith(
               balance: eventWallet.balance,
               fullBalance: eventWallet.fullBalance,
             );
+          }
         case UpdateWalletTypes.transactions:
-          if (eventWallet.transactions.isNotEmpty)
+          if (eventWallet.transactions.isNotEmpty) {
             storageWallet = storageWallet!.copyWith(
               transactions: eventWallet.transactions,
             );
+          }
 
-          if (eventWallet.unsignedTxs.isNotEmpty)
+          if (eventWallet.unsignedTxs.isNotEmpty) {
             storageWallet = storageWallet!.copyWith(
               unsignedTxs: eventWallet.unsignedTxs,
             );
+          }
 
         case UpdateWalletTypes.swaps:
           storageWallet = storageWallet!.copyWith(
@@ -351,51 +354,60 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           );
 
         case UpdateWalletTypes.addresses:
-          if (eventWallet.myAddressBook.isNotEmpty)
+          if (eventWallet.myAddressBook.isNotEmpty) {
             storageWallet = storageWallet!.copyWith(
               myAddressBook: eventWallet.myAddressBook,
             );
+          }
 
           if (eventWallet.externalAddressBook != null &&
-              eventWallet.externalAddressBook!.isNotEmpty)
+              eventWallet.externalAddressBook!.isNotEmpty) {
             storageWallet = storageWallet!.copyWith(
               externalAddressBook: eventWallet.externalAddressBook,
             );
+          }
 
-          if (eventWallet.lastGeneratedAddress != null)
+          if (eventWallet.lastGeneratedAddress != null) {
             storageWallet = storageWallet!.copyWith(
               lastGeneratedAddress: eventWallet.lastGeneratedAddress,
             );
+          }
 
         case UpdateWalletTypes.utxos:
-          if (eventWallet.utxos.isNotEmpty)
+          if (eventWallet.utxos.isNotEmpty) {
             storageWallet = storageWallet!.copyWith(
               utxos: eventWallet.utxos,
             );
+          }
 
         case UpdateWalletTypes.settings:
-          if (eventWallet.backupTested != storageWallet!.backupTested)
+          if (eventWallet.backupTested != storageWallet!.backupTested) {
             storageWallet = storageWallet.copyWith(
               backupTested: eventWallet.backupTested,
             );
+          }
 
-          if (eventWallet.name != storageWallet.name)
+          if (eventWallet.name != storageWallet.name) {
             storageWallet = storageWallet.copyWith(
               name: eventWallet.name,
             );
+          }
 
           if (eventWallet.lastBackupTested != null &&
-              eventWallet.lastBackupTested != storageWallet.lastBackupTested)
+              eventWallet.lastBackupTested != storageWallet.lastBackupTested) {
             storageWallet = storageWallet.copyWith(
               lastBackupTested: eventWallet.lastBackupTested,
             );
+          }
       }
+    }
 
     final err = await _walletsStorageRepository.updateWallet(
       storageWallet!,
     );
-    if (err != null)
+    if (err != null) {
       locator<Logger>().log(err.toString(), printToConsole: true);
+    }
     emit(state.copyWith(wallet: storageWallet));
     await Future.delayed(event.delaySync.ms);
     if (event.syncAfter) add(SyncWallet());

@@ -50,10 +50,11 @@ class ElectrumNetwork with _$ElectrumNetwork {
 
   String getNetworkUrl(bool isTestnet, {bool split = false}) {
     String url;
-    if (isTestnet)
+    if (isTestnet) {
       url = testnet;
-    else
+    } else {
       url = mainnet;
+    }
 
     if (split) {
       final spliturl = url.split('://');
@@ -97,10 +98,11 @@ class LiquidElectrumNetwork with _$LiquidElectrumNetwork {
 
   String getNetworkUrl(bool isTestnet, {bool split = true}) {
     String url;
-    if (isTestnet)
+    if (isTestnet) {
       url = testnet;
-    else
+    } else {
       url = mainnet;
+    }
 
     // if (split) url = url.split('://')[1];
 

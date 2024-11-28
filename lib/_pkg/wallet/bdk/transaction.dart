@@ -191,10 +191,11 @@ class BDKTransactions {
           if (externalAddress != null) {
             final extAddressHasLabel = externalAddress.label != null &&
                 externalAddress.label!.isNotEmpty;
-            if (extAddressHasLabel)
+            if (extAddressHasLabel) {
               label = externalAddress.label;
-            else
+            } else {
               externalAddress = externalAddress.copyWith(label: label);
+            }
           } else {
             try {
               if (serdBdkTx.output == null) throw 'No output object';
@@ -239,8 +240,9 @@ class BDKTransactions {
             toAddress: externalAddress != null ? externalAddress.address : '',
             // fromAddress: '',
           );
-          if (externalAddress != null)
+          if (externalAddress != null) {
             updatedTx = addOutputAddresses(externalAddress, updatedTx);
+          }
           //
           //
           // HANDLE CHANGE
@@ -256,9 +258,10 @@ class BDKTransactions {
           final amountChange = bdkTx.received;
 
           if (changeAddress != null) {
-            if (changeAddress.label != null && changeAddress.label!.isNotEmpty)
+            if (changeAddress.label != null &&
+                changeAddress.label!.isNotEmpty) {
               label = changeAddress.label;
-            else {
+            } else {
               changeAddress = changeAddress.copyWith(label: label);
             }
           } else {
@@ -298,8 +301,9 @@ class BDKTransactions {
               // print(e);
             }
           }
-          if (changeAddress != null)
+          if (changeAddress != null) {
             updatedTx = addOutputAddresses(changeAddress, updatedTx);
+          }
         } else if (updatedTx.isReceived()) {
           depositAddress = wallet.getAddressFromAddresses(
             updatedTx.txid,
@@ -310,10 +314,11 @@ class BDKTransactions {
 
           if (depositAddress != null) {
             if (depositAddress.label != null &&
-                depositAddress.label!.isNotEmpty)
+                depositAddress.label!.isNotEmpty) {
               label = depositAddress.label;
-            else
+            } else {
               depositAddress = depositAddress.copyWith(label: label);
+            }
           } else {
             try {
               if (serdBdkTx.output == null) throw 'No output object';
@@ -367,8 +372,9 @@ class BDKTransactions {
               outAddrs: uTx.outAddrs,
             ),
           );
-        } else
+        } else {
           transactions.add(updatedTx.copyWith(label: label));
+        }
       }
 
       final List<Transaction> pendingTxs = [];
@@ -653,8 +659,9 @@ class BDKTransactions {
       if (idx != -1) {
         txs.removeAt(idx);
         txs.insert(idx, newTx);
-      } else
+      } else {
         txs.add(newTx);
+      }
       // txs.add(newTx);
 
       // TODO: Not the right place. Also duplicated in BDKTransaction / LWKTransaction

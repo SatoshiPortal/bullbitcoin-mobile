@@ -16,8 +16,9 @@ class DeepLinker extends StatefulWidget {
 class _DeepLinkerState extends State<DeepLinker> {
   @override
   void initState() {
-    if (locator.isRegistered<DeepLink>())
+    if (locator.isRegistered<DeepLink>()) {
       locator<DeepLink>().initUniLink(link: linkReceived, err: errReceived);
+    }
     super.initState();
   }
 

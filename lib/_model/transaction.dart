@@ -144,12 +144,14 @@ class Transaction with _$Transaction {
       final index = outAddrs.indexWhere(
         (element) => element.kind == AddressKind.deposit,
       );
-      if (index == -1)
+      if (index == -1) {
         return false;
-      else
+      } else {
         return true;
-    } else
+      }
+    } else {
       return false;
+    }
   }
 
   int getAmount({bool sentAsTotal = false}) {
@@ -196,8 +198,9 @@ class Transaction with _$Transaction {
     if (dt.year == 1970) {
       dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     }
-    if (dt.isAfter(DateTime.now().subtract(const Duration(days: 2))))
+    if (dt.isAfter(DateTime.now().subtract(const Duration(days: 2)))) {
       return timeago.format(dt);
+    }
     final day =
         dt.day.toString().length == 1 ? '0${dt.day}' : dt.day.toString();
     return months[dt.month - 1] + ' ' + day + ', ' + dt.year.toString();

@@ -84,22 +84,23 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
 
   Future checkWalletLabel() async {
     final label = state.label;
-    if (label.isEmpty)
+    if (label.isEmpty) {
       emit(state.copyWith(errLabel: 'Wallet Label is required'));
-    else if (label.length < 3)
+    } else if (label.length < 3) {
       emit(
         state.copyWith(
           errLabel: 'Wallet Label must be at least 3 characters',
         ),
       );
-    else if (label.length > 20)
+    } else if (label.length > 20) {
       emit(
         state.copyWith(
           errLabel: 'Wallet Label must be less than 20 characters',
         ),
       );
-    else
+    } else {
       emit(state.copyWith(errLabel: ''));
+    }
   }
 
   void _processColdCard(ColdCard coldCard) async {

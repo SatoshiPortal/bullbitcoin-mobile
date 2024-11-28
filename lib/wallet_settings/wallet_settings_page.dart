@@ -762,22 +762,23 @@ class LabelSettingPopup extends StatelessWidget {
           AnimatedSwitcher(
             duration: 300.ms,
             child: () {
-              if (importing)
+              if (importing) {
                 return const CenterLeft(child: CircularProgressIndicator());
-              else if (errImporting.isNotEmpty)
+              } else if (errImporting.isNotEmpty) {
                 return BBText.error(errImporting);
-              else if (imported)
+              } else if (imported) {
                 return const FaIcon(
                   FontAwesomeIcons.circleCheck,
                   color: Colors.green,
                 );
-              else
+              } else {
                 return BBButton.text(
                   label: 'Import',
                   onPressed: () {
                     context.read<WalletSettingsCubit>().importLabelsClicked();
                   },
                 );
+              }
             }(),
           ),
           const Gap(40),
@@ -788,22 +789,23 @@ class LabelSettingPopup extends StatelessWidget {
           AnimatedSwitcher(
             duration: 300.ms,
             child: () {
-              if (exporting)
+              if (exporting) {
                 return const CenterLeft(child: CircularProgressIndicator());
-              else if (errExporting.isNotEmpty)
+              } else if (errExporting.isNotEmpty) {
                 return BBText.error(errExporting);
-              else if (exported)
+              } else if (exported) {
                 return const FaIcon(
                   FontAwesomeIcons.circleCheck,
                   color: Colors.green,
                 );
-              else
+              } else {
                 return BBButton.text(
                   label: 'Export',
                   onPressed: () {
                     context.read<WalletSettingsCubit>().exportLabelsClicked();
                   },
                 );
+              }
             }(),
           ),
           const Gap(40),

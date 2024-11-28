@@ -120,11 +120,12 @@ class _ScreenState extends State<_Screen> {
         appBar: !isTestnet ? null : _buildAppBar(context),
         body: HomeNoWalletsWithCreation(fullRed: !isTestnet),
       );
-      if (!isTestnet)
+      if (!isTestnet) {
         widget = AnnotatedRegion(
           value: SystemUiOverlayStyle(statusBarColor: context.colour.primary),
           child: widget,
         );
+      }
 
       return widget;
     }
@@ -889,7 +890,7 @@ class HomeNoWallets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!fullRed)
+    if (!fullRed) {
       return Padding(
         padding: const EdgeInsets.all(48.0),
         child: Column(
@@ -913,6 +914,7 @@ class HomeNoWallets extends StatelessWidget {
           ],
         ),
       );
+    }
 
     final font = GoogleFonts.bebasNeue();
     final w = MediaQuery.of(context).size.width;
@@ -997,7 +999,7 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
       mainWallet: true,
     );
 
-    if (!fullRed)
+    if (!fullRed) {
       return Padding(
         padding: const EdgeInsets.all(48.0),
         child: Column(
@@ -1021,6 +1023,7 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
           ],
         ),
       );
+    }
 
     final font = GoogleFonts.bebasNeue();
     final w = MediaQuery.of(context1).size.width;

@@ -597,10 +597,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
         case ReverseSwapActions.claimable:
           final swap = await __claimSwap(swapTx, walletBloc, emit);
-          if (swap != null)
+          if (swap != null) {
             await __updateWalletTxs(swap, walletBloc, emit);
-          else
+          } else {
             await __updateWalletTxs(swapTx, walletBloc, emit);
+          }
 
         case ReverseSwapActions.settled:
           final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
@@ -622,15 +623,17 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
             final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
             if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
             break;
-          } else
+          } else {
             await __updateWalletTxs(swapTx, walletBloc, emit);
+          }
 
         case SubmarineSwapActions.claimable:
           final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
-          if (swap != null)
+          if (swap != null) {
             await __updateWalletTxs(swap, walletBloc, emit);
-          else
+          } else {
             await __updateWalletTxs(swapTx, walletBloc, emit);
+          }
 
         case SubmarineSwapActions.refundable:
           // TODO: Delays are introduced so wallet update actually happens.
@@ -680,16 +683,18 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
                 emit,
               );
             }
-          } else
+          } else {
             await __updateWalletTxs(swapTx, walletBloc, emit);
+          }
 
         case ChainSwapActions.claimable:
           // await Future.delayed(const Duration(milliseconds: 100));
           final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
-          if (swap != null)
+          if (swap != null) {
             await __updateWalletTxs(swap, walletBloc, emit);
-          else
+          } else {
             await __updateWalletTxs(swapTx, walletBloc, emit);
+          }
 
         case ChainSwapActions.settled:
           // await Future.delayed(const Duration(milliseconds: 200));

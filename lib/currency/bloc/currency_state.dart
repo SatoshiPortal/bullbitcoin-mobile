@@ -23,7 +23,8 @@ class CurrencyState with _$CurrencyState {
   }) = _CurrencyState;
   const CurrencyState._();
 
-  factory CurrencyState.fromJson(Map<String, dynamic> json) => _$CurrencyStateFromJson(json);
+  factory CurrencyState.fromJson(Map<String, dynamic> json) =>
+      _$CurrencyStateFromJson(json);
 
   String satsFormatting(String satsAmount) {
     final currency = NumberFormat('#,##0', 'en_US');
@@ -63,14 +64,15 @@ class CurrencyState with _$CurrencyState {
     String amt = '';
     final btcStr = isLiquid ? 'L-BTC' : 'BTC';
     final satsStr = isLiquid ? 'L-sats' : 'sats';
-    if (isSats ?? unitsInSats)
+    if (isSats ?? unitsInSats) {
       amt = satsFormatting(amount.toString()) + ' $satsStr';
-    else {
+    } else {
       String b = '';
-      if (!removeEndZeros)
+      if (!removeEndZeros) {
         b = (amount / 100000000).toStringAsFixed(8);
-      else
+      } else {
         b = (amount / 100000000).toStringAsFixed(8);
+      }
       amt = b + ' $btcStr';
     }
 

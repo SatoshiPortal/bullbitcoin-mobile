@@ -87,22 +87,23 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   Future checkWalletLabel() async {
     if (state.mainWallet) return;
     final label = state.walletLabel;
-    if (label == null || label == '')
+    if (label == null || label == '') {
       emit(state.copyWith(errSaving: 'Wallet Label is required'));
-    else if (label.length < 3)
+    } else if (label.length < 3) {
       emit(
         state.copyWith(
           errSaving: 'Wallet Label must be at least 3 characters',
         ),
       );
-    else if (label.length > 20)
+    } else if (label.length > 20) {
       emit(
         state.copyWith(
           errSaving: 'Wallet Label must be less than 20 characters',
         ),
       );
-    else
+    } else {
       emit(state.copyWith(errSaving: ''));
+    }
   }
 
   void confirmClicked() async {
@@ -187,12 +188,13 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     }
 
     Wallet? liqWallet;
-    if (state.mainWallet)
+    if (state.mainWallet) {
       liqWallet = await _createLiquid(
         seed: seed,
         passPhrase: state.passPhrase,
         network: network,
       );
+    }
 
     clearSensitive();
 

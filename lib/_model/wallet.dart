@@ -94,8 +94,9 @@ class Wallet with _$Wallet {
   }
 
   SwapTx? getOngoingSwap(String id) {
-    if (hasOngoingSwap(id))
+    if (hasOngoingSwap(id)) {
       return swaps.firstWhere((element) => element.id == id);
+    }
     return null;
   }
 
@@ -191,25 +192,31 @@ class Wallet with _$Wallet {
   int totalReceived() {
     final txs = transactions.where((tx) => tx.isReceived()).toList();
     int amt = 0;
-    for (final tx in txs) amt += tx.getAmount().abs();
+    for (final tx in txs) {
+      amt += tx.getAmount().abs();
+    }
     return amt;
   }
 
   int totalSent() {
     final txs = transactions.where((tx) => !tx.isReceived()).toList();
     int amt = 0;
-    for (final tx in txs) amt += tx.getAmount(sentAsTotal: true).abs();
+    for (final tx in txs) {
+      amt += tx.getAmount(sentAsTotal: true).abs();
+    }
     return amt;
   }
 
   String getAddressFromTxid(String txid) {
     // TODO: UTXO
     // Updated / Simplified (Seach specific to utxos. Is this fine?)
-    for (final utxo in utxos)
+    for (final utxo in utxos) {
       if (utxo.txid == txid) return utxo.address.address;
+    }
     for (final tx in transactions) {
-      for (final addrs in tx.outAddrs)
+      for (final addrs in tx.outAddrs) {
         if (addrs.spentTxId == txid) return addrs.address;
+      }
     }
     return '';
 
@@ -237,7 +244,7 @@ class Wallet with _$Wallet {
     AddressKind? kind,
   }) {
     for (final address
-        in (isSend ? externalAddressBook : myAddressBook) ?? <Address>[])
+        in (isSend ? externalAddressBook : myAddressBook) ?? <Address>[]) {
       if (isSend) {
         if (address.spentTxId == txid) {
           if (kind == null) {
@@ -273,6 +280,7 @@ class Wallet with _$Wallet {
         // Just look for any negative consequences of this.
         // return null;
       }
+    }
 
     return null;
   }
@@ -282,23 +290,26 @@ class Wallet with _$Wallet {
 
     switch (type) {
       case BBWalletType.main:
-        if (baseWalletType == BaseWalletType.Bitcoin)
+        if (baseWalletType == BaseWalletType.Bitcoin) {
           str = 'Bull Bitcoin Wallet';
-        else
+        } else {
           str = 'Instant Payments Wallet';
-        if (hasPassphrase())
+        }
+        if (hasPassphrase()) {
           str += '\n(Passphrase Protected)';
-        else
+        } else {
           str += '\n(No Passphrase)';
+        }
 
       case BBWalletType.xpub:
         str = 'Imported Xpub';
       case BBWalletType.words:
         str = 'Imported Mnemonic';
-        if (hasPassphrase())
+        if (hasPassphrase()) {
           str += '\n(Passphrase Protected)';
-        else
+        } else {
           str += '\n(No Passphrase)';
+        }
       case BBWalletType.coldcard:
         str = 'Imported Coldcard';
 
@@ -314,10 +325,11 @@ class Wallet with _$Wallet {
 
     switch (type) {
       case BBWalletType.main:
-        if (baseWalletType == BaseWalletType.Bitcoin)
+        if (baseWalletType == BaseWalletType.Bitcoin) {
           str = 'Secure' + ':' + id.substring(0, 5);
-        else
+        } else {
           str = 'Instant' + ':' + id.substring(0, 5);
+        }
       case BBWalletType.xpub:
         str = 'Xpub' + ':' + id.substring(0, 5);
       case BBWalletType.words:
@@ -337,10 +349,11 @@ class Wallet with _$Wallet {
     switch (type) {
       case BBWalletType.words:
       case BBWalletType.main:
-        if (baseWalletType == BaseWalletType.Bitcoin)
+        if (baseWalletType == BaseWalletType.Bitcoin) {
           str = 'Secure Bitcoin Wallet';
-        else
+        } else {
           str = 'Instant Payments Wallet';
+        }
       case BBWalletType.xpub:
         str = 'Xpub' + ':' + id.substring(0, 5);
       case BBWalletType.coldcard:
@@ -358,10 +371,11 @@ class Wallet with _$Wallet {
 
     switch (type) {
       case BBWalletType.main:
-        if (baseWalletType == BaseWalletType.Bitcoin)
+        if (baseWalletType == BaseWalletType.Bitcoin) {
           return 'Bitcoin ${networkStr}Network';
-        else
+        } else {
           return 'Liquid ${networkStr}Network';
+        }
 
       case BBWalletType.words:
         return 'Bitcoin ${networkStr}Network';

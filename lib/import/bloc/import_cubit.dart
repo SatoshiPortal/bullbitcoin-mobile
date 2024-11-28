@@ -47,10 +47,11 @@ class ImportWalletCubit extends Cubit<ImportState> {
         _filePicker = filePicker,
         _barcode = barcode,
         super(ImportState(mainWallet: mainWallet)) {
-    if (useTestWallet && !kReleaseMode)
+    if (useTestWallet && !kReleaseMode) {
       emit(state.copyWith(words12: [...importW(secureTN2)]));
-    else
+    } else {
       reset();
+    }
 
     if (mainWallet) recoverClicked();
   }
@@ -95,14 +96,14 @@ class ImportWalletCubit extends Cubit<ImportState> {
         );
 
       case ImportSteps.selectWalletFormat:
-        if (state.importType == ImportTypes.xpub)
+        if (state.importType == ImportTypes.xpub) {
           emit(
             state.copyWith(
               importStep: ImportSteps.importXpub,
               importType: state.importType,
             ),
           );
-        else if (state.importType == ImportTypes.words12)
+        } else if (state.importType == ImportTypes.words12) {
           emit(
             state.copyWith(
               importStep: ImportSteps.import12Words,
@@ -110,7 +111,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
               words12: [...emptyWords12],
             ),
           );
-        else if (state.importType == ImportTypes.words24)
+        } else if (state.importType == ImportTypes.words24) {
           emit(
             state.copyWith(
               importStep: ImportSteps.import24Words,
@@ -118,17 +119,17 @@ class ImportWalletCubit extends Cubit<ImportState> {
               words24: [...emptyWords24],
             ),
           );
-        else if (state.importType == ImportTypes.coldcard)
+        } else if (state.importType == ImportTypes.coldcard) {
           emit(
             state.copyWith(
               importStep: ImportSteps.importXpub,
               importType: state.importType,
             ),
           );
-        emit(state.copyWith(errSavingWallet: ''));
+          emit(state.copyWith(errSavingWallet: ''));
 
-        stopScanningNFC();
-
+          stopScanningNFC();
+        }
       default:
         break;
     }
@@ -174,8 +175,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
       return;
     }
 
-    if (state.importStep == ImportSteps.importXpub)
+    if (state.importStep == ImportSteps.importXpub) {
       emit(state.copyWith(xpub: res!));
+    }
 
     emit(state.copyWith(loadingFile: false));
   }
@@ -207,11 +209,13 @@ class ImportWalletCubit extends Cubit<ImportState> {
     final words12 = state.words12.toList();
     final words24 = state.words24.toList();
 
-    for (int i = 0; i < words12.length; i++)
+    for (int i = 0; i < words12.length; i++) {
       if (!words12[i].tapped) words12[i] = (word: '', tapped: false);
+    }
 
-    for (int i = 0; i < words24.length; i++)
+    for (int i = 0; i < words24.length; i++) {
       if (!words24[i].tapped) words24[i] = (word: '', tapped: false);
+    }
 
     emit(
       state.copyWith(
@@ -283,13 +287,14 @@ class ImportWalletCubit extends Cubit<ImportState> {
       );
 
       final errStopping = _nfc.stopSession();
-      if (errStopping != null)
+      if (errStopping != null) {
         emit(
           state.copyWith(
             errLoadingFile: errStopping.toString(),
             loadingFile: false,
           ),
         );
+      }
     }
   }
 
@@ -308,13 +313,14 @@ class ImportWalletCubit extends Cubit<ImportState> {
     await _updateWalletDetailsForSelection();
     if (state.errImporting.isNotEmpty) {
       final errStoppping = _nfc.stopSession();
-      if (errStoppping != null)
+      if (errStoppping != null) {
         emit(
           state.copyWith(
             errLoadingFile: errStoppping.toString(),
             loadingFile: false,
           ),
         );
+      }
       emit(
         state.copyWith(
           importStep: ImportSteps.importXpub,
@@ -413,11 +419,12 @@ class ImportWalletCubit extends Cubit<ImportState> {
         state.importType == ImportTypes.words12 ? state.words12 : state.words24;
 
     emit(state.copyWith(errImporting: ''));
-    for (final word in words)
+    for (final word in words) {
       if (word.word.isEmpty) {
         emit(state.copyWith(errImporting: 'Please fill all words'));
         return;
       }
+    }
     await _updateWalletDetailsForSelection();
     if (state.errImporting.isNotEmpty) return;
 
@@ -526,8 +533,9 @@ class ImportWalletCubit extends Cubit<ImportState> {
       }
 
       if (wallets.isEmpty) throw 'Unable to create a wallet';
-      if (state.mainWallet)
+      if (state.mainWallet) {
         wallets.removeWhere((_) => _.scriptType != ScriptType.bip84);
+      }
 
       emit(state.copyWith(walletDetails: wallets));
     } catch (e) {
@@ -549,22 +557,23 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
   Future checkWalletLabel() async {
     final label = state.walletLabel;
-    if (label == null || label == '')
+    if (label == null || label == '') {
       emit(state.copyWith(errSavingWallet: 'Wallet Label is required'));
-    else if (label.length < 3)
+    } else if (label.length < 3) {
       emit(
         state.copyWith(
           errSavingWallet: 'Wallet Label must be at least 3 characters',
         ),
       );
-    else if (label.length > 20)
+    } else if (label.length > 20) {
       emit(
         state.copyWith(
           errSavingWallet: 'Wallet Label must be less than 20 characters',
         ),
       );
-    else
+    } else {
       emit(state.copyWith(errSavingWallet: ''));
+    }
   }
 
   void saveClicked() async {
@@ -618,19 +627,21 @@ class ImportWalletCubit extends Cubit<ImportState> {
         }
       }
 
-      if (state.mainWallet)
+      if (state.mainWallet) {
         await _createLiquid(
           seed: seed,
           passPhrase: state.passPhrase,
           network: network,
         );
+      }
     }
 
-    if (state.mainWallet)
+    if (state.mainWallet) {
       selectedWallet = selectedWallet.copyWith(
         mainWallet: true,
         type: BBWalletType.main,
       );
+    }
     var walletLabel = state.walletLabel ?? '';
     if (state.mainWallet) walletLabel = selectedWallet.creationName();
     final secureWallet = selectedWallet.copyWith(name: walletLabel);
@@ -687,11 +698,12 @@ class ImportWalletCubit extends Cubit<ImportState> {
     }
 
     wallet = wallet!.copyWith(backupTested: true);
-    if (state.mainWallet)
+    if (state.mainWallet) {
       wallet = wallet.copyWith(
         mainWallet: true,
         type: BBWalletType.main,
       );
+    }
 
     var walletLabel = state.walletLabel ?? '';
     if (state.mainWallet) walletLabel = wallet.creationName();

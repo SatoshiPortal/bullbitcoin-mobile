@@ -30,9 +30,9 @@ class SelectFeesButton extends StatelessWidget {
     final loading = context.select((NetworkFeesCubit _) => _.state.loadingFees);
 
     var txt = '';
-    if (!fromSettings)
+    if (!fromSettings) {
       txt = context.select((NetworkFeesCubit _) => _.state.feeSendButtonText());
-    else {
+    } else {
       txt = context.select((NetworkFeesCubit _) => _.state.defaultFeeStatus());
 
       return BBButton.textWithStatusAndRightArrow(

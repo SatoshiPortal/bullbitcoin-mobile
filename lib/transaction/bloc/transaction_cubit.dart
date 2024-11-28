@@ -38,10 +38,11 @@ class TransactionCubit extends Cubit<TransactionState> {
         _walletBloc = walletBloc,
         // _homeCubit = homeCubit,
         super(TransactionState(tx: tx)) {
-    if (tx.isReceived())
+    if (tx.isReceived()) {
       loadReceiveLabel();
-    else
+    } else {
       loadSentLabel();
+    }
 
     loadTx();
   }
@@ -195,7 +196,7 @@ class TransactionCubit extends Cubit<TransactionState> {
           );
         }
       } catch (_) {}
-    } else
+    } else {
       _walletBloc.add(
         UpdateWallet(
           w,
@@ -205,6 +206,7 @@ class TransactionCubit extends Cubit<TransactionState> {
           ],
         ),
       );
+    }
 
     await Future.delayed(const Duration(seconds: 1));
     _walletBloc.add(ListTransactions());

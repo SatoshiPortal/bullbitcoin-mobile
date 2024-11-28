@@ -128,8 +128,9 @@ class _BBTextInputState extends State<BBTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.value != _editingController.text)
+    if (widget.value != _editingController.text) {
       _editingController.text = widget.value;
+    }
 
     Widget widgett;
 
@@ -494,8 +495,9 @@ class _BBAmountInputState2 extends State<BBAmountInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.value != null && _editingController.text != widget.value)
+    if (widget.value != null && _editingController.text != widget.value) {
       _editingController.text = widget.value!;
+    }
 
     final borderColor = widget.selected
         ? context.colour.primary

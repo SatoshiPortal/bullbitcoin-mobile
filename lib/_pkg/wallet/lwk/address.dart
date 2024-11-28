@@ -35,7 +35,7 @@ class LWKAddress {
         final contain = wallet.myAddressBook.where(
           (element) => element.address == address.confidential,
         );
-        if (contain.isEmpty)
+        if (contain.isEmpty) {
           addresses.add(
             Address(
               address: address.confidential,
@@ -46,6 +46,7 @@ class LWKAddress {
               isLiquid: true,
             ),
           );
+        }
       }
       // Future.delayed(const Duration(milliseconds: 1600));
       addresses.sort((a, b) {
@@ -57,7 +58,7 @@ class LWKAddress {
       Wallet w;
 
       if (wallet.lastGeneratedAddress == null ||
-          addressLastUnused.index >= wallet.lastGeneratedAddress!.index!)
+          addressLastUnused.index >= wallet.lastGeneratedAddress!.index!) {
         w = wallet.copyWith(
           myAddressBook: addresses,
           lastGeneratedAddress: Address(
@@ -69,10 +70,11 @@ class LWKAddress {
             isLiquid: true,
           ),
         );
-      else
+      } else {
         w = wallet.copyWith(
           myAddressBook: addresses,
         );
+      }
       return (w, null);
     } on Exception catch (e) {
       return (

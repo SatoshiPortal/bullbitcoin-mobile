@@ -88,7 +88,9 @@ class _HomeTransactionsState extends State<HomeTransactions> {
               .read<HomeCubit>()
               .state
               .walletBlocsFromNetwork(network.getBBNetwork());
-          for (final wallet in wallets) wallet.add(SyncWallet());
+          for (final wallet in wallets) {
+            wallet.add(SyncWallet());
+          }
 
           context.read<WatchTxsBloc>().add(WatchWallets());
         },
@@ -179,7 +181,9 @@ class NoTxs extends StatelessWidget {
                     .read<HomeCubit>()
                     .state
                     .walletBlocsFromNetwork(network);
-                for (final wallet in wallets) wallet.add(SyncWallet());
+                for (final wallet in wallets) {
+                  wallet.add(SyncWallet());
+                }
               },
             ),
             const Gap(16),
@@ -230,7 +234,7 @@ class _TxList extends StatelessWidget {
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final txs = context.select((HomeCubit _) => _.state.getAllTxs(network));
 
-    if (txs.isEmpty)
+    if (txs.isEmpty) {
       return TopLeft(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -251,13 +255,16 @@ class _TxList extends StatelessWidget {
                       .read<HomeCubit>()
                       .state
                       .walletBlocsFromNetwork(network);
-                  for (final wallet in wallets) wallet.add(SyncWallet());
+                  for (final wallet in wallets) {
+                    wallet.add(SyncWallet());
+                  }
                 },
               ),
             ],
           ),
         ),
       );
+    }
 
     return ListView.builder(
       itemCount: txs.length,

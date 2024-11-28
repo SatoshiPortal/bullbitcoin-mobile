@@ -135,7 +135,7 @@ class Words extends StatelessWidget {
     final loading = context
         .select((CreateWalletCubit cubit) => cubit.state.creatingNmemonic);
 
-    if (loading)
+    if (loading) {
       return const Padding(
         padding: EdgeInsets.only(left: 24.0),
         child: Column(
@@ -153,6 +153,7 @@ class Words extends StatelessWidget {
           ],
         ),
       );
+    }
 
     return WordGrid(mne: mne);
   }

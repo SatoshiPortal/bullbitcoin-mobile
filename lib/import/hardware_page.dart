@@ -92,12 +92,13 @@ class _Screen extends StatelessWidget {
       (HardwareImportCubit _) => _.state.tempColdCard != null,
     );
 
-    if (isInputScreen)
+    if (isInputScreen) {
       return const InputScreen();
-    else if (isColdcard)
+    } else if (isColdcard) {
       return const ColdCardDetails();
-    else
+    } else {
       return const XpubDetails();
+    }
   }
 }
 

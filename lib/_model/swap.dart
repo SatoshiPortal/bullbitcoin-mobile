@@ -166,8 +166,9 @@ class SwapTx with _$SwapTx {
   bool isBitcoin() => walletType == BaseWalletType.Bitcoin;
 
   int? totalFees() {
-    if (boltzFees == null || lockupFees == null || claimFees == null)
+    if (boltzFees == null || lockupFees == null || claimFees == null) {
       return null;
+    }
 
     return boltzFees! + lockupFees! + claimFees!;
   }
@@ -356,44 +357,46 @@ class SwapTx with _$SwapTx {
     if (!isReverse()) throw 'Swap is not reverse!';
     final statuss = status?.status;
 
-    if (statuss == null || statuss == SwapStatus.swapCreated)
+    if (statuss == null || statuss == SwapStatus.swapCreated) {
       return ReverseSwapActions.created;
-    else if (expiredReverse() ||
+    } else if (expiredReverse() ||
         statuss == SwapStatus.swapError ||
         statuss == SwapStatus.txnFailed ||
-        statuss == SwapStatus.txnLockupFailed)
+        statuss == SwapStatus.txnLockupFailed) {
       return ReverseSwapActions.failed;
-    else if (paidReverse())
+    } else if (paidReverse()) {
       return ReverseSwapActions.paid;
-    else if (claimableReverse())
+    } else if (claimableReverse()) {
       return ReverseSwapActions.claimable;
-    else if (settledReverse())
+    } else if (settledReverse()) {
       return ReverseSwapActions.settled;
-    else
+    } else {
       return ReverseSwapActions.created;
+    }
   }
 
   SubmarineSwapActions submarineSwapAction() {
     if (!isSubmarine()) throw 'Swap is not submarine!';
     final statuss = status?.status;
 
-    if (statuss == null || statuss == SwapStatus.swapCreated)
+    if (statuss == null || statuss == SwapStatus.swapCreated) {
       return SubmarineSwapActions.created;
-    else if (expiredSubmarine() ||
+    } else if (expiredSubmarine() ||
         statuss == SwapStatus.swapExpired ||
         statuss == SwapStatus.swapError ||
-        statuss == SwapStatus.txnFailed)
+        statuss == SwapStatus.txnFailed) {
       return SubmarineSwapActions.failed;
-    else if (paidSubmarine())
+    } else if (paidSubmarine()) {
       return SubmarineSwapActions.paid;
-    else if (claimableSubmarine())
+    } else if (claimableSubmarine()) {
       return SubmarineSwapActions.claimable;
-    else if (settledSubmarine())
+    } else if (settledSubmarine()) {
       return SubmarineSwapActions.settled;
-    else if (refundableSubmarine())
+    } else if (refundableSubmarine()) {
       return SubmarineSwapActions.refundable;
-    else
+    } else {
       return SubmarineSwapActions.created;
+    }
   }
 
   // TODO:Onchain: Overlap between refundable and expired
@@ -401,22 +404,24 @@ class SwapTx with _$SwapTx {
     if (!isChainSwap()) throw 'Swap is not chainswap!';
     final statuss = status?.status;
 
-    if (statuss == null || statuss == SwapStatus.swapCreated)
+    if (statuss == null || statuss == SwapStatus.swapCreated) {
       return ChainSwapActions.created;
-    else if (paidOnchain())
+    } else if (paidOnchain()) {
       return ChainSwapActions.paid;
-    else if (claimableOnchain())
+    } else if (claimableOnchain()) {
       return ChainSwapActions.claimable;
-    else if (refundableOnchain())
+    } else if (refundableOnchain()) {
       return ChainSwapActions.refundable;
-    else if (statuss == SwapStatus.swapError || statuss == SwapStatus.txnFailed)
+    } else if (statuss == SwapStatus.swapError ||
+        statuss == SwapStatus.txnFailed) {
       return ChainSwapActions.failed;
-    else if (settledOnchain())
+    } else if (settledOnchain()) {
       return ChainSwapActions.settled;
-    else if (refundedOnchain())
+    } else if (refundedOnchain()) {
       return ChainSwapActions.refunded;
-    else
+    } else {
       return ChainSwapActions.created;
+    }
   }
 
   bool showAlert() {
@@ -432,11 +437,13 @@ class SwapTx with _$SwapTx {
 
   bool syncWallet() {
     if (isChainSwap()) {
-      if (claimableOnchain() || refundableOnchain() || settledOnchain())
+      if (claimableOnchain() || refundableOnchain() || settledOnchain()) {
         return true;
+      }
     } else if (isSubmarine()) {
-      if (claimableSubmarine() || refundableSubmarine() || settledSubmarine())
+      if (claimableSubmarine() || refundableSubmarine() || settledSubmarine()) {
         return true;
+      }
     } else {
       if (claimableReverse() || settledReverse()) return true;
     }
@@ -593,16 +600,17 @@ extension X on SwapStatus? {
         status = ('Error', 'Swap was unsuccessful');
       case SwapStatus.txnMempool:
         if (type == OnChainSwapType.selfSwap ||
-            type == OnChainSwapType.sendSwap)
+            type == OnChainSwapType.sendSwap) {
           status = (
             'Mempool',
             'You have paid the swap lockup transaction. Waiting for block confirmation'
           );
-        else
+        } else {
           status = (
             'Mempool',
             'Your sender have paid the swap lockup transaction. Waiting for block confirmation'
           );
+        }
 
       /// TODO: This happens with onchain swap?
       case SwapStatus.txnClaimPending:
@@ -614,16 +622,17 @@ extension X on SwapStatus? {
         status = ('Claimed', 'The swap is completed.');
       case SwapStatus.txnConfirmed:
         if (type == OnChainSwapType.selfSwap ||
-            type == OnChainSwapType.sendSwap)
+            type == OnChainSwapType.sendSwap) {
           status = (
             'Confirmed',
             'Your lockup transaction is confirmed. Waiting for Boltz lockup'
           );
-        else
+        } else {
           status = (
             'Confirmed',
             "Your sender's lockup transaction is confirmed. Waiting for Boltz lockup"
           );
+        }
       case SwapStatus.txnRefunded:
         status = ('Refunded', 'The swap has been successfully refunded.');
       case SwapStatus.txnFailed:

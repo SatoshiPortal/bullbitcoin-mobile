@@ -246,12 +246,13 @@ class DownloadButton extends StatelessWidget {
     final downloaded =
         context.select((BroadcastTxCubit cubit) => cubit.state.downloaded);
 
-    if (downloaded)
+    if (downloaded) {
       return Center(
         child: const BBText.body(
           'Downloaded',
         ).animate(delay: 300.ms).fadeIn(),
       );
+    }
 
     return Center(
       child: SizedBox(
@@ -289,12 +290,13 @@ class BroadcastSendButton extends StatelessWidget {
     final signed =
         context.select((BroadcastTxCubit cubit) => cubit.state.isSigned);
 
-    if (sent)
+    if (sent) {
       return const Center(
         child: BBText.body(
           'Tx Broadcasted!',
         ),
       ).animate(delay: 300.ms).fadeIn();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -312,10 +314,12 @@ class BroadcastSendButton extends StatelessWidget {
               loading: loading,
               onPressed: () {
                 // if (loading) return;
-                if (step == BroadcastTxStep.import)
+                if (step == BroadcastTxStep.import) {
                   context.read<BroadcastTxCubit>().extractTxClicked();
-                if (step == BroadcastTxStep.broadcast && signed)
+                }
+                if (step == BroadcastTxStep.broadcast && signed) {
                   context.read<BroadcastTxCubit>().broadcastClicked();
+                }
               },
               label: (step == BroadcastTxStep.import) ? 'Decode' : 'Broadcast',
             ),

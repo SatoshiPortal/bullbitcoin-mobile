@@ -196,8 +196,9 @@ class _Screen extends StatelessWidget {
     // END: ON CHAIN
     // **************
 
-    if (showWarning && !removeWarning && !walletIsLiquid)
+    if (showWarning && !removeWarning && !walletIsLiquid) {
       return const _Warnings();
+    }
 
     return SingleChildScrollView(
       child: Padding(
@@ -574,8 +575,9 @@ class WalletActions extends StatelessWidget {
             context.read<CurrencyCubit>().updateAmountDirect(0);
             final paymentNetwork =
                 context.read<ReceiveCubit>().state.paymentNetwork;
-            if (paymentNetwork == PaymentNetwork.lightning)
+            if (paymentNetwork == PaymentNetwork.lightning) {
               context.read<CreateSwapCubit>().clearSwapTx();
+            }
 
             context.read<ReceiveCubit>().generateNewAddress();
           },
@@ -988,8 +990,9 @@ class ReceiveQRDisplay extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () async {
-          if (locator.isRegistered<Clippboard>())
+          if (locator.isRegistered<Clippboard>()) {
             await locator<Clippboard>().copy(address);
+          }
 
           // ScaffoldMessenger.of(context).showSnackBar(
           //   const SnackBar(content: Text('Copied to clipboard')),
@@ -1140,8 +1143,9 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
-                          if (locator.isRegistered<Clippboard>())
+                          if (locator.isRegistered<Clippboard>()) {
                             await locator<Clippboard>().copy(addr);
+                          }
 
                           // ScaffoldMessenger.of(context).showSnackBar(
                           //   const SnackBar(
@@ -1157,8 +1161,9 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        if (locator.isRegistered<Clippboard>())
+                        if (locator.isRegistered<Clippboard>()) {
                           await locator<Clippboard>().copy(addr);
+                        }
 
                         // ScaffoldMessenger.of(context).showSnackBar(
                         //   const SnackBar(content: Text('Copied to clipboard')),

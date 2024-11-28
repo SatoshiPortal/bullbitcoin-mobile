@@ -85,8 +85,9 @@ class _ScreenState extends State<_Screen> {
   void syncingDone(ScriptType scriptType, BuildContext context) {
     if (scriptTypes.contains(scriptType)) return;
     scriptTypes.add(scriptType);
-    if (scriptTypes.length == widget.walletCubits.length)
+    if (scriptTypes.length == widget.walletCubits.length) {
       context.read<ImportWalletCubit>().syncingComplete();
+    }
   }
 
   @override
