@@ -3,7 +3,6 @@ include: package:lint/analysis_options.yaml
 
 linter:
   rules:
-    avoid_deprecated_members: false
     file_names: false
     curly_braces_in_flow_control_structures: false
     avoid_classes_with_only_static_members: false
