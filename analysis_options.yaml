@@ -11,8 +11,7 @@ analyzer:
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
-    - test/
-    - widget_catalog/
+    # - test/
     - maintainance/**
     - pubspec.yaml
   
