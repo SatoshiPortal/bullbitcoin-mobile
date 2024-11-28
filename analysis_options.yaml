@@ -18,6 +18,7 @@ linter:
     join_return_with_assignment: false
     unnecessary_string_escapes: false
     avoid_dynamic_calls: false
+    constant_identifier_names: false
     non_constant_identifier_names: false
     no_wildcard_variable_uses: false
     
@@ -29,6 +30,8 @@ analyzer:
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
+    - test/
+    - widget_catalog/
     - maintainance/**
     - pubspec.yaml
   
