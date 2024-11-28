@@ -163,12 +163,12 @@ class _CurrencyInputState extends State<CurrencyInput> {
     _isProgrammaticChange = true;
     if (currency.isFiat) {
       amountController.text = getFiatValueFromSats(_sats, currency)
-          .toStringAsFixed(Currency.FIAT_DECIMAL_POINTS);
+          .toStringAsFixed(Currency.fiatDecimalPoints);
     } else {
       if (currency.code == btcCurrency.code ||
           currency.code == lbtcCurrency.code) {
-        amountController.text = (_sats / Currency.SATS_IN_BTC)
-            .toStringAsFixed(Currency.BTC_DECIMAL_POINTS);
+        amountController.text = (_sats / Currency.satsInBtc)
+            .toStringAsFixed(Currency.btcDecimalPoints);
       } else {
         amountController.text = _sats.toString();
       }
@@ -204,7 +204,7 @@ class _CurrencyInputState extends State<CurrencyInput> {
           helperText = '= $_sats sats';
         } else {
           helperText =
-              '= ${(_sats / Currency.SATS_IN_BTC).toStringAsFixed(Currency.BTC_DECIMAL_POINTS)} BTC';
+              '= ${(_sats / Currency.satsInBtc).toStringAsFixed(Currency.btcDecimalPoints)} BTC';
         }
       } else {
         // Display default FIAT
@@ -212,7 +212,7 @@ class _CurrencyInputState extends State<CurrencyInput> {
             getFiatValueFromSats(_sats, widget.defaultFiatCurrency!);
 
         helperText =
-            '= ${fiatValue.toStringAsFixed(Currency.FIAT_DECIMAL_POINTS)} ${widget.defaultFiatCurrency!.code}';
+            '= ${fiatValue.toStringAsFixed(Currency.fiatDecimalPoints)} ${widget.defaultFiatCurrency!.code}';
       }
     }
 

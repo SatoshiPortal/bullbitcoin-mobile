@@ -15,9 +15,9 @@ class Currency with _$Currency {
       _$CurrencyFromJson(json);
   const Currency._();
 
-  static int get SATS_IN_BTC => 100000000;
-  static int get BTC_DECIMAL_POINTS => 8;
-  static int get FIAT_DECIMAL_POINTS => 2;
+  static int get satsInBtc => 100000000;
+  static int get btcDecimalPoints => 8;
+  static int get fiatDecimalPoints => 2;
 
   String getSymbol() {
     switch (name) {

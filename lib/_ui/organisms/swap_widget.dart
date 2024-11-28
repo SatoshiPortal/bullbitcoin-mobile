@@ -240,7 +240,7 @@ class _SwapWidgetState extends State<SwapWidget> {
       try {
         sats = isSat
             ? int.parse(fromPriceController.text)
-            : (double.parse(fromPriceController.text) * Currency.SATS_IN_BTC)
+            : (double.parse(fromPriceController.text) * Currency.satsInBtc)
                 .toInt();
       } catch (e) {
         sats = 0;
@@ -268,7 +268,7 @@ class _SwapWidgetState extends State<SwapWidget> {
       try {
         localSats = isSat
             ? int.parse(fromPriceController.text)
-            : (double.parse(fromPriceController.text) * Currency.SATS_IN_BTC)
+            : (double.parse(fromPriceController.text) * Currency.satsInBtc)
                 .toInt();
       } on FormatException {
         localSats = 0;

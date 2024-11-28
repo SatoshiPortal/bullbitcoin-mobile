@@ -230,7 +230,7 @@ class _TxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final __ = context.select((HomeCubit _) => _.state.walletBlocs);
+    context.select((HomeCubit _) => _.state.walletBlocs);
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final txs = context.select((HomeCubit _) => _.state.getAllTxs(network));
 

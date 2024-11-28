@@ -176,13 +176,13 @@ class _NumberButtonState extends State<NumberButton> {
 
   @override
   Widget build(BuildContext context) {
-    final _ = OutlinedButton.styleFrom(
+    OutlinedButton.styleFrom(
       shape: const CircleBorder(),
       backgroundColor: context.colour.onPrimaryContainer,
       foregroundColor: context.colour.primary,
     );
 
-    final __ = OutlinedButton.styleFrom(
+    OutlinedButton.styleFrom(
       shape: const CircleBorder(),
       backgroundColor: context.colour.primary,
       foregroundColor: context.colour.primaryContainer,
