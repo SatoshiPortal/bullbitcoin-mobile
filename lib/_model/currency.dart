@@ -10,9 +10,14 @@ class Currency with _$Currency {
     required double? price,
     required String shortName,
   }) = _Currency;
+
+  factory Currency.fromJson(Map<String, dynamic> json) =>
+      _$CurrencyFromJson(json);
   const Currency._();
 
-  factory Currency.fromJson(Map<String, dynamic> json) => _$CurrencyFromJson(json);
+  static int get SATS_IN_BTC => 100000000;
+  static int get BTC_DECIMAL_POINTS => 8;
+  static int get FIAT_DECIMAL_POINTS => 2;
 
   String getSymbol() {
     switch (name) {

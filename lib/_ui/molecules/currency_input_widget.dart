@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/currency_new.dart';
 import 'package:bb_mobile/_ui/atoms/bb_form_field.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -162,12 +163,12 @@ class _CurrencyInputState extends State<CurrencyInput> {
     _isProgrammaticChange = true;
     if (currency.isFiat) {
       amountController.text = getFiatValueFromSats(_sats, currency)
-          .toStringAsFixed(FIAT_DECIMAL_POINTS);
+          .toStringAsFixed(Currency.FIAT_DECIMAL_POINTS);
     } else {
       if (currency.code == btcCurrency.code ||
           currency.code == lbtcCurrency.code) {
-        amountController.text =
-            (_sats / SATS_IN_BTC).toStringAsFixed(BTC_DECIMAL_POINTS);
+        amountController.text = (_sats / Currency.SATS_IN_BTC)
+            .toStringAsFixed(Currency.BTC_DECIMAL_POINTS);
       } else {
         amountController.text = _sats.toString();
       }
@@ -203,7 +204,7 @@ class _CurrencyInputState extends State<CurrencyInput> {
           helperText = '= $_sats sats';
         } else {
           helperText =
-              '= ${(_sats / SATS_IN_BTC).toStringAsFixed(BTC_DECIMAL_POINTS)} BTC';
+              '= ${(_sats / Currency.SATS_IN_BTC).toStringAsFixed(Currency.BTC_DECIMAL_POINTS)} BTC';
         }
       } else {
         // Display default FIAT
@@ -211,7 +212,7 @@ class _CurrencyInputState extends State<CurrencyInput> {
             getFiatValueFromSats(_sats, widget.defaultFiatCurrency!);
 
         helperText =
-            '= ${fiatValue.toStringAsFixed(FIAT_DECIMAL_POINTS)} ${widget.defaultFiatCurrency!.code}';
+            '= ${fiatValue.toStringAsFixed(Currency.FIAT_DECIMAL_POINTS)} ${widget.defaultFiatCurrency!.code}';
       }
     }
 

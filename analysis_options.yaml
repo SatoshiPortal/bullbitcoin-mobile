@@ -7,7 +7,6 @@ linter:
     avoid_classes_with_only_static_members: false
     avoid_print: false
     avoid_dynamic_calls: false
-    constant_identifier_names: false
     non_constant_identifier_names: false
     no_wildcard_variable_uses: false
     

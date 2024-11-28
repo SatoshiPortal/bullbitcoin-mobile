@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/currency_new.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -8,8 +9,6 @@ import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-
-const SATS_IN_BTC = 100000000;
 
 final btcCurrencies = [
   btcCurrency,
@@ -241,7 +240,8 @@ class _SwapWidgetState extends State<SwapWidget> {
       try {
         sats = isSat
             ? int.parse(fromPriceController.text)
-            : (double.parse(fromPriceController.text) * SATS_IN_BTC).toInt();
+            : (double.parse(fromPriceController.text) * Currency.SATS_IN_BTC)
+                .toInt();
       } catch (e) {
         sats = 0;
       }
@@ -268,7 +268,8 @@ class _SwapWidgetState extends State<SwapWidget> {
       try {
         localSats = isSat
             ? int.parse(fromPriceController.text)
-            : (double.parse(fromPriceController.text) * SATS_IN_BTC).toInt();
+            : (double.parse(fromPriceController.text) * Currency.SATS_IN_BTC)
+                .toInt();
       } on FormatException {
         localSats = 0;
       }
