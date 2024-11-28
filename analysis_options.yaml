@@ -1,5 +1,4 @@
 include: package:lint/analysis_options.yaml
-# package: flutter_lints/flutter.yaml
 
 linter:
   rules:
@@ -12,9 +11,6 @@ linter:
     sized_box_for_whitespace: false
     prefer_interpolation_to_compose_strings: false
     avoid_print: false
-    # always_specify_types: true
-    # const_initialized_with_non_constant_value: false
-    # import_of_legacy_library_into_null_safe: false
     avoid_positional_boolean_parameters: false
     use_string_buffers: false
     use_build_context_synchronously: false
@@ -30,30 +26,9 @@ linter:
 analyzer:
   errors:
     deprecated_member_use: ignore
-  # enable-experiment:
-      # - inline-class
-  #   - records
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
     - maintainance/**
     - pubspec.yaml
   
-
-
-
-# include: package:flutter_lints/flutter.yaml
-
-# linter:
-  
-#   rules:
-#     depend_on_referenced_packages:false
-  
-# analyzer:
-#   exclude:
-#     - "**/*.g.dart"
-#   # strong-mode:
-#     # implicit-casts: false
-#     # implicit-dynamic: false
-#   errors:
-#     invalid_annotation_target: ignore
