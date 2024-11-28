@@ -6,7 +6,6 @@ linter:
     prefer_single_quotes: true
     avoid_classes_with_only_static_members: false
     avoid_print: false
-    depend_on_referenced_packages: false
     avoid_dynamic_calls: false
     constant_identifier_names: false
     non_constant_identifier_names: false
