@@ -48,7 +48,7 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     _processInput();
   }
 
-  void scanQRClicked() async {
+  Future<void> scanQRClicked() async {
     final (res, err) = await _barcode.scan();
     if (err != null) {
       emit(state.copyWith(errScanningInput: err.toString()));
@@ -59,7 +59,7 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     _processInput();
   }
 
-  void selectFile() async {
+  Future<void> selectFile() async {
     final (file, err) = await _filePicker.pickFile();
     if (err != null) {
       emit(state.copyWith(errScanningInput: err.toString()));
@@ -103,7 +103,7 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     }
   }
 
-  void _processColdCard(ColdCard coldCard) async {
+  Future<void> _processColdCard(ColdCard coldCard) async {
     final wallets = <Wallet>[];
 
     final network = _networkCubit.state.getBBNetwork();
@@ -134,7 +134,7 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     );
   }
 
-  void _processXpub(String xpub) async {
+  Future<void> _processXpub(String xpub) async {
     final wallets = <Wallet>[];
 
     if (xpub.contains('[')) {
@@ -195,7 +195,7 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     );
   }
 
-  void saveClicked() async {
+  Future<void> saveClicked() async {
     await checkWalletLabel();
     if (state.errLabel.isNotEmpty) return;
 

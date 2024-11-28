@@ -154,7 +154,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     );
   }
 
-  void refreshSwap({
+  Future<void> refreshSwap({
     required SwapTx swaptx,
     required String walletId,
   }) async {

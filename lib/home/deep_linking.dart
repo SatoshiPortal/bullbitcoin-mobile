@@ -28,7 +28,7 @@ class _DeepLinkerState extends State<DeepLinker> {
     super.dispose();
   }
 
-  void linkReceived(String link) async {
+  Future<void> linkReceived(String link) async {
     final homeCubit = locator<HomeCubit>();
     final err = await locator<DeepLink>().handleUri(
       link: link,

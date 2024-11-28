@@ -128,7 +128,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(switchToSecure: false, switchToInstant: false));
   }
 
-  void loadAddress() async {
+  Future<void> loadAddress() async {
     if (state.walletBloc == null) return;
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
 
@@ -238,7 +238,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     }
   }
 
-  void generateNewAddress() async {
+  Future<void> generateNewAddress() async {
     if (state.paymentNetwork == PaymentNetwork.lightning) return;
 
     emit(
@@ -319,7 +319,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     emit(state.copyWith(description: description));
   }
 
-  void saveAddrressLabel() async {
+  Future<void> saveAddrressLabel() async {
     if (state.walletBloc == null) return;
 
     if (state.description == state.defaultAddress?.label) return;

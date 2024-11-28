@@ -41,7 +41,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(name: name));
   }
 
-  void saveNameClicked() async {
+  Future<void> saveNameClicked() async {
     emit(state.copyWith(savingName: true, errSavingName: ''));
 
     final wallet = state.wallet.copyWith(name: state.name);
@@ -85,7 +85,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   //   );
   // }
 
-  void loadBackupClicked() async {
+  Future<void> loadBackupClicked() async {
     final (seed, err) = await _walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
     );
@@ -160,7 +160,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     // if (testMnemonic.length == 24) testBackupClicked();
   }
 
-  void invalidTestOrderClicked() async {
+  Future<void> invalidTestOrderClicked() async {
     emit(
       state.copyWith(
         testMnemonicOrder: [],
@@ -230,7 +230,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     );
   }
 
-  void testBackupClicked() async {
+  Future<void> testBackupClicked() async {
     emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
     final words = state.testMneString();
     final password = state.testBackupPassword;
@@ -308,7 +308,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     clearSensitive();
   }
 
-  void resetBackupTested() async {
+  Future<void> resetBackupTested() async {
     await Future.delayed(const Duration(milliseconds: 800));
     emit(state.copyWith(backupTested: false));
   }
@@ -324,7 +324,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     );
   }
 
-  void backupToSD() async {
+  Future<void> backupToSD() async {
     emit(state.copyWith(savingFile: true, errSavingFile: ''));
     final (seed, err) = await _walletSensRepository.readSeed(
       fingerprintIndex: state.wallet.getRelatedSeedStorageString(),
@@ -373,7 +373,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(savedFile: false));
   }
 
-  void deleteWalletClicked() async {
+  Future<void> deleteWalletClicked() async {
     emit(state.copyWith(deleting: true, errDeleting: ''));
     _walletBloc.add(KillSync());
     await Future.delayed(200.ms);
@@ -478,7 +478,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     );
   }
 
-  void exportLabelsClicked() async {
+  Future<void> exportLabelsClicked() async {
     try {
       emit(state.copyWith(exporting: true, errExporting: '', errImporting: ''));
       final key = state.wallet.generateBIP329Key();
@@ -511,7 +511,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
   }
 
-  void importLabelsClicked() async {
+  Future<void> importLabelsClicked() async {
     try {
       emit(state.copyWith(importing: true, errImporting: '', errExporting: ''));
       final wallet = state.wallet;

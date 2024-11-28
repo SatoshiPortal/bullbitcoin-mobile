@@ -58,7 +58,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   final WalletBloc _walletBloc;
   // final HomeCubit _homeCubit;
 
-  void loadTx() async {
+  Future<void> loadTx() async {
     emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));
 
     Future.wait([
@@ -133,7 +133,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(label: label));
   }
 
-  void saveLabelClicked() async {
+  Future<void> saveLabelClicked() async {
     final label = state.tx.label;
     if (label == state.label) return;
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
@@ -229,7 +229,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   // }
 
   // SENSITIVE FX
-  void buildRbfTx(int fee) async {
+  Future<void> buildRbfTx(int fee) async {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
 
     // final isManualFees = _networkFeesCubit.state.feeOption() == 4;
@@ -343,7 +343,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     sendTx();
   }
 
-  void sendTx() async {
+  Future<void> sendTx() async {
     emit(state.copyWith(sendingTx: true, errSendingTx: '', buildingTx: false));
     final tx = state.tx.swapTx != null
         ? state.updatedTx!.copyWith(swapTx: state.tx.swapTx, isSwap: true)

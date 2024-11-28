@@ -53,7 +53,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     );
   }
 
-  void createRevSwapForReceive({
+  Future<void> createRevSwapForReceive({
     required Wallet wallet,
     required int amount,
     String? label,
@@ -467,7 +467,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
   void setValidationError(String validationMsg) =>
       emit(state.copyWith(errCreatingSwapInv: validationMsg));
 
-  void createOnChainSwap({
+  Future<void> createOnChainSwap({
     required Wallet wallet,
     required int amount,
     bool sweep = false,
@@ -633,7 +633,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     }
   }
 
-  void createOnChainSwapForReceive({
+  Future<void> createOnChainSwapForReceive({
     required Wallet toWallet,
     required int amount,
     bool sweep = false,

@@ -5,7 +5,6 @@ linter:
     avoid_classes_with_only_static_members: false
     sort_constructors_first: true
     prefer_single_quotes: true
-    avoid_void_async: false
     sized_box_for_whitespace: false
     prefer_interpolation_to_compose_strings: false
     avoid_print: false

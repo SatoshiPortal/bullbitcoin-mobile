@@ -42,7 +42,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final BDKSensitiveCreate _bdkSensitiveCreate;
   final LWKSensitiveCreate _lwkSensitiveCreate;
 
-  void createMne({bool fromHome = false}) async {
+  Future<void> createMne({bool fromHome = false}) async {
     emit(state.copyWith(creatingNmemonic: true));
     final (mnemonic, err) = await _walletSensCreate.createMnemonic();
     if (err != null) {
@@ -106,7 +106,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     }
   }
 
-  void confirmClicked() async {
+  Future<void> confirmClicked() async {
     if (state.mnemonic == null) return;
     emit(state.copyWith(saving: true, errSaving: ''));
 

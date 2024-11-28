@@ -149,7 +149,7 @@ class NetworkCubit extends Cubit<NetworkState> {
     emit(state.copyWith(loadingNetworks: false));
   }
 
-  void toggleTestnet() async {
+  Future<void> toggleTestnet() async {
     final isTestnet = state.testnet;
     await Future.delayed(const Duration(milliseconds: 50));
     try {
@@ -162,13 +162,13 @@ class NetworkCubit extends Cubit<NetworkState> {
     // homeCubit?.networkChanged(state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet);
   }
 
-  void updateStopGapAndSave(int gap) async {
+  Future<void> updateStopGapAndSave(int gap) async {
     updateTempStopGap(gap);
     await Future.delayed(const Duration(milliseconds: 50));
     networkConfigsSaveClicked(isLiq: false);
   }
 
-  void closeNetworkError() async {
+  Future<void> closeNetworkError() async {
     emit(state.copyWith(goToSettings: true));
     await Future.delayed(const Duration(milliseconds: 200));
     emit(state.copyWith(goToSettings: false));
@@ -176,7 +176,7 @@ class NetworkCubit extends Cubit<NetworkState> {
     emit(state.copyWith(networkErrorOpened: false));
   }
 
-  void retryNetwork() async {
+  Future<void> retryNetwork() async {
     emit(state.copyWith(networkErrorOpened: false));
     await Future.delayed(const Duration(milliseconds: 100));
     setupBlockchain();
@@ -351,7 +351,7 @@ class NetworkCubit extends Cubit<NetworkState> {
     return '';
   }
 
-  void networkConfigsSaveClicked({required bool isLiq}) async {
+  Future<void> networkConfigsSaveClicked({required bool isLiq}) async {
     emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
     if (!isLiq) {
       if (state.tempNetwork == null) return;

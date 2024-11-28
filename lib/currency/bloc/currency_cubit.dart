@@ -59,7 +59,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     loadCurrencies();
   }
 
-  void loadCurrencyForAmount() async {
+  Future<void> loadCurrencyForAmount() async {
     await Future.delayed(300.ms);
     final updatedCurrenciess = state.updatedCurrencyList();
     final selectedCurrency = updatedCurrenciess.firstWhere(
@@ -76,7 +76,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   void changeDefaultCurrency(Currency currency) =>
       emit(state.copyWith(defaultFiatCurrency: currency));
 
-  void loadCurrencies() async {
+  Future<void> loadCurrencies() async {
     emit(state.copyWith(loadingCurrency: true));
     final (cad, _) = await _bbAPI.getExchangeRate(toCurrency: 'CAD');
     final (usd, _) = await _bbAPI.getExchangeRate(toCurrency: 'USD');
@@ -149,7 +149,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     convertAmtOnCurrencyChange();
   }
 
-  void convertAmtOnCurrencyChange() async {
+  Future<void> convertAmtOnCurrencyChange() async {
     await Future.delayed(300.ms);
     final satsAmt = state.amount;
     String amt = '';

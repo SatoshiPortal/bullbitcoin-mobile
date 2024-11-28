@@ -80,7 +80,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     return super.close();
   }
 
-  void _loadWallet(LoadWallet event, Emitter<WalletState> emit) async {
+  Future<void> _loadWallet(LoadWallet event, Emitter<WalletState> emit) async {
     emit(state.copyWith(loadingWallet: true, errLoadingWallet: ''));
 
     final (wallet, err) = await _walletCreate.loadPublicWallet(
@@ -196,7 +196,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     // emit(state.copyWith(syncing: false));
   }
 
-  void _getBalance(GetBalance event, Emitter<WalletState> emit) async {
+  Future<void> _getBalance(GetBalance event, Emitter<WalletState> emit) async {
     if (state.wallet == null) return;
 
     emit(state.copyWith(loadingBalance: true, errLoadingBalance: ''));
@@ -231,7 +231,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     add(ListTransactions());
   }
 
-  void _listTransactions(
+  Future<void> _listTransactions(
     ListTransactions event,
     Emitter<WalletState> emit,
   ) async {
@@ -274,7 +274,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     // _swapBloc.add(WatchWallets(isTestnet: state.wallet!));
   }
 
-  void _getFirstAddress(
+  Future<void> _getFirstAddress(
     GetFirstAddress event,
     Emitter<WalletState> emit,
   ) async {
@@ -299,7 +299,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
   }
 
-  void _updateWallet(UpdateWallet event, Emitter<WalletState> emit) async {
+  Future<void> _updateWallet(
+    UpdateWallet event,
+    Emitter<WalletState> emit,
+  ) async {
     if (!event.saveToStorage) {
       emit(state.copyWith(wallet: event.wallet));
       return;

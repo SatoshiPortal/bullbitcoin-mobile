@@ -65,7 +65,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     emit(state.copyWith(tx: tx));
   }
 
-  void scanQRClicked() async {
+  Future<void> scanQRClicked() async {
     await clearErrors();
     emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
     final (file, err) = await _barcode.scan();
@@ -78,7 +78,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     emit(state.copyWith(loadingFile: false, tx: tx));
   }
 
-  void uploadFileClicked() async {
+  Future<void> uploadFileClicked() async {
     await clearErrors();
     emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
     final (file, err) = await _filePicker.pickFile();
@@ -101,7 +101,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     return true;
   }
 
-  void extractTxClicked() async {
+  Future<void> extractTxClicked() async {
     try {
       await clearErrors();
       emit(
@@ -267,7 +267,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     }
   }
 
-  void broadcastClicked() async {
+  Future<void> broadcastClicked() async {
     await clearErrors();
     emit(
       state.copyWith(
@@ -307,7 +307,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     emit(state.copyWith(broadcastingTx: false, sent: true));
   }
 
-  void downloadPSBTClicked() async {
+  Future<void> downloadPSBTClicked() async {
     await clearErrors();
     emit(state.copyWith(downloadingFile: true, errDownloadingFile: ''));
     final psbt = state.psbtBDK?.toString();

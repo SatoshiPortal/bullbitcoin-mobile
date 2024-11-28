@@ -162,7 +162,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     );
   }
 
-  void scanQRClicked() async {
+  Future<void> scanQRClicked() async {
     emit(state.copyWith(loadingFile: true));
     final (res, err) = await _barcode.scan();
     if (err != null) {
@@ -267,7 +267,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(state.copyWith(customDerivation: text));
   }
 
-  void coldCardNFCClicked() async {
+  Future<void> coldCardNFCClicked() async {
     emit(
       state.copyWith(
         importStep: ImportSteps.scanningNFC,
@@ -298,13 +298,13 @@ class ImportWalletCubit extends Cubit<ImportState> {
     }
   }
 
-  void stopScanningNFC() async {
+  Future<void> stopScanningNFC() async {
     final err = _nfc.stopSession();
     if (err != null) emit(state.copyWith(errLoadingFile: err.toString()));
     emit(state.copyWith(loadingFile: false));
   }
 
-  void coldCardNFCReceived(String jsnStr) async {
+  Future<void> coldCardNFCReceived(String jsnStr) async {
     final ccObj = jsonDecode(jsnStr) as Map<String, dynamic>;
     final coldcard = ColdCard.fromJson(ccObj);
 
@@ -341,7 +341,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     );
   }
 
-  void coldCardFileClicked() async {
+  Future<void> coldCardFileClicked() async {
     emit(
       state.copyWith(
         loadingFile: true,
@@ -387,7 +387,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     );
   }
 
-  void xpubSaveClicked() async {
+  Future<void> xpubSaveClicked() async {
     await checkWalletLabel();
     if (state.errSavingWallet.isNotEmpty) return;
 
@@ -411,7 +411,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     emit(state.copyWith(importStep: ImportSteps.scanningWallets));
   }
 
-  void recoverWalletClicked() async {
+  Future<void> recoverWalletClicked() async {
     if (!state.mainWallet) await checkWalletLabel();
     if (state.errSavingWallet.isNotEmpty) return;
 
@@ -576,7 +576,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     }
   }
 
-  void saveClicked() async {
+  Future<void> saveClicked() async {
     emit(state.copyWith(savingWallet: true, errSavingWallet: ''));
 
     Wallet? selectedWallet = state.getSelectWalletDetails();
@@ -722,7 +722,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     return updatedWallet;
   }
 
-  void reset() async {
+  Future<void> reset() async {
     emit(
       state.copyWith(
         words12: [...emptyWords12],
@@ -741,7 +741,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     );
   }
 
-  void clearErrors() async {
+  Future<void> clearErrors() async {
     emit(
       state.copyWith(
         errImporting: '',

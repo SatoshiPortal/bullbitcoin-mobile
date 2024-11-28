@@ -118,7 +118,7 @@ class _TextSection extends StatefulWidget {
 class _TextSectionState extends State<_TextSection> {
   bool showToast = false;
 
-  void _copyClicked() async {
+  Future<void> _copyClicked() async {
     if (mounted) {
       setState(() {
         showToast = true;

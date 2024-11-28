@@ -63,7 +63,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     _testNetStream = null;
   }
 
-  void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) async {
+  Future<void> _onWatchWallets(
+    WatchWallets event,
+    Emitter<WatchTxsState> emit,
+  ) async {
     final isTestnet = _networkCubit.state.testnet;
     await Future.delayed(100.ms);
     final network = _networkCubit.state.getBBNetwork();
@@ -94,7 +97,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
   }
 
-  void __watchSwapStatus(
+  Future<void> __watchSwapStatus(
     Emitter<WatchTxsState> emit, {
     required List<String> swapTxsToWatch,
     required bool isTestnet,
@@ -147,7 +150,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     }
   }
 
-  void __swapStatusUpdated(
+  Future<void> __swapStatusUpdated(
     Emitter<WatchTxsState> emit, {
     required String swapId,
     required SwapStreamStatus status,

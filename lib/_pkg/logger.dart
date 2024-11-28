@@ -13,7 +13,7 @@ class Logger extends Cubit<List<(String, DateTime)>> {
 
   void clear() => emit([]);
 
-  void shareLog() async {
+  Future<void> shareLog() async {
     try {
       String logDump;
 

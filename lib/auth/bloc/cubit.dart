@@ -91,7 +91,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  void shuffleWords() async {
+  Future<void> shuffleWords() async {
     await Future.delayed(const Duration(milliseconds: 500));
     emit(state.copyWith(shuffledNumbers: state.generateShuffledNumbers()));
   }
