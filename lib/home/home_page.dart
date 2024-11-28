@@ -556,7 +556,7 @@ class HomeTopBar2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currency =
-        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+        context.select((CurrencyCubit e) => e.state.defaultFiatCurrency);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
@@ -1127,10 +1127,10 @@ class HomeWarnings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((HomeCubit _) => _.state.updated);
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final _ = context.select((HomeCubit e) => e.state.updated);
+    final network = context.select((NetworkCubit e) => e.state.getBBNetwork());
     final warnings =
-        context.select((HomeCubit _) => _.state.homeWarnings(network));
+        context.select((HomeCubit e) => e.state.homeWarnings(network));
 
     return Column(
       children: [

@@ -122,7 +122,7 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tx = context.select((TransactionCubit _) => _.state.tx);
+    final tx = context.select((TransactionCubit e) => e.state.tx);
     final swap = tx.swapTx;
 
     if (swap != null && !swap.isChainSwap()) {
@@ -218,7 +218,7 @@ class _TxDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tx = context.select((TransactionCubit _) => _.state.tx);
+    final tx = context.select((TransactionCubit e) => e.state.tx);
     final isLiq = tx.isLiquid;
     final isSwapPending = tx.swapIdisTxid();
 

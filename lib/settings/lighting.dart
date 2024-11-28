@@ -25,7 +25,7 @@ class LightingPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.select((Lighting _) => _.state);
+    final theme = context.select((Lighting e) => e.state);
 
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 56, left: 24, right: 24),

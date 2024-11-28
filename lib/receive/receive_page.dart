@@ -163,7 +163,7 @@ class _Screen extends StatelessWidget {
     final shouldShowForm = paymentNetwork == PaymentNetwork.bitcoin ||
         paymentNetwork == PaymentNetwork.liquid;
 
-    final description = context.select((ReceiveCubit _) => _.state.description);
+    final description = context.select((ReceiveCubit e) => e.state.description);
     final shouldShownDescription =
         (paymentNetwork == PaymentNetwork.lightning &&
                 description.isNotEmpty) ||
@@ -252,12 +252,12 @@ class ReceiveWalletsDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final oneWallet = context.select((ReceiveCubit _) => _.state.oneWallet);
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final oneWallet = context.select((ReceiveCubit e) => e.state.oneWallet);
+    final network = context.select((NetworkCubit e) => e.state.getBBNetwork());
     final walletBlocs = context
-        .select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+        .select((HomeCubit e) => e.state.walletBlocsFromNetwork(network));
     final selectedWalletBloc =
-        context.select((ReceiveCubit _) => _.state.walletBloc);
+        context.select((ReceiveCubit e) => e.state.walletBloc);
 
     // final walletBloc = selectedWalletBloc ?? walletBlocs.first;
 
@@ -315,11 +315,11 @@ class SelectWalletType extends StatelessWidget {
         context.select((ReceiveCubit x) => x.state.paymentNetwork);
 
     final btcAllowed = context.select(
-      (ReceiveCubit _) => _.state.allowedSwitch(PaymentNetwork.bitcoin),
+      (ReceiveCubit e) => e.state.allowedSwitch(PaymentNetwork.bitcoin),
     );
 
     final liqAllowed = context.select(
-      (ReceiveCubit _) => _.state.allowedSwitch(PaymentNetwork.liquid),
+      (ReceiveCubit e) => e.state.allowedSwitch(PaymentNetwork.liquid),
     );
 
     // if (!isTestnet) return const SizedBox.shrink();
@@ -355,7 +355,7 @@ class _WalletProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((ReceiveCubit _) => _.state.walletBloc);
+    final wallet = context.select((ReceiveCubit e) => e.state.walletBloc);
 
     if (wallet == null) return child;
     return BlocProvider.value(value: wallet, child: child);
@@ -543,8 +543,8 @@ class WalletActions extends StatelessWidget {
     final isLn = context.select((ReceiveCubit x) => x.state.isLn());
     if (isLn) return const SizedBox.shrink();
 
-    final swap = context.select((CreateSwapCubit _) => _.state.swapTx);
-    final show = context.select((ReceiveCubit _) => _.state.showQR(swap));
+    final swap = context.select((CreateSwapCubit e) => e.state.swapTx);
+    final show = context.select((ReceiveCubit e) => e.state.showQR(swap));
     if (!show) return const SizedBox.shrink();
 
     final errLoadingAddress =
@@ -642,14 +642,14 @@ class ChainSwapForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final description = context.select((ReceiveCubit _) => _.state.description);
+    final description = context.select((ReceiveCubit e) => e.state.description);
     context.select((CreateSwapCubit x) => x.state.allFees);
     context.select((CurrencyCubit x) => x.state.amount);
 
     context.select(
       (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
     );
-    final err = context.select((CreateSwapCubit _) => _.state.err());
+    final err = context.select((CreateSwapCubit e) => e.state.err());
 
     final generatingInv = context
         .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
@@ -737,11 +737,11 @@ class CreateLightningInvoice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final description = context.select((ReceiveCubit _) => _.state.description);
+    final description = context.select((ReceiveCubit e) => e.state.description);
     final err =
-        context.select((CreateSwapCubit _) => _.state.errCreatingSwapInv);
+        context.select((CreateSwapCubit e) => e.state.errCreatingSwapInv);
     final creatingInv =
-        context.select((CreateSwapCubit _) => _.state.generatingSwapInv);
+        context.select((CreateSwapCubit e) => e.state.generatingSwapInv);
     context.select((CreateSwapCubit x) => x.state.allFees);
     final amount = context.select((CurrencyCubit x) => x.state.amount);
 
@@ -845,7 +845,7 @@ class BitcoinReceiveForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final description = context.select((ReceiveCubit _) => _.state.description);
+    final description = context.select((ReceiveCubit e) => e.state.description);
     // final amount = context.select((CurrencyCubit x) => x.state.amount);
 
     // final isLiquid = context.select(
@@ -880,7 +880,7 @@ class SwapFeesDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final swapTx = context.select((CreateSwapCubit _) => _.state.swapTx);
+    final swapTx = context.select((CreateSwapCubit e) => e.state.swapTx);
     if (swapTx == null) return const SizedBox.shrink();
 
     final isLn = context.select((ReceiveCubit x) => x.state.isLn());
@@ -1063,7 +1063,7 @@ class PaymentDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final description = context.select((ReceiveCubit _) => _.state.description);
+    final description = context.select((ReceiveCubit e) => e.state.description);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

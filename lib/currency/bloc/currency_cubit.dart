@@ -115,7 +115,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
 
     if (state.defaultFiatCurrency != null) {
       final currency = results.firstWhere(
-        (_) => _.name == state.defaultFiatCurrency!.name,
+        (e) => e.name == state.defaultFiatCurrency!.name,
         orElse: () => state.defaultFiatCurrency!,
       );
       emit(state.copyWith(defaultFiatCurrency: currency));
@@ -125,7 +125,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   void updateAmountCurrency(String currency) {
     final currencies = state.updatedCurrencyList();
     final selectedCurrency =
-        currencies.firstWhere((_) => _.name.toLowerCase() == currency);
+        currencies.firstWhere((e) => e.name.toLowerCase() == currency);
 
     if (currency == 'btc' || currency == 'sats') {
       emit(

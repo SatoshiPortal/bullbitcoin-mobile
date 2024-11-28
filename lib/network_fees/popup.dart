@@ -27,13 +27,13 @@ class SelectFeesButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loading = context.select((NetworkFeesCubit _) => _.state.loadingFees);
+    final loading = context.select((NetworkFeesCubit e) => e.state.loadingFees);
 
     var txt = '';
     if (!fromSettings) {
-      txt = context.select((NetworkFeesCubit _) => _.state.feeSendButtonText());
+      txt = context.select((NetworkFeesCubit e) => e.state.feeSendButtonText());
     } else {
-      txt = context.select((NetworkFeesCubit _) => _.state.defaultFeeStatus());
+      txt = context.select((NetworkFeesCubit e) => e.state.defaultFeeStatus());
 
       return BBButton.textWithStatusAndRightArrow(
         label: label ?? 'Default fee rate',
@@ -292,7 +292,7 @@ class SelectFeesItem extends StatelessWidget {
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
 
     final fiatRateStr = context.select(
-      (NetworkFeesCubit _) => _.state.calculateFiatPriceForFees(
+      (NetworkFeesCubit e) => e.state.calculateFiatPriceForFees(
         feeRate: fee,
         selectedCurrency: currency,
         isTestnet: isTestnet,

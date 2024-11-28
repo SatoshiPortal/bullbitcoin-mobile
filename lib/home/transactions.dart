@@ -44,7 +44,7 @@ class _Listener extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final walletBlocs = context.select(
-      (HomeCubit _) => _.state.walletBlocs ?? [],
+      (HomeCubit e) => e.state.walletBlocs ?? [],
     );
 
     if (walletBlocs.isEmpty) return child;
@@ -230,9 +230,9 @@ class _TxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.select((HomeCubit _) => _.state.walletBlocs);
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    final txs = context.select((HomeCubit _) => _.state.getAllTxs(network));
+    context.select((HomeCubit e) => e.state.walletBlocs);
+    final network = context.select((NetworkCubit e) => e.state.getBBNetwork());
+    final txs = context.select((HomeCubit e) => e.state.getAllTxs(network));
 
     if (txs.isEmpty) {
       return TopLeft(

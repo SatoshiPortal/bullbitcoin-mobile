@@ -23,13 +23,13 @@ class SendInvAmtDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final inv = context.select((SendCubit _) => _.state.invoice);
+    final inv = context.select((SendCubit e) => e.state.invoice);
     if (inv == null) return const SizedBox.shrink();
     final isLiq = context
-        .select((SendCubit _) => _.state.selectedWalletBloc?.state.isLiq());
+        .select((SendCubit e) => e.state.selectedWalletBloc?.state.isLiq());
 
     final amtStr = context.select(
-      (CurrencyCubit _) => _.state.getAmountInUnits(
+      (CurrencyCubit e) => e.state.getAmountInUnits(
         inv.getAmount(),
         isLiquid: isLiq ?? false,
       ),
@@ -60,7 +60,7 @@ class _SwapFees extends StatelessWidget {
     // final allFees = context.select((SwapCubit cubit) => cubit.state.allFees);
     // if (allFees == null) return const SizedBox.shrink();
 
-    final swaptx = context.select((CreateSwapCubit _) => _.state.swapTx);
+    final swaptx = context.select((CreateSwapCubit e) => e.state.swapTx);
     if (swaptx == null) return const SizedBox.shrink();
 
     final isLiquid = swaptx.isLiquid();
@@ -72,7 +72,7 @@ class _SwapFees extends StatelessWidget {
     if (fees == null) return const SizedBox.shrink();
 
     final amt = context.select(
-      (CurrencyCubit _) => _.state.getAmountInUnits(
+      (CurrencyCubit e) => e.state.getAmountInUnits(
         fees,
         isLiquid: isLiquid,
       ),
@@ -180,9 +180,9 @@ class _SendingLnTxState extends State<SendingLnTx> {
         isLiquid: isLiquid,
       ),
     );
-    final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
+    final tx = context.select((HomeCubit e) => e.state.getTxFromSwap(swapTx));
 
-    final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
+    final isSats = context.select((CurrencyCubit e) => e.state.unitsInSats);
     final amtDouble = isSats ? amount : amount / 100000000;
 
     context.read<CurrencyCubit>().updateAmount(amtDouble.toString());

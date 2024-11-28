@@ -64,7 +64,7 @@ class NetworkCubit extends Cubit<NetworkState> {
 
     if (networks.isNotEmpty) {
       final selectedNetwork =
-          networks.firstWhere((_) => _.type == state.selectedNetwork);
+          networks.firstWhere((e) => e.type == state.selectedNetwork);
 
       emit(
         state.copyWith(
@@ -102,7 +102,7 @@ class NetworkCubit extends Cubit<NetworkState> {
 
     if (liqNetworks.isNotEmpty) {
       var selectedNetwork =
-          liqNetworks.firstWhere((_) => _.type == state.selectedLiquidNetwork);
+          liqNetworks.firstWhere((e) => e.type == state.selectedLiquidNetwork);
       final updatedLiqNetworks = liqNetworks.toList();
 
       if (liqNetworks.length == 2) {
@@ -248,7 +248,7 @@ class NetworkCubit extends Cubit<NetworkState> {
   }
 
   void networkTypeTempChanged(ElectrumTypes type) {
-    final network = state.networks.firstWhere((_) => _.type == type);
+    final network = state.networks.firstWhere((e) => e.type == type);
 
     emit(
       state.copyWith(
@@ -259,7 +259,7 @@ class NetworkCubit extends Cubit<NetworkState> {
   }
 
   void liqNetworkTypeTempChanged(LiquidElectrumTypes type) {
-    final network = state.liquidNetworks.firstWhere((_) => _.type == type);
+    final network = state.liquidNetworks.firstWhere((e) => e.type == type);
 
     emit(
       state.copyWith(

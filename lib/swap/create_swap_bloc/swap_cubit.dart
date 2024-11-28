@@ -324,9 +324,9 @@ class CreateSwapCubit extends Cubit<SwapState> {
           : (isLiq ? Chain.liquid : Chain.bitcoin);
 
       final storedSwapTxIdx = wallet.swaps.indexWhere(
-        (_) =>
-            _.lnSwapDetails != null &&
-            _.lnSwapDetails!.invoice == invoice.invoice,
+        (e) =>
+            e.lnSwapDetails != null &&
+            e.lnSwapDetails!.invoice == invoice.invoice,
       );
 
       SwapTx swapTx;

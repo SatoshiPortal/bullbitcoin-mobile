@@ -500,10 +500,9 @@ class Wallet with _$Wallet {
       ...myAddressBook,
     ];
     final unspendable = addresses
-        .where((_) => !_.spendable && (_.state == AddressStatus.active))
+        .where((e) => !e.spendable && (e.state == AddressStatus.active))
         .toList();
-    final totalFrozen =
-        unspendable.fold<int>(0, (value, _) => value + _.balance);
+    final totalFrozen = unspendable.fold<int>(0, (a, b) => a + b.balance);
     return totalFrozen;
   }
 

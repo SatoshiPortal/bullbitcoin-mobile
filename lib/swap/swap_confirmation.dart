@@ -103,7 +103,7 @@ class _Screen extends StatelessWidget {
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amount));
 
     final currency =
-        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+        context.select((CurrencyCubit e) => e.state.defaultFiatCurrency);
     final amtFiat = context.select(
       (NetworkCubit cubit) => cubit.state.calculatePrice(amount, currency),
     );
@@ -248,7 +248,7 @@ class _Warnings extends StatelessWidget {
     const minAmt = 1000000;
 
     final currency =
-        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+        context.select((CurrencyCubit e) => e.state.defaultFiatCurrency);
 
     final fees = swaptx.totalFees() ?? 0;
 

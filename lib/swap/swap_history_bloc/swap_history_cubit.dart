@@ -56,7 +56,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     for (final walletBloc in walletBlocs) {
       final wallet = walletBloc.state.wallet!;
       final txs = wallet.transactions.where(
-        (_) => _.isSwap && _.swapTx!.close(),
+        (e) => e.isSwap && e.swapTx!.close(),
       );
       completedSwaps.addAll(txs);
     }
@@ -137,7 +137,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     // print('Swap History Updating: ${swapTx.id} - ${swapTx.status?.status}');
     emit(state.copyWith(updateSwaps: true));
     final swaps = state.swaps;
-    final index = swaps.indexWhere((_) => _.$1.id == swapTx.id);
+    final index = swaps.indexWhere((e) => e.$1.id == swapTx.id);
     if (index == -1) {
       emit(state.copyWith(updateSwaps: false));
       return;
@@ -169,7 +169,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     if (err != null) {
       emit(
         state.copyWith(
-          refreshing: state.refreshing.where((_) => _ != id).toList(),
+          refreshing: state.refreshing.where((e) => e != id).toList(),
           errRefreshing: 'Error: SwapID: $id, Error: $err',
         ),
       );
@@ -189,7 +189,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
 
     emit(
       state.copyWith(
-        refreshing: state.refreshing.where((_) => _ != id).toList(),
+        refreshing: state.refreshing.where((e) => e != id).toList(),
       ),
     );
   }

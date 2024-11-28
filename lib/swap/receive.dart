@@ -27,7 +27,7 @@ class SwapHistoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.wallet?.swaps ?? []);
+    final txs = context.select((WalletBloc e) => e.state.wallet?.swaps ?? []);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return BBButton.big(
@@ -63,7 +63,7 @@ class SwapTxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.wallet?.swaps ?? []);
+    final txs = context.select((WalletBloc e) => e.state.wallet?.swaps ?? []);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return Padding(
@@ -358,13 +358,13 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
 
     if (tx != null) amt = tx.getAmount();
 
-    final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
+    final isSats = context.select((CurrencyCubit e) => e.state.unitsInSats);
     final amtDouble = isSats ? amt : amt / 100000000;
 
     final isLiq = swapTx.isLiquid();
 
     final amtStr = context.select(
-      (CurrencyCubit _) => _.state.getAmountInUnits(
+      (CurrencyCubit e) => e.state.getAmountInUnits(
         amt,
         isLiquid: isLiq,
       ),

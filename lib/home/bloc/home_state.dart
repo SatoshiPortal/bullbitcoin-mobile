@@ -188,14 +188,14 @@ class HomeState with _$HomeState {
     for (final walletBloc in walletBlocs!) {
       final wallet = walletBloc.state.wallet;
       if (wallet == null || wallet.swaps.isEmpty) continue;
-      final idx = wallet.swaps.indexWhere((_) => _.id == id);
+      final idx = wallet.swaps.indexWhere((e) => e.id == id);
       if (idx != -1) return wallet.swaps[idx];
     }
 
     for (final walletBloc in walletBlocs!) {
       final wallet = walletBloc.state.wallet;
       if (wallet == null || wallet.transactions.isEmpty) continue;
-      final idx = wallet.transactions.indexWhere((_) => _.swapTx?.id == id);
+      final idx = wallet.transactions.indexWhere((e) => e.swapTx?.id == id);
       if (idx != -1) return wallet.transactions[idx].swapTx;
     }
 
@@ -395,8 +395,8 @@ class HomeState with _$HomeState {
     bool onlyLiquid = false,
   }) {
     final wallets = walletBlocsFromNetwork(network).where(
-      (_) {
-        final wallet = _.state.wallet!;
+      (e) {
+        final wallet = e.state.wallet!;
         if (onlyMain && !wallet.mainWallet) return false;
         if (onlyBitcoin && !wallet.isBitcoin()) return false;
         if (onlyLiquid && !wallet.isLiquid()) return false;

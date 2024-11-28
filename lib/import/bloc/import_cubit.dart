@@ -441,7 +441,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
       switch (type) {
         case ImportTypes.words12:
-          final mnemonic = state.words12.map((_) => _.word).join(' ');
+          final mnemonic = state.words12.map((e) => e.word).join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
           final (ws, wErrs) = await _bdkSensitiveCreate.allFromBIP39(
             mnemonic: mnemonic,
@@ -460,7 +460,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
           }
           wallets.addAll(ws!);
         case ImportTypes.words24:
-          final mnemonic = state.words24.map((_) => _.word).join(' ');
+          final mnemonic = state.words24.map((e) => e.word).join(' ');
           final passphrase = state.passPhrase.isEmpty ? '' : state.passPhrase;
 
           final (ws, wErrs) = await _bdkSensitiveCreate.allFromBIP39(
@@ -534,7 +534,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
       if (wallets.isEmpty) throw 'Unable to create a wallet';
       if (state.mainWallet) {
-        wallets.removeWhere((_) => _.scriptType != ScriptType.bip84);
+        wallets.removeWhere((e) => e.scriptType != ScriptType.bip84);
       }
 
       emit(state.copyWith(walletDetails: wallets));
@@ -590,8 +590,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
     if (selectedWallet.type == BBWalletType.words) {
       final mnemonic = (state.importType == ImportTypes.words12)
-          ? state.words12.map((_) => _.word).join(' ')
-          : state.words24.map((_) => _.word).join(' ');
+          ? state.words12.map((e) => e.word).join(' ')
+          : state.words24.map((e) => e.word).join(' ');
       final (seed, sErr) =
           await _walletSensCreate.mnemonicSeed(mnemonic, network);
       if (sErr != null) {

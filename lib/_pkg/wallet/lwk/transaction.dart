@@ -118,7 +118,7 @@ class LWKTransactions {
   }) {
     final swaps = wallet.swaps;
 
-    final idx = swaps.indexWhere((_) => _.id == swapTx.id);
+    final idx = swaps.indexWhere((e) => e.id == swapTx.id);
     if (idx == -1) return (null, Err('No swapTx found'));
 
     final storedSwap = swaps[idx];
@@ -145,8 +145,8 @@ class LWKTransactions {
     ];
 
     for (final s in swapsToDelete) {
-      if (swapsToDelete.any((_) => _.id == s.id)) {
-        swapTxs.removeWhere((_) => _.id == s.id);
+      if (swapsToDelete.any((e) => e.id == s.id)) {
+        swapTxs.removeWhere((e) => e.id == s.id);
       }
     }
 

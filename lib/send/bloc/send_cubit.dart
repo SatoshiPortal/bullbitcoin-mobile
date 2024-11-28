@@ -352,7 +352,7 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(
           selectedWalletBloc: selectWalletBloc,
-          enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
+          enabledWallets: wallets.map((e) => e.state.wallet!.id).toList(),
         ),
       );
     }
@@ -399,7 +399,7 @@ class SendCubit extends Cubit<SendState> {
 
       emit(
         state.copyWith(
-          enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
+          enabledWallets: wallets.map((e) => e.state.wallet!.id).toList(),
           selectedWalletBloc: selectWallet,
         ),
       );
@@ -436,7 +436,7 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(
           selectedWalletBloc: wallets.first,
-          enabledWallets: wallets.map((_) => _.state.wallet!.id).toList(),
+          enabledWallets: wallets.map((e) => e.state.wallet!.id).toList(),
         ),
       );
     }

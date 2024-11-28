@@ -120,9 +120,9 @@ class _ButtonList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final network = context.select((NetworkCubit e) => e.state.getBBNetwork());
     final walletBlocs = context.select(
-      (HomeCubit _) => _.state.walletBlocsNotMainFromNetwork(network),
+      (HomeCubit e) => e.state.walletBlocsNotMainFromNetwork(network),
     );
 
     if (walletBlocs.isEmpty) return const SizedBox.shrink();

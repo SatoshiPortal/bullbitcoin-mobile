@@ -51,7 +51,7 @@ class _ChainSwapProgressWidgetState extends State<ChainSwapProgressWidget> {
       ),
     );
 
-    final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
+    final isSats = context.select((CurrencyCubit e) => e.state.unitsInSats);
     final amtDouble = isSats ? amount : amount / 100000000;
     context.read<CurrencyCubit>().updateAmount(amtDouble.toString());
     context.select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
@@ -59,7 +59,7 @@ class _ChainSwapProgressWidgetState extends State<ChainSwapProgressWidget> {
     context.select((NetworkCubit cubit) => cubit.state.testnet);
     Transaction? tx;
     if (swapTx?.isChainReceive() == false) {
-      tx = context.select((SendCubit _) => _.state.tx);
+      tx = context.select((SendCubit e) => e.state.tx);
     }
 
     return BlocListener<WatchTxsBloc, WatchTxsState>(

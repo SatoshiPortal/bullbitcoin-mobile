@@ -175,12 +175,12 @@ class SendState with _$SendState {
 
   WalletBloc selectLiqThenSecThenOtherBtc(List<WalletBloc> blocs) {
     final liqWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.isMain() && _.state.wallet!.isLiquid(),
+      (e) => e.state.wallet!.isMain() && e.state.wallet!.isLiquid(),
     );
     if (liqWalletIdx != -1) return blocs[liqWalletIdx];
 
     final secWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.isMain() && _.state.wallet!.isBitcoin(),
+      (e) => e.state.wallet!.isMain() && e.state.wallet!.isBitcoin(),
     );
     if (secWalletIdx != -1) return blocs[secWalletIdx];
 
@@ -193,7 +193,7 @@ class SendState with _$SendState {
 
   WalletBloc selectMainBtcThenOtherHighestBalBtc(List<WalletBloc> blocs) {
     final mainWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.mainWallet,
+      (e) => e.state.wallet!.mainWallet,
     );
     if (mainWalletIdx != -1) return blocs[mainWalletIdx];
 

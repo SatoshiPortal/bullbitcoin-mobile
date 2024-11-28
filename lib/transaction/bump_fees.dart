@@ -234,7 +234,7 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tx = context.select((TransactionCubit _) => _.state.tx);
+    final tx = context.select((TransactionCubit e) => e.state.tx);
     // final swap = tx.swapTx;
     final isSwapPending = tx.swapIdisTxid();
 
