@@ -38,7 +38,7 @@ class TestBackupPage extends StatelessWidget {
           builder: (context) {
             return PopScope(
               canPop: false,
-              onPopInvoked: (canPop) {
+              onPopInvokedWithResult: (canPop, _) {
                 context.go('/home');
               },
               child: Scaffold(

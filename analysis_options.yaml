@@ -9,8 +9,6 @@ linter:
     avoid_dynamic_calls: false
     
 analyzer:
-  errors:
-    deprecated_member_use: ignore
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart

@@ -146,12 +146,6 @@ class _Screen extends StatelessWidget {
         context.select((ImportWalletCubit cubit) => cubit.state.importStep);
     return PopScope(
       // canPop: step == ImportSteps.selectCreateType,
-      onPopInvoked: (_) async {
-        // context.pop();
-        // if (step == ImportSteps.selectCreateType) context.pop();
-        // context.read<ImportWalletCubit>().backClicked();
-        // return false;
-      },
       child: () {
         switch (step) {
           // return const ImportScanning(isColdCard: true);

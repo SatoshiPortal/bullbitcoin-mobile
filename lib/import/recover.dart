@@ -78,10 +78,10 @@ class _ImportEnterWordsScreenState extends State<ImportEnterWordsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 28),
                       child: SegmentedButton(
                         style: ButtonStyle(
-                          iconColor: MaterialStatePropertyAll<Color>(
+                          iconColor: WidgetStatePropertyAll<Color>(
                             context.colour.onPrimaryContainer,
                           ),
-                          backgroundColor: MaterialStatePropertyAll<Color>(
+                          backgroundColor: WidgetStatePropertyAll<Color>(
                             context.colour.primaryContainer,
                           ),
                         ),

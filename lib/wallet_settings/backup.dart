@@ -51,7 +51,7 @@ class _Screen extends StatelessWidget {
       builder: (context, state) {
         return PopScope(
           canPop: false,
-          onPopInvoked: (canPop) async {
+          onPopInvokedWithResult: (canPop, _) async {
             if (state) context.read<InfoRead>().unread();
             await context.read<WalletSettingsCubit>().clearSensitive();
 

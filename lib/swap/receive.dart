@@ -408,12 +408,6 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
         }
       },
       child: PopScope(
-        onPopInvoked: (didPop) {
-          // context.pop();
-          // Future.microtask(() {
-          //   context.pop();
-          // });
-        },
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
