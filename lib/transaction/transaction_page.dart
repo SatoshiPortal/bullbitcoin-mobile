@@ -594,6 +594,7 @@ class _SwapDetails extends StatelessWidget {
                         await locator<Clippboard>().copy(id);
                       }
 
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Copied to clipboard')),
                       );
@@ -1014,6 +1015,7 @@ class _OnchainSwapDetails extends StatelessWidget {
                         await locator<Clippboard>().copy(id);
                       }
 
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Copied to clipboard')),
                       );

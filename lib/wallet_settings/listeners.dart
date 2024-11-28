@@ -23,6 +23,7 @@ class WalletSettingsListeners extends StatelessWidget {
             // home.updateSelectedWallet(walletBloc);
 
             await context.read<HomeCubit>().getWalletsFromStorage();
+            if (!context.mounted) return;
             context.pop();
           },
         ),

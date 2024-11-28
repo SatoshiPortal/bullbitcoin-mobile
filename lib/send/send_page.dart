@@ -297,6 +297,8 @@ class _AddressFieldState extends State<AddressField> {
                   if (!locator.isRegistered<Clippboard>()) return;
                   final data = await locator<Clippboard>().paste();
                   if (data == null) return;
+
+                  if (!context.mounted) return;
                   context.read<CreateSwapCubit>().clearErrors();
                   context.read<SendCubit>().updateAddress(data);
                 },

@@ -37,6 +37,8 @@ class NetworkPopup extends StatelessWidget {
           current.errLoadingNetworks.isEmpty,
       listener: (context, state) async {
         await Future.delayed(const Duration(seconds: 1));
+
+        if (!context.mounted) return;
         context.pop();
       },
       child: BlocProvider.value(

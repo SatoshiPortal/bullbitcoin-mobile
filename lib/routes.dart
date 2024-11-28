@@ -136,6 +136,8 @@ GoRouter setupRouter() => GoRouter(
           builder: (context, state) {
             scheduleMicrotask(() async {
               await Future.delayed(100.ms);
+
+              if (!context.mounted) return;
               SystemChrome.setSystemUIOverlayStyle(
                 SystemUiOverlayStyle(
                   statusBarColor: context.colour.surface,
@@ -150,6 +152,8 @@ GoRouter setupRouter() => GoRouter(
           builder: (context, state) {
             scheduleMicrotask(() async {
               await Future.delayed(100.ms);
+
+              if (!context.mounted) return;
               SystemChrome.setSystemUIOverlayStyle(
                 SystemUiOverlayStyle(
                   statusBarColor: context.colour.surface,

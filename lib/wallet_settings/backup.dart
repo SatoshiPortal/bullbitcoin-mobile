@@ -55,6 +55,7 @@ class _Screen extends StatelessWidget {
             if (state) context.read<InfoRead>().unread();
             await context.read<WalletSettingsCubit>().clearSensitive();
 
+            if (!context.mounted) return;
             context.go('/home');
           },
           child: Scaffold(

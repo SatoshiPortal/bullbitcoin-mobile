@@ -717,6 +717,8 @@ class LabelSettingPopup extends StatelessWidget {
           listener: (context, state) async {
             if (state.exported || state.imported) {
               await Future.delayed(1.seconds);
+
+              if (!context.mounted) return;
               context.pop();
             }
           },

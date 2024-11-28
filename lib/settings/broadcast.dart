@@ -46,6 +46,8 @@ class BroadcastPage extends StatelessWidget {
         listener: (context, state) async {
           if (state.sent) {
             await Future.delayed(3.seconds);
+
+            if (!context.mounted) return;
             context.pop();
           }
         },
@@ -94,6 +96,8 @@ class BroadcastPopUp extends StatelessWidget {
           listener: (context, state) async {
             if (state.sent) {
               await Future.delayed(3.seconds);
+
+              if (!context.mounted) return;
               context.pop();
             }
           },

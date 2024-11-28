@@ -324,6 +324,8 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
 
     if (inBackground && !inBg) {
       await Future.delayed(400.ms);
+
+      if (!mounted) return;
       final updatedSwapTx = context.read<HomeCubit>().state.getSwapTxById(
             widget.tx.id,
           );

@@ -139,6 +139,7 @@ class _ScreenState extends State<_Screen> {
     scheduleMicrotask(() async {
       await Future.delayed(50.ms);
 
+      if (!context.mounted) return;
       SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(
           statusBarColor: context.colour.primaryContainer,
@@ -1053,6 +1054,7 @@ class HomeNoWalletsView extends StatelessWidget {
           //if (state.mainWallet)
           await locator<WalletsStorageRepository>().sortWallets();
           locator<HomeCubit>().getWalletsFromStorage();
+          if (!context.mounted) return;
           context3.go('/home');
         }
       },

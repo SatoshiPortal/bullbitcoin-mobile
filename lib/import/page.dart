@@ -206,6 +206,8 @@ class WalletLabel extends StatelessWidget {
                 context.read<ImportWalletCubit>().walletLabelChanged(value),
             onEnter: () async {
               await Future.delayed(500.ms);
+
+              if (!context.mounted) return;
               context.read<ScrollCubit>().state.animateTo(
                     context.read<ScrollCubit>().state.position.maxScrollExtent,
                     duration: 300.milliseconds,

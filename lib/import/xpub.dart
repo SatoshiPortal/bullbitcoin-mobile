@@ -180,6 +180,8 @@ class _XpubTextFieldAreaState extends State<XpubTextFieldArea> {
                     if (!locator.isRegistered<Clippboard>()) return;
                     final data = await locator<Clippboard>().paste();
                     if (data == null) return;
+
+                    if (!context.mounted) return;
                     context.read<ImportWalletCubit>().xpubChanged(data);
                   },
                   iconSize: 20,

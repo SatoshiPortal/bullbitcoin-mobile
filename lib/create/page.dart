@@ -64,6 +64,7 @@ class CreateWalletPage extends StatelessWidget {
               // await Future.delayed(500.milliseconds);
               // locator<HomeCubit>().changeMoveToIdx(wallets.first);
               // await Future.delayed(300.milliseconds);
+              if (!context.mounted) return;
               context.go('/home');
             }
           },
@@ -226,6 +227,7 @@ class CreateWalletLabel extends StatelessWidget {
                 context.read<CreateWalletCubit>().walletLabelChanged(value),
             onEnter: () async {
               await Future.delayed(500.ms);
+              if (!context.mounted) return;
               context.read<ScrollCubit>().state.animateTo(
                     context.read<ScrollCubit>().state.position.maxScrollExtent,
                     duration: 500.milliseconds,
@@ -332,6 +334,8 @@ class CreateWalletCreateButton extends StatelessWidget {
     return BBButton.big(
       onPressed: () async {
         await context.read<CreateWalletCubit>().checkWalletLabel();
+
+        if (!context.mounted) return;
         final err = context.read<CreateWalletCubit>().state.errSaving;
         if (err.isNotEmpty) return;
         CreateWalletConfirmPopUp.showPopup(context);

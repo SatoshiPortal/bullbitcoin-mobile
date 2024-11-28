@@ -251,6 +251,8 @@ class XpubField extends StatelessWidget {
                     if (!locator.isRegistered<Clippboard>()) return;
                     final data = await locator<Clippboard>().paste();
                     if (data == null) return;
+
+                    if (!context.mounted) return;
                     context.read<HardwareImportCubit>().updateInputText(data);
                   },
                   iconSize: 20,
@@ -316,6 +318,8 @@ class LabelField extends StatelessWidget {
               context.read<HardwareImportCubit>().updateLabel(value),
           onEnter: () async {
             await Future.delayed(500.ms);
+
+            if (!context.mounted) return;
             context.read<ScrollCubit>().state.animateTo(
                   context.read<ScrollCubit>().state.position.maxScrollExtent,
                   duration: 300.milliseconds,

@@ -64,6 +64,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
         // await Future.delayed(300.milliseconds);
         // locator<HomeCubit>().changeMoveToIdx(wallet);
         // await Future.delayed(300.milliseconds);
+        if (!context.mounted) return;
         context.go('/home');
       },
       child: _Screen(walletCubits: walletCubits),
