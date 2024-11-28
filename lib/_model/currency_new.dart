@@ -1,12 +1,8 @@
+import 'package:bb_mobile/_model/currency.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'currency_new.freezed.dart';
 part 'currency_new.g.dart';
-
-const SATS_IN_BTC = 100000000;
-
-const BTC_DECIMAL_POINTS = 8;
-const FIAT_DECIMAL_POINTS = 2;
 
 @freezed
 class CurrencyNew with _$CurrencyNew {
@@ -27,16 +23,16 @@ int calcualteSats(double price, CurrencyNew currency) {
   int sats;
 
   if (currency.isFiat) {
-    final int oneBTCInSmallFiatUnit = ((currency.price ?? 0.0) * 100).toInt();
+    final int oneBTCInSmallFiatUnit = ((currency.price) * 100).toInt();
     final int totalFiatSmallUnitsInvested = (price * 100).toInt();
 
     final double btcBought =
         totalFiatSmallUnitsInvested / oneBTCInSmallFiatUnit;
-    sats = (btcBought * SATS_IN_BTC).toInt();
+    sats = (btcBought * Currency.satsInBtc).toInt();
   } else {
     if (currency.code == btcCurrency.code ||
         currency.code == lbtcCurrency.code) {
-      sats = (price * SATS_IN_BTC).toInt();
+      sats = (price * Currency.satsInBtc).toInt();
     } else {
       // Should be sats
       sats = price.toInt();
@@ -47,8 +43,8 @@ int calcualteSats(double price, CurrencyNew currency) {
 }
 
 double getFiatValueFromSats(int sats, CurrencyNew fiatCurrency) {
-  final double oneBTCInFiat = fiatCurrency.price ?? 0.0;
-  final double oneSatInFiat = oneBTCInFiat / SATS_IN_BTC;
+  final double oneBTCInFiat = fiatCurrency.price;
+  final double oneSatInFiat = oneBTCInFiat / Currency.satsInBtc;
   final double fiatValue = sats * oneSatInFiat;
 
   return fiatValue;

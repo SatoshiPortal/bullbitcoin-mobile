@@ -27,12 +27,9 @@ class WalletDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final darkMode = context.select(
+    context.select(
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
     );
-
-    final bgColour =
-        darkMode ? context.colour.onPrimaryContainer : NewColours.offWhite;
 
     final balance = context.select(
       (CurrencyCubit x) =>

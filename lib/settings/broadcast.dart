@@ -3,7 +3,6 @@ import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -37,7 +36,6 @@ class BroadcastPage extends StatelessWidget {
       fileStorage: locator<FileStorage>(),
       homeCubit: locator<HomeCubit>(),
       networkRepository: locator<NetworkRepository>(),
-      walletsRepository: locator<WalletsRepository>(),
       bdkTransactions: locator<BDKTransactions>(),
     );
 
@@ -48,6 +46,8 @@ class BroadcastPage extends StatelessWidget {
         listener: (context, state) async {
           if (state.sent) {
             await Future.delayed(3.seconds);
+
+            if (!context.mounted) return;
             context.pop();
           }
         },
@@ -84,7 +84,6 @@ class BroadcastPopUp extends StatelessWidget {
       fileStorage: locator<FileStorage>(),
       homeCubit: locator<HomeCubit>(),
       networkRepository: locator<NetworkRepository>(),
-      walletsRepository: locator<WalletsRepository>(),
       bdkTransactions: locator<BDKTransactions>(),
     );
 
@@ -97,6 +96,8 @@ class BroadcastPopUp extends StatelessWidget {
           listener: (context, state) async {
             if (state.sent) {
               await Future.delayed(3.seconds);
+
+              if (!context.mounted) return;
               context.pop();
             }
           },
@@ -249,12 +250,13 @@ class DownloadButton extends StatelessWidget {
     final downloaded =
         context.select((BroadcastTxCubit cubit) => cubit.state.downloaded);
 
-    if (downloaded)
+    if (downloaded) {
       return Center(
         child: const BBText.body(
           'Downloaded',
         ).animate(delay: 300.ms).fadeIn(),
       );
+    }
 
     return Center(
       child: SizedBox(
@@ -278,9 +280,8 @@ class BroadcastSendButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final step = context.select((BroadcastTxCubit cubit) => cubit.state.step);
-    final _ = context.select((BroadcastTxCubit cubit) => cubit.state.hasErr());
-    final __ =
-        context.select((BroadcastTxCubit cubit) => cubit.state.getErrors());
+    context.select((BroadcastTxCubit cubit) => cubit.state.hasErr());
+    context.select((BroadcastTxCubit cubit) => cubit.state.getErrors());
 
     final broadcasting =
         context.select((BroadcastTxCubit cubit) => cubit.state.broadcastingTx);
@@ -292,12 +293,13 @@ class BroadcastSendButton extends StatelessWidget {
     final signed =
         context.select((BroadcastTxCubit cubit) => cubit.state.isSigned);
 
-    if (sent)
+    if (sent) {
       return const Center(
         child: BBText.body(
           'Tx Broadcasted!',
         ),
       ).animate(delay: 300.ms).fadeIn();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -315,10 +317,12 @@ class BroadcastSendButton extends StatelessWidget {
               loading: loading,
               onPressed: () {
                 // if (loading) return;
-                if (step == BroadcastTxStep.import)
+                if (step == BroadcastTxStep.import) {
                   context.read<BroadcastTxCubit>().extractTxClicked();
-                if (step == BroadcastTxStep.broadcast && signed)
+                }
+                if (step == BroadcastTxStep.broadcast && signed) {
                   context.read<BroadcastTxCubit>().broadcastClicked();
+                }
               },
               label: (step == BroadcastTxStep.import) ? 'Decode' : 'Broadcast',
             ),
@@ -386,11 +390,7 @@ class TxInfo extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
-              children: [
-                BBText.bodySmall(
-                  'Labels: ' + label,
-                ),
-              ],
+              children: [BBText.bodySmall('Labels: $label')],
             ),
           ] else ...[
             Row(
@@ -489,7 +489,7 @@ class TxInfo extends StatelessWidget {
           const Gap(4),
           for (final address in tx.outAddrs) ...[
             BBText.body(
-              address.getKindString() + ':',
+              '${address.getKindString()}:',
             ),
             const Gap(8),
             Row(

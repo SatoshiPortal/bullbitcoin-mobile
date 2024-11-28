@@ -48,7 +48,8 @@ class Bip329Label with _$Bip329Label {
   }) = _Bip329Label;
   const Bip329Label._();
 
-  factory Bip329Label.fromJson(Map<String, dynamic> json) => _$Bip329LabelFromJson(json);
+  factory Bip329Label.fromJson(Map<String, dynamic> json) =>
+      _$Bip329LabelFromJson(json);
 
   ///  TAG LIKE LABELLING SYSTEM
   ///  To stay within the BIP329 standard and support multiple labels per ref:
@@ -57,7 +58,10 @@ class Bip329Label with _$Bip329Label {
 }
 
 extension Bip329LabelHelpers on Bip329Label {
-  static Future<(List<Bip329Label>?, Err?)> decryptRead(String fileName, String key) async {
+  static Future<(List<Bip329Label>?, Err?)> decryptRead(
+    String fileName,
+    String key,
+  ) async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/$fileName.export.bip329');
     if (await file.exists()) {
@@ -71,16 +75,26 @@ extension Bip329LabelHelpers on Bip329Label {
     final decryptedContents = _decrypt(encryptedContents, key);
     final lines = LineSplitter.split(decryptedContents);
     return (
-      lines.map((line) => Bip329Label.fromJson(jsonDecode(line) as Map<String, dynamic>)).toList(),
+      lines
+          .map(
+            (line) =>
+                Bip329Label.fromJson(jsonDecode(line) as Map<String, dynamic>),
+          )
+          .toList(),
       null
     );
   }
 
-  static Future<Err?> encryptWrite(String fileName, List<Bip329Label> labels, String key) async {
+  static Future<Err?> encryptWrite(
+    String fileName,
+    List<Bip329Label> labels,
+    String key,
+  ) async {
     if (labels.isEmpty) return Err('No Labels To Write.');
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/$fileName.export.bip329');
-    final dataToEncrypt = labels.map((label) => jsonEncode(label.toJson())).join('\n');
+    final dataToEncrypt =
+        labels.map((label) => jsonEncode(label.toJson())).join('\n');
     final encryptedData = _encrypt(dataToEncrypt, key);
     await file.writeAsString(encryptedData);
     return null;
@@ -103,7 +117,7 @@ String _encrypt(String plainText, String key) {
   final input = Uint8List.fromList(utf8.encode(plainText));
   final encrypted = paddedBlockCipher.process(input);
 
-  return base64Encode(iv) + ',' + base64Encode(encrypted);
+  return '${base64Encode(iv)},${base64Encode(encrypted)}';
 }
 
 String _decrypt(String encryptedBase64Text, String key) {

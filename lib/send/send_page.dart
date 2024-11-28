@@ -140,7 +140,7 @@ class _WalletProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sendWalletBloc =
-        context.select((SendCubit _) => _.state.selectedWalletBloc);
+        context.select((SendCubit e) => e.state.selectedWalletBloc);
 
     if (sendWalletBloc == null) return child;
     return BlocProvider.value(value: sendWalletBloc, child: child);
@@ -170,14 +170,16 @@ class _Screen extends StatelessWidget {
       (SendCubit x) => x.state.couldBeOnchainSwap(),
     );
 
-    if (showWarning && !walletIsLiquid && potentialonchainSwap == false)
+    if (showWarning && !walletIsLiquid && potentialonchainSwap == false) {
       return const _Warnings();
+    }
 
     if (signed && !isLn) {
-      if (!sent)
+      if (!sent) {
         return const TxDetailsScreen();
-      else
+      } else {
         return const TxSuccess();
+      }
     }
 
     return ColoredBox(
@@ -231,27 +233,15 @@ class WalletSelectionDropDown extends StatelessWidget {
     final oneWallet = context.select(
       (SendCubit cubit) => cubit.state.oneWallet,
     );
-    final loading = context.select((SendCubit _) => _.state.scanningAddress);
-
-    final sending = context.select((SendCubit _) => _.state.sending);
-
-    final generatingInv =
-        context.select((CreateSwapCubit _) => _.state.generatingSwapInv);
 
     final _ = context.select((SendCubit cubit) => cubit.state.enabledWallets);
 
-    var enableDropdown = context
-        .select((SendCubit cubit) => cubit.state.enabledWallets.isNotEmpty);
-
-    if (loading || generatingInv || sending) enableDropdown = true;
-    if (oneWallet) enableDropdown = false;
-
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final network = context.select((NetworkCubit e) => e.state.getBBNetwork());
     final walletBlocs = context.select(
-      (HomeCubit _) => _.state.walletBlocsFromNetworkExcludeWatchOnly(network),
+      (HomeCubit e) => e.state.walletBlocsFromNetworkExcludeWatchOnly(network),
     );
     final selectedWalletBloc =
-        context.select((SendCubit _) => _.state.selectedWalletBloc);
+        context.select((SendCubit e) => e.state.selectedWalletBloc);
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 300),
@@ -273,19 +263,6 @@ class WalletSelectionDropDown extends StatelessWidget {
         ).animate().fadeIn(),
       ),
     );
-  }
-}
-
-class _Balance extends StatelessWidget {
-  const _Balance();
-
-  @override
-  Widget build(BuildContext context) {
-    final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton);
-    if (!showSend) return const SizedBox(height: 24);
-
-    return const Center(child: SendWalletBalance()).animate().fadeIn();
   }
 }
 
@@ -325,6 +302,8 @@ class _AddressFieldState extends State<AddressField> {
                   if (!locator.isRegistered<Clippboard>()) return;
                   final data = await locator<Clippboard>().paste();
                   if (data == null) return;
+
+                  if (!context.mounted) return;
                   context.read<CreateSwapCubit>().clearErrors();
                   context.read<SendCubit>().updateAddress(data);
                 },
@@ -425,13 +404,14 @@ class NetworkFees extends StatelessWidget {
 
     final sending = context.select((SendCubit cubit) => cubit.state.sending);
 
-    final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
+    final isLn = context.select((SendCubit e) => e.state.isLnInvoice());
 
     final isLiquid =
         context.select((SendCubit cubit) => cubit.state.isLiquidPayment());
 
-    if (isLn || isLiquid || !walletSelected || isSelectedWalletLiquid)
+    if (isLn || isLiquid || !walletSelected || isSelectedWalletLiquid) {
       return const SizedBox.shrink();
+    }
 
     return AnimatedOpacity(
       opacity: sending ? 0.3 : 1,
@@ -454,20 +434,21 @@ class AdvancedOptions extends StatelessWidget {
     final walletSelected = context.select(
       (SendCubit cubit) => cubit.state.selectedWalletBloc != null,
     );
-    final sending = context.select((SendCubit _) => _.state.sending);
-    final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
+    final sending = context.select((SendCubit e) => e.state.sending);
+    final isLn = context.select((SendCubit e) => e.state.isLnInvoice());
     final isLiquid = context.select(
-      (SendCubit _) =>
-          _.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false,
+      (SendCubit e) =>
+          e.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false,
     );
     final addressReady =
-        context.select((SendCubit _) => _.state.address.isNotEmpty);
+        context.select((SendCubit e) => e.state.address.isNotEmpty);
 
-    if (isLn || !walletSelected || !addressReady || isLiquid == true)
+    if (isLn || !walletSelected || !addressReady || isLiquid == true) {
       return const SizedBox.shrink();
+    }
 
     final text =
-        context.select((SendCubit _) => _.state.advancedOptionsButtonText());
+        context.select((SendCubit e) => e.state.advancedOptionsButtonText());
     return AnimatedOpacity(
       opacity: sending ? 0.3 : 1,
       duration: const Duration(milliseconds: 300),
@@ -652,7 +633,7 @@ class TxDetailsScreen extends StatelessWidget {
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
 
     final currency =
-        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+        context.select((CurrencyCubit e) => e.state.defaultFiatCurrency);
     final amtFiat = context.select(
       (NetworkCubit cubit) => cubit.state.calculatePrice(amount, currency),
     );
@@ -724,7 +705,7 @@ class TxSuccess extends StatelessWidget {
       ),
     );
     // final tx = context.select((SendCubit cubit) => cubit.state.tx);
-    final tx = context.select((SendCubit _) => _.state.tx);
+    final tx = context.select((SendCubit e) => e.state.tx);
 
     return Column(
       // crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -887,7 +868,7 @@ class _Warnings extends StatelessWidget {
     const minAmt = 1000000;
 
     final currency =
-        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
+        context.select((CurrencyCubit e) => e.state.defaultFiatCurrency);
 
     final fees = swaptx.totalFees() ?? 0;
 

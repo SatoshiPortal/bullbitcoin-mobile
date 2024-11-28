@@ -4,7 +4,7 @@ import 'dart:isolate';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
-void _syncBdkIsolate(List<dynamic> args) async {
+Future<void> _syncBdkIsolate(List<dynamic> args) async {
   final sendPort = args[0] as SendPort;
   final bdkWallet = args[1] as bdk.Wallet;
   final blockChain = args[2] as bdk.Blockchain;

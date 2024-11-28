@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/swap/swap_history_bloc/swap_history_state.dart';
@@ -16,10 +15,8 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     required NetworkCubit networkCubit,
     required SwapBoltz boltz,
     required WatchTxsBloc watcher,
-    required WalletTx walletTx,
   })  : _homeCubit = homeCubit,
         _networkCubit = networkCubit,
-        _walletTx = walletTx,
         _boltz = boltz,
         _watcher = watcher,
         super(const SwapHistoryState());
@@ -28,7 +25,6 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
   final NetworkCubit _networkCubit;
   final SwapBoltz _boltz;
   final WatchTxsBloc _watcher;
-  final WalletTx _walletTx;
 
   void loadSwaps() {
     final network = _networkCubit.state.getBBNetwork();
@@ -60,7 +56,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     for (final walletBloc in walletBlocs) {
       final wallet = walletBloc.state.wallet!;
       final txs = wallet.transactions.where(
-        (_) => _.isSwap && _.swapTx!.close(),
+        (e) => e.isSwap && e.swapTx!.close(),
       );
       completedSwaps.addAll(txs);
     }
@@ -141,7 +137,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     // print('Swap History Updating: ${swapTx.id} - ${swapTx.status?.status}');
     emit(state.copyWith(updateSwaps: true));
     final swaps = state.swaps;
-    final index = swaps.indexWhere((_) => _.$1.id == swapTx.id);
+    final index = swaps.indexWhere((e) => e.$1.id == swapTx.id);
     if (index == -1) {
       emit(state.copyWith(updateSwaps: false));
       return;
@@ -158,7 +154,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     );
   }
 
-  void refreshSwap({
+  Future<void> refreshSwap({
     required SwapTx swaptx,
     required String walletId,
   }) async {
@@ -173,8 +169,8 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     if (err != null) {
       emit(
         state.copyWith(
-          refreshing: state.refreshing.where((_) => _ != id).toList(),
-          errRefreshing: 'Error: SwapID: $id, Error: ' + err.toString(),
+          refreshing: state.refreshing.where((e) => e != id).toList(),
+          errRefreshing: 'Error: SwapID: $id, Error: $err',
         ),
       );
       return;
@@ -193,7 +189,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
 
     emit(
       state.copyWith(
-        refreshing: state.refreshing.where((_) => _ != id).toList(),
+        refreshing: state.refreshing.where((e) => e != id).toList(),
       ),
     );
   }

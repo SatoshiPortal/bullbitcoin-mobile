@@ -74,7 +74,9 @@ class WalletTxList extends StatelessWidget {
                       .read<HomeCubit>()
                       .state
                       .walletBlocsFromNetwork(network);
-                  for (final wallet in wallets) wallet.add(SyncWallet());
+                  for (final wallet in wallets) {
+                    wallet.add(SyncWallet());
+                  }
                 },
               ),
             ],

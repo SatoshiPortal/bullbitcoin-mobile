@@ -27,7 +27,7 @@ class SwapHistoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.wallet?.swaps ?? []);
+    final txs = context.select((WalletBloc e) => e.state.wallet?.swaps ?? []);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return BBButton.big(
@@ -63,7 +63,7 @@ class SwapTxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.wallet?.swaps ?? []);
+    final txs = context.select((WalletBloc e) => e.state.wallet?.swaps ?? []);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return Padding(
@@ -103,8 +103,8 @@ class SwapTxItem extends StatelessWidget {
     final swapTx = tx;
 
     final invoice = swapTx.splitInvoice();
-    final amount = swapTx.outAmount.toString() + ' sats';
-    final idx = tx.lnSwapDetails!.keyIndex.toString() ?? '0';
+    final amount = '${swapTx.outAmount} sats';
+    final idx = tx.lnSwapDetails!.keyIndex.toString();
     final status = swapTx.status?.toString() ?? '';
 
     return Container(
@@ -130,7 +130,7 @@ class SwapTxItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 // BBText.bodySmall(time),
-                BBText.bodySmall('invoice no. ' + idx),
+                BBText.bodySmall('invoice no. $idx'),
               ],
             ),
           ],
@@ -164,8 +164,8 @@ class _InvoiceQRPopup extends StatelessWidget {
   Widget build(BuildContext context) {
     final swapTx = tx;
 
-    final amount = swapTx.outAmount.toString() + ' sats';
-    final idx = tx.lnSwapDetails!.keyIndex.toString() ?? '0';
+    final amount = '${swapTx.outAmount} sats';
+    final idx = tx.lnSwapDetails!.keyIndex.toString();
     final status = swapTx.status?.toString() ?? '';
     final totalFees = swapTx.totalFees() ?? 0;
     final fees = context.select(
@@ -198,7 +198,7 @@ class _InvoiceQRPopup extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   // BBText.bodySmall(time),
-                  BBText.bodySmall('invoice no. ' + idx),
+                  BBText.bodySmall('invoice no. $idx'),
                 ],
               ),
             ],
@@ -316,7 +316,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     final inBg = state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden ||
@@ -324,6 +324,8 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
 
     if (inBackground && !inBg) {
       await Future.delayed(400.ms);
+
+      if (!mounted) return;
       final updatedSwapTx = context.read<HomeCubit>().state.getSwapTxById(
             widget.tx.id,
           );
@@ -356,13 +358,13 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
 
     if (tx != null) amt = tx.getAmount();
 
-    final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
+    final isSats = context.select((CurrencyCubit e) => e.state.unitsInSats);
     final amtDouble = isSats ? amt : amt / 100000000;
 
     final isLiq = swapTx.isLiquid();
 
     final amtStr = context.select(
-      (CurrencyCubit _) => _.state.getAmountInUnits(
+      (CurrencyCubit e) => e.state.getAmountInUnits(
         amt,
         isLiquid: isLiq,
       ),
@@ -406,12 +408,6 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
         }
       },
       child: PopScope(
-        onPopInvoked: (didPop) {
-          // context.pop();
-          // Future.microtask(() {
-          //   context.pop();
-          // });
-        },
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,

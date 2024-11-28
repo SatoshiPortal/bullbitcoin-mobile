@@ -29,8 +29,9 @@ class Err {
       var trace = StackTrace.current.toString();
       if (trace.length > 1000) trace = trace.substring(0, 1000);
       if (printToConsole) log('Error: $message \n$trace');
-      if (locator.isRegistered<Logger>())
+      if (locator.isRegistered<Logger>()) {
         locator<Logger>().log('Error: $message \n$trace');
+      }
     }
     if (showAlert) openAlert();
     // if (message.toLowerCase().contains('panic')) _handleElectrumException();

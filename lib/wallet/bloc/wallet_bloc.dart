@@ -80,7 +80,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     return super.close();
   }
 
-  void _loadWallet(LoadWallet event, Emitter<WalletState> emit) async {
+  Future<void> _loadWallet(LoadWallet event, Emitter<WalletState> emit) async {
     emit(state.copyWith(loadingWallet: true, errLoadingWallet: ''));
 
     final (wallet, err) = await _walletCreate.loadPublicWallet(
@@ -159,12 +159,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     await Future.delayed(100.ms);
     final isLiq = state.isLiq() ? 'Instant' : 'Secure';
     locator<Logger>().log(
-      'Start $isLiq  Wallet Sync for ' + (state.wallet?.id ?? ''),
+      'Start $isLiq  Wallet Sync for ${state.wallet?.id ?? ''}',
       printToConsole: true,
     );
     final err = await _walletSync.syncWallet(state.wallet!);
     locator<Logger>().log(
-      'End $isLiq Wallet Sync for ' + (state.wallet?.id ?? ''),
+      'End $isLiq Wallet Sync for ${state.wallet?.id ?? ''}',
       printToConsole: true,
     );
     emit(
@@ -196,7 +196,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     // emit(state.copyWith(syncing: false));
   }
 
-  void _getBalance(GetBalance event, Emitter<WalletState> emit) async {
+  Future<void> _getBalance(GetBalance event, Emitter<WalletState> emit) async {
     if (state.wallet == null) return;
 
     emit(state.copyWith(loadingBalance: true, errLoadingBalance: ''));
@@ -231,7 +231,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     add(ListTransactions());
   }
 
-  void _listTransactions(
+  Future<void> _listTransactions(
     ListTransactions event,
     Emitter<WalletState> emit,
   ) async {
@@ -274,7 +274,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     // _swapBloc.add(WatchWallets(isTestnet: state.wallet!));
   }
 
-  void _getFirstAddress(
+  Future<void> _getFirstAddress(
     GetFirstAddress event,
     Emitter<WalletState> emit,
   ) async {
@@ -299,7 +299,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     );
   }
 
-  void _updateWallet(UpdateWallet event, Emitter<WalletState> emit) async {
+  Future<void> _updateWallet(
+    UpdateWallet event,
+    Emitter<WalletState> emit,
+  ) async {
     if (!event.saveToStorage) {
       emit(state.copyWith(wallet: event.wallet));
       return;
@@ -322,26 +325,29 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (errr != null) locator<Logger>().log(errr.toString());
     if (storageWallet == null) return;
 
-    for (final eventType in event.updateTypes)
+    for (final eventType in event.updateTypes) {
       switch (eventType) {
         case UpdateWalletTypes.load:
           break;
         case UpdateWalletTypes.balance:
-          if (eventWallet.balance != null)
+          if (eventWallet.balance != null) {
             storageWallet = storageWallet!.copyWith(
               balance: eventWallet.balance,
               fullBalance: eventWallet.fullBalance,
             );
+          }
         case UpdateWalletTypes.transactions:
-          if (eventWallet.transactions.isNotEmpty)
+          if (eventWallet.transactions.isNotEmpty) {
             storageWallet = storageWallet!.copyWith(
               transactions: eventWallet.transactions,
             );
+          }
 
-          if (eventWallet.unsignedTxs.isNotEmpty)
+          if (eventWallet.unsignedTxs.isNotEmpty) {
             storageWallet = storageWallet!.copyWith(
               unsignedTxs: eventWallet.unsignedTxs,
             );
+          }
 
         case UpdateWalletTypes.swaps:
           storageWallet = storageWallet!.copyWith(
@@ -351,51 +357,60 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           );
 
         case UpdateWalletTypes.addresses:
-          if (eventWallet.myAddressBook.isNotEmpty)
+          if (eventWallet.myAddressBook.isNotEmpty) {
             storageWallet = storageWallet!.copyWith(
               myAddressBook: eventWallet.myAddressBook,
             );
+          }
 
           if (eventWallet.externalAddressBook != null &&
-              eventWallet.externalAddressBook!.isNotEmpty)
+              eventWallet.externalAddressBook!.isNotEmpty) {
             storageWallet = storageWallet!.copyWith(
               externalAddressBook: eventWallet.externalAddressBook,
             );
+          }
 
-          if (eventWallet.lastGeneratedAddress != null)
+          if (eventWallet.lastGeneratedAddress != null) {
             storageWallet = storageWallet!.copyWith(
               lastGeneratedAddress: eventWallet.lastGeneratedAddress,
             );
+          }
 
         case UpdateWalletTypes.utxos:
-          if (eventWallet.utxos.isNotEmpty)
+          if (eventWallet.utxos.isNotEmpty) {
             storageWallet = storageWallet!.copyWith(
               utxos: eventWallet.utxos,
             );
+          }
 
         case UpdateWalletTypes.settings:
-          if (eventWallet.backupTested != storageWallet!.backupTested)
+          if (eventWallet.backupTested != storageWallet!.backupTested) {
             storageWallet = storageWallet.copyWith(
               backupTested: eventWallet.backupTested,
             );
+          }
 
-          if (eventWallet.name != storageWallet.name)
+          if (eventWallet.name != storageWallet.name) {
             storageWallet = storageWallet.copyWith(
               name: eventWallet.name,
             );
+          }
 
           if (eventWallet.lastBackupTested != null &&
-              eventWallet.lastBackupTested != storageWallet.lastBackupTested)
+              eventWallet.lastBackupTested != storageWallet.lastBackupTested) {
             storageWallet = storageWallet.copyWith(
               lastBackupTested: eventWallet.lastBackupTested,
             );
+          }
       }
+    }
 
     final err = await _walletsStorageRepository.updateWallet(
       storageWallet!,
     );
-    if (err != null)
+    if (err != null) {
       locator<Logger>().log(err.toString(), printToConsole: true);
+    }
     emit(state.copyWith(wallet: storageWallet));
     await Future.delayed(event.delaySync.ms);
     if (event.syncAfter) add(SyncWallet());

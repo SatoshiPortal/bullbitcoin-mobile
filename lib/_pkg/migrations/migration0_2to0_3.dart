@@ -69,10 +69,11 @@ Future<Map<String, dynamic>> updateSwaps(
       .map((swapTx) => swapTx as Map<String, dynamic>)
       .map((swapTx) {
     final isSubmarine = swapTx['isSubmarine'] == true;
-    if (isSubmarine)
+    if (isSubmarine) {
       swapTx['lockupTxid'] = swapTx['txid'];
-    else
+    } else {
       swapTx['claimTxid'] = swapTx['txid'];
+    }
 
     swapTx['lnSwapDetails'] = LnSwapDetails(
       swapType:
@@ -106,10 +107,11 @@ Future<Map<String, dynamic>> updateSwaps(
     final swapTxHasInvoice = txHasSwap && tx['swapTx']['invoice'] != null;
     if (swapTxHasInvoice) {
       final isSubmarine = tx['swapTx']['isSubmarine'] == true;
-      if (isSubmarine)
+      if (isSubmarine) {
         tx['swapTx']['lockupTxid'] = tx['swapTx']['txid'];
-      else
+      } else {
         tx['swapTx']['claimTxid'] = tx['swapTx']['txid'];
+      }
 
       tx['swapTx']['lnSwapDetails'] = LnSwapDetails(
         swapType: isSubmarine ? SwapType.submarine : SwapType.reverse,

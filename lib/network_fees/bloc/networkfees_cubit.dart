@@ -89,7 +89,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     );
   }
 
-  void updateManualFees(String fees) async {
+  Future<void> updateManualFees(String fees) async {
     final clean = fees.replaceAll(',', '');
     final feesInInt = int.tryParse(clean);
     if (feesInInt == null) {
@@ -118,21 +118,22 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
         (state.fees == null || state.fees == 0)) feeOptionSelected(2);
   }
 
-  void checkMinimumFees() async {
+  Future<void> checkMinimumFees() async {
     await Future.delayed(50.ms);
     final isTestnet = _networkCubit.state.testnet;
     final minFees = isTestnet ? 0 : state.feesList!.last;
 
     int max;
 
-    if (!isTestnet)
+    if (!isTestnet) {
       max = state.feesList!.first * feemultiple;
-    else
+    } else {
       max = 1000;
+    }
 
     if (state.tempFees != null &&
         state.tempFees! < minFees &&
-        state.tempSelectedFeesOption == 4)
+        state.tempSelectedFeesOption == 4) {
       emit(
         state.copyWith(
           errLoadingFees:
@@ -140,9 +141,9 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
           // tempSelectedFeesOption: 2,
         ),
       );
-    else if (state.tempFees != null &&
+    } else if (state.tempFees != null &&
         state.tempFees! > max &&
-        state.tempSelectedFeesOption == 4)
+        state.tempSelectedFeesOption == 4) {
       emit(
         state.copyWith(
           errLoadingFees:
@@ -150,8 +151,9 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
           // tempSelectedFeesOption: 2,
         ),
       );
-    else
+    } else {
       emit(state.copyWith(errLoadingFees: ''));
+    }
   }
 
   Future confirmFeeClicked() async {
@@ -161,10 +163,11 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     // final max = state.feesList!.first * 2;
     final isTestnet = _networkCubit.state.testnet;
     int max;
-    if (!isTestnet)
+    if (!isTestnet) {
       max = state.feesList!.first * feemultiple;
-    else
+    } else {
       max = 1000;
+    }
     // can we not just call checkMinimumFees here?
     final tempFees = state.tempFees;
     if (tempFees == null && state.tempSelectedFeesOption == null) return;
@@ -188,7 +191,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     clearTempFeeValues();
   }
 
-  void clearTempFeeValues() async {
+  Future<void> clearTempFeeValues() async {
     await Future.delayed(100.ms);
     emit(
       state.copyWith(

@@ -42,7 +42,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final BDKSensitiveCreate _bdkSensitiveCreate;
   final LWKSensitiveCreate _lwkSensitiveCreate;
 
-  void createMne({bool fromHome = false}) async {
+  Future<void> createMne({bool fromHome = false}) async {
     emit(state.copyWith(creatingNmemonic: true));
     final (mnemonic, err) = await _walletSensCreate.createMnemonic();
     if (err != null) {
@@ -87,25 +87,26 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   Future checkWalletLabel() async {
     if (state.mainWallet) return;
     final label = state.walletLabel;
-    if (label == null || label == '')
+    if (label == null || label == '') {
       emit(state.copyWith(errSaving: 'Wallet Label is required'));
-    else if (label.length < 3)
+    } else if (label.length < 3) {
       emit(
         state.copyWith(
           errSaving: 'Wallet Label must be at least 3 characters',
         ),
       );
-    else if (label.length > 20)
+    } else if (label.length > 20) {
       emit(
         state.copyWith(
           errSaving: 'Wallet Label must be less than 20 characters',
         ),
       );
-    else
+    } else {
       emit(state.copyWith(errSaving: ''));
+    }
   }
 
-  void confirmClicked() async {
+  Future<void> confirmClicked() async {
     if (state.mnemonic == null) return;
     emit(state.copyWith(saving: true, errSaving: ''));
 
@@ -187,12 +188,13 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     }
 
     Wallet? liqWallet;
-    if (state.mainWallet)
+    if (state.mainWallet) {
       liqWallet = await _createLiquid(
         seed: seed,
         passPhrase: state.passPhrase,
         network: network,
       );
+    }
 
     clearSensitive();
 

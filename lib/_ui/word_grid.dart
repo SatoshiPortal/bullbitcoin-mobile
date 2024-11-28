@@ -56,7 +56,7 @@ class WordGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (mne.isEmpty) return const SizedBox.shrink();
-    if (mne.length == 12)
+    if (mne.length == 12) {
       return SizedBox(
         height: 200,
         width: double.infinity,
@@ -74,7 +74,7 @@ class WordGrid extends StatelessWidget {
           ]),
         ),
       );
-    else
+    } else {
       return SizedBox(
         height: 300,
         width: double.infinity,
@@ -92,6 +92,7 @@ class WordGrid extends StatelessWidget {
           ]),
         ),
       );
+    }
   }
 }
 

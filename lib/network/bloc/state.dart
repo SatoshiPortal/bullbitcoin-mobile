@@ -41,12 +41,12 @@ class NetworkState with _$NetworkState {
 
   ElectrumNetwork? getNetwork() {
     if (networks.isEmpty) return null;
-    return networks.firstWhere((_) => _.type == selectedNetwork);
+    return networks.firstWhere((e) => e.type == selectedNetwork);
   }
 
   LiquidElectrumNetwork? getLiquidNetwork() {
     if (liquidNetworks.isEmpty) return null;
-    return liquidNetworks.firstWhere((_) => _.type == selectedLiquidNetwork);
+    return liquidNetworks.firstWhere((e) => e.type == selectedLiquidNetwork);
   }
 
   ElectrumNetwork? getTempOrSelectedNetwork() {
@@ -56,7 +56,7 @@ class NetworkState with _$NetworkState {
     final n = networks;
     final t = tempNetwork;
 
-    return n.firstWhere((_) => _.type == t);
+    return n.firstWhere((e) => e.type == t);
   }
 
   LiquidElectrumNetwork? getTempOrSelectedLiquidNetwork() {
@@ -66,7 +66,7 @@ class NetworkState with _$NetworkState {
     final n = liquidNetworks;
     final t = tempLiquidNetwork;
 
-    return n.firstWhere((_) => _.type == t);
+    return n.firstWhere((e) => e.type == t);
   }
 
   String getNetworkUrl() {
@@ -154,7 +154,7 @@ class NetworkState with _$NetworkState {
 
   String calculatePrice(int sats, Currency? currency) {
     if (currency == null) return '';
-    if (testnet) return currency.getSymbol() + '0';
+    if (testnet) return '${currency.getSymbol()}0';
     return currency.getSymbol() +
         fiatFormatting(
           (sats / 100000000 * currency.price!).toStringAsFixed(2),
@@ -170,12 +170,13 @@ class NetworkState with _$NetworkState {
 
   ({bool show, String? err}) showConfirmButton({required bool isLiquid}) {
     if (isLiquid) {
-      if (tempLiquidNetwork == null)
+      if (tempLiquidNetwork == null) {
         return (
           show: false,
           err: '',
           // err: 'Network cannot be empty',
         );
+      }
       return (show: true, err: null);
     }
 
@@ -213,6 +214,8 @@ final cleanupWords = [
 
 String removeSubAndPort(String url) {
   var cleaned = url;
-  for (final word in cleanupWords) cleaned = cleaned.replaceAll(word, '');
+  for (final word in cleanupWords) {
+    cleaned = cleaned.replaceAll(word, '');
+  }
   return cleaned;
 }

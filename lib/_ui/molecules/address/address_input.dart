@@ -23,13 +23,13 @@ class AddressInput extends StatelessWidget {
   final bool showPaste;
   final bool showScan;
 
-  void _onPaste() async {
+  Future<void> _onPaste() async {
     final String? text = await BBClipboard.paste();
 
     addressController.text = text ?? '';
   }
 
-  void _onScan() async {}
+  Future<void> _onScan() async {}
 
   @override
   Widget build(BuildContext context) {

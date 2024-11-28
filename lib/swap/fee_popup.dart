@@ -49,27 +49,21 @@ class FeePopUp extends StatelessWidget {
             'Send network fee',
           ),
           const Gap(4),
-          BBText.bodyBold(
-            lockupFees.toStringAsFixed(0) + ' sats',
-          ),
+          BBText.bodyBold('${lockupFees.toStringAsFixed(0)} sats'),
           const Gap(16),
 
           const BBText.title(
             'Claim network fee',
           ),
           const Gap(4),
-          BBText.bodyBold(
-            claimFees.toStringAsFixed(0) + ' sats',
-          ),
+          BBText.bodyBold('${claimFees.toStringAsFixed(0)} sats'),
           const Gap(16),
 
           const BBText.title(
             'Boltz service fee',
           ),
           const Gap(4),
-          BBText.bodyBold(
-            boltzFees.toStringAsFixed(0) + ' sats',
-          ),
+          BBText.bodyBold('${boltzFees.toStringAsFixed(0)} sats'),
           const Gap(16),
 
           const BBText.title(

@@ -4,7 +4,7 @@ import 'dart:isolate';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
-void _syncLwkIsolate(List<dynamic> args) async {
+Future<void> _syncLwkIsolate(List<dynamic> args) async {
   final sendPort = args[0] as SendPort;
   final lwkWallet = args[1] as lwk.Wallet;
   final blockChain = args[2] as String;

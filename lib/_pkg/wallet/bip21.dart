@@ -99,7 +99,7 @@ class BIP21Decoder extends Converter<String, BIP21> {
         final int lastIndex =
             amountStrSplit[1].length < 8 ? amountStrSplit[1].length : 8;
         finalAmountInString =
-            amountStrSplit[0] + '.' + amountStrSplit[1].substring(0, lastIndex);
+            '${amountStrSplit[0]}.${amountStrSplit[1].substring(0, lastIndex)}';
       } else {
         finalAmountInString = amountStr;
       }

@@ -37,8 +37,9 @@ class LocaliseApp extends StatelessWidget {
                 listenWhen: (previous, current) =>
                     previous.language != current.language,
                 listener: (context, state) {
-                  if (state.language != delegate.currentLocale.languageCode)
+                  if (state.language != delegate.currentLocale.languageCode) {
                     delegate.changeLocale(Locale(state.language ?? 'en'));
+                  }
                 },
                 child: LocalizationProvider(
                   state: LocalizationProvider.of(context).state,

@@ -149,7 +149,7 @@ String? convertToSlipPub(
         }
     }
   } catch (e) {
-    return 'Error: ' + e.toString();
+    return 'Error: $e';
     // return (null, Err(e.message,
     // rethrow;
   }

@@ -18,7 +18,9 @@ class PublicDescriptorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.externalPublicDescriptor);
+    final desc = context.select(
+      (WalletBloc cubit) => cubit.state.wallet!.externalPublicDescriptor,
+    );
     if (desc.isEmpty) return const SizedBox();
 
     return BBButton.textWithStatusAndRightArrow(
@@ -40,7 +42,9 @@ class ExtendedPublicKeyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desc = context.select((WalletBloc cubit) => cubit.state.wallet!.externalPublicDescriptor);
+    final desc = context.select(
+      (WalletBloc cubit) => cubit.state.wallet!.externalPublicDescriptor,
+    );
     if (desc.isEmpty) return const SizedBox();
 
     return BBButton.textWithStatusAndRightArrow(
@@ -114,16 +118,18 @@ class _TextSection extends StatefulWidget {
 class _TextSectionState extends State<_TextSection> {
   bool showToast = false;
 
-  void _copyClicked() async {
-    if (mounted)
+  Future<void> _copyClicked() async {
+    if (mounted) {
       setState(() {
         showToast = true;
       });
+    }
     await Future.delayed(const Duration(seconds: 2));
-    if (mounted)
+    if (mounted) {
       setState(() {
         showToast = false;
       });
+    }
   }
 
   @override
@@ -147,8 +153,9 @@ class _TextSectionState extends State<_TextSection> {
                 const Gap(16),
                 IconButton(
                   onPressed: () async {
-                    if (locator.isRegistered<Clippboard>())
+                    if (locator.isRegistered<Clippboard>()) {
                       await locator<Clippboard>().copy(widget.publicKeyData);
+                    }
 
                     _copyClicked();
                   },

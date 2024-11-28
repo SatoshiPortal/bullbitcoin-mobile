@@ -47,7 +47,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   void clearWallets() => emit(state.copyWith(tempwallets: null));
 
-  void updateErrDeepLink(String err) async {
+  Future<void> updateErrDeepLink(String err) async {
     emit(state.copyWith(errDeepLinking: err));
     await Future.delayed(const Duration(seconds: 5));
     emit(state.copyWith(errDeepLinking: ''));
@@ -80,7 +80,7 @@ class HomeCubit extends Cubit<HomeState> {
     updatedNotifier();
   }
 
-  void updatedNotifier() async {
+  Future<void> updatedNotifier() async {
     emit(state.copyWith(updated: true));
     await Future.delayed(const Duration(seconds: 2));
     emit(state.copyWith(updated: false));

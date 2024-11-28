@@ -25,7 +25,7 @@ class LightingPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.select((Lighting _) => _.state);
+    final theme = context.select((Lighting e) => e.state);
 
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 56, left: 24, right: 24),
@@ -44,7 +44,7 @@ class LightingPopUp extends StatelessWidget {
               onClicked(context, ThemeLighting.light);
             },
             leading: Radio<ThemeLighting>(
-              fillColor: MaterialStateProperty.all(context.colour.primary),
+              fillColor: WidgetStateProperty.all(context.colour.primary),
               value: ThemeLighting.light,
               groupValue: theme,
               onChanged: (value) {
@@ -60,7 +60,7 @@ class LightingPopUp extends StatelessWidget {
             leading: Radio<ThemeLighting>(
               value: ThemeLighting.dark,
               groupValue: theme,
-              fillColor: MaterialStateProperty.all(context.colour.primary),
+              fillColor: WidgetStateProperty.all(context.colour.primary),
               onChanged: (value) {
                 onClicked(context, value!);
               },
@@ -74,7 +74,7 @@ class LightingPopUp extends StatelessWidget {
             leading: Radio<ThemeLighting>(
               value: ThemeLighting.dim,
               groupValue: theme,
-              fillColor: MaterialStateProperty.all(context.colour.primary),
+              fillColor: WidgetStateProperty.all(context.colour.primary),
               onChanged: (value) {
                 onClicked(context, value!);
               },
@@ -86,7 +86,7 @@ class LightingPopUp extends StatelessWidget {
               onClicked(context, ThemeLighting.system);
             },
             leading: Radio<ThemeLighting>(
-              fillColor: MaterialStateProperty.all(context.colour.primary),
+              fillColor: WidgetStateProperty.all(context.colour.primary),
               value: ThemeLighting.system,
               groupValue: theme,
               onChanged: (value) {

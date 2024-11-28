@@ -16,7 +16,9 @@ class WalletSettingsState with _$WalletSettingsState {
     @Default([]) List<String> mnemonic,
     @Default('') String password,
     @Default([]) List<String> shuffledMnemonic,
-    @Default([]) List<({String word, int shuffleIdx, int selectedActualIdx})> testMnemonicOrder,
+    @Default([])
+    List<({String word, int shuffleIdx, int selectedActualIdx})>
+        testMnemonicOrder,
     @Default('') String testBackupPassword,
     /**
      * 
@@ -47,7 +49,9 @@ class WalletSettingsState with _$WalletSettingsState {
   }) = _WalletSettingsState;
   const WalletSettingsState._();
 
-  (String word, bool isSelected, int actualIdx) shuffleElementAt(int shuffleIdx) {
+  (String word, bool isSelected, int actualIdx) shuffleElementAt(
+    int shuffleIdx,
+  ) {
     try {
       final word = shuffledMnemonic[shuffleIdx];
       final isSelected = _isSelected(shuffleIdx);
@@ -63,8 +67,11 @@ class WalletSettingsState with _$WalletSettingsState {
     final wordCount = mnemonic.where((w) => w == word).length;
 
     if (wordCount == 1) return mnemonic.indexOf(word);
-    if (_isSelected(shuffleIdx))
-      return testMnemonicOrder.firstWhere((w) => w.shuffleIdx == shuffleIdx).selectedActualIdx;
+    if (_isSelected(shuffleIdx)) {
+      return testMnemonicOrder
+          .firstWhere((w) => w.shuffleIdx == shuffleIdx)
+          .selectedActualIdx;
+    }
     return mnemonic.indexOf(word, testMnemonicOrder.length - 1);
   }
 

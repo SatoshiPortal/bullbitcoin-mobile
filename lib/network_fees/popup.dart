@@ -27,13 +27,13 @@ class SelectFeesButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loading = context.select((NetworkFeesCubit _) => _.state.loadingFees);
+    final loading = context.select((NetworkFeesCubit e) => e.state.loadingFees);
 
     var txt = '';
-    if (!fromSettings)
-      txt = context.select((NetworkFeesCubit _) => _.state.feeSendButtonText());
-    else {
-      txt = context.select((NetworkFeesCubit _) => _.state.defaultFeeStatus());
+    if (!fromSettings) {
+      txt = context.select((NetworkFeesCubit e) => e.state.feeSendButtonText());
+    } else {
+      txt = context.select((NetworkFeesCubit e) => e.state.defaultFeeStatus());
 
       return BBButton.textWithStatusAndRightArrow(
         label: label ?? 'Default fee rate',
@@ -89,9 +89,7 @@ class SelectFeesPopUp extends StatelessWidget {
             BlocProvider.value(value: fees),
           ],
           child: PopScope(
-            onPopInvoked: (_) async {
-              fees.checkFees();
-            },
+            onPopInvokedWithResult: (_, __) => fees.checkFees(),
             child: const SelectFeesPopUp(),
           ),
         ),
@@ -109,9 +107,7 @@ class SelectFeesPopUp extends StatelessWidget {
           BlocProvider.value(value: defaultFees),
         ],
         child: PopScope(
-          onPopInvoked: (_) async {
-            defaultFees.checkFees();
-          },
+          onPopInvokedWithResult: (_, __) => defaultFees.checkFees(),
           child: const SelectFeesPopUp(),
         ),
       ),
@@ -292,7 +288,7 @@ class SelectFeesItem extends StatelessWidget {
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
 
     final fiatRateStr = context.select(
-      (NetworkFeesCubit _) => _.state.calculateFiatPriceForFees(
+      (NetworkFeesCubit e) => e.state.calculateFiatPriceForFees(
         feeRate: fee,
         selectedCurrency: currency,
         isTestnet: isTestnet,
@@ -330,7 +326,7 @@ class SelectFeesItem extends StatelessWidget {
             children: [
               BBText.body(title, isBold: true),
               if (!custom) ...[
-                BBText.body(fee.toString() + ' sat/vB'),
+                BBText.body('$fee sat/vB'),
                 BBText.body(
                   () {
                     if (index == 0) return '~ 10 min';

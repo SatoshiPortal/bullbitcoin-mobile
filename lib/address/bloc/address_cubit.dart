@@ -22,7 +22,7 @@ class AddressCubit extends Cubit<AddressState> {
   final WalletAddress _walletAddress;
   final BDKUtxo _bdkUtxo;
 
-  void freezeAddress() async {
+  Future<void> freezeAddress() async {
     emit(state.copyWith(freezingAddress: true, errFreezingAddress: ''));
 
     final (address, w) = await _walletAddress.addAddressToWallet(
@@ -66,7 +66,7 @@ class AddressCubit extends Cubit<AddressState> {
     );
   }
 
-  void unfreezeAddress() async {
+  Future<void> unfreezeAddress() async {
     emit(state.copyWith(freezingAddress: true, errFreezingAddress: ''));
 
     final (address, w) = await _walletAddress.addAddressToWallet(
@@ -123,7 +123,7 @@ class AddressCubit extends Cubit<AddressState> {
     );
   }
 
-  void saveAddressName(Address address, String label) async {
+  Future<void> saveAddressName(Address address, String label) async {
     emit(state.copyWith(savingAddressName: true, errSavingAddressName: ''));
 
     final (addr, w) = await _walletAddress.addAddressToWallet(

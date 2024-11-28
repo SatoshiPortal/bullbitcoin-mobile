@@ -85,19 +85,20 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isInputScreen = context.select(
-      (HardwareImportCubit _) => _.state.inputScreen(),
+      (HardwareImportCubit e) => e.state.inputScreen(),
     );
 
     final isColdcard = context.select(
-      (HardwareImportCubit _) => _.state.tempColdCard != null,
+      (HardwareImportCubit e) => e.state.tempColdCard != null,
     );
 
-    if (isInputScreen)
+    if (isInputScreen) {
       return const InputScreen();
-    else if (isColdcard)
+    } else if (isColdcard) {
       return const ColdCardDetails();
-    else
+    } else {
       return const XpubDetails();
+    }
   }
 }
 
@@ -107,7 +108,7 @@ class InputScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loading = context.select(
-      (HardwareImportCubit _) => _.state.scanningInput,
+      (HardwareImportCubit e) => e.state.scanningInput,
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -150,7 +151,7 @@ class XpubDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final xpub = context.select(
-      (HardwareImportCubit _) => _.state.inputText,
+      (HardwareImportCubit e) => e.state.inputText,
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -178,10 +179,10 @@ class ColdCardDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cc = context.select(
-      (HardwareImportCubit _) => _.state.tempColdCard!,
+      (HardwareImportCubit e) => e.state.tempColdCard!,
     );
     final scriptType = context.select(
-      (HardwareImportCubit _) => _.state.selectScriptType,
+      (HardwareImportCubit e) => e.state.selectScriptType,
     );
 
     final identity = cc.xfp!;
@@ -250,6 +251,8 @@ class XpubField extends StatelessWidget {
                     if (!locator.isRegistered<Clippboard>()) return;
                     final data = await locator<Clippboard>().paste();
                     if (data == null) return;
+
+                    if (!context.mounted) return;
                     context.read<HardwareImportCubit>().updateInputText(data);
                   },
                   iconSize: 20,
@@ -315,6 +318,8 @@ class LabelField extends StatelessWidget {
               context.read<HardwareImportCubit>().updateLabel(value),
           onEnter: () async {
             await Future.delayed(500.ms);
+
+            if (!context.mounted) return;
             context.read<ScrollCubit>().state.animateTo(
                   context.read<ScrollCubit>().state.position.maxScrollExtent,
                   duration: 300.milliseconds,

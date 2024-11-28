@@ -38,10 +38,11 @@ class TransactionCubit extends Cubit<TransactionState> {
         _walletBloc = walletBloc,
         // _homeCubit = homeCubit,
         super(TransactionState(tx: tx)) {
-    if (tx.isReceived())
+    if (tx.isReceived()) {
       loadReceiveLabel();
-    else
+    } else {
       loadSentLabel();
+    }
 
     loadTx();
   }
@@ -57,7 +58,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   final WalletBloc _walletBloc;
   // final HomeCubit _homeCubit;
 
-  void loadTx() async {
+  Future<void> loadTx() async {
     emit(state.copyWith(loadingAddresses: true, errLoadingAddresses: ''));
 
     Future.wait([
@@ -132,7 +133,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     emit(state.copyWith(label: label));
   }
 
-  void saveLabelClicked() async {
+  Future<void> saveLabelClicked() async {
     final label = state.tx.label;
     if (label == state.label) return;
     emit(state.copyWith(savingLabel: true, errSavingLabel: ''));
@@ -194,8 +195,8 @@ class TransactionCubit extends Cubit<TransactionState> {
             ),
           );
         }
-      } catch (e) {}
-    } else
+      } catch (_) {}
+    } else {
       _walletBloc.add(
         UpdateWallet(
           w,
@@ -205,6 +206,7 @@ class TransactionCubit extends Cubit<TransactionState> {
           ],
         ),
       );
+    }
 
     await Future.delayed(const Duration(seconds: 1));
     _walletBloc.add(ListTransactions());
@@ -227,7 +229,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   // }
 
   // SENSITIVE FX
-  void buildRbfTx(int fee) async {
+  Future<void> buildRbfTx(int fee) async {
     emit(state.copyWith(buildingTx: true, errBuildingTx: ''));
 
     // final isManualFees = _networkFeesCubit.state.feeOption() == 4;
@@ -341,7 +343,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     sendTx();
   }
 
-  void sendTx() async {
+  Future<void> sendTx() async {
     emit(state.copyWith(sendingTx: true, errSendingTx: '', buildingTx: false));
     final tx = state.tx.swapTx != null
         ? state.updatedTx!.copyWith(swapTx: state.tx.swapTx, isSwap: true)

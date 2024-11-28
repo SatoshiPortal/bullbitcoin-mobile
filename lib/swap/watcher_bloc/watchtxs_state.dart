@@ -22,13 +22,13 @@ class WatchTxsState with _$WatchTxsState {
   }) = _WatchTxsState;
   const WatchTxsState._();
 
-  bool isListening(String swap) => listeningTxs.any((_) => _ == swap);
+  bool isListening(String swap) => listeningTxs.any((e) => e == swap);
 
-  bool isListeningId(String id) => listeningTxs.any((_) => _ == id);
+  bool isListeningId(String id) => listeningTxs.any((e) => e == id);
 
-  bool swapClaimed(String swap) => claimedSwapTxs.any((_) => _ == swap);
+  bool swapClaimed(String swap) => claimedSwapTxs.any((e) => e == swap);
 
-  bool isClaiming(String swap) => claimingSwapTxIds.any((_) => _ == swap);
+  bool isClaiming(String swap) => claimingSwapTxIds.any((e) => e == swap);
 
   List<String>? addClaiming(String id) =>
       isClaiming(id) ? null : [id, ...claimingSwapTxIds];
@@ -39,9 +39,9 @@ class WatchTxsState with _$WatchTxsState {
     return updatedList;
   }
 
-  bool swapRefunded(String swap) => refundedSwapTxs.any((_) => _ == swap);
+  bool swapRefunded(String swap) => refundedSwapTxs.any((e) => e == swap);
 
-  bool isRefunding(String swap) => refundingSwapTxIds.any((_) => _ == swap);
+  bool isRefunding(String swap) => refundingSwapTxIds.any((e) => e == swap);
 
   List<String>? addRefunding(String id) =>
       isRefunding(id) ? null : [id, ...refundingSwapTxIds];

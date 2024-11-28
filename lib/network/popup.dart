@@ -37,6 +37,8 @@ class NetworkPopup extends StatelessWidget {
           current.errLoadingNetworks.isEmpty,
       listener: (context, state) async {
         await Future.delayed(const Duration(seconds: 1));
+
+        if (!context.mounted) return;
         context.pop();
       },
       child: BlocProvider.value(
@@ -52,7 +54,7 @@ class NetworkScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final networks = context.select((NetworkCubit _) => _.state.networks);
+    final networks = context.select((NetworkCubit e) => e.state.networks);
     if (networks.isEmpty) return const SizedBox.shrink();
 
     return const Padding(
@@ -79,10 +81,9 @@ class _NetowrkHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiq = context.select((_NetworkSelector _) => _.state);
+    final isLiq = context.select((_NetworkSelector e) => e.state);
     final networkStr = isLiq ? 'Liquid' : 'Bitcoin';
-    final changeStr =
-        'Configure ' + (isLiq ? 'Bitcoin' : 'Liquid') + ' Network';
+    final changeStr = 'Configure ${isLiq ? 'Bitcoin' : 'Liquid'} Network';
 
     return BBHeader.popUpCenteredText(
       text: '', //networkStr + ' Network',
@@ -90,7 +91,7 @@ class _NetowrkHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText.titleLarge(
-            networkStr + ' Network',
+            '$networkStr Network',
             isBold: true,
           ),
           BBButton.text(
@@ -116,7 +117,7 @@ class NetworkStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiq = context.select((_NetworkSelector _) => _.state);
+    final isLiq = context.select((_NetworkSelector e) => e.state);
     final networkConnected =
         context.select((NetworkCubit x) => x.state.networkConnected);
     final errLoadingNetwork =
@@ -171,7 +172,7 @@ class SelectNetworkSegment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiq = context.select((_NetworkSelector _) => _.state);
+    final isLiq = context.select((_NetworkSelector e) => e.state);
 
     final tempSelected =
         context.select((NetworkCubit x) => x.state.tempNetwork);
@@ -227,7 +228,7 @@ class _SegmentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiq = context.select((_NetworkSelector _) => _.state);
+    final isLiq = context.select((_NetworkSelector e) => e.state);
 
     final selectedBGColour = context.colour.surface.withOpacity(0.3);
     final unselectedBGColour = context.colour.surface.withOpacity(0.1);
@@ -285,22 +286,22 @@ class NetworkConfigFields extends StatelessWidget {
   Widget build(BuildContext context) {
     final fieldWidth = MediaQuery.of(context).size.width * 0.7;
 
-    final isLiq = context.select((_NetworkSelector _) => _.state);
+    final isLiq = context.select((_NetworkSelector e) => e.state);
 
     final network =
-        context.select((NetworkCubit _) => _.state.getTempOrSelectedNetwork());
+        context.select((NetworkCubit e) => e.state.getTempOrSelectedNetwork());
     if (network == null) return const SizedBox.shrink();
 
     final liqNetwork = context
-        .select((NetworkCubit _) => _.state.getTempOrSelectedLiquidNetwork());
+        .select((NetworkCubit e) => e.state.getTempOrSelectedLiquidNetwork());
     if (liqNetwork == null) return const SizedBox.shrink();
 
     final tempNetworkDetails =
-        context.select((NetworkCubit _) => _.state.tempNetworkDetails);
+        context.select((NetworkCubit e) => e.state.tempNetworkDetails);
     if (tempNetworkDetails == null) return const SizedBox.shrink();
 
     final tempLiqNetworkDetails =
-        context.select((NetworkCubit _) => _.state.tempLiquidNetworkDetails);
+        context.select((NetworkCubit e) => e.state.tempLiquidNetworkDetails);
     if (tempLiqNetworkDetails == null) return const SizedBox.shrink();
 
     final type = network.type;
@@ -326,13 +327,15 @@ class NetworkConfigFields extends StatelessWidget {
         ? testnet != tempLiqNetworkDetails.testnet
         : testnet != tempNetworkDetails.testnet;
 
-    if (mainnetChanged)
+    if (mainnetChanged) {
       mainnet =
           isLiq ? tempLiqNetworkDetails.mainnet : tempNetworkDetails.mainnet;
+    }
 
-    if (testnetChanged)
+    if (testnetChanged) {
       testnet =
           isLiq ? tempLiqNetworkDetails.testnet : tempNetworkDetails.testnet;
+    }
 
     if (disabled) {
       mainnet = removeSubAndPort(mainnet);
@@ -352,10 +355,11 @@ class NetworkConfigFields extends StatelessWidget {
               width: fieldWidth,
               child: BBTextInput.big(
                 onChanged: (t) {
-                  if (!isLiq)
+                  if (!isLiq) {
                     context.read<NetworkCubit>().updateTempMainnet(t);
-                  else
+                  } else {
                     context.read<NetworkCubit>().updateTempLiquidMainnet(t);
+                  }
                 },
                 value: mainnet,
                 disabled: disabled,
@@ -368,10 +372,11 @@ class NetworkConfigFields extends StatelessWidget {
               width: fieldWidth,
               child: BBTextInput.big(
                 onChanged: (t) {
-                  if (!isLiq)
+                  if (!isLiq) {
                     context.read<NetworkCubit>().updateTempTestnet(t);
-                  else
+                  } else {
                     context.read<NetworkCubit>().updateTempLiquidTestnet(t);
+                  }
                 },
                 value: testnet,
                 disabled: disabled,

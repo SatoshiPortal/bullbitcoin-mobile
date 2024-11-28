@@ -38,8 +38,9 @@ class WalletCreate implements IWalletCreate {
         );
         if (err != null) return (null, err);
         w = walletFromStorage!;
-      } else
+      } else {
         w = wallet;
+      }
 
       if (w.network != network) throw 'Network mismatch';
 

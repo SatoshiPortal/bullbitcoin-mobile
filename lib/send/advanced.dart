@@ -175,8 +175,8 @@ class AddressSelectionPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utxos = context.select((WalletBloc _) => _.state.wallet!.utxos);
-    final amount = context.select((CurrencyCubit _) => _.state.amount);
+    final utxos = context.select((WalletBloc e) => e.state.wallet!.utxos);
+    final amount = context.select((CurrencyCubit e) => e.state.amount);
     final amt = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amount),
     );

@@ -176,13 +176,13 @@ class _NumberButtonState extends State<NumberButton> {
 
   @override
   Widget build(BuildContext context) {
-    final _ = OutlinedButton.styleFrom(
+    OutlinedButton.styleFrom(
       shape: const CircleBorder(),
       backgroundColor: context.colour.onPrimaryContainer,
       foregroundColor: context.colour.primary,
     );
 
-    final __ = OutlinedButton.styleFrom(
+    OutlinedButton.styleFrom(
       shape: const CircleBorder(),
       backgroundColor: context.colour.primary,
       foregroundColor: context.colour.primaryContainer,
@@ -271,12 +271,13 @@ class AuthConfirmButton extends StatelessWidget {
     final showButton = context.select((AuthCubit x) => x.state.showButton());
     final err = context.select((AuthCubit x) => x.state.err);
 
-    if (err.isNotEmpty)
+    if (err.isNotEmpty) {
       return Center(
         child: BBText.errorSmall(
           err,
         ),
       );
+    }
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),

@@ -67,7 +67,7 @@ class FileStorage {
   }) async {
     try {
       final dir = await getTemporaryDirectory();
-      final file = File(dir.path + '/$txid.psbt');
+      final file = File('${dir.path}/$txid.psbt');
       await file.writeAsString(psbt);
 
       final params = SaveFileDialogParams(sourceFilePath: file.path);

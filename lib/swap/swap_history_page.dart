@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -33,7 +32,6 @@ class _SwapHistoryPageState extends State<SwapHistoryPage> {
       networkCubit: context.read<NetworkCubit>(),
       boltz: locator<SwapBoltz>(),
       watcher: context.read<WatchTxsBloc>(),
-      walletTx: locator<WalletTx>(),
     )..loadSwaps();
     super.initState();
   }
@@ -233,18 +231,15 @@ class SwapItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText.bodySmall(
-                    'Id: ' + swapTx.id,
-                    isBold: true,
-                  ),
+                  BBText.bodySmall('Id: ${swapTx.id}', isBold: true),
                   if (swapTx.creationTime != null &&
                       swapTx.completionTime != null)
                     BBText.bodySmall(
-                      'Duration: ' + (swapTx.getDuration() ?? 'N/A'),
+                      'Duration: ${swapTx.getDuration() ?? 'N/A'}',
                       isBold: true,
                     ),
                   BBText.bodySmall(
-                    'Status: ' + (status?.$1 ?? ''),
+                    'Status: ${status?.$1 ?? ''}',
                     isBold: true,
                   ),
 

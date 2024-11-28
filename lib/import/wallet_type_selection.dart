@@ -64,6 +64,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
         // await Future.delayed(300.milliseconds);
         // locator<HomeCubit>().changeMoveToIdx(wallet);
         // await Future.delayed(300.milliseconds);
+        if (!context.mounted) return;
         context.go('/home');
       },
       child: _Screen(walletCubits: walletCubits),
@@ -85,8 +86,9 @@ class _ScreenState extends State<_Screen> {
   void syncingDone(ScriptType scriptType, BuildContext context) {
     if (scriptTypes.contains(scriptType)) return;
     scriptTypes.add(scriptType);
-    if (scriptTypes.length == widget.walletCubits.length)
+    if (scriptTypes.length == widget.walletCubits.length) {
       context.read<ImportWalletCubit>().syncingComplete();
+    }
   }
 
   @override
@@ -174,7 +176,7 @@ class SavingError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final err =
-        context.select((ImportWalletCubit _) => _.state.errSavingWallet);
+        context.select((ImportWalletCubit e) => e.state.errSavingWallet);
 
     if (err.isEmpty) return const SizedBox(height: 24);
 

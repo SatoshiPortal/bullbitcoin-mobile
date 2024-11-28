@@ -8,12 +8,13 @@ class Logger extends Cubit<List<(String, DateTime)>> {
 
   void log(String message, {bool printToConsole = false}) {
     emit([...state, (message, DateTime.now())]);
+    // ignore: avoid_print
     if (printToConsole) print(message);
   }
 
   void clear() => emit([]);
 
-  void shareLog() async {
+  Future<void> shareLog() async {
     try {
       String logDump;
 

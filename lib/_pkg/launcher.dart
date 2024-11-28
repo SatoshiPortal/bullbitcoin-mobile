@@ -14,12 +14,13 @@ class Launcher {
   Future<(bool?, Err?)> launchApp(String link) async {
     try {
       final can = await canLaunchUrl(Uri.parse(link));
-      if (can)
+      if (can) {
         await launchUrl(
           Uri.parse(link),
           // forceWebView: true
           // universalLinksOnly: true,
         );
+      }
       return (true, null);
     } catch (e) {
       return (null, Err(e.toString()));
@@ -34,7 +35,10 @@ class Launcher {
     }
   }
 
-  Future<(bool?, Err?)> sentSupportEmail(String loggedInEmail, String name) async {
+  Future<(bool?, Err?)> sentSupportEmail(
+    String loggedInEmail,
+    String name,
+  ) async {
     try {
       throw UnimplementedError();
     } catch (e) {

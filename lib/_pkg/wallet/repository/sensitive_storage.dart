@@ -33,10 +33,11 @@ class WalletSensitiveStorageRepository {
 
         final List<String> fingerprints = [];
         for (final fingerprint in fingerprintIdsJson) {
-          if (fingerprint == fingerprintIndex)
+          if (fingerprint == fingerprintIndex) {
             return Err('Seed Exists');
-          else
+          } else {
             fingerprints.add(fingerprint as String);
+          }
         }
 
         fingerprints.add(fingerprintIndex);
@@ -223,9 +224,11 @@ class WalletSensitiveStorageRepository {
       final existingPassphrases = seed.passphrases.toList();
 
       final List<Passphrase> passphrases = [];
-      for (final pp in existingPassphrases)
-        if (pp.sourceFingerprint != passphraseFingerprintIndex)
+      for (final pp in existingPassphrases) {
+        if (pp.sourceFingerprint != passphraseFingerprintIndex) {
           passphrases.add(pp);
+        }
+      }
 
       seed = seed.copyWith(passphrases: passphrases);
 

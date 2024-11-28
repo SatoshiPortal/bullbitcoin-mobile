@@ -312,7 +312,7 @@ class TestNetButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final testnet = context.select((NetworkCubit _) => _.state.testnet);
+    final testnet = context.select((NetworkCubit e) => e.state.testnet);
 
     // if (!testnet) return const SizedBox.shrink();
 
@@ -350,9 +350,9 @@ class ElectrumServerButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedNetwork =
-        context.select((NetworkCubit _) => _.state.getNetwork());
+        context.select((NetworkCubit e) => e.state.getNetwork());
     if (selectedNetwork == null) return const SizedBox.shrink();
-    final err = context.select((NetworkCubit _) => _.state.errLoadingNetworks);
+    final err = context.select((NetworkCubit e) => e.state.errLoadingNetworks);
 
     return Column(
       children: [
