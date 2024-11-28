@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -33,7 +32,6 @@ class _SwapHistoryPageState extends State<SwapHistoryPage> {
       networkCubit: context.read<NetworkCubit>(),
       boltz: locator<SwapBoltz>(),
       watcher: context.read<WatchTxsBloc>(),
-      walletTx: locator<WalletTx>(),
     )..loadSwaps();
     super.initState();
   }

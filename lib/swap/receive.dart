@@ -104,7 +104,7 @@ class SwapTxItem extends StatelessWidget {
 
     final invoice = swapTx.splitInvoice();
     final amount = swapTx.outAmount.toString() + ' sats';
-    final idx = tx.lnSwapDetails!.keyIndex.toString() ?? '0';
+    final idx = tx.lnSwapDetails!.keyIndex.toString();
     final status = swapTx.status?.toString() ?? '';
 
     return Container(
@@ -165,7 +165,7 @@ class _InvoiceQRPopup extends StatelessWidget {
     final swapTx = tx;
 
     final amount = swapTx.outAmount.toString() + ' sats';
-    final idx = tx.lnSwapDetails!.keyIndex.toString() ?? '0';
+    final idx = tx.lnSwapDetails!.keyIndex.toString();
     final status = swapTx.status?.toString() ?? '';
     final totalFees = swapTx.totalFees() ?? 0;
     final fees = context.select(

@@ -671,10 +671,10 @@ class _OnchainSwapDetails extends StatelessWidget {
     // final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
     final amt = swap.amountForDisplay() ?? 0;
-    final amount = context.select(
+    context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true),
     );
-    final isReceive = swap.isReverse();
+    swap.isReverse();
 
     final date = tx.getDateTimeStr();
     // swap.

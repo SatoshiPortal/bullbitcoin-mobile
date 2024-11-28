@@ -173,7 +173,6 @@ class CreateSwapCubit extends Cubit<SwapState> {
     //       ? fees.lbtcReverse.claimFeesEstimate
     //       : fees.btcReverse.claimFeesEstimate,
     // );
-    final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
 
     /*
     final updatedSwap = swap!.copyWith(

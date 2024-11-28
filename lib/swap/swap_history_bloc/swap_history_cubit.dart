@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/swap/swap_history_bloc/swap_history_state.dart';
@@ -16,10 +15,8 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     required NetworkCubit networkCubit,
     required SwapBoltz boltz,
     required WatchTxsBloc watcher,
-    required WalletTx walletTx,
   })  : _homeCubit = homeCubit,
         _networkCubit = networkCubit,
-        _walletTx = walletTx,
         _boltz = boltz,
         _watcher = watcher,
         super(const SwapHistoryState());
@@ -28,7 +25,6 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
   final NetworkCubit _networkCubit;
   final SwapBoltz _boltz;
   final WatchTxsBloc _watcher;
-  final WalletTx _walletTx;
 
   void loadSwaps() {
     final network = _networkCubit.state.getBBNetwork();

@@ -494,9 +494,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     // await Future.delayed(10.seconds);
 
-    final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
-        LiquidElectrumTypes.bullbitcoin;
-
     final (txid, err) = await _swapBoltz.refundChainSwap(
       swapTx: swapTx,
       wallet: walletBloc.state.wallet!,

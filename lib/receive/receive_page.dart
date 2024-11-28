@@ -146,7 +146,7 @@ class _Screen extends StatelessWidget {
         context.select((WalletBloc x) => x.state.wallet!.watchOnly());
     final mainWallet =
         context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
-    final receiveWallet = context.select((WalletBloc x) => x.state.wallet);
+    context.select((WalletBloc x) => x.state.wallet);
 
     final walletIsLiquid = context.select(
       (WalletBloc x) => x.state.wallet!.isLiquid(),
@@ -641,10 +641,10 @@ class ChainSwapForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description = context.select((ReceiveCubit _) => _.state.description);
-    final allFees = context.select((CreateSwapCubit x) => x.state.allFees);
-    final amount = context.select((CurrencyCubit x) => x.state.amount);
+    context.select((CreateSwapCubit x) => x.state.allFees);
+    context.select((CurrencyCubit x) => x.state.amount);
 
-    final isLiquid = context.select(
+    context.select(
       (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
     );
     final err = context.select((CreateSwapCubit _) => _.state.err());
@@ -652,8 +652,6 @@ class ChainSwapForm extends StatelessWidget {
     final generatingInv = context
         .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
     final sending = generatingInv;
-
-    const int finalFee = 0;
 
     final darkMode = context.select(
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
@@ -742,7 +740,7 @@ class CreateLightningInvoice extends StatelessWidget {
         context.select((CreateSwapCubit _) => _.state.errCreatingSwapInv);
     final creatingInv =
         context.select((CreateSwapCubit _) => _.state.generatingSwapInv);
-    final allFees = context.select((CreateSwapCubit x) => x.state.allFees);
+    context.select((CreateSwapCubit x) => x.state.allFees);
     final amount = context.select((CurrencyCubit x) => x.state.amount);
 
     final isLiquid = context.select(

@@ -6,11 +6,11 @@ import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 class BDKAddress {
   Future<(String?, Err?)> peekIndex(bdk.Wallet bdkWallet, int idx) async {
     try {
-      final address = await bdkWallet.getAddress(
+      final address = bdkWallet.getAddress(
         addressIndex: bdk.AddressIndex.peek(index: idx),
       );
 
-      final addr = await address.address.asString();
+      final addr = address.address.asString();
 
       return (addr, null);
     } on Exception catch (e) {
@@ -30,17 +30,17 @@ class BDKAddress {
     required bdk.Wallet bdkWallet,
   }) async {
     try {
-      final addressLastUnused = await bdkWallet.getAddress(
+      final addressLastUnused = bdkWallet.getAddress(
         addressIndex: const bdk.AddressIndex.lastUnused(),
       );
 
       final List<Address> addresses = [...wallet.myAddressBook];
 
       for (var i = 0; i <= addressLastUnused.index; i++) {
-        final address = await bdkWallet.getAddress(
+        final address = bdkWallet.getAddress(
           addressIndex: bdk.AddressIndex.peek(index: i),
         );
-        final addressStr = await address.address.asString();
+        final addressStr = address.address.asString();
         final contain = wallet.myAddressBook.where(
           (element) => element.address == addressStr,
         );
@@ -69,7 +69,7 @@ class BDKAddress {
         w = wallet.copyWith(
           myAddressBook: addresses,
           lastGeneratedAddress: Address(
-            address: await addressLastUnused.address.asString(),
+            address: addressLastUnused.address.asString(),
             index: addressLastUnused.index,
             kind: AddressKind.deposit,
             state: AddressStatus.unused,
@@ -97,17 +97,17 @@ class BDKAddress {
     required bdk.Wallet bdkWallet,
   }) async {
     try {
-      final addressLastUnused = await bdkWallet.getInternalAddress(
+      final addressLastUnused = bdkWallet.getInternalAddress(
         addressIndex: const bdk.AddressIndex.lastUnused(),
       );
 
       final List<Address> addresses = [...wallet.myAddressBook];
 
       for (var i = 0; i <= addressLastUnused.index; i++) {
-        final address = await bdkWallet.getInternalAddress(
+        final address = bdkWallet.getInternalAddress(
           addressIndex: bdk.AddressIndex.peek(index: i),
         );
-        final addressStr = await address.address.asString();
+        final addressStr = address.address.asString();
         final contain = wallet.myAddressBook.where(
           (element) => element.address == addressStr,
         );

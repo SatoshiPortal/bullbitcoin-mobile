@@ -142,12 +142,9 @@ class _SwapWidgetState extends State<SwapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final darkMode = context.select(
+    context.select(
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
     );
-
-    const imgBaseName = 'assets/images/swap_icon';
-    final img = darkMode ? '${imgBaseName}_white.png' : '$imgBaseName.png';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

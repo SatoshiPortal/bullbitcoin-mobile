@@ -265,7 +265,9 @@ class BDKTransactions {
             try {
               if (serdBdkTx.output == null) throw 'No output object';
               final scriptPubkeyString = serdBdkTx.output
-                  ?.firstWhere((output) => output.value == amountChange)
+                  ?.firstWhere(
+                    (output) => output.value == amountChange,
+                  )
                   .scriptPubkey;
 
               if (scriptPubkeyString == null) {
@@ -756,7 +758,6 @@ class BDKTransactions {
       );
       txBuilder = txBuilder.enableRbf();
       final txResult = await txBuilder.finish(pubWallet);
-      final signedPSBT = await signingWallet.sign(psbt: txResult.$1);
 
       final psbt = txResult.$1;
       final txDetails = txResult.$2;

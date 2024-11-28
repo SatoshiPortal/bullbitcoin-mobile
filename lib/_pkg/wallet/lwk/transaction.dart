@@ -440,7 +440,7 @@ class LWKTransactions {
         isLiquid: true,
       );
     } else {
-      if (e.unblinded.value == finalBalance) {
+      if (e.unblinded.value == BigInt.from(finalBalance)) {
         final addr = await lwk.Address.addressFromScript(
           network: lwkNetwork,
           script: e.scriptPubkey,

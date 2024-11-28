@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('Swap Fees test', () async {
     try {
-      const boltzUrl = 'https://api.testnet.boltz.exchange';
       // const amount = 100000;
       // const fees = Fees(boltzUrl: boltzUrl);
       // final submarineFees = await fees.submarine();

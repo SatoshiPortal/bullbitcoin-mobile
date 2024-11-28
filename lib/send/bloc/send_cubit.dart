@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/address.dart';
-import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
@@ -798,8 +797,6 @@ class SendCubit extends Cubit<SendState> {
     //   emit(state.copyWith(errSending: "Submarine swaps currently only supported via "));
     //   return;
     // };
-    final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
-        LiquidElectrumTypes.bullbitcoin;
     final (wtxid, errBroadcast) = await _walletTx.broadcastTxWithWallet(
       wallet: wallet!,
       address: swap.scriptAddress,

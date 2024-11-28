@@ -3,7 +3,6 @@ import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -37,7 +36,6 @@ class BroadcastPage extends StatelessWidget {
       fileStorage: locator<FileStorage>(),
       homeCubit: locator<HomeCubit>(),
       networkRepository: locator<NetworkRepository>(),
-      walletsRepository: locator<WalletsRepository>(),
       bdkTransactions: locator<BDKTransactions>(),
     );
 
@@ -84,7 +82,6 @@ class BroadcastPopUp extends StatelessWidget {
       fileStorage: locator<FileStorage>(),
       homeCubit: locator<HomeCubit>(),
       networkRepository: locator<NetworkRepository>(),
-      walletsRepository: locator<WalletsRepository>(),
       bdkTransactions: locator<BDKTransactions>(),
     );
 

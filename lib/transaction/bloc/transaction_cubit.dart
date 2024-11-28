@@ -194,7 +194,7 @@ class TransactionCubit extends Cubit<TransactionState> {
             ),
           );
         }
-      } catch (e) {}
+      } catch (_) {}
     } else
       _walletBloc.add(
         UpdateWallet(

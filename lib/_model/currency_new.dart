@@ -27,7 +27,7 @@ int calcualteSats(double price, CurrencyNew currency) {
   int sats;
 
   if (currency.isFiat) {
-    final int oneBTCInSmallFiatUnit = ((currency.price ?? 0.0) * 100).toInt();
+    final int oneBTCInSmallFiatUnit = ((currency.price) * 100).toInt();
     final int totalFiatSmallUnitsInvested = (price * 100).toInt();
 
     final double btcBought =
@@ -47,7 +47,7 @@ int calcualteSats(double price, CurrencyNew currency) {
 }
 
 double getFiatValueFromSats(int sats, CurrencyNew fiatCurrency) {
-  final double oneBTCInFiat = fiatCurrency.price ?? 0.0;
+  final double oneBTCInFiat = fiatCurrency.price;
   final double oneSatInFiat = oneBTCInFiat / SATS_IN_BTC;
   final double fiatValue = sats * oneSatInFiat;
 

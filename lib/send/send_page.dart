@@ -227,20 +227,8 @@ class WalletSelectionDropDown extends StatelessWidget {
     final oneWallet = context.select(
       (SendCubit cubit) => cubit.state.oneWallet,
     );
-    final loading = context.select((SendCubit _) => _.state.scanningAddress);
-
-    final sending = context.select((SendCubit _) => _.state.sending);
-
-    final generatingInv =
-        context.select((CreateSwapCubit _) => _.state.generatingSwapInv);
 
     final _ = context.select((SendCubit cubit) => cubit.state.enabledWallets);
-
-    var enableDropdown = context
-        .select((SendCubit cubit) => cubit.state.enabledWallets.isNotEmpty);
-
-    if (loading || generatingInv || sending) enableDropdown = true;
-    if (oneWallet) enableDropdown = false;
 
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = context.select(
@@ -269,19 +257,6 @@ class WalletSelectionDropDown extends StatelessWidget {
         ).animate().fadeIn(),
       ),
     );
-  }
-}
-
-class _Balance extends StatelessWidget {
-  const _Balance();
-
-  @override
-  Widget build(BuildContext context) {
-    final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton);
-    if (!showSend) return const SizedBox(height: 24);
-
-    return const Center(child: SendWalletBalance()).animate().fadeIn();
   }
 }
 
