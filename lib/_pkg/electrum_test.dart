@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+
 /// Works for both Bitcoin and Liquid electrum
 /// electrum should be of the format:
 /// ssl://[host]:[port]
@@ -49,7 +51,7 @@ Future<bool> isElectrumLive(String electrumUrl) async {
 
     return result;
   } catch (e) {
-    print('Error: $e');
+    debugPrint('Error: $e');
     return false;
   }
 }

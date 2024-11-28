@@ -5,6 +5,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class WalletsStorageRepository {
@@ -177,7 +178,7 @@ class WalletsStorageRepository {
           if (err != null) continue;
           wallets.add(wallet!);
         } catch (e) {
-          print(e);
+          debugPrint(e.toString());
         }
       }
 

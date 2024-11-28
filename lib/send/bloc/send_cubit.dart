@@ -18,6 +18,7 @@ import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:boltz_dart/boltz_dart.dart' as boltz;
+import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -892,7 +893,7 @@ class SendCubit extends Cubit<SendState> {
       );
 
       final amountDirect = (tx.sent ?? 0) - (tx.received ?? 0);
-      print('amountDirect: $amountDirect');
+      debugPrint('amountDirect: $amountDirect');
       // _currencyCubit.updateAmountDirect(amountDirect);
     } else {
       state.selectedWalletBloc!.add(

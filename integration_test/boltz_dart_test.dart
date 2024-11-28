@@ -1,4 +1,5 @@
 import 'package:boltz_dart/boltz_dart.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -10,10 +11,10 @@ void main() {
       // print('FEES:${submarineFees.lbtcFees}');
       // print('FEES:${fees.lbtcSubmarine.lockupFeesEstimate}');
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       if (e is BoltzError) {
-        print(e.kind);
-        print(e.message);
+        debugPrint(e.kind);
+        debugPrint(e.message);
       }
     }
   });

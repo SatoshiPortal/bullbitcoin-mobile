@@ -11,6 +11,7 @@ import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:boltz_dart/boltz_dart.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateSwapCubit extends Cubit<SwapState> {
@@ -400,7 +401,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
 
       _showWarnings();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -629,7 +630,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
 
       _showWarnings();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -799,7 +800,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
 
       _showWarnings();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 }
