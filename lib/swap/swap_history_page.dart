@@ -231,18 +231,15 @@ class SwapItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText.bodySmall(
-                    'Id: ' + swapTx.id,
-                    isBold: true,
-                  ),
+                  BBText.bodySmall('Id: ${swapTx.id}', isBold: true),
                   if (swapTx.creationTime != null &&
                       swapTx.completionTime != null)
                     BBText.bodySmall(
-                      'Duration: ' + (swapTx.getDuration() ?? 'N/A'),
+                      'Duration: ${swapTx.getDuration() ?? 'N/A'}',
                       isBold: true,
                     ),
                   BBText.bodySmall(
-                    'Status: ' + (status?.$1 ?? ''),
+                    'Status: ${status?.$1 ?? ''}',
                     isBold: true,
                   ),
 

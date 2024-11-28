@@ -34,11 +34,11 @@ class BroadcastTxState with _$BroadcastTxState {
 
   String getErrors() {
     String error = '';
-    if (errLoadingFile.isNotEmpty) error += errLoadingFile + '\n';
-    if (errExtractingTx.isNotEmpty) error += errExtractingTx + '\n';
-    if (errPSBT.isNotEmpty) error += errPSBT + '';
-    if (errBroadcastingTx.isNotEmpty) error += errBroadcastingTx + '\n';
-    if (errDownloadingFile.isNotEmpty) error += errDownloadingFile + '';
+    if (errLoadingFile.isNotEmpty) error += '$errLoadingFile\n';
+    if (errExtractingTx.isNotEmpty) error += '$errExtractingTx\n';
+    if (errPSBT.isNotEmpty) error += errPSBT;
+    if (errBroadcastingTx.isNotEmpty) error += '$errBroadcastingTx\n';
+    if (errDownloadingFile.isNotEmpty) error += errDownloadingFile;
     return error;
   }
 

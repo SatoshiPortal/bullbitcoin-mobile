@@ -330,7 +330,7 @@ class SelectFeesItem extends StatelessWidget {
             children: [
               BBText.body(title, isBold: true),
               if (!custom) ...[
-                BBText.body(fee.toString() + ' sat/vB'),
+                BBText.body('$fee sat/vB'),
                 BBText.body(
                   () {
                     if (index == 0) return '~ 10 min';

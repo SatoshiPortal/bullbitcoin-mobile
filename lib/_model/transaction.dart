@@ -203,7 +203,7 @@ class Transaction with _$Transaction {
     }
     final day =
         dt.day.toString().length == 1 ? '0${dt.day}' : dt.day.toString();
-    return months[dt.month - 1] + ' ' + day + ', ' + dt.year.toString();
+    return '${months[dt.month - 1]} $day, ${dt.year}';
   }
 
   DateTime? getBroadcastDateTime() => broadcastTime == null

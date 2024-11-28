@@ -367,20 +367,20 @@ class NetworkCubit extends Cubit<NetworkState> {
           RegExp(r'^ssl:\/\/([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\:[0-9]{2,5}$');
       if (!sslRegex.hasMatch(tempNetwork.mainnet)) {
         final String error = networkLoadError(tempNetwork.mainnet);
-        final String formattedError = error.isNotEmpty ? (': ' + error) : '';
+        final String formattedError = error.isNotEmpty ? (': $error') : '';
         emit(
           state.copyWith(
-            errLoadingNetworks: 'Invalid mainnet electrum URL' + formattedError,
+            errLoadingNetworks: 'Invalid mainnet electrum URL$formattedError',
           ),
         );
         return;
       }
       if (!sslRegex.hasMatch(tempNetwork.testnet)) {
         final String error = networkLoadError(tempNetwork.testnet);
-        final String formattedError = error.isNotEmpty ? ': ' + error : '';
+        final String formattedError = error.isNotEmpty ? ': $error' : '';
         emit(
           state.copyWith(
-            errLoadingNetworks: 'Invalid testnet electrum URL' + formattedError,
+            errLoadingNetworks: 'Invalid testnet electrum URL$formattedError',
           ),
         );
         return;

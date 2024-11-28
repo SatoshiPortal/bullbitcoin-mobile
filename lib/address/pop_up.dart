@@ -123,9 +123,7 @@ class Title extends StatelessWidget {
             label.isEmpty ? address : label,
           ),
           const Gap(8),
-          BBText.title(
-            'From wallet: ' + title,
-          ),
+          BBText.title('From wallet: $title'),
         ],
       ),
     );
@@ -370,7 +368,7 @@ class AddressLabelFieldPopUp extends StatelessWidget {
               horizontal: 8,
             ),
             child: BBText.body(
-              'Address: ' + address.address,
+              'Address: ${address.address}',
             ),
           ),
           const Gap(24),

@@ -466,7 +466,7 @@ class CardItem extends StatelessWidget {
                         Row(
                           children: [
                             BBText.bodySmall(
-                              '~' + fiatAmt,
+                              '~$fiatAmt',
                               onSurface: true,
                               fontSize: 12,
                             ),
@@ -612,9 +612,7 @@ class HomeTopBar2 extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         BBText.bodySmall(
-                          currency.price.toString() +
-                              ' ' +
-                              currency.shortName.toUpperCase(),
+                          '${currency.price} ${currency.shortName.toUpperCase()}',
                         ),
                       ],
                     )

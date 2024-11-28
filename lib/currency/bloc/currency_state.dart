@@ -65,7 +65,7 @@ class CurrencyState with _$CurrencyState {
     final btcStr = isLiquid ? 'L-BTC' : 'BTC';
     final satsStr = isLiquid ? 'L-sats' : 'sats';
     if (isSats ?? unitsInSats) {
-      amt = satsFormatting(amount.toString()) + ' $satsStr';
+      amt = '${satsFormatting(amount.toString())} $satsStr';
     } else {
       String b = '';
       if (!removeEndZeros) {
@@ -73,7 +73,7 @@ class CurrencyState with _$CurrencyState {
       } else {
         b = (amount / 100000000).toStringAsFixed(8);
       }
-      amt = b + ' $btcStr';
+      amt = '$b $btcStr';
     }
 
     if (removeText) {

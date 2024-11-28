@@ -246,7 +246,7 @@ class WalletsStorageRepository {
 
   Future<Err?> deleteWalletFile(String walletHashId) async {
     final appDocDir = await getApplicationDocumentsDirectory();
-    final Directory dbDirect = Directory(appDocDir.path + '/$walletHashId');
+    final Directory dbDirect = Directory('${appDocDir.path}/$walletHashId');
     if (dbDirect.existsSync()) {
       await dbDirect.delete(recursive: true);
     }

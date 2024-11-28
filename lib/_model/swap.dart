@@ -327,9 +327,7 @@ class SwapTx with _$SwapTx {
   }
 
   String splitInvoice() =>
-      lnSwapDetails!.invoice.substring(0, 5) +
-      ' .... ' +
-      lnSwapDetails!.invoice.substring(lnSwapDetails!.invoice.length - 10);
+      '${lnSwapDetails!.invoice.substring(0, 5)} .... ${lnSwapDetails!.invoice.substring(lnSwapDetails!.invoice.length - 10)}';
 
   bool smallAmt() => outAmount < 1000000;
 

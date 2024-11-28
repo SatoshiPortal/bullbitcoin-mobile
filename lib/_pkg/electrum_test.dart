@@ -29,7 +29,7 @@ Future<bool> isElectrumLive(String electrumUrl) async {
       'method': 'server.version',
       'params': [],
     };
-    socket.write(jsonEncode(request) + '\n');
+    socket.write('${jsonEncode(request)}\n');
 
     socket.listen((data) {
       final String response = String.fromCharCodes(data);

@@ -154,10 +154,7 @@ class HomeWalletLoadingListeners extends StatelessWidget {
 class BBlocObserver extends BlocObserver {
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    locator<Logger>().log(
-      error.toString() + '\n' + stackTrace.toString(),
-      printToConsole: true,
-    );
+    locator<Logger>().log('$error\n$stackTrace', printToConsole: true);
     super.onError(bloc, error, stackTrace);
   }
 }

@@ -81,8 +81,7 @@ class _NetowrkHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLiq = context.select((_NetworkSelector _) => _.state);
     final networkStr = isLiq ? 'Liquid' : 'Bitcoin';
-    final changeStr =
-        'Configure ' + (isLiq ? 'Bitcoin' : 'Liquid') + ' Network';
+    final changeStr = 'Configure ${isLiq ? 'Bitcoin' : 'Liquid'} Network';
 
     return BBHeader.popUpCenteredText(
       text: '', //networkStr + ' Network',
@@ -90,7 +89,7 @@ class _NetowrkHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText.titleLarge(
-            networkStr + ' Network',
+            '$networkStr Network',
             isBold: true,
           ),
           BBButton.text(

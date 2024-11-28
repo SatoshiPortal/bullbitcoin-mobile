@@ -32,7 +32,7 @@ class BDKCreate {
 
       final appDocDir = await getApplicationDocumentsDirectory();
       final String dbDir =
-          appDocDir.path + '/${wallet.getWalletStorageString()}';
+          '${appDocDir.path}/${wallet.getWalletStorageString()}';
 
       final dbConfig = bdk.DatabaseConfig.sqlite(
         config: bdk.SqliteDbConfiguration(path: dbDir),
@@ -76,7 +76,7 @@ class BDKCreate {
     final xpub84 = coldWallet84.xpub;
 
     final networkPath = network == BBNetwork.Mainnet ? '0h' : '1h';
-    final accountPath = coldCard.account.toString() + 'h';
+    final accountPath = '${coldCard.account}h';
 
     final coldWallet44ExtendedPublic =
         '[$fingerprint/44h/$networkPath/$accountPath]$xpub44';

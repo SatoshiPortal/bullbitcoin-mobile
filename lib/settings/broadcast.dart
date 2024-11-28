@@ -387,11 +387,7 @@ class TxInfo extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
-              children: [
-                BBText.bodySmall(
-                  'Labels: ' + label,
-                ),
-              ],
+              children: [BBText.bodySmall('Labels: $label')],
             ),
           ] else ...[
             Row(
@@ -490,7 +486,7 @@ class TxInfo extends StatelessWidget {
           const Gap(4),
           for (final address in tx.outAddrs) ...[
             BBText.body(
-              address.getKindString() + ':',
+              '${address.getKindString()}:',
             ),
             const Gap(8),
             Row(

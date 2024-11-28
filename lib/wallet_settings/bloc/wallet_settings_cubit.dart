@@ -352,7 +352,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       return;
     }
     final file =
-        File(appDocDir! + '/bullbitcoin_backup/$folder/$fingerprint.json');
+        File('${appDocDir!}/bullbitcoin_backup/$folder/$fingerprint.json');
 
     final (_, errSave) = await _fileStorage.saveToFile(
       file,
@@ -406,7 +406,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     await Future.delayed(const Duration(seconds: 1));
 
     final appDocDir = await getApplicationDocumentsDirectory();
-    final dbDir = appDocDir.path + '/' + state.wallet.getWalletStorageString();
+    final dbDir = '${appDocDir.path}/${state.wallet.getWalletStorageString()}';
 
     final errDeleting = await _fileStorage.deleteFile(dbDir);
     if (errDeleting != null) {

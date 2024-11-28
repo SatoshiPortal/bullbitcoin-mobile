@@ -154,7 +154,7 @@ class NetworkState with _$NetworkState {
 
   String calculatePrice(int sats, Currency? currency) {
     if (currency == null) return '';
-    if (testnet) return currency.getSymbol() + '0';
+    if (testnet) return '${currency.getSymbol()}0';
     return currency.getSymbol() +
         fiatFormatting(
           (sats / 100000000 * currency.price!).toStringAsFixed(2),

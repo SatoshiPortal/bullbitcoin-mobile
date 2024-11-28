@@ -170,7 +170,7 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
       emit(
         state.copyWith(
           refreshing: state.refreshing.where((_) => _ != id).toList(),
-          errRefreshing: 'Error: SwapID: $id, Error: ' + err.toString(),
+          errRefreshing: 'Error: SwapID: $id, Error: $err',
         ),
       );
       return;

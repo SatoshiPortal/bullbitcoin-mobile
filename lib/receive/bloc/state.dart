@@ -75,9 +75,9 @@ class ReceiveState with _$ReceiveState {
     if (savedInvoiceAmount > 0 || savedDescription.isNotEmpty) {
       final btcAmt = (savedInvoiceAmount / 100000000).toStringAsFixed(8);
 
-      var invoice = 'bitcoin:' + defaultAddress!.address + '?amount=' + btcAmt;
+      var invoice = 'bitcoin:${defaultAddress!.address}?amount=$btcAmt';
       if (savedDescription.isNotEmpty) {
-        invoice = invoice + '&label=' + savedDescription;
+        invoice = '$invoice&label=$savedDescription';
       }
 
       return invoice;
