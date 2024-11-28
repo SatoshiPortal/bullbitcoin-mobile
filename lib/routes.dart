@@ -37,7 +37,7 @@ import 'package:bb_mobile/wallet/wallet_page.dart';
 import 'package:bb_mobile/wallet_settings/accounting.dart';
 import 'package:bb_mobile/wallet_settings/backup.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
-import 'package:bb_mobile/wallet_settings/test-backup.dart';
+import 'package:bb_mobile/wallet_settings/test_backup.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
