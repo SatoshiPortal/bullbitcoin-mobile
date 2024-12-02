@@ -9,6 +9,7 @@ import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/backup/bloc/backup_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bip85/bip85.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
 import 'package:intl/intl.dart';
@@ -85,17 +86,10 @@ class BackupCubit extends Cubit<BackupState> {
       mnemonic: bdkMnemonic,
       password: '', // TODO: which passphrase?
     );
-    final rootXprv = xprv.toString().substring(0, 64); // remove /*
-    print('rootXprv: $rootXprv');
+    final rootXprv = xprv.toString().substring(0, 111); // remove /*
 
-    // const derivation = "m/1608'/0'"; // TODO: key rotation ?
-    // final derived = derive(xprv: rootXprv, path: derivation);
-    // print('derived: $derived');
-
-    // final backupKey = HEX.encode(Crypto.generateRandomBytes(32));
-    // TODO: replace by BIP85
-    const backupKey =
-        '23fe885eb43961829d0951f1f7eb251890512c504f6ea88034e6369491f256dd';
+    final derived = derive(xprv: rootXprv, path: "m/1608'/0'");
+    final backupKey = HEX.encode(derived.sublist(0, 32));
     final backupId = HEX.encode(Crypto.generateRandomBytes(32));
 
     final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
