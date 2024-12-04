@@ -133,6 +133,16 @@ class SendCubit extends Cubit<SendState> {
         if (label != null) {
           emit(state.copyWith(note: label));
         }
+        final pjParam = bip21Obj.options['pj'] as String?;
+        if (pjParam != null) {
+          // FIXME: this is an ugly hack because of ugliness in the bip21 module.
+          // Dart's URI encoding is not the same as the one used by the bip21 module.
+          final parsedPjParam = Uri.parse(pjParam);
+          final partialEncodedPjParam =
+              parsedPjParam.toString().replaceAll('#', '%23');
+          final encodedPjParam = partialEncodedPjParam.replaceAll('%20', '+');
+          emit(state.copyWith(payjoinEndpoint: Uri.parse(encodedPjParam)));
+        }
       case AddressNetwork.bip21Liquid:
         final bip21Obj = bip21.decode(
           address.startsWith('liquidnetwork:')
