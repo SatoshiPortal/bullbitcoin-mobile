@@ -57,6 +57,10 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(state.copyWith(defaultRBF: !state.defaultRBF));
   }
 
+  void toggleDefaultPayjoin() {
+    emit(state.copyWith(defaultPayjoin: !state.defaultPayjoin));
+  }
+
   void changeLanguage(String language) {
     emit(state.copyWith(language: language));
   }

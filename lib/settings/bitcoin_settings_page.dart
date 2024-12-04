@@ -56,6 +56,8 @@ class _Screen extends StatelessWidget {
                 Gap(8),
                 DefaultRBFToggle(),
                 Gap(8),
+                DefaultPayjoinToggle(),
+                Gap(8),
                 Units(),
                 Gap(8),
                 SelectFeesButton(fromSettings: true),
@@ -300,6 +302,31 @@ class DefaultRBFToggle extends StatelessWidget {
           value: rbf,
           onChanged: (e) {
             context.read<SettingsCubit>().toggleDefaultRBF();
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class DefaultPayjoinToggle extends StatelessWidget {
+  const DefaultPayjoinToggle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final rbf = context.select((SettingsCubit x) => x.state.defaultPayjoin);
+
+    return Row(
+      children: [
+        // const Gap(8),
+        const BBText.body(
+          'Default Payjoin',
+        ),
+        const Spacer(),
+        BBSwitch(
+          value: rbf,
+          onChanged: (e) {
+            context.read<SettingsCubit>().toggleDefaultPayjoin();
           },
         ),
       ],
