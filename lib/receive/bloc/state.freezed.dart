@@ -27,6 +27,7 @@ mixin _$ReceiveState {
   int get savedInvoiceAmount => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   String get savedDescription => throw _privateConstructorUsedError;
+  String get payjoinEndpoint => throw _privateConstructorUsedError;
   bool get creatingInvoice => throw _privateConstructorUsedError;
   String get errCreatingInvoice => throw _privateConstructorUsedError;
   WalletBloc? get walletBloc => throw _privateConstructorUsedError;
@@ -37,7 +38,9 @@ mixin _$ReceiveState {
   bool get receiveFormSubmitted => throw _privateConstructorUsedError;
   bool get oneWallet => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ReceiveStateCopyWith<ReceiveState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -59,6 +62,7 @@ abstract class $ReceiveStateCopyWith<$Res> {
       int savedInvoiceAmount,
       String description,
       String savedDescription,
+      String payjoinEndpoint,
       bool creatingInvoice,
       String errCreatingInvoice,
       WalletBloc? walletBloc,
@@ -83,6 +87,8 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -96,6 +102,7 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? savedInvoiceAmount = null,
     Object? description = null,
     Object? savedDescription = null,
+    Object? payjoinEndpoint = null,
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
@@ -147,6 +154,10 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.savedDescription
           : savedDescription // ignore: cast_nullable_to_non_nullable
               as String,
+      payjoinEndpoint: null == payjoinEndpoint
+          ? _value.payjoinEndpoint
+          : payjoinEndpoint // ignore: cast_nullable_to_non_nullable
+              as String,
       creatingInvoice: null == creatingInvoice
           ? _value.creatingInvoice
           : creatingInvoice // ignore: cast_nullable_to_non_nullable
@@ -186,6 +197,8 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     ) as $Val);
   }
 
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AddressCopyWith<$Res>? get defaultAddress {
@@ -198,6 +211,8 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     });
   }
 
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AddressCopyWith<$Res>? get defaultLiquidAddress {
@@ -230,6 +245,7 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       int savedInvoiceAmount,
       String description,
       String savedDescription,
+      String payjoinEndpoint,
       bool creatingInvoice,
       String errCreatingInvoice,
       WalletBloc? walletBloc,
@@ -254,6 +270,8 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
       _$ReceiveStateImpl _value, $Res Function(_$ReceiveStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -267,6 +285,7 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? savedInvoiceAmount = null,
     Object? description = null,
     Object? savedDescription = null,
+    Object? payjoinEndpoint = null,
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
@@ -317,6 +336,10 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
       savedDescription: null == savedDescription
           ? _value.savedDescription
           : savedDescription // ignore: cast_nullable_to_non_nullable
+              as String,
+      payjoinEndpoint: null == payjoinEndpoint
+          ? _value.payjoinEndpoint
+          : payjoinEndpoint // ignore: cast_nullable_to_non_nullable
               as String,
       creatingInvoice: null == creatingInvoice
           ? _value.creatingInvoice
@@ -372,6 +395,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.savedInvoiceAmount = 0,
       this.description = '',
       this.savedDescription = '',
+      this.payjoinEndpoint = '',
       this.creatingInvoice = true,
       this.errCreatingInvoice = '',
       this.walletBloc,
@@ -414,6 +438,9 @@ class _$ReceiveStateImpl extends _ReceiveState {
   final String savedDescription;
   @override
   @JsonKey()
+  final String payjoinEndpoint;
+  @override
+  @JsonKey()
   final bool creatingInvoice;
   @override
   @JsonKey()
@@ -440,7 +467,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, defaultLiquidAddress: $defaultLiquidAddress, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, updateAddressGap: $updateAddressGap, switchToSecure: $switchToSecure, switchToInstant: $switchToInstant, receiveFormSubmitted: $receiveFormSubmitted, oneWallet: $oneWallet)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, defaultLiquidAddress: $defaultLiquidAddress, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, payjoinEndpoint: $payjoinEndpoint, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, updateAddressGap: $updateAddressGap, switchToSecure: $switchToSecure, switchToInstant: $switchToInstant, receiveFormSubmitted: $receiveFormSubmitted, oneWallet: $oneWallet)';
   }
 
   @override
@@ -468,6 +495,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
                 other.description == description) &&
             (identical(other.savedDescription, savedDescription) ||
                 other.savedDescription == savedDescription) &&
+            (identical(other.payjoinEndpoint, payjoinEndpoint) ||
+                other.payjoinEndpoint == payjoinEndpoint) &&
             (identical(other.creatingInvoice, creatingInvoice) ||
                 other.creatingInvoice == creatingInvoice) &&
             (identical(other.errCreatingInvoice, errCreatingInvoice) ||
@@ -501,6 +530,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
         savedInvoiceAmount,
         description,
         savedDescription,
+        payjoinEndpoint,
         creatingInvoice,
         errCreatingInvoice,
         walletBloc,
@@ -512,7 +542,9 @@ class _$ReceiveStateImpl extends _ReceiveState {
         oneWallet
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>
@@ -531,6 +563,7 @@ abstract class _ReceiveState extends ReceiveState {
       final int savedInvoiceAmount,
       final String description,
       final String savedDescription,
+      final String payjoinEndpoint,
       final bool creatingInvoice,
       final String errCreatingInvoice,
       final WalletBloc? walletBloc,
@@ -549,8 +582,8 @@ abstract class _ReceiveState extends ReceiveState {
   @override
   Address? get defaultAddress;
   @override
-  Address? get defaultLiquidAddress;
-  @override // @Default('') String privateLabel,
+  Address? get defaultLiquidAddress; // @Default('') String privateLabel,
+  @override
   bool get savingLabel;
   @override
   String get errSavingLabel;
@@ -562,6 +595,8 @@ abstract class _ReceiveState extends ReceiveState {
   String get description;
   @override
   String get savedDescription;
+  @override
+  String get payjoinEndpoint;
   @override
   bool get creatingInvoice;
   @override
@@ -580,8 +615,11 @@ abstract class _ReceiveState extends ReceiveState {
   bool get receiveFormSubmitted;
   @override
   bool get oneWallet;
+
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

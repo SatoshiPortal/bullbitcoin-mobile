@@ -20,6 +20,7 @@ class ReceiveState with _$ReceiveState {
     @Default(0) int savedInvoiceAmount,
     @Default('') String description,
     @Default('') String savedDescription,
+    @Default('') String payjoinEndpoint,
     @Default(true) bool creatingInvoice,
     @Default('') String errCreatingInvoice,
     WalletBloc? walletBloc,
@@ -44,7 +45,7 @@ class ReceiveState with _$ReceiveState {
 
     String finalAddress = '';
     if (paymentNetwork == PaymentNetwork.lightning ||
-        (amount == 0 && description.isEmpty)) {
+        (amount == 0 && description.isEmpty && payjoinEndpoint.isEmpty)) {
       finalAddress = address;
     } else {
       if (isLiquid) {
@@ -56,7 +57,7 @@ class ReceiveState with _$ReceiveState {
             '$liquidProtocol:$address?amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}&assetid=$lqAssetId';
       } else {
         finalAddress =
-            'bitcoin:$address?amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}';
+            'bitcoin:$address?amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}${payjoinEndpoint.isNotEmpty ? '&pj=$payjoinEndpoint' : ''}';
       }
     }
     return finalAddress;
