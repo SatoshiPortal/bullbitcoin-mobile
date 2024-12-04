@@ -26,6 +26,15 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final WalletAddress _walletAddress;
   final WalletsStorageRepository _walletsStorageRepository;
 
+  void updatePayjoinEndpoint(String payjoinEndpoint) {
+    emit(
+      state.copyWith(
+        payjoinEndpoint: payjoinEndpoint,
+      ),
+    );
+    return;
+  }
+
   void updateWalletBloc(WalletBloc walletBloc) {
     if (state.oneWallet) return;
     emit(
