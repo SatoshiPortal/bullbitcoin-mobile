@@ -28,6 +28,7 @@ mixin _$SettingsState {
   bool get loadingLanguage => throw _privateConstructorUsedError;
   String get errLoadingLanguage => throw _privateConstructorUsedError;
   bool get defaultRBF => throw _privateConstructorUsedError;
+  bool get defaultPayjoin => throw _privateConstructorUsedError;
   int get homeLayout => throw _privateConstructorUsedError;
   bool get removeSwapWarnings => throw _privateConstructorUsedError;
 
@@ -52,6 +53,7 @@ abstract class $SettingsStateCopyWith<$Res> {
       bool loadingLanguage,
       String errLoadingLanguage,
       bool defaultRBF,
+      bool defaultPayjoin,
       int homeLayout,
       bool removeSwapWarnings});
 }
@@ -77,6 +79,7 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? loadingLanguage = null,
     Object? errLoadingLanguage = null,
     Object? defaultRBF = null,
+    Object? defaultPayjoin = null,
     Object? homeLayout = null,
     Object? removeSwapWarnings = null,
   }) {
@@ -113,6 +116,10 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.defaultRBF
           : defaultRBF // ignore: cast_nullable_to_non_nullable
               as bool,
+      defaultPayjoin: null == defaultPayjoin
+          ? _value.defaultPayjoin
+          : defaultPayjoin // ignore: cast_nullable_to_non_nullable
+              as bool,
       homeLayout: null == homeLayout
           ? _value.homeLayout
           : homeLayout // ignore: cast_nullable_to_non_nullable
@@ -142,6 +149,7 @@ abstract class _$$SettingsStateImplCopyWith<$Res>
       bool loadingLanguage,
       String errLoadingLanguage,
       bool defaultRBF,
+      bool defaultPayjoin,
       int homeLayout,
       bool removeSwapWarnings});
 }
@@ -165,6 +173,7 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
     Object? loadingLanguage = null,
     Object? errLoadingLanguage = null,
     Object? defaultRBF = null,
+    Object? defaultPayjoin = null,
     Object? homeLayout = null,
     Object? removeSwapWarnings = null,
   }) {
@@ -201,6 +210,10 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
           ? _value.defaultRBF
           : defaultRBF // ignore: cast_nullable_to_non_nullable
               as bool,
+      defaultPayjoin: null == defaultPayjoin
+          ? _value.defaultPayjoin
+          : defaultPayjoin // ignore: cast_nullable_to_non_nullable
+              as bool,
       homeLayout: null == homeLayout
           ? _value.homeLayout
           : homeLayout // ignore: cast_nullable_to_non_nullable
@@ -225,6 +238,7 @@ class _$SettingsStateImpl extends _SettingsState {
       this.loadingLanguage = false,
       this.errLoadingLanguage = '',
       this.defaultRBF = true,
+      this.defaultPayjoin = true,
       this.homeLayout = 1,
       this.removeSwapWarnings = false})
       : _languageList = languageList,
@@ -265,6 +279,9 @@ class _$SettingsStateImpl extends _SettingsState {
   final bool defaultRBF;
   @override
   @JsonKey()
+  final bool defaultPayjoin;
+  @override
+  @JsonKey()
   final int homeLayout;
   @override
   @JsonKey()
@@ -272,7 +289,7 @@ class _$SettingsStateImpl extends _SettingsState {
 
   @override
   String toString() {
-    return 'SettingsState(notifications: $notifications, privacyView: $privacyView, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, defaultRBF: $defaultRBF, homeLayout: $homeLayout, removeSwapWarnings: $removeSwapWarnings)';
+    return 'SettingsState(notifications: $notifications, privacyView: $privacyView, reloadWalletTimer: $reloadWalletTimer, language: $language, languageList: $languageList, loadingLanguage: $loadingLanguage, errLoadingLanguage: $errLoadingLanguage, defaultRBF: $defaultRBF, defaultPayjoin: $defaultPayjoin, homeLayout: $homeLayout, removeSwapWarnings: $removeSwapWarnings)';
   }
 
   @override
@@ -296,6 +313,8 @@ class _$SettingsStateImpl extends _SettingsState {
                 other.errLoadingLanguage == errLoadingLanguage) &&
             (identical(other.defaultRBF, defaultRBF) ||
                 other.defaultRBF == defaultRBF) &&
+            (identical(other.defaultPayjoin, defaultPayjoin) ||
+                other.defaultPayjoin == defaultPayjoin) &&
             (identical(other.homeLayout, homeLayout) ||
                 other.homeLayout == homeLayout) &&
             (identical(other.removeSwapWarnings, removeSwapWarnings) ||
@@ -314,6 +333,7 @@ class _$SettingsStateImpl extends _SettingsState {
       loadingLanguage,
       errLoadingLanguage,
       defaultRBF,
+      defaultPayjoin,
       homeLayout,
       removeSwapWarnings);
 
@@ -341,6 +361,7 @@ abstract class _SettingsState extends SettingsState {
       final bool loadingLanguage,
       final String errLoadingLanguage,
       final bool defaultRBF,
+      final bool defaultPayjoin,
       final int homeLayout,
       final bool removeSwapWarnings}) = _$SettingsStateImpl;
   const _SettingsState._() : super._();
@@ -364,6 +385,8 @@ abstract class _SettingsState extends SettingsState {
   String get errLoadingLanguage;
   @override
   bool get defaultRBF;
+  @override
+  bool get defaultPayjoin;
   @override
   int get homeLayout;
   @override

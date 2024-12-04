@@ -14,6 +14,7 @@ class SettingsState with _$SettingsState {
     @Default(false) bool loadingLanguage,
     @Default('') String errLoadingLanguage,
     @Default(true) bool defaultRBF,
+    @Default(true) bool defaultPayjoin,
     @Default(1) int homeLayout,
     @Default(false) bool removeSwapWarnings,
   }) = _SettingsState;
