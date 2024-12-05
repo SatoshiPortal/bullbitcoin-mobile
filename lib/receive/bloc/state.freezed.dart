@@ -27,7 +27,8 @@ mixin _$ReceiveState {
   int get savedInvoiceAmount => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   String get savedDescription => throw _privateConstructorUsedError;
-  String get payjoinEndpoint => throw _privateConstructorUsedError;
+  bool get disablePayjoin => throw _privateConstructorUsedError;
+  Receiver? get payjoinReceiver => throw _privateConstructorUsedError;
   bool get creatingInvoice => throw _privateConstructorUsedError;
   String get errCreatingInvoice => throw _privateConstructorUsedError;
   WalletBloc? get walletBloc => throw _privateConstructorUsedError;
@@ -62,7 +63,8 @@ abstract class $ReceiveStateCopyWith<$Res> {
       int savedInvoiceAmount,
       String description,
       String savedDescription,
-      String payjoinEndpoint,
+      bool disablePayjoin,
+      Receiver? payjoinReceiver,
       bool creatingInvoice,
       String errCreatingInvoice,
       WalletBloc? walletBloc,
@@ -102,7 +104,8 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     Object? savedInvoiceAmount = null,
     Object? description = null,
     Object? savedDescription = null,
-    Object? payjoinEndpoint = null,
+    Object? disablePayjoin = null,
+    Object? payjoinReceiver = freezed,
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
@@ -154,10 +157,14 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
           ? _value.savedDescription
           : savedDescription // ignore: cast_nullable_to_non_nullable
               as String,
-      payjoinEndpoint: null == payjoinEndpoint
-          ? _value.payjoinEndpoint
-          : payjoinEndpoint // ignore: cast_nullable_to_non_nullable
-              as String,
+      disablePayjoin: null == disablePayjoin
+          ? _value.disablePayjoin
+          : disablePayjoin // ignore: cast_nullable_to_non_nullable
+              as bool,
+      payjoinReceiver: freezed == payjoinReceiver
+          ? _value.payjoinReceiver
+          : payjoinReceiver // ignore: cast_nullable_to_non_nullable
+              as Receiver?,
       creatingInvoice: null == creatingInvoice
           ? _value.creatingInvoice
           : creatingInvoice // ignore: cast_nullable_to_non_nullable
@@ -245,7 +252,8 @@ abstract class _$$ReceiveStateImplCopyWith<$Res>
       int savedInvoiceAmount,
       String description,
       String savedDescription,
-      String payjoinEndpoint,
+      bool disablePayjoin,
+      Receiver? payjoinReceiver,
       bool creatingInvoice,
       String errCreatingInvoice,
       WalletBloc? walletBloc,
@@ -285,7 +293,8 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
     Object? savedInvoiceAmount = null,
     Object? description = null,
     Object? savedDescription = null,
-    Object? payjoinEndpoint = null,
+    Object? disablePayjoin = null,
+    Object? payjoinReceiver = freezed,
     Object? creatingInvoice = null,
     Object? errCreatingInvoice = null,
     Object? walletBloc = freezed,
@@ -337,10 +346,14 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
           ? _value.savedDescription
           : savedDescription // ignore: cast_nullable_to_non_nullable
               as String,
-      payjoinEndpoint: null == payjoinEndpoint
-          ? _value.payjoinEndpoint
-          : payjoinEndpoint // ignore: cast_nullable_to_non_nullable
-              as String,
+      disablePayjoin: null == disablePayjoin
+          ? _value.disablePayjoin
+          : disablePayjoin // ignore: cast_nullable_to_non_nullable
+              as bool,
+      payjoinReceiver: freezed == payjoinReceiver
+          ? _value.payjoinReceiver
+          : payjoinReceiver // ignore: cast_nullable_to_non_nullable
+              as Receiver?,
       creatingInvoice: null == creatingInvoice
           ? _value.creatingInvoice
           : creatingInvoice // ignore: cast_nullable_to_non_nullable
@@ -395,7 +408,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
       this.savedInvoiceAmount = 0,
       this.description = '',
       this.savedDescription = '',
-      this.payjoinEndpoint = '',
+      this.disablePayjoin = false,
+      this.payjoinReceiver,
       this.creatingInvoice = true,
       this.errCreatingInvoice = '',
       this.walletBloc,
@@ -438,7 +452,9 @@ class _$ReceiveStateImpl extends _ReceiveState {
   final String savedDescription;
   @override
   @JsonKey()
-  final String payjoinEndpoint;
+  final bool disablePayjoin;
+  @override
+  final Receiver? payjoinReceiver;
   @override
   @JsonKey()
   final bool creatingInvoice;
@@ -467,7 +483,7 @@ class _$ReceiveStateImpl extends _ReceiveState {
 
   @override
   String toString() {
-    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, defaultLiquidAddress: $defaultLiquidAddress, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, payjoinEndpoint: $payjoinEndpoint, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, updateAddressGap: $updateAddressGap, switchToSecure: $switchToSecure, switchToInstant: $switchToInstant, receiveFormSubmitted: $receiveFormSubmitted, oneWallet: $oneWallet)';
+    return 'ReceiveState(loadingAddress: $loadingAddress, errLoadingAddress: $errLoadingAddress, defaultAddress: $defaultAddress, defaultLiquidAddress: $defaultLiquidAddress, savingLabel: $savingLabel, errSavingLabel: $errSavingLabel, labelSaved: $labelSaved, savedInvoiceAmount: $savedInvoiceAmount, description: $description, savedDescription: $savedDescription, disablePayjoin: $disablePayjoin, payjoinReceiver: $payjoinReceiver, creatingInvoice: $creatingInvoice, errCreatingInvoice: $errCreatingInvoice, walletBloc: $walletBloc, paymentNetwork: $paymentNetwork, updateAddressGap: $updateAddressGap, switchToSecure: $switchToSecure, switchToInstant: $switchToInstant, receiveFormSubmitted: $receiveFormSubmitted, oneWallet: $oneWallet)';
   }
 
   @override
@@ -495,8 +511,10 @@ class _$ReceiveStateImpl extends _ReceiveState {
                 other.description == description) &&
             (identical(other.savedDescription, savedDescription) ||
                 other.savedDescription == savedDescription) &&
-            (identical(other.payjoinEndpoint, payjoinEndpoint) ||
-                other.payjoinEndpoint == payjoinEndpoint) &&
+            (identical(other.disablePayjoin, disablePayjoin) ||
+                other.disablePayjoin == disablePayjoin) &&
+            (identical(other.payjoinReceiver, payjoinReceiver) ||
+                other.payjoinReceiver == payjoinReceiver) &&
             (identical(other.creatingInvoice, creatingInvoice) ||
                 other.creatingInvoice == creatingInvoice) &&
             (identical(other.errCreatingInvoice, errCreatingInvoice) ||
@@ -530,7 +548,8 @@ class _$ReceiveStateImpl extends _ReceiveState {
         savedInvoiceAmount,
         description,
         savedDescription,
-        payjoinEndpoint,
+        disablePayjoin,
+        payjoinReceiver,
         creatingInvoice,
         errCreatingInvoice,
         walletBloc,
@@ -563,7 +582,8 @@ abstract class _ReceiveState extends ReceiveState {
       final int savedInvoiceAmount,
       final String description,
       final String savedDescription,
-      final String payjoinEndpoint,
+      final bool disablePayjoin,
+      final Receiver? payjoinReceiver,
       final bool creatingInvoice,
       final String errCreatingInvoice,
       final WalletBloc? walletBloc,
@@ -596,7 +616,9 @@ abstract class _ReceiveState extends ReceiveState {
   @override
   String get savedDescription;
   @override
-  String get payjoinEndpoint;
+  bool get disablePayjoin;
+  @override
+  Receiver? get payjoinReceiver;
   @override
   bool get creatingInvoice;
   @override

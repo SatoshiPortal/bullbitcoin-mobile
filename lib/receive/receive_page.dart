@@ -81,6 +81,7 @@ class _ReceivePageState extends State<ReceivePage> {
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletBloc: widget.walletBloc,
+      defaultPayjoin: locator<SettingsCubit>().state.defaultPayjoin,
     );
 
     final network = context.read<NetworkCubit>().state.getBBNetwork();
@@ -99,13 +100,6 @@ class _ReceivePageState extends State<ReceivePage> {
         context.read<NetworkCubit>().state.testnet,
         onStart: true,
       );
-    }
-
-    if (locator<SettingsCubit>().state.defaultPayjoin) {
-      //TODO: fetch pj endpoint
-      const payjoinEndpoint =
-          'HTTPS://LOCALHOST:53194/H2P45EQQTVGAY%23RK1QG6DW9EA5U3QQZCDY9TP5QZP5JAA6Y4CCY0W7AHE8GNJR7ZEQ6K9X+OH1QYP0LF3MHF7T79E46QFLTLGCHEMNPNERU22EQ8PPQ34L9A3D0L7UJGG+EX1JUR4ZEC';
-      _receiveCubit.updatePayjoinEndpoint(payjoinEndpoint);
     }
 
     _receiveCubit.updateWalletBloc(walletBloc);

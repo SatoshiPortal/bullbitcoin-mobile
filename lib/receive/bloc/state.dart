@@ -3,6 +3,7 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:payjoin_flutter/receive.dart';
 
 part 'state.freezed.dart';
 
@@ -20,7 +21,8 @@ class ReceiveState with _$ReceiveState {
     @Default(0) int savedInvoiceAmount,
     @Default('') String description,
     @Default('') String savedDescription,
-    @Default('') String payjoinEndpoint,
+    @Default(false) bool disablePayjoin,
+    Receiver? payjoinReceiver,
     @Default(true) bool creatingInvoice,
     @Default('') String errCreatingInvoice,
     WalletBloc? walletBloc,
@@ -45,7 +47,7 @@ class ReceiveState with _$ReceiveState {
 
     String finalAddress = '';
     if (paymentNetwork == PaymentNetwork.lightning ||
-        (amount == 0 && description.isEmpty && payjoinEndpoint.isEmpty)) {
+        (amount == 0 && description.isEmpty && payjoinReceiver == null)) {
       finalAddress = address;
     } else {
       if (isLiquid) {
@@ -55,9 +57,19 @@ class ReceiveState with _$ReceiveState {
         final liquidProtocol = isTestnet ? 'liquidtestnet' : 'liquidnetwork';
         finalAddress =
             '$liquidProtocol:$address?amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}&assetid=$lqAssetId';
+      } else if (payjoinReceiver != null) {
+        // Receiver session is active: build a payjoin URI
+        var pjUrl = payjoinReceiver!.pjUriBuilder();
+        if (amount > 0) {
+          pjUrl = pjUrl.amountSats(amount: BigInt.from(amount * 100000000));
+        }
+        if (description.isNotEmpty) {
+          pjUrl = pjUrl.label(label: description);
+        }
+        finalAddress = pjUrl.build().asString();
       } else {
         finalAddress =
-            'bitcoin:$address?amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}${payjoinEndpoint.isNotEmpty ? '&pj=$payjoinEndpoint' : ''}';
+            'bitcoin:$address?amount=${amount.toStringAsFixed(8)}${description.isNotEmpty ? '&label=$description' : ''}';
       }
     }
     return finalAddress;
