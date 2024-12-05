@@ -1062,6 +1062,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  payjoin_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "0124ef669eb3b8e130e4584a534e9eb51a06bdec"
+      resolved-ref: "0124ef669eb3b8e130e4584a534e9eb51a06bdec"
+      url: "https://github.com/LtbLightning/payjoin-flutter"
+    source: git
+    version: "0.21.0"
   petitparser:
     dependency: transitive
     description:
