@@ -25,6 +25,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lwk_dart/lwk_dart.dart';
+import 'package:nostr_sdk/nostr_sdk.dart';
 import 'package:oktoast/oktoast.dart';
 
 Future main({bool fromTest = false}) async {
@@ -36,6 +37,7 @@ Future main({bool fromTest = false}) async {
     await LibLwk.init();
     await LibBoltz.init();
     await LibBip85.init();
+    await Nip17.init();
     await dotenv.load(isOptional: true);
     Bloc.observer = BBlocObserver();
     // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
