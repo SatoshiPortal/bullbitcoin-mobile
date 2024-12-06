@@ -21,6 +21,9 @@ import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:payjoin_flutter/send.dart';
+import 'package:payjoin_flutter/uri.dart' as pj_uri;
 
 class SendCubit extends Cubit<SendState> {
   SendCubit({
@@ -1125,6 +1128,74 @@ class SendCubit extends Cubit<SendState> {
       if (!isLn) {
         final fees = _networkFeesCubit.state.selectedOrFirst(false);
         baseLayerBuild(networkFees: fees);
+        if (state.payjoinEndpoint != null) {
+          final ohttpProxyUrl =
+              await pj_uri.Url.fromStr('https://ohttp.achow101.com');
+          final payjoinDirectory = pj_uri.Url.fromStr('https://payjo.in');
+
+          // Initiate Payjoin request
+          final initialPsbt = state.psbt; // Assume this is your initial PSBT
+
+          final maybePjUri =
+              await pj_uri.Uri.fromStr(state.payjoinEndpoint!.toString());
+          final pjUri = maybePjUri.checkPjSupported();
+          final senderBuilder = await SenderBuilder.fromPsbtAndUri(
+            psbtBase64: initialPsbt,
+            pjUri: pjUri,
+          );
+
+          // TODO get appropriateminFeeRate from `fees`
+          final minFeeRate = BigInt.from(250);
+          final sender = await senderBuilder.buildRecommended(
+            minFeeRate: minFeeRate,
+          );
+          final (postReq, postReqCtx) =
+              await sender.extractV2(ohttpProxyUrl: ohttpProxyUrl);
+
+          // TODO handle if null
+          final postRes = await http.post(
+            Uri.parse(postReq.url.asString()),
+            headers: {
+              'Content-Type': postReq.contentType,
+            },
+            body: postReq.body,
+          );
+          final getCtx =
+              await postReqCtx.processResponse(response: postRes.bodyBytes);
+          String? proposal;
+          while (true) {
+            try {
+              final (getRequest, getReqCtx) = await getCtx.extractReq(
+                ohttpRelay: ohttpProxyUrl,
+              );
+              final getRes = await http.post(
+                Uri.parse(getRequest.url.asString()),
+                headers: {
+                  'Content-Type': getRequest.contentType,
+                },
+                body: getRequest.body,
+              );
+              proposal = await getCtx.processResponse(
+                response: getRes.bodyBytes,
+                ohttpCtx: getReqCtx,
+              );
+              if (proposal != null) {
+                break;
+              }
+            } catch (e) {
+              // If the session times out or another error occurs, rethrow the error
+              return;
+            }
+          }
+          final payjoin =
+              await _walletTx.signPsbt(psbt: proposal, wallet: wallet);
+          emit(
+            state.copyWith(
+              psbtSigned: payjoin.$2?.toString(),
+              tx: payjoin.$1?.$1,
+            ),
+          );
+        }
         return;
       }
       // context.read<WalletBloc>().state.wallet;

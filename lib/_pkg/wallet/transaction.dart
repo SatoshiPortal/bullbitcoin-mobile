@@ -224,6 +224,51 @@ class WalletTx implements IWalletTransactions {
     }
   }
 
+  Future<((Transaction, String)?, Err?)> signPsbt({
+    required String psbt,
+    // required bdk.Blockchain blockchain,
+    required Wallet wallet,
+    // required String address,
+  }) async {
+    try {
+      final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet.id);
+      if (errWallet != null) throw errWallet;
+      final ((signed), errSign) = await _bdkTransactions.signTx(
+        psbt: psbt,
+        bdkWallet: bdkWallet!,
+      );
+      if (errSign != null) throw errSign;
+      final txDetails = signed!.$1;
+      final signedPsbt = signed.$2;
+
+      final Transaction tx = Transaction(
+        txid: await txDetails.txid(),
+        received: 0, // TODO sender outputs - sender inputs
+        sent: 0, // TODO sender inputs - sender outputs
+        fee: 0, // TODO
+        feeRate: 0, // TODO
+        height: 0, // TODO
+        timestamp: 0,
+        // txDetails.confirmationTime?.timestamp ?? 0,
+        label: '',
+        toAddress: '',
+        outAddrs: [],
+        psbt: signedPsbt,
+      );
+      // convert BdkTransaction to _$Transaction
+      return ((tx, signedPsbt), null);
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while signing transaction',
+          solution: 'Please try again.',
+        ),
+      );
+    }
+  }
+
   Future<(Wallet, Err?)> addUnsignedTxToWallet({
     required Transaction transaction,
     required Wallet wallet,
