@@ -2,7 +2,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 void setupConfigs() {}
-final keychainapi = dotenv.env['KEYCHAIN_API'] ?? '';
+final keychainapi = dotenv.env['KEYCHAIN_API'] ?? 'http://localhost:3000';
+final socialrelay = dotenv.env['SOCIAL_RELAY'] ?? 'ws://localhost:7000';
 final bbmempoolapi = dotenv.env['BB_MEMPOOL_API'] ?? 'mempool.bullbitcoin.com';
 final openmempoolapi = dotenv.env['MEMPOOL_API'] ?? 'mempool.space';
 final bbexchangeapi = dotenv.env['BB_API'] ?? 'api.bullbitcoin.com/price';
