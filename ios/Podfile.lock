@@ -1,6 +1,8 @@
 PODS:
   - bdk_flutter (0.31.2):
     - Flutter
+  - bip85 (0.0.1):
+    - Flutter
   - boltz (0.1.6)
   - DKImagePickerController/Core (4.3.9):
     - DKImagePickerController/ImageDataManager
@@ -73,6 +75,7 @@ PODS:
 
 DEPENDENCIES:
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
+  - bip85 (from `.symlinks/plugins/bip85/ios`)
   - boltz (from `.symlinks/plugins/boltz/ios`)
   - document_file_save_plus (from `.symlinks/plugins/document_file_save_plus/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
@@ -102,6 +105,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   bdk_flutter:
     :path: ".symlinks/plugins/bdk_flutter/ios"
+  bip85:
+    :path: ".symlinks/plugins/bip85/ios"
   boltz:
     :path: ".symlinks/plugins/boltz/ios"
   document_file_save_plus:
@@ -139,6 +144,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   bdk_flutter: 08274535b7bd58a09bfa9c3733474fb44133484c
+  bip85: f656a7e6b23afda4960efb11c87d51d68e8be3db
   boltz: 6388ec2412f3753b63a9e65c97f87ea26f43bddc
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
