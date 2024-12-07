@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/payjoin.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
@@ -16,8 +17,10 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required WalletAddress walletAddress,
     required WalletsStorageRepository walletsStorageRepository,
     required bool defaultPayjoin,
+    required PayjoinSessionStorage payjoinSessionStorage,
   })  : _walletsStorageRepository = walletsStorageRepository,
         _walletAddress = walletAddress,
+        _payjoinSessionStorage = payjoinSessionStorage,
         super(
           ReceiveState(
             walletBloc: walletBloc,
@@ -34,6 +37,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   final WalletAddress _walletAddress;
   final WalletsStorageRepository _walletsStorageRepository;
+  final PayjoinSessionStorage _payjoinSessionStorage;
 
   void updateWalletBloc(WalletBloc walletBloc) {
     if (state.oneWallet) return;
@@ -383,6 +387,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       ohttpKeys: ohttpKeys,
       ohttpRelay: ohttpRelay,
     );
+    await _payjoinSessionStorage.insertReceiverSession(receiver);
     emit(state.copyWith(payjoinReceiver: receiver));
   }
 }
