@@ -1,30 +1,43 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/payjoin.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:payjoin_flutter/common.dart';
+import 'package:payjoin_flutter/receive.dart';
+import 'package:payjoin_flutter/uri.dart';
 
 class ReceiveCubit extends Cubit<ReceiveState> {
   ReceiveCubit({
     WalletBloc? walletBloc,
     required WalletAddress walletAddress,
     required WalletsStorageRepository walletsStorageRepository,
+    required bool defaultPayjoin,
+    required PayjoinSessionStorage payjoinSessionStorage,
   })  : _walletsStorageRepository = walletsStorageRepository,
         _walletAddress = walletAddress,
+        _payjoinSessionStorage = payjoinSessionStorage,
         super(
           ReceiveState(
             walletBloc: walletBloc,
             oneWallet: walletBloc != null,
           ),
         ) {
+    emit(
+      state.copyWith(
+        disablePayjoin: !defaultPayjoin,
+      ),
+    );
     loadAddress();
   }
 
   final WalletAddress _walletAddress;
   final WalletsStorageRepository _walletsStorageRepository;
+  final PayjoinSessionStorage _payjoinSessionStorage;
 
   void updateWalletBloc(WalletBloc walletBloc) {
     if (state.oneWallet) return;
@@ -48,6 +61,10 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     // if (watchOnly)
     //   emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
     loadAddress();
+    if (state.paymentNetwork == PaymentNetwork.bitcoin &&
+        !state.disablePayjoin) {
+      loadPayjoinReceiver();
+    }
   }
 
   void updateWalletType(
@@ -354,4 +371,23 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   void shareClicked() {}
+
+  void loadPayjoinReceiver() async {
+    final ohttpRelay = await Url.fromStr('https://ohttp.achow101.com');
+    final payjoinDirectory = await Url.fromStr('https://payjo.in');
+    final ohttpKeys = await fetchOhttpKeys(
+      ohttpRelay: ohttpRelay,
+      payjoinDirectory: payjoinDirectory,
+    );
+    final address = state.defaultAddress!.address;
+    final receiver = await Receiver.create(
+      address: address,
+      network: Network.bitcoin,
+      directory: payjoinDirectory,
+      ohttpKeys: ohttpKeys,
+      ohttpRelay: ohttpRelay,
+    );
+    await _payjoinSessionStorage.insertReceiverSession(receiver);
+    emit(state.copyWith(payjoinReceiver: receiver));
+  }
 }

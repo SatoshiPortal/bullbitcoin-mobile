@@ -20,6 +20,10 @@ dependencies:
     git:
       url: https://github.com/LtbLightning/bdk-flutter
       ref: 6cbadd9d7267d0fbb8626dfb403fb5d562046543
+  payjoin_flutter:
+    git:
+      url: https://github.com/DanGould/payjoin-flutter
+      ref: 5d7cc990912e47d6517748f402a8ad7203d1729f
   cupertino_icons: ^1.0.2
   flutter_bloc: ^8.1.5
   freezed: ^2.4.5
