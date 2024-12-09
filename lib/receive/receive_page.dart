@@ -3,7 +3,8 @@ import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
-import 'package:bb_mobile/_pkg/payjoin.dart';
+import 'package:bb_mobile/_pkg/payjoin/session_storage.dart';
+import 'package:bb_mobile/_pkg/payjoin/sync.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
@@ -84,6 +85,7 @@ class _ReceivePageState extends State<ReceivePage> {
       walletBloc: widget.walletBloc,
       defaultPayjoin: locator<SettingsCubit>().state.defaultPayjoin,
       payjoinSessionStorage: locator<PayjoinSessionStorage>(),
+      payjoinSync: locator<PayjoinSync>(),
     );
 
     final network = context.read<NetworkCubit>().state.getBBNetwork();
