@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/payjoin/session_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/bip21.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -31,6 +32,7 @@ class SendCubit extends Cubit<SendState> {
     WalletBloc? walletBloc,
     required WalletTx walletTx,
     required FileStorage fileStorage,
+    required PayjoinSessionStorage payjoinSessionStorage,
     required NetworkCubit networkCubit,
     required NetworkFeesCubit networkFeesCubit,
     required CurrencyCubit currencyCubit,
@@ -46,6 +48,7 @@ class SendCubit extends Cubit<SendState> {
         _currencyCubit = currencyCubit,
         _walletTx = walletTx,
         _fileStorage = fileStorage,
+        _payjoinSessionStorage = payjoinSessionStorage,
         _barcode = barcode,
         _swapBoltz = swapBoltz,
         _swapCubit = swapCubit,
@@ -68,6 +71,7 @@ class SendCubit extends Cubit<SendState> {
 
   final Barcode _barcode;
   final FileStorage _fileStorage;
+  final PayjoinSessionStorage _payjoinSessionStorage;
   final WalletTx _walletTx;
   final SwapBoltz _swapBoltz;
 
@@ -1139,6 +1143,7 @@ class SendCubit extends Cubit<SendState> {
           final maybePjUri =
               await pj_uri.Uri.fromStr(state.payjoinEndpoint!.toString());
           final pjUri = maybePjUri.checkPjSupported();
+          final pjUrl = pjUri.pjEndpoint();
           final senderBuilder = await SenderBuilder.fromPsbtAndUri(
             psbtBase64: initialPsbt,
             pjUri: pjUri,
@@ -1149,6 +1154,7 @@ class SendCubit extends Cubit<SendState> {
           final sender = await senderBuilder.buildRecommended(
             minFeeRate: minFeeRate,
           );
+          await _payjoinSessionStorage.insertSenderSession(sender, pjUrl);
           final (postReq, postReqCtx) =
               await sender.extractV2(ohttpProxyUrl: ohttpProxyUrl);
 
