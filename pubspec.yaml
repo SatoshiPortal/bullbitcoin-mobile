@@ -85,6 +85,10 @@ dependencies:
   freezed_annotation: ^2.4.4
   convert: ^3.1.2
   crypto: ^3.0.6
+  payjoin_flutter:
+    git:
+      url: https://github.com/DanGould/payjoin-flutter
+      ref: 5d7cc990912e47d6517748f402a8ad7203d1729f
 
 dev_dependencies:
   build_runner: ^2.4.9
