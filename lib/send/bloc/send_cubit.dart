@@ -1133,76 +1133,12 @@ class SendCubit extends Cubit<SendState> {
         final fees = _networkFeesCubit.state.selectedOrFirst(false);
         baseLayerBuild(networkFees: fees);
         if (state.payjoinEndpoint != null) {
-          final ohttpProxyUrl =
-              await pj_uri.Url.fromStr('https://ohttp.achow101.com');
-          final payjoinDirectory = pj_uri.Url.fromStr('https://payjo.in');
-
-          // Initiate Payjoin request
-          final initialPsbt = state.psbt; // Assume this is your initial PSBT
-
-          final maybePjUri =
-              await pj_uri.Uri.fromStr(state.payjoinEndpoint!.toString());
-          final pjUri = maybePjUri.checkPjSupported();
-          final pjUrl = pjUri.pjEndpoint();
-          final senderBuilder = await SenderBuilder.fromPsbtAndUri(
-            psbtBase64: initialPsbt,
-            pjUri: pjUri,
-          );
-
-          // TODO get appropriateminFeeRate from `fees`
-          final minFeeRate = BigInt.from(250);
-          final sender = await senderBuilder.buildRecommended(
-            minFeeRate: minFeeRate,
-          );
-          await _payjoinSessionStorage.insertSenderSession(sender, pjUrl);
-          final (postReq, postReqCtx) =
-              await sender.extractV2(ohttpProxyUrl: ohttpProxyUrl);
-
-          // TODO handle if null
-          final postRes = await http.post(
-            Uri.parse(postReq.url.asString()),
-            headers: {
-              'Content-Type': postReq.contentType,
-            },
-            body: postReq.body,
-          );
-          final getCtx =
-              await postReqCtx.processResponse(response: postRes.bodyBytes);
-          String? proposal;
-          while (true) {
-            try {
-              final (getRequest, getReqCtx) = await getCtx.extractReq(
-                ohttpRelay: ohttpProxyUrl,
-              );
-              final getRes = await http.post(
-                Uri.parse(getRequest.url.asString()),
-                headers: {
-                  'Content-Type': getRequest.contentType,
-                },
-                body: getRequest.body,
-              );
-              proposal = await getCtx.processResponse(
-                response: getRes.bodyBytes,
-                ohttpCtx: getReqCtx,
-              );
-              if (proposal != null) {
-                break;
-              }
-            } catch (e) {
-              // If the session times out or another error occurs, rethrow the error
-              return;
-            }
-          }
-          final payjoin =
-              await _walletTx.signPsbt(psbt: proposal, wallet: wallet);
-          emit(
-            state.copyWith(
-              psbtSigned: payjoin.$2?.toString(),
-              tx: payjoin.$1?.$1,
-            ),
+          sendPayjoin(
+            networkFees: fees,
+            originalPsbt: state.psbt,
+            wallet: wallet,
           );
         }
-        return;
       }
       // context.read<WalletBloc>().state.wallet;
       final isLiq = wallet.isLiquid();
@@ -1229,7 +1165,81 @@ class SendCubit extends Cubit<SendState> {
     sendSwap();
   }
 
-  Future<void> buildChainSwap(
+  Future<void> sendPayjoin({
+    required int networkFees,
+    required String originalPsbt,
+    required Wallet wallet,
+  }) async {
+    final minFeeRateSatPerKwu = BigInt.from(networkFees * 250);
+    final ohttpProxyUrl =
+        await pj_uri.Url.fromStr('https://ohttp.achow101.com');
+    final payjoinDirectory = pj_uri.Url.fromStr('https://payjo.in');
+
+    final maybePjUri =
+        await pj_uri.Uri.fromStr(state.payjoinEndpoint!.toString());
+    final pjUri =
+        maybePjUri.checkPjSupported(); // TODO throw error if not supported
+    final pjUrl = pjUri
+        .pjEndpoint(); // TODO throw error if null (should this be fallible?)
+
+    final senderBuilder = await SenderBuilder.fromPsbtAndUri(
+      psbtBase64: originalPsbt,
+      pjUri: pjUri,
+    );
+
+    final sender = await senderBuilder.buildRecommended(
+      minFeeRate: minFeeRateSatPerKwu,
+    );
+    await _payjoinSessionStorage.insertSenderSession(sender, pjUrl);
+    final (postReq, postReqCtx) =
+        await sender.extractV2(ohttpProxyUrl: ohttpProxyUrl);
+
+    final postRes = await http.post(
+      Uri.parse(postReq.url.asString()),
+      headers: {
+        'Content-Type': postReq.contentType,
+      },
+      body: postReq.body,
+    );
+    final getCtx = await postReqCtx.processResponse(
+      response: postRes.bodyBytes,
+    ); // TODO throw error if null
+    String? proposal;
+    while (true) {
+      try {
+        final (getRequest, getReqCtx) = await getCtx.extractReq(
+          ohttpRelay: ohttpProxyUrl,
+        );
+        final getRes = await http.post(
+          Uri.parse(getRequest.url.asString()),
+          headers: {
+            'Content-Type': getRequest.contentType,
+          },
+          body: getRequest.body,
+        );
+        proposal = await getCtx.processResponse(
+          response: getRes.bodyBytes,
+          ohttpCtx: getReqCtx,
+        ); // TODO throw error if null
+        if (proposal != null) {
+          break;
+        }
+      } catch (e) {
+        // If the session times out or another error occurs, rethrow the error
+        return;
+      }
+    }
+    // TODO throw error if null
+    final payjoin = await _walletTx.signPsbt(psbt: proposal, wallet: wallet);
+    emit(
+      state.copyWith(
+        psbtSigned: payjoin.$2?.toString(),
+        tx: payjoin.$1?.$1,
+      ),
+    );
+  }
+
+  void buildChainSwap(
     Wallet fromWallet,
     Wallet toWallet,
     int amount,
