@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
@@ -23,6 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:payjoin_flutter/common.dart' as pj;
 import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/uri.dart' as pj_uri;
 
@@ -1165,16 +1167,11 @@ class SendCubit extends Cubit<SendState> {
     sendSwap();
   }
 
-  Future<void> sendPayjoin({
+  void sendPayjoin({
     required int networkFees,
     required String originalPsbt,
     required Wallet wallet,
   }) async {
-    final minFeeRateSatPerKwu = BigInt.from(networkFees * 250);
-    final ohttpProxyUrl =
-        await pj_uri.Url.fromStr('https://ohttp.achow101.com');
-    final payjoinDirectory = pj_uri.Url.fromStr('https://payjo.in');
-
     final maybePjUri =
         await pj_uri.Uri.fromStr(state.payjoinEndpoint!.toString());
     final pjUri =
@@ -1182,18 +1179,69 @@ class SendCubit extends Cubit<SendState> {
     final pjUrl = pjUri
         .pjEndpoint(); // TODO throw error if null (should this be fallible?)
 
+    // TODO await db.getSender(url);
+    final sender = await initPayjoinSender(
+      networkFees: networkFees,
+      originalPsbt: originalPsbt,
+      pjUri: pjUri,
+    );
+    await _payjoinSessionStorage.insertSenderSession(sender, pjUrl);
+    await spawnPayjoinSender(
+      sender: sender,
+    );
+  }
+
+  Future<Sender> initPayjoinSender({
+    required int networkFees,
+    required String originalPsbt,
+    required pj_uri.PjUri pjUri,
+  }) async {
+    final minFeeRateSatPerKwu = BigInt.from(networkFees * 250);
     final senderBuilder = await SenderBuilder.fromPsbtAndUri(
       psbtBase64: originalPsbt,
       pjUri: pjUri,
     );
-
     final sender = await senderBuilder.buildRecommended(
       minFeeRate: minFeeRateSatPerKwu,
     );
-    await _payjoinSessionStorage.insertSenderSession(sender, pjUrl);
-    final (postReq, postReqCtx) =
-        await sender.extractV2(ohttpProxyUrl: ohttpProxyUrl);
+    return sender;
+  }
 
+  Future<void> spawnPayjoinSender({
+    required Sender sender,
+  }) async {
+    Isolate.spawn(longPollSender, sender);
+  }
+
+  Future<String?> longPollSender(Sender sender) async {
+    final ohttpProxyUrl =
+        await pj_uri.Url.fromStr('https://ohttp.achow101.com');
+    pj.Request postReq;
+    V2PostContext postReqCtx;
+    try {
+      final result = await sender.extractV2(ohttpProxyUrl: ohttpProxyUrl);
+      postReq = result.$1;
+      postReqCtx = result.$2;
+    } catch (e) {
+      try {
+        final (req, v1Ctx) = await sender.extractV1();
+        print('Posting Original PSBT Payload request...');
+        final response = await http.post(
+          Uri.parse(req.url.asString()),
+          headers: {
+            'Content-Type': req.contentType,
+          },
+          body: req.body,
+        );
+        print('Sent fallback transaction');
+        final proposalPsbt =
+            await v1Ctx.processResponse(response: response.bodyBytes);
+        return proposalPsbt;
+      } catch (e) {
+        print(e);
+        throw Exception('Response error: $e');
+      }
+    }
     final postRes = await http.post(
       Uri.parse(postReq.url.asString()),
       headers: {
@@ -1203,40 +1251,33 @@ class SendCubit extends Cubit<SendState> {
     );
     final getCtx = await postReqCtx.processResponse(
       response: postRes.bodyBytes,
-    ); // TODO throw error if null
-    String? proposal;
-    while (true) {
-      try {
-        final (getRequest, getReqCtx) = await getCtx.extractReq(
-          ohttpRelay: ohttpProxyUrl,
-        );
-        final getRes = await http.post(
-          Uri.parse(getRequest.url.asString()),
-          headers: {
-            'Content-Type': getRequest.contentType,
-          },
-          body: getRequest.body,
-        );
-        proposal = await getCtx.processResponse(
-          response: getRes.bodyBytes,
-          ohttpCtx: getReqCtx,
-        ); // TODO throw error if null
-        if (proposal != null) {
-          break;
-        }
-      } catch (e) {
-        // If the session times out or another error occurs, rethrow the error
-        return;
-      }
-    }
-    // TODO throw error if null
-    final payjoin = await _walletTx.signPsbt(psbt: proposal, wallet: wallet);
-    emit(
-      state.copyWith(
-        psbtSigned: payjoin.$2?.toString(),
-        tx: payjoin.$1?.$1,
-      ),
     );
+    String? proposalPsbt;
+    while (true) {
+      final (getRequest, getReqCtx) = await getCtx.extractReq(
+        ohttpRelay: ohttpProxyUrl,
+      );
+      final getRes = await http.post(
+        Uri.parse(getRequest.url.asString()),
+        headers: {
+          'Content-Type': getRequest.contentType,
+        },
+        body: getRequest.body,
+      );
+      proposalPsbt = await getCtx.processResponse(
+        response: getRes.bodyBytes,
+        ohttpCtx: getReqCtx,
+      ); // TODO throw error if null
+      break;
+    }
+    return proposalPsbt;
+  }
+
+  // process, finalize, and broadcast
+  void processPayjoinProposal(String proposalPsbt, Wallet wallet) async {
+    final payjoin =
+        await _walletTx.signPsbt(psbt: proposalPsbt, wallet: wallet);
+    // baseLayerSend() but not in UI
   }
 
   void buildChainSwap(
