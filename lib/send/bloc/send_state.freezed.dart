@@ -39,6 +39,7 @@ mixin _$SendState {
   String get errDownloadingFile => throw _privateConstructorUsedError;
   bool get downloaded => throw _privateConstructorUsedError;
   bool get disableRBF => throw _privateConstructorUsedError;
+  Uri? get payjoinEndpoint => throw _privateConstructorUsedError;
   bool get sendAllCoin => throw _privateConstructorUsedError;
   List<UTXO> get selectedUtxos => throw _privateConstructorUsedError;
   String get errAddresses => throw _privateConstructorUsedError;
@@ -50,7 +51,9 @@ mixin _$SendState {
   bool get oneWallet => throw _privateConstructorUsedError;
   bool get drainUtxos => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SendStateCopyWith<SendState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -81,6 +84,7 @@ abstract class $SendStateCopyWith<$Res> {
       String errDownloadingFile,
       bool downloaded,
       bool disableRBF,
+      Uri? payjoinEndpoint,
       bool sendAllCoin,
       List<UTXO> selectedUtxos,
       String errAddresses,
@@ -106,6 +110,8 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -129,6 +135,7 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     Object? errDownloadingFile = null,
     Object? downloaded = null,
     Object? disableRBF = null,
+    Object? payjoinEndpoint = freezed,
     Object? sendAllCoin = null,
     Object? selectedUtxos = null,
     Object? errAddresses = null,
@@ -221,6 +228,10 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
           ? _value.disableRBF
           : disableRBF // ignore: cast_nullable_to_non_nullable
               as bool,
+      payjoinEndpoint: freezed == payjoinEndpoint
+          ? _value.payjoinEndpoint
+          : payjoinEndpoint // ignore: cast_nullable_to_non_nullable
+              as Uri?,
       sendAllCoin: null == sendAllCoin
           ? _value.sendAllCoin
           : sendAllCoin // ignore: cast_nullable_to_non_nullable
@@ -264,6 +275,8 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     ) as $Val);
   }
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $InvoiceCopyWith<$Res>? get invoice {
@@ -276,6 +289,8 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     });
   }
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $TransactionCopyWith<$Res>? get tx {
@@ -318,6 +333,7 @@ abstract class _$$SendStateImplCopyWith<$Res>
       String errDownloadingFile,
       bool downloaded,
       bool disableRBF,
+      Uri? payjoinEndpoint,
       bool sendAllCoin,
       List<UTXO> selectedUtxos,
       String errAddresses,
@@ -343,6 +359,8 @@ class __$$SendStateImplCopyWithImpl<$Res>
       _$SendStateImpl _value, $Res Function(_$SendStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -366,6 +384,7 @@ class __$$SendStateImplCopyWithImpl<$Res>
     Object? errDownloadingFile = null,
     Object? downloaded = null,
     Object? disableRBF = null,
+    Object? payjoinEndpoint = freezed,
     Object? sendAllCoin = null,
     Object? selectedUtxos = null,
     Object? errAddresses = null,
@@ -458,6 +477,10 @@ class __$$SendStateImplCopyWithImpl<$Res>
           ? _value.disableRBF
           : disableRBF // ignore: cast_nullable_to_non_nullable
               as bool,
+      payjoinEndpoint: freezed == payjoinEndpoint
+          ? _value.payjoinEndpoint
+          : payjoinEndpoint // ignore: cast_nullable_to_non_nullable
+              as Uri?,
       sendAllCoin: null == sendAllCoin
           ? _value.sendAllCoin
           : sendAllCoin // ignore: cast_nullable_to_non_nullable
@@ -526,6 +549,7 @@ class _$SendStateImpl extends _SendState {
       this.errDownloadingFile = '',
       this.downloaded = false,
       this.disableRBF = false,
+      this.payjoinEndpoint,
       this.sendAllCoin = false,
       final List<UTXO> selectedUtxos = const [],
       this.errAddresses = '',
@@ -605,6 +629,8 @@ class _$SendStateImpl extends _SendState {
   @JsonKey()
   final bool disableRBF;
   @override
+  final Uri? payjoinEndpoint;
+  @override
   @JsonKey()
   final bool sendAllCoin;
   final List<UTXO> _selectedUtxos;
@@ -640,7 +666,7 @@ class _$SendStateImpl extends _SendState {
 
   @override
   String toString() {
-    return 'SendState(address: $address, enabledWallets: $enabledWallets, paymentNetwork: $paymentNetwork, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice, showSendButton: $showSendButton, buildingOnChain: $buildingOnChain, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, onChainAbsFee: $onChainAbsFee, onChainSweep: $onChainSweep, oneWallet: $oneWallet, drainUtxos: $drainUtxos)';
+    return 'SendState(address: $address, enabledWallets: $enabledWallets, paymentNetwork: $paymentNetwork, selectedWalletBloc: $selectedWalletBloc, invoice: $invoice, showSendButton: $showSendButton, buildingOnChain: $buildingOnChain, note: $note, tempAmt: $tempAmt, scanningAddress: $scanningAddress, errScanningAddress: $errScanningAddress, sending: $sending, errSending: $errSending, sent: $sent, psbt: $psbt, tx: $tx, downloadingFile: $downloadingFile, errDownloadingFile: $errDownloadingFile, downloaded: $downloaded, disableRBF: $disableRBF, payjoinEndpoint: $payjoinEndpoint, sendAllCoin: $sendAllCoin, selectedUtxos: $selectedUtxos, errAddresses: $errAddresses, signed: $signed, psbtSigned: $psbtSigned, psbtSignedFeeAmount: $psbtSignedFeeAmount, onChainAbsFee: $onChainAbsFee, onChainSweep: $onChainSweep, oneWallet: $oneWallet, drainUtxos: $drainUtxos)';
   }
 
   @override
@@ -680,6 +706,8 @@ class _$SendStateImpl extends _SendState {
                 other.downloaded == downloaded) &&
             (identical(other.disableRBF, disableRBF) ||
                 other.disableRBF == disableRBF) &&
+            (identical(other.payjoinEndpoint, payjoinEndpoint) ||
+                other.payjoinEndpoint == payjoinEndpoint) &&
             (identical(other.sendAllCoin, sendAllCoin) ||
                 other.sendAllCoin == sendAllCoin) &&
             const DeepCollectionEquality()
@@ -724,6 +752,7 @@ class _$SendStateImpl extends _SendState {
         errDownloadingFile,
         downloaded,
         disableRBF,
+        payjoinEndpoint,
         sendAllCoin,
         const DeepCollectionEquality().hash(_selectedUtxos),
         errAddresses,
@@ -736,7 +765,9 @@ class _$SendStateImpl extends _SendState {
         drainUtxos
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>
@@ -765,6 +796,7 @@ abstract class _SendState extends SendState {
       final String errDownloadingFile,
       final bool downloaded,
       final bool disableRBF,
+      final Uri? payjoinEndpoint,
       final bool sendAllCoin,
       final List<UTXO> selectedUtxos,
       final String errAddresses,
@@ -798,8 +830,8 @@ abstract class _SendState extends SendState {
   @override
   bool get scanningAddress;
   @override
-  String get errScanningAddress;
-  @override // @Default(false) bool showDropdown,
+  String get errScanningAddress; // @Default(false) bool showDropdown,
+  @override
   bool get sending;
   @override
   String get errSending;
@@ -808,9 +840,9 @@ abstract class _SendState extends SendState {
   @override
   String get psbt;
   @override
-  Transaction? get tx;
-  @override // @Default(false) bool txSettled,
+  Transaction? get tx; // @Default(false) bool txSettled,
 // @Default(false) bool txPaid,
+  @override
   bool get downloadingFile;
   @override
   String get errDownloadingFile;
@@ -818,6 +850,8 @@ abstract class _SendState extends SendState {
   bool get downloaded;
   @override
   bool get disableRBF;
+  @override
+  Uri? get payjoinEndpoint;
   @override
   bool get sendAllCoin;
   @override
@@ -838,8 +872,11 @@ abstract class _SendState extends SendState {
   bool get oneWallet;
   @override
   bool get drainUtxos;
+
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -133,6 +133,10 @@ class SendCubit extends Cubit<SendState> {
         if (label != null) {
           emit(state.copyWith(note: label));
         }
+        final pjParam = bip21Obj.options['pj'] as String?;
+        if (pjParam != null) {
+          emit(state.copyWith(payjoinEndpoint: Uri.parse(pjParam)));
+        }
       case AddressNetwork.bip21Liquid:
         final bip21Obj = bip21.decode(
           address.startsWith('liquidnetwork:')

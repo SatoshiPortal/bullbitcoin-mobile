@@ -19,6 +19,7 @@ class StorageKeys {
   static const swapTxSensitive = 'swapTxSensitive';
   static const hiveEncryption = 'hiveEncryptionKey';
   static const version = 'version';
+  static const payjoin = 'payjoin';
 }
 
 abstract class IStorage {
