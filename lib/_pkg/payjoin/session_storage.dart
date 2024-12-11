@@ -74,7 +74,7 @@ class PayjoinSessionStorage {
     }
   }
 
-  Future<Err?> insertSender(Sender sender, String pjUri) async {
+  Future<Err?> insertSenderSession(Sender sender, String pjUri) async {
     try {
       final sender_id = pjUri;
       final (pjSessions, err) =

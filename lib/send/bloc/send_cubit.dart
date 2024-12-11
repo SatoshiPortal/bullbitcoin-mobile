@@ -144,7 +144,13 @@ class SendCubit extends Cubit<SendState> {
         }
         final pjParam = bip21Obj.options['pj'] as String?;
         if (pjParam != null) {
-          emit(state.copyWith(payjoinEndpoint: Uri.parse(pjParam)));
+          try {
+            final uri = await pj_uri.Uri.fromStr(bip21Obj.toString());
+            final pjUri = uri.checkPjSupported();
+            emit(state.copyWith(payjoinUri: pjUri));
+          } catch (e) {
+            print('error: $e');
+          }
         }
       case AddressNetwork.bip21Liquid:
         final bip21Obj = bip21.decode(
@@ -893,12 +899,12 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final (wallet, tx, feeAmt) = buildResp!;
-
+    print('tx.psbt psbtSigned: ${tx!.psbt}');
     if (!wallet!.watchOnly()) {
       emit(
         state.copyWith(
           sending: false,
-          psbtSigned: tx!.psbt,
+          psbtSigned: tx.psbt,
           psbtSignedFeeAmount: feeAmt,
           tx: tx,
           signed: true,
@@ -922,7 +928,7 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(
           sending: false,
-          psbt: tx!.psbt!,
+          psbt: tx.psbt!,
           tx: tx,
         ),
       );
@@ -1062,7 +1068,8 @@ class SendCubit extends Cubit<SendState> {
     return feeAmt ?? 0;
   }
 
-  Future<void> processSendButton(String label) async {
+  void processSendButton(String label) async {
+    print('processSendButton');
     final network =
         _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
     final (_, addressError) =
@@ -1134,10 +1141,14 @@ class SendCubit extends Cubit<SendState> {
       if (!isLn) {
         final fees = _networkFeesCubit.state.selectedOrFirst(false);
         baseLayerBuild(networkFees: fees);
-        if (state.payjoinEndpoint != null) {
+        // wait until psbtSigned is not null FIXME!
+        while (state.psbtSigned == null) {
+          await Future.delayed(100.ms);
+        }
+        if (state.payjoinUri != null) {
           sendPayjoin(
             networkFees: fees,
-            originalPsbt: state.psbt,
+            originalPsbt: state.psbtSigned!,
             wallet: wallet,
           );
         }
@@ -1172,20 +1183,16 @@ class SendCubit extends Cubit<SendState> {
     required String originalPsbt,
     required Wallet wallet,
   }) async {
-    final maybePjUri =
-        await pj_uri.Uri.fromStr(state.payjoinEndpoint!.toString());
-    final pjUri =
-        maybePjUri.checkPjSupported(); // TODO throw error if not supported
-    final pjUrl = pjUri
-        .pjEndpoint(); // TODO throw error if null (should this be fallible?)
-
     // TODO await db.getSender(url);
     final sender = await initPayjoinSender(
       networkFees: networkFees,
       originalPsbt: originalPsbt,
-      pjUri: pjUri,
+      pjUri: state.payjoinUri!,
     );
-    await _payjoinSessionStorage.insertSenderSession(sender, pjUrl);
+    await _payjoinSessionStorage.insertSenderSession(
+      sender,
+      state.payjoinUri!.pjEndpoint(),
+    );
     await spawnPayjoinSender(
       sender: sender,
     );
@@ -1196,15 +1203,25 @@ class SendCubit extends Cubit<SendState> {
     required String originalPsbt,
     required pj_uri.PjUri pjUri,
   }) async {
-    final minFeeRateSatPerKwu = BigInt.from(networkFees * 250);
-    final senderBuilder = await SenderBuilder.fromPsbtAndUri(
-      psbtBase64: originalPsbt,
-      pjUri: pjUri,
-    );
-    final sender = await senderBuilder.buildRecommended(
-      minFeeRate: minFeeRateSatPerKwu,
-    );
-    return sender;
+    try {
+      print('initPayjoinSender');
+      final minFeeRateSatPerKwu = BigInt.from(networkFees * 250);
+      print('minFeeRateSatPerKwu: $minFeeRateSatPerKwu');
+      print('originalPsbt: $originalPsbt');
+      final senderBuilder = await SenderBuilder.fromPsbtAndUri(
+        psbtBase64: originalPsbt,
+        pjUri: pjUri,
+      );
+      print('senderBuilder: $senderBuilder');
+      final sender = await senderBuilder.buildRecommended(
+        minFeeRate: minFeeRateSatPerKwu,
+      );
+      print('sender: $sender');
+      return sender;
+    } catch (e) {
+      print('Error in initPayjoinSender: $e');
+      throw Exception('Error in initPayjoinSender: $e');
+    }
   }
 
   Future<void> spawnPayjoinSender({
