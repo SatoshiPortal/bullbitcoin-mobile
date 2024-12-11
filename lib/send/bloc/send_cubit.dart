@@ -1183,8 +1183,13 @@ class SendCubit extends Cubit<SendState> {
     required String originalPsbt,
     required Wallet wallet,
   }) async {
-    // TODO await db.getSender(url);
-    final sender = await initPayjoinSender(
+    var (sender, err) = await _payjoinSessionStorage.readSenderSession(
+      state.payjoinUri!.pjEndpoint(),
+    );
+    if (err != null) {
+      throw Exception('Error reading sender session: $err');
+    }
+    sender ??= await initPayjoinSender(
       networkFees: networkFees,
       originalPsbt: originalPsbt,
       pjUri: state.payjoinUri!,
