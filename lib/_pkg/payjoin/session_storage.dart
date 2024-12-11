@@ -74,6 +74,17 @@ class PayjoinSessionStorage {
     }
   }
 
+  // impl readAllReceivers
+  Future<(List<Receiver>, Err?)> readAllReceivers() async {
+    final (jsn, err) = await _hiveStorage.getValue(StorageKeys.payjoin);
+    if (err != null) return (List<Receiver>.empty(), err);
+    final sessions = jsonDecode(jsn!) as Map<String, dynamic>;
+    final recv_sessions = sessions['recv_sessions'] as List<String>;
+    final receivers =
+        recv_sessions.map((json) => Receiver.fromJson(json)).toList();
+    return (receivers, null);
+  }
+
   Future<Err?> insertSenderSession(Sender sender, String pjUri) async {
     try {
       final sender_id = pjUri;
@@ -134,5 +145,15 @@ class PayjoinSessionStorage {
         )
       );
     }
+  }
+
+  // impl readAllSenders
+  Future<(List<Sender>, Err?)> readAllSenders() async {
+    final (jsn, err) = await _hiveStorage.getValue(StorageKeys.payjoin);
+    if (err != null) return (List<Sender>.empty(), err);
+    final sessions = jsonDecode(jsn!) as Map<String, dynamic>;
+    final send_sessions = sessions['send_sessions'] as List<String>;
+    final senders = send_sessions.map((json) => Sender.fromJson(json)).toList();
+    return (senders, null);
   }
 }

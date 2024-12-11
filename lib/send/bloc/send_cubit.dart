@@ -1232,10 +1232,10 @@ class SendCubit extends Cubit<SendState> {
   Future<void> spawnPayjoinSender({
     required Sender sender,
   }) async {
-    Isolate.spawn(longPollSender, sender);
+    Isolate.spawn(pollSender, sender);
   }
 
-  Future<String?> longPollSender(Sender sender) async {
+  Future<String?> pollSender(Sender sender) async {
     final ohttpProxyUrl =
         await pj_uri.Url.fromStr('https://ohttp.achow101.com');
     pj.Request postReq;
