@@ -165,6 +165,7 @@ class _Screen extends StatelessWidget {
     );
 
     if (sent && isLn) return const SendingLnTx();
+    if (sent) return const TxSuccess();
 
     final potentialonchainSwap = context.select(
       (SendCubit x) => x.state.couldBeOnchainSwap(),
@@ -189,32 +190,34 @@ class _Screen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Gap(32),
-              const WalletSelectionDropDown(),
-              if (potentialonchainSwap) ...[
-                const Gap(8),
-                const BBText.body(
-                  'Onchain swap',
-                  textAlign: TextAlign.center,
-                ),
-              ],
-              //const Gap(8),
-              // const _Balance(),
-              const Gap(24),
-              const AddressField(),
-              const Gap(24),
-              const AmountField(),
-              if (!isLn) const SendAllOption(),
-              const Gap(24),
-              const DescriptionField(),
-              if (!isLn) ...[
+              if (!signed) ...[
+                const WalletSelectionDropDown(),
+                if (potentialonchainSwap) ...[
+                  const Gap(8),
+                  const BBText.body(
+                    'Onchain swap',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
                 const Gap(24),
-                const NetworkFees(),
+                const AddressField(),
+                const Gap(24),
+                const AmountField(),
+                if (!isLn) const SendAllOption(),
+                const Gap(24),
+                const DescriptionField(),
+                if (!isLn) ...[
+                  const Gap(24),
+                  const NetworkFees(),
+                ],
+                const Gap(8),
+                const AdvancedOptions(),
+              ] else if (!isLn) ...[
+                const TxDetailsScreen(),
               ],
-              const Gap(8),
-              const AdvancedOptions(),
               const _SendButton(),
               const SendErrDisplay(),
-              const Gap(80), // why such a big gap at the end
+              const Gap(80),
             ],
           ),
         ),
