@@ -51,8 +51,8 @@ class _Screen extends StatelessWidget {
             padding: EdgeInsets.all(24.0),
             child: Column(
               children: [
-                // Gap(8),
-                // TestNetButton(),
+                Gap(8),
+                TestNetButton(),
                 Gap(8),
                 DefaultRBFToggle(),
                 Gap(8),
