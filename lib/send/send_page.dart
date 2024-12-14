@@ -174,13 +174,6 @@ class _Screen extends StatelessWidget {
     if (showWarning && !walletIsLiquid && potentialonchainSwap == false)
       return const _Warnings();
 
-    if (signed && !isLn) {
-      if (!sent)
-        return const TxDetailsScreen();
-      else
-        return const TxSuccess();
-    }
-
     return ColoredBox(
       color: context.colour.primaryContainer,
       child: SingleChildScrollView(
