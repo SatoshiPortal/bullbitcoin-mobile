@@ -1,19 +1,24 @@
+import 'dart:async';
 import 'dart:isolate';
 
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/payjoin/session_storage.dart';
-import 'package:bb_mobile/_pkg/payjoin/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:http/http.dart' as http;
 import 'package:payjoin_flutter/common.dart';
+import 'package:payjoin_flutter/receive.dart';
 import 'package:payjoin_flutter/send.dart';
+import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:payjoin_flutter/uri.dart' as pj_uri;
 
 class PayjoinManager {
   PayjoinManager(this._sessionStorage, this._walletTx);
   final PayjoinSessionStorage _sessionStorage;
   final WalletTx _walletTx;
+
+  Isolate? _receiverIsolate;
+  ReceivePort? _receiverPort;
 
   Future<void> syncAllSessions(
     bdk.Wallet wallet,
@@ -24,7 +29,7 @@ class PayjoinManager {
     if (err != null) return; // Handle error
 
     for (final receiver in receivers) {
-      await PayjoinSync().spawnReceiver(receiver: receiver);
+      await spawnReceiver(receiver: receiver);
     }
 
     // Retrieve and sync all sender sessions
@@ -36,20 +41,99 @@ class PayjoinManager {
     }
   }
 
-  Future<void> spawnSender(
+  Future<Err?> spawnReceiver({required Receiver receiver}) async {
+    print('spawnReceiver: $receiver');
+    try {
+      final completer = Completer<Err?>();
+      _receiverPort = ReceivePort();
+      _receiverIsolate = await Isolate.spawn(
+        _doReceiver,
+        [_receiverPort!.sendPort, receiver],
+      );
+
+      _receiverPort!.listen((message) {
+        if (message is Err) {
+          completer.complete(message);
+        }
+      });
+
+      return completer.future;
+    } catch (e) {
+      print('err: $e');
+      return Err(
+        e.toString(),
+        title: 'Error occurred while syncing Payjoins',
+        solution: 'Please try again.',
+      );
+    }
+  }
+
+  static void _doReceiver(List<dynamic> args) async {
+    await core.init();
+    final sendPort = args[0] as SendPort;
+    final receiver = Receiver.fromJson(args[1] as String);
+    print('long polling payjoin directory...');
+    while (true) {
+      try {
+        final (req, context) = await receiver.extractReq();
+        final ohttpResponse = await http.post(
+          Uri.parse(req.url.asString()),
+          headers: {
+            'Content-Type': req.contentType,
+          },
+          body: req.body,
+        );
+        final proposal = await receiver.processRes(
+          body: ohttpResponse.bodyBytes,
+          ctx: context,
+        );
+        if (proposal != null) {
+          sendPort.send(proposal);
+          break;
+        }
+        print('empty response, trying again in 5s');
+        await Future.delayed(const Duration(seconds: 5));
+      } catch (e) {
+        sendPort.send(
+          Err(
+            e.toString(),
+            title: 'Error occurred while processing payjoin',
+            solution: 'Please try again.',
+          ),
+        );
+        break;
+      }
+    }
+  }
+
+  Future<Err?> spawnSender(
     Sender sender,
     bdk.Wallet wallet,
     bdk.Blockchain blockchain,
   ) async {
-    final receivePort = ReceivePort();
-    Isolate.spawn(
-      _isolateSender,
-      [receivePort.sendPort, sender.toJson(), wallet, blockchain, _walletTx],
-    );
+    try {
+      final completer = Completer<Err?>();
+      final receivePort = ReceivePort();
+      Isolate.spawn(
+        _isolateSender,
+        [receivePort.sendPort, sender.toJson(), wallet, blockchain, _walletTx],
+      );
 
-    receivePort.listen((message) {
-      // Handle messages from the isolate
-    });
+      receivePort.listen((message) {
+        if (message is Err) {
+          completer.complete(message);
+        }
+      });
+
+      return completer.future;
+    } catch (e) {
+      print('err: $e');
+      return Err(
+        e.toString(),
+        title: 'Error occurred while sending Payjoin',
+        solution: 'Please try again.',
+      );
+    }
   }
 
   static Future<void> _isolateSender(List<dynamic> args) async {
@@ -96,6 +180,11 @@ class PayjoinManager {
         ),
       );
     }
+  }
+
+  void cancelSync() {
+    _receiverIsolate?.kill(priority: Isolate.immediate);
+    _receiverPort?.close();
   }
 }
 
@@ -152,7 +241,7 @@ Future<String?> pollSender(Sender sender) async {
     proposalPsbt = await getCtx.processResponse(
       response: getRes.bodyBytes,
       ohttpCtx: getReqCtx,
-    ); // TODO throw error if null
+    );
     break;
   }
   return proposalPsbt;

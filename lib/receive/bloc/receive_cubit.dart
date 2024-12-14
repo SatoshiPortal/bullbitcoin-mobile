@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/payjoin/session_storage.dart';
-import 'package:bb_mobile/_pkg/payjoin/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
@@ -22,11 +22,11 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     required WalletsStorageRepository walletsStorageRepository,
     required bool defaultPayjoin,
     required PayjoinSessionStorage payjoinSessionStorage,
-    required PayjoinSync payjoinSync,
+    required PayjoinManager payjoinManager,
   })  : _walletsStorageRepository = walletsStorageRepository,
         _walletAddress = walletAddress,
         _payjoinSessionStorage = payjoinSessionStorage,
-        _payjoinSync = payjoinSync,
+        _payjoinManager = payjoinManager,
         super(
           ReceiveState(
             walletBloc: walletBloc,
@@ -44,7 +44,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final WalletAddress _walletAddress;
   final WalletsStorageRepository _walletsStorageRepository;
   final PayjoinSessionStorage _payjoinSessionStorage;
-  final PayjoinSync _payjoinSync;
+  final PayjoinManager _payjoinManager;
 
   void updateWalletBloc(WalletBloc walletBloc) {
     if (state.oneWallet) return;
@@ -403,7 +403,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     await _payjoinSessionStorage.insertReceiverSession(receiver);
     emit(state.copyWith(payjoinReceiver: receiver));
     try {
-      _payjoinSync.spawnReceiver(
+      _payjoinManager.spawnReceiver(
         receiver: receiver,
       );
     } catch (e) {
