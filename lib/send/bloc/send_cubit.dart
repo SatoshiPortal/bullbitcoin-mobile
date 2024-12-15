@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:isolate';
 
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
@@ -8,6 +7,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/payjoin/session_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/bip21.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
@@ -34,6 +34,7 @@ class SendCubit extends Cubit<SendState> {
     WalletBloc? walletBloc,
     required WalletTx walletTx,
     required FileStorage fileStorage,
+    required PayjoinManager payjoinManager,
     required PayjoinSessionStorage payjoinSessionStorage,
     required NetworkCubit networkCubit,
     required NetworkFeesCubit networkFeesCubit,
@@ -50,6 +51,7 @@ class SendCubit extends Cubit<SendState> {
         _currencyCubit = currencyCubit,
         _walletTx = walletTx,
         _fileStorage = fileStorage,
+        _payjoinManager = payjoinManager,
         _payjoinSessionStorage = payjoinSessionStorage,
         _barcode = barcode,
         _swapBoltz = swapBoltz,
@@ -73,6 +75,7 @@ class SendCubit extends Cubit<SendState> {
 
   final Barcode _barcode;
   final FileStorage _fileStorage;
+  final PayjoinManager _payjoinManager;
   final PayjoinSessionStorage _payjoinSessionStorage;
   final WalletTx _walletTx;
   final SwapBoltz _swapBoltz;
@@ -1151,6 +1154,7 @@ class SendCubit extends Cubit<SendState> {
             originalPsbt: state.psbtSigned!,
             wallet: wallet,
           );
+          return;
         }
       }
       // context.read<WalletBloc>().state.wallet;
@@ -1171,7 +1175,7 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    if (!isLn) {
+    if (!isLn && state.payjoinUri == null) {
       baseLayerSend();
       return;
     }
@@ -1183,22 +1187,29 @@ class SendCubit extends Cubit<SendState> {
     required String originalPsbt,
     required Wallet wallet,
   }) async {
+    print('sendPayjoin: $state.payjoinUri');
     var (sender, err) = await _payjoinSessionStorage.readSenderSession(
       state.payjoinUri!.pjEndpoint(),
     );
     if (err != null) {
-      throw Exception('Error reading sender session: $err');
+      print('Error reading sender session: $err');
+      // throw Exception('Error reading sender session: $err');
     }
+    print('sender: $sender');
     sender ??= await initPayjoinSender(
       networkFees: networkFees,
       originalPsbt: originalPsbt,
       pjUri: state.payjoinUri!,
     );
+    print('sender after initPayjoinSender: $sender');
     await _payjoinSessionStorage.insertSenderSession(
       sender,
       state.payjoinUri!.pjEndpoint(),
     );
-    await spawnPayjoinSender(
+    print('spawnSender');
+    await _payjoinManager.spawnSender(
+      isTestnet: _networkCubit.state.testnet,
+      wallet: state.selectedWalletBloc!.state.wallet!,
       sender: sender,
     );
   }
@@ -1227,12 +1238,6 @@ class SendCubit extends Cubit<SendState> {
       print('Error in initPayjoinSender: $e');
       throw Exception('Error in initPayjoinSender: $e');
     }
-  }
-
-  Future<void> spawnPayjoinSender({
-    required Sender sender,
-  }) async {
-    Isolate.spawn(pollSender, sender);
   }
 
   Future<String?> pollSender(Sender sender) async {

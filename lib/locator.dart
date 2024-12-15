@@ -245,8 +245,7 @@ Future _setupWalletServices() async {
 
   locator.registerSingleton<PayjoinManager>(
     PayjoinManager(
-      locator<PayjoinSessionStorage>(),
-      locator<WalletTx>(),
+      locator<NetworkCubit>(),
     ),
   );
 }

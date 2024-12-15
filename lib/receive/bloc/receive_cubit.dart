@@ -402,9 +402,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     );
     await _payjoinSessionStorage.insertReceiverSession(receiver);
     emit(state.copyWith(payjoinReceiver: receiver));
+    final wallet = state.walletBloc!.state.wallet!;
     try {
-      _payjoinManager.spawnReceiver(
+      await _payjoinManager.spawnReceiver(
+        isTestnet: isTestnet,
         receiver: receiver,
+        wallet: wallet,
       );
     } catch (e) {
       print('error: $e');
