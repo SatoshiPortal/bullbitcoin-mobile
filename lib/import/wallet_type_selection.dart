@@ -176,7 +176,7 @@ class SavingError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final err =
-        context.select((ImportWalletCubit e) => e.state.errSavingWallet);
+        context.select((ImportWalletCubit _) => _.state.errSavingWallet);
 
     if (err.isEmpty) return const SizedBox(height: 24);
 

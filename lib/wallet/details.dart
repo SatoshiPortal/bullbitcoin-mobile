@@ -51,22 +51,22 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fingerPrint = context
-        .select((WalletBloc e) => e.state.wallet?.sourceFingerprint ?? '');
+        .select((WalletBloc _) => _.state.wallet?.sourceFingerprint ?? '');
 
     final descriptorCombined = context.select(
-      (WalletBloc e) => e.state.wallet?.getDescriptorCombined() ?? '',
+      (WalletBloc _) => _.state.wallet?.getDescriptorCombined() ?? '',
     );
     final descriptor = context.select(
-      (WalletBloc e) => e.state.wallet?.externalPublicDescriptor ?? '',
+      (WalletBloc _) => _.state.wallet?.externalPublicDescriptor ?? '',
     );
     final pub = keyFromDescriptor(descriptor);
     final scriptType =
-        context.select((WalletBloc e) => e.state.wallet!.scriptType);
+        context.select((WalletBloc _) => _.state.wallet!.scriptType);
     final addressTypeStr = scriptTypeString(scriptType);
-    final network = context.select((WalletBloc e) => e.state.wallet!.network);
+    final network = context.select((WalletBloc _) => _.state.wallet!.network);
 
     final derivationPath = context
-        .select((WalletBloc e) => e.state.wallet?.derivationPathString() ?? '');
+        .select((WalletBloc _) => _.state.wallet?.derivationPathString() ?? '');
     final slipKey = convertToSlipPub(scriptType, network, pub);
 
     final showFingerprint = !fingerPrint.toLowerCase().contains('unknown');

@@ -41,12 +41,12 @@ class NetworkState with _$NetworkState {
 
   ElectrumNetwork? getNetwork() {
     if (networks.isEmpty) return null;
-    return networks.firstWhere((e) => e.type == selectedNetwork);
+    return networks.firstWhere((_) => _.type == selectedNetwork);
   }
 
   LiquidElectrumNetwork? getLiquidNetwork() {
     if (liquidNetworks.isEmpty) return null;
-    return liquidNetworks.firstWhere((e) => e.type == selectedLiquidNetwork);
+    return liquidNetworks.firstWhere((_) => _.type == selectedLiquidNetwork);
   }
 
   ElectrumNetwork? getTempOrSelectedNetwork() {
@@ -56,7 +56,7 @@ class NetworkState with _$NetworkState {
     final n = networks;
     final t = tempNetwork;
 
-    return n.firstWhere((e) => e.type == t);
+    return n.firstWhere((_) => _.type == t);
   }
 
   LiquidElectrumNetwork? getTempOrSelectedLiquidNetwork() {
@@ -66,7 +66,7 @@ class NetworkState with _$NetworkState {
     final n = liquidNetworks;
     final t = tempLiquidNetwork;
 
-    return n.firstWhere((e) => e.type == t);
+    return n.firstWhere((_) => _.type == t);
   }
 
   String getNetworkUrl() {

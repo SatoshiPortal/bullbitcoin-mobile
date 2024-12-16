@@ -85,11 +85,11 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isInputScreen = context.select(
-      (HardwareImportCubit e) => e.state.inputScreen(),
+      (HardwareImportCubit _) => _.state.inputScreen(),
     );
 
     final isColdcard = context.select(
-      (HardwareImportCubit e) => e.state.tempColdCard != null,
+      (HardwareImportCubit _) => _.state.tempColdCard != null,
     );
 
     if (isInputScreen) {
@@ -108,7 +108,7 @@ class InputScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loading = context.select(
-      (HardwareImportCubit e) => e.state.scanningInput,
+      (HardwareImportCubit _) => _.state.scanningInput,
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -151,7 +151,7 @@ class XpubDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final xpub = context.select(
-      (HardwareImportCubit e) => e.state.inputText,
+      (HardwareImportCubit _) => _.state.inputText,
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -179,10 +179,10 @@ class ColdCardDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cc = context.select(
-      (HardwareImportCubit e) => e.state.tempColdCard!,
+      (HardwareImportCubit _) => _.state.tempColdCard!,
     );
     final scriptType = context.select(
-      (HardwareImportCubit e) => e.state.selectScriptType,
+      (HardwareImportCubit _) => _.state.selectScriptType,
     );
 
     final identity = cc.xfp!;

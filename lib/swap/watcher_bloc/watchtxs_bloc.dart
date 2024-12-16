@@ -92,7 +92,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     __watchSwapStatus(
       emit,
-      swapTxsToWatch: swapsToWatch.map((e) => e.id).toList(),
+      swapTxsToWatch: swapsToWatch.map((_) => _.id).toList(),
       isTestnet: isTestnet,
     );
   }

@@ -178,7 +178,7 @@ class BackupTestItemWord extends StatelessWidget {
     );
 
     final (word, isSelected, actualIdx) = context.select(
-      (WalletSettingsCubit e) => e.state.shuffleElementAt(index),
+      (WalletSettingsCubit _) => _.state.shuffleElementAt(index),
     );
 
     final padLeft =

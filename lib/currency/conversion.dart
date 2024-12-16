@@ -10,19 +10,15 @@ class ConversionAmt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fiatSelected =
-        context.select((CurrencyCubit cubit) => cubit.state.fiatSelected);
-    final isDefaultSats =
-        context.select((CurrencyCubit cubit) => cubit.state.unitsInSats);
+    final fiatSelected = context.select((CurrencyCubit cubit) => cubit.state.fiatSelected);
+    final isDefaultSats = context.select((CurrencyCubit cubit) => cubit.state.unitsInSats);
 
-    final fiatAmt =
-        context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
+    final fiatAmt = context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
     final satsAmt = context.select((CurrencyCubit cubit) => cubit.state.amount);
-    final defaultCurrency = context
-        .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
+    final defaultCurrency =
+        context.select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
 
-    final isTestNet =
-        context.select((NetworkCubit cubit) => cubit.state.testnet);
+    final isTestNet = context.select((NetworkCubit cubit) => cubit.state.testnet);
 
     var amt = '';
     var unit = '';
@@ -30,7 +26,7 @@ class ConversionAmt extends StatelessWidget {
     if (fiatSelected) {
       unit = isDefaultSats ? 'sats' : 'BTC';
       amt = context.select(
-        (CurrencyCubit e) => e.state.getAmountInUnits(
+        (CurrencyCubit _) => _.state.getAmountInUnits(
           satsAmt,
           removeText: true,
         ),

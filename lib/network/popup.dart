@@ -54,7 +54,7 @@ class NetworkScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final networks = context.select((NetworkCubit e) => e.state.networks);
+    final networks = context.select((NetworkCubit _) => _.state.networks);
     if (networks.isEmpty) return const SizedBox.shrink();
 
     return const Padding(
@@ -81,7 +81,7 @@ class _NetowrkHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiq = context.select((_NetworkSelector e) => e.state);
+    final isLiq = context.select((_NetworkSelector _) => _.state);
     final networkStr = isLiq ? 'Liquid' : 'Bitcoin';
     final changeStr = 'Configure ${isLiq ? 'Bitcoin' : 'Liquid'} Network';
 
@@ -117,7 +117,7 @@ class NetworkStatus extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiq = context.select((_NetworkSelector e) => e.state);
+    final isLiq = context.select((_NetworkSelector _) => _.state);
     final networkConnected =
         context.select((NetworkCubit x) => x.state.networkConnected);
     final errLoadingNetwork =
@@ -172,7 +172,7 @@ class SelectNetworkSegment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiq = context.select((_NetworkSelector e) => e.state);
+    final isLiq = context.select((_NetworkSelector _) => _.state);
 
     final tempSelected =
         context.select((NetworkCubit x) => x.state.tempNetwork);
@@ -228,7 +228,7 @@ class _SegmentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiq = context.select((_NetworkSelector e) => e.state);
+    final isLiq = context.select((_NetworkSelector _) => _.state);
 
     final selectedBGColour = context.colour.surface.withOpacity(0.3);
     final unselectedBGColour = context.colour.surface.withOpacity(0.1);
@@ -286,22 +286,22 @@ class NetworkConfigFields extends StatelessWidget {
   Widget build(BuildContext context) {
     final fieldWidth = MediaQuery.of(context).size.width * 0.7;
 
-    final isLiq = context.select((_NetworkSelector e) => e.state);
+    final isLiq = context.select((_NetworkSelector _) => _.state);
 
     final network =
-        context.select((NetworkCubit e) => e.state.getTempOrSelectedNetwork());
+        context.select((NetworkCubit _) => _.state.getTempOrSelectedNetwork());
     if (network == null) return const SizedBox.shrink();
 
     final liqNetwork = context
-        .select((NetworkCubit e) => e.state.getTempOrSelectedLiquidNetwork());
+        .select((NetworkCubit _) => _.state.getTempOrSelectedLiquidNetwork());
     if (liqNetwork == null) return const SizedBox.shrink();
 
     final tempNetworkDetails =
-        context.select((NetworkCubit e) => e.state.tempNetworkDetails);
+        context.select((NetworkCubit _) => _.state.tempNetworkDetails);
     if (tempNetworkDetails == null) return const SizedBox.shrink();
 
     final tempLiqNetworkDetails =
-        context.select((NetworkCubit e) => e.state.tempLiquidNetworkDetails);
+        context.select((NetworkCubit _) => _.state.tempLiquidNetworkDetails);
     if (tempLiqNetworkDetails == null) return const SizedBox.shrink();
 
     final type = network.type;

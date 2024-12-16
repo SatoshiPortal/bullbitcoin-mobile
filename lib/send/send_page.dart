@@ -140,7 +140,7 @@ class _WalletProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sendWalletBloc =
-        context.select((SendCubit e) => e.state.selectedWalletBloc);
+        context.select((SendCubit _) => _.state.selectedWalletBloc);
 
     if (sendWalletBloc == null) return child;
     return BlocProvider.value(value: sendWalletBloc, child: child);
@@ -231,12 +231,12 @@ class WalletSelectionDropDown extends StatelessWidget {
 
     final _ = context.select((SendCubit cubit) => cubit.state.enabledWallets);
 
-    final network = context.select((NetworkCubit e) => e.state.getBBNetwork());
+    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = context.select(
-      (HomeCubit e) => e.state.walletBlocsFromNetworkExcludeWatchOnly(network),
+      (HomeCubit _) => _.state.walletBlocsFromNetworkExcludeWatchOnly(network),
     );
     final selectedWalletBloc =
-        context.select((SendCubit e) => e.state.selectedWalletBloc);
+        context.select((SendCubit _) => _.state.selectedWalletBloc);
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 300),
@@ -399,7 +399,7 @@ class NetworkFees extends StatelessWidget {
 
     final sending = context.select((SendCubit cubit) => cubit.state.sending);
 
-    final isLn = context.select((SendCubit e) => e.state.isLnInvoice());
+    final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
 
     final isLiquid =
         context.select((SendCubit cubit) => cubit.state.isLiquidPayment());
@@ -429,21 +429,21 @@ class AdvancedOptions extends StatelessWidget {
     final walletSelected = context.select(
       (SendCubit cubit) => cubit.state.selectedWalletBloc != null,
     );
-    final sending = context.select((SendCubit e) => e.state.sending);
-    final isLn = context.select((SendCubit e) => e.state.isLnInvoice());
+    final sending = context.select((SendCubit _) => _.state.sending);
+    final isLn = context.select((SendCubit _) => _.state.isLnInvoice());
     final isLiquid = context.select(
-      (SendCubit e) =>
-          e.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false,
+      (SendCubit _) =>
+          _.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false,
     );
     final addressReady =
-        context.select((SendCubit e) => e.state.address.isNotEmpty);
+        context.select((SendCubit _) => _.state.address.isNotEmpty);
 
     if (isLn || !walletSelected || !addressReady || isLiquid == true) {
       return const SizedBox.shrink();
     }
 
     final text =
-        context.select((SendCubit e) => e.state.advancedOptionsButtonText());
+        context.select((SendCubit _) => _.state.advancedOptionsButtonText());
     return AnimatedOpacity(
       opacity: sending ? 0.3 : 1,
       duration: const Duration(milliseconds: 300),
@@ -628,7 +628,7 @@ class TxDetailsScreen extends StatelessWidget {
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
 
     final currency =
-        context.select((CurrencyCubit e) => e.state.defaultFiatCurrency);
+        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
     final amtFiat = context.select(
       (NetworkCubit cubit) => cubit.state.calculatePrice(amount, currency),
     );
@@ -700,7 +700,7 @@ class TxSuccess extends StatelessWidget {
       ),
     );
     // final tx = context.select((SendCubit cubit) => cubit.state.tx);
-    final tx = context.select((SendCubit e) => e.state.tx);
+    final tx = context.select((SendCubit _) => _.state.tx);
 
     return Column(
       // crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -863,7 +863,7 @@ class _Warnings extends StatelessWidget {
     const minAmt = 1000000;
 
     final currency =
-        context.select((CurrencyCubit e) => e.state.defaultFiatCurrency);
+        context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
 
     final fees = swaptx.totalFees() ?? 0;
 

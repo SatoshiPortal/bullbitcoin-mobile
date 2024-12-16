@@ -138,7 +138,7 @@ class AddressQR extends StatelessWidget {
     final address =
         context.select((AddressCubit cubit) => cubit.state.address!);
     final url = context.select(
-      (NetworkCubit e) => e.state
+      (NetworkCubit _) => _.state
           .explorerAddressUrl(address.address, isLiquid: address.isLiquid),
     );
 
