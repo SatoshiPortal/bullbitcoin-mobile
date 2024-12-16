@@ -36,6 +36,7 @@ class Wallet with _$Wallet {
     @Default('') String id,
     @Default('') String externalPublicDescriptor,
     @Default('') String internalPublicDescriptor,
+    // public
     @Default('') String mnemonicFingerprint,
     @Default('') String sourceFingerprint,
     required BBNetwork network,
@@ -45,22 +46,23 @@ class Wallet with _$Wallet {
     String? path,
     int? balance,
     Balance? fullBalance,
-    Address? lastGeneratedAddress,
-    @Default([]) List<Address> myAddressBook,
-    List<Address>? externalAddressBook,
-    @Default([]) List<UTXO> utxos,
-    @Default([]) List<Transaction> transactions,
-    @Default([]) List<Transaction> unsignedTxs,
-    @Default([]) List<SwapTx> swaps,
-    @Default(0) int revKeyIndex,
-    @Default(0) int subKeyIndex,
-    // List<String>? labelTags,
-    // List<Bip329Label>? bip329Labels,
     @Default(false) bool backupTested,
     DateTime? lastBackupTested,
     @Default(false) bool hide,
     @Default(false) bool mainWallet,
     required BaseWalletType baseWalletType,
+    // -------------------
+    Address? lastGeneratedAddress,
+    @Default([]) List<Address> myAddressBook, // address we receive into
+    List<Address>? externalAddressBook, // address that we send to
+    @Default([]) List<UTXO> utxos,
+    @Default([]) List<Transaction> transactions,
+    @Default([]) List<Transaction> unsignedTxs, // related to hardware
+    @Default([]) List<SwapTx> swaps,
+    @Default(0) int revKeyIndex,
+    @Default(0) int subKeyIndex,
+    // List<String>? labelTags,
+    // List<Bip329Label>? bip329Labels,
   }) = _Wallet;
   const Wallet._();
 

@@ -379,7 +379,7 @@ class LWKTransactions {
           txid: tx.txid,
           received: tx.kind == 'outgoing' ? 0 : finalBalance,
           sent: tx.kind == 'outgoing' ? -finalBalance : 0,
-          fee: tx.fee.toInt(),
+          fee: tx.fee as int,
           feeRate: tx.fee / size,
           height: tx.height ?? 0,
           timestamp: tx.timestamp ?? 0,
