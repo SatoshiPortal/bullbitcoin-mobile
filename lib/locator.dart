@@ -242,12 +242,6 @@ Future _setupWalletServices() async {
       bdkNetwork: locator<BDKNetwork>(),
     ),
   );
-
-  locator.registerSingleton<PayjoinManager>(
-    PayjoinManager(
-      locator<NetworkCubit>(),
-    ),
-  );
 }
 
 Future _setupBlocs() async {
@@ -267,6 +261,12 @@ Future _setupBlocs() async {
     NetworkCubit(
       hiveStorage: locator<HiveStorage>(),
       walletNetwork: locator<WalletNetwork>(),
+    ),
+  );
+
+  locator.registerSingleton<PayjoinManager>(
+    PayjoinManager(
+      locator<NetworkCubit>(),
     ),
   );
 

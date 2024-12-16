@@ -158,9 +158,11 @@ Future<String?> pollSender(Sender sender) async {
   V2PostContext postReqCtx;
   try {
     final result = await sender.extractV2(ohttpProxyUrl: ohttpProxyUrl);
+    print('extracted v2');
     postReq = result.$1;
     postReqCtx = result.$2;
   } catch (e) {
+    print('failed to extract v2. err: $e');
     try {
       final (req, v1Ctx) = await sender.extractV1();
       print('Posting Original PSBT Payload request...');
@@ -187,28 +189,39 @@ Future<String?> pollSender(Sender sender) async {
     },
     body: postReq.body,
   );
-  final getCtx = await postReqCtx.processResponse(
-    response: postRes.bodyBytes,
-  );
-  String? proposalPsbt;
-  while (true) {
-    final (getRequest, getReqCtx) = await getCtx.extractReq(
-      ohttpRelay: ohttpProxyUrl,
+  try {
+    print('got post response');
+    final getCtx = await postReqCtx.processResponse(
+      response: postRes.bodyBytes,
     );
-    final getRes = await http.post(
-      Uri.parse(getRequest.url.asString()),
-      headers: {
-        'Content-Type': getRequest.contentType,
-      },
-      body: getRequest.body,
-    );
-    proposalPsbt = await getCtx.processResponse(
-      response: getRes.bodyBytes,
-      ohttpCtx: getReqCtx,
-    );
-    break;
+    print('processed post response');
+    String? proposalPsbt;
+    while (true) {
+      print('extracting get request');
+      final (getRequest, getReqCtx) = await getCtx.extractReq(
+        ohttpRelay: ohttpProxyUrl,
+      );
+      print('got get request');
+      final getRes = await http.post(
+        Uri.parse(getRequest.url.asString()),
+        headers: {
+          'Content-Type': getRequest.contentType,
+        },
+        body: getRequest.body,
+      );
+      print('got get response');
+      proposalPsbt = await getCtx.processResponse(
+        response: getRes.bodyBytes,
+        ohttpCtx: getReqCtx,
+      );
+      print('processed get response');
+      break;
+    }
+    return proposalPsbt;
+  } catch (e) {
+    print('err: $e');
+    throw Exception('Error occurred while polling sender');
   }
-  return proposalPsbt;
 }
 
 Future<bool> addressExistsInWallet(String address, bdk.Wallet bdkWallet) async {
@@ -343,12 +356,13 @@ Future<void> _isolateSender(List<dynamic> args) async {
 
     // SIGN AND BROADCAST ---------------------------
     try {
+      print('signing');
       final psbtStruct =
           await bdk.PartiallySignedTransaction.fromString(proposal!);
       await wallet.sign(
         psbt: psbtStruct,
         signOptions: const bdk.SignOptions(
-          trustWitnessUtxo: false,
+          trustWitnessUtxo: true,
           allowAllSighashes: false,
           removePartialSigs: true,
           tryFinalize: true,
@@ -356,11 +370,12 @@ Future<void> _isolateSender(List<dynamic> args) async {
           allowGrinding: true,
         ),
       );
-
+      print('signed');
       final finalizedTx = psbtStruct.extractTx();
       final signedPsbt = psbtStruct.toString();
 
       //Broadcast the transaction
+      print('broadcasting');
       final broadcastedTx =
           await blockchain.broadcast(transaction: finalizedTx);
       print('Broadcasted transaction: $broadcastedTx');
@@ -430,6 +445,7 @@ void _isolateReceiver(List<dynamic> args) async {
     while (unchecked_proposal == null) {
       try {
         final (req, context) = await receiver.extractReq();
+        print('making request');
         final ohttpResponse = await http.post(
           Uri.parse(req.url.asString()),
           headers: {
@@ -437,10 +453,14 @@ void _isolateReceiver(List<dynamic> args) async {
           },
           body: req.body,
         );
+        print('got unchecked response');
         unchecked_proposal = await receiver.processRes(
           body: ohttpResponse.bodyBytes,
           ctx: context,
         );
+        if (unchecked_proposal != null) {
+          break;
+        }
       } catch (e) {
         sendPort.send(
           Err(
@@ -452,17 +472,16 @@ void _isolateReceiver(List<dynamic> args) async {
         break;
       }
     }
-    if (unchecked_proposal == null) {
-      print('FAILED TO GET PROPOSAL');
-    }
     final payjoin_proposal = await processPayjoinProposal(
       unchecked_proposal!,
       isTestnet,
       wallet,
       blockchain,
     );
+    print('payjoin proposal: $payjoin_proposal');
     try {
       final (postReq, ohttpCtx) = await payjoin_proposal.extractV2Req();
+      print('extracted v2 req');
       final postRes = await http.post(
         Uri.parse(postReq.url.asString()),
         headers: {
@@ -470,6 +489,7 @@ void _isolateReceiver(List<dynamic> args) async {
         },
         body: postReq.body,
       );
+      print('processed res');
       await payjoin_proposal.processRes(
         res: postRes.bodyBytes,
         ohttpContext: ohttpCtx,
@@ -498,92 +518,104 @@ Future<PayjoinProposal> processPayjoinProposal(
   final fallbackTx = await proposal.extractTxToScheduleBroadcast();
   print('fallback tx (broadcast this if payjoin fails): $fallbackTx');
 
-  // Receive Check 1: can broadcast
-  final pj1 = await proposal.assumeInteractiveReceiver();
-  // Receive Check 2: original PSBT has no receiver-owned inputs
-  final pj2 = await pj1.checkInputsNotOwned(
-    isOwned: (inputScript) async {
-      final address = await bdk.Address.fromScript(
-        script: bdk.ScriptBuf(bytes: inputScript),
-        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-      );
-      return await addressExistsInWallet(address.toString(), wallet);
-    },
-  );
-  // Receive Check 3: sender inputs have not been seen before (prevent probing attacks)
-  final pj3 = await pj2.checkNoInputsSeenBefore(
-    isKnown: (input) {
-      // TODO: keep track of seen inputs in hive storage?
-      return false;
-    },
-  );
+  try {
+    // Receive Check 1: can broadcast
+    print('check1');
+    final pj1 = await proposal.assumeInteractiveReceiver();
+    print('check2');
+    // Receive Check 2: original PSBT has no receiver-owned inputs
+    final pj2 = await pj1.checkInputsNotOwned(
+      isOwned: (inputScript) async {
+        final address = await bdk.Address.fromScript(
+          script: bdk.ScriptBuf(bytes: inputScript),
+          network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+        );
+        return await addressExistsInWallet(address.toString(), wallet);
+      },
+    );
+    // Receive Check 3: sender inputs have not been seen before (prevent probing attacks)
+    print('check3');
+    final pj3 = await pj2.checkNoInputsSeenBefore(
+      isKnown: (input) {
+        // TODO: keep track of seen inputs in hive storage?
+        return false;
+      },
+    );
 
-  // Identify receiver outputs
-  final pj4 = await pj3.identifyReceiverOutputs(
-    isReceiverOutput: (outputScript) async {
-      final address = await bdk.Address.fromScript(
-        script: bdk.ScriptBuf(bytes: outputScript),
-        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-      );
-      return await addressExistsInWallet(address.toString(), wallet);
-    },
-  );
-  final pj5 = await pj4.commitOutputs();
+    // Identify receiver outputs
+    print('check4');
+    final pj4 = await pj3.identifyReceiverOutputs(
+      isReceiverOutput: (outputScript) async {
+        final address = await bdk.Address.fromScript(
+          script: bdk.ScriptBuf(bytes: outputScript),
+          network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+        );
+        return await addressExistsInWallet(address.toString(), wallet);
+      },
+    );
+    final pj5 = await pj4.commitOutputs();
 
-  // Contribute receiver inputs
-  final utxos = await getSpendableUtxosFromBdkWallet(
-    wallet,
-    isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-  );
-  final inputs = await Future.wait(
-    utxos.map((utxo) => inputPairFromUtxo(utxo, isTestnet)),
-  );
-  final selected_utxo = await pj5.tryPreservingPrivacy(
-    candidateInputs: inputs,
-  );
-  final pj6 = await pj5.contributeInputs(replacementInputs: [selected_utxo]);
-  final pj7 = await pj6.commitInputs();
+    // Contribute receiver inputs
+    print('get spendable utxos');
+    final unspent = wallet.listUnspent();
+    final inputs = await Future.wait(
+      unspent.map((unspent) => inputPairFromUtxo(unspent, isTestnet)),
+    );
+    print('selected utxo');
+    final selected_utxo = await pj5.tryPreservingPrivacy(
+      candidateInputs: inputs,
+    );
+    print('contribute inputs');
+    final pj6 = await pj5.contributeInputs(replacementInputs: [selected_utxo]);
+    print('commit inputs');
+    final pj7 = await pj6.commitInputs();
 
-  // Finalize proposal
-  final payjoin_proposal = await pj7.finalizeProposal(
-    processPsbt: (String psbt) async {
-      // TODO: sign PSBT
-      final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
-      await wallet.sign(
-        psbt: psbtStruct,
-        signOptions: const bdk.SignOptions(
-          trustWitnessUtxo: false,
-          allowAllSighashes: false,
-          removePartialSigs: true,
-          tryFinalize: true,
-          signWithTapInternalKey: false,
-          allowGrinding: true,
-        ),
-      );
-      return psbt;
-    },
-    maxFeeRateSatPerVb: BigInt.zero,
-  );
-  return payjoin_proposal;
+    // Finalize proposal
+    print('finalize proposal');
+    final payjoin_proposal = await pj7.finalizeProposal(
+      processPsbt: (String psbt) async {
+        print('finalizeProposal psbt $psbt');
+        // TODO: sign PSBT
+        final psbtStruct =
+            await bdk.PartiallySignedTransaction.fromString(psbt);
+        print('unsigned psbtStruct $psbtStruct');
+        final signed = await wallet.sign(
+          psbt: psbtStruct,
+          signOptions: const bdk.SignOptions(
+            trustWitnessUtxo: false,
+            allowAllSighashes: false,
+            removePartialSigs: true,
+            tryFinalize: true,
+            signWithTapInternalKey: true,
+            allowGrinding: true,
+          ),
+        );
+        print('signed $signed');
+        final signedPsbt = psbtStruct.toString();
+        print('signedPsbt $signedPsbt');
+        return signedPsbt;
+      },
+      maxFeeRateSatPerVb: BigInt.from(10000),
+    );
+    return payjoin_proposal;
+  } catch (e) {
+    print('err: $e');
+    throw Exception('Error occurred while finalizing proposal');
+  }
 }
 
-Future<InputPair> inputPairFromUtxo(UTXO utxo, bool isTestnet) async {
-  // TODO: this seems like a roundabout way of getting the script pubkey
-  final address = await bdk.Address.fromString(
-    s: utxo.address.address,
-    network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-  );
-  final spk = address.scriptPubkey().bytes;
+Future<InputPair> inputPairFromUtxo(bdk.LocalUtxo utxo, bool isTestnet) async {
   final psbtin = PsbtInput(
+    // We should be able to merge these bdk & payjoin rust-bitcoin types with bitcoin-ffi eventually
     witnessUtxo: TxOut(
-      value: BigInt.from(utxo.value),
-      scriptPubkey: spk,
+      value: utxo.txout.value,
+      scriptPubkey: utxo.txout.scriptPubkey.bytes,
     ),
     // TODO: redeem script/witness script?
   );
-  // TODO: perhaps TxIn.default() should be exposed in payjoin_flutter api
   final txin = TxIn(
-    previousOutput: OutPoint(txid: utxo.txid, vout: utxo.txIndex),
+    previousOutput:
+        OutPoint(txid: utxo.outpoint.txid, vout: utxo.outpoint.vout),
     scriptSig: await Script.newInstance(rawOutputScript: []),
     sequence: 0xFFFFFFFF,
     witness: [],

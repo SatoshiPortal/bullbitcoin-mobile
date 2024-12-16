@@ -148,9 +148,13 @@ class SendCubit extends Cubit<SendState> {
         final pjParam = bip21Obj.options['pj'] as String?;
         if (pjParam != null) {
           try {
-            final uri = await pj_uri.Uri.fromStr(bip21Obj.toString());
-            final pjUri = uri.checkPjSupported();
-            emit(state.copyWith(payjoinUri: pjUri));
+            final parsedPjParam = Uri.parse(pjParam);
+            final partialEncodedPjParam =
+                parsedPjParam.toString().replaceAll('#', '%23');
+            final encodedPjParam = partialEncodedPjParam.replaceAll('%20', '+');
+            // ICK bitcoin:tb1qsfa6dqnwx9uya6jupaulwe8gtmvs4jgmgutujs?amount=0.3&pjos=0&pj=https%3A%2F%2Fpayjo.in%2Fc0vmd8xjuzaws%23rk1qdfp44eycle2g92w3qsk62tn6dnxk8vptucldkfelz25qr6tlwvgz+oh1qyphkle3uql8ae79y5lw8d6323rdnryf7auz43xe4ccgtzvzmktz92q+ex1urxkqec
+            // TODO serialize properly and then pass to Uri.fromStr
+            emit(state.copyWith(payjoinEndpoint: Uri.parse(encodedPjParam)));
           } catch (e) {
             print('error: $e');
           }
@@ -1148,7 +1152,7 @@ class SendCubit extends Cubit<SendState> {
         while (state.psbtSigned == null) {
           await Future.delayed(100.ms);
         }
-        if (state.payjoinUri != null) {
+        if (state.payjoinEndpoint != null) {
           sendPayjoin(
             networkFees: fees,
             originalPsbt: state.psbtSigned!,
@@ -1175,7 +1179,7 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    if (!isLn && state.payjoinUri == null) {
+    if (!isLn && state.payjoinEndpoint == null) {
       baseLayerSend();
       return;
     }
@@ -1187,9 +1191,21 @@ class SendCubit extends Cubit<SendState> {
     required String originalPsbt,
     required Wallet wallet,
   }) async {
-    print('sendPayjoin: $state.payjoinUri');
+    // TODO build pjUri from state.payjoinEndpoint
+    final pjUriString =
+        'bitcoin:${state.address}?amount=${_currencyCubit.state.amount / 100000000}&label=${Uri.encodeComponent(state.note)}&pj=${state.payjoinEndpoint!}&pjos=0';
+    // find the substring starting pj= and CAPITALIZE everything after chars pj=
+    final pjSubstring = pjUriString.substring(pjUriString.indexOf('pj=') + 3);
+    final capitalizedPjSubstring = pjSubstring.toUpperCase();
+    final pjUriStringWithCapitalizedPj =
+        pjUriString.substring(0, pjUriString.indexOf('pj=') + 3) +
+            capitalizedPjSubstring;
+    print('capitalizedPjSubstring: $capitalizedPjSubstring');
+    final pjUri = (await pj_uri.Uri.fromStr(pjUriStringWithCapitalizedPj))
+        .checkPjSupported();
+    print('sendPayjoin: $pjUriString');
     var (sender, err) = await _payjoinSessionStorage.readSenderSession(
-      state.payjoinUri!.pjEndpoint(),
+      pjUri.pjEndpoint(),
     );
     if (err != null) {
       print('Error reading sender session: $err');
@@ -1199,12 +1215,12 @@ class SendCubit extends Cubit<SendState> {
     sender ??= await initPayjoinSender(
       networkFees: networkFees,
       originalPsbt: originalPsbt,
-      pjUri: state.payjoinUri!,
+      pjUri: pjUri,
     );
-    print('sender after initPayjoinSender: $sender');
+    print('sender after initPayjoinSender: ${pjUri.pjEndpoint()}');
     await _payjoinSessionStorage.insertSenderSession(
       sender,
-      state.payjoinUri!.pjEndpoint(),
+      pjUri.pjEndpoint(),
     );
     print('spawnSender');
     await _payjoinManager.spawnSender(

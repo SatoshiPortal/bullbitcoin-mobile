@@ -70,6 +70,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     // if (watchOnly)
     //   emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
     loadAddress();
+    print('state.paymentNetwork: ${state.paymentNetwork}');
     if (state.paymentNetwork == PaymentNetwork.bitcoin &&
         !state.disablePayjoin) {
       loadPayjoinReceiver(state.walletBloc!.state.wallet!.isTestnet());

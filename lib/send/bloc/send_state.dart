@@ -38,7 +38,7 @@ class SendState with _$SendState {
     @Default('') String errDownloadingFile,
     @Default(false) bool downloaded,
     @Default(false) bool disableRBF,
-    pj_uri.PjUri? payjoinUri,
+    Uri? payjoinEndpoint,
     @Default(false) bool sendAllCoin,
     @Default([]) List<UTXO> selectedUtxos,
     @Default('') String errAddresses,
