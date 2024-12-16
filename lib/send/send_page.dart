@@ -95,7 +95,7 @@ class _SendPageState extends State<SendPage> {
       defaultRBF: locator<SettingsCubit>().state.defaultRBF,
       fileStorage: locator<FileStorage>(),
       networkCubit: locator<NetworkCubit>(),
-      networkFeesCubit: locator<NetworkFeesCubit>(),
+      networkFeesCubit: networkFees,
       homeCubit: locator<HomeCubit>(),
       swapBoltz: locator<SwapBoltz>(),
       currencyCubit: currency,
