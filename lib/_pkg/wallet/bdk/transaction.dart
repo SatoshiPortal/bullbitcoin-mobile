@@ -128,7 +128,7 @@ class BDKTransactions {
 
         if (foundStoredTx) storedTx = storedTxs.elementAtOrNull(storedTxIdx);
 
-        final vsize = await bdkTx.transaction?.vsize() ?? 1;
+        final vsize = await bdkTx.transaction?.vsize() ?? BigInt.from(1);
         final isNativeRbf = storedTx?.rbfEnabled ?? true;
         //  await tx.transaction?.isExplicitlyRbf() ??
 
@@ -149,7 +149,7 @@ class BDKTransactions {
           received: bdkTx.received.toInt(),
           sent: bdkTx.sent.toInt(),
           fee: bdkTx.fee?.toInt() ?? 0,
-          feeRate: (bdkTx.fee?.toInt() ?? 1) / (vsize as int).toDouble(),
+          feeRate: (bdkTx.fee ?? BigInt.from(1)) / vsize,
           height: bdkTx.confirmationTime?.height ?? 0,
           timestamp: bdkTx.confirmationTime?.timestamp.toInt() ?? 0,
           bdkTx: bdkTx,
