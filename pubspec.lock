@@ -65,11 +65,12 @@ packages:
   bdk_flutter:
     dependency: "direct main"
     description:
-      name: bdk_flutter
-      sha256: ce4f6320095389ebd3eaae37e2213775de950722150d762fb9a661fd4b4eb9e0
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.31.2"
+      path: "."
+      ref: main
+      resolved-ref: b9d5af6df7354063de3ad047c6b5cb95b5144f36
+      url: "https://github.com/LtbLightning/bdk-flutter"
+    source: git
+    version: "0.31.3"
   bitcoin_utils:
     dependency: "direct main"
     description:

@@ -11,15 +11,9 @@ dependencies:
     sdk: flutter
 
   bdk_flutter:
-    ^0.31.2
-    # ^0.28.3
-    # path: ../bdk-flutter
-    # git:
-    #   url: https://github.com/LtbLightning/bdk-flutter
-    #   ref: pre-compiled-binaries
-    # git:
-    #   url: https://github.com/LtbLightning/bdk-flutter
-    #   ref: 6cbadd9d7267d0fbb8626dfb403fb5d562046543
+    git:
+      url: https://github.com/LtbLightning/bdk-flutter
+      ref: main
   payjoin_flutter:
     git:
       url: https://github.com/LtbLightning/payjoin-flutter

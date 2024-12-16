@@ -382,8 +382,8 @@ class BDKTransactions {
       for (final tx in transactions) {
         if (tx.isPending() && tx.isReceived()) {
           pendingTxs.add(tx);
-          final ip = await tx.bdkTx?.transaction?.input() ?? [];
-          pendingTxInputs.add(ip);
+          // final ip = await tx.bdkTx?.transaction?.input() ?? [];
+          // pendingTxInputs.add(ip);
         }
       }
 
@@ -593,6 +593,7 @@ class BDKTransactions {
     // required String address,
   }) async {
     try {
+      print('signTx psbt: $psbt');
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
       final tx = psbtStruct.extractTx();
       final _ = await bdkWallet.sign(
@@ -609,7 +610,7 @@ class BDKTransactions {
       );
       // final extracted = await finalized;
       final psbtStr = psbtStruct.serialize();
-
+      print('signTx psbtStr: ${base64Encode(psbtStr)}');
       return ((tx, base64Encode(psbtStr)), null);
     } on Exception catch (e) {
       return (

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -582,7 +583,7 @@ Future<PayjoinProposal> processPayjoinProposal(
         final signed = await wallet.sign(
           psbt: psbtStruct,
           signOptions: const bdk.SignOptions(
-            trustWitnessUtxo: false,
+            trustWitnessUtxo: true,
             allowAllSighashes: false,
             removePartialSigs: true,
             tryFinalize: true,
@@ -590,10 +591,10 @@ Future<PayjoinProposal> processPayjoinProposal(
             allowGrinding: true,
           ),
         );
-        print('signed $signed');
-        final signedPsbt = psbtStruct.toString();
+        print('finalizeProposal signed $signed');
+        final signedPsbt = psbtStruct.serialize();
         print('signedPsbt $signedPsbt');
-        return signedPsbt;
+        return base64Encode(signedPsbt);
       },
       maxFeeRateSatPerVb: BigInt.from(10000),
     );
