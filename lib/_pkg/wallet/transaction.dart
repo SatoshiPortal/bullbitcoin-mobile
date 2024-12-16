@@ -495,13 +495,14 @@ class WalletTx implements IWalletTransactions {
         final newTx = updatedSwapTx.toNewTransaction();
         txs.add(newTx);
       } else {
-        if (txIdx != -1)
+        if (txIdx != -1) {
           txs[txIdx] = txs[txIdx].copyWith(
             swapTx: updatedSwapTx,
             txid: updatedSwapTx.claimTxid ?? txs[txIdx].txid,
             label: updatedSwapTx.label,
             isSwap: true,
           );
+        }
       }
     }
 
@@ -540,9 +541,11 @@ class WalletTx implements IWalletTransactions {
           if (s.failed()) s,
       ];
 
-      for (final s in swapsToDelete)
-        if (swapsToDelete.any((_) => _.id == s.id))
+      for (final s in swapsToDelete) {
+        if (swapsToDelete.any((_) => _.id == s.id)) {
           swapTxs.removeWhere((_) => _.id == s.id);
+        }
+      }
     }
 
     final updatedWallet = wallet.copyWith(swaps: swapTxs, transactions: txs);

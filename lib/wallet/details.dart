@@ -39,9 +39,10 @@ class WalletDetailsPage extends StatelessWidget {
 class _Screen extends StatelessWidget {
   const _Screen();
 
-  void copy(BuildContext context, String text) async {
-    if (locator.isRegistered<Clippboard>())
+  Future<void> copy(BuildContext context, String text) async {
+    if (locator.isRegistered<Clippboard>()) {
       await locator<Clippboard>().copy(text);
+    }
 
     // ScaffoldMessenger.of(context)
     //     .showSnackBar(const SnackBar(content: Text('Copied to clipboard')));

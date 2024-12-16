@@ -48,7 +48,7 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     _processInput();
   }
 
-  void scanQRClicked() async {
+  Future<void> scanQRClicked() async {
     final (res, err) = await _barcode.scan();
     if (err != null) {
       emit(state.copyWith(errScanningInput: err.toString()));
@@ -59,7 +59,7 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     _processInput();
   }
 
-  void selectFile() async {
+  Future<void> selectFile() async {
     final (file, err) = await _filePicker.pickFile();
     if (err != null) {
       emit(state.copyWith(errScanningInput: err.toString()));
@@ -84,25 +84,26 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
 
   Future checkWalletLabel() async {
     final label = state.label;
-    if (label.isEmpty)
+    if (label.isEmpty) {
       emit(state.copyWith(errLabel: 'Wallet Label is required'));
-    else if (label.length < 3)
+    } else if (label.length < 3) {
       emit(
         state.copyWith(
           errLabel: 'Wallet Label must be at least 3 characters',
         ),
       );
-    else if (label.length > 20)
+    } else if (label.length > 20) {
       emit(
         state.copyWith(
           errLabel: 'Wallet Label must be less than 20 characters',
         ),
       );
-    else
+    } else {
       emit(state.copyWith(errLabel: ''));
+    }
   }
 
-  void _processColdCard(ColdCard coldCard) async {
+  Future<void> _processColdCard(ColdCard coldCard) async {
     final wallets = <Wallet>[];
 
     final network = _networkCubit.state.getBBNetwork();
@@ -133,7 +134,7 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     );
   }
 
-  void _processXpub(String xpub) async {
+  Future<void> _processXpub(String xpub) async {
     final wallets = <Wallet>[];
 
     if (xpub.contains('[')) {
@@ -194,7 +195,7 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     );
   }
 
-  void saveClicked() async {
+  Future<void> saveClicked() async {
     await checkWalletLabel();
     if (state.errLabel.isNotEmpty) return;
 

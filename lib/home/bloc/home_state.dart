@@ -121,8 +121,9 @@ class HomeState with _$HomeState {
     for (final walletBloc in walletBlocs!) {
       final wallet = walletBloc.state.wallet;
       if (wallet == null) continue;
-      if (wallet.transactions.indexWhere((t) => t.txid == tx.txid) != -1)
+      if (wallet.transactions.indexWhere((t) => t.txid == tx.txid) != -1) {
         return walletBloc;
+      }
     }
 
     return null;
@@ -250,7 +251,9 @@ class HomeState with _$HomeState {
       final walletTxs =
           walletBloc.state.wallet?.transactions ?? <Transaction>[];
       // final wallet = walletBloc.state.wallet;
-      for (final tx in walletTxs) txs.add(tx);
+      for (final tx in walletTxs) {
+        txs.add(tx);
+      }
     }
     txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return txs;
@@ -371,13 +374,15 @@ class HomeState with _$HomeState {
       if (enoughBalance) {
         if (walletBlocWithHighestBalance == null ||
             walletBloc.state.balanceSats() >
-                walletBlocWithHighestBalance.state.balanceSats())
+                walletBlocWithHighestBalance.state.balanceSats()) {
           walletBlocWithHighestBalance = walletBloc;
+        }
       }
     }
 
-    if (walletBlocWithHighestBalance != null)
+    if (walletBlocWithHighestBalance != null) {
       return walletBlocWithHighestBalance;
+    }
 
     return null;
   }
@@ -422,10 +427,11 @@ class HomeState with _$HomeState {
     final List<String> backupWalletFngrforBackupWarning = [];
 
     for (final walletBloc in walletBlocsFromNetwork(network)) {
-      if (instantBalWarning(walletBloc))
+      if (instantBalWarning(walletBloc)) {
         warnings.add(
           (info: 'Instant wallet balance is high', walletBloc: walletBloc),
         );
+      }
       if (backupWarning(walletBloc)) {
         final fngr = walletBloc.state.wallet!.sourceFingerprint;
         if (backupWalletFngrforBackupWarning.contains(fngr)) continue;

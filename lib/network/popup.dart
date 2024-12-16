@@ -37,6 +37,8 @@ class NetworkPopup extends StatelessWidget {
           current.errLoadingNetworks.isEmpty,
       listener: (context, state) async {
         await Future.delayed(const Duration(seconds: 1));
+
+        if (!context.mounted) return;
         context.pop();
       },
       child: BlocProvider.value(
@@ -81,8 +83,7 @@ class _NetowrkHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLiq = context.select((_NetworkSelector _) => _.state);
     final networkStr = isLiq ? 'Liquid' : 'Bitcoin';
-    final changeStr =
-        'Configure ' + (isLiq ? 'Bitcoin' : 'Liquid') + ' Network';
+    final changeStr = 'Configure ${isLiq ? 'Bitcoin' : 'Liquid'} Network';
 
     return BBHeader.popUpCenteredText(
       text: '', //networkStr + ' Network',
@@ -90,7 +91,7 @@ class _NetowrkHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText.titleLarge(
-            networkStr + ' Network',
+            '$networkStr Network',
             isBold: true,
           ),
           BBButton.text(
@@ -326,13 +327,15 @@ class NetworkConfigFields extends StatelessWidget {
         ? testnet != tempLiqNetworkDetails.testnet
         : testnet != tempNetworkDetails.testnet;
 
-    if (mainnetChanged)
+    if (mainnetChanged) {
       mainnet =
           isLiq ? tempLiqNetworkDetails.mainnet : tempNetworkDetails.mainnet;
+    }
 
-    if (testnetChanged)
+    if (testnetChanged) {
       testnet =
           isLiq ? tempLiqNetworkDetails.testnet : tempNetworkDetails.testnet;
+    }
 
     if (disabled) {
       mainnet = removeSubAndPort(mainnet);
@@ -352,10 +355,11 @@ class NetworkConfigFields extends StatelessWidget {
               width: fieldWidth,
               child: BBTextInput.big(
                 onChanged: (t) {
-                  if (!isLiq)
+                  if (!isLiq) {
                     context.read<NetworkCubit>().updateTempMainnet(t);
-                  else
+                  } else {
                     context.read<NetworkCubit>().updateTempLiquidMainnet(t);
+                  }
                 },
                 value: mainnet,
                 disabled: disabled,
@@ -368,10 +372,11 @@ class NetworkConfigFields extends StatelessWidget {
               width: fieldWidth,
               child: BBTextInput.big(
                 onChanged: (t) {
-                  if (!isLiq)
+                  if (!isLiq) {
                     context.read<NetworkCubit>().updateTempTestnet(t);
-                  else
+                  } else {
                     context.read<NetworkCubit>().updateTempLiquidTestnet(t);
+                  }
                 },
                 value: testnet,
                 disabled: disabled,

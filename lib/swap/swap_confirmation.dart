@@ -21,16 +21,16 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class SwapConfirmationPage extends StatefulWidget {
-  SwapConfirmationPage({
+  const SwapConfirmationPage({
     super.key,
     this.fromWalletId,
     required this.send,
     required this.swap,
   });
 
-  String? fromWalletId;
-  SendCubit send;
-  CreateSwapCubit swap;
+  final String? fromWalletId;
+  final SendCubit send;
+  final CreateSwapCubit swap;
 
   @override
   State<SwapConfirmationPage> createState() => _SwapConfirmationPageState();
@@ -82,9 +82,9 @@ class _SwapConfirmationPageState extends State<SwapConfirmationPage> {
 }
 
 class _Screen extends StatelessWidget {
-  _Screen({this.fromWalletId});
+  const _Screen({this.fromWalletId});
 
-  String? fromWalletId;
+  final String? fromWalletId;
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +131,7 @@ class _Screen extends StatelessWidget {
       (CreateSwapCubit x) => x.state.showSwapWarning(),
     );
 
-    final walletName = context.select(
+    context.select(
       (SendCubit x) => x.state.selectedWalletBloc?.state.wallet?.name ?? '',
     );
 

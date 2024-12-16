@@ -125,10 +125,12 @@ class _Screen extends StatelessWidget {
     final tx = context.select((TransactionCubit _) => _.state.tx);
     final swap = tx.swapTx;
 
-    if (swap != null && !swap.isChainSwap())
+    if (swap != null && !swap.isChainSwap()) {
       return const _CombinedTxAndSwapPage();
-    if (swap != null && swap.isChainSwap() && showOnchainSwap == true)
+    }
+    if (swap != null && swap.isChainSwap() && showOnchainSwap == true) {
       return const _CombinedTxAndOnchainSwapPage();
+    }
     return const _OnlyTxPage();
 
     // final page = context.select((TransactionCubit _) => _.state.tx.pageLayout);
@@ -588,9 +590,11 @@ class _SwapDetails extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () async {
-                      if (locator.isRegistered<Clippboard>())
+                      if (locator.isRegistered<Clippboard>()) {
                         await locator<Clippboard>().copy(id);
+                      }
 
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Copied to clipboard')),
                       );
@@ -671,10 +675,10 @@ class _OnchainSwapDetails extends StatelessWidget {
     // final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
     final amt = swap.amountForDisplay() ?? 0;
-    final amount = context.select(
+    context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amt, removeText: true),
     );
-    final isReceive = swap.isReverse();
+    swap.isReverse();
 
     final date = tx.getDateTimeStr();
     // swap.
@@ -1007,9 +1011,11 @@ class _OnchainSwapDetails extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () async {
-                      if (locator.isRegistered<Clippboard>())
+                      if (locator.isRegistered<Clippboard>()) {
                         await locator<Clippboard>().copy(id);
+                      }
 
+                      if (!context.mounted) return;
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Copied to clipboard')),
                       );

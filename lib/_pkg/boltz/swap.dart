@@ -46,7 +46,7 @@ class SwapBoltz {
   }) async {
     try {
       final res = Fees(
-        boltzUrl: 'https://' + boltzUrl,
+        boltzUrl: 'https://$boltzUrl',
       );
       return (res, null);
     } catch (e) {
@@ -90,7 +90,7 @@ class SwapBoltz {
   Future<Err?> deleteSwapSensitive({required String id}) async {
     try {
       final err = await _secureStorage
-          .deleteValue(StorageKeys.swapTxSensitive + '_' + id);
+          .deleteValue('${StorageKeys.swapTxSensitive}_$id');
       if (err != null) throw err;
       return null;
     } catch (e) {
@@ -132,7 +132,7 @@ class SwapBoltz {
         final swapSensitive = res.createSwapSensitiveFromBtcLnSwap();
         // SwapTxSensitive.fromBtcLnSwap(res);
         final err = await _secureStorage.saveValue(
-          key: StorageKeys.swapTxSensitive + '_' + res.id,
+          key: '${StorageKeys.swapTxSensitive}_${res.id}',
           value: jsonEncode(swapSensitive.toJson()),
         );
         if (err != null) throw err;
@@ -155,7 +155,7 @@ class SwapBoltz {
         final swapSensitive = res.createSwapSensitiveFromLbtcLnSwap();
         // SwapTxSensitive.fromLbtcLnSwap(res);
         final err = await _secureStorage.saveValue(
-          key: StorageKeys.swapTxSensitive + '_' + res.id,
+          key: '${StorageKeys.swapTxSensitive}_${res.id}',
           value: jsonEncode(swapSensitive.toJson()),
         );
         if (err != null) throw err;
@@ -194,7 +194,7 @@ class SwapBoltz {
 
         //SwapTxSensitive.fromBtcLnSwap(res);
         final err = await _secureStorage.saveValue(
-          key: StorageKeys.swapTxSensitive + '_' + res.id,
+          key: '${StorageKeys.swapTxSensitive}_${res.id}',
           value: jsonEncode(swapSensitive.toJson()),
         );
         if (err != null) throw err;
@@ -217,7 +217,7 @@ class SwapBoltz {
 
         //SwapTxSensitive.fromBtcLnSwap(res);
         final err = await _secureStorage.saveValue(
-          key: StorageKeys.swapTxSensitive + '_' + res.id,
+          key: '${StorageKeys.swapTxSensitive}_${res.id}',
           value: jsonEncode(swapSensitive.toJson()),
         );
         if (err != null) throw err;
@@ -239,7 +239,7 @@ class SwapBoltz {
       if (!swapTx.isLiquid()) throw 'Only Liquid';
 
       final (swapSensitiveStr, err) = await _secureStorage.getValue(
-        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+        '${StorageKeys.swapTxSensitive}_${swapTx.id}',
       );
       if (err != null) throw err;
       if (swapSensitiveStr == null) throw 'Could not find swap secrets';
@@ -274,7 +274,7 @@ class SwapBoltz {
       final isLiquid = wallet.isLiquid();
 
       final (swapSentive, err) = await _secureStorage.getValue(
-        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+        '${StorageKeys.swapTxSensitive}_${swapTx.id}',
       );
       if (err != null) throw err;
 
@@ -415,7 +415,7 @@ class SwapBoltz {
       final isLiquid = wallet.isLiquid();
 
       final (swapSentive, err) = await _secureStorage.getValue(
-        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+        '${StorageKeys.swapTxSensitive}_${swapTx.id}',
       );
       if (err != null) throw err;
 
@@ -537,7 +537,7 @@ class SwapBoltz {
       final isLiquid = wallet.isLiquid();
 
       final (swapSentive, err) = await _secureStorage.getValue(
-        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+        '${StorageKeys.swapTxSensitive}_${swapTx.id}',
       );
       if (err != null) throw err;
 
@@ -591,7 +591,7 @@ class SwapBoltz {
           swapTx.isChainReceive() ? !wallet.isLiquid() : wallet.isLiquid();
 
       final (swapSensitiveStr, err) = await _secureStorage.getValue(
-        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+        '${StorageKeys.swapTxSensitive}_${swapTx.id}',
       );
       if (err != null) throw err;
       if (swapSensitiveStr == null) throw 'Could not find swap secrets';
@@ -652,7 +652,7 @@ class SwapBoltz {
   }) async {
     try {
       final (swapSensitiveStr, err) = await _secureStorage.getValue(
-        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+        '${StorageKeys.swapTxSensitive}_${swapTx.id}',
       );
       if (err != null) throw err;
 
@@ -728,7 +728,7 @@ class SwapBoltz {
   }) async {
     try {
       final (swapSensitiveStr, err) = await _secureStorage.getValue(
-        StorageKeys.swapTxSensitive + '_' + swapTx.id,
+        '${StorageKeys.swapTxSensitive}_${swapTx.id}',
       );
       if (err != null) throw err;
       if (swapSensitiveStr == null) throw 'Could not find swap secrets';
@@ -777,7 +777,7 @@ class SwapBoltz {
 
       //SwapTxSensitive.fromBtcLnSwap(res);
       final err = await _secureStorage.saveValue(
-        key: StorageKeys.swapTxSensitive + '_' + res.id,
+        key: '${StorageKeys.swapTxSensitive}_${res.id}',
         value: jsonEncode(swapSensitive.toJson()),
       );
       if (err != null) throw err;

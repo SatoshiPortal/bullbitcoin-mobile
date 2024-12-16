@@ -146,7 +146,7 @@ class _Screen extends StatelessWidget {
         context.select((WalletBloc x) => x.state.wallet!.watchOnly());
     final mainWallet =
         context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
-    final receiveWallet = context.select((WalletBloc x) => x.state.wallet);
+    context.select((WalletBloc x) => x.state.wallet);
 
     final walletIsLiquid = context.select(
       (WalletBloc x) => x.state.wallet!.isLiquid(),
@@ -196,8 +196,9 @@ class _Screen extends StatelessWidget {
     // END: ON CHAIN
     // **************
 
-    if (showWarning && !removeWarning && !walletIsLiquid)
+    if (showWarning && !removeWarning && !walletIsLiquid) {
       return const _Warnings();
+    }
 
     return SingleChildScrollView(
       child: Padding(
@@ -574,8 +575,9 @@ class WalletActions extends StatelessWidget {
             context.read<CurrencyCubit>().updateAmountDirect(0);
             final paymentNetwork =
                 context.read<ReceiveCubit>().state.paymentNetwork;
-            if (paymentNetwork == PaymentNetwork.lightning)
+            if (paymentNetwork == PaymentNetwork.lightning) {
               context.read<CreateSwapCubit>().clearSwapTx();
+            }
 
             context.read<ReceiveCubit>().generateNewAddress();
           },
@@ -641,10 +643,10 @@ class ChainSwapForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final description = context.select((ReceiveCubit _) => _.state.description);
-    final allFees = context.select((CreateSwapCubit x) => x.state.allFees);
-    final amount = context.select((CurrencyCubit x) => x.state.amount);
+    context.select((CreateSwapCubit x) => x.state.allFees);
+    context.select((CurrencyCubit x) => x.state.amount);
 
-    final isLiquid = context.select(
+    context.select(
       (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
     );
     final err = context.select((CreateSwapCubit _) => _.state.err());
@@ -652,8 +654,6 @@ class ChainSwapForm extends StatelessWidget {
     final generatingInv = context
         .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);
     final sending = generatingInv;
-
-    const int finalFee = 0;
 
     final darkMode = context.select(
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
@@ -742,7 +742,7 @@ class CreateLightningInvoice extends StatelessWidget {
         context.select((CreateSwapCubit _) => _.state.errCreatingSwapInv);
     final creatingInv =
         context.select((CreateSwapCubit _) => _.state.generatingSwapInv);
-    final allFees = context.select((CreateSwapCubit x) => x.state.allFees);
+    context.select((CreateSwapCubit x) => x.state.allFees);
     final amount = context.select((CurrencyCubit x) => x.state.amount);
 
     final isLiquid = context.select(
@@ -990,8 +990,9 @@ class ReceiveQRDisplay extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () async {
-          if (locator.isRegistered<Clippboard>())
+          if (locator.isRegistered<Clippboard>()) {
             await locator<Clippboard>().copy(address);
+          }
 
           // ScaffoldMessenger.of(context).showSnackBar(
           //   const SnackBar(content: Text('Copied to clipboard')),
@@ -1142,8 +1143,9 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
-                          if (locator.isRegistered<Clippboard>())
+                          if (locator.isRegistered<Clippboard>()) {
                             await locator<Clippboard>().copy(addr);
+                          }
 
                           // ScaffoldMessenger.of(context).showSnackBar(
                           //   const SnackBar(
@@ -1159,8 +1161,9 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        if (locator.isRegistered<Clippboard>())
+                        if (locator.isRegistered<Clippboard>()) {
                           await locator<Clippboard>().copy(addr);
+                        }
 
                         // ScaffoldMessenger.of(context).showSnackBar(
                         //   const SnackBar(content: Text('Copied to clipboard')),

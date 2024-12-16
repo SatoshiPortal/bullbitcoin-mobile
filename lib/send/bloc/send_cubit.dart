@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/address.dart';
-import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
@@ -19,6 +18,7 @@ import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:boltz_dart/boltz_dart.dart' as boltz;
+import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -74,7 +74,7 @@ class SendCubit extends Cubit<SendState> {
   final HomeCubit _homeCubit;
   final CreateSwapCubit _swapCubit;
 
-  void updateAddress(String? addr, {bool changeWallet = true}) async {
+  Future<void> updateAddress(String? addr, {bool changeWallet = true}) async {
     if (!state.oneWallet) resetWalletSelection(changeWallet: changeWallet);
     resetErrors();
     _swapCubit.clearSwapTx();
@@ -315,10 +315,11 @@ class SendCubit extends Cubit<SendState> {
           ? _networkCubit.state.getLiquidNetworkUrl()
           : _networkCubit.state.getNetworkUrl();
 
-      if (amt == 0)
+      if (amt == 0) {
         emit(state.copyWith(showSendButton: false));
-      else
+      } else {
         _checkBalance();
+      }
       // emit(state.copyWith(showSendButton: true));
 
       await _swapCubit.createSubSwapForSend(
@@ -357,10 +358,11 @@ class SendCubit extends Cubit<SendState> {
       );
     }
 
-    if (amt == 0)
+    if (amt == 0) {
       emit(state.copyWith(showSendButton: false));
-    else
+    } else {
       _checkBalance();
+    }
 
     // emit(state.copyWith(showSendButton: true));
   }
@@ -404,10 +406,11 @@ class SendCubit extends Cubit<SendState> {
       );
     }
 
-    if (amount == 0)
+    if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
-    else
+    } else {
       _checkBalance();
+    }
 
     // emit(state.copyWith(showSendButton: true));
   }
@@ -439,10 +442,11 @@ class SendCubit extends Cubit<SendState> {
       );
     }
 
-    if (amount == 0)
+    if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
-    else
+    } else {
       _checkBalance();
+    }
     // emit(state.copyWith(showSendButton: true));
   }
 
@@ -506,7 +510,7 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
-  void scanAddress() async {
+  Future<void> scanAddress() async {
     emit(state.copyWith(scanningAddress: true));
     final (address, err) = await _barcode.scan();
     if (err != null) {
@@ -556,10 +560,11 @@ class SendCubit extends Cubit<SendState> {
   void utxoSelected(UTXO utxo) {
     var selectedUtxos = state.selectedUtxos.toList();
 
-    if (selectedUtxos.containsUtxo(utxo))
+    if (selectedUtxos.containsUtxo(utxo)) {
       selectedUtxos = selectedUtxos.removeUtxo(utxo);
-    else
+    } else {
       selectedUtxos.add(utxo);
+    }
 
     emit(state.copyWith(selectedUtxos: selectedUtxos));
   }
@@ -568,7 +573,7 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(selectedUtxos: []));
   }
 
-  void downloadPSBTClicked() async {
+  Future<void> downloadPSBTClicked() async {
     emit(
       state.copyWith(
         downloadingFile: true,
@@ -617,7 +622,7 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(downloadingFile: false, downloaded: true));
   }
 
-  void buildOnchainTxFromSwap({
+  Future<void> buildOnchainTxFromSwap({
     required int networkFees,
     required SwapTx swaptx,
   }) async {
@@ -693,7 +698,7 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
-  void buildTxFromSwap({
+  Future<void> buildTxFromSwap({
     required int networkFees,
     required SwapTx swaptx,
   }) async {
@@ -783,7 +788,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   // -----------------
-  void sendSwap() async {
+  Future<void> sendSwap() async {
     emit(state.copyWith(sending: true, errSending: ''));
 
     final tx = state.tx!;
@@ -798,8 +803,6 @@ class SendCubit extends Cubit<SendState> {
     //   emit(state.copyWith(errSending: "Submarine swaps currently only supported via "));
     //   return;
     // };
-    final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
-        LiquidElectrumTypes.bullbitcoin;
     final (wtxid, errBroadcast) = await _walletTx.broadcastTxWithWallet(
       wallet: wallet!,
       address: swap.scriptAddress,
@@ -839,7 +842,7 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(sending: false, sent: true));
   }
 
-  void baseLayerBuild({required int networkFees}) async {
+  Future<void> baseLayerBuild({required int networkFees}) async {
     if (state.sending) return;
     if (state.selectedWalletBloc == null) return;
 
@@ -890,7 +893,7 @@ class SendCubit extends Cubit<SendState> {
       );
 
       final amountDirect = (tx.sent ?? 0) - (tx.received ?? 0);
-      print('amountDirect: $amountDirect');
+      debugPrint('amountDirect: $amountDirect');
       // _currencyCubit.updateAmountDirect(amountDirect);
     } else {
       state.selectedWalletBloc!.add(
@@ -913,7 +916,7 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  void baseLayerSend() async {
+  Future<void> baseLayerSend() async {
     if (state.selectedWalletBloc == null) return;
     emit(state.copyWith(sending: true, errSending: ''));
     final address = state.address;
@@ -985,7 +988,7 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
-  void reset() async {
+  Future<void> reset() async {
     emit(
       state.copyWith(
         tx: null,
@@ -1046,7 +1049,7 @@ class SendCubit extends Cubit<SendState> {
     return feeAmt ?? 0;
   }
 
-  void processSendButton(String label) async {
+  Future<void> processSendButton(String label) async {
     final network =
         _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
     final (_, addressError) =
@@ -1145,7 +1148,7 @@ class SendCubit extends Cubit<SendState> {
     sendSwap();
   }
 
-  void buildChainSwap(
+  Future<void> buildChainSwap(
     Wallet fromWallet,
     Wallet toWallet,
     int amount,

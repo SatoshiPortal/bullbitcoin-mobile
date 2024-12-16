@@ -27,9 +27,6 @@ class WalletActionButtons extends StatelessWidget {
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
     );
 
-    final bgColour =
-        darkMode ? context.colour.primaryContainer : NewColours.offWhite;
-
     final shouldShowSwap = (walletBloc!.state.wallet?.isMain() != true ||
             walletBloc!.state.wallet?.isLiquid() == true) &&
         walletBloc!.state.wallet?.watchOnly() == false;

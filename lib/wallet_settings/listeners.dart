@@ -23,6 +23,7 @@ class WalletSettingsListeners extends StatelessWidget {
             // home.updateSelectedWallet(walletBloc);
 
             await context.read<HomeCubit>().getWalletsFromStorage();
+            if (!context.mounted) return;
             context.pop();
           },
         ),
@@ -30,8 +31,9 @@ class WalletSettingsListeners extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.savedName != current.savedName,
           listener: (context, state) {
-            if (state.savedName)
+            if (state.savedName) {
               FocusScope.of(context).requestFocus(FocusNode());
+            }
           },
         ),
       ],

@@ -11,6 +11,7 @@ import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:boltz_dart/boltz_dart.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateSwapCubit extends Cubit<SwapState> {
@@ -53,7 +54,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     );
   }
 
-  void createRevSwapForReceive({
+  Future<void> createRevSwapForReceive({
     required Wallet wallet,
     required int amount,
     String? label,
@@ -173,7 +174,6 @@ class CreateSwapCubit extends Cubit<SwapState> {
     //       ? fees.lbtcReverse.claimFeesEstimate
     //       : fees.btcReverse.claimFeesEstimate,
     // );
-    final liquidElectrum = _networkCubit.state.selectedLiquidNetwork;
 
     /*
     final updatedSwap = swap!.copyWith(
@@ -401,7 +401,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
 
       _showWarnings();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -468,7 +468,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
   void setValidationError(String validationMsg) =>
       emit(state.copyWith(errCreatingSwapInv: validationMsg));
 
-  void createOnChainSwap({
+  Future<void> createOnChainSwap({
     required Wallet wallet,
     required int amount,
     bool sweep = false,
@@ -630,11 +630,11 @@ class CreateSwapCubit extends Cubit<SwapState> {
 
       _showWarnings();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
-  void createOnChainSwapForReceive({
+  Future<void> createOnChainSwapForReceive({
     required Wallet toWallet,
     required int amount,
     bool sweep = false,
@@ -800,7 +800,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
 
       _showWarnings();
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 }

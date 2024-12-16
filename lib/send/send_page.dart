@@ -171,8 +171,9 @@ class _Screen extends StatelessWidget {
       (SendCubit x) => x.state.couldBeOnchainSwap(),
     );
 
-    if (showWarning && !walletIsLiquid && potentialonchainSwap == false)
+    if (showWarning && !walletIsLiquid && potentialonchainSwap == false) {
       return const _Warnings();
+    }
 
     return ColoredBox(
       color: context.colour.primaryContainer,
@@ -227,20 +228,8 @@ class WalletSelectionDropDown extends StatelessWidget {
     final oneWallet = context.select(
       (SendCubit cubit) => cubit.state.oneWallet,
     );
-    final loading = context.select((SendCubit _) => _.state.scanningAddress);
-
-    final sending = context.select((SendCubit _) => _.state.sending);
-
-    final generatingInv =
-        context.select((CreateSwapCubit _) => _.state.generatingSwapInv);
 
     final _ = context.select((SendCubit cubit) => cubit.state.enabledWallets);
-
-    var enableDropdown = context
-        .select((SendCubit cubit) => cubit.state.enabledWallets.isNotEmpty);
-
-    if (loading || generatingInv || sending) enableDropdown = true;
-    if (oneWallet) enableDropdown = false;
 
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final walletBlocs = context.select(
@@ -269,19 +258,6 @@ class WalletSelectionDropDown extends StatelessWidget {
         ).animate().fadeIn(),
       ),
     );
-  }
-}
-
-class _Balance extends StatelessWidget {
-  const _Balance();
-
-  @override
-  Widget build(BuildContext context) {
-    final showSend =
-        context.select((SendCubit cubit) => cubit.state.showSendButton);
-    if (!showSend) return const SizedBox(height: 24);
-
-    return const Center(child: SendWalletBalance()).animate().fadeIn();
   }
 }
 
@@ -321,6 +297,8 @@ class _AddressFieldState extends State<AddressField> {
                   if (!locator.isRegistered<Clippboard>()) return;
                   final data = await locator<Clippboard>().paste();
                   if (data == null) return;
+
+                  if (!context.mounted) return;
                   context.read<CreateSwapCubit>().clearErrors();
                   context.read<SendCubit>().updateAddress(data);
                 },
@@ -426,8 +404,9 @@ class NetworkFees extends StatelessWidget {
     final isLiquid =
         context.select((SendCubit cubit) => cubit.state.isLiquidPayment());
 
-    if (isLn || isLiquid || !walletSelected || isSelectedWalletLiquid)
+    if (isLn || isLiquid || !walletSelected || isSelectedWalletLiquid) {
       return const SizedBox.shrink();
+    }
 
     return AnimatedOpacity(
       opacity: sending ? 0.3 : 1,
@@ -459,8 +438,9 @@ class AdvancedOptions extends StatelessWidget {
     final addressReady =
         context.select((SendCubit _) => _.state.address.isNotEmpty);
 
-    if (isLn || !walletSelected || !addressReady || isLiquid == true)
+    if (isLn || !walletSelected || !addressReady || isLiquid == true) {
       return const SizedBox.shrink();
+    }
 
     final text =
         context.select((SendCubit _) => _.state.advancedOptionsButtonText());

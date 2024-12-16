@@ -27,17 +27,21 @@ class NetworkFeesState with _$NetworkFeesState {
     try {
       final selectedOption = feeOption();
 
-      if (selectedOption == 0)
-        str = 'Fastest fee rate: ' + feesList![0].toString();
-      if (selectedOption == 1)
-        str = 'Fast fee rate: ' + feesList![1].toString();
-      if (selectedOption == 2)
-        str = 'Medium fee rate: ' + feesList![2].toString();
-      if (selectedOption == 3)
-        str = 'Slow fee rate: ' + feesList![3].toString();
+      if (selectedOption == 0) {
+        str = 'Fastest fee rate: ${feesList![0]}';
+      }
+      if (selectedOption == 1) {
+        str = 'Fast fee rate: ${feesList![1]}';
+      }
+      if (selectedOption == 2) {
+        str = 'Medium fee rate: ${feesList![2]}';
+      }
+      if (selectedOption == 3) {
+        str = 'Slow fee rate: ${feesList![3]}';
+      }
 
-      if (selectedFeesOption == 4) str = 'Manual fee rate: ' + fees.toString();
-      return str + ' sat/vByte';
+      if (selectedFeesOption == 4) str = 'Manual fee rate: $fees';
+      return '$str sat/vByte';
     } catch (e) {
       return 'Select fee rate';
     }
@@ -47,13 +51,13 @@ class NetworkFeesState with _$NetworkFeesState {
     var str = '';
     try {
       final selectedOption = feeOption();
-      if (selectedOption == 0) str = 'Fastest (' + feesList![0].toString();
-      if (selectedOption == 1) str = 'Fast (' + feesList![1].toString();
-      if (selectedOption == 2) str = 'Medium (' + feesList![2].toString();
-      if (selectedOption == 3) str = 'Slow (' + feesList![3].toString();
+      if (selectedOption == 0) str = 'Fastest (${feesList![0]}';
+      if (selectedOption == 1) str = 'Fast (${feesList![1]}';
+      if (selectedOption == 2) str = 'Medium (${feesList![2]}';
+      if (selectedOption == 3) str = 'Slow (${feesList![3]}';
 
-      if (selectedOption == 4) str = 'Manual (' + fees.toString();
-      return str + ' sat/vByte)';
+      if (selectedOption == 4) str = 'Manual ($fees';
+      return '$str sat/vByte)';
     } catch (e) {
       return 'Select fee rate';
     }
@@ -77,7 +81,7 @@ class NetworkFeesState with _$NetworkFeesState {
       if (selectedOption == 3) str = feesList![3].toString();
       if (selectedOption == 4) str = fees.toString();
 
-      return str + ' sats/vbyte';
+      return '$str sats/vbyte';
     } catch (e) {
       return '';
     }
@@ -86,10 +90,11 @@ class NetworkFeesState with _$NetworkFeesState {
   int feesForBump() {
     final isManualFees = feeOption() == 4;
     int fees = 0;
-    if (!isManualFees)
+    if (!isManualFees) {
       fees = feesList?[feeOption()] ?? 0;
-    else
+    } else {
       fees = fee();
+    }
 
     return fees;
   }

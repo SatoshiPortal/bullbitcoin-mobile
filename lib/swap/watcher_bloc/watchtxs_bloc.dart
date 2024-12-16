@@ -63,7 +63,10 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     _testNetStream = null;
   }
 
-  void _onWatchWallets(WatchWallets event, Emitter<WatchTxsState> emit) async {
+  Future<void> _onWatchWallets(
+    WatchWallets event,
+    Emitter<WatchTxsState> emit,
+  ) async {
     final isTestnet = _networkCubit.state.testnet;
     await Future.delayed(100.ms);
     final network = _networkCubit.state.getBBNetwork();
@@ -94,7 +97,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     );
   }
 
-  void __watchSwapStatus(
+  Future<void> __watchSwapStatus(
     Emitter<WatchTxsState> emit, {
     required List<String> swapTxsToWatch,
     required bool isTestnet,
@@ -147,7 +150,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
     }
   }
 
-  void __swapStatusUpdated(
+  Future<void> __swapStatusUpdated(
     Emitter<WatchTxsState> emit, {
     required String swapId,
     required SwapStreamStatus status,
@@ -494,9 +497,6 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     // await Future.delayed(10.seconds);
 
-    final broadcastViaBoltz = _networkCubit.state.selectedLiquidNetwork !=
-        LiquidElectrumTypes.bullbitcoin;
-
     final (txid, err) = await _swapBoltz.refundChainSwap(
       swapTx: swapTx,
       wallet: walletBloc.state.wallet!,
@@ -600,10 +600,11 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
         case ReverseSwapActions.claimable:
           final swap = await __claimSwap(swapTx, walletBloc, emit);
-          if (swap != null)
+          if (swap != null) {
             await __updateWalletTxs(swap, walletBloc, emit);
-          else
+          } else {
             await __updateWalletTxs(swapTx, walletBloc, emit);
+          }
 
         case ReverseSwapActions.settled:
           final updatedSwapTx = swapTx.copyWith(completionTime: DateTime.now());
@@ -625,15 +626,17 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
             final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
             if (swap != null) await __updateWalletTxs(swap, walletBloc, emit);
             break;
-          } else
+          } else {
             await __updateWalletTxs(swapTx, walletBloc, emit);
+          }
 
         case SubmarineSwapActions.claimable:
           final swap = await __coopCloseSwap(swapTx, walletBloc, emit);
-          if (swap != null)
+          if (swap != null) {
             await __updateWalletTxs(swap, walletBloc, emit);
-          else
+          } else {
             await __updateWalletTxs(swapTx, walletBloc, emit);
+          }
 
         case SubmarineSwapActions.refundable:
           // TODO: Delays are introduced so wallet update actually happens.
@@ -683,16 +686,18 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
                 emit,
               );
             }
-          } else
+          } else {
             await __updateWalletTxs(swapTx, walletBloc, emit);
+          }
 
         case ChainSwapActions.claimable:
           // await Future.delayed(const Duration(milliseconds: 100));
           final swap = await __onChainclaimSwap(swapTx, walletBloc, emit);
-          if (swap != null)
+          if (swap != null) {
             await __updateWalletTxs(swap, walletBloc, emit);
-          else
+          } else {
             await __updateWalletTxs(swapTx, walletBloc, emit);
+          }
 
         case ChainSwapActions.settled:
           // await Future.delayed(const Duration(milliseconds: 200));

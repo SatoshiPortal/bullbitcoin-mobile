@@ -38,7 +38,7 @@ class TestBackupPage extends StatelessWidget {
           builder: (context) {
             return PopScope(
               canPop: false,
-              onPopInvoked: (canPop) {
+              onPopInvokedWithResult: (canPop, _) {
                 context.go('/home');
               },
               child: Scaffold(
@@ -190,9 +190,9 @@ class BackupTestItemWord extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(80),
           onTap: () {
-            if (mnemonic.length == 12)
+            if (mnemonic.length == 12) {
               context.read<WalletSettingsCubit>().wordClicked(index);
-            else {
+            } else {
               context.read<WalletSettingsCubit>().word24Clicked(index);
             }
           },

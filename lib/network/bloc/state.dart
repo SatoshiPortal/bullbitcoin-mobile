@@ -154,7 +154,7 @@ class NetworkState with _$NetworkState {
 
   String calculatePrice(int sats, Currency? currency) {
     if (currency == null) return '';
-    if (testnet) return currency.getSymbol() + '0';
+    if (testnet) return '${currency.getSymbol()}0';
     return currency.getSymbol() +
         fiatFormatting(
           (sats / 100000000 * currency.price!).toStringAsFixed(2),
@@ -170,12 +170,13 @@ class NetworkState with _$NetworkState {
 
   ({bool show, String? err}) showConfirmButton({required bool isLiquid}) {
     if (isLiquid) {
-      if (tempLiquidNetwork == null)
+      if (tempLiquidNetwork == null) {
         return (
           show: false,
           err: '',
           // err: 'Network cannot be empty',
         );
+      }
       return (show: true, err: null);
     }
 
@@ -213,6 +214,8 @@ final cleanupWords = [
 
 String removeSubAndPort(String url) {
   var cleaned = url;
-  for (final word in cleanupWords) cleaned = cleaned.replaceAll(word, '');
+  for (final word in cleanupWords) {
+    cleaned = cleaned.replaceAll(word, '');
+  }
   return cleaned;
 }

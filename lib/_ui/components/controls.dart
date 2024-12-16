@@ -181,7 +181,7 @@ class BBDropDown<T> extends StatelessWidget {
 
     final text = shorten
         ? item.label.length > 12
-            ? item.label.substring(0, 12) + '...'
+            ? '${item.label.substring(0, 12)}...'
             : item.label
         : item.label;
 

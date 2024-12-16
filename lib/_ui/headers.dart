@@ -40,10 +40,11 @@ class BBHeader extends StatelessWidget {
               icon: const FaIcon(FontAwesomeIcons.xmark),
               color: context.colour.onPrimaryContainer,
               onPressed: () {
-                if (onBack == null)
+                if (onBack == null) {
                   Navigator.of(context).pop();
-                else
+                } else {
                   onBack!();
+                }
               },
             ),
         ],

@@ -144,9 +144,11 @@ class LWKTransactions {
           s,
     ];
 
-    for (final s in swapsToDelete)
-      if (swapsToDelete.any((_) => _.id == s.id))
+    for (final s in swapsToDelete) {
+      if (swapsToDelete.any((_) => _.id == s.id)) {
         swapTxs.removeWhere((_) => _.id == s.id);
+      }
+    }
 
     final updatedWallet = wallet.copyWith(swaps: swapTxs);
 
@@ -347,8 +349,9 @@ class LWKTransactions {
         Transaction? storedTx;
         if (storedTxIdx != -1) storedTx = storedTxs[storedTxIdx];
         if (idxUnsignedTx != -1) {
-          if (tx.txid == unsignedTxs[idxUnsignedTx].txid)
+          if (tx.txid == unsignedTxs[idxUnsignedTx].txid) {
             unsignedTxs.removeAt(idxUnsignedTx);
+          }
         }
         final assetID = wallet.network == BBNetwork.Mainnet
             ? lwk.lBtcAssetId
@@ -440,7 +443,7 @@ class LWKTransactions {
         isLiquid: true,
       );
     } else {
-      if (e.unblinded.value == finalBalance) {
+      if (e.unblinded.value == BigInt.from(finalBalance)) {
         final addr = await lwk.Address.addressFromScript(
           network: lwkNetwork,
           script: e.scriptPubkey,
@@ -622,8 +625,9 @@ class LWKTransactions {
       if (idx != -1) {
         txs.removeAt(idx);
         txs.insert(idx, newTx);
-      } else
+      } else {
         txs.add(newTx);
+      }
 
       // TODO: Not the right place. Also duplicated in BDKTransaction / LWKTransaction
       // Optimize it later

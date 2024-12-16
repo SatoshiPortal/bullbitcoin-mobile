@@ -54,14 +54,9 @@ class _ChainSwapProgressWidgetState extends State<ChainSwapProgressWidget> {
     final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
     final amtDouble = isSats ? amount : amount / 100000000;
     context.read<CurrencyCubit>().updateAmount(amtDouble.toString());
-    final defaultCurrency = context
-        .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
-    final fiatAmt =
-        context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
-    final isTestNet =
-        context.select((NetworkCubit cubit) => cubit.state.testnet);
-    final unit = defaultCurrency?.name ?? '';
-    final amt = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
+    context.select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
+    context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
+    context.select((NetworkCubit cubit) => cubit.state.testnet);
     Transaction? tx;
     if (swapTx?.isChainReceive() == false) {
       tx = context.select((SendCubit _) => _.state.tx);

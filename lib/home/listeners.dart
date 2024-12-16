@@ -134,14 +134,15 @@ class HomeWalletLoadingListeners extends StatelessWidget {
             listenWhen: (previous, current) =>
                 previous.syncing != current.syncing,
             listener: (context, state) {
-              if (state.syncing)
+              if (state.syncing) {
                 context
                     .read<HomeLoadingCubit>()
                     .add(SetLoading(state.wallet!.id, true));
-              else
+              } else {
                 context
                     .read<HomeLoadingCubit>()
                     .add(SetLoading(state.wallet!.id, false));
+              }
             },
           ),
       ],
@@ -153,10 +154,7 @@ class HomeWalletLoadingListeners extends StatelessWidget {
 class BBlocObserver extends BlocObserver {
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    locator<Logger>().log(
-      error.toString() + '\n' + stackTrace.toString(),
-      printToConsole: true,
-    );
+    locator<Logger>().log('$error\n$stackTrace', printToConsole: true);
     super.onError(bloc, error, stackTrace);
   }
 }

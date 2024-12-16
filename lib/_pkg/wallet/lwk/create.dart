@@ -14,7 +14,7 @@ class LWKCreate {
 
       final appDocDir = await getApplicationDocumentsDirectory();
       final String dbDir =
-          appDocDir.path + '/${wallet.getWalletStorageString()}';
+          '${appDocDir.path}/${wallet.getWalletStorageString()}';
 
       final descriptor = lwk.Descriptor(
         ctDescriptor: wallet.externalPublicDescriptor,

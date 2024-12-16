@@ -120,11 +120,12 @@ class _ScreenState extends State<_Screen> {
         appBar: !isTestnet ? null : _buildAppBar(context),
         body: HomeNoWalletsWithCreation(fullRed: !isTestnet),
       );
-      if (!isTestnet)
+      if (!isTestnet) {
         widget = AnnotatedRegion(
           value: SystemUiOverlayStyle(statusBarColor: context.colour.primary),
           child: widget,
         );
+      }
 
       return widget;
     }
@@ -138,6 +139,7 @@ class _ScreenState extends State<_Screen> {
     scheduleMicrotask(() async {
       await Future.delayed(50.ms);
 
+      if (!context.mounted) return;
       SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(
           statusBarColor: context.colour.primaryContainer,
@@ -465,7 +467,7 @@ class CardItem extends StatelessWidget {
                         Row(
                           children: [
                             BBText.bodySmall(
-                              '~' + fiatAmt,
+                              '~$fiatAmt',
                               onSurface: true,
                               fontSize: 12,
                             ),
@@ -611,9 +613,7 @@ class HomeTopBar2 extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         BBText.bodySmall(
-                          currency.price.toString() +
-                              ' ' +
-                              currency.shortName.toUpperCase(),
+                          '${currency.price} ${currency.shortName.toUpperCase()}',
                         ),
                       ],
                     )
@@ -889,7 +889,7 @@ class HomeNoWallets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!fullRed)
+    if (!fullRed) {
       return Padding(
         padding: const EdgeInsets.all(48.0),
         child: Column(
@@ -913,6 +913,7 @@ class HomeNoWallets extends StatelessWidget {
           ],
         ),
       );
+    }
 
     final font = GoogleFonts.bebasNeue();
     final w = MediaQuery.of(context).size.width;
@@ -997,7 +998,7 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
       mainWallet: true,
     );
 
-    if (!fullRed)
+    if (!fullRed) {
       return Padding(
         padding: const EdgeInsets.all(48.0),
         child: Column(
@@ -1021,6 +1022,7 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
           ],
         ),
       );
+    }
 
     final font = GoogleFonts.bebasNeue();
     final w = MediaQuery.of(context1).size.width;
@@ -1052,6 +1054,7 @@ class HomeNoWalletsView extends StatelessWidget {
           //if (state.mainWallet)
           await locator<WalletsStorageRepository>().sortWallets();
           locator<HomeCubit>().getWalletsFromStorage();
+          if (!context.mounted) return;
           context3.go('/home');
         }
       },

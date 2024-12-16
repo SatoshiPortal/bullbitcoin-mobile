@@ -224,8 +224,10 @@ class SendState with _$SendState {
   }
 
   bool couldBeOnchainSwap() {
-    if (selectedWalletBloc == null || selectedWalletBloc?.state.wallet == null)
+    if (selectedWalletBloc == null ||
+        selectedWalletBloc?.state.wallet == null) {
       return false;
+    }
     if (selectedWalletBloc!.state.wallet!.isBitcoin() &&
         (paymentNetwork == AddressNetwork.liquid ||
             paymentNetwork == AddressNetwork.bip21Liquid)) return true;

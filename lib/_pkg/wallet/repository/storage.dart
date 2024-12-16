@@ -5,6 +5,7 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class WalletsStorageRepository {
@@ -69,7 +70,9 @@ class WalletsStorageRepository {
       // END: Testnet wallet sorting
 
       final List<String> ids = [];
-      for (final w in wallets) ids.add(w.id);
+      for (final w in wallets) {
+        ids.add(w.id);
+      }
 
       final idsJsn = jsonEncode({
         'wallets': [...ids],
@@ -108,10 +111,11 @@ class WalletsStorageRepository {
 
         final List<String> walletHashIds = [];
         for (final id in walletIdsJson) {
-          if (id == walletIdIndex)
+          if (id == walletIdIndex) {
             return Err('Wallet Exists');
-          else
+          } else {
             walletHashIds.add(id as String);
+          }
         }
 
         walletHashIds.add(walletIdIndex);
@@ -174,7 +178,7 @@ class WalletsStorageRepository {
           if (err != null) continue;
           wallets.add(wallet!);
         } catch (e) {
-          print(e);
+          debugPrint(e.toString());
         }
       }
 
@@ -243,7 +247,7 @@ class WalletsStorageRepository {
 
   Future<Err?> deleteWalletFile(String walletHashId) async {
     final appDocDir = await getApplicationDocumentsDirectory();
-    final Directory dbDirect = Directory(appDocDir.path + '/$walletHashId');
+    final Directory dbDirect = Directory('${appDocDir.path}/$walletHashId');
     if (dbDirect.existsSync()) {
       await dbDirect.delete(recursive: true);
     }

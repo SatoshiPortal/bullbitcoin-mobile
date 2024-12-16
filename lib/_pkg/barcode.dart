@@ -10,15 +10,16 @@ class Barcode {
         true,
         ScanMode.QR,
       );
-      if (res == '-1')
+      if (res == '-1') {
         return (
           null,
           Err(
             'Did not scan anything',
           )
         );
-      else
+      } else {
         return (res, null);
+      }
     } catch (e) {
       return (null, Err(e.toString()));
     }

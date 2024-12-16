@@ -50,7 +50,7 @@ class OnchainListeners extends StatelessWidget {
                     swaptx: state.swapTx!,
                   );
             } catch (e) {
-              print(e);
+              debugPrint(e.toString());
             }
           },
         ),

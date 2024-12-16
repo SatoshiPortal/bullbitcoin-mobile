@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
-import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
@@ -10,7 +9,6 @@ import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
@@ -119,8 +117,9 @@ class ImportAppBar extends StatelessWidget {
 
         step == ImportSteps.advancedOptions ||
             step == ImportSteps.selectWalletFormat ||
-            step == ImportSteps.selectImportType)
+            step == ImportSteps.selectImportType) {
       onBack = () => context.read<ImportWalletCubit>().backClicked();
+    }
 
     if (step == ImportSteps.selectCreateType) onBack = () => context.pop();
 
@@ -147,12 +146,6 @@ class _Screen extends StatelessWidget {
         context.select((ImportWalletCubit cubit) => cubit.state.importStep);
     return PopScope(
       // canPop: step == ImportSteps.selectCreateType,
-      onPopInvoked: (_) async {
-        // context.pop();
-        // if (step == ImportSteps.selectCreateType) context.pop();
-        // context.read<ImportWalletCubit>().backClicked();
-        // return false;
-      },
       child: () {
         switch (step) {
           // return const ImportScanning(isColdCard: true);
@@ -182,44 +175,6 @@ class _Screen extends StatelessWidget {
   }
 }
 
-class _CreateSelectionScreen extends StatelessWidget {
-  const _CreateSelectionScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BBButton.big(
-            onPressed: () {
-              context.push('/create-wallet');
-            },
-            label: 'Create new wallet',
-          ),
-          const Gap(16),
-          BBButton.big(
-            onPressed: () {
-              context.read<ImportWalletCubit>().importClicked();
-            },
-            label: 'Import wallet',
-          ),
-          const Gap(16),
-          BBButton.big(
-            buttonKey: UIKeys.importRecoverButton,
-            onPressed: () {
-              context.read<ImportWalletCubit>().recoverClicked();
-            },
-            label: 'Recover backup',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class WalletLabel extends StatelessWidget {
   const WalletLabel();
 
@@ -245,6 +200,8 @@ class WalletLabel extends StatelessWidget {
                 context.read<ImportWalletCubit>().walletLabelChanged(value),
             onEnter: () async {
               await Future.delayed(500.ms);
+
+              if (!context.mounted) return;
               context.read<ScrollCubit>().state.animateTo(
                     context.read<ScrollCubit>().state.position.maxScrollExtent,
                     duration: 300.milliseconds,

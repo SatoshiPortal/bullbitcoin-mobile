@@ -16,7 +16,7 @@ class BBClipboard {
     try {
       await Clipboard.setData(ClipboardData(text: data));
       HapticFeedback.mediumImpact();
-    } catch (e) {}
+    } catch (_) {}
   }
 }
 

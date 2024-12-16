@@ -19,9 +19,9 @@ class CurrencyCubit extends Cubit<CurrencyState> {
         _hiveStorage = hiveStorage,
         super(const CurrencyState()) {
     init();
-    if (_defaultCurrencyCubit == null)
+    if (_defaultCurrencyCubit == null) {
       loadCurrencies();
-    else {
+    } else {
       reset();
       loadCurrencyForAmount();
     }
@@ -59,7 +59,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     loadCurrencies();
   }
 
-  void loadCurrencyForAmount() async {
+  Future<void> loadCurrencyForAmount() async {
     await Future.delayed(300.ms);
     final updatedCurrenciess = state.updatedCurrencyList();
     final selectedCurrency = updatedCurrenciess.firstWhere(
@@ -76,7 +76,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
   void changeDefaultCurrency(Currency currency) =>
       emit(state.copyWith(defaultFiatCurrency: currency));
 
-  void loadCurrencies() async {
+  Future<void> loadCurrencies() async {
     emit(state.copyWith(loadingCurrency: true));
     final (cad, _) = await _bbAPI.getExchangeRate(toCurrency: 'CAD');
     final (usd, _) = await _bbAPI.getExchangeRate(toCurrency: 'USD');
@@ -127,7 +127,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
     final selectedCurrency =
         currencies.firstWhere((_) => _.name.toLowerCase() == currency);
 
-    if (currency == 'btc' || currency == 'sats')
+    if (currency == 'btc' || currency == 'sats') {
       emit(
         state.copyWith(
           fiatSelected: false,
@@ -136,7 +136,7 @@ class CurrencyCubit extends Cubit<CurrencyState> {
           tempAmount: '',
         ),
       );
-    else
+    } else {
       emit(
         state.copyWith(
           fiatSelected: true,
@@ -145,10 +145,11 @@ class CurrencyCubit extends Cubit<CurrencyState> {
           tempAmount: '',
         ),
       );
+    }
     convertAmtOnCurrencyChange();
   }
 
-  void convertAmtOnCurrencyChange() async {
+  Future<void> convertAmtOnCurrencyChange() async {
     await Future.delayed(300.ms);
     final satsAmt = state.amount;
     String amt = '';
@@ -157,10 +158,11 @@ class CurrencyCubit extends Cubit<CurrencyState> {
       final fiatAmt = currency!.price! * (satsAmt / 100000000);
       amt = fiatAmt.toStringAsFixed(2);
     } else {
-      if (state.unitsInSats)
+      if (state.unitsInSats) {
         amt = satsAmt.toString();
-      else
+      } else {
         amt = (satsAmt / 100000000).toStringAsFixed(8);
+      }
     }
     emit(state.copyWith(tempAmount: amt));
     updateAmount(amt);
@@ -173,10 +175,11 @@ class CurrencyCubit extends Cubit<CurrencyState> {
       final fiatAmt = currency!.price! * btcAmt;
       amt = fiatAmt.toStringAsFixed(2);
     } else {
-      if (state.unitsInSats)
+      if (state.unitsInSats) {
         amt = (btcAmt * 100000000).toStringAsFixed(0);
-      else
+      } else {
         amt = btcAmt.toString();
+      }
     }
     emit(state.copyWith(tempAmount: amt));
     updateAmount(amt);
