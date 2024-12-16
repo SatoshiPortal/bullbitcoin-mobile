@@ -15,7 +15,7 @@ const bbelectrumTest = 'wes.bullbitcoin.com:60002';
 const openelectrumTest = 'blockstream.info:993';
 
 const liquidElectrumUrl = 'blockstream.info:995';
-const liquidElectrumTestUrl = 'blockstream.info:465';
+const liquidElectrumTestUrl = 'elements-testnet.blockstream.info:50002';
 const bbLiquidElectrumUrl = 'les.bullbitcoin.com:995';
 const bbLiquidElectrumTestUrl = 'blockstream.info:465';
 

@@ -7,8 +7,11 @@ void main() {
     final wallet1 = await _createWallet(mne: secureTN1.join(' '));
     final blockchain = await _createBlockchain();
     wallet1.sync(blockchain: blockchain);
-    final _ = await wallet1.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
-    print('this message should omes before "sync complete" message or test passed');
+    final _ =
+        wallet1.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
+    print(
+      'this message should omes before "sync complete" message or test passed',
+    );
   });
 
   test('getAddress waits for multiple wallets to sync', () async {
@@ -17,18 +20,20 @@ void main() {
     final blockchain = await _createBlockchain();
     wallet1.sync(blockchain: blockchain);
     wallet2.sync(blockchain: blockchain);
-    await wallet1.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
+    wallet1.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
     // await wallet2.getAddress(addressIndex: const bdk.AddressIndex.lastUnused());
-    print('this message should comes before "sync complete" message or test passed');
+    print(
+      'this message should comes before "sync complete" message or test passed',
+    );
   });
 }
 
 Future<bdk.Blockchain> _createBlockchain() async {
   final blockchain = await bdk.Blockchain.create(
-    config: const bdk.BlockchainConfig.electrum(
+    config: bdk.BlockchainConfig.electrum(
       config: bdk.ElectrumConfig(
         validateDomain: true,
-        stopGap: 10,
+        stopGap: BigInt.from(10),
         timeout: 5,
         retry: 5,
         url: 'ssl://electrum.blockstream.info:60002',
@@ -46,8 +51,10 @@ Future<bdk.Wallet> _createWallet({String? mne}) async {
   else
     mnemonic = await bdk.Mnemonic.create(bdk.WordCount.words12);
 
-  final descriptorSecretKey =
-      await bdk.DescriptorSecretKey.create(network: bdk.Network.testnet, mnemonic: mnemonic);
+  final descriptorSecretKey = await bdk.DescriptorSecretKey.create(
+    network: bdk.Network.testnet,
+    mnemonic: mnemonic,
+  );
 
   final externalDescriptor = await bdk.Descriptor.newBip44(
     secretKey: descriptorSecretKey,

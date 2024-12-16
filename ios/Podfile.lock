@@ -1,5 +1,5 @@
 PODS:
-  - bdk_flutter (0.31.2-dev.2):
+  - bdk_flutter (0.31.2):
     - Flutter
   - boltz_dart (0.1.6)
   - DKImagePickerController/Core (4.3.9):
@@ -45,7 +45,7 @@ PODS:
     - Flutter
   - flutter_keyboard_visibility (0.0.1):
     - Flutter
-  - flutter_native_splash (0.0.1):
+  - flutter_native_splash (2.4.3):
     - Flutter
   - flutter_secure_storage (6.0.0):
     - Flutter
@@ -129,7 +129,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  bdk_flutter: af166bdb3f24fa9bac1de94772973f76302cb1c1
+  bdk_flutter: fb57a7400a7f3f181c5977bcdc2a5ef347ae4e7f
   boltz_dart: 7ebb80d3776711efacb5823a3d9a9bb1221bac95
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
@@ -139,7 +139,7 @@ SPEC CHECKSUMS:
   flutter_barcode_scanner: 7a1144744c28dc0c57a8de7218ffe5ec59a9e4bf
   flutter_file_dialog: 4c014a45b105709a27391e266c277d7e588e9299
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
-  flutter_native_splash: edf599c81f74d093a4daf8e17bd7a018854bc778
+  flutter_native_splash: e8a1e01082d97a8099d973f919f57904c925008a
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   lwk_dart: 898084320a2ce8ea206010c0dc3e3eead1b2c881
@@ -153,4 +153,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
