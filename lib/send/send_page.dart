@@ -245,7 +245,7 @@ class WalletSelectionDropDown extends StatelessWidget {
         ignoring: oneWallet,
         child: WalletDropDown(
           showSpendableBalance: true,
-          items: walletBlocs.map((wb) => wb.state.wallet).toList(),
+          items: walletBlocs.map((wb) => wb.state.wallet!).toList(),
           onChanged: (wallet) {
             final blocs =
                 walletBlocs.where((wb) => wb.state.wallet == wallet).toList();
@@ -853,7 +853,7 @@ class _Warnings extends StatelessWidget {
     final errLowAmt =
         context.select((CreateSwapCubit x) => x.state.swapTx!.smallAmt());
 
-    final swaptx = context.select((CreateSwapCubit x) => x.state.swapTx);
+    final swaptx = context.select((CreateSwapCubit x) => x.state.swapTx!);
 
     final errHighFees =
         context.select((CreateSwapCubit x) => x.state.swapTx!.highFees());
