@@ -9,7 +9,7 @@ void _syncLwkIsolate(List<dynamic> args) async {
   final lwkWallet = args[1] as lwk.Wallet;
   final blockChain = args[2] as String;
   try {
-    await lwkWallet.sync(electrumUrl: blockChain, validateDomain: true);
+    await lwkWallet.sync(electrumUrl: blockChain);
     sendPort.send(lwkWallet);
   } catch (e) {
     sendPort.send(
@@ -64,7 +64,7 @@ class LWKSync {
     required String blockChain,
   }) async {
     try {
-      await lwkWallet.sync(electrumUrl: blockChain, validateDomain: true);
+      await lwkWallet.sync(electrumUrl: blockChain);
       return (lwkWallet, null);
     } on Exception catch (e) {
       return (
