@@ -125,7 +125,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       final txid = await bdkTx.txid();
       final outputs = await bdkTx.output();
       final inputs = await bdkTx.input();
-      final isSigned = await checkWitnesses(inputs);
+      final isSigned = await checkWitnesses(inputs as List<bdk.TxIn>);
 
       Transaction? transaction;
       WalletBloc? relatedWallet;

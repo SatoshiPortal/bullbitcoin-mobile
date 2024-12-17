@@ -6,6 +6,15 @@ import 'dart:isolate';
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
+
+import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:http/http.dart' as http;
@@ -60,6 +69,7 @@ class PayjoinManager {
       final network = _networkCubit.state.getNetwork();
       final dbDir = (await getApplicationDocumentsDirectory()).path +
           '/${wallet.getWalletStorageString()}';
+      final walletId = wallet.id;
       final args = [
         _receiverPort!.sendPort,
         receiver.toJson(),
@@ -67,6 +77,7 @@ class PayjoinManager {
         wallet.externalPublicDescriptor,
         wallet.internalPublicDescriptor,
         dbDir,
+        walletId,
         network?.stopGap,
         network?.timeout,
         network?.retry,
@@ -110,7 +121,7 @@ class PayjoinManager {
           '/${wallet.getWalletStorageString()}';
 
       final network = _networkCubit.state.getNetwork();
-
+      final walletId = wallet.id;
       final args = [
         receivePort.sendPort,
         sender.toJson(),
@@ -118,6 +129,7 @@ class PayjoinManager {
         wallet.externalPublicDescriptor,
         wallet.internalPublicDescriptor,
         dbDir,
+        walletId,
         network?.stopGap,
         network?.timeout,
         network?.retry,
@@ -325,23 +337,30 @@ Future<void> _isolateSender(List<dynamic> args) async {
     network: network,
   );
   final dbDir = args[5] as String;
-
-  final stopGap = args[6] as int;
-  final timeout = args[7] as int;
-  final retry = args[8] as int;
-  final url = args[9] as String;
-  final validateDomain = args[10] as bool;
+  final walletId = args[6] as String;
+  final stopGap = args[7] as int;
+  final timeout = args[8] as int;
+  final retry = args[9] as int;
+  final url = args[10] as String;
+  final validateDomain = args[11] as bool;
 
   try {
     final sender = Sender.fromJson(senderJson);
-    final wallet = await bdk.Wallet.create(
-      descriptor: external,
-      changeDescriptor: internal,
-      network: network,
-      databaseConfig: bdk.DatabaseConfig.sqlite(
-        config: bdk.SqliteDbConfiguration(path: dbDir),
-      ),
+    final hiveStorage = HiveStorage();
+    final (bbWallet, _) =
+        await WalletsStorageRepository(hiveStorage: hiveStorage)
+            .readWallet(walletHashId: walletId);
+    final ss = SecureStorage();
+    final (seed, _) =
+        await WalletSensitiveStorageRepository(secureStorage: ss).readSeed(
+      fingerprintIndex: bbWallet!.getRelatedSeedStorageString(),
     );
+    final wr = WalletsRepository();
+    final bdkCreate = BDKCreate(walletsRepository: wr);
+    final (bdkSigner, _) =
+        await BDKSensitiveCreate(walletsRepository: wr, bdkCreate: bdkCreate)
+            .loadPrivateBdkWallet(bbWallet, seed!);
+
     final blockchain = await bdk.Blockchain.create(
       config: bdk.BlockchainConfig.electrum(
         config: bdk.ElectrumConfig(
@@ -360,7 +379,7 @@ Future<void> _isolateSender(List<dynamic> args) async {
       print('signing');
       final psbtStruct =
           await bdk.PartiallySignedTransaction.fromString(proposal!);
-      await wallet.sign(
+      await bdkSigner!.sign(
         psbt: psbtStruct,
         signOptions: const bdk.SignOptions(
           trustWitnessUtxo: true,
@@ -414,12 +433,12 @@ void _isolateReceiver(List<dynamic> args) async {
     network: network,
   );
   final dbDir = args[5] as String;
-
-  final stopGap = args[6] as int;
-  final timeout = args[7] as int;
-  final retry = args[8] as int;
-  final url = args[9] as String;
-  final validateDomain = args[10] as bool;
+  final walletId = args[6] as String;
+  final stopGap = args[7] as int;
+  final timeout = args[8] as int;
+  final retry = args[9] as int;
+  final url = args[10] as String;
+  final validateDomain = args[11] as bool;
 
   try {
     final wallet = await bdk.Wallet.create(

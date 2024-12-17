@@ -1147,7 +1147,8 @@ class SendCubit extends Cubit<SendState> {
     if (!state.signed) {
       if (!isLn) {
         final fees = _networkFeesCubit.state.selectedOrFirst(false);
-        baseLayerBuild(networkFees: fees);
+
+        await baseLayerBuild(networkFees: fees);
         // wait until psbtSigned is not null FIXME!
         while (state.psbtSigned == null) {
           await Future.delayed(100.ms);
@@ -1181,6 +1182,9 @@ class SendCubit extends Cubit<SendState> {
 
     if (!isLn && state.payjoinEndpoint == null) {
       baseLayerSend();
+      return;
+    }
+    if (state.payjoinEndpoint != null) {
       return;
     }
     sendSwap();
