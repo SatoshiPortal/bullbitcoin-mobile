@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/crypto.dart';
 import 'package:bb_mobile/backup/bloc/keychain_state.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
-import 'package:http/http.dart' as http;
 
 class KeychainCubit extends Cubit<KeychainState> {
   KeychainCubit() : super(const KeychainState());
@@ -36,14 +36,14 @@ class KeychainCubit extends Cubit<KeychainState> {
     final secretHashHex = HEX.encode(secretHashBytes);
 
     try {
-      final response = await http.post(
-        Uri.parse('$keychainapi/store_key'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
+      final response = await Dio().post(
+        '$keychainapi/store_key',
+        options: Options(headers: {'Content-Type': 'application/json'}),
+        data: {
           'backup_id': backupId,
           'backup_key': backupKey,
           'secret_hash': secretHashHex,
-        }),
+        },
       );
 
       if (response.statusCode == 201) {

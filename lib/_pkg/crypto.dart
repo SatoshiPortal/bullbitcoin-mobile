@@ -21,7 +21,7 @@ class Crypto {
     final input = Uint8List.fromList(utf8.encode(plainText));
     final encrypted = paddedBlockCipher.process(input);
 
-    return base64Encode(iv) + ',' + base64Encode(encrypted);
+    return '${base64Encode(iv)},${base64Encode(encrypted)}';
   }
 
   static String aesDecrypt(String encryptedBase64Text, String key) {
