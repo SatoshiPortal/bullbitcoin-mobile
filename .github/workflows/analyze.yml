@@ -4,26 +4,36 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   analyze:
-    name: Run Flutter Analyze
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        analyze_mode:
+          - { name: "Infos allowed, Warnings fatal", mode: "--no-fatal-infos", allow_failure: false }
+          - { name: "Warnings allowed, Infos fatal: allow failure", mode: "--no-fatal-warnings", allow_failure: true }
+
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.13.6'
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.24.5
 
-    - name: Install dependencies
-      run: flutter pub get
+      - name: Install dependencies
+        run: flutter pub get
 
-    - name: Run Flutter Analyze
-      run: |
-        if flutter analyze --no-fatal-warnings | grep "warning"; then
-          exit 1
-        fi
+      - name: Generate freezed files
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: "${{ matrix.analyze_mode.name }}"
+        run: flutter analyze ${{ matrix.analyze_mode.mode }}
+        continue-on-error: ${{ matrix.analyze_mode.allow_failure }}
