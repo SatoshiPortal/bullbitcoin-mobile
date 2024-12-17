@@ -11,7 +11,13 @@ class HiveStorage implements IStorage {
   Future init({required List<int> password}) async {
     final dir = await getApplicationDocumentsDirectory();
     Hive.init(dir.path);
+    final cipher = HiveAesCipher(password);
+    _box = await Hive.openBox('store', encryptionCipher: cipher);
+  }
 
+  Future initWithDocPath(
+      {required String documentsPath, required List<int> password}) async {
+    Hive.init(documentsPath);
     final cipher = HiveAesCipher(password);
     _box = await Hive.openBox('store', encryptionCipher: cipher);
   }

@@ -25,6 +25,7 @@ import 'package:payjoin_flutter/receive.dart';
 import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:payjoin_flutter/uri.dart' as pj_uri;
+import 'package:bb_mobile/_pkg/storage/storage.dart';
 
 class PayjoinManager {
   PayjoinManager(this._networkCubit);
@@ -117,24 +118,19 @@ class PayjoinManager {
       final receivePort = ReceivePort();
       final senderJson = sender.toJson();
       print('isolateSender: $senderJson');
-      final dbDir = (await getApplicationDocumentsDirectory()).path +
-          '/${wallet.getWalletStorageString()}';
 
       final network = _networkCubit.state.getNetwork();
       final walletId = wallet.id;
       final args = [
         receivePort.sendPort,
         sender.toJson(),
-        isTestnet,
-        wallet.externalPublicDescriptor,
-        wallet.internalPublicDescriptor,
-        dbDir,
         walletId,
         network?.stopGap,
         network?.timeout,
         network?.retry,
         if (isTestnet) network?.testnet else network?.mainnet,
         network?.validateDomain,
+        await getApplicationDocumentsDirectory(),
       ];
 
       await Isolate.spawn(
@@ -324,43 +320,40 @@ Future<void> _isolateSender(List<dynamic> args) async {
   print('_isolateSender');
   final sendPort = args[0] as SendPort;
   final senderJson = args[1] as String;
-  final isTestnet = args[2] as bool;
-  final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
-  final externalPublicDescriptor = args[3] as String;
-  final internalPublicDescriptor = args[4] as String;
-  final external = await bdk.Descriptor.create(
-    descriptor: externalPublicDescriptor,
-    network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-  );
-  final internal = await bdk.Descriptor.create(
-    descriptor: internalPublicDescriptor,
-    network: network,
-  );
-  final dbDir = args[5] as String;
-  final walletId = args[6] as String;
-  final stopGap = args[7] as int;
-  final timeout = args[8] as int;
-  final retry = args[9] as int;
-  final url = args[10] as String;
-  final validateDomain = args[11] as bool;
+  final walletId = args[2] as String;
+  final stopGap = args[3] as int;
+  final timeout = args[4] as int;
+  final retry = args[5] as int;
+  final url = args[6] as String;
+  final validateDomain = args[7] as bool;
+  final applicationDocumentsDirectory = args[8] as Directory;
 
   try {
+    print('senderJson: $senderJson');
     final sender = Sender.fromJson(senderJson);
-    final hiveStorage = HiveStorage();
+    print('sender: $sender');
+    final (ss, hiveStorage) = await setupStorageWithDocPath(
+      applicationDocumentsDirectory.path,
+    );
+    print('hiveStorage: $hiveStorage');
     final (bbWallet, _) =
         await WalletsStorageRepository(hiveStorage: hiveStorage)
             .readWallet(walletHashId: walletId);
-    final ss = SecureStorage();
+    print('bbWallet: $bbWallet');
+    print('ss: $ss');
     final (seed, _) =
         await WalletSensitiveStorageRepository(secureStorage: ss).readSeed(
       fingerprintIndex: bbWallet!.getRelatedSeedStorageString(),
     );
+    print('seed: $seed');
     final wr = WalletsRepository();
+    print('wr: $wr');
     final bdkCreate = BDKCreate(walletsRepository: wr);
+    print('bdkCreate: $bdkCreate');
     final (bdkSigner, _) =
         await BDKSensitiveCreate(walletsRepository: wr, bdkCreate: bdkCreate)
             .loadPrivateBdkWallet(bbWallet, seed!);
-
+    print('bdkSigner: $bdkSigner');
     final blockchain = await bdk.Blockchain.create(
       config: bdk.BlockchainConfig.electrum(
         config: bdk.ElectrumConfig(

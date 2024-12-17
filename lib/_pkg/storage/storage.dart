@@ -73,3 +73,43 @@ Future<(SecureStorage, HiveStorage)> setupStorage() async {
 
   return (secureStorage, hiveStorage);
 }
+
+Future<(SecureStorage, HiveStorage)> setupStorageWithDocPath(
+    String documentsPath) async {
+  final secureStorage = SecureStorage();
+  final hiveStorage = HiveStorage();
+
+  var (version, errr) = await secureStorage.getValue(StorageKeys.version);
+  if (errr != null) {
+    version = bbVersion;
+    await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
+  }
+
+  final (password, err) =
+      await secureStorage.getValue(StorageKeys.hiveEncryption);
+  if (err != null) {
+    final password = Hive.generateSecureKey();
+    secureStorage.saveValue(
+      key: StorageKeys.hiveEncryption,
+      value: base64UrlEncode(password),
+    );
+    await hiveStorage.initWithDocPath(
+      documentsPath: documentsPath,
+      password: password,
+    );
+  } else {
+    await hiveStorage.initWithDocPath(
+      documentsPath: documentsPath,
+      password: base64Url.decode(password!),
+    );
+  }
+
+  if (version != bbVersion) {
+    // await prepareMigration();
+    await doMigration(version!, bbVersion, secureStorage, hiveStorage);
+    await secureStorage.saveValue(key: StorageKeys.version, value: bbVersion);
+  }
+  // if (errr == null && version != bbVersion) await hiveStorage.deleteAll();
+
+  return (secureStorage, hiveStorage);
+}
