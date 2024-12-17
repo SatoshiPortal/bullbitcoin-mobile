@@ -106,7 +106,7 @@ class BackupCubit extends Cubit<BackupState> {
     }
 
     final backupDir =
-        await Directory(appDir! + '/backups/').create(recursive: true);
+        await Directory('${appDir!}/backups/').create(recursive: true);
     final file = File(backupDir.path + filename);
     final content = json.encode({'id': backupId, 'encrypted': ciphertext});
 

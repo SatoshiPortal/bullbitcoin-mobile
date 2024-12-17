@@ -2,11 +2,14 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
 
-import 'package:bb_mobile/_pkg/crypto.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pointycastle/api.dart';
+import 'package:pointycastle/export.dart' as pc;
 
 part 'bip329_label.freezed.dart';
 part 'bip329_label.g.dart';
@@ -69,7 +72,7 @@ extension Bip329LabelHelpers on Bip329Label {
       );
     }
     final encryptedContents = await file.readAsString();
-    final decryptedContents = Crypto.aesDecrypt(encryptedContents, key);
+    final decryptedContents = _decrypt(encryptedContents, key);
     final lines = LineSplitter.split(decryptedContents);
     return (
       lines
