@@ -70,12 +70,35 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.31.2"
+<<<<<<< HEAD
+=======
+  bech32:
+    dependency: transitive
+    description:
+      name: bech32
+      sha256: "156cbace936f7720c79a79d16a03efad343b1ef17106716e04b8b8e39f99f7f7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.2"
+  bip340:
+    dependency: transitive
+    description:
+      name: bip340
+      sha256: "2a92f6ed68959f75d67c9a304c17928b9c9449587d4f75ee68f34152f7f69e87"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
+>>>>>>> 254ad28a (chore: update lock files)
   bip85:
     dependency: "direct main"
     description:
       path: "bindings/dart-bip85"
       ref: master
+<<<<<<< HEAD
       resolved-ref: "2321b17f3e1c74f15bdb95638bb8c65bbbe2a2af"
+=======
+      resolved-ref: beee977ad2608987ceb350ef3bc3cc05c9e36455
+>>>>>>> 254ad28a (chore: update lock files)
       url: "https://github.com/ethicnology/rust-bip85.git"
     source: git
     version: "1.0.2"
@@ -983,6 +1006,23 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  nostr:
+    dependency: "direct main"
+    description:
+      name: nostr
+      sha256: a99942e4eedd5823d16f42e6df96240488028666a329ee1047552f79db564123
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.0"
+  nostr_sdk:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: cae2399dcba0a3ed03c0284db26236f9e5e31be6
+      url: "https://github.com/ethicnology/dart-nip17"
+    source: git
+    version: "0.0.1"
   oktoast:
     dependency: "direct main"
     description:
@@ -1550,7 +1590,7 @@ packages:
     source: hosted
     version: "0.5.1"
   web_socket_channel:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: web_socket_channel
       sha256: "58c6666b342a38816b2e7e50ed0f1e261959630becd4c879c4f26bfa14aa5a42"
@@ -1606,5 +1646,10 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
+<<<<<<< HEAD
   dart: ">=3.6.0 <4.0.0"
   flutter: ">=3.27.0"
+=======
+  dart: ">=3.5.4 <4.0.0"
+  flutter: ">=3.24.0"
+>>>>>>> 254ad28a (chore: update lock files)
