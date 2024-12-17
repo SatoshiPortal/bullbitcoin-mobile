@@ -441,14 +441,20 @@ void _isolateReceiver(List<dynamic> args) async {
   final validateDomain = args[11] as bool;
 
   try {
-    final wallet = await bdk.Wallet.create(
-      descriptor: external,
-      changeDescriptor: internal,
-      network: network,
-      databaseConfig: bdk.DatabaseConfig.sqlite(
-        config: bdk.SqliteDbConfiguration(path: dbDir),
-      ),
+    final hiveStorage = HiveStorage();
+    final (bbWallet, _) =
+        await WalletsStorageRepository(hiveStorage: hiveStorage)
+            .readWallet(walletHashId: walletId);
+    final ss = SecureStorage();
+    final (seed, _) =
+        await WalletSensitiveStorageRepository(secureStorage: ss).readSeed(
+      fingerprintIndex: bbWallet!.getRelatedSeedStorageString(),
     );
+    final wr = WalletsRepository();
+    final bdkCreate = BDKCreate(walletsRepository: wr);
+    final (bdkSigner, _) =
+        await BDKSensitiveCreate(walletsRepository: wr, bdkCreate: bdkCreate)
+            .loadPrivateBdkWallet(bbWallet, seed!);
     final blockchain = await bdk.Blockchain.create(
       config: bdk.BlockchainConfig.electrum(
         config: bdk.ElectrumConfig(
@@ -495,7 +501,7 @@ void _isolateReceiver(List<dynamic> args) async {
     final payjoin_proposal = await processPayjoinProposal(
       unchecked_proposal!,
       isTestnet,
-      wallet,
+      bdkSigner!,
       blockchain,
     );
     print('payjoin proposal: $payjoin_proposal');
