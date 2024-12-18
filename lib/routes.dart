@@ -19,7 +19,6 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/recover/keychain_page.dart';
 import 'package:bb_mobile/recover/manual_page.dart';
-import 'package:bb_mobile/recover/social_page.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 // import 'package:bb_mobile/seeds/seeds_page.dart';
 import 'package:bb_mobile/send/send_page.dart';
@@ -262,17 +261,10 @@ GoRouter setupRouter() => GoRouter(
           },
         ),
         GoRoute(
-          path: '/social-backup',
+          path: '/social',
           builder: (context, state) {
             final settings = state.extra! as SocialSettingState;
-            return SocialBackupPage(settings: settings);
-          },
-        ),
-        GoRoute(
-          path: '/social-recover',
-          builder: (context, state) {
-            final settings = state.extra! as SocialSettingState;
-            return SocialRecoverPage(settings: settings);
+            return SocialPage(settings: settings);
           },
         ),
 

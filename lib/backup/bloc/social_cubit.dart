@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/_pkg/crypto.dart';
+import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/backup/bloc/social_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 class SocialCubit extends Cubit<SocialState> {
   SocialCubit({
+    required this.filePick,
     required this.fileStorage,
     required this.relay,
     required this.senderPublic,
@@ -27,6 +29,7 @@ class SocialCubit extends Cubit<SocialState> {
     _sendInitialRequest();
   }
 
+  final FilePick filePick;
   final FileStorage fileStorage;
   final WebSocketChannel channel;
   final String senderPublic;
@@ -68,6 +71,17 @@ class SocialCubit extends Cubit<SocialState> {
 
                     switch (type) {
                       case 'backup_request':
+                        final friendBackupKey =
+                            socialPayload['backup_key'] as String;
+                        final friendBackupKeySignature =
+                            socialPayload['backup_key_sig'] as String;
+                        emit(
+                          state.copyWith(
+                            friendBackupKey: friendBackupKey,
+                            friendBackupKeySignature: friendBackupKeySignature,
+                          ),
+                        );
+                      case 'recover_backup':
                         final friendBackupKey =
                             socialPayload['backup_key'] as String;
                         final friendBackupKeySignature =
@@ -182,7 +196,7 @@ class SocialCubit extends Cubit<SocialState> {
     );
 
     final encrypted = Crypto.aesEncrypt(friendBackupKey, senderSecret);
-    fileSave(name: friendPublic.substring(0, 6), content: encrypted);
+    _fileSave(name: friendPublic.substring(0, 6), content: encrypted);
     // TODO: encrypt the key –> derivate a new BIP85 key? use nostr keys?
 
     final payload = json.encode({
@@ -193,7 +207,7 @@ class SocialCubit extends Cubit<SocialState> {
     sendPM(payload);
   }
 
-  void fileSave({
+  Future<void> _fileSave({
     required String name,
     required String content,
     String ext = 'txt',
@@ -217,5 +231,40 @@ class SocialCubit extends Cubit<SocialState> {
     }
 
     print(file.path);
+  }
+
+  Future<void> uploadFriendKey() async {
+    final (file, error) = await filePick.pickFile();
+
+    if (error != null) {
+      emit(state.copyWith(toast: error.toString()));
+      return;
+    }
+
+    if (file == null || file.isEmpty) {
+      emit(state.copyWith(toast: 'Empty file'));
+      return;
+    }
+
+    final backupKey = Crypto.aesDecrypt(file, senderSecret);
+    if (backupKey.isEmpty) {
+      emit(state.copyWith(toast: 'Invalid backup'));
+      return;
+    }
+
+    emit(state.copyWith(friendBackupKey: backupKey));
+
+    final backupKeySig = sign(
+      signerSecretKey: HEX.decode(senderSecret),
+      message: HEX.decode(backupKey),
+    );
+
+    final payload = json.encode({
+      'type': 'recover_backup',
+      'backup_key': backupKey,
+      'backup_key_sig': HEX.encode(backupKeySig),
+    });
+
+    await sendPM(payload);
   }
 }

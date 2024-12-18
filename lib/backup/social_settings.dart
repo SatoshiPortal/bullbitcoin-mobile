@@ -85,18 +85,10 @@ class _SocialSettingsPageState extends State<SocialSettingsPage> {
                       ),
                       const SizedBox(height: 16),
                       BBButton.textWithStatusAndRightArrow(
-                        label: 'Backup',
+                        label: 'Chat with friend',
                         onPressed: () {
                           if (cubit.form.currentState!.validate()) {
-                            context.push('/social-backup', extra: state);
-                          }
-                        },
-                      ),
-                      BBButton.textWithStatusAndRightArrow(
-                        label: 'Recovery',
-                        onPressed: () {
-                          if (cubit.form.currentState!.validate()) {
-                            context.push('/social-recover', extra: state);
+                            context.push('/social', extra: state);
                           }
                         },
                       ),
