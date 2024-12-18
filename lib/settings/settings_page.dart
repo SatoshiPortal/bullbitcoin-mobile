@@ -205,7 +205,7 @@ class SocialButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.textWithStatusAndRightArrow(
-      label: 'Social Backup',
+      label: 'Social',
       onPressed: () {
         context.push('/social-settings');
       },

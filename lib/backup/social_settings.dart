@@ -84,16 +84,22 @@ class _SocialSettingsPageState extends State<SocialSettingsPage> {
                         maxLength: 64,
                       ),
                       const SizedBox(height: 16),
-                      if (state.secretKey.length == 64 &&
-                          state.publicKey.length == 64)
-                        BBButton.textWithStatusAndRightArrow(
-                          label: 'Social',
-                          onPressed: () {
-                            if (cubit.form.currentState!.validate()) {
-                              context.push('/social', extra: state);
-                            }
-                          },
-                        ),
+                      BBButton.textWithStatusAndRightArrow(
+                        label: 'Backup',
+                        onPressed: () {
+                          if (cubit.form.currentState!.validate()) {
+                            context.push('/social-backup', extra: state);
+                          }
+                        },
+                      ),
+                      BBButton.textWithStatusAndRightArrow(
+                        label: 'Recovery',
+                        onPressed: () {
+                          if (cubit.form.currentState!.validate()) {
+                            context.push('/social-recover', extra: state);
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ),
