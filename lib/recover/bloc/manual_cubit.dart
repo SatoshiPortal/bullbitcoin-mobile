@@ -131,6 +131,7 @@ class ManualCubit extends Cubit<ManualState> {
 
       return true;
     } catch (e) {
+      print(e);
       emit(state.copyWith(error: 'Invalid backup key or file'));
       return false;
     }
@@ -144,37 +145,42 @@ class ManualCubit extends Cubit<ManualState> {
     ScriptType script,
     BBWalletType type,
   ) async {
-    final (seed, error) =
-        await walletSensitiveCreate.mnemonicSeed(mnemonic, network);
+    try {
+      final (seed, error) =
+          await walletSensitiveCreate.mnemonicSeed(mnemonic, network);
+      if (seed == null) return;
 
-    await walletSensitiveStorage.newSeed(seed: seed!);
+      await walletSensitiveStorage.newSeed(seed: seed);
 
-    Wallet? wallet;
-    switch (layer) {
-      case BaseWalletType.Bitcoin:
-        final (btcWallet, btcError) = await bdkSensitiveCreate.oneFromBIP39(
-          seed: seed,
-          passphrase: passphrase,
-          scriptType: script,
-          network: network,
-          walletType: type,
-          walletCreate: walletCreate,
-        );
-        wallet = btcWallet;
+      Wallet? wallet;
+      switch (layer) {
+        case BaseWalletType.Bitcoin:
+          final (btcWallet, btcError) = await bdkSensitiveCreate.oneFromBIP39(
+            seed: seed,
+            passphrase: passphrase,
+            scriptType: script,
+            network: network,
+            walletType: type,
+            walletCreate: walletCreate,
+          );
+          wallet = btcWallet;
 
-      case BaseWalletType.Liquid:
-        final (liqWallet, liqError) =
-            await lwkSensitiveCreate.oneLiquidFromBIP39(
-          seed: seed,
-          passphrase: passphrase,
-          scriptType: script,
-          network: network,
-          walletType: type,
-          walletCreate: walletCreate,
-        );
-        wallet = liqWallet;
+        case BaseWalletType.Liquid:
+          final (liqWallet, liqError) =
+              await lwkSensitiveCreate.oneLiquidFromBIP39(
+            seed: seed,
+            passphrase: passphrase,
+            scriptType: script,
+            network: network,
+            walletType: type,
+            walletCreate: walletCreate,
+          );
+          wallet = liqWallet;
+      }
+
+      await walletsStorageRepository.newWallet(wallet!);
+    } catch (_) {
+      rethrow;
     }
-
-    await walletsStorageRepository.newWallet(wallet!);
   }
 }
