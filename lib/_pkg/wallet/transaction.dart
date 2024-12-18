@@ -15,6 +15,7 @@ import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletTx implements IWalletTransactions {
   WalletTx({
@@ -224,7 +225,8 @@ class WalletTx implements IWalletTransactions {
     }
   }
 
-  Future<((Transaction, String)?, Err?)> signPsbt({
+  // FIXME is this the wrong area of abstraction for this to return bdk.Transaction?
+  Future<((bdk.Transaction, String)?, Err?)> signPsbt({
     required String psbt,
     // required bdk.Blockchain blockchain,
     required Wallet wallet,
@@ -233,30 +235,17 @@ class WalletTx implements IWalletTransactions {
     try {
       final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet.id);
       if (errWallet != null) throw errWallet;
-      final ((signed), errSign) = await _bdkTransactions.signTx(
+      final (seed, errSeed) = await _walletSensitiveStorageRepository.readSeed(
+        fingerprintIndex: wallet.getRelatedSeedStorageString(),
+      );
+      if (errSeed != null) throw errSeed;
+      final (bdkSignerWallet, errSigner) =
+          await _bdkSensitiveCreate.loadPrivateBdkWallet(wallet, seed!);
+      if (errSigner != null) throw errSigner;
+      return await _bdkTransactions.signTx(
         psbt: psbt,
-        bdkWallet: bdkWallet!,
+        bdkWallet: bdkSignerWallet!,
       );
-      if (errSign != null) throw errSign;
-      final txDetails = signed!.$1;
-      final signedPsbt = signed.$2;
-
-      final Transaction tx = Transaction(
-        txid: await txDetails.txid(),
-        received: 0, // TODO sender outputs - sender inputs
-        sent: 0, // TODO sender inputs - sender outputs
-        fee: 0, // TODO
-        feeRate: 0, // TODO
-        height: 0, // TODO
-        timestamp: 0,
-        // txDetails.confirmationTime?.timestamp ?? 0,
-        label: '',
-        toAddress: '',
-        outAddrs: [],
-        psbt: signedPsbt,
-      );
-      // convert BdkTransaction to _$Transaction
-      return ((tx, signedPsbt), null);
     } catch (e) {
       return (
         null,
@@ -267,6 +256,58 @@ class WalletTx implements IWalletTransactions {
         ),
       );
     }
+  }
+
+  Future<List<bdk.LocalUtxo>> listUnspent(Wallet wallet) async {
+    final (bdkWallet, err) = _walletsRepository.getBdkWallet(wallet.id);
+    if (err != null) throw err;
+    return bdkWallet!.listUnspent();
+  }
+
+  Future<bool> addressExistsInWallet(String address, Wallet wallet) async {
+    // Get the full address book
+    final (bdkWallet, err) = _walletsRepository.getBdkWallet(wallet.id);
+    if (err != null) throw err;
+    final addresses = await getAddressBookFromBdkWallet(bdkWallet!);
+
+    // Check if the address exists in the list
+    return addresses.any((addr) => addr.address == address);
+  }
+
+  Future<List<Address>> getAddressBookFromBdkWallet(
+      bdk.Wallet bdkWallet) async {
+    final List<Address> addresses = [];
+
+    // Get last unused address to know how many addresses to check
+    final addressLastUnused = bdkWallet.getAddress(
+      addressIndex: const bdk.AddressIndex.lastUnused(),
+    );
+
+    // Iterate through all addresses up to last unused
+    for (var i = 0; i <= addressLastUnused.index; i++) {
+      final address = bdkWallet.getAddress(
+        addressIndex: bdk.AddressIndex.peek(index: i),
+      );
+      final addressStr = address.address.asString();
+
+      addresses.add(
+        Address(
+          address: addressStr,
+          index: address.index,
+          kind: AddressKind.deposit,
+          state: AddressStatus.unused,
+        ),
+      );
+    }
+
+    // Sort addresses by index descending
+    addresses.sort((a, b) {
+      final int indexA = a.index ?? 0;
+      final int indexB = b.index ?? 0;
+      return indexB.compareTo(indexA);
+    });
+
+    return addresses;
   }
 
   Future<(Wallet, Err?)> addUnsignedTxToWallet({

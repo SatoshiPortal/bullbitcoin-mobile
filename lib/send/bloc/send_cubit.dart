@@ -1262,7 +1262,7 @@ class SendCubit extends Cubit<SendState> {
 
   Future<String?> pollSender(Sender sender) async {
     final ohttpProxyUrl =
-        await pj_uri.Url.fromStr('https://ohttp.achow101.com');
+        await pj_uri.Url.fromStr('https://pj.bobspacebkk.com');
     pj.Request postReq;
     V2PostContext postReqCtx;
     try {
@@ -1318,13 +1318,6 @@ class SendCubit extends Cubit<SendState> {
       break;
     }
     return proposalPsbt;
-  }
-
-  // process, finalize, and broadcast
-  void processPayjoinProposal(String proposalPsbt, Wallet wallet) async {
-    final payjoin =
-        await _walletTx.signPsbt(psbt: proposalPsbt, wallet: wallet);
-    // baseLayerSend() but not in UI
   }
 
   void buildChainSwap(
