@@ -65,12 +65,13 @@ class SocialCubit extends Cubit<SocialState> {
                     final socialPayload =
                         json.decode(event.content) as Map<String, dynamic>;
                     final type = socialPayload['type'] as String;
-                    final friendBackupKey =
-                        socialPayload['backup_key'] as String;
-                    final friendBackupKeySignature =
-                        socialPayload['backup_key_sig'] as String;
+
                     switch (type) {
                       case 'backup_request':
+                        final friendBackupKey =
+                            socialPayload['backup_key'] as String;
+                        final friendBackupKeySignature =
+                            socialPayload['backup_key_sig'] as String;
                         emit(
                           state.copyWith(
                             friendBackupKey: friendBackupKey,
