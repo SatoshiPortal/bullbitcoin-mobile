@@ -103,6 +103,7 @@ dependencies:
       ref: main
   web_socket_channel: ^2.4.5
   nostr: ^1.5.0
+  flutter_speed_dial: ^7.0.0
 
 
 dev_dependencies:

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/backup/bloc/social_cubit.dart';
@@ -7,10 +8,11 @@ import 'package:bb_mobile/backup/tweet_widget.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:go_router/go_router.dart';
 
-class SocialBackupPage extends StatelessWidget {
-  const SocialBackupPage({super.key, required this.settings});
+class SocialPage extends StatelessWidget {
+  const SocialPage({super.key, required this.settings});
   final SocialSettingState settings;
 
   @override
@@ -19,6 +21,7 @@ class SocialBackupPage extends StatelessWidget {
 
     return BlocProvider<SocialCubit>(
       create: (_) => SocialCubit(
+        filePick: locator<FilePick>(),
         fileStorage: locator<FileStorage>(),
         relay: settings.relay,
         senderSecret: settings.secretKey,
@@ -26,32 +29,32 @@ class SocialBackupPage extends StatelessWidget {
         friendPublic: settings.receiverPublicKey,
         backupKey: settings.backupKey,
       ),
-      child: Scaffold(
-        backgroundColor: Colors.amber,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          flexibleSpace: BBAppBar(
-            text: 'Social',
-            onBack: () => context.pop(),
-          ),
-        ),
-        body: BlocListener<SocialCubit, SocialState>(
-          listener: (context, state) {
-            if (state.toast.isNotEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.toast),
-                  backgroundColor: Colors.red,
-                ),
-              );
-              context.read<SocialCubit>().clearToast();
-            }
-          },
-          child: BlocBuilder<SocialCubit, SocialState>(
-            builder: (context, state) {
-              final cubit = context.read<SocialCubit>();
+      child: BlocListener<SocialCubit, SocialState>(
+        listener: (context, state) {
+          if (state.toast.isNotEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.toast),
+                backgroundColor: Colors.red,
+              ),
+            );
+            context.read<SocialCubit>().clearToast();
+          }
+        },
+        child: BlocBuilder<SocialCubit, SocialState>(
+          builder: (context, state) {
+            final cubit = context.read<SocialCubit>();
 
-              return Column(
+            return Scaffold(
+              backgroundColor: Colors.amber,
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                flexibleSpace: BBAppBar(
+                  text: 'Social',
+                  onBack: () => context.pop(),
+                ),
+              ),
+              body: Column(
                 children: [
                   Expanded(
                     child: ListView.builder(
@@ -81,11 +84,6 @@ class SocialBackupPage extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.backup),
-                        label: const Text('Request Backup'),
-                        onPressed: () async => await cubit.backupRequest(),
-                      ),
                       if (state.friendBackupKey.isNotEmpty)
                         ElevatedButton.icon(
                           icon: const Icon(Icons.cloud_download),
@@ -119,9 +117,27 @@ class SocialBackupPage extends StatelessWidget {
                     ),
                   ),
                 ],
-              );
-            },
-          ),
+              ),
+              floatingActionButton: SpeedDial(
+                animatedIcon: AnimatedIcons.menu_close,
+                backgroundColor: Colors.blue,
+                overlayColor: Colors.black,
+                overlayOpacity: 0.5,
+                children: [
+                  SpeedDialChild(
+                    child: const Icon(Icons.file_open_rounded),
+                    label: 'Backup',
+                    onTap: () async => await cubit.backupRequest(),
+                  ),
+                  SpeedDialChild(
+                    child: const Icon(Icons.upload_file_rounded),
+                    label: 'Recover',
+                    onTap: () async => await cubit.uploadFriendKey(),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
