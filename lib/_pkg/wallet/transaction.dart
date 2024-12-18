@@ -16,6 +16,7 @@ import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:path_provider/path_provider.dart';
 
 class WalletTx implements IWalletTransactions {
   WalletTx({
@@ -169,6 +170,9 @@ class WalletTx implements IWalletTransactions {
             final (bdkSignerWallet, errSigner) =
                 await _bdkSensitiveCreate.loadPrivateBdkWallet(wallet, seed!);
             if (errSigner != null) throw errSigner;
+            final signerTxs =
+                await bdkSignerWallet!.listTransactions(includeRaw: false);
+            print('signer txs: ${signerTxs.length}');
             final (signed, errSign) = await _bdkTransactions.signTx(
               psbt: psbt,
               bdkWallet: bdkSignerWallet!,
@@ -235,13 +239,31 @@ class WalletTx implements IWalletTransactions {
     try {
       final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet.id);
       if (errWallet != null) throw errWallet;
+      final walletTxs = await bdkWallet!.listTransactions(includeRaw: false);
+      print('wallet txs: ${walletTxs.length}');
       final (seed, errSeed) = await _walletSensitiveStorageRepository.readSeed(
         fingerprintIndex: wallet.getRelatedSeedStorageString(),
       );
       if (errSeed != null) throw errSeed;
+      final appDocDir = await getApplicationDocumentsDirectory();
+      final String dbDir =
+          '${appDocDir.path}/${wallet.getWalletStorageString()}';
+
+      final dbConfig = bdk.DatabaseConfig.sqlite(
+        config: bdk.SqliteDbConfiguration(path: dbDir),
+      );
       final (bdkSignerWallet, errSigner) =
-          await _bdkSensitiveCreate.loadPrivateBdkWallet(wallet, seed!);
+          await _bdkSensitiveCreate.loadPrivateBdkWalletWithDb(
+        wallet,
+        seed!,
+        dbConfig,
+      );
+      // final (blockchain, errNetwork) = _networkRepository.bdkBlockchain;
+      // await bdkSignerWallet!.sync(blockchain: blockchain!);
       if (errSigner != null) throw errSigner;
+      final signerTxs =
+          await bdkSignerWallet!.listTransactions(includeRaw: false);
+      print('signer txs: ${signerTxs.length}');
       return await _bdkTransactions.signTx(
         psbt: psbt,
         bdkWallet: bdkSignerWallet!,

@@ -593,7 +593,7 @@ class BDKTransactions {
     // required String address,
   }) async {
     try {
-      print('signTx psbt: $psbt');
+      printWrapped('signTx psbt: $psbt');
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
       final tx = psbtStruct.extractTx();
       final _ = await bdkWallet.sign(
@@ -610,7 +610,7 @@ class BDKTransactions {
       );
       // final extracted = await finalized;
       final psbtStr = psbtStruct.serialize();
-      print('signTx psbtStr: ${base64Encode(psbtStr)}');
+      printWrapped('signTx psbtStr: ${base64Encode(psbtStr)}');
       return ((tx, base64Encode(psbtStr)), null);
     } on Exception catch (e) {
       return (
@@ -853,4 +853,9 @@ class BDKTransactions {
     }
     return false;
   }
+}
+
+void printWrapped(String text) {
+  final pattern = new RegExp('.{1,800}'); // 800 is the size of each chunk
+  pattern.allMatches(text).forEach((match) => print(match.group(0)));
 }

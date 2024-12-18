@@ -235,9 +235,9 @@ class PayjoinManager {
               return;
             }
             final signedPayjoin = result!.$1;
-            final broadcastedTx = (await blockchain(isTestnet))
+            await (await blockchain(isTestnet))
                 .broadcast(transaction: signedPayjoin);
-            print('Broadcasted transaction: $broadcastedTx');
+            print('Broadcasted transaction: $signedPayjoin');
             await _cleanupSession(sessionId);
           } else if (message is Err) {
             print('err: $message');
