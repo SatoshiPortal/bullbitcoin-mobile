@@ -20,7 +20,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     WalletBloc? walletBloc,
     required WalletAddress walletAddress,
     required WalletsStorageRepository walletsStorageRepository,
-    required bool defaultPayjoin,
     required PayjoinSessionStorage payjoinSessionStorage,
     required PayjoinManager payjoinManager,
   })  : _walletsStorageRepository = walletsStorageRepository,
@@ -33,11 +32,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
             oneWallet: walletBloc != null,
           ),
         ) {
-    emit(
-      state.copyWith(
-        disablePayjoin: !defaultPayjoin,
-      ),
-    );
     loadAddress();
   }
 
@@ -69,6 +63,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     // final watchOnly = walletBloc.state.wallet!.watchOnly();
     // if (watchOnly)
     //   emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
+    isPayjoinDisabled();
     loadAddress();
     print('state.paymentNetwork: ${state.paymentNetwork}');
     if (state.paymentNetwork == PaymentNetwork.bitcoin &&
@@ -505,5 +500,21 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       witness: [],
     );
     return InputPair.newInstance(txin, psbtin);
+  }
+
+  Future<void> isPayjoinDisabled() async {
+    final walletBloc = state.walletBloc;
+    final wallet = walletBloc?.state.wallet;
+    if (walletBloc == null || wallet == null) return;
+
+    print(
+      'payjoin disabled: ${wallet.utxos.isEmpty} –> utxos: ${wallet.utxos.length}',
+    );
+
+    if (wallet.utxos.isEmpty) {
+      emit(state.copyWith(disablePayjoin: true));
+    } else {
+      emit(state.copyWith(disablePayjoin: false));
+    }
   }
 }
