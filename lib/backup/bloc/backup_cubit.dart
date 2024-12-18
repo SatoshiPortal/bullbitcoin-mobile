@@ -97,7 +97,7 @@ class BackupCubit extends Cubit<BackupState> {
     // TODO : extract nonce?
 
     final now = DateTime.now();
-    final formattedDate = DateFormat('yyyy-MM-dd_HH-mm-ss').format(now);
+    final formattedDate = DateFormat('yyyyMMdd_HHmm').format(now);
     final filename = '$formattedDate.json';
 
     final (appDir, errDir) = await fileStorage.getAppDirectory();
