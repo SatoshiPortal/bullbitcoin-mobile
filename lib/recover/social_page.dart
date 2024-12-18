@@ -1,16 +1,16 @@
-import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/backup/bloc/social_cubit.dart';
 import 'package:bb_mobile/backup/bloc/social_setting_state.dart';
-import 'package:bb_mobile/backup/bloc/social_state.dart';
-import 'package:bb_mobile/backup/tweet_widget.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/recover/bloc/social_cubit.dart';
+import 'package:bb_mobile/recover/bloc/social_state.dart';
+import 'package:bb_mobile/recover/tweet_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class SocialBackupPage extends StatelessWidget {
-  const SocialBackupPage({super.key, required this.settings});
+class SocialRecoverPage extends StatelessWidget {
+  const SocialRecoverPage({super.key, required this.settings});
   final SocialSettingState settings;
 
   @override
@@ -19,7 +19,7 @@ class SocialBackupPage extends StatelessWidget {
 
     return BlocProvider<SocialCubit>(
       create: (_) => SocialCubit(
-        fileStorage: locator<FileStorage>(),
+        filePick: locator<FilePick>(),
         relay: settings.relay,
         senderSecret: settings.secretKey,
         senderPublic: settings.publicKey,
@@ -82,16 +82,10 @@ class SocialBackupPage extends StatelessWidget {
                   Row(
                     children: [
                       ElevatedButton.icon(
-                        icon: const Icon(Icons.backup),
-                        label: const Text('Request Backup'),
-                        onPressed: () async => await cubit.backupRequest(),
+                        icon: const Icon(Icons.upload_file_rounded),
+                        label: const Text('Friend Key'),
+                        onPressed: () async => await cubit.uploadFriendKey(),
                       ),
-                      if (state.friendBackupKey.isNotEmpty)
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.cloud_download),
-                          label: const Text('Download Backup Key'),
-                          onPressed: () async => cubit.backupConfirm(),
-                        ),
                     ],
                   ),
                   Padding(

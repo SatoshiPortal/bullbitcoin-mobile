@@ -19,6 +19,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/recover/keychain_page.dart';
 import 'package:bb_mobile/recover/manual_page.dart';
+import 'package:bb_mobile/recover/social_page.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 // import 'package:bb_mobile/seeds/seeds_page.dart';
 import 'package:bb_mobile/send/send_page.dart';
@@ -234,13 +235,6 @@ GoRouter setupRouter() => GoRouter(
           },
         ),
         GoRoute(
-          path: '/keychain-backup',
-          builder: (context, state) {
-            final (backupKey, backupId) = state.extra! as (String, String);
-            return KeychainBackupPage(backupKey: backupKey, backupId: backupId);
-          },
-        ),
-        GoRoute(
           path: '/recoverbull',
           builder: (context, state) {
             final wallets = state.extra! as List<WalletBloc>;
@@ -248,16 +242,10 @@ GoRouter setupRouter() => GoRouter(
           },
         ),
         GoRoute(
-          path: '/social-settings',
+          path: '/keychain-backup',
           builder: (context, state) {
-            return const SocialSettingsPage();
-          },
-        ),
-        GoRoute(
-          path: '/social',
-          builder: (context, state) {
-            final settings = state.extra! as SocialSettingState;
-            return SocialPage(settings: settings);
+            final (backupKey, backupId) = state.extra! as (String, String);
+            return KeychainBackupPage(backupKey: backupKey, backupId: backupId);
           },
         ),
         GoRoute(
@@ -267,6 +255,27 @@ GoRouter setupRouter() => GoRouter(
             return KeychainRecoverPage(backupId: backupId);
           },
         ),
+        GoRoute(
+          path: '/social-settings',
+          builder: (context, state) {
+            return const SocialSettingsPage();
+          },
+        ),
+        GoRoute(
+          path: '/social-backup',
+          builder: (context, state) {
+            final settings = state.extra! as SocialSettingState;
+            return SocialBackupPage(settings: settings);
+          },
+        ),
+        GoRoute(
+          path: '/social-recover',
+          builder: (context, state) {
+            final settings = state.extra! as SocialSettingState;
+            return SocialRecoverPage(settings: settings);
+          },
+        ),
+
         // GoRoute(
         //   path: '/wallet-settings/open-test-backup',
         //   builder: (context, state) {
