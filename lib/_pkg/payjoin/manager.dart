@@ -9,6 +9,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:http/http.dart' as http;
 import 'package:payjoin_flutter/bitcoin_ffi.dart';
@@ -137,6 +138,7 @@ class PayjoinManager {
                   'result': inputs,
                 });
               } catch (e) {
+                print('err: $e');
                 rethrow;
               }
 
@@ -298,16 +300,18 @@ class PayjoinManager {
     return await _walletTx.addressExistsInWallet(address.toString(), wallet);
   }
 
-  Future<List<InputPair>> getCandidateInputs({
+  Future<List<bdk.LocalUtxo>> getCandidateInputs({
     required Wallet wallet,
     required bool isTestnet,
   }) async {
     print('get spendable utxos');
     final unspent = await _walletTx.listUnspent(wallet);
-    final inputs = await Future.wait(
-      unspent.map((unspent) => inputPairFromUtxo(unspent, isTestnet)),
-    );
-    return inputs;
+    print('unspent: $unspent');
+    // final inputs = await Future.wait(
+    //   unspent.map((unspent) => inputPairFromUtxo(unspent, isTestnet)),
+    // );
+    //print('inputs: $inputs');
+    return unspent;
   }
 
   Future<String> processPsbt({
@@ -545,14 +549,18 @@ Future<void> _isolateReceiver(List<dynamic> args) async {
       );
       final pj5 = await pj4.commitOutputs();
 
-      final candidateInputs = await sendAndWait(
+      final listUnspent = await sendAndWait(
         'get_candidate_inputs',
         {},
         sendPort,
       );
+      final unspent = listUnspent as List<bdk.LocalUtxo>;
+      final candidateInputs = await Future.wait(
+        unspent.map((utxo) => inputPairFromUtxo(utxo, true)),
+      );
       print('selected utxo');
       final selected_utxo = await pj5.tryPreservingPrivacy(
-        candidateInputs: candidateInputs as List<InputPair>,
+        candidateInputs: candidateInputs,
       );
       print('contribute inputs');
       final pj6 =

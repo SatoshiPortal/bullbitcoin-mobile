@@ -267,6 +267,7 @@ Future _setupBlocs() async {
   locator.registerSingleton<PayjoinManager>(
     PayjoinManager(
       locator<NetworkCubit>(),
+      locator<WalletTx>(),
     ),
   );
 
