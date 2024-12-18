@@ -1,0 +1,42 @@
+check_is_owned
+
+final address = await bdk.Address.fromScript(
+    script: bdk.ScriptBuf(bytes: inputScript),
+    network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+);
+return await addressExistsInWallet(address.toString(), wallet);
+
+final address = await bdk.Address.fromScript(
+          script: bdk.ScriptBuf(bytes: outputScript),
+          network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+        );
+        return await addressExistsInWallet(address.toString(), wallet);
+
+// Contribute receiver inputs
+print('get spendable utxos');
+final unspent = wallet.listUnspent();
+final inputs = await Future.wait(
+  unspent.map((unspent) => inputPairFromUtxo(unspent, isTestnet)),
+);
+
+
+print('finalizeProposal psbt $psbt');
+        // TODO: sign PSBT
+        final psbtStruct =
+            await bdk.PartiallySignedTransaction.fromString(psbt);
+        print('unsigned psbtStruct $psbtStruct');
+        final signed = await wallet.sign(
+          psbt: psbtStruct,
+          signOptions: const bdk.SignOptions(
+            trustWitnessUtxo: true,
+            allowAllSighashes: false,
+            removePartialSigs: true,
+            tryFinalize: true,
+            signWithTapInternalKey: true,
+            allowGrinding: true,
+          ),
+        );
+        print('finalizeProposal signed $signed');
+        final signedPsbt = psbtStruct.serialize();
+        print('signedPsbt $signedPsbt');
+        return base64Encode(signedPsbt);
