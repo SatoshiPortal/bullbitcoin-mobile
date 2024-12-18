@@ -600,7 +600,7 @@ class BDKTransactions {
         psbt: psbtStruct,
         signOptions: const bdk.SignOptions(
           // multiSig: false,
-          trustWitnessUtxo: false,
+          trustWitnessUtxo: true,
           allowAllSighashes: false,
           removePartialSigs: true,
           tryFinalize: true,

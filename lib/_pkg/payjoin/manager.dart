@@ -162,21 +162,16 @@ class PayjoinManager {
             case 'process_psbt':
               try {
                 final psbt = message['psbt'] as String;
-                final (result, err) = await _walletTx.signPsbt(
-                  psbt: psbt,
-                  wallet: wallet,
-                );
-                if (err != null) {
-                  completer.complete(err);
-                  return;
-                }
-                final signedPsbt = result!.$2;
+                print('process_psbt: $psbt');
+                final signedPsbt =
+                    await processPsbt(psbt: psbt, wallet: wallet);
+                print('signedPsbt: $signedPsbt');
                 mainToIsolateSendPort?.send({
-                  'type': 'signed_psbt',
                   'requestId': message['requestId'],
-                  'psbt': signedPsbt,
+                  'result': signedPsbt,
                 });
               } catch (e) {
+                print('err: $e');
                 rethrow;
               }
               break;
@@ -577,6 +572,7 @@ Future<void> _isolateReceiver(List<dynamic> args) async {
             {'psbt': psbt},
             sendPort,
           );
+          print('process_psbt result: $result');
           return result as String;
         },
         maxFeeRateSatPerVb: BigInt.from(10000),
@@ -622,7 +618,10 @@ Future<void> _isolateReceiver(List<dynamic> args) async {
       }
     }
     final payjoin_proposal = await processPayjoinProposal(
-        unchecked_proposal!, isolateTomainSendPort, isolateReceivePort);
+      unchecked_proposal!,
+      isolateTomainSendPort,
+      isolateReceivePort,
+    );
     print('payjoin proposal: $payjoin_proposal');
     try {
       final (postReq, ohttpCtx) = await payjoin_proposal.extractV2Req();
