@@ -167,8 +167,6 @@ class _Screen extends StatelessWidget {
 
           case ImportSteps.advancedOptions:
             return const AdvancedOptions();
-          default:
-            return Container();
         }
       }(),
     );
