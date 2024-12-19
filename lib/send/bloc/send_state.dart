@@ -8,6 +8,7 @@ import 'package:bb_mobile/_pkg/utils.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:payjoin_flutter/uri.dart' as pj_uri;
 
 part 'send_state.freezed.dart';
 
@@ -37,6 +38,7 @@ class SendState with _$SendState {
     @Default('') String errDownloadingFile,
     @Default(false) bool downloaded,
     @Default(false) bool disableRBF,
+    Uri? payjoinEndpoint,
     @Default(false) bool sendAllCoin,
     @Default([]) List<UTXO> selectedUtxos,
     @Default('') String errAddresses,

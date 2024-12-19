@@ -9,6 +9,8 @@ import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
+import 'package:bb_mobile/_pkg/payjoin/session_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
@@ -92,6 +94,9 @@ Future _setupRepositories() async {
     WalletSensitiveStorageRepository(
       secureStorage: locator<SecureStorage>(),
     ),
+  );
+  locator.registerSingleton<PayjoinSessionStorage>(
+    PayjoinSessionStorage(hiveStorage: locator<HiveStorage>()),
   );
   // locator.registerSingleton<HomeRepository>(
   //   HomeRepository(
@@ -256,6 +261,13 @@ Future _setupBlocs() async {
     NetworkCubit(
       hiveStorage: locator<HiveStorage>(),
       walletNetwork: locator<WalletNetwork>(),
+    ),
+  );
+
+  locator.registerSingleton<PayjoinManager>(
+    PayjoinManager(
+      locator<NetworkCubit>(),
+      locator<WalletTx>(),
     ),
   );
 

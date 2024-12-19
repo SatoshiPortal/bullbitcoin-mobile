@@ -15,6 +15,8 @@ import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:path_provider/path_provider.dart';
 
 class WalletTx implements IWalletTransactions {
   WalletTx({
@@ -168,6 +170,9 @@ class WalletTx implements IWalletTransactions {
             final (bdkSignerWallet, errSigner) =
                 await _bdkSensitiveCreate.loadPrivateBdkWallet(wallet, seed!);
             if (errSigner != null) throw errSigner;
+            final signerTxs =
+                await bdkSignerWallet!.listTransactions(includeRaw: false);
+            print('signer txs: ${signerTxs.length}');
             final (signed, errSign) = await _bdkTransactions.signTx(
               psbt: psbt,
               bdkWallet: bdkSignerWallet!,
@@ -222,6 +227,109 @@ class WalletTx implements IWalletTransactions {
         ),
       );
     }
+  }
+
+  // FIXME is this the wrong area of abstraction for this to return bdk.Transaction?
+  Future<((bdk.Transaction, String)?, Err?)> signPsbt({
+    required String psbt,
+    // required bdk.Blockchain blockchain,
+    required Wallet wallet,
+    // required String address,
+  }) async {
+    try {
+      final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet.id);
+      if (errWallet != null) throw errWallet;
+      final walletTxs = await bdkWallet!.listTransactions(includeRaw: false);
+      print('wallet txs: ${walletTxs.length}');
+      final (seed, errSeed) = await _walletSensitiveStorageRepository.readSeed(
+        fingerprintIndex: wallet.getRelatedSeedStorageString(),
+      );
+      if (errSeed != null) throw errSeed;
+      final appDocDir = await getApplicationDocumentsDirectory();
+      final String dbDir =
+          '${appDocDir.path}/${wallet.getWalletStorageString()}';
+
+      final dbConfig = bdk.DatabaseConfig.sqlite(
+        config: bdk.SqliteDbConfiguration(path: dbDir),
+      );
+      final (bdkSignerWallet, errSigner) =
+          await _bdkSensitiveCreate.loadPrivateBdkWalletWithDb(
+        wallet,
+        seed!,
+        dbConfig,
+      );
+      // final (blockchain, errNetwork) = _networkRepository.bdkBlockchain;
+      // await bdkSignerWallet!.sync(blockchain: blockchain!);
+      if (errSigner != null) throw errSigner;
+      final signerTxs =
+          await bdkSignerWallet!.listTransactions(includeRaw: false);
+      print('signer txs: ${signerTxs.length}');
+      return await _bdkTransactions.signTx(
+        psbt: psbt,
+        bdkWallet: bdkSignerWallet!,
+      );
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while signing transaction',
+          solution: 'Please try again.',
+        ),
+      );
+    }
+  }
+
+  Future<List<bdk.LocalUtxo>> listUnspent(Wallet wallet) async {
+    final (bdkWallet, err) = _walletsRepository.getBdkWallet(wallet.id);
+    if (err != null) throw err;
+    return bdkWallet!.listUnspent();
+  }
+
+  Future<bool> addressExistsInWallet(String address, Wallet wallet) async {
+    // Get the full address book
+    final (bdkWallet, err) = _walletsRepository.getBdkWallet(wallet.id);
+    if (err != null) throw err;
+    final addresses = await getAddressBookFromBdkWallet(bdkWallet!);
+
+    // Check if the address exists in the list
+    return addresses.any((addr) => addr.address == address);
+  }
+
+  Future<List<Address>> getAddressBookFromBdkWallet(
+      bdk.Wallet bdkWallet) async {
+    final List<Address> addresses = [];
+
+    // Get last unused address to know how many addresses to check
+    final addressLastUnused = bdkWallet.getAddress(
+      addressIndex: const bdk.AddressIndex.lastUnused(),
+    );
+
+    // Iterate through all addresses up to last unused
+    for (var i = 0; i <= addressLastUnused.index; i++) {
+      final address = bdkWallet.getAddress(
+        addressIndex: bdk.AddressIndex.peek(index: i),
+      );
+      final addressStr = address.address.asString();
+
+      addresses.add(
+        Address(
+          address: addressStr,
+          index: address.index,
+          kind: AddressKind.deposit,
+          state: AddressStatus.unused,
+        ),
+      );
+    }
+
+    // Sort addresses by index descending
+    addresses.sort((a, b) {
+      final int indexA = a.index ?? 0;
+      final int indexB = b.index ?? 0;
+      return indexB.compareTo(indexA);
+    });
+
+    return addresses;
   }
 
   Future<(Wallet, Err?)> addUnsignedTxToWallet({

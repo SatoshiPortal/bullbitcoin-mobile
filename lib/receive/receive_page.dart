@@ -3,6 +3,8 @@ import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
+import 'package:bb_mobile/_pkg/payjoin/session_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
@@ -81,6 +83,8 @@ class _ReceivePageState extends State<ReceivePage> {
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletBloc: widget.walletBloc,
+      payjoinSessionStorage: locator<PayjoinSessionStorage>(),
+      payjoinManager: locator<PayjoinManager>(),
     );
 
     final network = context.read<NetworkCubit>().state.getBBNetwork();
@@ -1131,6 +1135,9 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
 
     final addr = bip21Address.isNotEmpty ? bip21Address : widget.addressQr;
 
+    final isPayjoinDisabled =
+        context.select((ReceiveCubit _) => _.state.disablePayjoin);
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
       child: !showToast
@@ -1138,6 +1145,25 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BBText.body(receiveAddressLabel),
+                if (isPayjoinDisabled)
+                  Card(
+                    color: Colors.yellow[100],
+                    margin: const EdgeInsets.all(10),
+                    child: const ListTile(
+                      leading: Icon(Icons.warning, color: Colors.orange),
+                      title: Text(
+                        'Payjoin transactions',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Wallet does not meet the criteria',
+                        style: TextStyle(color: Colors.black87),
+                      ),
+                    ),
+                  ),
                 Row(
                   children: [
                     Expanded(
