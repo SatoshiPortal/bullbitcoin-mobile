@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/wallet/bip21.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -34,6 +35,7 @@ class SendCubit extends Cubit<SendState> {
     required bool openScanner,
     required HomeCubit homeCubit,
     required bool defaultRBF,
+    required PayjoinManager payjoinManager,
     required SwapBoltz swapBoltz,
     required CreateSwapCubit swapCubit,
     bool oneWallet = true,
@@ -44,6 +46,7 @@ class SendCubit extends Cubit<SendState> {
         _walletTx = walletTx,
         _fileStorage = fileStorage,
         _barcode = barcode,
+        _payjoinManager = payjoinManager,
         _swapBoltz = swapBoltz,
         _swapCubit = swapCubit,
         super(
@@ -66,6 +69,7 @@ class SendCubit extends Cubit<SendState> {
   final Barcode _barcode;
   final FileStorage _fileStorage;
   final WalletTx _walletTx;
+  final PayjoinManager _payjoinManager;
   final SwapBoltz _swapBoltz;
 
   final NetworkCubit _networkCubit;
@@ -926,6 +930,60 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
+  Future<void> payjoinBuild({
+    required int networkFees,
+    required String originalPsbt,
+    required Wallet wallet,
+  }) async {
+    // TODO Serialize raw bip21 input instead of this monstrosity
+    final pjUriString =
+        'bitcoin:${state.address}?amount=${_currencyCubit.state.amount / 100000000}&label=${Uri.encodeComponent(state.note)}&pj=${state.payjoinEndpoint!}&pjos=0';
+    final sender = await _payjoinManager.initSender(
+        pjUriString, networkFees, originalPsbt);
+    emit(state.copyWith(payjoinSender: sender));
+  }
+
+  Future<void> payjoinSend(Wallet wallet) async {
+    if (state.selectedWalletBloc == null) return;
+    if (state.payjoinSender == null) return;
+
+    // TODO copy originalPsbt.extractTx() to state.tx
+    // emit(state.copyWith(tx: originalPsbtTxWithId));
+    emit(state.copyWith(sending: true, sent: false));
+    final proposalPsbt = await _payjoinManager.runSender(
+      state.payjoinSender!,
+    );
+    final (wtxid, errSignBroadcast) = await _walletTx.signAndBroadcastPsbt(
+      wallet: wallet,
+      psbt: proposalPsbt!,
+    );
+    if (errSignBroadcast != null) {
+      emit(state.copyWith(
+          errSending: errSignBroadcast.toString(), sending: false));
+      return;
+    }
+
+    final txWithId = state.tx?.copyWith(txid: wtxid?.$2 ?? '');
+    emit(state.copyWith(tx: txWithId));
+
+    final (updatedWallet, _) = wtxid!;
+    state.selectedWalletBloc!.add(
+      UpdateWallet(
+        updatedWallet,
+        updateTypes: [
+          UpdateWalletTypes.addresses,
+          UpdateWalletTypes.transactions,
+          UpdateWalletTypes.swaps,
+        ],
+      ),
+    );
+
+    Future.delayed(150.ms);
+    state.selectedWalletBloc!.add(SyncWallet());
+
+    emit(state.copyWith(sending: false, sent: true));
+  }
+
   Future<void> baseLayerSend() async {
     if (state.selectedWalletBloc == null) return;
     emit(state.copyWith(sending: true, errSending: ''));
@@ -1130,7 +1188,15 @@ class SendCubit extends Cubit<SendState> {
     if (!state.signed) {
       if (!isLn) {
         final fees = _networkFeesCubit.state.selectedOrFirst(false);
-        baseLayerBuild(networkFees: fees);
+        await baseLayerBuild(networkFees: fees);
+        if (state.hasPjParam()) {
+          await payjoinBuild(
+            networkFees: fees,
+            originalPsbt: state.psbtSigned!,
+            wallet: wallet,
+          );
+          return;
+        }
         return;
       }
       // context.read<WalletBloc>().state.wallet;
@@ -1151,6 +1217,10 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
+    if (state.payjoinSender != null) {
+      await payjoinSend(wallet);
+      return;
+    }
     if (!isLn) {
       baseLayerSend();
       return;

@@ -8,6 +8,7 @@ import 'package:bb_mobile/_pkg/utils.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:payjoin_flutter/send.dart';
 
 part 'send_state.freezed.dart';
 
@@ -38,6 +39,7 @@ class SendState with _$SendState {
     @Default(false) bool downloaded,
     @Default(false) bool disableRBF,
     Uri? payjoinEndpoint,
+    Sender? payjoinSender,
     @Default(false) bool sendAllCoin,
     @Default([]) List<UTXO> selectedUtxos,
     @Default('') String errAddresses,
@@ -60,6 +62,8 @@ class SendState with _$SendState {
   bool isWatchOnly() => selectedWalletBloc?.state.wallet?.watchOnly() ?? false;
 
   bool isLnInvoice() => invoice != null;
+
+  bool hasPjParam() => payjoinEndpoint != null;
 
   // String getAddressFromInvoiceOrAddress() {
   //   // if (invoice != null) return invoice!.;
@@ -250,7 +254,9 @@ class SendState with _$SendState {
         ? 'Generate PSBT'
         : signed
             ? sending
-                ? 'Broadcasting'
+                ? payjoinSender != null
+                    ? 'Payjoining'
+                    : 'Broadcasting'
                 : 'Confirm'
             : sending
                 ? 'Building Tx'

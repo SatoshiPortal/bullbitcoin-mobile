@@ -256,7 +256,7 @@ packages:
     source: hosted
     version: "1.18.0"
   convert:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: convert
       sha256: b30acd5944035672bc15c6b7a8b47d773e41e2f17de064350988c5d02adb1c68
@@ -280,7 +280,7 @@ packages:
     source: hosted
     version: "0.3.4+2"
   crypto:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: crypto
       sha256: "1e445881f28f22d6140f181e07737b22f1e099a5e1ff94b0af2f9e4a463f4855"
@@ -644,7 +644,7 @@ packages:
     source: hosted
     version: "2.5.7"
   freezed_annotation:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: freezed_annotation
       sha256: c2e2d632dd9b8a2b7751117abcfc2b4888ecfe181bd9fca7170d9ef02e595fe2
@@ -1062,6 +1062,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  payjoin_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "0124ef669eb3b8e130e4584a534e9eb51a06bdec"
+      resolved-ref: "0124ef669eb3b8e130e4584a534e9eb51a06bdec"
+      url: "https://github.com/LtbLightning/payjoin-flutter"
+    source: git
+    version: "0.21.0"
   petitparser:
     dependency: transitive
     description:
