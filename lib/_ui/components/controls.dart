@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class BBSwitcher<T> extends StatelessWidget {
+class BBSwitcher<T extends Object> extends StatelessWidget {
   const BBSwitcher({
     super.key,
     required this.items,
@@ -60,7 +60,7 @@ class BBSwitcher<T> extends StatelessWidget {
         ),
         border: Border.all(color: borderColour),
       ),
-      child: CupertinoSlidingSegmentedControl(
+      child: CupertinoSlidingSegmentedControl<T>(
         groupValue: value,
         padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 4),
         children: _buildItems(darkMode),
@@ -74,7 +74,7 @@ class BBSwitcher<T> extends StatelessWidget {
   }
 }
 
-class BBDropDown<T> extends StatelessWidget {
+class BBDropDown<T extends Object> extends StatelessWidget {
   const BBDropDown({
     super.key,
     required this.items,

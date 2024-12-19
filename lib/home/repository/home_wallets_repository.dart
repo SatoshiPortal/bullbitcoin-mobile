@@ -14,6 +14,10 @@ class HomeWalletsRepository {
         _wallets.firstWhere((_) => _.id == id),
       );
 
+  Wallet? walletX(String id) {
+    return _wallets.firstWhere((_) => _.id == id);
+  }
+
   Future<void> getWalletsFromStorage() async {
     final (wallets, err) = await _walletsStorageRepository.readAllWallets();
     if (err != null && err.toString() != 'No Key') {
