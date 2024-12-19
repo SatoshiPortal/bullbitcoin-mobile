@@ -224,6 +224,54 @@ class WalletTx implements IWalletTransactions {
     }
   }
 
+  Future<(String?, Err?)> signAndBroadcastPsbt({
+    required String psbt,
+    // required bdk.Blockchain blockchain,
+    required Wallet walletStruct,
+    // required String address,
+  }) async {
+    // FIXME should this be broken up into two functions? Is "And" a smell?
+    try {
+      final (bdkWallet, errWallet) =
+          _walletsRepository.getBdkWallet(walletStruct.id);
+      if (errWallet != null) throw errWallet;
+      final (seed, errSeed) = await _walletSensitiveStorageRepository.readSeed(
+        fingerprintIndex: walletStruct.getRelatedSeedStorageString(),
+      );
+      if (errSeed != null) throw errSeed;
+      final (bdkSignerWallet, errSigner) =
+          await _bdkSensitiveCreate.loadPrivateBdkWallet(
+        walletStruct,
+        seed!,
+      );
+      if (errSigner != null) throw errSigner;
+
+      final (signedTx, errSign) = await _bdkTransactions.signTx(
+        psbt: psbt,
+        bdkWallet: bdkSignerWallet!,
+        trustWitnessUtxo: true,
+      );
+      if (errSign != null) throw errSign;
+      final (blockchain, errNetwork) = _networkRepository.bdkBlockchain;
+      if (errNetwork != null) throw errNetwork;
+      final (txid, errBroadcast) = await _bdkTransactions.broadcastPsbt(
+        psbt: psbt,
+        blockchain: blockchain!,
+      );
+      if (errBroadcast != null) throw errBroadcast;
+      return (txid, null);
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while signing transaction',
+          solution: 'Please try again.',
+        ),
+      );
+    }
+  }
+
   Future<(Wallet, Err?)> addUnsignedTxToWallet({
     required Transaction transaction,
     required Wallet wallet,
