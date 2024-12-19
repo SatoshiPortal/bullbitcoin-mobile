@@ -326,18 +326,18 @@ class Wallet with _$Wallet {
     switch (type) {
       case BBWalletType.main:
         if (baseWalletType == BaseWalletType.Bitcoin) {
-          str = 'Secure' + ':' + id.substring(0, 5);
+          str = 'Secure:${id.substring(0, 5)}';
         } else {
-          str = 'Instant' + ':' + id.substring(0, 5);
+          str = 'Instant:${id.substring(0, 5)}';
         }
       case BBWalletType.xpub:
-        str = 'Xpub' + ':' + id.substring(0, 5);
+        str = 'Xpub:${id.substring(0, 5)}';
       case BBWalletType.words:
-        str = 'Imported' + ':' + id.substring(0, 5);
+        str = 'Imported:${id.substring(0, 5)}';
       case BBWalletType.coldcard:
-        str = 'Coldcard' + ':' + id.substring(0, 5);
+        str = 'Coldcard:${id.substring(0, 5)}';
       case BBWalletType.descriptors:
-        str = 'Imported Descriptor' + ':' + id.substring(0, 5);
+        str = 'Imported Descriptor:${id.substring(0, 5)}';
     }
 
     return str;
@@ -355,11 +355,11 @@ class Wallet with _$Wallet {
           str = 'Instant Payments Wallet';
         }
       case BBWalletType.xpub:
-        str = 'Xpub' + ':' + id.substring(0, 5);
+        str = 'Xpub:${id.substring(0, 5)}';
       case BBWalletType.coldcard:
-        str = 'Coldcard' + ':' + id.substring(0, 5);
+        str = 'Coldcard:${id.substring(0, 5)}';
       case BBWalletType.descriptors:
-        str = 'Imported Descriptor' + ':' + id.substring(0, 5);
+        str = 'Imported Descriptor:${id.substring(0, 5)}';
     }
 
     return str;
