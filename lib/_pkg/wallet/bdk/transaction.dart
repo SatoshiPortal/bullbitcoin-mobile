@@ -395,7 +395,9 @@ class BDKTransactions {
         // This check is to eliminate sent RBF duplicates
         if (transactions.any((t) {
           return t.rbfTxIds.any((ids) => ids == tx.txid);
-        })) continue;
+        })) {
+          continue;
+        }
 
         // TODO: Merged above two into single iteration;
         //if (transactions.any((t) =>

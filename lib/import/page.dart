@@ -125,11 +125,15 @@ class ImportAppBar extends StatelessWidget {
 
     if (creatingMainWallet &&
         (step == ImportSteps.import12Words ||
-            step == ImportSteps.import24Words)) onBack = () => context.pop();
+            step == ImportSteps.import24Words)) {
+      onBack = () => context.pop();
+    }
 
     if (isRecovery &&
         (step == ImportSteps.import12Words ||
-            step == ImportSteps.import24Words)) onBack = () => context.pop();
+            step == ImportSteps.import24Words)) {
+      onBack = () => context.pop();
+    }
 
     onBack ??= () => context.pop();
 

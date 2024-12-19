@@ -85,11 +85,15 @@ bool? isTestnetAddress(String address) {
   if (address.startsWith('2') ||
       address.startsWith('m') ||
       address.startsWith('n') ||
-      address.startsWith('tb1')) return true;
+      address.startsWith('tb1')) {
+    return true;
+  }
 
   if (address.startsWith('1') ||
       address.startsWith('3') ||
-      address.startsWith('bc1')) return false;
+      address.startsWith('bc1')) {
+    return false;
+  }
 
   return null;
 }

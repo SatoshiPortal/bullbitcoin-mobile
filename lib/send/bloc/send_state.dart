@@ -230,11 +230,15 @@ class SendState with _$SendState {
     }
     if (selectedWalletBloc!.state.wallet!.isBitcoin() &&
         (paymentNetwork == AddressNetwork.liquid ||
-            paymentNetwork == AddressNetwork.bip21Liquid)) return true;
+            paymentNetwork == AddressNetwork.bip21Liquid)) {
+      return true;
+    }
 
     if (selectedWalletBloc!.state.wallet!.isLiquid() &&
         (paymentNetwork == AddressNetwork.bitcoin ||
-            paymentNetwork == AddressNetwork.bip21Bitcoin)) return true;
+            paymentNetwork == AddressNetwork.bip21Bitcoin)) {
+      return true;
+    }
 
     return false;
   }
