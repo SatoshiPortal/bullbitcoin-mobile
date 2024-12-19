@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class BBSwitcher<T> extends StatelessWidget {
+class BBSwitcher<T extends Object> extends StatelessWidget {
   const BBSwitcher({
     super.key,
     required this.items,
