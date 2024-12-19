@@ -151,7 +151,7 @@ class _BBTextInputState extends State<BBTextInput> {
             suffixIcon: widget.rightIcon,
             hintText: widget.hint,
             hintStyle: TextStyle(
-              color: context.colour.onPrimaryContainer.withOpacity(0.5),
+              color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
             ),
             // suffix: widget.rightIcon,
             border: OutlineInputBorder(
@@ -160,7 +160,7 @@ class _BBTextInputState extends State<BBTextInput> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide(
-                color: context.colour.onPrimaryContainer.withOpacity(0.2),
+                color: context.colour.onPrimaryContainer.withValues(alpha: 0.2),
               ),
             ),
             focusedBorder: OutlineInputBorder(
@@ -190,7 +190,7 @@ class _BBTextInputState extends State<BBTextInput> {
             decoration: InputDecoration(
               hintText: widget.hint,
               hintStyle: TextStyle(
-                color: context.colour.onPrimaryContainer.withOpacity(0.5),
+                color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
               ),
               counterText: '',
               border: OutlineInputBorder(
@@ -199,7 +199,8 @@ class _BBTextInputState extends State<BBTextInput> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: context.colour.onPrimaryContainer.withOpacity(0.2),
+                  color:
+                      context.colour.onPrimaryContainer.withValues(alpha: 0.2),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
@@ -211,7 +212,8 @@ class _BBTextInputState extends State<BBTextInput> {
               disabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: context.colour.onPrimaryContainer.withOpacity(0.2),
+                  color:
+                      context.colour.onPrimaryContainer.withValues(alpha: 0.2),
                 ),
               ),
               labelStyle: context.font.labelSmall,
@@ -235,7 +237,7 @@ class _BBTextInputState extends State<BBTextInput> {
             decoration: InputDecoration(
               hintText: widget.hint,
               hintStyle: TextStyle(
-                color: context.colour.onPrimaryContainer.withOpacity(0.5),
+                color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
               ),
               suffixIcon: IconButton(
                 icon: Padding(
@@ -250,7 +252,8 @@ class _BBTextInputState extends State<BBTextInput> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: context.colour.onPrimaryContainer.withOpacity(0.2),
+                  color:
+                      context.colour.onPrimaryContainer.withValues(alpha: 0.2),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
@@ -280,7 +283,7 @@ class _BBTextInputState extends State<BBTextInput> {
             decoration: InputDecoration(
               hintText: widget.hint,
               hintStyle: TextStyle(
-                color: context.colour.onPrimaryContainer.withOpacity(0.5),
+                color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
               ),
               suffixIcon: widget.rightIcon,
               // IconButton(
@@ -296,7 +299,8 @@ class _BBTextInputState extends State<BBTextInput> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: context.colour.onPrimaryContainer.withOpacity(0.2),
+                  color:
+                      context.colour.onPrimaryContainer.withValues(alpha: 0.2),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
@@ -328,7 +332,7 @@ class _BBTextInputState extends State<BBTextInput> {
             decoration: InputDecoration(
               hintText: widget.hint,
               hintStyle: TextStyle(
-                color: context.colour.onPrimaryContainer.withOpacity(0.5),
+                color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
@@ -336,7 +340,8 @@ class _BBTextInputState extends State<BBTextInput> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: context.colour.onPrimaryContainer.withOpacity(0.2),
+                  color:
+                      context.colour.onPrimaryContainer.withValues(alpha: 0.2),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
@@ -401,7 +406,7 @@ class _BBTextInputState extends State<BBTextInput> {
 //       _editingController.text = widget.value!;
 
 //     final borderColor =
-//         widget.selected ? context.colour.primary : context.colour.onPrimaryContainer.withOpacity(0.2);
+//         widget.selected ? context.colour.primary : context.colour.onPrimaryContainer.withValues(alpha:0.2);
 
 //     return TextField(
 //       key: widget.uiKey,
@@ -501,7 +506,7 @@ class _BBAmountInputState2 extends State<BBAmountInput> {
 
     final borderColor = widget.selected
         ? context.colour.primary
-        : context.colour.onPrimaryContainer.withOpacity(0.2);
+        : context.colour.onPrimaryContainer.withValues(alpha: 0.2);
 
     return SizedBox(
       height: 60,
@@ -540,7 +545,7 @@ class _BBAmountInputState2 extends State<BBAmountInput> {
         decoration: InputDecoration(
           hintText: widget.hint,
           hintStyle: TextStyle(
-            color: context.colour.onPrimaryContainer.withOpacity(0.5),
+            color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),

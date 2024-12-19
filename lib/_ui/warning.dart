@@ -61,7 +61,7 @@ class WarningBanner extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: context.colour.error.withOpacity(0.2),
+                color: context.colour.error.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(

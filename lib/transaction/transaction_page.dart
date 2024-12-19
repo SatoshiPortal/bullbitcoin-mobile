@@ -173,7 +173,7 @@ class _CombinedTxAndSwapPage extends StatelessWidget {
           const _TxDetails(),
           Container(
             padding: const EdgeInsets.only(left: 16.0),
-            color: context.colour.surface.withOpacity(0.1),
+            color: context.colour.surface.withValues(alpha: 0.1),
             child: const Column(
               children: [
                 Gap(8),
@@ -199,7 +199,7 @@ class _CombinedTxAndOnchainSwapPage extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.only(left: 16.0),
-            color: context.colour.surface.withOpacity(0.1),
+            color: context.colour.surface.withValues(alpha: 0.1),
             child: const Column(
               children: [
                 Gap(24),

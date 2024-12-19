@@ -86,7 +86,7 @@ class _ScreenState extends State<_Screen> {
   static AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       automaticallyImplyLeading: false,
-      shadowColor: context.colour.primary.withOpacity(0.2),
+      shadowColor: context.colour.primary.withValues(alpha: 0.2),
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       flexibleSpace: const HomeTopBar2(),
@@ -302,7 +302,7 @@ class CardColumn extends StatelessWidget {
                     side: const BorderSide(color: NewColours.lightGray),
                     backgroundColor: context.colour.primaryContainer,
                     surfaceTintColor:
-                        context.colour.primaryContainer.withOpacity(0.5),
+                        context.colour.primaryContainer.withValues(alpha: 0.5),
                     elevation: 2,
                     splashFactory: NoSplash.splashFactory,
                     enableFeedback: false,
@@ -383,7 +383,7 @@ class CardItem extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                color.withOpacity(0.73),
+                color.withValues(alpha: 0.73),
                 color,
               ],
             ),
@@ -786,7 +786,7 @@ class ScanButton extends StatelessWidget {
           ),
           side: const BorderSide(color: NewColours.lightGray),
           backgroundColor: bgColour,
-          surfaceTintColor: bgColour.withOpacity(0.5),
+          surfaceTintColor: bgColour.withValues(alpha: 0.5),
           elevation: 2,
           splashFactory: NoSplash.splashFactory,
           enableFeedback: false,

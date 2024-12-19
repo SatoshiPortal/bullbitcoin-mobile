@@ -230,8 +230,8 @@ class _SegmentButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLiq = context.select((_NetworkSelector _) => _.state);
 
-    final selectedBGColour = context.colour.surface.withOpacity(0.3);
-    final unselectedBGColour = context.colour.surface.withOpacity(0.1);
+    final selectedBGColour = context.colour.surface.withValues(alpha: 0.3);
+    final unselectedBGColour = context.colour.surface.withValues(alpha: 0.1);
 
     return Expanded(
       child: InkWell(
