@@ -269,7 +269,7 @@ class BDKTransactions {
               if (serdBdkTx.output == null) throw 'No output object';
               final scriptPubkeyString = serdBdkTx.output
                   ?.firstWhere(
-                    (output) => output.value == amountChange,
+                    (output) => output.value == amountChange.toInt(),
                   )
                   .scriptPubkey;
 
@@ -323,7 +323,9 @@ class BDKTransactions {
             try {
               if (serdBdkTx.output == null) throw 'No output object';
               final scriptPubkeyString = serdBdkTx.output
-                  ?.firstWhere((output) => output.value == amountReceived)
+                  ?.firstWhere(
+                    (output) => output.value == amountReceived.toInt(),
+                  )
                   .scriptPubkey;
 
               if (scriptPubkeyString == null) {
@@ -393,7 +395,9 @@ class BDKTransactions {
         // This check is to eliminate sent RBF duplicates
         if (transactions.any((t) {
           return t.rbfTxIds.any((ids) => ids == tx.txid);
-        })) continue;
+        })) {
+          continue;
+        }
 
         // TODO: Merged above two into single iteration;
         //if (transactions.any((t) =>

@@ -115,7 +115,9 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
 
   void checkFees() {
     if (state.selectedFeesOption == 4 &&
-        (state.fees == null || state.fees == 0)) feeOptionSelected(2);
+        (state.fees == null || state.fees == 0)) {
+      feeOptionSelected(2);
+    }
   }
 
   Future<void> checkMinimumFees() async {
@@ -184,7 +186,9 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
         );
         if (state.tempSelectedFeesOption == 4 &&
             state.tempFees != null &&
-            state.tempFees! <= max) emit(state.copyWith(fees: state.tempFees));
+            state.tempFees! <= max) {
+          emit(state.copyWith(fees: state.tempFees));
+        }
       }
     }
     emit(state.copyWith(feesSaved: true));

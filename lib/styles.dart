@@ -38,7 +38,7 @@ class Themes {
       onPrimaryContainer: _Colours.black,
       error: _Colours.red,
       onError: _Colours.white,
-      tertiary: _Colours.darkGray.withOpacity(0.6),
+      tertiary: _Colours.darkGray.withValues(alpha: 0.6),
       onTertiary: _Colours.white,
     ),
     scaffoldBackgroundColor: _Colours.white,

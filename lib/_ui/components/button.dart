@@ -246,8 +246,8 @@ class BBButton extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: !disabled
-                    ? Colors.black.withOpacity(0.1)
-                    : Colors.grey.withOpacity(0.1),
+                    ? Colors.black.withValues(alpha: 0.1)
+                    : Colors.grey.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),

@@ -110,7 +110,7 @@ class BBDropDown<T> extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -236,7 +236,8 @@ class BBSwitch extends StatelessWidget {
       activeColor: context.colour.primaryContainer,
       activeTrackColor: context.colour.onPrimaryContainer,
       inactiveTrackColor: context.colour.surface,
-      inactiveThumbColor: context.colour.onPrimaryContainer.withOpacity(0.4),
+      inactiveThumbColor:
+          context.colour.onPrimaryContainer.withValues(alpha: 0.4),
       value: value,
       onChanged: onChanged,
     );

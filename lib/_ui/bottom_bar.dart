@@ -29,7 +29,7 @@ class BottomBar extends StatelessWidget {
               style: TextButton.styleFrom(
                 foregroundColor: pageIdx == i
                     ? context.colour.onPrimary
-                    : context.colour.onPrimary.withOpacity(0.5),
+                    : context.colour.onPrimary.withValues(alpha: 0.5),
                 textStyle: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

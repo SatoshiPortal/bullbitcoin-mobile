@@ -162,7 +162,7 @@ class _Screen extends StatelessWidget {
                         width: MediaQuery.of(context).size.width * 0.7,
                         child: Material(
                           borderRadius: BorderRadius.circular(24),
-                          color: context.colour.surface.withOpacity(0.3),
+                          color: context.colour.surface.withValues(alpha: 0.3),
                           child: Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,

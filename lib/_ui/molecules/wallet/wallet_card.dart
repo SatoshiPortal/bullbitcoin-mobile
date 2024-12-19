@@ -45,7 +45,7 @@ class WalletCard extends StatelessWidget {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                color.withOpacity(0.73),
+                color.withValues(alpha: 0.73),
                 color,
               ],
             ),

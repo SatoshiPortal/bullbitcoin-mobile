@@ -138,7 +138,9 @@ class HomeState with _$HomeState {
       if (wallet.transactions.indexWhere(
             (t) => t.swapTx?.id == swaptx.id,
           ) !=
-          -1) return walletBloc;
+          -1) {
+        return walletBloc;
+      }
     }
 
     return null;

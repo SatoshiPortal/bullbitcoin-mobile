@@ -1,9 +1,6 @@
 name: Analyze
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -15,8 +12,8 @@ jobs:
     strategy:
       matrix:
         analyze_mode:
-          - { name: "Infos allowed, Warnings fatal", mode: "--no-fatal-infos", allow_failure: false }
-          - { name: "Warnings allowed, Infos fatal: allow failure", mode: "--no-fatal-warnings", allow_failure: true }
+          - { name: "Warnings fatal, Infos allowed", mode: "--no-fatal-infos", allow_failure: false }
+          - { name: "Infos fatal, Warnings allowed", mode: "--no-fatal-warnings", allow_failure: false }
 
     steps:
       - name: Checkout Repository
@@ -26,7 +23,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: 3.24.5
 
       - name: Install dependencies
         run: flutter pub get

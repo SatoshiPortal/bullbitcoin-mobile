@@ -20,7 +20,8 @@ class BBLoadingRow extends StatefulWidget {
   State<BBLoadingRow> createState() => _BBLoadingRowState();
 }
 
-class _BBLoadingRowState extends State<BBLoadingRow> with SingleTickerProviderStateMixin {
+class _BBLoadingRowState extends State<BBLoadingRow>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   final Cubic firstCurve = Curves.easeInCubic;
   final Cubic seconCurve = Curves.easeOutCubic;
@@ -92,7 +93,9 @@ class DashBox extends StatelessWidget {
       child: Container(
         width: width,
         decoration: BoxDecoration(
-          color: isOn ? context.colour.error : context.colour.surface.withOpacity(0.4),
+          color: isOn
+              ? context.colour.error
+              : context.colour.surface.withValues(alpha: 0.4),
           borderRadius: BorderRadius.circular(1),
         ),
       ),

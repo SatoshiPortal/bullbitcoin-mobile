@@ -42,7 +42,9 @@ class SwapAppListener extends StatelessWidget {
             if (isReceivePage ||
                 isSendPage ||
                 isSwapReceivePage ||
-                isOnchainSwapReceivePage) return;
+                isOnchainSwapReceivePage) {
+              return;
+            }
 
             final swapTx = state.updatedSwapTx!;
             final isReverse = swapTx.isReverse();

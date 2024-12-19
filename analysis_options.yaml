@@ -2,17 +2,16 @@ include: package:lint/analysis_options.yaml
 
 linter:
   rules:
-    sort_constructors_first: true
-    prefer_single_quotes: true
     avoid_classes_with_only_static_members: false
     avoid_dynamic_calls: false
     no_wildcard_variable_uses: false
     
+
 analyzer:
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart
-    # - test/
+    - test/
     - maintainance/**
     - pubspec.yaml
   

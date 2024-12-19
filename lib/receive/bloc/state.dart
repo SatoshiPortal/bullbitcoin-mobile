@@ -95,9 +95,13 @@ class ReceiveState with _$ReceiveState {
   bool isChainSwap() {
     if (walletBloc == null || walletBloc?.state.wallet == null) return false;
     if (paymentNetwork == PaymentNetwork.bitcoin &&
-        walletBloc!.state.wallet!.isLiquid()) return true;
+        walletBloc!.state.wallet!.isLiquid()) {
+      return true;
+    }
     if (paymentNetwork == PaymentNetwork.liquid &&
-        walletBloc!.state.wallet!.isBitcoin()) return true;
+        walletBloc!.state.wallet!.isBitcoin()) {
+      return true;
+    }
     return false;
   }
 
