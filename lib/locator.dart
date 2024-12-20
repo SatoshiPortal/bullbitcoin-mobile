@@ -9,6 +9,7 @@ import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
@@ -257,6 +258,10 @@ Future _setupBlocs() async {
       hiveStorage: locator<HiveStorage>(),
       walletNetwork: locator<WalletNetwork>(),
     ),
+  );
+
+  locator.registerSingleton<PayjoinManager>(
+    PayjoinManager(locator<WalletTx>()),
   );
 
   locator.registerSingleton<NetworkFeesCubit>(

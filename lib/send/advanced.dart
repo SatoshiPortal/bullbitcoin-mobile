@@ -129,6 +129,28 @@ class SendAllOption extends StatelessWidget {
   }
 }
 
+class SendPayjoinOption extends StatelessWidget {
+  const SendPayjoinOption({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final togglePayjoin =
+        context.select((SendCubit x) => x.state.togglePayjoin);
+    return Row(
+      children: [
+        const BBText.title('Send payjoin'),
+        const Spacer(),
+        BBSwitch(
+          value: togglePayjoin,
+          onChanged: (e) {
+            context.read<SendCubit>().togglePayjoin(e);
+          },
+        ),
+      ],
+    );
+  }
+}
+
 class EnableRBFOption extends StatelessWidget {
   const EnableRBFOption({super.key});
 

@@ -4,6 +4,7 @@ import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
@@ -97,6 +98,7 @@ class _SendPageState extends State<SendPage> {
       networkCubit: locator<NetworkCubit>(),
       networkFeesCubit: locator<NetworkFeesCubit>(),
       homeCubit: locator<HomeCubit>(),
+      payjoinManager: locator<PayjoinManager>(),
       swapBoltz: locator<SwapBoltz>(),
       currencyCubit: currency,
       openScanner: widget.openScanner,
@@ -155,6 +157,7 @@ class _Screen extends StatelessWidget {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
+    final isPj = context.select((SendCubit cubit) => cubit.state.hasPjParam());
 
     final showWarning =
         context.select((CreateSwapCubit x) => x.state.showWarning());
@@ -198,6 +201,8 @@ class _Screen extends StatelessWidget {
                 const Gap(24),
                 const AmountField(),
                 if (!isLn) const SendAllOption(),
+                const Gap(24),
+                if (isPj) const SendPayjoinOption(),
                 const Gap(24),
                 const DescriptionField(),
                 if (!isLn) ...[

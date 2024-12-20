@@ -595,15 +595,16 @@ class BDKTransactions {
     // required bdk.Blockchain blockchain,
     required bdk.Wallet bdkWallet,
     // required String address,
+    bool trustWitnessUtxo = false,
   }) async {
     try {
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
       final tx = psbtStruct.extractTx();
       final _ = await bdkWallet.sign(
         psbt: psbtStruct,
-        signOptions: const bdk.SignOptions(
+        signOptions: bdk.SignOptions(
           // multiSig: false,
-          trustWitnessUtxo: false,
+          trustWitnessUtxo: trustWitnessUtxo,
           allowAllSighashes: false,
           removePartialSigs: true,
           tryFinalize: true,
@@ -624,6 +625,25 @@ class BDKTransactions {
           solution: 'Please try again.',
         )
       );
+    }
+  }
+
+  /// Broadcast a PSBT and return the txid
+  Future<(String?, Err?)> broadcastPsbt({
+    required String psbt,
+    required bdk.Blockchain blockchain,
+  }) async {
+    // FIXME does this need to handle Transaction model accounting?
+    try {
+      final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
+      final tx = psbtStruct.extractTx();
+
+      await blockchain.broadcast(transaction: tx);
+      final txid = psbtStruct.txid();
+
+      return (txid, null);
+    } on Exception catch (e) {
+      return (null, Err(e.message));
     }
   }
 

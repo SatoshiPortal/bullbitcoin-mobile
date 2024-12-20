@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/wallet/bip21.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -34,6 +35,7 @@ class SendCubit extends Cubit<SendState> {
     required bool openScanner,
     required HomeCubit homeCubit,
     required bool defaultRBF,
+    required PayjoinManager payjoinManager,
     required SwapBoltz swapBoltz,
     required CreateSwapCubit swapCubit,
     bool oneWallet = true,
@@ -44,6 +46,7 @@ class SendCubit extends Cubit<SendState> {
         _walletTx = walletTx,
         _fileStorage = fileStorage,
         _barcode = barcode,
+        _payjoinManager = payjoinManager,
         _swapBoltz = swapBoltz,
         _swapCubit = swapCubit,
         super(
@@ -66,6 +69,7 @@ class SendCubit extends Cubit<SendState> {
   final Barcode _barcode;
   final FileStorage _fileStorage;
   final WalletTx _walletTx;
+  final PayjoinManager _payjoinManager;
   final SwapBoltz _swapBoltz;
 
   final NetworkCubit _networkCubit;
@@ -132,6 +136,16 @@ class SendCubit extends Cubit<SendState> {
         final label = bip21Obj.options['label'] as String?;
         if (label != null) {
           emit(state.copyWith(note: label));
+        }
+        final pjParam = bip21Obj.options['pj'] as String?;
+        if (pjParam != null) {
+          // FIXME: this is an ugly hack because of ugliness in the bip21 module.
+          // Dart's URI encoding is not the same as the one used by the bip21 module.
+          final parsedPjParam = Uri.parse(pjParam);
+          final partialEncodedPjParam =
+              parsedPjParam.toString().replaceAll('#', '%23');
+          final encodedPjParam = partialEncodedPjParam.replaceAll('%20', '+');
+          emit(state.copyWith(payjoinEndpoint: Uri.parse(encodedPjParam)));
         }
       case AddressNetwork.bip21Liquid:
         final bip21Obj = bip21.decode(
@@ -557,6 +571,10 @@ class SendCubit extends Cubit<SendState> {
     _checkBalance();
   }
 
+  void togglePayjoin(bool toggle) {
+    emit(state.copyWith(togglePayjoin: toggle));
+  }
+
   void utxoSelected(UTXO utxo) {
     var selectedUtxos = state.selectedUtxos.toList();
 
@@ -916,6 +934,37 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
+  Future<void> payjoinBuild({
+    required int networkFees,
+    required String originalPsbt,
+    required Wallet wallet,
+  }) async {
+    // TODO Serialize raw bip21 input instead of this monstrosity
+    final pjUriString =
+        'bitcoin:${state.address}?amount=${_currencyCubit.state.amount / 100000000}&label=${Uri.encodeComponent(state.note)}&pj=${state.payjoinEndpoint!}&pjos=0';
+    final sender = await _payjoinManager.initSender(
+        pjUriString, networkFees, originalPsbt);
+    emit(state.copyWith(payjoinSender: sender));
+  }
+
+  Future<void> payjoinSend(Wallet wallet) async {
+    if (state.selectedWalletBloc == null) return;
+    if (state.payjoinSender == null) return;
+
+    // TODO copy originalPsbt.extractTx() to state.tx
+    // emit(state.copyWith(tx: originalPsbtTxWithId));
+    emit(state.copyWith(sending: true, sent: false));
+    await _payjoinManager.spawnSender(
+      isTestnet: _networkCubit.state.testnet,
+      sender: state.payjoinSender!,
+      wallet: wallet,
+    );
+    Future.delayed(150.ms);
+    state.selectedWalletBloc!.add(SyncWallet());
+
+    emit(state.copyWith(sending: false, sent: true));
+  }
+
   Future<void> baseLayerSend() async {
     if (state.selectedWalletBloc == null) return;
     emit(state.copyWith(sending: true, errSending: ''));
@@ -1120,7 +1169,15 @@ class SendCubit extends Cubit<SendState> {
     if (!state.signed) {
       if (!isLn) {
         final fees = _networkFeesCubit.state.selectedOrFirst(false);
-        baseLayerBuild(networkFees: fees);
+        await baseLayerBuild(networkFees: fees);
+        if (state.hasPjParam()) {
+          await payjoinBuild(
+            networkFees: fees,
+            originalPsbt: state.psbtSigned!,
+            wallet: wallet,
+          );
+          return;
+        }
         return;
       }
       // context.read<WalletBloc>().state.wallet;
@@ -1141,6 +1198,10 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
+    if (state.payjoinSender != null) {
+      await payjoinSend(wallet);
+      return;
+    }
     if (!isLn) {
       baseLayerSend();
       return;
