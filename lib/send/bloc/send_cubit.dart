@@ -954,34 +954,11 @@ class SendCubit extends Cubit<SendState> {
     // TODO copy originalPsbt.extractTx() to state.tx
     // emit(state.copyWith(tx: originalPsbtTxWithId));
     emit(state.copyWith(sending: true, sent: false));
-    final proposalPsbt = await _payjoinManager.runSender(
-      state.payjoinSender!,
-    );
-    final (wtxid, errSignBroadcast) = await _walletTx.signAndBroadcastPsbt(
+    await _payjoinManager.spawnSender(
+      isTestnet: _networkCubit.state.testnet,
+      sender: state.payjoinSender!,
       wallet: wallet,
-      psbt: proposalPsbt!,
     );
-    if (errSignBroadcast != null) {
-      emit(state.copyWith(
-          errSending: errSignBroadcast.toString(), sending: false));
-      return;
-    }
-
-    final txWithId = state.tx?.copyWith(txid: wtxid?.$2 ?? '');
-    emit(state.copyWith(tx: txWithId));
-
-    final (updatedWallet, _) = wtxid!;
-    state.selectedWalletBloc!.add(
-      UpdateWallet(
-        updatedWallet,
-        updateTypes: [
-          UpdateWalletTypes.addresses,
-          UpdateWalletTypes.transactions,
-          UpdateWalletTypes.swaps,
-        ],
-      ),
-    );
-
     Future.delayed(150.ms);
     state.selectedWalletBloc!.add(SyncWallet());
 
