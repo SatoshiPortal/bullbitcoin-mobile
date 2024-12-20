@@ -119,7 +119,13 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    emit(state.copyWith(paymentNetwork: paymentNetwork));
+    emit(
+      state.copyWith(
+        paymentNetwork: paymentNetwork,
+        payjoinEndpoint: null, // Reset payjoin endpoint for not pj addresses
+        payjoinSender: null, // Reset payjoin sender for not pj addresses
+      ),
+    );
 
     switch (paymentNetwork) {
       case AddressNetwork.bip21Bitcoin:
@@ -233,7 +239,8 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(scanningAddress: false));
     if (changeWallet == true) {
       selectWallets();
-    } else {
+    }
+    if (_currencyCubit.state.amount != 0) {
       _checkBalance();
     }
   }
