@@ -387,11 +387,23 @@ class BDKSensitiveCreate {
     Wallet wallet,
     Seed seed,
   ) async {
+    return await loadPrivateBdkWalletWithDb(
+      wallet,
+      seed,
+      const bdk.DatabaseConfig.memory(),
+    );
+  }
+
+  Future<(bdk.Wallet?, Err?)> loadPrivateBdkWalletWithDb(
+    Wallet wallet,
+    Seed seed,
+    bdk.DatabaseConfig dbConfig,
+  ) async {
     try {
       final network = wallet.network == BBNetwork.Testnet
           ? bdk.Network.testnet
           : bdk.Network.bitcoin;
-
+      print('network: $network');
       final mn = await bdk.Mnemonic.fromString(seed.mnemonic);
       final pp = wallet.hasPassphrase()
           ? seed.passphrases.firstWhere(
@@ -448,8 +460,6 @@ class BDKSensitiveCreate {
             keychain: bdk.KeychainKind.internalChain,
           );
       }
-
-      const dbConfig = bdk.DatabaseConfig.memory();
 
       final bdkWallet = await bdk.Wallet.create(
         descriptor: external,

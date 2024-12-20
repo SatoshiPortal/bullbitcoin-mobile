@@ -5,6 +5,8 @@ import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
+import 'package:bb_mobile/_pkg/payjoin/session_storage.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
@@ -161,6 +163,8 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
       barcode: locator<Barcode>(),
       defaultRBF: locator<SettingsCubit>().state.defaultRBF,
       fileStorage: locator<FileStorage>(),
+      payjoinSessionStorage: locator<PayjoinSessionStorage>(),
+      payjoinManager: locator<PayjoinManager>(),
       networkCubit: locator<NetworkCubit>(),
       networkFeesCubit: locator<NetworkFeesCubit>(),
       homeCubit: locator<HomeCubit>(),

@@ -384,8 +384,8 @@ class BDKTransactions {
       for (final tx in transactions) {
         if (tx.isPending() && tx.isReceived()) {
           pendingTxs.add(tx);
-          final ip = await tx.bdkTx?.transaction?.input() ?? [];
-          pendingTxInputs.add(ip);
+          // final ip = await tx.bdkTx?.transaction?.input() ?? [];
+          // pendingTxInputs.add(ip);
         }
       }
 
@@ -597,13 +597,14 @@ class BDKTransactions {
     // required String address,
   }) async {
     try {
+      printWrapped('signTx psbt: $psbt');
       final psbtStruct = await bdk.PartiallySignedTransaction.fromString(psbt);
       final tx = psbtStruct.extractTx();
       final _ = await bdkWallet.sign(
         psbt: psbtStruct,
         signOptions: const bdk.SignOptions(
           // multiSig: false,
-          trustWitnessUtxo: false,
+          trustWitnessUtxo: true,
           allowAllSighashes: false,
           removePartialSigs: true,
           tryFinalize: true,
@@ -613,7 +614,7 @@ class BDKTransactions {
       );
       // final extracted = await finalized;
       final psbtStr = psbtStruct.serialize();
-
+      printWrapped('signTx psbtStr: ${base64Encode(psbtStr)}');
       return ((tx, base64Encode(psbtStr)), null);
     } on Exception catch (e) {
       return (
@@ -856,4 +857,9 @@ class BDKTransactions {
     }
     return false;
   }
+}
+
+void printWrapped(String text) {
+  final pattern = new RegExp('.{1,800}'); // 800 is the size of each chunk
+  pattern.allMatches(text).forEach((match) => print(match.group(0)));
 }
