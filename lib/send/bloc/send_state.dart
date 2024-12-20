@@ -40,6 +40,7 @@ class SendState with _$SendState {
     @Default(false) bool disableRBF,
     Uri? payjoinEndpoint,
     Sender? payjoinSender,
+    @Default(true) bool togglePayjoin,
     @Default(false) bool sendAllCoin,
     @Default([]) List<UTXO> selectedUtxos,
     @Default('') String errAddresses,
@@ -257,7 +258,9 @@ class SendState with _$SendState {
                 ? payjoinSender != null
                     ? 'Payjoining'
                     : 'Broadcasting'
-                : 'Confirm'
+                : payjoinSender != null
+                    ? 'Confirm Payjoin'
+                    : 'Confirm'
             : sending
                 ? 'Building Tx'
                 : !isLn

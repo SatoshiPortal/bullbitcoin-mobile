@@ -157,6 +157,7 @@ class _Screen extends StatelessWidget {
     final signed = context.select((SendCubit cubit) => cubit.state.signed);
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
+    final isPj = context.select((SendCubit cubit) => cubit.state.hasPjParam());
 
     final showWarning =
         context.select((CreateSwapCubit x) => x.state.showWarning());
@@ -200,6 +201,8 @@ class _Screen extends StatelessWidget {
                 const Gap(24),
                 const AmountField(),
                 if (!isLn) const SendAllOption(),
+                const Gap(24),
+                if (isPj) const SendPayjoinOption(),
                 const Gap(24),
                 const DescriptionField(),
                 if (!isLn) ...[

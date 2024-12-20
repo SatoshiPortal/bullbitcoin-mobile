@@ -571,6 +571,10 @@ class SendCubit extends Cubit<SendState> {
     _checkBalance();
   }
 
+  void togglePayjoin(bool toggle) {
+    emit(state.copyWith(togglePayjoin: toggle));
+  }
+
   void utxoSelected(UTXO utxo) {
     var selectedUtxos = state.selectedUtxos.toList();
 
