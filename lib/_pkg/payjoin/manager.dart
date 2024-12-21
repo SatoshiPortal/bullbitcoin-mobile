@@ -1,20 +1,27 @@
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:dio/dio.dart';
+import 'package:payjoin_flutter/bitcoin_ffi.dart';
 import 'package:payjoin_flutter/common.dart';
+import 'package:payjoin_flutter/receive.dart';
 import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:payjoin_flutter/uri.dart' as pj_uri;
+import 'package:payjoin_flutter/uri.dart';
 
 const List<String> _ohttpRelayUrls = [
   'https://pj.bobspacebkk.com',
   'https://ohttp.achow101.com',
 ];
+
+const payjoinDirectoryUrl = 'https://payjo.in';
 
 class PayjoinManager {
   PayjoinManager(this._walletTx);
@@ -99,6 +106,147 @@ class PayjoinManager {
     } catch (e) {
       return Err(e.toString());
     }
+  }
+
+  Future<Receiver> initReceiver(bool isTestnet, String address) async {
+    try {
+      final payjoinDirectory = await Url.fromStr(payjoinDirectoryUrl);
+      final ohttpKeys = await fetchOhttpKeys(
+        ohttpRelay: await _randomOhttpRelayUrl(),
+        payjoinDirectory: payjoinDirectory,
+      );
+      return await Receiver.create(
+        address: address,
+        network: isTestnet ? Network.testnet : Network.bitcoin,
+        directory: payjoinDirectory,
+        ohttpKeys: ohttpKeys,
+        ohttpRelay: await _randomOhttpRelayUrl(),
+      );
+    } catch (e) {
+      throw Exception('Error initializing payjoin Receiver: $e');
+    }
+  }
+
+  Future<UncheckedProposal> receiveUncheckedProposal(Receiver receiver) async {
+    final dio = Dio();
+
+    try {
+      while (true) {
+        final (req, context) = await receiver.extractReq();
+        final ohttpResponse = await _postRequest(dio, req);
+        final proposal = await receiver.processRes(
+          body: ohttpResponse.data as List<int>,
+          ctx: context,
+        );
+        if (proposal != null) {
+          return proposal;
+        }
+        await Future.delayed(const Duration(seconds: 5));
+      }
+    } catch (e) {
+      throw Exception('Error occurred while processing payjoin receiver: $e');
+    }
+  }
+
+  Future<PayjoinProposal> processReceivedProposal(
+    UncheckedProposal proposal,
+    Wallet wallet,
+    bool isTestnet,
+  ) async {
+    // TODO return originalPsbt extracted here for
+    // potential broadcast if sender goes offline
+    final _ = await proposal.extractTxToScheduleBroadcast();
+
+    // Receive Check 1: can broadcast
+    final pj1 = await proposal.assumeInteractiveReceiver();
+    // Receive Check 2: original PSBT has no receiver-owned inputs
+    final pj2 = await pj1.checkInputsNotOwned(
+      isOwned: (inputScript) async {
+        return await _checkIsOwned(
+          inputScript: inputScript,
+          isTestnet: isTestnet,
+          wallet: wallet,
+        );
+      },
+    );
+    // Receive Check 3: sender inputs have not been seen before (prevent probing attacks)
+    final pj3 = await pj2.checkNoInputsSeenBefore(
+      isKnown: (input) {
+        // TODO: keep track of seen inputs in hive storage?
+        return false;
+      },
+    );
+
+    // Identify receiver outputs
+    final pj4 = await pj3.identifyReceiverOutputs(
+      isReceiverOutput: (outputScript) async {
+        return await _checkIsOwned(
+          inputScript: outputScript,
+          isTestnet: isTestnet,
+          wallet: wallet,
+        );
+      },
+    );
+    final pj5 = await pj4.commitOutputs();
+
+    // Contribute receiver inputs
+    final inputs = await Future.wait(
+      (await _walletTx.listUnspent(wallet: wallet))
+          .map((utxo) => _inputPairFromUtxo(utxo, isTestnet)),
+    );
+    final selectedUtxo = await pj5.tryPreservingPrivacy(
+      candidateInputs: inputs,
+    );
+    final pj6 = await pj5.contributeInputs(replacementInputs: [selectedUtxo]);
+    final pj7 = await pj6.commitInputs();
+
+    // Finalize proposal
+    final payjoinProposal = await pj7.finalizeProposal(
+      processPsbt: (String psbt) {
+        return _processPsbt(psbt: psbt, wallet: wallet);
+      },
+      maxFeeRateSatPerVb: BigInt.zero,
+    );
+
+    return await payjoinProposal;
+  }
+
+  Future<void> respondProposal(PayjoinProposal proposal) async {
+    final dio = Dio();
+    try {
+      final (postReq, ohttpCtx) = await proposal.extractV2Req();
+      final postRes = await _postRequest(dio, postReq);
+      await proposal.processRes(
+        res: postRes.data as List<int>,
+        ohttpContext: ohttpCtx,
+      );
+    } catch (e) {
+      throw Exception('Error occurred while processing payjoin: $e');
+    }
+  }
+
+  Future<bool> _checkIsOwned({
+    required Uint8List inputScript,
+    required bool isTestnet,
+    required Wallet wallet,
+  }) async {
+    return await _walletTx.isMine(
+      inputScript: inputScript,
+      wallet: wallet,
+    );
+  }
+
+  Future<String> _processPsbt({
+    required String psbt,
+    required Wallet wallet,
+  }) async {
+    final (signed, err) = await _walletTx.signPsbt(
+      psbt: psbt,
+      wallet: wallet,
+    );
+    if (err != null) throw err;
+    final signedPsbt = signed!.$2;
+    return signedPsbt;
   }
 
   Future<void> _cleanupSession(String sessionId) async {
@@ -202,4 +350,23 @@ Future<Response<dynamic>> _postRequest(Dio dio, Request req) async {
     ),
     data: req.body,
   );
+}
+
+Future<InputPair> _inputPairFromUtxo(bdk.LocalUtxo utxo, bool isTestnet) async {
+  final psbtin = PsbtInput(
+    // We should be able to merge these bdk & payjoin rust-bitcoin types with bitcoin-ffi eventually
+    witnessUtxo: TxOut(
+      value: utxo.txout.value,
+      scriptPubkey: utxo.txout.scriptPubkey.bytes,
+    ),
+    // TODO: redeem script/witness script?
+  );
+  final txin = TxIn(
+    previousOutput:
+        OutPoint(txid: utxo.outpoint.txid, vout: utxo.outpoint.vout),
+    scriptSig: await Script.newInstance(rawOutputScript: []),
+    sequence: 0xFFFFFFFF,
+    witness: [],
+  );
+  return InputPair.newInstance(txin, psbtin);
 }
