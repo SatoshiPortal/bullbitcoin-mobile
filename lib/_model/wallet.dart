@@ -190,7 +190,7 @@ class Wallet with _$Wallet {
   }
 
   int totalReceived() {
-    final txs = transactions.where((tx) => tx.isReceived()).toList();
+    final txs = transactions.where((tx) => tx.getAmount() > 0).toList();
     int amt = 0;
     for (final tx in txs) {
       amt += tx.getAmount().abs();
@@ -199,7 +199,7 @@ class Wallet with _$Wallet {
   }
 
   int totalSent() {
-    final txs = transactions.where((tx) => !tx.isReceived()).toList();
+    final txs = transactions.where((tx) => tx.getAmount() < 0).toList();
     int amt = 0;
     for (final tx in txs) {
       amt += tx.getAmount(sentAsTotal: true).abs();

@@ -156,11 +156,7 @@ class Transaction with _$Transaction {
 
   int getAmount({bool sentAsTotal = false}) {
     try {
-      return isReceived()
-          ? received!
-          : sentAsTotal
-              ? (sent! - received!)
-              : (sent! - received! - fee!);
+      return sentAsTotal ? (sent! - received!) : (sent! - received! - fee!);
     } catch (e) {
       return 0;
     }

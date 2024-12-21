@@ -145,8 +145,6 @@ class HomeTxItem extends StatelessWidget {
       ),
     );
 
-    final isReceive = tx.isReceived();
-
     // final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
 
     final darkMode = context.select(
@@ -176,7 +174,8 @@ class HomeTxItem extends StatelessWidget {
               child: Container(
                 // color: Colors.red,
                 transformAlignment: Alignment.center,
-                transform: Matrix4.identity()..rotateZ(isReceive ? 0 : 3.16),
+                transform: Matrix4.identity()
+                  ..rotateZ(tx.getAmount() > 0 ? 0 : 3.16),
                 child: Image.asset(img),
               ),
             ),
