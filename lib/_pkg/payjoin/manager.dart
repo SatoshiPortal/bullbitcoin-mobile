@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/payjoin/event.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:dio/dio.dart';
@@ -83,6 +84,9 @@ class PayjoinManager {
               completer.complete(err);
               return;
             }
+            PayjoinEventBus().emit(PayjoinBroadcastEvent(
+              txid: wtxid!.$2,
+            ));
             await _cleanupSession(sessionId);
           } else if (message is Err) {
             // TODO propagate this error to the UI
