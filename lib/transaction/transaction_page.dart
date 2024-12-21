@@ -229,7 +229,7 @@ class _TxDetails extends StatelessWidget {
 
     final txid = tx.txid;
     final unblindedUrl = tx.unblindedUrl;
-    final amt = tx.getAmount().abs();
+    final amt = tx.getNetAmountToPayee().abs();
     final isReceived = tx.isReceived();
     final fees = tx.fee ?? 0;
     final amtStr = context.select(
@@ -699,7 +699,7 @@ class _OnchainSwapDetails extends StatelessWidget {
     final fromStatusStr = fromStatus ? 'Pending' : 'Confirmed';
     final fromAmtStr = context.select(
       (CurrencyCubit cubit) => cubit.state
-          .getAmountInUnits(tx.getAmount(sentAsTotal: true), removeText: true),
+          .getAmountInUnits(tx.getNetAmountIncludingFees(), removeText: true),
     );
     final fromUnits = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
@@ -728,7 +728,7 @@ class _OnchainSwapDetails extends StatelessWidget {
       if (receiveTx != null) {
         toAmtStr = context.select(
           (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
-            receiveTx!.getAmount(sentAsTotal: true),
+            receiveTx!.getNetAmountIncludingFees(),
             removeText: true,
           ),
         );

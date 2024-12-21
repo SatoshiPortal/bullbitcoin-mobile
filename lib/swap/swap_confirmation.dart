@@ -55,7 +55,7 @@ class _SwapConfirmationPageState extends State<SwapConfirmationPage> {
       hiveStorage: locator<HiveStorage>(),
       bbAPI: locator<BullBitcoinAPI>(),
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
-    )..updateAmountDirect(widget.send.state.tx!.getAmount(sentAsTotal: true));
+    )..updateAmountDirect(widget.send.state.tx!.getNetAmountIncludingFees());
 
     super.initState();
   }

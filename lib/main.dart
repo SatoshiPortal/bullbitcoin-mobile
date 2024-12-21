@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bb_mobile/_pkg/logger.dart';
+import 'package:bb_mobile/_pkg/payjoin/event.dart';
 import 'package:bb_mobile/_ui/security_overlay.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -125,8 +126,10 @@ class _AppListeners extends StatelessWidget {
   Widget build(BuildContext context) {
     return NetworkListeners(
       child: HomeWalletsSetupListener(
-        child: SwapAppListener(
-          child: child,
+        child: PayjoinEventListener(
+          child: SwapAppListener(
+            child: child,
+          ),
         ),
       ),
     );
