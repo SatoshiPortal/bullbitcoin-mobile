@@ -241,7 +241,7 @@ class _Screen extends StatelessWidget {
     final isSwapPending = tx.swapIdisTxid();
 
     final txid = tx.txid;
-    final amt = tx.getAmount().abs();
+    final amt = tx.getNetAmountToPayee().abs();
     final isReceived = tx.isReceived();
     final fees = tx.fee ?? 0;
     final amtStr = context.select(

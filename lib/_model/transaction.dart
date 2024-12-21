@@ -154,9 +154,19 @@ class Transaction with _$Transaction {
     }
   }
 
-  int getAmount({bool sentAsTotal = false}) {
+  /// Amount paid to the recipient of the transaction
+  int getNetAmountToPayee() {
     try {
-      return sentAsTotal ? (sent! - received!) : (sent! - received! - fee!);
+      return sent! - received!;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  /// Amount spent by the wallet to effectuate the transaction
+  int getNetAmountIncludingFees() {
+    try {
+      return getNetAmountToPayee() - fee!;
     } catch (e) {
       return 0;
     }

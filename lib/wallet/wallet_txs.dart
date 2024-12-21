@@ -138,9 +138,7 @@ class HomeTxItem extends StatelessWidget {
 
     final amount = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(
-        tx.getAmount(
-          sentAsTotal: true,
-        ),
+        tx.getNetAmountIncludingFees(),
         isLiquid: tx.isLiquid,
       ),
     );
@@ -175,7 +173,7 @@ class HomeTxItem extends StatelessWidget {
                 // color: Colors.red,
                 transformAlignment: Alignment.center,
                 transform: Matrix4.identity()
-                  ..rotateZ(tx.getAmount() > 0 ? 0 : 3.16),
+                  ..rotateZ(tx.getNetAmountToPayee() > 0 ? 0 : 3.16),
                 child: Image.asset(img),
               ),
             ),

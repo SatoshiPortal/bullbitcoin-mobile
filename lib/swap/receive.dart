@@ -356,7 +356,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
       (HomeCubit cubit) => cubit.state.getTxFromSwap(swapTx),
     );
 
-    if (tx != null) amt = tx.getAmount();
+    if (tx != null) amt = tx.getNetAmountToPayee();
 
     final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
     final amtDouble = isSats ? amt : amt / 100000000;

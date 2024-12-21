@@ -38,7 +38,7 @@ class PSBTPopUp extends StatelessWidget {
 
     // final outAddresses = context.select((SendCubit cubit) => cubit.state.tx?.outAddresses ?? []);
 
-    final txamt = tx.getAmount();
+    final txamt = tx.getNetAmountToPayee();
     final isSats =
         context.select((CurrencyCubit cubit) => cubit.state.unitsInSats);
     final txfee = context.select((SendCubit cubit) => cubit.state.tx?.fee ?? 0);
