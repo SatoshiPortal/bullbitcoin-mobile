@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
@@ -15,6 +17,7 @@ import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletTx implements IWalletTransactions {
   WalletTx({
@@ -224,6 +227,43 @@ class WalletTx implements IWalletTransactions {
     }
   }
 
+  Future<((Wallet, String)?, Err?)> signPsbt({
+    required String psbt,
+    required Wallet wallet,
+  }) async {
+    try {
+      final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet.id);
+      if (errWallet != null) throw errWallet;
+      final (seed, errSeed) = await _walletSensitiveStorageRepository.readSeed(
+        fingerprintIndex: wallet.getRelatedSeedStorageString(),
+      );
+      if (errSeed != null) throw errSeed;
+      final (bdkSignerWallet, errSigner) =
+          await _bdkSensitiveCreate.loadPrivateBdkWallet(
+        wallet,
+        seed!,
+      );
+      if (errSigner != null) throw errSigner;
+
+      final (signedTx, errSign) = await _bdkTransactions.signTx(
+        psbt: psbt,
+        bdkWallet: bdkSignerWallet!,
+        trustWitnessUtxo: true,
+      );
+      if (errSign != null) throw errSign;
+      return ((wallet, signedTx!.$2), null);
+    } catch (e) {
+      return (
+        null,
+        Err(
+          e.toString(),
+          title: 'Error occurred while signing transaction',
+          solution: 'Please try again.',
+        ),
+      );
+    }
+  }
+
   Future<((Wallet, String)?, Err?)> signAndBroadcastPsbt({
     required String psbt,
     required Wallet wallet,
@@ -269,6 +309,25 @@ class WalletTx implements IWalletTransactions {
         ),
       );
     }
+  }
+
+  Future<List<bdk.LocalUtxo>> listUnspent({
+    required Wallet wallet,
+  }) async {
+    final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet.id);
+    if (errWallet != null) throw errWallet;
+    return bdkWallet!.listUnspent();
+  }
+
+  Future<bool> isMine({
+    required Uint8List inputScript,
+    required Wallet wallet,
+  }) async {
+    final (bdkWallet, errWallet) = _walletsRepository.getBdkWallet(wallet.id);
+    if (errWallet != null) throw errWallet;
+    return bdkWallet!.isMine(
+      script: bdk.ScriptBuf(bytes: inputScript),
+    );
   }
 
   Future<(Wallet, Err?)> addUnsignedTxToWallet({

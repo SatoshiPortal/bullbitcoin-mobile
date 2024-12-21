@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
@@ -12,8 +13,10 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     WalletBloc? walletBloc,
     required WalletAddress walletAddress,
     required WalletsStorageRepository walletsStorageRepository,
+    required PayjoinManager payjoinManager,
   })  : _walletsStorageRepository = walletsStorageRepository,
         _walletAddress = walletAddress,
+        _payjoinManager = payjoinManager,
         super(
           ReceiveState(
             walletBloc: walletBloc,
@@ -25,8 +28,18 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   final WalletAddress _walletAddress;
   final WalletsStorageRepository _walletsStorageRepository;
+  final PayjoinManager _payjoinManager;
 
-  void updateWalletBloc(WalletBloc walletBloc) {
+  Future<void> updatePayjoinEndpoint(String payjoinEndpoint) async {
+    emit(
+      state.copyWith(
+        payjoinEndpoint: payjoinEndpoint,
+      ),
+    );
+    return;
+  }
+
+  Future<void> updateWalletBloc(WalletBloc walletBloc) async {
     if (state.oneWallet) return;
     emit(
       state.copyWith(
@@ -49,7 +62,13 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     // final watchOnly = walletBloc.state.wallet!.watchOnly();
     // if (watchOnly)
     //   emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
-    loadAddress();
+    await loadAddress();
+    if (state.defaultAddress != null) {
+      receivePayjoin(
+        state.walletBloc!.state.wallet!.isTestnet(),
+        state.defaultAddress!.address,
+      );
+    }
   }
 
   void updateWalletType(
@@ -360,4 +379,14 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   void shareClicked() {}
+
+  Future<void> receivePayjoin(bool isTestnet, String address) async {
+    final receiver = await _payjoinManager.initReceiver(isTestnet, address);
+    emit(state.copyWith(payjoinReceiver: receiver));
+    _payjoinManager.spawnReceiver(
+      isTestnet: isTestnet,
+      receiver: receiver,
+      wallet: state.walletBloc!.state.wallet!,
+    );
+  }
 }
