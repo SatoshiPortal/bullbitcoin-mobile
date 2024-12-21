@@ -127,101 +127,90 @@ class PayjoinManager {
     }
   }
 
-  Future<UncheckedProposal> receiveUncheckedProposal(Receiver receiver) async {
-    final dio = Dio();
-
+  Future<Err?> spawnReceiver({
+    required bool isTestnet,
+    required Receiver receiver,
+    required Wallet wallet,
+  }) async {
     try {
-      while (true) {
-        final (req, context) = await receiver.extractReq();
-        final ohttpResponse = await _postRequest(dio, req);
-        final proposal = await receiver.processRes(
-          body: ohttpResponse.data as List<int>,
-          ctx: context,
-        );
-        if (proposal != null) {
-          return proposal;
+      final completer = Completer<Err?>();
+      final receivePort = ReceivePort();
+      SendPort? mainToIsolateSendPort;
+
+      receivePort.listen((message) async {
+        if (message is Map<String, dynamic>) {
+          try {
+            switch (message['type']) {
+              case 'init':
+                mainToIsolateSendPort = message['port'] as SendPort;
+
+              case 'check_is_owned':
+                final inputScript = message['input_script'] as Uint8List;
+                final isOwned = await _checkIsOwned(
+                  inputScript: inputScript,
+                  isTestnet: isTestnet,
+                  wallet: wallet,
+                );
+                mainToIsolateSendPort?.send({
+                  'requestId': message['requestId'],
+                  'result': isOwned,
+                });
+
+              case 'check_is_receiver_output':
+                final outputScript = message['output_script'] as Uint8List;
+                final isReceiverOutput = await _checkIsOwned(
+                  inputScript: outputScript,
+                  isTestnet: isTestnet,
+                  wallet: wallet,
+                );
+                mainToIsolateSendPort?.send({
+                  'requestId': message['requestId'],
+                  'result': isReceiverOutput,
+                });
+
+              case 'get_candidate_inputs':
+                final inputs = await _walletTx.listUnspent(wallet: wallet);
+                mainToIsolateSendPort?.send({
+                  'requestId': message['requestId'],
+                  'result': inputs,
+                });
+
+              case 'process_psbt':
+                final psbt = message['psbt'] as String;
+                final signedPsbt =
+                    await _processPsbt(psbt: psbt, wallet: wallet);
+                mainToIsolateSendPort?.send({
+                  'requestId': message['requestId'],
+                  'result': signedPsbt,
+                });
+            }
+          } catch (e) {
+            // TODO PROPAGATE ERROR TO UI TOAST / TRANSACTION HISTORY
+            print('isolate error: $e');
+          }
         }
-        await Future.delayed(const Duration(seconds: 5));
-      }
-    } catch (e) {
-      throw Exception('Error occurred while processing payjoin receiver: $e');
-    }
-  }
+      });
 
-  Future<PayjoinProposal> processReceivedProposal(
-    UncheckedProposal proposal,
-    Wallet wallet,
-    bool isTestnet,
-  ) async {
-    // TODO return originalPsbt extracted here for
-    // potential broadcast if sender goes offline
-    final _ = await proposal.extractTxToScheduleBroadcast();
+      final args = [
+        receivePort.sendPort,
+        receiver.toJson(),
+      ];
 
-    // Receive Check 1: can broadcast
-    final pj1 = await proposal.assumeInteractiveReceiver();
-    // Receive Check 2: original PSBT has no receiver-owned inputs
-    final pj2 = await pj1.checkInputsNotOwned(
-      isOwned: (inputScript) async {
-        return await _checkIsOwned(
-          inputScript: inputScript,
-          isTestnet: isTestnet,
-          wallet: wallet,
-        );
-      },
-    );
-    // Receive Check 3: sender inputs have not been seen before (prevent probing attacks)
-    final pj3 = await pj2.checkNoInputsSeenBefore(
-      isKnown: (input) {
-        // TODO: keep track of seen inputs in hive storage?
-        return false;
-      },
-    );
-
-    // Identify receiver outputs
-    final pj4 = await pj3.identifyReceiverOutputs(
-      isReceiverOutput: (outputScript) async {
-        return await _checkIsOwned(
-          inputScript: outputScript,
-          isTestnet: isTestnet,
-          wallet: wallet,
-        );
-      },
-    );
-    final pj5 = await pj4.commitOutputs();
-
-    // Contribute receiver inputs
-    final inputs = await Future.wait(
-      (await _walletTx.listUnspent(wallet: wallet))
-          .map((utxo) => _inputPairFromUtxo(utxo, isTestnet)),
-    );
-    final selectedUtxo = await pj5.tryPreservingPrivacy(
-      candidateInputs: inputs,
-    );
-    final pj6 = await pj5.contributeInputs(replacementInputs: [selectedUtxo]);
-    final pj7 = await pj6.commitInputs();
-
-    // Finalize proposal
-    final payjoinProposal = await pj7.finalizeProposal(
-      processPsbt: (String psbt) {
-        return _processPsbt(psbt: psbt, wallet: wallet);
-      },
-      maxFeeRateSatPerVb: BigInt.zero,
-    );
-
-    return await payjoinProposal;
-  }
-
-  Future<void> respondProposal(PayjoinProposal proposal) async {
-    final dio = Dio();
-    try {
-      final (postReq, ohttpCtx) = await proposal.extractV2Req();
-      final postRes = await _postRequest(dio, postReq);
-      await proposal.processRes(
-        res: postRes.data as List<int>,
-        ohttpContext: ohttpCtx,
+      final isolate = await Isolate.spawn(
+        _isolateReceiver,
+        args,
       );
+
+      _activePollers[receiver.id()] = isolate;
+      _activePorts[receiver.id()] = receivePort;
+
+      return completer.future;
     } catch (e) {
-      throw Exception('Error occurred while processing payjoin: $e');
+      return Err(
+        e.toString(),
+        title: 'Error occurred while receiving Payjoin',
+        solution: 'Please try again.',
+      );
     }
   }
 
@@ -234,6 +223,13 @@ class PayjoinManager {
       inputScript: inputScript,
       wallet: wallet,
     );
+  }
+
+  Future<List<bdk.LocalUtxo>> _listUnspent(
+    Wallet wallet,
+    bool isTestnet,
+  ) async {
+    return await _walletTx.listUnspent(wallet: wallet);
   }
 
   Future<String> _processPsbt({
@@ -335,6 +331,172 @@ Future<String> _runSenderV1(Sender sender, Dio dio) async {
     return proposalPsbt;
   } catch (e) {
     throw Exception('Send V1 payjoin error: $e');
+  }
+}
+
+Future<void> _isolateReceiver(List<dynamic> args) async {
+  await core.init();
+  final isolateTomainSendPort = args[0] as SendPort;
+  final receiver = Receiver.fromJson(args[1] as String);
+
+  final isolateReceivePort = ReceivePort();
+  isolateTomainSendPort
+      .send({'type': 'init', 'port': isolateReceivePort.sendPort});
+  final pendingRequests = <String, Completer<dynamic>>{};
+  // Listen for responses from the main isolate
+  isolateReceivePort.listen((message) {
+    if (message is Map<String, dynamic>) {
+      final requestId = message['requestId'] as String?;
+      if (requestId != null && pendingRequests.containsKey(requestId)) {
+        pendingRequests[requestId]!.complete(message['result']);
+        pendingRequests.remove(requestId);
+      }
+    }
+  });
+
+  // Define sendAndWait with access to necessary ports
+  Future<dynamic> sendAndWait(
+    String type,
+    Map<String, dynamic> data,
+    SendPort isolateToMainSendPort,
+  ) async {
+    final completer = Completer<dynamic>();
+    final requestId = DateTime.now().millisecondsSinceEpoch.toString();
+    pendingRequests[requestId] = completer;
+
+    isolateToMainSendPort.send({
+      ...data,
+      'type': type,
+      'requestId': requestId,
+    });
+
+    return completer.future;
+  }
+
+  Future<PayjoinProposal> processPayjoinProposal(
+    UncheckedProposal proposal,
+    SendPort sendPort,
+    ReceivePort receivePort,
+  ) async {
+    final fallbackTx = await proposal.extractTxToScheduleBroadcast();
+    print('fallback tx (broadcast this if payjoin fails): $fallbackTx');
+    // TODO Handle this. send to the main port on a timer?
+
+    try {
+      // Receive Check 1: can broadcast
+      final pj1 = await proposal.assumeInteractiveReceiver();
+      // Receive Check 2: original PSBT has no receiver-owned inputs
+      final pj2 = await pj1.checkInputsNotOwned(
+        isOwned: (inputScript) async {
+          final result = await sendAndWait(
+            'check_is_owned',
+            {'input_script': inputScript},
+            sendPort,
+          );
+          return result as bool;
+        },
+      );
+      // Receive Check 3: sender inputs have not been seen before (prevent probing attacks)
+      final pj3 = await pj2.checkNoInputsSeenBefore(
+        isKnown: (input) {
+          // TODO: keep track of seen inputs in hive storage?
+          return false;
+        },
+      );
+
+      // Identify receiver outputs
+      final pj4 = await pj3.identifyReceiverOutputs(
+        isReceiverOutput: (outputScript) async {
+          final result = await sendAndWait(
+            'check_is_receiver_output',
+            {'output_script': outputScript},
+            sendPort,
+          );
+          return result as bool;
+        },
+      );
+      final pj5 = await pj4.commitOutputs();
+
+      final listUnspent = await sendAndWait(
+        'get_candidate_inputs',
+        {},
+        sendPort,
+      );
+      final unspent = listUnspent as List<bdk.LocalUtxo>;
+      final candidateInputs = await Future.wait(
+        unspent.map((utxo) => _inputPairFromUtxo(utxo, true)),
+      );
+      final selectedUtxo = await pj5.tryPreservingPrivacy(
+        candidateInputs: candidateInputs,
+      );
+      final pj6 = await pj5.contributeInputs(replacementInputs: [selectedUtxo]);
+      final pj7 = await pj6.commitInputs();
+
+      // Finalize proposal
+      final payjoinProposal = await pj7.finalizeProposal(
+        processPsbt: (String psbt) async {
+          final result = await sendAndWait(
+            'process_psbt',
+            {'psbt': psbt},
+            sendPort,
+          );
+          return result as String;
+        },
+        // TODO set maxFeeRateSatPerVb
+        maxFeeRateSatPerVb: BigInt.from(10000),
+      );
+      return payjoinProposal;
+    } catch (e) {
+      throw Exception('Error occurred while finalizing proposal');
+    }
+  }
+
+  try {
+    print('long polling payjoin directory...');
+    final dio = Dio();
+    final uncheckedProposal = await _receiveUncheckedProposal(dio, receiver);
+    final payjoinProposal = await processPayjoinProposal(
+      uncheckedProposal,
+      isolateTomainSendPort,
+      isolateReceivePort,
+    );
+    _respondProposal(dio, payjoinProposal);
+  } catch (e) {
+    isolateTomainSendPort.send(Err(e.toString()));
+  }
+}
+
+Future<UncheckedProposal> _receiveUncheckedProposal(
+  Dio dio,
+  Receiver receiver,
+) async {
+  try {
+    while (true) {
+      final (req, context) = await receiver.extractReq();
+      final ohttpResponse = await _postRequest(dio, req);
+      final proposal = await receiver.processRes(
+        body: ohttpResponse.data as List<int>,
+        ctx: context,
+      );
+      if (proposal != null) {
+        return proposal;
+      }
+    }
+  } catch (e) {
+    throw Exception('Error occurred while processing payjoin receiver: $e');
+  }
+}
+
+Future<void> _respondProposal(Dio dio, PayjoinProposal proposal) async {
+  try {
+    final (postReq, ohttpCtx) = await proposal.extractV2Req();
+    final postRes = await _postRequest(dio, postReq);
+    await proposal.processRes(
+      res: postRes.data as List<int>,
+      ohttpContext: ohttpCtx,
+    );
+  } catch (e) {
+    throw Exception('Error occurred while processing payjoin: $e');
   }
 }
 

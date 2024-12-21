@@ -383,16 +383,10 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   Future<void> receivePayjoin(bool isTestnet, String address) async {
     final receiver = await _payjoinManager.initReceiver(isTestnet, address);
     emit(state.copyWith(payjoinReceiver: receiver));
-    final uncheckedProposal =
-        await _payjoinManager.receiveUncheckedProposal(receiver);
-    // TODO respond with error if proposal is not valid
-    final payjoinProposal = await _payjoinManager.processReceivedProposal(
-      uncheckedProposal,
-      state.walletBloc!.state.wallet!,
-      isTestnet,
+    _payjoinManager.spawnReceiver(
+      isTestnet: isTestnet,
+      receiver: receiver,
+      wallet: state.walletBloc!.state.wallet!,
     );
-    _payjoinManager.respondProposal(payjoinProposal);
-    // TODO update wallet state with the signed psbt, recognizing it doesn't
-    // go into effect until the sender signs and broadcasts it.
   }
 }
