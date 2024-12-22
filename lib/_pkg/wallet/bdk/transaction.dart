@@ -439,6 +439,7 @@ class BDKTransactions {
     required List<UTXO> selectedUtxos,
     int? absFee,
     String? note,
+    bool isPayjoin = false,
   }) async {
     try {
       final isMainnet = wallet.network == BBNetwork.Mainnet;
@@ -569,9 +570,10 @@ class BDKTransactions {
         label: (note == null || note == '')
             ? labelsString
             : note, // for now we just take the first label
-        toAddress: address,
+        toAddress: isPayjoin ? null : address,
         outAddrs: outAddrs,
         psbt: base64Encode(psbtStr),
+        isPayjoin: isPayjoin,
       );
       return ((tx, feeAmt?.toInt(), base64Encode(psbtStr)), null);
     } on Exception catch (e) {
