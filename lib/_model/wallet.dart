@@ -190,19 +190,21 @@ class Wallet with _$Wallet {
   }
 
   int totalReceived() {
-    final txs = transactions.where((tx) => tx.isReceived()).toList();
+    final txs =
+        transactions.where((tx) => tx.getNetAmountToPayee() > 0).toList();
     int amt = 0;
     for (final tx in txs) {
-      amt += tx.getAmount().abs();
+      amt += tx.getNetAmountToPayee().abs();
     }
     return amt;
   }
 
   int totalSent() {
-    final txs = transactions.where((tx) => !tx.isReceived()).toList();
+    final txs =
+        transactions.where((tx) => tx.getNetAmountIncludingFees() < 0).toList();
     int amt = 0;
     for (final tx in txs) {
-      amt += tx.getAmount(sentAsTotal: true).abs();
+      amt += tx.getNetAmountIncludingFees().abs();
     }
     return amt;
   }
