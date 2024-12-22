@@ -229,13 +229,6 @@ class PayjoinManager {
     );
   }
 
-  Future<List<bdk.LocalUtxo>> _listUnspent(
-    Wallet wallet,
-    bool isTestnet,
-  ) async {
-    return await _walletTx.listUnspent(wallet: wallet);
-  }
-
   Future<String> _processPsbt({
     required String psbt,
     required Wallet wallet,
