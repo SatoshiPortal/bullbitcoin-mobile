@@ -950,3 +950,12 @@ class _Warnings extends StatelessWidget {
     );
   }
 }
+
+class SentPayJoin extends StatelessWidget {
+  const SentPayJoin({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}

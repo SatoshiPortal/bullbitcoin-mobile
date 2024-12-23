@@ -950,7 +950,10 @@ class SendCubit extends Cubit<SendState> {
     final pjUriString =
         'bitcoin:${state.address}?amount=${_currencyCubit.state.amount / 100000000}&label=${Uri.encodeComponent(state.note)}&pj=${state.payjoinEndpoint!}&pjos=0';
     final sender = await _payjoinManager.initSender(
-        pjUriString, networkFees, originalPsbt);
+      pjUriString,
+      networkFees,
+      originalPsbt,
+    );
     emit(state.copyWith(payjoinSender: sender));
   }
 
@@ -967,7 +970,7 @@ class SendCubit extends Cubit<SendState> {
       wallet: wallet,
       pjUrl: state.payjoinEndpoint!.toString(),
     );
-    Future.delayed(150.ms);
+    await Future.delayed(150.ms);
     state.selectedWalletBloc!.add(SyncWallet());
 
     emit(state.copyWith(sending: false, sent: true));

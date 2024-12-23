@@ -95,6 +95,7 @@ class PayjoinManager {
       const sessionId = 'TODO_SENDER_ENDPOINT';
 
       receivePort.listen((message) async {
+        print('Sender isolate: $message');
         if (message is Map<String, dynamic>) {
           if (message['type'] == 'psbt_to_sign') {
             final proposalPsbt = message['psbt'] as String;
@@ -106,9 +107,11 @@ class PayjoinManager {
               completer.complete(err);
               return;
             }
-            PayjoinEventBus().emit(PayjoinBroadcastEvent(
-              txid: wtxid!.$2,
-            ));
+            PayjoinEventBus().emit(
+              PayjoinBroadcastEvent(
+                txid: wtxid!.$2,
+              ),
+            );
             await _cleanupSession(sessionId);
           } else if (message is Err) {
             // TODO propagate this error to the UI
@@ -182,6 +185,7 @@ class PayjoinManager {
       SendPort? mainToIsolateSendPort;
 
       receivePort.listen((message) async {
+        print('Receiver isolate: $message');
         if (message is Map<String, dynamic>) {
           try {
             switch (message['type']) {

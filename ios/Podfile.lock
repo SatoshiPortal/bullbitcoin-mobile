@@ -58,6 +58,7 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - payjoin_flutter (0.20.0)
   - ScreenProtectorKit (1.3.1)
   - SDWebImage (5.19.7):
     - SDWebImage/Core (= 5.19.7)
@@ -83,6 +84,7 @@ DEPENDENCIES:
   - lwk_dart (from `.symlinks/plugins/lwk_dart/ios`)
   - no_screenshot (from `.symlinks/plugins/no_screenshot/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - payjoin_flutter (from `.symlinks/plugins/payjoin_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
@@ -123,6 +125,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/no_screenshot/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  payjoin_flutter:
+    :path: ".symlinks/plugins/payjoin_flutter/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   url_launcher_ios:
@@ -145,6 +149,7 @@ SPEC CHECKSUMS:
   lwk_dart: 898084320a2ce8ea206010c0dc3e3eead1b2c881
   no_screenshot: 67d110f12466f4913b488803d4e498d03ef2889e
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
