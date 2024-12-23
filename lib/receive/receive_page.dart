@@ -1087,8 +1087,10 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
         context.select((ReceiveCubit x) => x.state.paymentNetwork);
     String receiveAddressLabel = 'Payment invoice';
 
+    final isPayjoin = context.select((ReceiveCubit _) => _.state.isPayjoin);
+
     if (paymentNetwork == PaymentNetwork.bitcoin) {
-      receiveAddressLabel = 'Bitcoin address';
+      receiveAddressLabel = isPayjoin ? 'Payjoin address' : 'Bitcoin address';
     } else if (paymentNetwork == PaymentNetwork.liquid) {
       receiveAddressLabel = 'Liquid address';
     }
@@ -1122,6 +1124,25 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText.body(receiveAddressLabel),
+          if (isPayjoin == false && paymentNetwork == PaymentNetwork.bitcoin)
+            Card(
+              color: Colors.yellow[100],
+              margin: const EdgeInsets.all(10),
+              child: const ListTile(
+                leading: Icon(Icons.warning, color: Colors.orange),
+                title: Text(
+                  'Payjoin transactions',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                subtitle: Text(
+                  'Wallet does not meet the criteria',
+                  style: TextStyle(color: Colors.black87),
+                ),
+              ),
+            ),
           Row(
             children: [
               Expanded(
