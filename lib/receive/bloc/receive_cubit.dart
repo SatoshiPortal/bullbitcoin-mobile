@@ -53,6 +53,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     if (state.paymentNetwork == PaymentNetwork.lightning) {
       emit(state.copyWith(defaultAddress: null));
+      return;
     }
 
     if (!walletBloc.state.wallet!.mainWallet) {
@@ -63,7 +64,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     // if (watchOnly)
     //   emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
     await loadAddress();
-    if (state.defaultAddress != null) {
+
+    if (state.paymentNetwork == PaymentNetwork.bitcoin &&
+        state.defaultAddress != null) {
       receivePayjoin(
         state.walletBloc!.state.wallet!.isTestnet(),
         state.defaultAddress!.address,
