@@ -49,16 +49,6 @@ class ReceiveState with _$ReceiveState {
     if (paymentNetwork == PaymentNetwork.lightning ||
         (amount == 0 && description.isEmpty && payjoinReceiver == null)) {
       finalAddress = address;
-    } else if (payjoinReceiver != null) {
-      // Receiver session is active: build a payjoin URI
-      var pjUrl = payjoinReceiver!.pjUriBuilder();
-      if (amount > 0) {
-        pjUrl = pjUrl.amountSats(amount: BigInt.from(amount * 100000000));
-      }
-      if (description.isNotEmpty) {
-        pjUrl = pjUrl.label(label: description);
-      }
-      finalAddress = pjUrl.build().asString();
     } else {
       if (isLiquid) {
         // Refer spec: https://github.com/ElementsProject/elements/issues/805
