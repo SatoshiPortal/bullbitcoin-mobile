@@ -1,5 +1,7 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
+import 'package:bb_mobile/_pkg/payjoin/listeners.dart';
+import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
@@ -73,6 +75,34 @@ class WalletBlocListeners extends StatelessWidget {
         context.select((HomeCubit cubit) => cubit.state.walletBlocs);
     if (wallets == null || wallets.isEmpty) return child;
     // .read<HomeCubit>().state.walletBlocs ?? [];
+
+    // print each wallet id
+    for (final wallet in wallets) {
+      print('wallet id: ${wallet.state.wallet!.id}');
+    }
+    final mainWalletBloc = wallets.firstWhere(
+      (bloc) =>
+          bloc.state.wallet?.mainWallet == true &&
+          !bloc.state.wallet!.watchOnly() &&
+          bloc.state.wallet!.isSecure() &&
+          bloc.state.wallet!.isActive(),
+      orElse: () =>
+          wallets.first, // Return first wallet if no main wallet found
+    );
+
+    var walletChild = child;
+    if (mainWalletBloc.state.wallet?.mainWallet == true &&
+        !mainWalletBloc.state.wallet!.watchOnly() &&
+        mainWalletBloc.state.wallet!.isSecure()) {
+      print(
+          'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.state.wallet!.id}');
+      walletChild = PayjoinLifecycleManager(
+        wallet: mainWalletBloc.state.wallet!,
+        payjoinManager: locator<PayjoinManager>(),
+        child: child,
+      );
+    }
+
     return MultiBlocListener(
       listeners: [
         for (final w in wallets)
@@ -86,7 +116,7 @@ class WalletBlocListeners extends StatelessWidget {
             },
           ),
       ],
-      child: child,
+      child: walletChild,
     );
   }
 }
