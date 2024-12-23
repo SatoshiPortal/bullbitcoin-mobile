@@ -806,7 +806,6 @@ class CreateLightningInvoice extends StatelessWidget {
         const Gap(48),
         Center(
           child: BBButton.big(
-            // leftIcon: FontAwesomeIcons.receipt,
             leftSvgAsset: 'assets/request-payment.svg',
             buttonKey: UIKeys.receiveSavePaymentButton,
             loading: creatingInv,
@@ -939,21 +938,6 @@ class SwapFeesDetails extends StatelessWidget {
         ],
       ),
     );
-
-    // return BBText.bodySmall(
-    //   'Lightning Network payments are converted instantly to Liquid Network Bitcoin (L-BTC). A swap fee of $fees $units will be deducted',
-    // );
-
-    /*
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const BBText.body('Total fees:'),
-        BBText.bodyBold('$fees $units'),
-        const Gap(16),
-      ],
-    );
-    */
   }
 }
 
@@ -995,10 +979,6 @@ class ReceiveQRDisplay extends StatelessWidget {
           if (locator.isRegistered<Clippboard>()) {
             await locator<Clippboard>().copy(address);
           }
-
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   const SnackBar(content: Text('Copied to clipboard')),
-          // );
         },
         child: Column(
           children: [
@@ -1132,138 +1112,82 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
     );
 
     final addr = bip21Address.isNotEmpty ? bip21Address : widget.addressQr;
+    final addrOnly = widget.addressQr;
+    final isPjReceiver =
+        context.select((ReceiveCubit x) => x.state.payjoinReceiver);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 350),
-      child: !showToast
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BBText.body(receiveAddressLabel),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () async {
+                    if (locator.isRegistered<Clippboard>()) {
+                      await locator<Clippboard>().copy(addr);
+                    }
+                  },
+                  child: BBText.bodySmall(
+                    addr,
+                    isBlue: true,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () async {
+                  if (locator.isRegistered<Clippboard>()) {
+                    await locator<Clippboard>().copy(addr);
+                  }
+                },
+                iconSize: 24,
+                color: Colors.blue,
+                icon: const Icon(Icons.copy),
+              ),
+            ],
+          ),
+          if (isPjReceiver != null)
+            Row(
               children: [
-                BBText.body(receiveAddressLabel),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () async {
-                          if (locator.isRegistered<Clippboard>()) {
-                            await locator<Clippboard>().copy(addr);
-                          }
-
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   const SnackBar(
-                          //     content: Text('Copied to clipboard'),
-                          //   ),
-                          // );
-                        },
-                        child: BBText.bodySmall(
-                          addr,
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      if (locator.isRegistered<Clippboard>()) {
+                        await locator<Clippboard>().copy(addrOnly);
+                      }
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const BBText.bodySmall('Address only:'),
+                        BBText.bodySmall(
+                          addrOnly,
                           isBlue: true,
                         ),
-                      ),
+                      ],
                     ),
-                    IconButton(
-                      onPressed: () async {
-                        if (locator.isRegistered<Clippboard>()) {
-                          await locator<Clippboard>().copy(addr);
-                        }
-
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   const SnackBar(content: Text('Copied to clipboard')),
-                        // );
-                      },
-                      iconSize: 24,
-                      color: Colors.blue,
-                      icon: const Icon(Icons.copy),
-                    ),
-                  ],
+                  ),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    if (locator.isRegistered<Clippboard>()) {
+                      await locator<Clippboard>().copy(addrOnly);
+                    }
+                  },
+                  iconSize: 24,
+                  color: Colors.blue,
+                  icon: const Icon(Icons.copy),
                 ),
               ],
-            )
-          : const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: BBText.body('Address copied to clipboard'),
             ),
+        ],
+      ),
     );
   }
 }
-
-// class CreateInvoice extends StatelessWidget {
-//   const CreateInvoice({super.key});
-
-//   static Future openPopUp(BuildContext context) async {
-//     final receiveCubit = context.read<ReceiveCubit>();
-//     final currencyCubit = context.read<CurrencyCubit>();
-
-//     if (currencyCubit.state.amount > 0)
-//       currencyCubit.convertAmtOnCurrencyChange();
-
-//     return showBBBottomSheet(
-//       context: context,
-//       child: BlocProvider.value(
-//         value: receiveCubit,
-//         child: BlocProvider.value(
-//           value: currencyCubit,
-//           child: BlocListener<ReceiveCubit, ReceiveState>(
-//             listenWhen: (previous, current) =>
-//                 previous.savedInvoiceAmount != current.savedInvoiceAmount ||
-//                 previous.savedDescription != current.savedDescription,
-//             listener: (context, state) {
-//               context.pop();
-//             },
-//             child: const Padding(
-//               padding: EdgeInsets.all(30),
-//               child: CreateInvoice(),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final description = context.select((ReceiveCubit _) => _.state.description);
-
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.stretch,
-//       children: [
-//         BBHeader.popUpCenteredText(
-//           text: 'Request a Payment',
-//           onBack: () {
-//             context.read<ReceiveCubit>().clearInvoiceFields();
-//             context.read<CurrencyCubit>().reset();
-
-//             context.pop();
-//           },
-//         ),
-//         const Gap(40),
-//         const Gap(4),
-//         const EnterAmount(uiKey: UIKeys.receiveAmountField),
-//         const Gap(24),
-//         const BBText.title('   Public description'),
-//         const Gap(4),
-//         BBTextInput.big(
-//           uiKey: UIKeys.receiveDescriptionField,
-//           value: description,
-//           hint: 'Enter description',
-//           onChanged: (txt) {
-//             context.read<ReceiveCubit>().descriptionChanged(txt);
-//           },
-//         ),
-//         const Gap(40),
-//         BBButton.big(
-//           buttonKey: UIKeys.receiveSavePaymentButton,
-//           label: 'Save',
-//           onPressed: () {
-//             final amt = context.read<CurrencyCubit>().state.amount;
-//             context.read<ReceiveCubit>().saveFinalInvoiceClicked(amt);
-//           },
-//         ),
-//         const Gap(40),
-//       ],
-//     );
-//   }
-// }
 
 class CheckForPaymentsButton extends StatelessWidget {
   const CheckForPaymentsButton({super.key});
@@ -1278,72 +1202,3 @@ class CheckForPaymentsButton extends StatelessWidget {
     );
   }
 }
-
-// class AddLabelButton extends StatelessWidget {
-//   const AddLabelButton({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BBButton.big(
-//       label: 'Add address label',
-//       // leftIcon: FontAwesomeIcons.penToSquare,
-//       leftSvgAsset: 'assets/edit.svg',
-//       onPressed: () {
-//         AddLabelPopUp.openPopUp(context);
-//       },
-//     );
-//   }
-// }
-
-// class AddLabelPopUp extends StatelessWidget {
-//   const AddLabelPopUp({super.key});
-
-//   static Future openPopUp(BuildContext context) async {
-//     final receive = context.read<ReceiveCubit>();
-//     return showBBBottomSheet(
-//       context: context,
-//       child: BlocProvider.value(
-//         value: receive,
-//         child: const Padding(
-//           padding: EdgeInsets.all(30),
-//           child: AddLabelPopUp(),
-//         ),
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final value = context.select((ReceiveCubit x) => x.state.description);
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.stretch,
-//       children: [
-//         BBHeader.popUpCenteredText(
-//           text: 'Add Label',
-//           isLeft: true,
-//           onBack: () {
-//             context.pop();
-//           },
-//         ),
-//         const Gap(24),
-//         BBTextInput.big(
-//           hint: 'Enter label',
-//           value: value,
-//           onChanged: (txt) {
-//             context.read<ReceiveCubit>().descriptionChanged(txt);
-//           },
-//         ),
-//         const Gap(40),
-//         Center(
-//           child: BBButton.big(
-//             label: 'Save',
-//             onPressed: () {
-//               context.read<ReceiveCubit>().saveAddrressLabel();
-//             },
-//           ),
-//         ),
-//         const Gap(40),
-//       ],
-//     );
-//   }
-// }

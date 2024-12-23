@@ -71,6 +71,13 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         state.walletBloc!.state.wallet!.isTestnet(),
         state.defaultAddress!.address,
       );
+    } else {
+      // Clear payjoin receiver
+      emit(
+        state.copyWith(
+          payjoinReceiver: null,
+        ),
+      );
     }
   }
 
