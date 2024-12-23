@@ -58,9 +58,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     await isPayjoinEnabled();
     await loadAddress();
 
+    final baseType = state.walletBloc!.state.wallet!.baseWalletType;
+
     if (state.paymentNetwork == PaymentNetwork.bitcoin &&
         state.defaultAddress != null &&
-        state.isPayjoin) {
+        state.isPayjoin &&
+        baseType == BaseWalletType.Bitcoin) {
       receivePayjoin(
         state.walletBloc!.state.wallet!.isTestnet(),
         state.defaultAddress!.address,
