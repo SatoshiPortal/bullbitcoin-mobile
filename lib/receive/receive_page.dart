@@ -1132,58 +1132,93 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
     );
 
     final addr = bip21Address.isNotEmpty ? bip21Address : widget.addressQr;
+    final addrOnly = widget.addressQr;
+    final isPjReceiver =
+        context.select((ReceiveCubit x) => x.state.payjoinReceiver);
 
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 350),
-      child: !showToast
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        duration: const Duration(milliseconds: 350),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BBText.body(receiveAddressLabel),
+            Row(
               children: [
-                BBText.body(receiveAddressLabel),
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () async {
-                          if (locator.isRegistered<Clippboard>()) {
-                            await locator<Clippboard>().copy(addr);
-                          }
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      if (locator.isRegistered<Clippboard>()) {
+                        await locator<Clippboard>().copy(addr);
+                      }
 
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   const SnackBar(
-                          //     content: Text('Copied to clipboard'),
-                          //   ),
-                          // );
-                        },
-                        child: BBText.bodySmall(
-                          addr,
-                          isBlue: true,
-                        ),
-                      ),
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   const SnackBar(
+                      //     content: Text('Copied to clipboard'),
+                      //   ),
+                      // );
+                    },
+                    child: BBText.bodySmall(
+                      addr,
+                      isBlue: true,
                     ),
-                    IconButton(
-                      onPressed: () async {
-                        if (locator.isRegistered<Clippboard>()) {
-                          await locator<Clippboard>().copy(addr);
-                        }
+                  ),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    if (locator.isRegistered<Clippboard>()) {
+                      await locator<Clippboard>().copy(addr);
+                    }
 
-                        // ScaffoldMessenger.of(context).showSnackBar(
-                        //   const SnackBar(content: Text('Copied to clipboard')),
-                        // );
-                      },
-                      iconSize: 24,
-                      color: Colors.blue,
-                      icon: const Icon(Icons.copy),
-                    ),
-                  ],
+                    // ScaffoldMessenger.of(context).showSnackBar(
+                    //   const SnackBar(content: Text('Copied to clipboard')),
+                    // );
+                  },
+                  iconSize: 24,
+                  color: Colors.blue,
+                  icon: const Icon(Icons.copy),
                 ),
               ],
-            )
-          : const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: BBText.body('Address copied to clipboard'),
             ),
-    );
+            if (isPjReceiver != null)
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        if (locator.isRegistered<Clippboard>()) {
+                          await locator<Clippboard>().copy(addrOnly);
+                        }
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const BBText.bodySmall('Address only:'),
+                          BBText.bodySmall(
+                            addrOnly,
+                            isBlue: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      if (locator.isRegistered<Clippboard>()) {
+                        await locator<Clippboard>().copy(addrOnly);
+                      }
+
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   const SnackBar(content: Text('Copied to clipboard')),
+                      // );
+                    },
+                    iconSize: 24,
+                    color: Colors.blue,
+                    icon: const Icon(Icons.copy),
+                  ),
+                ],
+              ),
+          ],
+        ));
   }
 }
 
