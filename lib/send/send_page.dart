@@ -158,6 +158,9 @@ class _Screen extends StatelessWidget {
     final sent = context.select((SendCubit cubit) => cubit.state.sent);
     final isLn = context.select((SendCubit cubit) => cubit.state.isLnInvoice());
     final isPj = context.select((SendCubit cubit) => cubit.state.hasPjParam());
+    final isPayjoinPostSuccess = context.select(
+      (SendCubit cubit) => cubit.state.isPayjoinPostSuccess,
+    );
 
     final showWarning =
         context.select((CreateSwapCubit x) => x.state.showWarning());
@@ -167,6 +170,7 @@ class _Screen extends StatelessWidget {
           x.state.selectedWalletBloc?.state.wallet?.isLiquid() ?? false,
     );
 
+    if (isPayjoinPostSuccess) return const PjSuccess();
     if (sent && isLn) return const SendingLnTx();
     if (sent) return const TxSuccess();
 
@@ -682,6 +686,52 @@ class TxDetailsScreen extends StatelessWidget {
           '~ $feeFiat $fiatCurrency',
         ),
         const Gap(32),
+      ],
+    );
+  }
+}
+
+class PjSuccess extends StatelessWidget {
+  const PjSuccess({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final amount = context.select((CurrencyCubit cubit) => cubit.state.amount);
+    final amtStr = context.select(
+      (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
+        amount,
+      ),
+    );
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(
+          width: double.infinity,
+          height: 80,
+        ),
+        const BBText.body(
+          'Payjoin requested',
+          textAlign: TextAlign.center,
+        ),
+        const Gap(16),
+        const Icon(Icons.pending_rounded, size: 100, color: Colors.orange),
+        const BBText.bodySmall(
+          "Waiting for recipient's response to broadcast.",
+          textAlign: TextAlign.center,
+        ),
+        const Gap(16),
+        BBText.body(
+          amtStr,
+          textAlign: TextAlign.center,
+        ),
+        const Gap(40),
+        BBButton.big(
+          label: 'Back to home',
+          onPressed: () {
+            context.pop();
+          },
+        ),
       ],
     );
   }

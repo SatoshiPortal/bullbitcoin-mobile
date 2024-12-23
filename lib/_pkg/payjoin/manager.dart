@@ -97,6 +97,11 @@ class PayjoinManager {
       receivePort.listen((message) async {
         print('Sender isolate: $message');
         if (message is Map<String, dynamic>) {
+          if (message['type'] == 'request_posted') {
+            PayjoinEventBus().emit(
+              PayjoinSenderPostMessageASuccessEvent(),
+            );
+          }
           if (message['type'] == 'psbt_to_sign') {
             final proposalPsbt = message['psbt'] as String;
             final (wtxid, err) = await _walletTx.signAndBroadcastPsbt(
@@ -416,7 +421,7 @@ Future<void> _isolateSender(List<dynamic> args) async {
 
   // Run the sender logic inside the isolate
   try {
-    final proposalPsbt = await _runSender(sender);
+    final proposalPsbt = await _runSender(sender, sendPort: sendPort);
     if (proposalPsbt == null) throw Exception('proposalPsbt is null');
     sendPort.send({
       'type': 'psbt_to_sign',
@@ -428,7 +433,7 @@ Future<void> _isolateSender(List<dynamic> args) async {
 }
 
 /// Top-level function that attempts to run payjoin sender (V2 protocol first, fallback to V1).
-Future<String?> _runSender(Sender sender) async {
+Future<String?> _runSender(Sender sender, {required SendPort sendPort}) async {
   final dio = Dio();
 
   try {
@@ -440,6 +445,8 @@ Future<String?> _runSender(Sender sender) async {
 
     // Attempt V2
     final postRes = await _postRequest(dio, postReq);
+    // TODO: make an abstract class for these send port messages and subclasses for each type
+    sendPort.send({'type': 'request_posted'});
     final getCtx = await postReqCtx.processResponse(
       response: postRes.data as List<int>,
     );

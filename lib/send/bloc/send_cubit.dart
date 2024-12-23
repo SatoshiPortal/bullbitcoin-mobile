@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/payjoin/event.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/wallet/bip21.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
@@ -64,8 +65,18 @@ class SendCubit extends Cubit<SendState> {
 
     if (openScanner) scanAddress();
     if (walletBloc != null) selectWallets(fromStart: true);
+
+    // Subscribe to payjoin events to update the send state
+    _pjEventSubscription = PayjoinEventBus().stream.listen((event) {
+      if (event is PayjoinSenderPostMessageASuccessEvent) {
+        emit(state.copyWith(
+          isPayjoinPostSuccess: true,
+        ));
+      }
+    });
   }
 
+  late StreamSubscription<PayjoinEvent> _pjEventSubscription;
   final Barcode _barcode;
   final FileStorage _fileStorage;
   final WalletTx _walletTx;
@@ -77,6 +88,12 @@ class SendCubit extends Cubit<SendState> {
   final CurrencyCubit _currencyCubit;
   final HomeCubit _homeCubit;
   final CreateSwapCubit _swapCubit;
+
+  @override
+  Future<void> close() {
+    _pjEventSubscription.cancel();
+    return super.close();
+  }
 
   Future<void> updateAddress(String? addr, {bool changeWallet = true}) async {
     if (!state.oneWallet) resetWalletSelection(changeWallet: changeWallet);

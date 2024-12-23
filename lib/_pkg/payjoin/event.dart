@@ -22,14 +22,16 @@ class PayjoinEventBus {
   }
 }
 
-abstract class PayjoinEvent {
-  final String txid;
-
-  PayjoinEvent({required this.txid});
-}
+abstract class PayjoinEvent {}
 
 class PayjoinBroadcastEvent extends PayjoinEvent {
-  PayjoinBroadcastEvent({required super.txid});
+  final String txid;
+  PayjoinBroadcastEvent({required this.txid});
+}
+
+class PayjoinSenderPostMessageASuccessEvent extends PayjoinEvent {
+  // TODO: add to relate the event to a specific send transaction/payjoin session
+  PayjoinSenderPostMessageASuccessEvent();
 }
 
 class PayjoinEventListener extends StatefulWidget {
