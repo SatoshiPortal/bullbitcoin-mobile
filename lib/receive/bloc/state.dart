@@ -11,6 +11,7 @@ part 'state.freezed.dart';
 class ReceiveState with _$ReceiveState {
   const factory ReceiveState({
     @Default(true) bool loadingAddress,
+    @Default(true) bool isPayjoin,
     @Default('') String errLoadingAddress,
     Address? defaultAddress,
     Address? defaultLiquidAddress,

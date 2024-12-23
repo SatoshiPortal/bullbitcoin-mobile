@@ -31,11 +31,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   final PayjoinManager _payjoinManager;
 
   Future<void> updatePayjoinEndpoint(String payjoinEndpoint) async {
-    emit(
-      state.copyWith(
-        payjoinEndpoint: payjoinEndpoint,
-      ),
-    );
+    emit(state.copyWith(payjoinEndpoint: payjoinEndpoint));
     return;
   }
 
@@ -45,7 +41,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       state.copyWith(
         walletBloc: walletBloc,
         defaultAddress: null,
-        // privateLabel: '',
         savedDescription: '',
         description: '',
       ),
@@ -60,24 +55,19 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       emit(state.copyWith(paymentNetwork: PaymentNetwork.bitcoin));
     }
 
-    // final watchOnly = walletBloc.state.wallet!.watchOnly();
-    // if (watchOnly)
-    //   emit(state.copyWith(paymentNetwork: ReceivePaymentNetwork.bitcoin));
+    await isPayjoinEnabled();
     await loadAddress();
 
     if (state.paymentNetwork == PaymentNetwork.bitcoin &&
-        state.defaultAddress != null) {
+        state.defaultAddress != null &&
+        state.isPayjoin) {
       receivePayjoin(
         state.walletBloc!.state.wallet!.isTestnet(),
         state.defaultAddress!.address,
       );
     } else {
       // Clear payjoin receiver
-      emit(
-        state.copyWith(
-          payjoinReceiver: null,
-        ),
-      );
+      emit(state.copyWith(payjoinReceiver: null));
     }
   }
 
@@ -86,8 +76,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     bool isTestnet, {
     bool onStart = false,
   }) {
-    // if (!isTestnet) return;
-
     if (!state.allowedSwitch(selectedPaymentNetwork)) return;
 
     if (onStart) {
@@ -124,33 +112,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       emit(state.copyWith(switchToInstant: true));
       return;
     }
-
-    // if (walletType == BBWalletType.instant &&
-    //     currentPayNetwork != ReceivePaymentNetwork.bitcoin &&
-    //     selectedPaymentNetwork == ReceivePaymentNetwork.bitcoin) {
-    //   emit(state.copyWith(switchToSecure: true));
-    //   return;
-    // }
-
-    // if (walletType == BBWalletType.instant &&
-    //     currentPayNetwork != ReceivePaymentNetwork.liquid &&
-    //     selectedPaymentNetwork == ReceivePaymentNetwork.liquid) {
-    //   return;
-    // }
-
-    // if (walletType == BBWalletType.secure &&
-    //     currentPayNetwork != ReceivePaymentNetwork.lightning &&
-    //     selectedPaymentNetwork == ReceivePaymentNetwork.lightning) {
-    //   // Allow LN -> BTC swap
-    //   return;
-    // }
-
-    // if (walletType == BBWalletType.secure &&
-    //     currentPayNetwork != ReceivePaymentNetwork.liquid &&
-    //     selectedPaymentNetwork == ReceivePaymentNetwork.liquid) {
-    //   // Allow LBTC -> BTC swap
-    //   return;
-    // }
   }
 
   void clearSwitch() {
@@ -255,15 +216,11 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     if (address == null) return;
 
     if (!isLiq && state.defaultAddress != null) {
-      emit(
-        state.copyWith(description: address.label ?? ''),
-      );
+      emit(state.copyWith(description: address.label ?? ''));
     }
 
     if (isLiq && state.defaultLiquidAddress != null) {
-      emit(
-        state.copyWith(description: address.label ?? ''),
-      );
+      emit(state.copyWith(description: address.label ?? ''));
     }
   }
 
@@ -271,10 +228,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     if (state.paymentNetwork == PaymentNetwork.lightning) return;
 
     emit(
-      state.copyWith(
-        errLoadingAddress: '',
-        savedInvoiceAmount: 0,
-      ),
+      state.copyWith(errLoadingAddress: '', savedInvoiceAmount: 0),
     );
 
     if (state.walletBloc == null) return;
@@ -315,7 +269,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
               'WARNING! Electrum stop gap has been increased to $addressGap. This will affect your wallet sync time.\nGoto WalletSettings->Addresses to see all generated addresses.',
         ),
       );
-      // _networkCubit.updateStopGapAndSave(addressGap + 1);
       emit(state.copyWith(updateAddressGap: addressGap + 1));
       Future.delayed(const Duration(milliseconds: 100));
     }
@@ -337,7 +290,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       state.copyWith(
         defaultLiquidAddress: updatedWallet.lastGeneratedAddress,
         defaultAddress: updatedWallet.lastGeneratedAddress,
-        // privateLabel: '',
         savedDescription: '',
         description: '',
       ),
@@ -398,5 +350,17 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       receiver: receiver,
       wallet: state.walletBloc!.state.wallet!,
     );
+  }
+
+  Future<void> isPayjoinEnabled() async {
+    final walletBloc = state.walletBloc;
+    final wallet = walletBloc?.state.wallet;
+    if (walletBloc == null || wallet == null) return;
+
+    if (wallet.utxos.isEmpty) {
+      emit(state.copyWith(isPayjoin: false));
+    } else {
+      emit(state.copyWith(isPayjoin: true));
+    }
   }
 }
