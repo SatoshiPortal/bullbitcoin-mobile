@@ -1066,11 +1066,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0124ef669eb3b8e130e4584a534e9eb51a06bdec"
-      resolved-ref: "0124ef669eb3b8e130e4584a534e9eb51a06bdec"
-      url: "https://github.com/LtbLightning/payjoin-flutter"
+      ref: "28642ec548278d7e3d724a7518042b816ffd5dae"
+      resolved-ref: "28642ec548278d7e3d724a7518042b816ffd5dae"
+      url: "https://github.com/DanGould/payjoin-flutter"
     source: git
-    version: "0.21.0"
+    version: "0.22.0"
   petitparser:
     dependency: transitive
     description:

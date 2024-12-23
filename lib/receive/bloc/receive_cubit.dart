@@ -383,7 +383,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   Future<void> receivePayjoin(bool isTestnet, String address) async {
     final receiver = await _payjoinManager.initReceiver(isTestnet, address);
     emit(state.copyWith(payjoinReceiver: receiver));
-    _payjoinManager.spawnReceiver(
+    _payjoinManager.spawnNewReceiver(
       isTestnet: isTestnet,
       receiver: receiver,
       wallet: state.walletBloc!.state.wallet!,

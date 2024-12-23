@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/payjoin/event.dart';
+import 'package:bb_mobile/_pkg/payjoin/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:dio/dio.dart';
@@ -25,8 +26,9 @@ const List<String> _ohttpRelayUrls = [
 const payjoinDirectoryUrl = 'https://payjo.in';
 
 class PayjoinManager {
-  PayjoinManager(this._walletTx);
+  PayjoinManager(this._walletTx, this._payjoinStorage);
   final WalletTx _walletTx;
+  final PayjoinStorage _payjoinStorage;
   final Map<String, Isolate> _activePollers = {};
   final Map<String, ReceivePort> _activePorts = {};
 
@@ -58,6 +60,26 @@ class PayjoinManager {
     } catch (e) {
       throw Exception('Error initializing payjoin Sender: $e');
     }
+  }
+
+  Future<Err?> spawnNewSender({
+    required bool isTestnet,
+    required Sender sender,
+    required Wallet wallet,
+    required String pjUrl,
+  }) async {
+    final err = await _payjoinStorage.insertSenderSession(
+      sender,
+      pjUrl,
+      wallet.id,
+      isTestnet,
+    );
+    if (err != null) return err;
+    return spawnSender(
+      isTestnet: isTestnet,
+      sender: sender,
+      wallet: wallet,
+    );
   }
 
   Future<Err?> spawnSender({
@@ -131,6 +153,24 @@ class PayjoinManager {
     }
   }
 
+  Future<Err?> spawnNewReceiver({
+    required bool isTestnet,
+    required Receiver receiver,
+    required Wallet wallet,
+  }) async {
+    final err = await _payjoinStorage.insertReceiverSession(
+      isTestnet,
+      receiver,
+      wallet.id,
+    );
+    if (err != null) return err;
+    return spawnReceiver(
+      isTestnet: isTestnet,
+      receiver: receiver,
+      wallet: wallet,
+    );
+  }
+
   Future<Err?> spawnReceiver({
     required bool isTestnet,
     required Receiver receiver,
@@ -190,7 +230,6 @@ class PayjoinManager {
             }
           } catch (e) {
             // TODO PROPAGATE ERROR TO UI TOAST / TRANSACTION HISTORY
-            print('isolate error: $e');
           }
         }
       });
@@ -215,6 +254,46 @@ class PayjoinManager {
         title: 'Error occurred while receiving Payjoin',
         solution: 'Please try again.',
       );
+    }
+  }
+
+  Future<void> resumeSessions(Wallet wallet) async {
+    // Retrieve stored sessions and spawn them
+    // You can implement your own logic for loading sessions
+    final (receiverSessions, receiverErr) =
+        await _payjoinStorage.readAllReceivers();
+
+    final filteredReceivers = receiverSessions
+        .where((session) => session.walletId == wallet.id)
+        .toList();
+
+    if (receiverErr != null) throw receiverErr;
+    for (final session in filteredReceivers) {
+      await spawnReceiver(
+        isTestnet: session.isTestnet,
+        receiver: session.receiver,
+        wallet: wallet,
+      );
+    }
+
+    final (senderSessions, senderErr) = await _payjoinStorage.readAllSenders();
+    final filteredSenders = senderSessions.where((session) {
+      return session.walletId == wallet.id;
+    }).toList();
+    if (senderErr != null) throw senderErr;
+    for (final session in filteredSenders) {
+      await spawnSender(
+        isTestnet: session.isTestnet,
+        sender: session.sender,
+        wallet: wallet,
+      );
+    }
+  }
+
+  void pauseAllSessions() {
+    // Cleanup all active sessions
+    for (final sessionId in _activePollers.keys.toList()) {
+      _cleanupSession(sessionId);
     }
   }
 
@@ -257,6 +336,68 @@ class PayjoinManager {
   }
 }
 
+class SendSession {
+  SendSession(this._isTestnet, this._sender, this._walletId, this._pjUri);
+
+  // Deserialize JSON to Receiver
+  factory SendSession.fromJson(Map<String, dynamic> json) {
+    return SendSession(
+      json['isTestnet'] as bool,
+      Sender.fromJson(json['sender'] as String),
+      json['walletId'] as String,
+      json['pjUri'] as String,
+    );
+  }
+
+  final bool _isTestnet;
+  final Sender _sender;
+  final String _walletId;
+  final String _pjUri;
+
+  bool get isTestnet => _isTestnet;
+  Sender get sender => _sender;
+  String get walletId => _walletId;
+  String get pjUri => _pjUri;
+
+  // Serialize Receiver to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'isTestnet': _isTestnet,
+      'sender': _sender.toJson(),
+      'walletId': _walletId,
+      'pjUri': _pjUri,
+    };
+  }
+}
+
+class RecvSession {
+  RecvSession(this._isTestnet, this._receiver, this._walletId);
+
+  factory RecvSession.fromJson(Map<String, dynamic> json) {
+    return RecvSession(
+      json['isTestnet'] as bool,
+      Receiver.fromJson(json['receiver'] as String),
+      json['walletId'] as String,
+    );
+  }
+
+  final bool _isTestnet;
+  final Receiver _receiver;
+  final String _walletId;
+
+  bool get isTestnet => _isTestnet;
+  Receiver get receiver => _receiver;
+  String get walletId => _walletId;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'isTestnet': isTestnet,
+      'receiver': receiver.toJson(),
+      'walletId': walletId,
+    };
+  }
+}
+
 // Top-level function to generate random OHTTP relay URL
 Future<pj_uri.Url> _randomOhttpRelayUrl() async {
   return await pj_uri.Url.fromStr(
@@ -279,6 +420,7 @@ Future<void> _isolateSender(List<dynamic> args) async {
   // Run the sender logic inside the isolate
   try {
     final proposalPsbt = await _runSender(sender);
+    if (proposalPsbt == null) throw Exception('proposalPsbt is null');
     sendPort.send({
       'type': 'psbt_to_sign',
       'psbt': proposalPsbt,
@@ -311,11 +453,13 @@ Future<String?> _runSender(Sender sender) async {
           ohttpRelay: await _randomOhttpRelayUrl(),
         );
         final getRes = await _postRequest(dio, getRequest);
-        return await getCtx.processResponse(
+        final proposalPsbt = await getCtx.processResponse(
           response: getRes.data as List<int>,
           ohttpCtx: getReqCtx,
         );
+        if (proposalPsbt != null) return proposalPsbt;
       } catch (e) {
+        print('Error occurred while processing payjoin: $e');
         // Loop until a valid response is found
       }
     }
@@ -383,7 +527,6 @@ Future<void> _isolateReceiver(List<dynamic> args) async {
     ReceivePort receivePort,
   ) async {
     final fallbackTx = await proposal.extractTxToScheduleBroadcast();
-    print('fallback tx (broadcast this if payjoin fails): $fallbackTx');
     // TODO Handle this. send to the main port on a timer?
 
     try {
@@ -451,12 +594,12 @@ Future<void> _isolateReceiver(List<dynamic> args) async {
       );
       return payjoinProposal;
     } catch (e) {
+      print('Error occurred while finalizing proposal: $e');
       throw Exception('Error occurred while finalizing proposal');
     }
   }
 
   try {
-    print('long polling payjoin directory...');
     final dio = Dio();
     final uncheckedProposal = await _receiveUncheckedProposal(dio, receiver);
     final payjoinProposal = await processPayjoinProposal(
