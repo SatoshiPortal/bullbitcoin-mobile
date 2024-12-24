@@ -51,7 +51,7 @@ class _PayjoinEventListenerState extends State<PayjoinEventListener> {
       if (event is PayjoinBroadcastEvent) {
         showToastWidget(
           position: ToastPosition.top,
-          AlertUI(text: 'Payjoin transaction broadcast: ${event.txid}'),
+          const AlertUI(text: 'Payjoin transaction detected'),
           animationCurve: Curves.decelerate,
         );
       }
