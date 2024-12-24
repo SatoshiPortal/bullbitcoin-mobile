@@ -266,9 +266,6 @@ class SendCubit extends Cubit<SendState> {
     if (changeWallet == true) {
       selectWallets();
     }
-    if (_currencyCubit.state.amount != 0) {
-      _checkBalance();
-    }
   }
 
   void selectWallets({bool fromStart = false}) {
@@ -365,7 +362,7 @@ class SendCubit extends Cubit<SendState> {
       if (amt == 0) {
         emit(state.copyWith(showSendButton: false));
       } else {
-        _checkBalance();
+        checkBalance();
       }
       // emit(state.copyWith(showSendButton: true));
 
@@ -408,7 +405,7 @@ class SendCubit extends Cubit<SendState> {
     if (amt == 0) {
       emit(state.copyWith(showSendButton: false));
     } else {
-      _checkBalance();
+      checkBalance();
     }
 
     // emit(state.copyWith(showSendButton: true));
@@ -456,7 +453,7 @@ class SendCubit extends Cubit<SendState> {
     if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
     } else {
-      _checkBalance();
+      checkBalance();
     }
 
     // emit(state.copyWith(showSendButton: true));
@@ -492,14 +489,19 @@ class SendCubit extends Cubit<SendState> {
     if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
     } else {
-      _checkBalance();
+      checkBalance();
     }
     // emit(state.copyWith(showSendButton: true));
   }
 
-  void _checkBalance() {
+  void checkBalance() {
     final balance = state.selectedWalletBloc?.state.balanceSats() ?? 0;
     final amount = _currencyCubit.state.amount;
+
+    if (amount == 0) {
+      emit(state.copyWith(showSendButton: false));
+      return;
+    }
 
     if (balance < amount) {
       emit(
@@ -544,7 +546,7 @@ class SendCubit extends Cubit<SendState> {
   void updateWalletBloc(WalletBloc walletBloc) {
     emit(state.copyWith(selectedWalletBloc: walletBloc));
     sendAllCoin(false);
-    _checkBalance();
+    checkBalance();
   }
 
   void disabledDropdownClicked() {
@@ -601,7 +603,7 @@ class SendCubit extends Cubit<SendState> {
     _currencyCubit.updateAmountDirect(amount);
     _currencyCubit.updateAmount(amount == 0 ? '' : amount.toString());
 
-    _checkBalance();
+    checkBalance();
   }
 
   void togglePayjoin(bool toggle) {
