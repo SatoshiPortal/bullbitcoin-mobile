@@ -69,9 +69,18 @@ class SendCubit extends Cubit<SendState> {
     // Subscribe to payjoin events to update the send state
     _pjEventSubscription = PayjoinEventBus().stream.listen((event) {
       if (event is PayjoinSenderPostMessageASuccessEvent) {
-        emit(state.copyWith(
-          isPayjoinPostSuccess: true,
-        ));
+        emit(
+          state.copyWith(
+            isPayjoinPostSuccess: true,
+          ),
+        );
+      } else if (event is PayjoinFailureEvent) {
+        emit(
+          state.copyWith(
+            errSending: event.error.toString(),
+            sending: false,
+          ),
+        );
       }
     });
   }

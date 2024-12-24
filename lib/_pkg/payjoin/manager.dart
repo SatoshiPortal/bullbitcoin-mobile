@@ -119,7 +119,9 @@ class PayjoinManager {
             );
             await _cleanupSession(sessionId);
           } else if (message is Err) {
-            // TODO propagate this error to the UI
+            PayjoinEventBus().emit(
+              PayjoinFailureEvent(error: message),
+            );
             await _cleanupSession(sessionId);
           }
         }
@@ -445,11 +447,11 @@ Future<String?> _runSender(Sender sender, {required SendPort sendPort}) async {
 
     // Attempt V2
     final postRes = await _postRequest(dio, postReq);
-    // TODO: make an abstract class for these send port messages and subclasses for each type
-    sendPort.send({'type': 'request_posted'});
     final getCtx = await postReqCtx.processResponse(
       response: postRes.data as List<int>,
     );
+    // TODO: make an abstract class for these send port messages and subclasses for each type
+    sendPort.send({'type': 'request_posted'});
 
     while (true) {
       try {
@@ -469,15 +471,16 @@ Future<String?> _runSender(Sender sender, {required SendPort sendPort}) async {
     }
   } catch (e) {
     // If V2 fails, attempt V1
-    return await _runSenderV1(sender, dio);
+    return await _runSenderV1(sender, dio, sendPort);
   }
 }
 
 /// Attempt to send payjoin using the V1 protocol.
-Future<String> _runSenderV1(Sender sender, Dio dio) async {
+Future<String> _runSenderV1(Sender sender, Dio dio, SendPort sendPort) async {
   try {
     final (req, v1Ctx) = await sender.extractV1();
     final response = await _postRequest(dio, req);
+    sendPort.send({'type': 'request_posted'});
     final proposalPsbt =
         await v1Ctx.processResponse(response: response.data as List<int>);
     return proposalPsbt;

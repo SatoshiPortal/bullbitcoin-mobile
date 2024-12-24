@@ -34,6 +34,11 @@ class PayjoinSenderPostMessageASuccessEvent extends PayjoinEvent {
   PayjoinSenderPostMessageASuccessEvent();
 }
 
+class PayjoinFailureEvent extends PayjoinEvent {
+  final Object? error;
+  PayjoinFailureEvent({this.error});
+}
+
 class PayjoinEventListener extends StatefulWidget {
   const PayjoinEventListener({required this.child, super.key});
   final Widget child;
