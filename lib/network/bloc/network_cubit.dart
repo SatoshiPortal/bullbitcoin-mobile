@@ -387,25 +387,28 @@ class NetworkCubit extends Cubit<NetworkState> {
       }
 
       // Connection test with electrum
-      final mainnetElectrumLive = await isElectrumLive(tempNetwork.mainnet);
-      if (!mainnetElectrumLive) {
-        emit(
-          state.copyWith(
-            errLoadingNetworks:
-                'Pls check mainnet electrum URL. Cannot connect to electrum',
-          ),
-        );
-        return;
-      }
-      final testnetElectrumLive = await isElectrumLive(tempNetwork.testnet);
-      if (!testnetElectrumLive) {
-        emit(
-          state.copyWith(
-            errLoadingNetworks:
-                'Pls check testnet electrum URL. Cannot connect to electrum',
-          ),
-        );
-        return;
+      if (state.testnet) {
+        final testnetElectrumLive = await isElectrumLive(tempNetwork.testnet);
+        if (!testnetElectrumLive) {
+          emit(
+            state.copyWith(
+              errLoadingNetworks:
+                  'Check Testnet electrum URL. Could not connect to electrum.',
+            ),
+          );
+          return;
+        }
+      } else {
+        final mainnetElectrumLive = await isElectrumLive(tempNetwork.mainnet);
+        if (!mainnetElectrumLive) {
+          emit(
+            state.copyWith(
+              errLoadingNetworks:
+                  'Check Mainnet electrum URL. Could not connect to electrum.',
+            ),
+          );
+          return;
+        }
       }
 
       final index =
