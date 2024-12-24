@@ -577,12 +577,9 @@ Future<void> _isolateReceiver(List<dynamic> args) async {
         sendPort,
       );
       final unspent = listUnspent as List<bdk.LocalUtxo>;
-      final candidateInputs = await Future.wait(
-        unspent.map((utxo) => _inputPairFromUtxo(utxo, true)),
-      );
-      final selectedUtxo = await pj5.tryPreservingPrivacy(
-        candidateInputs: candidateInputs,
-      );
+      if (unspent.isEmpty) throw Exception('No unspent outputs available');
+
+      final selectedUtxo = await _inputPairFromUtxo(unspent[0], true);
       final pj6 = await pj5.contributeInputs(replacementInputs: [selectedUtxo]);
       final pj7 = await pj6.commitInputs();
 
