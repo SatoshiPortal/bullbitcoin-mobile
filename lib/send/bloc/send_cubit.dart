@@ -72,6 +72,13 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(
           isPayjoinPostSuccess: true,
         ));
+      } else if (event is PayjoinFailureEvent) {
+        emit(
+          state.copyWith(
+            errSending: event.error.toString(),
+            sending: false,
+          ),
+        );
       }
     });
   }
