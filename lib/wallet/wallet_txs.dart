@@ -135,13 +135,16 @@ class HomeTxItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final label = tx.label ?? '';
+    final isReceive = tx.isReceived();
 
-    final amount = context.select(
+    var amount = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(
         tx.getNetAmountIncludingFees(),
         isLiquid: tx.isLiquid,
       ),
     );
+
+    amount = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
 
     // final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
 
@@ -152,6 +155,8 @@ class HomeTxItem extends StatelessWidget {
     // final isChainSwap = tx.isSwap && tx.swapTx!.isChainSwap();
     const imgBaseName = 'assets/images/arrow_down';
     final img = darkMode ? '${imgBaseName}_white.png' : '$imgBaseName.png';
+    final isChainSwap = tx.isSwap && tx.swapTx!.isChainSwap();
+    final isChainReceive = isChainSwap && tx.swapTx!.isChainReceive();
 
     return InkWell(
       onTap: () {
@@ -173,7 +178,10 @@ class HomeTxItem extends StatelessWidget {
                 // color: Colors.red,
                 transformAlignment: Alignment.center,
                 transform: Matrix4.identity()
-                  ..rotateZ(tx.getNetAmountToPayee() > 0 ? 0 : 3.16),
+                  ..rotateZ(
+                    // tx.getNetAmountToPayee() > 0
+                    isReceive || isChainReceive ? 0 : 3.16,
+                  ),
                 child: Image.asset(img),
               ),
             ),
