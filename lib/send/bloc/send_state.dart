@@ -41,6 +41,7 @@ class SendState with _$SendState {
     Uri? payjoinEndpoint,
     Sender? payjoinSender,
     @Default(true) bool togglePayjoin,
+    @Default(false) bool isPayjoinPostSuccess,
     @Default(false) bool sendAllCoin,
     @Default([]) List<UTXO> selectedUtxos,
     @Default('') String errAddresses,
