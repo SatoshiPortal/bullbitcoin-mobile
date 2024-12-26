@@ -42,7 +42,7 @@ dependencies:
   payjoin_flutter:
     git:
       url: https://github.com/DanGould/payjoin-flutter
-      ref: 28642ec548278d7e3d724a7518042b816ffd5dae
+      ref: 0-22
   carousel_slider: ^4.2.1
   qr_flutter: ^4.1.0
   flutter_translate: ^4.0.3
