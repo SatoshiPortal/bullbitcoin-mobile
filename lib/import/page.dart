@@ -148,31 +148,24 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final step =
         context.select((ImportWalletCubit cubit) => cubit.state.importStep);
+
+    final page = switch (step) {
+      ImportSteps.selectCreateType ||
+      ImportSteps.selectImportType ||
+      ImportSteps.scanningNFC ||
+      ImportSteps.importXpub ||
+      ImportSteps.import12Words ||
+      ImportSteps.import24Words =>
+        const ImportEnterWordsScreen(),
+      ImportSteps.selectWalletFormat ||
+      ImportSteps.scanningWallets =>
+        const ImportSelectWalletTypeScreen(),
+      ImportSteps.advancedOptions => const AdvancedOptions(),
+    };
+
     return PopScope(
       // canPop: step == ImportSteps.selectCreateType,
-      child: () {
-        switch (step) {
-          // return const ImportScanning(isColdCard: true);
-
-          case ImportSteps.selectCreateType:
-          // return const _CreateSelectionScreen();
-
-          case ImportSteps.selectImportType:
-          case ImportSteps.importXpub:
-          // return const ImportXpubScreen();
-          case ImportSteps.scanningNFC:
-          case ImportSteps.import12Words:
-          case ImportSteps.import24Words:
-            return const ImportEnterWordsScreen();
-
-          case ImportSteps.scanningWallets:
-          case ImportSteps.selectWalletFormat:
-            return const ImportSelectWalletTypeScreen();
-
-          case ImportSteps.advancedOptions:
-            return const AdvancedOptions();
-        }
-      }(),
+      child: page,
     );
   }
 }

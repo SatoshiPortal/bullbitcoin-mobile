@@ -266,6 +266,8 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
 
   @override
   void dispose() {
+    entry?.remove();
+    entry = null;
     controller.dispose();
     widget.focusNode.dispose();
 
@@ -273,6 +275,10 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
   }
 
   void showOverLay() {
+    if (!context.mounted) {
+      hideOverlay();
+      return;
+    }
     final overlay = Overlay.of(context);
     final renderBox = context.findRenderObject()! as RenderBox;
     final size = renderBox.size;
@@ -302,6 +308,7 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
   }
 
   Widget buildOverlay() {
+    if (!context.mounted) return const SizedBox.shrink();
     if (suggestions.isEmpty) {
       hideOverlay();
       return Container();
@@ -337,6 +344,10 @@ class _ImportWordTextFieldState extends State<ImportWordTextField> {
 
   @override
   Widget build(BuildContext context) {
+    if (!context.mounted) {
+      hideOverlay();
+      return const SizedBox.shrink();
+    }
     final is12 =
         context.select((ImportWalletCubit cubit) => cubit.state.is12());
 
