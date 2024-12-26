@@ -30,8 +30,9 @@ class PayjoinBroadcastEvent extends PayjoinEvent {
 }
 
 class PayjoinSenderPostMessageASuccessEvent extends PayjoinEvent {
-  // TODO: add to relate the event to a specific send transaction/payjoin session
-  PayjoinSenderPostMessageASuccessEvent();
+  final String pjUri;
+
+  PayjoinSenderPostMessageASuccessEvent({required this.pjUri});
 }
 
 class PayjoinFailureEvent extends PayjoinEvent {

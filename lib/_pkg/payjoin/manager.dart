@@ -10,6 +10,7 @@ import 'package:bb_mobile/_pkg/payjoin/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:payjoin_flutter/bitcoin_ffi.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:payjoin_flutter/receive.dart';
@@ -79,6 +80,7 @@ class PayjoinManager {
       isTestnet: isTestnet,
       sender: sender,
       wallet: wallet,
+      pjUri: pjUrl,
     );
   }
 
@@ -86,20 +88,18 @@ class PayjoinManager {
     required bool isTestnet,
     required Sender sender,
     required Wallet wallet,
+    required String pjUri,
   }) async {
     try {
       final completer = Completer<Err?>();
       final receivePort = ReceivePort();
-
-      // TODO Create unique ID for this payjoin session
-      const sessionId = 'TODO_SENDER_ENDPOINT';
 
       receivePort.listen((message) async {
         print('Sender isolate: $message');
         if (message is Map<String, dynamic>) {
           if (message['type'] == 'request_posted') {
             PayjoinEventBus().emit(
-              PayjoinSenderPostMessageASuccessEvent(),
+              PayjoinSenderPostMessageASuccessEvent(pjUri: pjUri),
             );
           }
           if (message['type'] == 'psbt_to_sign') {
@@ -109,6 +109,7 @@ class PayjoinManager {
               wallet: wallet,
             );
             if (err != null) {
+              await _cleanupSession(pjUri);
               completer.complete(err);
               return;
             }
@@ -117,13 +118,15 @@ class PayjoinManager {
                 txid: wtxid!.$2,
               ),
             );
-            await _cleanupSession(sessionId);
-          } else if (message is Err) {
-            PayjoinEventBus().emit(
-              PayjoinFailureEvent(error: message),
-            );
-            await _cleanupSession(sessionId);
+            await _cleanupSession(pjUri);
+            completer.complete(null);
           }
+        } else if (message is Err) {
+          PayjoinEventBus().emit(
+            PayjoinFailureEvent(error: message),
+          );
+          await _cleanupSession(pjUri);
+          completer.complete(message);
         }
       });
 
@@ -136,8 +139,9 @@ class PayjoinManager {
         _isolateSender,
         args,
       );
-      _activePollers[sessionId] = isolate;
-      _activePorts[sessionId] = receivePort;
+
+      _activePollers[pjUri] = isolate;
+      _activePorts[pjUri] = receivePort;
       return completer.future;
     } catch (e) {
       return Err(e.toString());
@@ -238,10 +242,23 @@ class PayjoinManager {
                   'requestId': message['requestId'],
                   'result': signedPsbt,
                 });
+              case 'proposal_sent':
+                await _cleanupSession(receiver.id());
+                completer.complete(null);
             }
           } catch (e) {
             // TODO PROPAGATE ERROR TO UI TOAST / TRANSACTION HISTORY
+            debugPrint(e.toString());
+            await _cleanupSession(receiver.id());
+            completer.complete(
+              Err(
+                e.toString(),
+              ),
+            );
           }
+        } else if (message is Err) {
+          await _cleanupSession(receiver.id());
+          completer.complete(message);
         }
       });
 
@@ -273,32 +290,34 @@ class PayjoinManager {
     // You can implement your own logic for loading sessions
     final (receiverSessions, receiverErr) =
         await _payjoinStorage.readAllReceivers();
+    if (receiverErr != null) throw receiverErr;
+    final (senderSessions, senderErr) = await _payjoinStorage.readAllSenders();
+    if (senderErr != null) throw senderErr;
 
     final filteredReceivers = receiverSessions
         .where((session) => session.walletId == wallet.id)
         .toList();
+    final filteredSenders = senderSessions.where((session) {
+      return session.walletId == wallet.id;
+    }).toList();
 
-    if (receiverErr != null) throw receiverErr;
-    for (final session in filteredReceivers) {
-      await spawnReceiver(
+    final spawnedReceivers = filteredReceivers.map((session) {
+      return spawnReceiver(
         isTestnet: session.isTestnet,
         receiver: session.receiver,
         wallet: wallet,
       );
-    }
-
-    final (senderSessions, senderErr) = await _payjoinStorage.readAllSenders();
-    final filteredSenders = senderSessions.where((session) {
-      return session.walletId == wallet.id;
-    }).toList();
-    if (senderErr != null) throw senderErr;
-    for (final session in filteredSenders) {
-      await spawnSender(
+    });
+    final spawnedSenders = filteredSenders.map((session) {
+      return spawnSender(
         isTestnet: session.isTestnet,
         sender: session.sender,
         wallet: wallet,
+        pjUri: session.pjUri,
       );
-    }
+    });
+
+    await Future.wait([...spawnedReceivers, ...spawnedSenders]);
   }
 
   void pauseAllSessions() {
@@ -611,9 +630,16 @@ Future<void> _isolateReceiver(List<dynamic> args) async {
       isolateTomainSendPort,
       isolateReceivePort,
     );
-    _respondProposal(dio, payjoinProposal);
+    await _respondProposal(dio, payjoinProposal);
+    isolateTomainSendPort.send({
+      'type': 'proposal_sent',
+    });
   } catch (e) {
-    isolateTomainSendPort.send(Err(e.toString()));
+    try {
+      isolateTomainSendPort.send(Err(e.toString()));
+    } catch (e) {
+      print('$e');
+    }
   }
 }
 
