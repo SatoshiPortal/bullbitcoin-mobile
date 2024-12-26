@@ -166,7 +166,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       int verifiedOutputs = 0;
       final List<Address> outAddrs = [];
       for (final outpoint in outputs) {
-        totalAmount += outpoint.value as int;
+        totalAmount += outpoint.value.toInt();
         final scriptBuf = await bdk.ScriptBuf.fromHex(
           hex.encode(outpoint.scriptPubkey.bytes),
         );
@@ -192,8 +192,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
                 address: addressStr,
                 kind: AddressKind.external,
                 state: AddressStatus.used,
-                highestPreviousBalance: outpoint.value as int,
-                balance: outpoint.value as int,
+                highestPreviousBalance: outpoint.value.toInt(),
+                balance: outpoint.value.toInt(),
               ),
             );
           }
@@ -203,8 +203,8 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
               address: addressStr,
               kind: AddressKind.external,
               state: AddressStatus.used,
-              highestPreviousBalance: outpoint.value as int,
-              balance: outpoint.value as int,
+              highestPreviousBalance: outpoint.value.toInt(),
+              balance: outpoint.value.toInt(),
             ),
           );
         }
