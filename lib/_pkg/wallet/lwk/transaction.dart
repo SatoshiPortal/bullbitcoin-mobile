@@ -377,13 +377,13 @@ class LWKTransactions {
           outAddressFinal = storedTx?.outAddrs;
         }
 
-        final size = tx.vsize;
+        final size = tx.vsize as int;
         final txObj = Transaction(
           txid: tx.txid,
           received: tx.kind == 'outgoing' ? 0 : finalBalance,
           sent: tx.kind == 'outgoing' ? -finalBalance : 0,
           fee: tx.fee as int,
-          feeRate: tx.fee / size,
+          feeRate: (tx.fee as int) / size,
           height: tx.height ?? 0,
           timestamp: tx.timestamp ?? 0,
           rbfEnabled: false,
