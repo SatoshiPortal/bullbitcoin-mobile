@@ -1,40 +1,111 @@
-FROM dart:stable
-WORKDIR /usr/local/
+# Use a base Ubuntu image
+FROM ubuntu:20.04
 
-RUN apt update
-RUN apt install -y git openjdk-17-jdk unzip wget curl xz-utils
-RUN dpkg --print-architecture
-RUN dpkg --print-foreign-architectures
-RUN dpkg --remove --force-depends libstdc++6-arm64-cross
-RUN apt-get install --reinstall -y libstdc++6
-RUN apt-get -f install
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6-arm64-cross libglu1-mesa fonts-droid-fallback libstdc++6-arm64-cross python3 sed
-RUN apt-get clean
-# RUN apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+# Avoid prompts from apt
+ENV DEBIAN_FRONTEND=noninteractive
 
-ENV ANDROID_COMMAND_LINE_TOOLS_FILENAME commandlinetools-linux-10406996_latest.zip
-ENV ANDROID_API_LEVELS                  android-34
-ENV ANDROID_BUILD_TOOLS_VERSION         34.0.0
-ENV ANDROID_HOME                        /usr/local/android-sdk-linux
-ENV PATH                                ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/cmdline-tools/bin
-ENV FLUTTER_VERSION                     flutter_linux_3.13.2-stable
-ENV PATH                                ${PATH}:/usr/local/flutter/bin
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    unzip \
+    xz-utils \
+    zip \
+    libglu1-mesa \
+    wget \
+    clang \
+    cmake \
+    ninja-build \
+    pkg-config \
+    libgtk-3-dev \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q "https://dl.google.com/android/repository/${ANDROID_COMMAND_LINE_TOOLS_FILENAME}"
-RUN unzip ${ANDROID_COMMAND_LINE_TOOLS_FILENAME} -d /usr/local/android-sdk-linux
-RUN rm ${ANDROID_COMMAND_LINE_TOOLS_FILENAME}
+# Add the repository for OpenJDK 17
+RUN add-apt-repository ppa:openjdk-r/ppa
 
-RUN yes | sdkmanager --update --sdk_root="${ANDROID_HOME}"
-RUN yes | sdkmanager --sdk_root="${ANDROID_HOME}" "platforms;${ANDROID_API_LEVELS}" "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" "extras;google;m2repository" "extras;android;m2repository" "extras;google;google_play_services"
-RUN yes | sdkmanager --licenses --sdk_root="${ANDROID_HOME}"
+# Install OpenJDK 17
+RUN apt-get update && apt-get install -y openjdk-17-jdk && rm -rf /var/lib/apt/lists/*
 
-RUN rm -rf ${ANDROID_HOME}/tools
+# Set up Java environment
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH $JAVA_HOME/bin:$PATH
 
-RUN wget -q https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/${FLUTTER_VERSION}.tar.xz
-RUN tar -xvf /usr/local/${FLUTTER_VERSION}.tar.xz
-RUN git config --global --add safe.directory /usr/local/flutter
-# RUN flutter --disable-telemetry
-RUN flutter doctor
-CMD ["tail", "-f", "/dev/null"]
+# Install bundletool
+RUN wget https://github.com/google/bundletool/releases/download/1.15.5/bundletool-all-1.15.5.jar -O /usr/local/bin/bundletool.jar
+RUN echo '#!/bin/sh\njava -jar /usr/local/bin/bundletool.jar "$@"' > /usr/local/bin/bundletool && chmod +x /usr/local/bin/bundletool
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Verify Rust installation
+RUN rustc --version && cargo --version
+
+# Install Flutter
+ENV FLUTTER_HOME /opt/flutter
+ENV PATH $FLUTTER_HOME/bin:$PATH
+RUN git clone https://github.com/flutter/flutter.git $FLUTTER_HOME
+RUN cd $FLUTTER_HOME && git checkout stable && ./bin/flutter --version
+
+# Set up Android SDK
+ENV ANDROID_SDK_ROOT /opt/android-sdk
+ENV PATH $PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools && \
+    wget -q https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -O android-cmdline-tools.zip && \
+    unzip -q android-cmdline-tools.zip -d ${ANDROID_SDK_ROOT}/cmdline-tools && \
+    mv ${ANDROID_SDK_ROOT}/cmdline-tools/cmdline-tools ${ANDROID_SDK_ROOT}/cmdline-tools/latest && \
+    rm android-cmdline-tools.zip
+
+# Accept licenses and install necessary Android SDK components
+RUN yes | sdkmanager --licenses
+RUN sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+# Clean up existing app directory
+RUN rm -rf /app
+
+# Clone the Bull Bitcoin mobile repository
+RUN git clone https://github.com/SatoshiPortal/bullbitcoin-mobile /app
+
+# Copy device-spec.json into the container
+COPY device-spec.json /app/device-spec.json
+
+# Set up the Flutter project
+WORKDIR /app
+RUN flutter pub get
+
+# Generate a fake keystore
+RUN keytool -genkey -v -keystore /app/android/app/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
+
+# Set up key.properties
+RUN echo "storePassword=android" > /app/android/key.properties && \
+    echo "keyPassword=android" >> /app/android/key.properties && \
+    echo "keyAlias=upload" >> /app/android/key.properties && \
+    echo "storeFile=../app/upload-keystore.jks" >> /app/android/key.properties
+
+# Pre-build the project to download all necessary dependencies
+RUN flutter precache
+
+# Build the AAB (Android App Bundle)
+RUN flutter build appbundle --release
+
+# Generate split APKs
+RUN bundletool build-apks --bundle=/app/build/app/outputs/bundle/release/app-release.aab --output=/app/app.apks --device-spec=/app/device-spec.json
+
+# List apks
+# RUN unzip -l /app/app.apks
+
+# Extract specific APKs
+RUN unzip -p /app/app.apks splits/base-master.apk > /app/base.apk && \
+    unzip -p /app/app.apks splits/base-armeabi_v7a.apk > /app/armeabi_v7a.apk && \
+    unzip -p /app/app.apks splits/base-en.apk > /app/en.apk && \
+    unzip -p /app/app.apks splits/base-xhdpi.apk > /app/xhdpi.apk
+
+# Clean up
+RUN rm /app/app.apks
+
+# Create the output directory
+RUN mkdir -p /app/build-output/
+
+# Output the build artifacts
+CMD ["sh", "-c", "cp /app/base.apk /app/armeabi_v7a.apk /app/en.apk /app/xhdpi.apk /app/build/app/outputs/bundle/release/app-release.aab /app/build-output/"]
