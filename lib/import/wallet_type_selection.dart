@@ -17,6 +17,7 @@ import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -57,6 +58,9 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
       listener: (context, state) async {
         if (!state.savedWallet) return;
         //if (state.mainWallet)
+        for (final w in walletCubits) {
+          w.add(RemoveInternalWallet());
+        }
         await locator<WalletsStorageRepository>().sortWallets();
         locator<HomeCubit>().getWalletsFromStorage();
         // final wallet = state.savedWallet!;
@@ -89,6 +93,11 @@ class _ScreenState extends State<_Screen> {
     if (scriptTypes.length == widget.walletCubits.length) {
       context.read<ImportWalletCubit>().syncingComplete();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

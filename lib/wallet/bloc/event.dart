@@ -14,6 +14,8 @@ class SyncWallet extends WalletEvent {
   final bool cancelSync;
 }
 
+class RemoveInternalWallet extends WalletEvent {}
+
 class KillSync extends WalletEvent {}
 
 class UpdateWallet extends WalletEvent {

@@ -882,7 +882,7 @@ packages:
     description:
       path: "."
       ref: trunk
-      resolved-ref: "81b2b02fb95aa7df92c7d1c2dd2772c5d48e172e"
+      resolved-ref: "79247f0e87dd90ec95c088649b9db3bbf9e10acd"
       url: "https://github.com/SatoshiPortal/lwk-dart.git"
     source: git
     version: "0.1.5"
@@ -1139,10 +1139,10 @@ packages:
     dependency: transitive
     description:
       name: pubspec_parse
-      sha256: c799b721d79eb6ee6fa56f00c04b472dcd44a30d258fac2174a6ec57302678f8
+      sha256: "81876843eb50dc2e1e5b151792c9a985c5ed2536914115ed04e9c8528f6647b0"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.0"
+    version: "1.4.0"
   qr:
     dependency: transitive
     description:
@@ -1544,10 +1544,10 @@ packages:
     dependency: transitive
     description:
       name: yaml
-      sha256: "75769501ea3489fca56601ff33454fe45507ea3bfb014161abc3b43ae25989d5"
+      sha256: b9da305ac7c39faa3f030eccd175340f968459dae4af175130b3fc47e40d76ce
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.2"
+    version: "3.1.3"
 sdks:
   dart: ">=3.6.0 <4.0.0"
   flutter: ">=3.27.0"

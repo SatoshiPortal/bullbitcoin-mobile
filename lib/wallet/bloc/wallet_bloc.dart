@@ -48,11 +48,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         super(WalletState(wallet: wallet)) {
     on<LoadWallet>(_loadWallet);
     on<SyncWallet>(_syncWallet, transformer: droppable());
+    on<RemoveInternalWallet>(_removeInternalWallet);
     on<KillSync>(_killSync);
     on<UpdateWallet>(_updateWallet, transformer: sequential());
     on<GetBalance>(_getBalance);
     on<ListTransactions>(_listTransactions);
     on<GetFirstAddress>(_getFirstAddress);
+
     add(LoadWallet(saveDir));
   }
 
@@ -117,6 +119,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     add(GetFirstAddress());
     await Future.delayed(200.ms);
     add(SyncWallet());
+  }
+
+  FutureOr<void> _removeInternalWallet(
+    RemoveInternalWallet event,
+    Emitter<WalletState> emit,
+  ) {
+    _walletsRepository.removeBdkWallet(state.wallet?.id ?? '');
   }
 
   FutureOr<void> _killSync(KillSync event, Emitter<WalletState> emit) {
