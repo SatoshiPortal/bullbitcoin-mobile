@@ -139,7 +139,7 @@ class HomeTxItem extends StatelessWidget {
 
     var amount = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(
-        tx.getNetAmountIncludingFees(),
+        isReceive ? tx.getNetAmountToPayee() : tx.getNetAmountIncludingFees(),
         isLiquid: tx.isLiquid,
       ),
     );

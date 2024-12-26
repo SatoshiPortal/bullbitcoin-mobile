@@ -287,10 +287,13 @@ class HomeTxItem2 extends StatelessWidget {
     // if (showOnlySwap) return _SwapTxHomeListItem(transaction: tx);
 
     final label = tx.label ?? '';
+    final isReceive = tx.isReceived();
 
     final amount = context.select(
-      (CurrencyCubit x) => x.state
-          .getAmountInUnits(tx.getNetAmountIncludingFees(), removeText: true),
+      (CurrencyCubit x) => x.state.getAmountInUnits(
+        isReceive ? tx.getNetAmountToPayee() : tx.getNetAmountIncludingFees(),
+        removeText: true,
+      ),
     );
 
     final units = context.select(
@@ -334,8 +337,6 @@ class HomeTxItem2 extends StatelessWidget {
           ? 'assets/tx_status_failed.png'
           : statusImg;
     }
-
-    final isReceive = tx.isReceived();
 
     final amt = '${isReceive ? '' : ''}${amount.replaceAll("-", "")}';
 
