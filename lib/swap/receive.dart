@@ -365,7 +365,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
 
     final amtStr = context.select(
       (CurrencyCubit _) => _.state.getAmountInUnits(
-        amt,
+        amt.abs(),
         isLiquid: isLiq,
       ),
     );
@@ -374,7 +374,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
     final defaultCurrency = context
         .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
     final fiatAmt =
-        context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
+        context.select((CurrencyCubit cubit) => cubit.state.fiatAmt.abs());
     final isTestNet =
         context.select((NetworkCubit cubit) => cubit.state.testnet);
     final fiatUnit = defaultCurrency?.name ?? '';
