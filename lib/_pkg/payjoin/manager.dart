@@ -246,7 +246,8 @@ class PayjoinManager {
                 });
               case 'proposal_sent':
                 await _cleanupSession(receiver.id());
-                await _payjoinStorage.markSenderSessionComplete(receiver.id());
+                await _payjoinStorage
+                    .markReceiverSessionComplete(receiver.id());
                 completer.complete(null);
             }
           } catch (e) {
