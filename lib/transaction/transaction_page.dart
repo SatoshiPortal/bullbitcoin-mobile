@@ -728,7 +728,7 @@ class _OnchainSwapDetails extends StatelessWidget {
       if (receiveTx != null) {
         toAmtStr = context.select(
           (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
-            receiveTx!.getNetAmountIncludingFees(),
+            receiveTx!.getNetAmountIncludingFees().abs(),
             removeText: true,
           ),
         );
