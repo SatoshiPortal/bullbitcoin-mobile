@@ -107,10 +107,10 @@ packages:
     description:
       path: "."
       ref: trunk
-      resolved-ref: "4845e028a0b6a370656c43929c61aff39dbfa409"
+      resolved-ref: c55f68ae02bb01b9d42c85dbec9abb2879ed2de1
       url: "https://github.com/SatoshiPortal/boltz-dart.git"
     source: git
-    version: "0.1.6"
+    version: "0.1.7"
   boolean_selector:
     dependency: transitive
     description:
@@ -882,7 +882,7 @@ packages:
     description:
       path: "."
       ref: trunk
-      resolved-ref: "79247f0e87dd90ec95c088649b9db3bbf9e10acd"
+      resolved-ref: "192bf6810b169fe1cfcf336f45a015b433cca6c9"
       url: "https://github.com/SatoshiPortal/lwk-dart.git"
     source: git
     version: "0.1.5"

@@ -765,7 +765,7 @@ class SwapBoltz {
         direction: direction,
         mnemonic: mnemonic,
         index: BigInt.from(index),
-        amount: amount,
+        amount: BigInt.from(amount),
         isTestnet:
             network == Chain.bitcoinTestnet || network == Chain.liquidTestnet,
         btcElectrumUrl: btcElectrumUrl,
