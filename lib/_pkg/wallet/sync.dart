@@ -64,6 +64,14 @@ class WalletSync implements IWalletSync {
                   .deleteWalletFile(wallet.id);
               // create db file or restart app
             }
+            if (errSyncing.message.contains(
+              'LwkError(msg: UpdateOnDifferentStatus { wollet_status: ',
+            )) {
+              locator
+                  .get<WalletsStorageRepository>()
+                  .deleteWalletFile(wallet.id);
+              // create db file or restart app
+            }
             throw errSyncing;
           }
           final err =

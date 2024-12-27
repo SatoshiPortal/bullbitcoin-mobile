@@ -136,7 +136,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future _syncWallet(SyncWallet event, Emitter<WalletState> emit) async {
     if (state.wallet == null) return;
     if (state.syncing) return;
-
+    if (state.errLoadingWallet.isNotEmpty) {
+      add(LoadWallet(state.wallet!.getWalletStorageString()));
+      return;
+    }
+    // if (walletIsLoaded)
     // final (wallet, _) = await _walletsStorageRepository.readWallet(
     //   walletHashId: state.wallet!.id,
     // );

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
@@ -28,6 +30,29 @@ class LWKCreate {
 
       return (w, null);
     } catch (e) {
+      try {
+        if (e.toString().contains(
+              'LwkError(msg: UpdateOnDifferentStatus { wollet_status: ',
+            )) {
+          final appDocDir = await getApplicationDocumentsDirectory();
+          final String dbDir =
+              '${appDocDir.path}/${wallet.getWalletStorageString()}';
+          // delete dbDir
+          final Directory dbDirect = Directory(dbDir);
+          if (dbDirect.existsSync()) {
+            await dbDirect.delete(recursive: true);
+          }
+        }
+      } catch (e) {
+        return (
+          null,
+          Err(
+            e.toString(),
+            title: 'Error occurred while creating wallet',
+            solution: 'Please try again.',
+          )
+        );
+      }
       return (
         null,
         Err(
