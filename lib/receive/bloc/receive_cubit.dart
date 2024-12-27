@@ -1,6 +1,5 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
@@ -60,6 +59,10 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     await isPayjoinEnabled();
     await loadAddress();
 
+    payjoinInit();
+  }
+
+  void payjoinInit() {
     final baseType = state.walletBloc!.state.wallet!.baseWalletType;
 
     if (state.paymentNetwork == PaymentNetwork.bitcoin &&
@@ -299,6 +302,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         description: '',
       ),
     );
+
+    payjoinInit();
   }
 
   void descriptionChanged(String description) {
