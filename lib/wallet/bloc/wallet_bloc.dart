@@ -105,6 +105,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         loadingWallet: false,
         errLoadingWallet: '',
         name: wallet!.name ?? '',
+        loadingAttepmtsLeft: 3,
       ),
     );
 
@@ -137,8 +138,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     if (state.wallet == null) return;
     if (state.syncing) return;
     if (state.errLoadingWallet.isNotEmpty && state.loadingAttepmtsLeft > 0) {
-      add(LoadWallet(state.wallet!.getWalletStorageString()));
       emit(state.copyWith(loadingAttepmtsLeft: state.loadingAttepmtsLeft - 1));
+      add(LoadWallet(state.wallet!.getWalletStorageString()));
       return;
     }
     // if (walletIsLoaded)
