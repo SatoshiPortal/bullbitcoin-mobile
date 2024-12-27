@@ -35,9 +35,10 @@ class PayjoinSenderPostMessageASuccessEvent extends PayjoinEvent {
   PayjoinSenderPostMessageASuccessEvent({required this.pjUri});
 }
 
-class PayjoinFailureEvent extends PayjoinEvent {
+class PayjoinSendFailureEvent extends PayjoinEvent {
+  final String pjUri;
   final Object? error;
-  PayjoinFailureEvent({this.error});
+  PayjoinSendFailureEvent({required this.pjUri, this.error});
 }
 
 class PayjoinEventListener extends StatefulWidget {
