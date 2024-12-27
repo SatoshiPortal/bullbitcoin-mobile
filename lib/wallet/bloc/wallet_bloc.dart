@@ -136,8 +136,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   Future _syncWallet(SyncWallet event, Emitter<WalletState> emit) async {
     if (state.wallet == null) return;
     if (state.syncing) return;
-    if (state.errLoadingWallet.isNotEmpty) {
+    if (state.errLoadingWallet.isNotEmpty && state.loadingAttepmtsLeft > 0) {
       add(LoadWallet(state.wallet!.getWalletStorageString()));
+      emit(state.copyWith(loadingAttepmtsLeft: state.loadingAttepmtsLeft - 1));
       return;
     }
     // if (walletIsLoaded)

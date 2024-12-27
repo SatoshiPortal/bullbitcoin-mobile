@@ -27,6 +27,7 @@ class WalletState with _$WalletState {
     @Default(0) int syncErrCount,
     // Address? newAddress,
     Address? firstAddress,
+    @Default(3) int loadingAttepmtsLeft,
     // required WalletCreate walletCreate,
   }) = _WalletState;
   const WalletState._();
