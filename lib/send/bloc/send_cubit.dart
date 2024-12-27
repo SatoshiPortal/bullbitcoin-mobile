@@ -592,19 +592,32 @@ class SendCubit extends Cubit<SendState> {
 
   void sendAllCoin(bool sendAll) {
     if (state.selectedWalletBloc == null) return;
-    final balance = state.selectedWalletBloc!.state.balanceSats();
     emit(
       state.copyWith(
         sendAllCoin: sendAll,
       ),
     );
-    final amount = sendAll
+    final balance = state.selectedWalletBloc!.state.balanceSats();
+
+    final directAmt = sendAll
         ? balance
         : state.isLnInvoice()
             ? state.invoice!.getAmount()
             : _currencyCubit.state.amount;
-    _currencyCubit.updateAmountDirect(amount);
-    _currencyCubit.updateAmount(amount == 0 ? '' : amount.toString());
+
+    _currencyCubit.updateAmountDirect(directAmt);
+
+    final bal = _currencyCubit.state.unitsInSats
+        ? state.selectedWalletBloc!.state.balanceSats().toString()
+        : state.selectedWalletBloc!.state.balanceStr();
+
+    _currencyCubit.updateAmount(
+      directAmt == 0
+          ? ''
+          : !sendAll && state.isLnInvoice()
+              ? directAmt.toString()
+              : bal,
+    );
 
     checkBalance();
   }
