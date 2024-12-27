@@ -69,11 +69,14 @@ class SendCubit extends Cubit<SendState> {
     // Subscribe to payjoin events to update the send state
     _pjEventSubscription = PayjoinEventBus().stream.listen((event) {
       if (event is PayjoinSenderPostMessageASuccessEvent) {
+        if (event.pjUri != state.payjoinEndpoint.toString()) return;
         emit(
           state.copyWith(
             isPayjoinPostSuccess: true,
           ),
         );
+      } else if (event is PayjoinBroadcastEvent) {
+        state.selectedWalletBloc!.add(SyncWallet());
       } else if (event is PayjoinFailureEvent) {
         emit(
           state.copyWith(
@@ -992,16 +995,12 @@ class SendCubit extends Cubit<SendState> {
     // TODO copy originalPsbt.extractTx() to state.tx
     // emit(state.copyWith(tx: originalPsbtTxWithId));
     emit(state.copyWith(sending: true, sent: false));
-    await _payjoinManager.spawnNewSender(
+    _payjoinManager.spawnNewSender(
       isTestnet: _networkCubit.state.testnet,
       sender: state.payjoinSender!,
       wallet: wallet,
       pjUrl: state.payjoinEndpoint!.toString(),
     );
-    await Future.delayed(150.ms);
-    state.selectedWalletBloc!.add(SyncWallet());
-
-    emit(state.copyWith(sending: false, sent: true));
   }
 
   Future<void> baseLayerSend() async {

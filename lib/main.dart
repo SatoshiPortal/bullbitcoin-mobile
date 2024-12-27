@@ -27,12 +27,15 @@ import 'package:go_router/go_router.dart';
 import 'package:lwk_dart/lwk_dart.dart';
 import 'package:oktoast/oktoast.dart';
 
+import 'package:payjoin_flutter/src/generated/frb_generated.dart';
+
 Future main({bool fromTest = false}) async {
   FlutterError.onError = (err) =>
       log('Flutter Error:' + err.toString(minLevel: DiagnosticLevel.debug));
 
   runZonedGuarded(() async {
     if (!fromTest) WidgetsFlutterBinding.ensureInitialized();
+    await core.init();
     await LibLwk.init();
     await LibBoltz.init();
     await dotenv.load(isOptional: true);

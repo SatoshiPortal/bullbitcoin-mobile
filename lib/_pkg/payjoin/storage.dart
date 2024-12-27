@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:flutter/material.dart';
 import 'package:payjoin_flutter/receive.dart';
 import 'package:payjoin_flutter/send.dart';
 
@@ -86,6 +87,7 @@ class PayjoinStorage {
             receivers.add(RecvSession.fromJson(obj));
           } catch (e) {
             // Skip invalid entries
+            debugPrint('Error: $e');
           }
         }
       });
@@ -150,6 +152,7 @@ class PayjoinStorage {
             senders.add(SendSession.fromJson(obj));
           } catch (e) {
             // Skip invalid entries
+            debugPrint('Error: $e');
           }
         }
       });
