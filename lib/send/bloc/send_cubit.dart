@@ -77,7 +77,8 @@ class SendCubit extends Cubit<SendState> {
         );
       } else if (event is PayjoinBroadcastEvent) {
         state.selectedWalletBloc!.add(SyncWallet());
-      } else if (event is PayjoinFailureEvent) {
+      } else if (event is PayjoinSendFailureEvent &&
+          event.pjUri == state.payjoinEndpoint.toString()) {
         emit(
           state.copyWith(
             errSending: event.error.toString(),

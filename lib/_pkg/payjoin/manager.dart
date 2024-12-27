@@ -123,7 +123,7 @@ class PayjoinManager {
           }
         } else if (message is Err) {
           PayjoinEventBus().emit(
-            PayjoinFailureEvent(error: message),
+            PayjoinSendFailureEvent(pjUri: pjUri, error: message),
           );
           await _cleanupSession(pjUri);
           completer.complete(message);
