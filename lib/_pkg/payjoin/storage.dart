@@ -42,6 +42,7 @@ class PayjoinStorage {
         isTestnet,
         receiver,
         walletId,
+        PayjoinSessionStatus.pending,
       );
 
       await _hiveStorage.saveValue(
@@ -70,6 +71,28 @@ class PayjoinStorage {
           expected: e.toString() == 'No Receiver with id $sessionId',
         )
       );
+    }
+  }
+
+  Future<Err?> markReceiverSessionComplete(String sessionId) async {
+    try {
+      final (session, err) = await readReceiverSession(sessionId);
+      if (err != null) return err;
+
+      final updatedSession = RecvSession(
+        session!.isTestnet,
+        session.receiver,
+        session.walletId,
+        PayjoinSessionStatus.success,
+      );
+
+      await _hiveStorage.saveValue(
+        key: receiverPrefix + sessionId,
+        value: jsonEncode(updatedSession.toJson()),
+      );
+      return null;
+    } catch (e) {
+      return Err(e.toString());
     }
   }
 
@@ -109,6 +132,7 @@ class PayjoinStorage {
         sender,
         walletId,
         pjUrl,
+        PayjoinSessionStatus.pending,
       );
 
       await _hiveStorage.saveValue(
@@ -136,6 +160,29 @@ class PayjoinStorage {
           expected: e.toString() == 'No Sender with id $pjUrl',
         )
       );
+    }
+  }
+
+  Future<Err?> markSenderSessionComplete(String pjUrl) async {
+    try {
+      final (session, err) = await readSenderSession(pjUrl);
+      if (err != null) return err;
+
+      final updatedSession = SendSession(
+        session!.isTestnet,
+        session.sender,
+        session.walletId,
+        session.pjUri,
+        PayjoinSessionStatus.success,
+      );
+
+      await _hiveStorage.saveValue(
+        key: senderPrefix + pjUrl,
+        value: jsonEncode(updatedSession.toJson()),
+      );
+      return null;
+    } catch (e) {
+      return Err(e.toString());
     }
   }
 

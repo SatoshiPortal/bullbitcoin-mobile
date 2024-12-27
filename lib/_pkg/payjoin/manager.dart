@@ -113,12 +113,14 @@ class PayjoinManager {
               completer.complete(err);
               return;
             }
+            // Successfully sent payjoin
             PayjoinEventBus().emit(
               PayjoinBroadcastEvent(
                 txid: wtxid!.$2,
               ),
             );
             await _cleanupSession(pjUri);
+            await _payjoinStorage.markSenderSessionComplete(pjUri);
             completer.complete(null);
           }
         } else if (message is Err) {
@@ -244,6 +246,7 @@ class PayjoinManager {
                 });
               case 'proposal_sent':
                 await _cleanupSession(receiver.id());
+                await _payjoinStorage.markSenderSessionComplete(receiver.id());
                 completer.complete(null);
             }
           } catch (e) {
@@ -295,10 +298,13 @@ class PayjoinManager {
     if (senderErr != null) throw senderErr;
 
     final filteredReceivers = receiverSessions
-        .where((session) => session.walletId == wallet.id)
+        .where((session) =>
+            session.walletId == wallet.id &&
+            session.status != PayjoinSessionStatus.success)
         .toList();
     final filteredSenders = senderSessions.where((session) {
-      return session.walletId == wallet.id;
+      return session.walletId == wallet.id &&
+          session.status != PayjoinSessionStatus.success;
     }).toList();
 
     final spawnedReceivers = filteredReceivers.map((session) {
@@ -359,8 +365,19 @@ class PayjoinManager {
   }
 }
 
+enum PayjoinSessionStatus {
+  pending,
+  success,
+}
+
 class SendSession {
-  SendSession(this._isTestnet, this._sender, this._walletId, this._pjUri);
+  SendSession(
+    this._isTestnet,
+    this._sender,
+    this._walletId,
+    this._pjUri,
+    this._status,
+  );
 
   // Deserialize JSON to Receiver
   factory SendSession.fromJson(Map<String, dynamic> json) {
@@ -369,6 +386,9 @@ class SendSession {
       Sender.fromJson(json['sender'] as String),
       json['walletId'] as String,
       json['pjUri'] as String,
+      json['status'] != null
+          ? PayjoinSessionStatus.values.byName(json['status'] as String)
+          : null,
     );
   }
 
@@ -376,12 +396,12 @@ class SendSession {
   final Sender _sender;
   final String _walletId;
   final String _pjUri;
-
+  final PayjoinSessionStatus? _status;
   bool get isTestnet => _isTestnet;
   Sender get sender => _sender;
   String get walletId => _walletId;
   String get pjUri => _pjUri;
-
+  PayjoinSessionStatus? get status => _status;
   // Serialize Receiver to JSON
   Map<String, dynamic> toJson() {
     return {
@@ -389,34 +409,46 @@ class SendSession {
       'sender': _sender.toJson(),
       'walletId': _walletId,
       'pjUri': _pjUri,
+      'status': _status?.name,
     };
   }
 }
 
 class RecvSession {
-  RecvSession(this._isTestnet, this._receiver, this._walletId);
+  RecvSession(
+    this._isTestnet,
+    this._receiver,
+    this._walletId,
+    this._status,
+  );
 
   factory RecvSession.fromJson(Map<String, dynamic> json) {
     return RecvSession(
       json['isTestnet'] as bool,
       Receiver.fromJson(json['receiver'] as String),
       json['walletId'] as String,
+      json['status'] != null
+          ? PayjoinSessionStatus.values.byName(json['status'] as String)
+          : null,
     );
   }
 
   final bool _isTestnet;
   final Receiver _receiver;
   final String _walletId;
+  final PayjoinSessionStatus? _status;
 
   bool get isTestnet => _isTestnet;
   Receiver get receiver => _receiver;
   String get walletId => _walletId;
+  PayjoinSessionStatus? get status => _status;
 
   Map<String, dynamic> toJson() {
     return {
       'isTestnet': isTestnet,
       'receiver': receiver.toJson(),
       'walletId': walletId,
+      'status': _status?.name,
     };
   }
 }
