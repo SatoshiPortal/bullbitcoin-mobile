@@ -24,6 +24,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
           ),
         ) {
     loadAddress();
+    if (walletBloc != null) updateWalletBloc(walletBloc);
   }
 
   final WalletAddress _walletAddress;
@@ -36,7 +37,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   Future<void> updateWalletBloc(WalletBloc walletBloc) async {
-    if (state.oneWallet) return;
+    // if (state.oneWallet) return;
     emit(
       state.copyWith(
         walletBloc: walletBloc,
