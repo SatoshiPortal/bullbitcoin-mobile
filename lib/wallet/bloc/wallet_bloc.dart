@@ -392,11 +392,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           }
 
         case UpdateWalletTypes.utxos:
-          if (eventWallet.utxos.isNotEmpty) {
-            storageWallet = storageWallet!.copyWith(
-              utxos: eventWallet.utxos,
-            );
-          }
+          storageWallet = storageWallet!.copyWith(utxos: eventWallet.utxos);
 
         case UpdateWalletTypes.settings:
           if (eventWallet.backupTested != storageWallet!.backupTested) {
