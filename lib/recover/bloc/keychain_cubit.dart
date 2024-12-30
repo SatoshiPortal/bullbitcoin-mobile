@@ -9,7 +9,8 @@ import 'package:hex/hex.dart';
 import 'package:http/http.dart' as http;
 
 class KeychainCubit extends Cubit<KeychainState> {
-  KeychainCubit({required this.filePicker}) : super(const KeychainState());
+  KeychainCubit({required String backupId, required this.filePicker})
+      : super(KeychainState(backupId: backupId));
 
   final FilePick filePicker;
 
@@ -39,7 +40,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
 
     final response = await http.post(
-      Uri.parse(keychainapi + '/recover_key'),
+      Uri.parse('$keychainapi/recover_key'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'backup_id': state.backupId,

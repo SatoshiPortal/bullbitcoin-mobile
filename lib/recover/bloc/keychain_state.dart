@@ -7,7 +7,7 @@ class KeychainState with _$KeychainState {
   const factory KeychainState({
     @Default('') String error,
     @Default('') String backupKey,
-    @Default('') String backupId,
+    required String backupId,
     @Default('') String secret,
   }) = _KeychainState;
 }
