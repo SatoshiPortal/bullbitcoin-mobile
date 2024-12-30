@@ -101,26 +101,25 @@ RUN echo "storePassword=android" > ~/app/android/key.properties && \
 # Pre-build the project to download all necessary dependencies
 RUN flutter precache
 
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-ENV PATH=$JAVA_HOME/bin:$PATH
+RUN dart run build_runner build --delete-conflicting-outputs
 
 # Build the AAB (Android App Bundle)
-RUN flutter build appbundle --release
+RUN flutter build apk --release
 
-# Generate split APKs
-RUN bundletool build-apks --bundle=~/app/build/app/outputs/bundle/release/app-release.aab --output=~/app/app.apks --device-spec=~/app/device-spec.json
+# # Generate split APKs
+# RUN bundletool build-apks --bundle=~/app/build/app/outputs/bundle/release/app-release.aab --output=~/app/app.apks --device-spec=~/app/device-spec.json
 
-# Extract specific APKs
-RUN unzip -p ~/app/app.apks splits/base-master.apk > ~/app/base.apk && \
-    unzip -p ~/app/app.apks splits/base-armeabi_v7a.apk > ~/app/armeabi_v7a.apk && \
-    unzip -p ~/app/app.apks splits/base-en.apk > ~/app/en.apk && \
-    unzip -p ~/app/app.apks splits/base-xhdpi.apk > ~/app/xhdpi.apk
+# # Extract specific APKs
+# RUN unzip -p ~/app/app.apks splits/base-master.apk > ~/app/base.apk && \
+#     unzip -p ~/app/app.apks splits/base-armeabi_v7a.apk > ~/app/armeabi_v7a.apk && \
+#     unzip -p ~/app/app.apks splits/base-en.apk > ~/app/en.apk && \
+#     unzip -p ~/app/app.apks splits/base-xhdpi.apk > ~/app/xhdpi.apk
 
-# Clean up
-RUN rm ~/app/app.apks
+# # Clean up
+# RUN rm ~/app/app.apks
 
-# Create the output directory
-RUN mkdir -p ~/app/build-output/
+# # Create the output directory
+# RUN mkdir -p ~/app/build-output/
 
-# Output the build artifacts
-CMD ["sh", "-c", "cp ~/app/base.apk ~/app/armeabi_v7a.apk ~/app/en.apk ~/app/xhdpi.apk ~/app/build/app/outputs/bundle/release/app-release.aab ~/app/build-output/"]
+# # Output the build artifacts
+# CMD ["sh", "-c", "cp ~/app/base.apk ~/app/armeabi_v7a.apk ~/app/en.apk ~/app/xhdpi.apk ~/app/build/app/outputs/bundle/release/app-release.aab ~/app/build-output/"]
