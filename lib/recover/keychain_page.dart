@@ -16,7 +16,10 @@ class KeychainRecoverPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<KeychainCubit>(
-      create: (_) => KeychainCubit(filePicker: locator<FilePick>()),
+      create: (_) => KeychainCubit(
+        filePicker: locator<FilePick>(),
+        backupId: backupId,
+      ),
       child: Scaffold(
         backgroundColor: Colors.amber,
         appBar: AppBar(
