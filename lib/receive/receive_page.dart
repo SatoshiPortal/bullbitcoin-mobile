@@ -1131,14 +1131,14 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
               child: const ListTile(
                 leading: Icon(Icons.warning, color: Colors.orange),
                 title: Text(
-                  'Payjoin transactions',
+                  'Payjoin',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                 ),
                 subtitle: Text(
-                  'Wallet does not meet the criteria',
+                  'To receive with Payjoin, your wallet must already hold Bitcoin',
                   style: TextStyle(color: Colors.black87),
                 ),
               ),
