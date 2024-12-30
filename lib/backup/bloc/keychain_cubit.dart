@@ -54,6 +54,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         emit(state.copyWith(error: 'Key not secured \n${response.statusCode}'));
       }
     } catch (e) {
+      print(e);
       emit(state.copyWith(error: 'Server Inaccessible'));
     }
   }
