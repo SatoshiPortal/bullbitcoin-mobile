@@ -1,5 +1,5 @@
 # Use a base Ubuntu image
-FROM ubuntu:20.04
+FROM --platform=linux/amd64 ubuntu:20.04
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -77,26 +77,30 @@ RUN yes | sdkmanager --licenses
 RUN sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
 # Clean up existing app directory
-RUN rm -rf ~/app
+RUN sudo rm -rf /app
+
+RUN sudo mkdir /app
+
+RUN sudo chown -R $USER /app
 
 # Clone the Bull Bitcoin mobile repository
-RUN git clone https://github.com/SatoshiPortal/bullbitcoin-mobile ~/app
+RUN git clone https://github.com/SatoshiPortal/bullbitcoin-mobile /app
 
 # Copy device-spec.json into the container
-COPY device-spec.json ~/app/device-spec.json
+COPY device-spec.json /app/device-spec.json
 
-WORKDIR /home/$USER/app
+WORKDIR /app
 
 RUN flutter pub get
 
 # Generate a fake keystore
-RUN keytool -genkey -v -keystore ~/app/android/app/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
+RUN keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
 
 # Set up key.properties
-RUN echo "storePassword=android" > ~/app/android/key.properties && \
-    echo "keyPassword=android" >> ~/app/android/key.properties && \
-    echo "keyAlias=upload" >> ~/app/android/key.properties && \
-    echo "storeFile=~/app/upload-keystore.jks" >> ~/app/android/key.properties
+RUN echo "storePassword=android" > /app/android/key.properties && \
+    echo "keyPassword=android" >> /app/android/key.properties && \
+    echo "keyAlias=upload" >> /app/android/key.properties && \
+    echo "storeFile=/app/upload-keystore.jks" >> /app/android/key.properties
 
 # Pre-build the project to download all necessary dependencies
 RUN flutter precache
