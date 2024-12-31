@@ -5,8 +5,6 @@ FROM --platform=linux/amd64 ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV USER="docker"
 
-RUN apt update && apt install -y sudo
-
 # Install necessary dependencies
 RUN apt update && apt install -y \
     curl \
@@ -24,24 +22,16 @@ RUN apt update && apt install -y \
     software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
-
+RUN apt update && apt install -y sudo
 RUN adduser --disabled-password --gecos '' $USER
 RUN adduser $USER sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER $USER
-
-# this is where I was running into problems with the other approaches
 RUN sudo apt update 
 
 # Install OpenJDK 17
 RUN sudo apt-get update && sudo apt-get install -y openjdk-17-jdk && sudo rm -rf /var/lib/apt/lists/*
-
-# Install bundletool
-RUN sudo wget https://github.com/google/bundletool/releases/download/1.15.5/bundletool-all-1.15.5.jar -O /usr/local/bin/bundletool.jar
-RUN sudo sh -c 'echo "#!/bin/sh\njava -jar /usr/local/bin/bundletool.jar \"$@\"" > /usr/local/bin/bundletool'
-RUN sudo chmod +x /usr/local/bin/bundletool
-
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -105,25 +95,7 @@ RUN echo "storePassword=android" > /app/android/key.properties && \
 # Pre-build the project to download all necessary dependencies
 RUN flutter precache
 
+# Generates freezed files
 RUN dart run build_runner build --delete-conflicting-outputs
 
-# Build the AAB (Android App Bundle)
 RUN flutter build apk --release
-
-# # Generate split APKs
-# RUN bundletool build-apks --bundle=~/app/build/app/outputs/bundle/release/app-release.aab --output=~/app/app.apks --device-spec=~/app/device-spec.json
-
-# # Extract specific APKs
-# RUN unzip -p ~/app/app.apks splits/base-master.apk > ~/app/base.apk && \
-#     unzip -p ~/app/app.apks splits/base-armeabi_v7a.apk > ~/app/armeabi_v7a.apk && \
-#     unzip -p ~/app/app.apks splits/base-en.apk > ~/app/en.apk && \
-#     unzip -p ~/app/app.apks splits/base-xhdpi.apk > ~/app/xhdpi.apk
-
-# # Clean up
-# RUN rm ~/app/app.apks
-
-# # Create the output directory
-# RUN mkdir -p ~/app/build-output/
-
-# # Output the build artifacts
-# CMD ["sh", "-c", "cp ~/app/base.apk ~/app/armeabi_v7a.apk ~/app/en.apk ~/app/xhdpi.apk ~/app/build/app/outputs/bundle/release/app-release.aab ~/app/build-output/"]
