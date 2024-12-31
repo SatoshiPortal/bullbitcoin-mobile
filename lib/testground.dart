@@ -1,7 +1,7 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/organisms/swap_widget.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/swap/ui_swapwidget/swap_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

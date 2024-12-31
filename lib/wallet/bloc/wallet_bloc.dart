@@ -6,11 +6,11 @@ import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
@@ -28,8 +28,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required WalletAddress walletAddress,
     required NetworkCubit networkCubit,
     // required WatchTxsBloc swapBloc,
-    required NetworkRepository networkRepository,
-    required WalletsRepository walletsRepository,
+    required InternalNetworkRepository networkRepository,
+    required InternalWalletsRepository walletsRepository,
     required WalletTx walletTransactionn,
     required WalletCreate walletCreatee,
     bool fromStorage = true,
@@ -59,8 +59,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }
 
   final WalletsStorageRepository _walletsStorageRepository;
-  final NetworkRepository _networkRepository;
-  final WalletsRepository _walletsRepository;
+  final InternalNetworkRepository _networkRepository;
+  final InternalWalletsRepository _walletsRepository;
 
   final WalletSync _walletSync;
   final WalletBalance _walletBalance;

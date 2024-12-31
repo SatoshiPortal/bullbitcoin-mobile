@@ -6,10 +6,10 @@ import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -26,7 +26,7 @@ class TransactionCubit extends Cubit<TransactionState> {
     required WalletSensitiveStorageRepository walletSensRepository,
     required WalletAddress walletAddress,
     required WalletUpdate walletUpdate,
-    required WalletsRepository walletsRepository,
+    required InternalWalletsRepository walletsRepository,
     required BDKSensitiveCreate bdkSensitiveCreate,
   })  : _bdkTx = bdkTx,
         _bdkSensitiveCreate = bdkSensitiveCreate,
@@ -49,7 +49,7 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   final WalletTx _walletTx;
   final WalletUpdate _walletUpdate;
-  final WalletsRepository _walletsRepository;
+  final InternalWalletsRepository _walletsRepository;
   final WalletSensitiveStorageRepository _walletSensRepository;
   final WalletAddress _walletAddress;
   final BDKSensitiveCreate _bdkSensitiveCreate;

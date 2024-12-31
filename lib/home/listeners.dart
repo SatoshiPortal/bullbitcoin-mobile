@@ -5,11 +5,11 @@ import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
 import 'package:bb_mobile/locator.dart';
@@ -34,8 +34,8 @@ class HomeWalletsSetupListener extends StatelessWidget {
           walletAddress: locator<WalletAddress>(),
           networkCubit: locator<NetworkCubit>(),
           // swapBloc: locator<WatchTxsBloc>(),
-          networkRepository: locator<NetworkRepository>(),
-          walletsRepository: locator<WalletsRepository>(),
+          networkRepository: locator<InternalNetworkRepository>(),
+          walletsRepository: locator<InternalWalletsRepository>(),
           walletTransactionn: locator<WalletTx>(),
           walletCreatee: locator<WalletCreate>(),
           wallet: w,

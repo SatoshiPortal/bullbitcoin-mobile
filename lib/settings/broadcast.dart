@@ -2,7 +2,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -35,7 +35,7 @@ class BroadcastPage extends StatelessWidget {
       networkCubit: locator<NetworkCubit>(),
       fileStorage: locator<FileStorage>(),
       homeCubit: locator<HomeCubit>(),
-      networkRepository: locator<NetworkRepository>(),
+      networkRepository: locator<InternalNetworkRepository>(),
       bdkTransactions: locator<BDKTransactions>(),
     );
 
@@ -83,7 +83,7 @@ class BroadcastPopUp extends StatelessWidget {
       networkCubit: locator<NetworkCubit>(),
       fileStorage: locator<FileStorage>(),
       homeCubit: locator<HomeCubit>(),
-      networkRepository: locator<NetworkRepository>(),
+      networkRepository: locator<InternalNetworkRepository>(),
       bdkTransactions: locator<BDKTransactions>(),
     );
 

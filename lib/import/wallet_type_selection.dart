@@ -3,11 +3,11 @@ import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -45,8 +45,8 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
           networkCubit: locator<NetworkCubit>(),
           // swapBloc: locator<WatchTxsBloc>(),
           wallet: w,
-          networkRepository: locator<NetworkRepository>(),
-          walletsRepository: locator<WalletsRepository>(),
+          networkRepository: locator<InternalNetworkRepository>(),
+          walletsRepository: locator<InternalWalletsRepository>(),
           walletTransactionn: locator<WalletTx>(),
           walletCreatee: locator<WalletCreate>(),
         ),

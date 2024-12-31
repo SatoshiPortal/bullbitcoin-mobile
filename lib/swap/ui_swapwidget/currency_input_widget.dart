@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/currency_new.dart';
-import 'package:bb_mobile/_ui/atoms/bb_form_field.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/swap/ui_swapwidget/bb_form_field.dart';
 import 'package:flutter/material.dart';
 
 /// Constraints: This component always require sats and btc to be first two currencies.

@@ -5,7 +5,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -23,7 +23,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     required FileStorage fileStorage,
     required HomeCubit homeCubit,
     required NetworkCubit networkCubit,
-    required NetworkRepository networkRepository,
+    required InternalNetworkRepository networkRepository,
     required BDKTransactions bdkTransactions,
   })  : _bdkTransactions = bdkTransactions,
         _networkRepository = networkRepository,
@@ -41,7 +41,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   final FileStorage _fileStorage;
   final HomeCubit _homeCubit;
   final NetworkCubit _networkCubit;
-  final NetworkRepository _networkRepository;
+  final InternalNetworkRepository _networkRepository;
   final BDKTransactions _bdkTransactions;
 
   @override

@@ -5,15 +5,15 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sync.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/locator.dart';
 
 class WalletSync implements IWalletSync {
   WalletSync({
-    required WalletsRepository walletsRepository,
-    required NetworkRepository networkRepository,
+    required InternalWalletsRepository walletsRepository,
+    required InternalNetworkRepository networkRepository,
     required BDKSync bdkSync,
     required LWKSync lwkSync,
   })  : _walletsRepository = walletsRepository,
@@ -21,8 +21,8 @@ class WalletSync implements IWalletSync {
         _bdkSync = bdkSync,
         _lwkSync = lwkSync;
 
-  final WalletsRepository _walletsRepository;
-  final NetworkRepository _networkRepository;
+  final InternalWalletsRepository _walletsRepository;
+  final InternalNetworkRepository _networkRepository;
   final BDKSync _bdkSync;
   final LWKSync _lwkSync;
 
