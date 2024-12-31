@@ -1,11 +1,13 @@
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
+import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/deep_link.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
+import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/payjoin/storage.dart';
@@ -35,8 +37,6 @@ import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
-import 'package:bb_mobile/_repository/bull_bitcoin_api.dart';
-import 'package:bb_mobile/_repository/mempool_api.dart';
 import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
@@ -86,9 +86,11 @@ Future _setupAPIs() async {
 
 Future _setupRepositories() async {
   locator.registerSingleton<InternalWalletsRepository>(
-      InternalWalletsRepository());
+    InternalWalletsRepository(),
+  );
   locator.registerSingleton<InternalNetworkRepository>(
-      InternalNetworkRepository());
+    InternalNetworkRepository(),
+  );
   locator.registerSingleton<WalletsStorageRepository>(
     WalletsStorageRepository(hiveStorage: locator<HiveStorage>()),
   );

@@ -1,12 +1,12 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
+import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/_repository/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -103,7 +103,7 @@ class _ReceivePageState extends State<ReceivePage> {
       );
     }
 
-    _receiveCubit.updateWalletBloc(walletBloc);
+    _receiveCubit.updateWallet(walletBloc);
 
     super.initState();
   }
@@ -275,7 +275,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
                 walletBlocs.where((wb) => wb.state.wallet == wallet).toList();
             if (blocs.isNotEmpty) {
               context.read<CreateSwapCubit>().removeWarnings();
-              context.read<ReceiveCubit>().updateWalletBloc(blocs[0]);
+              context.read<ReceiveCubit>().updateWallet(blocs[0]);
             }
           },
           value:

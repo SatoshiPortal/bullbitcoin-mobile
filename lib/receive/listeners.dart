@@ -47,7 +47,7 @@ class ReceiveListeners extends StatelessWidget {
             final secureWallet =
                 context.read<HomeCubit>().state.getMainSecureWallet(network);
             if (secureWallet == null) return;
-            context.read<ReceiveCubit>().updateWalletBloc(secureWallet);
+            context.read<ReceiveCubit>().updateWallet(secureWallet);
             context.read<ReceiveCubit>().clearSwitch();
           },
         ),
@@ -61,7 +61,7 @@ class ReceiveListeners extends StatelessWidget {
             final instantWallet =
                 context.read<HomeCubit>().state.getMainInstantWallet(network);
             if (instantWallet == null) return;
-            context.read<ReceiveCubit>().updateWalletBloc(instantWallet);
+            context.read<ReceiveCubit>().updateWallet(instantWallet);
             context.read<ReceiveCubit>().clearSwitch();
           },
         ),
