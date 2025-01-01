@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
@@ -48,9 +49,9 @@ const lqMainnetAddress =
     'lq1qq23h89g7u7ngp2n7p7tvek7n97dckyfyu89e3j875rqz35u8rd9tmy8fss0q7zke3lzj80834zl6t72pw2khqz0fkf6hnswne';
 
 class ReceivePage extends StatefulWidget {
-  const ReceivePage({super.key, this.walletBloc});
+  const ReceivePage({super.key, this.wallet});
 
-  final WalletBloc? walletBloc;
+  final Wallet? wallet;
 
   @override
   State<ReceivePage> createState() => _ReceivePageState();
@@ -81,12 +82,13 @@ class _ReceivePageState extends State<ReceivePage> {
     _receiveCubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
-      walletBloc: widget.walletBloc,
+      walletBloc:
+          widget.wallet != null ? createWalletBloc(widget.wallet!) : null,
       payjoinManager: locator<PayjoinManager>(),
     );
 
     final network = context.read<NetworkCubit>().state.getBBNetwork();
-    final walletBloc = widget.walletBloc ??
+    final walletBloc = widget.wallet ??
         context.read<HomeCubit>().state.getMainInstantWallet(network);
 
     if (walletBloc!.state.wallet!.isLiquid()) {
@@ -145,13 +147,13 @@ class _Screen extends StatelessWidget {
     );
 
     final watchOnly =
-        context.select((WalletBloc x) => x.state.wallet!.watchOnly());
+        context.select((WalletBloc x) => x.state.wallet.watchOnly());
     final mainWallet =
         context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
     context.select((WalletBloc x) => x.state.wallet);
 
     final walletIsLiquid = context.select(
-      (WalletBloc x) => x.state.wallet!.isLiquid(),
+      (WalletBloc x) => x.state.wallet.isLiquid(),
     );
     final showWarning =
         context.select((CreateSwapCubit x) => x.state.showWarning());
@@ -269,7 +271,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
       child: IgnorePointer(
         ignoring: oneWallet,
         child: WalletDropDown(
-          items: walletBlocs.map((wb) => wb.state.wallet!).toList(),
+          items: walletBlocs.map((wb) => wb.state.wallet).toList(),
           onChanged: (wallet) {
             final blocs =
                 walletBlocs.where((wb) => wb.state.wallet == wallet).toList();
@@ -279,7 +281,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
             }
           },
           value:
-              selectedWalletBloc?.state.wallet ?? walletBlocs[0].state.wallet!,
+              selectedWalletBloc?.state.wallet ?? walletBlocs[0].state.wallet,
         ),
 
         /*
@@ -649,7 +651,7 @@ class ChainSwapForm extends StatelessWidget {
     context.select((CurrencyCubit x) => x.state.amount);
 
     context.select(
-      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
+      (ReceiveCubit x) => x.state.walletBloc?.state.wallet.isLiquid(),
     );
     final err = context.select((CreateSwapCubit _) => _.state.err());
 
@@ -696,7 +698,7 @@ class ChainSwapForm extends StatelessWidget {
             onPressed: () async {
               final amt = context.read<CurrencyCubit>().state.amount;
               final receiveWallet =
-                  context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
+                  context.read<ReceiveCubit>().state.walletBloc!.state.wallet;
               final label = context.read<ReceiveCubit>().state.description;
 
               final matchingWalletForRefund = context
@@ -706,11 +708,11 @@ class ChainSwapForm extends StatelessWidget {
                   .map((bloc) => bloc.state.wallet)
                   .where(
                     (wallet) =>
-                        wallet?.baseWalletType != receiveWallet.baseWalletType,
+                        wallet.baseWalletType != receiveWallet.baseWalletType,
                   )
                   .first;
               final refundAddress =
-                  matchingWalletForRefund?.lastGeneratedAddress;
+                  matchingWalletForRefund.lastGeneratedAddress;
 
               context.read<CreateSwapCubit>().createOnChainSwapForReceive(
                     toWallet: receiveWallet,
@@ -748,7 +750,7 @@ class CreateLightningInvoice extends StatelessWidget {
     final amount = context.select((CurrencyCubit x) => x.state.amount);
 
     final isLiquid = context.select(
-      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
+      (ReceiveCubit x) => x.state.walletBloc?.state.wallet.isLiquid(),
     );
 
     int finalFee = 0;
@@ -815,7 +817,7 @@ class CreateLightningInvoice extends StatelessWidget {
             onPressed: () async {
               final amt = context.read<CurrencyCubit>().state.amount;
               final wallet =
-                  context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
+                  context.read<ReceiveCubit>().state.walletBloc!.state.wallet;
               final walletIsLiquid = wallet.isLiquid();
               final label = context.read<ReceiveCubit>().state.description;
               final isTestnet = context.read<NetworkCubit>().state.testnet;
@@ -951,7 +953,7 @@ class ReceiveQR extends StatelessWidget {
         context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
     final isLiquid = context.select(
-      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid() ?? false,
+      (ReceiveCubit x) => x.state.walletBloc?.state.wallet.isLiquid() ?? false,
     );
     final bip21Address = context.select(
       (ReceiveCubit x) => x.state.getAddressWithAmountAndLabel(
@@ -1100,7 +1102,7 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
         context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
     final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
     final isLiquid = context.select(
-      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid() ?? false,
+      (ReceiveCubit x) => x.state.walletBloc?.state.wallet.isLiquid() ?? false,
     );
     final bip21Address = context.select(
       (ReceiveCubit x) => x.state.getAddressWithAmountAndLabel(

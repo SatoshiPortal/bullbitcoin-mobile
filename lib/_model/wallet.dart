@@ -515,6 +515,10 @@ class Wallet with _$Wallet {
   List<SwapTx> swapsToProcess() {
     return swaps.where((swap) => swap.proceesTx() && !swap.failed()).toList();
   }
+
+  int balanceSats() => balance ?? 0;
+
+  String balanceStr() => ((balance ?? 0) / 100000000).toStringAsFixed(8);
 }
 
 @freezed

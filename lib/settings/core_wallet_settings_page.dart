@@ -1,5 +1,7 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -86,9 +88,9 @@ class SecureBitcoinWallet extends StatelessWidget {
       label: 'Secure Bitcoin wallet',
       onPressed: () {
         // final walletBlocs = context.read<HomeCubit>().state.walletBlocs;
-        final network = context.read<NetworkCubit>().state.getBBNetwork();
+        final network = context.read<NetworkRepository>().getBBNetwork;
         final walletBloc =
-            context.read<HomeCubit>().state.getMainSecureWallet(network);
+            context.read<AppWalletsRepository>().getMainSecureWallet(network);
         // final walletBloc = walletBlocs
         //     ?.where((w) => w.state.wallet?.network == network && w.state.wallet?.type == BBWalletType.secure)
         //     .first;
@@ -106,9 +108,9 @@ class InstantPaymentsWallet extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Instant Payments wallet',
       onPressed: () {
-        final network = context.read<NetworkCubit>().state.getBBNetwork();
+        final network = context.read<NetworkRepository>().getBBNetwork;
         final walletBloc =
-            context.read<HomeCubit>().state.getMainInstantWallet(network);
+            context.read<AppWalletsRepository>().getMainInstantWallet(network);
         context.push('/wallet-settings', extra: walletBloc);
       },
     );
@@ -131,7 +133,7 @@ class _ButtonList extends StatelessWidget {
       children: [
         for (final walletBloc in walletBlocs) ...[
           BBButton.textWithStatusAndRightArrow(
-            label: walletBloc.state.wallet?.name ?? 'Wallet',
+            label: walletBloc.state.wallet.name ?? 'Wallet',
             onPressed: () {
               context.push('/wallet-settings', extra: walletBloc);
             },
@@ -158,8 +160,8 @@ class ColdcardWallet extends StatelessWidget {
         final walletBloc = walletBlocs
             ?.where(
               (w) =>
-                  w.state.wallet?.network == network &&
-                  w.state.wallet?.type == BBWalletType.coldcard,
+                  w.state.wallet.network == network &&
+                  w.state.wallet.type == BBWalletType.coldcard,
             )
             .first;
         context.push('/wallet-settings', extra: walletBloc);

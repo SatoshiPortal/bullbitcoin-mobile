@@ -18,7 +18,8 @@ class SendState with _$SendState {
     @Default('') String address,
     @Default([]) List<String> enabledWallets,
     AddressNetwork? paymentNetwork,
-    WalletBloc? selectedWalletBloc,
+    // WalletBloc? selectedWalletBloc,
+    Wallet? selectedWallet,
     Invoice? invoice,
     @Default(false) bool showSendButton,
     @Default(false) bool buildingOnChain,
@@ -61,7 +62,7 @@ class SendState with _$SendState {
     return calculateTotalSelected() >= amount;
   }
 
-  bool isWatchOnly() => selectedWalletBloc?.state.wallet?.watchOnly() ?? false;
+  bool isWatchOnly() => selectedWallet?.watchOnly() ?? false;
 
   bool isLnInvoice() => invoice != null;
 
@@ -108,8 +109,7 @@ class SendState with _$SendState {
   //   return false;
   // }
 
-  bool checkIfMainWalletSelected() =>
-      selectedWalletBloc?.state.wallet?.mainWallet ?? false;
+  bool checkIfMainWalletSelected() => selectedWallet?.mainWallet ?? false;
 
   Future<(AddressNetwork?, Err?)> getPaymentNetwork(
     String address,
@@ -182,12 +182,12 @@ class SendState with _$SendState {
 
   WalletBloc selectLiqThenSecThenOtherBtc(List<WalletBloc> blocs) {
     final liqWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.isMain() && _.state.wallet!.isLiquid(),
+      (_) => _.state.wallet.isMain() && _.state.wallet.isLiquid(),
     );
     if (liqWalletIdx != -1) return blocs[liqWalletIdx];
 
     final secWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.isMain() && _.state.wallet!.isBitcoin(),
+      (_) => _.state.wallet.isMain() && _.state.wallet.isBitcoin(),
     );
     if (secWalletIdx != -1) return blocs[secWalletIdx];
 
@@ -198,14 +198,45 @@ class SendState with _$SendState {
     return blocs.first;
   }
 
+  Wallet selectLiqThenSecThenOtherBtc2(List<Wallet> wallets) {
+    final liqWalletIdx = wallets.indexWhere(
+      (_) => _.isMain() && _.isLiquid(),
+    );
+    if (liqWalletIdx != -1) return wallets[liqWalletIdx];
+
+    final secWalletIdx = wallets.indexWhere(
+      (_) => _.isMain() && _.isBitcoin(),
+    );
+    if (secWalletIdx != -1) return wallets[secWalletIdx];
+
+    wallets.sort(
+      (a, b) => b.balanceSats().compareTo(a.balanceSats()),
+    );
+
+    return wallets.first;
+  }
+
   WalletBloc selectMainBtcThenOtherHighestBalBtc(List<WalletBloc> blocs) {
     final mainWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.mainWallet,
+      (_) => _.state.wallet.mainWallet,
     );
     if (mainWalletIdx != -1) return blocs[mainWalletIdx];
 
     blocs.sort(
       (a, b) => b.state.balanceSats().compareTo(a.state.balanceSats()),
+    );
+
+    return blocs.first;
+  }
+
+  Wallet selectMainBtcThenOtherHighestBalBtc2(List<Wallet> blocs) {
+    final mainWalletIdx = blocs.indexWhere(
+      (_) => _.mainWallet,
+    );
+    if (mainWalletIdx != -1) return blocs[mainWalletIdx];
+
+    blocs.sort(
+      (a, b) => b.balanceSats().compareTo(a.balanceSats()),
     );
 
     return blocs.first;
@@ -220,8 +251,8 @@ class SendState with _$SendState {
   bool allowedSwitch(PaymentNetwork network) {
     if (!oneWallet) return true;
 
-    final wallet = selectedWalletBloc!.state.wallet;
-    if (wallet == null) return false;
+    // final wallet = selectedWalletBloc!.state.wallet;
+    final wallet = selectedWallet!;
 
     if (network == PaymentNetwork.bitcoin && wallet.isLiquid()) return false;
 
@@ -231,17 +262,16 @@ class SendState with _$SendState {
   }
 
   bool couldBeOnchainSwap() {
-    if (selectedWalletBloc == null ||
-        selectedWalletBloc?.state.wallet == null) {
+    if (selectedWallet == null) {
       return false;
     }
-    if (selectedWalletBloc!.state.wallet!.isBitcoin() &&
+    if (selectedWallet!.isBitcoin() &&
         (paymentNetwork == AddressNetwork.liquid ||
             paymentNetwork == AddressNetwork.bip21Liquid)) {
       return true;
     }
 
-    if (selectedWalletBloc!.state.wallet!.isLiquid() &&
+    if (selectedWallet!.isLiquid() &&
         (paymentNetwork == AddressNetwork.bitcoin ||
             paymentNetwork == AddressNetwork.bip21Bitcoin)) {
       return true;
@@ -253,7 +283,7 @@ class SendState with _$SendState {
   String getSendButtonLabel(bool sending) {
     if (couldBeOnchainSwap() == true) return 'Create Swap';
 
-    final watchOnly = selectedWalletBloc?.state.wallet?.watchOnly() ?? false;
+    final watchOnly = selectedWallet?.watchOnly() ?? false;
     final isLn = isLnInvoice();
 
     final String label = watchOnly

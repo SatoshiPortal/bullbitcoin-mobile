@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -11,7 +12,6 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/addresses.dart';
@@ -29,31 +29,33 @@ import 'package:go_router/go_router.dart';
 class WalletSettingsPage extends StatelessWidget {
   const WalletSettingsPage({
     super.key,
-    required this.walletBloc,
+    required this.wallet,
     // this.openTestBackup = false,
     this.openBackup = false,
   });
 
   // final bool openTestBackup;
   final bool openBackup;
-  final WalletBloc walletBloc;
+  final Wallet wallet;
 
   @override
   Widget build(BuildContext context) {
     // final wallet = home.state.selectedWalletCubit!;
     final walletSettings = WalletSettingsCubit(
-      wallet: walletBloc.state.wallet!,
+      // wallet: wallet.state.wallet!,
       // walletRead: locator<WalletSync>(),
-      walletBloc: walletBloc,
+      wallet: wallet,
+      appWalletsRepository: locator<AppWalletsRepository>(),
+      // walletBloc: wallet,
       fileStorage: locator<FileStorage>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
-      homeCubit: locator<HomeCubit>(),
+      // homeCubit: locator<HomeCubit>(),
     );
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: walletBloc),
+        BlocProvider.value(value: createWalletBloc(wallet)),
         BlocProvider.value(value: walletSettings),
       ],
       child: WalletSettingsListeners(
@@ -90,10 +92,11 @@ class _ScreenState extends State<_Screen> {
         // await Future.delayed(const Duration(milliseconds: 300));
         await context.push(
           '/wallet-settings/backup',
-          extra: (
-            context.read<WalletBloc>(),
-            context.read<WalletSettingsCubit>(),
-          ),
+          extra: context.read<WalletBloc>().state.wallet,
+          // (
+          //   context.read<WalletBloc>(),
+          //   context.read<WalletSettingsCubit>(),
+          // ),
         );
       } else {
         // showPage = true;
@@ -103,13 +106,11 @@ class _ScreenState extends State<_Screen> {
 
   @override
   Widget build(BuildContext context) {
-    final watchOnly = context
-        .select((WalletSettingsCubit cubit) => cubit.state.wallet.watchOnly());
+    final watchOnly =
+        context.select((WalletBloc cubit) => cubit.state.wallet.watchOnly());
 
-    final isInstant =
-        context.read<WalletBloc>().state.wallet?.isInstant() ?? false;
-    final isSecure =
-        context.read<WalletBloc>().state.wallet?.isSecure() ?? false;
+    final isInstant = context.read<WalletBloc>().state.wallet.isInstant();
+    final isSecure = context.read<WalletBloc>().state.wallet.isSecure();
     // if (!showPage) return const Scaffold(body: SizedBox.shrink());
 
     return Scaffold(
@@ -177,11 +178,11 @@ class ApppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final walletName = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.wallet.name,
+      (WalletBloc cubit) => cubit.state.wallet.name,
     );
 
     final fingerPrint = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.wallet.sourceFingerprint,
+      (WalletBloc cubit) => cubit.state.wallet.sourceFingerprint,
     );
 
     return BBAppBar(
@@ -206,7 +207,7 @@ class _WalletNameState extends State<WalletName> {
   @override
   Widget build(BuildContext context) {
     final mainWallet =
-        context.select((WalletBloc x) => x.state.wallet!.mainWallet);
+        context.select((WalletBloc x) => x.state.wallet.mainWallet);
     if (mainWallet) return const SizedBox.shrink();
 
     final saving = context.select(
@@ -219,7 +220,7 @@ class _WalletNameState extends State<WalletName> {
     if (text != _controller.text) _controller.text = text;
 
     final name = context.select(
-      (WalletSettingsCubit x) => x.state.wallet.name,
+      (WalletBloc x) => x.state.wallet.name,
     );
 
     final showSave = text.isNotEmpty && name != text;
@@ -266,10 +267,10 @@ class WalletType extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final type = context.select(
-      (WalletSettingsCubit x) => x.state.wallet.getWalletTypeString(),
+      (WalletBloc x) => x.state.wallet.getWalletTypeString(),
     );
     final scriptType =
-        context.select((WalletSettingsCubit x) => x.state.wallet.scriptType);
+        context.select((WalletBloc x) => x.state.wallet.scriptType);
     final _ = scriptTypeString(scriptType);
 
     return Column(
@@ -291,7 +292,7 @@ class Balances extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((WalletBloc cubit) => cubit.state.wallet!);
+    final wallet = context.select((WalletBloc cubit) => cubit.state.wallet);
 
     final amtSent = wallet.totalSent();
 
@@ -439,7 +440,7 @@ class TestBackupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isTested =
-        context.select((WalletBloc x) => x.state.wallet!.backupTested);
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
 
     // if (isTested) return const SizedBox.shrink();
     return BBButton.textWithStatusAndRightArrow(
@@ -482,7 +483,7 @@ class BackupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isTested =
-        context.select((WalletBloc x) => x.state.wallet!.backupTested);
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
 
     return BBButton.textWithStatusAndRightArrow(
       onPressed: () async {

@@ -20,6 +20,22 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+WalletBloc createWalletBloc(Wallet wallet) {
+  return WalletBloc(
+    saveDir: wallet.getWalletStorageString(),
+    walletSync: locator<WalletSync>(),
+    walletsStorageRepository: locator<WalletsStorageRepository>(),
+    walletBalance: locator<WalletBalance>(),
+    walletAddress: locator<WalletAddress>(),
+    networkRepository: locator<InternalNetworkRepository>(),
+    walletsRepository: locator<InternalWalletsRepository>(),
+    walletTransactionn: locator<WalletTx>(),
+    walletCreatee: locator<WalletCreate>(),
+    appWalletsRepository: locator<AppWalletsRepository>(),
+    wallet: wallet,
+  );
+}
+
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   WalletBloc({
     required String saveDir,

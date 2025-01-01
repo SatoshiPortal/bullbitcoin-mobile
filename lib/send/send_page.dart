@@ -261,7 +261,7 @@ class WalletSelectionDropDown extends StatelessWidget {
             final blocs =
                 walletBlocs.where((wb) => wb.state.wallet == wallet).toList();
             if (blocs.isNotEmpty) {
-              context.read<SendCubit>().updateWalletBloc(blocs[0]);
+              context.read<SendCubit>().updateWallet(blocs[0]);
             }
           },
           value:

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_wallet_actions.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -14,14 +15,14 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletPage extends StatelessWidget {
-  const WalletPage({super.key, required this.walletBloc});
+  const WalletPage({super.key, required this.wallet});
 
-  final WalletBloc walletBloc;
+  final Wallet wallet;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: walletBloc,
+      value: createWalletBloc(wallet),
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -44,7 +45,7 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backupTested =
-        context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -96,11 +97,11 @@ class ActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backupTested =
-        context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
     final watchonly =
-        context.select((WalletBloc x) => x.state.wallet?.watchOnly() ?? false);
+        context.select((WalletBloc x) => x.state.wallet.watchOnly());
     final isInstant =
-        context.select((WalletBloc x) => x.state.wallet?.isInstant() ?? false);
+        context.select((WalletBloc x) => x.state.wallet.isInstant());
 
     final isdarkMode = context.select(
       (Lighting x) => x.state == ThemeLighting.dark,

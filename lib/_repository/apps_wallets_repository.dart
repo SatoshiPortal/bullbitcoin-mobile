@@ -1,3 +1,5 @@
+import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
@@ -88,5 +90,75 @@ class AppWalletsRepository {
     );
     if (idx == -1) return null;
     return wallets[idx];
+  }
+
+  WalletService? getMainSecureWalletService(BBNetwork network) {
+    final wallet = getMainSecureWallet(network);
+    if (wallet == null) return null;
+    return getWalletServiceById(wallet.id);
+  }
+
+  WalletService? getMainInstantWalletService(BBNetwork network) {
+    final wallet = getMainInstantWallet(network);
+    if (wallet == null) return null;
+    return getWalletServiceById(wallet.id);
+  }
+
+  List<WalletService> getMainWalletServices(bool isTestnet) {
+    final network = isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final instantwallet = getMainInstantWalletService(network);
+    final securewallet = getMainSecureWalletService(network);
+    return [
+      if (instantwallet != null) instantwallet,
+      if (securewallet != null) securewallet,
+    ];
+  }
+
+  Transaction? getTxFromSwap(SwapTx swap) {
+    final isLiq = swap.isLiquid();
+    final network = swap.network;
+    final wallet =
+        !isLiq ? getMainSecureWallet(network) : getMainInstantWallet(network);
+    if (wallet == null) return null;
+    final idx = wallet.transactions.indexWhere((t) => t.swapTx?.id == swap.id);
+    if (idx == -1) return null;
+    return wallet.transactions[idx];
+  }
+
+  WalletService? findWalletServiceWithSameFngr(Wallet wallet) {
+    for (final ws in _walletServices) {
+      final w = ws.wallet;
+      if (w.id == wallet.id) continue;
+      if (w.sourceFingerprint == wallet.sourceFingerprint) return ws;
+    }
+    return null;
+  }
+
+  List<Wallet> walletsWithEnoughBalance(
+    int sats,
+    BBNetwork network, {
+    bool onlyMain = false,
+    bool onlyBitcoin = false,
+    bool onlyLiquid = false,
+  }) {
+    final wallets = walletsFromNetwork(network).where(
+      (_) {
+        final wallet = _;
+        if (onlyMain && !wallet.mainWallet) return false;
+        if (onlyBitcoin && !wallet.isBitcoin()) return false;
+        if (onlyLiquid && !wallet.isLiquid()) return false;
+        return true;
+      },
+    ).toList();
+
+    final List<Wallet> walletsWithEnoughBalance = [];
+
+    for (final walletBloc in wallets) {
+      final enoughBalance = (walletBloc.balance ?? 0) >= sats;
+      if (enoughBalance) walletsWithEnoughBalance.add(walletBloc);
+    }
+    return walletsWithEnoughBalance.isEmpty
+        ? wallets
+        : walletsWithEnoughBalance;
   }
 }

@@ -6,7 +6,7 @@ part 'state.freezed.dart';
 @freezed
 class WalletSettingsState with _$WalletSettingsState {
   const factory WalletSettingsState({
-    required Wallet wallet,
+    // required Wallet wallet,
     @Default('') String name,
     /**
      * 

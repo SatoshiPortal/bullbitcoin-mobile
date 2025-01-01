@@ -1,4 +1,6 @@
 import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -157,6 +159,7 @@ class SendingLnTx extends StatefulWidget {
 
 class _SendingLnTxState extends State<SendingLnTx> {
   late SwapTx swapTx;
+  Transaction? tx;
 
   bool settled = false;
   bool paid = false;
@@ -165,6 +168,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
   @override
   void initState() {
     swapTx = context.read<CreateSwapCubit>().state.swapTx!;
+    tx = context.read<AppWalletsRepository>().getTxFromSwap(swapTx);
     super.initState();
   }
 
@@ -180,7 +184,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
         isLiquid: isLiquid,
       ),
     );
-    final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
+    // final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
 
     final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
     final amtDouble = isSats ? amount : amount / 100000000;

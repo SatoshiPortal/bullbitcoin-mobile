@@ -77,7 +77,7 @@ class HomeCubit extends Cubit<HomeState> {
         ? state.walletBlocs!.toList()
         : <WalletBloc>[];
     final idx = walletBlocs
-        .indexWhere((wB) => wB.state.wallet!.id == bloc.state.wallet!.id);
+        .indexWhere((wB) => wB.state.wallet.id == bloc.state.wallet.id);
     walletBlocs[idx] = bloc;
 
     emit(state.copyWith(walletBlocs: walletBlocs));
@@ -196,43 +196,43 @@ class HomeCubit extends Cubit<HomeState> {
   //     emit(state.copyWith(selectedWalletCubit: wallets.first));
   // }
 
-  void removeWallet(WalletBloc walletBloc) {
-    // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-    // wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
-    final walletBlocs = state.walletBlocs != null
-        ? state.walletBlocs!.toList()
-        : <WalletBloc>[];
-    walletBlocs.removeWhere(
-      (wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id,
-    );
+  // void removeWallet(WalletBloc walletBloc) {
+  //   // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+  //   // wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
+  //   final walletBlocs = state.walletBlocs != null
+  //       ? state.walletBlocs!.toList()
+  //       : <WalletBloc>[];
+  //   walletBlocs.removeWhere(
+  //     (wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id,
+  //   );
 
-    emit(
-      state.copyWith(
-        // wallets: wallets,
-        // selectedWalletCubit: null,
-        walletBlocs: walletBlocs,
-      ),
-    );
-  }
+  //   emit(
+  //     state.copyWith(
+  //       // wallets: wallets,
+  //       // selectedWalletCubit: null,
+  //       walletBlocs: walletBlocs,
+  //     ),
+  //   );
+  // }
 
-  void removeWallet2(Wallet wallet) {
-    _appWalletsRepository.deleteWallet(wallet.id);
-    // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
-    // wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
-    // final walletBlocs = state.walletBlocs != null
-    //     ? state.walletBlocs!.toList()
-    //     : <WalletBloc>[];
+  // void removeWallet2(Wallet wallet) {
+  //   _appWalletsRepository.deleteWallet(wallet.id);
+  //   // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+  //   // wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
+  //   // final walletBlocs = state.walletBlocs != null
+  //   //     ? state.walletBlocs!.toList()
+  //   //     : <WalletBloc>[];
 
-    // walletBlocs.removeWhere(
-    //   (wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id,
-    // );
+  //   // walletBlocs.removeWhere(
+  //   //   (wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id,
+  //   // );
 
-    // emit(
-    //   state.copyWith(
-    //     // wallets: wallets,
-    //     // selectedWalletCubit: null,
-    //     walletBlocs: walletBlocs,
-    //   ),
-    // );
-  }
+  //   // emit(
+  //   //   state.copyWith(
+  //   //     // wallets: wallets,
+  //   //     // selectedWalletCubit: null,
+  //   //     walletBlocs: walletBlocs,
+  //   //   ),
+  //   // );
+  // }
 }

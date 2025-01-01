@@ -30,11 +30,11 @@ class HomeState with _$HomeState {
   //     walletBlocs?.where((wallet) => wallet.network == network).toList().reversed.toList() ?? [];
 
   bool hasMainWallets() =>
-      walletBlocs?.any((wallet) => wallet.state.wallet!.mainWallet) ?? false;
+      walletBlocs?.any((wallet) => wallet.state.wallet.mainWallet) ?? false;
 
   List<WalletBloc> walletBlocsFromNetwork(BBNetwork network) {
     final blocs = walletBlocs
-            ?.where((walletBloc) => walletBloc.state.wallet?.network == network)
+            ?.where((walletBloc) => walletBloc.state.wallet.network == network)
             //.toList()
             //.reversed
             .toList() ??
@@ -47,8 +47,8 @@ class HomeState with _$HomeState {
     final blocs = walletBlocs
             ?.where(
               (walletBloc) =>
-                  walletBloc.state.wallet?.network == network &&
-                  walletBloc.state.wallet!.watchOnly() == false,
+                  walletBloc.state.wallet.network == network &&
+                  walletBloc.state.wallet.watchOnly() == false,
             )
             .toList() ??
         [];
@@ -60,8 +60,8 @@ class HomeState with _$HomeState {
     final blocs = walletBlocs
             ?.where(
               (wallet) =>
-                  wallet.state.wallet?.network == network &&
-                  !wallet.state.wallet!.mainWallet,
+                  wallet.state.wallet.network == network &&
+                  !wallet.state.wallet.mainWallet,
             )
             .toList()
             .reversed
@@ -74,43 +74,43 @@ class HomeState with _$HomeState {
   int lenWalletsFromNetwork(BBNetwork network) =>
       walletBlocsFromNetwork(network).length;
 
-  List<WalletBloc> getMainWallets(bool isTestnet) {
-    final network = isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
-    final instantwallet = getMainInstantWallet(network);
-    final securewallet = getMainSecureWallet(network);
-    return [
-      if (instantwallet != null) instantwallet,
-      if (securewallet != null) securewallet,
-    ];
-  }
+  // List<WalletBloc> getMainWallets(bool isTestnet) {
+  //   final network = isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+  //   final instantwallet = getMainInstantWallet(network);
+  //   final securewallet = getMainSecureWallet(network);
+  //   return [
+  //     if (instantwallet != null) instantwallet,
+  //     if (securewallet != null) securewallet,
+  //   ];
+  // }
 
-  List<String> getMainWalletIDs(bool isTestnet) =>
-      getMainWallets(isTestnet).map((e) => e.state.wallet!.id).toList();
+  // List<String> getMainWalletIDs(bool isTestnet) =>
+  // getMainWallets(isTestnet).map((e) => e.state.wallet.id).toList();
 
-  WalletBloc? getMainInstantWallet(BBNetwork network) {
-    final wallets = walletBlocsFromNetwork(network);
-    final idx = wallets.indexWhere(
-      (w) => w.state.wallet!.isInstant() && w.state.wallet!.mainWallet,
-    );
-    if (idx == -1) return null;
-    return wallets[idx];
-  }
+  // WalletBloc? getMainInstantWallet(BBNetwork network) {
+  //   final wallets = walletBlocsFromNetwork(network);
+  //   final idx = wallets.indexWhere(
+  //     (w) => w.state.wallet.isInstant() && w.state.wallet.mainWallet,
+  //   );
+  //   if (idx == -1) return null;
+  //   return wallets[idx];
+  // }
 
-  WalletBloc? getMainSecureWallet(BBNetwork network) {
-    final wallets = walletBlocsFromNetwork(network);
-    final idx = wallets.indexWhere(
-      (w) => w.state.wallet!.isSecure() && w.state.wallet!.mainWallet,
-    );
-    if (idx == -1) return null;
-    return wallets[idx];
-  }
+  // WalletBloc? getMainSecureWallet(BBNetwork network) {
+  //   final wallets = walletBlocsFromNetwork(network);
+  //   final idx = wallets.indexWhere(
+  //     (w) => w.state.wallet.isSecure() && w.state.wallet.mainWallet,
+  //   );
+  //   if (idx == -1) return null;
+  //   return wallets[idx];
+  // }
 
   bool noNetworkWallets(BBNetwork network) =>
       walletBlocsFromNetwork(network).isEmpty;
 
   WalletBloc? getWalletBloc(Wallet wallet) {
     final walletBlocs = walletBlocsFromNetwork(wallet.network);
-    final idx = walletBlocs.indexWhere((w) => w.state.wallet!.id == wallet.id);
+    final idx = walletBlocs.indexWhere((w) => w.state.wallet.id == wallet.id);
     if (idx == -1) return null;
     return walletBlocs[idx];
   }
@@ -120,7 +120,6 @@ class HomeState with _$HomeState {
 
     for (final walletBloc in walletBlocs!) {
       final wallet = walletBloc.state.wallet;
-      if (wallet == null) continue;
       if (wallet.transactions.indexWhere((t) => t.txid == tx.txid) != -1) {
         return walletBloc;
       }
@@ -134,7 +133,6 @@ class HomeState with _$HomeState {
 
     for (final walletBloc in walletBlocs!) {
       final wallet = walletBloc.state.wallet;
-      if (wallet == null) continue;
       if (wallet.transactions.indexWhere(
             (t) => t.swapTx?.id == swaptx.id,
           ) !=
@@ -159,7 +157,7 @@ class HomeState with _$HomeState {
 
   bool walletIsWatchOnlyFromTx(Transaction tx) {
     final walletBloc = getWalletBlocById(tx.walletId!);
-    return walletBloc?.state.wallet!.watchOnly() ?? false;
+    return walletBloc?.state.wallet.watchOnly() ?? false;
   }
 
   WalletBloc? getWalletBlocById(String id) {
@@ -167,7 +165,7 @@ class HomeState with _$HomeState {
     // if (walletIdx == -1) return null;
     // final wallet = wallets![walletIdx];
     // final walletBlocs = walletBlocsFromNetwork(wallet.network);
-    final idx = walletBlocs?.indexWhere((w) => id == w.state.wallet!.id);
+    final idx = walletBlocs?.indexWhere((w) => id == w.state.wallet.id);
     if (idx == -1 || idx == null) return null;
     return walletBlocs![idx];
   }
@@ -178,7 +176,7 @@ class HomeState with _$HomeState {
     Wallet? wallet;
     for (final w in wallets) {
       final ww = w.state.wallet;
-      if (!ww!.watchOnly()) {
+      if (!ww.watchOnly()) {
         if ((ww.balance ?? 0) > amt) return ww;
         wallet = ww;
       }
@@ -189,14 +187,14 @@ class HomeState with _$HomeState {
   SwapTx? getSwapTxById(String id) {
     for (final walletBloc in walletBlocs!) {
       final wallet = walletBloc.state.wallet;
-      if (wallet == null || wallet.swaps.isEmpty) continue;
+      if (wallet.swaps.isEmpty) continue;
       final idx = wallet.swaps.indexWhere((_) => _.id == id);
       if (idx != -1) return wallet.swaps[idx];
     }
 
     for (final walletBloc in walletBlocs!) {
       final wallet = walletBloc.state.wallet;
-      if (wallet == null || wallet.transactions.isEmpty) continue;
+      if (wallet.transactions.isEmpty) continue;
       final idx = wallet.transactions.indexWhere((_) => _.swapTx?.id == id);
       if (idx != -1) return wallet.transactions[idx].swapTx;
     }
@@ -204,17 +202,17 @@ class HomeState with _$HomeState {
     return null;
   }
 
-  Transaction? getTxFromSwap(SwapTx swap) {
-    final isLiq = swap.isLiquid();
-    final network = swap.network;
-    final wallet = !isLiq
-        ? getMainSecureWallet(network)?.state.wallet
-        : getMainInstantWallet(network)?.state.wallet;
-    if (wallet == null) return null;
-    final idx = wallet.transactions.indexWhere((t) => t.swapTx?.id == swap.id);
-    if (idx == -1) return null;
-    return wallet.transactions[idx];
-  }
+  // Transaction? getTxFromSwap(SwapTx swap) {
+  //   final isLiq = swap.isLiquid();
+  //   final network = swap.network;
+  //   final wallet = !isLiq
+  //       ? getMainSecureWallet(network)?.state.wallet
+  //       : getMainInstantWallet(network)?.state.wallet;
+  //   if (wallet == null) return null;
+  //   final idx = wallet.transactions.indexWhere((t) => t.swapTx?.id == swap.id);
+  //   if (idx == -1) return null;
+  //   return wallet.transactions[idx];
+  // }
 
   // int? getLastWalletIdx(BBNetwork network) {
   //   if (network == BBNetwork.Testnet) return lastTestnetWalletIdx;
@@ -224,16 +222,16 @@ class HomeState with _$HomeState {
   int? getWalletIdx(Wallet wallet) {
     final walletsFromNetwork = walletBlocsFromNetwork(wallet.network);
     final idx =
-        walletsFromNetwork.indexWhere((w) => w.state.wallet!.id == wallet.id);
+        walletsFromNetwork.indexWhere((w) => w.state.wallet.id == wallet.id);
     if (idx == -1) return null;
     return idx;
   }
 
   int? getWalletBlocIdx(WalletBloc walletBloc) {
     final walletsFromNetwork =
-        walletBlocsFromNetwork(walletBloc.state.wallet!.network);
+        walletBlocsFromNetwork(walletBloc.state.wallet.network);
     final idx = walletsFromNetwork
-        .indexWhere((w) => w.state.wallet!.id == walletBloc.state.wallet!.id);
+        .indexWhere((w) => w.state.wallet.id == walletBloc.state.wallet.id);
     if (idx == -1) return null;
     return idx;
   }
@@ -250,8 +248,7 @@ class HomeState with _$HomeState {
   List<Transaction> allTxs(BBNetwork network) {
     final txs = <Transaction>[];
     for (final walletBloc in walletBlocsFromNetwork(network)) {
-      final walletTxs =
-          walletBloc.state.wallet?.transactions ?? <Transaction>[];
+      final walletTxs = walletBloc.state.wallet.transactions ?? <Transaction>[];
       // final wallet = walletBloc.state.wallet;
       for (final tx in walletTxs) {
         txs.add(tx);
@@ -264,8 +261,7 @@ class HomeState with _$HomeState {
   List<Transaction> getAllTxs(BBNetwork network) {
     final txs = <Transaction>[];
     for (final walletBloc in walletBlocsFromNetwork(network)) {
-      final walletTxs =
-          walletBloc.state.wallet?.transactions ?? <Transaction>[];
+      final walletTxs = walletBloc.state.wallet.transactions ?? <Transaction>[];
       // final wallet = walletBloc.state.wallet;
       for (final tx in walletTxs) {
         // final isInSwapTx =
@@ -273,7 +269,7 @@ class HomeState with _$HomeState {
         // if (isInSwapTx == true) continue;
         txs.add(
           tx.copyWith(
-            walletId: walletBloc.state.wallet!.id,
+            walletId: walletBloc.state.wallet.id,
           ),
         );
       }
@@ -341,7 +337,6 @@ class HomeState with _$HomeState {
     var total = 0;
     for (final walletBloc in walletBlocsFromNetwork(network)) {
       final wallet = walletBloc.state.wallet;
-      if (wallet == null) continue;
       total += wallet.balance ?? 0;
     }
     return total;
@@ -364,7 +359,7 @@ class HomeState with _$HomeState {
   }) {
     final List<WalletBloc> filteredWallets =
         walletBlocsFromNetwork(network).where((w) {
-      final wallet = w.state.wallet!;
+      final wallet = w.state.wallet;
       if (onlyMain && !wallet.mainWallet) return false;
       if (onlyBitcoin && !wallet.isBitcoin()) return false;
       if (onlyLiquid && !wallet.isLiquid()) return false;
@@ -398,7 +393,7 @@ class HomeState with _$HomeState {
   }) {
     final wallets = walletBlocsFromNetwork(network).where(
       (_) {
-        final wallet = _.state.wallet!;
+        final wallet = _.state.wallet;
         if (onlyMain && !wallet.mainWallet) return false;
         if (onlyBitcoin && !wallet.isBitcoin()) return false;
         if (onlyLiquid && !wallet.isLiquid()) return false;
@@ -419,11 +414,11 @@ class HomeState with _$HomeState {
 
   Set<({String info, WalletBloc walletBloc})> homeWarnings(BBNetwork network) {
     bool instantBalWarning(WalletBloc wb) {
-      if (wb.state.wallet?.isInstant() == false) return false;
+      if (wb.state.wallet.isInstant() == false) return false;
       return wb.state.balanceSats() > 100000000;
     }
 
-    bool backupWarning(WalletBloc wb) => !wb.state.wallet!.backupTested;
+    bool backupWarning(WalletBloc wb) => !wb.state.wallet.backupTested;
 
     final warnings = <({String info, WalletBloc walletBloc})>{};
     final List<String> backupWalletFngrforBackupWarning = [];
@@ -435,7 +430,7 @@ class HomeState with _$HomeState {
         );
       }
       if (backupWarning(walletBloc)) {
-        final fngr = walletBloc.state.wallet!.sourceFingerprint;
+        final fngr = walletBloc.state.wallet.sourceFingerprint;
         if (backupWalletFngrforBackupWarning.contains(fngr)) continue;
         warnings.add(
           (
@@ -452,7 +447,7 @@ class HomeState with _$HomeState {
 
   WalletBloc? findWalletBlocWithSameFngr(Wallet wallet) {
     for (final wb in walletBlocs!) {
-      final w = wb.state.wallet!;
+      final w = wb.state.wallet;
       if (w.id == wallet.id) continue;
       if (w.sourceFingerprint == wallet.sourceFingerprint) return wb;
     }

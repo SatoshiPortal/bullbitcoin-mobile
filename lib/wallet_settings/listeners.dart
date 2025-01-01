@@ -1,6 +1,7 @@
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,8 @@ class WalletSettingsListeners extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         BlocListener<WalletSettingsCubit, WalletSettingsState>(
-          listenWhen: (previous, current) => previous.wallet != current.wallet,
+          listenWhen: (previous, current) =>
+              previous.deleted != current.deleted,
           listener: (context, state) async {
             if (!state.deleted) return;
 
@@ -55,25 +57,34 @@ class TestBackupListener extends StatelessWidget {
       listener: (context, state) {
         if (!state.backupTested) return;
 
-        final walletBloc = context
-            .read<HomeCubit>()
-            .state
-            .findWalletBlocWithSameFngr(state.wallet);
-        if (walletBloc == null) return;
+        final wallet = context.read<WalletBloc>().state.wallet;
 
-        final w = walletBloc.state.wallet!.copyWith(
+        final walletService = context
+            .read<AppWalletsRepository>()
+            .findWalletServiceWithSameFngr(wallet);
+        // .findWalletBlocWithSameFngr(state.wallet);
+        if (walletService == null) return;
+
+        final w = walletService.wallet.copyWith(
           backupTested: true,
           lastBackupTested: DateTime.now(),
         );
 
-        walletBloc.add(
-          UpdateWallet(
-            w,
-            updateTypes: [
-              UpdateWalletTypes.settings,
-            ],
-          ),
+        walletService.updateWallet(
+          w,
+          updateTypes: [
+            UpdateWalletTypes.settings,
+          ],
         );
+
+        // walletService.add(
+        //   UpdateWallet(
+        //     w,
+        //     updateTypes: [
+        //       UpdateWalletTypes.settings,
+        //     ],
+        //   ),
+        // );
       },
       child: child,
     );

@@ -6,6 +6,7 @@ import 'package:bb_mobile/_pkg/electrum_test.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/network/bloc/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,14 +15,17 @@ class NetworkCubit extends Cubit<NetworkState> {
   NetworkCubit({
     required HiveStorage hiveStorage,
     required WalletNetwork walletNetwork,
+    required NetworkRepository networkRepository,
   })  : _walletNetwork = walletNetwork,
         _hiveStorage = hiveStorage,
+        _networkRepository = networkRepository,
         super(const NetworkState()) {
     init();
   }
 
   final HiveStorage _hiveStorage;
   final WalletNetwork _walletNetwork;
+  final NetworkRepository _networkRepository;
 
   @override
   void onChange(Change<NetworkState> change) {

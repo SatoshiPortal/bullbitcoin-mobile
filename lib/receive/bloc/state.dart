@@ -1,7 +1,7 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:payjoin_flutter/receive.dart';
 
@@ -26,7 +26,8 @@ class ReceiveState with _$ReceiveState {
     Receiver? payjoinReceiver,
     @Default(true) bool creatingInvoice,
     @Default('') String errCreatingInvoice,
-    WalletBloc? walletBloc,
+    // WalletBloc? walletBloc,
+    Wallet? wallet,
     @Default(PaymentNetwork.bitcoin) PaymentNetwork paymentNetwork,
     int? updateAddressGap,
     @Default(false) bool switchToSecure,
@@ -107,13 +108,11 @@ class ReceiveState with _$ReceiveState {
   }
 
   bool isChainSwap() {
-    if (walletBloc == null || walletBloc?.state.wallet == null) return false;
-    if (paymentNetwork == PaymentNetwork.bitcoin &&
-        walletBloc!.state.wallet!.isLiquid()) {
+    if (wallet == null) return false;
+    if (paymentNetwork == PaymentNetwork.bitcoin && wallet!.isLiquid()) {
       return true;
     }
-    if (paymentNetwork == PaymentNetwork.liquid &&
-        walletBloc!.state.wallet!.isBitcoin()) {
+    if (paymentNetwork == PaymentNetwork.liquid && wallet!.isBitcoin()) {
       return true;
     }
     return false;
@@ -128,22 +127,21 @@ class ReceiveState with _$ReceiveState {
 
   bool isLn() => paymentNetwork == PaymentNetwork.lightning;
 
-  bool checkIfMainWalletSelected() =>
-      walletBloc?.state.wallet?.mainWallet ?? false;
+  bool checkIfMainWalletSelected() => wallet?.mainWallet ?? false;
 
   // bool _swapTxIsNotNull() => swapBloc.state.swapTx != null;
 
-  // bool showActionButtons() =>
+  // bool showActionButtons() =
   //     paymentNetwork == ReceiveWalletType.secure ||
   //     (walletType == ReceiveWalletType.lightning && _swapTxIsNotNull());
 
   bool allowedSwitch(PaymentNetwork network) {
     if (!oneWallet) return true;
-    if (walletBloc == null || walletBloc?.state.wallet == null) return false;
+    if (wallet == null) return false;
 
-    final wallet = walletBloc!.state.wallet!;
-    if (network == PaymentNetwork.bitcoin && wallet.isLiquid()) return false;
-    if (network == PaymentNetwork.liquid && wallet.isBitcoin()) return false;
+    // final wallet = walletBloc!.state.wallet;
+    if (network == PaymentNetwork.bitcoin && wallet!.isLiquid()) return false;
+    if (network == PaymentNetwork.liquid && wallet!.isBitcoin()) return false;
 
     return true;
   }

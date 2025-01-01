@@ -1,4 +1,6 @@
 import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -27,7 +29,7 @@ class SwapHistoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.wallet?.swaps ?? []);
+    final txs = context.select((WalletBloc _) => _.state.wallet.swaps ?? []);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return BBButton.big(
@@ -63,7 +65,7 @@ class SwapTxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.wallet?.swaps ?? []);
+    final txs = context.select((WalletBloc _) => _.state.wallet.swaps ?? []);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return Padding(
@@ -294,6 +296,7 @@ class ReceivingSwapPage extends StatefulWidget {
 class _ReceivingSwapPageState extends State<ReceivingSwapPage>
     with WidgetsBindingObserver {
   late SwapTx swapTx;
+  Transaction? tx;
 
   bool received = false;
   bool paid = false;
@@ -306,6 +309,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
     WidgetsBinding.instance.addObserver(this);
 
     swapTx = widget.tx;
+    tx = context.read<AppWalletsRepository>().getTxFromSwap(swapTx);
     super.initState();
   }
 
@@ -352,11 +356,11 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
   Widget build(BuildContext context) {
     var amt = swapTx.recievableAmount() ?? 0;
 
-    final tx = context.select(
-      (HomeCubit cubit) => cubit.state.getTxFromSwap(swapTx),
-    );
+    // final tx = context.select(
+    //   (HomeCubit cubit) => cubit.state.getTxFromSwap(swapTx),
+    // );
 
-    if (tx != null) amt = tx.getNetAmountToPayee();
+    if (tx != null) amt = tx!.getNetAmountToPayee();
 
     final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
     final amtDouble = isSats ? amt : amt / 100000000;

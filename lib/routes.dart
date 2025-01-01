@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/create/page.dart';
@@ -62,28 +63,6 @@ GoRouter setupRouter() => GoRouter(
           path: '/',
           builder: (context, state) {
             return const AuthPage(fromSettings: false);
-          },
-        ),
-
-        GoRoute(
-          path: '/swap-page',
-          builder: (context, state) {
-            final q = state.uri.queryParameters;
-            return SwapPage(fromWalletId: q['fromWalletId']);
-          },
-        ),
-
-        GoRoute(
-          path: '/swap-confirmation',
-          builder: (context, state) {
-            // TODO: Convert this to proper map
-            final params = state.extra! as List;
-            final sendCubit = params[0] as SendCubit;
-            final swapCubit = params[1] as CreateSwapCubit;
-            return SwapConfirmationPage(
-              send: sendCubit,
-              swap: swapCubit,
-            );
           },
         ),
 
@@ -215,8 +194,8 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings',
           builder: (context, state) {
-            final walletBloc = state.extra! as WalletBloc;
-            return WalletSettingsPage(walletBloc: walletBloc);
+            final wallet = state.extra! as Wallet;
+            return WalletSettingsPage(wallet: wallet);
           },
         ),
         // GoRoute(
@@ -228,37 +207,16 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings/open-backup',
           builder: (context, state) {
-            final walletBloc = state.extra! as WalletBloc;
-            return WalletSettingsPage(openBackup: true, walletBloc: walletBloc);
+            final wallet = state.extra! as Wallet;
+            return WalletSettingsPage(openBackup: true, wallet: wallet);
           },
         ),
-        GoRoute(
-          path: '/wallet-settings/test-backup',
-          builder: (context, state) {
-            final blocs = state.extra! as (WalletBloc, WalletSettingsCubit);
-            return TestBackupPage(
-              walletBloc: blocs.$1,
-              walletSettings: blocs.$2,
-            );
-            // const WalletSettingsPage(openTestBackup: true);
-          },
-        ),
-        GoRoute(
-          path: '/wallet-settings/backup',
-          builder: (context, state) {
-            final blocs = state.extra! as (WalletBloc, WalletSettingsCubit);
 
-            return BackupPage(
-              walletBloc: blocs.$1,
-              walletSettings: blocs.$2,
-            );
-          },
-        ),
         GoRoute(
           path: '/wallet-settings/accounting',
           builder: (context, state) {
-            final walletBloc = state.extra! as WalletBloc;
-            return AccountingPage(walletBloc: walletBloc);
+            final wallet = state.extra! as Wallet;
+            return AccountingPage(wallet: wallet);
           },
         ),
         GoRoute(
@@ -277,54 +235,24 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/receive',
           builder: (context, state) {
-            final walletBloc = state.extra as WalletBloc?;
+            final wallet = state.extra as Wallet?;
 
-            return ReceivePage(walletBloc: walletBloc);
+            return ReceivePage(wallet: wallet);
           },
         ),
 
-        GoRoute(
-          path: '/swap-receive',
-          builder: (context, state) {
-            final tx = state.extra! as SwapTx;
-            return ReceivingSwapPage(tx: tx);
-          },
-        ),
-        GoRoute(
-          path: '/onchain-swap-progress',
-          builder: (context, state) {
-            // TODO: Convert this to proper map
-            final list = state.extra! as List;
-            final swapTx = list[0] as SwapTx;
-            final isReceive = list[1] as bool;
-            final SendCubit? sendCubit =
-                list.length == 3 ? list[2] as SendCubit : null;
-
-            return ChainSwapProgressPage(
-              swapTx: swapTx,
-              isReceive: isReceive,
-              sendCubit: sendCubit,
-            );
-          },
-        ),
-        GoRoute(
-          path: '/swap-history',
-          builder: (context, state) {
-            return const SwapHistoryPage();
-          },
-        ),
         GoRoute(
           path: '/wallet',
           builder: (context, state) {
-            final wallet = state.extra! as WalletBloc;
-            return WalletPage(walletBloc: wallet);
+            final wallet = state.extra! as Wallet;
+            return WalletPage(wallet: wallet);
           },
         ),
         GoRoute(
           path: '/wallet/details',
           builder: (context, state) {
-            final wallet = state.extra! as WalletBloc;
-            return WalletDetailsPage(walletBloc: wallet);
+            final wallet = state.extra! as Wallet;
+            return WalletDetailsPage(wallet: wallet);
           },
         ),
         GoRoute(
@@ -360,6 +288,89 @@ GoRouter setupRouter() => GoRouter(
             return BumpFeesPage(tx: tx);
           },
         ),
+
+        //
+        //
+
+        GoRoute(
+          path: '/wallet-settings/test-backup',
+          builder: (context, state) {
+            final blocs = state.extra! as (WalletBloc, WalletSettingsCubit);
+            return TestBackupPage(
+              walletBloc: blocs.$1,
+              walletSettings: blocs.$2,
+            );
+            // const WalletSettingsPage(openTestBackup: true);
+          },
+        ),
+        GoRoute(
+          path: '/wallet-settings/backup',
+          builder: (context, state) {
+            final blocs = state.extra! as (WalletBloc, WalletSettingsCubit);
+
+            return BackupPage(
+              walletBloc: blocs.$1,
+              walletSettings: blocs.$2,
+            );
+          },
+        ),
+
+        //
+        //
+        //
+
+        GoRoute(
+          path: '/swap-page',
+          builder: (context, state) {
+            final q = state.uri.queryParameters;
+            return SwapPage(fromWalletId: q['fromWalletId']);
+          },
+        ),
+
+        GoRoute(
+          path: '/swap-confirmation',
+          builder: (context, state) {
+            // TODO: Convert this to proper map
+            final params = state.extra! as List;
+            final sendCubit = params[0] as SendCubit;
+            final swapCubit = params[1] as CreateSwapCubit;
+            return SwapConfirmationPage(
+              send: sendCubit,
+              swap: swapCubit,
+            );
+          },
+        ),
+
+        GoRoute(
+          path: '/swap-receive',
+          builder: (context, state) {
+            final tx = state.extra! as SwapTx;
+            return ReceivingSwapPage(tx: tx);
+          },
+        ),
+        GoRoute(
+          path: '/onchain-swap-progress',
+          builder: (context, state) {
+            // TODO: Convert this to proper map
+            final list = state.extra! as List;
+            final swapTx = list[0] as SwapTx;
+            final isReceive = list[1] as bool;
+            final SendCubit? sendCubit =
+                list.length == 3 ? list[2] as SendCubit : null;
+
+            return ChainSwapProgressPage(
+              swapTx: swapTx,
+              isReceive: isReceive,
+              sendCubit: sendCubit,
+            );
+          },
+        ),
+        GoRoute(
+          path: '/swap-history',
+          builder: (context, state) {
+            return const SwapHistoryPage();
+          },
+        ),
       ],
     );
 
@@ -384,7 +395,6 @@ class GoRouterObserver extends NavigatorObserver {
     locator<NavName>().update(newRoute?.settings.name ?? '');
   }
 }
-
 
 // extension GoRouterExtension on GoRouter {
 //   String location() {

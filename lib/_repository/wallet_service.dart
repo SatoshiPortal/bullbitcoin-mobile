@@ -286,6 +286,10 @@ class WalletService {
     );
     return null;
   }
+
+  void killSync() {
+    _walletSync.cancelSync();
+  }
 }
 
 WalletService createWalletService({required Wallet wallet}) {
