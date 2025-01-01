@@ -19,7 +19,7 @@ class PublicDescriptorButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final desc = context.select(
-      (WalletBloc cubit) => cubit.state.wallet!.externalPublicDescriptor,
+      (Wallet cubit) => cubit.state.wallet!.externalPublicDescriptor,
     );
     if (desc.isEmpty) return const SizedBox();
 
@@ -43,7 +43,7 @@ class ExtendedPublicKeyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final desc = context.select(
-      (WalletBloc cubit) => cubit.state.wallet!.externalPublicDescriptor,
+      (Wallet cubit) => cubit.state.wallet!.externalPublicDescriptor,
     );
     if (desc.isEmpty) return const SizedBox();
 

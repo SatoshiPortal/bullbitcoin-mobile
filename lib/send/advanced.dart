@@ -19,7 +19,7 @@ class AdvancedOptionsPopUp extends StatelessWidget {
 
   static Future openPopup(BuildContext context) {
     final send = context.read<SendCubit>();
-    final wallet = context.read<WalletBloc>();
+    final wallet = context.read<Wallet>();
     return showBBBottomSheet(
       context: context,
       child: MultiBlocProvider(
@@ -156,7 +156,7 @@ class EnableRBFOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiq = context.select((WalletBloc x) => x.state.isLiq());
+    final isLiq = context.select((Wallet x) => x.state.isLiq());
     if (isLiq) return const SizedBox.shrink();
 
     final disableRBF = context.select((SendCubit x) => x.state.disableRBF);
@@ -182,7 +182,7 @@ class AddressSelectionPopUp extends StatelessWidget {
     BuildContext context,
   ) {
     final send = context.read<SendCubit>();
-    final wallet = context.read<WalletBloc>();
+    final wallet = context.read<Wallet>();
     return showBBBottomSheet(
       context: context,
       child: MultiBlocProvider(
@@ -197,7 +197,7 @@ class AddressSelectionPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utxos = context.select((WalletBloc _) => _.state.wallet!.utxos);
+    final utxos = context.select((Wallet _) => _.state.wallet!.utxos);
     final amount = context.select((CurrencyCubit _) => _.state.amount);
     final amt = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amount),

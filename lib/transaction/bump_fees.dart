@@ -1,8 +1,10 @@
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
+import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
+import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
@@ -10,8 +12,6 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
-import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
-import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
@@ -106,7 +106,7 @@ class BumpFeesPage extends StatefulWidget {
 
 class _BumpFeesPageState extends State<BumpFeesPage> {
   late SendCubit send;
-  late WalletBloc? walletBloc;
+  late Wallet? walletBloc;
   late NetworkFeesCubit networkFees;
   late CurrencyCubit currency;
   late CreateSwapCubit swap;
@@ -140,7 +140,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
 
     txCubit = TransactionCubit(
       tx: widget.tx,
-      walletBloc: walletBloc!,
+      wallet: walletBloc!,
       walletUpdate: locator<WalletUpdate>(),
 
       walletTx: locator<WalletTx>(),

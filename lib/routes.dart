@@ -295,7 +295,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings/test-backup',
           builder: (context, state) {
-            final blocs = state.extra! as (WalletBloc, WalletSettingsCubit);
+            final blocs = state.extra! as (Wallet, WalletSettingsCubit);
             return TestBackupPage(
               walletBloc: blocs.$1,
               walletSettings: blocs.$2,
@@ -306,7 +306,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings/backup',
           builder: (context, state) {
-            final blocs = state.extra! as (WalletBloc, WalletSettingsCubit);
+            final blocs = state.extra! as (Wallet, WalletSettingsCubit);
 
             return BackupPage(
               walletBloc: blocs.$1,

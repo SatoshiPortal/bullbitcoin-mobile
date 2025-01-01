@@ -18,7 +18,7 @@ class AddressesScreen extends HookWidget {
   static Future openPopup(
     BuildContext context,
   ) {
-    final wallet = context.read<WalletBloc>();
+    final wallet = context.read<Wallet>();
 
     final walletSettings = context.read<WalletSettingsCubit>();
 
@@ -39,7 +39,7 @@ class AddressesScreen extends HookWidget {
     final selectedOption = useState(0);
 
     var addresses =
-        context.select((WalletBloc cubit) => cubit.state.wallet!.myAddressBook);
+        context.select((Wallet cubit) => cubit.state.wallet!.myAddressBook);
 
     addresses = addresses.toList()
       ..sort((a, b) => (b.index ?? 0).compareTo(a.index ?? 0));

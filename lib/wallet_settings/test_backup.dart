@@ -21,7 +21,7 @@ class TestBackupPage extends StatelessWidget {
     required this.walletSettings,
   });
 
-  final WalletBloc walletBloc;
+  final Wallet walletBloc;
   final WalletSettingsCubit walletSettings;
 
   @override
@@ -253,7 +253,7 @@ class TestBackupPassField extends HookWidget {
     if (tested) return const SizedBox.shrink();
 
     final hasPassphrase =
-        context.select((WalletBloc x) => x.state.wallet!.hasPassphrase());
+        context.select((Wallet x) => x.state.wallet!.hasPassphrase());
 
     if (!hasPassphrase) return const SizedBox.shrink();
 
@@ -325,7 +325,6 @@ class TestBackupConfirmButton extends StatelessWidget {
     );
   }
 }
-
 
 // class BackupTestTextField extends StatefulWidget {
 //   const BackupTestTextField({super.key, required this.index});

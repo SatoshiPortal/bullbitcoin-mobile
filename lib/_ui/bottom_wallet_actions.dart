@@ -11,7 +11,7 @@ import 'package:go_router/go_router.dart';
 class WalletActionButtons extends StatelessWidget {
   const WalletActionButtons({super.key, this.walletBloc});
 
-  final WalletBloc? walletBloc;
+  final Wallet? walletBloc;
 
   @override
   Widget build(BuildContext context) {

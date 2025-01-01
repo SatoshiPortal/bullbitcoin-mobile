@@ -17,6 +17,8 @@ class AppWalletsRepository {
         _walletServices.map((_) => _.wallet).toList(),
       );
 
+  List<Wallet> get allWallets => _walletServices.map((_) => _.wallet).toList();
+
   Stream<Wallet> wallet(String id) => Stream.value(
         _walletServices.firstWhere((_) => _.wallet.id == id).wallet,
       );

@@ -19,27 +19,20 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   WalletSettingsCubit({
     required Wallet wallet,
     required AppWalletsRepository appWalletsRepository,
-    // required WalletBloc walletBloc,
-    // required HomeCubit homeCubit,
     required WalletsStorageRepository walletsStorageRepository,
     required WalletSensitiveStorageRepository walletSensRepository,
     required FileStorage fileStorage,
   })  : _fileStorage = fileStorage,
         _walletSensRepository = walletSensRepository,
-        // _homeCubit = homeCubit,
         _walletsStorageRepository = walletsStorageRepository,
         _appWalletsRepository = appWalletsRepository,
         _wallet = wallet,
-        // _walletBloc = walletBloc,
         super(
-          const WalletSettingsState(
-              // wallet: wallet,
-              ),
+          const WalletSettingsState(),
         );
 
-  // final WalletBloc _walletBloc;
   final WalletsStorageRepository _walletsStorageRepository;
-  // final HomeCubit _homeCubit;
+
   final WalletSensitiveStorageRepository _walletSensRepository;
   final FileStorage _fileStorage;
   final AppWalletsRepository _appWalletsRepository;
@@ -54,21 +47,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(savingName: true, errSavingName: ''));
 
     final wallet = _wallet.copyWith(name: state.name);
-    // final err = await walletsStorageRepository.updateWallet(
-    //   wallet: wallet,
-    //   hiveStore: hiveStorage,
-    // );
-    // if (err != null) {
-    //   emit(
-    //     state.copyWith(
-    //       errSavingName: err.toString(),
-    //       savingName: false,
-    //     ),
-    //   );
-    //   return;
-    // }
-    // _walletBloc
-    //     .add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
 
     await _appWalletsRepository
         .getWalletServiceById(wallet.id)
@@ -77,7 +55,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(
       state.copyWith(
         savingName: false,
-        // wallet: wallet,
         savedName: true,
       ),
     );
@@ -86,17 +63,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
 
     emit(state.copyWith(savedName: false));
   }
-
-  // void wordChanged(int index, String word) {
-  //   final words = state.mnemonic.toList();
-  //   words[index] = word;
-  //   emit(
-  //     state.copyWith(
-  //       mnemonic: words,
-  //       errTestingBackup: '',
-  //     ),
-  //   );
-  // }
 
   Future<void> loadBackupClicked() async {
     final (seed, err) = await _walletSensRepository.readSeed(
@@ -143,8 +109,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     );
 
     emit(state.copyWith(testMnemonicOrder: testMnemonic));
-
-    // if (testMnemonic.length == 12) testBackupClicked();
   }
 
   void word24Clicked(int shuffledIdx) {
@@ -168,8 +132,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     );
 
     emit(state.copyWith(testMnemonicOrder: testMnemonic));
-
-    // if (testMnemonic.length == 24) testBackupClicked();
   }
 
   Future<void> invalidTestOrderClicked() async {
@@ -193,45 +155,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       ),
     );
   }
-
-  // void testingOrderCompleted() async {
-  //   final words = state.testMneString();
-  //   final mne = state.mnemonic.join(' ');
-  //   if (words != mne) {
-  //     return;
-  //   }
-  //   if (state.password != state.testBackupPassword) {
-  //     return;
-  //   }
-  //   emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
-
-  //   final wallet = state.wallet.copyWith(backupTested: true);
-
-  //   // final updateErr = await walletsStorageRepository.updateWallet(
-  //   //   wallet: wallet,
-  //   //   hiveStore: hiveStorage,
-  //   // );
-  //   // if (updateErr != null) {
-  //   //   emit(
-  //   //     state.copyWith(
-  //   //       errTestingBackup: updateErr.toString(),
-  //   //       testingBackup: false,
-  //   //     ),
-  //   //   );
-  //   //   return;
-  //   // }
-
-  //   walletBloc.add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
-
-  //   emit(
-  //     state.copyWith(
-  //       backupTested: true,
-  //       testingBackup: false,
-  //       wallet: wallet,
-  //     ),
-  //   );
-  //   clearSensitive();
-  // }
 
   void changePassword(String password) {
     emit(
@@ -261,7 +184,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
 
     final mne = seed!.mnemonic == words;
-    // final pp = seed.getPassphraseFromIndex(state.wallet.sourceFingerprint).passphrase;
+
     final psd =
         seed.getPassphraseFromIndex(_wallet.sourceFingerprint).passphrase ==
             password;
@@ -289,35 +212,14 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final wallet =
         _wallet.copyWith(backupTested: true, lastBackupTested: DateTime.now());
 
-    // final updateErr = await walletsStorageRepository.updateWallet(
-    //   wallet: wallet,
-    //   hiveStore: hiveStorage,
-    // );
-
-    // if (updateErr != null) {
-    //   emit(
-    //     state.copyWith(
-    //       errTestingBackup: updateErr.toString(),
-    //       testingBackup: false,
-    //     ),
-    //   );
-    //   return;
-    // }
-
-    // _walletBloc
-    //     .add(UpdateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]));
-
     await _appWalletsRepository
         .getWalletServiceById(wallet.id)
         ?.updateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]);
-
-    // await Future.delayed(100.ms);
 
     emit(
       state.copyWith(
         backupTested: true,
         testingBackup: false,
-        // wallet: wallet,
       ),
     );
     clearSensitive();
@@ -392,9 +294,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(deleting: true, errDeleting: ''));
     final walletService =
         _appWalletsRepository.getWalletServiceById(_wallet.id);
-    // _walletBloc.add(KillSync());
+
     walletService?.killSync();
-    // await Future.delayed(200.ms);
+
     if (walletService!.wallet.type == BBWalletType.main) {
       emit(
         state.copyWith(
@@ -465,7 +367,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     final List<Wallet> networkSpecificWallets = (wallets != null)
         ? wallets.where((wallet) => wallet.network == _wallet.network).toList()
         : [];
-    // check if a wallet exists for this seed, if it does we should not delete the seed
+
     final walletInUse = await WalletUpdate().walletExists(
       mnemonicFingerprint,
       networkSpecificWallets,
@@ -484,8 +386,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       }
     }
     _appWalletsRepository.deleteWallet(_wallet.id);
-    // _homeCubit.removeWallet(_walletBloc);
-    // homeCubit.removeWalletPostDelete(state.wallet.id);
 
     emit(
       state.copyWith(
@@ -558,16 +458,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
         emit(state.copyWith(errImporting: err2.toString(), importing: false));
         return;
       }
-
-      // _walletBloc.add(
-      //   UpdateWallet(
-      //     updatedWallet!,
-      //     updateTypes: [
-      //       UpdateWalletTypes.addresses,
-      //       UpdateWalletTypes.transactions,
-      //     ],
-      //   ),
-      // );
 
       await _appWalletsRepository
           .getWalletServiceById(updatedWallet!.id)

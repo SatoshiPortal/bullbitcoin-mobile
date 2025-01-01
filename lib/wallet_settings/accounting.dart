@@ -38,45 +38,44 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletName =
-        context.select((WalletBloc _) => _.state.wallet.name ?? '');
-    final totalBalance = context
-        .select((WalletBloc _) => _.state.wallet.fullBalance?.total ?? 0);
+    final walletName = context.select((Wallet _) => _.state.wallet.name ?? '');
+    final totalBalance =
+        context.select((Wallet _) => _.state.wallet.fullBalance?.total ?? 0);
     final totalStr = context.select(
       (CurrencyCubit _) =>
           _.state.getAmountInUnits(totalBalance, removeText: true),
     );
     final confirmedBalance = context
-        .select((WalletBloc _) => _.state.wallet.fullBalance?.confirmed ?? 0);
+        .select((Wallet _) => _.state.wallet.fullBalance?.confirmed ?? 0);
     final confirmedStr = context.select(
       (CurrencyCubit _) =>
           _.state.getAmountInUnits(confirmedBalance, removeText: true),
     );
     final unconfirmedBalance = context.select(
-      (WalletBloc _) => _.state.wallet.fullBalance?.untrustedPending ?? 0,
+      (Wallet _) => _.state.wallet.fullBalance?.untrustedPending ?? 0,
     );
     final unconfirmedStr = context.select(
       (CurrencyCubit _) =>
           _.state.getAmountInUnits(unconfirmedBalance, removeText: true),
     );
     final amtSent = context.select(
-      (WalletBloc cubit) => cubit.state.wallet.totalSent(),
+      (Wallet cubit) => cubit.state.wallet.totalSent(),
     );
     final sentStr = context.select(
       (CurrencyCubit _) => _.state.getAmountInUnits(amtSent, removeText: true),
     );
     final amtReceived = context.select(
-      (WalletBloc cubit) => cubit.state.wallet.totalReceived(),
+      (Wallet cubit) => cubit.state.wallet.totalReceived(),
     );
     final receivedStr = context.select(
       (CurrencyCubit _) =>
           _.state.getAmountInUnits(amtReceived, removeText: true),
     );
     final txsReceivedCount = context.select(
-      (WalletBloc _) => _.state.wallet.txReceivedCount(),
+      (Wallet _) => _.state.wallet.txReceivedCount(),
     );
     final txsSentCount = context.select(
-      (WalletBloc _) => _.state.wallet.txSentCount(),
+      (Wallet _) => _.state.wallet.txSentCount(),
     );
     final units = context.select((CurrencyCubit x) => x.state.getUnitString());
 

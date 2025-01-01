@@ -175,7 +175,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   Future<Wallet?> __updateWalletTxs(
     SwapTx swapTx,
-    WalletBloc walletBloc,
+    Wallet walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
     final (resp, err) = _walletTx.updateSwapTxs(
@@ -206,7 +206,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   Future<SwapTx?> __refundSwap(
     SwapTx swapTx,
-    WalletBloc walletBloc,
+    Wallet walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
     if (state.swapRefunded(swapTx.id) || (state.isRefunding(swapTx.id))) {
@@ -284,7 +284,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   Future<SwapTx?> __claimSwap(
     SwapTx swapTx,
-    WalletBloc walletBloc,
+    Wallet walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
     if (state.swapClaimed(swapTx.id) || (state.isClaiming(swapTx.id))) {
@@ -349,7 +349,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   Future<SwapTx?> __coopCloseSwap(
     SwapTx swapTx,
-    WalletBloc walletBloc,
+    Wallet walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
     if (state.swapClaimed(swapTx.id) || (state.isClaiming(swapTx.id))) {
@@ -418,7 +418,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   Future<SwapTx?> __onChainclaimSwap(
     SwapTx swapTx,
-    WalletBloc walletBloc,
+    Wallet walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
     if (state.swapClaimed(swapTx.id) || (state.isClaiming(swapTx.id))) {
@@ -477,7 +477,7 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
   Future<SwapTx?> __onchainRefund(
     SwapTx swapTx,
-    WalletBloc walletBloc,
+    Wallet walletBloc,
     Emitter<WatchTxsState> emit,
   ) async {
     if (state.swapRefunded(swapTx.id) || (state.isRefunding(swapTx.id))) {

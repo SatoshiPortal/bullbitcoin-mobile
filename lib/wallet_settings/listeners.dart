@@ -57,7 +57,7 @@ class TestBackupListener extends StatelessWidget {
       listener: (context, state) {
         if (!state.backupTested) return;
 
-        final wallet = context.read<WalletBloc>().state.wallet;
+        final wallet = context.read<Wallet>().state.wallet;
 
         final walletService = context
             .read<AppWalletsRepository>()

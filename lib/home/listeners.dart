@@ -24,10 +24,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class HomeWalletsSetupListener extends StatelessWidget {
   const HomeWalletsSetupListener({super.key, required this.child});
 
-  List<WalletBloc> createWalletBlocs(List<Wallet> tempwallets) {
+  List<Wallet> createWalletBlocs(List<Wallet> tempwallets) {
     final walletCubits = [
       for (final w in tempwallets)
-        WalletBloc(
+        Wallet(
           saveDir: w.getWalletStorageString(),
           walletSync: locator<WalletSync>(),
           walletsStorageRepository: locator<WalletsStorageRepository>(),
@@ -109,7 +109,7 @@ class WalletBlocListeners extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         for (final w in wallets)
-          BlocListener<WalletBloc, WalletState>(
+          BlocListener<Wallet, WalletState>(
             bloc: w,
             listenWhen: (previous, current) =>
                 previous.wallet != current.wallet,
@@ -161,7 +161,7 @@ class HomeWalletLoadingListeners extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         for (final walletBloc in walletBlocs)
-          BlocListener<WalletBloc, WalletState>(
+          BlocListener<Wallet, WalletState>(
             bloc: walletBloc,
             listenWhen: (previous, current) =>
                 previous.syncing != current.syncing,

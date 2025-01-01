@@ -69,7 +69,7 @@ class _SwapPageState extends State<SwapPage> {
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
 
-    WalletBloc? walletBloc;
+    Wallet? walletBloc;
 
     walletBloc = context.read<HomeCubit>().state.walletBlocs?[0];
 

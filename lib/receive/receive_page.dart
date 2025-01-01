@@ -146,14 +146,13 @@ class _Screen extends StatelessWidget {
       (ReceiveCubit x) => x.state.showQR(swapTx, isChainSwap: isChainSwap),
     );
 
-    final watchOnly =
-        context.select((WalletBloc x) => x.state.wallet.watchOnly());
+    final watchOnly = context.select((Wallet x) => x.state.wallet.watchOnly());
     final mainWallet =
         context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
-    context.select((WalletBloc x) => x.state.wallet);
+    context.select((Wallet x) => x.state.wallet);
 
     final walletIsLiquid = context.select(
-      (WalletBloc x) => x.state.wallet.isLiquid(),
+      (Wallet x) => x.state.wallet.isLiquid(),
     );
     final showWarning =
         context.select((CreateSwapCubit x) => x.state.showWarning());
@@ -261,7 +260,7 @@ class ReceiveWalletsDropDown extends StatelessWidget {
     final walletBlocs = context
         .select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
     final selectedWalletBloc =
-        context.select((ReceiveCubit _) => _.state.walletBloc);
+        context.select((ReceiveCubit _) => _.state.wallet);
 
     // final walletBloc = selectedWalletBloc ?? walletBlocs.first;
 

@@ -45,11 +45,11 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backupTested =
-        context.select((WalletBloc x) => x.state.wallet.backupTested);
+        context.select((Wallet x) => x.state.wallet.backupTested);
 
     return RefreshIndicator(
       onRefresh: () async {
-        context.read<WalletBloc>().add(SyncWallet());
+        context.read<Wallet>().add(SyncWallet());
         return;
       },
       child: Stack(
@@ -70,7 +70,7 @@ class _Screen extends StatelessWidget {
           ),
           BottomCenter(
             child: WalletActionButtons(
-              walletBloc: context.read<WalletBloc>(),
+              walletBloc: context.read<Wallet>(),
             ),
           ),
         ],
@@ -97,11 +97,9 @@ class ActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backupTested =
-        context.select((WalletBloc x) => x.state.wallet.backupTested);
-    final watchonly =
-        context.select((WalletBloc x) => x.state.wallet.watchOnly());
-    final isInstant =
-        context.select((WalletBloc x) => x.state.wallet.isInstant());
+        context.select((Wallet x) => x.state.wallet.backupTested);
+    final watchonly = context.select((Wallet x) => x.state.wallet.watchOnly());
+    final isInstant = context.select((Wallet x) => x.state.wallet.isInstant());
 
     final isdarkMode = context.select(
       (Lighting x) => x.state == ThemeLighting.dark,
@@ -120,7 +118,7 @@ class ActionsRow extends StatelessWidget {
               isBlue: false,
               isRed: !backupTested,
               onPressed: () {
-                final walletBloc = context.read<WalletBloc>();
+                final walletBloc = context.read<Wallet>();
                 context.push('/wallet-settings/open-backup', extra: walletBloc);
               },
             ),
@@ -132,7 +130,7 @@ class ActionsRow extends StatelessWidget {
                   ? context.push('/information')
                   : context.push(
                       '/wallet/details',
-                      extra: context.read<WalletBloc>(),
+                      extra: context.read<Wallet>(),
                     );
             },
           ),
@@ -140,7 +138,7 @@ class ActionsRow extends StatelessWidget {
             label: 'Settings',
             isBlue: false,
             onPressed: () {
-              final walletBloc = context.read<WalletBloc>();
+              final walletBloc = context.read<Wallet>();
               context.push('/wallet-settings', extra: walletBloc);
             },
           ),

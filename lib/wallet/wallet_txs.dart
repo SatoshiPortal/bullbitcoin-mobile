@@ -25,12 +25,12 @@ class WalletTxList extends StatelessWidget {
     // final syncing = context.select((WalletBloc x) => x.state.syncing);
     // final loading = context.select((WalletBloc x) => x.state.loadingTxs);
     // final loadingBal = context.select((WalletBloc x) => x.state.loadingBalance);
-    final loading = context.select((WalletBloc x) => x.state.loading());
+    final loading = context.select((Wallet x) => x.state.loading());
 
-    final confirmedTXs = context
-        .select((WalletBloc x) => x.state.wallet?.getConfirmedTxs() ?? []);
+    final confirmedTXs =
+        context.select((Wallet x) => x.state.wallet?.getConfirmedTxs() ?? []);
     final pendingTXs =
-        context.select((WalletBloc x) => x.state.wallet?.getPendingTxs() ?? []);
+        context.select((Wallet x) => x.state.wallet?.getPendingTxs() ?? []);
     final zeroPending = pendingTXs.isEmpty;
 
     if (loading && confirmedTXs.isEmpty && pendingTXs.isEmpty) {
@@ -228,9 +228,9 @@ class BackupAlertBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((WalletBloc x) => x.state.wallet);
+    final _ = context.select((Wallet x) => x.state.wallet);
     final backupTested =
-        context.select((WalletBloc x) => x.state.wallet?.backupTested ?? true);
+        context.select((Wallet x) => x.state.wallet?.backupTested ?? true);
 
     if (backupTested) return const SizedBox.shrink();
 
@@ -238,7 +238,7 @@ class BackupAlertBanner extends StatelessWidget {
       onTap: () {
         context.push(
           '/wallet-settings/open-backup',
-          extra: context.read<WalletBloc>(),
+          extra: context.read<Wallet>(),
         );
       },
       info: 'Back up your wallet! Tap to test backup.',

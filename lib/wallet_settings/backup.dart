@@ -24,7 +24,7 @@ class BackupPage extends StatelessWidget {
     required this.walletSettings,
   });
 
-  final WalletBloc walletBloc;
+  final Wallet walletBloc;
   final WalletSettingsCubit walletSettings;
 
   @override
@@ -90,11 +90,11 @@ class BackUpInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lastBackupTested = context
-        .select((WalletBloc cubit) => cubit.state.wallet!.lastBackupTested);
+    final lastBackupTested =
+        context.select((Wallet cubit) => cubit.state.wallet!.lastBackupTested);
 
-    final hasPassphrase = context
-        .select((WalletBloc cubit) => cubit.state.wallet!.hasPassphrase());
+    final hasPassphrase =
+        context.select((Wallet cubit) => cubit.state.wallet!.hasPassphrase());
     final instructions = backupInstructions(hasPassphrase);
     return SingleChildScrollView(
       child: Padding(
@@ -225,7 +225,7 @@ class BackupScreen extends StatelessWidget {
                         .push(
                       '/wallet-settings/test-backup',
                       extra: (
-                        context.read<WalletBloc>(),
+                        context.read<Wallet>(),
                         context.read<WalletSettingsCubit>(),
                       ),
                     );

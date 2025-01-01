@@ -81,7 +81,7 @@ class _SendPageState extends State<SendPage> {
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
 
-    WalletBloc? walletBloc;
+    Wallet? walletBloc;
 
     if (widget.walletId != null) {
       walletBloc =
@@ -578,14 +578,14 @@ class SendWalletBalance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalFrozen = context.select(
-      (WalletBloc cubit) => cubit.state.wallet.frozenUTXOTotal() ?? 0,
+      (Wallet cubit) => cubit.state.wallet.frozenUTXOTotal() ?? 0,
     );
     final isLiq = context
-        .select((WalletBloc cubit) => cubit.state.wallet.isLiquid() ?? false);
+        .select((Wallet cubit) => cubit.state.wallet.isLiquid() ?? false);
 
     if (totalFrozen == 0) {
       final balance = context.select(
-        (WalletBloc cubit) => cubit.state.wallet.fullBalance?.total ?? 0,
+        (Wallet cubit) => cubit.state.wallet.fullBalance?.total ?? 0,
       );
 
       final balStr = context.select(
@@ -595,8 +595,7 @@ class SendWalletBalance extends StatelessWidget {
       return BBText.body(balStr, isBold: true);
     } else {
       final balanceWithoutFrozenUTXOs = context.select(
-        (WalletBloc cubit) =>
-            cubit.state.wallet.balanceWithoutFrozenUTXOs() ?? 0,
+        (Wallet cubit) => cubit.state.wallet.balanceWithoutFrozenUTXOs() ?? 0,
       );
       final balStr = context.select(
         (CurrencyCubit cubit) => cubit.state

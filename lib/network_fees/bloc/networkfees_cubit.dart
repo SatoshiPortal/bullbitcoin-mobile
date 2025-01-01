@@ -13,10 +13,8 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
     required HiveStorage hiveStorage,
     required MempoolAPI mempoolAPI,
     required NetworkRepository networkRepository,
-    // required NetworkCubit networkCubit,
     NetworkFeesCubit? defaultNetworkFeesCubit,
   })  : _defaultNetworkFeesCubit = defaultNetworkFeesCubit,
-        // _networkCubit = networkCubit,
         _networkRepository = networkRepository,
         _mempoolAPI = mempoolAPI,
         _hiveStorage = hiveStorage,
@@ -26,7 +24,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
 
   final HiveStorage _hiveStorage;
   final MempoolAPI _mempoolAPI;
-  // final NetworkCubit _networkCubit;
+
   final NetworkRepository _networkRepository;
   final NetworkFeesCubit? _defaultNetworkFeesCubit;
 
@@ -70,7 +68,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   Future loadFees() async {
     emit(state.copyWith(loadingFees: true, errLoadingFees: ''));
     final testnet = _networkRepository.testnet;
-    //  _networkCubit.state.testnet;
+
     final (fees, err) = await _mempoolAPI.getFees(testnet);
     if (err != null) {
       emit(
@@ -100,7 +98,6 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
       emit(
         state.copyWith(
           tempFees: 0,
-          // tempSelectedFeesOption: 2,
         ),
       );
       await Future.delayed(const Duration(milliseconds: 50));
@@ -126,7 +123,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
 
   Future<void> checkMinimumFees() async {
     await Future.delayed(50.ms);
-    final isTestnet = _networkRepository.testnet; //_networkCubit.state.testnet;
+    final isTestnet = _networkRepository.testnet;
     final minFees = isTestnet ? 0 : state.feesList!.last;
 
     int max;
@@ -144,7 +141,6 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
         state.copyWith(
           errLoadingFees:
               "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
-          // tempSelectedFeesOption: 2,
         ),
       );
     } else if (state.tempFees != null &&
@@ -154,7 +150,6 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
         state.copyWith(
           errLoadingFees:
               'The default selected fee is too high. Please select a lower fee than $max sats/vbyte .',
-          // tempSelectedFeesOption: 2,
         ),
       );
     } else {
@@ -165,17 +160,16 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   Future confirmFeeClicked() async {
     await Future.delayed(200.ms);
     if (state.feesList == null) return;
-    // final minFees = state.feesList!.last;
-    // final max = state.feesList!.first * 2;
+
     final isTestnet = _networkRepository.testnet;
-    //  _networkCubit.state.testnet;
+
     int max;
     if (!isTestnet) {
       max = state.feesList!.first * feemultiple;
     } else {
       max = 1000;
     }
-    // can we not just call checkMinimumFees here?
+
     final tempFees = state.tempFees;
     if (tempFees == null && state.tempSelectedFeesOption == null) return;
     if (tempFees != null && tempFees > max) return;

@@ -10,7 +10,7 @@ part 'home_state.freezed.dart';
 class HomeState with _$HomeState {
   const factory HomeState({
     List<Wallet>? tempwallets,
-    List<WalletBloc>? walletBlocs,
+    List<Wallet>? walletBlocs,
     @Default(true) bool loadingWallets,
     @Default('') String errLoadingWallets,
     // Wallet? selectedWallet,
@@ -32,7 +32,7 @@ class HomeState with _$HomeState {
   bool hasMainWallets() =>
       walletBlocs?.any((wallet) => wallet.state.wallet.mainWallet) ?? false;
 
-  List<WalletBloc> walletBlocsFromNetwork(BBNetwork network) {
+  List<Wallet> walletBlocsFromNetwork(BBNetwork network) {
     final blocs = walletBlocs
             ?.where((walletBloc) => walletBloc.state.wallet.network == network)
             //.toList()
@@ -43,7 +43,7 @@ class HomeState with _$HomeState {
     return blocs;
   }
 
-  List<WalletBloc> walletBlocsFromNetworkExcludeWatchOnly(BBNetwork network) {
+  List<Wallet> walletBlocsFromNetworkExcludeWatchOnly(BBNetwork network) {
     final blocs = walletBlocs
             ?.where(
               (walletBloc) =>
@@ -56,7 +56,7 @@ class HomeState with _$HomeState {
     return blocs;
   }
 
-  List<WalletBloc> walletBlocsNotMainFromNetwork(BBNetwork network) {
+  List<Wallet> walletBlocsNotMainFromNetwork(BBNetwork network) {
     final blocs = walletBlocs
             ?.where(
               (wallet) =>
@@ -108,14 +108,14 @@ class HomeState with _$HomeState {
   bool noNetworkWallets(BBNetwork network) =>
       walletBlocsFromNetwork(network).isEmpty;
 
-  WalletBloc? getWalletBloc(Wallet wallet) {
+  Wallet? getWalletBloc(Wallet wallet) {
     final walletBlocs = walletBlocsFromNetwork(wallet.network);
     final idx = walletBlocs.indexWhere((w) => w.state.wallet.id == wallet.id);
     if (idx == -1) return null;
     return walletBlocs[idx];
   }
 
-  WalletBloc? getWalletBlocFromTx(Transaction tx) {
+  Wallet? getWalletBlocFromTx(Transaction tx) {
     if (walletBlocs == null) return null;
 
     for (final walletBloc in walletBlocs!) {
@@ -128,7 +128,7 @@ class HomeState with _$HomeState {
     return null;
   }
 
-  WalletBloc? getWalletBlocFromSwapTx(SwapTx swaptx) {
+  Wallet? getWalletBlocFromSwapTx(SwapTx swaptx) {
     if (walletBlocs == null) return null;
 
     for (final walletBloc in walletBlocs!) {
@@ -160,7 +160,7 @@ class HomeState with _$HomeState {
     return walletBloc?.state.wallet.watchOnly() ?? false;
   }
 
-  WalletBloc? getWalletBlocById(String id) {
+  Wallet? getWalletBlocById(String id) {
     // final walletIdx = wallets!.indexWhere((w) => w.id == id);
     // if (walletIdx == -1) return null;
     // final wallet = wallets![walletIdx];
@@ -227,7 +227,7 @@ class HomeState with _$HomeState {
     return idx;
   }
 
-  int? getWalletBlocIdx(WalletBloc walletBloc) {
+  int? getWalletBlocIdx(Wallet walletBloc) {
     final walletsFromNetwork =
         walletBlocsFromNetwork(walletBloc.state.wallet.network);
     final idx = walletsFromNetwork
@@ -342,7 +342,7 @@ class HomeState with _$HomeState {
     return total;
   }
 
-  WalletBloc? firstWalletWithEnoughBalance(int sats, BBNetwork network) {
+  Wallet? firstWalletWithEnoughBalance(int sats, BBNetwork network) {
     for (final walletBloc in walletBlocsFromNetwork(network)) {
       final enoughBalance = walletBloc.state.balanceSats() >= sats;
       if (enoughBalance) return walletBloc;
@@ -350,14 +350,14 @@ class HomeState with _$HomeState {
     return null;
   }
 
-  WalletBloc? selectWalletWithHighestBalance(
+  Wallet? selectWalletWithHighestBalance(
     int sats,
     BBNetwork network, {
     bool onlyMain = false,
     bool onlyBitcoin = false,
     bool onlyLiquid = false,
   }) {
-    final List<WalletBloc> filteredWallets =
+    final List<Wallet> filteredWallets =
         walletBlocsFromNetwork(network).where((w) {
       final wallet = w.state.wallet;
       if (onlyMain && !wallet.mainWallet) return false;
@@ -365,7 +365,7 @@ class HomeState with _$HomeState {
       if (onlyLiquid && !wallet.isLiquid()) return false;
       return true;
     }).toList();
-    WalletBloc? walletBlocWithHighestBalance;
+    Wallet? walletBlocWithHighestBalance;
     for (final walletBloc in filteredWallets) {
       final enoughBalance = walletBloc.state.balanceSats() >= sats;
       if (enoughBalance) {
@@ -384,7 +384,7 @@ class HomeState with _$HomeState {
     return null;
   }
 
-  List<WalletBloc> walletsWithEnoughBalance(
+  List<Wallet> walletsWithEnoughBalance(
     int sats,
     BBNetwork network, {
     bool onlyMain = false,
@@ -401,7 +401,7 @@ class HomeState with _$HomeState {
       },
     ).toList();
 
-    final List<WalletBloc> walletsWithEnoughBalance = [];
+    final List<Wallet> walletsWithEnoughBalance = [];
 
     for (final walletBloc in wallets) {
       final enoughBalance = walletBloc.state.balanceSats() >= sats;
@@ -412,15 +412,15 @@ class HomeState with _$HomeState {
         : walletsWithEnoughBalance;
   }
 
-  Set<({String info, WalletBloc walletBloc})> homeWarnings(BBNetwork network) {
-    bool instantBalWarning(WalletBloc wb) {
+  Set<({String info, Wallet walletBloc})> homeWarnings(BBNetwork network) {
+    bool instantBalWarning(Wallet wb) {
       if (wb.state.wallet.isInstant() == false) return false;
       return wb.state.balanceSats() > 100000000;
     }
 
-    bool backupWarning(WalletBloc wb) => !wb.state.wallet.backupTested;
+    bool backupWarning(Wallet wb) => !wb.state.wallet.backupTested;
 
-    final warnings = <({String info, WalletBloc walletBloc})>{};
+    final warnings = <({String info, Wallet walletBloc})>{};
     final List<String> backupWalletFngrforBackupWarning = [];
 
     for (final walletBloc in walletBlocsFromNetwork(network)) {
@@ -445,7 +445,7 @@ class HomeState with _$HomeState {
     return warnings;
   }
 
-  WalletBloc? findWalletBlocWithSameFngr(Wallet wallet) {
+  Wallet? findWalletBlocWithSameFngr(Wallet wallet) {
     for (final wb in walletBlocs!) {
       final w = wb.state.wallet;
       if (w.id == wallet.id) continue;

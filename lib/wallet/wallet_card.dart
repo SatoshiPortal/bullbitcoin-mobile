@@ -20,7 +20,7 @@ class HomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((WalletBloc x) => x.state.wallet);
+    final wallet = context.select((Wallet x) => x.state.wallet);
     if (wallet == null) return const SizedBox.shrink();
 
     final (_, info) = WalletCardDetails.cardDetails(context, wallet);
@@ -76,18 +76,18 @@ class WalletCardDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((WalletBloc x) => x.state.wallet);
+    final wallet = context.select((Wallet x) => x.state.wallet);
     if (wallet == null) return const SizedBox.shrink();
 
     final (color, _) = cardDetails(context, wallet);
 
-    final name = context.select((WalletBloc x) => x.state.wallet?.name);
-    final fingerprint = context
-        .select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
+    final name = context.select((Wallet x) => x.state.wallet?.name);
+    final fingerprint =
+        context.select((Wallet x) => x.state.wallet?.sourceFingerprint ?? '');
     final walletStr =
-        context.select((WalletBloc x) => x.state.wallet?.getWalletTypeStr());
+        context.select((Wallet x) => x.state.wallet?.getWalletTypeStr());
 
-    final sats = context.select((WalletBloc x) => x.state.balanceSats());
+    final sats = context.select((Wallet x) => x.state.balanceSats());
 
     final balance = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true),
@@ -128,7 +128,7 @@ class WalletCardDetails extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 4),
                   child: IconButton(
                     onPressed: () {
-                      final walletBloc = context.read<WalletBloc>();
+                      final walletBloc = context.read<Wallet>();
                       context.push('/wallet-settings', extra: walletBloc);
                     },
                     color: context.colour.onPrimary,

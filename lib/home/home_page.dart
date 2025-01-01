@@ -202,7 +202,7 @@ class CardsList extends StatelessWidget {
 
   final Function(int) onChanged;
 
-  static List<CardColumn> buildCardColumns(List<WalletBloc> wallets) {
+  static List<CardColumn> buildCardColumns(List<Wallet> wallets) {
     final List<CardColumn> columns = [];
     final isOne = wallets.length == 1;
     for (var i = 0; i < wallets.length; i += 3) {
@@ -250,9 +250,9 @@ class CardColumn extends StatelessWidget {
     this.showSwap = false,
   });
 
-  final WalletBloc walletTop;
-  final WalletBloc? walletBottom;
-  final WalletBloc? walletLast;
+  final Wallet walletTop;
+  final Wallet? walletBottom;
+  final Wallet? walletLast;
   final bool onlyOne;
   final bool showSwap;
 
@@ -346,17 +346,17 @@ class CardItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((WalletBloc x) => x.state.wallet);
+    final wallet = context.select((Wallet x) => x.state.wallet);
 
     final (color, _) = WalletCardDetails.cardDetails(context, wallet);
 
-    final name = context.select((WalletBloc x) => x.state.wallet.name);
-    final fingerprint = context
-        .select((WalletBloc x) => x.state.wallet.sourceFingerprint ?? '');
+    final name = context.select((Wallet x) => x.state.wallet.name);
+    final fingerprint =
+        context.select((Wallet x) => x.state.wallet.sourceFingerprint ?? '');
     final walletStr =
-        context.select((WalletBloc x) => x.state.wallet.getWalletTypeStr());
+        context.select((Wallet x) => x.state.wallet.getWalletTypeStr());
 
-    final sats = context.select((WalletBloc x) => x.state.balanceSats());
+    final sats = context.select((Wallet x) => x.state.balanceSats());
 
     final balance = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true),
@@ -390,7 +390,7 @@ class CardItem extends StatelessWidget {
           ),
           child: InkWell(
             onTap: () {
-              final walletBloc = context.read<WalletBloc>();
+              final walletBloc = context.read<Wallet>();
               context.push('/wallet', extra: walletBloc);
             },
             child: Padding(
@@ -662,14 +662,14 @@ class HomeTopBar2 extends StatelessWidget {
 class HomeBottomBar2 extends StatefulWidget {
   const HomeBottomBar2({super.key, required this.walletBloc});
 
-  final WalletBloc? walletBloc;
+  final Wallet? walletBloc;
 
   @override
   State<HomeBottomBar2> createState() => _HomeBottomBar2State();
 }
 
 class _HomeBottomBar2State extends State<HomeBottomBar2> {
-  WalletBloc? wb;
+  Wallet? wb;
   @override
   void initState() {
     if (widget.walletBloc == null) {
@@ -762,7 +762,7 @@ class _HomeBottomBar2State extends State<HomeBottomBar2> {
 class ScanButton extends StatelessWidget {
   const ScanButton({super.key, this.walletBloc});
 
-  final WalletBloc? walletBloc;
+  final Wallet? walletBloc;
 
   @override
   Widget build(BuildContext context) {

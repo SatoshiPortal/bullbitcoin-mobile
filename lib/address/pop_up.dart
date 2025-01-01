@@ -33,12 +33,12 @@ class AddressPopUp extends StatelessWidget {
     Address address,
   ) async {
     final settings = context.read<SettingsCubit>();
-    final wallet = context.read<WalletBloc>();
+    final wallet = context.read<Wallet>();
     final walletSettings = context.read<WalletSettingsCubit>();
     final addressCubit = AddressCubit(
       address: address,
       walletAddress: locator<WalletAddress>(),
-      walletBloc: wallet,
+      wallet: wallet,
       bdkUtxo: locator<BDKUtxo>(),
     );
 
@@ -110,9 +110,9 @@ class Title extends StatelessWidget {
         .select((AddressCubit cubit) => cubit.state.address!.miniString());
 
     final walletName =
-        context.select((WalletBloc cubit) => cubit.state.wallet!.name ?? '');
+        context.select((Wallet cubit) => cubit.state.wallet!.name ?? '');
     final walletFingerprint = context.select(
-      (WalletBloc cubit) => cubit.state.wallet!.sourceFingerprint,
+      (Wallet cubit) => cubit.state.wallet!.sourceFingerprint,
     );
     final title = walletName.isEmpty ? walletFingerprint : walletName;
 
@@ -314,7 +314,7 @@ class AddressLabelFieldPopUp extends StatelessWidget {
     Address address,
   ) {
     final settings = context.read<SettingsCubit>();
-    final wallet = context.read<WalletBloc>();
+    final wallet = context.read<Wallet>();
     final walletSettings = context.read<WalletSettingsCubit>();
     final addressCubit = context.read<AddressCubit>();
 

@@ -10,7 +10,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReceiveCubit extends Cubit<ReceiveState> {
   ReceiveCubit({
-    // WalletBloc? walletBloc,
     Wallet? wallet,
     required WalletAddress walletAddress,
     required WalletsStorageRepository walletsStorageRepository,
@@ -23,7 +22,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         super(
           ReceiveState(
             wallet: wallet,
-            // walletBloc: walletBloc,
             oneWallet: wallet != null,
           ),
         ) {
@@ -82,7 +80,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         state.defaultAddress!.address,
       );
     } else {
-      // Clear payjoin receiver
       emit(state.copyWith(payjoinReceiver: null));
     }
   }
@@ -140,7 +137,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     final Wallet wallet = state.wallet!;
 
-    // If currently selected wallet is bitcoin? wallet, then find and load the liquid wallet and get it's lastGeneratedAddress.
     if (wallet.isLiquid()) {
       emit(
         state.copyWith(
@@ -172,7 +168,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
           defaultLiquidAddress: liquidWallet?.lastGeneratedAddress,
         ),
       );
-      // If currently selected wallet is liquid? wallet, then find and load the bitcoin wallet and get it's lastGeneratedAddress.
     } else if (wallet.isBitcoin()) {
       emit(
         state.copyWith(
@@ -261,13 +256,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    // state.walletBloc!.add(
-    //   UpdateWallet(
-    //     updatedWallet!,
-    //     updateTypes: [UpdateWalletTypes.addresses],
-    //   ),
-    // );
-
     await _appWalletsRepository.getWalletServiceById(wallet.id)?.updateWallet(
       updatedWallet!,
       updateTypes: [UpdateWalletTypes.addresses],
@@ -342,9 +330,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       state: address.state,
     );
 
-    // state.walletBloc!
-    //     .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
-
     await _appWalletsRepository
         .getWalletServiceById(state.wallet!.id)
         ?.updateWallet(
@@ -383,7 +368,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   Future<void> isPayjoinEnabled() async {
-    // final walletBloc = state.wallet;
     final wallet = state.wallet;
     if (wallet == null) return;
 
