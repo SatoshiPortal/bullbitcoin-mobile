@@ -7,7 +7,7 @@ import 'package:bb_mobile/_ui/page_template.dart';
 import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/auth/bloc/cubit.dart';
 import 'package:bb_mobile/auth/bloc/state.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/styles.dart';

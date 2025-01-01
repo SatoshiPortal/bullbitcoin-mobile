@@ -17,7 +17,7 @@ import 'package:bb_mobile/_ui/word_grid.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
 import 'package:bb_mobile/create/confirm_popup.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/styles.dart';

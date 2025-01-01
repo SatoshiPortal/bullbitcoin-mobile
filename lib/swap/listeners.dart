@@ -1,5 +1,5 @@
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
 import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/swap/receive.dart';

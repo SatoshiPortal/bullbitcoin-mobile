@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/bip21.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/material.dart';
 // import 'package:uni_links/uni_links.dart';

@@ -24,10 +24,17 @@ class NetworkRepoData with _$NetworkRepoData {
     @Default(LiquidElectrumTypes.blockstream)
     @Default(LiquidElectrumNetwork.bullbitcoin)
     LiquidElectrumTypes selectedLiquidNetwork,
+    @Default(false) bool loadingNetworks,
+    @Default('') String errLoadingNetworks,
+    @Default(false) bool networkConnected,
+    @Default(false) bool networkErrorOpened,
+
+    // @Default(20) int stopGap,
     ElectrumTypes? tempNetwork,
     ElectrumNetwork? tempNetworkDetails,
     LiquidElectrumTypes? tempLiquidNetwork,
     LiquidElectrumNetwork? tempLiquidNetworkDetails,
+    @Default(false) bool goToSettings,
   }) = _NetworkRepoData;
   const NetworkRepoData._();
 
