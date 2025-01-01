@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
@@ -7,6 +8,7 @@ import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -81,15 +83,18 @@ class _SendPageState extends State<SendPage> {
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
 
-    Wallet? walletBloc;
+    Wallet? wallet;
 
     if (widget.walletId != null) {
-      walletBloc =
-          context.read<HomeCubit>().state.getWalletBlocById(widget.walletId!);
+      wallet =
+          context.read<AppWalletsRepository>().getWalletById(widget.walletId!);
     } else {
-      final isTestnet = context.read<NetworkCubit>().state.testnet;
-      walletBloc =
-          context.read<HomeCubit>().state.getMainWallets(isTestnet).first;
+      final isTestnet = context.read<NetworkRepository>().testnet;
+      //  context.read<NetworkCubit>().state.testnet;
+      wallet =
+          context.read<AppWalletsRepository>().getMainWallets(isTestnet).first;
+      // walletBloc = createWalletBloc(wallet);
+      // context.read<HomeCubit>().state.getMainWallets(isTestnet).first;
     }
 
     send = SendCubit(
@@ -97,16 +102,19 @@ class _SendPageState extends State<SendPage> {
       barcode: locator<Barcode>(),
       defaultRBF: locator<SettingsCubit>().state.defaultRBF,
       fileStorage: locator<FileStorage>(),
-      networkCubit: locator<NetworkCubit>(),
-      networkFeesCubit: networkFees,
-      homeCubit: locator<HomeCubit>(),
+      networkRepository: locator<NetworkRepository>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
+      // networkCubit: locator<NetworkCubit>(),
+      // networkFeesCubit: networkFees,
+      // homeCubit: locator<HomeCubit>(),
       payjoinManager: locator<PayjoinManager>(),
       swapBoltz: locator<SwapBoltz>(),
-      currencyCubit: currency,
+      // currencyCubit: currency,
       openScanner: widget.openScanner,
-      walletBloc: walletBloc,
+      // walletBloc: walletBloc,
       swapCubit: swap,
-      oneWallet: widget.walletId != null && walletBloc != null,
+      oneWallet: widget.walletId != null && wallet != null,
+      wallet: wallet,
     );
 
     super.initState();
@@ -144,10 +152,13 @@ class _WalletProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sendWalletBloc =
-        context.select((SendCubit _) => _.state.selectedWalletBloc);
+        context.select((SendCubit _) => _.state.selectedWallet);
 
     if (sendWalletBloc == null) return child;
-    return BlocProvider.value(value: sendWalletBloc, child: child);
+    return BlocProvider.value(
+      value: createWalletBloc(sendWalletBloc),
+      child: child,
+    );
   }
 }
 
@@ -168,8 +179,7 @@ class _Screen extends StatelessWidget {
         context.select((CreateSwapCubit x) => x.state.showWarning());
 
     final walletIsLiquid = context.select(
-      (SendCubit x) =>
-          x.state.selectedWalletBloc?.state.wallet.isLiquid() ?? false,
+      (SendCubit x) => x.state.selectedWallet?.isLiquid() ?? false,
     );
 
     if (isPayjoinPostSuccess) return const PjSuccess();
@@ -247,7 +257,7 @@ class WalletSelectionDropDown extends StatelessWidget {
       (HomeCubit _) => _.state.walletBlocsFromNetworkExcludeWatchOnly(network),
     );
     final selectedWalletBloc =
-        context.select((SendCubit _) => _.state.selectedWalletBloc);
+        context.select((SendCubit _) => _.state.selectedWallet);
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 300),
@@ -581,7 +591,7 @@ class SendWalletBalance extends StatelessWidget {
       (Wallet cubit) => cubit.state.wallet.frozenUTXOTotal() ?? 0,
     );
     final isLiq = context
-        .select((Wallet cubit) => cubit.state.wallet.isLiquid() ?? false);
+        .select((WalletBloc cubit) => cubit.state.wallet.isLiquid() ?? false);
 
     if (totalFrozen == 0) {
       final balance = context.select(

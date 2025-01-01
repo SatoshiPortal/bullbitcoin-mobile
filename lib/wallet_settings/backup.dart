@@ -17,20 +17,33 @@ class InfoRead extends Cubit<bool> {
   void unread() => emit(false);
 }
 
-class BackupPage extends StatelessWidget {
+class BackupPage extends StatefulWidget {
   const BackupPage({
     super.key,
-    required this.walletBloc,
-    required this.walletSettings,
+    required this.wallet,
   });
 
-  final Wallet walletBloc;
-  final WalletSettingsCubit walletSettings;
+  final Wallet wallet;
+
+  @override
+  State<BackupPage> createState() => _BackupPageState();
+}
+
+class _BackupPageState extends State<BackupPage> {
+  late WalletBloc walletBloc;
+  late WalletSettingsCubit walletSettings;
+  @override
+  void initState() {
+    walletBloc = createWalletBloc(widget.wallet);
+    walletSettings = createWalletSettingsCubit(widget.wallet);
+
+    walletSettings.loadBackupClicked();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    walletSettings.loadBackupClicked();
-
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: walletBloc),
@@ -90,11 +103,11 @@ class BackUpInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lastBackupTested =
-        context.select((Wallet cubit) => cubit.state.wallet!.lastBackupTested);
+    final lastBackupTested = context
+        .select((WalletBloc cubit) => cubit.state.wallet.lastBackupTested);
 
-    final hasPassphrase =
-        context.select((Wallet cubit) => cubit.state.wallet!.hasPassphrase());
+    final hasPassphrase = context
+        .select((WalletBloc cubit) => cubit.state.wallet.hasPassphrase());
     final instructions = backupInstructions(hasPassphrase);
     return SingleChildScrollView(
       child: Padding(

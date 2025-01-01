@@ -28,16 +28,13 @@ import 'package:bb_mobile/swap/swap_confirmation.dart';
 import 'package:bb_mobile/swap/swap_history_page.dart';
 import 'package:bb_mobile/swap/swap_page.dart';
 import 'package:bb_mobile/swap/swap_page_progress_page.dart';
-import 'package:bb_mobile/testground.dart';
 import 'package:bb_mobile/transaction/bump_fees.dart';
 import 'package:bb_mobile/transaction/transaction_page.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/details.dart';
 import 'package:bb_mobile/wallet/information_page.dart';
 import 'package:bb_mobile/wallet/wallet_page.dart';
 import 'package:bb_mobile/wallet_settings/accounting.dart';
 import 'package:bb_mobile/wallet_settings/backup.dart';
-import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/test_backup.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
 import 'package:flutter/material.dart';
@@ -53,12 +50,12 @@ GoRouter setupRouter() => GoRouter(
       initialLocation: '/',
       observers: [GoRouterObserver()],
       routes: <RouteBase>[
-        GoRoute(
-          path: '/testground',
-          builder: (context, state) {
-            return const Testground();
-          },
-        ),
+        // GoRoute(
+        //   path: '/testground',
+        //   builder: (context, state) {
+        //     return const Testground();
+        //   },
+        // ),
         GoRoute(
           path: '/',
           builder: (context, state) {
@@ -295,10 +292,10 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings/test-backup',
           builder: (context, state) {
-            final blocs = state.extra! as (Wallet, WalletSettingsCubit);
+            final wallet = state.extra! as Wallet;
             return TestBackupPage(
-              walletBloc: blocs.$1,
-              walletSettings: blocs.$2,
+              wallet: wallet,
+              // walletSettings: blocs.$2,
             );
             // const WalletSettingsPage(openTestBackup: true);
           },
@@ -306,11 +303,10 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings/backup',
           builder: (context, state) {
-            final blocs = state.extra! as (Wallet, WalletSettingsCubit);
+            final wallet = state.extra! as Wallet;
 
             return BackupPage(
-              walletBloc: blocs.$1,
-              walletSettings: blocs.$2,
+              wallet: wallet,
             );
           },
         ),

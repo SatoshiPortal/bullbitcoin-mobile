@@ -92,7 +92,7 @@ class _ScreenState extends State<_Screen> {
         // await Future.delayed(const Duration(milliseconds: 300));
         await context.push(
           '/wallet-settings/backup',
-          extra: context.read<Wallet>().state.wallet,
+          extra: context.read<WalletBloc>().state.wallet,
           // (
           //   context.read<WalletBloc>(),
           //   context.read<WalletSettingsCubit>(),
@@ -107,10 +107,10 @@ class _ScreenState extends State<_Screen> {
   @override
   Widget build(BuildContext context) {
     final watchOnly =
-        context.select((Wallet cubit) => cubit.state.wallet.watchOnly());
+        context.select((WalletBloc cubit) => cubit.state.wallet.watchOnly());
 
-    final isInstant = context.read<Wallet>().state.wallet.isInstant();
-    final isSecure = context.read<Wallet>().state.wallet.isSecure();
+    final isInstant = context.read<WalletBloc>().state.wallet.isInstant();
+    final isSecure = context.read<WalletBloc>().state.wallet.isSecure();
     // if (!showPage) return const Scaffold(body: SizedBox.shrink());
 
     return Scaffold(
@@ -178,11 +178,11 @@ class ApppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final walletName = context.select(
-      (Wallet cubit) => cubit.state.wallet.name,
+      (WalletBloc cubit) => cubit.state.wallet.name,
     );
 
     final fingerPrint = context.select(
-      (Wallet cubit) => cubit.state.wallet.sourceFingerprint,
+      (WalletBloc cubit) => cubit.state.wallet.sourceFingerprint,
     );
 
     return BBAppBar(
@@ -206,7 +206,8 @@ class _WalletNameState extends State<WalletName> {
 
   @override
   Widget build(BuildContext context) {
-    final mainWallet = context.select((Wallet x) => x.state.wallet.mainWallet);
+    final mainWallet =
+        context.select((WalletBloc x) => x.state.wallet.mainWallet);
     if (mainWallet) return const SizedBox.shrink();
 
     final saving = context.select(
@@ -219,7 +220,7 @@ class _WalletNameState extends State<WalletName> {
     if (text != _controller.text) _controller.text = text;
 
     final name = context.select(
-      (Wallet x) => x.state.wallet.name,
+      (WalletBloc x) => x.state.wallet.name,
     );
 
     final showSave = text.isNotEmpty && name != text;
@@ -266,9 +267,10 @@ class WalletType extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final type = context.select(
-      (Wallet x) => x.state.wallet.getWalletTypeString(),
+      (WalletBloc x) => x.state.wallet.getWalletTypeString(),
     );
-    final scriptType = context.select((Wallet x) => x.state.wallet.scriptType);
+    final scriptType =
+        context.select((WalletBloc x) => x.state.wallet.scriptType);
     final _ = scriptTypeString(scriptType);
 
     return Column(
@@ -290,7 +292,7 @@ class Balances extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((Wallet cubit) => cubit.state.wallet);
+    final wallet = context.select((WalletBloc cubit) => cubit.state.wallet);
 
     final amtSent = wallet.totalSent();
 
@@ -437,7 +439,8 @@ class TestBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTested = context.select((Wallet x) => x.state.wallet.backupTested);
+    final isTested =
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
 
     // if (isTested) return const SizedBox.shrink();
     return BBButton.textWithStatusAndRightArrow(
@@ -479,7 +482,8 @@ class BackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTested = context.select((Wallet x) => x.state.wallet.backupTested);
+    final isTested =
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
 
     return BBButton.textWithStatusAndRightArrow(
       onPressed: () async {

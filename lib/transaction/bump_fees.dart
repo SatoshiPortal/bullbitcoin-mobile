@@ -12,6 +12,7 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
@@ -106,7 +107,7 @@ class BumpFeesPage extends StatefulWidget {
 
 class _BumpFeesPageState extends State<BumpFeesPage> {
   late SendCubit send;
-  late Wallet? walletBloc;
+  late WalletBloc? walletBloc;
   late NetworkFeesCubit networkFees;
   late CurrencyCubit currency;
   late CreateSwapCubit swap;
@@ -114,9 +115,10 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
 
   @override
   void initState() {
-    walletBloc = context.read<HomeCubit>().state.getWalletBlocFromTx(widget.tx);
-
-    if (walletBloc == null) return;
+    final wallet =
+        context.read<AppWalletsRepository>().getWalletFromTx(widget.tx);
+    if (wallet == null) return;
+    walletBloc = createWalletBloc(wallet);
 
     swap = CreateSwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
@@ -130,9 +132,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
     networkFees = NetworkFeesCubit(
       hiveStorage: locator<HiveStorage>(),
       mempoolAPI: locator<MempoolAPI>(),
-      // networkCubit: locator<NetworkCubit>(),
       networkRepository: locator<NetworkRepository>(),
-
       defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
     );
     networkFees.showOnlyFastest(true);
@@ -140,16 +140,13 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
 
     txCubit = TransactionCubit(
       tx: widget.tx,
-      wallet: walletBloc!,
+      wallet: wallet,
       walletUpdate: locator<WalletUpdate>(),
-
+      appWalletsRepository: locator<AppWalletsRepository>(),
       walletTx: locator<WalletTx>(),
       bdkTx: locator<BDKTransactions>(),
-      // walletSensTx: locator<WalletSensitiveTx>(),
-      // walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       walletAddress: locator<WalletAddress>(),
-
       walletsRepository: locator<InternalWalletsRepository>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
     );
@@ -165,14 +162,11 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
       barcode: locator<Barcode>(),
       defaultRBF: locator<SettingsCubit>().state.defaultRBF,
       fileStorage: locator<FileStorage>(),
-      networkCubit: locator<NetworkCubit>(),
-      networkFeesCubit: locator<NetworkFeesCubit>(),
-      homeCubit: locator<HomeCubit>(),
+      networkRepository: locator<NetworkRepository>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
       payjoinManager: locator<PayjoinManager>(),
       swapBoltz: locator<SwapBoltz>(),
-      currencyCubit: currency,
       openScanner: false,
-      walletBloc: walletBloc,
       swapCubit: swap,
     );
     super.initState();
@@ -240,7 +234,7 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tx = context.select((TransactionCubit _) => _.state.tx);
-    // final swap = tx.swapTx;
+
     final isSwapPending = tx.swapIdisTxid();
 
     final txid = tx.txid;
@@ -260,11 +254,6 @@ class _Screen extends StatelessWidget {
     );
 
     final feeRate = (tx.feeRate ?? 1).toStringAsFixed(2);
-
-    // final size = await tx.bdkTx.transaction.size(); // cant do await here.
-    // final feesPetByte = fees / size;
-
-    // final statuss = tx.height == null || tx.height == 0 || tx.timestamp == 0;
 
     final er = context.select((TransactionCubit x) => x.state.errSendingTx);
     final err = context.select((TransactionCubit x) => x.state.errBuildingTx);
@@ -350,10 +339,8 @@ class _Screen extends StatelessWidget {
               ),
               const Gap(24),
               const NetworkFees(label: 'Set new fee rate'),
-
               const Gap(24),
               if (errr.isNotEmpty) BBText.errorSmall(errr),
-              // const Gap(100),
             ],
           ),
         ),

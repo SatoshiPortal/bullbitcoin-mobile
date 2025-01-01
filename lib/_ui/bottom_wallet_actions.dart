@@ -1,17 +1,17 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletActionButtons extends StatelessWidget {
-  const WalletActionButtons({super.key, this.walletBloc});
+  const WalletActionButtons({super.key, this.wallet});
 
-  final Wallet? walletBloc;
+  final Wallet? wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +27,15 @@ class WalletActionButtons extends StatelessWidget {
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
     );
 
-    final shouldShowSwap = (walletBloc!.state.wallet?.isMain() != true ||
-            walletBloc!.state.wallet?.isLiquid() == true) &&
-        walletBloc!.state.wallet?.watchOnly() == false;
+    final shouldShowSwap =
+        (wallet?.isMain() != true || wallet?.isLiquid() == true) &&
+            wallet?.watchOnly() == false;
 
     final leftImage = darkMode
         ? 'assets/images/swap_icon_white.png'
         : 'assets/images/swap_icon.png';
 
-    final canShowSend = walletBloc!.state.wallet?.watchOnly() == false;
+    final canShowSend = wallet?.watchOnly() == false;
 
     return Container(
       padding: const EdgeInsets.only(
@@ -72,7 +72,7 @@ class WalletActionButtons extends StatelessWidget {
                   filled: true,
                   onPressed: () async {
                     context.push(
-                      '/swap-page?fromWalletId=${walletBloc!.state.wallet?.id}',
+                      '/swap-page?fromWalletId=${wallet?.id}',
                     );
                   },
                   label: 'Swap',
@@ -89,7 +89,7 @@ class WalletActionButtons extends StatelessWidget {
                     buttonKey: UIKeys.homeReceiveButton,
                     filled: true,
                     onPressed: () async {
-                      context.push('/receive', extra: walletBloc);
+                      context.push('/receive', extra: wallet);
                     },
                     label: 'Receive',
                   ),
@@ -103,7 +103,7 @@ class WalletActionButtons extends StatelessWidget {
                       onPressed: () async {
                         context.push(
                           '/send',
-                          extra: walletBloc?.state.wallet!.id,
+                          extra: wallet?.id,
                         );
                       },
                       label: 'Send',

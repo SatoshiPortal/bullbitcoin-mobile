@@ -76,6 +76,14 @@ class AppWalletsRepository {
       .where((_) => _.network == network)
       .toList();
 
+  Wallet getColdCardWallet(BBNetwork network) {
+    return walletsFromNetwork(network)
+        .where(
+          (_) => _.network == network && _.type == BBWalletType.coldcard,
+        )
+        .first;
+  }
+
   Wallet? getMainInstantWallet(BBNetwork network) {
     final wallets = walletsFromNetwork(network);
     final idx = wallets.indexWhere(
@@ -110,6 +118,16 @@ class AppWalletsRepository {
     final network = isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
     final instantwallet = getMainInstantWalletService(network);
     final securewallet = getMainSecureWalletService(network);
+    return [
+      if (instantwallet != null) instantwallet,
+      if (securewallet != null) securewallet,
+    ];
+  }
+
+  List<Wallet> getMainWallets(bool isTestnet) {
+    final network = isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final instantwallet = getMainInstantWallet(network);
+    final securewallet = getMainSecureWallet(network);
     return [
       if (instantwallet != null) instantwallet,
       if (securewallet != null) securewallet,
@@ -162,5 +180,29 @@ class AppWalletsRepository {
     return walletsWithEnoughBalance.isEmpty
         ? wallets
         : walletsWithEnoughBalance;
+  }
+
+  List<Wallet> walletNotMainFromNetwork(BBNetwork network) {
+    final wallets = walletsFromNetwork(network)
+        .where(
+          (_) => _.network == network && !_.mainWallet,
+        )
+        .toList()
+        .reversed
+        .toList();
+
+    return wallets;
+  }
+
+  Wallet? getWalletFromTx(Transaction tx) {
+    if (allWallets.isEmpty) return null;
+
+    for (final wallet in allWallets) {
+      if (wallet.transactions.indexWhere((t) => t.txid == tx.txid) != -1) {
+        return wallet;
+      }
+    }
+
+    return null;
   }
 }

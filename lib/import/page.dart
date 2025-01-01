@@ -20,7 +20,6 @@ import 'package:bb_mobile/import/recover.dart';
 import 'package:bb_mobile/import/wallet_type_selection.dart';
 import 'package:bb_mobile/import/xpub.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

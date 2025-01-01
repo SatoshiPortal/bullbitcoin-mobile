@@ -10,6 +10,7 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
@@ -27,6 +28,7 @@ import 'package:bb_mobile/transaction/bloc/state.dart';
 import 'package:bb_mobile/transaction/bloc/transaction_cubit.dart';
 import 'package:bb_mobile/transaction/bump_fees.dart';
 import 'package:bb_mobile/transaction/rename_label.dart';
+import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -34,48 +36,56 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class TxPage extends StatelessWidget {
+class TxPage extends StatefulWidget {
   const TxPage({super.key, required this.tx, this.showOnchainSwap = false});
 
   final Transaction tx;
   final bool showOnchainSwap;
 
   @override
-  Widget build(BuildContext context) {
-    // final home = context.read<HomeCubit>();
-    // final wallet = home.state.selectedWalletCubit!;
-    // final wallet = ;
-    final walletBloc = context.read<HomeCubit>().state.getWalletBlocFromTx(tx);
-    if (walletBloc == null) {
+  State<TxPage> createState() => _TxPageState();
+}
+
+class _TxPageState extends State<TxPage> {
+  late TransactionCubit txCubit;
+  late WalletBloc walletBloc;
+  late NetworkFeesCubit networkFees;
+
+  @override
+  void initState() {
+    final wallet =
+        context.read<AppWalletsRepository>().getWalletFromTx(widget.tx);
+    if (wallet == null) {
       context.pop();
-      return const SizedBox.shrink();
+      return;
     }
-    final networkFees = NetworkFeesCubit(
+
+    walletBloc = createWalletBloc(wallet);
+
+    networkFees = NetworkFeesCubit(
       hiveStorage: locator<HiveStorage>(),
       mempoolAPI: locator<MempoolAPI>(),
-      // networkCubit: locator<NetworkCubit>(),
       networkRepository: locator<NetworkRepository>(),
       defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
     );
 
-    final txCubit = TransactionCubit(
-      tx: tx,
-      wallet: walletBloc,
+    txCubit = TransactionCubit(
+      tx: widget.tx,
+      wallet: wallet,
+      appWalletsRepository: locator<AppWalletsRepository>(),
       walletUpdate: locator<WalletUpdate>(),
-
       walletTx: locator<WalletTx>(),
       bdkTx: locator<BDKTransactions>(),
-      // walletSensTx: locator<WalletSensitiveTx>(),
-      // walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       walletAddress: locator<WalletAddress>(),
-
       walletsRepository: locator<InternalWalletsRepository>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
-
-      // networkFeesCubit: networkFees,
     );
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: txCubit),
@@ -85,15 +95,13 @@ class TxPage extends StatelessWidget {
       ],
       child: BlocListener<TransactionCubit, TransactionState>(
         listenWhen: (previous, current) => previous.tx != current.tx,
-        listener: (context, state) async {
-          // home.updateSelectedWallet(walletBloc);
-        },
+        listener: (context, state) async {},
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
             flexibleSpace: const _TxAppBar(),
           ),
-          body: _Screen(showOnchainSwap: showOnchainSwap),
+          body: _Screen(showOnchainSwap: widget.showOnchainSwap),
         ),
       ),
     );
@@ -134,14 +142,6 @@ class _Screen extends StatelessWidget {
       return const _CombinedTxAndOnchainSwapPage();
     }
     return const _OnlyTxPage();
-
-    // final page = context.select((TransactionCubit _) => _.state.tx.pageLayout);
-    // if()
-    // return switch (page) {
-    //   TxLayout.onlyTx => const _OnlyTxPage(),
-    //   TxLayout.onlySwapTx => const _OnlySwapTxPage(),
-    //   TxLayout.both => const _CombinedTxAndSwapPage(),
-    // };
   }
 }
 
@@ -153,15 +153,6 @@ class _OnlyTxPage extends StatelessWidget {
     return const SingleChildScrollView(child: _TxDetails());
   }
 }
-
-// class _OnlySwapTxPage extends StatelessWidget {
-//   const _OnlySwapTxPage();
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const SingleChildScrollView(child: _SwapDetails());
-//   }
-// }
 
 class _CombinedTxAndSwapPage extends StatelessWidget {
   const _CombinedTxAndSwapPage();
@@ -223,8 +214,6 @@ class _TxDetails extends StatelessWidget {
     final tx = context.select((TransactionCubit _) => _.state.tx);
     final isLiq = tx.isLiquid;
     final isSwapPending = tx.swapIdisTxid();
-
-    // final toAddresses = tx.outAddresses ?? [];
 
     final err = context
         .select((TransactionCubit cubit) => cubit.state.errLoadingAddresses);
@@ -296,7 +285,6 @@ class _TxDetails extends StatelessWidget {
             if (recipients.isNotEmpty &&
                 recipientAddress.address.isNotEmpty) ...[
               const BBText.title('Recipient Bitcoin Address'),
-              // const Gap(4),
               InkWell(
                 onTap: () {
                   final url =
@@ -308,7 +296,6 @@ class _TxDetails extends StatelessWidget {
                 },
                 child: BBText.body(recipientAddress.address, isBlue: true),
               ),
-
               const Gap(24),
             ],
             if (status.isNotEmpty && !isSwapPending) ...[
@@ -381,7 +368,6 @@ class _TxDetails extends StatelessWidget {
                 err,
               ),
             ],
-            // const Gap(100),
           ],
         ),
       ),
@@ -468,15 +454,12 @@ class _SwapDetails extends StatelessWidget {
       (TransactionCubit cubit) => cubit.state.tx.swapTx?.status?.status,
     );
     final isLiq = tx.isLiquid;
-    // final showQr = status?.showQR ?? true; // may not be required
 
     final swap = tx.swapTx;
     if (swap == null) return const SizedBox.shrink();
     final statusStr = swap.isChainSwap()
         ? status.getOnChainStr(swap.chainSwapDetails!.onChainType)
         : status.getStr(swap.isSubmarine());
-
-    // final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
     final amt = swap.amountForDisplay() ?? 0;
     final amount = context.select(
@@ -485,20 +468,19 @@ class _SwapDetails extends StatelessWidget {
     final isReceive = swap.isReverse();
 
     final date = tx.getDateTimeStr();
-    // swap.
+
     final id = swap.id;
     final fees = swap.totalFees() ?? 0;
     final feesAmount = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(fees, removeText: true),
     );
-    // final invoice = swap.invoice;
+
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
     );
 
     final isRefundedSend = swap.isSubmarine() && swap.refundedAny();
 
-    // Is this needed?
     final refundChildren = [
       const Gap(24),
       const BBText.title('Refund Tx ID'),
@@ -520,7 +502,6 @@ class _SwapDetails extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // const Gap(24),
             const BBText.title(
               'Swap Amount',
             ),
@@ -566,7 +547,6 @@ class _SwapDetails extends StatelessWidget {
                         claimFee ?? 0,
                         swap.boltzFees ?? 0,
                       );
-                      // show popup
                     },
                   ),
                 ],
@@ -607,7 +587,6 @@ class _SwapDetails extends StatelessWidget {
                   ),
                 ],
               ),
-              // const Gap(24),
             ],
             const Gap(16),
             if (statusStr != null) ...[
@@ -622,7 +601,6 @@ class _SwapDetails extends StatelessWidget {
                 statusStr.$2,
               ),
             ],
-            // const Gap(4),
             if (isRefundedSend) ...refundChildren,
             const Gap(24),
             if (date.isNotEmpty) ...[
@@ -633,21 +611,6 @@ class _SwapDetails extends StatelessWidget {
               BBText.titleLarge(date, isBold: true),
               const Gap(32),
             ],
-            // if (showQr)
-            //   Center(
-            //     child: SizedBox(
-            //       width: 300,
-            //       child: Column(
-            //         children: [
-            //           ReceiveQRDisplay(address: invoice),
-            //           ReceiveDisplayAddress(
-            //             addressQr: invoice,
-            //             fontSize: 10,
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ),
             const Gap(24),
           ],
         ),
@@ -666,15 +629,12 @@ class _OnchainSwapDetails extends StatelessWidget {
       (TransactionCubit cubit) => cubit.state.tx.swapTx?.status?.status,
     );
     final isLiq = tx.isLiquid;
-    // final showQr = status?.showQR ?? true; // may not be required
 
     final swap = tx.swapTx;
     if (swap == null) return const SizedBox.shrink();
     final statusStr = swap.isChainSwap()
         ? status.getOnChainStr(swap.chainSwapDetails!.onChainType)
         : status.getStr(swap.isSubmarine());
-
-    // final _ = tx.swapTx?.txid?.isNotEmpty ?? false;
 
     final amt = swap.amountForDisplay() ?? 0;
     context.select(
@@ -683,18 +643,17 @@ class _OnchainSwapDetails extends StatelessWidget {
     swap.isReverse();
 
     final date = tx.getDateTimeStr();
-    // swap.
+
     final id = swap.id;
     final fees = swap.totalFees() ?? 0;
     final feesAmount = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(fees, removeText: true),
     );
-    // final invoice = swap.invoice;
+
     final units = context.select(
       (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
     );
-    // status of swap should be read from WalletBloc.state.wallet.transactions
-    // final status = context.select((WatchTxsBloc _) => _.state.showStatus(swap));
+
     final fromWallet =
         context.select((HomeCubit cubit) => cubit.state.getWalletFromTx(tx));
     final fromStatus = tx.height == null || tx.height == 0 || tx.timestamp == 0;
@@ -714,7 +673,7 @@ class _OnchainSwapDetails extends StatelessWidget {
           .wallet,
     );
     final isRefundedReceive = swap.isChainReceive() && swap.refundedOnchain();
-    // swap.baseWallet is based on direction. btc->lbtc will have base wallet as instant, although receiving in secure
+
     final walletReceiveRefundedTo =
         isRefundedReceive && swap.isLiquid() ? 'Instant' : 'Secure';
     final isRefundedChainSend =
@@ -744,25 +703,6 @@ class _OnchainSwapDetails extends StatelessWidget {
         toStatusStr = toStatus ? 'Pending' : 'Confirmed';
       }
     }
-    //     if (swap.claimTxid != null && isRefunded) {
-    //   receiveTx = .getTxWithId(swap.claimTxid!);
-    //   if (receiveTx != null) {
-    //     toAmtStr = context.select(
-    //       (CurrencyCubit cubit) => cubit.state.getAmountInUnits(
-    //         receiveTx!.getAmount(sentAsTotal: true),
-    //         removeText: true,
-    //       ),
-    //     );
-    //     toUnits = context.select(
-    //       (CurrencyCubit cubit) => cubit.state.getUnitString(isLiquid: isLiq),
-    //     );
-
-    //     final toStatus = receiveTx.height == null ||
-    //         receiveTx.height == 0 ||
-    //         receiveTx.timestamp == 0;
-    //     toStatusStr = toStatus ? 'Pending' : 'Confirmed';
-    //   }
-    // }
 
     final selfFromWalletChildren = [
       const BBText.body(
@@ -840,7 +780,6 @@ class _OnchainSwapDetails extends StatelessWidget {
       ),
     ];
 
-    // Is this needed?
     final refundedSendChildren = [
       const Gap(24),
       const BBText.title('Refund Tx ID'),
@@ -967,7 +906,7 @@ class _OnchainSwapDetails extends StatelessWidget {
             ),
             const Gap(4),
             BBText.titleLarge(
-              date, // swap.creationTime?.toIso8601String() ?? 'In progress',
+              date,
               isBold: true,
             ),
             const Gap(24),
@@ -987,7 +926,6 @@ class _OnchainSwapDetails extends StatelessWidget {
                         claimFee ?? 0,
                         swap.boltzFees ?? 0,
                       );
-                      // show popup
                     },
                   ),
                 ],

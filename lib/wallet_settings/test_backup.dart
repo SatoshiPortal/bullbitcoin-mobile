@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -14,20 +15,33 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class TestBackupPage extends StatelessWidget {
+class TestBackupPage extends StatefulWidget {
   const TestBackupPage({
     super.key,
-    required this.walletBloc,
-    required this.walletSettings,
+    required this.wallet,
   });
 
-  final Wallet walletBloc;
-  final WalletSettingsCubit walletSettings;
+  final Wallet wallet;
+
+  @override
+  State<TestBackupPage> createState() => _TestBackupPageState();
+}
+
+class _TestBackupPageState extends State<TestBackupPage> {
+  late WalletSettingsCubit walletSettings;
+  late WalletBloc walletBloc;
+  @override
+  void initState() {
+    walletBloc = createWalletBloc(widget.wallet);
+    walletSettings = createWalletSettingsCubit(widget.wallet);
+
+    walletSettings.loadBackupClicked();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    walletSettings.loadBackupClicked();
-
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: walletBloc),
@@ -253,7 +267,7 @@ class TestBackupPassField extends HookWidget {
     if (tested) return const SizedBox.shrink();
 
     final hasPassphrase =
-        context.select((Wallet x) => x.state.wallet!.hasPassphrase());
+        context.select((WalletBloc x) => x.state.wallet.hasPassphrase());
 
     if (!hasPassphrase) return const SizedBox.shrink();
 

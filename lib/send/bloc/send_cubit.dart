@@ -1186,14 +1186,14 @@ class SendCubit extends Cubit<SendState> {
     sendSwap();
   }
 
-  Future<void> buildChainSwap(
-    Wallet fromWallet,
-    Wallet toWallet,
-    int amount,
-    bool sweep,
-    int feeRate,
-    bool unitsInSats,
-  ) async {
+  Future<void> buildChainSwap({
+    required Wallet fromWallet,
+    required Wallet toWallet,
+    required int amount,
+    required bool sweep,
+    required int feeRate,
+    required bool unitsInSats,
+  }) async {
     if (amount == 0 && sweep == false) {
       _swapCubit.setValidationError(
         'Please enter valid amount',

@@ -4,14 +4,12 @@ import 'dart:async';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
-import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/internal_network.dart';
-import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/locator.dart';
 // import 'package:freezed_annotation/freezed_annotation.dart';
@@ -38,10 +36,10 @@ class WalletService {
     required Wallet wallet,
     required WalletsStorageRepository walletsStorageRepository,
     required InternalNetworkRepository internalNetworkRepository,
-    required InternalWalletsRepository walletsRepository,
+    // required InternalWalletsRepository walletsRepository,
     required WalletSync walletSync,
     required WalletBalance walletBalance,
-    required WalletAddress walletAddress,
+    // required WalletAddress walletAddress,
     required WalletCreate walletCreate,
     required WalletTx walletTransaction,
     required NetworkRepository networkRepository,
@@ -49,10 +47,10 @@ class WalletService {
   })  : _wallet = wallet,
         _walletsStorageRepository = walletsStorageRepository,
         _internalNetworkRepository = internalNetworkRepository,
-        _walletsRepository = walletsRepository,
+        // _walletsRepository = walletsRepository,
         _walletSync = walletSync,
         _walletBalance = walletBalance,
-        _walletAddress = walletAddress,
+        // _walletAddress = walletAddress,
         _walletCreate = walletCreate,
         _walletTransactionn = walletTransaction,
         _networkRepository = networkRepository,
@@ -68,10 +66,10 @@ class WalletService {
 
   final WalletsStorageRepository _walletsStorageRepository;
   final InternalNetworkRepository _internalNetworkRepository;
-  final InternalWalletsRepository _walletsRepository;
+  // final InternalWalletsRepository _walletsRepository;
   final WalletSync _walletSync;
   final WalletBalance _walletBalance;
-  final WalletAddress _walletAddress;
+  // final WalletAddress _walletAddress;
   final WalletCreate _walletCreate;
   final WalletTx _walletTransactionn;
   final NetworkRepository _networkRepository;
@@ -295,10 +293,10 @@ class WalletService {
 WalletService createWalletService({required Wallet wallet}) {
   final walletsStorageRepository = locator<WalletsStorageRepository>();
   final internalNetworkkRepository = locator<InternalNetworkRepository>();
-  final walletsRepository = locator<InternalWalletsRepository>();
+  // final walletsRepository = locator<InternalWalletsRepository>();
   final walletSync = locator<WalletSync>();
   final walletBalance = locator<WalletBalance>();
-  final walletAddress = locator<WalletAddress>();
+  // final walletAddress = locator<WalletAddress>();
   final walletCreate = locator<WalletCreate>();
   final walletTransaction = locator<WalletTx>();
   final networkRepository = locator<NetworkRepository>();
@@ -307,10 +305,10 @@ WalletService createWalletService({required Wallet wallet}) {
     wallet: wallet,
     walletsStorageRepository: walletsStorageRepository,
     internalNetworkRepository: internalNetworkkRepository,
-    walletsRepository: walletsRepository,
+    // walletsRepository: walletsRepository,
     walletSync: walletSync,
     walletBalance: walletBalance,
-    walletAddress: walletAddress,
+    // walletAddress: walletAddress,
     walletCreate: walletCreate,
     walletTransaction: walletTransaction,
     networkRepository: networkRepository,

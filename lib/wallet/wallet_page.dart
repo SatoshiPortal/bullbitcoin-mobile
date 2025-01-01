@@ -45,11 +45,11 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backupTested =
-        context.select((Wallet x) => x.state.wallet.backupTested);
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
 
     return RefreshIndicator(
       onRefresh: () async {
-        context.read<Wallet>().add(SyncWallet());
+        context.read<WalletBloc>().add(SyncWallet());
         return;
       },
       child: Stack(
@@ -70,7 +70,7 @@ class _Screen extends StatelessWidget {
           ),
           BottomCenter(
             child: WalletActionButtons(
-              walletBloc: context.read<Wallet>(),
+              wallet: context.read<Wallet>(),
             ),
           ),
         ],
@@ -97,9 +97,11 @@ class ActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backupTested =
-        context.select((Wallet x) => x.state.wallet.backupTested);
-    final watchonly = context.select((Wallet x) => x.state.wallet.watchOnly());
-    final isInstant = context.select((Wallet x) => x.state.wallet.isInstant());
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
+    final watchonly =
+        context.select((WalletBloc x) => x.state.wallet.watchOnly());
+    final isInstant =
+        context.select((WalletBloc x) => x.state.wallet.isInstant());
 
     final isdarkMode = context.select(
       (Lighting x) => x.state == ThemeLighting.dark,

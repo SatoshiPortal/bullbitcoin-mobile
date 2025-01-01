@@ -10,10 +10,23 @@ import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/_ui/alert.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+
+WalletSettingsCubit createWalletSettingsCubit(
+  Wallet wallet,
+) {
+  return WalletSettingsCubit(
+    wallet: wallet,
+    appWalletsRepository: locator<AppWalletsRepository>(),
+    walletsStorageRepository: locator<WalletsStorageRepository>(),
+    walletSensRepository: locator<WalletSensitiveStorageRepository>(),
+    fileStorage: locator<FileStorage>(),
+  );
+}
 
 class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   WalletSettingsCubit({

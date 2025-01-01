@@ -51,11 +51,11 @@ class _Listener extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         for (final walletBloc in walletBlocs)
-          BlocListener<Wallet, WalletState>(
+          BlocListener<WalletBloc, WalletState>(
             bloc: walletBloc,
             listenWhen: (previous, current) =>
-                previous.wallet?.transactions != current.wallet?.transactions ||
-                previous.wallet?.swaps != current.wallet?.swaps,
+                previous.wallet.transactions != current.wallet.transactions ||
+                previous.wallet.swaps != current.wallet.swaps,
             listener: (context, state) {
               onUpdated();
             },

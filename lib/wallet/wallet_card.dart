@@ -20,8 +20,8 @@ class HomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((Wallet x) => x.state.wallet);
-    if (wallet == null) return const SizedBox.shrink();
+    final wallet = context.select((WalletBloc x) => x.state.wallet);
+    // if (wallet == null) return const SizedBox.shrink();
 
     final (_, info) = WalletCardDetails.cardDetails(context, wallet);
     final keyName = 'home_card_$info';
@@ -76,18 +76,18 @@ class WalletCardDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((Wallet x) => x.state.wallet);
-    if (wallet == null) return const SizedBox.shrink();
+    final wallet = context.select((WalletBloc x) => x.state.wallet);
+    // if (wallet == null) return const SizedBox.shrink();
 
     final (color, _) = cardDetails(context, wallet);
 
-    final name = context.select((Wallet x) => x.state.wallet?.name);
+    final name = context.select((WalletBloc x) => x.state.wallet.name);
     final fingerprint =
-        context.select((Wallet x) => x.state.wallet?.sourceFingerprint ?? '');
+        context.select((WalletBloc x) => x.state.wallet.sourceFingerprint);
     final walletStr =
-        context.select((Wallet x) => x.state.wallet?.getWalletTypeStr());
+        context.select((WalletBloc x) => x.state.wallet.getWalletTypeStr());
 
-    final sats = context.select((Wallet x) => x.state.balanceSats());
+    final sats = context.select((WalletBloc x) => x.state.balanceSats());
 
     final balance = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true),
@@ -208,7 +208,7 @@ class WalletCardDetails extends StatelessWidget {
                       child: Opacity(
                         opacity: 0.7,
                         child: BBText.bodySmall(
-                          walletStr ?? '',
+                          walletStr,
                           onSurface: true,
                           isBold: true,
                         ),

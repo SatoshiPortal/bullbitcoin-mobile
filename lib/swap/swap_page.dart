@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -22,7 +23,6 @@ import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/onchain_listeners.dart';
 import 'package:bb_mobile/swap/ui_swapwidget/swap_widget.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -69,23 +69,28 @@ class _SwapPageState extends State<SwapPage> {
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
 
-    Wallet? walletBloc;
+    // WalletBloc? walletBloc;
 
-    walletBloc = context.read<HomeCubit>().state.walletBlocs?[0];
+    final wallet = context.read<AppWalletsRepository>().allWallets.first;
+    // walletBloc = createWalletBloc(wallet);
+    // walletBloc = context.read<HomeCubit>().state.walletBlocs?[0];
 
     send = SendCubit(
       walletTx: locator<WalletTx>(),
       barcode: locator<Barcode>(),
       defaultRBF: locator<SettingsCubit>().state.defaultRBF,
       fileStorage: locator<FileStorage>(),
-      networkCubit: locator<NetworkCubit>(),
-      networkFeesCubit: locator<NetworkFeesCubit>(),
-      homeCubit: locator<HomeCubit>(),
+      networkRepository: locator<NetworkRepository>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
+      // networkCubit: locator<NetworkCubit>(),
+      // networkFeesCubit: locator<NetworkFeesCubit>(),
+      // homeCubit: locator<HomeCubit>(),
       payjoinManager: locator<PayjoinManager>(),
       swapBoltz: locator<SwapBoltz>(),
-      currencyCubit: currency,
+      // currencyCubit: currency,
       openScanner: false,
-      walletBloc: walletBloc,
+      wallet: wallet,
+      // walletBloc: walletBloc,
       swapCubit: swap,
     );
 
@@ -175,9 +180,20 @@ class _Screen extends StatelessWidget {
                 int amount,
                 bool sweep,
               ) {
-                context
-                    .read<SendCubit>()
-                    .buildChainSwap(fromWallet, toWallet, amount, sweep);
+                final feeRate = context
+                    .read<NetworkFeesCubit>()
+                    .state
+                    .selectedOrFirst(true);
+                final unitsInSats =
+                    context.read<CurrencyCubit>().state.unitsInSats;
+                context.read<SendCubit>().buildChainSwap(
+                      fromWallet: fromWallet,
+                      toWallet: toWallet,
+                      amount: amount,
+                      sweep: sweep,
+                      feeRate: feeRate,
+                      unitsInSats: unitsInSats,
+                    );
               },
             ),
             const SendErrDisplay(),

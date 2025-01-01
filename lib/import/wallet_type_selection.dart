@@ -35,7 +35,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
 
     final walletCubits = [
       for (final w in wallets)
-        Wallet(
+        WalletBloc(
           saveDir: w.getWalletStorageString(),
           walletSync: locator<WalletSync>(),
           walletsStorageRepository: locator<WalletsStorageRepository>(),
@@ -80,7 +80,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
 class _Screen extends StatefulWidget {
   const _Screen({required this.walletCubits});
 
-  final List<Wallet> walletCubits;
+  final List<WalletBloc> walletCubits;
 
   @override
   State<_Screen> createState() => _ScreenState();
@@ -228,7 +228,7 @@ class _ImportWalletTypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((Wallet cubit) => cubit.state.wallet);
+    final wallet = context.select((WalletBloc cubit) => cubit.state.wallet);
 
     final scriptType = wallet.scriptType;
 
@@ -240,15 +240,15 @@ class _ImportWalletTypeButton extends StatelessWidget {
       (ImportWalletCubit cubit) => cubit.state.walletName(scriptType),
     );
 
-    final syncing = context.select((Wallet cubit) => cubit.state.syncing);
+    final syncing = context.select((WalletBloc cubit) => cubit.state.syncing);
 
-    final ad = context.select((Wallet cubit) => cubit.state.firstAddress);
+    final ad = context.select((WalletBloc cubit) => cubit.state.firstAddress);
 
     final balance =
-        context.select((Wallet cubit) => cubit.state.wallet.fullBalance);
+        context.select((WalletBloc cubit) => cubit.state.wallet.fullBalance);
 
     final hasTxs = context.select(
-      (Wallet cubit) => cubit.state.wallet.transactions.isNotEmpty ?? false,
+      (WalletBloc cubit) => cubit.state.wallet.transactions.isNotEmpty,
     );
 
     final address = ad?.miniString() ?? '';

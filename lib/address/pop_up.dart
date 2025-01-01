@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -33,12 +34,13 @@ class AddressPopUp extends StatelessWidget {
     Address address,
   ) async {
     final settings = context.read<SettingsCubit>();
-    final wallet = context.read<Wallet>();
+    final wallet = context.read<WalletBloc>();
     final walletSettings = context.read<WalletSettingsCubit>();
     final addressCubit = AddressCubit(
       address: address,
       walletAddress: locator<WalletAddress>(),
-      wallet: wallet,
+      appWalletsRepository: locator<AppWalletsRepository>(),
+      wallet: wallet.state.wallet,
       bdkUtxo: locator<BDKUtxo>(),
     );
 
@@ -110,9 +112,9 @@ class Title extends StatelessWidget {
         .select((AddressCubit cubit) => cubit.state.address!.miniString());
 
     final walletName =
-        context.select((Wallet cubit) => cubit.state.wallet!.name ?? '');
+        context.select((WalletBloc cubit) => cubit.state.wallet.name ?? '');
     final walletFingerprint = context.select(
-      (Wallet cubit) => cubit.state.wallet!.sourceFingerprint,
+      (WalletBloc cubit) => cubit.state.wallet.sourceFingerprint,
     );
     final title = walletName.isEmpty ? walletFingerprint : walletName;
 
@@ -314,7 +316,7 @@ class AddressLabelFieldPopUp extends StatelessWidget {
     Address address,
   ) {
     final settings = context.read<SettingsCubit>();
-    final wallet = context.read<Wallet>();
+    final wallet = context.read<WalletBloc>();
     final walletSettings = context.read<WalletSettingsCubit>();
     final addressCubit = context.read<AddressCubit>();
 

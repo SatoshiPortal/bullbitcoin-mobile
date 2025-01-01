@@ -4,9 +4,7 @@ import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -117,25 +115,35 @@ class InstantPaymentsWallet extends StatelessWidget {
   }
 }
 
-class _ButtonList extends StatelessWidget {
+class _ButtonList extends StatefulWidget {
   const _ButtonList();
 
   @override
-  Widget build(BuildContext context) {
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    final walletBlocs = context.select(
-      (HomeCubit _) => _.state.walletBlocsNotMainFromNetwork(network),
-    );
+  State<_ButtonList> createState() => _ButtonListState();
+}
 
-    if (walletBlocs.isEmpty) return const SizedBox.shrink();
+class _ButtonListState extends State<_ButtonList> {
+  List<Wallet> wallets = [];
+
+  @override
+  void initState() {
+    final network = context.read<NetworkRepository>().getBBNetwork;
+    wallets =
+        context.read<AppWalletsRepository>().walletNotMainFromNetwork(network);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (wallets.isEmpty) return const SizedBox.shrink();
 
     return Column(
       children: [
-        for (final walletBloc in walletBlocs) ...[
+        for (final wallet in wallets) ...[
           BBButton.textWithStatusAndRightArrow(
-            label: walletBloc.state.wallet.name ?? 'Wallet',
+            label: wallet.name ?? 'Wallet',
             onPressed: () {
-              context.push('/wallet-settings', extra: walletBloc);
+              context.push('/wallet-settings', extra: wallet);
             },
           ),
           const Gap(8),
@@ -153,18 +161,10 @@ class ColdcardWallet extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Coldcard wallet',
       onPressed: () {
-        final walletBlocs = context.read<HomeCubit>().state.walletBlocs;
-        final network = context.read<NetworkCubit>().state.testnet
-            ? BBNetwork.Testnet
-            : BBNetwork.Mainnet;
-        final walletBloc = walletBlocs
-            ?.where(
-              (w) =>
-                  w.state.wallet.network == network &&
-                  w.state.wallet.type == BBWalletType.coldcard,
-            )
-            .first;
-        context.push('/wallet-settings', extra: walletBloc);
+        final network = context.read<NetworkRepository>().getBBNetwork;
+        final wallet =
+            context.read<AppWalletsRepository>().getColdCardWallet(network);
+        context.push('/wallet-settings', extra: wallet);
       },
     );
   }
