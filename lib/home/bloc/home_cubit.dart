@@ -1,40 +1,45 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
     required WalletsStorageRepository walletsStorageRepository,
+    required AppWalletsRepository appWalletsRepository,
   })  : _walletsStorageRepository = walletsStorageRepository,
+        _appWalletsRepository = appWalletsRepository,
         super(const HomeState());
 
   final WalletsStorageRepository _walletsStorageRepository;
+  final AppWalletsRepository _appWalletsRepository;
 
   Future<void> getWalletsFromStorage() async {
     emit(state.copyWith(loadingWallets: true));
 
-    final (wallets, err) = await _walletsStorageRepository.readAllWallets();
-    if (err != null && err.toString() != 'No Key') {
-      emit(state.copyWith(loadingWallets: false));
-      return;
-    }
+    await _appWalletsRepository.getWalletsFromStorage();
 
-    if (wallets == null) {
-      emit(state.copyWith(loadingWallets: false));
-      return;
-    }
+    // final (wallets, err) = await _walletsStorageRepository.readAllWallets();
+    // if (err != null && err.toString() != 'No Key') {
+    //   emit(state.copyWith(loadingWallets: false));
+    //   return;
+    // }
 
-    await Future.delayed(const Duration(milliseconds: 300));
+    // if (wallets == null) {
+    //   emit(state.copyWith(loadingWallets: false));
+    //   return;
+    // }
+
+    // await Future.delayed(const Duration(milliseconds: 300));
 
     emit(
       state.copyWith(
-        tempwallets: wallets,
-        walletBlocs: null,
+        // tempwallets: wallets,
+        // walletBlocs: null,
         loadingWallets: false,
       ),
     );
@@ -87,14 +92,19 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void loadWalletsForNetwork(BBNetwork network) {
-    final blocs = state.walletBlocsFromNetwork(network);
-
-    if (blocs.isEmpty) return;
-
-    for (final bloc in blocs) {
-      final w = bloc.state.wallet!;
-      bloc.add(LoadWallet(w.getWalletStorageString()));
+    // final blocs = state.walletBlocsFromNetwork(network);
+    final wallets = _appWalletsRepository.walletServiceFromNetwork(network);
+    if (wallets.isEmpty) return;
+    for (final w in wallets) {
+      w.loadWallet();
     }
+
+    // if (blocs.isEmpty) return;
+
+    // for (final bloc in blocs) {
+    // final w = bloc.state.wallet!;
+    // bloc.add(LoadWallet(w.getWalletStorageString()));
+    // }
   }
 
   // void addWallets(List<Wallet> wallets) {
@@ -203,5 +213,26 @@ class HomeCubit extends Cubit<HomeState> {
         walletBlocs: walletBlocs,
       ),
     );
+  }
+
+  void removeWallet2(Wallet wallet) {
+    _appWalletsRepository.deleteWallet(wallet.id);
+    // final wallets = state.wallets != null ? state.wallets!.toList() : <Wallet>[];
+    // wallets.removeWhere((w) => w.id == walletBloc.state.wallet!.id);
+    // final walletBlocs = state.walletBlocs != null
+    //     ? state.walletBlocs!.toList()
+    //     : <WalletBloc>[];
+
+    // walletBlocs.removeWhere(
+    //   (wB) => wB.state.wallet!.id == walletBloc.state.wallet!.id,
+    // );
+
+    // emit(
+    //   state.copyWith(
+    //     // wallets: wallets,
+    //     // selectedWalletCubit: null,
+    //     walletBlocs: walletBlocs,
+    //   ),
+    // );
   }
 }
