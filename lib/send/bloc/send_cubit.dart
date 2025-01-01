@@ -14,8 +14,6 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
-import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:boltz_dart/boltz_dart.dart' as boltz;
@@ -30,8 +28,6 @@ class SendCubit extends Cubit<SendState> {
     required FileStorage fileStorage,
     required NetworkRepository networkRepository,
     required AppWalletsRepository appWalletsRepository,
-    required NetworkFeesCubit networkFeesCubit,
-    required CurrencyCubit currencyCubit,
     required bool openScanner,
     required bool defaultRBF,
     required PayjoinManager payjoinManager,
@@ -41,8 +37,6 @@ class SendCubit extends Cubit<SendState> {
     bool oneWallet = true,
   })  : _appWalletsRepository = appWalletsRepository,
         _networkRepository = networkRepository,
-        _networkFeesCubit = networkFeesCubit,
-        _currencyCubit = currencyCubit,
         _walletTx = walletTx,
         _fileStorage = fileStorage,
         _barcode = barcode,
@@ -95,9 +89,6 @@ class SendCubit extends Cubit<SendState> {
   final PayjoinManager _payjoinManager;
   final SwapBoltz _swapBoltz;
 
-  final NetworkFeesCubit _networkFeesCubit;
-  final CurrencyCubit _currencyCubit;
-
   final CreateSwapCubit _swapCubit;
   final NetworkRepository _networkRepository;
   final AppWalletsRepository _appWalletsRepository;
@@ -108,7 +99,11 @@ class SendCubit extends Cubit<SendState> {
     return super.close();
   }
 
-  Future<void> updateAddress(String? addr, {bool changeWallet = true}) async {
+  Future<void> updateAddress(
+    String? addr, {
+    bool changeWallet = true,
+    int? currentAmt,
+  }) async {
     if (!state.oneWallet) resetWalletSelection(changeWallet: changeWallet);
     resetErrors();
     _swapCubit.clearSwapTx();
@@ -119,6 +114,7 @@ class SendCubit extends Cubit<SendState> {
         scanningAddress: true,
       ),
     );
+
     final address = addr ?? state.address;
     final network = _networkRepository.getBBNetwork;
     final (paymentNetwork, err) =
@@ -132,8 +128,9 @@ class SendCubit extends Cubit<SendState> {
           note: '',
         ),
       );
-      _currencyCubit.updateAmountDirect(0);
-      _currencyCubit.updateAmount('');
+
+      emit(state.copyWith(tempAmt: 0, tempStrAmt: ''));
+
       resetWalletSelection(changeWallet: changeWallet);
       if (address.isEmpty) resetErrors();
       return;
@@ -163,10 +160,14 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(address: newAddress));
         final amount = bip21Obj.options['amount'] as num?;
         if (amount != null) {
-          _currencyCubit.btcToCurrentTempAmount(amount.toDouble());
           final amountInSats = (amount * 100000000).toInt();
-          _currencyCubit.updateAmountDirect(amountInSats);
-          emit(state.copyWith(tempAmt: amountInSats));
+
+          emit(
+            state.copyWith(
+              btcTempAmt: amount.toDouble(),
+              tempAmt: amountInSats,
+            ),
+          );
         }
         final label = bip21Obj.options['label'] as String?;
         if (label != null) {
@@ -190,12 +191,14 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(address: newAddress));
         final amount = bip21Obj.options['amount'] as num?;
         if (amount != null) {
-          _currencyCubit.btcToCurrentTempAmount(amount.toDouble());
-          final amountInSats =
-              _currencyCubit.convertBtcStringToSats(amount.toString());
+          final amountInSats = state.convertBtcStringToSats(amount.toString());
 
-          _currencyCubit.updateAmountDirect(amountInSats);
-          emit(state.copyWith(tempAmt: amountInSats));
+          emit(
+            state.copyWith(
+              tempAmt: amountInSats,
+              btcTempAmt: amount.toDouble(),
+            ),
+          );
         }
         final label = bip21Obj.options['label'] as String?;
         if (label != null) {
@@ -228,8 +231,14 @@ class SendCubit extends Cubit<SendState> {
           emit(state.copyWith(errScanningAddress: 'Network mismatch'));
           return;
         }
-        _currencyCubit.updateAmountDirect(inv.getAmount());
-        emit(state.copyWith(invoice: inv, address: address));
+
+        emit(
+          state.copyWith(
+            invoice: inv,
+            address: address,
+            tempAmt: inv.getAmount(),
+          ),
+        );
 
       case AddressNetwork.bip21Lightning:
         final invoice = address.toLowerCase().replaceAll('lightning:', '');
@@ -253,8 +262,14 @@ class SendCubit extends Cubit<SendState> {
 
           return;
         }
-        _currencyCubit.updateAmountDirect(inv.getAmount());
-        emit(state.copyWith(invoice: inv, address: invoice));
+
+        emit(
+          state.copyWith(
+            invoice: inv,
+            address: invoice,
+            tempAmt: inv.getAmount(),
+          ),
+        );
 
       case AddressNetwork.bitcoin:
         emit(state.copyWith(address: address));
@@ -283,18 +298,20 @@ class SendCubit extends Cubit<SendState> {
       );
     }
 
+    final amt = fromStart ? 0 : state.tempAmt ?? 0;
+
     if (state.address.isNotEmpty) {
       switch (state.paymentNetwork!) {
         case AddressNetwork.bip21Bitcoin:
-          _processBitcoinAddress();
+          _processBitcoinAddress(amt);
         case AddressNetwork.bip21Liquid:
-          _processLiquidAddress();
+          _processLiquidAddress(amt);
         case AddressNetwork.lightning:
           _processLnInvoice();
         case AddressNetwork.bitcoin:
-          _processBitcoinAddress();
+          _processBitcoinAddress(amt);
         case AddressNetwork.liquid:
-          _processLiquidAddress();
+          _processLiquidAddress(amt);
         case AddressNetwork.bip21Lightning:
           _processLnInvoice();
       }
@@ -359,7 +376,7 @@ class SendCubit extends Cubit<SendState> {
       if (amt == 0) {
         emit(state.copyWith(showSendButton: false));
       } else {
-        checkBalance();
+        checkBalance(amt);
       }
 
       await _swapCubit.createSubSwapForSend(
@@ -400,13 +417,11 @@ class SendCubit extends Cubit<SendState> {
     if (amt == 0) {
       emit(state.copyWith(showSendButton: false));
     } else {
-      checkBalance();
+      checkBalance(amt);
     }
   }
 
-  Future _processBitcoinAddress() async {
-    final amount = _currencyCubit.state.amount;
-
+  Future _processBitcoinAddress(int amount) async {
     if (!state.oneWallet) {
       final wallets = _appWalletsRepository.walletsWithEnoughBalance(
         amount,
@@ -446,13 +461,11 @@ class SendCubit extends Cubit<SendState> {
     if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
     } else {
-      checkBalance();
+      checkBalance(amount);
     }
   }
 
-  Future _processLiquidAddress() async {
-    final amount = _currencyCubit.state.amount;
-
+  Future _processLiquidAddress(int amount) async {
     if (!state.oneWallet) {
       final wallets = _appWalletsRepository.walletsWithEnoughBalance(
         amount,
@@ -480,13 +493,12 @@ class SendCubit extends Cubit<SendState> {
     if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
     } else {
-      checkBalance();
+      checkBalance(amount);
     }
   }
 
-  void checkBalance() {
+  void checkBalance(int amount) {
     final balance = state.selectedWallet?.balanceSats() ?? 0;
-    final amount = _currencyCubit.state.amount;
 
     if (amount == 0) {
       emit(state.copyWith(showSendButton: false));
@@ -532,10 +544,10 @@ class SendCubit extends Cubit<SendState> {
         ),
       );
 
-  void updateWallet(Wallet wallet) {
+  void updateWallet(Wallet wallet, int amt, bool unitsInSats) {
     emit(state.copyWith(selectedWallet: wallet));
-    sendAllCoin(false);
-    checkBalance();
+    sendAllCoin(false, amt, unitsInSats);
+    checkBalance(amt);
   }
 
   void disabledDropdownClicked() {
@@ -576,7 +588,7 @@ class SendCubit extends Cubit<SendState> {
 
   void disableRBF(bool disable) => emit(state.copyWith(disableRBF: disable));
 
-  void sendAllCoin(bool sendAll) {
+  void sendAllCoin(bool sendAll, int amount, bool unitsInSats) {
     if (state.selectedWallet == null) return;
     emit(
       state.copyWith(
@@ -589,23 +601,23 @@ class SendCubit extends Cubit<SendState> {
         ? balance
         : state.isLnInvoice()
             ? state.invoice!.getAmount()
-            : _currencyCubit.state.amount;
+            : amount;
 
-    _currencyCubit.updateAmountDirect(directAmt);
+    emit(state.copyWith(tempAmt: directAmt));
 
-    final bal = _currencyCubit.state.unitsInSats
+    final bal = unitsInSats
         ? state.selectedWallet!.balanceSats().toString()
         : state.selectedWallet!.balanceStr();
 
-    _currencyCubit.updateAmount(
-      directAmt == 0
-          ? ''
-          : !sendAll && state.isLnInvoice()
-              ? directAmt.toString()
-              : bal,
-    );
+    final da = directAmt == 0
+        ? ''
+        : !sendAll && state.isLnInvoice()
+            ? directAmt.toString()
+            : bal;
 
-    checkBalance();
+    emit(state.copyWith(tempStrAmt: da));
+
+    checkBalance(amount);
   }
 
   void togglePayjoin(bool toggle) {
@@ -876,7 +888,10 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(sending: false, sent: true));
   }
 
-  Future<void> baseLayerBuild({required int networkFees}) async {
+  Future<void> baseLayerBuild({
+    required int networkFees,
+    required int amount,
+  }) async {
     if (state.sending) return;
     if (state.selectedWallet == null) return;
 
@@ -896,7 +911,7 @@ class SendCubit extends Cubit<SendState> {
       wallet: localWallet,
       isManualSend: state.selectedUtxos.isNotEmpty,
       address: address,
-      amount: _currencyCubit.state.amount,
+      amount: amount,
       sendAllCoin: state.sendAllCoin,
       feeRate: fee,
       enableRbf: enableRbf,
@@ -952,9 +967,10 @@ class SendCubit extends Cubit<SendState> {
     required int networkFees,
     required String originalPsbt,
     required Wallet wallet,
+    required int amount,
   }) async {
     final pjUriString =
-        'bitcoin:${state.address}?amount=${_currencyCubit.state.amount / 100000000}&label=${Uri.encodeComponent(state.note)}&pj=${state.payjoinEndpoint!}&pjos=0';
+        'bitcoin:${state.address}?amount=${amount / 100000000}&label=${Uri.encodeComponent(state.note)}&pj=${state.payjoinEndpoint!}&pjos=0';
     final sender = await _payjoinManager.initSender(
       pjUriString,
       networkFees,
@@ -1066,7 +1082,7 @@ class SendCubit extends Cubit<SendState> {
     return feeAmt ?? 0;
   }
 
-  Future<void> processSendButton(String label) async {
+  Future<void> processSendButton(String label, int feeRate, int amt) async {
     final network = _networkRepository.getBBNetwork;
     final (_, addressError) =
         await state.getPaymentNetwork(state.address, network);
@@ -1083,7 +1099,6 @@ class SendCubit extends Cubit<SendState> {
       int sweepAmount = 0;
       final refundAddress = wallet.lastGeneratedAddress?.address;
       if (state.sendAllCoin == true) {
-        final feeRate = _networkFeesCubit.state.selectedOrFirst(true);
         final fees = await calculateFeeForSend(
           wallet: wallet,
           address: refundAddress!,
@@ -1100,7 +1115,7 @@ class SendCubit extends Cubit<SendState> {
         sweepAmount = wallet.balance! - fees - magicNumber;
       }
 
-      final swapAmount = _currencyCubit.state.amount;
+      final swapAmount = amt;
 
       final liqNetworkurl = _networkRepository.getLiquidNetworkUrl;
       final btcNetworkUrl = _networkRepository.getNetworkUrl;
@@ -1130,13 +1145,13 @@ class SendCubit extends Cubit<SendState> {
 
     if (!state.signed) {
       if (!isLn) {
-        final fees = _networkFeesCubit.state.selectedOrFirst(false);
-        await baseLayerBuild(networkFees: fees);
+        await baseLayerBuild(networkFees: feeRate, amount: amt);
         if (state.hasPjParam()) {
           await payjoinBuild(
-            networkFees: fees,
+            networkFees: feeRate,
             originalPsbt: state.psbtSigned!,
             wallet: wallet,
+            amount: amt,
           );
           return;
         }
@@ -1151,7 +1166,7 @@ class SendCubit extends Cubit<SendState> {
       _swapCubit.createSubSwapForSend(
         wallet: wallet,
         address: state.address,
-        amount: _currencyCubit.state.amount,
+        amount: amt,
         isTestnet: _networkRepository.testnet,
         invoice: state.invoice!,
         networkUrl: networkurl,
@@ -1176,6 +1191,8 @@ class SendCubit extends Cubit<SendState> {
     Wallet toWallet,
     int amount,
     bool sweep,
+    int feeRate,
+    bool unitsInSats,
   ) async {
     if (amount == 0 && sweep == false) {
       _swapCubit.setValidationError(
@@ -1192,7 +1209,7 @@ class SendCubit extends Cubit<SendState> {
     }
 
     final wallett = _appWalletsRepository.getWalletById(fromWallet.id);
-    updateWallet(wallett!);
+    updateWallet(wallett!, amount, unitsInSats);
 
     final recipientAddress = toWallet.lastGeneratedAddress?.address ?? '';
     final refundAddress = fromWallet.lastGeneratedAddress?.address ?? '';
@@ -1208,8 +1225,6 @@ class SendCubit extends Cubit<SendState> {
     int finalAmount = amount;
     bool finalSweep = sweep;
     if (sweep == true) {
-      final feeRate = _networkFeesCubit.state.selectedOrFirst(true);
-
       final fees = await calculateFeeForSend(
         wallet: wallett,
         address: refundAddress,

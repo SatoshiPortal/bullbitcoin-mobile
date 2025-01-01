@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
@@ -23,6 +25,8 @@ class SendState with _$SendState {
     @Default(false) bool buildingOnChain,
     @Default('') String note,
     int? tempAmt,
+    double? btcTempAmt,
+    String? tempStrAmt,
     @Default(false) bool scanningAddress,
     @Default('') String errScanningAddress,
     @Default(false) bool sending,
@@ -189,6 +193,17 @@ class SendState with _$SendState {
     if (network == PaymentNetwork.liquid && wallet.isBitcoin()) return false;
 
     return true;
+  }
+
+  int convertBtcStringToSats(String btcAmt) {
+    final split = btcAmt.split('.');
+    final amountNo = int.parse(split[0]);
+    final len = min(8, split[1].length);
+    final amountDecimal =
+        int.parse(split[1].substring(0, len)) * pow(10, 8 - len);
+
+    final amountInSats = amountNo * 100000000 + amountDecimal;
+    return amountInSats.toInt();
   }
 
   bool couldBeOnchainSwap() {
