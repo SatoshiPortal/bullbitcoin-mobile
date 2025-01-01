@@ -46,6 +46,7 @@ class Transaction with _$Transaction {
     bdk.TransactionDetails? bdkTx,
     // Wallet? wallet,
     @Default(false) bool isSwap,
+    @Default(false) bool isPayjoin,
     SwapTx? swapTx,
     @Default(false) bool isLiquid,
     @Default('') String unblindedUrl,

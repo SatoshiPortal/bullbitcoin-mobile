@@ -952,6 +952,14 @@ class SendCubit extends Cubit<SendState> {
     final (wallet, tx, feeAmt) = buildResp!;
 
     if (!wallet!.watchOnly()) {
+      if (state.hasPjParam()) {
+        await payjoinBuild(
+          networkFees: networkFees,
+          originalPsbt: tx!.psbt!,
+          wallet: wallet,
+        );
+      }
+
       emit(
         state.copyWith(
           sending: false,
@@ -1006,8 +1014,16 @@ class SendCubit extends Cubit<SendState> {
     if (state.selectedWalletBloc == null) return;
     if (state.payjoinSender == null) return;
 
-    // TODO copy originalPsbt.extractTx() to state.tx
-    // emit(state.copyWith(tx: originalPsbtTxWithId));
+    // Save originalPsbt to history
+    state.selectedWalletBloc!.add(
+      UpdateWallet(
+        wallet,
+        updateTypes: [
+          UpdateWalletTypes.transactions,
+        ],
+      ),
+    );
+
     emit(state.copyWith(sending: true, sent: false));
     _payjoinManager.spawnNewSender(
       isTestnet: _networkCubit.state.testnet,
@@ -1222,14 +1238,6 @@ class SendCubit extends Cubit<SendState> {
       if (!isLn) {
         final fees = _networkFeesCubit.state.selectedOrFirst(false);
         await baseLayerBuild(networkFees: fees);
-        if (state.hasPjParam()) {
-          await payjoinBuild(
-            networkFees: fees,
-            originalPsbt: state.psbtSigned!,
-            wallet: wallet,
-          );
-          return;
-        }
         return;
       }
       // context.read<WalletBloc>().state.wallet;
