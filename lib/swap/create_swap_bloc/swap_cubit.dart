@@ -3,14 +3,13 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_state.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,12 +19,14 @@ class CreateSwapCubit extends Cubit<SwapState> {
     required WalletSensitiveStorageRepository walletSensitiveRepository,
     required SwapBoltz swapBoltz,
     required WalletTx walletTx,
-    required HomeCubit homeCubit,
+    // required HomeBloc homeCubit,
     required WatchTxsBloc watchTxsBloc,
     required NetworkCubit networkCubit,
+    required AppWalletsRepository appWalletsRepository,
   })  : _walletTx = walletTx,
         _swapBoltz = swapBoltz,
-        _homeCubit = homeCubit,
+        _appWalletsRepository = appWalletsRepository,
+        // _homeCubit = homeCubit,
         _watchTxsBloc = watchTxsBloc,
         _walletSensitiveRepository = walletSensitiveRepository,
         _networkCubit = networkCubit,
@@ -34,7 +35,8 @@ class CreateSwapCubit extends Cubit<SwapState> {
   final WalletSensitiveStorageRepository _walletSensitiveRepository;
   final SwapBoltz _swapBoltz;
   final WalletTx _walletTx;
-  final HomeCubit _homeCubit;
+  // final HomeBloc _homeCubit;
+  final AppWalletsRepository _appWalletsRepository;
   final WatchTxsBloc _watchTxsBloc;
   final NetworkCubit _networkCubit;
   Future<void> fetchFees(bool isTestnet) async {
@@ -430,17 +432,27 @@ class CreateSwapCubit extends Cubit<SwapState> {
       return;
     }
 
-    _homeCubit.state.getWalletBloc(updatedWallet)?.add(
-          UpdateWallet(
-            updatedWallet,
-            updateTypes: [
-              UpdateWalletTypes.swaps,
-              UpdateWalletTypes.transactions,
-            ],
-          ),
-        );
+    // _homeCubit.state.getWalletBloc(updatedWallet)?.add(
+    //       UpdateWallet(
+    //         updatedWallet,
+    //         updateTypes: [
+    //           UpdateWalletTypes.swaps,
+    //           UpdateWalletTypes.transactions,
+    //         ],
+    //       ),
+    //     );
 
-    await Future.delayed(const Duration(milliseconds: 300));
+    // await Future.delayed(const Duration(milliseconds: 300));
+
+    await _appWalletsRepository
+        .getWalletServiceById(updatedWallet.id)
+        ?.updateWallet(
+      updatedWallet,
+      updateTypes: [
+        UpdateWalletTypes.swaps,
+        UpdateWalletTypes.transactions,
+      ],
+    );
 
     _watchTxsBloc.add(
       WatchWallets(),

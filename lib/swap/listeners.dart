@@ -19,7 +19,7 @@ class SwapAppListener extends StatelessWidget {
   Widget build(BuildContext ctx) {
     return MultiBlocListener(
       listeners: [
-        BlocListener<HomeCubit, HomeState>(
+        BlocListener<HomeBloc, HomeState>(
           listenWhen: (previous, current) =>
               previous.loadingWallets != current.loadingWallets,
           listener: (context, state) {

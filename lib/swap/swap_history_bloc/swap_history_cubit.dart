@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/swap/swap_history_bloc/swap_history_state.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
@@ -11,29 +11,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SwapHistoryCubit extends Cubit<SwapHistoryState> {
   SwapHistoryCubit({
-    required HomeCubit homeCubit,
-    required NetworkCubit networkCubit,
+    required AppWalletsRepository appWalletsRepository,
+    required NetworkRepository networkRepository,
     required SwapBoltz boltz,
     required WatchTxsBloc watcher,
-  })  : _homeCubit = homeCubit,
-        _networkCubit = networkCubit,
+  })  : _appWalletsRepository = appWalletsRepository,
+        _networkRepository = networkRepository,
         _boltz = boltz,
         _watcher = watcher,
         super(const SwapHistoryState());
 
-  final HomeCubit _homeCubit;
-  final NetworkCubit _networkCubit;
+  final AppWalletsRepository _appWalletsRepository;
+  final NetworkRepository _networkRepository;
   final SwapBoltz _boltz;
   final WatchTxsBloc _watcher;
 
   void loadSwaps() {
-    final network = _networkCubit.state.getBBNetwork();
-    final walletBlocs = _homeCubit.state.walletBlocsFromNetwork(network);
+    final network = _networkRepository.getBBNetwork;
+    final wallets = _appWalletsRepository.walletsFromNetwork(network);
     final swapsToWatch = <(SwapTx, String)>[];
-    final uniqueIds = <String>[]; // List to track unique swap IDs
+    final uniqueIds = <String>[];
 
-    for (final walletBloc in walletBlocs) {
-      final wallet = walletBloc.state.wallet!;
+    for (final wallet in wallets) {
       for (final swap in wallet.swaps) {
         if (!uniqueIds.contains(swap.id)) {
           uniqueIds.add(swap.id);
@@ -53,88 +52,17 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     emit(state.copyWith(swaps: swapsToWatch));
 
     final completedSwaps = <Transaction>[];
-    for (final walletBloc in walletBlocs) {
-      final wallet = walletBloc.state.wallet!;
+    for (final wallet in wallets) {
       final txs = wallet.transactions.where(
         (_) => _.isSwap && _.swapTx!.close(),
       );
       completedSwaps.addAll(txs);
     }
 
-    // completedSwaps.removeWhere(
-    //   (element) => swapsToWatch
-    //       .map(
-    //         (_) => _.$1.id,
-    //       )
-    //       .contains(
-    //         element.swapTx!.id,
-    //       ),
-    // );
-    // completedSwaps.removeWhere(
-    //   (element) => element.swapTx!.close(),
-    // );
-
     emit(state.copyWith(completeSwaps: completedSwaps));
-
-    // migrateHistory();
   }
 
-  // void migrateHistory() async {
-  //   // for state.completeswaps
-  //   //    - if tx.txid == tx.swaptx.id
-  //   //    - if tx.swaptx.txid == null
-  //   //      - add to wallet swaps if not there
-  //   // if empty return
-
-  //   // save wallet
-  //   // loadswaps() and restart watchers
-
-  //   try {
-  //     final swapsToAdd = <SwapTx>[];
-  //     for (final tx in state.completeSwaps)
-  //       if (tx.txid == tx.swapTx!.id || (tx.swapTx!.txid == null)) {
-  //         if (!state.checkSwapExists(tx.swapTx!.id)) {
-  //           swapsToAdd.add(tx.swapTx!);
-  //         }
-  //       }
-
-  //     if (swapsToAdd.isEmpty) return;
-
-  //     for (final swap in swapsToAdd) {
-  //       final walletBloc = _homeCubit.state.getWalletBlocFromSwapTx(swap);
-  //       if (walletBloc == null) continue;
-  //       final (updatedWallet, err) = await _walletTx.addSwapTxToWallet(
-  //         wallet: walletBloc.state.wallet!,
-  //         swapTx: swap,
-  //       );
-  //       if (err != null) {
-  //         print('Error: Adding SwapTx to Wallet: ${swap.id}, Error: $err');
-  //         continue;
-  //       }
-
-  //       walletBloc.add(
-  //         UpdateWallet(
-  //           updatedWallet,
-  //           updateTypes: [
-  //             UpdateWalletTypes.swaps,
-  //             UpdateWalletTypes.transactions,
-  //           ],
-  //         ),
-  //       );
-
-  //       await Future.delayed(const Duration(milliseconds: 300));
-  //     }
-
-  //     _watcher.add(WatchWallets());
-
-  //     loadSwaps();
-  //   } catch (e) {
-  //     print('Error: Swap History Processing: $e');
-  //   }
-  // }
-
   void swapUpdated(SwapTx swapTx) {
-    // print('Swap History Updating: ${swapTx.id} - ${swapTx.status?.status}');
     emit(state.copyWith(updateSwaps: true));
     final swaps = state.swaps;
     final index = swaps.indexWhere((_) => _.$1.id == swapTx.id);
@@ -177,7 +105,6 @@ class SwapHistoryCubit extends Cubit<SwapHistoryState> {
     }
 
     final stream = boltz.SwapStreamStatus(id: id, status: status!.status);
-    // final updatedSwap = swaptx.copyWith(status: stream);
 
     _watcher.add(
       ProcessSwapTx(

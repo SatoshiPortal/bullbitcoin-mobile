@@ -15,7 +15,7 @@ class WalletActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final hasWallets = context.select((HomeCubit x) => x.state.hasWallets());
+    // final hasWallets = context.select((HomeBloc x) => x.state.hasWallets());
 
     // if (!hasWallets) return const SizedBox.shrink();
 

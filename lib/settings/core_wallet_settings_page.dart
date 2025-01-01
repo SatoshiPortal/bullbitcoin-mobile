@@ -85,7 +85,7 @@ class SecureBitcoinWallet extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Secure Bitcoin wallet',
       onPressed: () {
-        // final walletBlocs = context.read<HomeCubit>().state.walletBlocs;
+        // final walletBlocs = context.read<HomeBloc>().state.walletBlocs;
         final network = context.read<NetworkRepository>().getBBNetwork;
         final walletBloc =
             context.read<AppWalletsRepository>().getMainSecureWallet(network);

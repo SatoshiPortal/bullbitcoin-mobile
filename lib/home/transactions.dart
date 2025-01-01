@@ -1,5 +1,7 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -12,7 +14,6 @@ import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
@@ -43,16 +44,16 @@ class _Listener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletBlocs = context.select(
-      (HomeCubit _) => _.state.walletBlocs ?? [],
+    final wallets = context.select(
+      (HomeBloc _) => _.state.wallets ?? [],
     );
 
-    if (walletBlocs.isEmpty) return child;
+    if (wallets.isEmpty) return child;
     return MultiBlocListener(
       listeners: [
-        for (final walletBloc in walletBlocs)
+        for (final wallet in wallets)
           BlocListener<WalletBloc, WalletState>(
-            bloc: walletBloc,
+            bloc: createWalletBloc(wallet),
             listenWhen: (previous, current) =>
                 previous.wallet.transactions != current.wallet.transactions ||
                 previous.wallet.swaps != current.wallet.swaps,
@@ -69,12 +70,12 @@ class _Listener extends StatelessWidget {
 class _HomeTransactionsState extends State<HomeTransactions> {
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((HomeCubit x) => x.state.updated);
+    final _ = context.select((HomeBloc x) => x.state.updated);
 
-    // final walletBlocs = context.select((HomeCubit _) => _.state.walletBlocs);
+    // final walletBlocs = context.select((HomeBloc _) => _.state.walletBlocs);
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
     final txs =
-        context.select((HomeCubit cubit) => cubit.state.getAllTxs(network));
+        context.select((HomeBloc cubit) => cubit.state.getAllTxs(network));
 
     return _Listener(
       onUpdated: () {
@@ -82,14 +83,13 @@ class _HomeTransactionsState extends State<HomeTransactions> {
       },
       child: RefreshIndicator(
         onRefresh: () async {
-          final network = context.read<NetworkCubit>().state;
+          final network = context.read<NetworkRepository>();
 
           final wallets = context
-              .read<HomeCubit>()
-              .state
-              .walletBlocsFromNetwork(network.getBBNetwork());
-          for (final wallet in wallets) {
-            wallet.add(SyncWallet());
+              .read<AppWalletsRepository>()
+              .walletServiceFromNetwork(network.getBBNetwork);
+          for (final walletService in wallets) {
+            walletService.syncWallet();
           }
 
           context.read<WatchTxsBloc>().add(WatchWallets());
@@ -175,14 +175,12 @@ class NoTxs extends StatelessWidget {
               label: 'Sync transactions',
               fontSize: 11,
               onPressed: () {
-                final network =
-                    context.read<NetworkCubit>().state.getBBNetwork();
+                final network = context.read<NetworkRepository>().getBBNetwork;
                 final wallets = context
-                    .read<HomeCubit>()
-                    .state
-                    .walletBlocsFromNetwork(network);
+                    .read<AppWalletsRepository>()
+                    .walletServiceFromNetwork(network);
                 for (final wallet in wallets) {
-                  wallet.add(SyncWallet());
+                  wallet.syncWallet();
                 }
               },
             ),
@@ -201,7 +199,7 @@ class TransactionHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: locator<HomeCubit>(),
+      value: locator<HomeBloc>(),
       child: Scaffold(
         appBar: AppBar(
           flexibleSpace: const _TopAppBar(),
@@ -230,9 +228,9 @@ class _TxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.select((HomeCubit _) => _.state.walletBlocs);
+    context.select((HomeBloc _) => _.state.wallets);
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    final txs = context.select((HomeCubit _) => _.state.getAllTxs(network));
+    final txs = context.select((HomeBloc _) => _.state.getAllTxs(network));
 
     if (txs.isEmpty) {
       return TopLeft(
@@ -250,13 +248,12 @@ class _TxList extends StatelessWidget {
                 fontSize: 11,
                 onPressed: () {
                   final network =
-                      context.read<NetworkCubit>().state.getBBNetwork();
+                      context.read<NetworkRepository>().getBBNetwork;
                   final wallets = context
-                      .read<HomeCubit>()
-                      .state
-                      .walletBlocsFromNetwork(network);
+                      .read<AppWalletsRepository>()
+                      .walletServiceFromNetwork(network);
                   for (final wallet in wallets) {
-                    wallet.add(SyncWallet());
+                    wallet.syncWallet();
                   }
                 },
               ),

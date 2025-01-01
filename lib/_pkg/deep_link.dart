@@ -39,7 +39,7 @@ class DeepLink {
   Future<Err?> handleUri({
     required String link,
     // required SettingsCubit settingsCubit,
-    required HomeCubit homeCubit,
+    required HomeBloc homeCubit,
     required NetworkCubit networkCubit,
     required BuildContext context,
   }) async {

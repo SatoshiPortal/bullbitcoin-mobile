@@ -18,6 +18,7 @@ import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
@@ -96,25 +97,25 @@ class _ScreenState extends State<_Screen> {
 
   @override
   Widget build(BuildContext context) {
-    // final _ = context.select((HomeCubit x) => x.state.updated);
+    // final _ = context.select((HomeBloc x) => x.state.updated);
     final loading = context.select(
-      (HomeCubit x) => x.state.loadingWallets,
+      (HomeBloc x) => x.state.loadingWallets,
     );
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
 
-    final walletBlocs = context.select(
-      (HomeCubit x) => x.state.walletBlocsFromNetwork(network),
+    final wallets = context.select(
+      (HomeBloc x) => x.state.walletsFromNetwork(network),
     );
 
-    // final hasWallets = context.select((HomeCubit x) => x.state.hasWallets());
+    // final hasWallets = context.select((HomeBloc x) => x.state.hasWallets());
     final hasMainWallets = context.select(
-      (HomeCubit x) => x.state.hasMainWallets(),
+      (HomeBloc x) => x.state.hasMainWallets(),
     );
 
     // final walletBlocsLen =
-    //     context.select((HomeCubit x) => x.state.lenWalletsFromNetwork(network));
+    //     context.select((HomeBloc x) => x.state.lenWalletsFromNetwork(network));
 
-    if (!loading && (walletBlocs.isEmpty || !hasMainWallets)) {
+    if (!loading && (wallets.isEmpty || !hasMainWallets)) {
       final isTestnet = network == BBNetwork.Testnet;
 
       Widget widget = Scaffold(
@@ -132,10 +133,10 @@ class _ScreenState extends State<_Screen> {
     }
 
     final warningsSize =
-        context.select((HomeCubit x) => x.state.homeWarnings(network)).length *
+        context.select((HomeBloc x) => x.state.homeWarnings(network)).length *
             40.0;
 
-    final h = _calculateHeight(walletBlocs.length);
+    final h = _calculateHeight(wallets.length);
 
     scheduleMicrotask(() async {
       await Future.delayed(50.ms);
@@ -202,7 +203,7 @@ class CardsList extends StatelessWidget {
 
   final Function(int) onChanged;
 
-  static List<CardColumn> buildCardColumns(List<WalletBloc> wallets) {
+  static List<CardColumn> buildCardColumns(List<Wallet> wallets) {
     final List<CardColumn> columns = [];
     final isOne = wallets.length == 1;
     for (var i = 0; i < wallets.length; i += 3) {
@@ -225,11 +226,11 @@ class CardsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((HomeCubit x) => x.state.updated);
+    final _ = context.select((HomeBloc x) => x.state.updated);
 
     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final walletBlocs = context
-        .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+    final walletBlocs =
+        context.select((HomeBloc x) => x.state.walletsFromNetwork(network));
     final columns = buildCardColumns(walletBlocs);
 
     return PageView(
@@ -250,9 +251,9 @@ class CardColumn extends StatelessWidget {
     this.showSwap = false,
   });
 
-  final WalletBloc walletTop;
-  final WalletBloc? walletBottom;
-  final WalletBloc? walletLast;
+  final Wallet walletTop;
+  final Wallet? walletBottom;
+  final Wallet? walletLast;
   final bool onlyOne;
   final bool showSwap;
 
@@ -268,17 +269,17 @@ class CardColumn extends StatelessWidget {
           Column(
             children: [
               BlocProvider.value(
-                value: walletTop,
+                value: createWalletBloc(walletTop),
                 child: const CardItem(),
               ),
               if (walletBottom != null)
                 BlocProvider.value(
-                  value: walletBottom!,
+                  value: createWalletBloc(walletBottom!),
                   child: const CardItem(),
                 ),
               if (walletLast != null)
                 BlocProvider.value(
-                  value: walletLast!,
+                  value: createWalletBloc(walletLast!),
                   child: const CardItem(),
                 )
               else if (!onlyOne)
@@ -351,8 +352,8 @@ class CardItem extends StatelessWidget {
     final (color, _) = WalletCardDetails.cardDetails(context, wallet);
 
     final name = context.select((WalletBloc x) => x.state.wallet.name);
-    final fingerprint = context
-        .select((WalletBloc x) => x.state.wallet.sourceFingerprint ?? '');
+    final fingerprint =
+        context.select((WalletBloc x) => x.state.wallet.sourceFingerprint);
     final walletStr =
         context.select((WalletBloc x) => x.state.wallet.getWalletTypeStr());
 
@@ -434,7 +435,7 @@ class CardItem extends StatelessWidget {
                       Opacity(
                         opacity: 0.7,
                         child: BBText.bodySmall(
-                          walletStr ?? '',
+                          walletStr,
                           onSurface: true,
                           isBold: true,
                           fontSize: 12,
@@ -521,7 +522,7 @@ class WalletTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final watchOnly =
-        context.read<HomeCubit>().state.walletIsWatchOnlyFromTx(tx);
+        context.read<HomeBloc>().state.walletIsWatchOnlyFromTx(tx);
 
     final darkMode = context.select(
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
@@ -669,13 +670,13 @@ class HomeBottomBar2 extends StatefulWidget {
 }
 
 class _HomeBottomBar2State extends State<HomeBottomBar2> {
-  WalletBloc? wb;
+  Wallet? wb;
   @override
   void initState() {
     if (widget.walletBloc == null) {
       final network = context.read<NetworkCubit>().state.getBBNetwork();
       final walletBlocs =
-          context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+          context.read<HomeBloc>().state.walletsFromNetwork(network);
       if (walletBlocs.length == 1) wb = walletBlocs.first;
     }
     super.initState();
@@ -818,7 +819,7 @@ class ScanButton extends StatelessWidget {
 //   Widget build(BuildContext context) {
 //     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
 //     final walletBlocs = context
-//         .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+//         .select((HomeBloc x) => x.state.walletBlocsFromNetwork(network));
 
 //     if (walletBlocs.isEmpty) return const SizedBox.shrink();
 
@@ -1054,7 +1055,8 @@ class HomeNoWalletsView extends StatelessWidget {
           if (state.savedWallets == null) return;
           //if (state.mainWallet)
           await locator<WalletsStorageRepository>().sortWallets();
-          locator<HomeCubit>().getWalletsFromStorage();
+          locator<HomeBloc>()
+              .add(LoadWalletsFromStorage()); //getWalletsFromStorage();
           if (!context.mounted) return;
           context3.go('/home');
         }
@@ -1128,10 +1130,10 @@ class HomeWarnings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((HomeCubit _) => _.state.updated);
+    final _ = context.select((HomeBloc _) => _.state.updated);
     final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     final warnings =
-        context.select((HomeCubit _) => _.state.homeWarnings(network));
+        context.select((HomeBloc _) => _.state.homeWarnings(network));
 
     return Column(
       children: [

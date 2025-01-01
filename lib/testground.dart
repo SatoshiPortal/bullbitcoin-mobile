@@ -14,7 +14,7 @@
 //     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
 
 //     final walletBlocs = context.select(
-//       (HomeCubit x) => x.state.walletBlocsFromNetwork(network),
+//       (HomeBloc x) => x.state.walletBlocsFromNetwork(network),
 //     );
 
 //     final wallets = walletBlocs.map((e) => e.state.wallet!).toList();

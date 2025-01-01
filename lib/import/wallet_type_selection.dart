@@ -13,6 +13,7 @@ import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/locator.dart';
@@ -63,11 +64,11 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
           w.add(RemoveInternalWallet());
         }
         await locator<WalletsStorageRepository>().sortWallets();
-        locator<HomeCubit>().getWalletsFromStorage();
+        locator<HomeBloc>().add(LoadWalletsFromStorage());
         // final wallet = state.savedWallet!;
-        // locator<HomeCubit>().addWallets([wallet]);
+        // locator<HomeBloc>().addWallets([wallet]);
         // await Future.delayed(300.milliseconds);
-        // locator<HomeCubit>().changeMoveToIdx(wallet);
+        // locator<HomeBloc>().changeMoveToIdx(wallet);
         // await Future.delayed(300.milliseconds);
         if (!context.mounted) return;
         context.go('/home');

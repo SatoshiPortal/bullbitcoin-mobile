@@ -183,7 +183,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
         isLiquid: isLiquid,
       ),
     );
-    // final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
+    // final tx = context.select((HomeBloc _) => _.state.getTxFromSwap(swapTx));
 
     final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
     final amtDouble = isSats ? amount : amount / 100000000;

@@ -18,7 +18,6 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
@@ -64,7 +63,8 @@ class _SendPageState extends State<SendPage> {
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
-      homeCubit: context.read<HomeCubit>(),
+      // homeCubit: context.read<HomeBloc>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
       networkCubit: context.read<NetworkCubit>(),
     )..fetchFees(context.read<NetworkCubit>().state.testnet);
@@ -94,7 +94,7 @@ class _SendPageState extends State<SendPage> {
       wallet =
           context.read<AppWalletsRepository>().getMainWallets(isTestnet).first;
       // walletBloc = createWalletBloc(wallet);
-      // context.read<HomeCubit>().state.getMainWallets(isTestnet).first;
+      // context.read<HomeBloc>().state.getMainWallets(isTestnet).first;
     }
 
     send = SendCubit(
@@ -106,7 +106,7 @@ class _SendPageState extends State<SendPage> {
       appWalletsRepository: locator<AppWalletsRepository>(),
       // networkCubit: locator<NetworkCubit>(),
       // networkFeesCubit: networkFees,
-      // homeCubit: locator<HomeCubit>(),
+      // homeCubit: locator<HomeBloc>(),
       payjoinManager: locator<PayjoinManager>(),
       swapBoltz: locator<SwapBoltz>(),
       // currencyCubit: currency,

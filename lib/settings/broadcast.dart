@@ -35,7 +35,7 @@ class BroadcastPage extends StatelessWidget {
       // settingsCubit: locator<SettingsCubit>(),
       // networkCubit: locator<NetworkCubit>(),
       fileStorage: locator<FileStorage>(),
-      // homeCubit: locator<HomeCubit>(),
+      // homeCubit: locator<HomeBloc>(),
       networkRepository: locator<NetworkRepository>(),
       internalNetworkRepository: locator<InternalNetworkRepository>(),
       bdkTransactions: locator<BDKTransactions>(),
@@ -84,7 +84,7 @@ class BroadcastPopUp extends StatelessWidget {
       // settingsCubit: locator<SettingsCubit>(),
       // networkCubit: locator<NetworkCubit>(),
       fileStorage: locator<FileStorage>(),
-      // homeCubit: locator<HomeCubit>(),
+      // homeCubit: locator<HomeBloc>(),
       // networkRepository: locator<InternalNetworkRepository>(),
 
       appWalletsRepository: locator<AppWalletsRepository>(),

@@ -18,6 +18,7 @@ import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
 import 'package:bb_mobile/create/confirm_popup.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
@@ -59,11 +60,11 @@ class CreateWalletPage extends StatelessWidget {
               if (state.savedWallets == null) return;
               //if (state.mainWallet)
               await locator<WalletsStorageRepository>().sortWallets();
-              locator<HomeCubit>().getWalletsFromStorage();
+              locator<HomeBloc>().add(LoadWalletsFromStorage());
               // final wallets = state.savedWallets!;
-              // locator<HomeCubit>().addWallets(wallets);
+              // locator<HomeBloc>().addWallets(wallets);
               // await Future.delayed(500.milliseconds);
-              // locator<HomeCubit>().changeMoveToIdx(wallets.first);
+              // locator<HomeBloc>().changeMoveToIdx(wallets.first);
               // await Future.delayed(300.milliseconds);
               if (!context.mounted) return;
               context.go('/home');

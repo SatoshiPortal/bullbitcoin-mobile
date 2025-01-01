@@ -49,7 +49,8 @@ class _SwapPageState extends State<SwapPage> {
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
-      homeCubit: context.read<HomeCubit>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
+      // homeCubit: context.read<HomeBloc>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
       networkCubit: context.read<NetworkCubit>(),
     )..fetchFees(context.read<NetworkCubit>().state.testnet);
@@ -73,7 +74,7 @@ class _SwapPageState extends State<SwapPage> {
 
     final wallet = context.read<AppWalletsRepository>().allWallets.first;
     // walletBloc = createWalletBloc(wallet);
-    // walletBloc = context.read<HomeCubit>().state.walletBlocs?[0];
+    // walletBloc = context.read<HomeBloc>().state.walletBlocs?[0];
 
     send = SendCubit(
       walletTx: locator<WalletTx>(),
@@ -84,7 +85,7 @@ class _SwapPageState extends State<SwapPage> {
       appWalletsRepository: locator<AppWalletsRepository>(),
       // networkCubit: locator<NetworkCubit>(),
       // networkFeesCubit: locator<NetworkFeesCubit>(),
-      // homeCubit: locator<HomeCubit>(),
+      // homeCubit: locator<HomeBloc>(),
       payjoinManager: locator<PayjoinManager>(),
       swapBoltz: locator<SwapBoltz>(),
       // currencyCubit: currency,
@@ -128,11 +129,11 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final network =
         context.select((NetworkCubit cubit) => cubit.state.getBBNetwork());
-    final walletBlocs = context.select(
-      (HomeCubit cubit) =>
-          cubit.state.walletBlocsFromNetworkExcludeWatchOnly(network),
+    final wallets = context.select(
+      (HomeBloc cubit) =>
+          cubit.state.walletsFromNetworkExcludeWatchOnly(network),
     );
-    final wallets = walletBlocs.map((bloc) => bloc.state.wallet).toList();
+    // final wallets = walletBlocs.map((bloc) => bloc.state.wallet).toList();
 
     final generatingInv = context
         .select((CreateSwapCubit cubit) => cubit.state.generatingSwapInv);

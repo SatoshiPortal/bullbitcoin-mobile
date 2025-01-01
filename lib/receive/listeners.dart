@@ -46,7 +46,7 @@ class ReceiveListeners extends StatelessWidget {
 
             final network = context.read<NetworkRepository>().getBBNetwork;
             // final secureWallet =
-            //     context.read<HomeCubit>().state.getMainSecureWallet(network);
+            //     context.read<HomeBloc>().state.getMainSecureWallet(network);
             final secureWallet = context
                 .read<AppWalletsRepository>()
                 .getMainSecureWallet(network);

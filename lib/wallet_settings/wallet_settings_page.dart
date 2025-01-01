@@ -50,7 +50,7 @@ class WalletSettingsPage extends StatelessWidget {
       fileStorage: locator<FileStorage>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
-      // homeCubit: locator<HomeCubit>(),
+      // homeCubit: locator<HomeBloc>(),
     );
 
     return MultiBlocProvider(
@@ -538,7 +538,7 @@ class DeletePopUp extends StatelessWidget {
           listener: (context, state) {
             if (state.deleted) {
               // final walletBloc = settings.walletBloc;
-              // context.read<HomeCubit>().clearWallet(walletBloc);
+              // context.read<HomeBloc>().clearWallet(walletBloc);
               context.go('/home');
             }
           },

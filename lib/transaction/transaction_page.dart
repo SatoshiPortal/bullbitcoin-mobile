@@ -655,7 +655,7 @@ class _OnchainSwapDetails extends StatelessWidget {
     );
 
     final fromWallet =
-        context.select((HomeCubit cubit) => cubit.state.getWalletFromTx(tx));
+        context.select((HomeBloc cubit) => cubit.state.getWalletFromTx(tx));
     final fromStatus = tx.height == null || tx.height == 0 || tx.timestamp == 0;
     final fromStatusStr = fromStatus ? 'Pending' : 'Confirmed';
     final fromAmtStr = context.select(
@@ -667,10 +667,8 @@ class _OnchainSwapDetails extends StatelessWidget {
     );
 
     final toWallet = context.select(
-      (HomeCubit cubit) => cubit.state
-          .getWalletBlocById(swap.chainSwapDetails!.toWalletId)
-          ?.state
-          .wallet,
+      (HomeBloc cubit) =>
+          cubit.state.getWalletById(swap.chainSwapDetails!.toWalletId),
     );
     final isRefundedReceive = swap.isChainReceive() && swap.refundedOnchain();
 

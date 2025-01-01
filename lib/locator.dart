@@ -258,9 +258,9 @@ Future _setupWalletServices() async {
 }
 
 Future _setupBlocs() async {
-  locator.registerSingleton<HomeCubit>(
-    HomeCubit(
-      walletsStorageRepository: locator<WalletsStorageRepository>(),
+  locator.registerSingleton<HomeBloc>(
+    HomeBloc(
+      // walletsStorageRepository: locator<WalletsStorageRepository>(),
       appWalletsRepository: locator<AppWalletsRepository>(),
     ),
   );

@@ -1,13 +1,12 @@
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -69,13 +68,12 @@ class WalletTxList extends StatelessWidget {
                 fontSize: 11,
                 onPressed: () {
                   final network =
-                      context.read<NetworkCubit>().state.getBBNetwork();
+                      context.read<NetworkRepository>().getBBNetwork;
                   final wallets = context
-                      .read<HomeCubit>()
-                      .state
-                      .walletBlocsFromNetwork(network);
+                      .read<AppWalletsRepository>()
+                      .walletServiceFromNetwork(network);
                   for (final wallet in wallets) {
-                    wallet.add(SyncWallet());
+                    wallet.syncWallet();
                   }
                 },
               ),

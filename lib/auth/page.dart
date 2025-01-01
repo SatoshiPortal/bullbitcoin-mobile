@@ -8,6 +8,7 @@ import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/auth/bloc/cubit.dart';
 import 'package:bb_mobile/auth/bloc/state.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,7 @@ class AuthPage extends StatelessWidget {
         listener: (context, state) async {
           if (state.loggedIn) {
             if (!state.fromSettings) {
-              locator<HomeCubit>().getWalletsFromStorage();
+              locator<HomeBloc>().add(LoadWalletsFromStorage());
               context.go('/home');
             } else {
               ScaffoldMessenger.of(context).showSnackBar(

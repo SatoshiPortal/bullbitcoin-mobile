@@ -70,7 +70,8 @@ class _ReceivePageState extends State<ReceivePage> {
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
-      homeCubit: context.read<HomeCubit>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
+      // homeCubit: context.read<HomeBloc>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
       networkCubit: context.read<NetworkCubit>(),
     )..fetchFees(context.read<NetworkCubit>().state.testnet);
@@ -278,7 +279,7 @@ class _ReceiveWalletsDropDownState extends State<ReceiveWalletsDropDown> {
     final oneWallet = context.select((ReceiveCubit _) => _.state.oneWallet);
     // final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
     // final walletBlocs = context
-    //     .select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
+    //     .select((HomeBloc _) => _.state.walletBlocsFromNetwork(network));
     final selectedWallet = context.select((ReceiveCubit _) => _.state.wallet);
 
     // final walletBloc = selectedWalletBloc ?? walletBlocs.first;
@@ -718,10 +719,10 @@ class ChainSwapForm extends StatelessWidget {
               final label = context.read<ReceiveCubit>().state.description;
 
               final matchingWalletForRefund = context
-                  .read<HomeCubit>()
+                  .read<HomeBloc>()
                   .state
-                  .walletBlocsFromNetwork(receiveWallet.network)
-                  .map((bloc) => bloc.state.wallet)
+                  .walletsFromNetwork(receiveWallet.network)
+                  // .map((bloc) => bloc.state.wallet)
                   .where(
                     (wallet) =>
                         wallet.baseWalletType != receiveWallet.baseWalletType,

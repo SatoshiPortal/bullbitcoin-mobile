@@ -1,11 +1,11 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/swap_history_bloc/swap_history_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
@@ -28,8 +28,8 @@ class _SwapHistoryPageState extends State<SwapHistoryPage> {
   @override
   void initState() {
     _swapHistory = SwapHistoryCubit(
-      homeCubit: context.read<HomeCubit>(),
-      networkCubit: context.read<NetworkCubit>(),
+      appWalletsRepository: context.read<AppWalletsRepository>(),
+      networkRepository: context.read<NetworkRepository>(),
       boltz: locator<SwapBoltz>(),
       watcher: context.read<WatchTxsBloc>(),
     )..loadSwaps();

@@ -331,7 +331,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
       await Future.delayed(400.ms);
 
       if (!mounted) return;
-      final updatedSwapTx = context.read<HomeCubit>().state.getSwapTxById(
+      final updatedSwapTx = context.read<HomeBloc>().state.getSwapTxById(
             widget.tx.id,
           );
 
@@ -358,7 +358,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
     var amt = swapTx.recievableAmount() ?? 0;
 
     // final tx = context.select(
-    //   (HomeCubit cubit) => cubit.state.getTxFromSwap(swapTx),
+    //   (HomeBloc cubit) => cubit.state.getTxFromSwap(swapTx),
     // );
 
     if (tx != null) amt = tx!.getNetAmountToPayee();
@@ -408,7 +408,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
           });
 
           // await Future.delayed(100.ms);
-          // tx = context.read<HomeCubit>().state.getTxFromSwap(widget.tx);
+          // tx = context.read<HomeBloc>().state.getTxFromSwap(widget.tx);
           // setState(() {});
         }
       },

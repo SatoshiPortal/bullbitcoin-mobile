@@ -26,7 +26,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lwk_dart/lwk_dart.dart';
 import 'package:oktoast/oktoast.dart';
-
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 
 Future main({bool fromTest = false}) async {
@@ -62,7 +61,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
         BlocProvider.value(value: locator<NetworkCubit>()),
         BlocProvider.value(value: locator<NetworkFeesCubit>()),
         BlocProvider.value(value: locator<CurrencyCubit>()),
-        BlocProvider.value(value: locator<HomeCubit>()),
+        BlocProvider.value(value: locator<HomeBloc>()),
         BlocProvider.value(value: locator<WatchTxsBloc>()),
         // BlocProvider.value(value: TestCub()),
         BlocProvider.value(value: locator<NavName>()),
