@@ -13,6 +13,7 @@ class StorageKeys {
   static const wallets = 'wallets';
   static const settings = 'settings';
   static const network = 'network';
+  static const networkReposity = 'networkReposity';
   static const networkFees = 'networkFees';
   static const currency = 'currency';
   static const lighting = 'lighting';

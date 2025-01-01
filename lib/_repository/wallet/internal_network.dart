@@ -44,4 +44,13 @@ class InternalNetworkRepository {
   Err? checkNetworks() => (_bdkBlockchain == null || _liquidUrl == null)
       ? Err('Network not setup')
       : null;
+
+  Err? checkNetworks2(bool isLiquid) =>
+      isLiquid ? checkLiquidNetwork() : checkBitcoinNetwork();
+
+  Err? checkBitcoinNetwork() =>
+      (_bitcoinUrl == null) ? Err('Network not setup') : null;
+
+  Err? checkLiquidNetwork() =>
+      (_liquidUrl == null) ? Err('Network not setup') : null;
 }

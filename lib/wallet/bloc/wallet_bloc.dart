@@ -43,7 +43,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         _walletBalance = walletBalance,
         _walletSync = walletSync,
         _walletsRepository = walletsRepository,
-        _networkRepository = networkRepository,
+        _internalNetworkRepository = networkRepository,
         _walletsStorageRepository = walletsStorageRepository,
         super(WalletState(wallet: wallet)) {
     on<LoadWallet>(_loadWallet);
@@ -59,7 +59,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }
 
   final WalletsStorageRepository _walletsStorageRepository;
-  final InternalNetworkRepository _networkRepository;
+  final InternalNetworkRepository _internalNetworkRepository;
   final InternalWalletsRepository _walletsRepository;
 
   final WalletSync _walletSync;
@@ -160,11 +160,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       ),
     );
 
-    final errNetwork = _networkRepository.checkNetworks();
+    final errNetwork = _internalNetworkRepository.checkNetworks();
     if (errNetwork != null) {
       await _networkCubit.loadNetworks();
       await Future.delayed(const Duration(milliseconds: 300));
-      final errNetwork2 = _networkRepository.checkNetworks();
+      final errNetwork2 = _internalNetworkRepository.checkNetworks();
       if (errNetwork2 != null) {
         emit(state.copyWith(syncing: false));
         return;
