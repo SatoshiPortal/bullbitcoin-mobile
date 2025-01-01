@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -18,7 +19,6 @@ import 'package:bb_mobile/create/bloc/state.dart';
 import 'package:bb_mobile/create/confirm_popup.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +40,8 @@ class CreateWalletPage extends StatelessWidget {
       walletSensCreate: locator<WalletSensitiveCreate>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
-      networkCubit: locator<NetworkCubit>(),
+      // networkCubit: locator<NetworkCubit>(),
+      networkRepository: locator<NetworkRepository>(),
       walletCreate: locator<WalletCreate>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
       lwkSensitiveCreate: locator<LWKSensitiveCreate>(),

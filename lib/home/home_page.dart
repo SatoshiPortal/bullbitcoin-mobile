@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -346,15 +347,14 @@ class CardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wallet = context.select((WalletBloc x) => x.state.wallet);
-    if (wallet == null) return const SizedBox.shrink();
 
     final (color, _) = WalletCardDetails.cardDetails(context, wallet);
 
-    final name = context.select((WalletBloc x) => x.state.wallet?.name);
+    final name = context.select((WalletBloc x) => x.state.wallet.name);
     final fingerprint = context
-        .select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
+        .select((WalletBloc x) => x.state.wallet.sourceFingerprint ?? '');
     final walletStr =
-        context.select((WalletBloc x) => x.state.wallet?.getWalletTypeStr());
+        context.select((WalletBloc x) => x.state.wallet.getWalletTypeStr());
 
     final sats = context.select((WalletBloc x) => x.state.balanceSats());
 
@@ -991,7 +991,8 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
       walletSensCreate: locator<WalletSensitiveCreate>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
-      networkCubit: locator<NetworkCubit>(),
+      networkRepository: locator<NetworkRepository>(),
+      // networkCubit: locator<NetworkCubit>(),
       walletCreate: locator<WalletCreate>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
       lwkSensitiveCreate: locator<LWKSensitiveCreate>(),

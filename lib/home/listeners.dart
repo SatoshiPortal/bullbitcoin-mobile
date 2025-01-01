@@ -33,7 +33,7 @@ class HomeWalletsSetupListener extends StatelessWidget {
           walletsStorageRepository: locator<WalletsStorageRepository>(),
           walletBalance: locator<WalletBalance>(),
           walletAddress: locator<WalletAddress>(),
-          networkCubit: locator<NetworkCubit>(),
+          // networkCubit: locator<NetworkCubit>(),
           // swapBloc: locator<WatchTxsBloc>(),
           networkRepository: locator<InternalNetworkRepository>(),
           walletsRepository: locator<InternalWalletsRepository>(),
@@ -80,27 +80,27 @@ class WalletBlocListeners extends StatelessWidget {
 
     // print each wallet id
     for (final wallet in wallets) {
-      print('wallet id: ${wallet.state.wallet!.id}');
+      print('wallet id: ${wallet.state.wallet.id}');
     }
     final mainWalletBloc = wallets.firstWhere(
       (bloc) =>
-          bloc.state.wallet?.mainWallet == true &&
-          !bloc.state.wallet!.watchOnly() &&
-          bloc.state.wallet!.isSecure() &&
-          bloc.state.wallet!.isActive(),
+          bloc.state.wallet.mainWallet == true &&
+          !bloc.state.wallet.watchOnly() &&
+          bloc.state.wallet.isSecure() &&
+          bloc.state.wallet.isActive(),
       orElse: () =>
           wallets.first, // Return first wallet if no main wallet found
     );
 
     var walletChild = child;
-    if (mainWalletBloc.state.wallet?.mainWallet == true &&
-        !mainWalletBloc.state.wallet!.watchOnly() &&
-        mainWalletBloc.state.wallet!.isSecure()) {
+    if (mainWalletBloc.state.wallet.mainWallet == true &&
+        !mainWalletBloc.state.wallet.watchOnly() &&
+        mainWalletBloc.state.wallet.isSecure()) {
       print(
-        'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.state.wallet!.id}',
+        'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.state.wallet.id}',
       );
       walletChild = PayjoinLifecycleManager(
-        wallet: mainWalletBloc.state.wallet!,
+        wallet: mainWalletBloc.state.wallet,
         payjoinManager: locator<PayjoinManager>(),
         child: child,
       );
@@ -114,7 +114,6 @@ class WalletBlocListeners extends StatelessWidget {
             listenWhen: (previous, current) =>
                 previous.wallet != current.wallet,
             listener: (context, state) {
-              if (state.wallet == null) return;
               context.read<HomeCubit>().updateWalletBloc(w);
             },
           ),
@@ -170,11 +169,11 @@ class HomeWalletLoadingListeners extends StatelessWidget {
               if (state.syncing) {
                 context
                     .read<HomeLoadingCubit>()
-                    .add(SetLoading(state.wallet!.id, true));
+                    .add(SetLoading(state.wallet.id, true));
               } else {
                 context
                     .read<HomeLoadingCubit>()
-                    .add(SetLoading(state.wallet!.id, false));
+                    .add(SetLoading(state.wallet.id, false));
               }
             },
           ),

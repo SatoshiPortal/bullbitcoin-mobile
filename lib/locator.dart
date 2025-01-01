@@ -38,6 +38,7 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
 import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
@@ -250,6 +251,13 @@ Future _setupWalletServices() async {
     ),
   );
 
+  locator.registerSingleton<NetworkRepository>(
+    NetworkRepository(
+      walletNetwork: locator<WalletNetwork>(),
+      hiveStorage: locator<HiveStorage>(),
+    ),
+  );
+
   locator.registerSingleton<AppWalletsRepository>(
     AppWalletsRepository(
       walletsStorageRepository: locator<WalletsStorageRepository>(),
@@ -289,7 +297,8 @@ Future _setupBlocs() async {
     NetworkFeesCubit(
       hiveStorage: locator<HiveStorage>(),
       mempoolAPI: locator<MempoolAPI>(),
-      networkCubit: locator<NetworkCubit>(),
+      // networkCubit: locator<NetworkCubit>(),
+      networkRepository: locator<NetworkRepository>(),
     ),
   );
 

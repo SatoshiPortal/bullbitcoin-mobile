@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -45,7 +46,9 @@ class _SwapConfirmationPageState extends State<SwapConfirmationPage> {
   @override
   void initState() {
     networkFees = NetworkFeesCubit(
-      networkCubit: locator<NetworkCubit>(),
+      // networkCubit: locator<NetworkCubit>(),
+      networkRepository: locator<NetworkRepository>(),
+
       hiveStorage: locator<HiveStorage>(),
       mempoolAPI: locator<MempoolAPI>(),
       defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
@@ -132,7 +135,7 @@ class _Screen extends StatelessWidget {
     );
 
     context.select(
-      (SendCubit x) => x.state.selectedWalletBloc?.state.wallet?.name ?? '',
+      (SendCubit x) => x.state.selectedWalletBloc?.state.wallet.name ?? '',
     );
 
     if (showWarning == true) {
