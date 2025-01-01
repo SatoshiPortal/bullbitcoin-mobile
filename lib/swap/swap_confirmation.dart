@@ -135,7 +135,7 @@ class _Screen extends StatelessWidget {
     );
 
     context.select(
-      (SendCubit x) => x.state.selectedWalletBloc?.state.wallet.name ?? '',
+      (SendCubit x) => x.state.selectedWallet?.name ?? '',
     );
 
     if (showWarning == true) {

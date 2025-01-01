@@ -44,7 +44,8 @@ class NetworkRepository {
 
   var _data = const NetworkRepoData();
 
-  Stream<NetworkRepoData> get details => Stream.value(_data);
+  Stream<NetworkRepoData> get dataStream => Stream.value(_data);
+  NetworkRepoData get data => _data;
 
   final WalletNetwork _walletNetwork;
   final HiveStorage _hiveStorage;

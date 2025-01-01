@@ -4,7 +4,6 @@ import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -27,8 +26,8 @@ class SendInvAmtDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     final inv = context.select((SendCubit _) => _.state.invoice);
     if (inv == null) return const SizedBox.shrink();
-    final isLiq = context
-        .select((SendCubit _) => _.state.selectedWalletBloc?.state.isLiq());
+    final isLiq =
+        context.select((SendCubit _) => _.state.selectedWallet?.isLiquid());
 
     final amtStr = context.select(
       (CurrencyCubit _) => _.state.getAmountInUnits(

@@ -29,7 +29,7 @@ class SwapHistoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.wallet.swaps ?? []);
+    final txs = context.select((WalletBloc _) => _.state.wallet.swaps);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return BBButton.big(
@@ -48,7 +48,7 @@ class SwapTxList extends StatelessWidget {
     final receiveCubit = context.read<ReceiveCubit>();
     final swapBloc = context.read<CreateSwapCubit>();
     // receiveCubit.state.swapBloc;
-    final walletBloc = receiveCubit.state.walletBloc;
+    final wallet = receiveCubit.state.wallet;
 
     return showBBBottomSheet(
       context: context,
@@ -56,7 +56,8 @@ class SwapTxList extends StatelessWidget {
         providers: [
           BlocProvider.value(value: receiveCubit),
           BlocProvider.value(value: swapBloc),
-          if (walletBloc != null) BlocProvider.value(value: walletBloc),
+          if (wallet != null)
+            BlocProvider.value(value: createWalletBloc(wallet)),
         ],
         child: const SwapTxList(),
       ),
@@ -65,7 +66,7 @@ class SwapTxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.wallet.swaps ?? []);
+    final txs = context.select((WalletBloc _) => _.state.wallet.swaps);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return Padding(

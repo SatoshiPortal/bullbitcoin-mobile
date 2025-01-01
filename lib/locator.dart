@@ -101,12 +101,6 @@ Future _setupRepositories() async {
       secureStorage: locator<SecureStorage>(),
     ),
   );
-  // locator.registerSingleton<HomeRepository>(
-  //   HomeRepository(
-  //     walletsStorageRepository: locator<WalletsStorageRepository>(),
-  //     logger: locator<Logger>(),
-  //   ),
-  // );
 }
 
 Future _setupAppServices() async {
@@ -207,7 +201,6 @@ Future _setupWalletServices() async {
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
     ),
   );
-  // locator.registerSingleton<WalletSensitiveTx>(WalletSensitiveTx());
 
   locator.registerFactory<WalletSync>(
     () => WalletSync(
@@ -246,7 +239,6 @@ Future _setupWalletServices() async {
   locator.registerSingleton<WalletNetwork>(
     WalletNetwork(
       networkRepository: locator<InternalNetworkRepository>(),
-      // logger: locator<Logger>(),
       bdkNetwork: locator<BDKNetwork>(),
     ),
   );
@@ -298,7 +290,6 @@ Future _setupBlocs() async {
     NetworkFeesCubit(
       hiveStorage: locator<HiveStorage>(),
       mempoolAPI: locator<MempoolAPI>(),
-      // networkCubit: locator<NetworkCubit>(),
       networkRepository: locator<NetworkRepository>(),
     ),
   );
@@ -314,11 +305,10 @@ Future _setupBlocs() async {
 
   locator.registerSingleton<WatchTxsBloc>(
     WatchTxsBloc(
-      // isTestnet: locator<NetworkCubit>().state.testnet,
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
-      homeCubit: locator<HomeCubit>(),
-      networkCubit: locator<NetworkCubit>(),
+      networkRepository: locator<NetworkRepository>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
     ),
   );
 }

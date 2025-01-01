@@ -1,5 +1,6 @@
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
@@ -43,9 +44,12 @@ class ReceiveListeners extends StatelessWidget {
           listener: (context, state) {
             if (!state.switchToSecure) return;
 
-            final network = context.read<NetworkCubit>().state.getBBNetwork();
-            final secureWallet =
-                context.read<HomeCubit>().state.getMainSecureWallet(network);
+            final network = context.read<NetworkRepository>().getBBNetwork;
+            // final secureWallet =
+            //     context.read<HomeCubit>().state.getMainSecureWallet(network);
+            final secureWallet = context
+                .read<AppWalletsRepository>()
+                .getMainSecureWallet(network);
             if (secureWallet == null) return;
             context.read<ReceiveCubit>().updateWallet(secureWallet);
             context.read<ReceiveCubit>().clearSwitch();
@@ -57,9 +61,10 @@ class ReceiveListeners extends StatelessWidget {
           listener: (context, state) {
             if (!state.switchToInstant) return;
 
-            final network = context.read<NetworkCubit>().state.getBBNetwork();
-            final instantWallet =
-                context.read<HomeCubit>().state.getMainInstantWallet(network);
+            final network = context.read<NetworkRepository>().getBBNetwork;
+            final instantWallet = context
+                .read<AppWalletsRepository>()
+                .getMainInstantWallet(network);
             if (instantWallet == null) return;
             context.read<ReceiveCubit>().updateWallet(instantWallet);
             context.read<ReceiveCubit>().clearSwitch();

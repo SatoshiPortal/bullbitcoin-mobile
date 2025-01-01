@@ -205,4 +205,14 @@ class AppWalletsRepository {
 
     return null;
   }
+
+  List<Wallet> walletFromNetworkExcludeWatchOnly(BBNetwork network) {
+    final blocs = allWallets
+        .where(
+          (_) => _.network == network && _.watchOnly() == false,
+        )
+        .toList();
+
+    return blocs;
+  }
 }
