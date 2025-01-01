@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({
     required AppWalletsRepository appWalletsRepository,
+    required NetworkRepository networkRepository,
   })  : _appWalletsRepository = appWalletsRepository,
+        _networkRepository = networkRepository,
         super(const HomeState()) {
     on<LoadWalletsFromStorage>(_onLoadWalletsFromStorage);
     on<ClearWallets>(_onClearWallets);
@@ -30,6 +33,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   final AppWalletsRepository _appWalletsRepository;
+  final NetworkRepository _networkRepository;
 
   Future<void> _onLoadWalletsFromStorage(
     LoadWalletsFromStorage event,
@@ -37,6 +41,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     emit(state.copyWith(loadingWallets: true));
     await _appWalletsRepository.getWalletsFromStorage();
+    await _appWalletsRepository
+        .loadAllInNetwork(_networkRepository.getBBNetwork);
     emit(state.copyWith(loadingWallets: false));
   }
 

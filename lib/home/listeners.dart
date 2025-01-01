@@ -1,16 +1,6 @@
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/payjoin/listeners.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
-import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/balance.dart';
-import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/sync.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/_repository/app_wallets_repository.dart';
-import 'package:bb_mobile/_repository/wallet/internal_network.dart';
-import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
-import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
@@ -23,27 +13,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class HomeWalletsSetupListener extends StatelessWidget {
   const HomeWalletsSetupListener({super.key, required this.child});
 
-  List<WalletBloc> createWalletBlocs(List<Wallet> tempwallets) {
-    final walletCubits = [
-      for (final w in tempwallets)
-        WalletBloc(
-          saveDir: w.getWalletStorageString(),
-          walletSync: locator<WalletSync>(),
-          walletsStorageRepository: locator<WalletsStorageRepository>(),
-          walletBalance: locator<WalletBalance>(),
-          walletAddress: locator<WalletAddress>(),
-          // networkCubit: locator<NetworkCubit>(),
-          // swapBloc: locator<WatchTxsBloc>(),
-          networkRepository: locator<InternalNetworkRepository>(),
-          walletsRepository: locator<InternalWalletsRepository>(),
-          walletTransactionn: locator<WalletTx>(),
-          walletCreatee: locator<WalletCreate>(),
-          appWalletsRepository: locator<AppWalletsRepository>(),
-          wallet: w,
-        ),
-    ];
-    return walletCubits;
-  }
+  // List<WalletBloc> createWalletBlocs(List<Wallet> tempwallets) {
+  //   final walletCubits = [
+  //     for (final w in tempwallets)
+  //       WalletBloc(
+  //         saveDir: w.getWalletStorageString(),
+  //         walletSync: locator<WalletSync>(),
+  //         walletsStorageRepository: locator<WalletsStorageRepository>(),
+  //         walletBalance: locator<WalletBalance>(),
+  //         walletAddress: locator<WalletAddress>(),
+  //         // networkCubit: locator<NetworkCubit>(),
+  //         // swapBloc: locator<WatchTxsBloc>(),
+  //         networkRepository: locator<InternalNetworkRepository>(),
+  //         walletsRepository: locator<InternalWalletsRepository>(),
+  //         walletTransactionn: locator<WalletTx>(),
+  //         walletCreatee: locator<WalletCreate>(),
+  //         appWalletsRepository: locator<AppWalletsRepository>(),
+  //         wallet: w,
+  //       ),
+  //   ];
+  //   return walletCubits;
+  // }
 
   final Widget child;
 

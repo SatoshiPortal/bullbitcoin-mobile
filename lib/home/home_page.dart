@@ -357,7 +357,7 @@ class CardItem extends StatelessWidget {
     final walletStr =
         context.select((WalletBloc x) => x.state.wallet.getWalletTypeStr());
 
-    final sats = context.select((WalletBloc x) => x.state.balanceSats());
+    final sats = context.select((WalletBloc x) => x.state.wallet.balanceSats());
 
     final balance = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true),

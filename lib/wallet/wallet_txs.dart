@@ -24,7 +24,7 @@ class WalletTxList extends StatelessWidget {
     // final syncing = context.select((WalletBloc x) => x.state.syncing);
     // final loading = context.select((WalletBloc x) => x.state.loadingTxs);
     // final loadingBal = context.select((WalletBloc x) => x.state.loadingBalance);
-    final loading = context.select((WalletBloc x) => x.state.loading());
+    final loading = context.select((WalletBloc x) => x.state.syncing);
 
     final confirmedTXs =
         context.select((WalletBloc x) => x.state.wallet.getConfirmedTxs());

@@ -1,9 +1,11 @@
 // ignore_for_file: use_setters_to_change_properties
 import 'dart:async';
 
+import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/logger.dart';
+import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
@@ -39,7 +41,7 @@ class WalletService {
     // required InternalWalletsRepository walletsRepository,
     required WalletSync walletSync,
     required WalletBalance walletBalance,
-    // required WalletAddress walletAddress,
+    required WalletAddress walletAddress,
     required WalletCreate walletCreate,
     required WalletTx walletTransaction,
     required NetworkRepository networkRepository,
@@ -50,7 +52,7 @@ class WalletService {
         // _walletsRepository = walletsRepository,
         _walletSync = walletSync,
         _walletBalance = walletBalance,
-        // _walletAddress = walletAddress,
+        _walletAddress = walletAddress,
         _walletCreate = walletCreate,
         _walletTransactionn = walletTransaction,
         _networkRepository = networkRepository,
@@ -69,7 +71,7 @@ class WalletService {
   // final InternalWalletsRepository _walletsRepository;
   final WalletSync _walletSync;
   final WalletBalance _walletBalance;
-  // final WalletAddress _walletAddress;
+  final WalletAddress _walletAddress;
   final WalletCreate _walletCreate;
   final WalletTx _walletTransactionn;
   final NetworkRepository _networkRepository;
@@ -138,6 +140,13 @@ class WalletService {
     }
 
     syncErrCount = 0;
+
+    await Future.wait([
+      if (!_fromStorage) getFirstAddress(),
+      getBalance(),
+      listTransactions(),
+    ]);
+
     return null;
   }
 
@@ -260,7 +269,7 @@ class WalletService {
     final (w, err) = await _walletBalance.getBalance(_wallet);
     if (err != null) return err;
     _wallet = w!.$1;
-    updateWallet(
+    await updateWallet(
       wallet,
       saveToStorage: _fromStorage,
       updateTypes: [UpdateWalletTypes.balance],
@@ -272,7 +281,7 @@ class WalletService {
     final (w, err) = await _walletTransactionn.getTransactions(_wallet);
     if (err != null) return err;
     _wallet = w!;
-    updateWallet(
+    await updateWallet(
       wallet,
       saveToStorage: _fromStorage,
       updateTypes: [
@@ -285,18 +294,37 @@ class WalletService {
     return null;
   }
 
+  Future<Err?> getFirstAddress() async {
+    final (address, err) =
+        await _walletAddress.peekIndex(wallet: _wallet, idx: 0);
+
+    if (err != null) return err;
+    _wallet = _wallet.copyWith(
+      firstAddress: Address(
+        address: address!,
+        index: 0,
+        kind: AddressKind.deposit,
+        state: AddressStatus.unused,
+      ),
+    );
+    return null;
+  }
+
   void killSync() {
     _walletSync.cancelSync();
   }
 }
 
-WalletService createWalletService({required Wallet wallet}) {
+WalletService createWalletService({
+  required Wallet wallet,
+  bool fromStorage = false,
+}) {
   final walletsStorageRepository = locator<WalletsStorageRepository>();
   final internalNetworkkRepository = locator<InternalNetworkRepository>();
   // final walletsRepository = locator<InternalWalletsRepository>();
   final walletSync = locator<WalletSync>();
   final walletBalance = locator<WalletBalance>();
-  // final walletAddress = locator<WalletAddress>();
+  final walletAddress = locator<WalletAddress>();
   final walletCreate = locator<WalletCreate>();
   final walletTransaction = locator<WalletTx>();
   final networkRepository = locator<NetworkRepository>();
@@ -308,10 +336,11 @@ WalletService createWalletService({required Wallet wallet}) {
     // walletsRepository: walletsRepository,
     walletSync: walletSync,
     walletBalance: walletBalance,
-    // walletAddress: walletAddress,
+    walletAddress: walletAddress,
     walletCreate: walletCreate,
     walletTransaction: walletTransaction,
     networkRepository: networkRepository,
+    fromStorage: fromStorage,
   );
 }
 

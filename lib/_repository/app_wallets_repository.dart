@@ -13,6 +13,21 @@ class AppWalletsRepository {
 
   final WalletsStorageRepository _walletsStorageRepository;
 
+  Future<void> getWalletsFromStorage() async {
+    final (wallets, err) = await _walletsStorageRepository.readAllWallets();
+    if (err != null && err.toString() != 'No Key') {
+      return;
+    }
+
+    if (wallets == null) {
+      return;
+    }
+
+    _walletServices = wallets
+        .map((_) => createWalletService(wallet: _, fromStorage: true))
+        .toList();
+  }
+
   Stream<List<Wallet>> get wallets => Stream.value(
         _walletServices.map((_) => _.wallet).toList(),
       );
@@ -39,28 +54,14 @@ class AppWalletsRepository {
     return _walletServices[idx].wallet;
   }
 
-  Future<void> getWalletsFromStorage() async {
-    final (wallets, err) = await _walletsStorageRepository.readAllWallets();
-    if (err != null && err.toString() != 'No Key') {
-      return;
-    }
-
-    if (wallets == null) {
-      return;
-    }
-
-    _walletServices =
-        wallets.map((_) => createWalletService(wallet: _)).toList();
-  }
-
-  void updateWallet(Wallet wallet) {
-    final idx = _walletServices.indexWhere((_) => _.wallet.id == wallet.id);
-    if (idx == -1) {
-      _walletServices.add(createWalletService(wallet: wallet));
-    } else {
-      // _walletServices[idx].updateWallet(wallet);
-    }
-  }
+  // void updateWallet(Wallet wallet) {
+  //   final idx = _walletServices.indexWhere((_) => _.wallet.id == wallet.id);
+  //   if (idx == -1) {
+  //     _walletServices.add(createWalletService(wallet: wallet));
+  //   } else {
+  //     // _walletServices[idx].updateWallet(wallet);
+  //   }
+  // }
 
   void deleteWallet(String id) {
     _walletServices.removeWhere((_) => _.wallet.id == id);
@@ -68,6 +69,20 @@ class AppWalletsRepository {
 
   List<WalletService> walletServiceFromNetwork(BBNetwork network) =>
       _walletServices.where((_) => _.wallet.network == network).toList();
+
+  Future loadAllInNetwork(BBNetwork network) async {
+    final ws = walletServiceFromNetwork(network);
+    for (final w in ws) {
+      await w.loadWallet();
+    }
+  }
+
+  Future syncAllInNetwork(BBNetwork network) async {
+    final ws = walletServiceFromNetwork(network);
+    for (final w in ws) {
+      await w.syncWallet();
+    }
+  }
 
   bool get hasWallets => _walletServices.isNotEmpty;
   bool get hasMainWallets => _walletServices.any((_) => _.wallet.mainWallet);

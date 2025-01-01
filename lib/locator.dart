@@ -261,6 +261,7 @@ Future _setupBlocs() async {
   locator.registerSingleton<HomeBloc>(
     HomeBloc(
       // walletsStorageRepository: locator<WalletsStorageRepository>(),
+      networkRepository: locator<NetworkRepository>(),
       appWalletsRepository: locator<AppWalletsRepository>(),
     ),
   );

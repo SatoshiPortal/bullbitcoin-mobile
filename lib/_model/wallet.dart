@@ -63,6 +63,7 @@ class Wallet with _$Wallet {
     @Default(0) int subKeyIndex,
     // List<String>? labelTags,
     // List<Bip329Label>? bip329Labels,
+    Address? firstAddress,
   }) = _Wallet;
   const Wallet._();
 
