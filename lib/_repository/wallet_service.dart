@@ -14,24 +14,24 @@ import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+// import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'wallet_service.freezed.dart';
-part 'wallet_service.g.dart';
+// part 'wallet_service.freezed.dart';
+// part 'wallet_service.g.dart';
 
-@freezed
-class WalletServiceData with _$WalletServiceData {
-  const factory WalletServiceData({
-    required Wallet wallet,
-    @Default(3) int loadingAttepmtsLeft,
-    @Default(true) bool loadingWallet,
-    @Default('') String errLoadingWallet,
-  }) = _WalletServiceData;
-  const WalletServiceData._();
+// @freezed
+// class WalletServiceData with _$WalletServiceData {
+//   const factory WalletServiceData({
+//     required Wallet wallet,
+//     @Default(3) int loadingAttepmtsLeft,
+//     @Default(true) bool loadingWallet,
+//     @Default('') String errLoadingWallet,
+//   }) = _WalletServiceData;
+//   const WalletServiceData._();
 
-  factory WalletServiceData.fromJson(Map<String, dynamic> json) =>
-      _WalletServiceData.fromJson(json);
-}
+//   factory WalletServiceData.fromJson(Map<String, dynamic> json) =>
+//       _WalletServiceData.fromJson(json);
+// }
 
 class WalletService {
   WalletService({
@@ -45,6 +45,7 @@ class WalletService {
     required WalletCreate walletCreate,
     required WalletTx walletTransaction,
     required NetworkRepository networkRepository,
+    bool fromStorage = true,
   })  : _wallet = wallet,
         _walletsStorageRepository = walletsStorageRepository,
         _internalNetworkRepository = internalNetworkRepository,
@@ -54,12 +55,16 @@ class WalletService {
         _walletAddress = walletAddress,
         _walletCreate = walletCreate,
         _walletTransactionn = walletTransaction,
-        _networkRepository = networkRepository;
+        _networkRepository = networkRepository,
+        _fromStorage = fromStorage;
 
   Wallet _wallet;
   bool errLoading = false;
   int loadingAttemptsLeft = 3;
   int syncErrCount = 0;
+  bool syncing = false;
+
+  final bool _fromStorage;
 
   final WalletsStorageRepository _walletsStorageRepository;
   final InternalNetworkRepository _internalNetworkRepository;
@@ -70,7 +75,6 @@ class WalletService {
   final WalletCreate _walletCreate;
   final WalletTx _walletTransactionn;
   final NetworkRepository _networkRepository;
-  // final NetworkRepository networkRepository;
 
   Wallet get wallet => _wallet;
 
@@ -114,7 +118,9 @@ class WalletService {
       'Start $liqTxt  Wallet Sync for ${_wallet.id}',
       printToConsole: true,
     );
+    syncing = true;
     final err = await _walletSync.syncWallet(_wallet);
+    syncing = false;
     locator<Logger>().log(
       'End $liqTxt Wallet Sync for ${_wallet.id}',
       printToConsole: true,
@@ -250,6 +256,35 @@ class WalletService {
       await Future.delayed(Duration(milliseconds: delaySync));
       if (syncAfter) syncWallet();
     }
+  }
+
+  Future<Err?> getBalance() async {
+    final (w, err) = await _walletBalance.getBalance(_wallet);
+    if (err != null) return err;
+    _wallet = w!.$1;
+    updateWallet(
+      wallet,
+      saveToStorage: _fromStorage,
+      updateTypes: [UpdateWalletTypes.balance],
+    );
+    return null;
+  }
+
+  Future<Err?> listTransactions() async {
+    final (w, err) = await _walletTransactionn.getTransactions(_wallet);
+    if (err != null) return err;
+    _wallet = w!;
+    updateWallet(
+      wallet,
+      saveToStorage: _fromStorage,
+      updateTypes: [
+        UpdateWalletTypes.transactions,
+        UpdateWalletTypes.addresses,
+        UpdateWalletTypes.transactions,
+        UpdateWalletTypes.utxos,
+      ],
+    );
+    return null;
   }
 }
 

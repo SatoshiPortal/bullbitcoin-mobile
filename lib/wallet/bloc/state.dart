@@ -7,7 +7,7 @@ part 'state.freezed.dart';
 @freezed
 class WalletState with _$WalletState {
   const factory WalletState({
-    Wallet? wallet,
+    required Wallet wallet,
     // bdk.Wallet? bdkWallet,
     // List<Transaction>? txs,
     // Balance? balance,
@@ -24,10 +24,10 @@ class WalletState with _$WalletState {
     @Default('') String errSyncingAddresses,
     @Default(false) bool savingName,
     @Default('') String errSavingName,
-    @Default(0) int syncErrCount,
+    // @Default(0) int syncErrCount,
     // Address? newAddress,
     Address? firstAddress,
-    @Default(3) int loadingAttepmtsLeft,
+    // @Default(3) int loadingAttepmtsLeft,
     // required WalletCreate walletCreate,
   }) = _WalletState;
   const WalletState._();

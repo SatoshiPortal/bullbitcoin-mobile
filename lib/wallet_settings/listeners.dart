@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';

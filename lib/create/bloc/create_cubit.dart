@@ -4,10 +4,10 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateWalletCubit extends Cubit<CreateWalletState> {
@@ -15,7 +15,8 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     required WalletSensitiveCreate walletSensCreate,
     required WalletsStorageRepository walletsStorageRepository,
     required WalletSensitiveStorageRepository walletSensRepository,
-    required NetworkCubit networkCubit,
+    // required NetworkCubit networkCubit,
+    required NetworkRepository networkRepository,
     required WalletCreate walletCreate,
     required BDKSensitiveCreate bdkSensitiveCreate,
     required LWKSensitiveCreate lwkSensitiveCreate,
@@ -24,9 +25,10 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   })  : _lwkSensitiveCreate = lwkSensitiveCreate,
         _bdkSensitiveCreate = bdkSensitiveCreate,
         _walletCreate = walletCreate,
-        _networkCubit = networkCubit,
+        // _networkCubit = networkCubit,
         _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,
+        _networkRepository = networkRepository,
         _walletSensCreate = walletSensCreate,
         super(
           CreateWalletState(mainWallet: mainWallet),
@@ -37,10 +39,11 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
   final WalletSensitiveCreate _walletSensCreate;
   final WalletsStorageRepository _walletsStorageRepository;
   final WalletSensitiveStorageRepository _walletSensRepository;
-  final NetworkCubit _networkCubit;
+  // final NetworkCubit _networkCubit;
   final WalletCreate _walletCreate;
   final BDKSensitiveCreate _bdkSensitiveCreate;
   final LWKSensitiveCreate _lwkSensitiveCreate;
+  final NetworkRepository _networkRepository;
 
   Future<void> createMne({bool fromHome = false}) async {
     emit(state.copyWith(creatingNmemonic: true));
@@ -123,8 +126,8 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
       }
     }
 
-    final network =
-        _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final network = _networkRepository.getBBNetwork;
+    // _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
     final mnemonic = state.mnemonic!.join(' ');
     final (seed, sErr) =
         await _walletSensCreate.mnemonicSeed(mnemonic, network);

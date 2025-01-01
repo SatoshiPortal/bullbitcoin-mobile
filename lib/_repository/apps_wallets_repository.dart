@@ -19,6 +19,10 @@ class AppWalletsRepository {
         _walletServices.firstWhere((_) => _.wallet.id == id).wallet,
       );
 
+  Stream<WalletService> walletService(String id) => Stream.value(
+        _walletServices.firstWhere((_) => _.wallet.id == id),
+      );
+
   WalletService? getWalletServiceById(String id) {
     final idx = _walletServices.indexWhere((_) => _.wallet.id == id);
     if (idx == -1) return null;

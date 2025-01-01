@@ -7,6 +7,7 @@ import 'package:bb_mobile/_pkg/wallet/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_repository/apps_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
@@ -38,6 +39,7 @@ class HomeWalletsSetupListener extends StatelessWidget {
           walletsRepository: locator<InternalWalletsRepository>(),
           walletTransactionn: locator<WalletTx>(),
           walletCreatee: locator<WalletCreate>(),
+          appWalletsRepository: locator<AppWalletsRepository>(),
           wallet: w,
         ),
     ];
@@ -95,7 +97,8 @@ class WalletBlocListeners extends StatelessWidget {
         !mainWalletBloc.state.wallet!.watchOnly() &&
         mainWalletBloc.state.wallet!.isSecure()) {
       print(
-          'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.state.wallet!.id}');
+        'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.state.wallet!.id}',
+      );
       walletChild = PayjoinLifecycleManager(
         wallet: mainWalletBloc.state.wallet!,
         payjoinManager: locator<PayjoinManager>(),

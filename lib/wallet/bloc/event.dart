@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_repository/wallet_service.dart';
 
 class WalletEvent {}
 
@@ -6,6 +7,12 @@ class LoadWallet extends WalletEvent {
   LoadWallet(this.saveDir);
 
   final String saveDir;
+}
+
+class WalletSubscribe extends WalletEvent {
+  WalletSubscribe(this.walletId);
+
+  final String walletId;
 }
 
 class SyncWallet extends WalletEvent {
@@ -43,12 +50,12 @@ class GetFirstAddress extends WalletEvent {}
 
 class GetNewAddress extends WalletEvent {}
 
-enum UpdateWalletTypes {
-  load,
-  balance,
-  transactions,
-  swaps,
-  addresses,
-  settings,
-  utxos
-}
+// enum UpdateWalletTypess {
+//   load,
+//   balance,
+//   transactions,
+//   swaps,
+//   addresses,
+//   settings,
+//   utxos
+// }
