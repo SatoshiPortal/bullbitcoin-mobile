@@ -91,7 +91,7 @@ packages:
     description:
       path: "bindings/dart-bip85"
       ref: master
-      resolved-ref: beee977ad2608987ceb350ef3bc3cc05c9e36455
+      resolved-ref: "2321b17f3e1c74f15bdb95638bb8c65bbbe2a2af"
       url: "https://github.com/ethicnology/rust-bip85.git"
     source: git
     version: "1.0.2"
@@ -1678,10 +1678,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-<<<<<<< HEAD
   dart: ">=3.6.0 <4.0.0"
   flutter: ">=3.27.0"
-=======
-  dart: ">=3.5.4 <4.0.0"
-  flutter: ">=3.24.0"
->>>>>>> 254ad28a (chore: update lock files)
