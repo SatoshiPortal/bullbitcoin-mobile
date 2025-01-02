@@ -68,7 +68,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
         BlocProvider.value(value: locator<WatchTxsBloc>()),
         // BlocProvider.value(value: TestCub()),
         BlocProvider.value(value: locator<NavName>()),
-        BlocProvider.value(value: AppWalletBlocs()),
+        BlocProvider.value(value: locator<AppWalletBlocs>()),
       ],
       child: MultiRepositoryProvider(
         providers: [

@@ -66,7 +66,7 @@ class _HomeWalletsSetupListenerState extends State<HomeWalletsSetupListener> {
         if (state.wallets.isEmpty) return;
 
         context.read<AppWalletBlocs>().updateWalletBlocs([
-          for (final w in state.wallets) createWalletBloc(w),
+          for (final w in state.wallets) createOrRetreiveWalletBloc(w),
         ]); // final walletBlocs = createWalletBlocs(state.tempwallets!);
         // context.read<HomeBloc>().updateWalletBlocs(
         //       createWalletBlocs(state.tempwallets!),

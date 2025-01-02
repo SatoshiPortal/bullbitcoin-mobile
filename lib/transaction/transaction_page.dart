@@ -60,7 +60,7 @@ class _TxPageState extends State<TxPage> {
       return;
     }
 
-    walletBloc = createWalletBloc(wallet);
+    walletBloc = createOrRetreiveWalletBloc(wallet);
 
     networkFees = NetworkFeesCubit(
       hiveStorage: locator<HiveStorage>(),
@@ -86,7 +86,6 @@ class _TxPageState extends State<TxPage> {
 
   @override
   void dispose() {
-    walletBloc.close();
     super.dispose();
   }
 
@@ -95,7 +94,7 @@ class _TxPageState extends State<TxPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: txCubit),
-        BlocProvider(create: (BuildContext context) => walletBloc),
+        BlocProvider.value(value: walletBloc),
         BlocProvider.value(value: networkFees),
         BlocProvider.value(value: locator<WatchTxsBloc>()),
       ],

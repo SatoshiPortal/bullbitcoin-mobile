@@ -32,7 +32,7 @@ class _TestBackupPageState extends State<TestBackupPage> {
   late WalletBloc walletBloc;
   @override
   void initState() {
-    walletBloc = createWalletBloc(widget.wallet);
+    walletBloc = createOrRetreiveWalletBloc(widget.wallet);
     walletSettings = createWalletSettingsCubit(widget.wallet);
 
     walletSettings.loadBackupClicked();
@@ -44,7 +44,7 @@ class _TestBackupPageState extends State<TestBackupPage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (BuildContext context) => walletBloc),
+        BlocProvider.value(value: walletBloc),
         BlocProvider(create: (BuildContext context) => walletSettings),
       ],
       child: TestBackupListener(

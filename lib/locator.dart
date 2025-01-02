@@ -45,6 +45,7 @@ import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
@@ -258,6 +259,7 @@ Future _setupWalletServices() async {
 }
 
 Future _setupBlocs() async {
+  locator.registerSingleton<AppWalletBlocs>(AppWalletBlocs());
   locator.registerSingleton<HomeBloc>(
     HomeBloc(
       // walletsStorageRepository: locator<WalletsStorageRepository>(),

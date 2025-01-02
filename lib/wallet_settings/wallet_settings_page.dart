@@ -55,8 +55,8 @@ class WalletSettingsPage extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (BuildContext context) => createWalletBloc(wallet),
+        BlocProvider.value(
+          value: createOrRetreiveWalletBloc(wallet),
         ),
         BlocProvider(create: (BuildContext context) => walletSettings),
       ],

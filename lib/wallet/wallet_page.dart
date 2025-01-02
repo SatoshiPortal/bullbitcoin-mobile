@@ -28,7 +28,7 @@ class _WalletPageState extends State<WalletPage> {
 
   @override
   void initState() {
-    walletBloc = createWalletBloc(widget.wallet);
+    walletBloc = createOrRetreiveWalletBloc(widget.wallet);
     super.initState();
   }
 
@@ -40,8 +40,8 @@ class _WalletPageState extends State<WalletPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (BuildContext context) => walletBloc,
+    return BlocProvider.value(
+      value: walletBloc,
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,

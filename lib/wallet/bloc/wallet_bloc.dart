@@ -5,6 +5,7 @@ import 'package:bb_mobile/_pkg/wallet/sync.dart';
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
+import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
@@ -73,9 +74,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }
 }
 
-WalletBloc createWalletBloc(Wallet wallet) {
+WalletBloc createOrRetreiveWalletBloc(Wallet wallet) {
+  final existIdx = locator<AppWalletBlocs>()
+      .state
+      .indexWhere((_) => _.state.wallet.id == wallet.id);
+
+  if (existIdx != -1) return locator<AppWalletBlocs>().state[existIdx];
+
   _blocCount += 1;
-  final trace = StackTrace.current;
   print('blocCount: $_blocCount ');
   return WalletBloc(
     walletSync: locator<WalletSync>(),
