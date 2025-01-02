@@ -9,6 +9,7 @@ import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'network_repository.freezed.dart';
 part 'network_repository.g.dart';
@@ -40,21 +41,28 @@ class NetworkRepository {
   })  : _walletNetwork = walletNetwork,
         _hiveStorage = hiveStorage;
 
-  var _data = const NetworkRepoData();
+  final _data =
+      BehaviorSubject<NetworkRepoData>.seeded(const NetworkRepoData());
 
-  Stream<NetworkRepoData> get dataStream => Stream.value(_data);
-  NetworkRepoData get data => _data;
+  Stream<NetworkRepoData> get dataStream => _data.asBroadcastStream();
+  NetworkRepoData get data => _data.value;
 
   final WalletNetwork _walletNetwork;
   final HiveStorage _hiveStorage;
+
+  void dispose() {
+    _data.close();
+  }
 
   Future<Err?> init() async {
     final (result, err) =
         await _hiveStorage.getValue(StorageKeys.networkReposity);
     if (err != null) return err;
 
-    _data = NetworkRepoData.fromJson(
-      jsonDecode(result!) as Map<String, dynamic>,
+    _data.add(
+      NetworkRepoData.fromJson(
+        jsonDecode(result!) as Map<String, dynamic>,
+      ),
     );
 
     return null;
@@ -63,17 +71,12 @@ class NetworkRepository {
   Future save() async {
     await _hiveStorage.saveValue(
       key: StorageKeys.networkReposity,
-      value: jsonEncode(_data.toJson()),
+      value: jsonEncode(_data.value.toJson()),
     );
   }
 
-  // Future toggleTestnet({required bool testnet}) async {
-  //   _data = _data.copyWith(testnet: testnet);
-  //   // this.testnet = testnet;
-  // }
-
   Future<Err?> setupBlockchain({bool? isLiquid, bool? isTestnetLocal}) async {
-    final isTestnet = isTestnetLocal ?? _data.testnet;
+    final isTestnet = isTestnetLocal ?? _data.value.testnet;
 
     if (isLiquid == null || !isLiquid) {
       final selectedNetwork = getNetwork;
@@ -107,18 +110,18 @@ class NetworkRepository {
   }
 
   Future loadNetworks() async {
-    if (_data.networks.isNotEmpty) {
-      final selectedNetwork =
-          _data.networks.firstWhere((_) => _.type == _data.selectedNetwork);
+    if (_data.value.networks.isNotEmpty) {
+      final selectedNetwork = _data.value.networks
+          .firstWhere((_) => _.type == _data.value.selectedNetwork);
 
-      _data = _data.copyWith(
-        tempNetworkDetails: selectedNetwork,
-        tempNetwork: selectedNetwork.type,
-        selectedNetwork: selectedNetwork.type,
+      _data.add(
+        _data.value.copyWith(
+          tempNetworkDetails: selectedNetwork,
+          tempNetwork: selectedNetwork.type,
+          selectedNetwork: selectedNetwork.type,
+        ),
       );
 
-      // final err = await setupBlockchain(isLiquid: false);
-      // if (err != null) return err;
       await setupBlockchain(isLiquid: false);
     } else {
       final newNetworks = [
@@ -132,44 +135,37 @@ class NetworkRepository {
 
       final selectedNetwork = newNetworks[2];
 
-      _data = _data.copyWith(
-        networks: newNetworks,
-        tempNetworkDetails: selectedNetwork,
-        tempNetwork: selectedNetwork.type,
-        selectedNetwork: selectedNetwork.type,
+      _data.add(
+        _data.value.copyWith(
+          networks: newNetworks,
+          tempNetworkDetails: selectedNetwork,
+          tempNetwork: selectedNetwork.type,
+          selectedNetwork: selectedNetwork.type,
+        ),
       );
 
       await setupBlockchain(isLiquid: false);
-
-      // final err = await setupBlockchain(isLiquid: false);
-      // if (err != null) return err;
     }
 
-    if (_data.liquidNetworks.isNotEmpty) {
-      var selectedNetwork = _data.liquidNetworks
-          .firstWhere((_) => _.type == _data.selectedLiquidNetwork);
-      final updatedLiqNetworks = _data.liquidNetworks.toList();
-      if (_data.liquidNetworks.length == 2) {
+    if (_data.value.liquidNetworks.isNotEmpty) {
+      var selectedNetwork = _data.value.liquidNetworks
+          .firstWhere((_) => _.type == _data.value.selectedLiquidNetwork);
+      final updatedLiqNetworks = _data.value.liquidNetworks.toList();
+      if (_data.value.liquidNetworks.length == 2) {
         updatedLiqNetworks.insert(1, const LiquidElectrumNetwork.bullbitcoin());
         selectedNetwork = updatedLiqNetworks[1];
       }
 
-      _data = _data.copyWith(
-        tempLiquidNetworkDetails: selectedNetwork,
-        tempLiquidNetwork: selectedNetwork.type,
-        selectedLiquidNetwork: selectedNetwork.type,
-        liquidNetworks: updatedLiqNetworks,
+      _data.add(
+        _data.value.copyWith(
+          tempLiquidNetworkDetails: selectedNetwork,
+          tempLiquidNetwork: selectedNetwork.type,
+          selectedLiquidNetwork: selectedNetwork.type,
+          liquidNetworks: updatedLiqNetworks,
+        ),
       );
 
       await setupBlockchain(isLiquid: true);
-
-      // tempLiquidNetworkDetails = net;
-      // tempLiquidNetwork = net.type;
-      // selectedLiquidNetwork = net.type;
-      // liquidNetworks = updatedLiqNetworks;
-
-      // final err = await setupBlockchain(isLiquid: true);
-      // if (err != null) return err;
     } else {
       final newLiqNetworks = [
         const LiquidElectrumNetwork.blockstream(),
@@ -181,53 +177,52 @@ class NetworkRepository {
       ];
       final selectedLiqNetwork = newLiqNetworks[1];
 
-      _data = _data.copyWith(
-        liquidNetworks: newLiqNetworks,
-        tempLiquidNetworkDetails: selectedLiqNetwork,
-        tempLiquidNetwork: selectedLiqNetwork.type,
-        selectedLiquidNetwork: selectedLiqNetwork.type,
+      _data.add(
+        _data.value.copyWith(
+          liquidNetworks: newLiqNetworks,
+          tempLiquidNetworkDetails: selectedLiqNetwork,
+          tempLiquidNetwork: selectedLiqNetwork.type,
+          selectedLiquidNetwork: selectedLiqNetwork.type,
+        ),
       );
 
-      // liquidNetworks = newLiqNetworks;
-      // tempLiquidNetworkDetails = selectedLiqNetwork;
-      // tempLiquidNetwork = selectedLiqNetwork.type;
-      // selectedLiquidNetwork = selectedLiqNetwork.type;
       await setupBlockchain(isLiquid: true);
     }
   }
 
-  bool get testnet => _data.testnet;
+  bool get testnet => _data.value.testnet;
 
   ElectrumNetwork? get getNetwork {
-    if (_data.networks.isEmpty) return null;
-    return _data.networks.firstWhere((_) => _.type == _data.selectedNetwork);
+    if (_data.value.networks.isEmpty) return null;
+    return _data.value.networks
+        .firstWhere((_) => _.type == _data.value.selectedNetwork);
   }
 
   LiquidElectrumNetwork? get getLiquidNetwork {
-    if (_data.liquidNetworks.isEmpty) return null;
-    return _data.liquidNetworks
-        .firstWhere((_) => _.type == _data.selectedLiquidNetwork);
+    if (_data.value.liquidNetworks.isEmpty) return null;
+    return _data.value.liquidNetworks
+        .firstWhere((_) => _.type == _data.value.selectedLiquidNetwork);
   }
 
   BBNetwork get getBBNetwork =>
-      _data.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+      _data.value.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
   bdk.Network get getBdkNetwork =>
-      _data.testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+      _data.value.testnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
   String get getLiquidNetworkUrl {
     final network = getLiquidNetwork;
     if (network == null) return '';
-    return network.getNetworkUrl(_data.testnet, split: false);
+    return network.getNetworkUrl(_data.value.testnet, split: false);
   }
 
   String get getNetworkUrl {
     final network = getNetwork;
     if (network == null) return '';
-    return network.getNetworkUrl(_data.testnet);
+    return network.getNetworkUrl(_data.value.testnet);
   }
 
   double get pickLiquidFees {
-    switch (_data.selectedLiquidNetwork) {
+    switch (_data.value.selectedLiquidNetwork) {
       case LiquidElectrumTypes.custom:
       case LiquidElectrumTypes.blockstream:
         return 0.1;
@@ -247,18 +242,21 @@ class NetworkRepository {
     ElectrumTypes? selectedNetwork,
     LiquidElectrumTypes? selectedLiquidNetwork,
   }) {
-    _data = _data.copyWith(
-      testnet: testnet ?? _data.testnet,
-      networks: networks ?? _data.networks,
-      liquidNetworks: liquidNetworks ?? _data.liquidNetworks,
-      tempNetworkDetails: tempNetworkDetails ?? _data.tempNetworkDetails,
-      tempLiquidNetworkDetails:
-          tempLiquidNetworkDetails ?? _data.tempLiquidNetworkDetails,
-      tempNetwork: tempNetwork ?? _data.tempNetwork,
-      tempLiquidNetwork: tempLiquidNetwork ?? _data.tempLiquidNetwork,
-      selectedNetwork: selectedNetwork ?? _data.selectedNetwork,
-      selectedLiquidNetwork:
-          selectedLiquidNetwork ?? _data.selectedLiquidNetwork,
+    _data.add(
+      _data.value.copyWith(
+        testnet: testnet ?? _data.value.testnet,
+        networks: networks ?? _data.value.networks,
+        liquidNetworks: liquidNetworks ?? _data.value.liquidNetworks,
+        tempNetworkDetails:
+            tempNetworkDetails ?? _data.value.tempNetworkDetails,
+        tempLiquidNetworkDetails:
+            tempLiquidNetworkDetails ?? _data.value.tempLiquidNetworkDetails,
+        tempNetwork: tempNetwork ?? _data.value.tempNetwork,
+        tempLiquidNetwork: tempLiquidNetwork ?? _data.value.tempLiquidNetwork,
+        selectedNetwork: selectedNetwork ?? _data.value.selectedNetwork,
+        selectedLiquidNetwork:
+            selectedLiquidNetwork ?? _data.value.selectedLiquidNetwork,
+      ),
     );
   }
 
@@ -266,9 +264,12 @@ class NetworkRepository {
     bool tempNetwork = false,
     bool tempLiquidNetwork = false,
   }) {
-    _data = _data.copyWith(
-      tempNetwork: tempNetwork ? null : _data.tempNetwork,
-      tempLiquidNetwork: tempLiquidNetwork ? null : _data.tempLiquidNetwork,
+    _data.add(
+      _data.value.copyWith(
+        tempNetwork: tempNetwork ? null : _data.value.tempNetwork,
+        tempLiquidNetwork:
+            tempLiquidNetwork ? null : _data.value.tempLiquidNetwork,
+      ),
     );
   }
 }

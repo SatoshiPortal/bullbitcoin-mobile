@@ -391,7 +391,7 @@ class CardItem extends StatelessWidget {
           ),
           child: InkWell(
             onTap: () {
-              final walletBloc = context.read<Wallet>();
+              final walletBloc = context.read<WalletBloc>().state.wallet;
               context.push('/wallet', extra: walletBloc);
             },
             child: Padding(

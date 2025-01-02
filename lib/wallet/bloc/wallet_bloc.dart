@@ -24,21 +24,24 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<SyncWallet>(_syncWallet, transformer: droppable());
     on<RemoveInternalWallet>(_removeInternalWallet);
     on<KillSync>(_killSync);
-
     on<WalletSubscribe>((event, emit) async {
       await emit.forEach(
         _appWalletsRepository.walletService(event.walletId),
-        onData: (WalletService w) => state.copyWith(
-          wallet: w.wallet,
-          syncing: w.syncing,
-        ),
+        onData: (WalletService w) {
+          print('wallet updated: ${w.wallet.id}');
+          return state.copyWith(
+            wallet: w.wallet,
+            syncing: w.syncing,
+          );
+        },
       );
     });
+
+    add(WalletSubscribe(wallet.id));
   }
 
   final InternalWalletsRepository _walletsRepository;
   final WalletSync _walletSync;
-
   final AppWalletsRepository _appWalletsRepository;
 
   FutureOr<void> _removeInternalWallet(
@@ -60,9 +63,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         .getWalletServiceById(state.wallet.id)
         ?.syncWallet();
   }
+
+  @override
+  Future<void> close() {
+    _blocCount -= 1;
+    print('blocCount close: $_blocCount');
+    return super.close();
+  }
 }
 
 WalletBloc createWalletBloc(Wallet wallet) {
+  _blocCount += 1;
+  // final trace = StackTrace.current;
+  print('blocCount: $_blocCount');
   return WalletBloc(
     walletSync: locator<WalletSync>(),
     walletsRepository: locator<InternalWalletsRepository>(),
@@ -70,3 +83,5 @@ WalletBloc createWalletBloc(Wallet wallet) {
     wallet: wallet,
   );
 }
+
+int _blocCount = 0;

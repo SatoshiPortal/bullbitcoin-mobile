@@ -14,8 +14,6 @@ import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
-import 'package:bb_mobile/wallet/bloc/state.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -44,26 +42,27 @@ class _Listener extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallets = context.select(
-      (HomeBloc _) => _.state.wallets ?? [],
-    );
+    return child;
+    // final wallets = context.select(
+    //   (HomeBloc _) => _.state.wallets ?? [],
+    // );
 
-    if (wallets.isEmpty) return child;
-    return MultiBlocListener(
-      listeners: [
-        for (final wallet in wallets)
-          BlocListener<WalletBloc, WalletState>(
-            bloc: createWalletBloc(wallet),
-            listenWhen: (previous, current) =>
-                previous.wallet.transactions != current.wallet.transactions ||
-                previous.wallet.swaps != current.wallet.swaps,
-            listener: (context, state) {
-              onUpdated();
-            },
-          ),
-      ],
-      child: child,
-    );
+    // if (wallets.isEmpty) return child;
+    // return MultiBlocListener(
+    //   listeners: [
+    //     for (final wallet in wallets)
+    //       BlocListener<WalletBloc, WalletState>(
+    //         bloc: createWalletBloc(wallet),
+    //         listenWhen: (previous, current) =>
+    //             previous.wallet.transactions != current.wallet.transactions ||
+    //             previous.wallet.swaps != current.wallet.swaps,
+    //         listener: (context, state) {
+    //           onUpdated();
+    //         },
+    //       ),
+    //   ],
+    //   child: child,
+    // );
   }
 }
 

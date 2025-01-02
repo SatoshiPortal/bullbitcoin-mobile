@@ -70,7 +70,7 @@ class _Screen extends StatelessWidget {
           ),
           BottomCenter(
             child: WalletActionButtons(
-              wallet: context.read<Wallet>(),
+              wallet: context.read<WalletBloc>().state.wallet,
             ),
           ),
         ],
@@ -132,7 +132,7 @@ class ActionsRow extends StatelessWidget {
                   ? context.push('/information')
                   : context.push(
                       '/wallet/details',
-                      extra: context.read<Wallet>(),
+                      extra: context.read<WalletBloc>().state.wallet,
                     );
             },
           ),
@@ -140,8 +140,8 @@ class ActionsRow extends StatelessWidget {
             label: 'Settings',
             isBlue: false,
             onPressed: () {
-              final walletBloc = context.read<Wallet>();
-              context.push('/wallet-settings', extra: walletBloc);
+              final wallet = context.read<WalletBloc>().state.wallet;
+              context.push('/wallet-settings', extra: wallet);
             },
           ),
         ],

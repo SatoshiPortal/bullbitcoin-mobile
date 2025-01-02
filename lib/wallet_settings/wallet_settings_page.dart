@@ -412,8 +412,8 @@ class AccountingButton extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Accounting',
       onPressed: () {
-        final walletBloc = context.read<Wallet>();
-        context.push('/wallet-settings/accounting', extra: walletBloc);
+        final wallet = context.read<WalletBloc>().state.wallet;
+        context.push('/wallet-settings/accounting', extra: wallet);
       },
     );
   }
@@ -427,8 +427,8 @@ class WalletDetailsButton extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'Wallet Details',
       onPressed: () {
-        final walletBloc = context.read<Wallet>();
-        context.push('/wallet/details', extra: walletBloc);
+        final wallet = context.read<WalletBloc>().state.wallet;
+        context.push('/wallet/details', extra: wallet);
       },
     );
   }
@@ -489,10 +489,11 @@ class BackupButton extends StatelessWidget {
       onPressed: () async {
         context.push(
           '/wallet-settings/backup',
-          extra: (
-            context.read<Wallet>(),
-            context.read<WalletSettingsCubit>(),
-          ),
+          extra: context.read<WalletBloc>().state.wallet,
+          //  (
+          //   context.read<Wallet>(),
+          //   context.read<WalletSettingsCubit>(),
+          // ),
         );
         // await BackupScreen.openPopup(context);
       },

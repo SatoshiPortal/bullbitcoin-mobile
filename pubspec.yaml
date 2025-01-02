@@ -90,6 +90,7 @@ dependencies:
   convert: ^3.1.2
   crypto: ^3.0.6
   permission_handler: ^11.3.1
+  rxdart: ^0.28.0
 
 dev_dependencies:
   build_runner: ^2.4.9

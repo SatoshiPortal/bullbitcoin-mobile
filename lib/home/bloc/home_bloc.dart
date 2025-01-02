@@ -23,7 +23,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       (event, emit) async {
         await emit.forEach(
           _appWalletsRepository.wallets,
-          onData: (List<Wallet> wallets) => state.copyWith(wallets: wallets),
+          onData: (List<Wallet> wallets) {
+            print('home wallets updated: $wallets');
+            return state.copyWith(wallets: wallets);
+          },
         );
       },
     );
