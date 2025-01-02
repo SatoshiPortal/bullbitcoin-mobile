@@ -11,7 +11,11 @@ class UpdateErrDeepLink extends HomeEvent {
   final String err;
 }
 
-class UpdatedNotifier extends HomeEvent {}
+class UpdatedNotifier extends HomeEvent {
+  bool fromStart;
+
+  UpdatedNotifier({this.fromStart = false});
+}
 
 class LoadWalletsForNetwork extends HomeEvent {
   LoadWalletsForNetwork(this.network);

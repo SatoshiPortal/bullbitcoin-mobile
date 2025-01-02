@@ -1,16 +1,20 @@
+// ignore_for_file: avoid_print
+
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/payjoin/listeners.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
+import 'package:bb_mobile/home/bloc/home_state.dart';
+import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomeWalletsSetupListener extends StatelessWidget {
+class HomeWalletsSetupListener extends StatefulWidget {
   const HomeWalletsSetupListener({super.key, required this.child});
 
   // List<WalletBloc> createWalletBlocs(List<Wallet> tempwallets) {
@@ -38,21 +42,38 @@ class HomeWalletsSetupListener extends StatelessWidget {
   final Widget child;
 
   @override
+  State<HomeWalletsSetupListener> createState() =>
+      _HomeWalletsSetupListenerState();
+}
+
+class _HomeWalletsSetupListenerState extends State<HomeWalletsSetupListener> {
+  @override
+  void initState() {
+    context.read<HomeBloc>().add(UpdatedNotifier(fromStart: true));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return WalletBlocListeners(child: child);
-    // return BlocListener<HomeBloc, HomeState>(
-    //   listenWhen: (previous, current) =>
-    //       previous.wallets != current.wallets,
-    //   listener: (context, state) {
-    //     if (state.wallets == null || state.wallets!.isEmpty) return;
-    //     // final walletBlocs = createWalletBlocs(state.tempwallets!);
-    //     context.read<HomeBloc>().updateWalletBlocs(
-    //           createWalletBlocs(state.tempwallets!),
-    //         );
-    //     context.read<HomeBloc>().clearWallets();
-    //   },
-    //   child: WalletBlocListeners(child: child),
-    // );
+    // return WalletBlocListeners(child: child);
+    print('home wallets setup listener');
+    return BlocListener<HomeBloc, HomeState>(
+      listenWhen: (previous, current) =>
+          previous.updated != current.updated && current.updated,
+      listener: (context, state) {
+        print('home wallets listener: ${state.wallets.length}');
+        if (state.wallets.isEmpty) return;
+
+        context.read<AppWalletBlocs>().updateWalletBlocs([
+          for (final w in state.wallets) createWalletBloc(w),
+        ]); // final walletBlocs = createWalletBlocs(state.tempwallets!);
+        // context.read<HomeBloc>().updateWalletBlocs(
+        //       createWalletBlocs(state.tempwallets!),
+        //     );
+        // context.read<HomeBloc>().clearWallets();
+      },
+      child: WalletBlocListeners(child: widget.child),
+    );
   }
 }
 
@@ -64,12 +85,12 @@ class WalletBlocListeners extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wallets = context.select((HomeBloc cubit) => cubit.state.wallets);
-    if (wallets == null || wallets.isEmpty) return child;
+    if (wallets.isEmpty) return child;
     // .read<HomeBloc>().state.walletBlocs ?? [];
 
     // print each wallet id
     for (final wallet in wallets) {
-      print('wallet id: ${wallet.id}');
+      // print('wallet id: ${wallet.id}');
     }
     final mainWalletBloc = wallets.firstWhere(
       (bloc) =>
@@ -85,9 +106,9 @@ class WalletBlocListeners extends StatelessWidget {
     if (mainWalletBloc.mainWallet == true &&
         !mainWalletBloc.watchOnly() &&
         mainWalletBloc.isSecure()) {
-      print(
-        'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.id}',
-      );
+      // print(
+      //   'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.id}',
+      // );
       walletChild = PayjoinLifecycleManager(
         wallet: mainWalletBloc,
         payjoinManager: locator<PayjoinManager>(),
@@ -95,20 +116,21 @@ class WalletBlocListeners extends StatelessWidget {
       );
     }
 
-    return MultiBlocListener(
-      listeners: [
-        for (final w in wallets)
-          BlocListener<WalletBloc, WalletState>(
-            bloc: createWalletBloc(w),
-            listenWhen: (previous, current) =>
-                previous.wallet != current.wallet,
-            listener: (context, state) {
-              // context.read<HomeBloc>().updateWalletBloc(w);
-            },
-          ),
-      ],
-      child: walletChild,
-    );
+    return walletChild;
+    // return MultiBlocListener(
+    //   listeners: [
+    //     for (final w in wallets)
+    //       BlocListener<WalletBloc, WalletState>(
+    //         bloc: createWalletBloc(w),
+    //         listenWhen: (previous, current) =>
+    //             previous.wallet != current.wallet,
+    //         listener: (context, state) {
+    //           // context.read<HomeBloc>().updateWalletBloc(w);
+    //         },
+    //       ),
+    //   ],
+    //   child: walletChild,
+    // );
   }
 }
 
@@ -141,17 +163,15 @@ class HomeWalletLoadingListeners extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final network = context.select((NetworkBloc x) => x.state.getBBNetwork());
-    final wallets =
-        context.select((HomeBloc x) => x.state.walletsFromNetwork(network));
+    final walletBlocs = context.select((AppWalletBlocs x) => x.state);
 
-    if (wallets.isEmpty) return child;
+    if (walletBlocs.isEmpty) return child;
 
     return MultiBlocListener(
       listeners: [
-        for (final wallet in wallets)
+        for (final walletBloc in walletBlocs)
           BlocListener<WalletBloc, WalletState>(
-            bloc: createWalletBloc(wallet),
+            bloc: walletBloc,
             listenWhen: (previous, current) =>
                 previous.syncing != current.syncing,
             listener: (context, state) {
@@ -177,5 +197,11 @@ class BBlocObserver extends BlocObserver {
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     locator<Logger>().log('$error\n$stackTrace', printToConsole: true);
     super.onError(bloc, error, stackTrace);
+  }
+
+  @override
+  void onEvent(Bloc bloc, Object? event) {
+    // locator<Logger>().log('$event', printToConsole: true);
+    super.onEvent(bloc, event);
   }
 }

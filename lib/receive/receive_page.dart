@@ -381,7 +381,10 @@ class _WalletProvider extends StatelessWidget {
     final wallet = context.select((ReceiveCubit _) => _.state.wallet);
 
     if (wallet == null) return child;
-    return BlocProvider.value(value: createWalletBloc(wallet), child: child);
+    return BlocProvider(
+      create: (BuildContext context) => createWalletBloc(wallet),
+      child: child,
+    );
   }
 }
 

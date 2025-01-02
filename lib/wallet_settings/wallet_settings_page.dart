@@ -55,8 +55,10 @@ class WalletSettingsPage extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: createWalletBloc(wallet)),
-        BlocProvider.value(value: walletSettings),
+        BlocProvider(
+          create: (BuildContext context) => createWalletBloc(wallet),
+        ),
+        BlocProvider(create: (BuildContext context) => walletSettings),
       ],
       child: WalletSettingsListeners(
         child: _Screen(

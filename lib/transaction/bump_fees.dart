@@ -195,7 +195,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
       providers: [
         BlocProvider.value(value: send),
         BlocProvider.value(value: txCubit),
-        BlocProvider.value(value: walletBloc!),
+        BlocProvider(create: (BuildContext context) => walletBloc!),
         BlocProvider.value(value: networkFees),
         BlocProvider.value(value: locator<WatchTxsBloc>()),
       ],

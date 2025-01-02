@@ -18,8 +18,8 @@ class WalletDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: createWalletBloc(wallet),
+    return BlocProvider(
+      create: (BuildContext context) => createWalletBloc(wallet),
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,

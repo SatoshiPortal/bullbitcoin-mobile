@@ -122,8 +122,8 @@ class _ScreenState extends State<_Screen> {
             ),
             const Gap(16),
             for (final walletBloc in widget.walletCubits) ...[
-              BlocProvider.value(
-                value: walletBloc,
+              BlocProvider(
+                create: (BuildContext context) => walletBloc,
                 child: const _ImportWalletTypeButton(),
               ),
               const Gap(16),

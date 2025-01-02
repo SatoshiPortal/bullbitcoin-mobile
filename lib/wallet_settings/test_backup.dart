@@ -44,8 +44,8 @@ class _TestBackupPageState extends State<TestBackupPage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: walletBloc),
-        BlocProvider.value(value: walletSettings),
+        BlocProvider(create: (BuildContext context) => walletBloc),
+        BlocProvider(create: (BuildContext context) => walletSettings),
       ],
       child: TestBackupListener(
         child: Builder(

@@ -8,6 +8,7 @@ import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/security_overlay.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_bloc.dart';
@@ -67,6 +68,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
         BlocProvider.value(value: locator<WatchTxsBloc>()),
         // BlocProvider.value(value: TestCub()),
         BlocProvider.value(value: locator<NavName>()),
+        BlocProvider.value(value: AppWalletBlocs()),
       ],
       child: MultiRepositoryProvider(
         providers: [

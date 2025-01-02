@@ -85,11 +85,17 @@ class _TxPageState extends State<TxPage> {
   }
 
   @override
+  void dispose() {
+    walletBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: txCubit),
-        BlocProvider.value(value: walletBloc),
+        BlocProvider(create: (BuildContext context) => walletBloc),
         BlocProvider.value(value: networkFees),
         BlocProvider.value(value: locator<WatchTxsBloc>()),
       ],

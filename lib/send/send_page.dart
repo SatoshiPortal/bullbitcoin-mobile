@@ -156,8 +156,8 @@ class _WalletProvider extends StatelessWidget {
         context.select((SendCubit _) => _.state.selectedWallet);
 
     if (sendWalletBloc == null) return child;
-    return BlocProvider.value(
-      value: createWalletBloc(sendWalletBloc),
+    return BlocProvider(
+      create: (BuildContext context) => createWalletBloc(sendWalletBloc),
       child: child,
     );
   }

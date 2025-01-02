@@ -37,6 +37,12 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+class AppWalletBlocs extends Cubit<List<WalletBloc>> {
+  AppWalletBlocs() : super([]);
+  void updateWalletBlocs(List<WalletBloc> _) => emit(_);
+  void clearWallets() => emit([]);
+}
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -229,9 +235,9 @@ class CardsList extends StatelessWidget {
     final _ = context.select((HomeBloc x) => x.state.updated);
 
     final network = context.select((NetworkBloc x) => x.state.getBBNetwork());
-    final walletBlocs =
+    final wallets =
         context.select((HomeBloc x) => x.state.walletsFromNetwork(network));
-    final columns = buildCardColumns(walletBlocs);
+    final columns = buildCardColumns(wallets);
 
     return PageView(
       scrollDirection: Axis.vertical,
@@ -259,6 +265,11 @@ class CardColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasWallets = context.select(
+      (AppWalletBlocs _) => _.state.isNotEmpty,
+    );
+    if (!hasWallets) return const SizedBox.shrink();
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 26,
@@ -269,17 +280,28 @@ class CardColumn extends StatelessWidget {
           Column(
             children: [
               BlocProvider.value(
-                value: createWalletBloc(walletTop),
+                value: context.read<AppWalletBlocs>().state.firstWhere(
+                      (_) => _.state.wallet.id == walletTop.id,
+                    ),
+                // create: (BuildContext context) => createWalletBloc(walletTop),
                 child: const CardItem(),
               ),
               if (walletBottom != null)
                 BlocProvider.value(
-                  value: createWalletBloc(walletBottom!),
+                  value: context.read<AppWalletBlocs>().state.firstWhere(
+                        (_) => _.state.wallet.id == walletBottom!.id,
+                      ),
+                  // create: (BuildContext context) =>
+                  // createWalletBloc(walletBottom!),
                   child: const CardItem(),
                 ),
               if (walletLast != null)
                 BlocProvider.value(
-                  value: createWalletBloc(walletLast!),
+                  value: context.read<AppWalletBlocs>().state.firstWhere(
+                        (_) => _.state.wallet.id == walletLast!.id,
+                      ),
+                  // create: (BuildContext context) =>
+                  // createWalletBloc(walletLast!),
                   child: const CardItem(),
                 )
               else if (!onlyOne)

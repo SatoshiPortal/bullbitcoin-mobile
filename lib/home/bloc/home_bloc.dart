@@ -23,9 +23,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       (event, emit) async {
         await emit.forEach(
           _appWalletsRepository.wallets,
-          onData: (List<Wallet> wallets) {
-            print('home wallets updated: $wallets');
-            return state.copyWith(wallets: wallets);
+          onData: (List<Wallet> ws) {
+            print('home wallets updated: ${ws.length}');
+            add(UpdatedNotifier());
+            return state.copyWith(wallets: ws);
           },
         );
       },
@@ -53,7 +54,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     ClearWallets event,
     Emitter<HomeState> emit,
   ) {
-    emit(state.copyWith(wallets: null));
+    emit(state.copyWith(wallets: []));
   }
 
   Future<void> _onUpdateErrDeepLink(
@@ -69,6 +70,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     UpdatedNotifier event,
     Emitter<HomeState> emit,
   ) async {
+    if (event.fromStart) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
     emit(state.copyWith(updated: true));
     await Future.delayed(const Duration(seconds: 2));
     emit(state.copyWith(updated: false));

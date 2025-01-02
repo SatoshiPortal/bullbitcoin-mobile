@@ -14,15 +14,34 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class WalletPage extends StatelessWidget {
+class WalletPage extends StatefulWidget {
   const WalletPage({super.key, required this.wallet});
 
   final Wallet wallet;
 
   @override
+  State<WalletPage> createState() => _WalletPageState();
+}
+
+class _WalletPageState extends State<WalletPage> {
+  late WalletBloc walletBloc;
+
+  @override
+  void initState() {
+    walletBloc = createWalletBloc(widget.wallet);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // walletBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: createWalletBloc(wallet),
+    return BlocProvider(
+      create: (BuildContext context) => walletBloc,
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,

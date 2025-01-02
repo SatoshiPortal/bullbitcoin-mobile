@@ -74,8 +74,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
 WalletBloc createWalletBloc(Wallet wallet) {
   _blocCount += 1;
-  // final trace = StackTrace.current;
-  print('blocCount: $_blocCount');
+  final trace = StackTrace.current;
+  print('blocCount: $_blocCount \n$trace');
   return WalletBloc(
     walletSync: locator<WalletSync>(),
     walletsRepository: locator<InternalWalletsRepository>(),
