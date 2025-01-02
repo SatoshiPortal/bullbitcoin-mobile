@@ -56,10 +56,11 @@ class _HomeWalletsSetupListenerState extends State<HomeWalletsSetupListener> {
   @override
   Widget build(BuildContext context) {
     // return WalletBlocListeners(child: child);
-    print('home wallets setup listener');
+
     return BlocListener<HomeBloc, HomeState>(
       listenWhen: (previous, current) =>
-          previous.updated != current.updated && current.updated,
+          previous.updated != current.updated && current.updated ||
+          previous.wallets != current.wallets,
       listener: (context, state) {
         print('home wallets listener: ${state.wallets.length}');
         if (state.wallets.isEmpty) return;

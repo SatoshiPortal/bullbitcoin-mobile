@@ -1,4 +1,3 @@
-// ignore_for_file: use_setters_to_change_properties
 import 'dart:async';
 
 import 'package:bb_mobile/_model/address.dart';
@@ -14,31 +13,32 @@ import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/locator.dart';
-// import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:rxdart/rxdart.dart';
 
-// part 'wallet_service.freezed.dart';
-// part 'wallet_service.g.dart';
+part 'wallet_service.freezed.dart';
+part 'wallet_service.g.dart';
 
-// @freezed
-// class WalletServiceData with _$WalletServiceData {
-//   const factory WalletServiceData({
-//     required Wallet wallet,
-//     @Default(3) int loadingAttepmtsLeft,
-//     @Default(true) bool loadingWallet,
-//     @Default('') String errLoadingWallet,
-//   }) = _WalletServiceData;
-//   const WalletServiceData._();
+@freezed
+class WalletServiceData with _$WalletServiceData {
+  const factory WalletServiceData({
+    required Wallet wallet,
+    @Default(3) int loadingAttemptsLeft,
+    @Default(false) bool errLoading,
+    @Default(0) int syncErrCount,
+    @Default(false) bool syncing,
+  }) = _WalletServiceData;
+  const WalletServiceData._();
 
-//   factory WalletServiceData.fromJson(Map<String, dynamic> json) =>
-//       _WalletServiceData.fromJson(json);
-// }
+  factory WalletServiceData.fromJson(Map<String, dynamic> json) =>
+      _WalletServiceData.fromJson(json);
+}
 
 class WalletService {
   WalletService({
     required Wallet wallet,
     required WalletsStorageRepository walletsStorageRepository,
     required InternalNetworkRepository internalNetworkRepository,
-    // required InternalWalletsRepository walletsRepository,
     required WalletSync walletSync,
     required WalletBalance walletBalance,
     required WalletAddress walletAddress,
@@ -46,29 +46,28 @@ class WalletService {
     required WalletTx walletTransaction,
     required NetworkRepository networkRepository,
     bool fromStorage = true,
-  })  : _wallet = wallet,
-        _walletsStorageRepository = walletsStorageRepository,
+  })  : _walletsStorageRepository = walletsStorageRepository,
         _internalNetworkRepository = internalNetworkRepository,
-        // _walletsRepository = walletsRepository,
         _walletSync = walletSync,
         _walletBalance = walletBalance,
         _walletAddress = walletAddress,
         _walletCreate = walletCreate,
         _walletTransactionn = walletTransaction,
         _networkRepository = networkRepository,
-        _fromStorage = fromStorage;
+        _fromStorage = fromStorage,
+        _data = BehaviorSubject<WalletServiceData>.seeded(
+          WalletServiceData(wallet: wallet),
+        );
 
-  Wallet _wallet;
-  bool errLoading = false;
-  int loadingAttemptsLeft = 3;
-  int syncErrCount = 0;
-  bool syncing = false;
+  final BehaviorSubject<WalletServiceData> _data;
+  Stream<WalletServiceData> get dataStream => _data.stream;
+  WalletServiceData get data => _data.value;
 
   final bool _fromStorage;
 
   final WalletsStorageRepository _walletsStorageRepository;
   final InternalNetworkRepository _internalNetworkRepository;
-  // final InternalWalletsRepository _walletsRepository;
+
   final WalletSync _walletSync;
   final WalletBalance _walletBalance;
   final WalletAddress _walletAddress;
@@ -76,33 +75,46 @@ class WalletService {
   final WalletTx _walletTransactionn;
   final NetworkRepository _networkRepository;
 
-  Wallet get wallet => _wallet;
+  Wallet get wallet => _data.value.wallet;
+
+  void dispose() {
+    _data.close();
+  }
 
   Future<Err?> loadWallet() async {
-    errLoading = false;
+    _data.add(_data.value.copyWith(errLoading: false));
     final (w, err) = await _walletCreate.loadPublicWallet(
-      saveDir: _wallet.getWalletStorageString(),
-      wallet: _wallet,
-      network: _wallet.network,
+      saveDir: _data.value.wallet.getWalletStorageString(),
+      wallet: _data.value.wallet,
+      network: _data.value.wallet.network,
     );
     if (err != null) {
-      errLoading = true;
+      _data.add(_data.value.copyWith(errLoading: true));
       return err;
     }
 
-    _wallet = w!;
-    loadingAttemptsLeft = 3;
+    _data.add(
+      _data.value.copyWith(
+        wallet: w!,
+        loadingAttemptsLeft: 3,
+      ),
+    );
+
     return null;
   }
 
   Future<Err?> syncWallet() async {
-    if (errLoading && loadingAttemptsLeft > 0) {
-      loadingAttemptsLeft -= 1;
+    if (_data.value.errLoading && _data.value.loadingAttemptsLeft > 0) {
+      _data.add(
+        _data.value.copyWith(
+          loadingAttemptsLeft: _data.value.loadingAttemptsLeft - 1,
+        ),
+      );
       final errLoad = await loadWallet();
       if (errLoad != null) return errLoad;
     }
 
-    final isLiq = _wallet.isLiquid();
+    final isLiq = _data.value.wallet.isLiquid();
 
     final errNetwork = _internalNetworkRepository.checkNetworks2(isLiq);
     if (errNetwork != null) {
@@ -115,31 +127,36 @@ class WalletService {
 
     final liqTxt = isLiq ? 'Instant' : 'Secure';
     locator<Logger>().log(
-      'Start $liqTxt  Wallet Sync for ${_wallet.id}',
+      'Start $liqTxt  Wallet Sync for ${_data.value.wallet.id}',
       printToConsole: true,
     );
-    syncing = true;
-    final err = await _walletSync.syncWallet(_wallet);
-    syncing = false;
+
+    _data.add(_data.value.copyWith(syncing: true));
+    final err = await _walletSync.syncWallet(_data.value.wallet);
+
+    _data.add(_data.value.copyWith(syncing: false));
     locator<Logger>().log(
-      'End $liqTxt Wallet Sync for ${_wallet.id}',
+      'End $liqTxt Wallet Sync for ${_data.value.wallet.id}',
       printToConsole: true,
     );
     if (err != null) {
-      if (err.message.toLowerCase().contains('panic') && syncErrCount < 5) {
+      if (err.message.toLowerCase().contains('panic') &&
+          _data.value.syncErrCount < 5) {
         await _networkRepository.loadNetworks();
         final errBC2 =
             await _networkRepository.setupBlockchain(isLiquid: isLiq);
-        syncErrCount += 1;
+
+        _data.add(
+            _data.value.copyWith(syncErrCount: _data.value.syncErrCount + 1));
         if (errBC2 != null) return errBC2;
-        final err2 = await _walletSync.syncWallet(_wallet);
+        final err2 = await _walletSync.syncWallet(_data.value.wallet);
         if (err2 != null) return err2;
       }
 
       locator<Logger>().log(err.toString());
     }
 
-    syncErrCount = 0;
+    _data.add(_data.value.copyWith(syncErrCount: 0));
 
     await Future.wait([
       if (!_fromStorage) getFirstAddress(),
@@ -158,21 +175,22 @@ class WalletService {
     int delaySync = 0,
   }) async {
     if (!saveToStorage) {
-      _wallet = wallet;
+      _data.add(_data.value.copyWith(wallet: wallet));
       return;
     }
 
     if (updateTypes.contains(UpdateWalletTypes.load)) {
       final err = await _walletsStorageRepository.updateWallet(
-        _wallet,
+        _data.value.wallet,
       );
       if (err != null) locator<Logger>().log(err.toString());
-      _wallet = wallet;
+
+      _data.add(_data.value.copyWith(wallet: wallet));
       return;
     }
 
     var (storageWallet, errr) = await _walletsStorageRepository.readWallet(
-      walletHashId: _wallet.getWalletStorageString(),
+      walletHashId: _data.value.wallet.getWalletStorageString(),
     );
     if (errr != null) locator<Logger>().log(errr.toString());
     if (storageWallet == null) return;
@@ -259,16 +277,17 @@ class WalletService {
         locator<Logger>().log(err.toString(), printToConsole: true);
       }
 
-      _wallet = storageWallet;
+      _data.add(_data.value.copyWith(wallet: storageWallet));
       await Future.delayed(Duration(milliseconds: delaySync));
       if (syncAfter) syncWallet();
     }
   }
 
   Future<Err?> getBalance() async {
-    final (w, err) = await _walletBalance.getBalance(_wallet);
+    final (w, err) = await _walletBalance.getBalance(_data.value.wallet);
     if (err != null) return err;
-    _wallet = w!.$1;
+
+    _data.add(_data.value.copyWith(wallet: w!.$1));
     await updateWallet(
       wallet,
       saveToStorage: _fromStorage,
@@ -278,9 +297,11 @@ class WalletService {
   }
 
   Future<Err?> listTransactions() async {
-    final (w, err) = await _walletTransactionn.getTransactions(_wallet);
+    final (w, err) =
+        await _walletTransactionn.getTransactions(_data.value.wallet);
     if (err != null) return err;
-    _wallet = w!;
+
+    _data.add(_data.value.copyWith(wallet: w!));
     await updateWallet(
       wallet,
       saveToStorage: _fromStorage,
@@ -296,15 +317,20 @@ class WalletService {
 
   Future<Err?> getFirstAddress() async {
     final (address, err) =
-        await _walletAddress.peekIndex(wallet: _wallet, idx: 0);
+        await _walletAddress.peekIndex(wallet: _data.value.wallet, idx: 0);
 
     if (err != null) return err;
-    _wallet = _wallet.copyWith(
-      firstAddress: Address(
-        address: address!,
-        index: 0,
-        kind: AddressKind.deposit,
-        state: AddressStatus.unused,
+
+    _data.add(
+      _data.value.copyWith(
+        wallet: _data.value.wallet.copyWith(
+          firstAddress: Address(
+            address: address!,
+            index: 0,
+            kind: AddressKind.deposit,
+            state: AddressStatus.unused,
+          ),
+        ),
       ),
     );
     return null;
@@ -321,7 +347,7 @@ WalletService createWalletService({
 }) {
   final walletsStorageRepository = locator<WalletsStorageRepository>();
   final internalNetworkkRepository = locator<InternalNetworkRepository>();
-  // final walletsRepository = locator<InternalWalletsRepository>();
+
   final walletSync = locator<WalletSync>();
   final walletBalance = locator<WalletBalance>();
   final walletAddress = locator<WalletAddress>();
@@ -333,7 +359,6 @@ WalletService createWalletService({
     wallet: wallet,
     walletsStorageRepository: walletsStorageRepository,
     internalNetworkRepository: internalNetworkkRepository,
-    // walletsRepository: walletsRepository,
     walletSync: walletSync,
     walletBalance: walletBalance,
     walletAddress: walletAddress,

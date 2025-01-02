@@ -24,18 +24,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<SyncWallet>(_syncWallet, transformer: droppable());
     on<RemoveInternalWallet>(_removeInternalWallet);
     on<KillSync>(_killSync);
-    on<WalletSubscribe>((event, emit) async {
-      await emit.forEach(
-        _appWalletsRepository.walletService(event.walletId),
-        onData: (WalletService w) {
-          print('wallet updated: ${w.wallet.id}');
-          return state.copyWith(
-            wallet: w.wallet,
-            syncing: w.syncing,
-          );
-        },
-      );
-    });
+    on<WalletSubscribe>(
+      (event, emit) async {
+        await emit.forEach(
+          _appWalletsRepository
+              .getWalletServiceById(event.walletId)!
+              .dataStream,
+          onData: (WalletServiceData data) => state.copyWith(
+            wallet: data.wallet,
+            syncing: data.syncing,
+          ),
+        );
+      },
+    );
 
     add(WalletSubscribe(wallet.id));
   }
@@ -75,7 +76,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 WalletBloc createWalletBloc(Wallet wallet) {
   _blocCount += 1;
   final trace = StackTrace.current;
-  print('blocCount: $_blocCount \n$trace');
+  print('blocCount: $_blocCount ');
   return WalletBloc(
     walletSync: locator<WalletSync>(),
     walletsRepository: locator<InternalWalletsRepository>(),

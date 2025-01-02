@@ -54,6 +54,12 @@ class AppWalletsRepository {
       )
       .asBroadcastStream();
 
+  // Stream<bool> walletSyncing(String id) => _walletServices
+  //     .map(
+  //       (services) => services.firstWhere((_) => _.wallet.id == id).syncing,
+  //     )
+  //     .asBroadcastStream();
+
   WalletService? getWalletServiceById(String id) {
     final services = _walletServices.value;
     final idx = services.indexWhere((_) => _.wallet.id == id);

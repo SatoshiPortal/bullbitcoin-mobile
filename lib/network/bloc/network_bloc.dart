@@ -44,6 +44,7 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     });
 
     add(InitNetworks());
+    add(NetworkDataSubscribe());
   }
 
   final HiveStorage _hiveStorage;
