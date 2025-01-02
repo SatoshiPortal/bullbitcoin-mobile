@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
@@ -11,7 +10,7 @@ import 'package:go_router/go_router.dart';
 class AccountingPage extends StatelessWidget {
   const AccountingPage({super.key, required this.wallet});
 
-  final Wallet wallet;
+  final String wallet;
 
   @override
   Widget build(BuildContext context) {

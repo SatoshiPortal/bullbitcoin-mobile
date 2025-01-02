@@ -27,7 +27,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
         .select((ImportWalletCubit cubit) => cubit.state.walletDetails ?? []);
 
     final walletCubits = [
-      for (final w in wallets) createOrRetreiveWalletBloc(w),
+      for (final w in wallets) createOrRetreiveWalletBloc(w.id),
     ];
 
     return BlocListener<ImportWalletCubit, ImportState>(

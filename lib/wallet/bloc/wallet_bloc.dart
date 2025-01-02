@@ -74,15 +74,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   }
 }
 
-WalletBloc createOrRetreiveWalletBloc(Wallet wallet) {
+WalletBloc createOrRetreiveWalletBloc(String walletId) {
   final existIdx = locator<AppWalletBlocs>()
       .state
-      .indexWhere((_) => _.state.wallet.id == wallet.id);
+      .indexWhere((_) => _.state.wallet.id == walletId);
 
   if (existIdx != -1) return locator<AppWalletBlocs>().state[existIdx];
 
   _blocCount += 1;
   print('blocCount: $_blocCount ');
+  final wallet = locator<AppWalletsRepository>().getWalletById(walletId)!;
   return WalletBloc(
     walletSync: locator<WalletSync>(),
     walletsRepository: locator<InternalWalletsRepository>(),

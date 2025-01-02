@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -21,7 +20,7 @@ class TestBackupPage extends StatefulWidget {
     required this.wallet,
   });
 
-  final Wallet wallet;
+  final String wallet;
 
   @override
   State<TestBackupPage> createState() => _TestBackupPageState();

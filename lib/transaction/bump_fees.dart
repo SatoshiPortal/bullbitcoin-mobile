@@ -117,7 +117,7 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
     final wallet =
         context.read<AppWalletsRepository>().getWalletFromTx(widget.tx);
     if (wallet == null) return;
-    walletBloc = createOrRetreiveWalletBloc(wallet);
+    walletBloc = createOrRetreiveWalletBloc(wallet.id);
 
     swap = CreateSwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_wallet_actions.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -17,7 +16,7 @@ import 'package:go_router/go_router.dart';
 class WalletPage extends StatefulWidget {
   const WalletPage({super.key, required this.wallet});
 
-  final Wallet wallet;
+  final String wallet;
 
   @override
   State<WalletPage> createState() => _WalletPageState();
@@ -139,8 +138,11 @@ class ActionsRow extends StatelessWidget {
               isBlue: false,
               isRed: !backupTested,
               onPressed: () {
-                final walletBloc = context.read<Wallet>();
-                context.push('/wallet-settings/open-backup', extra: walletBloc);
+                final walletBloc = context.read<WalletBloc>();
+                context.push(
+                  '/wallet-settings/open-backup',
+                  extra: walletBloc.state.wallet.id,
+                );
               },
             ),
           BBButton.text(
@@ -151,7 +153,7 @@ class ActionsRow extends StatelessWidget {
                   ? context.push('/information')
                   : context.push(
                       '/wallet/details',
-                      extra: context.read<WalletBloc>().state.wallet,
+                      extra: context.read<WalletBloc>().state.wallet.id,
                     );
             },
           ),
@@ -160,7 +162,7 @@ class ActionsRow extends StatelessWidget {
             isBlue: false,
             onPressed: () {
               final wallet = context.read<WalletBloc>().state.wallet;
-              context.push('/wallet-settings', extra: wallet);
+              context.push('/wallet-settings', extra: wallet.id);
             },
           ),
         ],

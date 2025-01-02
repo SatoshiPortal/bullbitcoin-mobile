@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/create/page.dart';
@@ -191,7 +190,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings',
           builder: (context, state) {
-            final wallet = state.extra! as Wallet;
+            final wallet = state.extra! as String;
             return WalletSettingsPage(wallet: wallet);
           },
         ),
@@ -204,7 +203,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings/open-backup',
           builder: (context, state) {
-            final wallet = state.extra! as Wallet;
+            final wallet = state.extra! as String;
             return WalletSettingsPage(openBackup: true, wallet: wallet);
           },
         ),
@@ -212,7 +211,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings/accounting',
           builder: (context, state) {
-            final wallet = state.extra! as Wallet;
+            final wallet = state.extra! as String;
             return AccountingPage(wallet: wallet);
           },
         ),
@@ -232,7 +231,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/receive',
           builder: (context, state) {
-            final wallet = state.extra as Wallet?;
+            final wallet = state.extra as String?;
 
             return ReceivePage(wallet: wallet);
           },
@@ -241,14 +240,14 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet',
           builder: (context, state) {
-            final wallet = state.extra! as Wallet;
+            final wallet = state.extra! as String;
             return WalletPage(wallet: wallet);
           },
         ),
         GoRoute(
           path: '/wallet/details',
           builder: (context, state) {
-            final wallet = state.extra! as Wallet;
+            final wallet = state.extra! as String;
             return WalletDetailsPage(wallet: wallet);
           },
         ),
@@ -292,7 +291,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings/test-backup',
           builder: (context, state) {
-            final wallet = state.extra! as Wallet;
+            final wallet = state.extra! as String;
             return TestBackupPage(
               wallet: wallet,
               // walletSettings: blocs.$2,
@@ -303,7 +302,7 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/wallet-settings/backup',
           builder: (context, state) {
-            final wallet = state.extra! as Wallet;
+            final wallet = state.extra! as String;
 
             return BackupPage(
               wallet: wallet,

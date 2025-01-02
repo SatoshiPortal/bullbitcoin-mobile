@@ -23,7 +23,7 @@ class BackupPage extends StatefulWidget {
     required this.wallet,
   });
 
-  final Wallet wallet;
+  final String wallet;
 
   @override
   State<BackupPage> createState() => _BackupPageState();
@@ -237,7 +237,7 @@ class BackupScreen extends StatelessWidget {
                         // ..pop()
                         .push(
                       '/wallet-settings/test-backup',
-                      extra: context.read<WalletBloc>().state.wallet,
+                      extra: context.read<WalletBloc>().state.wallet.id,
                       // (
                       //   context.read<Wallet>(),
                       //   context.read<WalletSettingsCubit>(),

@@ -57,7 +57,7 @@ class SwapTxList extends StatelessWidget {
           BlocProvider.value(value: receiveCubit),
           BlocProvider.value(value: swapBloc),
           if (wallet != null)
-            BlocProvider.value(value: createOrRetreiveWalletBloc(wallet)),
+            BlocProvider.value(value: createOrRetreiveWalletBloc(wallet.id)),
         ],
         child: const SwapTxList(),
       ),

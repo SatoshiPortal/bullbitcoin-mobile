@@ -14,7 +14,7 @@ import 'package:go_router/go_router.dart';
 class WalletDetailsPage extends StatelessWidget {
   const WalletDetailsPage({super.key, required this.wallet});
 
-  final Wallet wallet;
+  final String wallet;
 
   @override
   Widget build(BuildContext context) {

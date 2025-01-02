@@ -192,7 +192,7 @@ class _ScreenState extends State<_Screen> {
             child: Container(
               height: 128,
               margin: const EdgeInsets.only(top: 16),
-              child: const HomeBottomBar2(walletBloc: null),
+              child: const HomeBottomBar2(wallet: null),
             ),
           ),
         ],
@@ -413,8 +413,8 @@ class CardItem extends StatelessWidget {
           ),
           child: InkWell(
             onTap: () {
-              final walletBloc = context.read<WalletBloc>().state.wallet;
-              context.push('/wallet', extra: walletBloc);
+              final w = context.read<WalletBloc>().state.wallet.id;
+              context.push('/wallet', extra: w);
             },
             child: Padding(
               padding: const EdgeInsets.only(
@@ -683,9 +683,9 @@ class HomeTopBar2 extends StatelessWidget {
 }
 
 class HomeBottomBar2 extends StatefulWidget {
-  const HomeBottomBar2({super.key, required this.walletBloc});
+  const HomeBottomBar2({super.key, required this.wallet});
 
-  final Wallet? walletBloc;
+  final Wallet? wallet;
 
   @override
   State<HomeBottomBar2> createState() => _HomeBottomBar2State();
@@ -695,7 +695,7 @@ class _HomeBottomBar2State extends State<HomeBottomBar2> {
   Wallet? wb;
   @override
   void initState() {
-    if (widget.walletBloc == null) {
+    if (widget.wallet == null) {
       final network = context.read<NetworkBloc>().state.getBBNetwork();
       final walletBlocs =
           context.read<HomeBloc>().state.walletsFromNetwork(network);
@@ -726,7 +726,7 @@ class _HomeBottomBar2State extends State<HomeBottomBar2> {
                         onPressed: () {
                           context.push(
                             '/receive',
-                            extra: widget.walletBloc ?? wb,
+                            extra: widget.wallet?.id ?? wb?.id,
                           );
                         },
                       ),
@@ -1162,7 +1162,8 @@ class HomeWarnings extends StatelessWidget {
         for (final w in warnings)
           WarningBanner(
             onTap: () {
-              context.push('/wallet-settings/open-backup', extra: w.walletBloc);
+              context.push('/wallet-settings/open-backup',
+                  extra: w.walletBloc.id);
             },
             info: w.info,
           ),

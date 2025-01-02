@@ -87,12 +87,12 @@ class SecureBitcoinWallet extends StatelessWidget {
       onPressed: () {
         // final walletBlocs = context.read<HomeBloc>().state.walletBlocs;
         final network = context.read<NetworkRepository>().getBBNetwork;
-        final walletBloc =
+        final wallet =
             context.read<AppWalletsRepository>().getMainSecureWallet(network);
         // final walletBloc = walletBlocs
         //     ?.where((w) => w.state.wallet?.network == network && w.state.wallet?.type == BBWalletType.secure)
         //     .first;
-        context.push('/wallet-settings', extra: walletBloc);
+        context.push('/wallet-settings', extra: wallet!.id);
       },
     );
   }
@@ -107,9 +107,9 @@ class InstantPaymentsWallet extends StatelessWidget {
       label: 'Instant Payments wallet',
       onPressed: () {
         final network = context.read<NetworkRepository>().getBBNetwork;
-        final walletBloc =
+        final wallet =
             context.read<AppWalletsRepository>().getMainInstantWallet(network);
-        context.push('/wallet-settings', extra: walletBloc);
+        context.push('/wallet-settings', extra: wallet!.id);
       },
     );
   }
@@ -143,7 +143,7 @@ class _ButtonListState extends State<_ButtonList> {
           BBButton.textWithStatusAndRightArrow(
             label: wallet.name ?? 'Wallet',
             onPressed: () {
-              context.push('/wallet-settings', extra: wallet);
+              context.push('/wallet-settings', extra: wallet.id);
             },
           ),
           const Gap(8),
@@ -164,7 +164,7 @@ class ColdcardWallet extends StatelessWidget {
         final network = context.read<NetworkRepository>().getBBNetwork;
         final wallet =
             context.read<AppWalletsRepository>().getColdCardWallet(network);
-        context.push('/wallet-settings', extra: wallet);
+        context.push('/wallet-settings', extra: wallet.id);
       },
     );
   }

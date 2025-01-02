@@ -89,7 +89,7 @@ class WalletActionButtons extends StatelessWidget {
                     buttonKey: UIKeys.homeReceiveButton,
                     filled: true,
                     onPressed: () async {
-                      context.push('/receive', extra: wallet);
+                      context.push('/receive', extra: wallet?.id);
                     },
                     label: 'Receive',
                   ),

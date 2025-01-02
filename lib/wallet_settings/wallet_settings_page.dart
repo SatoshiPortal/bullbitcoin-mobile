@@ -1,10 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/file_storage.dart';
-import 'package:bb_mobile/_repository/app_wallets_repository.dart';
-import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
-import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -12,7 +8,6 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/addresses.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
@@ -36,29 +31,31 @@ class WalletSettingsPage extends StatelessWidget {
 
   // final bool openTestBackup;
   final bool openBackup;
-  final Wallet wallet;
+  final String wallet;
 
   @override
   Widget build(BuildContext context) {
     // final wallet = home.state.selectedWalletCubit!;
-    final walletSettings = WalletSettingsCubit(
-      // wallet: wallet.state.wallet!,
-      // walletRead: locator<WalletSync>(),
-      wallet: wallet,
-      appWalletsRepository: locator<AppWalletsRepository>(),
-      // walletBloc: wallet,
-      fileStorage: locator<FileStorage>(),
-      walletsStorageRepository: locator<WalletsStorageRepository>(),
-      walletSensRepository: locator<WalletSensitiveStorageRepository>(),
-      // homeCubit: locator<HomeBloc>(),
-    );
+    // final walletSettings = WalletSettingsCubit(
+    //   // wallet: wallet.state.wallet!,
+    //   // walletRead: locator<WalletSync>(),
+    //   wallet: wallet,
+    //   appWalletsRepository: locator<AppWalletsRepository>(),
+    //   // walletBloc: wallet,
+    //   fileStorage: locator<FileStorage>(),
+    //   walletsStorageRepository: locator<WalletsStorageRepository>(),
+    //   walletSensRepository: locator<WalletSensitiveStorageRepository>(),
+    //   // homeCubit: locator<HomeBloc>(),
+    // );
 
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(
           value: createOrRetreiveWalletBloc(wallet),
         ),
-        BlocProvider(create: (BuildContext context) => walletSettings),
+        BlocProvider(
+          create: (BuildContext context) => createWalletSettingsCubit(wallet),
+        ),
       ],
       child: WalletSettingsListeners(
         child: _Screen(
@@ -94,7 +91,7 @@ class _ScreenState extends State<_Screen> {
         // await Future.delayed(const Duration(milliseconds: 300));
         await context.push(
           '/wallet-settings/backup',
-          extra: context.read<WalletBloc>().state.wallet,
+          extra: context.read<WalletBloc>().state.wallet.id,
           // (
           //   context.read<WalletBloc>(),
           //   context.read<WalletSettingsCubit>(),
@@ -415,7 +412,7 @@ class AccountingButton extends StatelessWidget {
       label: 'Accounting',
       onPressed: () {
         final wallet = context.read<WalletBloc>().state.wallet;
-        context.push('/wallet-settings/accounting', extra: wallet);
+        context.push('/wallet-settings/accounting', extra: wallet.id);
       },
     );
   }
@@ -430,7 +427,7 @@ class WalletDetailsButton extends StatelessWidget {
       label: 'Wallet Details',
       onPressed: () {
         final wallet = context.read<WalletBloc>().state.wallet;
-        context.push('/wallet/details', extra: wallet);
+        context.push('/wallet/details', extra: wallet.id);
       },
     );
   }
@@ -452,10 +449,11 @@ class TestBackupButton extends StatelessWidget {
       onPressed: () async {
         context.push(
           '/wallet-settings/test-backup',
-          extra: (
-            context.read<Wallet>(),
-            context.read<WalletSettingsCubit>(),
-          ),
+          extra: context.read<WalletBloc>().state.wallet.id,
+          // (
+          //   context.read<Wallet>(),
+          //   context.read<WalletSettingsCubit>(),
+          // ),
         );
         // await TestBackupScreen.openPopup(context);
       },
@@ -491,7 +489,7 @@ class BackupButton extends StatelessWidget {
       onPressed: () async {
         context.push(
           '/wallet-settings/backup',
-          extra: context.read<WalletBloc>().state.wallet,
+          extra: context.read<WalletBloc>().state.wallet.id,
           //  (
           //   context.read<Wallet>(),
           //   context.read<WalletSettingsCubit>(),

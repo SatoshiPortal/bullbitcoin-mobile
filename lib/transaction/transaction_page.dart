@@ -60,7 +60,7 @@ class _TxPageState extends State<TxPage> {
       return;
     }
 
-    walletBloc = createOrRetreiveWalletBloc(wallet);
+    walletBloc = createOrRetreiveWalletBloc(wallet.id);
 
     networkFees = NetworkFeesCubit(
       hiveStorage: locator<HiveStorage>(),

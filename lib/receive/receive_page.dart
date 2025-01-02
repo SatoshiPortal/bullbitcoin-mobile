@@ -53,7 +53,7 @@ const lqMainnetAddress =
 class ReceivePage extends StatefulWidget {
   const ReceivePage({super.key, this.wallet});
 
-  final Wallet? wallet;
+  final String? wallet;
 
   @override
   State<ReceivePage> createState() => _ReceivePageState();
@@ -83,11 +83,15 @@ class _ReceivePageState extends State<ReceivePage> {
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
 
+    final w = widget.wallet != null
+        ? context.read<AppWalletsRepository>().getWalletById(widget.wallet!)
+        : null;
+
     _receiveCubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       appWalletsRepository: locator<AppWalletsRepository>(),
-      wallet: widget.wallet,
+      wallet: w,
 
       // walletBloc:
       // widget.wallet != null ? createWalletBloc(widget.wallet!) : null,
@@ -95,8 +99,8 @@ class _ReceivePageState extends State<ReceivePage> {
     );
 
     final network = context.read<NetworkRepository>().getBBNetwork;
-    final wallet = widget.wallet ??
-        context.read<AppWalletsRepository>().getMainInstantWallet(network);
+    final wallet =
+        w ?? context.read<AppWalletsRepository>().getMainInstantWallet(network);
 
     if (wallet!.isLiquid()) {
       _receiveCubit.updateWalletType(
@@ -382,7 +386,7 @@ class _WalletProvider extends StatelessWidget {
 
     if (wallet == null) return child;
     return BlocProvider.value(
-      value: createOrRetreiveWalletBloc(wallet),
+      value: createOrRetreiveWalletBloc(wallet.id),
       child: child,
     );
   }

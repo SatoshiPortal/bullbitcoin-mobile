@@ -17,10 +17,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
 WalletSettingsCubit createWalletSettingsCubit(
-  Wallet wallet,
+  String wallet,
 ) {
+  final w = locator<AppWalletsRepository>().getWalletById(wallet);
   return WalletSettingsCubit(
-    wallet: wallet,
+    wallet: w!,
     appWalletsRepository: locator<AppWalletsRepository>(),
     walletsStorageRepository: locator<WalletsStorageRepository>(),
     walletSensRepository: locator<WalletSensitiveStorageRepository>(),
