@@ -35,9 +35,12 @@ class AppWalletsRepository {
     );
   }
 
-  Stream<List<Wallet>> get wallets => _walletServices
-      .map((services) => services.map((_) => _.wallet).toList())
-      .asBroadcastStream();
+  Stream<List<Wallet>> get wallets => _walletServices.switchMap((services) {
+        final streams = services.map((service) => service.walletStream);
+        return streams.isEmpty
+            ? Stream.value([])
+            : CombineLatestStream(streams, (wallets) => wallets);
+      });
 
   List<Wallet> get allWallets =>
       _walletServices.value.map((_) => _.wallet).toList();
@@ -85,15 +88,15 @@ class AppWalletsRepository {
 
   Future loadAllInNetwork(BBNetwork network) async {
     final ws = walletServiceFromNetwork(network);
-    for (final w in ws) {
-      await w.loadWallet();
-    }
+    await Future.wait(
+      ws.map((w) => w.loadWallet()),
+    );
   }
 
   Future syncAllInNetwork(BBNetwork network) async {
     final ws = walletServiceFromNetwork(network);
     for (final w in ws) {
-      await w.syncWallet();
+      w.syncWallet();
     }
   }
 

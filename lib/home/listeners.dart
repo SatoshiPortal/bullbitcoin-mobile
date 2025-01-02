@@ -58,9 +58,7 @@ class _HomeWalletsSetupListenerState extends State<HomeWalletsSetupListener> {
     // return WalletBlocListeners(child: child);
 
     return BlocListener<HomeBloc, HomeState>(
-      listenWhen: (previous, current) =>
-          previous.updated != current.updated && current.updated ||
-          previous.wallets != current.wallets,
+      listenWhen: (previous, current) => previous.wallets != current.wallets,
       listener: (context, state) {
         if (state.wallets.isEmpty) return;
 

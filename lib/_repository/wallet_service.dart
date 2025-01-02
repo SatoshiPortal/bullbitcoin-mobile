@@ -45,7 +45,7 @@ class WalletService {
     required WalletCreate walletCreate,
     required WalletTx walletTransaction,
     required NetworkRepository networkRepository,
-    bool fromStorage = true,
+    bool fromStorage = false,
   })  : _walletsStorageRepository = walletsStorageRepository,
         _internalNetworkRepository = internalNetworkRepository,
         _walletSync = walletSync,
@@ -64,6 +64,8 @@ class WalletService {
   final BehaviorSubject<WalletServiceData> _data;
 
   Stream<WalletServiceData> get dataStream => _data.stream;
+  Stream<Wallet> get walletStream => _data.stream.map((e) => e.wallet);
+
   WalletServiceData get data => _data.value;
 
   final bool _fromStorage;
@@ -84,7 +86,7 @@ class WalletService {
     _data.close();
   }
 
-  Future<Err?> loadWallet() async {
+  Future<Err?> loadWallet({bool syncAfter = false}) async {
     _data.add(_data.value.copyWith(errLoading: false));
     final (w, err) = await _walletCreate.loadPublicWallet(
       saveDir: _data.value.wallet.getWalletStorageString(),
@@ -102,6 +104,8 @@ class WalletService {
         loadingAttemptsLeft: 3,
       ),
     );
+
+    if (syncAfter) await syncWallet();
 
     return null;
   }

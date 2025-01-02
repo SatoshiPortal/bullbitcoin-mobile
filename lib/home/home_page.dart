@@ -1119,7 +1119,7 @@ class HomeNoWalletsView extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
-              const Gap(128),
+              const Gap(110),
               Center(
                 child: BBButton.big(
                   label: 'Create new wallet',
@@ -1162,8 +1162,10 @@ class HomeWarnings extends StatelessWidget {
         for (final w in warnings)
           WarningBanner(
             onTap: () {
-              context.push('/wallet-settings/open-backup',
-                  extra: w.walletBloc.id);
+              context.push(
+                '/wallet-settings/open-backup',
+                extra: w.walletBloc.id,
+              );
             },
             info: w.info,
           ),

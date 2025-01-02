@@ -27,7 +27,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
         .select((ImportWalletCubit cubit) => cubit.state.walletDetails ?? []);
 
     final walletCubits = [
-      for (final w in wallets) createOrRetreiveWalletBloc(w.id),
+      for (final w in wallets) createOrRetreiveWalletBloc(w.id, wallet: w),
     ];
 
     return BlocListener<ImportWalletCubit, ImportState>(
@@ -122,8 +122,8 @@ class _ScreenState extends State<_Screen> {
             ),
             const Gap(16),
             for (final walletBloc in widget.walletCubits) ...[
-              BlocProvider.value(
-                value: walletBloc,
+              BlocProvider(
+                create: (context) => walletBloc,
                 child: const _ImportWalletTypeButton(),
               ),
               const Gap(16),
