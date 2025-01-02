@@ -4,6 +4,7 @@ import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
@@ -14,25 +15,24 @@ part 'state.g.dart';
 @freezed
 class NetworkState with _$NetworkState {
   const factory NetworkState({
-    @Default(false) bool testnet,
     @Default(20) int reloadWalletTimer,
-    @Default([]) List<ElectrumNetwork> networks,
-    @Default(ElectrumTypes.bullbitcoin) ElectrumTypes selectedNetwork,
-    @Default([]) List<LiquidElectrumNetwork> liquidNetworks,
-    @Default(LiquidElectrumTypes.blockstream)
-    @Default(LiquidElectrumNetwork.bullbitcoin)
-    LiquidElectrumTypes selectedLiquidNetwork,
     @Default(false) bool loadingNetworks,
     @Default('') String errLoadingNetworks,
     @Default(false) bool networkConnected,
     @Default(false) bool networkErrorOpened,
-
-    // @Default(20) int stopGap,
-    ElectrumTypes? tempNetwork,
-    ElectrumNetwork? tempNetworkDetails,
-    LiquidElectrumTypes? tempLiquidNetwork,
-    LiquidElectrumNetwork? tempLiquidNetworkDetails,
     @Default(false) bool goToSettings,
+    //
+    @Default(NetworkRepoData()) NetworkRepoData networkData,
+    // @Default(false) bool testnet,
+    // @Default([]) List<ElectrumNetwork> networks,
+    // @Default(ElectrumTypes.bullbitcoin) ElectrumTypes selectedNetwork,
+    // @Default([]) List<LiquidElectrumNetwork> liquidNetworks,
+    // @Default(LiquidElectrumTypes.blockstream)
+    // LiquidElectrumTypes selectedLiquidNetwork,
+    // ElectrumTypes? tempNetwork,
+    // ElectrumNetwork? tempNetworkDetails,
+    // LiquidElectrumTypes? tempLiquidNetwork,
+    // LiquidElectrumNetwork? tempLiquidNetworkDetails,
   }) = _NetworkState;
   const NetworkState._();
 
@@ -40,31 +40,33 @@ class NetworkState with _$NetworkState {
       _$NetworkStateFromJson(json);
 
   ElectrumNetwork? getNetwork() {
-    if (networks.isEmpty) return null;
-    return networks.firstWhere((_) => _.type == selectedNetwork);
+    if (networkData.networks.isEmpty) return null;
+    return networkData.networks
+        .firstWhere((_) => _.type == networkData.selectedNetwork);
   }
 
   LiquidElectrumNetwork? getLiquidNetwork() {
-    if (liquidNetworks.isEmpty) return null;
-    return liquidNetworks.firstWhere((_) => _.type == selectedLiquidNetwork);
+    if (networkData.liquidNetworks.isEmpty) return null;
+    return networkData.liquidNetworks
+        .firstWhere((_) => _.type == networkData.selectedLiquidNetwork);
   }
 
   ElectrumNetwork? getTempOrSelectedNetwork() {
-    if (networks.isEmpty) return null;
+    if (networkData.networks.isEmpty) return null;
     // return tempNetwork ?? selectedNetwork;
-    if (tempNetwork == null) return getNetwork();
-    final n = networks;
-    final t = tempNetwork;
+    if (networkData.tempNetwork == null) return getNetwork();
+    final n = networkData.networks;
+    final t = networkData.tempNetwork;
 
     return n.firstWhere((_) => _.type == t);
   }
 
   LiquidElectrumNetwork? getTempOrSelectedLiquidNetwork() {
-    if (liquidNetworks.isEmpty) return null;
+    if (networkData.liquidNetworks.isEmpty) return null;
     // return tempNetwork ?? selectedNetwork;
-    if (tempLiquidNetwork == null) return getLiquidNetwork();
-    final n = liquidNetworks;
-    final t = tempLiquidNetwork;
+    if (networkData.tempLiquidNetwork == null) return getLiquidNetwork();
+    final n = networkData.liquidNetworks;
+    final t = networkData.tempLiquidNetwork;
 
     return n.firstWhere((_) => _.type == t);
   }
@@ -72,22 +74,22 @@ class NetworkState with _$NetworkState {
   String getNetworkUrl() {
     final network = getNetwork();
     if (network == null) return '';
-    return network.getNetworkUrl(testnet);
+    return network.getNetworkUrl(networkData.testnet);
   }
 
   String getLiquidNetworkUrl() {
     final network = getLiquidNetwork();
     if (network == null) return '';
-    return network.getNetworkUrl(testnet, split: false);
+    return network.getNetworkUrl(networkData.testnet, split: false);
   }
 
   bdk.Network getBdkNetwork() {
-    if (testnet) return bdk.Network.testnet;
+    if (networkData.testnet) return bdk.Network.testnet;
     return bdk.Network.bitcoin;
   }
 
   BBNetwork getBBNetwork() {
-    if (testnet) return BBNetwork.Testnet;
+    if (networkData.testnet) return BBNetwork.Testnet;
     return BBNetwork.Mainnet;
   }
 
@@ -102,11 +104,11 @@ class NetworkState with _$NetworkState {
     String unblindedUrl = '',
   }) {
     if (isLiquid) {
-      return testnet
+      return networkData.testnet
           ? '$liquidMempoolTestnet/$unblindedUrl'
           : '$liquidMempool/$unblindedUrl';
     } else {
-      return testnet
+      return networkData.testnet
           ? 'https://$mempoolapi/testnet/tx/$txid'
           : 'https://$mempoolapi/tx/$txid';
     }
@@ -114,11 +116,11 @@ class NetworkState with _$NetworkState {
 
   String explorerAddressUrl(String address, {bool isLiquid = false}) {
     if (isLiquid) {
-      return testnet
+      return networkData.testnet
           ? '$liquidMempoolTestnet/address/$address'
           : '$liquidMempool/address/$address';
     } else {
-      return testnet
+      return networkData.testnet
           ? 'https://$mempoolapi/testnet/address/$address'
           : 'https://$mempoolapi/address/$address';
     }
@@ -154,7 +156,7 @@ class NetworkState with _$NetworkState {
 
   String calculatePrice(int sats, Currency? currency) {
     if (currency == null) return '';
-    if (testnet) return '${currency.getSymbol()}0';
+    if (networkData.testnet) return '${currency.getSymbol()}0';
     return currency.getSymbol() +
         fiatFormatting(
           (sats / 100000000 * currency.price!).toStringAsFixed(2),
@@ -170,7 +172,7 @@ class NetworkState with _$NetworkState {
 
   ({bool show, String? err}) showConfirmButton({required bool isLiquid}) {
     if (isLiquid) {
-      if (tempLiquidNetwork == null) {
+      if (networkData.tempLiquidNetwork == null) {
         return (
           show: false,
           err: '',
@@ -180,7 +182,7 @@ class NetworkState with _$NetworkState {
       return (show: true, err: null);
     }
 
-    final temp = tempNetworkDetails;
+    final temp = networkData.tempNetworkDetails;
     if (temp == null) return (show: false, err: '');
 
     if (temp.retry == 0) return (show: false, err: 'Retry cannot be 0');
@@ -191,7 +193,7 @@ class NetworkState with _$NetworkState {
   }
 
   double pickLiquidFees() {
-    switch (selectedLiquidNetwork) {
+    switch (networkData.selectedLiquidNetwork) {
       case LiquidElectrumTypes.custom:
       case LiquidElectrumTypes.blockstream:
         return 0.1;

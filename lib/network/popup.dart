@@ -55,7 +55,8 @@ class NetworkScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final networks = context.select((NetworkBloc _) => _.state.networks);
+    final networks =
+        context.select((NetworkBloc _) => _.state.networkData.networks);
     if (networks.isEmpty) return const SizedBox.shrink();
 
     return const Padding(
@@ -123,7 +124,8 @@ class NetworkStatus extends StatelessWidget {
         context.select((NetworkBloc x) => x.state.networkConnected);
     final errLoadingNetwork =
         context.select((NetworkBloc x) => x.state.errLoadingNetworks);
-    final isTestnet = context.select((NetworkBloc x) => x.state.testnet);
+    final isTestnet =
+        context.select((NetworkBloc x) => x.state.networkData.testnet);
     var network = context.select(
       (NetworkBloc x) => x.state.getNetwork()?.getNetworkUrl(isTestnet) ?? '',
     );
@@ -175,12 +177,14 @@ class SelectNetworkSegment extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLiq = context.select((_NetworkSelector _) => _.state);
 
-    final tempSelected = context.select((NetworkBloc x) => x.state.tempNetwork);
-    final tempLiqSelected =
-        context.select((NetworkBloc x) => x.state.tempLiquidNetwork);
-    final network = context.select((NetworkBloc x) => x.state.selectedNetwork);
-    final liqNetwork =
-        context.select((NetworkBloc x) => x.state.selectedLiquidNetwork);
+    final tempSelected =
+        context.select((NetworkBloc x) => x.state.networkData.tempNetwork);
+    final tempLiqSelected = context
+        .select((NetworkBloc x) => x.state.networkData.tempLiquidNetwork);
+    final network =
+        context.select((NetworkBloc x) => x.state.networkData.selectedNetwork);
+    final liqNetwork = context
+        .select((NetworkBloc x) => x.state.networkData.selectedLiquidNetwork);
 
     final selected = tempSelected ?? network;
     final liqSelected = tempLiqSelected ?? liqNetwork;
@@ -296,12 +300,12 @@ class NetworkConfigFields extends StatelessWidget {
         .select((NetworkBloc _) => _.state.getTempOrSelectedLiquidNetwork());
     if (liqNetwork == null) return const SizedBox.shrink();
 
-    final tempNetworkDetails =
-        context.select((NetworkBloc _) => _.state.tempNetworkDetails);
+    final tempNetworkDetails = context
+        .select((NetworkBloc _) => _.state.networkData.tempNetworkDetails);
     if (tempNetworkDetails == null) return const SizedBox.shrink();
 
-    final tempLiqNetworkDetails =
-        context.select((NetworkBloc _) => _.state.tempLiquidNetworkDetails);
+    final tempLiqNetworkDetails = context.select(
+        (NetworkBloc _) => _.state.networkData.tempLiquidNetworkDetails);
     if (tempLiqNetworkDetails == null) return const SizedBox.shrink();
 
     final type = network.type;
@@ -544,12 +548,12 @@ class ElectrumAdvancedOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     final fieldWidth = MediaQuery.of(context).size.width * 0.7;
 
-    final sg =
-        context.select((NetworkBloc x) => x.state.tempNetworkDetails?.stopGap);
-    final r =
-        context.select((NetworkBloc x) => x.state.tempNetworkDetails?.retry);
-    final t =
-        context.select((NetworkBloc x) => x.state.tempNetworkDetails?.timeout);
+    final sg = context.select(
+        (NetworkBloc x) => x.state.networkData.tempNetworkDetails?.stopGap);
+    final r = context.select(
+        (NetworkBloc x) => x.state.networkData.tempNetworkDetails?.retry);
+    final t = context.select(
+        (NetworkBloc x) => x.state.networkData.tempNetworkDetails?.timeout);
 
     final showButton = context
         .select((NetworkBloc x) => x.state.showConfirmButton(isLiquid: false));

@@ -56,7 +56,7 @@ class _ChainSwapProgressWidgetState extends State<ChainSwapProgressWidget> {
     context.read<CurrencyCubit>().updateAmount(amtDouble.toString());
     context.select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
     context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
-    context.select((NetworkBloc cubit) => cubit.state.testnet);
+    context.select((NetworkBloc cubit) => cubit.state.networkData.testnet);
     Transaction? tx;
     if (swapTx?.isChainReceive() == false) {
       tx = context.select((SendCubit _) => _.state.tx);

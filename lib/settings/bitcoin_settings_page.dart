@@ -314,12 +314,14 @@ class TestNetButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final testnet = context.select((NetworkBloc _) => _.state.testnet);
+    final testnet =
+        context.select((NetworkBloc _) => _.state.networkData.testnet);
 
     // if (!testnet) return const SizedBox.shrink();
 
     return BlocListener<NetworkBloc, NetworkState>(
-      listenWhen: (previous, current) => previous.testnet != current.testnet,
+      listenWhen: (previous, current) =>
+          previous.networkData.testnet != current.networkData.testnet,
       listener: (context, state) {
         context.read<NetworkFeesCubit>().loadFees();
         final network = state.getBBNetwork();

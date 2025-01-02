@@ -381,7 +381,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
     final fiatAmt =
         context.select((CurrencyCubit cubit) => cubit.state.fiatAmt.abs());
     final isTestNet =
-        context.select((NetworkBloc cubit) => cubit.state.testnet);
+        context.select((NetworkBloc cubit) => cubit.state.networkData.testnet);
     final fiatUnit = defaultCurrency?.name ?? '';
     final fiatAmtStr = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
 

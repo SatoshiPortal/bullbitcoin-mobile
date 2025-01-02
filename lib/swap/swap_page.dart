@@ -52,8 +52,9 @@ class _SwapPageState extends State<SwapPage> {
       appWalletsRepository: locator<AppWalletsRepository>(),
       // homeCubit: context.read<HomeBloc>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
-      networkCubit: context.read<NetworkBloc>(),
-    )..fetchFees(context.read<NetworkBloc>().state.testnet);
+      // networkCubit: context.read<NetworkBloc>(),
+      networkRepository: locator<NetworkRepository>(),
+    )..fetchFees(context.read<NetworkBloc>().state.networkData.testnet);
 
     networkFees = NetworkFeesCubit(
       // networkCubit: locator<NetworkCubit>(),

@@ -194,7 +194,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
     final fiatAmt =
         context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
     final isTestNet =
-        context.select((NetworkBloc cubit) => cubit.state.testnet);
+        context.select((NetworkBloc cubit) => cubit.state.networkData.testnet);
     final unit = defaultCurrency?.name ?? '';
     final amt = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
 

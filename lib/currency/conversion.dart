@@ -22,7 +22,7 @@ class ConversionAmt extends StatelessWidget {
         .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
 
     final isTestNet =
-        context.select((NetworkBloc cubit) => cubit.state.testnet);
+        context.select((NetworkBloc cubit) => cubit.state.networkData.testnet);
 
     var amt = '';
     var unit = '';

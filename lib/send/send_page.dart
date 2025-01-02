@@ -66,8 +66,9 @@ class _SendPageState extends State<SendPage> {
       // homeCubit: context.read<HomeBloc>(),
       appWalletsRepository: locator<AppWalletsRepository>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
-      networkCubit: context.read<NetworkBloc>(),
-    )..fetchFees(context.read<NetworkBloc>().state.testnet);
+      // networkCubit: context.read<NetworkBloc>(),
+      networkRepository: locator<NetworkRepository>(),
+    )..fetchFees(context.read<NetworkBloc>().state.networkData.testnet);
 
     networkFees = NetworkFeesCubit(
       // networkCubit: locator<NetworkCubit>(),

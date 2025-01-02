@@ -17,24 +17,15 @@ part 'network_repository.g.dart';
 class NetworkRepoData with _$NetworkRepoData {
   const factory NetworkRepoData({
     @Default(false) bool testnet,
-    @Default(20) int reloadWalletTimer,
     @Default([]) List<ElectrumNetwork> networks,
     @Default(ElectrumTypes.bullbitcoin) ElectrumTypes selectedNetwork,
     @Default([]) List<LiquidElectrumNetwork> liquidNetworks,
     @Default(LiquidElectrumTypes.blockstream)
-    @Default(LiquidElectrumNetwork.bullbitcoin)
     LiquidElectrumTypes selectedLiquidNetwork,
-    @Default(false) bool loadingNetworks,
-    @Default('') String errLoadingNetworks,
-    @Default(false) bool networkConnected,
-    @Default(false) bool networkErrorOpened,
-
-    // @Default(20) int stopGap,
     ElectrumTypes? tempNetwork,
     ElectrumNetwork? tempNetworkDetails,
     LiquidElectrumTypes? tempLiquidNetwork,
     LiquidElectrumNetwork? tempLiquidNetworkDetails,
-    @Default(false) bool goToSettings,
   }) = _NetworkRepoData;
   const NetworkRepoData._();
 
@@ -76,10 +67,10 @@ class NetworkRepository {
     );
   }
 
-  Future toggleTestnet({required bool testnet}) async {
-    _data = _data.copyWith(testnet: testnet);
-    // this.testnet = testnet;
-  }
+  // Future toggleTestnet({required bool testnet}) async {
+  //   _data = _data.copyWith(testnet: testnet);
+  //   // this.testnet = testnet;
+  // }
 
   Future<Err?> setupBlockchain({bool? isLiquid, bool? isTestnetLocal}) async {
     final isTestnet = isTestnetLocal ?? _data.testnet;
@@ -239,7 +230,39 @@ class NetworkRepository {
     }
   }
 
-  Future<Err?> saveNetworkConfig() async {
-    return null;
+  void setNetworkData({
+    bool? testnet,
+    List<ElectrumNetwork>? networks,
+    List<LiquidElectrumNetwork>? liquidNetworks,
+    ElectrumNetwork? tempNetworkDetails,
+    LiquidElectrumNetwork? tempLiquidNetworkDetails,
+    ElectrumTypes? tempNetwork,
+    LiquidElectrumTypes? tempLiquidNetwork,
+    ElectrumTypes? selectedNetwork,
+    LiquidElectrumTypes? selectedLiquidNetwork,
+  }) {
+    _data = _data.copyWith(
+      testnet: testnet ?? _data.testnet,
+      networks: networks ?? _data.networks,
+      liquidNetworks: liquidNetworks ?? _data.liquidNetworks,
+      tempNetworkDetails: tempNetworkDetails ?? _data.tempNetworkDetails,
+      tempLiquidNetworkDetails:
+          tempLiquidNetworkDetails ?? _data.tempLiquidNetworkDetails,
+      tempNetwork: tempNetwork ?? _data.tempNetwork,
+      tempLiquidNetwork: tempLiquidNetwork ?? _data.tempLiquidNetwork,
+      selectedNetwork: selectedNetwork ?? _data.selectedNetwork,
+      selectedLiquidNetwork:
+          selectedLiquidNetwork ?? _data.selectedLiquidNetwork,
+    );
+  }
+
+  void resetNetworkData({
+    bool tempNetwork = false,
+    bool tempLiquidNetwork = false,
+  }) {
+    _data = _data.copyWith(
+      tempNetwork: tempNetwork ? null : _data.tempNetwork,
+      tempLiquidNetwork: tempLiquidNetwork ? null : _data.tempLiquidNetwork,
+    );
   }
 }

@@ -4,9 +4,9 @@ import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
-import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_state.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
@@ -21,7 +21,8 @@ class CreateSwapCubit extends Cubit<SwapState> {
     required WalletTx walletTx,
     // required HomeBloc homeCubit,
     required WatchTxsBloc watchTxsBloc,
-    required NetworkBloc networkCubit,
+    // required NetworkBloc networkCubit,
+    required NetworkRepository networkRepository,
     required AppWalletsRepository appWalletsRepository,
   })  : _walletTx = walletTx,
         _swapBoltz = swapBoltz,
@@ -29,7 +30,8 @@ class CreateSwapCubit extends Cubit<SwapState> {
         // _homeCubit = homeCubit,
         _watchTxsBloc = watchTxsBloc,
         _walletSensitiveRepository = walletSensitiveRepository,
-        _networkCubit = networkCubit,
+        _networkRepository = networkRepository,
+        // _networkCubit = networkCubit,
         super(const SwapState());
 
   final WalletSensitiveStorageRepository _walletSensitiveRepository;
@@ -37,8 +39,9 @@ class CreateSwapCubit extends Cubit<SwapState> {
   final WalletTx _walletTx;
   // final HomeBloc _homeCubit;
   final AppWalletsRepository _appWalletsRepository;
+  final NetworkRepository _networkRepository;
   final WatchTxsBloc _watchTxsBloc;
-  final NetworkBloc _networkCubit;
+  // final NetworkBloc _networkCubit;
   Future<void> fetchFees(bool isTestnet) async {
     final boltzurl = isTestnet ? boltzTestnetUrl : boltzMainnetUrl;
 
@@ -659,9 +662,9 @@ class CreateSwapCubit extends Cubit<SwapState> {
     try {
       emit(state.copyWith(generatingSwapInv: true, errCreatingSwapInv: ''));
 
-      final isTestnet = _networkCubit.state.testnet;
-      final lbtcElectrumUrl = _networkCubit.state.getLiquidNetworkUrl();
-      final btcNetworkUrl = _networkCubit.state.getNetworkUrl();
+      final isTestnet = _networkRepository.data.testnet;
+      final lbtcElectrumUrl = _networkRepository.getLiquidNetworkUrl;
+      final btcNetworkUrl = _networkRepository.getNetworkUrl;
       final btcElectrumUrl = btcNetworkUrl.startsWith('ssl://')
           ? btcNetworkUrl.split('//')[1]
           : btcNetworkUrl;

@@ -285,7 +285,8 @@ class SelectFeesItem extends StatelessWidget {
     final currency =
         context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
 
-    final isTestnet = context.select((NetworkBloc x) => x.state.testnet);
+    final isTestnet =
+        context.select((NetworkBloc x) => x.state.networkData.testnet);
 
     final fiatRateStr = context.select(
       (NetworkFeesCubit _) => _.state.calculateFiatPriceForFees(

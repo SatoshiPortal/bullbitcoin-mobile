@@ -2,10 +2,10 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/swap_page_progress.dart';
@@ -41,7 +41,8 @@ class _ChainSwapProgressPageState extends State<ChainSwapProgressPage> {
       appWalletsRepository: locator<AppWalletsRepository>(),
       // homeCubit: context.read<HomeBloc>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
-      networkCubit: context.read<NetworkBloc>(),
+      // networkCubit: context.read<NetworkBloc>(),
+      networkRepository: locator<NetworkRepository>(),
     );
     _swapCubit.setSwapTx(widget.swapTx);
     super.initState();
