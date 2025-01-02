@@ -275,7 +275,6 @@ Future _setupBlocs() async {
   locator.registerSingleton<NetworkBloc>(
     NetworkBloc(
       hiveStorage: locator<HiveStorage>(),
-      walletNetwork: locator<WalletNetwork>(),
       networkRepository: locator<NetworkRepository>(),
     ),
   );

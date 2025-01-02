@@ -108,17 +108,18 @@ class NetworkRepository {
 
   Future loadNetworks() async {
     if (_data.networks.isNotEmpty) {
-      final net =
+      final selectedNetwork =
           _data.networks.firstWhere((_) => _.type == _data.selectedNetwork);
 
       _data = _data.copyWith(
-        tempNetworkDetails: net,
-        tempNetwork: net.type,
-        selectedNetwork: net.type,
+        tempNetworkDetails: selectedNetwork,
+        tempNetwork: selectedNetwork.type,
+        selectedNetwork: selectedNetwork.type,
       );
 
       // final err = await setupBlockchain(isLiquid: false);
       // if (err != null) return err;
+      await setupBlockchain(isLiquid: false);
     } else {
       final newNetworks = [
         const ElectrumNetwork.defaultElectrum(),
@@ -129,34 +130,38 @@ class NetworkRepository {
         ),
       ];
 
-      final net = newNetworks[2];
+      final selectedNetwork = newNetworks[2];
 
       _data = _data.copyWith(
         networks: newNetworks,
-        tempNetworkDetails: net,
-        tempNetwork: net.type,
-        selectedNetwork: net.type,
+        tempNetworkDetails: selectedNetwork,
+        tempNetwork: selectedNetwork.type,
+        selectedNetwork: selectedNetwork.type,
       );
+
+      await setupBlockchain(isLiquid: false);
 
       // final err = await setupBlockchain(isLiquid: false);
       // if (err != null) return err;
     }
 
     if (_data.liquidNetworks.isNotEmpty) {
-      var net = _data.liquidNetworks
+      var selectedNetwork = _data.liquidNetworks
           .firstWhere((_) => _.type == _data.selectedLiquidNetwork);
       final updatedLiqNetworks = _data.liquidNetworks.toList();
       if (_data.liquidNetworks.length == 2) {
         updatedLiqNetworks.insert(1, const LiquidElectrumNetwork.bullbitcoin());
-        net = updatedLiqNetworks[1];
+        selectedNetwork = updatedLiqNetworks[1];
       }
 
       _data = _data.copyWith(
-        tempLiquidNetworkDetails: net,
-        tempLiquidNetwork: net.type,
-        selectedLiquidNetwork: net.type,
+        tempLiquidNetworkDetails: selectedNetwork,
+        tempLiquidNetwork: selectedNetwork.type,
+        selectedLiquidNetwork: selectedNetwork.type,
         liquidNetworks: updatedLiqNetworks,
       );
+
+      await setupBlockchain(isLiquid: true);
 
       // tempLiquidNetworkDetails = net;
       // tempLiquidNetwork = net.type;
@@ -187,6 +192,7 @@ class NetworkRepository {
       // tempLiquidNetworkDetails = selectedLiqNetwork;
       // tempLiquidNetwork = selectedLiqNetwork.type;
       // selectedLiquidNetwork = selectedLiqNetwork.type;
+      await setupBlockchain(isLiquid: true);
     }
   }
 
