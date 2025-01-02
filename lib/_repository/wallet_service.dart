@@ -59,7 +59,10 @@ class WalletService {
           WalletServiceData(wallet: wallet),
         );
 
+  // Lock lock = Lock(reentrant: true);
+
   final BehaviorSubject<WalletServiceData> _data;
+
   Stream<WalletServiceData> get dataStream => _data.stream;
   WalletServiceData get data => _data.value;
 
@@ -147,7 +150,8 @@ class WalletService {
             await _networkRepository.setupBlockchain(isLiquid: isLiq);
 
         _data.add(
-            _data.value.copyWith(syncErrCount: _data.value.syncErrCount + 1));
+          _data.value.copyWith(syncErrCount: _data.value.syncErrCount + 1),
+        );
         if (errBC2 != null) return errBC2;
         final err2 = await _walletSync.syncWallet(_data.value.wallet);
         if (err2 != null) return err2;
@@ -174,6 +178,7 @@ class WalletService {
     bool syncAfter = false,
     int delaySync = 0,
   }) async {
+    // return lock.synchronized(() async {
     if (!saveToStorage) {
       _data.add(_data.value.copyWith(wallet: wallet));
       return;
@@ -281,6 +286,7 @@ class WalletService {
       await Future.delayed(Duration(milliseconds: delaySync));
       if (syncAfter) syncWallet();
     }
+    // });
   }
 
   Future<Err?> getBalance() async {

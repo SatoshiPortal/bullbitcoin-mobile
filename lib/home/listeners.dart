@@ -62,7 +62,6 @@ class _HomeWalletsSetupListenerState extends State<HomeWalletsSetupListener> {
           previous.updated != current.updated && current.updated ||
           previous.wallets != current.wallets,
       listener: (context, state) {
-        print('home wallets listener: ${state.wallets.length}');
         if (state.wallets.isEmpty) return;
 
         context.read<AppWalletBlocs>().updateWalletBlocs([

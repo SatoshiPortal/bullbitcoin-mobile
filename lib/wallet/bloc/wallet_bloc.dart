@@ -65,13 +65,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         .getWalletServiceById(state.wallet.id)
         ?.syncWallet();
   }
-
-  @override
-  Future<void> close() {
-    _blocCount -= 1;
-    print('blocCount close: $_blocCount');
-    return super.close();
-  }
 }
 
 WalletBloc createOrRetreiveWalletBloc(String walletId) {
@@ -81,8 +74,6 @@ WalletBloc createOrRetreiveWalletBloc(String walletId) {
 
   if (existIdx != -1) return locator<AppWalletBlocs>().state[existIdx];
 
-  _blocCount += 1;
-  print('blocCount: $_blocCount ');
   final wallet = locator<AppWalletsRepository>().getWalletById(walletId)!;
   return WalletBloc(
     walletSync: locator<WalletSync>(),
@@ -91,5 +82,3 @@ WalletBloc createOrRetreiveWalletBloc(String walletId) {
     wallet: wallet,
   );
 }
-
-int _blocCount = 0;

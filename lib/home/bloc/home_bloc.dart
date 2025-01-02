@@ -24,7 +24,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         await emit.forEach(
           _appWalletsRepository.wallets,
           onData: (List<Wallet> ws) {
-            print('home wallets updated: ${ws.length}');
             add(UpdatedNotifier());
             return state.copyWith(wallets: ws);
           },
