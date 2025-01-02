@@ -26,6 +26,23 @@ const List<String> _ohttpRelayUrls = [
 
 const payjoinDirectoryUrl = 'https://payjo.in';
 
+sealed class SendError {
+  final String message;
+
+  const SendError.SessionError(this.message);
+
+  factory SendError.recoverable(String message) = RecoverableError;
+  factory SendError.unrecoverable(String message) = UnrecoverableError;
+}
+
+class RecoverableError extends SendError {
+  const RecoverableError(super.message) : super.SessionError();
+}
+
+class UnrecoverableError extends SendError {
+  const UnrecoverableError(super.message) : super.SessionError();
+}
+
 class PayjoinManager {
   PayjoinManager(this._walletTx, this._payjoinStorage);
   final WalletTx _walletTx;
@@ -123,12 +140,15 @@ class PayjoinManager {
             await _payjoinStorage.markSenderSessionComplete(pjUri);
             completer.complete(null);
           }
-        } else if (message is Err) {
+        } else if (message is SendError) {
           PayjoinEventBus().emit(
-            PayjoinSendFailureEvent(pjUri: pjUri, error: message),
+            PayjoinSendFailureEvent(pjUri: pjUri, error: message.message),
           );
+          if (message is UnrecoverableError) {
+            await _payjoinStorage.markSenderSessionUnrecoverable(pjUri);
+          }
           await _cleanupSession(pjUri);
-          completer.complete(message);
+          completer.complete(Err(message.message));
         }
       });
 
@@ -305,7 +325,8 @@ class PayjoinManager {
         .toList();
     final filteredSenders = senderSessions.where((session) {
       return session.walletId == wallet.id &&
-          session.status != PayjoinSessionStatus.success;
+          session.status != PayjoinSessionStatus.success &&
+          session.status != PayjoinSessionStatus.unrecoverable;
     }).toList();
 
     final spawnedReceivers = filteredReceivers.map((session) {
@@ -368,6 +389,7 @@ class PayjoinManager {
 
 enum PayjoinSessionStatus {
   pending,
+  unrecoverable,
   success,
 }
 
@@ -473,21 +495,19 @@ Future<void> _isolateSender(List<dynamic> args) async {
   // Reconstruct the Sender from the JSON
   final sender = Sender.fromJson(senderJson);
 
-  // Run the sender logic inside the isolate
   try {
     final proposalPsbt = await _runSender(sender, sendPort: sendPort);
-    if (proposalPsbt == null) throw Exception('proposalPsbt is null');
     sendPort.send({
       'type': 'psbt_to_sign',
       'psbt': proposalPsbt,
     });
   } catch (e) {
-    sendPort.send(Err(e.toString()));
+    sendPort.send(e);
   }
 }
 
 /// Top-level function that attempts to run payjoin sender (V2 protocol first, fallback to V1).
-Future<String?> _runSender(Sender sender, {required SendPort sendPort}) async {
+Future<String> _runSender(Sender sender, {required SendPort sendPort}) async {
   final dio = Dio();
 
   try {
@@ -506,24 +526,26 @@ Future<String?> _runSender(Sender sender, {required SendPort sendPort}) async {
     sendPort.send({'type': 'request_posted'});
 
     while (true) {
-      try {
-        final (getRequest, getReqCtx) = await getCtx.extractReq(
-          ohttpRelay: await _randomOhttpRelayUrl(),
-        );
-        final getRes = await _postRequest(dio, getRequest);
-        final proposalPsbt = await getCtx.processResponse(
-          response: getRes.data as List<int>,
-          ohttpCtx: getReqCtx,
-        );
-        if (proposalPsbt != null) return proposalPsbt;
-      } catch (e) {
-        print('Error occurred while processing payjoin: $e');
-        // Loop until a valid response is found
-      }
+      final (getRequest, getReqCtx) = await getCtx.extractReq(
+        ohttpRelay: await _randomOhttpRelayUrl(),
+      );
+      final getRes = await _postRequest(dio, getRequest);
+      final proposalPsbt = await getCtx.processResponse(
+        response: getRes.data as List<int>,
+        ohttpCtx: getReqCtx,
+      );
+      if (proposalPsbt != null) return proposalPsbt;
     }
   } catch (e) {
-    // If V2 fails, attempt V1
-    return await _runSenderV1(sender, dio, sendPort);
+    if (e is PayjoinException &&
+        // TODO condition on error type instead of message content
+        e.message?.contains('parse receiver public key') == true) {
+      return await _runSenderV1(sender, dio, sendPort);
+    } else if (e is DioException) {
+      throw Exception(SessionError.recoverable(e.toString()));
+    } else {
+      throw Exception(SessionError.unrecoverable(e.toString()));
+    }
   }
 }
 

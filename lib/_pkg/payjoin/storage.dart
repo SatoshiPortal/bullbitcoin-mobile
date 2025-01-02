@@ -186,6 +186,29 @@ class PayjoinStorage {
     }
   }
 
+  Future<Err?> markSenderSessionUnrecoverable(String pjUri) async {
+    try {
+      final (session, err) = await readSenderSession(pjUri);
+      if (err != null) return err;
+
+      final updatedSession = SendSession(
+        session!.isTestnet,
+        session.sender,
+        session.walletId,
+        session.pjUri,
+        PayjoinSessionStatus.unrecoverable,
+      );
+
+      await _hiveStorage.saveValue(
+        key: senderPrefix + pjUri,
+        value: jsonEncode(updatedSession.toJson()),
+      );
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
+
   Future<(List<SendSession>, Err?)> readAllSenders() async {
     try {
       final (allData, err) = await _hiveStorage.getAll();
