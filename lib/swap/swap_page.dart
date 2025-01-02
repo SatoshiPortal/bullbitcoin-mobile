@@ -14,7 +14,7 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
@@ -52,8 +52,8 @@ class _SwapPageState extends State<SwapPage> {
       appWalletsRepository: locator<AppWalletsRepository>(),
       // homeCubit: context.read<HomeBloc>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
-      networkCubit: context.read<NetworkCubit>(),
-    )..fetchFees(context.read<NetworkCubit>().state.testnet);
+      networkCubit: context.read<NetworkBloc>(),
+    )..fetchFees(context.read<NetworkBloc>().state.testnet);
 
     networkFees = NetworkFeesCubit(
       // networkCubit: locator<NetworkCubit>(),
@@ -128,7 +128,7 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final network =
-        context.select((NetworkCubit cubit) => cubit.state.getBBNetwork());
+        context.select((NetworkBloc cubit) => cubit.state.getBBNetwork());
     final wallets = context.select(
       (HomeBloc cubit) =>
           cubit.state.walletsFromNetworkExcludeWatchOnly(network),

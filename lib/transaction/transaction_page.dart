@@ -19,7 +19,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/fee_popup.dart';
@@ -288,7 +288,7 @@ class _TxDetails extends StatelessWidget {
               InkWell(
                 onTap: () {
                   final url =
-                      context.read<NetworkCubit>().state.explorerAddressUrl(
+                      context.read<NetworkBloc>().state.explorerAddressUrl(
                             recipientAddress.address,
                             isLiquid: tx.isLiquid,
                           );
@@ -391,7 +391,7 @@ class TxLink extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        final url = context.read<NetworkCubit>().state.explorerTxUrl(
+        final url = context.read<NetworkBloc>().state.explorerTxUrl(
               txid,
               isLiquid: tx.isLiquid,
               unblindedUrl: unblindedUrl,

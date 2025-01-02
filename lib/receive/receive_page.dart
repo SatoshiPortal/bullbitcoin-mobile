@@ -22,7 +22,7 @@ import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/listeners.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
@@ -73,8 +73,8 @@ class _ReceivePageState extends State<ReceivePage> {
       appWalletsRepository: locator<AppWalletsRepository>(),
       // homeCubit: context.read<HomeBloc>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
-      networkCubit: context.read<NetworkCubit>(),
-    )..fetchFees(context.read<NetworkCubit>().state.testnet);
+      networkCubit: context.read<NetworkBloc>(),
+    )..fetchFees(context.read<NetworkBloc>().state.testnet);
 
     _currencyCubit = CurrencyCubit(
       hiveStorage: locator<HiveStorage>(),
@@ -100,13 +100,13 @@ class _ReceivePageState extends State<ReceivePage> {
     if (wallet!.isLiquid()) {
       _receiveCubit.updateWalletType(
         PaymentNetwork.lightning,
-        context.read<NetworkCubit>().state.testnet,
+        context.read<NetworkBloc>().state.testnet,
         onStart: true,
       );
     } else {
       _receiveCubit.updateWalletType(
         PaymentNetwork.bitcoin,
-        context.read<NetworkCubit>().state.testnet,
+        context.read<NetworkBloc>().state.testnet,
         onStart: true,
       );
     }
@@ -363,7 +363,7 @@ class SelectWalletType extends StatelessWidget {
         context.read<CurrencyCubit>().updateAmountDirect(0);
         context.read<CreateSwapCubit>().removeWarnings();
 
-        final isTestnet = context.read<NetworkCubit>().state.testnet;
+        final isTestnet = context.read<NetworkBloc>().state.testnet;
         context.read<ReceiveCubit>().updateWalletType(value, isTestnet);
       },
     );
@@ -639,7 +639,7 @@ class ChainSwapDisplayReceive extends StatelessWidget {
     if (swapTx == null) return const SizedBox.shrink();
 
     final amount = swapTx.outAmount / 100000000.0;
-    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
+    final isTestnet = context.select((NetworkBloc x) => x.state.testnet);
     final bip21Address = context.select(
       (ReceiveCubit x) => x.state.getAddressWithAmountAndLabel(
         amount,
@@ -836,7 +836,7 @@ class CreateLightningInvoice extends StatelessWidget {
               final wallet = context.read<ReceiveCubit>().state.wallet!;
               final walletIsLiquid = wallet.isLiquid();
               final label = context.read<ReceiveCubit>().state.description;
-              final isTestnet = context.read<NetworkCubit>().state.testnet;
+              final isTestnet = context.read<NetworkBloc>().state.testnet;
               final networkUrl = !walletIsLiquid
                   ? context.read<NetworkRepository>().getNetworkUrl
                   : context.read<NetworkRepository>().getLiquidNetworkUrl;
@@ -967,7 +967,7 @@ class ReceiveQR extends StatelessWidget {
     final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     final amount =
         context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
-    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
+    final isTestnet = context.select((NetworkBloc x) => x.state.testnet);
     final isLiquid = context.select(
       (ReceiveCubit x) => x.state.wallet?.isLiquid() ?? false,
     );
@@ -1116,7 +1116,7 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
     final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     final amount =
         context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
-    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
+    final isTestnet = context.select((NetworkBloc x) => x.state.testnet);
     final isLiquid = context.select(
       (ReceiveCubit x) => x.state.wallet?.isLiquid() ?? false,
     );

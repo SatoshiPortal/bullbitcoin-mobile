@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/_model/network.dart';
+import 'package:bb_mobile/_pkg/consts/configs.dart';
+import 'package:bb_mobile/_pkg/electrum_test.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
@@ -38,9 +40,9 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     on<UpdateTempValidateDomain>(_onUpdateTempValidateDomain);
     on<ResetTempNetwork>(_onResetTempNetwork);
     on<SetupBlockchain>(_onSetupBlockchain);
-    on<NetworkLoadError>(_onNetworkLoadError);
-    on<UpdateMainnet>(_onUpdateMainnet);
-    on<UpdateTestnet>(_onUpdateTestnet);
+    // on<NetworkLoadError>(_onNetworkLoadError);
+    // on<UpdateMainnet>(_onUpdateMainnet);
+    // on<UpdateTestnet>(_onUpdateTestnet);
 
     add(InitNetworks());
   }
@@ -89,8 +91,94 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     if (state.loadingNetworks) return;
     emit(state.copyWith(loadingNetworks: true));
 
-    // ...existing loadNetworks logic...
-    // Convert all emit calls to use the emit parameter
+    final networks = state.networks;
+    final liqNetworks = state.liquidNetworks;
+
+    if (networks.isNotEmpty) {
+      final selectedNetwork =
+          networks.firstWhere((_) => _.type == state.selectedNetwork);
+
+      emit(
+        state.copyWith(
+          loadingNetworks: false,
+          tempNetworkDetails: selectedNetwork,
+          tempNetwork: selectedNetwork.type,
+          selectedNetwork: selectedNetwork.type,
+        ),
+      );
+      await Future.delayed(const Duration(milliseconds: 200));
+      add(SetupBlockchain(isLiquid: false));
+    } else {
+      final newNetworks = [
+        const ElectrumNetwork.defaultElectrum(),
+        const ElectrumNetwork.bullbitcoin(),
+        const ElectrumNetwork.custom(
+          mainnet: 'ssl://$bbelectrumMain',
+          testnet: 'ssl://$openelectrumTest',
+        ),
+      ];
+
+      final selectedNetwork = newNetworks[2];
+      //.firstWhere((_) => _.type == state.selectedNetwork);
+      emit(
+        state.copyWith(
+          networks: newNetworks,
+          tempNetworkDetails: selectedNetwork,
+          tempNetwork: selectedNetwork.type,
+          selectedNetwork: selectedNetwork.type,
+        ),
+      );
+      await Future.delayed(const Duration(milliseconds: 200));
+      add(SetupBlockchain(isLiquid: false));
+    }
+
+    if (liqNetworks.isNotEmpty) {
+      var selectedNetwork =
+          liqNetworks.firstWhere((_) => _.type == state.selectedLiquidNetwork);
+      final updatedLiqNetworks = liqNetworks.toList();
+
+      if (liqNetworks.length == 2) {
+        updatedLiqNetworks.insert(1, const LiquidElectrumNetwork.bullbitcoin());
+        selectedNetwork = updatedLiqNetworks[1];
+      }
+      emit(
+        state.copyWith(
+          loadingNetworks: false,
+          tempLiquidNetworkDetails: selectedNetwork,
+          tempLiquidNetwork: selectedNetwork.type,
+          liquidNetworks: updatedLiqNetworks,
+          selectedLiquidNetwork: selectedNetwork.type,
+        ),
+      );
+      await Future.delayed(const Duration(milliseconds: 200));
+      add(SetupBlockchain(isLiquid: true));
+    } else {
+      final newLiqNetworks = [
+        const LiquidElectrumNetwork.blockstream(),
+        const LiquidElectrumNetwork.bullbitcoin(),
+        const LiquidElectrumNetwork.custom(
+          mainnet: liquidElectrumUrl,
+          testnet: liquidElectrumTestUrl,
+        ),
+      ];
+      // final selectedLiqNetwork = newLiqNetworks
+      //     .firstWhere((_) => _.type == state.selectedLiquidNetwork);
+
+      final selectedLiqNetwork = newLiqNetworks[1];
+
+      emit(
+        state.copyWith(
+          liquidNetworks: newLiqNetworks,
+          tempLiquidNetworkDetails: selectedLiqNetwork,
+          tempLiquidNetwork: selectedLiqNetwork.type,
+          selectedLiquidNetwork: selectedLiqNetwork.type,
+        ),
+      );
+      await Future.delayed(const Duration(milliseconds: 200));
+      add(SetupBlockchain(isLiquid: true));
+    }
+
+    emit(state.copyWith(loadingNetworks: false));
   }
 
   Future<void> _onToggleTestnet(
@@ -205,7 +293,34 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
       }
     }
 
-    // ...existing liquid network setup logic...
+    if (event.isLiquid == null || event.isLiquid!) {
+      final selectedLiqNetwork = state.getLiquidNetwork();
+      if (selectedLiqNetwork == null) return;
+
+      final errLiquid = await _walletNetwork.createBlockChain(
+        url:
+            isTestnet ? selectedLiqNetwork.testnet : selectedLiqNetwork.mainnet,
+        isTestnet: isTestnet,
+      );
+      if (errLiquid != null) {
+        if (!state.networkErrorOpened) {
+          BBAlert.showErrorAlertPopUp(
+            title: errLiquid.title ?? '',
+            err: errLiquid.message,
+            onClose: () => add(CloseNetworkError()),
+            okButtonText: 'Change server',
+            onRetry: () => add(RetryNetwork()),
+          );
+        }
+
+        emit(
+          state.copyWith(
+            errLoadingNetworks: errLiquid.toString(),
+            networkErrorOpened: true,
+          ),
+        );
+      }
+    }
 
     emit(state.copyWith(networkConnected: true));
   }
@@ -215,10 +330,8 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     Emitter<NetworkState> emit,
   ) async {
     emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
-
     if (!event.isLiq) {
       if (state.tempNetwork == null) return;
-
       final networks = state.networks.toList();
       final tempNetwork = state.tempNetworkDetails!;
       final checkedTempNetworkDetails = tempNetwork.copyWith(
@@ -226,27 +339,85 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
         testnet: _checkURL(tempNetwork.testnet),
       );
 
-      // Validation logic...
-      if (!_validateNetwork(tempNetwork, emit)) return;
+      // Local validation
+      final sslRegex =
+          RegExp(r'^ssl:\/\/([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\:[0-9]{2,5}$');
+      if (!sslRegex.hasMatch(tempNetwork.mainnet)) {
+        final String error = _networkLoadError(tempNetwork.mainnet);
+        final String formattedError = error.isNotEmpty ? (': $error') : '';
+        emit(
+          state.copyWith(
+            errLoadingNetworks: 'Invalid mainnet electrum URL$formattedError',
+          ),
+        );
+        return;
+      }
+      if (!sslRegex.hasMatch(tempNetwork.testnet)) {
+        final String error = _networkLoadError(tempNetwork.testnet);
+        final String formattedError = error.isNotEmpty ? ': $error' : '';
+        emit(
+          state.copyWith(
+            errLoadingNetworks: 'Invalid testnet electrum URL$formattedError',
+          ),
+        );
+        return;
+      }
+
+      // Connection test with electrum
+      if (state.testnet) {
+        final testnetElectrumLive = await isElectrumLive(tempNetwork.testnet);
+        if (!testnetElectrumLive) {
+          emit(
+            state.copyWith(
+              errLoadingNetworks:
+                  'Check Testnet electrum URL. Could not connect to electrum.',
+            ),
+          );
+          return;
+        }
+      } else {
+        final mainnetElectrumLive = await isElectrumLive(tempNetwork.mainnet);
+        if (!mainnetElectrumLive) {
+          emit(
+            state.copyWith(
+              errLoadingNetworks:
+                  'Check Mainnet electrum URL. Could not connect to electrum.',
+            ),
+          );
+          return;
+        }
+      }
 
       final index =
           networks.indexWhere((element) => element.type == state.tempNetwork);
       networks.removeAt(index);
       networks.insert(index, checkedTempNetworkDetails);
-
       emit(
         state.copyWith(
           networks: networks,
           selectedNetwork: tempNetwork.type,
         ),
       );
-
       await Future.delayed(const Duration(milliseconds: 100));
       add(SetupBlockchain(isLiquid: false));
       return;
     }
 
-    // ... handle liquid network save logic ...
+    if (state.tempLiquidNetwork == null) return;
+    final networks = state.liquidNetworks.toList();
+    final tempNetwork = state.tempLiquidNetworkDetails!;
+    final index = networks
+        .indexWhere((element) => element.type == state.tempLiquidNetwork);
+    networks.removeAt(index);
+    networks.insert(index, state.tempLiquidNetworkDetails!);
+    emit(
+      state.copyWith(
+        liquidNetworks: networks,
+        selectedLiquidNetwork: tempNetwork.type,
+      ),
+    );
+    await Future.delayed(const Duration(milliseconds: 100));
+    add(SetupBlockchain(isLiquid: true));
   }
 
   Future<void> _onUpdateTempMainnet(
@@ -261,26 +432,6 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
 
   Future<void> _onUpdateTempTestnet(
     UpdateTempTestnet event,
-    Emitter<NetworkState> emit,
-  ) async {
-    final network = state.tempNetworkDetails;
-    if (network == null) return;
-    final updatedConfig = network.copyWith(testnet: event.testnet);
-    emit(state.copyWith(tempNetworkDetails: updatedConfig));
-  }
-
-  Future<void> _onUpdateMainnet(
-    UpdateMainnet event,
-    Emitter<NetworkState> emit,
-  ) async {
-    final network = state.tempNetworkDetails;
-    if (network == null) return;
-    final updatedConfig = network.copyWith(mainnet: event.mainnet);
-    emit(state.copyWith(tempNetworkDetails: updatedConfig));
-  }
-
-  Future<void> _onUpdateTestnet(
-    UpdateTestnet event,
     Emitter<NetworkState> emit,
   ) async {
     final network = state.tempNetworkDetails;
@@ -366,41 +517,9 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     );
   }
 
-  Future<void> _onNetworkLoadError(
-    NetworkLoadError event,
-    Emitter<NetworkState> emit,
-  ) async {
-    final error = _networkLoadError(event.url);
-    emit(
-      state.copyWith(
-        errLoadingNetworks:
-            'Invalid electrum URL${error.isNotEmpty ? ": $error" : ""}',
-      ),
-    );
-  }
-
-  // Helper methods
   String _checkURL(String url) {
     if (!url.contains('://')) return 'ssl://$url';
     return url;
-  }
-
-  bool _validateNetwork(ElectrumNetwork network, Emitter<NetworkState> emit) {
-    final sslRegex =
-        RegExp(r'^ssl:\/\/([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\:[0-9]{2,5}$');
-
-    if (!sslRegex.hasMatch(network.mainnet)) {
-      final error = _networkLoadError(network.mainnet);
-      emit(
-        state.copyWith(
-          errLoadingNetworks:
-              'Invalid mainnet electrum URL${error.isNotEmpty ? ": $error" : ""}',
-        ),
-      );
-      return false;
-    }
-    // ... rest of validation logic ...
-    return true;
   }
 
   String _networkLoadError(String url) {
@@ -416,6 +535,4 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     final torRegex = RegExp(r'^([a-z2-7]{16}|[a-zA-Z2-7]{56})\.onion$');
     return torRegex.hasMatch(cleanUrl);
   }
-
-  // Add remaining event handlers following the same pattern...
 }

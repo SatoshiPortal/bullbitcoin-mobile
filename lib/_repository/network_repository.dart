@@ -238,4 +238,8 @@ class NetworkRepository {
         return 0.01; // 0.01; TODO: Sai for liquid testnet
     }
   }
+
+  Future<Err?> saveNetworkConfig() async {
+    return null;
+  }
 }

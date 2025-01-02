@@ -22,7 +22,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/page_template.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
@@ -126,8 +126,8 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
       appWalletsRepository: locator<AppWalletsRepository>(),
       // homeCubit: context.read<HomeBloc>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
-      networkCubit: context.read<NetworkCubit>(),
-    )..fetchFees(context.read<NetworkCubit>().state.testnet);
+      networkCubit: context.read<NetworkBloc>(),
+    )..fetchFees(context.read<NetworkBloc>().state.testnet);
 
     networkFees = NetworkFeesCubit(
       hiveStorage: locator<HiveStorage>(),
@@ -303,11 +303,10 @@ class _Screen extends StatelessWidget {
                 const Gap(4),
                 InkWell(
                   onTap: () {
-                    final url =
-                        context.read<NetworkCubit>().state.explorerTxUrl(
-                              txid,
-                              isLiquid: tx.isLiquid,
-                            );
+                    final url = context.read<NetworkBloc>().state.explorerTxUrl(
+                          txid,
+                          isLiquid: tx.isLiquid,
+                        );
                     locator<Launcher>().launchApp(url);
                   },
                   child: BBText.body(txid, isBlue: true),

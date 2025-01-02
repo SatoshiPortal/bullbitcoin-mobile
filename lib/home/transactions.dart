@@ -9,7 +9,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
@@ -73,7 +73,7 @@ class _HomeTransactionsState extends State<HomeTransactions> {
     final _ = context.select((HomeBloc x) => x.state.updated);
 
     // final walletBlocs = context.select((HomeBloc _) => _.state.walletBlocs);
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final network = context.select((NetworkBloc x) => x.state.getBBNetwork());
     final txs =
         context.select((HomeBloc cubit) => cubit.state.getAllTxs(network));
 
@@ -229,7 +229,7 @@ class _TxList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.select((HomeBloc _) => _.state.wallets);
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final network = context.select((NetworkBloc _) => _.state.getBBNetwork());
     final txs = context.select((HomeBloc _) => _.state.getAllTxs(network));
 
     if (txs.isEmpty) {

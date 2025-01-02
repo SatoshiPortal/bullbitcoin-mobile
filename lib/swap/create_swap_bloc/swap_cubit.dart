@@ -6,7 +6,7 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_state.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
@@ -21,7 +21,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
     required WalletTx walletTx,
     // required HomeBloc homeCubit,
     required WatchTxsBloc watchTxsBloc,
-    required NetworkCubit networkCubit,
+    required NetworkBloc networkCubit,
     required AppWalletsRepository appWalletsRepository,
   })  : _walletTx = walletTx,
         _swapBoltz = swapBoltz,
@@ -38,7 +38,7 @@ class CreateSwapCubit extends Cubit<SwapState> {
   // final HomeBloc _homeCubit;
   final AppWalletsRepository _appWalletsRepository;
   final WatchTxsBloc _watchTxsBloc;
-  final NetworkCubit _networkCubit;
+  final NetworkBloc _networkCubit;
   Future<void> fetchFees(bool isTestnet) async {
     final boltzurl = isTestnet ? boltzTestnetUrl : boltzMainnetUrl;
 

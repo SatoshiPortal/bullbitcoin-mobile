@@ -10,7 +10,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network/listeners.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/routes.dart';
@@ -60,7 +60,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
         BlocProvider.value(value: locator<SettingsCubit>()),
         BlocProvider.value(value: locator<Logger>()),
         BlocProvider.value(value: locator<Lighting>()),
-        BlocProvider.value(value: locator<NetworkCubit>()),
+        BlocProvider.value(value: locator<NetworkBloc>()),
         BlocProvider.value(value: locator<NetworkFeesCubit>()),
         BlocProvider.value(value: locator<CurrencyCubit>()),
         BlocProvider.value(value: locator<HomeBloc>()),

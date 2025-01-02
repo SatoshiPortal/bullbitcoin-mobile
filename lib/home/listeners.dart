@@ -3,7 +3,7 @@ import 'package:bb_mobile/_pkg/payjoin/listeners.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -141,7 +141,7 @@ class HomeWalletLoadingListeners extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final network = context.select((NetworkBloc x) => x.state.getBBNetwork());
     final wallets =
         context.select((HomeBloc x) => x.state.walletsFromNetwork(network));
 

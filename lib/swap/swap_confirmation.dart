@@ -8,7 +8,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
@@ -108,7 +108,7 @@ class _Screen extends StatelessWidget {
     final currency =
         context.select((CurrencyCubit _) => _.state.defaultFiatCurrency);
     final amtFiat = context.select(
-      (NetworkCubit cubit) => cubit.state.calculatePrice(amount, currency),
+      (NetworkBloc cubit) => cubit.state.calculatePrice(amount, currency),
     );
 
     final swapTx =
@@ -120,7 +120,7 @@ class _Screen extends StatelessWidget {
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fee));
 
     final feeFiat = context.select(
-      (NetworkCubit cubit) => cubit.state.calculatePrice(fee, currency),
+      (NetworkBloc cubit) => cubit.state.calculatePrice(fee, currency),
     );
 
     final fiatCurrency = context.select(
@@ -259,21 +259,21 @@ class _Warnings extends StatelessWidget {
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(fees));
 
     final feesFiatStr = context.select(
-      (NetworkCubit cubit) => cubit.state.calculatePrice(fees, currency),
+      (NetworkBloc cubit) => cubit.state.calculatePrice(fees, currency),
     );
 
     final amtStr = context
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(amt));
 
     final amtFiatStr = context.select(
-      (NetworkCubit cubit) => cubit.state.calculatePrice(amt, currency),
+      (NetworkBloc cubit) => cubit.state.calculatePrice(amt, currency),
     );
 
     final minAmtStr = context
         .select((CurrencyCubit cubit) => cubit.state.getAmountInUnits(minAmt));
 
     final minAmtFiatStr = context.select(
-      (NetworkCubit cubit) => cubit.state.calculatePrice(minAmt, currency),
+      (NetworkBloc cubit) => cubit.state.calculatePrice(minAmt, currency),
     );
 
     return SingleChildScrollView(

@@ -22,7 +22,7 @@ import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -101,7 +101,7 @@ class _ScreenState extends State<_Screen> {
     final loading = context.select(
       (HomeBloc x) => x.state.loadingWallets,
     );
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final network = context.select((NetworkBloc x) => x.state.getBBNetwork());
 
     final wallets = context.select(
       (HomeBloc x) => x.state.walletsFromNetwork(network),
@@ -228,7 +228,7 @@ class CardsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final _ = context.select((HomeBloc x) => x.state.updated);
 
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final network = context.select((NetworkBloc x) => x.state.getBBNetwork());
     final walletBlocs =
         context.select((HomeBloc x) => x.state.walletsFromNetwork(network));
     final columns = buildCardColumns(walletBlocs);
@@ -370,7 +370,7 @@ class CardItem extends StatelessWidget {
         context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
 
     final fiatAmt = context
-        .select((NetworkCubit x) => x.state.calculatePrice(sats, fiatCurrency));
+        .select((NetworkBloc x) => x.state.calculatePrice(sats, fiatCurrency));
 
     return SizedBox(
       width: double.infinity,
@@ -674,7 +674,7 @@ class _HomeBottomBar2State extends State<HomeBottomBar2> {
   @override
   void initState() {
     if (widget.walletBloc == null) {
-      final network = context.read<NetworkCubit>().state.getBBNetwork();
+      final network = context.read<NetworkBloc>().state.getBBNetwork();
       final walletBlocs =
           context.read<HomeBloc>().state.walletsFromNetwork(network);
       if (walletBlocs.length == 1) wb = walletBlocs.first;
@@ -1131,7 +1131,7 @@ class HomeWarnings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _ = context.select((HomeBloc _) => _.state.updated);
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final network = context.select((NetworkBloc _) => _.state.getBBNetwork());
     final warnings =
         context.select((HomeBloc _) => _.state.homeWarnings(network));
 

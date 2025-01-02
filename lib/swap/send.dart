@@ -4,7 +4,7 @@ import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
@@ -194,7 +194,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
     final fiatAmt =
         context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
     final isTestNet =
-        context.select((NetworkCubit cubit) => cubit.state.testnet);
+        context.select((NetworkBloc cubit) => cubit.state.testnet);
     final unit = defaultCurrency?.name ?? '';
     final amt = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
 

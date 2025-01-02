@@ -28,16 +28,16 @@ class LiquidNetworkTypeChanged extends NetworkEvent {
   LiquidNetworkTypeChanged(this.type);
 }
 
-// Add other events for updating network configuration...
-class UpdateMainnet extends NetworkEvent {
-  final String mainnet;
-  UpdateMainnet(this.mainnet);
-}
+// // Add other events for updating network configuration...
+// class UpdateMainnet extends NetworkEvent {
+//   final String mainnet;
+//   UpdateMainnet(this.mainnet);
+// }
 
-class UpdateTestnet extends NetworkEvent {
-  final String testnet;
-  UpdateTestnet(this.testnet);
-}
+// class UpdateTestnet extends NetworkEvent {
+//   final String testnet;
+//   UpdateTestnet(this.testnet);
+// }
 
 // ... add other events as needed ...
 
@@ -96,7 +96,7 @@ class SetupBlockchain extends NetworkEvent {
   SetupBlockchain({this.isLiquid, this.isTestnetLocal});
 }
 
-class NetworkLoadError extends NetworkEvent {
-  final String url;
-  NetworkLoadError(this.url);
-}
+// class NetworkLoadError extends NetworkEvent {
+//   final String url;
+//   NetworkLoadError(this.url);
+// }

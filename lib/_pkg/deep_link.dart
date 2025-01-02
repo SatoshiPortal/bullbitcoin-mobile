@@ -4,7 +4,8 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/bip21.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/event.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:flutter/material.dart';
 // import 'package:uni_links/uni_links.dart';
 
@@ -40,7 +41,7 @@ class DeepLink {
     required String link,
     // required SettingsCubit settingsCubit,
     required HomeBloc homeCubit,
-    required NetworkCubit networkCubit,
+    required NetworkBloc networkCubit,
     required BuildContext context,
   }) async {
     try {
@@ -51,7 +52,7 @@ class DeepLink {
       final isTestnet = isTestnetAddress(address);
       if (isTestnet == null) return Err('Invalid address');
       final currentIsTestnet = networkCubit.state.testnet;
-      if (currentIsTestnet != isTestnet) networkCubit.toggleTestnet();
+      if (currentIsTestnet != isTestnet) networkCubit.add(ToggleTestnet());
       await Future.delayed(const Duration(milliseconds: 200));
       final wallet = homeCubit.state.getFirstWithSpendableAndBalance(
         isTestnet ? BBNetwork.Testnet : BBNetwork.Mainnet,

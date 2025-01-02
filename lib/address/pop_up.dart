@@ -13,7 +13,7 @@ import 'package:bb_mobile/address/bloc/address_cubit.dart';
 import 'package:bb_mobile/address/bloc/address_state.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -140,7 +140,7 @@ class AddressQR extends StatelessWidget {
     final address =
         context.select((AddressCubit cubit) => cubit.state.address!);
     final url = context.select(
-      (NetworkCubit _) => _.state
+      (NetworkBloc _) => _.state
           .explorerAddressUrl(address.address, isLiquid: address.isLiquid),
     );
 

@@ -2,7 +2,8 @@ import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/event.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
 import 'package:bb_mobile/routes.dart';
@@ -34,8 +35,8 @@ class ReceiveListeners extends StatelessWidget {
             if (state.updateAddressGap == null) return;
 
             context
-                .read<NetworkCubit>()
-                .updateStopGapAndSave(state.updateAddressGap!);
+                .read<NetworkBloc>()
+                .add(UpdateStopGapAndSave(state.updateAddressGap!));
           },
         ),
         BlocListener<ReceiveCubit, ReceiveState>(
