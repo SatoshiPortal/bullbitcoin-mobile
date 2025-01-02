@@ -96,6 +96,28 @@ class PayjoinStorage {
     }
   }
 
+  Future<Err?> markReceiverSessionUnrecoverable(String id) async {
+    try {
+      final (session, err) = await readReceiverSession(id);
+      if (err != null) return err;
+
+      final updatedSession = RecvSession(
+        session!.isTestnet,
+        session.receiver,
+        session.walletId,
+        PayjoinSessionStatus.unrecoverable,
+      );
+
+      await _hiveStorage.saveValue(
+        key: receiverPrefix + id,
+        value: jsonEncode(updatedSession.toJson()),
+      );
+      return null;
+    } catch (e) {
+      return Err(e.toString());
+    }
+  }
+
   Future<(List<RecvSession>, Err?)> readAllReceivers() async {
     //deleteAllSessions();
     try {

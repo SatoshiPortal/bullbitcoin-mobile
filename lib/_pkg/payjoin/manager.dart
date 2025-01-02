@@ -26,21 +26,21 @@ const List<String> _ohttpRelayUrls = [
 
 const payjoinDirectoryUrl = 'https://payjo.in';
 
-sealed class SendError {
+sealed class SessionError {
   final String message;
 
-  const SendError.SessionError(this.message);
+  const SessionError._(this.message);
 
-  factory SendError.recoverable(String message) = RecoverableError;
-  factory SendError.unrecoverable(String message) = UnrecoverableError;
+  factory SessionError.recoverable(String message) = RecoverableError;
+  factory SessionError.unrecoverable(String message) = UnrecoverableError;
 }
 
-class RecoverableError extends SendError {
-  const RecoverableError(super.message) : super.SessionError();
+class RecoverableError extends SessionError {
+  const RecoverableError(super.message) : super._();
 }
 
-class UnrecoverableError extends SendError {
-  const UnrecoverableError(super.message) : super.SessionError();
+class UnrecoverableError extends SessionError {
+  const UnrecoverableError(super.message) : super._();
 }
 
 class PayjoinManager {
@@ -140,7 +140,7 @@ class PayjoinManager {
             await _payjoinStorage.markSenderSessionComplete(pjUri);
             completer.complete(null);
           }
-        } else if (message is SendError) {
+        } else if (message is SessionError) {
           PayjoinEventBus().emit(
             PayjoinSendFailureEvent(pjUri: pjUri, error: message.message),
           );
@@ -301,6 +301,9 @@ class PayjoinManager {
 
       return completer.future;
     } catch (e) {
+      if (e is UnrecoverableError) {
+        await _payjoinStorage.markReceiverSessionUnrecoverable(receiver.id());
+      }
       return Err(
         e.toString(),
         title: 'Error occurred while receiving Payjoin',
@@ -321,7 +324,8 @@ class PayjoinManager {
     final filteredReceivers = receiverSessions
         .where((session) =>
             session.walletId == wallet.id &&
-            session.status != PayjoinSessionStatus.success)
+            session.status != PayjoinSessionStatus.success &&
+            session.status != PayjoinSessionStatus.unrecoverable)
         .toList();
     final filteredSenders = senderSessions.where((session) {
       return session.walletId == wallet.id &&
@@ -673,7 +677,7 @@ Future<void> _isolateReceiver(List<dynamic> args) async {
       return payjoinProposal;
     } catch (e) {
       print('Error occurred while finalizing proposal: $e');
-      throw Exception('Error occurred while finalizing proposal');
+      rethrow;
     }
   }
 
@@ -690,10 +694,10 @@ Future<void> _isolateReceiver(List<dynamic> args) async {
       'type': 'proposal_sent',
     });
   } catch (e) {
-    try {
-      isolateTomainSendPort.send(Err(e.toString()));
-    } catch (e) {
-      print('$e');
+    if (e is DioException) {
+      isolateTomainSendPort.send(SessionError.recoverable(e.toString()));
+    } else {
+      isolateTomainSendPort.send(SessionError.unrecoverable(e.toString()));
     }
   }
 }
@@ -702,34 +706,26 @@ Future<UncheckedProposal> _receiveUncheckedProposal(
   Dio dio,
   Receiver receiver,
 ) async {
-  try {
-    while (true) {
-      final (req, context) = await receiver.extractReq();
-      final ohttpResponse = await _postRequest(dio, req);
-      final proposal = await receiver.processRes(
-        body: ohttpResponse.data as List<int>,
-        ctx: context,
-      );
-      if (proposal != null) {
-        return proposal;
-      }
+  while (true) {
+    final (req, context) = await receiver.extractReq();
+    final ohttpResponse = await _postRequest(dio, req);
+    final proposal = await receiver.processRes(
+      body: ohttpResponse.data as List<int>,
+      ctx: context,
+    );
+    if (proposal != null) {
+      return proposal;
     }
-  } catch (e) {
-    throw Exception('Error occurred while processing payjoin receiver: $e');
   }
 }
 
 Future<void> _respondProposal(Dio dio, PayjoinProposal proposal) async {
-  try {
-    final (postReq, ohttpCtx) = await proposal.extractV2Req();
-    final postRes = await _postRequest(dio, postReq);
-    await proposal.processRes(
-      res: postRes.data as List<int>,
-      ohttpContext: ohttpCtx,
-    );
-  } catch (e) {
-    throw Exception('Error occurred while processing payjoin: $e');
-  }
+  final (postReq, ohttpCtx) = await proposal.extractV2Req();
+  final postRes = await _postRequest(dio, postReq);
+  await proposal.processRes(
+    res: postRes.data as List<int>,
+    ohttpContext: ohttpCtx,
+  );
 }
 
 /// Posts a request via dio and returns the response.
