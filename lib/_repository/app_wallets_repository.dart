@@ -3,7 +3,6 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
-import 'package:rxdart/rxdart.dart';
 
 class AppWalletsRepository {
   AppWalletsRepository({
@@ -11,12 +10,7 @@ class AppWalletsRepository {
   }) : _walletsStorageRepository = walletsStorageRepository;
   final WalletsStorageRepository _walletsStorageRepository;
 
-  final BehaviorSubject<List<WalletService>> _walletServices =
-      BehaviorSubject<List<WalletService>>.seeded([]);
-
-  void dispose() {
-    _walletServices.close();
-  }
+  final List<WalletService> _walletServices = [];
 
   Future<void> getWalletsFromStorage() async {
     final (wallets, err) = await _walletsStorageRepository.readAllWallets();
@@ -28,64 +22,34 @@ class AppWalletsRepository {
       return;
     }
 
-    _walletServices.add(
+    _walletServices.clear();
+    _walletServices.addAll(
       wallets
           .map((_) => createWalletService(wallet: _, fromStorage: true))
           .toList(),
     );
   }
 
-  // Stream<List<WalletServiceData>> get wallets => _walletServices
-  //     .map((services) => services.map((s) => s.dataStream).toList())
-  //     .switchMap(
-  //       (streams) => streams.isEmpty
-  //           ? Stream.value(<WalletServiceData>[])
-  //           : CombineLatestStream.list(streams),
-  //     );
-
-  List<Wallet> get allWallets =>
-      _walletServices.value.map((_) => _.wallet).toList();
-
-  Stream<Wallet> wallet(String id) => _walletServices
-      .map(
-        (services) => services.firstWhere((_) => _.wallet.id == id).wallet,
-      )
-      .asBroadcastStream();
-
-  Stream<WalletService> walletService(String id) => _walletServices
-      .map(
-        (services) => services.firstWhere((_) => _.wallet.id == id),
-      )
-      .asBroadcastStream();
-
-  // Stream<bool> walletSyncing(String id) => _walletServices
-  //     .map(
-  //       (services) => services.firstWhere((_) => _.wallet.id == id).syncing,
-  //     )
-  //     .asBroadcastStream();
-
-  WalletService? getWalletServiceById(String id) {
-    final services = _walletServices.value;
-    final idx = services.indexWhere((_) => _.wallet.id == id);
-    if (idx == -1) return null;
-    return services[idx];
-  }
+  List<Wallet> get allWallets => _walletServices.map((_) => _.wallet).toList();
 
   Wallet? getWalletById(String id) {
-    final services = _walletServices.value;
-    final idx = services.indexWhere((_) => _.wallet.id == id);
+    final idx = _walletServices.indexWhere((_) => _.wallet.id == id);
     if (idx == -1) return null;
-    return services[idx].wallet;
+    return _walletServices[idx].wallet;
+  }
+
+  WalletService? getWalletServiceById(String id) {
+    final idx = _walletServices.indexWhere((_) => _.wallet.id == id);
+    if (idx == -1) return null;
+    return _walletServices[idx];
   }
 
   void deleteWallet(String id) {
-    final services = _walletServices.value;
-    services.removeWhere((_) => _.wallet.id == id);
-    _walletServices.add(services);
+    _walletServices.removeWhere((_) => _.wallet.id == id);
   }
 
   List<WalletService> walletServiceFromNetwork(BBNetwork network) =>
-      _walletServices.value.where((_) => _.wallet.network == network).toList();
+      _walletServices.where((_) => _.wallet.network == network).toList();
 
   Future loadAllInNetwork(BBNetwork network) async {
     final ws = walletServiceFromNetwork(network);
@@ -101,10 +65,9 @@ class AppWalletsRepository {
     }
   }
 
-  bool get hasWallets => _walletServices.value.isNotEmpty;
-  bool get hasMainWallets =>
-      _walletServices.value.any((_) => _.wallet.mainWallet);
-  List<Wallet> walletsFromNetwork(BBNetwork network) => _walletServices.value
+  bool get hasWallets => _walletServices.isNotEmpty;
+  bool get hasMainWallets => _walletServices.any((_) => _.wallet.mainWallet);
+  List<Wallet> walletsFromNetwork(BBNetwork network) => _walletServices
       .map((_) => _.wallet)
       .where((_) => _.network == network)
       .toList();
@@ -179,7 +142,7 @@ class AppWalletsRepository {
   }
 
   WalletService? findWalletServiceWithSameFngr(Wallet wallet) {
-    for (final ws in _walletServices.value) {
+    for (final ws in _walletServices) {
       final w = ws.wallet;
       if (w.id == wallet.id) continue;
       if (w.sourceFingerprint == wallet.sourceFingerprint) return ws;

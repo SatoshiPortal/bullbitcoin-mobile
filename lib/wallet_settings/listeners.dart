@@ -1,5 +1,7 @@
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
@@ -24,7 +26,8 @@ class WalletSettingsListeners extends StatelessWidget {
 
             // home.updateSelectedWallet(walletBloc);
 
-            await context.read<AppWalletsRepository>().getWalletsFromStorage();
+            // await context.read<AppWalletsRepository>().getWalletsFromStorage();
+            context.read<HomeBloc>().add(LoadWalletsFromStorage());
             if (!context.mounted) return;
             context.pop();
           },
