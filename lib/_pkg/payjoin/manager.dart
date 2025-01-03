@@ -274,15 +274,21 @@ class PayjoinManager {
             // TODO PROPAGATE ERROR TO UI TOAST / TRANSACTION HISTORY
             debugPrint(e.toString());
             await _cleanupSession(receiver.id());
+            await _payjoinStorage
+                .markReceiverSessionUnrecoverable(receiver.id());
             completer.complete(
               Err(
                 e.toString(),
               ),
             );
           }
-        } else if (message is Err) {
+        } else if (message is SessionError) {
           await _cleanupSession(receiver.id());
-          completer.complete(message);
+          if (message is UnrecoverableError) {
+            await _payjoinStorage
+                .markReceiverSessionUnrecoverable(receiver.id());
+          }
+          completer.complete(Err(message.toString()));
         }
       });
 
@@ -301,9 +307,6 @@ class PayjoinManager {
 
       return completer.future;
     } catch (e) {
-      if (e is UnrecoverableError) {
-        await _payjoinStorage.markReceiverSessionUnrecoverable(receiver.id());
-      }
       return Err(
         e.toString(),
         title: 'Error occurred while receiving Payjoin',
