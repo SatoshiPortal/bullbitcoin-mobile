@@ -33,8 +33,8 @@ class NetworkPopup extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<NetworkBloc, NetworkState>(
       listenWhen: (previous, current) =>
-          previous.networkConnected == false &&
-          current.networkConnected == true &&
+          previous.networkData.networkConnected == false &&
+          current.networkData.networkConnected == true &&
           current.errLoadingNetworks.isEmpty,
       listener: (context, state) async {
         await Future.delayed(const Duration(seconds: 1));
@@ -121,7 +121,7 @@ class NetworkStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLiq = context.select((_NetworkSelector _) => _.state);
     final networkConnected =
-        context.select((NetworkBloc x) => x.state.networkConnected);
+        context.select((NetworkBloc x) => x.state.networkData.networkConnected);
     final errLoadingNetwork =
         context.select((NetworkBloc x) => x.state.errLoadingNetworks);
     final isTestnet =
@@ -305,7 +305,8 @@ class NetworkConfigFields extends StatelessWidget {
     if (tempNetworkDetails == null) return const SizedBox.shrink();
 
     final tempLiqNetworkDetails = context.select(
-        (NetworkBloc _) => _.state.networkData.tempLiquidNetworkDetails);
+      (NetworkBloc _) => _.state.networkData.tempLiquidNetworkDetails,
+    );
     if (tempLiqNetworkDetails == null) return const SizedBox.shrink();
 
     final type = network.type;
@@ -549,11 +550,14 @@ class ElectrumAdvancedOptions extends StatelessWidget {
     final fieldWidth = MediaQuery.of(context).size.width * 0.7;
 
     final sg = context.select(
-        (NetworkBloc x) => x.state.networkData.tempNetworkDetails?.stopGap);
+      (NetworkBloc x) => x.state.networkData.tempNetworkDetails?.stopGap,
+    );
     final r = context.select(
-        (NetworkBloc x) => x.state.networkData.tempNetworkDetails?.retry);
+      (NetworkBloc x) => x.state.networkData.tempNetworkDetails?.retry,
+    );
     final t = context.select(
-        (NetworkBloc x) => x.state.networkData.tempNetworkDetails?.timeout);
+      (NetworkBloc x) => x.state.networkData.tempNetworkDetails?.timeout,
+    );
 
     final showButton = context
         .select((NetworkBloc x) => x.state.showConfirmButton(isLiquid: false));

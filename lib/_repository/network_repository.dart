@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
-import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -27,6 +24,7 @@ class NetworkRepoData with _$NetworkRepoData {
     ElectrumNetwork? tempNetworkDetails,
     LiquidElectrumTypes? tempLiquidNetwork,
     LiquidElectrumNetwork? tempLiquidNetworkDetails,
+    @Default(false) bool networkConnected,
   }) = _NetworkRepoData;
   const NetworkRepoData._();
 
@@ -54,29 +52,31 @@ class NetworkRepository {
     _data.close();
   }
 
-  Future<Err?> init() async {
-    final (result, err) =
-        await _hiveStorage.getValue(StorageKeys.networkReposity);
-    if (err != null) return err;
+  // Future<Err?> init() async {
+  //   final (result, err) =
+  //       await _hiveStorage.getValue(StorageKeys.networkReposity);
+  //   if (err != null) return err;
 
-    _data.add(
-      NetworkRepoData.fromJson(
-        jsonDecode(result!) as Map<String, dynamic>,
-      ),
-    );
+  //   _data.add(
+  //     NetworkRepoData.fromJson(
+  //       jsonDecode(result!) as Map<String, dynamic>,
+  //     ),
+  //   );
 
-    return null;
-  }
+  //   return null;
+  // }
 
-  Future save() async {
-    await _hiveStorage.saveValue(
-      key: StorageKeys.networkReposity,
-      value: jsonEncode(_data.value.toJson()),
-    );
-  }
+  // Future save() async {
+  //   await _hiveStorage.saveValue(
+  //     key: StorageKeys.networkReposity,
+  //     value: jsonEncode(_data.value.toJson()),
+  //   );
+  // }
 
   Future<Err?> setupBlockchain({bool? isLiquid, bool? isTestnetLocal}) async {
     final isTestnet = isTestnetLocal ?? _data.value.testnet;
+
+    _data.add(_data.value.copyWith(networkConnected: false));
 
     if (isLiquid == null || !isLiquid) {
       final selectedNetwork = getNetwork;
@@ -91,6 +91,8 @@ class NetworkRepository {
         validateDomain: selectedNetwork.validateDomain,
       );
       if (errBitcoin != null) return errBitcoin;
+
+      _data.add(_data.value.copyWith(networkConnected: true));
       return null;
     }
 
@@ -104,6 +106,8 @@ class NetworkRepository {
         isTestnet: isTestnet,
       );
       if (errLiquid != null) return errLiquid;
+
+      _data.add(_data.value.copyWith(networkConnected: true));
       return null;
     }
     return null;
@@ -232,7 +236,7 @@ class NetworkRepository {
   }
 
   void setNetworkData({
-    bool? testnet,
+    // bool? testnet,
     List<ElectrumNetwork>? networks,
     List<LiquidElectrumNetwork>? liquidNetworks,
     ElectrumNetwork? tempNetworkDetails,
@@ -241,10 +245,12 @@ class NetworkRepository {
     LiquidElectrumTypes? tempLiquidNetwork,
     ElectrumTypes? selectedNetwork,
     LiquidElectrumTypes? selectedLiquidNetwork,
+    bool? networkConnected,
   }) {
     _data.add(
       _data.value.copyWith(
-        testnet: testnet ?? _data.value.testnet,
+        // testnet: testnet ?? _data.value.testnet,
+        networkConnected: networkConnected ?? _data.value.networkConnected,
         networks: networks ?? _data.value.networks,
         liquidNetworks: liquidNetworks ?? _data.value.liquidNetworks,
         tempNetworkDetails:
@@ -258,6 +264,14 @@ class NetworkRepository {
             selectedLiquidNetwork ?? _data.value.selectedLiquidNetwork,
       ),
     );
+  }
+
+  void setAllData(NetworkRepoData _) => _data.add(_);
+
+  Future changeTestnet(bool testnet) async {
+    _data.add(_data.value.copyWith(testnet: testnet));
+    await setupBlockchain(isTestnetLocal: testnet);
+    await setupBlockchain(isTestnetLocal: testnet, isLiquid: true);
   }
 
   void resetNetworkData({

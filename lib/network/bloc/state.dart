@@ -18,7 +18,7 @@ class NetworkState with _$NetworkState {
     @Default(20) int reloadWalletTimer,
     @Default(false) bool loadingNetworks,
     @Default('') String errLoadingNetworks,
-    @Default(false) bool networkConnected,
+    // @Default(false) bool networkConnected,
     @Default(false) bool networkErrorOpened,
     @Default(false) bool goToSettings,
     //

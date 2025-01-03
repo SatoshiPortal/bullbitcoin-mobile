@@ -35,13 +35,13 @@ class AppWalletsRepository {
     );
   }
 
-  Stream<List<WalletServiceData>> get wallets => _walletServices
-      .map((services) => services.map((s) => s.dataStream).toList())
-      .switchMap(
-        (streams) => streams.isEmpty
-            ? Stream.value(<WalletServiceData>[])
-            : CombineLatestStream.list(streams),
-      );
+  // Stream<List<WalletServiceData>> get wallets => _walletServices
+  //     .map((services) => services.map((s) => s.dataStream).toList())
+  //     .switchMap(
+  //       (streams) => streams.isEmpty
+  //           ? Stream.value(<WalletServiceData>[])
+  //           : CombineLatestStream.list(streams),
+  //     );
 
   List<Wallet> get allWallets =>
       _walletServices.value.map((_) => _.wallet).toList();

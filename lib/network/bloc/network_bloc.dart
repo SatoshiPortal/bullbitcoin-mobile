@@ -39,12 +39,13 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     on<NetworkDataSubscribe>((event, emit) async {
       await emit.forEach(
         _networkRepository.dataStream,
-        onData: (NetworkRepoData _) => state.copyWith(networkData: _),
+        onData: (NetworkRepoData _) {
+          return state.copyWith(networkData: _);
+        },
       );
     });
 
     add(InitNetworks());
-    add(NetworkDataSubscribe());
   }
 
   final HiveStorage _hiveStorage;
@@ -70,7 +71,7 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     InitNetworks event,
     Emitter<NetworkState> emit,
   ) async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    // await Future.delayed(const Duration(milliseconds: 200));
     final (result, err) = await _hiveStorage.getValue(StorageKeys.network);
     if (err != null) {
       add(LoadNetworks());
@@ -79,8 +80,11 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
 
     final network =
         NetworkState.fromJson(jsonDecode(result!) as Map<String, dynamic>);
+    _networkRepository.setAllData(network.networkData);
     emit(network.copyWith(networkErrorOpened: false));
-    await Future.delayed(const Duration(milliseconds: 100));
+    // await Future.delayed(const Duration(milliseconds: 100));
+    add(NetworkDataSubscribe());
+
     add(LoadNetworks());
   }
 
@@ -88,13 +92,16 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     ToggleTestnet event,
     Emitter<NetworkState> emit,
   ) async {
-    final isTestnet = state.networkData.testnet;
-    await Future.delayed(const Duration(milliseconds: 50));
-    try {} catch (e) {
-      emit(state.copyWith(errLoadingNetworks: e.toString()));
-    }
+    // final isTestnet = state.networkData.testnet;
+    // await Future.delayed(const Duration(milliseconds: 50));
+    // try {} catch (e) {
+    //   emit(state.copyWith(errLoadingNetworks: e.toString()));
+    // }
 
-    _networkRepository.setNetworkData(testnet: !isTestnet);
+    await _networkRepository.changeTestnet(!_networkRepository.data.testnet);
+    // _networkRepository.setNetworkData(
+    //   testnet: !_networkRepository.data.testnet,
+    // );
   }
 
   Future<void> _onUpdateStopGapAndSave(
@@ -162,7 +169,8 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     NetworkConfigsSave event,
     Emitter<NetworkState> emit,
   ) async {
-    emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
+    emit(state.copyWith(errLoadingNetworks: ''));
+    _networkRepository.setNetworkData(networkConnected: false);
     if (!event.isLiq) {
       if (state.networkData.tempNetwork == null) return;
       final networks = state.networkData.networks.toList();
@@ -387,6 +395,8 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
 
     await _networkRepository.loadNetworks();
 
+    add(NetworkDataSubscribe());
+
     emit(state.copyWith(loadingNetworks: false));
   }
 
@@ -394,7 +404,8 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
     SetupBlockchain event,
     Emitter<NetworkState> emit,
   ) async {
-    emit(state.copyWith(errLoadingNetworks: '', networkConnected: false));
+    emit(state.copyWith(errLoadingNetworks: ''));
+    _networkRepository.setNetworkData(networkConnected: false);
     final isTestnet = event.isTestnetLocal ?? state.networkData.testnet;
 
     final err = await _networkRepository.setupBlockchain(
@@ -421,6 +432,8 @@ class NetworkBloc extends Bloc<NetworkEvent, NetworkState> {
       );
     }
 
-    emit(state.copyWith(networkConnected: true));
+    _networkRepository.setNetworkData(networkConnected: true);
+
+    // emit(state.copyWith(networkConnected: true));
   }
 }
