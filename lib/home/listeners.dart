@@ -175,6 +175,11 @@ class _HomeWalletLoadingListenersState
     extends State<HomeWalletLoadingListeners> {
   @override
   void initState() {
+    super.initState();
+  }
+
+  void _setup() {
+    if (!context.mounted) return;
     final blocs = context.read<AppWalletBlocs>().state;
 
     for (final bloc in blocs) {
@@ -182,8 +187,6 @@ class _HomeWalletLoadingListenersState
           .read<HomeLoadingCubit>()
           .add(SetLoading(bloc.state.wallet.id, bloc.state.syncing));
     }
-
-    super.initState();
   }
 
   @override
@@ -192,6 +195,7 @@ class _HomeWalletLoadingListenersState
 
     if (walletBlocs.isEmpty) return widget.child;
 
+    _setup();
     return MultiBlocListener(
       listeners: [
         for (final walletBloc in walletBlocs)
