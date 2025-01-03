@@ -124,7 +124,7 @@ Suggestion to this roadmap can be proposed as Github issues.
 - [ ] Biometric authentification
 - [ ] Show fiat value of transactions at the approximated time they were made
 - [ ] Spanish and French translactions
-- [ ] Payjoin integration
+- [x] Payjoin integration
 - [ ] Integrate Bull Bitcoin Fee multiple
 - [ ] Auto-consolidation mode for spend
 - [ ] Small UTXO warning and consolidation suggestions
