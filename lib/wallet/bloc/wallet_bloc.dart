@@ -36,21 +36,26 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
           await emit.forEach(
             _walletServiceFromTempWallets!.dataStream,
-            onData: (WalletServiceData data) => state.copyWith(
-              wallet: data.wallet,
-              syncing: data.syncing,
-            ),
+            onData: (WalletServiceData data) {
+              return state.copyWith(
+                wallet: data.wallet,
+                syncing: data.syncing,
+              );
+            },
           );
           return;
         }
+
         await emit.forEach(
           walletService.dataStream,
           onData: (WalletServiceData data) {
-            print('wallet id ${data.wallet.id}  - syncing ${data.syncing}');
             return state.copyWith(
               wallet: data.wallet,
               syncing: data.syncing,
             );
+          },
+          onError: (error, stackTrace) {
+            return state.copyWith(errSyncing: error.toString());
           },
         );
       },

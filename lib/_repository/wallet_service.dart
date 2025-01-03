@@ -63,10 +63,10 @@ class WalletService {
 
   final BehaviorSubject<WalletServiceData> _data;
 
-  Stream<WalletServiceData> get dataStream => _data.stream;
-  Stream<Wallet> get walletStream => _data.stream.map((e) => e.wallet);
+  Stream<WalletServiceData> get dataStream => _data.asBroadcastStream();
+  // Stream<Wallet> get walletStream => _data.stream.map((e) => e.wallet);
 
-  WalletServiceData get data => _data.value;
+  // WalletServiceData get data => _data.value;
 
   final bool _fromStorage;
 
@@ -140,12 +140,12 @@ class WalletService {
 
     _data.add(_data.value.copyWith(syncing: true));
     final err = await _walletSync.syncWallet(_data.value.wallet);
-
     _data.add(_data.value.copyWith(syncing: false));
     locator<Logger>().log(
-      'End $liqTxt Wallet Sync for ${_data.value.wallet.id}',
+      'End $liqTxt Wallet Sync for ${_data.value.wallet.id} - err: $err',
       printToConsole: true,
     );
+
     if (err != null) {
       if (err.message.toLowerCase().contains('panic') &&
           _data.value.syncErrCount < 5) {
@@ -166,11 +166,13 @@ class WalletService {
 
     _data.add(_data.value.copyWith(syncErrCount: 0));
 
-    await Future.wait([
-      if (!_fromStorage) getFirstAddress(),
-      getBalance(),
-      listTransactions(),
-    ]);
+    scheduleMicrotask(() async {
+      // await Future.wait([
+      // if (!_fromStorage) await getFirstAddress();
+      await getBalance();
+      await listTransactions();
+      // ]);
+    });
 
     return null;
   }

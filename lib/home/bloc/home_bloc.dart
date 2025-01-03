@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
@@ -19,20 +18,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<UpdateErrDeepLink>(_onUpdateErrDeepLink);
     on<UpdatedNotifier>(_onUpdatedNotifier);
     on<LoadWalletsForNetwork>(_onLoadWalletsForNetwork);
-    on<WalletsSubscribe>(
-      (event, emit) async {
-        await emit.forEach(
-          _appWalletsRepository.wallets,
-          onData: (List<Wallet> ws) {
-            add(UpdatedNotifier());
-            return state.copyWith(wallets: ws);
-          },
-        );
-      },
-    );
+    on<WalletUpdated>(_onWalletUpdated);
+    // on<WalletsSubscribe>(
+    //   (event, emit) async {
+    //     print('wallets updated');
+    //     await emit.forEach(
+    //       _appWalletsRepository.wallets,
+    //       onData: (List<WalletServiceData> ws) {
+    //         add(UpdatedNotifier());
+    //         return state.copyWith(wallets: ws.map((_) => _.wallet).toList());
+    //       },
+    //     );
+    //   },
+    // );
 
-    add(LoadWalletsFromStorage());
-    add(WalletsSubscribe());
+    // add(LoadWalletsFromStorage());
+    // add(WalletsSubscribe());
   }
 
   final AppWalletsRepository _appWalletsRepository;
@@ -44,6 +45,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     emit(state.copyWith(loadingWallets: true));
     await _appWalletsRepository.getWalletsFromStorage();
+    final wallets = _appWalletsRepository.allWallets;
+    emit(state.copyWith(wallets: wallets));
     await _appWalletsRepository
         .loadAllInNetwork(_networkRepository.getBBNetwork);
     _appWalletsRepository.syncAllInNetwork(_networkRepository.getBBNetwork);
@@ -88,5 +91,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     for (final w in wallets) {
       w.loadWallet();
     }
+  }
+
+  void _onWalletUpdated(
+    WalletUpdated event,
+    Emitter<HomeState> emit,
+  ) {
+    final wallet = event.wallet;
+    final wallets = state.wallets.toList();
+    final idx = wallets.indexWhere((w) => w.id == wallet.id);
+    if (idx == -1) return;
+    wallets[idx] = wallet;
+    emit(state.copyWith(wallets: wallets));
   }
 }

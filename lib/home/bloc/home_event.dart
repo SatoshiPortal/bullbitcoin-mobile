@@ -22,4 +22,9 @@ class LoadWalletsForNetwork extends HomeEvent {
   final BBNetwork network;
 }
 
+class WalletUpdated extends HomeEvent {
+  WalletUpdated(this.wallet);
+  final Wallet wallet;
+}
+
 class WalletsSubscribe extends HomeEvent {}

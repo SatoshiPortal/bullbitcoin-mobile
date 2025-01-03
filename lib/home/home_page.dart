@@ -1086,60 +1086,62 @@ class HomeNoWalletsView extends StatelessWidget {
       child: ColoredBox(
         color: context.colour.primary,
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 148,
-                width: 184,
-                child: Image.asset('assets/bb-logo-white.png'),
-              ),
-              const Gap(24),
-              Text(
-                'BULL BITCOIN',
-                style: font.copyWith(
-                  fontSize: 80,
-                  color: context.colour.primaryContainer,
-                  height: 0.8,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 148,
+                  width: 184,
+                  child: Image.asset('assets/bb-logo-white.png'),
                 ),
-              ),
-              Text(
-                'OWN YOUR MONEY',
-                style: font.copyWith(
-                  fontSize: 59,
-                  height: 0.8,
+                const Gap(24),
+                Text(
+                  'BULL BITCOIN',
+                  style: font.copyWith(
+                    fontSize: 80,
+                    color: context.colour.primaryContainer,
+                    height: 0.8,
+                  ),
                 ),
-              ),
-              const Gap(8),
-              SizedBox(
-                width: w * 0.8,
-                child: const BBText.body(
-                  'Sovereign non-custodial Bitcoin wallet and Bitcoin-only exchange service. ',
+                Text(
+                  'OWN YOUR MONEY',
+                  style: font.copyWith(
+                    fontSize: 59,
+                    height: 0.8,
+                  ),
+                ),
+                const Gap(8),
+                SizedBox(
+                  width: w * 0.8,
+                  child: const BBText.body(
+                    'Sovereign non-custodial Bitcoin wallet and Bitcoin-only exchange service. ',
+                    onSurface: true,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const Gap(110),
+                Center(
+                  child: BBButton.big(
+                    label: 'Create new wallet',
+                    onPressed: () {
+                      context.read<CreateWalletCubit>().confirmClicked();
+                      // context.push('/create-wallet-main');
+                    },
+                  ),
+                ),
+                BBButton.text(
+                  label: 'Recover wallet backup',
+                  centered: true,
                   onSurface: true,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const Gap(110),
-              Center(
-                child: BBButton.big(
-                  label: 'Create new wallet',
+                  isBlue: false,
+                  fontSize: 11,
                   onPressed: () {
-                    context.read<CreateWalletCubit>().confirmClicked();
-                    // context.push('/create-wallet-main');
+                    context.push('/import-main');
                   },
                 ),
-              ),
-              BBButton.text(
-                label: 'Recover wallet backup',
-                centered: true,
-                onSurface: true,
-                isBlue: false,
-                fontSize: 11,
-                onPressed: () {
-                  context.push('/import-main');
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
