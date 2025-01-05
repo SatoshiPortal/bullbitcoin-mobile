@@ -24,6 +24,7 @@ Future<bool> isElectrumLive(String electrumUrl) async {
       url,
       port,
       timeout: const Duration(seconds: 15),
+      onBadCertificate: (_) => true,
     );
     final Map<String, dynamic> request = {
       'jsonrpc': '2.0',

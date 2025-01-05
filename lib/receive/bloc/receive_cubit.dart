@@ -65,17 +65,17 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     await isPayjoinEnabled();
     await loadAddress();
 
-    payjoinInit();
+    await payjoinInit();
   }
 
-  void payjoinInit() {
+  Future<void> payjoinInit() async {
     final baseType = state.wallet!.baseWalletType;
 
     if (state.paymentNetwork == PaymentNetwork.bitcoin &&
         state.defaultAddress != null &&
         state.isPayjoin &&
         baseType == BaseWalletType.Bitcoin) {
-      receivePayjoin(
+      await receivePayjoin(
         state.wallet!.isTestnet(),
         state.defaultAddress!.address,
       );
@@ -203,7 +203,8 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     emit(
       state.copyWith(
-        loadingAddress: false,
+        loadingAddress: state
+            .isPayjoin, // Keep loading while the payjoin receiver is being initialized, if it's enabled.
         errLoadingAddress: '',
       ),
     );
@@ -359,7 +360,13 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
   Future<void> receivePayjoin(bool isTestnet, String address) async {
     final receiver = await _payjoinManager.initReceiver(isTestnet, address);
-    emit(state.copyWith(payjoinReceiver: receiver));
+    emit(
+      state.copyWith(
+        payjoinReceiver: receiver,
+        loadingAddress:
+            false, // Stop loading now that the receiver is initialized.
+      ),
+    );
     _payjoinManager.spawnNewReceiver(
       isTestnet: isTestnet,
       receiver: receiver,

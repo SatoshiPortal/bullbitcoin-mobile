@@ -240,6 +240,8 @@ class _Screen extends StatelessWidget {
     final showQR = context.select(
       (ReceiveCubit x) => x.state.showQR(swapTx, isChainSwap: isChainSwap),
     );
+    final loadingAddress =
+        context.select((ReceiveCubit x) => x.state.loadingAddress);
 
     final watchOnly =
         context.select((WalletBloc x) => x.state.wallet.watchOnly());
@@ -319,12 +321,19 @@ class _Screen extends StatelessWidget {
               const SwapFeesDetails(),
             ],
             if (isChainSwap == false && showQR) ...[
-              const ReceiveQR(),
-              const Gap(8),
-              ReceiveAddress(
-                swapTx: swapTx,
-                addressQr: addressQr,
-              ),
+              if (loadingAddress)
+                const Center(child: CircularProgressIndicator())
+              else
+                Column(
+                  children: [
+                    const ReceiveQR(),
+                    const Gap(8),
+                    ReceiveAddress(
+                      swapTx: swapTx,
+                      addressQr: addressQr,
+                    ),
+                  ],
+                ),
               const Gap(8),
               if (shouldShowForm) const BitcoinReceiveForm(),
               if (paymentNetwork == PaymentNetwork.lightning || formSubmitted)
