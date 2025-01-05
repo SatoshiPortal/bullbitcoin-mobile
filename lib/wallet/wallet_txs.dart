@@ -132,7 +132,10 @@ class HomeTxItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = tx.label ?? '';
+    // final label = tx.label ?? '';
+    final label = (tx.label != null && tx.label!.length > 20)
+        ? '${tx.label!.substring(0, 20)}...'
+        : tx.label ?? '';
     final isReceive = tx.isReceived();
 
     var amount = context.select(

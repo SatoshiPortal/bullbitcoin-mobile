@@ -320,7 +320,6 @@ class WalletService {
       updateTypes: [
         UpdateWalletTypes.transactions,
         UpdateWalletTypes.addresses,
-        UpdateWalletTypes.transactions,
         UpdateWalletTypes.utxos,
       ],
     );

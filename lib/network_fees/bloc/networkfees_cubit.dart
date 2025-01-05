@@ -68,6 +68,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   Future loadFees() async {
     emit(state.copyWith(loadingFees: true, errLoadingFees: ''));
     final testnet = _networkRepository.testnet;
+    await Future.delayed(const Duration(milliseconds: 50));
 
     final (fees, err) = await _mempoolAPI.getFees(testnet);
     if (err != null) {

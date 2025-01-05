@@ -1082,7 +1082,11 @@ class SendCubit extends Cubit<SendState> {
     return feeAmt ?? 0;
   }
 
-  Future<void> processSendButton(String label, int feeRate, int amt) async {
+  Future<void> processSendButton({
+    required String label,
+    required int feeRate,
+    required int amt,
+  }) async {
     final network = _networkRepository.getBBNetwork;
     final (_, addressError) =
         await state.getPaymentNetwork(state.address, network);

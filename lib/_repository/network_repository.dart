@@ -226,12 +226,21 @@ class NetworkRepository {
   }
 
   double get pickLiquidFees {
+    if (testnet) {
+      switch (_data.value.selectedLiquidNetwork) {
+        case LiquidElectrumTypes.custom:
+        case LiquidElectrumTypes.blockstream:
+          return 0.1;
+        case LiquidElectrumTypes.bullbitcoin:
+          return 0.1;
+      }
+    }
     switch (_data.value.selectedLiquidNetwork) {
       case LiquidElectrumTypes.custom:
       case LiquidElectrumTypes.blockstream:
         return 0.1;
       case LiquidElectrumTypes.bullbitcoin:
-        return 0.01; // 0.01; TODO: Sai for liquid testnet
+        return 0.01;
     }
   }
 

@@ -118,8 +118,10 @@ class _TxAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label =
+    var label =
         context.select((TransactionCubit cubit) => cubit.state.tx.label ?? '');
+
+    label = (label.length > 20) ? '${label.substring(0, 20)}...' : label;
 
     return BBAppBar(
       text: label.isNotEmpty ? label : 'Transaction',

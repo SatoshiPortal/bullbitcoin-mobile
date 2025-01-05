@@ -283,7 +283,10 @@ class HomeTxItem2 extends StatelessWidget {
     // final showOnlySwap = tx.pageLayout == TxLayout.onlySwapTx;
     // if (showOnlySwap) return _SwapTxHomeListItem(transaction: tx);
 
-    final label = tx.label ?? '';
+    final label = (tx.label != null && tx.label!.length > 20)
+        ? '${tx.label!.substring(0, 20)}...'
+        : tx.label ?? '';
+
     final isReceive = tx.isReceived();
 
     final amount = context.select(

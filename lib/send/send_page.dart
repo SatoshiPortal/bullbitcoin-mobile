@@ -633,9 +633,9 @@ class _SendButton extends StatelessWidget {
                     .state
                     .selectedOrFirst(true);
                 context.read<SendCubit>().processSendButton(
-                      txLabel,
-                      amt,
-                      feeRate,
+                      label: txLabel,
+                      feeRate: feeRate,
+                      amt: amt,
                     );
               },
               label: buttonLabel,
