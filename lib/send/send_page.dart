@@ -59,6 +59,69 @@ class _SendPageState extends State<SendPage> {
 
   @override
   void initState() {
+    // swap = CreateSwapCubit(
+    //   walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
+    //   swapBoltz: locator<SwapBoltz>(),
+    //   walletTx: locator<WalletTx>(),
+    //   // homeCubit: context.read<HomeBloc>(),
+    //   appWalletsRepository: locator<AppWalletsRepository>(),
+    //   watchTxsBloc: context.read<WatchTxsBloc>(),
+    //   // networkCubit: context.read<NetworkBloc>(),
+    //   networkRepository: locator<NetworkRepository>(),
+    // )..fetchFees(context.read<NetworkBloc>().state.networkData.testnet);
+
+    // networkFees = NetworkFeesCubit(
+    //   // networkCubit: locator<NetworkCubit>(),
+    //   networkRepository: locator<NetworkRepository>(),
+    //   hiveStorage: locator<HiveStorage>(),
+    //   mempoolAPI: locator<MempoolAPI>(),
+    //   defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
+    // );
+
+    // currency = CurrencyCubit(
+    //   hiveStorage: locator<HiveStorage>(),
+    //   bbAPI: locator<BullBitcoinAPI>(),
+    //   defaultCurrencyCubit: context.read<CurrencyCubit>(),
+    // );
+
+    // Wallet? wallet;
+
+    // if (widget.walletId != null) {
+    //   wallet =
+    //       context.read<AppWalletsRepository>().getWalletById(widget.walletId!);
+    // } else {
+    //   final isTestnet = context.read<NetworkRepository>().testnet;
+    //   //  context.read<NetworkCubit>().state.testnet;
+    //   wallet =
+    //       context.read<AppWalletsRepository>().getMainWallets(isTestnet).first;
+    //   // walletBloc = createWalletBloc(wallet);
+    //   // context.read<HomeBloc>().state.getMainWallets(isTestnet).first;
+    // }
+
+    // send = SendCubit(
+    //   walletTx: locator<WalletTx>(),
+    //   barcode: locator<Barcode>(),
+    //   defaultRBF: locator<SettingsCubit>().state.defaultRBF,
+    //   fileStorage: locator<FileStorage>(),
+    //   networkRepository: locator<NetworkRepository>(),
+    //   appWalletsRepository: locator<AppWalletsRepository>(),
+    //   // networkCubit: locator<NetworkCubit>(),
+    //   // networkFeesCubit: networkFees,
+    //   // homeCubit: locator<HomeBloc>(),
+    //   payjoinManager: locator<PayjoinManager>(),
+    //   swapBoltz: locator<SwapBoltz>(),
+    //   // currencyCubit: currency,
+    //   openScanner: widget.openScanner,
+    //   // walletBloc: walletBloc,
+    //   swapCubit: swap,
+    //   oneWallet: widget.walletId != null && wallet != null,
+    //   wallet: wallet,
+    // );
+
+    super.initState();
+  }
+
+  Future _setupBloc() async {
     swap = CreateSwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
@@ -117,30 +180,37 @@ class _SendPageState extends State<SendPage> {
       oneWallet: widget.walletId != null && wallet != null,
       wallet: wallet,
     );
-
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: send),
-        BlocProvider.value(value: currency),
-        BlocProvider.value(value: swap),
-        BlocProvider.value(value: networkFees),
-      ],
-      child: Scaffold(
-        appBar: AppBar(
-          flexibleSpace: const _SendAppBar(),
-          automaticallyImplyLeading: false,
-        ),
-        body: const SendListeners(
-          child: _WalletProvider(
-            child: _Screen(),
+    return FutureBuilder(
+      future: _setupBloc(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SizedBox.shrink();
+        }
+
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: send),
+            BlocProvider.value(value: currency),
+            BlocProvider.value(value: swap),
+            BlocProvider.value(value: networkFees),
+          ],
+          child: Scaffold(
+            appBar: AppBar(
+              flexibleSpace: const _SendAppBar(),
+              automaticallyImplyLeading: false,
+            ),
+            body: SendListeners(
+              child: _WalletProvider(
+                child: const _Screen().animate(delay: 400.ms).fadeIn(),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

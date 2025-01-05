@@ -35,6 +35,7 @@ import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
@@ -66,6 +67,73 @@ class _ReceivePageState extends State<ReceivePage> {
 
   @override
   void initState() {
+    // print('-----2 - ${DateTime.now()}');
+    // _swapCubit = CreateSwapCubit(
+    //   walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
+    //   swapBoltz: locator<SwapBoltz>(),
+    //   walletTx: locator<WalletTx>(),
+    //   appWalletsRepository: locator<AppWalletsRepository>(),
+    //   // homeCubit: context.read<HomeBloc>(),
+    //   watchTxsBloc: context.read<WatchTxsBloc>(),
+    //   networkRepository: context.read<NetworkRepository>(),
+    //   // networkCubit: context.read<NetworkBloc>(),
+    // )..fetchFees(context.read<NetworkBloc>().state.networkData.testnet);
+    // print('-----3 - ${DateTime.now()}');
+
+    // _currencyCubit = CurrencyCubit(
+    //   hiveStorage: locator<HiveStorage>(),
+    //   bbAPI: locator<BullBitcoinAPI>(),
+    //   defaultCurrencyCubit: context.read<CurrencyCubit>(),
+    // );
+    // print('-----4 - ${DateTime.now()}');
+
+    // final w = widget.wallet != null
+    //     ? context.read<AppWalletsRepository>().getWalletById(widget.wallet!)
+    //     : null;
+    // print('-----5 - ${DateTime.now()}');
+
+    // _receiveCubit = ReceiveCubit(
+    //   walletAddress: locator<WalletAddress>(),
+    //   walletsStorageRepository: locator<WalletsStorageRepository>(),
+    //   appWalletsRepository: locator<AppWalletsRepository>(),
+    //   wallet: w,
+
+    //   // walletBloc:
+    //   // widget.wallet != null ? createWalletBloc(widget.wallet!) : null,
+    //   payjoinManager: locator<PayjoinManager>(),
+    // );
+    // print('-----6 - ${DateTime.now()}');
+
+    // final network = context.read<NetworkRepository>().getBBNetwork;
+    // print('-----7 - ${DateTime.now()}');
+
+    // final wallet =
+    //     w ?? context.read<AppWalletsRepository>().getMainInstantWallet(network);
+    // print('-----8 - ${DateTime.now()}');
+
+    // if (wallet!.isLiquid()) {
+    //   _receiveCubit.updateWalletType(
+    //     PaymentNetwork.lightning,
+    //     context.read<NetworkBloc>().state.networkData.testnet,
+    //     onStart: true,
+    //   );
+    // } else {
+    //   _receiveCubit.updateWalletType(
+    //     PaymentNetwork.bitcoin,
+    //     context.read<NetworkBloc>().state.networkData.testnet,
+    //     onStart: true,
+    //   );
+    // }
+    // print('-----10 - ${DateTime.now()}');
+
+    // _receiveCubit.updateWallet(wallet);
+    // print('-----11 - ${DateTime.now()}');
+
+    super.initState();
+  }
+
+  Future _setupBlocs() async {
+    print('-----2 - ${DateTime.now()}');
     _swapCubit = CreateSwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
@@ -76,16 +144,19 @@ class _ReceivePageState extends State<ReceivePage> {
       networkRepository: context.read<NetworkRepository>(),
       // networkCubit: context.read<NetworkBloc>(),
     )..fetchFees(context.read<NetworkBloc>().state.networkData.testnet);
+    print('-----3 - ${DateTime.now()}');
 
     _currencyCubit = CurrencyCubit(
       hiveStorage: locator<HiveStorage>(),
       bbAPI: locator<BullBitcoinAPI>(),
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
+    print('-----4 - ${DateTime.now()}');
 
     final w = widget.wallet != null
         ? context.read<AppWalletsRepository>().getWalletById(widget.wallet!)
         : null;
+    print('-----5 - ${DateTime.now()}');
 
     _receiveCubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
@@ -97,10 +168,14 @@ class _ReceivePageState extends State<ReceivePage> {
       // widget.wallet != null ? createWalletBloc(widget.wallet!) : null,
       payjoinManager: locator<PayjoinManager>(),
     );
+    print('-----6 - ${DateTime.now()}');
 
     final network = context.read<NetworkRepository>().getBBNetwork;
+    print('-----7 - ${DateTime.now()}');
+
     final wallet =
         w ?? context.read<AppWalletsRepository>().getMainInstantWallet(network);
+    print('-----8 - ${DateTime.now()}');
 
     if (wallet!.isLiquid()) {
       _receiveCubit.updateWalletType(
@@ -115,31 +190,40 @@ class _ReceivePageState extends State<ReceivePage> {
         onStart: true,
       );
     }
+    print('-----10 - ${DateTime.now()}');
 
     _receiveCubit.updateWallet(wallet);
-
-    super.initState();
+    print('-----11 - ${DateTime.now()}');
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: _receiveCubit),
-        BlocProvider.value(value: _currencyCubit),
-        BlocProvider.value(value: _swapCubit),
-      ],
-      child: ReceiveListeners(
-        child: Scaffold(
-          appBar: AppBar(
-            flexibleSpace: const _ReceiveAppBar(),
-            automaticallyImplyLeading: false,
+    return FutureBuilder(
+      future: _setupBlocs(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SizedBox.shrink();
+        }
+
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: _receiveCubit),
+            BlocProvider.value(value: _currencyCubit),
+            BlocProvider.value(value: _swapCubit),
+          ],
+          child: ReceiveListeners(
+            child: Scaffold(
+              appBar: AppBar(
+                flexibleSpace: const _ReceiveAppBar(),
+                automaticallyImplyLeading: false,
+              ),
+              body: _WalletProvider(
+                child: const _Screen().animate(delay: 400.ms).fadeIn(),
+              ),
+            ),
           ),
-          body: const _WalletProvider(
-            child: _Screen(),
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
