@@ -99,6 +99,14 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                                 child: const Text('Generate'),
                               ),
                             ),
+                          if (state.backupPath.isNotEmpty)
+                            ElevatedButton(
+                              onPressed: () => context.push(
+                                '/cloud-backup',
+                                extra: (state.backupPath, state.backupName),
+                              ),
+                              child: const Text('Cloud'),
+                            ),
                         ],
                       ),
                     );

@@ -115,7 +115,14 @@ class BackupCubit extends Cubit<BackupState> {
       emit(state.copyWith(error: 'Fail to save backup'));
     }
 
-    emit(state.copyWith(backupId: backupId, backupKey: backupKey));
+    emit(
+      state.copyWith(
+        backupId: backupId,
+        backupKey: backupKey,
+        backupPath: file.path,
+        backupName: filename,
+      ),
+    );
   }
 
   void clearError() => emit(state.copyWith(error: ''));
