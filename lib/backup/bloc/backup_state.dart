@@ -9,6 +9,8 @@ class BackupState with _$BackupState {
     @Default(true) bool loading,
     @Default([]) List<Backup> backups,
     @Default('') String backupId,
+    @Default('') String backupPath,
+    @Default('') String backupName,
     @Default('') String backupKey,
     @Default('') String error,
   }) = _BackupState;

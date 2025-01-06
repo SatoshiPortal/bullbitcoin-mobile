@@ -6,6 +6,7 @@ import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/backup/backup_page.dart';
 import 'package:bb_mobile/backup/bloc/social_setting_state.dart';
+import 'package:bb_mobile/backup/cloud_page.dart';
 import 'package:bb_mobile/backup/keychain_page.dart';
 import 'package:bb_mobile/backup/social_page.dart';
 import 'package:bb_mobile/backup/social_settings.dart';
@@ -222,6 +223,14 @@ GoRouter setupRouter() => GoRouter(
             return KeychainBackupPage(backupKey: backupKey, backupId: backupId);
           },
         ),
+        GoRoute(
+          path: '/cloud-backup',
+          builder: (context, state) {
+            final (backupPath, backupName) = state.extra! as (String, String);
+            return CloudPage(backupPath: backupPath, backupName: backupName);
+          },
+        ),
+
         GoRoute(
           path: '/keychain-recover',
           builder: (context, state) {
