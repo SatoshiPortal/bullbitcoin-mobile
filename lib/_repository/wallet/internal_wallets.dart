@@ -3,7 +3,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
-class WalletsRepository {
+class InternalWalletsRepository {
   final Set<({String id, bdk.Wallet wallet})> _bdkWallets = {};
   final Set<({String id, lwk.Wallet wallet})> _lwkWallets = {};
 

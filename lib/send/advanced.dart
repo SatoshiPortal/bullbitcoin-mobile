@@ -121,7 +121,10 @@ class SendAllOption extends StatelessWidget {
         BBSwitch(
           value: sendAll,
           onChanged: (e) {
-            context.read<SendCubit>().sendAllCoin(e);
+            final currency = context.read<CurrencyCubit>().state;
+            context
+                .read<SendCubit>()
+                .sendAllCoin(e, currency.amount, currency.unitsInSats);
           },
         ),
       ],
@@ -156,7 +159,7 @@ class EnableRBFOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLiq = context.select((WalletBloc x) => x.state.isLiq());
+    final isLiq = context.select((WalletBloc x) => x.state.wallet.isLiquid());
     if (isLiq) return const SizedBox.shrink();
 
     final disableRBF = context.select((SendCubit x) => x.state.disableRBF);
@@ -197,7 +200,7 @@ class AddressSelectionPopUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utxos = context.select((WalletBloc _) => _.state.wallet!.utxos);
+    final utxos = context.select((WalletBloc _) => _.state.wallet.utxos);
     final amount = context.select((CurrencyCubit _) => _.state.amount);
     final amt = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(amount),

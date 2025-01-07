@@ -15,9 +15,9 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/create.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 
 // int mainWalletIndex = 0;
 // int testWalletIndex = 0;
@@ -331,7 +331,7 @@ Future<List<Wallet>> createLiquidWallet(
   Seed? liquidTestnetSeed,
   HiveStorage hiveStorage,
 ) async {
-  final WalletsRepository walletRep = WalletsRepository();
+  final InternalWalletsRepository walletRep = InternalWalletsRepository();
   final BDKCreate bdkCreate = BDKCreate(walletsRepository: walletRep);
   final BDKSensitiveCreate bdkSensitiveCreate =
       BDKSensitiveCreate(walletsRepository: walletRep, bdkCreate: bdkCreate);

@@ -1,9 +1,10 @@
 import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
@@ -25,8 +26,8 @@ class SendInvAmtDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     final inv = context.select((SendCubit _) => _.state.invoice);
     if (inv == null) return const SizedBox.shrink();
-    final isLiq = context
-        .select((SendCubit _) => _.state.selectedWalletBloc?.state.isLiq());
+    final isLiq =
+        context.select((SendCubit _) => _.state.selectedWallet?.isLiquid());
 
     final amtStr = context.select(
       (CurrencyCubit _) => _.state.getAmountInUnits(
@@ -157,6 +158,7 @@ class SendingLnTx extends StatefulWidget {
 
 class _SendingLnTxState extends State<SendingLnTx> {
   late SwapTx swapTx;
+  Transaction? tx;
 
   bool settled = false;
   bool paid = false;
@@ -165,6 +167,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
   @override
   void initState() {
     swapTx = context.read<CreateSwapCubit>().state.swapTx!;
+    tx = context.read<AppWalletsRepository>().getTxFromSwap(swapTx);
     super.initState();
   }
 
@@ -180,7 +183,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
         isLiquid: isLiquid,
       ),
     );
-    final tx = context.select((HomeCubit _) => _.state.getTxFromSwap(swapTx));
+    // final tx = context.select((HomeBloc _) => _.state.getTxFromSwap(swapTx));
 
     final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
     final amtDouble = isSats ? amount : amount / 100000000;
@@ -191,7 +194,7 @@ class _SendingLnTxState extends State<SendingLnTx> {
     final fiatAmt =
         context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
     final isTestNet =
-        context.select((NetworkCubit cubit) => cubit.state.testnet);
+        context.select((NetworkBloc cubit) => cubit.state.networkData.testnet);
     final unit = defaultCurrency?.name ?? '';
     final amt = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
 

@@ -3,18 +3,18 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/balance.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/balance.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 
 class WalletBalance implements IWalletBalance {
   WalletBalance({
-    required WalletsRepository walletsRepository,
+    required InternalWalletsRepository walletsRepository,
     required BDKBalance bdkBalance,
     required LWKBalance lwkBalance,
   })  : _walletsRepository = walletsRepository,
         _bdkBalance = bdkBalance,
         _lwkBalance = lwkBalance;
 
-  final WalletsRepository _walletsRepository;
+  final InternalWalletsRepository _walletsRepository;
   final BDKBalance _bdkBalance;
   final LWKBalance _lwkBalance;
 

@@ -4,7 +4,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_state.dart';
 import 'package:bb_mobile/styles.dart';
@@ -285,7 +285,8 @@ class SelectFeesItem extends StatelessWidget {
     final currency =
         context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
 
-    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
+    final isTestnet =
+        context.select((NetworkBloc x) => x.state.networkData.testnet);
 
     final fiatRateStr = context.select(
       (NetworkFeesCubit _) => _.state.calculateFiatPriceForFees(

@@ -6,9 +6,11 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/event.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network/bloc/state.dart';
 import 'package:bb_mobile/network/popup.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
@@ -312,16 +314,18 @@ class TestNetButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final testnet = context.select((NetworkCubit _) => _.state.testnet);
+    final testnet =
+        context.select((NetworkBloc _) => _.state.networkData.testnet);
 
     // if (!testnet) return const SizedBox.shrink();
 
-    return BlocListener<NetworkCubit, NetworkState>(
-      listenWhen: (previous, current) => previous.testnet != current.testnet,
+    return BlocListener<NetworkBloc, NetworkState>(
+      listenWhen: (previous, current) =>
+          previous.networkData.testnet != current.networkData.testnet,
       listener: (context, state) {
         context.read<NetworkFeesCubit>().loadFees();
         final network = state.getBBNetwork();
-        context.read<HomeCubit>().loadWalletsForNetwork(network);
+        context.read<HomeBloc>().add(LoadWalletsForNetwork(network));
         // context.read<WatchTxsBloc>().add(InitializeSwapWatcher(isTestnet: state.testnet));
       },
       child: Row(
@@ -335,7 +339,7 @@ class TestNetButton extends StatelessWidget {
             key: UIKeys.settingsTestnetSwitch,
             value: testnet,
             onChanged: (e) {
-              context.read<NetworkCubit>().toggleTestnet();
+              context.read<NetworkBloc>().add(ToggleTestnet());
             },
           ),
         ],
@@ -350,9 +354,9 @@ class ElectrumServerButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedNetwork =
-        context.select((NetworkCubit _) => _.state.getNetwork());
+        context.select((NetworkBloc _) => _.state.getNetwork());
     if (selectedNetwork == null) return const SizedBox.shrink();
-    final err = context.select((NetworkCubit _) => _.state.errLoadingNetworks);
+    final err = context.select((NetworkBloc _) => _.state.errLoadingNetworks);
 
     return Column(
       children: [

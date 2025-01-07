@@ -2,7 +2,9 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
@@ -10,9 +12,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
 import 'package:bb_mobile/styles.dart';
@@ -31,11 +31,13 @@ class BroadcastPage extends StatelessWidget {
     final broadcast = BroadcastTxCubit(
       barcode: locator<Barcode>(),
       filePicker: locator<FilePick>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
       // settingsCubit: locator<SettingsCubit>(),
-      networkCubit: locator<NetworkCubit>(),
+      // networkCubit: locator<NetworkCubit>(),
       fileStorage: locator<FileStorage>(),
-      homeCubit: locator<HomeCubit>(),
+      // homeCubit: locator<HomeBloc>(),
       networkRepository: locator<NetworkRepository>(),
+      internalNetworkRepository: locator<InternalNetworkRepository>(),
       bdkTransactions: locator<BDKTransactions>(),
     );
 
@@ -80,10 +82,14 @@ class BroadcastPopUp extends StatelessWidget {
       barcode: locator<Barcode>(),
       filePicker: locator<FilePick>(),
       // settingsCubit: locator<SettingsCubit>(),
-      networkCubit: locator<NetworkCubit>(),
+      // networkCubit: locator<NetworkCubit>(),
       fileStorage: locator<FileStorage>(),
-      homeCubit: locator<HomeCubit>(),
+      // homeCubit: locator<HomeBloc>(),
+      // networkRepository: locator<InternalNetworkRepository>(),
+
+      appWalletsRepository: locator<AppWalletsRepository>(),
       networkRepository: locator<NetworkRepository>(),
+      internalNetworkRepository: locator<InternalNetworkRepository>(),
       bdkTransactions: locator<BDKTransactions>(),
     );
 

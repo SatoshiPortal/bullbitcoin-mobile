@@ -2,48 +2,51 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
+import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/receive/bloc/state.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReceiveCubit extends Cubit<ReceiveState> {
   ReceiveCubit({
-    WalletBloc? walletBloc,
+    Wallet? wallet,
     required WalletAddress walletAddress,
     required WalletsStorageRepository walletsStorageRepository,
     required PayjoinManager payjoinManager,
+    required AppWalletsRepository appWalletsRepository,
   })  : _walletsStorageRepository = walletsStorageRepository,
         _walletAddress = walletAddress,
         _payjoinManager = payjoinManager,
+        _appWalletsRepository = appWalletsRepository,
         super(
           ReceiveState(
-            walletBloc: walletBloc,
-            oneWallet: walletBloc != null,
+            wallet: wallet,
+            oneWallet: wallet != null,
           ),
         ) {
     loadAddress();
-    if (walletBloc != null) updateWalletBloc(walletBloc, fromInit: true);
+    if (wallet != null) updateWallet(wallet, fromInit: true);
   }
 
   final WalletAddress _walletAddress;
   final WalletsStorageRepository _walletsStorageRepository;
   final PayjoinManager _payjoinManager;
+  final AppWalletsRepository _appWalletsRepository;
 
   Future<void> updatePayjoinEndpoint(String payjoinEndpoint) async {
     emit(state.copyWith(payjoinEndpoint: payjoinEndpoint));
     return;
   }
 
-  Future<void> updateWalletBloc(
-    WalletBloc walletBloc, {
+  Future<void> updateWallet(
+    Wallet wallet, {
     bool fromInit = false,
   }) async {
     if (state.oneWallet && !fromInit) return;
     emit(
       state.copyWith(
-        walletBloc: walletBloc,
+        wallet: wallet,
         defaultAddress: null,
         savedDescription: '',
         description: '',
@@ -55,7 +58,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    if (!walletBloc.state.wallet!.mainWallet) {
+    if (!wallet.mainWallet) {
       emit(state.copyWith(paymentNetwork: PaymentNetwork.bitcoin));
     }
 
@@ -66,18 +69,17 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   Future<void> payjoinInit() async {
-    final baseType = state.walletBloc!.state.wallet!.baseWalletType;
+    final baseType = state.wallet!.baseWalletType;
 
     if (state.paymentNetwork == PaymentNetwork.bitcoin &&
         state.defaultAddress != null &&
         state.isPayjoin &&
         baseType == BaseWalletType.Bitcoin) {
       await receivePayjoin(
-        state.walletBloc!.state.wallet!.isTestnet(),
+        state.wallet!.isTestnet(),
         state.defaultAddress!.address,
       );
     } else {
-      // Clear payjoin receiver
       emit(state.copyWith(payjoinReceiver: null));
     }
   }
@@ -95,7 +97,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     }
 
     final currentPayNetwork = state.paymentNetwork;
-    final walletType = state.walletBloc?.state.wallet?.type;
+    final walletType = state.wallet?.type;
     if (walletType == null) return;
 
     emit(state.copyWith(paymentNetwork: selectedPaymentNetwork));
@@ -130,12 +132,11 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   Future<void> loadAddress() async {
-    if (state.walletBloc == null) return;
+    if (state.wallet == null) return;
     emit(state.copyWith(loadingAddress: true, errLoadingAddress: ''));
 
-    final Wallet wallet = state.walletBloc!.state.wallet!;
+    final Wallet wallet = state.wallet!;
 
-    // If currently selected wallet is bitcoin? wallet, then find and load the liquid wallet and get it's lastGeneratedAddress.
     if (wallet.isLiquid()) {
       emit(
         state.copyWith(
@@ -167,7 +168,6 @@ class ReceiveCubit extends Cubit<ReceiveState> {
           defaultLiquidAddress: liquidWallet?.lastGeneratedAddress,
         ),
       );
-      // If currently selected wallet is liquid? wallet, then find and load the bitcoin wallet and get it's lastGeneratedAddress.
     } else if (wallet.isBitcoin()) {
       emit(
         state.copyWith(
@@ -221,7 +221,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
         isLiq ? state.defaultLiquidAddress : state.defaultAddress;
     if (defaultAddress == null) return;
 
-    final wallet = state.walletBloc?.state.wallet;
+    final wallet = state.wallet;
     if (wallet == null) return;
 
     final address = wallet.getAddressFromWallet(defaultAddress.address);
@@ -243,9 +243,9 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       state.copyWith(errLoadingAddress: '', savedInvoiceAmount: 0),
     );
 
-    if (state.walletBloc == null) return;
+    if (state.wallet == null) return;
 
-    final wallet = state.walletBloc!.state.wallet!;
+    final wallet = state.wallet!;
 
     final (updatedWallet, err) = await _walletAddress.newAddress(wallet);
     if (err != null) {
@@ -257,14 +257,12 @@ class ReceiveCubit extends Cubit<ReceiveState> {
       return;
     }
 
-    state.walletBloc!.add(
-      UpdateWallet(
-        updatedWallet!,
-        updateTypes: [UpdateWalletTypes.addresses],
-      ),
+    await _appWalletsRepository.getWalletServiceById(wallet.id)?.updateWallet(
+      updatedWallet!,
+      updateTypes: [UpdateWalletTypes.addresses],
     );
 
-    final addressGap = updatedWallet.addressGap();
+    final addressGap = updatedWallet!.addressGap();
     if (addressGap >= 5 && addressGap <= 20) {
       emit(
         state.copyWith(
@@ -315,7 +313,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
   }
 
   Future<void> saveAddrressLabel() async {
-    if (state.walletBloc == null) return;
+    if (state.wallet == null) return;
 
     if (state.description == state.defaultAddress?.label) return;
 
@@ -327,14 +325,18 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     final (a, w) = await _walletAddress.addAddressToWallet(
       address: (address!.index, address.address),
-      wallet: state.walletBloc!.state.wallet!,
+      wallet: state.wallet!,
       label: state.description,
       kind: address.kind,
       state: address.state,
     );
 
-    state.walletBloc!
-        .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+    await _appWalletsRepository
+        .getWalletServiceById(state.wallet!.id)
+        ?.updateWallet(
+      w,
+      updateTypes: [UpdateWalletTypes.addresses],
+    );
 
     emit(
       state.copyWith(
@@ -368,14 +370,13 @@ class ReceiveCubit extends Cubit<ReceiveState> {
     _payjoinManager.spawnNewReceiver(
       isTestnet: isTestnet,
       receiver: receiver,
-      wallet: state.walletBloc!.state.wallet!,
+      wallet: state.wallet!,
     );
   }
 
   Future<void> isPayjoinEnabled() async {
-    final walletBloc = state.walletBloc;
-    final wallet = walletBloc?.state.wallet;
-    if (walletBloc == null || wallet == null) return;
+    final wallet = state.wallet;
+    if (wallet == null) return;
 
     if (wallet.utxos.isEmpty) {
       emit(state.copyWith(isPayjoin: false));

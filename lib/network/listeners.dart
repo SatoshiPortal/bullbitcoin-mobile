@@ -1,4 +1,4 @@
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network/bloc/state.dart';
 import 'package:bb_mobile/network/popup.dart';
 import 'package:bb_mobile/routes.dart';
@@ -14,7 +14,7 @@ class NetworkListeners extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        BlocListener<NetworkCubit, NetworkState>(
+        BlocListener<NetworkBloc, NetworkState>(
           listenWhen: (previous, current) =>
               previous.goToSettings != current.goToSettings &&
               current.goToSettings,

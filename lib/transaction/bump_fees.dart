@@ -10,18 +10,19 @@ import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/page_template.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
@@ -113,23 +114,26 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
 
   @override
   void initState() {
-    walletBloc = context.read<HomeCubit>().state.getWalletBlocFromTx(widget.tx);
-
-    if (walletBloc == null) return;
+    final wallet =
+        context.read<AppWalletsRepository>().getWalletFromTx(widget.tx);
+    if (wallet == null) return;
+    walletBloc = createOrRetreiveWalletBloc(wallet.id);
 
     swap = CreateSwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
-      homeCubit: context.read<HomeCubit>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
+      // homeCubit: context.read<HomeBloc>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
-      networkCubit: context.read<NetworkCubit>(),
-    )..fetchFees(context.read<NetworkCubit>().state.testnet);
+      // networkCubit: context.read<NetworkBloc>(),
+      networkRepository: locator<NetworkRepository>(),
+    )..fetchFees(context.read<NetworkBloc>().state.networkData.testnet);
 
     networkFees = NetworkFeesCubit(
       hiveStorage: locator<HiveStorage>(),
       mempoolAPI: locator<MempoolAPI>(),
-      networkCubit: locator<NetworkCubit>(),
+      networkRepository: locator<NetworkRepository>(),
       defaultNetworkFeesCubit: context.read<NetworkFeesCubit>(),
     );
     networkFees.showOnlyFastest(true);
@@ -137,17 +141,14 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
 
     txCubit = TransactionCubit(
       tx: widget.tx,
-      walletBloc: walletBloc!,
+      wallet: wallet,
       walletUpdate: locator<WalletUpdate>(),
-
+      appWalletsRepository: locator<AppWalletsRepository>(),
       walletTx: locator<WalletTx>(),
       bdkTx: locator<BDKTransactions>(),
-      // walletSensTx: locator<WalletSensitiveTx>(),
-      // walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
       walletAddress: locator<WalletAddress>(),
-
-      walletsRepository: locator<WalletsRepository>(),
+      walletsRepository: locator<InternalWalletsRepository>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
     );
 
@@ -162,14 +163,11 @@ class _BumpFeesPageState extends State<BumpFeesPage> {
       barcode: locator<Barcode>(),
       defaultRBF: locator<SettingsCubit>().state.defaultRBF,
       fileStorage: locator<FileStorage>(),
-      networkCubit: locator<NetworkCubit>(),
-      networkFeesCubit: locator<NetworkFeesCubit>(),
-      homeCubit: locator<HomeCubit>(),
+      networkRepository: locator<NetworkRepository>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
       payjoinManager: locator<PayjoinManager>(),
       swapBoltz: locator<SwapBoltz>(),
-      currencyCubit: currency,
       openScanner: false,
-      walletBloc: walletBloc,
       swapCubit: swap,
     );
     super.initState();
@@ -237,7 +235,7 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tx = context.select((TransactionCubit _) => _.state.tx);
-    // final swap = tx.swapTx;
+
     final isSwapPending = tx.swapIdisTxid();
 
     final txid = tx.txid;
@@ -257,11 +255,6 @@ class _Screen extends StatelessWidget {
     );
 
     final feeRate = (tx.feeRate ?? 1).toStringAsFixed(2);
-
-    // final size = await tx.bdkTx.transaction.size(); // cant do await here.
-    // final feesPetByte = fees / size;
-
-    // final statuss = tx.height == null || tx.height == 0 || tx.timestamp == 0;
 
     final er = context.select((TransactionCubit x) => x.state.errSendingTx);
     final err = context.select((TransactionCubit x) => x.state.errBuildingTx);
@@ -311,11 +304,10 @@ class _Screen extends StatelessWidget {
                 const Gap(4),
                 InkWell(
                   onTap: () {
-                    final url =
-                        context.read<NetworkCubit>().state.explorerTxUrl(
-                              txid,
-                              isLiquid: tx.isLiquid,
-                            );
+                    final url = context.read<NetworkBloc>().state.explorerTxUrl(
+                          txid,
+                          isLiquid: tx.isLiquid,
+                        );
                     locator<Launcher>().launchApp(url);
                   },
                   child: BBText.body(txid, isBlue: true),
@@ -347,10 +339,8 @@ class _Screen extends StatelessWidget {
               ),
               const Gap(24),
               const NetworkFees(label: 'Set new fee rate'),
-
               const Gap(24),
               if (errr.isNotEmpty) BBText.errorSmall(errr),
-              // const Gap(100),
             ],
           ),
         ),

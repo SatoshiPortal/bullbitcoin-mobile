@@ -1,13 +1,12 @@
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +24,12 @@ class WalletTxList extends StatelessWidget {
     // final syncing = context.select((WalletBloc x) => x.state.syncing);
     // final loading = context.select((WalletBloc x) => x.state.loadingTxs);
     // final loadingBal = context.select((WalletBloc x) => x.state.loadingBalance);
-    final loading = context.select((WalletBloc x) => x.state.loading());
+    final loading = context.select((WalletBloc x) => x.state.syncing);
 
-    final confirmedTXs = context
-        .select((WalletBloc x) => x.state.wallet?.getConfirmedTxs() ?? []);
+    final confirmedTXs =
+        context.select((WalletBloc x) => x.state.wallet.getConfirmedTxs());
     final pendingTXs =
-        context.select((WalletBloc x) => x.state.wallet?.getPendingTxs() ?? []);
+        context.select((WalletBloc x) => x.state.wallet.getPendingTxs());
     final zeroPending = pendingTXs.isEmpty;
 
     if (loading && confirmedTXs.isEmpty && pendingTXs.isEmpty) {
@@ -69,13 +68,12 @@ class WalletTxList extends StatelessWidget {
                 fontSize: 11,
                 onPressed: () {
                   final network =
-                      context.read<NetworkCubit>().state.getBBNetwork();
+                      context.read<NetworkRepository>().getBBNetwork;
                   final wallets = context
-                      .read<HomeCubit>()
-                      .state
-                      .walletBlocsFromNetwork(network);
+                      .read<AppWalletsRepository>()
+                      .walletServiceFromNetwork(network);
                   for (final wallet in wallets) {
-                    wallet.add(SyncWallet());
+                    wallet.syncWallet();
                   }
                 },
               ),
@@ -134,7 +132,10 @@ class HomeTxItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = tx.label ?? '';
+    // final label = tx.label ?? '';
+    final label = (tx.label != null && tx.label!.length > 20)
+        ? '${tx.label!.substring(0, 20)}...'
+        : tx.label ?? '';
     final isReceive = tx.isReceived();
 
     var amount = context.select(
@@ -228,9 +229,9 @@ class BackupAlertBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((WalletBloc x) => x.state.wallet);
+    final wallet = context.select((WalletBloc x) => x.state.wallet);
     final backupTested =
-        context.select((WalletBloc x) => x.state.wallet?.backupTested ?? true);
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
 
     if (backupTested) return const SizedBox.shrink();
 
@@ -238,7 +239,7 @@ class BackupAlertBanner extends StatelessWidget {
       onTap: () {
         context.push(
           '/wallet-settings/open-backup',
-          extra: context.read<WalletBloc>(),
+          extra: wallet.id,
         );
       },
       info: 'Back up your wallet! Tap to test backup.',

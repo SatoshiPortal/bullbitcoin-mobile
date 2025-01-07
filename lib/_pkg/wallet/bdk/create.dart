@@ -2,16 +2,16 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/cold_card.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
 class BDKCreate {
-  BDKCreate({required WalletsRepository walletsRepository})
+  BDKCreate({required InternalWalletsRepository walletsRepository})
       : _walletsRepository = walletsRepository;
 
-  final WalletsRepository _walletsRepository;
+  final InternalWalletsRepository _walletsRepository;
 
   Future<(bdk.Wallet?, Err?)> loadPublicBdkWallet(
     Wallet wallet,

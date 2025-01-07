@@ -1,26 +1,29 @@
 import 'package:bb_mobile/_model/address.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/address/bloc/address_state.dart';
-import 'package:bb_mobile/wallet/bloc/event.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddressCubit extends Cubit<AddressState> {
   AddressCubit({
     required Address address,
-    required WalletBloc walletBloc,
+    required Wallet wallet,
     required WalletAddress walletAddress,
     required BDKUtxo bdkUtxo,
+    required AppWalletsRepository appWalletsRepository,
   })  : _walletAddress = walletAddress,
-        _walletBloc = walletBloc,
+        _wallet = wallet,
         _bdkUtxo = bdkUtxo,
+        _appWalletsRepository = appWalletsRepository,
         super(AddressState(address: address));
 
-  // final WalletStorage walletStorage;
-  final WalletBloc _walletBloc;
+  final Wallet _wallet;
   final WalletAddress _walletAddress;
   final BDKUtxo _bdkUtxo;
+  final AppWalletsRepository _appWalletsRepository;
 
   Future<void> freezeAddress() async {
     emit(state.copyWith(freezingAddress: true, errFreezingAddress: ''));
@@ -28,7 +31,7 @@ class AddressCubit extends Cubit<AddressState> {
     final (address, w) = await _walletAddress.addAddressToWallet(
       address: (state.address!.index, state.address!.address),
       label: state.address?.label,
-      wallet: _walletBloc.state.wallet!,
+      wallet: _wallet,
       kind: state.address!.kind,
       state: state.address!.state,
       spendable: false,
@@ -50,11 +53,14 @@ class AddressCubit extends Cubit<AddressState> {
       return;
     }
 
-    _walletBloc.add(
-      UpdateWallet(
-        utxoWallet!,
-        updateTypes: [UpdateWalletTypes.addresses, UpdateWalletTypes.utxos],
-      ),
+    await _appWalletsRepository
+        .getWalletServiceById(utxoWallet!.id)
+        ?.updateWallet(
+      utxoWallet,
+      updateTypes: [
+        UpdateWalletTypes.addresses,
+        UpdateWalletTypes.utxos,
+      ],
     );
 
     emit(
@@ -72,7 +78,7 @@ class AddressCubit extends Cubit<AddressState> {
     final (address, w) = await _walletAddress.addAddressToWallet(
       address: (state.address!.index, state.address!.address),
       label: state.address?.label,
-      wallet: _walletBloc.state.wallet!,
+      wallet: _wallet,
       kind: state.address!.kind,
       state: state.address!.state,
     );
@@ -93,26 +99,15 @@ class AddressCubit extends Cubit<AddressState> {
       return;
     }
 
-    _walletBloc.add(
-      UpdateWallet(
-        utxoWallet!,
-        updateTypes: [UpdateWalletTypes.addresses, UpdateWalletTypes.utxos],
-      ),
+    await _appWalletsRepository
+        .getWalletServiceById(utxoWallet!.id)
+        ?.updateWallet(
+      utxoWallet,
+      updateTypes: [
+        UpdateWalletTypes.addresses,
+        UpdateWalletTypes.utxos,
+      ],
     );
-
-    // final errUpdate = await walletsStorageRepository.updateWallet(
-    //   wallet: w,
-    //   hiveStore: hiveStorage,
-    // );
-    // if (errUpdate != null) {
-    //   emit(
-    //     state.copyWith(
-    //       freezingAddress: false,
-    //       errFreezingAddress: errUpdate.toString(),
-    //     ),
-    //   );
-    //   return;
-    // }
 
     emit(
       state.copyWith(
@@ -129,42 +124,40 @@ class AddressCubit extends Cubit<AddressState> {
     final (addr, w) = await _walletAddress.addAddressToWallet(
       address: (address.index, address.address),
       label: label,
-      wallet: _walletBloc.state.wallet!,
+      wallet: _wallet,
       kind: address.kind,
       state: address.state,
     );
     if (!w.isLiquid()) {
-      // pass utxo into cubit
-      // make utxo interface
       final updatedWallet = await BDKUtxo().updateUtxoLabel(
         addressStr: address.address,
         wallet: w,
         label: label,
       );
       if (updatedWallet == null) {
-        _walletBloc.add(
-          UpdateWallet(
-            w,
-            updateTypes: [
-              UpdateWalletTypes.addresses,
-              UpdateWalletTypes.utxos,
-            ],
-          ),
+        await _appWalletsRepository.getWalletServiceById(w.id)?.updateWallet(
+          w,
+          updateTypes: [
+            UpdateWalletTypes.addresses,
+            UpdateWalletTypes.utxos,
+          ],
         );
       } else {
-        _walletBloc.add(
-          UpdateWallet(
-            updatedWallet,
-            updateTypes: [
-              UpdateWalletTypes.addresses,
-              UpdateWalletTypes.utxos,
-            ],
-          ),
+        await _appWalletsRepository
+            .getWalletServiceById(updatedWallet.id)
+            ?.updateWallet(
+          updatedWallet,
+          updateTypes: [
+            UpdateWalletTypes.addresses,
+            UpdateWalletTypes.utxos,
+          ],
         );
       }
     } else {
-      _walletBloc
-          .add(UpdateWallet(w, updateTypes: [UpdateWalletTypes.addresses]));
+      await _appWalletsRepository.getWalletServiceById(w.id)?.updateWallet(
+        w,
+        updateTypes: [UpdateWalletTypes.addresses],
+      );
     }
     emit(
       state.copyWith(

@@ -1,7 +1,8 @@
 import 'package:bb_mobile/_pkg/deep_link.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:flutter/material.dart';
 
 class DeepLinker extends StatefulWidget {
@@ -29,20 +30,20 @@ class _DeepLinkerState extends State<DeepLinker> {
   }
 
   Future<void> linkReceived(String link) async {
-    final homeCubit = locator<HomeCubit>();
+    final homeCubit = locator<HomeBloc>();
     final err = await locator<DeepLink>().handleUri(
       link: link,
       // settingsCubit: locator<SettingsCubit>(),
-      networkCubit: locator<NetworkCubit>(),
+      networkCubit: locator<NetworkBloc>(),
       homeCubit: homeCubit,
       context: context,
     );
 
-    if (err != null) homeCubit.updateErrDeepLink(err.toString());
+    if (err != null) homeCubit.add(UpdateErrDeepLink(err.toString()));
   }
 
   void errReceived(String err) {
-    locator<HomeCubit>().updateErrDeepLink(err);
+    locator<HomeBloc>().add(UpdateErrDeepLink(err));
   }
 
   @override

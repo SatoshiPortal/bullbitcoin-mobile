@@ -1,21 +1,14 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
-import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/balance.dart';
-import 'package:bb_mobile/_pkg/wallet/create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
-import 'package:bb_mobile/_pkg/wallet/sync.dart';
-import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -34,22 +27,7 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
         .select((ImportWalletCubit cubit) => cubit.state.walletDetails ?? []);
 
     final walletCubits = [
-      for (final w in wallets)
-        WalletBloc(
-          saveDir: w.getWalletStorageString(),
-          walletSync: locator<WalletSync>(),
-          walletsStorageRepository: locator<WalletsStorageRepository>(),
-          fromStorage: false,
-          walletBalance: locator<WalletBalance>(),
-          walletAddress: locator<WalletAddress>(),
-          networkCubit: locator<NetworkCubit>(),
-          // swapBloc: locator<WatchTxsBloc>(),
-          wallet: w,
-          networkRepository: locator<NetworkRepository>(),
-          walletsRepository: locator<WalletsRepository>(),
-          walletTransactionn: locator<WalletTx>(),
-          walletCreatee: locator<WalletCreate>(),
-        ),
+      for (final w in wallets) createOrRetreiveWalletBloc(w.id, wallet: w),
     ];
 
     return BlocListener<ImportWalletCubit, ImportState>(
@@ -62,11 +40,11 @@ class ImportSelectWalletTypeScreen extends StatelessWidget {
           w.add(RemoveInternalWallet());
         }
         await locator<WalletsStorageRepository>().sortWallets();
-        locator<HomeCubit>().getWalletsFromStorage();
+        locator<HomeBloc>().add(LoadWalletsFromStorage());
         // final wallet = state.savedWallet!;
-        // locator<HomeCubit>().addWallets([wallet]);
+        // locator<HomeBloc>().addWallets([wallet]);
         // await Future.delayed(300.milliseconds);
-        // locator<HomeCubit>().changeMoveToIdx(wallet);
+        // locator<HomeBloc>().changeMoveToIdx(wallet);
         // await Future.delayed(300.milliseconds);
         if (!context.mounted) return;
         context.go('/home');
@@ -144,8 +122,8 @@ class _ScreenState extends State<_Screen> {
             ),
             const Gap(16),
             for (final walletBloc in widget.walletCubits) ...[
-              BlocProvider.value(
-                value: walletBloc,
+              BlocProvider(
+                create: (context) => walletBloc,
                 child: const _ImportWalletTypeButton(),
               ),
               const Gap(16),
@@ -229,8 +207,6 @@ class _ImportWalletTypeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final wallet = context.select((WalletBloc cubit) => cubit.state.wallet);
 
-    if (wallet == null) return const SizedBox.shrink();
-
     final scriptType = wallet.scriptType;
 
     final selected = context.select(
@@ -243,14 +219,14 @@ class _ImportWalletTypeButton extends StatelessWidget {
 
     final syncing = context.select((WalletBloc cubit) => cubit.state.syncing);
 
-    final ad = context.select((WalletBloc cubit) => cubit.state.firstAddress);
+    final ad =
+        context.select((WalletBloc cubit) => cubit.state.wallet.firstAddress);
 
     final balance =
-        context.select((WalletBloc cubit) => cubit.state.wallet?.fullBalance);
+        context.select((WalletBloc cubit) => cubit.state.wallet.fullBalance);
 
     final hasTxs = context.select(
-      (WalletBloc cubit) =>
-          cubit.state.wallet?.transactions.isNotEmpty ?? false,
+      (WalletBloc cubit) => cubit.state.wallet.transactions.isNotEmpty,
     );
 
     final address = ad?.miniString() ?? '';

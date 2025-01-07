@@ -3,7 +3,7 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
@@ -56,7 +56,7 @@ class _ChainSwapProgressWidgetState extends State<ChainSwapProgressWidget> {
     context.read<CurrencyCubit>().updateAmount(amtDouble.toString());
     context.select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
     context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
-    context.select((NetworkCubit cubit) => cubit.state.testnet);
+    context.select((NetworkBloc cubit) => cubit.state.networkData.testnet);
     Transaction? tx;
     if (swapTx?.isChainReceive() == false) {
       tx = context.select((SendCubit _) => _.state.tx);

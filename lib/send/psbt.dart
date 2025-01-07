@@ -5,7 +5,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -101,7 +101,7 @@ class PSBTPopUp extends StatelessWidget {
           InkWell(
             onTap: () {
               final url = context
-                  .read<NetworkCubit>()
+                  .read<NetworkBloc>()
                   .state
                   .explorerAddressUrl(toAddress);
               locator<Launcher>().launchApp(url);

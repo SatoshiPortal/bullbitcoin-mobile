@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
@@ -5,7 +7,6 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/address_validation.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/utils.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:payjoin_flutter/send.dart';
@@ -18,22 +19,21 @@ class SendState with _$SendState {
     @Default('') String address,
     @Default([]) List<String> enabledWallets,
     AddressNetwork? paymentNetwork,
-    WalletBloc? selectedWalletBloc,
+    Wallet? selectedWallet,
     Invoice? invoice,
     @Default(false) bool showSendButton,
     @Default(false) bool buildingOnChain,
     @Default('') String note,
     int? tempAmt,
+    double? btcTempAmt,
+    String? tempStrAmt,
     @Default(false) bool scanningAddress,
     @Default('') String errScanningAddress,
-    // @Default(false) bool showDropdown,
     @Default(false) bool sending,
     @Default('') String errSending,
     @Default(false) bool sent,
     @Default('') String psbt,
     Transaction? tx,
-    // @Default(false) bool txSettled,
-    // @Default(false) bool txPaid,
     @Default(false) bool downloadingFile,
     @Default('') String errDownloadingFile,
     @Default(false) bool downloaded,
@@ -61,16 +61,11 @@ class SendState with _$SendState {
     return calculateTotalSelected() >= amount;
   }
 
-  bool isWatchOnly() => selectedWalletBloc?.state.wallet?.watchOnly() ?? false;
+  bool isWatchOnly() => selectedWallet?.watchOnly() ?? false;
 
   bool isLnInvoice() => invoice != null;
 
   bool hasPjParam() => payjoinEndpoint != null;
-
-  // String getAddressFromInvoiceOrAddress() {
-  //   // if (invoice != null) return invoice!.;
-  //   return address;
-  // }
 
   int calculateTotalSelected() {
     return selectedUtxos.fold<int>(
@@ -103,41 +98,12 @@ class SendState with _$SendState {
     return '';
   }
 
-  // bool showSendButton() {
-  //   if (selectedWalletBloc != null) return true;
-  //   return false;
-  // }
-
-  bool checkIfMainWalletSelected() =>
-      selectedWalletBloc?.state.wallet?.mainWallet ?? false;
+  bool checkIfMainWalletSelected() => selectedWallet?.mainWallet ?? false;
 
   Future<(AddressNetwork?, Err?)> getPaymentNetwork(
     String address,
     BBNetwork network,
   ) async {
-    // final bitcoinMainnetPrefixes = ['1', '3', 'bc1', 'BC1'];
-    // final bitcoinTestnetPrefixesCase = ['m', 'n', '2', 'tb1', 'TB1'];
-    // final liquidMainnetPrefixesCase = ['lq1', 'LQ1', 'VJL', 'ex1', 'EX1', 'G'];
-    // final liquidTestnetPrefixes = ['tlq1', 'TLQ1'];
-    // final lightningPrefixes = [
-    //   'lnbc',
-    //   'LNBC',
-    //   'lntb',
-    //   'LNTB',
-    //   'lnbs',
-    //   'LNBS',
-    //   'lnbcrt',
-    //   'LNBCRT',
-    //   'lightning:',
-    // ];
-    // const lightningUri = 'lightning:';
-    // const bitcoinUri = 'bitcoin:';
-    // const liquidUris = ['liquidnetwork:', 'liquidtestnet:'];
-
-    // const a = lwk.Address.new(standard: '', confidential: '', index: 1);
-    // lwk.Address.validate(addressString: '');
-    // boltz.DecodedInvoice.fromString(s: '');
-
     final lowerAddress = address.toLowerCase();
 
     final bdkNetwork = network == BBNetwork.Mainnet
@@ -180,32 +146,32 @@ class SendState with _$SendState {
     }
   }
 
-  WalletBloc selectLiqThenSecThenOtherBtc(List<WalletBloc> blocs) {
-    final liqWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.isMain() && _.state.wallet!.isLiquid(),
+  Wallet selectLiqThenSecThenOtherBtc2(List<Wallet> wallets) {
+    final liqWalletIdx = wallets.indexWhere(
+      (_) => _.isMain() && _.isLiquid(),
     );
-    if (liqWalletIdx != -1) return blocs[liqWalletIdx];
+    if (liqWalletIdx != -1) return wallets[liqWalletIdx];
 
-    final secWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.isMain() && _.state.wallet!.isBitcoin(),
+    final secWalletIdx = wallets.indexWhere(
+      (_) => _.isMain() && _.isBitcoin(),
     );
-    if (secWalletIdx != -1) return blocs[secWalletIdx];
+    if (secWalletIdx != -1) return wallets[secWalletIdx];
 
-    blocs.sort(
-      (a, b) => b.state.balanceSats().compareTo(a.state.balanceSats()),
+    wallets.sort(
+      (a, b) => b.balanceSats().compareTo(a.balanceSats()),
     );
 
-    return blocs.first;
+    return wallets.first;
   }
 
-  WalletBloc selectMainBtcThenOtherHighestBalBtc(List<WalletBloc> blocs) {
+  Wallet selectMainBtcThenOtherHighestBalBtc2(List<Wallet> blocs) {
     final mainWalletIdx = blocs.indexWhere(
-      (_) => _.state.wallet!.mainWallet,
+      (_) => _.mainWallet,
     );
     if (mainWalletIdx != -1) return blocs[mainWalletIdx];
 
     blocs.sort(
-      (a, b) => b.state.balanceSats().compareTo(a.state.balanceSats()),
+      (a, b) => b.balanceSats().compareTo(a.balanceSats()),
     );
 
     return blocs.first;
@@ -220,8 +186,7 @@ class SendState with _$SendState {
   bool allowedSwitch(PaymentNetwork network) {
     if (!oneWallet) return true;
 
-    final wallet = selectedWalletBloc!.state.wallet;
-    if (wallet == null) return false;
+    final wallet = selectedWallet!;
 
     if (network == PaymentNetwork.bitcoin && wallet.isLiquid()) return false;
 
@@ -230,18 +195,28 @@ class SendState with _$SendState {
     return true;
   }
 
+  int convertBtcStringToSats(String btcAmt) {
+    final split = btcAmt.split('.');
+    final amountNo = int.parse(split[0]);
+    final len = min(8, split[1].length);
+    final amountDecimal =
+        int.parse(split[1].substring(0, len)) * pow(10, 8 - len);
+
+    final amountInSats = amountNo * 100000000 + amountDecimal;
+    return amountInSats.toInt();
+  }
+
   bool couldBeOnchainSwap() {
-    if (selectedWalletBloc == null ||
-        selectedWalletBloc?.state.wallet == null) {
+    if (selectedWallet == null) {
       return false;
     }
-    if (selectedWalletBloc!.state.wallet!.isBitcoin() &&
+    if (selectedWallet!.isBitcoin() &&
         (paymentNetwork == AddressNetwork.liquid ||
             paymentNetwork == AddressNetwork.bip21Liquid)) {
       return true;
     }
 
-    if (selectedWalletBloc!.state.wallet!.isLiquid() &&
+    if (selectedWallet!.isLiquid() &&
         (paymentNetwork == AddressNetwork.bitcoin ||
             paymentNetwork == AddressNetwork.bip21Bitcoin)) {
       return true;
@@ -253,7 +228,7 @@ class SendState with _$SendState {
   String getSendButtonLabel(bool sending) {
     if (couldBeOnchainSwap() == true) return 'Create Swap';
 
-    final watchOnly = selectedWalletBloc?.state.wallet?.watchOnly() ?? false;
+    final watchOnly = selectedWallet?.watchOnly() ?? false;
     final isLn = isLnInvoice();
 
     final String label = watchOnly

@@ -3,7 +3,7 @@ import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
@@ -13,7 +13,7 @@ import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/hardware_import_bloc/hardware_import_cubit.dart';
 import 'package:bb_mobile/import/listeners.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -37,7 +37,7 @@ class _HardwareImportPageState extends State<HardwareImportPage> {
     _hardwareImportCubit = HardwareImportCubit(
       barcode: locator<Barcode>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
-      networkCubit: locator<NetworkCubit>(),
+      networkCubit: locator<NetworkBloc>(),
       bdkCreate: locator<BDKCreate>(),
       filePicker: locator<FilePick>(),
     );

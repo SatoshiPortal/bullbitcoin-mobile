@@ -26,7 +26,33 @@ class SendListeners extends StatelessWidget {
         BlocListener<CurrencyCubit, CurrencyState>(
           listenWhen: (previous, current) => previous.amount != current.amount,
           listener: (context, state) {
-            context.read<SendCubit>().checkBalance();
+            final amt = context.read<CurrencyCubit>().state.amount;
+            context.read<SendCubit>().checkBalance(amt);
+          },
+        ),
+        BlocListener<SendCubit, SendState>(
+          listenWhen: (previous, current) =>
+              previous.tempAmt != current.tempAmt && current.tempAmt != null,
+          listener: (context, state) {
+            context.read<CurrencyCubit>().updateAmountDirect(state.tempAmt!);
+          },
+        ),
+        BlocListener<SendCubit, SendState>(
+          listenWhen: (previous, current) =>
+              previous.btcTempAmt != current.btcTempAmt &&
+              current.btcTempAmt != null,
+          listener: (context, state) {
+            context
+                .read<CurrencyCubit>()
+                .btcToCurrentTempAmount(state.btcTempAmt!);
+          },
+        ),
+        BlocListener<SendCubit, SendState>(
+          listenWhen: (previous, current) =>
+              previous.tempStrAmt != current.tempStrAmt &&
+              current.tempStrAmt != null,
+          listener: (context, state) {
+            context.read<CurrencyCubit>().updateAmount(state.tempStrAmt!);
           },
         ),
         BlocListener<CreateSwapCubit, SwapState>(
