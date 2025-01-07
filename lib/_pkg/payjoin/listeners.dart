@@ -37,24 +37,5 @@ class _PayjoinLifecycleManagerState extends State<PayjoinLifecycleManager>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    final inBg = state == AppLifecycleState.inactive ||
-        state == AppLifecycleState.paused ||
-        state == AppLifecycleState.hidden ||
-        state == AppLifecycleState.detached;
-
-    if (!inBackground && inBg) {
-      // App going to background
-      widget.payjoinManager.pauseAllSessions();
-    } else if (inBackground && !inBg) {
-      // App coming to foreground
-      widget.payjoinManager.resumeSessions(widget.wallet);
-    }
-
-    inBackground = inBg;
-    super.didChangeAppLifecycleState(state);
-  }
-
-  @override
   Widget build(BuildContext context) => widget.child;
 }
