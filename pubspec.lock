@@ -78,22 +78,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.31.2"
-  bech32:
-    dependency: transitive
-    description:
-      name: bech32
-      sha256: "156cbace936f7720c79a79d16a03efad343b1ef17106716e04b8b8e39f99f7f7"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.2"
-  bip340:
-    dependency: transitive
-    description:
-      name: bip340
-      sha256: "2a92f6ed68959f75d67c9a304c17928b9c9449587d4f75ee68f34152f7f69e87"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.0"
   bip85:
     dependency: "direct main"
     description:
@@ -1087,23 +1071,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
-  nostr:
-    dependency: "direct main"
-    description:
-      name: nostr
-      sha256: a99942e4eedd5823d16f42e6df96240488028666a329ee1047552f79db564123
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.0"
-  nostr_sdk:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: main
-      resolved-ref: cae2399dcba0a3ed03c0284db26236f9e5e31be6
-      url: "https://github.com/ethicnology/dart-nip17"
-    source: git
-    version: "0.0.1"
   oktoast:
     dependency: "direct main"
     description:

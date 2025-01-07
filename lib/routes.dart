@@ -5,11 +5,8 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/backup/backup_page.dart';
-import 'package:bb_mobile/backup/bloc/social_setting_state.dart';
 import 'package:bb_mobile/backup/cloud_page.dart';
 import 'package:bb_mobile/backup/keychain_page.dart';
-import 'package:bb_mobile/backup/social_page.dart';
-import 'package:bb_mobile/backup/social_settings.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/home/market.dart';
@@ -21,7 +18,6 @@ import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/recover/keychain_page.dart';
 import 'package:bb_mobile/recover/manual_page.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
-// import 'package:bb_mobile/seeds/seeds_page.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/application_settings_page.dart';
 import 'package:bb_mobile/settings/bitcoin_settings_page.dart';
@@ -236,19 +232,6 @@ GoRouter setupRouter() => GoRouter(
           builder: (context, state) {
             final backupId = state.extra! as String;
             return KeychainRecoverPage(backupId: backupId);
-          },
-        ),
-        GoRoute(
-          path: '/social-settings',
-          builder: (context, state) {
-            return const SocialSettingsPage();
-          },
-        ),
-        GoRoute(
-          path: '/social',
-          builder: (context, state) {
-            final settings = state.extra! as SocialSettingState;
-            return SocialPage(settings: settings);
           },
         ),
 
