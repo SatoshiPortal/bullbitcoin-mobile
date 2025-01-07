@@ -54,8 +54,6 @@ class _Screen extends StatelessWidget {
                 const BackupBullButton(),
                 const Gap(8),
                 const RecoverBullButton(),
-                const Gap(8),
-                const SocialButton(),
 
                 const Gap(24),
                 const Center(
@@ -194,20 +192,6 @@ class RecoverBullButton extends StatelessWidget {
         final wallets =
             context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
         context.push('/recoverbull', extra: wallets);
-      },
-    );
-  }
-}
-
-class SocialButton extends StatelessWidget {
-  const SocialButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BBButton.textWithStatusAndRightArrow(
-      label: 'Social',
-      onPressed: () {
-        context.push('/social-settings');
       },
     );
   }
