@@ -7,7 +7,8 @@ part 'backup_state.freezed.dart';
 class BackupState with _$BackupState {
   const factory BackupState({
     @Default(true) bool loading,
-    @Default([]) List<Backup> backups,
+    @Default([]) List<Backup> loadedBackups,
+    @Default({}) Map<String, bool> confirmedBackups,
     @Default('') String backupId,
     @Default('') String backupPath,
     @Default('') String backupName,
