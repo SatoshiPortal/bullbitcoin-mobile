@@ -15,6 +15,7 @@ class Backup with _$Backup {
     @Default('') String type,
     @Default(<String>[]) List<String> mnemonic,
     @Default('') String passphrase,
+    @Default('') String mnemonicFingerPrint,
     @Default(<Bip329Label>[]) List<Bip329Label> labels,
     @Default(<String>[]) List<String> descriptors,
   }) = _Backup;
