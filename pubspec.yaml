@@ -100,6 +100,9 @@ dependencies:
   googleapis: ^13.2.0
   google_sign_in: ^6.2.2
   extension_google_sign_in_as_googleapis_auth: ^2.0.12
+  recoverbull_dart:
+    git:
+      url: https://github.com/StaxoLotl/recoverbull-dart.git
 
 
 dev_dependencies:
