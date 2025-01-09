@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/wallet/sync.dart';
-import 'package:bb_mobile/_repository/app_wallets_repository.dart';
-import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
-import 'package:bb_mobile/_repository/wallet_service.dart';
+import 'package:bb_mobile/_repositories/app_wallets_repository.dart';
+import 'package:bb_mobile/_repositories/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repositories/wallet_service.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';

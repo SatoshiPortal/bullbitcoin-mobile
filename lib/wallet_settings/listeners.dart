@@ -1,5 +1,5 @@
-import 'package:bb_mobile/_repository/app_wallets_repository.dart';
-import 'package:bb_mobile/_repository/wallet_service.dart';
+import 'package:bb_mobile/_repositories/app_wallets_repository.dart';
+import 'package:bb_mobile/_repositories/wallet_service.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';

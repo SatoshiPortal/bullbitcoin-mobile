@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_repository/app_wallets_repository.dart';
-import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repositories/app_wallets_repository.dart';
+import 'package:bb_mobile/_repositories/network_repository.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

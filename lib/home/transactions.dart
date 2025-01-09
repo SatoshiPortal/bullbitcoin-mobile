@@ -1,7 +1,7 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_repository/app_wallets_repository.dart';
-import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repositories/app_wallets_repository.dart';
+import 'package:bb_mobile/_repositories/network_repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';

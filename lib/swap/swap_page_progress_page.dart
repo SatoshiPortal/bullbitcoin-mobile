@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
-import 'package:bb_mobile/_repository/app_wallets_repository.dart';
-import 'package:bb_mobile/_repository/network_repository.dart';
-import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repositories/app_wallets_repository.dart';
+import 'package:bb_mobile/_repositories/network_repository.dart';
+import 'package:bb_mobile/_repositories/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';

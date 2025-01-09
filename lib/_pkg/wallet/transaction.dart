@@ -14,9 +14,9 @@ import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/address.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
-import 'package:bb_mobile/_repository/wallet/internal_network.dart';
-import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
-import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repositories/wallet/internal_network.dart';
+import 'package:bb_mobile/_repositories/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repositories/wallet/sensitive_wallet_storage.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletTx implements IWalletTransactions {

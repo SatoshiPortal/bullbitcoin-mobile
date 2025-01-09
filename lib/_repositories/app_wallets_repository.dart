@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
-import 'package:bb_mobile/_repository/wallet_service.dart';
+import 'package:bb_mobile/_repositories/wallet/wallet_storage.dart';
+import 'package:bb_mobile/_repositories/wallet_service.dart';
 
 class AppWalletsRepository {
   AppWalletsRepository({

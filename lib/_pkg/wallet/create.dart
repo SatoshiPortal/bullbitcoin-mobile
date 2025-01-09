@@ -3,8 +3,8 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/create.dart';
-import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
-import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
+import 'package:bb_mobile/_repositories/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repositories/wallet/wallet_storage.dart';
 
 class WalletCreate implements IWalletCreate {
   WalletCreate({

@@ -4,7 +4,7 @@ import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
-import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repositories/network_repository.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';

@@ -4,7 +4,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/address.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/address.dart';
-import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repositories/wallet/internal_wallets.dart';
 
 class WalletAddress implements IWalletAddress {
   WalletAddress({

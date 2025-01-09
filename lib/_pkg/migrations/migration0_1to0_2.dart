@@ -15,9 +15,9 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/create.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
-import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
-import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
-import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
+import 'package:bb_mobile/_repositories/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repositories/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repositories/wallet/wallet_storage.dart';
 
 // int mainWalletIndex = 0;
 // int testWalletIndex = 0;

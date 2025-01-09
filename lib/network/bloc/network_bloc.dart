@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/_pkg/electrum_test.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
-import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repositories/network_repository.dart';
 import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/network/bloc/event.dart';
 import 'package:bb_mobile/network/bloc/state.dart';

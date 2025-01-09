@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/network.dart';
-import 'package:bb_mobile/_repository/wallet/internal_network.dart';
+import 'package:bb_mobile/_repositories/wallet/internal_network.dart';
 
 class WalletNetwork implements IWalletNetwork {
   WalletNetwork({

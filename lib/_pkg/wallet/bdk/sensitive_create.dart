@@ -5,7 +5,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
-import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repositories/wallet/internal_wallets.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 

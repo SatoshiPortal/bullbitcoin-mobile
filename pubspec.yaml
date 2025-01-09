@@ -92,6 +92,7 @@ dependencies:
   permission_handler: ^11.3.1
   rxdart: ^0.28.0
   synchronized: ^3.3.0+3
+  decimal: ^2.3.3
 
 dev_dependencies:
   build_runner: ^2.4.9

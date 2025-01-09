@@ -8,7 +8,7 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
-import 'package:bb_mobile/_repository/wallet/internal_network.dart';
+import 'package:bb_mobile/_repositories/wallet/internal_network.dart';
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:dio/dio.dart';
 
