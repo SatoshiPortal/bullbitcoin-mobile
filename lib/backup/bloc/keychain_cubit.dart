@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/_pkg/consts/configs.dart';
-import 'package:bb_mobile/_pkg/crypto.dart';
 import 'package:bb_mobile/backup/bloc/keychain_state.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hex/hex.dart';
+import 'package:recoverbull_dart/recoverbull_dart.dart';
 
 class KeychainCubit extends Cubit<KeychainState> {
   KeychainCubit() : super(const KeychainState());
@@ -27,32 +23,13 @@ class KeychainCubit extends Cubit<KeychainState> {
       emit(state.copyWith(error: 'keychain api is not set'));
       return;
     }
-
     await _storeBackupKey(backupId, backupKey);
   }
 
   Future<void> _storeBackupKey(String backupId, String backupKey) async {
-    final secretHashBytes = Crypto.sha256(utf8.encode(state.secret));
-    final secretHashHex = HEX.encode(secretHashBytes);
-
     try {
-      final response = await Dio().post(
-        '$keychainapi/store_key',
-        options: Options(headers: {'Content-Type': 'application/json'}),
-        data: {
-          'backup_id': backupId,
-          'backup_key': backupKey,
-          'secret_hash': secretHashHex,
-        },
-      );
-
-      if (response.statusCode == 201) {
-        emit(state.copyWith(completed: true));
-      } else if (response.statusCode == 403) {
-        emit(state.copyWith(error: 'Key already stored'));
-      } else {
-        emit(state.copyWith(error: 'Key not secured \n${response.statusCode}'));
-      }
+      await KeyManagementService(keychainapi: keychainapi)
+          .storeBackupKey(backupId, backupKey, state.secret);
     } catch (e) {
       print(e);
       emit(state.copyWith(error: 'Server Inaccessible'));
