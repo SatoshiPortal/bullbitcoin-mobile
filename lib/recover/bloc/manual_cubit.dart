@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:bb_mobile/_model/backup.dart';
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/crypto.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
@@ -13,6 +12,8 @@ import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/recover/bloc/manual_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hex/hex.dart';
+import 'package:recoverbull_dart/recoverbull_dart.dart';
 
 class ManualCubit extends Cubit<ManualState> {
   ManualCubit({
@@ -50,16 +51,14 @@ class ManualCubit extends Cubit<ManualState> {
       emit(state.copyWith(error: 'Empty file'));
       return;
     }
-
-    final json = jsonDecode(file);
-    final id = json['id']?.toString() ?? '';
-    final encrypted = json['encrypted']?.toString() ?? '';
-    if (encrypted.isEmpty || id.isEmpty) {
+    final decodeEncryptedFile = utf8.decode(HEX.decode(file));
+    final id = jsonDecode(decodeEncryptedFile)['backupId']?.toString() ?? '';
+    if (decodeEncryptedFile.isEmpty || id.isEmpty) {
       emit(state.copyWith(error: 'Invalid backup'));
       return;
     }
 
-    emit(state.copyWith(backupId: id, encrypted: encrypted));
+    emit(state.copyWith(backupId: id, encrypted: decodeEncryptedFile));
   }
 
   Future<void> clickRecover() async {
@@ -74,13 +73,13 @@ class ManualCubit extends Cubit<ManualState> {
     }
 
     try {
-      final plaintext = Crypto.aesDecrypt(state.encrypted, state.backupKey);
+      final plaintext =
+          await BackupService.restoreBackup(state.encrypted, state.backupKey);
       final decodedJson = jsonDecode(plaintext) as List;
 
       final backups = decodedJson
           .map((item) => Backup.fromJson(item as Map<String, dynamic>))
           .toList();
-
       for (final backup in backups) {
         final network = switch (backup.network.toLowerCase()) {
           'mainnet' => BBNetwork.Mainnet,
@@ -118,17 +117,58 @@ class ManualCubit extends Cubit<ManualState> {
         }
 
         if (backup.mnemonic.isNotEmpty) {
-          await _addWallet(
-            backup.mnemonic.join(' '),
-            backup.passphrase,
+          await _addOrUpdateWallet(
             network,
             layer,
             script,
             type,
+            backup.mnemonic.join(' '),
+            backup.passphrase,
           );
+        } else {
+          //find the mnemonic & passphrase associated with the fingerprint.
+
+          for (final walletBloc in wallets) {
+            if (walletBloc.state.wallet!.mnemonicFingerprint ==
+                backup.mnemonicFingerPrint) {
+              final seedStorageString =
+                  walletBloc.state.wallet!.getRelatedSeedStorageString();
+              final (seed, error) = await walletSensitiveStorage.readSeed(
+                fingerprintIndex: seedStorageString,
+              );
+              if (error != null) {
+                emit(state.copyWith(
+                    error: 'Error reading seed: ${error.message}'));
+                return false;
+              }
+              if (seed == null) {
+                emit(state.copyWith(error: 'Seed data is missing.'));
+                return false;
+              }
+              final passphrase = walletBloc.state.wallet!.hasPassphrase()
+                  ? seed.passphrases
+                      .firstWhere(
+                        (e) =>
+                            e.sourceFingerprint ==
+                            walletBloc.state.wallet!.sourceFingerprint,
+                      )
+                      .passphrase
+                  : '';
+              await _addOrUpdateWallet(
+                network,
+                layer,
+                script,
+                type,
+                seed.mnemonic,
+                passphrase,
+              );
+            } else {
+              emit(state.copyWith(error: 'Backup does not match any wallet'));
+              return false;
+            }
+          }
         }
       }
-
       return true;
     } catch (e) {
       print(e);
@@ -137,13 +177,13 @@ class ManualCubit extends Cubit<ManualState> {
     }
   }
 
-  Future<void> _addWallet(
-    String mnemonic,
-    String passphrase,
+  Future<void> _addOrUpdateWallet(
     BBNetwork network,
     BaseWalletType layer,
     ScriptType script,
     BBWalletType type,
+    String mnemonic,
+    String passphrase,
   ) async {
     try {
       final (seed, error) =
