@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_pkg/gdrive.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:recoverbull_dart/recoverbull_dart.dart';
 
 part 'cloud_state.freezed.dart';
 
@@ -7,7 +8,7 @@ part 'cloud_state.freezed.dart';
 class CloudState with _$CloudState {
   const factory CloudState({
     @Default(true) bool loading,
-    Gdrive? gdrive,
+    GoogleDriveStorage? googleDriveStorage,
     @Default('') String toast,
   }) = _CloudState;
 }
