@@ -48,10 +48,10 @@ class CloudPage extends StatelessWidget {
                       onPressed: cubit.connectAndStoreBackup,
                       child: const Text("Google Drive"),
                     ),
-                    if (state.gdrive != null)
+                    if (state.googleDriveStorage != null)
                       ElevatedButton(
                         onPressed: cubit.disconnect,
-                        child: const Text("log out"),
+                        child: const Text("Log out"),
                       ),
                   ],
                 ),
