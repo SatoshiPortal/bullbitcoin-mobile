@@ -39,6 +39,7 @@ class ManualRecoverPage extends StatelessWidget {
         backgroundColor: Colors.amber,
         appBar: AppBar(
           automaticallyImplyLeading: false,
+          elevation: 0,
           flexibleSpace: BBAppBar(
             text: 'Recover Backup',
             onBack: () => context.pop(),
@@ -71,39 +72,42 @@ class ManualRecoverPage extends StatelessWidget {
             builder: (context, state) {
               final cubit = context.read<ManualCubit>();
 
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  if (!state.recovered &&
-                      state.backupId.isNotEmpty &&
-                      state.backupKey.isEmpty)
-                    ElevatedButton(
-                      onPressed: () => context.push(
-                        '/keychain-recover',
-                        extra: state.backupId,
+              return Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    if (!state.recovered &&
+                        state.backupId.isNotEmpty &&
+                        state.backupKey.isEmpty)
+                      ElevatedButton(
+                        onPressed: () => context.push(
+                          '/keychain-recover',
+                          extra: state.backupId,
+                        ),
+                        child: const Text('Keychain'),
                       ),
-                      child: const Text('Keychain'),
-                    ),
-                  if (!state.recovered && state.backupId.isNotEmpty)
-                    TextFormField(
-                      decoration:
-                          const InputDecoration(labelText: 'Backup Key'),
-                      maxLength: 64,
-                      onChanged: (value) => cubit.updateBackupKey(value),
-                    ),
-                  if (!state.recovered && state.backupKey.isEmpty)
-                    BBButton.big(
-                      label: 'Select File',
-                      center: true,
-                      onPressed: () => cubit.selectFile(),
-                    ),
-                  if (!state.recovered && state.backupKey.isNotEmpty)
-                    BBButton.big(
-                      label: 'Recover',
-                      center: true,
-                      onPressed: () => cubit.clickRecover(),
-                    ),
-                ],
+                    if (!state.recovered && state.backupId.isNotEmpty)
+                      TextFormField(
+                        decoration:
+                            const InputDecoration(labelText: 'Backup Key'),
+                        maxLength: 64,
+                        onChanged: (value) => cubit.updateBackupKey(value),
+                      ),
+                    if (!state.recovered && state.backupKey.isEmpty)
+                      BBButton.big(
+                        label: 'Select File',
+                        center: true,
+                        onPressed: () => cubit.selectFile(),
+                      ),
+                    if (!state.recovered && state.backupKey.isNotEmpty)
+                      BBButton.big(
+                        label: 'Recover',
+                        center: true,
+                        onPressed: () => cubit.clickRecover(),
+                      ),
+                  ],
+                ),
               );
             },
           ),
