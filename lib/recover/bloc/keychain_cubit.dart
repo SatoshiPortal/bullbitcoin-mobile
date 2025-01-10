@@ -1,12 +1,8 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/_pkg/consts/configs.dart';
-import 'package:bb_mobile/_pkg/crypto.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/recover/bloc/keychain_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hex/hex.dart';
-import 'package:http/http.dart' as http;
+import 'package:recoverbull_dart/recoverbull_dart.dart';
 
 class KeychainCubit extends Cubit<KeychainState> {
   KeychainCubit({required String backupId, required this.filePicker})
@@ -32,30 +28,16 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   void _recoverBackupKey(String secret, String backupId) async {
-    final secretHash = Crypto.sha256(utf8.encode(secret));
-
-    if (keychainapi.isEmpty) {
-      emit(state.copyWith(error: 'keychain api is not set'));
-      return;
-    }
-
-    final response = await http.post(
-      Uri.parse('$keychainapi/recover_key'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'backup_id': state.backupId,
-        'secret_hash': HEX.encode(secretHash),
-      }),
-    );
-    final body = jsonDecode(response.body);
-    final backupKey = body['backup_key'];
-
-    if (response.statusCode == 200 &&
-        backupKey != null &&
-        backupKey is String) {
+    try {
+      if (keychainapi.isEmpty) {
+        emit(state.copyWith(error: 'keychain api is not set'));
+        return;
+      }
+      final backupKey = await KeyManagementService(keychainapi: keychainapi)
+          .recoverBackupKey(backupId, secret);
       emit(state.copyWith(backupKey: backupKey));
-    } else {
-      emit(state.copyWith(error: '${response.statusCode} | ${response.body}'));
+    } on KeyManagementException catch (e) {
+      emit(state.copyWith(error: e.message));
     }
   }
 }
