@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_repository/wallet_service.dart';
 
 class HomeEvent {}
 
@@ -23,8 +24,13 @@ class LoadWalletsForNetwork extends HomeEvent {
 }
 
 class WalletUpdated extends HomeEvent {
-  WalletUpdated(this.wallet);
-  final Wallet wallet;
+  WalletUpdated(this.walletData);
+  final WalletServiceData walletData;
+}
+
+class WalletServicesUpdated extends HomeEvent {
+  WalletServicesUpdated(this.walletServices);
+  final List<WalletService> walletServices;
 }
 
 class WalletsSubscribe extends HomeEvent {}

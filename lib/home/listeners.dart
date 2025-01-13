@@ -2,7 +2,6 @@ import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/payjoin/listeners.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
-import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/locator.dart';
@@ -51,7 +50,7 @@ class _HomeWalletsSetupListenerState extends State<HomeWalletsSetupListener> {
     final wallets = context.read<HomeBloc>().state.wallets;
     if (wallets.isNotEmpty) {
       context.read<AppWalletBlocs>().updateWalletBlocs([
-        for (final w in wallets) createOrRetreiveWalletBloc(w.id),
+        for (final w in wallets) createOrRetreiveWalletBloc(w.wallet.id),
       ]);
     }
     super.initState();
@@ -67,7 +66,8 @@ class _HomeWalletsSetupListenerState extends State<HomeWalletsSetupListener> {
         if (state.wallets.isEmpty) return;
 
         context.read<AppWalletBlocs>().updateWalletBlocs([
-          for (final w in state.wallets) createOrRetreiveWalletBloc(w.id),
+          for (final w in state.wallets)
+            createOrRetreiveWalletBloc(w.wallet.id),
         ]); // final walletBlocs = createWalletBlocs(state.tempwallets!);
         // context.read<HomeBloc>().updateWalletBlocs(
         //       createWalletBlocs(state.tempwallets!),
@@ -97,23 +97,23 @@ class WalletBlocListeners extends StatelessWidget {
     }
     final mainWalletBloc = wallets.firstWhere(
       (bloc) =>
-          bloc.mainWallet == true &&
-          !bloc.watchOnly() &&
-          bloc.isSecure() &&
-          bloc.isActive(),
+          bloc.wallet.mainWallet == true &&
+          !bloc.wallet.watchOnly() &&
+          bloc.wallet.isSecure() &&
+          bloc.wallet.isActive(),
       orElse: () =>
           wallets.first, // Return first wallet if no main wallet found
     );
 
     var walletChild = child;
-    if (mainWalletBloc.mainWallet == true &&
-        !mainWalletBloc.watchOnly() &&
-        mainWalletBloc.isSecure()) {
+    if (mainWalletBloc.wallet.mainWallet == true &&
+        !mainWalletBloc.wallet.watchOnly() &&
+        mainWalletBloc.wallet.isSecure()) {
       // print(
       //   'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.id}',
       // );
       walletChild = PayjoinLifecycleManager(
-        wallet: mainWalletBloc,
+        wallet: mainWalletBloc.wallet,
         payjoinManager: locator<PayjoinManager>(),
         child: child,
       );
@@ -121,21 +121,7 @@ class WalletBlocListeners extends StatelessWidget {
 
     if (blocs.isEmpty) return walletChild;
 
-    return MultiBlocListener(
-      listeners: [
-        for (final bloc in context.read<AppWalletBlocs>().state)
-          BlocListener<WalletBloc, WalletState>(
-            bloc: bloc,
-            // bloc: createWalletBloc(w),
-            listenWhen: (previous, current) =>
-                previous.wallet != current.wallet,
-            listener: (context, state) {
-              context.read<HomeBloc>().add(WalletUpdated(state.wallet));
-            },
-          ),
-      ],
-      child: walletChild,
-    );
+    return walletChild;
   }
 }
 
@@ -196,6 +182,7 @@ class _HomeWalletLoadingListenersState
     if (walletBlocs.isEmpty) return widget.child;
 
     _setup();
+    // TODO: cleanup
     return MultiBlocListener(
       listeners: [
         for (final walletBloc in walletBlocs)
