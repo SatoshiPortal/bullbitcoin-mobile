@@ -5,6 +5,7 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/backup/backup_page.dart';
+import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
 import 'package:bb_mobile/backup/cloud_page.dart';
 import 'package:bb_mobile/backup/keychain_page.dart';
 import 'package:bb_mobile/create/page.dart';
@@ -247,8 +248,11 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/cloud-backup',
           builder: (context, state) {
-            final (backupPath, backupName) = state.extra! as (String, String);
-            return CloudPage(backupPath: backupPath, backupName: backupName);
+            final cloudCubit = state.extra! as CloudCubit;
+            return BlocProvider.value(
+              value: cloudCubit,
+              child: const CloudPage(),
+            );
           },
         ),
 
