@@ -1,8 +1,3 @@
-import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/components/button.dart';
-import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
-import 'package:bb_mobile/backup/bloc/cloud_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -10,18 +5,51 @@ import 'package:go_router/go_router.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:intl/intl.dart';
 
-class CloudPage extends StatelessWidget {
-  const CloudPage({super.key});
+import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
+import 'package:bb_mobile/backup/bloc/cloud_state.dart';
+
+class CloudPage extends StatefulWidget {
+  final Function(String, String)? onBackupSelected;
+  const CloudPage({
+    Key? key,
+    this.onBackupSelected,
+  });
+
+  @override
+  State<CloudPage> createState() => _CloudPageState();
+}
+
+class _CloudPageState extends State<CloudPage> {
+  @override
+  void initState() {
+    final cubit = context.read<CloudCubit>();
+    cubit.readAllBackups();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CloudCubit, CloudState>(
       listener: (context, state) {
-        if (state.toast.isNotEmpty) {
+        if (widget.onBackupSelected != null) {
+          if (state.selectedBackup.$1.isNotEmpty &&
+              state.selectedBackup.$2.isNotEmpty) {
+            widget.onBackupSelected!(
+              state.selectedBackup.$1,
+              state.selectedBackup.$2,
+            );
+            context.pop();
+          }
+        }
+
+        if (state.toast.isNotEmpty && state.toast != '') {
           _showSnackBar(context, state.toast, Colors.green);
           context.read<CloudCubit>().clearToast();
         }
-        if (state.error.isNotEmpty) {
+        if (state.error.isNotEmpty && state.error != '') {
           _showSnackBar(context, state.error, Colors.red);
           context.read<CloudCubit>().clearError();
         }
@@ -45,7 +73,7 @@ class CloudPage extends StatelessWidget {
                       const Gap(50),
                       AvailableBackups(
                         onFileSelected: (file) {
-                          debugPrint('Selected file: ${file.name}');
+                          cubit.readCloudBackup(file);
                         },
                       ),
                       const Gap(10),
@@ -80,7 +108,7 @@ class AvailableBackups extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<CloudCubit>();
     return SizedBox(
-      height: 500,
+      height: 700,
       child: BlocBuilder<CloudCubit, CloudState>(
         builder: (context, state) {
           if (state.availableBackups.isEmpty) {
