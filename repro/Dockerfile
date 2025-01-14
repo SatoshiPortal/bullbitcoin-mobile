@@ -74,7 +74,7 @@ RUN sudo mkdir /app
 RUN sudo chown -R $USER /app
 
 # Clone the Bull Bitcoin mobile repository
-RUN git clone https://github.com/SatoshiPortal/bullbitcoin-mobile /app
+RUN git clone --branch main https://github.com/SatoshiPortal/bullbitcoin-mobile /app
 
 # Copy device-spec.json into the container
 COPY device-spec.json /app/device-spec.json
