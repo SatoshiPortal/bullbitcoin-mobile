@@ -2,21 +2,25 @@ import 'dart:convert';
 
 import 'package:bb_mobile/_model/backup.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
+import 'package:bb_mobile/_pkg/gdrive.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/recover/bloc/fs_cloud_state.dart';
+import 'package:bb_mobile/recover/bloc/manual_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:googleapis/drive/v3.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull_dart/recoverbull_dart.dart';
 
-class FsCloudCubit extends Cubit<FsCloudState> {
-  FsCloudCubit({
+class ManualCubit extends Cubit<ManualState> {
+  ManualCubit({
     required this.bdkSensitiveCreate,
     required this.lwkSensitiveCreate,
     required this.walletSensitiveCreate,
@@ -24,10 +28,10 @@ class FsCloudCubit extends Cubit<FsCloudState> {
     required this.walletCreate,
     required this.wallets,
     required this.walletSensitiveStorage,
-    required this.filePicker,
-  }) : super(const FsCloudState());
+    this.filePicker,
+  }) : super(const ManualState());
 
-  final FilePick filePicker;
+  FilePick? filePicker;
   final List<WalletBloc> wallets;
   final WalletSensitiveStorageRepository walletSensitiveStorage;
   final WalletsStorageRepository walletsStorageRepository;
@@ -39,8 +43,11 @@ class FsCloudCubit extends Cubit<FsCloudState> {
   void updateBackupKey(String value) => emit(state.copyWith(backupKey: value));
   void clearError() => emit(state.copyWith(error: ''));
 
-  Future<void> selectFile() async {
-    final (file, error) = await filePicker.pickFile();
+  Future<void> selectFileFromFs() async {
+    if (filePicker == null) {
+      return;
+    }
+    final (file, error) = await filePicker!.pickFile();
 
     if (error != null) {
       emit(state.copyWith(error: error.toString()));
@@ -57,9 +64,11 @@ class FsCloudCubit extends Cubit<FsCloudState> {
       emit(state.copyWith(error: 'Invalid backup'));
       return;
     }
-
-    emit(state.copyWith(backupId: id, encrypted: decodeEncryptedFile));
+    setSelectedBack(id, decodeEncryptedFile);
   }
+
+  void setSelectedBack(String id, String encrypted) =>
+      emit(state.copyWith(backupId: id, encrypted: encrypted));
 
   Future<void> clickRecover() async {
     final recovered = await _recoverBackup();
