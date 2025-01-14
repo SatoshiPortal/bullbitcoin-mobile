@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -10,15 +10,19 @@ class ConversionAmt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fiatSelected = context.select((CurrencyCubit cubit) => cubit.state.fiatSelected);
-    final isDefaultSats = context.select((CurrencyCubit cubit) => cubit.state.unitsInSats);
+    final fiatSelected =
+        context.select((CurrencyCubit cubit) => cubit.state.fiatSelected);
+    final isDefaultSats =
+        context.select((CurrencyCubit cubit) => cubit.state.unitsInSats);
 
-    final fiatAmt = context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
+    final fiatAmt =
+        context.select((CurrencyCubit cubit) => cubit.state.fiatAmt);
     final satsAmt = context.select((CurrencyCubit cubit) => cubit.state.amount);
-    final defaultCurrency =
-        context.select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
+    final defaultCurrency = context
+        .select((CurrencyCubit cubit) => cubit.state.defaultFiatCurrency);
 
-    final isTestNet = context.select((NetworkCubit cubit) => cubit.state.testnet);
+    final isTestNet =
+        context.select((NetworkBloc cubit) => cubit.state.networkData.testnet);
 
     var amt = '';
     var unit = '';

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -21,7 +21,7 @@ class HomeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wallet = context.select((WalletBloc x) => x.state.wallet);
-    if (wallet == null) return const SizedBox.shrink();
+    // if (wallet == null) return const SizedBox.shrink();
 
     final (_, info) = WalletCardDetails.cardDetails(context, wallet);
     final keyName = 'home_card_$info';
@@ -77,17 +77,17 @@ class WalletCardDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wallet = context.select((WalletBloc x) => x.state.wallet);
-    if (wallet == null) return const SizedBox.shrink();
+    // if (wallet == null) return const SizedBox.shrink();
 
     final (color, _) = cardDetails(context, wallet);
 
-    final name = context.select((WalletBloc x) => x.state.wallet?.name);
-    final fingerprint = context
-        .select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
+    final name = context.select((WalletBloc x) => x.state.wallet.name);
+    final fingerprint =
+        context.select((WalletBloc x) => x.state.wallet.sourceFingerprint);
     final walletStr =
-        context.select((WalletBloc x) => x.state.wallet?.getWalletTypeStr());
+        context.select((WalletBloc x) => x.state.wallet.getWalletTypeStr());
 
-    final sats = context.select((WalletBloc x) => x.state.balanceSats());
+    final sats = context.select((WalletBloc x) => x.state.wallet.balanceSats());
 
     final balance = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true),
@@ -100,7 +100,7 @@ class WalletCardDetails extends StatelessWidget {
         context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
 
     final fiatAmt = context
-        .select((NetworkCubit x) => x.state.calculatePrice(sats, fiatCurrency));
+        .select((NetworkBloc x) => x.state.calculatePrice(sats, fiatCurrency));
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -128,8 +128,8 @@ class WalletCardDetails extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 4),
                   child: IconButton(
                     onPressed: () {
-                      final walletBloc = context.read<WalletBloc>();
-                      context.push('/wallet-settings', extra: walletBloc);
+                      final walletBloc = context.read<Wallet>();
+                      context.push('/wallet-settings', extra: walletBloc.id);
                     },
                     color: context.colour.onPrimary,
                     icon: const FaIcon(
@@ -208,7 +208,7 @@ class WalletCardDetails extends StatelessWidget {
                       child: Opacity(
                         opacity: 0.7,
                         child: BBText.bodySmall(
-                          walletStr ?? '',
+                          walletStr,
                           onSurface: true,
                           isBold: true,
                         ),

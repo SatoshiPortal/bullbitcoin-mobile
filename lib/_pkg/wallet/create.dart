@@ -3,12 +3,12 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/create.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 
 class WalletCreate implements IWalletCreate {
   WalletCreate({
-    required WalletsRepository walletsRepository,
+    required InternalWalletsRepository walletsRepository,
     required LWKCreate lwkCreate,
     required BDKCreate bdkCreate,
     required WalletsStorageRepository walletsStorageRepository,
@@ -17,7 +17,7 @@ class WalletCreate implements IWalletCreate {
         _bdkCreate = bdkCreate,
         _walletsStorageRepository = walletsStorageRepository;
 
-  final WalletsRepository _walletsRepository;
+  final InternalWalletsRepository _walletsRepository;
   final WalletsStorageRepository _walletsStorageRepository;
 
   final LWKCreate _lwkCreate;

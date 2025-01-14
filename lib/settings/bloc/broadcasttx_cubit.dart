@@ -1,16 +1,16 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 import 'package:bb_mobile/_ui/alert.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -21,14 +21,14 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     required Barcode barcode,
     required FilePick filePicker,
     required FileStorage fileStorage,
-    required HomeCubit homeCubit,
-    required NetworkCubit networkCubit,
+    required AppWalletsRepository appWalletsRepository,
     required NetworkRepository networkRepository,
+    required InternalNetworkRepository internalNetworkRepository,
     required BDKTransactions bdkTransactions,
   })  : _bdkTransactions = bdkTransactions,
+        _internalNetworkRepository = internalNetworkRepository,
         _networkRepository = networkRepository,
-        _networkCubit = networkCubit,
-        _homeCubit = homeCubit,
+        _appWalletsRepository = appWalletsRepository,
         _fileStorage = fileStorage,
         _barcode = barcode,
         _filePicker = filePicker,
@@ -39,9 +39,10 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
   final FilePick _filePicker;
   final Barcode _barcode;
   final FileStorage _fileStorage;
-  final HomeCubit _homeCubit;
-  final NetworkCubit _networkCubit;
+
+  final AppWalletsRepository _appWalletsRepository;
   final NetworkRepository _networkRepository;
+  final InternalNetworkRepository _internalNetworkRepository;
   final BDKTransactions _bdkTransactions;
 
   @override
@@ -86,7 +87,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       emit(state.copyWith(loadingFile: false, errLoadingFile: err.toString()));
       return;
     }
-    // remove carriage return and newline from file read strings
+
     final tx =
         file!.replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '');
     emit(state.copyWith(loadingFile: false, tx: tx));
@@ -114,13 +115,11 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       bdk.Transaction bdkTx;
       final tx = state.tx;
       try {
-        // check if = is in the string
         final decodedTx = hex.decode(tx);
         bdkTx = await bdk.Transaction.fromBytes(transactionBytes: decodedTx);
       } catch (e) {
         final psbt = await bdk.PartiallySignedTransaction.fromString(tx);
         bdkTx = psbt.extractTx();
-        // maybe this psbt needs to be finalized?
       }
       final txid = await bdkTx.txid();
       final outputs = await bdkTx.output();
@@ -128,11 +127,12 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       final isSigned = await checkWitnesses(inputs);
 
       Transaction? transaction;
-      WalletBloc? relatedWallet;
+      Wallet? relatedWallet;
 
-      final wallets = _homeCubit.state.walletBlocs ?? [];
+      final wallets = _appWalletsRepository.allWallets;
+
       for (final wallet in wallets) {
-        for (final tx in wallet.state.wallet?.unsignedTxs ?? <Transaction>[]) {
+        for (final tx in wallet.unsignedTxs) {
           if (tx.txid == txid && !tx.isReceived()) {
             transaction = tx;
             relatedWallet = wallet;
@@ -172,7 +172,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         );
         final addressStruct = await bdk.Address.fromScript(
           script: scriptBuf,
-          network: _networkCubit.state.getBdkNetwork(),
+          network: _networkRepository.getBdkNetwork,
         );
         final addressStr = addressStruct.asString();
         if (transaction != null) {
@@ -210,14 +210,12 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         }
       }
       final int feeAmount = transaction?.fee ?? 0;
-      // sum of input values - output values = fees
 
-      // TODO: timestamp needs to be properly set
       transaction ??= Transaction(
         txid: txid,
         timestamp: 0,
       );
-      // transaction ??= Transaction(txid: txid);
+
       transaction = transaction.copyWith(
         fee: feeAmount,
         outAddrs: outAddrs,
@@ -260,7 +258,6 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
         state.copyWith(
           extractingTx: false,
           errExtractingTx: e.toString(),
-          // step: BroadcastTxStep.import,
           tx: '',
         ),
       );
@@ -280,7 +277,7 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     final bdkTx =
         await bdk.Transaction.fromBytes(transactionBytes: hex.decode(tx));
 
-    final (blockchain, errB) = _networkRepository.bdkBlockchain;
+    final (blockchain, errB) = _internalNetworkRepository.bdkBlockchain;
     if (errB != null) {
       emit(
         state.copyWith(
@@ -294,7 +291,6 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     final err =
         await _bdkTransactions.broadcastTx(tx: bdkTx, blockchain: blockchain!);
     if (err != null) {
-      // final error =
       emit(
         state.copyWith(
           broadcastingTx: false,
@@ -332,17 +328,6 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
       return;
     }
 
-    // final (appDocDir, err) = await fileStorage.getDownloadDirectory();
-    // if (err != null) {
-    //   emit(
-    //     state.copyWith(
-    //       downloadingFile: false,
-    //       errDownloadingFile: err.toString(),
-    //     ),
-    //   );
-    //   return;
-    // }
-    // final file = File(appDocDir! + '/bullbitcoin_psbt/$txid.psbt');
     final errSave = await _fileStorage.savePSBT(
       psbt: psbt,
       txid: txid,

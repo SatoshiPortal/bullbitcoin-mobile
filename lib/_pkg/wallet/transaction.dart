@@ -13,19 +13,19 @@ import 'package:bb_mobile/_pkg/wallet/bdk/transaction.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/address.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/transaction.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/update.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletTx implements IWalletTransactions {
   WalletTx({
-    required WalletsRepository walletsRepository,
+    required InternalWalletsRepository walletsRepository,
     required WalletSensitiveStorageRepository walletSensitiveStorageRepository,
     required WalletAddress walletAddress,
     required WalletUpdate walletUpdate,
-    required NetworkRepository networkRepository,
+    required InternalNetworkRepository networkRepository,
     required BDKTransactions bdkTransactions,
     required LWKTransactions lwkTransactions,
     required BDKAddress bdkAddress,
@@ -44,8 +44,8 @@ class WalletTx implements IWalletTransactions {
         _bdkAddress = bdkAddress,
         _lwkAddress = lwkAddress;
 
-  final WalletsRepository _walletsRepository;
-  final NetworkRepository _networkRepository;
+  final InternalWalletsRepository _walletsRepository;
+  final InternalNetworkRepository _networkRepository;
   final WalletSensitiveStorageRepository _walletSensitiveStorageRepository;
 
   final WalletAddress _walletAddress;

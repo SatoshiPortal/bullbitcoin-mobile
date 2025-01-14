@@ -3,12 +3,15 @@ import 'dart:developer';
 
 import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/payjoin/event.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/security_overlay.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network/listeners.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
 import 'package:bb_mobile/routes.dart';
@@ -26,7 +29,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lwk_dart/lwk_dart.dart';
 import 'package:oktoast/oktoast.dart';
-
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 
 Future main({bool fromTest = false}) async {
@@ -59,62 +61,69 @@ class BullBitcoinWalletApp extends StatelessWidget {
         BlocProvider.value(value: locator<SettingsCubit>()),
         BlocProvider.value(value: locator<Logger>()),
         BlocProvider.value(value: locator<Lighting>()),
-        BlocProvider.value(value: locator<NetworkCubit>()),
+        BlocProvider.value(value: locator<NetworkBloc>()),
         BlocProvider.value(value: locator<NetworkFeesCubit>()),
         BlocProvider.value(value: locator<CurrencyCubit>()),
-        BlocProvider.value(value: locator<HomeCubit>()),
+        BlocProvider.value(value: locator<HomeBloc>()),
         BlocProvider.value(value: locator<WatchTxsBloc>()),
         // BlocProvider.value(value: TestCub()),
         BlocProvider.value(value: locator<NavName>()),
+        BlocProvider.value(value: locator<AppWalletBlocs>()),
       ],
-      child: BlocBuilder<Lighting, ThemeLighting>(
-        builder: (context, lightingState) {
-          return AnimatedSwitcher(
-            duration: 600.ms,
-            switchInCurve: Curves.easeInOutCubic,
-            child: MaterialApp.router(
-              theme: Themes.lightTheme,
-              darkTheme: lightingState.dark(),
-              themeMode: lightingState.mode(),
-              routerConfig: locator<GoRouter>(),
-              debugShowCheckedModeBanner: false,
-              // localizationsDelegates: [localizationDelegate],
-              // supportedLocales: localizationDelegate.supportedLocales,
-              // locale: localizationDelegate.currentLocale,
-              builder: (context, child) {
-                // scheduleMicrotask(() async {
-                //   await Future.delayed(100.ms);
-                //   SystemChrome.setSystemUIOverlayStyle(
-                //     SystemUiOverlayStyle(
-                //       statusBarColor: context.colour.primaryContainer,
-                //     ),
-                //   );
-                // });
-                SystemChrome.setPreferredOrientations([
-                  DeviceOrientation.portraitUp,
-                ]);
-                if (child == null) return Container();
-                return OKToast(
-                  child: _AppListeners(
-                    child: GestureDetector(
-                      onTap: () {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                      },
-                      child: MediaQuery(
-                        data: MediaQuery.of(context).copyWith(
-                          textScaler: TextScaler.noScaling,
-                        ),
-                        child: SecurityOverlay(
-                          child: child,
+      child: MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider.value(value: locator<AppWalletsRepository>()),
+          RepositoryProvider.value(value: locator<NetworkRepository>()),
+        ],
+        child: BlocBuilder<Lighting, ThemeLighting>(
+          builder: (context, lightingState) {
+            return AnimatedSwitcher(
+              duration: 600.ms,
+              switchInCurve: Curves.easeInOutCubic,
+              child: MaterialApp.router(
+                theme: Themes.lightTheme,
+                darkTheme: lightingState.dark(),
+                themeMode: lightingState.mode(),
+                routerConfig: locator<GoRouter>(),
+                debugShowCheckedModeBanner: false,
+                // localizationsDelegates: [localizationDelegate],
+                // supportedLocales: localizationDelegate.supportedLocales,
+                // locale: localizationDelegate.currentLocale,
+                builder: (context, child) {
+                  // scheduleMicrotask(() async {
+                  //   await Future.delayed(100.ms);
+                  //   SystemChrome.setSystemUIOverlayStyle(
+                  //     SystemUiOverlayStyle(
+                  //       statusBarColor: context.colour.primaryContainer,
+                  //     ),
+                  //   );
+                  // });
+                  SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.portraitUp,
+                  ]);
+                  if (child == null) return Container();
+                  return OKToast(
+                    child: _AppListeners(
+                      child: GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                        },
+                        child: MediaQuery(
+                          data: MediaQuery.of(context).copyWith(
+                            textScaler: TextScaler.noScaling,
+                          ),
+                          child: SecurityOverlay(
+                            child: child,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          );
-        },
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -1,12 +1,14 @@
 import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/styles.dart';
@@ -27,7 +29,7 @@ class SwapHistoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.wallet?.swaps ?? []);
+    final txs = context.select((WalletBloc _) => _.state.wallet.swaps);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return BBButton.big(
@@ -46,7 +48,7 @@ class SwapTxList extends StatelessWidget {
     final receiveCubit = context.read<ReceiveCubit>();
     final swapBloc = context.read<CreateSwapCubit>();
     // receiveCubit.state.swapBloc;
-    final walletBloc = receiveCubit.state.walletBloc;
+    final wallet = receiveCubit.state.wallet;
 
     return showBBBottomSheet(
       context: context,
@@ -54,7 +56,8 @@ class SwapTxList extends StatelessWidget {
         providers: [
           BlocProvider.value(value: receiveCubit),
           BlocProvider.value(value: swapBloc),
-          if (walletBloc != null) BlocProvider.value(value: walletBloc),
+          if (wallet != null)
+            BlocProvider.value(value: createOrRetreiveWalletBloc(wallet.id)),
         ],
         child: const SwapTxList(),
       ),
@@ -63,7 +66,7 @@ class SwapTxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context.select((WalletBloc _) => _.state.wallet?.swaps ?? []);
+    final txs = context.select((WalletBloc _) => _.state.wallet.swaps);
     if (txs.isEmpty) return const SizedBox.shrink();
 
     return Padding(
@@ -294,6 +297,7 @@ class ReceivingSwapPage extends StatefulWidget {
 class _ReceivingSwapPageState extends State<ReceivingSwapPage>
     with WidgetsBindingObserver {
   late SwapTx swapTx;
+  Transaction? tx;
 
   bool received = false;
   bool paid = false;
@@ -306,6 +310,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
     WidgetsBinding.instance.addObserver(this);
 
     swapTx = widget.tx;
+    tx = context.read<AppWalletsRepository>().getTxFromSwap(swapTx);
     super.initState();
   }
 
@@ -326,7 +331,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
       await Future.delayed(400.ms);
 
       if (!mounted) return;
-      final updatedSwapTx = context.read<HomeCubit>().state.getSwapTxById(
+      final updatedSwapTx = context.read<HomeBloc>().state.getSwapTxById(
             widget.tx.id,
           );
 
@@ -352,11 +357,11 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
   Widget build(BuildContext context) {
     var amt = swapTx.recievableAmount() ?? 0;
 
-    final tx = context.select(
-      (HomeCubit cubit) => cubit.state.getTxFromSwap(swapTx),
-    );
+    // final tx = context.select(
+    //   (HomeBloc cubit) => cubit.state.getTxFromSwap(swapTx),
+    // );
 
-    if (tx != null) amt = tx.getNetAmountToPayee();
+    if (tx != null) amt = tx!.getNetAmountToPayee();
 
     final isSats = context.select((CurrencyCubit _) => _.state.unitsInSats);
     final amtDouble = isSats ? amt : amt / 100000000;
@@ -376,7 +381,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
     final fiatAmt =
         context.select((CurrencyCubit cubit) => cubit.state.fiatAmt.abs());
     final isTestNet =
-        context.select((NetworkCubit cubit) => cubit.state.testnet);
+        context.select((NetworkBloc cubit) => cubit.state.networkData.testnet);
     final fiatUnit = defaultCurrency?.name ?? '';
     final fiatAmtStr = isTestNet ? '0' : fiatAmt.toStringAsFixed(2);
 
@@ -403,7 +408,7 @@ class _ReceivingSwapPageState extends State<ReceivingSwapPage>
           });
 
           // await Future.delayed(100.ms);
-          // tx = context.read<HomeCubit>().state.getTxFromSwap(widget.tx);
+          // tx = context.read<HomeBloc>().state.getTxFromSwap(widget.tx);
           // setState(() {});
         }
       },

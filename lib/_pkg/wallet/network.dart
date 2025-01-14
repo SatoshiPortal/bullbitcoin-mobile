@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/network.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 
 class WalletNetwork implements IWalletNetwork {
   WalletNetwork({
-    required NetworkRepository networkRepository,
+    required InternalNetworkRepository networkRepository,
     required BDKNetwork bdkNetwork,
     // required Logger logger,
   })  : _networkRepository = networkRepository,
         _bdkNetwork = bdkNetwork;
 
-  final NetworkRepository _networkRepository;
+  final InternalNetworkRepository _networkRepository;
   final BDKNetwork _bdkNetwork;
   // final Logger _logger;
 

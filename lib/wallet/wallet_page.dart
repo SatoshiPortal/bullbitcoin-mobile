@@ -13,10 +13,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class WalletPage extends StatelessWidget {
-  const WalletPage({super.key, required this.walletBloc});
+class WalletPage extends StatefulWidget {
+  const WalletPage({super.key, required this.wallet});
 
-  final WalletBloc walletBloc;
+  final String wallet;
+
+  @override
+  State<WalletPage> createState() => _WalletPageState();
+}
+
+class _WalletPageState extends State<WalletPage> {
+  late WalletBloc walletBloc;
+
+  @override
+  void initState() {
+    walletBloc = createOrRetreiveWalletBloc(widget.wallet);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // walletBloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +63,7 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backupTested =
-        context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -69,7 +88,7 @@ class _Screen extends StatelessWidget {
           ),
           BottomCenter(
             child: WalletActionButtons(
-              walletBloc: context.read<WalletBloc>(),
+              wallet: context.read<WalletBloc>().state.wallet,
             ),
           ),
         ],
@@ -96,11 +115,11 @@ class ActionsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backupTested =
-        context.select((WalletBloc x) => x.state.wallet?.backupTested ?? false);
+        context.select((WalletBloc x) => x.state.wallet.backupTested);
     final watchonly =
-        context.select((WalletBloc x) => x.state.wallet?.watchOnly() ?? false);
+        context.select((WalletBloc x) => x.state.wallet.watchOnly());
     final isInstant =
-        context.select((WalletBloc x) => x.state.wallet?.isInstant() ?? false);
+        context.select((WalletBloc x) => x.state.wallet.isInstant());
 
     final isdarkMode = context.select(
       (Lighting x) => x.state == ThemeLighting.dark,
@@ -120,7 +139,10 @@ class ActionsRow extends StatelessWidget {
               isRed: !backupTested,
               onPressed: () {
                 final walletBloc = context.read<WalletBloc>();
-                context.push('/wallet-settings/open-backup', extra: walletBloc);
+                context.push(
+                  '/wallet-settings/open-backup',
+                  extra: walletBloc.state.wallet.id,
+                );
               },
             ),
           BBButton.text(
@@ -131,7 +153,7 @@ class ActionsRow extends StatelessWidget {
                   ? context.push('/information')
                   : context.push(
                       '/wallet/details',
-                      extra: context.read<WalletBloc>(),
+                      extra: context.read<WalletBloc>().state.wallet.id,
                     );
             },
           ),
@@ -139,8 +161,8 @@ class ActionsRow extends StatelessWidget {
             label: 'Settings',
             isBlue: false,
             onPressed: () {
-              final walletBloc = context.read<WalletBloc>();
-              context.push('/wallet-settings', extra: walletBloc);
+              final wallet = context.read<WalletBloc>().state.wallet;
+              context.push('/wallet-settings', extra: wallet.id);
             },
           ),
         ],

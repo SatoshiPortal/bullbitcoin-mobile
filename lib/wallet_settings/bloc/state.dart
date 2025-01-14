@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
@@ -6,7 +5,7 @@ part 'state.freezed.dart';
 @freezed
 class WalletSettingsState with _$WalletSettingsState {
   const factory WalletSettingsState({
-    required Wallet wallet,
+    // required Wallet wallet,
     @Default('') String name,
     /**
      * 

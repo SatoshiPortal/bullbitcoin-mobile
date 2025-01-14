@@ -4,18 +4,18 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/wallet/_interface.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/address.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/wallets.dart';
+import 'package:bb_mobile/_repository/wallet/internal_wallets.dart';
 
 class WalletAddress implements IWalletAddress {
   WalletAddress({
-    required WalletsRepository walletsRepository,
+    required InternalWalletsRepository walletsRepository,
     required BDKAddress bdkAddress,
     required LWKAddress lwkAddress,
   })  : _walletsRepository = walletsRepository,
         _bdkAddress = bdkAddress,
         _lwkAddress = lwkAddress;
 
-  final WalletsRepository _walletsRepository;
+  final InternalWalletsRepository _walletsRepository;
   final BDKAddress _bdkAddress;
   final LWKAddress _lwkAddress;
 

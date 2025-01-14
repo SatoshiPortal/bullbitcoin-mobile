@@ -32,7 +32,8 @@ class BBAppBar extends StatelessWidget {
               ).animate(delay: 100.ms).fadeIn(),
             ),
           ],
-          const Spacer(),
+          // const Spacer(),
+          const Gap(16),
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: BBText.titleLarge(

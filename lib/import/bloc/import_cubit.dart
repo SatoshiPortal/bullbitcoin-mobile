@@ -11,12 +11,12 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,13 +29,13 @@ class ImportWalletCubit extends Cubit<ImportState> {
     required WalletSensitiveCreate walletSensCreate,
     required WalletsStorageRepository walletsStorageRepository,
     required WalletSensitiveStorageRepository walletSensRepository,
-    required NetworkCubit networkCubit,
+    required NetworkRepository networkRepository,
     required BDKCreate bdkCreate,
     required BDKSensitiveCreate bdkSensitiveCreate,
     required LWKSensitiveCreate lwkSensitiveCreate,
     bool mainWallet = false,
     bool useTestWallet = false,
-  })  : _networkCubit = networkCubit,
+  })  : _networkRepository = networkRepository,
         _walletSensRepository = walletSensRepository,
         _walletsStorageRepository = walletsStorageRepository,
         _walletSensCreate = walletSensCreate,
@@ -68,7 +68,8 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
   final WalletsStorageRepository _walletsStorageRepository;
   final WalletSensitiveStorageRepository _walletSensRepository;
-  final NetworkCubit _networkCubit;
+
+  final NetworkRepository _networkRepository;
 
   void backClicked() {
     switch (state.importStep) {
@@ -436,8 +437,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       final type = state.importType;
 
       final wallets = <Wallet>[];
-      final network =
-          _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+      final network = _networkRepository.getBBNetwork;
 
       switch (type) {
         case ImportTypes.words12:
@@ -482,7 +482,6 @@ class ImportWalletCubit extends Cubit<ImportState> {
 
         case ImportTypes.xpub:
           if (state.xpub.contains('[')) {
-            // has origin info
             final (wxpub, wErrs) = await _bdkCreate.oneFromXpubWithOrigin(
               state.xpub,
             );
@@ -585,8 +584,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
         ? selectedWallet.copyWith(name: state.walletLabel)
         : selectedWallet;
 
-    final network =
-        _networkCubit.state.testnet ? BBNetwork.Testnet : BBNetwork.Mainnet;
+    final network = _networkRepository.getBBNetwork;
 
     if (selectedWallet.type == BBWalletType.words) {
       final mnemonic = (state.importType == ImportTypes.words12)
@@ -599,8 +597,6 @@ class ImportWalletCubit extends Cubit<ImportState> {
         return;
       }
 
-      // if seed exists - this will error with Seed Exists, but we ignore it
-      // else we create the seed
       await _walletSensRepository.newSeed(seed: seed!);
 
       if (state.passPhrase.isNotEmpty) {
@@ -684,8 +680,6 @@ class ImportWalletCubit extends Cubit<ImportState> {
       network: network,
       walletType: BBWalletType.main,
       walletCreate: _walletCreate,
-      // walletType: network,
-      // false,
     );
     if (wErr != null) {
       emit(

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_state.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,10 +12,10 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   NetworkFeesCubit({
     required HiveStorage hiveStorage,
     required MempoolAPI mempoolAPI,
-    required NetworkCubit networkCubit,
+    required NetworkRepository networkRepository,
     NetworkFeesCubit? defaultNetworkFeesCubit,
   })  : _defaultNetworkFeesCubit = defaultNetworkFeesCubit,
-        _networkCubit = networkCubit,
+        _networkRepository = networkRepository,
         _mempoolAPI = mempoolAPI,
         _hiveStorage = hiveStorage,
         super(const NetworkFeesState()) {
@@ -24,7 +24,8 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
 
   final HiveStorage _hiveStorage;
   final MempoolAPI _mempoolAPI;
-  final NetworkCubit _networkCubit;
+
+  final NetworkRepository _networkRepository;
   final NetworkFeesCubit? _defaultNetworkFeesCubit;
 
   static const int feemultiple = 4;
@@ -66,7 +67,9 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
 
   Future loadFees() async {
     emit(state.copyWith(loadingFees: true, errLoadingFees: ''));
-    final testnet = _networkCubit.state.testnet;
+    final testnet = _networkRepository.testnet;
+    await Future.delayed(const Duration(milliseconds: 50));
+
     final (fees, err) = await _mempoolAPI.getFees(testnet);
     if (err != null) {
       emit(
@@ -96,7 +99,6 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
       emit(
         state.copyWith(
           tempFees: 0,
-          // tempSelectedFeesOption: 2,
         ),
       );
       await Future.delayed(const Duration(milliseconds: 50));
@@ -122,7 +124,7 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
 
   Future<void> checkMinimumFees() async {
     await Future.delayed(50.ms);
-    final isTestnet = _networkCubit.state.testnet;
+    final isTestnet = _networkRepository.testnet;
     final minFees = isTestnet ? 0 : state.feesList!.last;
 
     int max;
@@ -140,7 +142,6 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
         state.copyWith(
           errLoadingFees:
               "The selected fee is below the Bitcoin Network's minimum relay fee. Your transaction will likely never confirm. Please select a higher fee than $minFees sats/vbyte .",
-          // tempSelectedFeesOption: 2,
         ),
       );
     } else if (state.tempFees != null &&
@@ -150,7 +151,6 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
         state.copyWith(
           errLoadingFees:
               'The default selected fee is too high. Please select a lower fee than $max sats/vbyte .',
-          // tempSelectedFeesOption: 2,
         ),
       );
     } else {
@@ -161,16 +161,16 @@ class NetworkFeesCubit extends Cubit<NetworkFeesState> {
   Future confirmFeeClicked() async {
     await Future.delayed(200.ms);
     if (state.feesList == null) return;
-    // final minFees = state.feesList!.last;
-    // final max = state.feesList!.first * 2;
-    final isTestnet = _networkCubit.state.testnet;
+
+    final isTestnet = _networkRepository.testnet;
+
     int max;
     if (!isTestnet) {
       max = state.feesList!.first * feemultiple;
     } else {
       max = 1000;
     }
-    // can we not just call checkMinimumFees here?
+
     final tempFees = state.tempFees;
     if (tempFees == null && state.tempSelectedFeesOption == null) return;
     if (tempFees != null && tempFees > max) return;

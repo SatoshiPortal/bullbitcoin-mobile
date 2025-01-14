@@ -17,24 +17,37 @@ class InfoRead extends Cubit<bool> {
   void unread() => emit(false);
 }
 
-class BackupPage extends StatelessWidget {
+class BackupPage extends StatefulWidget {
   const BackupPage({
     super.key,
-    required this.walletBloc,
-    required this.walletSettings,
+    required this.wallet,
   });
 
-  final WalletBloc walletBloc;
-  final WalletSettingsCubit walletSettings;
+  final String wallet;
+
+  @override
+  State<BackupPage> createState() => _BackupPageState();
+}
+
+class _BackupPageState extends State<BackupPage> {
+  late WalletBloc walletBloc;
+  late WalletSettingsCubit walletSettings;
+  @override
+  void initState() {
+    walletBloc = createOrRetreiveWalletBloc(widget.wallet);
+    walletSettings = createWalletSettingsCubit(widget.wallet);
+
+    walletSettings.loadBackupClicked();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    walletSettings.loadBackupClicked();
-
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: walletBloc),
-        BlocProvider.value(value: walletSettings),
+        BlocProvider(create: (BuildContext context) => walletSettings),
         BlocProvider.value(value: InfoRead()),
       ],
       child: const _Screen(),
@@ -91,10 +104,10 @@ class BackUpInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lastBackupTested = context
-        .select((WalletBloc cubit) => cubit.state.wallet!.lastBackupTested);
+        .select((WalletBloc cubit) => cubit.state.wallet.lastBackupTested);
 
     final hasPassphrase = context
-        .select((WalletBloc cubit) => cubit.state.wallet!.hasPassphrase());
+        .select((WalletBloc cubit) => cubit.state.wallet.hasPassphrase());
     final instructions = backupInstructions(hasPassphrase);
     return SingleChildScrollView(
       child: Padding(
@@ -224,10 +237,11 @@ class BackupScreen extends StatelessWidget {
                         // ..pop()
                         .push(
                       '/wallet-settings/test-backup',
-                      extra: (
-                        context.read<WalletBloc>(),
-                        context.read<WalletSettingsCubit>(),
-                      ),
+                      extra: context.read<WalletBloc>().state.wallet.id,
+                      // (
+                      //   context.read<Wallet>(),
+                      //   context.read<WalletSettingsCubit>(),
+                      // ),
                     );
                     // context.pop();
                     // TestBackupScreen.openPopup(context);

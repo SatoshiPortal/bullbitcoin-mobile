@@ -6,8 +6,9 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -19,7 +20,6 @@ import 'package:bb_mobile/import/recover.dart';
 import 'package:bb_mobile/import/wallet_type_selection.dart';
 import 'package:bb_mobile/import/xpub.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,7 +54,9 @@ class _ImportWalletPageState extends State<ImportWalletPage> {
       walletSensCreate: locator<WalletSensitiveCreate>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
-      networkCubit: locator<NetworkCubit>(),
+      // networkCubit: locator<NetworkCubit>(),
+      networkRepository: locator<NetworkRepository>(),
+
       bdkCreate: locator<BDKCreate>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
       lwkSensitiveCreate: locator<LWKSensitiveCreate>(),

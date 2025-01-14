@@ -7,8 +7,9 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/indicators.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -16,11 +17,12 @@ import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/create/bloc/create_cubit.dart';
 import 'package:bb_mobile/create/bloc/state.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -35,17 +37,18 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+class AppWalletBlocs extends Cubit<List<WalletBloc>> {
+  AppWalletBlocs() : super([]);
+  void updateWalletBlocs(List<WalletBloc> _) => emit(_);
+  void clearWallets() => emit([]);
+}
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: HomeLoadingCubit(),
-      child: const HomeWalletLoadingListeners(
-        child: _Screen(),
-      ),
-    );
+    return const _Screen();
   }
 }
 
@@ -95,25 +98,25 @@ class _ScreenState extends State<_Screen> {
 
   @override
   Widget build(BuildContext context) {
-    // final _ = context.select((HomeCubit x) => x.state.updated);
+    // final _ = context.select((HomeBloc x) => x.state.updated);
     final loading = context.select(
-      (HomeCubit x) => x.state.loadingWallets,
+      (HomeBloc x) => x.state.loadingWallets,
     );
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
+    final network = context.select((NetworkBloc x) => x.state.getBBNetwork());
 
-    final walletBlocs = context.select(
-      (HomeCubit x) => x.state.walletBlocsFromNetwork(network),
+    final wallets = context.select(
+      (HomeBloc x) => x.state.walletsFromNetwork(network),
     );
 
-    // final hasWallets = context.select((HomeCubit x) => x.state.hasWallets());
+    // final hasWallets = context.select((HomeBloc x) => x.state.hasWallets());
     final hasMainWallets = context.select(
-      (HomeCubit x) => x.state.hasMainWallets(),
+      (HomeBloc x) => x.state.hasMainWallets(),
     );
 
     // final walletBlocsLen =
-    //     context.select((HomeCubit x) => x.state.lenWalletsFromNetwork(network));
+    //     context.select((HomeBloc x) => x.state.lenWalletsFromNetwork(network));
 
-    if (!loading && (walletBlocs.isEmpty || !hasMainWallets)) {
+    if (!loading && (wallets.isEmpty || !hasMainWallets)) {
       final isTestnet = network == BBNetwork.Testnet;
 
       Widget widget = Scaffold(
@@ -131,10 +134,10 @@ class _ScreenState extends State<_Screen> {
     }
 
     final warningsSize =
-        context.select((HomeCubit x) => x.state.homeWarnings(network)).length *
+        context.select((HomeBloc x) => x.state.homeWarnings(network)).length *
             40.0;
 
-    final h = _calculateHeight(walletBlocs.length);
+    final h = _calculateHeight(wallets.length);
 
     scheduleMicrotask(() async {
       await Future.delayed(50.ms);
@@ -184,7 +187,7 @@ class _ScreenState extends State<_Screen> {
             child: Container(
               height: 128,
               margin: const EdgeInsets.only(top: 16),
-              child: const HomeBottomBar2(walletBloc: null),
+              child: const HomeBottomBar2(wallet: null),
             ),
           ),
         ],
@@ -201,7 +204,7 @@ class CardsList extends StatelessWidget {
 
   final Function(int) onChanged;
 
-  static List<CardColumn> buildCardColumns(List<WalletBloc> wallets) {
+  static List<CardColumn> buildCardColumns(List<Wallet> wallets) {
     final List<CardColumn> columns = [];
     final isOne = wallets.length == 1;
     for (var i = 0; i < wallets.length; i += 3) {
@@ -224,12 +227,12 @@ class CardsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((HomeCubit x) => x.state.updated);
+    final _ = context.select((HomeBloc x) => x.state.updated);
 
-    final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
-    final walletBlocs = context
-        .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
-    final columns = buildCardColumns(walletBlocs);
+    final network = context.select((NetworkBloc x) => x.state.getBBNetwork());
+    final wallets =
+        context.select((HomeBloc x) => x.state.walletsFromNetwork(network));
+    final columns = buildCardColumns(wallets);
 
     return PageView(
       scrollDirection: Axis.vertical,
@@ -249,14 +252,19 @@ class CardColumn extends StatelessWidget {
     this.showSwap = false,
   });
 
-  final WalletBloc walletTop;
-  final WalletBloc? walletBottom;
-  final WalletBloc? walletLast;
+  final Wallet walletTop;
+  final Wallet? walletBottom;
+  final Wallet? walletLast;
   final bool onlyOne;
   final bool showSwap;
 
   @override
   Widget build(BuildContext context) {
+    final hasWallets = context.select(
+      (AppWalletBlocs _) => _.state.isNotEmpty,
+    );
+    if (!hasWallets) return const SizedBox.shrink();
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 26,
@@ -267,17 +275,28 @@ class CardColumn extends StatelessWidget {
           Column(
             children: [
               BlocProvider.value(
-                value: walletTop,
+                value: context.read<AppWalletBlocs>().state.firstWhere(
+                      (_) => _.state.wallet.id == walletTop.id,
+                    ),
+                // create: (BuildContext context) => createWalletBloc(walletTop),
                 child: const CardItem(),
               ),
               if (walletBottom != null)
                 BlocProvider.value(
-                  value: walletBottom!,
+                  value: context.read<AppWalletBlocs>().state.firstWhere(
+                        (_) => _.state.wallet.id == walletBottom!.id,
+                      ),
+                  // create: (BuildContext context) =>
+                  // createWalletBloc(walletBottom!),
                   child: const CardItem(),
                 ),
               if (walletLast != null)
                 BlocProvider.value(
-                  value: walletLast!,
+                  value: context.read<AppWalletBlocs>().state.firstWhere(
+                        (_) => _.state.wallet.id == walletLast!.id,
+                      ),
+                  // create: (BuildContext context) =>
+                  // createWalletBloc(walletLast!),
                   child: const CardItem(),
                 )
               else if (!onlyOne)
@@ -346,17 +365,16 @@ class CardItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wallet = context.select((WalletBloc x) => x.state.wallet);
-    if (wallet == null) return const SizedBox.shrink();
 
     final (color, _) = WalletCardDetails.cardDetails(context, wallet);
 
-    final name = context.select((WalletBloc x) => x.state.wallet?.name);
-    final fingerprint = context
-        .select((WalletBloc x) => x.state.wallet?.sourceFingerprint ?? '');
+    final name = context.select((WalletBloc x) => x.state.wallet.name);
+    final fingerprint =
+        context.select((WalletBloc x) => x.state.wallet.sourceFingerprint);
     final walletStr =
-        context.select((WalletBloc x) => x.state.wallet?.getWalletTypeStr());
+        context.select((WalletBloc x) => x.state.wallet.getWalletTypeStr());
 
-    final sats = context.select((WalletBloc x) => x.state.balanceSats());
+    final sats = context.select((WalletBloc x) => x.state.wallet.balanceSats());
 
     final balance = context.select(
       (CurrencyCubit x) => x.state.getAmountInUnits(sats, removeText: true),
@@ -369,7 +387,7 @@ class CardItem extends StatelessWidget {
         context.select((CurrencyCubit x) => x.state.defaultFiatCurrency);
 
     final fiatAmt = context
-        .select((NetworkCubit x) => x.state.calculatePrice(sats, fiatCurrency));
+        .select((NetworkBloc x) => x.state.calculatePrice(sats, fiatCurrency));
 
     return SizedBox(
       width: double.infinity,
@@ -390,8 +408,8 @@ class CardItem extends StatelessWidget {
           ),
           child: InkWell(
             onTap: () {
-              final walletBloc = context.read<WalletBloc>();
-              context.push('/wallet', extra: walletBloc);
+              final w = context.read<WalletBloc>().state.wallet.id;
+              context.push('/wallet', extra: w);
             },
             child: Padding(
               padding: const EdgeInsets.only(
@@ -434,7 +452,7 @@ class CardItem extends StatelessWidget {
                       Opacity(
                         opacity: 0.7,
                         child: BBText.bodySmall(
-                          walletStr ?? '',
+                          walletStr,
                           onSurface: true,
                           isBold: true,
                           fontSize: 12,
@@ -521,7 +539,7 @@ class WalletTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final watchOnly =
-        context.read<HomeCubit>().state.walletIsWatchOnlyFromTx(tx);
+        context.read<HomeBloc>().state.walletIsWatchOnlyFromTx(tx);
 
     final darkMode = context.select(
       (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
@@ -660,22 +678,22 @@ class HomeTopBar2 extends StatelessWidget {
 }
 
 class HomeBottomBar2 extends StatefulWidget {
-  const HomeBottomBar2({super.key, required this.walletBloc});
+  const HomeBottomBar2({super.key, required this.wallet});
 
-  final WalletBloc? walletBloc;
+  final Wallet? wallet;
 
   @override
   State<HomeBottomBar2> createState() => _HomeBottomBar2State();
 }
 
 class _HomeBottomBar2State extends State<HomeBottomBar2> {
-  WalletBloc? wb;
+  Wallet? wb;
   @override
   void initState() {
-    if (widget.walletBloc == null) {
-      final network = context.read<NetworkCubit>().state.getBBNetwork();
+    if (widget.wallet == null) {
+      final network = context.read<NetworkBloc>().state.getBBNetwork();
       final walletBlocs =
-          context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+          context.read<HomeBloc>().state.walletsFromNetwork(network);
       if (walletBlocs.length == 1) wb = walletBlocs.first;
     }
     super.initState();
@@ -703,7 +721,7 @@ class _HomeBottomBar2State extends State<HomeBottomBar2> {
                         onPressed: () {
                           context.push(
                             '/receive',
-                            extra: widget.walletBloc ?? wb,
+                            extra: widget.wallet?.id ?? wb?.id,
                           );
                         },
                       ),
@@ -762,7 +780,7 @@ class _HomeBottomBar2State extends State<HomeBottomBar2> {
 class ScanButton extends StatelessWidget {
   const ScanButton({super.key, this.walletBloc});
 
-  final WalletBloc? walletBloc;
+  final Wallet? walletBloc;
 
   @override
   Widget build(BuildContext context) {
@@ -818,7 +836,7 @@ class ScanButton extends StatelessWidget {
 //   Widget build(BuildContext context) {
 //     final network = context.select((NetworkCubit x) => x.state.getBBNetwork());
 //     final walletBlocs = context
-//         .select((HomeCubit x) => x.state.walletBlocsFromNetwork(network));
+//         .select((HomeBloc x) => x.state.walletBlocsFromNetwork(network));
 
 //     if (walletBlocs.isEmpty) return const SizedBox.shrink();
 
@@ -856,13 +874,8 @@ class HomeLoadingTxsIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeLoadingCubit, Map<String, bool>>(
-      buildWhen: (previous, current) => previous.values != current.values,
-      builder: (context, state) {
-        final isLoading = state.values.contains(true);
-        return _Loading(loading: isLoading);
-      },
-    );
+    final isSyncing = context.select((HomeBloc x) => x.state.syncingAny());
+    return _Loading(loading: isSyncing);
   }
 }
 
@@ -991,7 +1004,8 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
       walletSensCreate: locator<WalletSensitiveCreate>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
       walletSensRepository: locator<WalletSensitiveStorageRepository>(),
-      networkCubit: locator<NetworkCubit>(),
+      networkRepository: locator<NetworkRepository>(),
+      // networkCubit: locator<NetworkCubit>(),
       walletCreate: locator<WalletCreate>(),
       bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
       lwkSensitiveCreate: locator<LWKSensitiveCreate>(),
@@ -1053,7 +1067,8 @@ class HomeNoWalletsView extends StatelessWidget {
           if (state.savedWallets == null) return;
           //if (state.mainWallet)
           await locator<WalletsStorageRepository>().sortWallets();
-          locator<HomeCubit>().getWalletsFromStorage();
+          locator<HomeBloc>()
+              .add(LoadWalletsFromStorage()); //getWalletsFromStorage();
           if (!context.mounted) return;
           context3.go('/home');
         }
@@ -1061,60 +1076,62 @@ class HomeNoWalletsView extends StatelessWidget {
       child: ColoredBox(
         color: context.colour.primary,
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 148,
-                width: 184,
-                child: Image.asset('assets/bb-logo-white.png'),
-              ),
-              const Gap(24),
-              Text(
-                'BULL BITCOIN',
-                style: font.copyWith(
-                  fontSize: 80,
-                  color: context.colour.primaryContainer,
-                  height: 0.8,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 148,
+                  width: 184,
+                  child: Image.asset('assets/bb-logo-white.png'),
                 ),
-              ),
-              Text(
-                'OWN YOUR MONEY',
-                style: font.copyWith(
-                  fontSize: 59,
-                  height: 0.8,
+                const Gap(24),
+                Text(
+                  'BULL BITCOIN',
+                  style: font.copyWith(
+                    fontSize: 80,
+                    color: context.colour.primaryContainer,
+                    height: 0.8,
+                  ),
                 ),
-              ),
-              const Gap(8),
-              SizedBox(
-                width: w * 0.8,
-                child: const BBText.body(
-                  'Sovereign non-custodial Bitcoin wallet and Bitcoin-only exchange service. ',
+                Text(
+                  'OWN YOUR MONEY',
+                  style: font.copyWith(
+                    fontSize: 59,
+                    height: 0.8,
+                  ),
+                ),
+                const Gap(8),
+                SizedBox(
+                  width: w * 0.8,
+                  child: const BBText.body(
+                    'Sovereign non-custodial Bitcoin wallet and Bitcoin-only exchange service. ',
+                    onSurface: true,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const Gap(110),
+                Center(
+                  child: BBButton.big(
+                    label: 'Create new wallet',
+                    onPressed: () {
+                      context.read<CreateWalletCubit>().confirmClicked();
+                      // context.push('/create-wallet-main');
+                    },
+                  ),
+                ),
+                BBButton.text(
+                  label: 'Recover wallet backup',
+                  centered: true,
                   onSurface: true,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const Gap(128),
-              Center(
-                child: BBButton.big(
-                  label: 'Create new wallet',
+                  isBlue: false,
+                  fontSize: 11,
                   onPressed: () {
-                    context.read<CreateWalletCubit>().confirmClicked();
-                    // context.push('/create-wallet-main');
+                    context.push('/import-main');
                   },
                 ),
-              ),
-              BBButton.text(
-                label: 'Recover wallet backup',
-                centered: true,
-                onSurface: true,
-                isBlue: false,
-                fontSize: 11,
-                onPressed: () {
-                  context.push('/import-main');
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -1127,17 +1144,20 @@ class HomeWarnings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _ = context.select((HomeCubit _) => _.state.updated);
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    final _ = context.select((HomeBloc _) => _.state.updated);
+    final network = context.select((NetworkBloc _) => _.state.getBBNetwork());
     final warnings =
-        context.select((HomeCubit _) => _.state.homeWarnings(network));
+        context.select((HomeBloc _) => _.state.homeWarnings(network));
 
     return Column(
       children: [
         for (final w in warnings)
           WarningBanner(
             onTap: () {
-              context.push('/wallet-settings/open-backup', extra: w.walletBloc);
+              context.push(
+                '/wallet-settings/open-backup',
+                extra: w.walletBloc.id,
+              );
             },
             info: w.info,
           ),

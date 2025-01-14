@@ -12,14 +12,14 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletDetailsPage extends StatelessWidget {
-  const WalletDetailsPage({super.key, required this.walletBloc});
+  const WalletDetailsPage({super.key, required this.wallet});
 
-  final WalletBloc walletBloc;
+  final String wallet;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: walletBloc,
+      value: createOrRetreiveWalletBloc(wallet),
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -50,23 +50,23 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fingerPrint = context
-        .select((WalletBloc _) => _.state.wallet?.sourceFingerprint ?? '');
+    final fingerPrint =
+        context.select((WalletBloc _) => _.state.wallet.sourceFingerprint);
 
     final descriptorCombined = context.select(
-      (WalletBloc _) => _.state.wallet?.getDescriptorCombined() ?? '',
+      (WalletBloc _) => _.state.wallet.getDescriptorCombined(),
     );
     final descriptor = context.select(
-      (WalletBloc _) => _.state.wallet?.externalPublicDescriptor ?? '',
+      (WalletBloc _) => _.state.wallet.externalPublicDescriptor,
     );
     final pub = keyFromDescriptor(descriptor);
     final scriptType =
-        context.select((WalletBloc _) => _.state.wallet!.scriptType);
+        context.select((WalletBloc _) => _.state.wallet.scriptType);
     final addressTypeStr = scriptTypeString(scriptType);
-    final network = context.select((WalletBloc _) => _.state.wallet!.network);
+    final network = context.select((WalletBloc _) => _.state.wallet.network);
 
-    final derivationPath = context
-        .select((WalletBloc _) => _.state.wallet?.derivationPathString() ?? '');
+    final derivationPath =
+        context.select((WalletBloc _) => _.state.wallet.derivationPathString());
     final slipKey = convertToSlipPub(scriptType, network, pub);
 
     final showFingerprint = !fingerPrint.toLowerCase().contains('unknown');

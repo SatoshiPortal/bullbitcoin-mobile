@@ -7,18 +7,18 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
+import 'package:bb_mobile/_repository/wallet/internal_network.dart';
 import 'package:convert/convert.dart';
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
 
 class LWKTransactions {
   LWKTransactions({
-    required NetworkRepository networkRepository,
+    required InternalNetworkRepository networkRepository,
     required SwapBoltz swapBoltz,
   })  : _networkRepository = networkRepository,
         _swapBoltz = swapBoltz;
 
-  final NetworkRepository _networkRepository;
+  final InternalNetworkRepository _networkRepository;
   final SwapBoltz _swapBoltz;
 
   Transaction addOutputAddresses(Address newAddress, Transaction tx) {

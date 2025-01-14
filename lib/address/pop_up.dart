@@ -3,6 +3,7 @@ import 'package:bb_mobile/_pkg/clipboard.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/utxo.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_ui/bottom_sheet.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -12,7 +13,7 @@ import 'package:bb_mobile/address/bloc/address_cubit.dart';
 import 'package:bb_mobile/address/bloc/address_state.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -38,7 +39,8 @@ class AddressPopUp extends StatelessWidget {
     final addressCubit = AddressCubit(
       address: address,
       walletAddress: locator<WalletAddress>(),
-      walletBloc: wallet,
+      appWalletsRepository: locator<AppWalletsRepository>(),
+      wallet: wallet.state.wallet,
       bdkUtxo: locator<BDKUtxo>(),
     );
 
@@ -110,9 +112,9 @@ class Title extends StatelessWidget {
         .select((AddressCubit cubit) => cubit.state.address!.miniString());
 
     final walletName =
-        context.select((WalletBloc cubit) => cubit.state.wallet!.name ?? '');
+        context.select((WalletBloc cubit) => cubit.state.wallet.name ?? '');
     final walletFingerprint = context.select(
-      (WalletBloc cubit) => cubit.state.wallet!.sourceFingerprint,
+      (WalletBloc cubit) => cubit.state.wallet.sourceFingerprint,
     );
     final title = walletName.isEmpty ? walletFingerprint : walletName;
 
@@ -138,7 +140,7 @@ class AddressQR extends StatelessWidget {
     final address =
         context.select((AddressCubit cubit) => cubit.state.address!);
     final url = context.select(
-      (NetworkCubit _) => _.state
+      (NetworkBloc _) => _.state
           .explorerAddressUrl(address.address, isLiquid: address.isLiquid),
     );
 

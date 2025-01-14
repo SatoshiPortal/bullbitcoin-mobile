@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/swap.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
 import 'package:bb_mobile/_pkg/clipboard.dart';
@@ -6,32 +7,35 @@ import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/address.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
-import 'package:bb_mobile/_ui/molecules/wallet/wallet_dropdown.dart';
 import 'package:bb_mobile/_ui/warning.dart';
 import 'package:bb_mobile/currency/amount_input.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/receive/bloc/receive_cubit.dart';
 import 'package:bb_mobile/receive/listeners.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
+import 'package:bb_mobile/swap/ui_swapwidget/wallet_dropdown.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:boltz_dart/boltz_dart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
@@ -48,9 +52,9 @@ const lqMainnetAddress =
     'lq1qq23h89g7u7ngp2n7p7tvek7n97dckyfyu89e3j875rqz35u8rd9tmy8fss0q7zke3lzj80834zl6t72pw2khqz0fkf6hnswne';
 
 class ReceivePage extends StatefulWidget {
-  const ReceivePage({super.key, this.walletBloc});
+  const ReceivePage({super.key, this.wallet});
 
-  final WalletBloc? walletBloc;
+  final String? wallet;
 
   @override
   State<ReceivePage> createState() => _ReceivePageState();
@@ -63,70 +67,163 @@ class _ReceivePageState extends State<ReceivePage> {
 
   @override
   void initState() {
+    // print('-----2 - ${DateTime.now()}');
+    // _swapCubit = CreateSwapCubit(
+    //   walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
+    //   swapBoltz: locator<SwapBoltz>(),
+    //   walletTx: locator<WalletTx>(),
+    //   appWalletsRepository: locator<AppWalletsRepository>(),
+    //   // homeCubit: context.read<HomeBloc>(),
+    //   watchTxsBloc: context.read<WatchTxsBloc>(),
+    //   networkRepository: context.read<NetworkRepository>(),
+    //   // networkCubit: context.read<NetworkBloc>(),
+    // )..fetchFees(context.read<NetworkBloc>().state.networkData.testnet);
+    // print('-----3 - ${DateTime.now()}');
+
+    // _currencyCubit = CurrencyCubit(
+    //   hiveStorage: locator<HiveStorage>(),
+    //   bbAPI: locator<BullBitcoinAPI>(),
+    //   defaultCurrencyCubit: context.read<CurrencyCubit>(),
+    // );
+    // print('-----4 - ${DateTime.now()}');
+
+    // final w = widget.wallet != null
+    //     ? context.read<AppWalletsRepository>().getWalletById(widget.wallet!)
+    //     : null;
+    // print('-----5 - ${DateTime.now()}');
+
+    // _receiveCubit = ReceiveCubit(
+    //   walletAddress: locator<WalletAddress>(),
+    //   walletsStorageRepository: locator<WalletsStorageRepository>(),
+    //   appWalletsRepository: locator<AppWalletsRepository>(),
+    //   wallet: w,
+
+    //   // walletBloc:
+    //   // widget.wallet != null ? createWalletBloc(widget.wallet!) : null,
+    //   payjoinManager: locator<PayjoinManager>(),
+    // );
+    // print('-----6 - ${DateTime.now()}');
+
+    // final network = context.read<NetworkRepository>().getBBNetwork;
+    // print('-----7 - ${DateTime.now()}');
+
+    // final wallet =
+    //     w ?? context.read<AppWalletsRepository>().getMainInstantWallet(network);
+    // print('-----8 - ${DateTime.now()}');
+
+    // if (wallet!.isLiquid()) {
+    //   _receiveCubit.updateWalletType(
+    //     PaymentNetwork.lightning,
+    //     context.read<NetworkBloc>().state.networkData.testnet,
+    //     onStart: true,
+    //   );
+    // } else {
+    //   _receiveCubit.updateWalletType(
+    //     PaymentNetwork.bitcoin,
+    //     context.read<NetworkBloc>().state.networkData.testnet,
+    //     onStart: true,
+    //   );
+    // }
+    // print('-----10 - ${DateTime.now()}');
+
+    // _receiveCubit.updateWallet(wallet);
+    // print('-----11 - ${DateTime.now()}');
+
+    super.initState();
+  }
+
+  Future _setupBlocs() async {
+    print('-----2 - ${DateTime.now()}');
     _swapCubit = CreateSwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
       walletTx: locator<WalletTx>(),
-      homeCubit: context.read<HomeCubit>(),
+      appWalletsRepository: locator<AppWalletsRepository>(),
+      // homeCubit: context.read<HomeBloc>(),
       watchTxsBloc: context.read<WatchTxsBloc>(),
-      networkCubit: context.read<NetworkCubit>(),
-    )..fetchFees(context.read<NetworkCubit>().state.testnet);
+      networkRepository: context.read<NetworkRepository>(),
+      // networkCubit: context.read<NetworkBloc>(),
+    )..fetchFees(context.read<NetworkBloc>().state.networkData.testnet);
+    print('-----3 - ${DateTime.now()}');
 
     _currencyCubit = CurrencyCubit(
       hiveStorage: locator<HiveStorage>(),
       bbAPI: locator<BullBitcoinAPI>(),
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
+    print('-----4 - ${DateTime.now()}');
+
+    final w = widget.wallet != null
+        ? context.read<AppWalletsRepository>().getWalletById(widget.wallet!)
+        : null;
+    print('-----5 - ${DateTime.now()}');
 
     _receiveCubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
-      walletBloc: widget.walletBloc,
+      appWalletsRepository: locator<AppWalletsRepository>(),
+      wallet: w,
+
+      // walletBloc:
+      // widget.wallet != null ? createWalletBloc(widget.wallet!) : null,
       payjoinManager: locator<PayjoinManager>(),
     );
+    print('-----6 - ${DateTime.now()}');
 
-    final network = context.read<NetworkCubit>().state.getBBNetwork();
-    final walletBloc = widget.walletBloc ??
-        context.read<HomeCubit>().state.getMainInstantWallet(network);
+    final network = context.read<NetworkRepository>().getBBNetwork;
+    print('-----7 - ${DateTime.now()}');
 
-    if (walletBloc!.state.wallet!.isLiquid()) {
+    final wallet =
+        w ?? context.read<AppWalletsRepository>().getMainInstantWallet(network);
+    print('-----8 - ${DateTime.now()}');
+
+    if (wallet!.isLiquid()) {
       _receiveCubit.updateWalletType(
         PaymentNetwork.lightning,
-        context.read<NetworkCubit>().state.testnet,
+        context.read<NetworkBloc>().state.networkData.testnet,
         onStart: true,
       );
     } else {
       _receiveCubit.updateWalletType(
         PaymentNetwork.bitcoin,
-        context.read<NetworkCubit>().state.testnet,
+        context.read<NetworkBloc>().state.networkData.testnet,
         onStart: true,
       );
     }
+    print('-----10 - ${DateTime.now()}');
 
-    _receiveCubit.updateWalletBloc(walletBloc);
-
-    super.initState();
+    _receiveCubit.updateWallet(wallet);
+    print('-----11 - ${DateTime.now()}');
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: _receiveCubit),
-        BlocProvider.value(value: _currencyCubit),
-        BlocProvider.value(value: _swapCubit),
-      ],
-      child: ReceiveListeners(
-        child: Scaffold(
-          appBar: AppBar(
-            flexibleSpace: const _ReceiveAppBar(),
-            automaticallyImplyLeading: false,
+    return FutureBuilder(
+      future: _setupBlocs(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const SizedBox.shrink();
+        }
+
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: _receiveCubit),
+            BlocProvider.value(value: _currencyCubit),
+            BlocProvider.value(value: _swapCubit),
+          ],
+          child: ReceiveListeners(
+            child: Scaffold(
+              appBar: AppBar(
+                flexibleSpace: const _ReceiveAppBar(),
+                automaticallyImplyLeading: false,
+              ),
+              body: _WalletProvider(
+                child: const _Screen().animate(delay: 400.ms).fadeIn(),
+              ),
+            ),
           ),
-          body: const _WalletProvider(
-            child: _Screen(),
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -147,13 +244,13 @@ class _Screen extends StatelessWidget {
         context.select((ReceiveCubit x) => x.state.loadingAddress);
 
     final watchOnly =
-        context.select((WalletBloc x) => x.state.wallet!.watchOnly());
+        context.select((WalletBloc x) => x.state.wallet.watchOnly());
     final mainWallet =
         context.select((ReceiveCubit x) => x.state.checkIfMainWalletSelected());
     context.select((WalletBloc x) => x.state.wallet);
 
     final walletIsLiquid = context.select(
-      (WalletBloc x) => x.state.wallet!.isLiquid(),
+      (WalletBloc x) => x.state.wallet.isLiquid(),
     );
     final showWarning =
         context.select((CreateSwapCubit x) => x.state.showWarning());
@@ -258,17 +355,30 @@ class _Screen extends StatelessWidget {
   }
 }
 
-class ReceiveWalletsDropDown extends StatelessWidget {
+class ReceiveWalletsDropDown extends StatefulWidget {
   const ReceiveWalletsDropDown({super.key});
+
+  @override
+  State<ReceiveWalletsDropDown> createState() => _ReceiveWalletsDropDownState();
+}
+
+class _ReceiveWalletsDropDownState extends State<ReceiveWalletsDropDown> {
+  List<Wallet> wallets = [];
+
+  @override
+  void initState() {
+    final network = context.read<NetworkRepository>().getBBNetwork;
+    wallets = context.read<AppWalletsRepository>().walletsFromNetwork(network);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final oneWallet = context.select((ReceiveCubit _) => _.state.oneWallet);
-    final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
-    final walletBlocs = context
-        .select((HomeCubit _) => _.state.walletBlocsFromNetwork(network));
-    final selectedWalletBloc =
-        context.select((ReceiveCubit _) => _.state.walletBloc);
+    // final network = context.select((NetworkCubit _) => _.state.getBBNetwork());
+    // final walletBlocs = context
+    //     .select((HomeBloc _) => _.state.walletBlocsFromNetwork(network));
+    final selectedWallet = context.select((ReceiveCubit _) => _.state.wallet);
 
     // final walletBloc = selectedWalletBloc ?? walletBlocs.first;
 
@@ -278,17 +388,16 @@ class ReceiveWalletsDropDown extends StatelessWidget {
       child: IgnorePointer(
         ignoring: oneWallet,
         child: WalletDropDown(
-          items: walletBlocs.map((wb) => wb.state.wallet!).toList(),
+          items: wallets,
+          // walletBlocs.map((wb) => wb.state.wallet).toList(),
           onChanged: (wallet) {
-            final blocs =
-                walletBlocs.where((wb) => wb.state.wallet == wallet).toList();
-            if (blocs.isNotEmpty) {
+            // final blocs = wallets.where((_) => _ == wallet).toList();
+            if (wallets.isNotEmpty) {
               context.read<CreateSwapCubit>().removeWarnings();
-              context.read<ReceiveCubit>().updateWalletBloc(blocs[0]);
+              context.read<ReceiveCubit>().updateWallet(wallets[0]);
             }
           },
-          value:
-              selectedWalletBloc?.state.wallet ?? walletBlocs[0].state.wallet!,
+          value: selectedWallet ?? wallets[0],
         ),
 
         /*
@@ -352,7 +461,7 @@ class SelectWalletType extends StatelessWidget {
         context.read<CurrencyCubit>().updateAmountDirect(0);
         context.read<CreateSwapCubit>().removeWarnings();
 
-        final isTestnet = context.read<NetworkCubit>().state.testnet;
+        final isTestnet = context.read<NetworkBloc>().state.networkData.testnet;
         context.read<ReceiveCubit>().updateWalletType(value, isTestnet);
       },
     );
@@ -366,10 +475,13 @@ class _WalletProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((ReceiveCubit _) => _.state.walletBloc);
+    final wallet = context.select((ReceiveCubit _) => _.state.wallet);
 
     if (wallet == null) return child;
-    return BlocProvider.value(value: wallet, child: child);
+    return BlocProvider.value(
+      value: createOrRetreiveWalletBloc(wallet.id),
+      child: child,
+    );
   }
 }
 
@@ -628,7 +740,8 @@ class ChainSwapDisplayReceive extends StatelessWidget {
     if (swapTx == null) return const SizedBox.shrink();
 
     final amount = swapTx.outAmount / 100000000.0;
-    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
+    final isTestnet =
+        context.select((NetworkBloc x) => x.state.networkData.testnet);
     final bip21Address = context.select(
       (ReceiveCubit x) => x.state.getAddressWithAmountAndLabel(
         amount,
@@ -658,7 +771,7 @@ class ChainSwapForm extends StatelessWidget {
     context.select((CurrencyCubit x) => x.state.amount);
 
     context.select(
-      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
+      (ReceiveCubit x) => x.state.wallet?.isLiquid(),
     );
     final err = context.select((CreateSwapCubit _) => _.state.err());
 
@@ -704,22 +817,21 @@ class ChainSwapForm extends StatelessWidget {
             loadingText: 'Creating Swap',
             onPressed: () async {
               final amt = context.read<CurrencyCubit>().state.amount;
-              final receiveWallet =
-                  context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
+              final receiveWallet = context.read<ReceiveCubit>().state.wallet!;
               final label = context.read<ReceiveCubit>().state.description;
 
               final matchingWalletForRefund = context
-                  .read<HomeCubit>()
+                  .read<HomeBloc>()
                   .state
-                  .walletBlocsFromNetwork(receiveWallet.network)
-                  .map((bloc) => bloc.state.wallet)
+                  .walletsFromNetwork(receiveWallet.network)
+                  // .map((bloc) => bloc.state.wallet)
                   .where(
                     (wallet) =>
-                        wallet?.baseWalletType != receiveWallet.baseWalletType,
+                        wallet.baseWalletType != receiveWallet.baseWalletType,
                   )
                   .first;
               final refundAddress =
-                  matchingWalletForRefund?.lastGeneratedAddress;
+                  matchingWalletForRefund.lastGeneratedAddress;
 
               context.read<CreateSwapCubit>().createOnChainSwapForReceive(
                     toWallet: receiveWallet,
@@ -757,7 +869,7 @@ class CreateLightningInvoice extends StatelessWidget {
     final amount = context.select((CurrencyCubit x) => x.state.amount);
 
     final isLiquid = context.select(
-      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid(),
+      (ReceiveCubit x) => x.state.wallet?.isLiquid(),
     );
 
     int finalFee = 0;
@@ -823,14 +935,14 @@ class CreateLightningInvoice extends StatelessWidget {
             loadingText: 'Creating Invoice',
             onPressed: () async {
               final amt = context.read<CurrencyCubit>().state.amount;
-              final wallet =
-                  context.read<ReceiveCubit>().state.walletBloc!.state.wallet!;
+              final wallet = context.read<ReceiveCubit>().state.wallet!;
               final walletIsLiquid = wallet.isLiquid();
               final label = context.read<ReceiveCubit>().state.description;
-              final isTestnet = context.read<NetworkCubit>().state.testnet;
+              final isTestnet =
+                  context.read<NetworkBloc>().state.networkData.testnet;
               final networkUrl = !walletIsLiquid
-                  ? context.read<NetworkCubit>().state.getNetworkUrl()
-                  : context.read<NetworkCubit>().state.getLiquidNetworkUrl();
+                  ? context.read<NetworkRepository>().getNetworkUrl
+                  : context.read<NetworkRepository>().getLiquidNetworkUrl;
 
               context.read<CreateSwapCubit>().createRevSwapForReceive(
                     amount: amt,
@@ -958,9 +1070,10 @@ class ReceiveQR extends StatelessWidget {
     final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     final amount =
         context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
-    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
+    final isTestnet =
+        context.select((NetworkBloc x) => x.state.networkData.testnet);
     final isLiquid = context.select(
-      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid() ?? false,
+      (ReceiveCubit x) => x.state.wallet?.isLiquid() ?? false,
     );
     final bip21Address = context.select(
       (ReceiveCubit x) => x.state.getAddressWithAmountAndLabel(
@@ -1107,9 +1220,10 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
     final swapTx = context.select((CreateSwapCubit x) => x.state.swapTx);
     final amount =
         context.select((CurrencyCubit x) => x.state.amount / 100000000.0);
-    final isTestnet = context.select((NetworkCubit x) => x.state.testnet);
+    final isTestnet =
+        context.select((NetworkBloc x) => x.state.networkData.testnet);
     final isLiquid = context.select(
-      (ReceiveCubit x) => x.state.walletBloc?.state.wallet?.isLiquid() ?? false,
+      (ReceiveCubit x) => x.state.wallet?.isLiquid() ?? false,
     );
     final bip21Address = context.select(
       (ReceiveCubit x) => x.state.getAddressWithAmountAndLabel(

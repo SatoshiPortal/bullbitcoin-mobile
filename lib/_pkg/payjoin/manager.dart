@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
@@ -218,7 +217,7 @@ class PayjoinManager {
       SendPort? mainToIsolateSendPort;
 
       receivePort.listen((message) async {
-        print('Receiver isolate: $message');
+        // print('Receiver isolate: $message');
         if (message is Map<String, dynamic>) {
           try {
             switch (message['type']) {
@@ -325,10 +324,12 @@ class PayjoinManager {
     if (senderErr != null) throw senderErr;
 
     final filteredReceivers = receiverSessions
-        .where((session) =>
-            session.walletId == wallet.id &&
-            session.status != PayjoinSessionStatus.success &&
-            session.status != PayjoinSessionStatus.unrecoverable)
+        .where(
+          (session) =>
+              session.walletId == wallet.id &&
+              session.status != PayjoinSessionStatus.success &&
+              session.status != PayjoinSessionStatus.unrecoverable,
+        )
         .toList();
     final filteredSenders = senderSessions.where((session) {
       return session.walletId == wallet.id &&
