@@ -16,7 +16,7 @@ class CloudCubit extends Cubit<CloudState> {
     required this.backupName,
   }) : super(const CloudState());
 
-  void clearToast() => state.copyWith(toast: '');
+  void clearToast() => emit(state.copyWith(toast: ''));
 
   Future<void> connectAndStoreBackup() async {
     try {
