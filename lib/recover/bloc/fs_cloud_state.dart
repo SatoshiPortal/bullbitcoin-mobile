@@ -1,14 +1,14 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'manual_state.freezed.dart';
+part 'fs_cloud_state.freezed.dart';
 
 @freezed
-class ManualState with _$ManualState {
-  const factory ManualState({
+class FsCloudState with _$FsCloudState {
+  const factory FsCloudState({
     @Default('') String error,
     @Default(false) bool recovered,
     @Default('') String backupKey,
     @Default('') String backupId,
     @Default('') String encrypted,
-  }) = _ManualState;
+  }) = _FsCloudState;
 }
