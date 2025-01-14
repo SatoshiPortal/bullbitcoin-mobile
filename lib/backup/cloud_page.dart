@@ -6,14 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class CloudPage extends StatelessWidget {
-  final String backupPath;
-  final String backupName;
-
-  const CloudPage({
-    super.key,
-    required this.backupPath,
-    required this.backupName,
-  });
+  const CloudPage({super.key});
 
   @override
   Widget build(BuildContext context) {
