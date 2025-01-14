@@ -18,6 +18,7 @@ class CloudCubit extends Cubit<CloudState> {
 
   void clearToast() => emit(state.copyWith(toast: ''));
 
+  void clearError() => emit(state.copyWith(error: ''));
   Future<void> connectAndStoreBackup() async {
     try {
       final googleSignInAccount = await GoogleDriveApi.google.signIn();
@@ -29,14 +30,17 @@ class CloudCubit extends Cubit<CloudState> {
         emit(state.copyWith(googleDriveStorage: googleDriveStorage));
         debugPrint("User has logged in");
       } else {
-        debugPrint("User has not logged in");
+        emit(state.copyWith(error: "Google drive user has not authenticated"));
+        return;
       }
     } catch (e) {
       debugPrint("GoogleDriveStorage.connect Error: $e");
-    }
-
-    if (state.googleDriveStorage == null) {
-      emit(state.copyWith(toast: 'User has not logged in'));
+      emit(
+        state.copyWith(
+          error: "GoogleDriveStorage.connect Error: $e",
+          loading: false,
+        ),
+      );
       return;
     }
 
@@ -47,7 +51,13 @@ class CloudCubit extends Cubit<CloudState> {
         await state.googleDriveStorage?.writeMetaData(decoded, backupName);
 
     if (isCreated == false) {
-      emit(state.copyWith(toast: "Failed to backup file to google drive."));
+      emit(
+        state.copyWith(
+          error: "Failed to backup file to google drive.",
+          loading: false,
+        ),
+      );
+      return;
     } else {
       emit(state.copyWith(toast: "File created successfully."));
     }
