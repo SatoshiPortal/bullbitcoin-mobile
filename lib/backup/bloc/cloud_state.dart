@@ -10,6 +10,7 @@ class CloudState with _$CloudState {
     @Default(false) bool loading,
     GoogleDriveStorage? googleDriveStorage,
     @Default([]) List<File> availableBackups,
+    @Default(('', '')) (String, String) selectedBackup,
     @Default('') String toast,
     @Default('') String error,
   }) = _CloudState;
