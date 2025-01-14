@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/gdrive.dart';
 import 'package:bb_mobile/backup/bloc/cloud_state.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,6 +22,7 @@ class CloudCubit extends Cubit<CloudState> {
   void clearError() => emit(state.copyWith(error: ''));
   Future<void> connectAndStoreBackup() async {
     try {
+      emit(state.copyWith(loading: true));
       final googleSignInAccount = await GoogleDriveApi.google.signIn();
       final googleDriveStorage = await GoogleDriveStorage.connect(
         googleSignInAccount,
@@ -28,7 +30,6 @@ class CloudCubit extends Cubit<CloudState> {
       );
       if (googleSignInAccount != null) {
         emit(state.copyWith(googleDriveStorage: googleDriveStorage));
-        debugPrint("User has logged in");
       } else {
         emit(state.copyWith(error: "Google drive user has not authenticated"));
         return;
@@ -59,7 +60,39 @@ class CloudCubit extends Cubit<CloudState> {
       );
       return;
     } else {
-      emit(state.copyWith(toast: "File created successfully."));
+      emit(
+        state.copyWith(
+          toast: "Google drive backup successful",
+          loading: false,
+        ),
+      );
+    }
+  }
+
+  Future<void> readAllBackups() async {
+    try {
+      emit(
+        state.copyWith(
+          loading: true,
+        ),
+      );
+      final availableBackups =
+          await state.googleDriveStorage!.readAllMetaDataFiles();
+
+      emit(
+        state.copyWith(
+          loading: false,
+          toast: "Found ${availableBackups.length} backups files",
+          availableBackups: availableBackups,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          loading: false,
+          error: "Failed to read all backups: $e",
+        ),
+      );
     }
   }
 
