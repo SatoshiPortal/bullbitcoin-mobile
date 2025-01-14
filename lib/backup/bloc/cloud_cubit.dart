@@ -24,7 +24,7 @@ class CloudCubit extends Cubit<CloudState> {
       final googleSignInAccount = await GoogleDriveApi.google.signIn();
       final googleDriveStorage = await GoogleDriveStorage.connect(
         googleSignInAccount,
-        "bullbitcoin/backups",
+        defaultCloudBackupPath,
       );
       if (googleSignInAccount != null) {
         emit(state.copyWith(googleDriveStorage: googleDriveStorage));
