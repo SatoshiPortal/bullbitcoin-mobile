@@ -12,7 +12,6 @@ import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:bip85/bip85.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
-import 'package:intl/intl.dart';
 import 'package:recoverbull_dart/recoverbull_dart.dart';
 
 class BackupCubit extends Cubit<BackupState> {
@@ -158,8 +157,9 @@ class BackupCubit extends Cubit<BackupState> {
       final encrypted =
           await BackupService.createBackup(backupId, plaintext, backupKey);
       final now = DateTime.now();
-      final formattedDate = DateFormat('yyyyMMdd_HHmm').format(now);
-      final filename = '$formattedDate.json';
+      //TODO; Find a better filename format.
+      final formattedDate = now.millisecondsSinceEpoch;
+      final filename = '${formattedDate}_$backupId.json';
 
       final (appDir, errDir) = await fileStorage.getAppDirectory();
       if (errDir != null) {
