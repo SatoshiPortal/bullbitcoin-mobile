@@ -16,7 +16,7 @@ import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
-import 'package:boltz_dart/boltz_dart.dart' as boltz;
+import 'package:boltz/boltz.dart' as boltz;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

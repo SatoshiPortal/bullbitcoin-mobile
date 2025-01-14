@@ -1,8 +1,8 @@
 // import 'dart:async';
 
-// import 'package:boltz_dart/boltz_dart.dart';
+// import 'package:boltz/boltz.dart';
 // import 'package:flutter_test/flutter_test.dart';
-// import 'package:lwk_dart/lwk_dart.dart';
+// import 'package:lwk/lwk.dart';
 
 // import 'lwk_test.data.dart';
 // import 'test_base.dart';

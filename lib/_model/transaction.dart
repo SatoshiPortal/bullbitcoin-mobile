@@ -6,7 +6,7 @@ import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz/boltz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeago/timeago.dart' as timeago;

@@ -1,5 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:lwk_dart/lwk_dart.dart' as lwk;
+import 'package:lwk/lwk.dart' as lwk;
 
 void setupConfigs() {}
 

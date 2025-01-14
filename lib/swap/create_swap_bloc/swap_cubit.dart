@@ -10,7 +10,7 @@ import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_state.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
