@@ -30,3 +30,7 @@ const liquidMempoolTestnet = 'https://liquid.network/testnet';
 
 const liquidMainnetAssetId = lwk.lBtcAssetId;
 const liquidTestnetAssetId = lwk.lTestAssetId;
+
+//Backups
+const defaultCloudBackupPath =
+    'backups'; //todo; create a better folder structure
