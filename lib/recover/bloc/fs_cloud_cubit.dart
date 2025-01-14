@@ -9,14 +9,14 @@ import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
-import 'package:bb_mobile/recover/bloc/manual_state.dart';
+import 'package:bb_mobile/recover/bloc/fs_cloud_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull_dart/recoverbull_dart.dart';
 
-class ManualCubit extends Cubit<ManualState> {
-  ManualCubit({
+class FsCloudCubit extends Cubit<FsCloudState> {
+  FsCloudCubit({
     required this.bdkSensitiveCreate,
     required this.lwkSensitiveCreate,
     required this.walletSensitiveCreate,
@@ -25,7 +25,7 @@ class ManualCubit extends Cubit<ManualState> {
     required this.wallets,
     required this.walletSensitiveStorage,
     required this.filePicker,
-  }) : super(const ManualState());
+  }) : super(const FsCloudState());
 
   final FilePick filePicker;
   final List<WalletBloc> wallets;

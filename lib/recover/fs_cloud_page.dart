@@ -10,8 +10,8 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/recover/bloc/manual_cubit.dart';
-import 'package:bb_mobile/recover/bloc/manual_state.dart';
+import 'package:bb_mobile/recover/bloc/fs_cloud_cubit.dart';
+import 'package:bb_mobile/recover/bloc/fs_cloud_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,8 +24,8 @@ class ManualRecoverPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ManualCubit>(
-      create: (_) => ManualCubit(
+    return BlocProvider<FsCloudCubit>(
+      create: (_) => FsCloudCubit(
         filePicker: locator<FilePick>(),
         walletCreate: locator<WalletCreate>(),
         walletSensitiveCreate: locator<WalletSensitiveCreate>(),
@@ -46,7 +46,7 @@ class ManualRecoverPage extends StatelessWidget {
             buttonKey: UIKeys.settingsBackButton,
           ),
         ),
-        body: BlocListener<ManualCubit, ManualState>(
+        body: BlocListener<FsCloudCubit, FsCloudState>(
           listener: (context, state) async {
             if (state.error.isNotEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -55,7 +55,7 @@ class ManualRecoverPage extends StatelessWidget {
                   backgroundColor: Colors.red,
                 ),
               );
-              context.read<ManualCubit>().clearError();
+              context.read<FsCloudCubit>().clearError();
             }
             if (state.recovered) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -68,9 +68,9 @@ class ManualRecoverPage extends StatelessWidget {
               context.go('/home');
             }
           },
-          child: BlocBuilder<ManualCubit, ManualState>(
+          child: BlocBuilder<FsCloudCubit, FsCloudState>(
             builder: (context, state) {
-              final cubit = context.read<ManualCubit>();
+              final cubit = context.read<FsCloudCubit>();
 
               return Padding(
                 padding: const EdgeInsets.all(20.0),
