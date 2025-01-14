@@ -11,7 +11,31 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'wallet.freezed.dart';
 part 'wallet.g.dart';
 
-enum BBNetwork { Testnet, Mainnet }
+enum BBNetwork {
+  Testnet,
+
+  Mainnet;
+
+  static BBNetwork fromString(String network) {
+    switch (network) {
+      case 'Testnet':
+        return BBNetwork.Testnet;
+      case 'Mainnet':
+        return BBNetwork.Mainnet;
+      default:
+        return BBNetwork.Mainnet;
+    }
+  }
+
+  bdk.Network toBdkNetwork() {
+    switch (this) {
+      case BBNetwork.Testnet:
+        return bdk.Network.testnet;
+      case BBNetwork.Mainnet:
+        return bdk.Network.bitcoin;
+    }
+  }
+}
 
 enum BBWalletType { main, xpub, descriptors, words, coldcard }
 
