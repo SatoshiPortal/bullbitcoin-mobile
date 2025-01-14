@@ -5,9 +5,7 @@ import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -122,89 +120,6 @@ class WalletBlocListeners extends StatelessWidget {
     if (blocs.isEmpty) return walletChild;
 
     return walletChild;
-  }
-}
-
-class HomeLoadingEvent {}
-
-class SetLoading extends HomeLoadingEvent {
-  SetLoading(this.id, this.loading);
-  final String id;
-  final bool loading;
-}
-
-class HomeLoadingCubit extends Bloc<HomeLoadingEvent, Map<String, bool>> {
-  HomeLoadingCubit() : super({}) {
-    on<SetLoading>(
-      (event, emit) {
-        final map = state;
-        map[event.id] = event.loading;
-        emit({});
-        emit(map);
-      },
-      transformer: droppable(),
-    );
-  }
-}
-
-class HomeWalletLoadingListeners extends StatefulWidget {
-  const HomeWalletLoadingListeners({super.key, required this.child});
-
-  final Widget child;
-
-  @override
-  State<HomeWalletLoadingListeners> createState() =>
-      _HomeWalletLoadingListenersState();
-}
-
-class _HomeWalletLoadingListenersState
-    extends State<HomeWalletLoadingListeners> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void _setup() {
-    if (!context.mounted) return;
-    final blocs = context.read<AppWalletBlocs>().state;
-
-    for (final bloc in blocs) {
-      context
-          .read<HomeLoadingCubit>()
-          .add(SetLoading(bloc.state.wallet.id, bloc.state.syncing));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final walletBlocs = context.select((AppWalletBlocs x) => x.state);
-
-    if (walletBlocs.isEmpty) return widget.child;
-
-    _setup();
-    // TODO: cleanup
-    return MultiBlocListener(
-      listeners: [
-        for (final walletBloc in walletBlocs)
-          BlocListener<WalletBloc, WalletState>(
-            bloc: walletBloc,
-            listenWhen: (previous, current) =>
-                previous.syncing != current.syncing,
-            listener: (context, state) {
-              if (state.syncing) {
-                context
-                    .read<HomeLoadingCubit>()
-                    .add(SetLoading(state.wallet.id, true));
-              } else {
-                context
-                    .read<HomeLoadingCubit>()
-                    .add(SetLoading(state.wallet.id, false));
-              }
-            },
-          ),
-      ],
-      child: widget.child,
-    );
   }
 }
 

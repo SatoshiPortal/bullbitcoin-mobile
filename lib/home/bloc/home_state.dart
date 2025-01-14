@@ -24,6 +24,8 @@ class HomeState with _$HomeState {
   }) = _HomeState;
   const HomeState._();
 
+  bool syncingAny() => wallets.any((_) => _.syncing);
+
   bool hasWallets() => !loadingWallets && wallets.isNotEmpty;
 
   // List<Wallet> walletsFromNetwork(BBNetwork network) =>
