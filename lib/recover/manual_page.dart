@@ -8,13 +8,17 @@ import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
+import 'package:bb_mobile/backup/cloud_page.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/recover/bloc/fs_cloud_cubit.dart';
-import 'package:bb_mobile/recover/bloc/fs_cloud_state.dart';
+import 'package:bb_mobile/recover/bloc/manual_cubit.dart';
+import 'package:bb_mobile/recover/bloc/manual_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ManualRecoverPage extends StatelessWidget {
@@ -24,8 +28,8 @@ class ManualRecoverPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<FsCloudCubit>(
-      create: (_) => FsCloudCubit(
+    return BlocProvider<ManualCubit>(
+      create: (_) => ManualCubit(
         filePicker: locator<FilePick>(),
         walletCreate: locator<WalletCreate>(),
         walletSensitiveCreate: locator<WalletSensitiveCreate>(),
@@ -46,7 +50,7 @@ class ManualRecoverPage extends StatelessWidget {
             buttonKey: UIKeys.settingsBackButton,
           ),
         ),
-        body: BlocListener<FsCloudCubit, FsCloudState>(
+        body: BlocListener<ManualCubit, ManualState>(
           listener: (context, state) async {
             if (state.error.isNotEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -55,7 +59,7 @@ class ManualRecoverPage extends StatelessWidget {
                   backgroundColor: Colors.red,
                 ),
               );
-              context.read<FsCloudCubit>().clearError();
+              context.read<ManualCubit>().clearError();
             }
             if (state.recovered) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -68,9 +72,9 @@ class ManualRecoverPage extends StatelessWidget {
               context.go('/home');
             }
           },
-          child: BlocBuilder<FsCloudCubit, FsCloudState>(
+          child: BlocBuilder<ManualCubit, ManualState>(
             builder: (context, state) {
-              final cubit = context.read<FsCloudCubit>();
+              final cubit = context.read<ManualCubit>();
 
               return Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -95,10 +99,29 @@ class ManualRecoverPage extends StatelessWidget {
                         onChanged: (value) => cubit.updateBackupKey(value),
                       ),
                     if (!state.recovered && state.backupKey.isEmpty)
-                      BBButton.big(
-                        label: 'Select File',
-                        center: true,
-                        onPressed: () => cubit.selectFile(),
+                      Column(
+                        children: [
+                          BBButton.big(
+                            label: 'Select file from FileSystem',
+                            center: true,
+                            onPressed: () => cubit.selectFileFromFs(),
+                          ),
+                          const Gap(20),
+                          BBButton.big(
+                            label: 'Select file from Cloud',
+                            center: true,
+                            onPressed: () => {
+                              context.push(
+                                '/cloud-backup',
+                                extra: {
+                                  'cubit': CloudCubit(),
+                                  'callback': (String id, String encrypted) =>
+                                      cubit.setSelectedBack(id, encrypted),
+                                },
+                              ),
+                            },
+                          ),
+                        ],
                       ),
                     if (!state.recovered && state.backupKey.isNotEmpty)
                       BBButton.big(
@@ -111,6 +134,24 @@ class ManualRecoverPage extends StatelessWidget {
               );
             },
           ),
+        ),
+      ),
+    );
+  }
+
+  void showModalPopup({
+    required BuildContext context,
+    required List<Widget> children,
+  }) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext modalContext) => Container(
+        height: 700,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+        ),
+        child: Column(
+          children: children,
         ),
       ),
     );
