@@ -128,10 +128,7 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                           const Gap(50),
                           if (state.backupPath.isNotEmpty)
                             BlocProvider(
-                              create: (context) => CloudCubit(
-                                backupPath: state.backupPath,
-                                backupName: state.backupName,
-                              ),
+                              create: (context) => CloudCubit(),
                               child: Center(
                                 child: BlocConsumer<CloudCubit, CloudState>(
                                   listener: (context, cloudState) {
@@ -163,16 +160,20 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                                       }
                                     }
                                   },
+                                  buildWhen: (p, q) => p.loading != q.loading,
                                   builder: (context, cloudState) {
                                     return BBButton.big(
                                       loading: cloudState.loading,
                                       onPressed: () {
-                                        context
-                                            .read<CloudCubit>()
-                                            .connectAndStoreBackup();
+                                        context.read<CloudCubit>().uploadBackup(
+                                              state.backupPath,
+                                              state.backupName,
+                                            );
                                         context.push(
                                           '/cloud-backup',
-                                          extra: context.read<CloudCubit>(),
+                                          extra: {
+                                            'cubit': context.read<CloudCubit>(),
+                                          },
                                         );
                                       },
                                       label: "SAVE TO GOOGLE DRIVE",
