@@ -1,58 +1,150 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
 import 'package:bb_mobile/backup/bloc/cloud_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:googleapis/drive/v3.dart';
+import 'package:intl/intl.dart';
 
 class CloudPage extends StatelessWidget {
   const CloudPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<CloudCubit>(
-      create: (_) => CloudCubit(backupPath: backupPath, backupName: backupName),
-      child: BlocListener<CloudCubit, CloudState>(
-        listener: (context, state) {
-          if (state.toast.isNotEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.toast)),
-            );
-            context.read<CloudCubit>().clearToast();
-          }
-        },
-        child: BlocBuilder<CloudCubit, CloudState>(
-          builder: (context, state) {
-            final cubit = context.read<CloudCubit>();
-
-            return Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                flexibleSpace: BBAppBar(
-                  text: 'Cloud Backup',
-                  onBack: () => context.pop(),
-                ),
-              ),
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: cubit.connectAndStoreBackup,
-                      child: const Text("Google Drive"),
-                    ),
-                    if (state.googleDriveStorage != null)
-                      ElevatedButton(
-                        onPressed: cubit.disconnect,
-                        child: const Text("Log out"),
+    return BlocConsumer<CloudCubit, CloudState>(
+      listener: (context, state) {
+        if (state.toast.isNotEmpty) {
+          _showSnackBar(context, state.toast, Colors.green);
+          context.read<CloudCubit>().clearToast();
+        }
+        if (state.error.isNotEmpty) {
+          _showSnackBar(context, state.error, Colors.red);
+          context.read<CloudCubit>().clearError();
+        }
+      },
+      builder: (context, state) {
+        final cubit = context.read<CloudCubit>();
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            flexibleSpace: BBAppBar(
+              text: 'Cloud Backup',
+              onBack: () => context.pop(),
+            ),
+          ),
+          body: Center(
+            child: state.loading
+                ? const CircularProgressIndicator()
+                : Column(
+                    children: [
+                      const Gap(50),
+                      AvailableBackups(
+                        onFileSelected: (file) {
+                          debugPrint('Selected file: ${file.name}');
+                        },
                       ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
+                      const Gap(10),
+                      if (state.googleDriveStorage != null)
+                        BBButton.big(
+                          onPressed: cubit.disconnect,
+                          label: "LOGOUT",
+                        ),
+                    ],
+                  ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showSnackBar(BuildContext context, String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
       ),
     );
+  }
+}
+
+class AvailableBackups extends StatelessWidget {
+  const AvailableBackups({super.key, required this.onFileSelected});
+  final void Function(File) onFileSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<CloudCubit>();
+    return SizedBox(
+      height: 500,
+      child: BlocBuilder<CloudCubit, CloudState>(
+        builder: (context, state) {
+          if (state.availableBackups.isEmpty) {
+            return Center(
+              child: Column(
+                children: [
+                  const Text('No backups found'),
+                  const Gap(10),
+                  BBButton.big(
+                    onPressed: () {
+                      cubit.clearToast();
+                      cubit.clearError();
+                      cubit.readAllBackups();
+                    },
+                    label: "READ ALL BACKUPS",
+                  ),
+                ],
+              ),
+            );
+          }
+          return ListView.separated(
+            // Use ListView.separated for dividers
+            itemCount: state.availableBackups.length,
+            shrinkWrap: true,
+            separatorBuilder: (context, index) =>
+                const Divider(), // Add dividers between items
+            itemBuilder: (context, index) => BackupTile(
+              file: state.availableBackups[index],
+              onFileSelected: onFileSelected,
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class BackupTile extends StatelessWidget {
+  const BackupTile({
+    super.key,
+    required this.file,
+    required this.onFileSelected,
+  });
+  final File file;
+  final void Function(File) onFileSelected; // Use void Function for clarity
+
+  @override
+  Widget build(BuildContext context) {
+    final fileName = file.name?.replaceAll(".json", "");
+    final parts = fileName?.split('_');
+    final backupId = parts?.last;
+    final dateTimeString = parts?.first;
+    final dateTime =
+        DateTime.fromMillisecondsSinceEpoch(int.parse(dateTimeString!));
+
+    final formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
+    return ListTile(
+        onTap: () => onFileSelected(file),
+        title: BBText.body(
+          backupId ?? 'Unnamed File',
+          isBold: true,
+        ),
+        subtitle: BBText.bodySmall(
+          formattedDate,
+        ));
   }
 }
