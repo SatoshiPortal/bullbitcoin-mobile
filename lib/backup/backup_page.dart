@@ -105,7 +105,7 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                           if (state.backupKey.isNotEmpty)
                             Column(
                               children: [
-                                BBText.bodyBold("Generated Backup Key"),
+                                const BBText.bodyBold("Generated Backup Key"),
                                 Gap(10),
                                 SelectableText(
                                   state.backupKey,
@@ -125,7 +125,7 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                                   ),
                               ],
                             ),
-                          Gap(50),
+                          const Gap(50),
                           if (state.backupPath.isNotEmpty)
                             BlocProvider(
                               create: (context) => CloudCubit(
@@ -179,10 +179,9 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                                     );
                                   },
                                 ),
-                                label: "SAVE TO CLOUD",
                               ),
                             ),
-                          Gap(10),
+                          const Gap(10),
                         ],
                       ),
                     );
