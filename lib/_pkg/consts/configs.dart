@@ -32,5 +32,4 @@ const liquidMainnetAssetId = lwk.lBtcAssetId;
 const liquidTestnetAssetId = lwk.lTestAssetId;
 
 //Backups
-const defaultCloudBackupPath =
-    'backups'; //todo; create a better folder structure
+const defaultBackupPath = 'backups'; //todo; create a better folder structure
