@@ -127,11 +127,57 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                             ),
                           Gap(50),
                           if (state.backupPath.isNotEmpty)
-                            Center(
-                              child: BBButton.big(
-                                onPressed: () => context.push(
-                                  '/cloud-backup',
-                                  extra: (state.backupPath, state.backupName),
+                            BlocProvider(
+                              create: (context) => CloudCubit(
+                                backupPath: state.backupPath,
+                                backupName: state.backupName,
+                              ),
+                              child: Center(
+                                child: BlocConsumer<CloudCubit, CloudState>(
+                                  listener: (context, cloudState) {
+                                    if (!cloudState.loading) {
+                                      if (cloudState.error != '') {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              cloudState.error,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            backgroundColor: Colors.red,
+                                          ),
+                                        );
+                                        context.read<CloudCubit>().clearError();
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              cloudState.toast,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+                                        context.read<CloudCubit>().clearToast();
+                                      }
+                                    }
+                                  },
+                                  builder: (context, cloudState) {
+                                    return BBButton.big(
+                                      loading: cloudState.loading,
+                                      onPressed: () {
+                                        context
+                                            .read<CloudCubit>()
+                                            .connectAndStoreBackup();
+                                        context.push(
+                                          '/cloud-backup',
+                                          extra: context.read<CloudCubit>(),
+                                        );
+                                      },
+                                      label: "SAVE TO GOOGLE DRIVE",
+                                    );
+                                  },
                                 ),
                                 label: "SAVE TO CLOUD",
                               ),
