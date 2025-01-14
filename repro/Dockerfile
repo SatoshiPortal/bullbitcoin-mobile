@@ -1,5 +1,5 @@
 # Use a base Ubuntu image
-FROM --platform=linux/amd64 ubuntu:20.04
+FROM ubuntu:20.04
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
