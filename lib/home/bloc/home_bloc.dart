@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
+import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
@@ -19,6 +21,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<UpdatedNotifier>(_onUpdatedNotifier);
     on<LoadWalletsForNetwork>(_onLoadWalletsForNetwork);
     on<WalletUpdated>(_onWalletUpdated);
+
+    on<WalletServicesUpdated>(_onWalletServicesUpdated);
+
+    _walletServicesSubscription = _appWalletsRepository.wallets
+        .listen((walletServices) => add(WalletServicesUpdated(walletServices)));
     // on<WalletsSubscribe>(
     //   (event, emit) async {
     //     print('wallets updated');
@@ -38,6 +45,43 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   final AppWalletsRepository _appWalletsRepository;
   final NetworkRepository _networkRepository;
+  late StreamSubscription _walletServicesSubscription;
+  final Map<String, StreamSubscription> _walletServiceDataUpdateSubscriptions =
+      {};
+
+  @override
+  Future<void> close() {
+    _walletServicesSubscription.cancel();
+    for (final sub in _walletServiceDataUpdateSubscriptions.values) {
+      sub.cancel();
+    }
+    return super.close();
+  }
+
+  Future<void> _onWalletServicesUpdated(
+    WalletServicesUpdated event,
+    Emitter<HomeState> emit,
+  ) async {
+    debugPrint('wallet services updated: ${event.walletServices.length}');
+    final walletServicesData = event.walletServices
+        .map((_) => WalletServiceData(wallet: _.wallet))
+        .toList();
+    emit(state.copyWith(wallets: walletServicesData));
+
+    // Listen to wallet data updates
+    for (final ws in event.walletServices) {
+      if (_walletServiceDataUpdateSubscriptions.containsKey(ws.wallet.id)) {
+        _walletServiceDataUpdateSubscriptions[ws.wallet.id]!.cancel();
+      }
+      _walletServiceDataUpdateSubscriptions[ws.wallet.id] =
+          ws.dataStream.listen(
+        (data) {
+          debugPrint('wallet data updated from stream: ${data.wallet.id}');
+          add(WalletUpdated(data));
+        },
+      );
+    }
+  }
 
   Future<void> _onLoadWalletsFromStorage(
     LoadWalletsFromStorage event,
@@ -46,7 +90,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(state.copyWith(loadingWallets: true));
     await _appWalletsRepository.getWalletsFromStorage();
     final wallets = _appWalletsRepository.allWallets;
-    emit(state.copyWith(wallets: wallets));
+    emit(state.copyWith(
+        wallets: wallets.map((_) => WalletServiceData(wallet: _)).toList()));
     await _appWalletsRepository
         .loadAllInNetwork(_networkRepository.getBBNetwork);
     _appWalletsRepository.syncAllInNetwork(_networkRepository.getBBNetwork);
@@ -97,11 +142,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     WalletUpdated event,
     Emitter<HomeState> emit,
   ) {
-    final wallet = event.wallet;
+    debugPrint('wallet updated: ${event.walletData.wallet.id}');
+    final walletData = event.walletData;
     final wallets = state.wallets.toList();
-    final idx = wallets.indexWhere((w) => w.id == wallet.id);
+    final idx = wallets.indexWhere((w) => w.wallet.id == walletData.wallet.id);
     if (idx == -1) return;
-    wallets[idx] = wallet;
+    wallets[idx] = walletData;
     emit(state.copyWith(wallets: wallets));
   }
 }

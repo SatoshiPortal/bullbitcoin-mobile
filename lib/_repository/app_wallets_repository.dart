@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
@@ -11,6 +13,11 @@ class AppWalletsRepository {
   final WalletsStorageRepository _walletsStorageRepository;
 
   final List<WalletService> _walletServices = [];
+  final StreamController<List<WalletService>> _walletsController =
+      StreamController.broadcast();
+
+  Stream<List<WalletService>> get wallets =>
+      _walletsController.stream.asBroadcastStream();
 
   Future<void> getWalletsFromStorage() async {
     final (wallets, err) = await _walletsStorageRepository.readAllWallets();
@@ -28,6 +35,7 @@ class AppWalletsRepository {
           .map((_) => createWalletService(wallet: _, fromStorage: true))
           .toList(),
     );
+    _walletsController.add(_walletServices);
   }
 
   List<Wallet> get allWallets => _walletServices.map((_) => _.wallet).toList();
@@ -46,6 +54,7 @@ class AppWalletsRepository {
 
   void deleteWallet(String id) {
     _walletServices.removeWhere((_) => _.wallet.id == id);
+    _walletsController.add(_walletServices);
   }
 
   List<WalletService> walletServiceFromNetwork(BBNetwork network) =>

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'home_state.freezed.dart';
@@ -8,7 +9,7 @@ part 'home_state.freezed.dart';
 @freezed
 class HomeState with _$HomeState {
   const factory HomeState({
-    @Default([]) List<Wallet> wallets,
+    @Default([]) List<WalletServiceData> wallets,
     // List<Wallet>? tempwallets,
     // List<Wallet>? wallets,
     @Default(true) bool loadingWallets,
@@ -23,49 +24,46 @@ class HomeState with _$HomeState {
   }) = _HomeState;
   const HomeState._();
 
-  bool hasWallets() =>
-      !loadingWallets && wallets != null && wallets!.isNotEmpty;
+  bool syncingAny() => wallets.any((_) => _.syncing);
+
+  bool hasWallets() => !loadingWallets && wallets.isNotEmpty;
 
   // List<Wallet> walletsFromNetwork(BBNetwork network) =>
   //     wallets?.where((wallet) => wallet.network == network).toList().reversed.toList() ?? [];
 
-  bool hasMainWallets() => wallets?.any((_) => _.mainWallet) ?? false;
+  bool hasMainWallets() => wallets.any((_) => _.wallet.mainWallet);
 
   List<Wallet> walletsFromNetwork(BBNetwork network) {
-    final blocs = wallets
-            ?.where((_) => _.network == network)
-            //.toList()
-            //.reversed
-            .toList() ??
-        [];
+    final walletsData = wallets
+        .where((_) => _.wallet.network == network)
+        //.toList()
+        //.reversed
+        .toList();
 
-    return blocs;
+    return walletsData.map((e) => e.wallet).toList();
   }
 
   List<Wallet> walletsFromNetworkExcludeWatchOnly(BBNetwork network) {
-    final blocs = wallets
-            ?.where(
-              (walletBloc) =>
-                  walletBloc.network == network &&
-                  walletBloc.watchOnly() == false,
-            )
-            .toList() ??
-        [];
+    final data = wallets
+        .where(
+          (d) => d.wallet.network == network && d.wallet.watchOnly() == false,
+        )
+        .toList();
 
-    return blocs;
+    return data.map((e) => e.wallet).toList();
   }
 
   List<Wallet> walletsNotMainFromNetwork(BBNetwork network) {
     final blocs = wallets
-            ?.where(
-              (wallet) => wallet.network == network && !wallet.mainWallet,
-            )
-            .toList()
-            .reversed
-            .toList() ??
-        [];
+        .where(
+          (wallet) =>
+              wallet.wallet.network == network && !wallet.wallet.mainWallet,
+        )
+        .toList()
+        .reversed
+        .toList();
 
-    return blocs;
+    return blocs.map((e) => e.wallet).toList();
   }
 
   int lenWalletsFromNetwork(BBNetwork network) =>
@@ -113,12 +111,11 @@ class HomeState with _$HomeState {
   }
 
   Wallet? getWalletFromTx(Transaction tx) {
-    if (wallets == null) return null;
-
-    for (final walletBloc in wallets!) {
+    for (final walletBloc in wallets) {
       final wallet = walletBloc;
-      if (wallet.transactions.indexWhere((t) => t.txid == tx.txid) != -1) {
-        return walletBloc;
+      if (wallet.wallet.transactions.indexWhere((t) => t.txid == tx.txid) !=
+          -1) {
+        return walletBloc.wallet;
       }
     }
 
@@ -126,15 +123,13 @@ class HomeState with _$HomeState {
   }
 
   Wallet? getWalletFromSwapTx(SwapTx swaptx) {
-    if (wallets == null) return null;
-
-    for (final walletBloc in wallets!) {
+    for (final walletBloc in wallets) {
       final wallet = walletBloc;
-      if (wallet.transactions.indexWhere(
+      if (wallet.wallet.transactions.indexWhere(
             (t) => t.swapTx?.id == swaptx.id,
           ) !=
           -1) {
-        return walletBloc;
+        return walletBloc.wallet;
       }
     }
 
@@ -162,9 +157,9 @@ class HomeState with _$HomeState {
     // if (walletIdx == -1) return null;
     // final wallet = wallets![walletIdx];
     // final wallets = walletsFromNetwork(wallet.network);
-    final idx = wallets?.indexWhere((w) => id == w.id);
-    if (idx == -1 || idx == null) return null;
-    return wallets![idx];
+    final idx = wallets.indexWhere((w) => id == w.wallet.id);
+    if (idx == -1) return null;
+    return wallets[idx].wallet;
   }
 
   Wallet? getFirstWithSpendableAndBalance(BBNetwork network, {int amt = 0}) {
@@ -182,18 +177,19 @@ class HomeState with _$HomeState {
   }
 
   SwapTx? getSwapTxById(String id) {
-    for (final walletBloc in wallets!) {
+    for (final walletBloc in wallets) {
       final wallet = walletBloc;
-      if (wallet.swaps.isEmpty) continue;
-      final idx = wallet.swaps.indexWhere((_) => _.id == id);
-      if (idx != -1) return wallet.swaps[idx];
+      if (wallet.wallet.swaps.isEmpty) continue;
+      final idx = wallet.wallet.swaps.indexWhere((_) => _.id == id);
+      if (idx != -1) return wallet.wallet.swaps[idx];
     }
 
-    for (final walletBloc in wallets!) {
+    for (final walletBloc in wallets) {
       final wallet = walletBloc;
-      if (wallet.transactions.isEmpty) continue;
-      final idx = wallet.transactions.indexWhere((_) => _.swapTx?.id == id);
-      if (idx != -1) return wallet.transactions[idx].swapTx;
+      if (wallet.wallet.transactions.isEmpty) continue;
+      final idx =
+          wallet.wallet.transactions.indexWhere((_) => _.swapTx?.id == id);
+      if (idx != -1) return wallet.wallet.transactions[idx].swapTx;
     }
 
     return null;
@@ -440,10 +436,12 @@ class HomeState with _$HomeState {
   }
 
   Wallet? findWalletWithSameFngr(Wallet wallet) {
-    for (final wb in wallets!) {
+    for (final wb in wallets) {
       final w = wb;
-      if (w.id == wallet.id) continue;
-      if (w.sourceFingerprint == wallet.sourceFingerprint) return wb;
+      if (w.wallet.id == wallet.id) continue;
+      if (w.wallet.sourceFingerprint == wallet.sourceFingerprint) {
+        return wb.wallet;
+      }
     }
     return null;
   }
