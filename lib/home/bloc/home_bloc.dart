@@ -90,8 +90,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(state.copyWith(loadingWallets: true));
     await _appWalletsRepository.getWalletsFromStorage();
     final wallets = _appWalletsRepository.allWallets;
-    emit(state.copyWith(
-        wallets: wallets.map((_) => WalletServiceData(wallet: _)).toList()));
+    emit(
+      state.copyWith(
+        wallets: wallets.map((_) => WalletServiceData(wallet: _)).toList(),
+      ),
+    );
     await _appWalletsRepository
         .loadAllInNetwork(_networkRepository.getBBNetwork);
     _appWalletsRepository.syncAllInNetwork(_networkRepository.getBBNetwork);

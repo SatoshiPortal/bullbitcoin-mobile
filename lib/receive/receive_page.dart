@@ -67,7 +67,7 @@ class _ReceivePageState extends State<ReceivePage> {
 
   @override
   void initState() {
-    // print('-----2 - ${DateTime.now()}');
+    // debugPrint('-----2 - ${DateTime.now()}');
     // _swapCubit = CreateSwapCubit(
     //   walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
     //   swapBoltz: locator<SwapBoltz>(),
@@ -78,19 +78,19 @@ class _ReceivePageState extends State<ReceivePage> {
     //   networkRepository: context.read<NetworkRepository>(),
     //   // networkCubit: context.read<NetworkBloc>(),
     // )..fetchFees(context.read<NetworkBloc>().state.networkData.testnet);
-    // print('-----3 - ${DateTime.now()}');
+    // debugPrint('-----3 - ${DateTime.now()}');
 
     // _currencyCubit = CurrencyCubit(
     //   hiveStorage: locator<HiveStorage>(),
     //   bbAPI: locator<BullBitcoinAPI>(),
     //   defaultCurrencyCubit: context.read<CurrencyCubit>(),
     // );
-    // print('-----4 - ${DateTime.now()}');
+    // debugPrint('-----4 - ${DateTime.now()}');
 
     // final w = widget.wallet != null
     //     ? context.read<AppWalletsRepository>().getWalletById(widget.wallet!)
     //     : null;
-    // print('-----5 - ${DateTime.now()}');
+    // debugPrint('-----5 - ${DateTime.now()}');
 
     // _receiveCubit = ReceiveCubit(
     //   walletAddress: locator<WalletAddress>(),
@@ -102,14 +102,14 @@ class _ReceivePageState extends State<ReceivePage> {
     //   // widget.wallet != null ? createWalletBloc(widget.wallet!) : null,
     //   payjoinManager: locator<PayjoinManager>(),
     // );
-    // print('-----6 - ${DateTime.now()}');
+    // debugPrint('-----6 - ${DateTime.now()}');
 
     // final network = context.read<NetworkRepository>().getBBNetwork;
-    // print('-----7 - ${DateTime.now()}');
+    // debugPrint('-----7 - ${DateTime.now()}');
 
     // final wallet =
     //     w ?? context.read<AppWalletsRepository>().getMainInstantWallet(network);
-    // print('-----8 - ${DateTime.now()}');
+    // debugPrint('-----8 - ${DateTime.now()}');
 
     // if (wallet!.isLiquid()) {
     //   _receiveCubit.updateWalletType(
@@ -124,16 +124,16 @@ class _ReceivePageState extends State<ReceivePage> {
     //     onStart: true,
     //   );
     // }
-    // print('-----10 - ${DateTime.now()}');
+    // debugPrint('-----10 - ${DateTime.now()}');
 
     // _receiveCubit.updateWallet(wallet);
-    // print('-----11 - ${DateTime.now()}');
+    // debugPrint('-----11 - ${DateTime.now()}');
 
     super.initState();
   }
 
   Future _setupBlocs() async {
-    print('-----2 - ${DateTime.now()}');
+    debugPrint('-----2 - ${DateTime.now()}');
     _swapCubit = CreateSwapCubit(
       walletSensitiveRepository: locator<WalletSensitiveStorageRepository>(),
       swapBoltz: locator<SwapBoltz>(),
@@ -144,19 +144,19 @@ class _ReceivePageState extends State<ReceivePage> {
       networkRepository: context.read<NetworkRepository>(),
       // networkCubit: context.read<NetworkBloc>(),
     )..fetchFees(context.read<NetworkBloc>().state.networkData.testnet);
-    print('-----3 - ${DateTime.now()}');
+    debugPrint('-----3 - ${DateTime.now()}');
 
     _currencyCubit = CurrencyCubit(
       hiveStorage: locator<HiveStorage>(),
       bbAPI: locator<BullBitcoinAPI>(),
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
-    print('-----4 - ${DateTime.now()}');
+    debugPrint('-----4 - ${DateTime.now()}');
 
     final w = widget.wallet != null
         ? context.read<AppWalletsRepository>().getWalletById(widget.wallet!)
         : null;
-    print('-----5 - ${DateTime.now()}');
+    debugPrint('-----5 - ${DateTime.now()}');
 
     _receiveCubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
@@ -168,14 +168,14 @@ class _ReceivePageState extends State<ReceivePage> {
       // widget.wallet != null ? createWalletBloc(widget.wallet!) : null,
       payjoinManager: locator<PayjoinManager>(),
     );
-    print('-----6 - ${DateTime.now()}');
+    debugPrint('-----6 - ${DateTime.now()}');
 
     final network = context.read<NetworkRepository>().getBBNetwork;
-    print('-----7 - ${DateTime.now()}');
+    debugPrint('-----7 - ${DateTime.now()}');
 
     final wallet =
         w ?? context.read<AppWalletsRepository>().getMainInstantWallet(network);
-    print('-----8 - ${DateTime.now()}');
+    debugPrint('-----8 - ${DateTime.now()}');
 
     if (wallet!.isLiquid()) {
       _receiveCubit.updateWalletType(
@@ -190,10 +190,10 @@ class _ReceivePageState extends State<ReceivePage> {
         onStart: true,
       );
     }
-    print('-----10 - ${DateTime.now()}');
+    debugPrint('-----10 - ${DateTime.now()}');
 
     _receiveCubit.updateWallet(wallet);
-    print('-----11 - ${DateTime.now()}');
+    debugPrint('-----11 - ${DateTime.now()}');
   }
 
   @override

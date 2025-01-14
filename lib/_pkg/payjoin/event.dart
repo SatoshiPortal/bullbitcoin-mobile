@@ -56,7 +56,7 @@ class _PayjoinEventListenerState extends State<PayjoinEventListener> {
   void initState() {
     super.initState();
     _subscription = PayjoinEventBus().stream.listen((event) {
-      print('event: $event');
+      debugPrint('event: $event');
       if (event is PayjoinBroadcastEvent) {
         showToastWidget(
           position: ToastPosition.top,

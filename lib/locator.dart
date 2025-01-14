@@ -247,7 +247,6 @@ Future _setupWalletServices() async {
   locator.registerSingleton<NetworkRepository>(
     NetworkRepository(
       walletNetwork: locator<WalletNetwork>(),
-      hiveStorage: locator<HiveStorage>(),
     ),
   );
 

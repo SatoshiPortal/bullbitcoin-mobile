@@ -111,7 +111,7 @@ class PayjoinManager {
       final receivePort = ReceivePort();
 
       receivePort.listen((message) async {
-        print('Sender isolate: $message');
+        debugPrint('Sender isolate: $message');
         if (message is Map<String, dynamic>) {
           if (message['type'] == 'request_posted') {
             PayjoinEventBus().emit(
@@ -680,7 +680,7 @@ Future<void> _isolateReceiver(List<dynamic> args) async {
       );
       return payjoinProposal;
     } catch (e) {
-      print('Error occurred while finalizing proposal: $e');
+      debugPrint('Error occurred while finalizing proposal: $e');
       rethrow;
     }
   }

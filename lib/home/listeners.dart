@@ -90,7 +90,7 @@ class WalletBlocListeners extends StatelessWidget {
     // .read<HomeBloc>().state.walletBlocs ?? [];
 
     // print each wallet id
-    for (final wallet in wallets) {
+    for (final _ in wallets) {
       // print('wallet id: ${wallet.id}');
     }
     final mainWalletBloc = wallets.firstWhere(

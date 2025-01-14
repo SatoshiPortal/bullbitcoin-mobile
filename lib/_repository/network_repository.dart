@@ -2,7 +2,6 @@ import 'package:bb_mobile/_model/network.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/wallet/network.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -35,9 +34,7 @@ class NetworkRepoData with _$NetworkRepoData {
 class NetworkRepository {
   NetworkRepository({
     required WalletNetwork walletNetwork,
-    required HiveStorage hiveStorage,
-  })  : _walletNetwork = walletNetwork,
-        _hiveStorage = hiveStorage;
+  }) : _walletNetwork = walletNetwork;
 
   final _data =
       BehaviorSubject<NetworkRepoData>.seeded(const NetworkRepoData());
@@ -46,32 +43,10 @@ class NetworkRepository {
   NetworkRepoData get data => _data.value;
 
   final WalletNetwork _walletNetwork;
-  final HiveStorage _hiveStorage;
 
   void dispose() {
     _data.close();
   }
-
-  // Future<Err?> init() async {
-  //   final (result, err) =
-  //       await _hiveStorage.getValue(StorageKeys.networkReposity);
-  //   if (err != null) return err;
-
-  //   _data.add(
-  //     NetworkRepoData.fromJson(
-  //       jsonDecode(result!) as Map<String, dynamic>,
-  //     ),
-  //   );
-
-  //   return null;
-  // }
-
-  // Future save() async {
-  //   await _hiveStorage.saveValue(
-  //     key: StorageKeys.networkReposity,
-  //     value: jsonEncode(_data.value.toJson()),
-  //   );
-  // }
 
   Future<Err?> setupBlockchain({bool? isLiquid, bool? isTestnetLocal}) async {
     final isTestnet = isTestnetLocal ?? _data.value.testnet;
