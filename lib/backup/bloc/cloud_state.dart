@@ -10,5 +10,6 @@ class CloudState with _$CloudState {
     @Default(true) bool loading,
     GoogleDriveStorage? googleDriveStorage,
     @Default('') String toast,
+    @Default('') String error,
   }) = _CloudState;
 }
