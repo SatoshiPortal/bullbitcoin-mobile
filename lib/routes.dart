@@ -16,7 +16,7 @@ import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
-import 'package:bb_mobile/recover/fs_cloud_page.dart';
+import 'package:bb_mobile/recover/manual_page.dart';
 import 'package:bb_mobile/recover/keychain_page.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
@@ -223,10 +223,16 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/cloud-backup',
           builder: (context, state) {
-            final cloudCubit = state.extra! as CloudCubit;
+            final data = state.extra! as Map<String, dynamic>;
+            final cloudCubit = data['cubit'] as CloudCubit;
+            Function(String, String)? onBackupSelected;
+            if (data['callback'] != null) {
+              onBackupSelected = data['callback']! as Function(String, String)?;
+            }
+
             return BlocProvider.value(
               value: cloudCubit,
-              child: const CloudPage(),
+              child: CloudPage(onBackupSelected: onBackupSelected),
             );
           },
         ),
